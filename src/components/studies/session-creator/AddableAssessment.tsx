@@ -48,11 +48,36 @@ const AddableAssessment: FunctionComponent<AddableAssessmentProps> = ({
     setAnchorEl(null)
   }
 
+  const renderMenuItems = (sessions: StudySession[]): JSX.Element[] => {
+    if (sessions.length === 0) {
+      return [
+        <MenuItem
+          onClick={() => handleClose()}
+          key={-1}
+          className={classes.root}
+        >
+          Please create a session first
+        </MenuItem>,
+      ]
+    } else {
+      return sessions.map((session, index) => (
+        <MenuItem
+          onClick={() => addToSession(session.id)}
+          key={index}
+          className={classes.root}
+        >
+          Add to: {session.name}
+        </MenuItem>
+      ))
+    }
+  }
+
   return (
     <>
       <Button aria-haspopup="true" onClick={(evt: any) => handleClick(evt)}>
         {children}
       </Button>
+
       <Menu
         id="simple-menu"
         anchorEl={anchorEl}
@@ -60,15 +85,7 @@ const AddableAssessment: FunctionComponent<AddableAssessmentProps> = ({
         open={Boolean(anchorEl)}
         onClose={() => handleClose()}
       >
-        {sessions.map((session, index) => (
-          <MenuItem
-            onClick={() => addToSession(session.id)}
-            key={index}
-            className={classes.root}
-          >
-            Add to: {session.name}
-          </MenuItem>
-        ))}
+        {renderMenuItems(sessions)}
       </Menu>
     </>
   )

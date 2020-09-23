@@ -28,11 +28,11 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
   const assessments = useAssessments()
   const [assessmentTabIndex, setAssessmentTabIndex] = useState(0)
   const [groupTabIndex, setGroupTabIndex] = useState(0)
-  const [value2, setValue2] = useState(0)
 
   const defaultGroup: Group = {
     id: '123',
-    name: 'popGroup1',
+    name: 'Group1',
+    active: true,
     sessions: [
       {
         id: '123',
@@ -58,12 +58,37 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
   const [groups, setGroups] = useState<Group[]>([defaultGroup])
   const classes = useStyles()
 
-  const addGroup = (id: string) => {
-    setGroups(prev => [
-      ...prev,
-      { id, active: true, name: `Group ${id}`, sessions: [] },
-    ])
+  const addGroup = (id: string, isMakeActive?: boolean) => {
+    let newGroups = [
+      ...groups,
+      { id, active: false, name: `Group ${groups.length+1}`, sessions: [] },
+    ]
+    if (isMakeActive) {
+      newGroups = newGroups.map(group => ({
+        ...group,
+        active: group.id === id,
+      }))
+    }
+    setGroups(prev => newGroups)
   }
+
+  const setActiveGroup = (id: string) => {
+    setGroups(prev =>
+      prev.map(group => ({ ...group, active: group.id === id })),
+    )
+  }
+
+  const handleGroupChange = (groupIndex: number) => {
+    if (groupIndex === groups.length) {
+      addGroup(Date.now().toString(), true)
+    } else {
+      setActiveGroup(groups[groupIndex].id)
+    }
+    setGroupTabIndex(groupIndex)
+  }
+
+  const getActiveGroupSessions = () =>  groups.find(group => group.active)?.sessions 
+
 
   const addSession = (
     sessionId: string,
@@ -144,7 +169,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
         <TabsMtb
           value={assessmentTabIndex}
           handleChange={(val: number) => setAssessmentTabIndex(val)}
-          tabLabels={['Assessment Library', 'Bookmarked Assessment']}
+          tabLabels={['Bookmarked Assessment', 'Assessment Library']}
         ></TabsMtb>
 
         <TabPanel value={assessmentTabIndex} index={0}>
@@ -162,7 +187,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
                   onAddFn={(sessionId: string) =>
                     addAssessment(groups[groupTabIndex].id, sessionId, a)
                   }
-                  sessions={groups[0].sessions}
+                  sessions={getActiveGroupSessions() || []}
                 >
                   <AssessmentCard
                     index={index}
@@ -198,9 +223,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
         <TabsMtb
           value={groupTabIndex}
           handleChange={(val: number) => {
-            val < groups.length
-              ? setGroupTabIndex(val)
-              : addGroup(val.toString())
+            handleGroupChange(val)
           }}
           tabLabels={groups.map(group => group.name)}
           addNewLabel="+"
