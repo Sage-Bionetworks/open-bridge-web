@@ -1,9 +1,9 @@
 import React, { FunctionComponent } from 'react'
 
-import { RouteComponentProps } from 'react-router-dom'
+
 import { StudySession } from '../../../types/types'
-import { Droppable, DragDropContext, Draggable } from 'react-beautiful-dnd'
-import AssessmentCard from '../../assessments/AssessmentCard'
+import { Droppable,  Draggable } from 'react-beautiful-dnd'
+
 import clsx from 'clsx'
 import { makeStyles, Box, Button } from '@material-ui/core'
 import AssessmentSmall from '../../assessments/AssessmentSmall'

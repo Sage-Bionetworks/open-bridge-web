@@ -1,16 +1,17 @@
 import React, { FunctionComponent, useState } from 'react'
 
-import { Tabs, Tab, makeStyles } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core'
 import TabPanel from '../../widgets/TabPanel'
 import TabsMtb from '../../widgets/TabsMtb'
 import useAssessments from '../../../helpers/hooks'
 import AssessmentCard from '../../assessments/AssessmentCard'
 
 import { Group, Assessment } from '../../../types/types'
-import StudySessionContainer from './StudySessionContainer'
+
 import clsx from 'clsx'
 import AddableAssessment from './AddableAssessment'
-import { DragDropContext } from 'react-beautiful-dnd'
+import GroupsEditor from './GoupsEditor'
+import AssessmentSelector from './AssessmentSelector'
 
 const useStyles = makeStyles({
   root: {},
@@ -61,7 +62,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
   const addGroup = (id: string, isMakeActive?: boolean) => {
     let newGroups = [
       ...groups,
-      { id, active: false, name: `Group ${groups.length+1}`, sessions: [] },
+      { id, active: false, name: `Group ${groups.length + 1}`, sessions: [] },
     ]
     if (isMakeActive) {
       newGroups = newGroups.map(group => ({
@@ -78,17 +79,8 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
     )
   }
 
-  const handleGroupChange = (groupIndex: number) => {
-    if (groupIndex === groups.length) {
-      addGroup(Date.now().toString(), true)
-    } else {
-      setActiveGroup(groups[groupIndex].id)
-    }
-    setGroupTabIndex(groupIndex)
-  }
-
-  const getActiveGroupSessions = () =>  groups.find(group => group.active)?.sessions 
-
+  const getActiveGroupSessions = () =>
+    groups.find(group => group.active)?.sessions
 
   const addSession = (
     sessionId: string,
@@ -165,103 +157,25 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
 
   return (
     <div>
-      <div className="assessmentTabs">
-        <TabsMtb
-          value={assessmentTabIndex}
-          handleChange={(val: number) => setAssessmentTabIndex(val)}
-          tabLabels={['Bookmarked Assessment', 'Assessment Library']}
-        ></TabsMtb>
+      <AssessmentSelector
+        groups={groups}
+        onAddAssessment={(groupId: string, sessionId: string, a: Assessment) =>
+          addAssessment(groupId, sessionId, a)
+        }
+      ></AssessmentSelector>
 
-        <TabPanel value={assessmentTabIndex} index={0}>
-          <div
-            className={clsx(
-              'assesmentContainer',
-              classes.bookmarkedAssessments,
-            )}
-          >
-            {assessments
-              .filter(a => a.bookmarked)
-              .map((a, index) => (
-                <AddableAssessment
-                  key={index + 'a'}
-                  onAddFn={(sessionId: string) =>
-                    addAssessment(groups[groupTabIndex].id, sessionId, a)
-                  }
-                  sessions={getActiveGroupSessions() || []}
-                >
-                  <AssessmentCard
-                    index={index}
-                    assessment={a}
-                    key={index}
-                  ></AssessmentCard>
-                </AddableAssessment>
-              ))}
-          </div>
-        </TabPanel>
+      <div>----------+----------</div>
 
-        <TabPanel value={assessmentTabIndex} index={1}>
-          <div
-            className={clsx(
-              'assesmentContainer',
-              classes.bookmarkedAssessments,
-            )}
-          >
-            {assessments.map((a, index) => (
-              <AssessmentCard
-                index={index}
-                assessment={a}
-                key={index + 'b'}
-              ></AssessmentCard>
-            ))}
-          </div>
-        </TabPanel>
-      </div>
-
-      <div>--------------------</div>
-
-      <div className="sessionTabs">
-        <TabsMtb
-          value={groupTabIndex}
-          handleChange={(val: number) => {
-            handleGroupChange(val)
-          }}
-          tabLabels={groups.map(group => group.name)}
-          addNewLabel="+"
-        ></TabsMtb>
-        {groups.map((group, index) => (
-          <TabPanel value={groupTabIndex} index={index} key={index}>
-            <DragDropContext
-              onDragEnd={(something: any) =>
-                /*this.onDragEnd*/ console.log(something)
-              }
-            >
-              <div
-                style={{ minHeight: '300px' }}
-                className={clsx(
-                  'assesmentContainer',
-                  classes.bookmarkedAssessments,
-                )}
-              >
-                {group.sessions.map((session, index) => (
-                  <StudySessionContainer
-                    key={index}
-                    studySession={session}
-                  ></StudySessionContainer>
-                ))}
-                <StudySessionContainer
-                  onAddSession={() =>
-                    addSession(
-                      group.sessions.length.toString(),
-                      'Session' + group.sessions.length.toString(),
-                      group.id,
-                    )
-                  }
-                ></StudySessionContainer>
-              </div>
-            </DragDropContext>
-          </TabPanel>
-        ))}
-      </div>
+      <GroupsEditor
+        groups={groups}
+        onSetActiveGroup={(groupId: string) => setActiveGroup(groupId)}
+        onAddGroup={(id: string, isActive: boolean) => addGroup(id, isActive)}
+        onAddSession={(
+          sessionId: string,
+          sessionName: string,
+          groupId: string,
+        ) => addSession(sessionId, sessionName, groupId)}
+      ></GroupsEditor>
     </div>
   )
 }
