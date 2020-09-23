@@ -6,19 +6,19 @@ import ParticipantManager from './components/participants/ParticipantManager'
 
 export default [
   {
-    path: '/compliance-dashboard',
+    path: process.env.PUBLIC_URL + '/compliance-dashboard',
     name: 'COMPLIANCE DASHBOARD',
     Component: ComplianceDashboard,
   },
   { path: '/study-editor', name: 'STUDY EDITOR', Component: StudyManager },
 
   {
-    path: '/participant-manager',
+    path: process.env.PUBLIC_URL + '/1participant-manager',
     name: 'PARTICIPANT MANAGER',
     Component: ParticipantManager,
   },
   {
-    path: '/assessment-library',
+    path: process.env.PUBLIC_URL + '/assessment-library',
     name: 'ASSESSMENTS LIBRARY',
     Component: AssessmentLibrary,
   },
