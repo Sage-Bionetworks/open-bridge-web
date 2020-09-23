@@ -48,7 +48,7 @@ function App() {
         <Container maxWidth="xl" style={{ height: '100vh' }}>
           <Header title="Blog" sections={routes} />
           <main>
-            <Router>
+            <Router basename={process.env.PUBLIC_URL}>
               <Switch>
                 {routes.map(({ path, Component }, key) => (
                   <Route
