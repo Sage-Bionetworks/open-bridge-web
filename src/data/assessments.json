@@ -1,0 +1,77 @@
+{
+  "data": [
+    {
+      "id": "sdgasg",
+      "img": "string1",
+      "type": "string1",
+      "title": "Memory for Sequences",
+      "duration": "5",
+      "description": " Assesses working memory or capacity to process information across a series of tasks and modalities",
+      "validation": "true",
+      "study_number": "45"
+    },
+    {
+      "id": "afag",
+      "img": "st2",
+      "type": "string2",
+      "title": "Dimensional Change Card Sort",
+      "duration": "10",
+      "description": " Assesses working memory or capacity to process information across a series of tasks and modalities",
+      "validation": "false",
+      "study_number": "10",
+      "bookmarked": true
+    },
+    {
+      "id": "afaas1g",
+      "img": "str3",
+      "type": "string3",
+      "title": "Number Match",
+      "duration": "10",
+      "description": " Assesses working memory or capacity to process information across a series of tasks and modalities",
+      "validation": "false",
+      "study_number": "11",
+      "bookmarked": true
+    },
+    {
+      "id": "afa63g",
+      "img": "str4",
+      "type": "string4",
+      "title": "Picture Sequence Memory",
+      "duration": "5",
+      "description": " Assesses working memory or capacity to process information across a series of tasks and modalities",
+      "validation": "true",
+      "study_number": "2",
+      "bookmarked": true
+    },
+    {
+      "id": "afaaag",
+      "img": "st5",
+      "type": "string2",
+      "title": " Vocabulary",
+      "duration": "10",
+      "description": " Assesses working memory or capacity to process information across a series of tasks and modalities",
+      "validation": "false",
+      "study_number": "10"
+    },
+    {
+      "id": "afaas1gd",
+      "img": "str6",
+      "type": "string3",
+      "title": "Faces & Names ",
+      "duration": "10",
+      "description": " Assesses working memory or capacity to process information across a series of tasks and modalities",
+      "validation": "false",
+      "study_number": "11"
+    },
+    {
+      "id": "7afa63g",
+      "img": "str7",
+      "type": "string4",
+      "title": " Spelling",
+      "duration": "5",
+      "description": " Assesses working memory or capacity to process information across a series of tasks and modalities",
+      "validation": "true",
+      "study_number": "2"
+    }
+  ]
+}
