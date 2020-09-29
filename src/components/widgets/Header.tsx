@@ -1,12 +1,13 @@
-import React, { FunctionComponent } from 'react'
-import PropTypes from 'prop-types'
+import React, { FunctionComponent, useState } from 'react'
+
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import Button from '@material-ui/core/Button'
-import IconButton from '@material-ui/core/IconButton'
-import SearchIcon from '@material-ui/icons/Search'
-import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
+import { Dialog, DialogContent } from '@material-ui/core'
+import AccountLogin from './../account/AccountLogin'
+import { useSessionDataState } from '../../helpers/AuthContext'
+import Logout from '../account/Logout'
 
 const useStyles = makeStyles(theme => ({
   toolbar: {
@@ -33,8 +34,11 @@ type HeaderProps = {
 const Header: FunctionComponent<HeaderProps> = ({
   sections,
   title,
+  ...props
 }: HeaderProps) => {
   const classes = useStyles()
+  const sessionData = useSessionDataState()
+  const [signInOpen, setSignInOpen] = useState(false)
 
   return (
     <React.Fragment>
@@ -56,11 +60,30 @@ const Header: FunctionComponent<HeaderProps> = ({
             {section.name}
           </Link>
         ))}
+        {!sessionData.token && (
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => setSignInOpen(true)}
+          >
+            Sign in
+          </Button>
+        )}
 
-        <Button variant="outlined" size="small">
-          Sign up
-        </Button>
+        {sessionData.token && <Logout></Logout>}
       </Toolbar>
+      <Dialog
+        open={signInOpen}
+        onClose={() => setSignInOpen(false)}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogContent>
+          <AccountLogin
+            {...props}
+            callbackFn={() => setSignInOpen(false)}
+          ></AccountLogin>
+        </DialogContent>
+      </Dialog>
     </React.Fragment>
   )
 }

@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core'
 import TabPanel from '../../widgets/TabPanel'
 import TabsMtb from '../../widgets/TabsMtb'
 
-import { Group} from '../../../types/types'
+import { Group } from '../../../types/types'
 import StudySessionContainer from './StudySessionContainer'
 import clsx from 'clsx'
 
@@ -35,8 +35,6 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
 
   const classes = useStyles()
 
-
-
   const handleGroupChange = (groupIndex: number) => {
     if (groupIndex === groups.length) {
       onAddGroup(Date.now().toString(), true)
@@ -56,6 +54,9 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
           }}
           tabLabels={groups.map(group => group.name)}
           addNewLabel="+"
+          menuItems={[{label: 'Add Group', fn: onAddGroup},
+          {label: 'Copy Group', fn: onAddGroup}
+        ]}
         ></TabsMtb>
         {groups.map((group, index) => (
           <TabPanel value={groupTabIndex} index={index} key={index}>

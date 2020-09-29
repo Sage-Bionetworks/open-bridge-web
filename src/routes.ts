@@ -3,25 +3,27 @@ import AssessmentLibrary from './components/assessments/AssessmentLibrary'
 import ComplianceDashboard from './components/compliance/ComplianceDashboard'
 import StudyManager from './components/studies/StudyManager'
 import ParticipantManager from './components/participants/ParticipantManager'
+import AccountLogin from './components/account/AccountLogin'
 
 export default [
+
   {
-    path: process.env.PUBLIC_URL + '/compliance-dashboard',
+    path: '/compliance-dashboard',
     name: 'COMPLIANCE DASHBOARD',
     Component: ComplianceDashboard,
   },
   { path: '/study-editor', name: 'STUDY EDITOR', Component: StudyManager },
 
   {
-    path: process.env.PUBLIC_URL + '/1participant-manager',
+    path: '/1participant-manager',
     name: 'PARTICIPANT MANAGER',
     Component: ParticipantManager,
   },
   {
-    path: process.env.PUBLIC_URL + '/assessment-library',
+    path: '/assessment-library',
     name: 'ASSESSMENTS LIBRARY',
     Component: AssessmentLibrary,
-  },
+  }
   /* { path: "/assessment/:assessmentId", name: "Edit Pizza", Component: Template },
     {
       path: "/pizza/:pizzaId/toppings",

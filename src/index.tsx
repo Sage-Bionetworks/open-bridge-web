@@ -1,12 +1,20 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
+import 'react-app-polyfill/ie11'
+import 'react-app-polyfill/stable'
+
+import { SessionDataProvider } from './helpers/AuthContext'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <SessionDataProvider>
+      <Suspense fallback={null}>
+        <App />
+      </Suspense>
+    </SessionDataProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 )

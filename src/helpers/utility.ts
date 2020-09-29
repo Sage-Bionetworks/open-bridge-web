@@ -1,13 +1,15 @@
 import {
   Response,
-  SignInData,
+ // SignInData,
   LoggedInUserData,
-  SignInDataEmail,
-  APP_ID,
-  LoginType,
+  //SignInDataEmail,
+
+ // LoginType,
   StringDictionary,
-  SESSION_NAME,
+
 } from '../types/types'
+
+import CONSTANTS from '../types/constants'
 
 import { useState } from 'react'
 import { SessionData } from '../types/types'
@@ -84,8 +86,9 @@ export const callEndpoint = async <T>(
 ): Promise<Response<T>> => {
   const ls = window.localStorage
   const isE2E = ls.getItem('crc_e2e')
+  let url =  `${CONSTANTS.constants.ENDPOINT}${endpoint}`
   if (isE2E) {
-    return callEndpointXHR(endpoint, method, data, token)
+    return callEndpointXHR(url, method, data, token)
   }
   const headers: HeadersInit = new Headers()
   //headers.set('Accept-Language', i18n.language)
@@ -98,17 +101,17 @@ export const callEndpoint = async <T>(
     method: method, // *GET, POST, PUT, DELETE, etc.
     headers,
     body: JSON.stringify(data),
-  }
+  } as any
 
   if (method === 'GET') {
     const queryString = Object.keys(data)
       .map(key => key + '=' + data[key])
       .join('&')
-    endpoint = queryString ? `${endpoint}?${queryString}` : endpoint
+    url = queryString ? `${url}?${queryString}` : url
     delete config.body
   }
 
-  const response = await fetch(endpoint, config)
+  const response = await fetch(url, config)
 
   const result = await response.json()
   if (!response.ok && response.status !== 412) {
@@ -119,7 +122,7 @@ export const callEndpoint = async <T>(
 }
 
 export const getSession = (): SessionData | undefined => {
-  const item = sessionStorage.getItem(SESSION_NAME) || ''
+  const item = sessionStorage.getItem(CONSTANTS.constants.SESSION_NAME) || ''
   try {
     const json = JSON.parse(item)
     return json
@@ -129,41 +132,14 @@ export const getSession = (): SessionData | undefined => {
 }
 
 export const clearSession = () => {
-  sessionStorage.removeItem(SESSION_NAME)
+  sessionStorage.removeItem(CONSTANTS.constants.SESSION_NAME)
   sessionStorage.clear()
 }
 
 export const setSession = (data: SessionData) => {
-  sessionStorage.setItem(SESSION_NAME, JSON.stringify(data))
+  sessionStorage.setItem(CONSTANTS.constants.SESSION_NAME, JSON.stringify(data))
 }
 
-export const sendSignInRequest = async (
-  loginType: LoginType,
-  phoneOrEmail: string,
-  endpoint: string,
-): Promise<any> => {
-  let postData: SignInData
-  // setLoginType(_loginType)
-  /*  if (loginType === 'PHONE') {
-      postData = {
-        appId: APP_ID,
-        phone: makePhone(phoneOrEmail),
-      } as SignInDataPhone
-    } else {*/
-  postData = {
-    appId: APP_ID,
-    email: phoneOrEmail,
-  } as SignInDataEmail
-  // }
-
-  try {
-    return callEndpoint<LoggedInUserData>(endpoint, 'POST', postData)
-  } catch (e) {
-    console.log(e)
-
-    throw e
-  }
-}
 
 export const getSearchParams = (search: string): { [key: string]: string } => {
   const searchParamsProps: any = {}

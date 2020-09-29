@@ -12,6 +12,7 @@ import clsx from 'clsx'
 import AddableAssessment from './AddableAssessment'
 import GroupsEditor from './GoupsEditor'
 import AssessmentSelector from './AssessmentSelector'
+import AssessmentSelectorClick from './AssessmentSelector.Click'
 
 const useStyles = makeStyles({
   root: {},
@@ -163,6 +164,13 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
           addAssessment(groupId, sessionId, a)
         }
       ></AssessmentSelector>
+
+      <AssessmentSelectorClick
+        groups={groups}
+        onAddAssessment={(groupId: string, sessionId: string, a: Assessment) =>
+          addAssessment(groupId, sessionId, a)
+        }
+      ></AssessmentSelectorClick>
 
       <div>----------+----------</div>
 
