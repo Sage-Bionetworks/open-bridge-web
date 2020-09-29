@@ -14,6 +14,9 @@ const useStyles = makeStyles({
     border: '1px solid #C4C4C4',
     width: '265px',
     marginRight: '26px',
+    '&.active': {
+      border: '1px solid red'
+    }
   },
   inner: {
     border: '1px solid #C4C4C4',
@@ -34,11 +37,13 @@ const useStyles = makeStyles({
 type StudySessionContainerProps = {
   studySession?: StudySession
   onAddSession?: Function
+ onSetActiveSession?: Function
 }
 
 const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   studySession,
-  onAddSession = () => {},
+  onAddSession = ()=>{},
+  onSetActiveSession = ()=>{}
 }: StudySessionContainerProps) => {
   console.log('redraw')
   console.log(studySession?.assessments.length)
@@ -86,7 +91,7 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
       )
     }
   }
-  return <Box className={classes.root}>{getInner(studySession)}</Box>
+  return <Box className={clsx(classes.root, studySession?.active && 'active') } onClick={()=> onSetActiveSession()}>{getInner(studySession)}</Box>
 }
 
 export default StudySessionContainer

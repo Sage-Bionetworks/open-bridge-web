@@ -20,17 +20,17 @@ const useStyles = makeStyles({
   },
 })
 
-type AddableAssessmentClickProps = {
+type AddableAssessmentProps = {
   children?: React.ReactNode
   sessions: StudySession[]
   onAddFn: Function
 }
 
-const AddableAssessmentClick: FunctionComponent<AddableAssessmentClickProps> = ({
+const AddableAssessment: FunctionComponent<AddableAssessmentProps> = ({
   sessions = [],
   onAddFn,
   children,
-}: AddableAssessmentClickProps) => {
+}: AddableAssessmentProps) => {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
 
@@ -66,7 +66,7 @@ const AddableAssessmentClick: FunctionComponent<AddableAssessmentClickProps> = (
           key={index}
           className={classes.root}
         >
-          Add to1: {session.name}
+          Add to: {session.name}
         </MenuItem>
       ))
     }
@@ -78,7 +78,7 @@ const AddableAssessmentClick: FunctionComponent<AddableAssessmentClickProps> = (
         {children}
       </Button>
 
-    { /*  <Menu
+      <Menu
         id="simple-menu"
         anchorEl={anchorEl}
         keepMounted
@@ -86,9 +86,9 @@ const AddableAssessmentClick: FunctionComponent<AddableAssessmentClickProps> = (
         onClose={() => handleClose()}
       >
         {renderMenuItems(sessions)}
-      </Menu>*/ }
+      </Menu>
     </>
   )
 }
 
-export default AddableAssessmentClick
+export default AddableAssessment

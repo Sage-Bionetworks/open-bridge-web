@@ -23,12 +23,14 @@ type GroupsEditorProps = {
   onAddGroup: Function
   onSetActiveGroup: Function
   onAddSession: Function
+  onSetActiveSession: Function
 }
 
 const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
   groups,
   onAddGroup,
   onSetActiveGroup,
+  onSetActiveSession,
   onAddSession,
 }: GroupsEditorProps) => {
   const [groupTabIndex, setGroupTabIndex] = useState(0)
@@ -54,9 +56,10 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
           }}
           tabLabels={groups.map(group => group.name)}
           addNewLabel="+"
-          menuItems={[{label: 'Add Group', fn: onAddGroup},
-          {label: 'Copy Group', fn: onAddGroup}
-        ]}
+          menuItems={[
+            { label: 'Add Group', fn: onAddGroup },
+            { label: 'Copy Group', fn: onAddGroup },
+          ]}
         ></TabsMtb>
         {groups.map((group, index) => (
           <TabPanel value={groupTabIndex} index={index} key={index}>
@@ -76,6 +79,7 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
                   <StudySessionContainer
                     key={index}
                     studySession={session}
+                    onSetActiveSession={() => onSetActiveSession(session.id)}
                   ></StudySessionContainer>
                 ))}
                 <StudySessionContainer

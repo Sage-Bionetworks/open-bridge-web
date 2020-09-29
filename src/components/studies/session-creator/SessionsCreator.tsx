@@ -1,18 +1,14 @@
 import React, { FunctionComponent, useState } from 'react'
 
 import { makeStyles } from '@material-ui/core'
-import TabPanel from '../../widgets/TabPanel'
-import TabsMtb from '../../widgets/TabsMtb'
 import useAssessments from '../../../helpers/hooks'
-import AssessmentCard from '../../assessments/AssessmentCard'
-
 import { Group, Assessment } from '../../../types/types'
 
 import clsx from 'clsx'
-import AddableAssessment from './AddableAssessment'
 import GroupsEditor from './GoupsEditor'
+
 import AssessmentSelector from './AssessmentSelector'
-import AssessmentSelectorClick from './AssessmentSelector.Click'
+import { group } from 'console'
 
 const useStyles = makeStyles({
   root: {},
@@ -40,6 +36,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
         id: '123',
         name: 'Baseline Survey',
         duration: 30,
+        active: true,
         assessments: [
           {
             id: 'sdgasg',
@@ -76,12 +73,42 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
 
   const setActiveGroup = (id: string) => {
     setGroups(prev =>
-      prev.map(group => ({ ...group, active: group.id === id })),
+      prev.map(group => {
+        if (group.id !== id) {
+          if (group.active) {
+            group.sessions.forEach(session => (session.active = false))
+            group.active = false
+          }
+          return group
+        } else {
+          console.log('setting group to active')
+          group.active = true
+          if (group.sessions?.length > 0) {
+            group.sessions[0].active = true
+          }
+          return group
+        }
+      }),
     )
   }
 
-  const getActiveGroupSessions = () =>
-    groups.find(group => group.active)?.sessions
+  const setActiveSession = (id: string) => {
+    setGroups(prev =>
+      prev.map(group => {
+        if (group.active) {
+          
+            group.sessions.forEach(session => (session.active = (session.id === id)))
+          }
+          return group
+       
+      }),
+    )
+  }
+
+ 
+
+  /*const getActiveGroupSessions = () =>
+    groups.find(group => group.active)?.sessions*/
 
   const addSession = (
     sessionId: string,
@@ -93,7 +120,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
         return group
       }
       group.sessions = [
-        ...group.sessions,
+        ...group.sessions.map(session => ({ ...session, active: false })),
         {
           id: sessionId,
           name: sessionName,
@@ -110,7 +137,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
   const addAssessment = (
     groupId: string,
     sessionId: string,
-    assessment: Assessment,
+    new_assessments: Assessment[],
   ) => {
     const updatedGroups = groups.map(group => {
       if (group.id !== groupId) {
@@ -120,8 +147,8 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
         if (session.id !== sessionId) {
           return session
         }
-        const assessments = [...session.assessments]
-        assessments.push(assessment)
+        const assessments = [...session.assessments, ...new_assessments]
+
         return { ...session, assessments }
       })
       group.sessions = [...sessions]
@@ -158,19 +185,20 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
 
   return (
     <div>
+      {'activeGroup: ' +
+        groups.find(group => group.active == true)?.name +
+        ' active session ' +
+        groups
+          .find(group => group.active == true)
+          ?.sessions.find(session => session.active)?.name}
       <AssessmentSelector
         groups={groups}
-        onAddAssessment={(groupId: string, sessionId: string, a: Assessment) =>
-          addAssessment(groupId, sessionId, a)
-        }
+        onAddAssessment={(
+          groupId: string,
+          sessionId: string,
+          a: Assessment[],
+        ) => addAssessment(groupId, sessionId, a)}
       ></AssessmentSelector>
-
-      <AssessmentSelectorClick
-        groups={groups}
-        onAddAssessment={(groupId: string, sessionId: string, a: Assessment) =>
-          addAssessment(groupId, sessionId, a)
-        }
-      ></AssessmentSelectorClick>
 
       <div>----------+----------</div>
 
@@ -178,6 +206,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
         groups={groups}
         onSetActiveGroup={(groupId: string) => setActiveGroup(groupId)}
         onAddGroup={(id: string, isActive: boolean) => addGroup(id, isActive)}
+        onSetActiveSession={(id: string) => setActiveSession(id)}
         onAddSession={(
           sessionId: string,
           sessionName: string,
