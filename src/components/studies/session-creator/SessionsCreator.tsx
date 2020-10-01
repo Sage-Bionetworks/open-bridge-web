@@ -39,7 +39,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
         active: true,
         assessments: [
           {
-            id: 'sdgasg',
+            id: '0',
             img: 'string1',
             type: 'string1',
             title: 'Memory for Sequences',
@@ -97,7 +97,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
       prev.map(group => {
         if (group.active) {
           
-            group.sessions.forEach(session => (session.active = (session.id === id)))
+            group.sessions = group.sessions.map(session => ({...session, active: session.id === id}))
           }
           return group
        
@@ -183,6 +183,31 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
     setGroups(updatedGroups)
   }
 
+  const rearrangeAssessments = (
+
+    sessionId: string,
+    assessments1: Assessment[],
+
+  ) => {
+console.log('rearranging'+ assessments1)
+    const updatedGroups = groups.map(group => {
+      if (!group.active) {
+        return group
+      }
+      const sessions = group.sessions.map(session => {
+        if (session.id !== sessionId) {
+          return session
+        } else {
+          return {...session, assessments: assessments1}
+        }
+      })
+      group.sessions = [...sessions]
+      return group
+    })
+    setGroups(updatedGroups)
+  }
+
+
   return (
     <div>
       {'activeGroup: ' +
@@ -192,7 +217,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
           .find(group => group.active == true)
           ?.sessions.find(session => session.active)?.name}
       <AssessmentSelector
-        groups={groups}
+        activeGroup={groups.find(group=> group.active)!}
         onAddAssessment={(
           groupId: string,
           sessionId: string,
@@ -204,14 +229,11 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
 
       <GroupsEditor
         groups={groups}
-        onSetActiveGroup={(groupId: string) => setActiveGroup(groupId)}
-        onAddGroup={(id: string, isActive: boolean) => addGroup(id, isActive)}
-        onSetActiveSession={(id: string) => setActiveSession(id)}
-        onAddSession={(
-          sessionId: string,
-          sessionName: string,
-          groupId: string,
-        ) => addSession(sessionId, sessionName, groupId)}
+        onSetActiveGroup={setActiveGroup}
+        onAddGroup={addGroup}
+        onRearrangeAssessments={rearrangeAssessments}
+        onSetActiveSession={setActiveSession}
+        onAddSession={addSession}
       ></GroupsEditor>
     </div>
   )

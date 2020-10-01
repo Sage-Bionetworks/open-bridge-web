@@ -17,7 +17,6 @@ import {
   Checkbox,
   Snackbar,
 } from '@material-ui/core'
-import { RouteComponentProps } from 'react-router-dom'
 import Alert, { AlertProps } from '@material-ui/lab/Alert'
 import { Response, LoggedInUserData } from '../../types/types'
 import {

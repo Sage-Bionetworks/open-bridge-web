@@ -1,8 +1,7 @@
 import React, { FunctionComponent } from 'react'
 
-
-import { StudySession } from '../../../types/types'
-import { Droppable,  Draggable } from 'react-beautiful-dnd'
+import { Assessment, StudySession } from '../../../types/types'
+import { Droppable, Draggable, DragDropContext, DraggableLocation, DropResult } from 'react-beautiful-dnd'
 
 import clsx from 'clsx'
 import { makeStyles, Box, Button } from '@material-ui/core'
@@ -15,8 +14,8 @@ const useStyles = makeStyles({
     width: '265px',
     marginRight: '26px',
     '&.active': {
-      border: '1px solid red'
-    }
+      border: '1px solid blue',
+    },
   },
   inner: {
     border: '1px solid #C4C4C4',
@@ -28,70 +27,121 @@ const useStyles = makeStyles({
     },
     '&.dragging': {
       border: '2px solid #C4C4C4',
-      boxShadow: '0px 5px 5px #0908f3;'
-
-    }
+      boxShadow: '0px 5px 5px #0908f3;',
+    },
   },
 })
 
+const rearrangeList = (
+  list: any[],
+  source: DraggableLocation,
+  destination: DraggableLocation,
+) => {
+  const startIndex = source.index
+
+  const endIndex = destination.index
+
+  const result = Array.from(list)
+  const [removed] = result.splice(startIndex, 1)
+  result.splice(endIndex, 0, removed)
+
+  return result
+}
+
 type StudySessionContainerProps = {
-  studySession?: StudySession
-  onAddSession?: Function
- onSetActiveSession?: Function
+  studySession: StudySession
+
+  onSetActiveSession: Function
+  onRearrangeAssessments: Function
 }
 
 const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   studySession,
-  onAddSession = ()=>{},
-  onSetActiveSession = ()=>{}
+
+  onSetActiveSession,
+  onRearrangeAssessments
 }: StudySessionContainerProps) => {
-  console.log('redraw')
-  console.log(studySession?.assessments.length)
+  
+
   const classes = useStyles()
 
-  const getInner = (studySession?: StudySession): JSX.Element => {
-    if (!studySession) {
-      return (
-        <>
-          <Button variant="text" onClick={() => onAddSession()}>
-            + Create new session
-          </Button>
-        </>
-      )
-    } else {
+
+  const rearrangeAssessments = (
+    assessments: Assessment[],
+    dropResult: DropResult) => {
+    if (!dropResult.destination) {
+      return 
+    }
+    const newAssessmentList = rearrangeList(assessments, dropResult.source, dropResult.destination )
+    onRearrangeAssessments(studySession.id, newAssessmentList)
+
+  }
+
+
+  const getTotalSessionTime = (assessments: Assessment[]): number => {
+    const result = assessments.reduce((prev, curr, ndx) => {
+      return prev + Number(curr.duration)
+    }, 0)
+    return result
+  }
+
+  const getInner = (studySession: StudySession): JSX.Element => {
+   
       return (
         <>
           {studySession.assessments.length} {studySession.name} -{' '}
-          {studySession.duration} min.
-          <Droppable droppableId={studySession.id} type="TASK">
-            {(provided, snapshot) => (
-              <div
-                className={clsx({[classes.inner]: true, 'dragging': snapshot.isDraggingOver})}
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                {studySession.assessments.map((assessment, index) => (
-                  <Draggable draggableId={assessment.id + index} index={index}>
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <AssessmentSmall assessment={assessment} isDragging={snapshot.isDragging}/>
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
+          {getTotalSessionTime(studySession.assessments)} min.
+          <DragDropContext
+            onDragEnd={(dropResult: DropResult) =>
+              rearrangeAssessments(studySession.assessments, dropResult)
+            }
+          >
+            <Droppable droppableId={studySession.id} type="TASK">
+              {(provided, snapshot) => (
+                <div
+                  className={clsx({
+                    [classes.inner]: true,
+                    dragging: snapshot.isDraggingOver,
+                  })}
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                >
+                  {studySession.assessments.map((assessment, index) => (
+                    <Draggable
+                      draggableId={assessment.id}
+                      index={index}
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <AssessmentSmall
+                            assessment={assessment}
+                            isDragging={snapshot.isDragging}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
         </>
       )
-    }
+  
   }
-  return <Box className={clsx(classes.root, studySession?.active && 'active') } onClick={()=> onSetActiveSession()}>{getInner(studySession)}</Box>
+  return (
+    <Box
+      className={clsx(classes.root, studySession?.active && 'active')}
+      onClick={() => onSetActiveSession()}
+    >
+      {getInner(studySession)}
+    </Box>
+  )
 }
 
 export default StudySessionContainer

@@ -4,11 +4,12 @@ import { makeStyles } from '@material-ui/core'
 import TabPanel from '../../widgets/TabPanel'
 import TabsMtb from '../../widgets/TabsMtb'
 
-import { Group } from '../../../types/types'
+import { Assessment, Group } from '../../../types/types'
 import StudySessionContainer from './StudySessionContainer'
 import clsx from 'clsx'
 
 import { DragDropContext } from 'react-beautiful-dnd'
+import NewStudySessionContainer from './NewStudySessionContainer'
 
 const useStyles = makeStyles({
   root: {},
@@ -24,6 +25,7 @@ type GroupsEditorProps = {
   onSetActiveGroup: Function
   onAddSession: Function
   onSetActiveSession: Function
+  onRearrangeAssessments: Function
 }
 
 const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
@@ -32,6 +34,7 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
   onSetActiveGroup,
   onSetActiveSession,
   onAddSession,
+  onRearrangeAssessments
 }: GroupsEditorProps) => {
   const [groupTabIndex, setGroupTabIndex] = useState(0)
 
@@ -63,26 +66,24 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
         ></TabsMtb>
         {groups.map((group, index) => (
           <TabPanel value={groupTabIndex} index={index} key={index}>
-            <DragDropContext
-              onDragEnd={(something: any) =>
-                /*this.onDragEnd*/ console.log(something)
-              }
-            >
+          
               <div
                 style={{ minHeight: '300px' }}
                 className={clsx(
                   'assesmentContainer',
                   classes.bookmarkedAssessments,
                 )}
-              >
+              
+              >  
                 {group.sessions.map((session, index) => (
                   <StudySessionContainer
                     key={index}
                     studySession={session}
                     onSetActiveSession={() => onSetActiveSession(session.id)}
+                    onRearrangeAssessments={onRearrangeAssessments}
                   ></StudySessionContainer>
                 ))}
-                <StudySessionContainer
+                <NewStudySessionContainer
                   onAddSession={() =>
                     onAddSession(
                       group.sessions.length.toString(),
@@ -90,9 +91,9 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
                       group.id,
                     )
                   }
-                ></StudySessionContainer>
+                ></NewStudySessionContainer>
               </div>
-            </DragDropContext>
+        
           </TabPanel>
         ))}
       </div>

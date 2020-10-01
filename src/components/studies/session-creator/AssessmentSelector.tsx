@@ -15,8 +15,7 @@ import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 
 const useStyles = makeStyles({
-  root: {backgroundColor: '#E2E2E2',
-  padding: '20px',},
+  root: { backgroundColor: '#E2E2E2', padding: '20px' },
   assessments: {
     backgroundColor: '#E2E2E2',
     padding: '20px',
@@ -54,40 +53,32 @@ const useStyles = makeStyles({
 })
 
 type AssessmentSelectorProps = {
-  groups: Group[]
+  activeGroup: Group
   onAddAssessment: Function
 }
 
-const getActiveGroupAndSession = (
-  groups: Group[],
-): { group?: Group; session?: StudySession } => {
-  const group = groups.find(group => group.active)
-  const session = group?.sessions.find(session => session.active)
-  return { group, session }
-}
-
 const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
-  groups,
+  activeGroup,
   onAddAssessment,
 }: AssessmentSelectorProps) => {
   const assessments = useAssessments()
   const [assessmentTabIndex, setAssessmentTabIndex] = useState(0)
-  const [groupTabIndex, setGroupTabIndex] = useState(0)
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
     [],
   )
-  const [activeGroupSession, setActiveGroupSession] = useState<{
-    group?: Group
-    session?: StudySession
-  }>({})
+  const [activeSession, setActiveSession] = useState<StudySession | undefined>(
+    undefined,
+  )
+  console.log('redraw')
 
   useEffect(() => {
-    setActiveGroupSession(getActiveGroupAndSession(groups))
-  }, [groups])
+    console.log('effect')
+    setActiveSession(activeGroup.sessions.find(session => session.active))
+  }, [activeGroup.sessions])
 
   const classes = useStyles()
 
-  const handleFormat = (
+  const toggleAssessment = (
     event: React.MouseEvent<HTMLElement>,
     newFormats: Assessment[],
   ) => {
@@ -96,14 +87,12 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
 
   const renderAssessmentTab = (assessments: Assessment[]): JSX.Element => {
     return (
-      <div
-        className={clsx('assesmentContainer', classes.assessments)}
-      >
+      <div className={clsx('assesmentContainer', classes.assessments)}>
         {assessments.map((a, index) => (
           <ToggleButtonGroup
             value={selectedAssessments}
-            onChange={handleFormat}
-            aria-label="text formatting"
+            onChange={toggleAssessment}
+            aria-label={a.title}
             key={a.id}
           >
             <ToggleButton
@@ -148,23 +137,23 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
         <TabPanel value={assessmentTabIndex} index={1} key={'asmnt'}>
           {renderAssessmentTab(assessments)}
         </TabPanel>
-<div className={classes.root}>
-        <Button
-          disabled={!activeGroupSession.session}
-          variant="contained"
-          color="primary"
-          onClick={() =>
-            onAddAssessment(
-              activeGroupSession.group?.id,
-              activeGroupSession.session?.id,
-              selectedAssessments,
-            )
-          }
-        >
-          {!activeGroupSession.session
-            ? 'Please select group and session'
-            : `Add Selected to ${activeGroupSession.group?.name} ${activeGroupSession.session?.name} session` }
-        </Button>
+        <div className={classes.root}>
+          <Button
+            disabled={!activeSession}
+            variant="contained"
+            color="primary"
+            onClick={() =>
+              onAddAssessment(
+                activeGroup.id,
+                activeSession?.id,
+                selectedAssessments,
+              )
+            }
+          >
+            {!activeSession
+              ? 'Please select group and session'
+              : `Add Selected to ${activeGroup.name} ${activeSession.name} session`}
+          </Button>
         </div>
       </div>
     </div>
