@@ -9,8 +9,6 @@ import AssessmentCard from '../../assessments/AssessmentCard'
 import { Group, Assessment, StudySession } from '../../../types/types'
 
 import clsx from 'clsx'
-import AddableAssessmentClick from './AddableAssessment'
-
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 
@@ -22,6 +20,18 @@ const useStyles = makeStyles({
   },
   ToggleA: {
     position: 'relative',
+  },
+  ToggleADisabled: {
+    border: 'none',
+    opacity: '.3'
+
+  },
+  ToggleASelected: {
+    border: '2px solid blue',
+
+    '& $Overlay': {
+      opacity: 1,
+    },
   },
 
   Overlay: {
@@ -43,23 +53,18 @@ const useStyles = makeStyles({
     padding: '20px',
   },
 
-  ToggleASelected: {
-    border: '2px solid blue',
-
-    '& $Overlay': {
-      opacity: 1,
-    },
-  },
+ 
 })
 
 type AssessmentSelectorProps = {
   activeGroup: Group
-  onAddAssessment: Function
+  onUpdateAssessments: Function
+
 }
 
 const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
   activeGroup,
-  onAddAssessment,
+  onUpdateAssessments,
 }: AssessmentSelectorProps) => {
   const assessments = useAssessments()
   const [assessmentTabIndex, setAssessmentTabIndex] = useState(0)
@@ -78,11 +83,14 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
 
   const classes = useStyles()
 
+
+  const isAssessmentInSession = (session: StudySession, assessmentId: string):boolean => (session.assessments.find(item=>item.id===assessmentId) !== undefined)
+
   const toggleAssessment = (
     event: React.MouseEvent<HTMLElement>,
-    newFormats: Assessment[],
+    selectedAssessments: Assessment[],
   ) => {
-    setSelectedAssessments(newFormats)
+    setSelectedAssessments(selectedAssessments)
   }
 
   const renderAssessmentTab = (assessments: Assessment[]): JSX.Element => {
@@ -98,9 +106,11 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
             <ToggleButton
               aria-label="bold"
               value={a}
+              disabled={!activeSession || isAssessmentInSession(activeSession, a.id)}
               classes={{
                 root: classes.ToggleA,
                 selected: classes.ToggleASelected,
+                disabled: classes.ToggleADisabled
               }}
             >
               <AssessmentCard
@@ -139,15 +149,17 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
         </TabPanel>
         <div className={classes.root}>
           <Button
-            disabled={!activeSession}
+            disabled={!activeSession || selectedAssessments.length === 0}
             variant="contained"
             color="primary"
-            onClick={() =>
-              onAddAssessment(
-                activeGroup.id,
-                activeSession?.id,
-                selectedAssessments,
+            onClick={() =>{
+              onUpdateAssessments(
+              
+                activeSession!.id,
+                [...activeSession!.assessments, ...selectedAssessments]
               )
+              setSelectedAssessments([])
+            }
             }
           >
             {!activeSession

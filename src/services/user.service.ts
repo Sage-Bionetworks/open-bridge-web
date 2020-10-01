@@ -30,30 +30,31 @@ const loginWithPassword = async (
   )
 }
 
-
-const loginOauth = async (authToken: string, callbackUrl: string): Promise<Response<LoggedInUserData>> => {
-    const postData = {
-        appId: constants.constants.APP_ID,
-        vendorId: 'synapse', 
-        authToken,
-        callbackUrl,
-      }
-      console.log('token:', authToken)
-      /*DO NOt CHECK IN*/
-return loginWithPassword('username', 'password')
-      /*return await callEndpoint<LoggedInUserData>(
+const loginOauth = async (
+  authToken: string,
+  callbackUrl: string,
+): Promise<Response<LoggedInUserData>> => {
+  const postData = {
+    appId: constants.constants.APP_ID,
+    vendorId: 'synapse',
+    authToken,
+    callbackUrl,
+  }
+  console.log('token:', authToken)
+  /*DO NOt CHECK IN*/
+  return loginWithPassword('username', 'password')
+  /*return await callEndpoint<LoggedInUserData>(
         constants.endpoints.oauthSignIn,
         'POST',
         postData,
 
       )*/
-  }
+}
 
 const UserService = {
   requestResetPassword,
   loginWithPassword,
   loginOauth,
-
 }
 
 export default UserService

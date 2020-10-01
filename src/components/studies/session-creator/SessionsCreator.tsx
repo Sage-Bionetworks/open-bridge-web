@@ -96,16 +96,15 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
     setGroups(prev =>
       prev.map(group => {
         if (group.active) {
-          
-            group.sessions = group.sessions.map(session => ({...session, active: session.id === id}))
-          }
-          return group
-       
+          group.sessions = group.sessions.map(session => ({
+            ...session,
+            active: session.id === id,
+          }))
+        }
+        return group
       }),
     )
   }
-
- 
 
   /*const getActiveGroupSessions = () =>
     groups.find(group => group.active)?.sessions*/
@@ -134,7 +133,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
     setGroups(updatedGroups)
   }
 
-  const addAssessment = (
+  /*const addAssessment = (
     groupId: string,
     sessionId: string,
     new_assessments: Assessment[],
@@ -156,7 +155,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
     })
     console.log(updatedGroups)
     setGroups(updatedGroups)
-  }
+  }*/
 
   const removeAssessment = (
     groupId: string,
@@ -183,13 +182,8 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
     setGroups(updatedGroups)
   }
 
-  const rearrangeAssessments = (
-
-    sessionId: string,
-    assessments1: Assessment[],
-
-  ) => {
-console.log('rearranging'+ assessments1)
+  const updateAssessments = (sessionId: string, assessments1: Assessment[]) => {
+    console.log('rearranging' + assessments1)
     const updatedGroups = groups.map(group => {
       if (!group.active) {
         return group
@@ -198,7 +192,7 @@ console.log('rearranging'+ assessments1)
         if (session.id !== sessionId) {
           return session
         } else {
-          return {...session, assessments: assessments1}
+          return { ...session, assessments: assessments1 }
         }
       })
       group.sessions = [...sessions]
@@ -206,7 +200,6 @@ console.log('rearranging'+ assessments1)
     })
     setGroups(updatedGroups)
   }
-
 
   return (
     <div>
@@ -217,12 +210,8 @@ console.log('rearranging'+ assessments1)
           .find(group => group.active == true)
           ?.sessions.find(session => session.active)?.name}
       <AssessmentSelector
-        activeGroup={groups.find(group=> group.active)!}
-        onAddAssessment={(
-          groupId: string,
-          sessionId: string,
-          a: Assessment[],
-        ) => addAssessment(groupId, sessionId, a)}
+        activeGroup={groups.find(group => group.active)!}
+        onUpdateAssessments={updateAssessments}
       ></AssessmentSelector>
 
       <div>----------+----------</div>
@@ -231,7 +220,7 @@ console.log('rearranging'+ assessments1)
         groups={groups}
         onSetActiveGroup={setActiveGroup}
         onAddGroup={addGroup}
-        onRearrangeAssessments={rearrangeAssessments}
+        onUpdateAssessments={updateAssessments}
         onSetActiveSession={setActiveSession}
         onAddSession={addSession}
       ></GroupsEditor>
