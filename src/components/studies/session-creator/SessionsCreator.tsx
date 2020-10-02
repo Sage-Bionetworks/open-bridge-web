@@ -113,6 +113,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
     sessionId: string,
     sessionName: string,
     groupId: string,
+    assessments: Assessment[] = [],
   ) => {
     const updatedGroups = groups.map(group => {
       if (group.id !== groupId) {
@@ -125,7 +126,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
           name: sessionName,
           active: true,
           duration: 0,
-          assessments: [],
+          assessments: [...assessments],
         },
       ]
       return group
@@ -182,6 +183,19 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
     setGroups(updatedGroups)
   }
 
+  const removeSession = (sessionId: string)=> {
+    const updatedGroups = groups.map(group => {
+      if (!group.active) {
+        return group
+      }
+      const sessions = group.sessions.filter(session => session.id !== sessionId)
+      group.sessions = [...sessions]
+      return group
+    })
+    setGroups(updatedGroups)
+
+  }
+
   const updateAssessments = (sessionId: string, assessments1: Assessment[]) => {
     console.log('rearranging' + assessments1)
     const updatedGroups = groups.map(group => {
@@ -212,6 +226,11 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
       <AssessmentSelector
         activeGroup={groups.find(group => group.active)!}
         onUpdateAssessments={updateAssessments}
+        /* onAddAssessment={(
+          groupId: string,
+          sessionId: string,
+          a: Assessment[],
+        ) => addAssessment(groupId, sessionId, a)}*/
       ></AssessmentSelector>
 
       <div>----------+----------</div>
@@ -223,6 +242,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
         onUpdateAssessments={updateAssessments}
         onSetActiveSession={setActiveSession}
         onAddSession={addSession}
+        onRemoveSession={removeSession}
       ></GroupsEditor>
     </div>
   )

@@ -57,15 +57,15 @@ const rearrangeList = (
 
 type StudySessionContainerProps = {
   studySession: StudySession
-
   onSetActiveSession: Function
   onUpdateAssessments: Function
+  onRemoveSession: Function
 
 }
 
 const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   studySession,
-
+onRemoveSession,
   onSetActiveSession,
   onUpdateAssessments,
 }: StudySessionContainerProps) => {
@@ -160,6 +160,13 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
       onClick={() => onSetActiveSession()}
     >
       {getInner(studySession)}
+      <Button
+                            variant="text"
+                            style={{ padding: '0', minWidth: 'auto' }}
+                            onClick={()=>onRemoveSession(studySession.id)}
+                          >
+                            <DeleteIcon></DeleteIcon>
+                          </Button>
     </Box>
   )
 }
