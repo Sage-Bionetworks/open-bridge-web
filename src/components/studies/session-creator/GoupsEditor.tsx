@@ -10,6 +10,11 @@ import clsx from 'clsx'
 
 import { DragDropContext } from 'react-beautiful-dnd'
 import NewStudySessionContainer from './NewStudySessionContainer'
+import {
+  useStudySessionsState,
+  useStudySessionsDispatch,
+  Types,
+} from '../../../helpers/StudySessionsContext'
 import Button from '@material-ui/core/Button/Button'
 
 const useStyles = makeStyles({
@@ -29,41 +34,30 @@ const useStyles = makeStyles({
     width: '100%',
     // Promote the list into his own layer on Chrome. This cost memory but helps keeping high FPS.
     transform: 'translateZ(0)',
-  }/*,
+  } /*,
   arrowButton: {
     position: 'absolute',
     left: '0px',
     top: '50%',
     zIndex: 10
 
-  }*/
+  }*/,
 })
 
 type GroupsEditorProps = {
-  groups: Group[]
-  onAddGroup: Function
-  onSetActiveGroup: Function
-  onAddSession: Function
-  onSetActiveSession: Function
-  onUpdateAssessments: Function
-  onRemoveSession: Function
+
 }
 
 const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
-  groups,
-  onAddGroup,
-  onSetActiveGroup,
-  onSetActiveSession,
-  onAddSession,
-  onRemoveSession,
-  onUpdateAssessments,
 }: GroupsEditorProps) => {
   const [groupTabIndex, setGroupTabIndex] = useState(0)
   const [width, setWidth] = React.useState(window.innerWidth)
   const [parentWidth, setParentWidth] = React.useState(0)
+  const groups = useStudySessionsState()
+  const sessionUpdateFn = useStudySessionsDispatch()
 
   const classes = useStyles()
-
+  console.log('rerender')
   const parentRef = useRef<HTMLDivElement>(null)
   const resized = (evt: any) => {
     console.log('evt' + evt)
@@ -103,19 +97,31 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
       }*/
   })
 
+  const onAddGroup = () => {
+    sessionUpdateFn({
+      type: Types.AddGroup,
+      payload: { id: groups.length.toString(), isMakeActive: false },
+    })
+  }
+
   const handleGroupChange = (groupIndex: number) => {
     if (groupIndex === groups.length) {
-      onAddGroup(Date.now().toString(), true)
+      //onAddGroup()
+      //onAddGroup(Date.now().toString(), true)
     } else {
-      onSetActiveGroup(groups[groupIndex].id)
+      sessionUpdateFn({
+        type: Types.SetActiveGroup,
+        payload: { id: groups[groupIndex].id },
+      })
+      //onSetActiveGroup(groups[groupIndex].id)
     }
     setGroupTabIndex(groupIndex)
   }
 
-  const getCols= (numberOfSessions: number): number => {
-    const result = Math.floor((numberOfSessions+1)*291)
-   console.log(result)
-return result
+  const getCols = (numberOfSessions: number): number => {
+    const result = Math.floor((numberOfSessions + 1) * 291)
+    console.log(result)
+    return result
   }
 
   return (
@@ -133,48 +139,31 @@ return result
             { label: 'Copy Group', fn: onAddGroup },
           ]}
         ></TabsMtb>
-      
+
         {groups.map((group, index) => (
-        
           <TabPanel value={groupTabIndex} index={index} key={index}>
             <div
               style={{ minHeight: '300px' }}
               className={classes.root}
               ref={parentRef}
             >
- 
               <div
                 className={classes.gridList}
-           style={{width: getCols(group.sessions.length)+ 'px'}}
-               
-
+                style={{ width: getCols(group.sessions.length) + 'px' }}
               >
                 {group.sessions.map((session, index) => (
-                <div >
-                    <StudySessionContainer
-                      key={index}
-                      studySession={session}
-                      onSetActiveSession={() => onSetActiveSession(session.id)}
-                      onUpdateAssessments={onUpdateAssessments}
-                      onRemoveSession={onRemoveSession}
-                    ></StudySessionContainer>
-                    </div>
-             
+                  <StudySessionContainer
+                    key={index}
+                    studySession={session}
+                  ></StudySessionContainer>
                 ))}
-              <div >
-                  <NewStudySessionContainer
-                    sessions={group.sessions}
-                    onAddSession={(assessments: Assessment[]) =>
-                      onAddSession(
-                        group.sessions.length.toString(),
-                        'Session' + group.sessions.length.toString(),
-                        group.id,
-                        assessments,
-                      )
-                    }
-                  ></NewStudySessionContainer>
-           </div>
-             </div>
+
+                <NewStudySessionContainer
+                  key={group.sessions.length}
+                  sessions={group.sessions}
+                  
+                ></NewStudySessionContainer>
+              </div>
             </div>
           </TabPanel>
         ))}
