@@ -32,6 +32,12 @@ const useStyles = makeStyles({
   title: {
     fontSize: '12px',
   },
+  actions: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+
+  },
   duration: {
     fontSize: '13px',
   },
@@ -47,6 +53,7 @@ type AssessmentSmallProps = AssessmentSmallOwnProps
 const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
   assessment,
   isDragging,
+  children
 }) => {
   const classes = useStyles()
 
@@ -63,7 +70,10 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
           </Typography>
         </CardContent>
       </Card>
+     <div className={classes.actions}>
       <div className={classes.duration}>{assessment.duration} (min)</div>
+      {children}
+      </div>
     </div>
   )
 }

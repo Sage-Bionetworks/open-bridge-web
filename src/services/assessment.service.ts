@@ -1,8 +1,8 @@
 import {
-  ENDPOINT,
-  LoggedInUserData,
+
+
   Response,
-  UserAttributes,
+
   Assessment,
 } from '../types/types'
 

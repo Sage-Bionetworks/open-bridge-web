@@ -1,16 +1,47 @@
-export const APP_ID = 'czi-coronavirus'
-export const SESSION_NAME = 'bridge-session-ny-strong'
-export const ENDPOINT = 'https://webservices.sagebridge.org'
+/*  General Types ********************************/
 
+
+export interface StringDictionary {
+  [key: string]: any
+}
+
+export interface Response<T> {
+  status: number
+  ok: boolean
+  data: T
+}
+/*  User Types ********************************/
+
+export interface UserData {
+  username?: string
+  firstName: string
+  lastName: string
+  email?: string
+  //phone?: Phone
+  clientData: object
+  //attributes?: UserAttributes
+}
+
+export interface LoggedInUserData extends UserData {
+  sessionToken: string
+  //consented: boolean
+  sharingScope: string
+
+  id: string
+}
+
+
+/*
 export type EmailSigninParams = {
   email: string
   token: string
   password?: string
 }
 
-export interface StringDictionary {
-  [key: string]: any
-}
+
+
+
+
 
 export type LoginType = 'PHONE' | 'EMAIL'
 export type Phone = {
@@ -25,25 +56,9 @@ export type UserAttributes = {
   zip_code: string
   dob: string
   gender: string
-}
-export interface UserData {
-  username?: string
-  firstName: string
-  lastName: string
-  email?: string
-  phone?: Phone
-  clientData: object
-  attributes?: UserAttributes
-}
+}*/
 
-export interface LoggedInUserData extends UserData {
-  sessionToken: string
-  consented: boolean
-  sharingScope: string
-
-  id: string
-}
-
+/*
 export interface RegistrationData {
   appId: string
   substudyIds: string[]
@@ -52,13 +67,9 @@ export interface RegistrationData {
   phone?: Phone
   clientData: object
 }
+*/
 
-export interface Response<T> {
-  status: number
-  ok: boolean
-  data: T
-}
-
+/*
 export type SignInData = {
   appId: string
 }
@@ -71,11 +82,12 @@ export interface SignInDataPhone extends SignInData {
 
 export interface SignInDataEmail extends SignInData {
   email: string
-}
+}*/
 
 export type SessionData = {
   token: string | undefined
   name?: string
+  alert?: string
 }
 
 /****************  */
