@@ -59,11 +59,12 @@ const useStyles = makeStyles({
 
 type AssessmentSelectorProps = {
   activeGroup: Group
-  //  onUpdateAssessments: Function
+  onUpdateAssessments?: Function
 }
 
 const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
   activeGroup,
+  onUpdateAssessments = ()=>{}
 }: //onUpdateAssessments,
 AssessmentSelectorProps) => {
   const assessments = useAssessments()
@@ -169,6 +170,7 @@ AssessmentSelectorProps) => {
                 },
               })
               setSelectedAssessments([])
+              onUpdateAssessments()
             }}
           >
             {!activeSession
