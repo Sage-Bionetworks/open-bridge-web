@@ -16,11 +16,7 @@ import clsx from 'clsx'
 
 import { DragDropContext } from 'react-beautiful-dnd'
 import NewStudySessionContainer from './NewStudySessionContainer'
-import {
 
-  useStudySessionsDispatch,
-  Types,
-} from '../../../helpers/StudySessionsContext'
 import Button from '@material-ui/core/Button/Button'
 import { FormatListBulletedOutlined } from '@material-ui/icons'
 import AssessmentSelector from './AssessmentSelector'
@@ -53,19 +49,31 @@ const useStyles = makeStyles({
 })
 
 type GroupsEditorProps = {
-  onShowAssessmentsFn: Function
+  onShowAssessments: Function
+  onAddGroup: Function
+  onSetActiveGroup: Function
   groups: Group[]
+  onAddSession: Function
+  onRemoveSession: Function
+  onSetActiveSession: Function
+  onUpdateAssessmentList: Function
 }
 
 const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
-  onShowAssessmentsFn,groups
+  onShowAssessments,
+  groups,
+  onAddGroup,
+  onSetActiveGroup,
+  onAddSession,
+  onRemoveSession,
+  onSetActiveSession,
+  onUpdateAssessmentList,
 }: GroupsEditorProps) => {
   const [groupTabIndex, setGroupTabIndex] = useState(0)
   const [width, setWidth] = useState(window.innerWidth)
   const [parentWidth, setParentWidth] = useState(0)
   //const groups = useStudySessionsState()
 
-  const groupsUpdateFn = useStudySessionsDispatch()
 
   const classes = useStyles()
   console.log('rerender')
@@ -83,6 +91,12 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
       setParentWidth(parentWidth)
     }
   }
+
+  useEffect(() => {
+   
+    const activeIndex = groups.findIndex(item=> item.active === true)
+    setGroupTabIndex(activeIndex)
+  }, [groups])
 
   useEffect(() => {
     console.log('hi2')
@@ -108,53 +122,17 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
       }*/
   })
 
-  const addGroup = () => {
-    groupsUpdateFn({
-      type: Types.AddGroup,
-      payload: { isMakeActive: false },
-    })
-  }
-
-  const addSession = (sessions: StudySession[], assessments: Assessment[]) => {
-    groupsUpdateFn({
-      type: Types.AddSession,
-      payload: {
-       
-     
-          name: 'Session' + sessions.length.toString(),
-          assessments,
-       
-          active: true,
-      
-      },
-    })
-  }
-
-const removeSession =(sessionId: string) =>
-
-  groupsUpdateFn({type: Types.RemoveSession, payload: {sessionId}})
-
-  const setActiveSession =(sessionId: string) =>
-  groupsUpdateFn({type: Types.SetActiveSession, payload: {sessionId}})
-
-  const updateAssessmentList = (sessionId: string, assessments: Assessment[]) =>
-  groupsUpdateFn({type: Types.UpdateAssessments, payload: {sessionId,  assessments}})
- 
-
-
-
   const handleGroupChange = (groupIndex: number) => {
     if (groupIndex === groups.length) {
       //onAddGroup()
       //onAddGroup(Date.now().toString(), true)
     } else {
-      groupsUpdateFn({
-        type: Types.SetActiveGroup,
-        payload: { id: groups[groupIndex].id },
-      })
+     
+      onSetActiveGroup(groups[groupIndex].id)
       //onSetActiveGroup(groups[groupIndex].id)
     }
-    setGroupTabIndex(groupIndex)
+ 
+    //setGroupTabIndex(groupIndex)
   }
 
   const getCols = (numberOfSessions: number): number => {
@@ -174,8 +152,8 @@ const removeSession =(sessionId: string) =>
           tabLabels={groups.map(group => group.name)}
           addNewLabel="+"
           menuItems={[
-            { label: 'Add Group', fn: addGroup },
-            { label: 'Copy Group', fn: addGroup },
+            { label: 'Add Group', fn: onAddGroup },
+            { label: 'Copy Group', fn: onAddGroup },
           ]}
         ></TabsMtb>
 
@@ -194,17 +172,17 @@ const removeSession =(sessionId: string) =>
                   <StudySessionContainer
                     key={index}
                     studySession={session}
-                    onShowAssessments={onShowAssessmentsFn}
-                    onSetActiveSession={setActiveSession}
-                    onRemoveSession={removeSession}
-                    onUpdateAssessmentList={updateAssessmentList}
+                    onShowAssessments={onShowAssessments}
+                    onSetActiveSession={onSetActiveSession}
+                    onRemoveSession={onRemoveSession}
+                    onUpdateAssessmentList={onUpdateAssessmentList}
                   ></StudySessionContainer>
                 ))}
 
                 <NewStudySessionContainer
                   key={group.sessions.length}
                   sessions={group.sessions}
-                  onAddSession = {addSession}
+                  onAddSession={onAddSession}
                 ></NewStudySessionContainer>
               </div>
             </div>

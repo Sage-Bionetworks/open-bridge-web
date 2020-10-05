@@ -1,19 +1,17 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { FunctionComponent, useState,useReducer } from 'react'
 
 import { Dialog, DialogContent, makeStyles } from '@material-ui/core'
 
-import {Assessment } from '../../../types/types'
-
+import { Assessment, StudySession } from '../../../types/types'
 
 import GroupsEditor from './GoupsEditor'
 
 import AssessmentSelector from './AssessmentSelector'
 
 import {
-
   Types,
-  useStudySessionsDispatch,
-  useStudySessionsState,
+  actionsReducer,
+  defaultGroup
 } from '../../../helpers/StudySessionsContext'
 
 const useStyles = makeStyles({
@@ -29,27 +27,75 @@ type SessionsCreatorOwnProps = {}
 type SessionsCreatorProps = SessionsCreatorOwnProps
 
 const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
+  //const groups = useStudySessionsState()
 
-  const groups = useStudySessionsState()
+  const [groups, groupsUpdateFn] = useReducer(actionsReducer, [defaultGroup])
 
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
 
   const classes = useStyles()
-  const groupsUpdateFn = useStudySessionsDispatch()
-  const onUpdateAssessments = (sessionId: string, assessments: Assessment[])=> {
+  //const groupsUpdateFn = useStudySessionsDispatch()
+
+  const addGroup = () => {
+    groupsUpdateFn({
+      type: Types.AddGroup,
+      payload: { isMakeActive: false },
+    })
+  }
+
+  const setActiveGroup = (id: string) => {
+    groupsUpdateFn({
+      type: Types.SetActiveGroup,
+      payload: { id}
+    })
+  }
+
+  const addSession = (sessions: StudySession[], assessments: Assessment[]) => {
+    groupsUpdateFn({
+      type: Types.AddSession,
+      payload: {
+        name: 'Session' + sessions.length.toString(),
+        assessments,
+
+        active: true,
+      },
+    })
+  }
+
+  const removeSession = (sessionId: string) =>
+    groupsUpdateFn({ type: Types.RemoveSession, payload: { sessionId } })
+
+  const setActiveSession = (sessionId: string) =>
+    groupsUpdateFn({ type: Types.SetActiveSession, payload: { sessionId } })
+
+  const updateAssessmentList = (sessionId: string, assessments: Assessment[]) =>
+    groupsUpdateFn({
+      type: Types.UpdateAssessments,
+      payload: { sessionId, assessments },
+    })
+
+  const updateAssessments = (sessionId: string, assessments: Assessment[]) => {
     groupsUpdateFn({
       type: Types.UpdateAssessments,
       payload: {
         sessionId,
-        assessments}
+        assessments,
+      },
     })
     setIsAssessmentDialogOpen(false)
   }
 
   return (
     <div>
-      <GroupsEditor groups = {groups}
-        onShowAssessmentsFn={() => setIsAssessmentDialogOpen(true)}
+      <GroupsEditor
+        groups={groups}
+        onShowAssessments={() => setIsAssessmentDialogOpen(true)}
+        onAddGroup={addGroup}
+        onSetActiveGroup={setActiveGroup}
+        onAddSession={addSession}
+        onRemoveSession={removeSession}
+        onSetActiveSession={setActiveSession}
+        onUpdateAssessmentList={updateAssessmentList}
       ></GroupsEditor>
       <Dialog
         open={isAssessmentDialogOpen}
@@ -58,7 +104,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
       >
         <DialogContent>
           <AssessmentSelector
-            onUpdateAssessments={onUpdateAssessments}
+            onUpdateAssessments={updateAssessments}
             activeGroup={groups.find(group => group.active)!}
           ></AssessmentSelector>
         </DialogContent>

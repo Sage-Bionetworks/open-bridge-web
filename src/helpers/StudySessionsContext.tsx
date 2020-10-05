@@ -274,4 +274,6 @@ export {
   StudySessionsProvider,
   useStudySessionsState,
   useStudySessionsDispatch,
+  defaultGroup, 
+  actionsReducer
 }
