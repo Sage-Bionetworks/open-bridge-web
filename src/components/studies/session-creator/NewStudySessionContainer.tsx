@@ -9,12 +9,9 @@ import {
   MenuItem,
   Select,
 } from '@material-ui/core'
-import AssessmentSmall from '../../assessments/AssessmentSmall'
-import { Assessment, StudySession } from '../../../types/types'
-import {
-  Types,
-  useStudySessionsDispatch,
-} from '../../../helpers/StudySessionsContext'
+
+import {StudySession } from '../../../types/types'
+
 
 const useStyles = makeStyles({
   root: {
@@ -26,31 +23,17 @@ const useStyles = makeStyles({
 })
 
 type NewStudySessionContainerProps = {
-  // onAddSession: Function
+  onAddSession: Function
   sessions: StudySession[]
 }
 
 const NewStudySessionContainer: FunctionComponent<NewStudySessionContainerProps> = ({
-  //onAddSession,
+  onAddSession,
   sessions,
 }: NewStudySessionContainerProps) => {
   const classes = useStyles()
-  const sessionUpdateFn = useStudySessionsDispatch()
 
-  const addSession = (sessions: StudySession[], assessments: Assessment[]) => {
-    sessionUpdateFn({
-      type: Types.AddSession,
-      payload: {
-        session: {
-          id: sessions.length.toString(),
-          name: 'Session' + sessions.length.toString(),
-          assessments,
-          duration: 0,
-          active: true,
-        },
-      },
-    })
-  }
+
 
   const copySession = (event: React.ChangeEvent<{ value: unknown }>) => {
     const sessionId = event.target.value as string
@@ -59,12 +42,12 @@ const NewStudySessionContainer: FunctionComponent<NewStudySessionContainerProps>
     const assessments =
       sessions.find(session => session.id === sessionId)?.assessments || []
 
-    addSession(sessions, [...assessments])
+    onAddSession(sessions, [...assessments])
   }
 
   return (
     <Box className={clsx(classes.root)}>
-      <Button variant="text" onClick={() => addSession(sessions, [])}>
+      <Button variant="text" onClick={() => onAddSession(sessions, [])}>
         + Create new session
       </Button>
 

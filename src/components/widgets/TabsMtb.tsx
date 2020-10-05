@@ -72,8 +72,8 @@ const TabsMtb: FunctionComponent<TabProps> = ({
           open={Boolean(menuAnchorEl)}
           onClose={() => setMenuAnchorEl(null)}
         >
-          {menuItems!.map(item => (
-            <MenuItem onClick={() => {setMenuAnchorEl(null); item.fn()}} key={0} className={classes.menuRoot}>
+          {menuItems!.map((item, index) => (
+            <MenuItem onClick={() => {setMenuAnchorEl(null); item.fn()}} key={index} className={classes.menuRoot}>
               {item.label}
             </MenuItem>
           ))}

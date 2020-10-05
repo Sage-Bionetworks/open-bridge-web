@@ -1,5 +1,6 @@
 import { Remove } from '@material-ui/icons'
 import * as React from 'react'
+import {getRandomId} from './utility'
 import { Group, Assessment, StudySession } from '../types/types'
 
 type ActionMap<M extends { [index: string]: any }> = {
@@ -24,14 +25,16 @@ export enum Types {
 
 type ActionPayload = {
   [Types.AddGroup]: {
-    id: string
+
     isMakeActive: boolean
   }
   [Types.SetActiveGroup]: {
     id: string
   }
   [Types.AddSession]: {
-    session: StudySession
+    name: string,
+    assessments: Assessment[],
+    active?: boolean
   }
   [Types.RemoveSession]: {
     sessionId: string
@@ -90,13 +93,14 @@ const StudySessionsDispatchContext = React.createContext<Dispatch | undefined>(
 
 function addGroup(
   groups: Group[],
-  groupId: string,
+
   isMakeActive: boolean,
 ): Group[] {
+    const newId = getRandomId()
   let newGroups = [
     ...groups,
     {
-      id: groupId,
+      id: newId ,
       active: false,
       name: `Group ${groups.length + 1}`,
       sessions: [],
@@ -105,7 +109,7 @@ function addGroup(
   if (isMakeActive) {
     newGroups = newGroups.map(group => ({
       ...group,
-      active: group.id === groupId,
+      active: group.id === newId ,
     }))
   }
   return newGroups
@@ -130,7 +134,16 @@ function setActiveGroup(groups: Group[], groupId: string): Group[] {
   return newGroups
 }
 
-function AddSession(groups: Group[], session: StudySession): Group[] {
+function AddSession(groups: Group[], name: string, assessments: Assessment[], isActive: boolean= false): Group[] {
+
+  const session: StudySession = {
+    id: getRandomId(), 
+    assessments,
+    active: isActive,
+    duration: 0,
+    name
+
+  }
   const newGroups = groups.map(group => {
     if (group.active) {
       group.sessions = [
@@ -196,13 +209,13 @@ function RemoveSession(groups: Group[], sessionId: string): Group[] {
 function actionsReducer(groups: Group[], action: SessionAction): Group[] {
   switch (action.type) {
     case Types.AddGroup: {
-      return addGroup(groups, action.payload.id, action.payload.isMakeActive)
+      return addGroup(groups, action.payload.isMakeActive)
     }
     case Types.SetActiveGroup: {
       return setActiveGroup(groups, action.payload.id)
     }
     case Types.AddSession: {
-      return AddSession(groups, action.payload.session)
+      return AddSession(groups, action.payload.name, action.payload.assessments, action.payload.active)
     }
     case Types.SetActiveSession: {
       return SetActiveSession(groups, action.payload.sessionId)

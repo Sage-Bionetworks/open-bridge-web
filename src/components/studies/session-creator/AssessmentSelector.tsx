@@ -11,10 +11,6 @@ import { Group, Assessment, StudySession } from '../../../types/types'
 import clsx from 'clsx'
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
-import {
-  useStudySessionsDispatch,
-  Types,
-} from '../../../helpers/StudySessionsContext'
 
 const useStyles = makeStyles({
   root: { backgroundColor: '#E2E2E2', padding: '20px' },
@@ -59,13 +55,13 @@ const useStyles = makeStyles({
 
 type AssessmentSelectorProps = {
   activeGroup: Group
-  onUpdateAssessments?: Function
+  onUpdateAssessments: Function
 }
 
 const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
   activeGroup,
-  onUpdateAssessments = ()=>{}
-}: //onUpdateAssessments,
+  onUpdateAssessments
+}:
 AssessmentSelectorProps) => {
   const assessments = useAssessments()
   const [assessmentTabIndex, setAssessmentTabIndex] = useState(0)
@@ -75,7 +71,7 @@ AssessmentSelectorProps) => {
   const [activeSession, setActiveSession] = useState<StudySession | undefined>(
     undefined,
   )
-  const sessionUpdateFn = useStudySessionsDispatch()
+
 
   useEffect(() => {
     console.log('effect')
@@ -159,18 +155,13 @@ AssessmentSelectorProps) => {
             variant="contained"
             color="primary"
             onClick={() => {
-              sessionUpdateFn({
-                type: Types.UpdateAssessments,
-                payload: {
-                  sessionId: activeSession!.id,
-                  assessments: [
-                    ...activeSession!.assessments,
-                    ...selectedAssessments,
-                  ],
-                },
-              })
+         
+              onUpdateAssessments(activeSession!.id, [
+                ...activeSession!.assessments,
+                ...selectedAssessments,
+              ],)
               setSelectedAssessments([])
-              onUpdateAssessments()
+            
             }}
           >
             {!activeSession

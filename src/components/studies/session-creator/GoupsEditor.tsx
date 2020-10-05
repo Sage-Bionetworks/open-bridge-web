@@ -1,17 +1,23 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from 'react'
 
-import { Dialog, DialogContent, GridList, GridListTile, makeStyles } from '@material-ui/core'
+import {
+  Dialog,
+  DialogContent,
+  GridList,
+  GridListTile,
+  makeStyles,
+} from '@material-ui/core'
 import TabPanel from '../../widgets/TabPanel'
 import TabsMtb from '../../widgets/TabsMtb'
 
-import { Assessment, Group } from '../../../types/types'
+import { Assessment, Group, StudySession } from '../../../types/types'
 import StudySessionContainer from './StudySessionContainer'
 import clsx from 'clsx'
 
 import { DragDropContext } from 'react-beautiful-dnd'
 import NewStudySessionContainer from './NewStudySessionContainer'
 import {
-  useStudySessionsState,
+
   useStudySessionsDispatch,
   Types,
 } from '../../../helpers/StudySessionsContext'
@@ -47,17 +53,19 @@ const useStyles = makeStyles({
 })
 
 type GroupsEditorProps = {
-
+  onShowAssessmentsFn: Function
+  groups: Group[]
 }
 
 const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
+  onShowAssessmentsFn,groups
 }: GroupsEditorProps) => {
   const [groupTabIndex, setGroupTabIndex] = useState(0)
   const [width, setWidth] = useState(window.innerWidth)
   const [parentWidth, setParentWidth] = useState(0)
-  const groups = useStudySessionsState()
-  const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
-  const sessionUpdateFn = useStudySessionsDispatch()
+  //const groups = useStudySessionsState()
+
+  const groupsUpdateFn = useStudySessionsDispatch()
 
   const classes = useStyles()
   console.log('rerender')
@@ -100,19 +108,47 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
       }*/
   })
 
-  const onAddGroup = () => {
-    sessionUpdateFn({
+  const addGroup = () => {
+    groupsUpdateFn({
       type: Types.AddGroup,
-      payload: { id: groups.length.toString(), isMakeActive: false },
+      payload: { isMakeActive: false },
     })
   }
+
+  const addSession = (sessions: StudySession[], assessments: Assessment[]) => {
+    groupsUpdateFn({
+      type: Types.AddSession,
+      payload: {
+       
+     
+          name: 'Session' + sessions.length.toString(),
+          assessments,
+       
+          active: true,
+      
+      },
+    })
+  }
+
+const removeSession =(sessionId: string) =>
+
+  groupsUpdateFn({type: Types.RemoveSession, payload: {sessionId}})
+
+  const setActiveSession =(sessionId: string) =>
+  groupsUpdateFn({type: Types.SetActiveSession, payload: {sessionId}})
+
+  const updateAssessmentList = (sessionId: string, assessments: Assessment[]) =>
+  groupsUpdateFn({type: Types.UpdateAssessments, payload: {sessionId,  assessments}})
+ 
+
+
 
   const handleGroupChange = (groupIndex: number) => {
     if (groupIndex === groups.length) {
       //onAddGroup()
       //onAddGroup(Date.now().toString(), true)
     } else {
-      sessionUpdateFn({
+      groupsUpdateFn({
         type: Types.SetActiveGroup,
         payload: { id: groups[groupIndex].id },
       })
@@ -138,8 +174,8 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
           tabLabels={groups.map(group => group.name)}
           addNewLabel="+"
           menuItems={[
-            { label: 'Add Group', fn: onAddGroup },
-            { label: 'Copy Group', fn: onAddGroup },
+            { label: 'Add Group', fn: addGroup },
+            { label: 'Copy Group', fn: addGroup },
           ]}
         ></TabsMtb>
 
@@ -158,32 +194,23 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
                   <StudySessionContainer
                     key={index}
                     studySession={session}
-                    onShowAssessments={()=>setIsAssessmentDialogOpen(true)}
+                    onShowAssessments={onShowAssessmentsFn}
+                    onSetActiveSession={setActiveSession}
+                    onRemoveSession={removeSession}
+                    onUpdateAssessmentList={updateAssessmentList}
                   ></StudySessionContainer>
                 ))}
 
                 <NewStudySessionContainer
                   key={group.sessions.length}
                   sessions={group.sessions}
-                  
+                  onAddSession = {addSession}
                 ></NewStudySessionContainer>
               </div>
             </div>
           </TabPanel>
         ))}
       </div>
-      <Dialog
-        open={isAssessmentDialogOpen}
-        onClose={() => setIsAssessmentDialogOpen(false)}
-        aria-labelledby="form-dialog-title"
-      >
-        <DialogContent>
-        <AssessmentSelector
-        onUpdateAssessments= {()=> setIsAssessmentDialogOpen(false)}
-        activeGroup={groups.find(group => group.active)!}
-      ></AssessmentSelector>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

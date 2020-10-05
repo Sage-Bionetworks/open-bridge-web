@@ -187,3 +187,10 @@ export const useSessionStorage = (
   }
   return [storedValue, setValue]
 }
+
+
+export const getRandomId=(): string => {
+  const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0];
+  console.log('newId', uint32.toString(16) )
+  return uint32.toString(16);
+}

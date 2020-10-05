@@ -1,16 +1,18 @@
 import React, { FunctionComponent, useState } from 'react'
 
-import { makeStyles } from '@material-ui/core'
-import useAssessments from '../../../helpers/hooks'
-import { Group, Assessment } from '../../../types/types'
+import { Dialog, DialogContent, makeStyles } from '@material-ui/core'
 
-import clsx from 'clsx'
+import {Assessment } from '../../../types/types'
+
+
 import GroupsEditor from './GoupsEditor'
 
 import AssessmentSelector from './AssessmentSelector'
-import { group } from 'console'
+
 import {
-  StudySessionsProvider,
+
+  Types,
+  useStudySessionsDispatch,
   useStudySessionsState,
 } from '../../../helpers/StudySessionsContext'
 
@@ -27,53 +29,40 @@ type SessionsCreatorOwnProps = {}
 type SessionsCreatorProps = SessionsCreatorOwnProps
 
 const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
-  const assessments = useAssessments()
-  const [assessmentTabIndex, setAssessmentTabIndex] = useState(0)
-  const [groupTabIndex, setGroupTabIndex] = useState(0)
+
   const groups = useStudySessionsState()
-  const defaultGroup: Group = {
-    id: '123',
-    name: 'Group1',
-    active: true,
-    sessions: [
-      {
-        id: '123',
-        name: 'Baseline Survey',
-        duration: 30,
-        active: true,
-        assessments: [
-          {
-            id: '0',
-            img: 'string1',
-            type: 'string1',
-            title: 'Memory for Sequences',
-            duration: '5',
-            description:
-              ' Assesses working memory or capacity to process information across a series of tasks and modalities',
-            validation: 'true',
-            study_number: '45',
-          },
-        ],
-      },
-    ],
-  }
+
+  const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
+
   const classes = useStyles()
+  const groupsUpdateFn = useStudySessionsDispatch()
+  const onUpdateAssessments = (sessionId: string, assessments: Assessment[])=> {
+    groupsUpdateFn({
+      type: Types.UpdateAssessments,
+      payload: {
+        sessionId,
+        assessments}
+    })
+    setIsAssessmentDialogOpen(false)
+  }
 
   return (
     <div>
-      {'activeGroup: ' +
-        groups.find(group => group.active == true)?.name +
-        ' active session ' +
-        groups
-          .find(group => group.active == true)
-          ?.sessions.find(session => session.active)?.name}
-      <AssessmentSelector
-        activeGroup={groups.find(group => group.active)!}
-      ></AssessmentSelector>
-
-      <div>----------+----------</div>
-
-      <GroupsEditor></GroupsEditor>
+      <GroupsEditor groups = {groups}
+        onShowAssessmentsFn={() => setIsAssessmentDialogOpen(true)}
+      ></GroupsEditor>
+      <Dialog
+        open={isAssessmentDialogOpen}
+        onClose={() => setIsAssessmentDialogOpen(false)}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogContent>
+          <AssessmentSelector
+            onUpdateAssessments={onUpdateAssessments}
+            activeGroup={groups.find(group => group.active)!}
+          ></AssessmentSelector>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
