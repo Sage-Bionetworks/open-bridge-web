@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from 'react'
 
-import { GridList, GridListTile, makeStyles } from '@material-ui/core'
+import { Dialog, DialogContent, GridList, GridListTile, makeStyles } from '@material-ui/core'
 import TabPanel from '../../widgets/TabPanel'
 import TabsMtb from '../../widgets/TabsMtb'
 
@@ -16,6 +16,8 @@ import {
   Types,
 } from '../../../helpers/StudySessionsContext'
 import Button from '@material-ui/core/Button/Button'
+import { FormatListBulletedOutlined } from '@material-ui/icons'
+import AssessmentSelector from './AssessmentSelector'
 
 const useStyles = makeStyles({
   root: {
@@ -51,9 +53,10 @@ type GroupsEditorProps = {
 const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
 }: GroupsEditorProps) => {
   const [groupTabIndex, setGroupTabIndex] = useState(0)
-  const [width, setWidth] = React.useState(window.innerWidth)
-  const [parentWidth, setParentWidth] = React.useState(0)
+  const [width, setWidth] = useState(window.innerWidth)
+  const [parentWidth, setParentWidth] = useState(0)
   const groups = useStudySessionsState()
+  const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
   const sessionUpdateFn = useStudySessionsDispatch()
 
   const classes = useStyles()
@@ -155,6 +158,7 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
                   <StudySessionContainer
                     key={index}
                     studySession={session}
+                    onShowAssessments={()=>setIsAssessmentDialogOpen(true)}
                   ></StudySessionContainer>
                 ))}
 
@@ -168,6 +172,18 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
           </TabPanel>
         ))}
       </div>
+      <Dialog
+        open={isAssessmentDialogOpen}
+        onClose={() => setIsAssessmentDialogOpen(false)}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogContent>
+        <AssessmentSelector
+        onUpdateAssessments= {()=> setIsAssessmentDialogOpen(false)}
+        activeGroup={groups.find(group => group.active)!}
+      ></AssessmentSelector>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

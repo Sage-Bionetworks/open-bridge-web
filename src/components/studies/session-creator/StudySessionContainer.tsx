@@ -14,7 +14,6 @@ import { makeStyles, Box, Button } from '@material-ui/core'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
 import DeleteIcon from '@material-ui/icons/Delete'
 import {
-  useStudySessionsState,
   useStudySessionsDispatch,
   Types,
 } from '../../../helpers/StudySessionsContext'
@@ -62,6 +61,7 @@ const rearrangeList = (
 
 type StudySessionContainerProps = {
   studySession: StudySession
+  onShowAssessments: Function
  // onSetActiveSession: Function
   //onUpdateAssessments: Function
  // onRemoveSession: Function
@@ -69,6 +69,7 @@ type StudySessionContainerProps = {
 
 const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   studySession,
+  onShowAssessments,
  // onRemoveSession,
   //onSetActiveSession,
   //onUpdateAssessments,
@@ -153,6 +154,7 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
                   </Draggable>
                 ))}
                 {provided.placeholder}
+                <Button onClick={()=>onShowAssessments()}> Add Another</Button>
               </div>
             )}
           </Droppable>

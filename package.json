@@ -2,7 +2,7 @@
   "name": "mtb",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://conundrumgirl.github.io/mtb/",
+
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
@@ -24,13 +24,13 @@
     "react-scripts": "3.4.3",
     "typescript": "~3.7.2"
   },
+
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "react-scripts build",
-    "deploy": "gh-pages -d build",
+ 
     "prettier": "prettier --write '**/*.{ts,js,scss,html,tsx,json}'"
   },
   "eslintConfig": {
