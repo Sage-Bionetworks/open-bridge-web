@@ -37,7 +37,7 @@ const NewStudySessionContainer: FunctionComponent<NewStudySessionContainerProps>
 
   const copySession = (event: React.ChangeEvent<{ value: unknown }>) => {
     const sessionId = event.target.value as string
-    debugger
+    
     console.log('sessionId:', sessionId)
     const assessments =
       sessions.find(session => session.id === sessionId)?.assessments || []

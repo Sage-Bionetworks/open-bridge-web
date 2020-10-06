@@ -1,8 +1,8 @@
 import React, { FunctionComponent, useState,useReducer } from 'react'
 
-import { Dialog, DialogContent, makeStyles } from '@material-ui/core'
+import { Button, Dialog, DialogActions, DialogContent, makeStyles } from '@material-ui/core'
 
-import { Assessment, StudySession } from '../../../types/types'
+import { Assessment, Group, StudySession } from '../../../types/types'
 
 import GroupsEditor from './GoupsEditor'
 
@@ -28,7 +28,9 @@ type SessionsCreatorProps = SessionsCreatorOwnProps
 
 const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
   //const groups = useStudySessionsState()
-
+  const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
+    [],
+  )
   const [groups, groupsUpdateFn] = useReducer(actionsReducer, [defaultGroup])
 
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
@@ -93,6 +95,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
     })
 
   const updateAssessments = (sessionId: string, assessments: Assessment[]) => {
+    console.log('updating')
     groupsUpdateFn({
       type: Types.UpdateAssessments,
       payload: {
@@ -101,6 +104,13 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
       },
     })
     setIsAssessmentDialogOpen(false)
+  }
+
+  const getActiveGroupAndSession = (groups: Group[]): {group: Group, session: StudySession | undefined} => {
+    const group = groups.find(group => group.active)!
+    const session = group?.sessions?.find(session=> session.active)
+    return {group, session}
+           
   }
 
   return (
@@ -124,10 +134,28 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
       >
         <DialogContent>
           <AssessmentSelector
-            onUpdateAssessments={updateAssessments}
-            activeGroup={groups.find(group => group.active)!}
+          selectedAssessments = {selectedAssessments}
+            onUpdateAssessments={setSelectedAssessments}
+            active = {getActiveGroupAndSession(groups)}
           ></AssessmentSelector>
         </DialogContent>
+        <DialogActions>
+          <Button variant="contained" 
+           onClick={() => {
+         
+            updateAssessments(getActiveGroupAndSession(groups)!.session!.id, [
+              ...getActiveGroupAndSession(groups)!.session!.assessments,
+              ...selectedAssessments,
+            ],)
+            setSelectedAssessments([])
+          
+          }}>
+
+           {! getActiveGroupAndSession(groups).session
+            ? 'Please select group and session'
+            : `Add Selected to ${getActiveGroupAndSession(groups)?.group?.name} ${getActiveGroupAndSession(groups)?.session?.name} `}
+            </Button>
+        </DialogActions>
       </Dialog>
     </div>
   )
