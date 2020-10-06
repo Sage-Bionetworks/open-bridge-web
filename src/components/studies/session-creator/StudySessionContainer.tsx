@@ -180,7 +180,7 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
                   </Draggable>
                 ))}
                 {provided.placeholder}
-                <Button onClick={()=>onShowAssessments()}> Add Another</Button>
+                <Button onClick={()=>onShowAssessments()}> Assessments</Button>
               </div>
             )}
           </Droppable>
