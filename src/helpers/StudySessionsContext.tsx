@@ -101,7 +101,7 @@ const StudySessionsDispatchContext = React.createContext<Dispatch | undefined>(
 )
 
 function addGroup(groups: Group[], isMakeActive: boolean): Group[] {
-  debugger
+
   const newId = getRandomId()
   let newGroups = [
     ...groups,
