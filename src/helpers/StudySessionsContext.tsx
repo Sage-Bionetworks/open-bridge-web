@@ -16,6 +16,7 @@ type ActionMap<M extends { [index: string]: any }> = {
 }
 
 export enum Types {
+  SetGroups = 'SET_GROUPS',
   AddGroup = 'ADD_GROUP',
   RemoveGroup = 'REMOVE_GROUP',
   SetActiveGroup = 'SET_ACTIVE_GROUP',
@@ -28,6 +29,9 @@ export enum Types {
 }
 
 type ActionPayload = {
+  [Types.SetGroups]: {
+    groups: Group[]
+  }
   [Types.AddGroup]: {
     isMakeActive: boolean
   }
@@ -263,6 +267,9 @@ function updateAssessments(
 
 function actionsReducer(groups: Group[], action: SessionAction): Group[] {
   switch (action.type) {
+    case Types.SetGroups: {
+      return action.payload.groups
+    }
     case Types.AddGroup: {
       return addGroup(groups, action.payload.isMakeActive)
     }
