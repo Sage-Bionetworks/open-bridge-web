@@ -1,7 +1,8 @@
 import { Remove } from '@material-ui/icons'
 import * as React from 'react'
-import {getRandomId} from './utility'
+import { getRandomId } from './utility'
 import { Group, Assessment, StudySession } from '../types/types'
+import { group } from 'console'
 
 type ActionMap<M extends { [index: string]: any }> = {
   [Key in keyof M]: M[Key] extends undefined
@@ -16,7 +17,9 @@ type ActionMap<M extends { [index: string]: any }> = {
 
 export enum Types {
   AddGroup = 'ADD_GROUP',
+  RemoveGroup = 'REMOVE_GROUP',
   SetActiveGroup = 'SET_ACTIVE_GROUP',
+  RenameGroup = 'RENAME_GROUP',
   AddSession = 'ADD_SESSION',
   RemoveSession = 'REMOVE_SESSION',
   SetActiveSession = 'SEAT_ACTIVE_SESSION',
@@ -25,15 +28,21 @@ export enum Types {
 
 type ActionPayload = {
   [Types.AddGroup]: {
-
     isMakeActive: boolean
+  }
+  [Types.RemoveGroup]: {
+    id: string
   }
   [Types.SetActiveGroup]: {
     id: string
   }
+  [Types.RenameGroup]: {
+    id: string
+    name: string
+  }
   [Types.AddSession]: {
-    name: string,
-    assessments: Assessment[],
+    name: string
+    assessments: Assessment[]
     active?: boolean
   }
   [Types.RemoveSession]: {
@@ -91,16 +100,13 @@ const StudySessionsDispatchContext = React.createContext<Dispatch | undefined>(
   undefined,
 )
 
-function addGroup(
-  groups: Group[],
-
-  isMakeActive: boolean,
-): Group[] {
-    const newId = getRandomId()
+function addGroup(groups: Group[], isMakeActive: boolean): Group[] {
+  debugger
+  const newId = getRandomId()
   let newGroups = [
     ...groups,
     {
-      id: newId ,
+      id: newId,
       active: false,
       name: `Group ${groups.length + 1}`,
       sessions: [],
@@ -109,13 +115,19 @@ function addGroup(
   if (isMakeActive) {
     newGroups = newGroups.map(group => ({
       ...group,
-      active: group.id === newId ,
+      active: group.id === newId,
     }))
   }
   return newGroups
 }
 
+function removeGroup(groups: Group[], groupId: string): Group[] {
+ return   groups.filter(group => group.id !== groupId)
+ 
+}
+
 function setActiveGroup(groups: Group[], groupId: string): Group[] {
+  console.log('active bein set')
   const newGroups = groups.map(group => {
     if (group.id !== groupId) {
       if (group.active) {
@@ -134,15 +146,32 @@ function setActiveGroup(groups: Group[], groupId: string): Group[] {
   return newGroups
 }
 
-function AddSession(groups: Group[], name: string, assessments: Assessment[], isActive: boolean= false): Group[] {
+function renameGroup(groups: Group[], groupId: string, name: string): Group[] {
 
+  const newGroups = groups.map(group => {
+    if (group.id !== groupId) {
+  
+      return group
+    } else {
+      
+      return {...group, name: name}
+    }
+  })
+  return newGroups
+}
+
+function addSession(
+  groups: Group[],
+  name: string,
+  assessments: Assessment[],
+  isActive: boolean = false,
+): Group[] {
   const session: StudySession = {
-    id: getRandomId(), 
+    id: getRandomId(),
     assessments,
     active: isActive,
     duration: 0,
-    name
-
+    name,
   }
   const newGroups = groups.map(group => {
     if (group.active) {
@@ -158,7 +187,7 @@ function AddSession(groups: Group[], name: string, assessments: Assessment[], is
   return newGroups
 }
 
-function SetActiveSession(groups: Group[], sessionId: string): Group[] {
+function setActiveSession(groups: Group[], sessionId: string): Group[] {
   const newGroups = groups.map(group => {
     if (group.active) {
       group.sessions = group.sessions.map(session => ({
@@ -171,40 +200,39 @@ function SetActiveSession(groups: Group[], sessionId: string): Group[] {
   return newGroups
 }
 
+function removeSession(groups: Group[], sessionId: string): Group[] {
+  const updatedGroups = groups.map(group => {
+    if (!group.active) {
+      return group
+    }
+    const sessions = group.sessions.filter(session => session.id !== sessionId)
+    group.sessions = [...sessions]
+    return group
+  })
+  return updatedGroups
+}
 
-function RemoveSession(groups: Group[], sessionId: string): Group[] {
-    const updatedGroups = groups.map(group => {
-        if (!group.active) {
-          return group
-        }
-        const sessions = group.sessions.filter(
-          session => session.id !== sessionId,
-        )
-        group.sessions = [...sessions]
-        return group
-      })
-    return updatedGroups
-  }
-
-
-
-  function UpdateAssessments(groups: Group[], sessionId: string, assessments: Assessment[]): Group[] {
-    const updatedGroups = groups.map(group => {
-        if (!group.active) {
-          return group
-        }
-        const sessions = group.sessions.map(session => {
-          if (session.id !== sessionId) {
-            return session
-          } else {
-            return { ...session, assessments: assessments }
-          }
-        })
-        group.sessions = [...sessions]
-        return group
-      })
-    return updatedGroups
-  }
+function updateAssessments(
+  groups: Group[],
+  sessionId: string,
+  assessments: Assessment[],
+): Group[] {
+  const updatedGroups = groups.map(group => {
+    if (!group.active) {
+      return group
+    }
+    const sessions = group.sessions.map(session => {
+      if (session.id !== sessionId) {
+        return session
+      } else {
+        return { ...session, assessments: assessments }
+      }
+    })
+    group.sessions = [...sessions]
+    return group
+  })
+  return updatedGroups
+}
 
 function actionsReducer(groups: Group[], action: SessionAction): Group[] {
   switch (action.type) {
@@ -214,22 +242,38 @@ function actionsReducer(groups: Group[], action: SessionAction): Group[] {
     case Types.SetActiveGroup: {
       return setActiveGroup(groups, action.payload.id)
     }
+
+    case Types.RenameGroup: {
+      return renameGroup(groups, action.payload.id, action.payload.name)
+    }
+
+
+    case Types.RemoveGroup: {
+      return removeGroup(groups, action.payload.id)
+    }
     case Types.AddSession: {
-      return AddSession(groups, action.payload.name, action.payload.assessments, action.payload.active)
+      return addSession(
+        groups,
+        action.payload.name,
+        action.payload.assessments,
+        action.payload.active,
+      )
     }
     case Types.SetActiveSession: {
-      return SetActiveSession(groups, action.payload.sessionId)
+      return setActiveSession(groups, action.payload.sessionId)
     }
 
     case Types.RemoveSession: {
-        return RemoveSession(groups, action.payload.sessionId)
-   
+      return removeSession(groups, action.payload.sessionId)
     }
     case Types.UpdateAssessments: {
-      return UpdateAssessments(groups, action.payload.sessionId, action.payload.assessments)
+      return updateAssessments(
+        groups,
+        action.payload.sessionId,
+        action.payload.assessments,
+      )
     }
 
-  
     default: {
       throw new Error(`Unhandled action type`)
     }
@@ -274,6 +318,6 @@ export {
   StudySessionsProvider,
   useStudySessionsState,
   useStudySessionsDispatch,
-  defaultGroup, 
-  actionsReducer
+  defaultGroup,
+  actionsReducer,
 }

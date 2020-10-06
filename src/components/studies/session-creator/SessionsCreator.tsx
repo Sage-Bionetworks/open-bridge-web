@@ -50,6 +50,24 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
     })
   }
 
+  const renameGroup=(id: string, name: string) => {
+    console.log('RENAMING')
+    groupsUpdateFn({
+      type: Types.RenameGroup,
+      payload: { id, name}
+    })
+  }
+
+  const removeGroup = (id: string) => {
+
+    groupsUpdateFn({
+      type: Types.RemoveGroup,
+      payload: { id},
+    })
+
+
+  }
+
   const addSession = (sessions: StudySession[], assessments: Assessment[]) => {
     groupsUpdateFn({
       type: Types.AddSession,
@@ -91,11 +109,13 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
         groups={groups}
         onShowAssessments={() => setIsAssessmentDialogOpen(true)}
         onAddGroup={addGroup}
+        onRemoveGroup={removeGroup}
         onSetActiveGroup={setActiveGroup}
         onAddSession={addSession}
         onRemoveSession={removeSession}
         onSetActiveSession={setActiveSession}
         onUpdateAssessmentList={updateAssessmentList}
+        onRenameGroup={renameGroup}
       ></GroupsEditor>
       <Dialog
         open={isAssessmentDialogOpen}

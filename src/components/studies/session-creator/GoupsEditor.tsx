@@ -51,22 +51,26 @@ const useStyles = makeStyles({
 type GroupsEditorProps = {
   onShowAssessments: Function
   onAddGroup: Function
+  onRemoveGroup: Function
   onSetActiveGroup: Function
   groups: Group[]
   onAddSession: Function
   onRemoveSession: Function
   onSetActiveSession: Function
   onUpdateAssessmentList: Function
+  onRenameGroup: Function
 }
 
 const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
   onShowAssessments,
   groups,
   onAddGroup,
+  onRemoveGroup,
   onSetActiveGroup,
   onAddSession,
   onRemoveSession,
   onSetActiveSession,
+  onRenameGroup,
   onUpdateAssessmentList,
 }: GroupsEditorProps) => {
   const [groupTabIndex, setGroupTabIndex] = useState(0)
@@ -84,18 +88,24 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
 
   const updateWidthAndHeight = () => {
     setWidth(window.innerWidth)
-    console.log('width', window.innerWidth)
+   // console.log('width', window.innerWidth)
     if (parentRef?.current) {
       let parentWidth = parentRef.current.offsetWidth
-      console.log('pwidth', parentWidth)
+     // console.log('pwidth', parentWidth)
       setParentWidth(parentWidth)
     }
   }
 
   useEffect(() => {
-   
-    const activeIndex = groups.findIndex(item=> item.active === true)
+   console.log(groups)
+    let activeIndex = groups.findIndex(item=> item.active === true)
+
+    console.log('activeIndex', activeIndex)
+    if(activeIndex === -1) {
+      activeIndex =0
+    }
     setGroupTabIndex(activeIndex)
+    
   }, [groups])
 
   useEffect(() => {
@@ -103,7 +113,7 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
     if (parentRef.current) {
       let parentWidth = parentRef.current.offsetWidth
       setParentWidth(parentWidth)
-      console.log('parentWidth', parentWidth)
+     // console.log('parentWidth', parentWidth)
     }
   }, [parentRef])
 
@@ -137,8 +147,13 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
 
   const getCols = (numberOfSessions: number): number => {
     const result = Math.floor((numberOfSessions + 1) * 291)
-    console.log(result)
+   // console.log(result)
     return result
+  }
+
+  const getTabDataObjects = (): {label: string, id: string}[] => {
+ const result = groups.map(group => ({label: group.name, id: group.id}))
+ return result
   }
 
   return (
@@ -149,8 +164,10 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
           handleChange={(val: number) => {
             handleGroupChange(val)
           }}
-          tabLabels={groups.map(group => group.name)}
+          tabDataObjects={getTabDataObjects()}
           addNewLabel="+"
+          onDelete={onRemoveGroup}
+          onRenameTab={onRenameGroup}
           menuItems={[
             { label: 'Add Group', fn: onAddGroup },
             { label: 'Copy Group', fn: onAddGroup },

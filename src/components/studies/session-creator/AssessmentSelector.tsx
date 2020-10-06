@@ -139,7 +139,7 @@ AssessmentSelectorProps) => {
         <TabsMtb
           value={assessmentTabIndex}
           handleChange={(val: number) => setAssessmentTabIndex(val)}
-          tabLabels={['Bookmarked Assessment', 'Assessment Library']}
+          tabDataObjects={[{label:'Bookmarked Assessment'}, {label: 'Assessment Library'}]}
         ></TabsMtb>
 
         <TabPanel value={assessmentTabIndex} index={0} key={'bkm_asmnt'}>
