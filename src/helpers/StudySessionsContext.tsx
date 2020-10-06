@@ -23,6 +23,7 @@ export enum Types {
   AddSession = 'ADD_SESSION',
   RemoveSession = 'REMOVE_SESSION',
   SetActiveSession = 'SEAT_ACTIVE_SESSION',
+  UpdateSessionName = 'UPDATE_SESSION_NAME',
   UpdateAssessments = 'UPDATE_ASSESSMENTS',
 }
 
@@ -50,6 +51,10 @@ type ActionPayload = {
   }
   [Types.SetActiveSession]: {
     sessionId: string
+  }
+  [Types.UpdateSessionName]: {
+    sessionId: string
+    sessionName: string
   }
   [Types.UpdateAssessments]: {
     sessionId: string
@@ -200,6 +205,28 @@ function setActiveSession(groups: Group[], sessionId: string): Group[] {
   return newGroups
 }
 
+function updateSessionName(groups: Group[], sessionId: string, sessionName: string): Group[] {
+ 
+  const newGroups = groups.map(group => {
+    if (group.active) {
+      group.sessions = group.sessions.map(session => {
+        if(session.id!== sessionId) {
+          return session
+        } else {
+          return {...session, name: sessionName}
+        }
+      })
+    }
+    return group
+  })
+
+  return newGroups
+}
+
+
+
+
+
 function removeSession(groups: Group[], sessionId: string): Group[] {
   const updatedGroups = groups.map(group => {
     if (!group.active) {
@@ -261,6 +288,10 @@ function actionsReducer(groups: Group[], action: SessionAction): Group[] {
     }
     case Types.SetActiveSession: {
       return setActiveSession(groups, action.payload.sessionId)
+    }
+
+    case Types.UpdateSessionName: {
+      return updateSessionName(groups, action.payload.sessionId, action.payload.sessionName)
     }
 
     case Types.RemoveSession: {

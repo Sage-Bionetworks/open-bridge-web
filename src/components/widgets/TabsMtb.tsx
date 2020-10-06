@@ -95,7 +95,6 @@ const TabsMtb: FunctionComponent<TabProps> = ({
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null,
   )
-  const [popAnchorEl, setPopAnchorEl] = React.useState<null | HTMLElement>(null)
   const [newGroupName, setNewGroupName] = React.useState('')
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     if (newValue !== -10) {
@@ -159,19 +158,17 @@ const TabsMtb: FunctionComponent<TabProps> = ({
             icon={
               index === value && onDelete ? (
                 <>
-                
                   <DeleteIcon
                     className={classes.deleteIcon}
                     onClick={() => onDelete(tab.id)}
                   ></DeleteIcon>
                   <div className={classes.TE}>
                     <Editable
-
                       text={newGroupName}
                       placeholder={tab.label}
                       childRef={inputRef}
-                      onReset={()=>setNewGroupName(tab.label)}
-                      onTriggerUpdate={()=> onRenameTab(tab.id, newGroupName)}
+                      onReset={() => setNewGroupName(tab.label)}
+                      onTriggerUpdate={() => onRenameTab(tab.id, newGroupName)}
                       type="input"
                     >
                       <input
@@ -181,10 +178,11 @@ const TabsMtb: FunctionComponent<TabProps> = ({
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300"
                         placeholder={tab.label}
                         value={newGroupName}
-                        onBlur = {(e)=> {onRenameTab(tab.id, newGroupName)}}
+                        onBlur={e => {
+                          onRenameTab(tab.id, newGroupName)
+                        }}
                         onChange={e => {
                           setNewGroupName(e.target.value)
-                       
                         }}
                       />
                     </Editable>

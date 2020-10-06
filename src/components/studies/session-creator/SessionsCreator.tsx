@@ -88,6 +88,10 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
   const setActiveSession = (sessionId: string) =>
     groupsUpdateFn({ type: Types.SetActiveSession, payload: { sessionId } })
 
+
+  const updateSessionName = (sessionId: string, sessionName: string) => groupsUpdateFn({ type: Types.UpdateSessionName, payload: { sessionId, sessionName } })
+
+
   const updateAssessmentList = (sessionId: string, assessments: Assessment[]) =>
     groupsUpdateFn({
       type: Types.UpdateAssessments,
@@ -124,6 +128,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = () => {
         onAddSession={addSession}
         onRemoveSession={removeSession}
         onSetActiveSession={setActiveSession}
+        onUpdateSessionName = {updateSessionName}
         onUpdateAssessmentList={updateAssessmentList}
         onRenameGroup={renameGroup}
       ></GroupsEditor>
