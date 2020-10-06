@@ -12,7 +12,7 @@ export default [
     name: 'COMPLIANCE DASHBOARD',
     Component: ComplianceDashboard,
   },
-  { path: '/study-editor', name: 'STUDY EDITOR', Component: StudyManager },
+  { path: '/study-editor', name: 'MY STUDIES', Component: StudyManager },
 
   {
     path: '/1participant-manager',
