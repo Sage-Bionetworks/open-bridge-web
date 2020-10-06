@@ -11,10 +11,7 @@ import { Group, Assessment, StudySession } from '../../../types/types'
 import clsx from 'clsx'
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
-import {
-  useStudySessionsDispatch,
-  Types,
-} from '../../../helpers/StudySessionsContext'
+import { Session } from 'inspector'
 
 const useStyles = makeStyles({
   root: { backgroundColor: '#E2E2E2', padding: '20px' },
@@ -58,29 +55,32 @@ const useStyles = makeStyles({
 })
 
 type AssessmentSelectorProps = {
-  activeGroup: Group
-  onUpdateAssessments?: Function
+  active: {group: Group, session: StudySession | undefined}
+
+  onUpdateAssessments: Function
+  selectedAssessments: Assessment[]
 }
 
 const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
-  activeGroup,
-  onUpdateAssessments = ()=>{}
-}: //onUpdateAssessments,
+  active,
+  selectedAssessments,
+  onUpdateAssessments
+}:
 AssessmentSelectorProps) => {
   const assessments = useAssessments()
   const [assessmentTabIndex, setAssessmentTabIndex] = useState(0)
-  const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
+  /*const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
     [],
-  )
-  const [activeSession, setActiveSession] = useState<StudySession | undefined>(
+  )*/
+/*  const [activeSession, setActiveSession] = useState<StudySession | undefined>(
     undefined,
-  )
-  const sessionUpdateFn = useStudySessionsDispatch()
+  )*/
 
-  useEffect(() => {
+
+ /* useEffect(() => {
     console.log('effect')
     setActiveSession(activeGroup.sessions.find(session => session.active))
-  }, [activeGroup.sessions])
+  }, [activeGroup.sessions])*/
 
   const classes = useStyles()
 
@@ -94,7 +94,8 @@ AssessmentSelectorProps) => {
     event: React.MouseEvent<HTMLElement>,
     selectedAssessments: Assessment[],
   ) => {
-    setSelectedAssessments(selectedAssessments)
+    onUpdateAssessments(selectedAssessments)
+   // setSelectedAssessments(selectedAssessments)
   }
 
   const renderAssessmentTab = (assessments: Assessment[]): JSX.Element => {
@@ -111,7 +112,7 @@ AssessmentSelectorProps) => {
               aria-label="bold"
               value={a}
               disabled={
-                !activeSession || isAssessmentInSession(activeSession, a.id)
+                !active.session || isAssessmentInSession(active.session, a.id)
               }
               classes={{
                 root: classes.ToggleA,
@@ -140,45 +141,20 @@ AssessmentSelectorProps) => {
   return (
     <div>
       <div className="assessmentTabs">
-        <TabsMtb
+      {/*  <TabsMtb
           value={assessmentTabIndex}
           handleChange={(val: number) => setAssessmentTabIndex(val)}
-          tabLabels={['Bookmarked Assessment', 'Assessment Library']}
+          tabDataObjects={[{label:'Bookmarked Assessment'}, {label: 'Assessment Library'}]}
         ></TabsMtb>
 
         <TabPanel value={assessmentTabIndex} index={0} key={'bkm_asmnt'}>
           {renderAssessmentTab(assessments.filter(a => a.bookmarked))}
         </TabPanel>
 
-        <TabPanel value={assessmentTabIndex} index={1} key={'asmnt'}>
+      <TabPanel value={assessmentTabIndex} index={1} key={'asmnt'}>*/}
           {renderAssessmentTab(assessments)}
-        </TabPanel>
-        <div className={classes.root}>
-          <Button
-            disabled={!activeSession || selectedAssessments.length === 0}
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              sessionUpdateFn({
-                type: Types.UpdateAssessments,
-                payload: {
-                  sessionId: activeSession!.id,
-                  assessments: [
-                    ...activeSession!.assessments,
-                    ...selectedAssessments,
-                  ],
-                },
-              })
-              setSelectedAssessments([])
-              onUpdateAssessments()
-            }}
-          >
-            {!activeSession
-              ? 'Please select group and session'
-              : `Add Selected to ${activeGroup.name} ${activeSession.name} session`}
-          </Button>
-        </div>
-      </div>
+      
+     </div>
     </div>
   )
 }

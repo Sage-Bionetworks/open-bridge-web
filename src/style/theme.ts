@@ -2,6 +2,13 @@ import { createMuiTheme } from '@material-ui/core'
 import { CSSProperties } from '@material-ui/core/styles/withStyles'
 
 const theme = createMuiTheme({
+  props: {
+    // Name of the component ⚛️
+    MuiButtonBase: {
+      // The properties to apply
+      disableRipple: true, // No more ripple, on the whole application 💣!
+    },
+  },
   spacing: 8,
   
   typography: {

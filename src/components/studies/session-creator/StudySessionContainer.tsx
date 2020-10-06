@@ -13,10 +13,7 @@ import clsx from 'clsx'
 import { makeStyles, Box, Button } from '@material-ui/core'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
 import DeleteIcon from '@material-ui/icons/Delete'
-import {
-  useStudySessionsDispatch,
-  Types,
-} from '../../../helpers/StudySessionsContext'
+
 
 const useStyles = makeStyles({
   root: {
@@ -62,20 +59,20 @@ const rearrangeList = (
 type StudySessionContainerProps = {
   studySession: StudySession
   onShowAssessments: Function
- // onSetActiveSession: Function
-  //onUpdateAssessments: Function
- // onRemoveSession: Function
+ onSetActiveSession: Function
+  onUpdateAssessmentList: Function
+ onRemoveSession: Function
 }
 
 const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   studySession,
   onShowAssessments,
- // onRemoveSession,
-  //onSetActiveSession,
-  //onUpdateAssessments,
+ onRemoveSession,
+  onSetActiveSession,
+  onUpdateAssessmentList,
 }: StudySessionContainerProps) => {
   const classes = useStyles()
-  const sessionUpdateFn = useStudySessionsDispatch()
+
 
   const rearrangeAssessments = (
     assessments: Assessment[],
@@ -89,11 +86,11 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
       dropResult.source,
       dropResult.destination,
     )
-   sessionUpdateFn({type: Types.UpdateAssessments, payload: {sessionId: studySession.id,  assessments: newAssessmentList}})
+    onUpdateAssessmentList(studySession.id, newAssessmentList)
   }
 
   const removeAssessment = (assessmentId: string) => {
-    sessionUpdateFn({type: Types.UpdateAssessments, payload: {sessionId: studySession.id,  assessments:  studySession.assessments.filter(a => a.id !== assessmentId)}})
+    onUpdateAssessmentList(studySession.id, studySession.assessments.filter(a => a.id !== assessmentId))
  
   }
 
@@ -165,13 +162,13 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   return (
     <Box
       className={clsx(classes.root, studySession?.active && 'active')}
-      onClick={() => sessionUpdateFn({type: Types.SetActiveSession, payload: {sessionId: studySession.id}})}
+      onClick={() => onSetActiveSession(studySession.id)}
     >
       {getInner(studySession)}
       <Button
         variant="text"
         style={{ padding: '0', minWidth: 'auto' }}
-        onClick={() => sessionUpdateFn({type: Types.RemoveSession, payload: {sessionId: studySession.id}})}
+        onClick={() => onRemoveSession(studySession.id)}
       >
         <DeleteIcon></DeleteIcon>
       </Button>
