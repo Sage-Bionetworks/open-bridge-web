@@ -123,7 +123,7 @@ AssessmentSelectorProps) => {
               <AssessmentCard
                 index={index}
                 assessment={a}
-                key={index}
+                key={a.id}
               ></AssessmentCard>
               <div className={classes.Overlay}>
                 <CheckCircleIcon

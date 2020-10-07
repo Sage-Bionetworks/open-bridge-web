@@ -129,7 +129,7 @@ const TabsMtb: FunctionComponent<TabProps> = ({
                 setMenuAnchorEl(null)
                 item.fn()
               }}
-              key={index}
+              key={item.label}
               className={classes.menuRoot}
             >
               {item.label}
@@ -153,7 +153,7 @@ const TabsMtb: FunctionComponent<TabProps> = ({
       >
         {tabDataObjects.map((tab, index) => (
           <Tab
-            key={index}
+            key={tab.id}
             label={tab.label}
             icon={
               index === value && onDelete ? (
