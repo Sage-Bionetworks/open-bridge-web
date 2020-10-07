@@ -31,6 +31,7 @@ type GroupsEditorProps = {
   onSetActiveGroup: Function
   groups: Group[]
   onAddSession: Function
+  onUpdateSessionName: Function
   onRemoveSession: Function
   onSetActiveSession: Function
   onUpdateAssessmentList: Function
@@ -47,6 +48,7 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
   onRemoveSession,
   onSetActiveSession,
   onRenameGroup,
+  onUpdateSessionName,
   onUpdateAssessmentList,
 }: GroupsEditorProps) => {
   const [groupTabIndex, setGroupTabIndex] = useState(0)
@@ -105,6 +107,7 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
                   onShowAssessments={onShowAssessments}
                   onSetActiveSession={onSetActiveSession}
                   onRemoveSession={onRemoveSession}
+                  onUpdateSessionName = {onUpdateSessionName}
                   onUpdateAssessmentList={onUpdateAssessmentList}
                 ></StudySessionContainer>
               ))}

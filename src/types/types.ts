@@ -119,6 +119,7 @@ export type Group = {
 }
 
 export type Study = {
+  id: string
   active?: boolean
   name: string
   description: string

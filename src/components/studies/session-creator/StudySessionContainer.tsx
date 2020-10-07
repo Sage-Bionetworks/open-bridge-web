@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, useRef } from 'react'
 
 import { Assessment, StudySession } from '../../../types/types'
 import {
@@ -13,6 +13,7 @@ import clsx from 'clsx'
 import { makeStyles, Box, Button } from '@material-ui/core'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
 import DeleteIcon from '@material-ui/icons/Delete'
+import Editable from '../../widgets/Editable'
 
 
 const useStyles = makeStyles({
@@ -60,6 +61,7 @@ type StudySessionContainerProps = {
   studySession: StudySession
   onShowAssessments: Function
  onSetActiveSession: Function
+ onUpdateSessionName: Function
   onUpdateAssessmentList: Function
  onRemoveSession: Function
 }
@@ -69,8 +71,11 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   onShowAssessments,
  onRemoveSession,
   onSetActiveSession,
+  onUpdateSessionName,
   onUpdateAssessmentList,
 }: StudySessionContainerProps) => {
+  const [newSessionName, setNewSessionName]= React.useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
   const classes = useStyles()
 
 
@@ -104,7 +109,31 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   const getInner = (studySession: StudySession): JSX.Element => {
     return (
       <>
-        {studySession.assessments.length} {studySession.name} -{' '}
+        
+        <Editable
+                      text={newSessionName}
+                      placeholder={studySession.name}
+                      childRef={inputRef}
+                      onReset={() => setNewSessionName(studySession.name)}
+                      onTriggerUpdate={() => onUpdateSessionName(studySession.id, newSessionName)}
+                      type="input"
+                    >
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        name="task"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300"
+                        placeholder={studySession.name}
+                        value={newSessionName}
+                        onBlur={e => {
+                          onUpdateSessionName(studySession.id, newSessionName)
+                        }}
+                        onChange={e => {
+                          setNewSessionName(e.target.value)
+                        }}
+                      />
+                    </Editable>
+ -{' '}
         {getTotalSessionTime(studySession.assessments)} min.
         <DragDropContext
           onDragEnd={(dropResult: DropResult) =>
@@ -151,7 +180,7 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
                   </Draggable>
                 ))}
                 {provided.placeholder}
-                <Button onClick={()=>onShowAssessments()}> Add Another</Button>
+                <Button onClick={()=>onShowAssessments()}> Assessments</Button>
               </div>
             )}
           </Droppable>

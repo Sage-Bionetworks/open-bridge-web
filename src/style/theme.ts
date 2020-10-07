@@ -1,7 +1,43 @@
-import { createMuiTheme } from '@material-ui/core'
+import { createMuiTheme, Theme } from '@material-ui/core'
 import { CSSProperties } from '@material-ui/core/styles/withStyles'
 
-const theme = createMuiTheme({
+
+type cssDict = {
+  [key: string]: CSSProperties
+}
+
+export type CssVariablesType = {
+  shadowing:  any,
+  testColor: string
+}
+
+const cssVariables = {
+  shadowing: {
+     boxShadow: "0 2px 5px -1px rgba(0, 0, 0, 0.3)",
+  },
+  testColor: 'red'
+};
+
+
+//those are global css classes
+const globals: cssDict = {
+  '.assesmentContainer': {
+    justifyContent: 'flex-start',
+    fontSize: '26px',
+
+    display: 'flex',
+    flexWrap: 'wrap',
+    overflowWrap: 'normal',
+  },
+}
+
+
+const theme: Theme = createMuiTheme({
+  overrides: {
+    MuiCssBaseline: {
+    
+      '@global': globals,
+    }},
   props: {
     // Name of the component ⚛️
     MuiButtonBase: {
@@ -26,18 +62,5 @@ const theme = createMuiTheme({
   },
 })
 
-type cssDict = {
-  [key: string]: CSSProperties
-}
 
-const globals: cssDict = {
-  '.assesmentContainer': {
-    justifyContent: 'flex-start',
-
-    display: 'flex',
-    flexWrap: 'wrap',
-    overflowWrap: 'normal',
-  },
-}
-
-export { theme, globals }
+export { theme, globals, cssVariables }

@@ -16,6 +16,7 @@ type ActionMap<M extends { [index: string]: any }> = {
 }
 
 export enum Types {
+  SetGroups = 'SET_GROUPS',
   AddGroup = 'ADD_GROUP',
   RemoveGroup = 'REMOVE_GROUP',
   SetActiveGroup = 'SET_ACTIVE_GROUP',
@@ -23,10 +24,14 @@ export enum Types {
   AddSession = 'ADD_SESSION',
   RemoveSession = 'REMOVE_SESSION',
   SetActiveSession = 'SEAT_ACTIVE_SESSION',
+  UpdateSessionName = 'UPDATE_SESSION_NAME',
   UpdateAssessments = 'UPDATE_ASSESSMENTS',
 }
 
 type ActionPayload = {
+  [Types.SetGroups]: {
+    groups: Group[]
+  }
   [Types.AddGroup]: {
     isMakeActive: boolean
   }
@@ -50,6 +55,10 @@ type ActionPayload = {
   }
   [Types.SetActiveSession]: {
     sessionId: string
+  }
+  [Types.UpdateSessionName]: {
+    sessionId: string
+    sessionName: string
   }
   [Types.UpdateAssessments]: {
     sessionId: string
@@ -200,6 +209,28 @@ function setActiveSession(groups: Group[], sessionId: string): Group[] {
   return newGroups
 }
 
+function updateSessionName(groups: Group[], sessionId: string, sessionName: string): Group[] {
+ 
+  const newGroups = groups.map(group => {
+    if (group.active) {
+      group.sessions = group.sessions.map(session => {
+        if(session.id!== sessionId) {
+          return session
+        } else {
+          return {...session, name: sessionName}
+        }
+      })
+    }
+    return group
+  })
+
+  return newGroups
+}
+
+
+
+
+
 function removeSession(groups: Group[], sessionId: string): Group[] {
   const updatedGroups = groups.map(group => {
     if (!group.active) {
@@ -236,6 +267,9 @@ function updateAssessments(
 
 function actionsReducer(groups: Group[], action: SessionAction): Group[] {
   switch (action.type) {
+    case Types.SetGroups: {
+      return action.payload.groups
+    }
     case Types.AddGroup: {
       return addGroup(groups, action.payload.isMakeActive)
     }
@@ -261,6 +295,10 @@ function actionsReducer(groups: Group[], action: SessionAction): Group[] {
     }
     case Types.SetActiveSession: {
       return setActiveSession(groups, action.payload.sessionId)
+    }
+
+    case Types.UpdateSessionName: {
+      return updateSessionName(groups, action.payload.sessionId, action.payload.sessionName)
     }
 
     case Types.RemoveSession: {

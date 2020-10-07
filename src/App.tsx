@@ -14,7 +14,7 @@ import {
   makeStyles,
   Container,
 } from '@material-ui/core'
-import { theme, globals } from './style/theme'
+import { theme, globals, cssVariables } from './style/theme'
 import { useSessionDataDispatch, useSessionDataState } from './helpers/AuthContext'
 import { SessionData } from './types/types'
 
@@ -69,15 +69,10 @@ if (code) {
 }
 }
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    height: '100%',
-  },
-  '@global': globals,
-}))
+
 
 function App() {
-  const classes = useStyles()
+
   const sessionData = useSessionDataState()
   const sessionUpdateFn = useSessionDataDispatch()
   useEffect(()=> {
@@ -85,7 +80,7 @@ function App() {
   })
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={{...theme, ...cssVariables}}>
       <Typography component={'div'}>
         <CssBaseline />
         <Container maxWidth="xl" style={{ height: '100vh' }}>

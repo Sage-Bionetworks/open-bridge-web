@@ -8,13 +8,11 @@ const useAssessments = () => {
   useEffect(() => {
     let isSubscribed = true
     const getInfo = async () => {
-      console.log('jere')
       if (isSubscribed) {
         try {
           //setIsLoading(true)
 
           const assessments = await AssessmentService.getAssessments()
-          console.log('a', assessments)
 
           if (isSubscribed) {
             setAssessments(assessments)
