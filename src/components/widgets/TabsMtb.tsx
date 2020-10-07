@@ -18,6 +18,7 @@ import EditIcon from '@material-ui/icons/Edit'
 import clsx from 'clsx'
 import GroupsEditor from '../studies/session-creator/GoupsEditor'
 import Editable from './Editable'
+import EditableTextbox from './EditableTextbox'
 
 const useStyles = makeStyles({
   tabRoot: {
@@ -35,7 +36,8 @@ const useStyles = makeStyles({
 
   deleteIcon: {
     position: 'absolute',
-    top: 5,
+    zIndex: 10,
+ 
     right: 5,
     width: '.8em',
   },
@@ -45,27 +47,7 @@ const useStyles = makeStyles({
     width: '100%',
 
     padding: '0 20px',
-  },
-  textInput: {
-    '& .Mui-focused': {
-      backgroundColor: '#fff',
-    },
-    '& input': {
-      textAlign: 'center',
-      textTransform: 'uppercase',
-    },
-
-    '& input:focused': {
-      backgroundColor: 'blue',
-    },
-  },
-  editIcon: {
-    position: 'absolute',
-    top: 5,
-
-    width: '.8em',
-    right: 20,
-  },
+  }
 })
 
 type TabProps = {
@@ -163,29 +145,7 @@ const TabsMtb: FunctionComponent<TabProps> = ({
                     onClick={() => onDelete(tab.id)}
                   ></DeleteIcon>
                   <div className={classes.TE}>
-                    <Editable
-                      text={newGroupName}
-                      placeholder={tab.label}
-                      childRef={inputRef}
-                      onReset={() => setNewGroupName(tab.label)}
-                      onTriggerUpdate={() => onRenameTab(tab.id, newGroupName)}
-                      type="input"
-                    >
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        name="task"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300"
-                        placeholder={tab.label}
-                        value={newGroupName}
-                        onBlur={e => {
-                          onRenameTab(tab.id, newGroupName)
-                        }}
-                        onChange={e => {
-                          setNewGroupName(e.target.value)
-                        }}
-                      />
-                    </Editable>
+                    <EditableTextbox  initValue={tab.label} onTriggerUpdate={(newText: string)=>onRenameTab(tab.id, newText)} ></EditableTextbox>
                   </div>
                 </>
               ) : (
