@@ -13,7 +13,7 @@ import clsx from 'clsx'
 import { makeStyles, Box, Button } from '@material-ui/core'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
 import DeleteIcon from '@material-ui/icons/Delete'
-import Editable from '../../widgets/Editable'
+
 import EditableTextbox from '../../widgets/EditableTextbox'
 
 const useStyles = makeStyles({

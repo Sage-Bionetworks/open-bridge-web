@@ -14,10 +14,10 @@ import {
 } from '@material-ui/core'
 
 import DeleteIcon from '@material-ui/icons/Delete'
-import EditIcon from '@material-ui/icons/Edit'
+
 import clsx from 'clsx'
-import GroupsEditor from '../studies/session-creator/GoupsEditor'
-import Editable from './Editable'
+
+
 import EditableTextbox from './EditableTextbox'
 
 const useStyles = makeStyles({
