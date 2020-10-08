@@ -84,7 +84,7 @@ function App() {
       <Typography component={'div'}>
         <CssBaseline />
         <Container maxWidth="xl" style={{ height: '100vh' }}>
-          <Header title="Blog" sections={routes} />
+          <Header title="Some Title" sections={routes} />
           <main>
             <Router basename={process.env.PUBLIC_URL}>
               <Switch>

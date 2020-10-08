@@ -13,8 +13,8 @@ import clsx from 'clsx'
 import { makeStyles, Box, Button } from '@material-ui/core'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
 import DeleteIcon from '@material-ui/icons/Delete'
-import Editable from '../../widgets/Editable'
 
+import EditableTextbox from '../../widgets/EditableTextbox'
 
 const useStyles = makeStyles({
   root: {
@@ -60,24 +60,22 @@ const rearrangeList = (
 type StudySessionContainerProps = {
   studySession: StudySession
   onShowAssessments: Function
- onSetActiveSession: Function
- onUpdateSessionName: Function
+  onSetActiveSession: Function
+  onUpdateSessionName: Function
   onUpdateAssessmentList: Function
- onRemoveSession: Function
+  onRemoveSession: Function
 }
 
 const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   studySession,
   onShowAssessments,
- onRemoveSession,
+  onRemoveSession,
   onSetActiveSession,
   onUpdateSessionName,
   onUpdateAssessmentList,
 }: StudySessionContainerProps) => {
-  const [newSessionName, setNewSessionName]= React.useState('')
-  const inputRef = useRef<HTMLInputElement>(null)
-  const classes = useStyles()
 
+  const classes = useStyles()
 
   const rearrangeAssessments = (
     assessments: Assessment[],
@@ -95,8 +93,10 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   }
 
   const removeAssessment = (assessmentId: string) => {
-    onUpdateAssessmentList(studySession.id, studySession.assessments.filter(a => a.id !== assessmentId))
- 
+    onUpdateAssessmentList(
+      studySession.id,
+      studySession.assessments.filter(a => a.id !== assessmentId),
+    )
   }
 
   const getTotalSessionTime = (assessments: Assessment[]): number => {
@@ -109,32 +109,13 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   const getInner = (studySession: StudySession): JSX.Element => {
     return (
       <>
-        
-        <Editable
-                      text={newSessionName}
-                      placeholder={studySession.name}
-                      childRef={inputRef}
-                      onReset={() => setNewSessionName(studySession.name)}
-                      onTriggerUpdate={() => onUpdateSessionName(studySession.id, newSessionName)}
-                      type="input"
-                    >
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        name="task"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300"
-                        placeholder={studySession.name}
-                        value={newSessionName}
-                        onBlur={e => {
-                          onUpdateSessionName(studySession.id, newSessionName)
-                        }}
-                        onChange={e => {
-                          setNewSessionName(e.target.value)
-                        }}
-                      />
-                    </Editable>
- -{' '}
-        {getTotalSessionTime(studySession.assessments)} min.
+        <EditableTextbox
+          initValue={studySession.name}
+          onTriggerUpdate={(newValue: string) =>
+            onUpdateSessionName(studySession.id, newValue)
+          }
+        ></EditableTextbox>
+        - {getTotalSessionTime(studySession.assessments)} min.
         <DragDropContext
           onDragEnd={(dropResult: DropResult) =>
             rearrangeAssessments(studySession.assessments, dropResult)
@@ -180,7 +161,10 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
                   </Draggable>
                 ))}
                 {provided.placeholder}
-                <Button onClick={()=>onShowAssessments()}> Assessments</Button>
+                <Button onClick={() => onShowAssessments()}>
+                  {' '}
+                  Assessments
+                </Button>
               </div>
             )}
           </Droppable>

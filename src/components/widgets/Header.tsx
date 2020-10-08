@@ -48,7 +48,7 @@ const Header: FunctionComponent<HeaderProps> = ({
         disableGutters
         className={classes.toolbarSecondary}
       >
-        {sections.map(section => (
+        {sections.filter(section=> section.name).map(section => (
           <Link
             color="inherit"
             noWrap

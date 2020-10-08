@@ -6,21 +6,19 @@ import CardContent from '@material-ui/core/CardContent'
 
 import Typography from '@material-ui/core/Typography'
 
-
 import clsx from 'clsx'
 import { Study } from '../../types/types'
 import { CssVariablesType } from '../../style/theme'
 
-const useStyles = makeStyles((theme:Theme & CssVariablesType)  => ({
+const useStyles = makeStyles((theme: Theme & CssVariablesType) => ({
   root: {
     width: '300px',
     border: '1px solid gray',
   },
-  
 
   title: {
     fontSize: 14,
-    color: theme.testColor
+    color: theme.testColor,
   },
   pos: {
     marginBottom: 12,
@@ -29,19 +27,14 @@ const useStyles = makeStyles((theme:Theme & CssVariablesType)  => ({
 
 type StudyCardOwnProps = {
   study: Study
- 
 }
 
 type StudyCardProps = StudyCardOwnProps
 
-const StudyCard: FunctionComponent<StudyCardProps> = ({
-  study,
-
-}) => {
+const StudyCard: FunctionComponent<StudyCardProps> = ({ study }) => {
   const classes = useStyles()
   // const bull = <span className={classes.bullet}>•</span>
 
- 
   //console.log('className', className)
 
   return (

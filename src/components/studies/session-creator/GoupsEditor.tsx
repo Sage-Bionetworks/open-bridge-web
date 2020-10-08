@@ -94,15 +94,15 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
         ></TabsMtb>
 
         {groups.map((group, index) => (
-          <TabPanel value={groupTabIndex} index={index} key={index}>
+          <TabPanel value={groupTabIndex} index={index} key={group.id}>
             <div
        
               className={classes.root}
        
             >
-              {group.sessions.map((session, index) => (
+              {group.sessions.map((session) => (
                 <StudySessionContainer
-                  key={index}
+                  key={session.id}
                   studySession={session}
                   onShowAssessments={onShowAssessments}
                   onSetActiveSession={onSetActiveSession}
@@ -113,7 +113,7 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
               ))}
 
               <NewStudySessionContainer
-                key={group.sessions.length}
+                key={'new_session'}
                 sessions={group.sessions}
                 onAddSession={onAddSession}
               ></NewStudySessionContainer>
