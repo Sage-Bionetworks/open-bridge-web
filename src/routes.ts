@@ -6,18 +6,21 @@ import ParticipantManager from './components/participants/ParticipantManager'
 import AccountLogin from './components/account/AccountLogin'
 import SessionsCreator from './components/studies/session-creator/SessionsCreator'
 
+import StudyEditor from './components/studies/StudyEditor'
+
 export default [
 
   {
     path: '/compliance-dashboard',
     name: 'COMPLIANCE DASHBOARD',
     Component: ComplianceDashboard,
+
   },
-  { path: '/study-editor', name: 'MY STUDIES', Component: StudyManager },
+  { path: '/studies', name: 'MY STUDIES', Component: StudyManager },
 
-  { path: '/study-editor/:id', name: 'MY STUDIES', Component: SessionsCreator },
+  { path: '/studies/:id/:section', name: '', Component: StudyEditor },
  
-
+ 
   {
     path: '/1participant-manager',
     name: 'PARTICIPANT MANAGER',

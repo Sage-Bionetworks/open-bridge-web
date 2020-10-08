@@ -11,6 +11,8 @@ export type CssVariablesType = {
   testColor: string
 }
 
+export type ThemeType = Theme & CssVariablesType
+
 const cssVariables = {
   shadowing: {
      boxShadow: "0 2px 5px -1px rgba(0, 0, 0, 0.3)",

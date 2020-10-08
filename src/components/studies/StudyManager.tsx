@@ -56,7 +56,7 @@ const StudyManager: FunctionComponent<StudyManagerProps> = () => {
     
          key={a.id}
          variant="body2"
-         href={`/study-editor/${a.id}`}
+         href={`/studies/${a.id}/session-creator`}
         
        >
         <StudyCard study={a}></StudyCard>
