@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect } from 'react'
 import Link from '@material-ui/core/Link'
-import {  RouteComponentProps } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router-dom'
 import StudyService from '../../services/study.service'
 import { Study } from '../../types/types'
 import StudyCard from './StudyCard'
@@ -51,15 +51,12 @@ const StudyManager: FunctionComponent<StudyManagerProps> = () => {
       <SessionsCreator></SessionsCreator>
      </StudySessionsProvider>*/}
       {studies.map((a, index) => (
-         <Link
-       
-    
-         key={a.id}
-         variant="body2"
-         href={`/studies/${a.id}/session-creator`}
-        
-       >
-        <StudyCard study={a}></StudyCard>
+        <Link
+          key={a.id}
+          variant="body2"
+          href={`/studies/${a.id}/session-creator`}
+        >
+          <StudyCard study={a}></StudyCard>
         </Link>
       ))}
     </>

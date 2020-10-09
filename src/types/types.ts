@@ -10,6 +10,13 @@ export interface Response<T> {
   ok: boolean
   data: T
 }
+
+export type RequestStatus =
+  'IDLE'|
+  'PENDING' |
+  'RESOLVED'|
+  'REJECTED'
+
 /*  User Types ********************************/
 
 export interface UserData {

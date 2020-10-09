@@ -13,7 +13,12 @@ import {
   makeStyles,
 } from '@material-ui/core'
 
-import { Assessment, Group, StudySession } from '../../../types/types'
+import {
+  Assessment,
+  Group,
+  RequestStatus,
+  StudySession,
+} from '../../../types/types'
 
 import GroupsEditor from './GoupsEditor'
 import { RouteComponentProps, useParams } from 'react-router-dom'
@@ -26,6 +31,12 @@ import {
   defaultGroup,
 } from '../../../helpers/StudySessionsContext'
 import StudyService from '../../../services/study.service'
+import TabPanel from '../../widgets/TabPanel'
+import NewStudySessionContainer from './NewStudySessionContainer'
+import StudySessionContainer from './StudySessionContainer'
+import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
+import { useSessionDataState } from '../../../helpers/AuthContext'
+import LoadingComponent from '../../widgets/Loader'
 
 const useStyles = makeStyles({
   root: {},
@@ -33,7 +44,17 @@ const useStyles = makeStyles({
     backgroundColor: '#E2E2E2',
     padding: '20px',
   },
+  groupTab: {
+    display: 'grid',
+    minHeight: '310px',
+    padding: '20px',
+    backgroundColor: '#E2E2E2',
+    gridTemplateColumns: 'repeat( auto-fill, minmax(250px, 1fr) )',
+    gridAutoRows: 'minMax(310px, auto)',
+    gridGap: '10px',
+  },
 })
+
 
 type SessionsCreatorOwnProps = {}
 
@@ -48,31 +69,24 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = (...props) => {
 
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
   let { id } = useParams<{ id: string }>()
+  const [reqStatus, setRequestStatus] = React.useState<RequestStatus>('PENDING')
+  const handleError = useErrorHandler()
 
   useEffect(() => {
     let isSubscribed = true
-    const getInfo = async () => {
-      if (isSubscribed) {
-        try {
-          //setIsLoading(true)
 
-          const study = await StudyService.getStudy(id)
-
-          if (isSubscribed && study) {
-            groupsUpdateFn({
-              type: Types.SetGroups,
-              payload: { groups: study.groups },
-            })
-          }
-        } catch (e) {
-          // isSubscribed && setError(e)
-        } finally {
-          // isSubscribed && setIsLoading(false)
+    StudyService.getStudy(id).then(
+      study => {
+        if (isSubscribed && study) {
+          groupsUpdateFn({
+            type: Types.SetGroups,
+            payload: { groups: study.groups },
+          })
+          setRequestStatus('RESOLVED')
         }
-      }
-    }
-
-    getInfo()
+      },
+      e => handleError(e),
+    )
 
     return () => {
       isSubscribed = false
@@ -81,6 +95,13 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = (...props) => {
 
   const classes = useStyles()
   //const groupsUpdateFn = useStudySessionsDispatch()
+
+  const copyGroup = () => {
+    groupsUpdateFn({
+      type: Types.AddGroup,
+      payload: { group: groups[groups.length - 1], isMakeActive: false },
+    })
+  }
 
   const addGroup = () => {
     groupsUpdateFn({
@@ -161,21 +182,50 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = (...props) => {
     return { group, session }
   }
 
+  /*if (reqStatus === 'PENDING') {
+    return <>'...loading'</>
+  }*/
+
+
+
   return (
-    <div>
+    <LoadingComponent reqStatusLoading= {reqStatus} >
       <GroupsEditor
         groups={groups}
-        onShowAssessments={() => setIsAssessmentDialogOpen(true)}
         onAddGroup={addGroup}
         onRemoveGroup={removeGroup}
         onSetActiveGroup={setActiveGroup}
-        onAddSession={addSession}
-        onRemoveSession={removeSession}
-        onSetActiveSession={setActiveSession}
-        onUpdateSessionName={updateSessionName}
-        onUpdateAssessmentList={updateAssessmentList}
         onRenameGroup={renameGroup}
-      ></GroupsEditor>
+        onCopyGroup={copyGroup}
+      >
+        {groups.map((group, index) => (
+          <TabPanel
+            value={groups.findIndex(group => group.active)}
+            index={index}
+            key={group.id}
+          >
+            <div className={classes.groupTab}>
+              {group.sessions.map(session => (
+                <StudySessionContainer
+                  key={session.id}
+                  studySession={session}
+                  onShowAssessments={() => setIsAssessmentDialogOpen(true)}
+                  onSetActiveSession={setActiveSession}
+                  onRemoveSession={removeSession}
+                  onUpdateSessionName={updateSessionName}
+                  onUpdateAssessmentList={updateAssessmentList}
+                ></StudySessionContainer>
+              ))}
+
+              <NewStudySessionContainer
+                key={'new_session'}
+                sessions={group.sessions}
+                onAddSession={addSession}
+              ></NewStudySessionContainer>
+            </div>
+          </TabPanel>
+        ))}
+      </GroupsEditor>
       <Dialog
         open={isAssessmentDialogOpen}
         onClose={() => setIsAssessmentDialogOpen(false)}
@@ -207,7 +257,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = (...props) => {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+      </LoadingComponent>
   )
 }
 
