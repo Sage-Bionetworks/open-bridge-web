@@ -59,8 +59,8 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
   }
 
   return (
-    <div>
-      <div className="sessionTabs">
+
+      <div >
         <TabsMtb
           value={groupTabIndex}
           handleChange={(val: number) => {
@@ -78,7 +78,6 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
 
         {children}
       </div>
-    </div>
   )
 }
 

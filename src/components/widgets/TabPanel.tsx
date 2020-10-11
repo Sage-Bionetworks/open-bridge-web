@@ -6,7 +6,9 @@ import clsx from 'clsx'
 
 const useStyles = makeStyles({
   root: {
-    padding: '0',
+    minHeight: '310px',
+    padding: '20px',
+    backgroundColor: '#E2E2E2',
   },
 })
 

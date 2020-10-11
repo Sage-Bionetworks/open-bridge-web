@@ -46,12 +46,9 @@ const useStyles = makeStyles({
   },
   groupTab: {
     display: 'grid',
-    minHeight: '310px',
-    padding: '20px',
-    backgroundColor: '#E2E2E2',
     gridTemplateColumns: 'repeat( auto-fill, minmax(250px, 1fr) )',
     gridAutoRows: 'minMax(310px, auto)',
-    gridGap: '10px',
+    gridGap: '20px',
   },
 })
 

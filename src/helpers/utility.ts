@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import {
   Response,
  // SignInData,
@@ -5,14 +7,15 @@ import {
   //SignInDataEmail,
 
  // LoginType,
-  StringDictionary,
+  StringDictionary,RequestStatus, Study
 
 } from '../types/types'
 
 import CONSTANTS from '../types/constants'
 
-import { useState } from 'react'
+import { Reducer, useState } from 'react'
 import { SessionData } from '../types/types'
+import React from 'react'
 
 function makeRequest(
   method: 'POST' | 'GET' = 'POST',
@@ -194,3 +197,137 @@ export const getRandomId=(): string => {
   console.log('newId', uint32.toString(16) )
   return uint32.toString(16);
 }
+
+
+
+//async hooks
+
+interface AsyncAction<T> {
+  type: RequestStatus
+  data: T| null
+  error?: Error | null
+}
+
+interface AsyncReturnType<T> {
+  error?: Error | null | undefined
+  status: RequestStatus
+  data: T | null
+  run: Function
+
+}
+
+type HookState<T> ={
+  status: RequestStatus, data: T| null, error?: Error| null| undefined
+}
+
+function useSafeDispatch<T>(dispatch: Function): Function {
+  const mountedRef = React.useRef(false)
+
+  // to make this even more generic you should use the useLayoutEffect hook to
+  // make sure that you are correctly setting the mountedRef.current immediately
+  // after React updates the DOM. Even though this effect does not interact
+  // with the dom another side effect inside a useLayoutEffect which does
+  // interact with the dom may depend on the value being set
+  React.useEffect(() => {
+    mountedRef.current = true
+    return () => {mountedRef.current = false}
+  }, [])
+
+  return React.useCallback(
+    (...args) => (mountedRef.current ? dispatch(...args) : void 0),
+    [dispatch],
+  )
+}
+
+
+
+function asyncReducer<T>(_state: any, action: AsyncAction<T>): HookState<T> {
+  switch (action.type) {
+    case 'PENDING': {
+      return {status: 'PENDING', data: null, error: null}
+    }
+    case 'RESOLVED': {
+      return {status: 'RESOLVED', data: action.data, error: null}
+    }
+    case 'REJECTED': {
+      return {status: 'REJECTED', data: null, error: action.error}
+    }
+    default: {
+      throw new Error(`Unhandled action type: ${action.type}`)
+    }
+  }
+}
+
+export function useAsync<T>(initialState?: HookState<T>): AsyncReturnType<T>{
+  const initState: HookState<T> = {
+    status: 'IDLE',
+    data: null ,
+    error: null,
+    ...initialState,
+  }
+  const [state, unsafeDispatch] = React.useReducer<React.Reducer<HookState<T>, AsyncAction<T>>>(asyncReducer, initState)
+
+  const dispatch = useSafeDispatch<AsyncAction<T>>(unsafeDispatch)
+
+  const {data, error, status} = state
+
+  const run = React.useCallback(
+    (promise) => {
+      dispatch({type: 'PENDING'})
+      promise.then(
+       (data: Study) => {
+          dispatch({type: 'RESOLVED', data})
+        },
+        (error: Error) => {
+          dispatch({type: 'REJECTED', error})
+        },
+      )
+    },
+    [dispatch],
+  )
+
+  return {
+    error,
+    status,
+    data,
+    run,
+  }
+}
+
+function useWhyDidYouUpdate(name: any, props:any) {
+  // Get a mutable ref object where we can store props ...
+  // ... for comparison next time this hook runs.
+  const previousProps = React.useRef();
+
+  React.useEffect(() => {
+    if (previousProps.current) {
+      // Get all keys from previous and current props
+
+      //@ts-ignore
+      const allKeys = Object.keys({ ...previousProps.current, ...props });
+      // Use this object to keep track of changed props
+      const changesObj = {};
+      // Iterate through keys
+      allKeys.forEach(key => {
+        // If previous is different from current
+         //@ts-ignore
+        if (previousProps.current[key] !== props[key]) {
+          // Add to changesObj
+          changesObj[key] = {
+            from: previousProps.current[key],
+            to: props[key]
+          };
+        }
+      });
+
+      // If changesObj not empty then output to console
+      if (Object.keys(changesObj).length) {
+        console.log('[why-did-you-update]', name, changesObj);
+      }
+    }
+
+    // Finally update previousProps with current props for next hook call
+    previousProps.current = props;
+  });
+}
+

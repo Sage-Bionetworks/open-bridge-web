@@ -11,7 +11,7 @@ import { Study } from '../../types/types'
 import { CssVariablesType, ThemeType } from '../../style/theme'
 import { RouteComponentProps, useParams } from 'react-router-dom'
 
-import { Button, Grid, Link } from '@material-ui/core'
+import { Box, Button, Grid, Link } from '@material-ui/core'
 import { JsxElement } from 'typescript'
 import Scheduler from './scheduler/Scheduler'
 import SessionsCreator from './session-creator/SessionsCreator'
@@ -74,10 +74,9 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
         return <></>
       }
       return (
-        <Button variant="contained" color="primary"
-  
-    
-          
+        <Button
+          variant="contained"
+          color="primary"
           href={`/studies/${id}/${section.path}`}
         >
           {section.name}
@@ -85,10 +84,12 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
       )
     }
     const result = (
-      <>
+      <Box position="fixed"   bottom={24}  right={24} >
+
         <NavLink id={id} section={prev}></NavLink>&nbsp;&nbsp;
         <NavLink id={id} section={next}></NavLink>
-      </>
+       
+        </Box>
     )
     return result
   }
