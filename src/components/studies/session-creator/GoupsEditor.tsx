@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from 'react'
+import React, { FunctionComponent, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 import { makeStyles } from '@material-ui/core'
 import TabPanel from '../../widgets/TabPanel'
@@ -24,29 +24,20 @@ type GroupsEditorProps = {
   children: React.ReactNode
 }
 
-const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
+const GroupsEditor: FunctionComponent<GroupsEditorProps> =React.memo( ({
   groups,
   onAddGroup,
   onCopyGroup,
   onRemoveGroup,
   onSetActiveGroup,
-
   onRenameGroup,
 
   children,
 }: GroupsEditorProps) => {
-  const [groupTabIndex, setGroupTabIndex] = useState(0)
+  //const [groupTabIndex, setGroupTabIndex] = useState(0)
 
   const classes = useStyles()
-
-  useEffect(() => {
-    let activeIndex = groups.findIndex(item => item.active === true)
-    if (activeIndex === -1) {
-      activeIndex = 0
-    }
-    setGroupTabIndex(activeIndex)
-  }, [groups])
-
+ 
   const handleGroupChange = (groupIndex: number) => {
     if (groupIndex !== groups.length) {
       onSetActiveGroup(groups[groupIndex].id)
@@ -62,7 +53,7 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
 
       <div >
         <TabsMtb
-          value={groupTabIndex}
+          value={groups.findIndex(item => item.active === true)}
           handleChange={(val: number) => {
             handleGroupChange(val)
           }}
@@ -79,6 +70,6 @@ const GroupsEditor: FunctionComponent<GroupsEditorProps> = ({
         {children}
       </div>
   )
-}
+})
 
 export default GroupsEditor

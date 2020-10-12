@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useRef, useState } from 'react'
+import React, { FunctionComponent, SyntheticEvent, useRef, useState } from 'react'
 
 import {
   Tabs,
@@ -73,17 +73,14 @@ const TabsMtb: FunctionComponent<TabProps> = ({
   onRenameTab = () => null,
 }: TabProps) => {
   const classes = useStyles()
-  const inputRef = useRef<HTMLInputElement>(null)
+
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null,
   )
-  const [newGroupName, setNewGroupName] = React.useState('')
+console.log('tabRerender: '+value)
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     if (newValue !== -10) {
-      console.log('newValue', newValue)
-      if (newValue === -1) {
-        newValue = 0
-      }
+      console.log('Tab change newValue Tabs', newValue)
       handleChange(newValue)
     } else {
       //@ts-ignore
@@ -95,9 +92,9 @@ const TabsMtb: FunctionComponent<TabProps> = ({
     vertical: 'top',
     horizontal: 'center',
   }
-  const renderMenu = (): JSX.Element => {
+  const TabMenu = (): JSX.Element => {
     return (
-      <>
+  
         <Menu
           id="simple-menu"
           anchorEl={menuAnchorEl}
@@ -118,7 +115,7 @@ const TabsMtb: FunctionComponent<TabProps> = ({
             </MenuItem>
           ))}
         </Menu>
-      </>
+
     )
   }
 
@@ -142,7 +139,7 @@ const TabsMtb: FunctionComponent<TabProps> = ({
                 <>
                   <DeleteIcon
                     className={classes.deleteIcon}
-                    onClick={() => onDelete(tab.id)}
+                    onClick={(e: SyntheticEvent) => { e.stopPropagation();  onDelete(tab.id)}}
                   ></DeleteIcon>
                   <div className={classes.TE}>
                     <EditableTextbox  initValue={tab.label} onTriggerUpdate={(newText: string)=>onRenameTab(tab.id, newText)} ></EditableTextbox>
@@ -170,7 +167,7 @@ const TabsMtb: FunctionComponent<TabProps> = ({
         )}
       </Tabs>
 
-      {menuItems && renderMenu()}
+      {menuItems && <TabMenu></TabMenu>}
     </>
   )
 }
