@@ -53,106 +53,27 @@ const useStyles = makeStyles({
 })
 
 
-type SessionsCreatorOwnProps = {}
+type SessionsCreatorProps = {
+  studyGroups: Group[]
 
-type SessionsCreatorProps = SessionsCreatorOwnProps & RouteComponentProps
+}
 
-const SessionsCreator: FunctionComponent<SessionsCreatorProps> = (...props) => {
+
+
+const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({studyGroups}: SessionsCreatorProps) => {
   //const groups = useStudySessionsState()
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
     [],
   )
-  const [groups, groupsUpdateFn] = useReducer(actionsReducer, [defaultGroup])
+  const [groups, groupsUpdateFn] = useReducer(actionsReducer, studyGroups)
 
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
-  let { id } = useParams<{ id: string }>()
-  const [reqStatus, setRequestStatus] = React.useState<RequestStatus>('PENDING')
-  const handleError = useErrorHandler()
 
-  useEffect(() => {
-    let isSubscribed = true
-
-    StudyService.getStudy(id).then(
-      study => {
-        if (isSubscribed && study) {
-          groupsUpdateFn({
-            type: Types.SetGroups,
-            payload: { groups: study.groups },
-          })
-          setRequestStatus('RESOLVED')
-        }
-      },
-      e => handleError(e),
-    )
-
-    return () => {
-      isSubscribed = false
-    }
-  }, [id])
 
   const classes = useStyles()
   //const groupsUpdateFn = useStudySessionsDispatch()
 
-  const copyGroup = () => {
-    groupsUpdateFn({
-      type: Types.AddGroup,
-      payload: { group: groups[groups.length - 1], isMakeActive: false },
-    })
-  }
-
-  const addGroup = () => {
-    groupsUpdateFn({
-      type: Types.AddGroup,
-      payload: { isMakeActive: false },
-    })
-  }
-
-  const setActiveGroup = (id: string) => {
-    groupsUpdateFn({
-      type: Types.SetActiveGroup,
-      payload: { id },
-    })
-  }
-
-  const renameGroup = (id: string, name: string) => {
-    console.log('RENAMING')
-    groupsUpdateFn({
-      type: Types.RenameGroup,
-      payload: { id, name },
-    })
-  }
-
-  const removeGroup = (id: string) => {
-    groupsUpdateFn({
-      type: Types.RemoveGroup,
-      payload: { id },
-    })
-  }
-
-  const addSession = (sessions: StudySession[], assessments: Assessment[]) => {
-    groupsUpdateFn({
-      type: Types.AddSession,
-      payload: {
-        name: 'Session' + sessions.length.toString(),
-        assessments,
-
-        active: true,
-      },
-    })
-  }
-
-  const removeSession = (sessionId: string) =>
-    groupsUpdateFn({ type: Types.RemoveSession, payload: { sessionId } })
-
-  const setActiveSession = (sessionId: string) =>
-    groupsUpdateFn({ type: Types.SetActiveSession, payload: { sessionId } })
-
-  const updateSessionName = (sessionId: string, sessionName: string) =>
-    groupsUpdateFn({
-      type: Types.UpdateSessionName,
-      payload: { sessionId, sessionName },
-    })
-
+ 
   const updateAssessmentList = (sessionId: string, assessments: Assessment[]) =>
     groupsUpdateFn({
       type: Types.UpdateAssessments,
@@ -179,62 +100,113 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = (...props) => {
     return { group, session }
   }
 
-  /*if (reqStatus === 'PENDING') {
-    return <>'...loading'</>
-  }*/
-
 
 
   return (
-    <LoadingComponent reqStatusLoading= {reqStatus} >
-      <GroupsEditor
-        groups={groups}
-        onAddGroup={addGroup}
-        onRemoveGroup={removeGroup}
-        onSetActiveGroup={setActiveGroup}
-        onRenameGroup={renameGroup}
-        onCopyGroup={copyGroup}
-      >
-        {groups.map((group, index) => (
-          <TabPanel
-            value={groups.findIndex(group => group.active)}
-            index={index}
-            key={group.id}
-          >
-            <div className={classes.groupTab}>
-              {group.sessions.map(session => (
-                <StudySessionContainer
-                  key={session.id}
-                  studySession={session}
-                  onShowAssessments={() => setIsAssessmentDialogOpen(true)}
-                  onSetActiveSession={setActiveSession}
-                  onRemoveSession={removeSession}
-                  onUpdateSessionName={updateSessionName}
-                  onUpdateAssessmentList={updateAssessmentList}
-                ></StudySessionContainer>
-              ))}
+<div>
 
-              <NewStudySessionContainer
-                key={'new_session'}
-                sessions={group.sessions}
-                onAddSession={addSession}
-              ></NewStudySessionContainer>
-            </div>
-          </TabPanel>
-        ))}
-      </GroupsEditor>
-      <Dialog
-        open={isAssessmentDialogOpen}
-        onClose={() => setIsAssessmentDialogOpen(false)}
-        aria-labelledby="form-dialog-title"
-      >
-        <DialogContent>
-          <AssessmentSelector
-            selectedAssessments={selectedAssessments}
-            onUpdateAssessments={setSelectedAssessments}
-            active={getActiveGroupAndSession(groups)}
-          ></AssessmentSelector>
-        </DialogContent>
+<GroupsEditor
+          groups={groups}
+          onAddGroup={() =>
+            groupsUpdateFn({
+              type: Types.AddGroup,
+              payload: { isMakeActive: false },
+            })
+          }
+          onRemoveGroup={(id: string) => {
+            groupsUpdateFn({
+              type: Types.RemoveGroup,
+              payload: { id },
+            })
+          }}
+          onSetActiveGroup={(id: string) => {
+            groupsUpdateFn({
+              type: Types.SetActiveGroup,
+              payload: { id },
+            })
+          }}
+          onRenameGroup={(id: string, name: string) => {
+            groupsUpdateFn({
+              type: Types.RenameGroup,
+              payload: { id, name },
+            })
+          }}
+          onCopyGroup={() =>
+            groupsUpdateFn({
+              type: Types.AddGroup,
+              payload: {
+                group: groups[groups!.length - 1],
+                isMakeActive: false,
+              },
+            })
+          }
+        >
+          {groups.map((group, index) => (
+            <TabPanel
+              value={groups.findIndex(group => group.active)}
+              index={index}
+              key={group.id}
+            >
+              <div className={classes.groupTab}>
+                {group.sessions.map(session => (
+                  <StudySessionContainer
+                    key={session.id}
+                    studySession={session}
+                    onShowAssessments={() => setIsAssessmentDialogOpen(true)}
+                    onSetActiveSession={(sessionId: string) =>
+                      groupsUpdateFn({
+                        type: Types.SetActiveSession,
+                        payload: { sessionId },
+                      })
+                    }
+                    onRemoveSession={(sessionId: string) =>
+                      groupsUpdateFn({
+                        type: Types.RemoveSession,
+                        payload: { sessionId },
+                      })
+                    }
+                    onUpdateSessionName={(
+                      sessionId: string,
+                      sessionName: string,
+                    ) =>
+                      groupsUpdateFn({
+                        type: Types.UpdateSessionName,
+                        payload: { sessionId, sessionName },
+                      })
+                    }
+                    onUpdateAssessmentList={updateAssessmentList}
+                  ></StudySessionContainer>
+                ))}
+
+                <NewStudySessionContainer
+                  key={'new_session'}
+                  sessions={group.sessions}
+                  onAddSession={ (sessions: StudySession[], assessments: Assessment[]) => 
+                    groupsUpdateFn({
+                      type: Types.AddSession,
+                      payload: {
+                        name: 'Session' + sessions.length.toString(),
+                        assessments,
+                        active: true,
+                      },
+                    })}
+                ></NewStudySessionContainer>
+              </div>
+            </TabPanel>
+          ))}
+        </GroupsEditor>
+        <Dialog
+          open={isAssessmentDialogOpen}
+          onClose={() => setIsAssessmentDialogOpen(false)}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogContent>
+            <AssessmentSelector
+              selectedAssessments={selectedAssessments}
+              onUpdateAssessments={setSelectedAssessments}
+              active={getActiveGroupAndSession(groups)}
+            ></AssessmentSelector>
+          </DialogContent>
         <DialogActions>
           <Button
             variant="contained"
@@ -254,7 +226,8 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = (...props) => {
           </Button>
         </DialogActions>
       </Dialog>
-      </LoadingComponent>
+      </div>
+      
   )
 }
 

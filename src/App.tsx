@@ -15,8 +15,13 @@ import {
   Container,
 } from '@material-ui/core'
 import { theme, globals, cssVariables } from './style/theme'
-import { useSessionDataDispatch, useSessionDataState } from './helpers/AuthContext'
+import {
+  useSessionDataDispatch,
+  useSessionDataState,
+} from './helpers/AuthContext'
 import { SessionData } from './types/types'
+import { ErrorFallback, ErrorHandler } from './helpers/ErrorHandler'
+import { ErrorBoundary } from 'react-error-boundary'
 
 const defaultTheme = createMuiTheme()
 /*const theme = createMuiTheme({
@@ -39,7 +44,10 @@ const getRootURL = () => {
   return `${window.location.protocol}//${window.location.hostname}${portString}/`
 }
 
-export const detectSSOCode = async(sessionUpdateFn: Function, sessionData:SessionData) => {
+export const detectSSOCode = async (
+  sessionUpdateFn: Function,
+  sessionData: SessionData,
+) => {
   const redirectURL = getRootURL()
   // 'code' handling (from SSO) should be preformed on the root page, and then redirect to original route.
   let code: URL | null | string = new URL(window.location.href)
@@ -49,55 +57,60 @@ export const detectSSOCode = async(sessionUpdateFn: Function, sessionData:Sessio
     return
   }
   code = searchParams.get('code')
-if (code) {
-  try{
-  const loggedIn= await UserService.loginOauth(code, 'http://127.0.0.1:3000')
-  sessionUpdateFn({
-    type: 'LOGIN',
-    payload: {
-      ...sessionData,
-      token: loggedIn.data.sessionToken,
-      name: loggedIn.data.firstName,
-      // consented: loggedIn.data.consented,
-      // userDataGroup: loggedIn.data.dataGroups,
-    },
-  })
-  window.location.replace('http://127.0.0.1:3000/study-editor')
-} catch(e)
-{alert(e.message)}
-
+  if (code) {
+    try {
+      const loggedIn = await UserService.loginOauth(
+        code,
+        'http://127.0.0.1:3000',
+      )
+      sessionUpdateFn({
+        type: 'LOGIN',
+        payload: {
+          ...sessionData,
+          token: loggedIn.data.sessionToken,
+          name: loggedIn.data.firstName,
+          // consented: loggedIn.data.consented,
+          // userDataGroup: loggedIn.data.dataGroups,
+        },
+      })
+      window.location.replace('http://127.0.0.1:3000/study-editor')
+    } catch (e) {
+      alert(e.message)
+    }
+  }
 }
-}
-
-
 
 function App() {
-
   const sessionData = useSessionDataState()
   const sessionUpdateFn = useSessionDataDispatch()
-  useEffect(()=> {
-  detectSSOCode(sessionUpdateFn, sessionData)
+  useEffect(() => {
+    detectSSOCode(sessionUpdateFn, sessionData)
   })
 
   return (
-    <ThemeProvider theme={{...theme, ...cssVariables}}>
+    <ThemeProvider theme={{ ...theme, ...cssVariables }}>
       <Typography component={'div'}>
         <CssBaseline />
         <Container maxWidth="xl" style={{ height: '100vh' }}>
           <Header title="Some Title" sections={routes} />
           <main>
-            <Router basename={process.env.PUBLIC_URL}>
-              <Switch>
-                {routes.map(({ path, Component }, key) => (
-                  <Route
-                    exact
-                    path={path}
-                    key={key}
-                    render={props => <Component {...props}></Component>}
-                  />
-                ))}
-              </Switch>
-            </Router>
+            <ErrorBoundary
+              FallbackComponent={ErrorFallback}
+              onError={ErrorHandler}
+            >
+              <Router basename={process.env.PUBLIC_URL}>
+                <Switch>
+                  {routes.map(({ path, Component }, key) => (
+                    <Route
+                      exact
+                      path={path}
+                      key={key}
+                      render={props => <Component {...props}></Component>}
+                    />
+                  ))}
+                </Switch>
+              </Router>
+            </ErrorBoundary>
           </main>
         </Container>
       </Typography>

@@ -15,10 +15,15 @@ import { Box, Button, Grid, Link } from '@material-ui/core'
 import { JsxElement } from 'typescript'
 import Scheduler from './scheduler/Scheduler'
 import SessionsCreator from './session-creator/SessionsCreator'
-import { ErrorBoundary } from 'react-error-boundary'
+import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
 import { ErrorFallback, ErrorHandler } from '../../helpers/ErrorHandler'
 import { SECTIONS as sectionLinks, StudySection } from './sections'
 import LeftNav from './LeftNav'
+import { useAsync } from '../../helpers/utility'
+import StudyService from '../../services/study.service'
+import LoadingComponent from '../widgets/Loader'
+import SessionsCreatorNew from './session-creator/SessionsCreatorNew'
+import SessionsCreatorOld from './session-creator/SessionsCreatorOld'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -41,14 +46,52 @@ type StudyEditorProps = StudyEditorOwnProps & RouteComponentProps
 
 const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
   const classes = useStyles()
+  const handleError = useErrorHandler()
   let { id, section } = useParams<{ id: string; section: StudySection }>()
 
-  const servePage = (section: StudySection): JSX.Element => {
+  const { data: study, status, error, run } = useAsync<Study>({
+    status: id ? 'PENDING' : 'IDLE',
+    data: null,
+  })
+
+  React.useEffect(() => {
+    if (!id) {
+      return
+    }
+    return run(StudyService.getStudy(id))
+  }, [id, run])
+
+  if (status === 'IDLE') {
+    return <>'no id'</>
+  } else if (status === 'REJECTED') {
+    handleError(error!)
+  } else if (status === 'RESOLVED') {
+    if (!study) {
+      throw new Error('This session does not exist')
+    }
+  }
+
+  const ServePage = ({
+    section,
+    study,
+  }: {
+    section: StudySection
+    study: Study
+  }): JSX.Element => {
+    {/*<>
+          <SessionsCreatorOld studyGroups={study.groups || []} id={id}></SessionsCreatorOld>
+          -------------------------------<br/>
+          -------------------------------new--------------------<br/>
+          <SessionsCreatorNew studyGroups={study.groups || []} id={id}></SessionsCreatorNew>
+        </>*/}
+
     switch (section) {
       case 'scheduler':
         return <Scheduler {...props}></Scheduler>
       case 'session-creator':
-        return <SessionsCreator {...props}></SessionsCreator>
+        return (
+        <SessionsCreator studyGroups={study.groups || []}></SessionsCreator>
+        )
       default:
         return <></>
     }
@@ -84,12 +127,10 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
       )
     }
     const result = (
-      <Box position="fixed"   bottom={24}  right={24} >
-
+      <Box position="fixed" bottom={24} right={24}>
         <NavLink id={id} section={prev}></NavLink>&nbsp;&nbsp;
         <NavLink id={id} section={next}></NavLink>
-       
-        </Box>
+      </Box>
     )
     return result
   }
@@ -106,7 +147,9 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
             FallbackComponent={ErrorFallback}
             onError={ErrorHandler}
           >
-            {servePage(section)}
+            <LoadingComponent reqStatusLoading={status}>
+              <ServePage study={study!} section={section}></ServePage>
+            </LoadingComponent>
           </ErrorBoundary>
           <NavLinks sections={sectionLinks} currentSection={section}></NavLinks>
         </div>

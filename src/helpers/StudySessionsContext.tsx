@@ -28,13 +28,13 @@ export enum Types {
   UpdateAssessments = 'UPDATE_ASSESSMENTS',
 }
 
-type ActionPayload = {
+export type ActionPayload = {
   [Types.SetGroups]: {
     groups: Group[]
   }
   [Types.AddGroup]: {
-    isMakeActive: boolean,
-    group?: Group 
+    isMakeActive: boolean
+    group?: Group
   }
   [Types.RemoveGroup]: {
     id: string
@@ -110,16 +110,19 @@ const StudySessionsDispatchContext = React.createContext<Dispatch | undefined>(
   undefined,
 )
 
-function addGroup(groups: Group[], isMakeActive: boolean, group?: Group): Group[] {
-
+function addGroup(
+  groups: Group[],
+  isMakeActive: boolean,
+  group?: Group,
+): Group[] {
   const newId = getRandomId()
   let newGroups = [
     ...groups,
     {
       id: newId,
       active: false,
-      name: group? `${group.name} copy`: `New Group`,
-      sessions: group? [...group.sessions] : [],
+      name: group ? `${group.name} copy` : `New Group`,
+      sessions: group ? [...group.sessions] : [],
     } as Group,
   ]
   if (isMakeActive) {
@@ -132,13 +135,13 @@ function addGroup(groups: Group[], isMakeActive: boolean, group?: Group): Group[
 }
 
 function removeGroup(groups: Group[], groupId: string): Group[] {
- return   groups.filter(group => group.id !== groupId)
- 
+  const currentIndex = groups.findIndex(group => group.id === groupId)
+  const newGroups = setActiveGroup(groups, groups[currentIndex - 1].id)
+  return newGroups.filter(group => group.id !== groupId)
 }
 
 function setActiveGroup(groups: Group[], groupId: string): Group[] {
-  console.log('active bein set')
-  const newGroups = groups.map(group => {
+  const newGroups = groups.map((group, index) => {
     if (group.id !== groupId) {
       if (group.active) {
         group.sessions.forEach(session => (session.active = false))
@@ -146,6 +149,7 @@ function setActiveGroup(groups: Group[], groupId: string): Group[] {
       }
       return group
     } else {
+      console.log(`group ${index} is being set to active`)
       group.active = true
       if (group.sessions?.length > 0) {
         group.sessions[0].active = true
@@ -157,14 +161,11 @@ function setActiveGroup(groups: Group[], groupId: string): Group[] {
 }
 
 function renameGroup(groups: Group[], groupId: string, name: string): Group[] {
-
   const newGroups = groups.map(group => {
     if (group.id !== groupId) {
-  
       return group
     } else {
-      
-      return {...group, name: name}
+      return { ...group, name: name }
     }
   })
   return newGroups
@@ -210,15 +211,18 @@ function setActiveSession(groups: Group[], sessionId: string): Group[] {
   return newGroups
 }
 
-function updateSessionName(groups: Group[], sessionId: string, sessionName: string): Group[] {
- 
+function updateSessionName(
+  groups: Group[],
+  sessionId: string,
+  sessionName: string,
+): Group[] {
   const newGroups = groups.map(group => {
     if (group.active) {
       group.sessions = group.sessions.map(session => {
-        if(session.id!== sessionId) {
+        if (session.id !== sessionId) {
           return session
         } else {
-          return {...session, name: sessionName}
+          return { ...session, name: sessionName }
         }
       })
     }
@@ -227,10 +231,6 @@ function updateSessionName(groups: Group[], sessionId: string, sessionName: stri
 
   return newGroups
 }
-
-
-
-
 
 function removeSession(groups: Group[], sessionId: string): Group[] {
   const updatedGroups = groups.map(group => {
@@ -282,7 +282,6 @@ function actionsReducer(groups: Group[], action: SessionAction): Group[] {
       return renameGroup(groups, action.payload.id, action.payload.name)
     }
 
-
     case Types.RemoveGroup: {
       return removeGroup(groups, action.payload.id)
     }
@@ -299,7 +298,11 @@ function actionsReducer(groups: Group[], action: SessionAction): Group[] {
     }
 
     case Types.UpdateSessionName: {
-      return updateSessionName(groups, action.payload.sessionId, action.payload.sessionName)
+      return updateSessionName(
+        groups,
+        action.payload.sessionId,
+        action.payload.sessionName,
+      )
     }
 
     case Types.RemoveSession: {
