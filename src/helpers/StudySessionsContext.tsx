@@ -33,7 +33,8 @@ type ActionPayload = {
     groups: Group[]
   }
   [Types.AddGroup]: {
-    isMakeActive: boolean
+    isMakeActive: boolean,
+    group?: Group 
   }
   [Types.RemoveGroup]: {
     id: string
@@ -109,7 +110,7 @@ const StudySessionsDispatchContext = React.createContext<Dispatch | undefined>(
   undefined,
 )
 
-function addGroup(groups: Group[], isMakeActive: boolean): Group[] {
+function addGroup(groups: Group[], isMakeActive: boolean, group?: Group): Group[] {
 
   const newId = getRandomId()
   let newGroups = [
@@ -117,8 +118,8 @@ function addGroup(groups: Group[], isMakeActive: boolean): Group[] {
     {
       id: newId,
       active: false,
-      name: `Group ${groups.length + 1}`,
-      sessions: [],
+      name: group? `${group.name} copy`: `New Group`,
+      sessions: group? [...group.sessions] : [],
     } as Group,
   ]
   if (isMakeActive) {
@@ -271,7 +272,7 @@ function actionsReducer(groups: Group[], action: SessionAction): Group[] {
       return action.payload.groups
     }
     case Types.AddGroup: {
-      return addGroup(groups, action.payload.isMakeActive)
+      return addGroup(groups, action.payload.isMakeActive, action.payload.group)
     }
     case Types.SetActiveGroup: {
       return setActiveGroup(groups, action.payload.id)

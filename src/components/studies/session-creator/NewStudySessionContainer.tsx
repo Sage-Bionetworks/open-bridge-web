@@ -7,20 +7,31 @@ import {
   Button,
   InputLabel,
   MenuItem,
-  Select,
+  Select,FormControl
 } from '@material-ui/core'
 
-import {StudySession } from '../../../types/types'
+import { StudySession } from '../../../types/types'
 
-
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme=> ({
   root: {
     padding: '12px',
     border: '1px solid #C4C4C4',
     width: '265px',
     marginRight: '26px',
   },
-})
+  label: {
+    fontSize:18,
+    textTransform: 'uppercase'
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+    whiteSpace: 'nowrap'
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}))
 
 type NewStudySessionContainerProps = {
   onAddSession: Function
@@ -33,11 +44,9 @@ const NewStudySessionContainer: FunctionComponent<NewStudySessionContainerProps>
 }: NewStudySessionContainerProps) => {
   const classes = useStyles()
 
-
-
   const copySession = (event: React.ChangeEvent<{ value: unknown }>) => {
     const sessionId = event.target.value as string
-    
+
     console.log('sessionId:', sessionId)
     const assessments =
       sessions.find(session => session.id === sessionId)?.assessments || []
@@ -51,24 +60,26 @@ const NewStudySessionContainer: FunctionComponent<NewStudySessionContainerProps>
         + Create new session
       </Button>
 
-      <InputLabel id="demo-simple-select-label">
-        {' '}
-        + Duplicate session
-      </InputLabel>
-      <Select
-        labelId="demo-simple-select-label"
-        id="demo-simple-select"
-        onChange={copySession}
-      >
-        <MenuItem value="" disabled>
-          + Duplicate Session
-        </MenuItem>
-        {sessions.map(session => (
+      <FormControl className={classes.formControl}>
+        <Select
+          value={''}
+          onChange={copySession}
+          displayEmpty
+          className={classes.selectEmpty}
+          inputProps={{ 'aria-label': 'Without label' }}
+        >
+          <MenuItem value="" disabled>
+           + DUPLICATE SESSION
+          </MenuItem>
+          {sessions.map(session => (
           <MenuItem value={session.id} key={session.id}>
             {session.name}
           </MenuItem>
         ))}
-      </Select>
+        </Select>
+
+      </FormControl>
+
     </Box>
   )
 }
