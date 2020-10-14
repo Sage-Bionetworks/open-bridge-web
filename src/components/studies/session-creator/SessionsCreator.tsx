@@ -1,12 +1,12 @@
 import React, {
   FunctionComponent,
   useState,
-  useReducer,
-  useEffect,
+
 } from 'react'
 
 import {
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -16,27 +16,21 @@ import {
 import {
   Assessment,
   Group,
-  RequestStatus,
   StudySession,
 } from '../../../types/types'
 
 import GroupsEditor from './GoupsEditor'
-import { RouteComponentProps, useParams } from 'react-router-dom'
+
 
 import AssessmentSelector from './AssessmentSelector'
 
-import {
-  Types,
-  actionsReducer,
-  defaultGroup,
-} from '../../../helpers/StudySessionsContext'
+import actionsReducer, { Types, SessionAction } from './sessionActions'
 import StudyService from '../../../services/study.service'
 import TabPanel from '../../widgets/TabPanel'
 import NewStudySessionContainer from './NewStudySessionContainer'
 import StudySessionContainer from './StudySessionContainer'
-import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
-import { useSessionDataState } from '../../../helpers/AuthContext'
-import LoadingComponent from '../../widgets/Loader'
+import { useErrorHandler } from 'react-error-boundary'
+import { useAsync } from '../../../helpers/AsyncHook'
 
 const useStyles = makeStyles({
   root: {},
@@ -46,115 +40,54 @@ const useStyles = makeStyles({
   },
   groupTab: {
     display: 'grid',
-    minHeight: '310px',
-    padding: '20px',
-    backgroundColor: '#E2E2E2',
     gridTemplateColumns: 'repeat( auto-fill, minmax(250px, 1fr) )',
     gridAutoRows: 'minMax(310px, auto)',
-    gridGap: '10px',
+    gridGap: '20px',
   },
 })
 
+type SessionsCreatorProps = {
+  studyGroups?: Group[]
+  id?: string
+}
 
-type SessionsCreatorOwnProps = {}
-
-type SessionsCreatorProps = SessionsCreatorOwnProps & RouteComponentProps
-
-const SessionsCreator: FunctionComponent<SessionsCreatorProps> = (...props) => {
-  //const groups = useStudySessionsState()
+const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
+  studyGroups,
+  id,
+}: SessionsCreatorProps) => {
+  const classes = useStyles()
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
     [],
   )
-  const [groups, groupsUpdateFn] = useReducer(actionsReducer, [defaultGroup])
-
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
-  let { id } = useParams<{ id: string }>()
-  const [reqStatus, setRequestStatus] = React.useState<RequestStatus>('PENDING')
+
+  const groupsUpdateFn = (action: SessionAction) => {
+    setData(actionsReducer(groups!, action))
+  }
+
+  const { data: groups, status, error, run, setData } = useAsync<Group[]>({
+    status: id ? 'PENDING' : 'IDLE',
+    data: studyGroups || [],
+  })
+
   const handleError = useErrorHandler()
 
-  useEffect(() => {
-    let isSubscribed = true
-
-    StudyService.getStudy(id).then(
-      study => {
-        if (isSubscribed && study) {
-          groupsUpdateFn({
-            type: Types.SetGroups,
-            payload: { groups: study.groups },
-          })
-          setRequestStatus('RESOLVED')
-        }
-      },
-      e => handleError(e),
-    )
-
-    return () => {
-      isSubscribed = false
+  React.useEffect(() => {
+    if (!id) {
+      return
     }
-  }, [id])
+    return run(StudyService.getStudy(id).then(study => {
+     /* if (!study) {
+        throw new Error("what are you thinking?")
+      }*/
+      return study!.groups}))
+  }, [id, run])
 
-  const classes = useStyles()
-  //const groupsUpdateFn = useStudySessionsDispatch()
-
-  const copyGroup = () => {
-    groupsUpdateFn({
-      type: Types.AddGroup,
-      payload: { group: groups[groups.length - 1], isMakeActive: false },
-    })
+  if (status === 'REJECTED') {
+    handleError(error!)
+  } else if (status === 'PENDING') {
+    return <>...loading</>
   }
-
-  const addGroup = () => {
-    groupsUpdateFn({
-      type: Types.AddGroup,
-      payload: { isMakeActive: false },
-    })
-  }
-
-  const setActiveGroup = (id: string) => {
-    groupsUpdateFn({
-      type: Types.SetActiveGroup,
-      payload: { id },
-    })
-  }
-
-  const renameGroup = (id: string, name: string) => {
-    console.log('RENAMING')
-    groupsUpdateFn({
-      type: Types.RenameGroup,
-      payload: { id, name },
-    })
-  }
-
-  const removeGroup = (id: string) => {
-    groupsUpdateFn({
-      type: Types.RemoveGroup,
-      payload: { id },
-    })
-  }
-
-  const addSession = (sessions: StudySession[], assessments: Assessment[]) => {
-    groupsUpdateFn({
-      type: Types.AddSession,
-      payload: {
-        name: 'Session' + sessions.length.toString(),
-        assessments,
-
-        active: true,
-      },
-    })
-  }
-
-  const removeSession = (sessionId: string) =>
-    groupsUpdateFn({ type: Types.RemoveSession, payload: { sessionId } })
-
-  const setActiveSession = (sessionId: string) =>
-    groupsUpdateFn({ type: Types.SetActiveSession, payload: { sessionId } })
-
-  const updateSessionName = (sessionId: string, sessionName: string) =>
-    groupsUpdateFn({
-      type: Types.UpdateSessionName,
-      payload: { sessionId, sessionName },
-    })
 
   const updateAssessmentList = (sessionId: string, assessments: Assessment[]) =>
     groupsUpdateFn({
@@ -182,83 +115,140 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = (...props) => {
     return { group, session }
   }
 
-  /*if (reqStatus === 'PENDING') {
-    return <>'...loading'</>
-  }*/
+  if (groups) {
+    return (
+      <div>
+        <GroupsEditor
+          groups={groups}
+          onAddGroup={() =>
+            groupsUpdateFn({
+              type: Types.AddGroup,
+              payload: { isMakeActive: false },
+            })
+          }
+          onRemoveGroup={(id: string) => {
+            groupsUpdateFn({
+              type: Types.RemoveGroup,
+              payload: { id },
+            })
+          }}
+          onSetActiveGroup={(id: string) => {
+            groupsUpdateFn({
+              type: Types.SetActiveGroup,
+              payload: { id },
+            })
+          }}
+          onRenameGroup={(id: string, name: string) => {
+            groupsUpdateFn({
+              type: Types.RenameGroup,
+              payload: { id, name },
+            })
+          }}
+          onCopyGroup={() =>
+            groupsUpdateFn({
+              type: Types.AddGroup,
+              payload: {
+                group: groups[groups!.length - 1],
+                isMakeActive: false,
+              },
+            })
+          }
+        >
+          {groups.map((group, index) => (
+            <TabPanel
+              value={groups.findIndex(group => group.active)}
+              index={index}
+              key={group.id}
+            >
+              <div className={classes.groupTab}>
+                {group.sessions.map(session => (
+                  <StudySessionContainer
+                    key={session.id}
+                    studySession={session}
+                    onShowAssessments={() => setIsAssessmentDialogOpen(true)}
+                    onSetActiveSession={(sessionId: string) =>
+                      groupsUpdateFn({
+                        type: Types.SetActiveSession,
+                        payload: { sessionId },
+                      })
+                    }
+                    onRemoveSession={(sessionId: string) =>
+                      groupsUpdateFn({
+                        type: Types.RemoveSession,
+                        payload: { sessionId },
+                      })
+                    }
+                    onUpdateSessionName={(
+                      sessionId: string,
+                      sessionName: string,
+                    ) =>
+                      groupsUpdateFn({
+                        type: Types.UpdateSessionName,
+                        payload: { sessionId, sessionName },
+                      })
+                    }
+                    onUpdateAssessmentList={updateAssessmentList}
+                  ></StudySessionContainer>
+                ))}
 
-
-
-  return (
-    <LoadingComponent reqStatusLoading= {reqStatus} >
-      <GroupsEditor
-        groups={groups}
-        onAddGroup={addGroup}
-        onRemoveGroup={removeGroup}
-        onSetActiveGroup={setActiveGroup}
-        onRenameGroup={renameGroup}
-        onCopyGroup={copyGroup}
-      >
-        {groups.map((group, index) => (
-          <TabPanel
-            value={groups.findIndex(group => group.active)}
-            index={index}
-            key={group.id}
-          >
-            <div className={classes.groupTab}>
-              {group.sessions.map(session => (
-                <StudySessionContainer
-                  key={session.id}
-                  studySession={session}
-                  onShowAssessments={() => setIsAssessmentDialogOpen(true)}
-                  onSetActiveSession={setActiveSession}
-                  onRemoveSession={removeSession}
-                  onUpdateSessionName={updateSessionName}
-                  onUpdateAssessmentList={updateAssessmentList}
-                ></StudySessionContainer>
-              ))}
-
-              <NewStudySessionContainer
-                key={'new_session'}
-                sessions={group.sessions}
-                onAddSession={addSession}
-              ></NewStudySessionContainer>
-            </div>
-          </TabPanel>
-        ))}
-      </GroupsEditor>
-      <Dialog
-        open={isAssessmentDialogOpen}
-        onClose={() => setIsAssessmentDialogOpen(false)}
-        aria-labelledby="form-dialog-title"
-      >
-        <DialogContent>
-          <AssessmentSelector
-            selectedAssessments={selectedAssessments}
-            onUpdateAssessments={setSelectedAssessments}
-            active={getActiveGroupAndSession(groups)}
-          ></AssessmentSelector>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            variant="contained"
-            onClick={() => {
-              updateAssessments(getActiveGroupAndSession(groups)!.session!.id, [
-                ...getActiveGroupAndSession(groups)!.session!.assessments,
-                ...selectedAssessments,
-              ])
-              setSelectedAssessments([])
-            }}
-          >
-            {!getActiveGroupAndSession(groups).session
-              ? 'Please select group and session'
-              : `Add Selected to ${
-                  getActiveGroupAndSession(groups)?.group?.name
-                } ${getActiveGroupAndSession(groups)?.session?.name} `}
-          </Button>
-        </DialogActions>
-      </Dialog>
-      </LoadingComponent>
-  )
+                <NewStudySessionContainer
+                  key={'new_session'}
+                  sessions={group.sessions}
+                  onAddSession={(
+                    sessions: StudySession[],
+                    assessments: Assessment[],
+                  ) =>
+                    groupsUpdateFn({
+                      type: Types.AddSession,
+                      payload: {
+                        name: 'Session' + sessions.length.toString(),
+                        assessments,
+                        active: true,
+                      },
+                    })
+                  }
+                ></NewStudySessionContainer>
+              </div>
+            </TabPanel>
+          ))}
+        </GroupsEditor>
+        <Dialog
+          open={isAssessmentDialogOpen}
+          onClose={() => setIsAssessmentDialogOpen(false)}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogContent>
+            <AssessmentSelector
+              selectedAssessments={selectedAssessments}
+              onUpdateAssessments={setSelectedAssessments}
+              active={getActiveGroupAndSession(groups)}
+            ></AssessmentSelector>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="contained"
+              onClick={() => {
+                updateAssessments(
+                  getActiveGroupAndSession(groups)!.session!.id,
+                  [
+                    ...getActiveGroupAndSession(groups)!.session!.assessments,
+                    ...selectedAssessments,
+                  ],
+                )
+                setSelectedAssessments([])
+              }}
+            >
+              {!getActiveGroupAndSession(groups).session
+                ? 'Please select group and session'
+                : `Add Selected to ${
+                    getActiveGroupAndSession(groups)?.group?.name
+                  } ${getActiveGroupAndSession(groups)?.session?.name} `}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    )
+  } else return <>should not happen</>
 }
 
 export default SessionsCreator

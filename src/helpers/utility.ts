@@ -1,18 +1,15 @@
 import {
   Response,
- // SignInData,
-  LoggedInUserData,
-  //SignInDataEmail,
-
- // LoginType,
+  
   StringDictionary,
-
+ 
 } from '../types/types'
 
 import CONSTANTS from '../types/constants'
 
-import { useState } from 'react'
+import { Reducer, useState } from 'react'
 import { SessionData } from '../types/types'
+import React from 'react'
 
 function makeRequest(
   method: 'POST' | 'GET' = 'POST',
@@ -86,7 +83,7 @@ export const callEndpoint = async <T>(
 ): Promise<Response<T>> => {
   const ls = window.localStorage
   const isE2E = ls.getItem('crc_e2e')
-  let url =  `${CONSTANTS.constants.ENDPOINT}${endpoint}`
+  let url = `${CONSTANTS.constants.ENDPOINT}${endpoint}`
   if (isE2E) {
     return callEndpointXHR(url, method, data, token)
   }
@@ -140,7 +137,6 @@ export const setSession = (data: SessionData) => {
   sessionStorage.setItem(CONSTANTS.constants.SESSION_NAME, JSON.stringify(data))
 }
 
-
 export const getSearchParams = (search: string): { [key: string]: string } => {
   const searchParamsProps: any = {}
   // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams -- needs polyfill for ie11
@@ -188,9 +184,9 @@ export const useSessionStorage = (
   return [storedValue, setValue]
 }
 
-
-export const getRandomId=(): string => {
-  const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0];
-  console.log('newId', uint32.toString(16) )
-  return uint32.toString(16);
+export const getRandomId = (): string => {
+  const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0]
+  console.log('newId', uint32.toString(16))
+  return uint32.toString(16)
 }
+
