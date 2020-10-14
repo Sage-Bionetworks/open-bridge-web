@@ -77,9 +77,9 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
       return
     }
     return run(StudyService.getStudy(id).then(study => {
-     /* if (!study) {
+      if (!study) {
         throw new Error("what are you thinking?")
-      }*/
+      }
       return study!.groups}))
   }, [id, run])
 

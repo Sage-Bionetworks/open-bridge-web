@@ -16,12 +16,13 @@ import { JsxElement } from 'typescript'
 import Scheduler from './scheduler/Scheduler'
 import SessionsCreator from './session-creator/SessionsCreator'
 import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
-import { ErrorFallback, ErrorHandler } from '../../helpers/ErrorHandler'
+import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
+import LoadingComponent from '../widgets/Loader'
 import { SECTIONS as sectionLinks, StudySection } from './sections'
 import LeftNav from './LeftNav'
 import { useAsync } from '../../helpers/AsyncHook'
 import StudyService from '../../services/study.service'
-import LoadingComponent from '../widgets/Loader'
+
 import SessionsCreatorNew from './session-creator/SessionsCreatorNew'
 import SessionsCreatorOld from './session-creator/SessionsCreatorOld'
 
@@ -78,19 +79,24 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
     section: StudySection
     study: Study
   }): JSX.Element => {
-    {/*<>
+    {
+      /*<>
           <SessionsCreatorOld studyGroups={study.groups || []} id={id}></SessionsCreatorOld>
           -------------------------------<br/>
           -------------------------------new--------------------<br/>
           <SessionsCreatorNew studyGroups={study.groups || []} id={id}></SessionsCreatorNew>
-        </>*/}
+        </>*/
+    }
 
     switch (section) {
       case 'scheduler':
         return <Scheduler {...props}></Scheduler>
       case 'session-creator':
         return (
-        <SessionsCreator studyGroups={/*study.groups || []*/undefined} id={study.id/*undefined*/}></SessionsCreator>
+          <SessionsCreator
+            studyGroups={study.groups || [] /*undefined*/}
+            id={/*study.id*/ undefined}
+          ></SessionsCreator>
         )
       default:
         return <></>
@@ -142,7 +148,10 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
       </Grid>
       <Grid item xs={9} sm={10}>
         <div>
-          Stage here{id} {section}
+          <h2>
+            Some Information that we want to see before everything is loaded{' '}
+            {id} {section}{' '}
+          </h2>
           <ErrorBoundary
             FallbackComponent={ErrorFallback}
             onError={ErrorHandler}
