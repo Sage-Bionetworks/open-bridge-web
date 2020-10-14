@@ -20,7 +20,7 @@ import {
   useSessionDataState,
 } from './helpers/AuthContext'
 import { SessionData } from './types/types'
-import { ErrorFallback, ErrorHandler } from './helpers/ErrorHandler'
+import { ErrorFallback, ErrorHandler } from './components/widgets/ErrorHandler'
 import { ErrorBoundary } from 'react-error-boundary'
 
 const defaultTheme = createMuiTheme()
