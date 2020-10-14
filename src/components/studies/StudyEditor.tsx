@@ -19,7 +19,7 @@ import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
 import { ErrorFallback, ErrorHandler } from '../../helpers/ErrorHandler'
 import { SECTIONS as sectionLinks, StudySection } from './sections'
 import LeftNav from './LeftNav'
-import { useAsync } from '../../helpers/utility'
+import { useAsync } from '../../helpers/AsyncHook'
 import StudyService from '../../services/study.service'
 import LoadingComponent from '../widgets/Loader'
 import SessionsCreatorNew from './session-creator/SessionsCreatorNew'
@@ -90,7 +90,7 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
         return <Scheduler {...props}></Scheduler>
       case 'session-creator':
         return (
-        <SessionsCreator studyGroups={study.groups || []}></SessionsCreator>
+        <SessionsCreator studyGroups={/*study.groups || []*/undefined} id={study.id/*undefined*/}></SessionsCreator>
         )
       default:
         return <></>

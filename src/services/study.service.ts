@@ -18,7 +18,7 @@ async function getStudy(id: string): Promise<Study|undefined> {
     const result = Studies.data.find(study=> study.id===id)
  
     return new Promise(resolve =>
-        setTimeout(resolve.bind(null, result), 2000)
+        setTimeout(resolve.bind(null, result), 1000)
     );
     /*return new Promise((resolve, reject) =>
     setTimeout(() => reject(new Error("Some Error Just happened")), 1000)

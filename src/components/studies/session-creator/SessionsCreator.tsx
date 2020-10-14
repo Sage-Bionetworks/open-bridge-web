@@ -1,12 +1,12 @@
 import React, {
   FunctionComponent,
   useState,
-  useReducer,
-  useEffect,
+
 } from 'react'
 
 import {
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -16,27 +16,21 @@ import {
 import {
   Assessment,
   Group,
-  RequestStatus,
   StudySession,
 } from '../../../types/types'
 
 import GroupsEditor from './GoupsEditor'
-import { RouteComponentProps, useParams } from 'react-router-dom'
+
 
 import AssessmentSelector from './AssessmentSelector'
 
-import {
-  Types,
-  actionsReducer,
-  defaultGroup,
-} from '../../../helpers/StudySessionsContext'
+import actionsReducer, { Types, SessionAction } from './sessionActions'
 import StudyService from '../../../services/study.service'
 import TabPanel from '../../widgets/TabPanel'
 import NewStudySessionContainer from './NewStudySessionContainer'
 import StudySessionContainer from './StudySessionContainer'
-import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
-import { useSessionDataState } from '../../../helpers/AuthContext'
-import LoadingComponent from '../../widgets/Loader'
+import { useErrorHandler } from 'react-error-boundary'
+import { useAsync } from '../../../helpers/AsyncHook'
 
 const useStyles = makeStyles({
   root: {},
@@ -52,28 +46,49 @@ const useStyles = makeStyles({
   },
 })
 
-
 type SessionsCreatorProps = {
-  studyGroups: Group[]
-
+  studyGroups?: Group[]
+  id?: string
 }
 
-
-
-const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({studyGroups}: SessionsCreatorProps) => {
-  //const groups = useStudySessionsState()
+const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
+  studyGroups,
+  id,
+}: SessionsCreatorProps) => {
+  const classes = useStyles()
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
     [],
   )
-  const [groups, groupsUpdateFn] = useReducer(actionsReducer, studyGroups)
-
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
 
+  const groupsUpdateFn = (action: SessionAction) => {
+    setData(actionsReducer(groups!, action))
+  }
 
-  const classes = useStyles()
-  //const groupsUpdateFn = useStudySessionsDispatch()
+  const { data: groups, status, error, run, setData } = useAsync<Group[]>({
+    status: id ? 'PENDING' : 'IDLE',
+    data: studyGroups || [],
+  })
 
- 
+  const handleError = useErrorHandler()
+
+  React.useEffect(() => {
+    if (!id) {
+      return
+    }
+    return run(StudyService.getStudy(id).then(study => {
+     /* if (!study) {
+        throw new Error("what are you thinking?")
+      }*/
+      return study!.groups}))
+  }, [id, run])
+
+  if (status === 'REJECTED') {
+    handleError(error!)
+  } else if (status === 'PENDING') {
+    return <>...loading</>
+  }
+
   const updateAssessmentList = (sessionId: string, assessments: Assessment[]) =>
     groupsUpdateFn({
       type: Types.UpdateAssessments,
@@ -100,12 +115,10 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({studyGroups}:
     return { group, session }
   }
 
-
-
-  return (
-<div>
-
-<GroupsEditor
+  if (groups) {
+    return (
+      <div>
+        <GroupsEditor
           groups={groups}
           onAddGroup={() =>
             groupsUpdateFn({
@@ -181,7 +194,10 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({studyGroups}:
                 <NewStudySessionContainer
                   key={'new_session'}
                   sessions={group.sessions}
-                  onAddSession={ (sessions: StudySession[], assessments: Assessment[]) => 
+                  onAddSession={(
+                    sessions: StudySession[],
+                    assessments: Assessment[],
+                  ) =>
                     groupsUpdateFn({
                       type: Types.AddSession,
                       payload: {
@@ -189,7 +205,8 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({studyGroups}:
                         assessments,
                         active: true,
                       },
-                    })}
+                    })
+                  }
                 ></NewStudySessionContainer>
               </div>
             </TabPanel>
@@ -207,28 +224,31 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({studyGroups}:
               active={getActiveGroupAndSession(groups)}
             ></AssessmentSelector>
           </DialogContent>
-        <DialogActions>
-          <Button
-            variant="contained"
-            onClick={() => {
-              updateAssessments(getActiveGroupAndSession(groups)!.session!.id, [
-                ...getActiveGroupAndSession(groups)!.session!.assessments,
-                ...selectedAssessments,
-              ])
-              setSelectedAssessments([])
-            }}
-          >
-            {!getActiveGroupAndSession(groups).session
-              ? 'Please select group and session'
-              : `Add Selected to ${
-                  getActiveGroupAndSession(groups)?.group?.name
-                } ${getActiveGroupAndSession(groups)?.session?.name} `}
-          </Button>
-        </DialogActions>
-      </Dialog>
+          <DialogActions>
+            <Button
+              variant="contained"
+              onClick={() => {
+                updateAssessments(
+                  getActiveGroupAndSession(groups)!.session!.id,
+                  [
+                    ...getActiveGroupAndSession(groups)!.session!.assessments,
+                    ...selectedAssessments,
+                  ],
+                )
+                setSelectedAssessments([])
+              }}
+            >
+              {!getActiveGroupAndSession(groups).session
+                ? 'Please select group and session'
+                : `Add Selected to ${
+                    getActiveGroupAndSession(groups)?.group?.name
+                  } ${getActiveGroupAndSession(groups)?.session?.name} `}
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
-      
-  )
+    )
+  } else return <>should not happen</>
 }
 
 export default SessionsCreator
