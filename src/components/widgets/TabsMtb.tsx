@@ -1,23 +1,15 @@
-import React, { FunctionComponent, SyntheticEvent, useRef, useState } from 'react'
+import React, { FunctionComponent, SyntheticEvent} from 'react'
 
 import {
   Tabs,
   Tab,
   makeStyles,
-  Button,
   Menu,
   MenuItem,
-  PopoverPosition,
   PopoverOrigin,
-  Popover,
-  TextField,
 } from '@material-ui/core'
 
 import DeleteIcon from '@material-ui/icons/Delete'
-
-import clsx from 'clsx'
-
-
 import EditableTextbox from './EditableTextbox'
 
 const useStyles = makeStyles({
@@ -77,7 +69,7 @@ const TabsMtb: FunctionComponent<TabProps> = ({
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null,
   )
-console.log('tabRerender: '+value)
+
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     if (newValue !== -10) {
       console.log('Tab change newValue Tabs', newValue)

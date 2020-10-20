@@ -1,15 +1,9 @@
-import {
-  Response,
-  
-  StringDictionary,
- 
-} from '../types/types'
+import { Response, StringDictionary } from '../types/types'
 
 import CONSTANTS from '../types/constants'
 
-import { Reducer, useState } from 'react'
+import { useState } from 'react'
 import { SessionData } from '../types/types'
-import React from 'react'
 
 function makeRequest(
   method: 'POST' | 'GET' = 'POST',
@@ -190,3 +184,5 @@ export const getRandomId = (): string => {
   return uint32.toString(16)
 }
 
+export const getEnumKeys = <T>(enum1: T): (keyof T)[] =>
+  Object.keys(enum1) as (keyof T)[]

@@ -9,6 +9,7 @@ type cssDict = {
 export type CssVariablesType = {
   shadowing:  any,
   testColor: string
+  activeBorder: string
 }
 
 export type ThemeType = Theme & CssVariablesType
@@ -17,7 +18,8 @@ const cssVariables = {
   shadowing: {
      boxShadow: "0 2px 5px -1px rgba(0, 0, 0, 0.3)",
   },
-  testColor: 'red'
+  testColor: 'red',
+  activeBorder: `1px solid #2196f3`,
 };
 
 
@@ -58,6 +60,13 @@ const theme: Theme = createMuiTheme({
   },
 
   palette: {
+    secondary: {
+      main: '#6e818a',
+    },
+
+    primary: {
+      main: '#2196f3',
+    },
     text: {
       secondary: '',
     },

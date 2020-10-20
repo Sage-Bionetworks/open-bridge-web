@@ -15,15 +15,16 @@ import AssessmentSmall from '../../assessments/AssessmentSmall'
 import DeleteIcon from '@material-ui/icons/Delete'
 
 import EditableTextbox from '../../widgets/EditableTextbox'
+import { ThemeType } from '../../../style/theme'
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: ThemeType)=> ({
   root: {
     padding: '12px',
     border: '1px solid #C4C4C4',
     width: '265px',
     marginRight: '26px',
     '&.active': {
-      border: '1px solid blue',
+      border: theme.activeBorder
     },
   },
   inner: {
@@ -39,7 +40,7 @@ const useStyles = makeStyles({
       boxShadow: '0px 5px 5px #0908f3;',
     },
   },
-})
+}))
 
 const rearrangeList = (
   list: any[],

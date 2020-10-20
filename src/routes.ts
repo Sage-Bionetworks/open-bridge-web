@@ -1,10 +1,9 @@
-import Template from './components/Template'
+
 import AssessmentLibrary from './components/assessments/AssessmentLibrary'
 import ComplianceDashboard from './components/compliance/ComplianceDashboard'
 import StudyManager from './components/studies/StudyManager'
 import ParticipantManager from './components/participants/ParticipantManager'
-import AccountLogin from './components/account/AccountLogin'
-import SessionsCreator from './components/studies/session-creator/SessionsCreator'
+
 
 import StudyEditor from './components/studies/StudyEditor'
 

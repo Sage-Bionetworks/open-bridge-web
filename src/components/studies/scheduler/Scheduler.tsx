@@ -7,18 +7,14 @@ import React, {
 import Link from '@material-ui/core/Link'
 import { RouteComponentProps, useParams } from 'react-router-dom'
 import StudyService from '../../../services/study.service'
-import { RequestStatus, Study } from '../../../types/types'
+import { RequestStatus } from '../../../types/types'
 import TabsMtb from '../../widgets/TabsMtb'
 import actionsReducer, { Types } from '../session-creator/sessionActions'
 import TabPanel from '../../widgets/TabPanel'
 import LoadingComponent from '../../widgets/Loader'
-import GroupsEditor from '../session-creator/GoupsEditor'
 import { useErrorHandler } from 'react-error-boundary'
-import StudySessionContainer from '../session-creator/StudySessionContainer'
 import SchedulableStudySessionContainer from './SchedulableStudySessionContainer'
-
-//import { StudySessionsProvider } from '../../helpers/StudySessionsContext'
-//import SessionsCreator from './session-creator/SessionsCreator'
+import ObjectDebug from '../../widgets/ObjectDebug'
 
 type SchedulerOwnProps = {
   title?: string
@@ -62,11 +58,13 @@ const Scheduler: FunctionComponent<SchedulerProps> = () => {
     return () => {
       isSubscribed = false
     }
-  }, [id])
+  }, [handleError, id])
 
   return (
     <>
       <div>Scheduler</div>
+      <ObjectDebug label="groups" data={groups}></ObjectDebug>
+
       <LoadingComponent reqStatusLoading={reqStatus}>
         <TabsMtb
           value={groupTabIndex}

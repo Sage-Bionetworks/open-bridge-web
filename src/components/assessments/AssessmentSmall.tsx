@@ -45,7 +45,8 @@ const useStyles = makeStyles({
 
 type AssessmentSmallOwnProps = {
   assessment: Assessment,
-  isDragging?: boolean
+  isDragging?: boolean,
+  isHideDuration?: boolean
 }
 
 type AssessmentSmallProps = AssessmentSmallOwnProps
@@ -53,7 +54,9 @@ type AssessmentSmallProps = AssessmentSmallOwnProps
 const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
   assessment,
   isDragging,
-  children
+  isHideDuration,
+  children,
+
 }) => {
   const classes = useStyles()
 
@@ -71,7 +74,7 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
         </CardContent>
       </Card>
      <div className={classes.actions}>
-      <div className={classes.duration}>{assessment.duration} (min)</div>
+     {!isHideDuration &&<div className={classes.duration}>{assessment.duration} (min)</div>}
       {children}
       </div>
     </div>

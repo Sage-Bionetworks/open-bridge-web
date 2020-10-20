@@ -1,16 +1,11 @@
-import React, { FunctionComponent, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { FunctionComponent} from 'react'
 
 import { makeStyles } from '@material-ui/core'
-import TabPanel from '../../widgets/TabPanel'
+
 import TabsMtb from '../../widgets/TabsMtb'
 
 import { Group } from '../../../types/types'
-import StudySessionContainer from './StudySessionContainer'
 
-import NewStudySessionContainer from './NewStudySessionContainer'
-
-import Button from '@material-ui/core/Button/Button'
-import { FormatListBulletedOutlined } from '@material-ui/icons'
 
 const useStyles = makeStyles({})
 
