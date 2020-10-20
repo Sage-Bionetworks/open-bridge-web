@@ -10,7 +10,7 @@ import clsx from 'clsx'
 import { Study } from '../../types/types'
 import { CssVariablesType } from '../../style/theme'
 
-const useStyles = makeStyles((theme: Theme & CssVariablesType) => ({
+const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
     width: '300px',
     border: '1px solid gray',

@@ -11,10 +11,9 @@ import {
   Typography,
   CssBaseline,
   createMuiTheme,
-  makeStyles,
   Container,
 } from '@material-ui/core'
-import { theme, globals, cssVariables } from './style/theme'
+import { theme, cssVariables } from './style/theme'
 import {
   useSessionDataDispatch,
   useSessionDataState,
@@ -35,7 +34,7 @@ const defaultTheme = createMuiTheme()
 
   palette: {
     text: {
-      secondary: 'red',
+      secondary: '#4caf50',
     },
   },
 })*/

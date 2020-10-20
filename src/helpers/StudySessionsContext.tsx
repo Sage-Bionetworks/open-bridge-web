@@ -1,7 +1,7 @@
-import { Remove } from '@material-ui/icons'
+
 import * as React from 'react'
-import { getRandomId } from './utility'
-import { Group, Assessment, StudySession } from '../types/types'
+
+import { Group} from '../types/types'
 import SessionCreatorActions, {
   DEFAULT_GROUP,
   SessionAction,

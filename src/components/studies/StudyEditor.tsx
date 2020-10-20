@@ -1,18 +1,11 @@
 import React, { FunctionComponent } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import Card from '@material-ui/core/Card'
 
-import CardContent from '@material-ui/core/CardContent'
-
-import Typography from '@material-ui/core/Typography'
-
-import clsx from 'clsx'
 import { Study } from '../../types/types'
-import { CssVariablesType, ThemeType } from '../../style/theme'
+import { ThemeType } from '../../style/theme'
 import { RouteComponentProps, useParams } from 'react-router-dom'
 
 import { Box, Button, Grid, Link } from '@material-ui/core'
-import { JsxElement } from 'typescript'
 import Scheduler from './scheduler/Scheduler'
 import SessionsCreator from './session-creator/SessionsCreator'
 import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
@@ -23,8 +16,6 @@ import LeftNav from './LeftNav'
 import { useAsync } from '../../helpers/AsyncHook'
 import StudyService from '../../services/study.service'
 
-import SessionsCreatorNew from './session-creator/SessionsCreatorNew'
-import SessionsCreatorOld from './session-creator/SessionsCreatorOld'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {

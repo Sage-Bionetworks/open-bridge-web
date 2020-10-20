@@ -18,7 +18,7 @@ import {
   Snackbar,
 } from '@material-ui/core'
 import Alert, { AlertProps } from '@material-ui/lab/Alert'
-import { Response, LoggedInUserData } from '../../types/types'
+
 import {
   useSessionDataState,
   useSessionDataDispatch,
@@ -208,14 +208,14 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({callbackFn}) => {
                 autoComplete="current-password"
               />
               <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
+                control={<Checkbox value="remember" />}
                 label="Remember me"
               />
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
-                color="primary"
+         
                 className={classes.submit}
               >
                 Sign In
