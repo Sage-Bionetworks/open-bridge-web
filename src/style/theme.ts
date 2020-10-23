@@ -60,6 +60,7 @@ const theme: Theme = createMuiTheme({
   },
 
   palette: {
+    divider: '#282828',
     secondary: {
       main: '#6e818a',
     },

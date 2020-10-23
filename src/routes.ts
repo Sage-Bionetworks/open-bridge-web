@@ -5,6 +5,7 @@ import ParticipantManager from './components/participants/ParticipantManager'
 
 import StudyEditor from './components/studies/StudyEditor'
 import AssessmentDetail from './components/assessments/AssessmentDetail'
+import SessionsLayout from './components/layouts/sessions'
 
 export default [
   {
@@ -39,9 +40,9 @@ export default [
     Component: AssessmentDetail,
     exact: true,
   },
-  /* {
-      path: "/pizza/:pizzaId/toppings",
-      name: "Pizza Toppings",
-      Component: Template
-    }*/
+{
+      path: "/sessionsLayout",
+      name: "SessionBuilderLayout",
+      Component: SessionsLayout
+    }
 ]
