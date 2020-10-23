@@ -1,0 +1,601 @@
+{
+  "data": [
+    {
+      "id": "5476c92a",
+      "name": "someStudy",
+      "description": "loremIpsum",
+      "groups": [
+        {
+          "id": "123",
+          "name": "Group1",
+          "active": false,
+          "sessions": [
+            {
+              "id": "123",
+              "name": "Baseline Survey",
+              "duration": 30,
+              "active": false,
+              "assessments": [
+                {
+                  "guid": "X5-W9S2flYzjI6tkr7AslYFZ",
+                  "identifier": "psm",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Picture Sequence Memory (PSM)",
+                  "summary": "Dragging the picture/item in the correct order of the sequence to assess episodic memory.",
+                  "osName": "iPhone OS",
+                  "validationStatus": "",
+                  "normingStatus": "",
+                  "tags": [
+                    "cognitive",
+                    "episodic-memory"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T20:38:05.956Z",
+                  "modifiedOn": "2020-10-05T20:38:05.956Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                },
+                {
+                  "guid": "7g-e13Km5yHrtjifvhtVN60-",
+                  "identifier": "number-match",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Number Match",
+                  "summary": "Fill in items, one row at a time, according to a code/legend on the top of the screen.",
+                  "osName": "iPhone OS",
+                  "validationStatus": "",
+                  "normingStatus": "",
+                  "tags": [
+                    "cognitive",
+                    "episodic-memory"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T20:34:41.421Z",
+                  "modifiedOn": "2020-10-05T20:34:41.421Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                }
+               
+              ]
+            },
+            {
+              "id": "a5f7bc44",
+              "assessments": [
+                [
+                  {
+                    "guid": "dokxPxeR-JjCZA370eGctQly",
+                    "identifier": "memory-for-sequences",
+                    "revision": 1,
+                    "ownerId": "sage-bionetworks",
+                    "title": "Memory for Sequences",
+                    "summary": "Recall an alphanumeric string and reorganize/cognitively manipulate it and produce a new output.",
+                    "osName": "iPhone OS",
+                    "validationStatus": "",
+                    "normingStatus": "",
+                    "tags": [
+                      "cognitive",
+                      "working-memory"
+                    ],
+                    "customizationFields": {},
+                    "createdOn": "2020-10-05T20:44:53.727Z",
+                    "modifiedOn": "2020-10-05T20:44:53.727Z",
+                    "deleted": false,
+                    "version": 1,
+                    "type": "Assessment"
+                  },
+                  {
+                    "guid": "DbSbKtRbbPpDS_Vb8ttzNNPA",
+                    "identifier": "dccs",
+                    "revision": 1,
+                    "ownerId": "sage-bionetworks",
+                    "title": "Dimensional Change Card Sort (DCCS)",
+                    "summary": "Tapping on one of the two pictures presented in response to either the SHAPE or COLOR prompt as fast as possible.",
+                    "osName": "iPhone OS",
+                    "validationStatus": "",
+                    "normingStatus": "",
+                    "tags": [
+                      "cognitive",
+                      "executive-function"
+                    ],
+                    "customizationFields": {},
+                    "createdOn": "2020-10-05T20:41:26.648Z",
+                    "modifiedOn": "2020-10-05T20:41:26.648Z",
+                    "deleted": false,
+                    "version": 1,
+                    "type": "Assessment"
+                  },
+                  {
+                    "guid": "X5-W9S2flYzjI6tkr7AslYFZ",
+                    "identifier": "psm",
+                    "revision": 1,
+                    "ownerId": "sage-bionetworks",
+                    "title": "Picture Sequence Memory (PSM)",
+                    "summary": "Dragging the picture/item in the correct order of the sequence to assess episodic memory.",
+                    "osName": "iPhone OS",
+                    "validationStatus": "",
+                    "normingStatus": "",
+                    "tags": [
+                      "cognitive",
+                      "episodic-memory"
+                    ],
+                    "customizationFields": {},
+                    "createdOn": "2020-10-05T20:38:05.956Z",
+                    "modifiedOn": "2020-10-05T20:38:05.956Z",
+                    "deleted": false,
+                    "version": 1,
+                    "type": "Assessment"
+                  },
+                  {
+                    "guid": "7g-e13Km5yHrtjifvhtVN60-",
+                    "identifier": "number-match",
+                    "revision": 1,
+                    "ownerId": "sage-bionetworks",
+                    "title": "Number Match",
+                    "summary": "Fill in items, one row at a time, according to a code/legend on the top of the screen.",
+                    "osName": "iPhone OS",
+                    "validationStatus": "",
+                    "normingStatus": "",
+                    "tags": [
+                      "cognitive",
+                      "episodic-memory"
+                    ],
+                    "customizationFields": {},
+                    "createdOn": "2020-10-05T20:34:41.421Z",
+                    "modifiedOn": "2020-10-05T20:34:41.421Z",
+                    "deleted": false,
+                    "version": 1,
+                    "type": "Assessment"
+                  }
+                 
+                ]
+
+              ],
+              "active": false,
+              "duration": 0,
+              "name": "Session1"
+            },
+            {
+              "id": "1b203526",
+              "assessments": [
+                {
+                  "guid": "xe8KsZ66UNozGdx8nQmV_54L",
+                  "identifier": "vocabulary",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Vocabulary",
+                  "summary": "Identify word synonyms.",
+                  "osName": "iPhone OS",
+                  "validationStatus": "",
+                  "normingStatus": "",
+                  "tags": [
+                    "cognitive",
+                    "language"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T20:30:55.803Z",
+                  "modifiedOn": "2020-10-05T20:30:55.803Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                },
+                {
+                  "guid": "cniY7sXfA9HOzfx-7WF3akWp",
+                  "identifier": "spelling",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Spelling",
+                  "summary": "Type spelling of orally presented English words.",
+                  "osName": "iPhone OS",
+                  "validationStatus": "",
+                  "normingStatus": "",
+                  "tags": [
+                    "cognitive",
+                    "language"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T20:26:05.866Z",
+                  "modifiedOn": "2020-10-05T20:26:05.866Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                },
+                {
+                  "guid": "tlgX9Xlr_NZ8LVfWx1RfhvLC",
+                  "identifier": "flanker",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Flanker",
+                  "summary": "Indicate the direction of a central arrow flanked by foils on each side presented in the same (congruent) and opposite (incongruent) orientations",
+                  "osName": "iPhone OS",
+                  "validationStatus": "To be validated in 2020 through the mobiletoolbox consortium",
+                  "normingStatus": "",
+                  "tags": [
+                    "cognitive",
+                    "executive-function",
+                    "inhibitory-control"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T20:21:44.603Z",
+                  "modifiedOn": "2020-10-05T21:00:42.172Z",
+                  "deleted": false,
+                  "version": 2,
+                  "type": "Assessment"
+                },
+                {
+                  "guid": "NpjoAByj83eqWH4mJxduH0Tr",
+                  "identifier": "fname",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Face Name Associative Memory Exam (FNAME)",
+                  "summary": "Participants see a series of facial photos and names and are asked to remember the face-name pairs.",
+                  "osName": "Universal",
+                  "validationStatus": "To be validated in 2020 through the mobiletoolbox consortium.",
+                  "normingStatus": "",
+                  "tags": [
+                    "associative-memory",
+                    "cognitive"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T20:15:05.353Z",
+                  "modifiedOn": "2020-10-05T20:15:05.353Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                },
+                {
+                  "guid": "h47dKmai4qOcm6rhV-FCr7NA",
+                  "identifier": "digital-jar-open",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Digital Jar Open",
+                  "summary": "The Digital Jar Open assessment measures the functional range of motion without pain for the joints of the arm (wrist, elbow, shoulder) on each arm while rotating inward and outward. Data collected from this assessment includes x,y,z accelerometer readings (at ~100Hz) and rotation rates from the gyroscope as well as the overall degrees of rotation in each direction for each arm.",
+                  "osName": "iPhone OS",
+                  "validationStatus": "A validation study is in progress in the context of psoriatic arthritis.",
+                  "normingStatus": "",
+                  "tags": [
+                    "interactive"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T20:11:20.397Z",
+                  "modifiedOn": "2020-10-05T20:11:20.397Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                }
+                
+              ],
+              "active": false,
+              "duration": 0,
+              "name": "Session2"
+            }
+          ]
+        },
+        {
+          "id": "de6ac6ec",
+          "active": false,
+          "name": "Group 2",
+          "sessions": [
+            {
+              "id": "5476c923",
+              "assessments": [
+                {
+                  "guid": "a6uyNlSfafjDapDKp_hGJ6j7",
+                  "identifier": "toe-imaging",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Toe Imaging",
+                  "summary": "The Toe Imaging assessment allows a participant to take a photo of the digits of each foot to assess symptoms related to joint swelling and nail dystrophy. Data collected include a jpeg image of each foot.",
+                  "osName": "iPhone OS",
+                  "validationStatus": "A validation study is in progress in the context of psoriatic disease.",
+                  "normingStatus": "",
+                  "tags": [
+                    "interactive"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T20:08:45.366Z",
+                  "modifiedOn": "2020-10-05T20:08:45.366Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                },
+                {
+                  "guid": "9PNNPeyG5Nu6Jp0DL12JugKp",
+                  "identifier": "finger-imaging",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Finger Imaging",
+                  "summary": "The Finger Imaging assessment allows a participant to take a photo of the digits of each hand to assess symptoms related to joint swelling and nail dystrophy. Data collected include a jpeg image of each hand.",
+                  "osName": "iPhone OS",
+                  "validationStatus": "A validation study is in progress in the context of psoriatic disease.",
+                  "normingStatus": "",
+                  "tags": [
+                    "interactive"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T20:05:47.302Z",
+                  "modifiedOn": "2020-10-05T20:05:47.302Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                },
+                {
+                  "guid": "tKxqn7NbtkaYrBgf5nFzvL-q",
+                  "identifier": "joint-counting",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Joint Counting",
+                  "summary": "The Joint Counting assessment allows a participant to select a given set of joints on the body for a binary yes/no as to whether each joint is affected. Data collected include the affected joints and a jpeg image summary.",
+                  "osName": "iPhone OS",
+                  "validationStatus": "A validation study is in progress in the context of psoriatic arthritis.",
+                  "normingStatus": "",
+                  "tags": [
+                    "interactive"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T20:02:20.018Z",
+                  "modifiedOn": "2020-10-05T20:02:20.018Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                },
+                {
+                  "guid": "7iNDDklQm2Bt4HNqB_0mmqRL",
+                  "identifier": "body-area-draw",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Body Area Draw",
+                  "summary": "The Body Area Draw assessment allows a participant to use the touch screen to draw the extent to which an area of the body is affected by a given symptom. Data collected include the calculated percentage of the body surface area and a jpeg image summary. ",
+                  "osName": "iPhone OS",
+                  "validationStatus": "A validation study is in progress in the context of psoriasis.",
+                  "normingStatus": "",
+                  "tags": [
+                    "interactive"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T19:59:21.318Z",
+                  "modifiedOn": "2020-10-05T19:59:21.318Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                },
+                {
+                  "guid": "kUr9oRdbPwra-PYBH9RMYR-b",
+                  "identifier": "body-area-imaging",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Body Area Imaging",
+                  "summary": "The Body Area Imaging assessment allows a participant to select an area of the body and use the phone camera to capture an image of this area. Data collected include the location of the body selected and a jpeg image.",
+                  "osName": "iPhone OS",
+                  "validationStatus": "A validation study is in progress in the context of psoriasis.",
+                  "normingStatus": "",
+                  "tags": [
+                    "interactive"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T19:56:24.606Z",
+                  "modifiedOn": "2020-10-05T19:56:24.606Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                },
+                {
+                  "guid": "u26VaX-cfQq203J31Bj30n9Y",
+                  "identifier": "phonation",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Phonation",
+                  "summary": "The Phonation assessment is an adaption of a clinical test where a participant makes an extended “ahhhhh” sound for 20 seconds.  Data collected from this assessment includes an audio recording.",
+                  "osName": "iPhone OS",
+                  "validationStatus": "Phonation has been used in multiple Parkinson’s Disease studies and has shown moderate association",
+                  "normingStatus": "",
+                  "tags": [
+                    "interactive"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T19:52:08.654Z",
+                  "modifiedOn": "2020-10-05T19:52:08.654Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                },
+                {
+                  "guid": "1PvBwzG0_SG4N9FWz7K0Y8b0",
+                  "identifier": "heart-rate",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Heart Rate",
+                  "summary": "The Heart Rate assessment measures the pulse of a participant using the smartphone camera and flash. The assessment monitors blood flow through the tip of the finger  over the course of 20 seconds and provides quality control warnings if a heart rate is not detected. Data collected from this assessment includes heart rate estimation, a running confidence score, and summarized video pixel intensities.",
+                  "osName": "iPhone OS",
+                  "validationStatus": "Validated in a 100-person cohort across all 6 Fitzpatrick skin types using 8 different phones (iOS and Android).",
+                  "normingStatus": "",
+                  "tags": [
+                    "interactive"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T19:48:06.784Z",
+                  "modifiedOn": "2020-10-05T19:48:06.784Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                }
+                
+              ],
+              "active": false,
+              "duration": 0,
+              "name": "Session0"
+            },
+            {
+              "id": "9100e27d",
+              "assessments": [
+                {
+                  "guid": "fwGES530zfTs8CDWN-dHkwBx",
+                  "identifier": "vo2-max",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "VO2Max",
+                  "summary": "The VO2max, or Heart Rate Recovery assessment is an adaption of the Tecumseh step test that measures VO2Max using the smartphone camera and flash. The assessment follows a protocol where participants step up and down at a fixed cadence for 3 minutes followed by monitoring of heart rate recovery for 60 seconds. Data collected from this assessment includes VO2max estimation, heart rate estimation, and summarized video pixel intensities.",
+                  "osName": "iPhone OS",
+                  "validationStatus": "Validated in a cohort of 120 individuals spanning ages 20-80 by comparing to direct measurement of O2 consumption using mask and exercise protocol.",
+                  "normingStatus": "",
+                  "tags": [
+                    "interactive"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T18:58:06.871Z",
+                  "modifiedOn": "2020-10-05T18:58:06.871Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                },
+                {
+                  "guid": "lnnVjYu95jazA_e4XhDH62T9",
+                  "identifier": "6-minute-walk",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "6-Minute Walk",
+                  "summary": "The 6-Minute Walk assessment is a direct translation of the 6 minute walk test that measures aerobic capacity and endurance over the course of a 6-minute walk with the phone in a participant’s pocket. Data collected from this assessment includes steps, distance traveled by GPS differentials, x,y,z accelerometer readings (at ~100Hz) and rotation rates from the gyroscope.",
+                  "osName": "iPhone OS",
+                  "validationStatus": "Not validated by Sage Bionetworks.",
+                  "normingStatus": "",
+                  "tags": [
+                    "interactive"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-10-05T18:44:22.862Z",
+                  "modifiedOn": "2020-10-05T18:44:22.862Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                }
+              
+              ],
+              "active": false,
+              "duration": 0,
+              "name": "Session1"
+            },
+            {
+              "id": "8c592e9b",
+              "assessments": [
+                {
+                  "guid": "4XZK5PB3daoO7OViZhuJNWJM",
+                  "identifier": "tremor",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Tremor",
+                  "summary": "The Tremor assessment is a multi-part activity measuring resting tremor, postural tremor, and kinetic tremor.  All activities are performed by each hand separately while holding the phone. Each activity takes 30 seconds per hand. Resting tremor is performed by the participant sitting in a chair while holding the phone in their lap.  Postural tremor is performed by holding the phone outstretched at shoulder level.  Kinetic tremor uses an adaptation of the finger to nose test where the participant moves the phone from outstretched to touching their nose repeatedly. Data collected from this assessment includes x,y,z accelerometer readings (at ~100Hz) and rotation rates from the gyroscope.",
+                  "osName": "iPhone OS",
+                  "validationStatus": "Validated against Parkinson’s Disease severity in 3 cohorts.  Publication in review.\n\nValidated against Quality of Life and Disability in Multiple Sclerosis.  Publication in preparation.",
+                  "normingStatus": "",
+                  "tags": [
+                    "interactive"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-09-29T19:53:43.690Z",
+                  "modifiedOn": "2020-09-29T19:53:43.690Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                }
+                
+              ],
+              "active": false,
+              "duration": 0,
+              "name": "Session2"
+            }
+          ]
+        },
+        {
+          "id": "691c9fcf",
+          "active": true,
+          "name": "Some Other People",
+          "sessions": [
+            {
+              "id": "d25b7ba9",
+              "assessments": [
+                {
+                  "id": "2",
+                  "img": "st2",
+                  "type": "string2",
+                  "title": "Dimensional Change Card Sort",
+                  "duration": "10",
+                  "description": " Assesses working memory or capacity to process information across a series of tasks and modalities",
+                  "validation": "false",
+                  "study_number": "10",
+                  "bookmarked": true
+                }
+              ],
+              "active": true,
+              "duration": 0,
+              "name": "Session0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5476c92c",
+      "name": "anotherStudy",
+      "description": "loremIpsum dolor",
+      "groups": [
+        {
+          "id": "123",
+          "name": "Group1",
+          "active": true,
+          "sessions": [
+            {
+              "id": "123",
+              "name": "Baseline Survey",
+              "duration": 30,
+              "active": false,
+              "assessments": [
+                {
+                  "guid": "_gL8nzfD4fYgrrHAL83qlWHK",
+                  "identifier": "finger-tapping",
+                  "revision": 2,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Finger Tapping",
+                  "summary": "The Finger Tapping assessment measures motor function and finger dexterity by having participants alternately tap 2 fingers on the touchscreen within defined target areas. Data collected from this assessment includes the timing and position of each screen touch, information on whether the buttons were touched, and motion data for QC purposes.",
+                  "osName": "Universal",
+                  "validationStatus": "Validated against Parkinson’s Disease severity in 3 cohorts. Publication in review.\n\nValidated against Quality of Life and Disability in Multiple Sclerosis. Publication in preparation.\n",
+                  "normingStatus": "I am entering information as to the norming status here.  To see a distribution of assessment outcomes as a function of age/sex, see the link here: www.google.com\n",
+                  "tags": [
+                    "interactive"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-09-29T19:04:00.969Z",
+                  "modifiedOn": "2020-09-29T19:04:57.572Z",
+                  "deleted": false,
+                  "version": 3,
+                  "type": "Assessment"
+                },
+                {
+                  "guid": "CDA1BpQRrOSJs7A02TAUffX_",
+                  "identifier": "walk-and-balance",
+                  "revision": 1,
+                  "ownerId": "sage-bionetworks",
+                  "title": "Walk and Balance",
+                  "summary": "The Walk and Balance assessment is a multi-part activity measuring gait disturbance and motor function similar to a number of traditional assessments: the 25 ft walk, gait analysis, and a stand test.  Walk and Balance consists of two sub-assessments: (1) the participant walks for 30 seconds with their phone in their pocket, and (2) the participant turns around 360o then stands still for 30 seconds. Data collected from this assessment includes x,y,z accelerometer readings (at ~100Hz) and rotation rates from the gyroscope.",
+                  "osName": "iPhone OS",
+                  "validationStatus": "Validated against Parkinson’s Disease severity in 3 cohorts.  Publication in review.\n\nValidated against Quality of Life and Disability in Multiple Sclerosis.  Publication in preparation.",
+                  "normingStatus": "",
+                  "tags": [
+                    "interactive"
+                  ],
+                  "customizationFields": {},
+                  "createdOn": "2020-09-29T18:56:05.578Z",
+                  "modifiedOn": "2020-09-29T18:56:05.578Z",
+                  "deleted": false,
+                  "version": 1,
+                  "type": "Assessment"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
