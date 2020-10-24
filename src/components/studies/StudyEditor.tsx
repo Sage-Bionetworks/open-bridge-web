@@ -66,9 +66,11 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
   const ServePage = ({
     section,
     study,
+    children
   }: {
     section: StudySection
     study: Study
+    children: React.ReactNode
   }): JSX.Element => {
     {
       /*<>
@@ -148,7 +150,9 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
             onError={ErrorHandler}
           >
             <LoadingComponent reqStatusLoading={status}>
-              <ServePage study={study!} section={section}></ServePage>
+              <ServePage study={study!} section={section}>
+             
+              </ServePage>
             </LoadingComponent>
           </ErrorBoundary>
           <NavLinks sections={sectionLinks} currentSection={section}></NavLinks>

@@ -90,14 +90,15 @@ function App() {
     <ThemeProvider theme={{ ...theme, ...cssVariables }}>
       <Typography component={'div'}>
         <CssBaseline />
-        <Container maxWidth="xl" style={{ height: '100vh' }}>
+        <Container maxWidth="xl" style={{ height: '100vh', padding: '0' }} >
+        <Router basename={process.env.PUBLIC_URL}>
           <Header title="Some Title" sections={routes} />
           <main>
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
               onError={ErrorHandler}
             >
-              <Router basename={process.env.PUBLIC_URL}>
+           
                 <Switch>
                   {routes.map(({ path, Component }, key) => (
                     <Route
@@ -108,9 +109,10 @@ function App() {
                     />
                   ))}
                 </Switch>
-              </Router>
+         
             </ErrorBoundary>
           </main>
+          </Router>
         </Container>
       </Typography>
     </ThemeProvider>

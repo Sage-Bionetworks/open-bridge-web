@@ -88,7 +88,7 @@ AssessmentSelectorProps) => {
     session: StudySession,
     assessmentId: string,
   ): boolean =>
-    session.assessments.find(item => item.id === assessmentId) !== undefined
+    session.assessments.find(item => item.guid === assessmentId) !== undefined
 
   const toggleAssessment = (
     event: React.MouseEvent<HTMLElement>,
@@ -106,13 +106,13 @@ AssessmentSelectorProps) => {
             value={selectedAssessments}
             onChange={toggleAssessment}
             aria-label={a.title}
-            key={a.id}
+            key={a.guid}
           >
             <ToggleButton
               aria-label="bold"
               value={a}
               disabled={
-                !active.session || isAssessmentInSession(active.session, a.id)
+                !active.session || isAssessmentInSession(active.session, a.guid)
               }
               classes={{
                 root: classes.ToggleA,
@@ -123,7 +123,7 @@ AssessmentSelectorProps) => {
               <AssessmentCard
                 index={index}
                 assessment={a}
-                key={a.id}
+                key={a.guid}
               ></AssessmentCard>
               <div className={classes.Overlay}>
                 <CheckCircleIcon

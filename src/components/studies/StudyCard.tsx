@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography'
 
 import clsx from 'clsx'
 import { Study } from '../../types/types'
-import { CssVariablesType } from '../../style/theme'
+import { ThemeType } from '../../style/theme'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {

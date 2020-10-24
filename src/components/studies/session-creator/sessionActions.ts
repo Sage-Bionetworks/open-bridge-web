@@ -81,16 +81,26 @@ export const DEFAULT_GROUP: Group = {
       active: true,
       assessments: [
         {
-          id: '0',
-          img: 'string1',
-          type: 'string1',
-          title: 'Memory for Sequences',
-          duration: '5',
-          description:
-            ' Assesses working memory or capacity to process information across a series of tasks and modalities',
-          validation: 'true',
-          study_number: '45',
-        },
+          "guid": "7g-e13Km5yHrtjifvhtVN60-",
+          "identifier": "number-match",
+          "revision": 1,
+          "ownerId": "sage-bionetworks",
+          "title": "Number Match",
+          "summary": "Fill in items, one row at a time, according to a code/legend on the top of the screen.",
+          "osName": "iPhone OS",
+          "validationStatus": "",
+          "normingStatus": "",
+          "tags": [
+            "cognitive",
+            "episodic-memory"
+          ],
+          "customizationFields": {},
+          "createdOn": "2020-10-05T20:34:41.421Z",
+          "modifiedOn": "2020-10-05T20:34:41.421Z",
+          "deleted": false,
+          "version": 1,
+          "type": "Assessment"
+        }
       ],
     },
   ],

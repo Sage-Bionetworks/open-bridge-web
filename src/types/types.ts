@@ -1,6 +1,5 @@
 /*  General Types ********************************/
 
-
 export interface StringDictionary {
   [key: string]: any
 }
@@ -11,11 +10,7 @@ export interface Response<T> {
   data: T
 }
 
-export type RequestStatus =
-  'IDLE'|
-  'PENDING' |
-  'RESOLVED'|
-  'REJECTED'
+export type RequestStatus = 'IDLE' | 'PENDING' | 'RESOLVED' | 'REJECTED'
 
 /*  User Types ********************************/
 
@@ -36,7 +31,6 @@ export interface LoggedInUserData extends UserData {
 
   id: string
 }
-
 
 /*
 export type EmailSigninParams = {
@@ -98,16 +92,63 @@ export type SessionData = {
 }
 
 /****************  */
-export type Assessment = {
-  id: string
-  img: string
-  type: string
+export type ResourceFormat = 'image/png'
+export type AssessmentCategory = 'screenshot'
+export type AssessmentResource = {
+  category: AssessmentCategory
+
+  deleted: boolean
+
+  format: ResourceFormat
+  guid: string
+  language: string
+  minRevision: 1
+  modifiedOn: string
   title: string
-  duration: string
-  description: string
-  validation: string
-  study_number: string
-  bookmarked?: boolean
+  upToDate: boolean
+  url: string
+  version: number
+  duration?: number
+
+  /*category: "screenshot"
+contributors: []
+createdAtRevision: 1
+createdOn: "2020-10-21T16:45:47.116Z"
+creators: ["Dan Webster"]
+date: "2020"
+deleted: false
+description: ""
+format: "image/png"
+guid: "UkTT0LrvkEHtQySDr6_6XUjy"
+language: "en"
+minRevision: 1
+modifiedOn: "2020-10-21T16:45:47.116Z"
+publishers: []
+title: "Landscape screenshot"
+type: "AssessmentResource"
+upToDate: true
+url: "https://docs.sagebridge.org/assessments/psoriasisDraw_2020_04_29.png"
+version: 0*/
+}
+export type Assessment = {
+  createdOn: string
+  customizationFields: object
+  deleted: boolean
+  guid: string
+  identifier: string
+  modifiedOn?: string
+  normingStatus: string
+  osName: string //iPhone OS"
+  ownerId: string //sage-bionetworks"
+  revision: number
+  summary: string
+  tags: string[]
+  title: string
+  type: string
+  version: number
+  validationStatus: string
+  duration?: number,
+  resources?: any[]
 }
 
 export type StudySession = {

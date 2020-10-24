@@ -96,7 +96,7 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   const removeAssessment = (assessmentId: string) => {
     onUpdateAssessmentList(
       studySession.id,
-      studySession.assessments.filter(a => a.id !== assessmentId),
+      studySession.assessments.filter(a => a.guid !== assessmentId),
     )
   }
 
@@ -134,9 +134,9 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
               >
                 {studySession.assessments.map((assessment, index) => (
                   <Draggable
-                    draggableId={assessment.id}
+                    draggableId={assessment.guid}
                     index={index}
-                    key={assessment.id}
+                    key={assessment.guid}
                   >
                     {(provided, snapshot) => (
                       <div
@@ -152,7 +152,7 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
                           <Button
                             variant="text"
                             style={{ padding: '0', minWidth: 'auto' }}
-                            onClick={() => removeAssessment(assessment.id)}
+                            onClick={() => removeAssessment(assessment.guid)}
                           >
                             <DeleteIcon></DeleteIcon>
                           </Button>
