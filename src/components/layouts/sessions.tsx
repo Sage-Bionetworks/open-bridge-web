@@ -9,7 +9,6 @@ import Drawer from '@material-ui/core/Drawer'
 
 import List from '@material-ui/core/List'
 
-
 import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 
@@ -25,24 +24,19 @@ const drawerWidth = 212
 
 const useStyles = makeStyles(theme => ({
   mainArea: {
-
     margin: '0 auto',
     minHeight: '100px',
     backgroundColor: '#cacacd',
-
   },
   mainAreaNormal: {
-    width: `${324 * 3 + 16 * 3}px`,
-
+    width: `${280 * 3 + 16 * 3}px`,
   },
   mainAreaWide: {
-
-    width: `${324 * 4 + 16 * 4}px`,
+    width: `${280 * 4 + 16 * 4}px`,
     [theme.breakpoints.down('md')]: {
-        width: `${324 * 3 + 16 * 3}px`,
-      },
+      width: `${280 * 3 + 16 * 3}px`,
+    },
   },
-
 
   drawerPaper: {
     position: 'static',
@@ -62,7 +56,7 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
   },
- 
+
   hide: {
     display: 'none',
   },
@@ -149,7 +143,12 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
         </div>
         <Divider />
         <List>
-          {['Study Protocol', 'Sessions Creator', 'Scheduler', 'Participant Groups'].map((text, index) => (
+          {[
+            'Study Protocol',
+            'Sessions Creator',
+            'Scheduler',
+            'Participant Groups',
+          ].map((text, index) => (
             <ListItem button key={text}>
               <ListItemIcon>
                 {index % 2 === 0 ? <SomeIcon /> : <SomeIcon />}
@@ -158,30 +157,27 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
             </ListItem>
           ))}
         </List>
-        <Box
- 
-          height="500px"
-          bgcolor="#cec8c8"
-          flexGrow="0"
-          flexShrink="0"
-        >
+        <Box height="500px" bgcolor="#cec8c8" flexGrow="0" flexShrink="0">
           lef nav
         </Box>
       </Drawer>
 
       <Box textAlign="center" flexGrow="1" bgcolor="#dde0de">
-        <Box className={clsx(classes.mainArea,  {
-          [classes.mainAreaNormal]: open,  [classes.mainAreaWide]: !open})} display="grid" padding="8px" 
-  
-      
-        gridTemplateColumns="repeat(auto-fill,324px)"
-     
-          gridColumnGap="16px" gridRowGap="16px">
+        <Box
+          className={clsx(classes.mainArea, {
+            [classes.mainAreaNormal]: open,
+            [classes.mainAreaWide]: !open,
+          })}
+          display="grid"
+          padding="8px"
+          gridTemplateColumns="repeat(auto-fill,280px)"
+          gridColumnGap="16px"
+          gridRowGap="16px"
+        >
           {cards.map(card => (
             <Box
-              width="324px"
+              width="280px"
               height="511px"
-           
               border="1px solid black"
               bgcolor="#d5e5ec"
             >
