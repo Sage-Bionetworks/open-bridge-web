@@ -3,9 +3,10 @@ import { makeStyles } from '@material-ui/core/styles'
 
 import { Study } from '../../types/types'
 import { ThemeType } from '../../style/theme'
-import { RouteComponentProps, useParams } from 'react-router-dom'
+import { Route, RouteComponentProps, useParams } from 'react-router-dom'
 
 import { Box, Button, Grid, Link } from '@material-ui/core'
+import { Switch, matchPath } from 'react-router-dom'
 import Scheduler from './scheduler/Scheduler'
 import SessionsCreator from './session-creator/SessionsCreator'
 import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
@@ -15,20 +16,23 @@ import { SECTIONS as sectionLinks, StudySection } from './sections'
 import LeftNav from './LeftNav'
 import { useAsync } from '../../helpers/AsyncHook'
 import StudyService from '../../services/study.service'
-
+import clsx from 'clsx'
+import { TurnedInNotOutlined } from '@material-ui/icons'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
-  root: {
-    width: '300px',
-    border: '1px solid gray',
+  mainArea: {
+    margin: '0 auto',
+    minHeight: '100px',
+    backgroundColor: '#cacacd',
   },
-
-  title: {
-    fontSize: 14,
-    color: theme.testColor,
+  mainAreaNormal: {
+    width: `${280 * 3 + 16 * 3}px`,
   },
-  pos: {
-    marginBottom: 12,
+  mainAreaWide: {
+    width: `${280 * 4 + 16 * 4}px`,
+    [theme.breakpoints.down('md')]: {
+      width: `${280 * 3 + 16 * 3}px`,
+    },
   },
 }))
 
@@ -45,6 +49,8 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
     status: id ? 'PENDING' : 'IDLE',
     data: null,
   })
+
+  const [open, setOpen] = React.useState(true)
 
   React.useEffect(() => {
     if (!id) {
@@ -63,37 +69,9 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
     }
   }
 
-  const ServePage = ({
-    section,
-    study,
-    children
-  }: {
-    section: StudySection
-    study: Study
-    children: React.ReactNode
-  }): JSX.Element => {
-    {
-      /*<>
-          <SessionsCreatorOld studyGroups={study.groups || []} id={id}></SessionsCreatorOld>
-          -------------------------------<br/>
-          -------------------------------new--------------------<br/>
-          <SessionsCreatorNew studyGroups={study.groups || []} id={id}></SessionsCreatorNew>
-        </>*/
-    }
-
-    switch (section) {
-      case 'scheduler':
-        return <Scheduler {...props}></Scheduler>
-      case 'session-creator':
-        return (
-          <SessionsCreator
-            studyGroups={study.groups || [] /*undefined*/}
-            id={/*study.id*/ undefined}
-          ></SessionsCreator>
-        )
-      default:
-        return <></>
-    }
+  const getStudySessions = (study: Study) => {
+    const sessions = study.groups.map(group => group.sessions).flat()
+    return sessions
   }
 
   const NavLinks = ({
@@ -135,12 +113,26 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
   }
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={3} sm={2}>
-        <LeftNav currentSection={section} id={id}></LeftNav>
-      </Grid>
-      <Grid item xs={9} sm={10}>
-        <div>
+    <Box
+      paddingTop="16px"
+      bgcolor="#997cbf29"
+      display="flex"
+      position="relative"
+    >
+      <LeftNav
+        open={open}
+        onToggle={() => setOpen(prev => !prev)}
+        currentSection={section}
+        id={id}
+      ></LeftNav>
+
+      <Box textAlign="center" flexGrow="1" bgcolor="#dde0de">
+        <Box
+          className={clsx(classes.mainArea, {
+            [classes.mainAreaNormal]: open,
+            [classes.mainAreaWide]: !open,
+          })}
+        >
           <h2>
             Some Information that we want to see before everything is loaded{' '}
             {id} {section}{' '}
@@ -150,15 +142,37 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
             onError={ErrorHandler}
           >
             <LoadingComponent reqStatusLoading={status}>
-              <ServePage study={study!} section={section}>
-             
-              </ServePage>
+              {study && (
+                <Switch>
+                  <Route
+                    path="/studies/builder/:id/scheduler"
+                    render={props => {
+                      return <Scheduler {...props}></Scheduler>
+                    }}
+                  />
+                  <Route
+                    path="/studies/builder/:id/session-creator"
+                    render={props => {
+                      return (
+                        <SessionsCreator
+                          {...props}
+                          studySessions={getStudySessions(study)}
+                        />
+                      )
+                    }}
+                  />
+                </Switch>
+              )}
+
+              <NavLinks
+                sections={sectionLinks}
+                currentSection={section}
+              ></NavLinks>
             </LoadingComponent>
           </ErrorBoundary>
-          <NavLinks sections={sectionLinks} currentSection={section}></NavLinks>
-        </div>
-      </Grid>
-    </Grid>
+        </Box>
+      </Box>
+    </Box>
   )
 }
 

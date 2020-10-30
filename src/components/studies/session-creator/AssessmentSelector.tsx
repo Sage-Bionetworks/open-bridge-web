@@ -55,29 +55,27 @@ const useStyles = makeStyles({
 })
 
 type AssessmentSelectorProps = {
-  active: {group: Group, session: StudySession | undefined}
-
+  //active: {group: Group, session: StudySession | undefined}
+  activeSession: StudySession | undefined
   onUpdateAssessments: Function
   selectedAssessments: Assessment[]
 }
 
 const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
-  active,
+  activeSession,
   selectedAssessments,
-  onUpdateAssessments
-}:
-AssessmentSelectorProps) => {
+  onUpdateAssessments,
+}: AssessmentSelectorProps) => {
   const assessments = useAssessments()
   const [assessmentTabIndex, setAssessmentTabIndex] = useState(0)
   /*const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
     [],
   )*/
-/*  const [activeSession, setActiveSession] = useState<StudySession | undefined>(
+  /*  const [activeSession, setActiveSession] = useState<StudySession | undefined>(
     undefined,
   )*/
 
-
- /* useEffect(() => {
+  /* useEffect(() => {
     console.log('effect')
     setActiveSession(activeGroup.sessions.find(session => session.active))
   }, [activeGroup.sessions])*/
@@ -95,7 +93,7 @@ AssessmentSelectorProps) => {
     selectedAssessments: Assessment[],
   ) => {
     onUpdateAssessments(selectedAssessments)
-   // setSelectedAssessments(selectedAssessments)
+    // setSelectedAssessments(selectedAssessments)
   }
 
   const renderAssessmentTab = (assessments: Assessment[]): JSX.Element => {
@@ -112,7 +110,7 @@ AssessmentSelectorProps) => {
               aria-label="bold"
               value={a}
               disabled={
-                !active.session || isAssessmentInSession(active.session, a.guid)
+                !activeSession || isAssessmentInSession(activeSession, a.guid)
               }
               classes={{
                 root: classes.ToggleA,
@@ -141,7 +139,7 @@ AssessmentSelectorProps) => {
   return (
     <div>
       <div className="assessmentTabs">
-      {/*  <TabsMtb
+        {/*  <TabsMtb
           value={assessmentTabIndex}
           handleChange={(val: number) => setAssessmentTabIndex(val)}
           tabDataObjects={[{label:'Bookmarked Assessment'}, {label: 'Assessment Library'}]}
@@ -152,9 +150,8 @@ AssessmentSelectorProps) => {
         </TabPanel>
 
       <TabPanel value={assessmentTabIndex} index={1} key={'asmnt'}>*/}
-          {renderAssessmentTab(assessments)}
-      
-     </div>
+        {renderAssessmentTab(assessments)}
+      </div>
     </div>
   )
 }

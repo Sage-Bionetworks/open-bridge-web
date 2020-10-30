@@ -17,14 +17,14 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import EditableTextbox from '../../widgets/EditableTextbox'
 import { ThemeType } from '../../../style/theme'
 
-const useStyles = makeStyles((theme: ThemeType)=> ({
+const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
     padding: '12px',
     border: '1px solid #C4C4C4',
     width: '265px',
     marginRight: '26px',
     '&.active': {
-      border: theme.activeBorder
+      border: theme.activeBorder,
     },
   },
   inner: {
@@ -75,7 +75,6 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   onUpdateSessionName,
   onUpdateAssessmentList,
 }: StudySessionContainerProps) => {
-
   const classes = useStyles()
 
   const rearrangeAssessments = (
@@ -175,7 +174,7 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   }
   return (
     <Box
-      className={clsx(classes.root, studySession?.active && 'active')}
+      className={/*clsx(classes.root, studySession?.active && 'active')*/ ''}
       onClick={() => onSetActiveSession(studySession.id)}
     >
       {getInner(studySession)}

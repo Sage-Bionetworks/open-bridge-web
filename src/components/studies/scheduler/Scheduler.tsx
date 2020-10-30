@@ -24,30 +24,21 @@ type SchedulerOwnProps = {
 type SchedulerProps = SchedulerOwnProps & RouteComponentProps
 
 const Scheduler: FunctionComponent<SchedulerProps> = () => {
-  const [groups, groupsUpdateFn] = useReducer(actionsReducer, [])
+  const [sessions, groupsUpdateFn] = useReducer(actionsReducer, [])
   const [reqStatus, setRequestStatus] = React.useState<RequestStatus>('PENDING')
 
-  const [groupTabIndex, setGroupTabIndex] = useState(0)
   let { id } = useParams<{ id: string }>()
   const handleError = useErrorHandler()
 
   useEffect(() => {
-    let activeIndex = groups.findIndex(item => item.active === true)
-    if (activeIndex === -1) {
-      activeIndex = 0
-    }
-    setGroupTabIndex(activeIndex)
-  }, [groups])
-
-  useEffect(() => {
     let isSubscribed = true
 
-    StudyService.getStudy(id).then(
-      study => {
-        if (isSubscribed && study) {
+    StudyService.getStudySessions(id).then(
+      sessions => {
+        if (isSubscribed && sessions) {
           groupsUpdateFn({
-            type: Types.SetGroups,
-            payload: { groups: study.groups },
+            type: Types.SetSessions,
+            payload: { sessions },
           })
           setRequestStatus('RESOLVED')
         }
@@ -63,46 +54,23 @@ const Scheduler: FunctionComponent<SchedulerProps> = () => {
   return (
     <>
       <div>Scheduler</div>
-      <ObjectDebug label="groups" data={groups}></ObjectDebug>
+      <ObjectDebug label="groups" data={sessions}></ObjectDebug>
 
       <LoadingComponent reqStatusLoading={reqStatus}>
-        <TabsMtb
-          value={groupTabIndex}
-          handleChange={(groupIndex: number) => {
-            const id = groups[groupIndex].id
-            groupsUpdateFn({
-              type: Types.SetActiveGroup,
-              payload: { id: id },
-            })
-          }}
-          tabDataObjects={groups.map(group => ({
-            label: group.name,
-            id: group.id,
-          }))}
-        ></TabsMtb>
-
-        {groups.map((group, index) => (
-          <TabPanel
-            value={groups.findIndex(group => group.active)}
-            index={index}
-            key={group.id}
-          >
-            <div>
-              {group.sessions.map(session => (
-                <SchedulableStudySessionContainer
-                  key={session.id}
-                  studySession={session}
-                  onSetActiveSession={() =>
-                    groupsUpdateFn({
-                      type: Types.SetActiveSession,
-                      payload: { sessionId: session.id },
-                    })
-                  }
-                ></SchedulableStudySessionContainer>
-              ))}
-            </div>
-          </TabPanel>
-        ))}
+        <div>
+          {sessions.map(session => (
+            <SchedulableStudySessionContainer
+              key={session.id}
+              studySession={session}
+              onSetActiveSession={() =>
+                groupsUpdateFn({
+                  type: Types.SetActiveSession,
+                  payload: { sessionId: session.id },
+                })
+              }
+            ></SchedulableStudySessionContainer>
+          ))}
+        </div>
       </LoadingComponent>
     </>
   )

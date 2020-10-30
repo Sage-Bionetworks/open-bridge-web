@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 export type LoadingComponentType = {
   children: React.ReactNode
   reqStatusLoading: RequestStatus | boolean
-  variant? : 'full' | 'small'
+  variant?: 'full' | 'small'
   style?: any
   loaderSize?: string | number
 }
@@ -29,15 +29,15 @@ export type LoadingComponentType = {
 const LoadingComponent = ({
   reqStatusLoading,
   children,
-  variant='full',
-  loaderSize='3rem',
-  style
+  variant = 'full',
+  loaderSize = '3rem',
+  style,
 }: LoadingComponentType) => {
-
-    const classes = useStyles()
+  const classes = useStyles()
   return reqStatusLoading === 'PENDING' || reqStatusLoading === true ? (
-    <div className={clsx(classes.root, variant=== 'full' && classes.full)} style={{...style}}
-    
+    <div
+      className={clsx(classes.root, variant === 'full' && classes.full)}
+      style={{ ...style }}
     >
       <CircularProgress size={loaderSize} />
     </div>

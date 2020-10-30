@@ -2,12 +2,9 @@ import React from 'react'
 
 import { makeStyles } from '@material-ui/core/styles'
 
-
 import {
-
   createStyles,
   Theme,
-
   FormGroup,
   Checkbox,
   FormControlLabel,
@@ -15,7 +12,11 @@ import {
 
 import { getEnumKeys } from '../../../helpers/utility'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
-import { ReoccuranceUnitEnum, ReoccuranceType, WeekdaysEnum } from '../../../types/scheduling'
+import {
+  ReoccuranceUnitEnum,
+  ReoccuranceType,
+  WeekdaysEnum,
+} from '../../../types/scheduling'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,7 +29,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   }),
 )
-
 
 export interface RepeatFrequencyProps {
   repeatFrequency: ReoccuranceType
@@ -78,7 +78,6 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
             key={item}
             control={
               <Checkbox
-             
                 checked={
                   repeatFrequency.days?.indexOf(WeekdaysEnum[item]) != -1
                 }

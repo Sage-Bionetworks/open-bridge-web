@@ -37,21 +37,23 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-type HeaderProps = {
-  sections: { name: string; path: string }[]
-  title: string
-  token?: string
+type StudyHeaderProps = {
+  //sections:? { name: string; path: string }[]
+  studyId: string
 }
 
-const Header: FunctionComponent<HeaderProps> = ({
-  sections,
-  title,
-  token,
-  ...props
-}: HeaderProps) => {
+const StudyHeader: FunctionComponent<StudyHeaderProps> = ({
+  studyId,
+}: StudyHeaderProps) => {
+  const links = [
+    { path: '/studies/builder/:id/', name: 'STUDY BUILDER' },
+    { path: '/studies/:id/participant-manager', name: 'PARTICIPANT MANAGER' },
+    { path: '/studies/:id/compliance', name: 'COMPLIANCE' },
+    { path: '/studies/:id/study-data', name: 'STUDY DATA' },
+  ]
+
   const classes = useStyles()
   //const sessionData = useSessionDataState()
-  const [signInOpen, setSignInOpen] = useState(false)
 
   return (
     <Paper className={classes.toolbarWrapper} elevation={0}>
@@ -61,13 +63,13 @@ const Header: FunctionComponent<HeaderProps> = ({
         disableGutters
         className={classes.toolbar}
       >
-        <img src={SageLogo} key="x" />
-        {sections
+        <img src={SageLogo} key="home" />
+        {links
           .filter(section => section.name)
           .map(section => (
             <>
               <NavLink
-                to={section.path}
+                to={section.path.replace(':id', studyId)}
                 key={section.name + '1'}
                 className={classes.toolbarLink}
                 activeClassName={classes.selectedLink}
@@ -76,32 +78,9 @@ const Header: FunctionComponent<HeaderProps> = ({
               </NavLink>
             </>
           ))}
-        {token ? (
-          <Logout></Logout>
-        ) : (
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() => setSignInOpen(true)}
-          >
-            Sign in
-          </Button>
-        )}
       </Toolbar>
-      <Dialog
-        open={signInOpen}
-        onClose={() => setSignInOpen(false)}
-        aria-labelledby="form-dialog-title"
-      >
-        <DialogContent>
-          <AccountLogin
-            {...props}
-            callbackFn={() => setSignInOpen(false)}
-          ></AccountLogin>
-        </DialogContent>
-      </Dialog>
     </Paper>
   )
 }
 
-export default Header
+export default StudyHeader

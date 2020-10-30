@@ -108,7 +108,7 @@ const loginWithPassword = (event: FormEvent) => {}
   } else {
   alert('Incorrect Credntials!');*/
 
-const AccountLogin: FunctionComponent<AccountLoginProps> = ({callbackFn}) => {
+const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [isForgotPassword, setIsForgotPassword] = useState(false)
@@ -154,7 +154,6 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({callbackFn}) => {
       setAlertMsg({ type: 'error', msg: JSON.stringify(e, null, 2) })
     } finally {
       setIsLoading(false)
-      
     }
   }
 
@@ -180,7 +179,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({callbackFn}) => {
               <SageLogo></SageLogo>
               Sign in with your Synapse account
             </Button>
-            <form className={classes.form} noValidate onSubmit={(e)=> signIn(e)}>
+            <form className={classes.form} noValidate onSubmit={e => signIn(e)}>
               <TextField
                 variant="outlined"
                 margin="normal"
@@ -215,7 +214,6 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({callbackFn}) => {
                 type="submit"
                 fullWidth
                 variant="contained"
-         
                 className={classes.submit}
               >
                 Sign In

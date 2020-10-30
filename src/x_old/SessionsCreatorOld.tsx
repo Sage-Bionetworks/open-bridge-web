@@ -1,3 +1,4 @@
+//@ts-nocheck
 import React, {
   FunctionComponent,
   useState,
@@ -7,29 +8,21 @@ import React, {
 
 import {
   Button,
-    CircularProgress,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   makeStyles,
 } from '@material-ui/core'
 
-import {
-  Assessment,
-  Group,
-  RequestStatus,
-  StudySession,
-} from '../../../types/types'
+import { Assessment, Group, RequestStatus, StudySession } from '../types/types'
 
-import GroupsEditor from './GoupsEditor'
+//import GroupsEditor from '../components/studies/GoupsEditor'
 import { RouteComponentProps, useParams } from 'react-router-dom'
 
-import AssessmentSelector from './AssessmentSelector'
+import AssessmentSelector from '../components/studies/AssessmentSelector'
 
-import actionsReducer, {
-  Types
-
-} from './sessionActions'
+import actionsReducer, { Types } from './sessionActions'
 import StudyService from '../../../services/study.service'
 import TabPanel from '../../widgets/TabPanel'
 import NewStudySessionContainer from './NewStudySessionContainer'
@@ -61,6 +54,7 @@ const SessionsCreatorOld: FunctionComponent<SessionsCreatorOldProps> = ({
   studyGroups,
   id,
 }: SessionsCreatorOldProps) => {
+  /*
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
     [],
   )
@@ -253,7 +247,8 @@ const SessionsCreatorOld: FunctionComponent<SessionsCreatorOldProps> = ({
         </DialogActions>
       </Dialog>
     </div>
-  )
+  )*/
+  return <></>
 }
 
 export default SessionsCreatorOld

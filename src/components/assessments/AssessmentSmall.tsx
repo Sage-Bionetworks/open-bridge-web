@@ -20,9 +20,12 @@ const useStyles = makeStyles({
 
     '&.dragging': {
       border: '1px dashed #cdcdcd',
-      padding: '5px'
-
-    }
+      padding: '5px',
+    },
+    '&:hover': {
+      border: '1px dashed #cdcdcd',
+      padding: '1px',
+    },
   },
 
   card: {
@@ -36,7 +39,6 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-
   },
   duration: {
     fontSize: '13px',
@@ -44,8 +46,8 @@ const useStyles = makeStyles({
 })
 
 type AssessmentSmallOwnProps = {
-  assessment: Assessment,
-  isDragging?: boolean,
+  assessment: Assessment
+  isDragging?: boolean
   isHideDuration?: boolean
 }
 
@@ -56,7 +58,6 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
   isDragging,
   isHideDuration,
   children,
-
 }) => {
   const classes = useStyles()
 
@@ -73,9 +74,13 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
           </Typography>
         </CardContent>
       </Card>
-     <div className={classes.actions}>
-     {!isHideDuration &&<div className={classes.duration}>{/*assessment.duration*/}  duration to do(min)</div>}
-      {children}
+      <div className={classes.actions}>
+        {!isHideDuration && (
+          <div className={classes.duration}>
+            {/*assessment.duration*/} duration to do(min)
+          </div>
+        )}
+        {children}
       </div>
     </div>
   )

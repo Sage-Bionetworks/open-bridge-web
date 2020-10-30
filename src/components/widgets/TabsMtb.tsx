@@ -1,4 +1,4 @@
-import React, { FunctionComponent, SyntheticEvent} from 'react'
+import React, { FunctionComponent, SyntheticEvent } from 'react'
 
 import {
   Tabs,
@@ -29,7 +29,7 @@ const useStyles = makeStyles({
   deleteIcon: {
     position: 'absolute',
     zIndex: 10,
- 
+
     right: 5,
     width: '.8em',
   },
@@ -39,7 +39,7 @@ const useStyles = makeStyles({
     width: '100%',
 
     padding: '0 20px',
-  }
+  },
 })
 
 type TabProps = {
@@ -86,28 +86,26 @@ const TabsMtb: FunctionComponent<TabProps> = ({
   }
   const TabMenu = (): JSX.Element => {
     return (
-  
-        <Menu
-          id="simple-menu"
-          anchorEl={menuAnchorEl}
-          anchorOrigin={menuOrigin}
-          open={Boolean(menuAnchorEl)}
-          onClose={() => setMenuAnchorEl(null)}
-        >
-          {menuItems!.map((item, index) => (
-            <MenuItem
-              onClick={() => {
-                setMenuAnchorEl(null)
-                item.fn()
-              }}
-              key={item.label}
-              className={classes.menuRoot}
-            >
-              {item.label}
-            </MenuItem>
-          ))}
-        </Menu>
-
+      <Menu
+        id="simple-menu"
+        anchorEl={menuAnchorEl}
+        anchorOrigin={menuOrigin}
+        open={Boolean(menuAnchorEl)}
+        onClose={() => setMenuAnchorEl(null)}
+      >
+        {menuItems!.map((item, index) => (
+          <MenuItem
+            onClick={() => {
+              setMenuAnchorEl(null)
+              item.fn()
+            }}
+            key={item.label}
+            className={classes.menuRoot}
+          >
+            {item.label}
+          </MenuItem>
+        ))}
+      </Menu>
     )
   }
 
@@ -131,10 +129,18 @@ const TabsMtb: FunctionComponent<TabProps> = ({
                 <>
                   <DeleteIcon
                     className={classes.deleteIcon}
-                    onClick={(e: SyntheticEvent) => { e.stopPropagation();  onDelete(tab.id)}}
+                    onClick={(e: SyntheticEvent) => {
+                      e.stopPropagation()
+                      onDelete(tab.id)
+                    }}
                   ></DeleteIcon>
                   <div className={classes.TE}>
-                    <EditableTextbox  initValue={tab.label} onTriggerUpdate={(newText: string)=>onRenameTab(tab.id, newText)} ></EditableTextbox>
+                    <EditableTextbox
+                      initValue={tab.label}
+                      onTriggerUpdate={(newText: string) =>
+                        onRenameTab(tab.id, newText)
+                      }
+                    ></EditableTextbox>
                   </div>
                 </>
               ) : (

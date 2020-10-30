@@ -7,12 +7,13 @@ import {
   Button,
   InputLabel,
   MenuItem,
-  Select,FormControl
+  Select,
+  FormControl,
 } from '@material-ui/core'
 
 import { StudySession } from '../../../types/types'
 
-const useStyles = makeStyles(theme=> ({
+const useStyles = makeStyles(theme => ({
   root: {
     padding: '12px',
     border: '1px solid #C4C4C4',
@@ -20,13 +21,13 @@ const useStyles = makeStyles(theme=> ({
     marginRight: '26px',
   },
   label: {
-    fontSize:18,
-    textTransform: 'uppercase'
+    fontSize: 18,
+    textTransform: 'uppercase',
   },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
@@ -55,7 +56,7 @@ const NewStudySessionContainer: FunctionComponent<NewStudySessionContainerProps>
   }
 
   return (
-    <Box className={clsx(classes.root)}>
+    <Box className={/*clsx(classes.root)*/ ''}>
       <Button variant="text" onClick={() => onAddSession(sessions, [])}>
         + Create new session
       </Button>
@@ -69,17 +70,15 @@ const NewStudySessionContainer: FunctionComponent<NewStudySessionContainerProps>
           inputProps={{ 'aria-label': 'Without label' }}
         >
           <MenuItem value="" disabled>
-           + DUPLICATE SESSION
+            + DUPLICATE SESSION
           </MenuItem>
           {sessions.map(session => (
-          <MenuItem value={session.id} key={session.id}>
-            {session.name}
-          </MenuItem>
-        ))}
+            <MenuItem value={session.id} key={session.id}>
+              {session.name}
+            </MenuItem>
+          ))}
         </Select>
-
       </FormControl>
-
     </Box>
   )
 }

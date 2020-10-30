@@ -2,12 +2,8 @@ import * as React from 'react'
 import { setSession, getSession, clearSession } from './utility'
 import { SessionData } from '../types/types'
 
-type ActionType =
-  | 'LOGIN'
-  | 'LOGOUT'
-  | 'SET_ALERT'
-  | 'CLEAR_ALERT'
-  /*| 'CONSENT'
+type ActionType = 'LOGIN' | 'LOGOUT' | 'SET_ALERT' | 'CLEAR_ALERT'
+/*| 'CONSENT'
   | 'WITHDRAW'*/
 type Action = { type: ActionType; payload?: SessionData }
 type Dispatch = (action: Action) => void
@@ -15,7 +11,7 @@ type SessionDataProviderProps = { children: React.ReactNode }
 
 const initialState = {
   token: undefined,
-  userDataGroup: []
+  userDataGroup: [],
 }
 
 const SessionDataStateContext = React.createContext<SessionData | undefined>(
@@ -44,7 +40,7 @@ function countReducer(state: SessionData, action: Action): SessionData {
       setSession(newState)
       return newState
     }
-   /* case 'CONSENT': {
+    /* case 'CONSENT': {
       const newState = {
         ...state,
         consented: true,
@@ -67,7 +63,7 @@ function countReducer(state: SessionData, action: Action): SessionData {
         token: action.payload!.token,
         //consented: action.payload!.consented,
         name: action.payload!.name,
-       // userDataGroup: action.payload!.userDataGroup
+        // userDataGroup: action.payload!.userDataGroup
       }
       setSession(newState)
       return newState
@@ -78,8 +74,8 @@ function countReducer(state: SessionData, action: Action): SessionData {
         ...state,
         token: undefined,
         //consented: undefined,
-       // alert: undefined,
-       // userDataGroup: []
+        // alert: undefined,
+        // userDataGroup: []
       }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`)
@@ -112,9 +108,7 @@ function useSessionDataState() {
 function useSessionDataDispatch() {
   const context = React.useContext(SessionDataDispatchContext)
   if (context === undefined) {
-    throw new Error(
-      'useSessionDataDispatch must be used within a AuthContext',
-    )
+    throw new Error('useSessionDataDispatch must be used within a AuthContext')
   }
   return context
 }

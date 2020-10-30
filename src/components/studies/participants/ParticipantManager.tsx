@@ -1,21 +1,21 @@
 import React, { FunctionComponent, useEffect } from 'react'
 import Link from '@material-ui/core/Link'
-import { RouteComponentProps } from 'react-router-dom'
-import StudyService from '../../services/study.service'
-import { Study } from '../../types/types'
-import StudyCard from './StudyCard'
+import { RouteComponentProps, useParams } from 'react-router-dom'
+import StudyHeader from '../StudyHeader'
+
 //import { StudySessionsProvider } from '../../helpers/StudySessionsContext'
 //import SessionsCreator from './session-creator/SessionsCreator'
 
-type StudyManagerOwnProps = {
+type ParticipantManagerOwnProps = {
   title?: string
   paragraph?: string
 }
 
-type StudyManagerProps = StudyManagerOwnProps & RouteComponentProps
+type ParticipantManagerProps = ParticipantManagerOwnProps & RouteComponentProps
 
-const StudyManager: FunctionComponent<StudyManagerProps> = () => {
-  const [studies, setStudies] = React.useState<Study[]>([])
+const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
+  let { id } = useParams<{ id: string }>()
+  /*const [studies, setStudies] = React.useState<Study[]>([])
 
   useEffect(() => {
     let isSubscribed = true
@@ -42,25 +42,15 @@ const StudyManager: FunctionComponent<StudyManagerProps> = () => {
     return () => {
       isSubscribed = false
     }
-  }, [])
+  }, [])*/
 
   return (
     <>
-      <h2>Study Manager</h2>
-      {/* <StudySessionsProvider>
-      <SessionsCreator></SessionsCreator>
-     </StudySessionsProvider>*/}
-      {studies.map((a, index) => (
-        <Link
-          key={a.id}
-          variant="body2"
-          href={`/studies/builder/${a.id}/session-creator`}
-        >
-          <StudyCard study={a}></StudyCard>
-        </Link>
-      ))}
+      <StudyHeader studyId={id} />
+      <h2>Participant Managerc</h2>
+      studyId {id}
     </>
   )
 }
 
-export default StudyManager
+export default ParticipantManager

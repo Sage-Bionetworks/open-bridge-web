@@ -1,7 +1,7 @@
 /*  General Types ********************************/
 
-export interface StringDictionary {
-  [key: string]: any
+export interface StringDictionary<T> {
+  [key: string]: T
 }
 
 export interface Response<T> {
@@ -147,7 +147,7 @@ export type Assessment = {
   type: string
   version: number
   validationStatus: string
-  duration?: number,
+  duration?: number
   resources?: any[]
 }
 

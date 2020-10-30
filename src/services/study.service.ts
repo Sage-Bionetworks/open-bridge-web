@@ -1,12 +1,13 @@
-import { Group, Study } from '../types/types'
+import { Group, Study, StudySession } from '../types/types'
 import Studies from '../data/studies.json'
+import { StudySection } from '../components/studies/sections'
 
 const StudyService = {
-
   getStudies,
   getStudy,
   saveStudy,
   getStudyGroups,
+  getStudySessions,
 }
 
 async function getStudies(): Promise<Study[]> {
@@ -16,12 +17,16 @@ async function getStudies(): Promise<Study[]> {
 async function getStudy(id: string): Promise<Study | undefined> {
   const result = Studies.data.find(study => study.id === id)
 
- return new Promise(resolve => setTimeout(resolve.bind(null, result), 2))
+  return new Promise(resolve => setTimeout(resolve.bind(null, result), 2))
   /*return new Promise((resolve, reject) =>
     setTimeout(() => reject(new Error("Some Error Just happened")), 1000)
     );*/
 }
 
+async function getStudySessions(id: string): Promise<StudySession[]> {
+  const study = await getStudy(id)
+  return study!.groups.map(group => group.sessions).flat()
+}
 
 async function saveStudy(study: Study): Promise<Study | undefined> {
   //const result = Studies.data.find(study => study.id === id)
@@ -31,8 +36,6 @@ async function saveStudy(study: Study): Promise<Study | undefined> {
     setTimeout(() => reject(new Error("Some Error Just happened")), 1000)
     );*/
 }
-
-
 
 async function getStudyGroups(id: string): Promise<Group[]> {
   const result = Studies.data.find(study => study.id === id)

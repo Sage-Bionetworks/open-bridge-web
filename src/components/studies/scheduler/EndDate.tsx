@@ -4,12 +4,9 @@ import { makeStyles } from '@material-ui/core/styles'
 
 import {
   Box,
-
   FormControl,
-
   createStyles,
   Theme,
-
   FormControlLabel,
   FormLabel,
   Radio,
@@ -31,10 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-
-
 export interface EndDateProps {
-
   endDate: EndDateType
   onChange: Function
 }
@@ -67,7 +61,9 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
         aria-label="End Date"
         name="endDate"
         value={endDate.type}
-        onChange={e => changeEndDateType(e.target.value as SessionScheduleEndType)}
+        onChange={e =>
+          changeEndDateType(e.target.value as SessionScheduleEndType)
+        }
       >
         <FormControlLabel
           value={'END_STUDY'}
@@ -75,7 +71,6 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
           label="End of study "
         />
 
-    
         <FormControlLabel
           control={
             <>
@@ -96,14 +91,12 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
           label=" "
         />
 
-  
         <FormControlLabel
           control={
             <>
               <Radio value={'N_OCCURENCES'} />{' '}
               <TextField
                 id="standard-basic"
-       
                 onChange={e => changeEndDateDays(e.target.value)}
                 value={endDate.days || ''}
               />
@@ -111,8 +104,7 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
           }
           label="Occurrences"
         />
-        </RadioGroup>
-
+      </RadioGroup>
     </FormControl>
   )
 }

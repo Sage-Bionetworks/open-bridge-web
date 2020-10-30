@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     border: '1px solid #C4C4C4',
 
     '&.active': {
-      border:  theme.activeBorder,
+      border: theme.activeBorder,
     },
   },
 

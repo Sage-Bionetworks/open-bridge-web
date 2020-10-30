@@ -31,17 +31,21 @@ const BreadCrumb: React.FunctionComponent<BreadCrumbProps> = ({
   //<T> is the type of data you are retrieving
 
   return (
+    <Breadcrumbs aria-label="breadcrumb">
+      {links.map((link, index) => (
+        <Link
+          color="inherit"
+          href={link.url}
+          key={link.url}
+          style={{ display: 'flex' }}
+        >
+          {index === 0 && <BackIcon />}
+          {link.text}
+        </Link>
+      ))}
 
-      <Breadcrumbs aria-label="breadcrumb">
-        {links.map((link, index) => <Link color="inherit" href={link.url} key={link.url} style={{display: 'flex'}}>
-            {index === 0 &&   <BackIcon />}
-            {link.text}
-          </Link>
-        )}
-
-        <Typography color="textPrimary">{currentItem}</Typography>
-      </Breadcrumbs>
-    
+      <Typography color="textPrimary">{currentItem}</Typography>
+    </Breadcrumbs>
   )
 }
 

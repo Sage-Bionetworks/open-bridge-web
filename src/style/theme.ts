@@ -1,13 +1,32 @@
 import { createMuiTheme, Theme } from '@material-ui/core'
 import { CSSProperties } from '@material-ui/core/styles/withStyles'
 
-
 type cssDict = {
   [key: string]: CSSProperties
 }
 
+export const openSansFont = [
+  'Open Sans',
+  'serif',
+  'Lato',
+  'Roboto',
+  'Helvetica',
+  'Arial',
+].join(',')
+
+export const playfairDisplayFont = [
+  'Playfair Display',
+  'serif',
+  'Lato',
+  'Roboto',
+  'Helvetica',
+  'Arial',
+].join(',')
+
+export const poppinsFont = ['Poppins', 'sans-serif'].join(',')
+
 export type CssVariablesType = {
-  shadowing:  any,
+  shadowing: any
   testColor: string
   activeBorder: string
 }
@@ -16,12 +35,11 @@ export type ThemeType = Theme & CssVariablesType
 
 const cssVariables = {
   shadowing: {
-     boxShadow: "0 2px 5px -1px rgba(0, 0, 0, 0.3)",
+    boxShadow: '0 2px 5px -1px rgba(0, 0, 0, 0.3)',
   },
   testColor: 'red',
   activeBorder: `1px solid #2196f3`,
-};
-
+}
 
 //those are global css classes
 const globals: cssDict = {
@@ -35,13 +53,12 @@ const globals: cssDict = {
   },
 }
 
-
 const theme: Theme = createMuiTheme({
   overrides: {
     MuiCssBaseline: {
-    
       '@global': globals,
-    }},
+    },
+  },
   props: {
     // Name of the component ⚛️
     MuiButtonBase: {
@@ -50,9 +67,19 @@ const theme: Theme = createMuiTheme({
     },
   },
   spacing: 8,
-  
+
   typography: {
     fontSize: 12,
+    h3: {
+      fontFamily: poppinsFont,
+      fontWeight: 600,
+    },
+    subtitle2: {
+      fontFamily: playfairDisplayFont,
+      fontWeight: 400,
+      fontStyle: 'italic',
+    },
+
     /*htmlFontSize: 10,
     button: {
       textTransform: 'none',
@@ -61,6 +88,14 @@ const theme: Theme = createMuiTheme({
 
   palette: {
     divider: '#282828',
+    background: {
+      default: '#BCD5E4',
+      paper: '#fff',
+    },
+    text: {
+      primary: '#000',
+      secondary: '#2A2A2A',
+    },
     secondary: {
       main: '#6e818a',
     },
@@ -68,11 +103,7 @@ const theme: Theme = createMuiTheme({
     primary: {
       main: '#2196f3',
     },
-    text: {
-      secondary: '',
-    },
   },
 })
-
 
 export { theme, globals, cssVariables }

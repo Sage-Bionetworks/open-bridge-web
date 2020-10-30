@@ -45,7 +45,7 @@ function makeRequest(
 export const callEndpointXHR = async <T>(
   endpoint: string,
   method: 'POST' | 'GET' = 'POST',
-  data: StringDictionary,
+  data: StringDictionary<any>,
   token?: string,
 ): Promise<Response<T>> => {
   let body: string | undefined = JSON.stringify(data)
@@ -72,7 +72,7 @@ export const callEndpointXHR = async <T>(
 export const callEndpoint = async <T>(
   endpoint: string,
   method: 'POST' | 'GET' = 'POST',
-  data: StringDictionary,
+  data: StringDictionary<any>,
   token?: string,
 ): Promise<Response<T>> => {
   const ls = window.localStorage

@@ -1,0 +1,105 @@
+import React, { FunctionComponent, useState, useEffect } from 'react'
+import {
+  match,
+  RouteComponentProps,
+  useParams,
+  Link,
+  Route,
+} from 'react-router-dom'
+import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
+import LoadingComponent from '../widgets/Loader'
+import { useAsync } from '../../helpers/AsyncHook'
+
+import {
+  Grid,
+  Paper,
+  makeStyles,
+  Hidden,
+  Box,
+  Container,
+  Slider,
+  Checkbox,
+  FormControlLabel,
+} from '@material-ui/core'
+import clsx from 'clsx'
+import { Assessment, StringDictionary } from '../../types/types'
+import { RSA_SSLV23_PADDING } from 'constants'
+
+type AssessmentLibraryFilterProps = {
+  assessments: Assessment[]
+  tags: StringDictionary<number>
+  //selectedTags: string[]
+  // onChangeDuration: Function
+  onChangeTags: Function
+}
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    padding: theme.spacing(5),
+  },
+}))
+
+const AssessmentLibraryFilter: FunctionComponent<AssessmentLibraryFilterProps> = ({
+  assessments,
+  tags,
+  onChangeTags,
+}: //selectedTags
+AssessmentLibraryFilterProps) => {
+  const classes = useStyles()
+
+  const getTotalCount = (tags: object): number =>
+    Object.values(tags).reduce((a, c) => a + c, 0)
+
+  const getAssessmentDurations = (): number[] =>
+    assessments.map(a => a.duration || 0)
+  const [selectedTags, setSelectedTags] = React.useState<string[]>([])
+
+  const changeTags = (isChecked: boolean, tag: string) => {
+    const result = isChecked
+      ? [...selectedTags, tag]
+      : selectedTags.filter(item => item !== tag)
+    setSelectedTags(result)
+    onChangeTags(result)
+  }
+
+  console.log(selectedTags)
+
+  return (
+    <Paper className={classes.root}>
+      <FormControlLabel
+        key="allConstructs"
+        control={
+          <Checkbox
+            checked={selectedTags.length == 0}
+            onChange={event => {
+              if (event.target.checked) {
+                setSelectedTags([])
+                onChangeTags([])
+              }
+            }}
+            name="checkedB"
+            color="primary"
+          />
+        }
+        label={`All Construct Domains (${getTotalCount(tags)})`}
+      />
+      {Object.keys(tags).map(tag => (
+        <FormControlLabel
+          key={tag}
+          control={
+            <Checkbox
+              checked={selectedTags.indexOf(tag) !== -1}
+              onChange={event => changeTags(event.target.checked, tag)}
+              name="checkedB"
+              color="primary"
+            />
+          }
+          //@ts-ignore
+          label={`${tag} (${tags[tag]})`}
+        />
+      ))}
+    </Paper>
+  )
+}
+
+export default AssessmentLibraryFilter

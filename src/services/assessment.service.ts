@@ -25,7 +25,6 @@ async function getAssessments(token: string): Promise<Assessment[]> {
 }
 
 async function getSharedAssessment(guid: string): Promise<Assessment[]> {
-
   const result = await callEndpoint<Assessment>(
     `${constants.endpoints.assessmentShared}${guid}/`,
     'GET',
@@ -36,7 +35,6 @@ async function getSharedAssessment(guid: string): Promise<Assessment[]> {
 }
 
 async function getSharedAssessments(): Promise<Assessment[]> {
-
   const result = await callEndpoint<{ items: Assessment[] }>(
     constants.endpoints.assessmentsShared,
     'GET',
@@ -50,26 +48,42 @@ const getResource = async (assessment: Assessment): Promise<Assessment> => {
     assessment.identifier,
   )
   const response = await callEndpoint<{ items: any[] }>(endPoint, 'GET', {})
-  return { ...assessment, resources: response.data.items, duration: Math.ceil(Math.random() * 30) }
+  return {
+    ...assessment,
+    resources: response.data.items,
+    duration: Math.ceil(Math.random() * 30),
+  }
 }
 
-async function getSharedAssessmentsWithResources(guid?: string): Promise<{assessments: Assessment[], tags: string[]}> {
+async function getSharedAssessmentsWithResources(
+  guid?: string,
+): Promise<{ assessments: Assessment[]; tags: string[] }> {
   const name = 'AR'
-  
-  const localStore = localStorage.getItem("AR");
-  if (localStore) {
+
+  const localStore = localStorage.getItem('AR')
+  /*if (localStore) {
   return Promise.resolve(JSON.parse(localStore))
-  }
-  
-  const assessments = guid? await getSharedAssessment(guid): await getSharedAssessments()
+  }*/
+
+  const assessments = guid
+    ? await getSharedAssessment(guid)
+    : await getSharedAssessments()
   const resourcePromises = assessments.map(async asmnt => getResource(asmnt))
   return Promise.all(resourcePromises).then(items => {
-    
-    const allTags = items.map(item=> item.tags).flat()
+    const allTags = items.map(item => item.tags).flat()
+    const tags = allTags.reduce((acc, curr) => {
+      if (!acc[curr]) {
+        acc[curr] = 1
+      } else {
+        acc[curr] += 1
+      }
 
-    const  result = {assessments: items, tags: Array.from(new Set(allTags))}
-    localStorage.setItem("AR", JSON.stringify(result));
-    
+      return acc
+    }, {} as any)
+
+    const result = { assessments: items, tags }
+    localStorage.setItem('AR', JSON.stringify(result))
+
     return result
   })
 }

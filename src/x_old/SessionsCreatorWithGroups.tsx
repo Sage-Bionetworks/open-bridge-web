@@ -1,37 +1,27 @@
-import React, {
-  FunctionComponent,
-  useState,
-
-} from 'react'
+import React, { FunctionComponent, useState } from 'react'
 
 import {
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   makeStyles,
 } from '@material-ui/core'
 
-import {
-  Assessment,
-  Group,
+import { Assessment, Group, StudySession } from '../types/types'
 
-  StudySession,
-} from '../../../types/types'
+import GroupsEditor from '../components/studies/session-creator/GoupsEditor'
 
-import GroupsEditor from './GoupsEditor'
+import AssessmentSelector from '../components/studies/session-creator/AssessmentSelector'
 
-
-import AssessmentSelector from './AssessmentSelector'
-
-import actionsReducer, { Types, SessionAction } from './sessionActions'
-import StudyService from '../../../services/study.service'
-import TabPanel from '../../widgets/TabPanel'
-import NewStudySessionContainer from './NewStudySessionContainer'
-import StudySessionContainer from './StudySessionContainer'
+import actionsReducer, { Types, GroupAction } from './groupsActions'
+import StudyService from '../services/study.service'
+import TabPanel from '../components/widgets/TabPanel'
+import NewStudySessionContainer from '../components/studies/session-creator/NewStudySessionContainer'
+import StudySessionContainer from '../components/studies/session-creator/StudySessionContainer'
 import { useErrorHandler } from 'react-error-boundary'
-
-import { useAsync } from '../../../helpers/AsyncHook'
+import { useAsync } from '../helpers/AsyncHook'
 
 const useStyles = makeStyles({
   root: {},
@@ -47,46 +37,51 @@ const useStyles = makeStyles({
   },
 })
 
-type SessionsCreatorNewProps = {
-  studyGroups: Group[]
-  id: string
+type SessionsCreatorProps = {
+  studyGroups?: Group[]
+  id?: string
 }
 
-const SessionsCreatorNew: FunctionComponent<SessionsCreatorNewProps> = ({
+const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
   studyGroups,
   id,
-}: SessionsCreatorNewProps) => {
+}: SessionsCreatorProps) => {
+  const classes = useStyles()
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
     [],
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
 
-  const handleError = useErrorHandler()
-  const classes = useStyles()
-
-  
-  const { data: groups, status, error, run, setData } = useAsync<Group[]>({
-    status: id ? 'PENDING' : 'IDLE',
-    data: [],
-  })
-  const groupsUpdateFn = (action: SessionAction) => {
+  const groupsUpdateFn = (action: GroupAction) => {
     setData(actionsReducer(groups!, action))
   }
 
+  const { data: groups, status, error, run, setData } = useAsync<Group[]>({
+    status: id ? 'PENDING' : 'IDLE',
+    data: studyGroups || [],
+  })
+
+  const handleError = useErrorHandler()
 
   React.useEffect(() => {
     if (!id) {
       return
     }
-    return run(StudyService.getStudy(id).then(study => study?.groups))
+    return run(
+      StudyService.getStudy(id).then(study => {
+        if (!study) {
+          throw new Error('what are you thinking?')
+        }
+        return study!.groups
+      }),
+    )
   }, [id, run])
 
   if (status === 'REJECTED') {
     handleError(error!)
   } else if (status === 'PENDING') {
-    return <>'...loading'</>
+    return <>...loading</>
   }
-
 
   const updateAssessmentList = (sessionId: string, assessments: Assessment[]) =>
     groupsUpdateFn({
@@ -95,6 +90,7 @@ const SessionsCreatorNew: FunctionComponent<SessionsCreatorNewProps> = ({
     })
 
   const updateAssessments = (sessionId: string, assessments: Assessment[]) => {
+    console.log('updating')
     groupsUpdateFn({
       type: Types.UpdateAssessments,
       payload: {
@@ -192,7 +188,10 @@ const SessionsCreatorNew: FunctionComponent<SessionsCreatorNewProps> = ({
                 <NewStudySessionContainer
                   key={'new_session'}
                   sessions={group.sessions}
-                  onAddSession={ (sessions: StudySession[], assessments: Assessment[]) => 
+                  onAddSession={(
+                    sessions: StudySession[],
+                    assessments: Assessment[],
+                  ) =>
                     groupsUpdateFn({
                       type: Types.AddSession,
                       payload: {
@@ -200,7 +199,8 @@ const SessionsCreatorNew: FunctionComponent<SessionsCreatorNewProps> = ({
                         assessments,
                         active: true,
                       },
-                    })}
+                    })
+                  }
                 ></NewStudySessionContainer>
               </div>
             </TabPanel>
@@ -215,7 +215,7 @@ const SessionsCreatorNew: FunctionComponent<SessionsCreatorNewProps> = ({
             <AssessmentSelector
               selectedAssessments={selectedAssessments}
               onUpdateAssessments={setSelectedAssessments}
-              active={getActiveGroupAndSession(groups)}
+              activeSession={getActiveGroupAndSession(groups).session}
             ></AssessmentSelector>
           </DialogContent>
           <DialogActions>
@@ -242,9 +242,7 @@ const SessionsCreatorNew: FunctionComponent<SessionsCreatorNewProps> = ({
         </Dialog>
       </div>
     )
-  } else {
-    return <>No Groups</>
-  }
+  } else return <>should not happen</>
 }
 
-export default SessionsCreatorNew
+export default SessionsCreator

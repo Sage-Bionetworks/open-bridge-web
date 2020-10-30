@@ -5,7 +5,6 @@ import UserService from './services/user.service'
 import './App.css'
 
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-import routes from './routes'
 import {
   ThemeProvider,
   Typography,
@@ -21,26 +20,19 @@ import {
 import { SessionData } from './types/types'
 import { ErrorFallback, ErrorHandler } from './components/widgets/ErrorHandler'
 import { ErrorBoundary } from 'react-error-boundary'
+import AuthenticatedApp from './AuthenticatedApp'
+import UnauthenticatedApp from './UnauthenticatedApp'
 
 const defaultTheme = createMuiTheme()
-/*const theme = createMuiTheme({
-  spacing: 8,
-  typography: {
-    htmlFontSize: 10,
-    button: {
-      textTransform: 'none',
-    },
-  },
 
-  palette: {
-    text: {
-      secondary: '#4caf50',
-    },
-  },
-})*/
-const getRootURL = () => {
+function getRootURL() {
   const portString = window.location.port ? `:${window.location.port}` : ''
   return `${window.location.protocol}//${window.location.hostname}${portString}/`
+}
+
+const inStudy = (location: string) => {
+  const regexPattern = '/studies/[A-Za-z0-9]+/'
+  return location.search(regexPattern) > -1
 }
 
 export const detectSSOCode = async (
@@ -56,8 +48,9 @@ export const detectSSOCode = async (
     return
   }
   code = searchParams.get('code')
-  if (code) {
+  if (code && !sessionData.token) {
     try {
+      console.log('trying to log in')
       const loggedIn = await UserService.loginOauth(
         code,
         'http://127.0.0.1:3000',
@@ -90,28 +83,18 @@ function App() {
     <ThemeProvider theme={{ ...theme, ...cssVariables }}>
       <Typography component={'div'}>
         <CssBaseline />
-        <Container maxWidth="xl" style={{ height: '100vh', padding: '0' }} >
-        <Router basename={process.env.PUBLIC_URL}>
-          <Header title="Some Title" sections={routes} />
-          <main>
+        <Container maxWidth="xl" style={{ height: '100vh', padding: '0' }}>
+          <Router basename={process.env.PUBLIC_URL}>
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
               onError={ErrorHandler}
             >
-           
-                <Switch>
-                  {routes.map(({ path, Component }, key) => (
-                    <Route
-                      exact
-                      path={path}
-                      key={key}
-                      render={props => <Component {...props}></Component>}
-                    />
-                  ))}
-                </Switch>
-         
+              {sessionData.token ? (
+                <AuthenticatedApp token={sessionData.token} />
+              ) : (
+                <UnauthenticatedApp />
+              )}
             </ErrorBoundary>
-          </main>
           </Router>
         </Container>
       </Typography>

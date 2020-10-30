@@ -1,7 +1,6 @@
-
 import * as React from 'react'
 
-import { Group} from '../types/types'
+import { Group, StudySession } from '../types/types'
 import SessionCreatorActions, {
   DEFAULT_GROUP,
   SessionAction,
@@ -10,11 +9,11 @@ import SessionCreatorActions, {
 type Dispatch = (action: SessionAction) => void
 type StudySessionsProviderProps = { children: React.ReactNode }
 
-const initialState: Group[] = [DEFAULT_GROUP]
+const initialState: StudySession[] = DEFAULT_GROUP.sessions
 
-const StudySessionsStateContext = React.createContext<Group[] | undefined>(
-  undefined,
-)
+const StudySessionsStateContext = React.createContext<
+  StudySession[] | undefined
+>(undefined)
 const StudySessionsDispatchContext = React.createContext<Dispatch | undefined>(
   undefined,
 )
@@ -22,7 +21,8 @@ const StudySessionsDispatchContext = React.createContext<Dispatch | undefined>(
 function StudySessionsProvider({ children }: StudySessionsProviderProps) {
   const [state, dispatch] = React.useReducer(
     SessionCreatorActions,
-    initialState as Group[],
+    //initialState as Group[],
+    initialState as StudySession[],
   )
   return (
     <StudySessionsStateContext.Provider value={state}>

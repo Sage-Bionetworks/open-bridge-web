@@ -3,8 +3,8 @@ import React, { FunctionComponent } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
 type HowItWorksOwnProps = {
-  title: string
-  paragraph: string
+  title?: string
+  paragraph?: string
 }
 
 type HowItWorksProps = HowItWorksOwnProps & RouteComponentProps

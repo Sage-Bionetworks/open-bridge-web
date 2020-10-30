@@ -22,7 +22,11 @@ import {
 import { createNamedExports } from 'typescript'
 import DeleteIcon from '@material-ui/icons/Delete'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
-import { AssessmentWindowType, NotificationFreqEnum, ReminderIntervalEnum } from '../../../types/scheduling'
+import {
+  AssessmentWindowType,
+  NotificationFreqEnum,
+  ReminderIntervalEnum,
+} from '../../../types/scheduling'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -150,10 +154,9 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
       ></SelectWithEnum>
       <Box display="block">
         <FormControlLabel
-         
           control={
             <Checkbox
-            value={window.allowSnooze}
+              value={window.allowSnooze}
               onChange={e =>
                 onChange({ ...window, allowSnooze: e.target.checked })
               }

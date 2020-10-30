@@ -17,7 +17,6 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
-import InboxIcon from '@material-ui/icons/MoveToInbox'
 import SomeIcon from '@material-ui/icons/FaceOutlined'
 
 const drawerWidth = 212
@@ -168,22 +167,25 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
             [classes.mainAreaNormal]: open,
             [classes.mainAreaWide]: !open,
           })}
-          display="grid"
-          padding="8px"
-          gridTemplateColumns="repeat(auto-fill,280px)"
-          gridColumnGap="16px"
-          gridRowGap="16px"
         >
-          {cards.map(card => (
-            <Box
-              width="280px"
-              height="511px"
-              border="1px solid black"
-              bgcolor="#d5e5ec"
-            >
-              card
-            </Box>
-          ))}
+          <Box
+            display="grid"
+            padding="8px"
+            gridTemplateColumns="repeat(auto-fill,280px)"
+            gridColumnGap="16px"
+            gridRowGap="16px"
+          >
+            {cards.map(card => (
+              <Box
+                width="280px"
+                height="511px"
+                border="1px solid black"
+                bgcolor="#d5e5ec"
+              >
+                card
+              </Box>
+            ))}
+          </Box>
         </Box>
       </Box>
     </Box>

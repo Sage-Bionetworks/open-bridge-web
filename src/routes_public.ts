@@ -1,0 +1,41 @@
+import AssessmentLibrary from './components/assessments/AssessmentLibrary'
+
+import StudyEditor from './components/studies/StudyEditor'
+import AssessmentDetail from './components/assessments/AssessmentDetail'
+import SessionsLayout from './components/layouts/sessions'
+import HowItWorks from './components/static/HowItWorks'
+import Plans from './components/static/Plans'
+import DevelopmentTeam from './components/static/DevelopmentTeam'
+
+export default [
+  {
+    path: '/how-it-works',
+    name: 'HOW IT WORKS',
+    Component: HowItWorks,
+    exact: true,
+  },
+  {
+    path: '/assessments',
+    name: 'ASSESSMENTS LIBRARY',
+    Component: AssessmentLibrary,
+    exact: false,
+  },
+  {
+    path: '/assessments/:id',
+    name: '',
+    Component: AssessmentDetail,
+    exact: true,
+  },
+  {
+    path: '/plans',
+    name: 'PLANS',
+    Component: Plans,
+    exact: true,
+  },
+
+  {
+    path: '/development-team',
+    name: 'DEVELOPMENT TEAM',
+    Component: DevelopmentTeam,
+  },
+]
