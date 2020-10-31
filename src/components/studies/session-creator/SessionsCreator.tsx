@@ -7,7 +7,11 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  FormControl,
   makeStyles,
+  MenuItem,
+  Select,
+  Typography,
 } from '@material-ui/core'
 
 import { Assessment, Group, StudySession } from '../../../types/types'
@@ -50,13 +54,16 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
   studySessions,
 }: SessionsCreatorProps) => {
   const classes = useStyles()
+
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
     [],
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
 
   const groupsUpdateFn = (action: SessionAction) => {
-    setData(actionsReducer(sessions!, action))
+    const newState = actionsReducer(sessions!, action)
+    console.log('setting data  to ', newState)
+    setData(newState)
   }
 
   /* const { data: sessions, status, error, run, setData } = useAsync<StudySession[]>({
@@ -67,6 +74,8 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
   const [sessions, setData] = React.useState<StudySession[]>(studySessions)
   const handleError = useErrorHandler()
   console.log('sessionsState', sessions)
+
+
 
   /*React.useEffect(() => {
     if (!id) {
@@ -113,6 +122,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
   if (sessions) {
     return (
       <>
+        <Typography component="h1"> Session Creator</Typography>
         <Box
           display="grid"
           padding="8px"
@@ -123,9 +133,12 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
           {sessions.map(session => (
             <Box
               width="280px"
-              height="511px"
+     
               border="1px solid black"
               bgcolor="#d5e5ec"
+              key={session.id}
+       
+              borderColor={session.active? 'red': 'blue'}
             >
               <StudySessionContainer
                 key={session.id}
@@ -153,13 +166,13 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
               ></StudySessionContainer>
             </Box>
           ))}
-          <Box
+          {/* <Box
             width="280px"
             height="511px"
             border="1px solid black"
             bgcolor="#d5e5ec"
           >
-            <NewStudySessionContainer
+           <NewStudySessionContainer
               key={'new_session'}
               sessions={sessions}
               onAddSession={(
@@ -176,9 +189,27 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
                 })
               }
             ></NewStudySessionContainer>
-          </Box>
+          </Box>*/}
         </Box>
-
+        <Box borderTop="1px solid black" key="footer">
+        <NewStudySessionContainer
+              key={'new_session'}
+              sessions={sessions}
+              onAddSession={(
+                sessions: StudySession[],
+                assessments: Assessment[],
+              ) =>
+                groupsUpdateFn({
+                  type: Types.AddSession,
+                  payload: {
+                    name: 'Session' + sessions.length.toString(),
+                    assessments,
+                    active: true,
+                  },
+                })
+              }
+            ></NewStudySessionContainer>
+        </Box>
         <Dialog
           open={isAssessmentDialogOpen}
           onClose={() => setIsAssessmentDialogOpen(false)}

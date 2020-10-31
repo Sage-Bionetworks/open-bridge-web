@@ -44,41 +44,55 @@ const NewStudySessionContainer: FunctionComponent<NewStudySessionContainerProps>
   sessions,
 }: NewStudySessionContainerProps) => {
   const classes = useStyles()
+  const [selectedSession, setSelectedSession] = React.useState<StudySession>(
+    sessions[0],
+  )
 
-  const copySession = (event: React.ChangeEvent<{ value: unknown }>) => {
-    const sessionId = event.target.value as string
-
-    console.log('sessionId:', sessionId)
-    const assessments =
-      sessions.find(session => session.id === sessionId)?.assessments || []
+  const copySession = (session: StudySession) => {
+    const assessments = session.assessments || []
 
     onAddSession(sessions, [...assessments])
   }
 
   return (
-    <Box className={/*clsx(classes.root)*/ ''}>
-      <Button variant="text" onClick={() => onAddSession(sessions, [])}>
-        + Create new session
+    <Box className={/*clsx(classes.root)*/ ''} display="flex" alignItems="flex-start" paddingTop="16px">
+      <Button
+        variant="contained"
+        color="secondary"
+        style={{marginRight: '16px'}}
+        onClick={() => onAddSession(sessions, [])}
+      >
+        Create new session
       </Button>
 
-      <FormControl className={classes.formControl}>
         <Select
-          value={''}
-          onChange={copySession}
+        style={{marginRight: '8px',  marginLeft: '16px', padding: 0, marginTop: '0'}}
+          value={selectedSession.id}
+          onChange={e =>
+            setSelectedSession(
+              sessions.find(session => session.id === e.target.value)!,
+            )
+          }
           displayEmpty
           className={classes.selectEmpty}
           inputProps={{ 'aria-label': 'Without label' }}
         >
-          <MenuItem value="" disabled>
-            + DUPLICATE SESSION
-          </MenuItem>
           {sessions.map(session => (
             <MenuItem value={session.id} key={session.id}>
               {session.name}
             </MenuItem>
           ))}
         </Select>
-      </FormControl>
+  
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={() =>
+          onAddSession(sessions, [...(selectedSession.assessments || [])])
+        }
+      >
+        Duplicate
+      </Button>
     </Box>
   )
 }

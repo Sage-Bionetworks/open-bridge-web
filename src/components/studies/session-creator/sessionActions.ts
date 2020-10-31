@@ -144,8 +144,8 @@ function removeSession(
   sessions: StudySession[],
   sessionId: string,
 ): StudySession[] {
-  const result = sessions.filter(session => session.id !== sessionId)
-  return result
+
+  return sessions.filter(session => session.id !== sessionId)
 }
 
 function updateAssessments(

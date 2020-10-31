@@ -18,6 +18,7 @@ import { useAsync } from '../../helpers/AsyncHook'
 import StudyService from '../../services/study.service'
 import clsx from 'clsx'
 import { TurnedInNotOutlined } from '@material-ui/icons'
+import StudyHeader from './StudyHeader'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   mainArea: {
@@ -113,12 +114,15 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
   }
 
   return (
+    <>
+    <StudyHeader studyId={id} currentSection={section}></StudyHeader>
     <Box
       paddingTop="16px"
       bgcolor="#997cbf29"
       display="flex"
       position="relative"
     >
+   
       <LeftNav
         open={open}
         onToggle={() => setOpen(prev => !prev)}
@@ -133,10 +137,7 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
             [classes.mainAreaWide]: !open,
           })}
         >
-          <h2>
-            Some Information that we want to see before everything is loaded{' '}
-            {id} {section}{' '}
-          </h2>
+ 
           <ErrorBoundary
             FallbackComponent={ErrorFallback}
             onError={ErrorHandler}
@@ -173,6 +174,7 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
         </Box>
       </Box>
     </Box>
+    </>
   )
 }
 

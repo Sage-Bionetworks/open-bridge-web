@@ -10,15 +10,23 @@ import {
 } from 'react-beautiful-dnd'
 
 import clsx from 'clsx'
-import { makeStyles, Box, Button } from '@material-ui/core'
+import {
+  makeStyles,
+  Box,
+  Button,
+  FormLabel,
+  Switch,
+  FormControlLabel,
+} from '@material-ui/core'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
+import ClearIcon from '@material-ui/icons/Clear'
+import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
-
 import EditableTextbox from '../../widgets/EditableTextbox'
 import { ThemeType } from '../../../style/theme'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
-  root: {
+  /*  root: {
     padding: '12px',
     border: '1px solid #C4C4C4',
     width: '265px',
@@ -26,8 +34,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     '&.active': {
       border: theme.activeBorder,
     },
-  },
+  },*/
   inner: {
+    flexGrow: 1,
     border: '1px solid #C4C4C4',
     padding: '12px',
     minHeight: '240px',
@@ -76,6 +85,7 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   onUpdateAssessmentList,
 }: StudySessionContainerProps) => {
   const classes = useStyles()
+  const [isEditable, setIsEditable] = React.useState(false)
 
   const rearrangeAssessments = (
     assessments: Assessment[],
@@ -109,12 +119,30 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   const getInner = (studySession: StudySession): JSX.Element => {
     return (
       <>
-        <EditableTextbox
-          initValue={studySession.name}
-          onTriggerUpdate={(newValue: string) =>
-            onUpdateSessionName(studySession.id, newValue)
-          }
-        ></EditableTextbox>
+        <Box position="relative" padding="8px 18px">
+          <EditableTextbox
+            initValue={studySession.name}
+            onTriggerUpdate={(newValue: string) =>
+              onUpdateSessionName(studySession.id, newValue)
+            }
+          ></EditableTextbox>
+          <Button
+            variant="text"
+            style={{
+              padding: '0',
+              minWidth: 'auto',
+              position: 'absolute',
+              right: '4px',
+              top: '4px',
+            }}
+            onClick={e => {
+              e.stopPropagation()
+              onRemoveSession(studySession.id)
+            }}
+          >
+            <ClearIcon fontSize="small"></ClearIcon>
+          </Button>
+        </Box>
         - {getTotalSessionTime(studySession.assessments)} min.
         <DragDropContext
           onDragEnd={(dropResult: DropResult) =>
@@ -147,24 +175,21 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
                           assessment={assessment}
                           isDragging={snapshot.isDragging}
                         >
-                          {' '}
-                          <Button
-                            variant="text"
-                            style={{ padding: '0', minWidth: 'auto' }}
-                            onClick={() => removeAssessment(assessment.guid)}
-                          >
-                            <DeleteIcon></DeleteIcon>
-                          </Button>
+                          {isEditable && (
+                            <Button
+                              variant="text"
+                              style={{ padding: '0', minWidth: 'auto' }}
+                              onClick={() => removeAssessment(assessment.guid)}
+                            >
+                              <DeleteIcon></DeleteIcon>
+                            </Button>
+                          )}
                         </AssessmentSmall>
                       </div>
                     )}
                   </Draggable>
                 ))}
                 {provided.placeholder}
-                <Button onClick={() => onShowAssessments()}>
-                  {' '}
-                  Assessments
-                </Button>
               </div>
             )}
           </Droppable>
@@ -175,16 +200,38 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   return (
     <Box
       className={/*clsx(classes.root, studySession?.active && 'active')*/ ''}
+      display="flex"
+      flexDirection="column"
+      height="100%"
       onClick={() => onSetActiveSession(studySession.id)}
     >
       {getInner(studySession)}
-      <Button
-        variant="text"
-        style={{ padding: '0', minWidth: 'auto' }}
-        onClick={() => onRemoveSession(studySession.id)}
+
+      <Box
+        borderTop="1px solid black"
+        height="50px"
+        display="flex"
+        padding=" 0px 8px"
+        justifyContent="space-between"
       >
-        <DeleteIcon></DeleteIcon>
-      </Button>
+        <FormControlLabel
+          control={
+            <Switch
+              value={isEditable}
+              onChange={e => setIsEditable(e.target.checked)}
+            />
+          }
+          label="Edit"
+        />
+
+        <Button
+          onClick={() => onShowAssessments()}
+          variant="text"
+          style={{ padding: '0px' }}
+        >
+          <AddIcon></AddIcon>
+        </Button>
+      </Box>
     </Box>
   )
 }

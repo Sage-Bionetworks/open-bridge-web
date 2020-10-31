@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import Button from '@material-ui/core/Button'
 import Link from '@material-ui/core/Link'
-import { Box, Dialog, DialogContent, Paper } from '@material-ui/core'
+import { Box, Dialog, DialogContent, Paper, Typography } from '@material-ui/core'
 import AccountLogin from './../account/AccountLogin'
 import { useSessionDataState } from '../../helpers/AuthContext'
 import Logout from '../account/Logout'
@@ -40,10 +40,14 @@ const useStyles = makeStyles(theme => ({
 type StudyHeaderProps = {
   //sections:? { name: string; path: string }[]
   studyId: string
+  studyName?: string
+  currentSection?: string
 }
 
 const StudyHeader: FunctionComponent<StudyHeaderProps> = ({
   studyId,
+  studyName,
+  currentSection
 }: StudyHeaderProps) => {
   const links = [
     { path: '/studies/builder/:id/', name: 'STUDY BUILDER' },
@@ -64,13 +68,14 @@ const StudyHeader: FunctionComponent<StudyHeaderProps> = ({
         className={classes.toolbar}
       >
         <img src={SageLogo} key="home" />
+        {studyName || 'Utitled Study '}
         {links
           .filter(section => section.name)
           .map(section => (
             <>
               <NavLink
                 to={section.path.replace(':id', studyId)}
-                key={section.name + '1'}
+                key={section.path}
                 className={classes.toolbarLink}
                 activeClassName={classes.selectedLink}
               >
@@ -79,6 +84,7 @@ const StudyHeader: FunctionComponent<StudyHeaderProps> = ({
             </>
           ))}
       </Toolbar>
+      {currentSection && <Typography component="h1">{currentSection}</Typography> }
     </Paper>
   )
 }

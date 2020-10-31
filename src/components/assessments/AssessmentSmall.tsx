@@ -21,10 +21,12 @@ const useStyles = makeStyles({
     '&.dragging': {
       border: '1px dashed #cdcdcd',
       padding: '5px',
+ 
     },
     '&:hover': {
       border: '1px dashed #cdcdcd',
-      padding: '1px',
+      padding: '2px',
+      margin: '0 -5px'
     },
   },
 
