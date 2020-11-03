@@ -54,15 +54,33 @@ AssessmentLibraryFilterProps) => {
     assessments.map(a => a.duration || 0)
   const [selectedTags, setSelectedTags] = React.useState<string[]>([])
 
+
+
+  const hasAnyTags = (assessment: Assessment, tags: string[]) => {
+    const intersection = assessment.tags.filter(tag => tags.includes(tag))
+    return intersection.length > 0
+  }
+
+
+  const getFilteredAssessments = (
+    assessments: Assessment[],
+    tags: string[],
+  ) => {
+    if (!tags.length) {
+      return assessments
+    } else {
+      return assessments.filter(a => hasAnyTags(a, tags))
+    }
+  }
+
   const changeTags = (isChecked: boolean, tag: string) => {
     const result = isChecked
       ? [...selectedTags, tag]
       : selectedTags.filter(item => item !== tag)
     setSelectedTags(result)
-    onChangeTags(result)
+    onChangeTags(getFilteredAssessments(assessments, result))
   }
 
-  console.log(selectedTags)
 
   return (
     <Paper className={classes.root}>
@@ -74,7 +92,7 @@ AssessmentLibraryFilterProps) => {
             onChange={event => {
               if (event.target.checked) {
                 setSelectedTags([])
-                onChangeTags([])
+                onChangeTags(getFilteredAssessments(assessments, []))
               }
             }}
             name="checkedB"

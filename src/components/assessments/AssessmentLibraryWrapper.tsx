@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, useEffect } from 'react'
+import React, { FunctionComponent, useState, useEffect, ReactNode } from 'react'
 import {
   match,
   RouteComponentProps,
@@ -30,12 +30,12 @@ import AssessmentService from '../../services/assessment.service'
 import AssessmentCard from './AssessmentCard'
 import AssessmentDetail from './AssessmentDetail'
 import AssessmentLibraryFilter from './AssessmentLibraryFilter'
-import AssessmentLibraryWrapper from './AssessmentLibraryWrapper'
 
-
-type AssessmentLibraryOwnProps = {
-  assessments?: Assessment[]
-  tags?: string[]
+type AssessmentLibraryWrapperOwnProps = {
+  assessments: Assessment[]
+  tags: StringDictionary<number>
+  children: ReactNode[]
+  onChangeTags: Function
 }
 
 
@@ -78,58 +78,35 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-type AssessmentLibraryProps = AssessmentLibraryOwnProps & RouteComponentProps
+type AssessmentLibraryWrapperProps = AssessmentLibraryWrapperOwnProps 
 
-const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
-  match,
-}: AssessmentLibraryProps) => {
+const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps> = ({
+
+  children,
+  tags, assessments,
+  onChangeTags
+}: AssessmentLibraryWrapperProps) => {
   const classes = useStyles()
 
-  const { token } = useSessionDataState()
-
-  const handleError = useErrorHandler()
-
-  const [filteredAssessments, setFilteredAssessments] = useState<Assessment[]| undefined>(undefined)
-
-  const { data, status, error, run, setData } = useAsync<{
-    assessments: Assessment[]
-    tags: StringDictionary<number>
-  }>({
-    status: 'PENDING',
-    data: null,
-  })
-
-
-  React.useEffect(() => {
-    ///your async call
-    return run(AssessmentService.getAssessmentsWithResources(undefined, token))
-  }, [run])
-  if (status === 'PENDING') {
-    return <>loading component here</>
-  }
-  if (status === 'REJECTED') {
-    handleError(error!)
-  }
-
-  if (!data?.assessments || (!data?.tags && status === 'RESOLVED')) {
-    return <>No Data </>
-  }
-
+  
   return (
-  <AssessmentLibraryWrapper tags={data.tags} assessments={data.assessments} onChangeTags={(assessments: Assessment[])=> setFilteredAssessments(assessments)/*setFilterTags(tags)*/}>
-      {(filteredAssessments|| data.assessments).map(
-            (a, index) => (
-              <Link to={`${match.url}/${a.guid}`} className={classes.cardLink}>
-                <AssessmentCard
-                  index={index}
-                  assessment={a}
-                  key={a.guid}
-                ></AssessmentCard>
-              </Link>
-            ),
-          )}
-  </AssessmentLibraryWrapper>
+    <Box className={classes.root}>
+      <AssessmentLibraryFilter
+        tags={tags}
+        assessments={assessments}
+        onChangeTags={(tags: string[]) => onChangeTags(tags)}
+      />
+      <Container
+        className={classes.assessmentContainer}
+        maxWidth="xl"
+        style={{ textAlign: 'center' }}
+      >
+        <Box className={clsx(classes.cardGrid)}>
+         {children}
+        </Box>
+      </Container>
+    </Box>
   )
 }
 
-export default AssessmentLibrary
+export default AssessmentLibraryWrapper

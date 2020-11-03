@@ -79,6 +79,7 @@ export default {
     assessments: '/v1/assessments?includeDeleted=false',
     assessmentsShared: '/v1/sharedassessments/?includeDeleted=false',
     assessmentShared: '/v1/sharedassessments/',
+    assessment: '/v1/assessments/',
     assessmentsSharedResources:
       '/v1/sharedassessments/identifier:{identifier}/resources',
     assessmentResources: '/v1/assessments/identifier:{identifier}/resources', //'/v1/sharedassessments',

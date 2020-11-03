@@ -65,7 +65,7 @@ const Header: FunctionComponent<HeaderProps> = ({
         {sections
           .filter(section => section.name)
           .map(section => (
-            <>
+       
               <NavLink
                 to={section.path}
                 key={section.name + '1'}
@@ -74,7 +74,7 @@ const Header: FunctionComponent<HeaderProps> = ({
               >
                 {section.name}
               </NavLink>
-            </>
+       
           ))}
         {token ? (
           <Logout></Logout>

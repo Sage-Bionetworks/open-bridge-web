@@ -55,7 +55,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = (
   })
   React.useEffect(() => {
     ///your async call
-    return run(AssessmentService.getSharedAssessmentsWithResources(id))
+    return run(AssessmentService.getAssessmentsWithResources(id, token))
   }, [run])
   if (status === 'PENDING') {
     return <>loading component here</>

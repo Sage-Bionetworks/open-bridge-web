@@ -75,8 +75,6 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
   const handleError = useErrorHandler()
   console.log('sessionsState', sessions)
 
-
-
   /*React.useEffect(() => {
     if (!id) {
       return
@@ -133,12 +131,10 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
           {sessions.map(session => (
             <Box
               width="280px"
-     
               border="1px solid black"
               bgcolor="#d5e5ec"
               key={session.id}
-       
-              borderColor={session.active? 'red': 'blue'}
+              borderColor={session.active ? 'red' : 'blue'}
             >
               <StudySessionContainer
                 key={session.id}
@@ -192,28 +188,30 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
           </Box>*/}
         </Box>
         <Box borderTop="1px solid black" key="footer">
-        <NewStudySessionContainer
-              key={'new_session'}
-              sessions={sessions}
-              onAddSession={(
-                sessions: StudySession[],
-                assessments: Assessment[],
-              ) =>
-                groupsUpdateFn({
-                  type: Types.AddSession,
-                  payload: {
-                    name: 'Session' + sessions.length.toString(),
-                    assessments,
-                    active: true,
-                  },
-                })
-              }
-            ></NewStudySessionContainer>
+          <NewStudySessionContainer
+            key={'new_session'}
+            sessions={sessions}
+            onAddSession={(
+              sessions: StudySession[],
+              assessments: Assessment[],
+            ) =>
+              groupsUpdateFn({
+                type: Types.AddSession,
+                payload: {
+                  name: 'Session' + sessions.length.toString(),
+                  assessments,
+                  active: true,
+                },
+              })
+            }
+          ></NewStudySessionContainer>
         </Box>
         <Dialog
+        maxWidth="lg"
           open={isAssessmentDialogOpen}
           onClose={() => setIsAssessmentDialogOpen(false)}
           aria-labelledby="form-dialog-title"
+          
         >
           <DialogContent>
             <AssessmentSelector

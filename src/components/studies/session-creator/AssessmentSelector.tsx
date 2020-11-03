@@ -6,12 +6,17 @@ import TabsMtb from '../../widgets/TabsMtb'
 import useAssessments from '../../../helpers/hooks'
 import AssessmentCard from '../../assessments/AssessmentCard'
 
-import { Group, Assessment, StudySession } from '../../../types/types'
+import { Group, Assessment, StudySession, StringDictionary } from '../../../types/types'
 
 import clsx from 'clsx'
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import { Session } from 'inspector'
+import AssessmentService from '../../../services/assessment.service'
+import { useAsync } from '../../../helpers/AsyncHook'
+import { useErrorHandler } from 'react-error-boundary'
+import { useSessionDataState } from '../../../helpers/AuthContext'
+import AssessmentLibraryWrapper from '../../assessments/AssessmentLibraryWrapper'
 
 const useStyles = makeStyles({
   root: { backgroundColor: '#E2E2E2', padding: '20px' },
@@ -66,21 +71,44 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
   selectedAssessments,
   onUpdateAssessments,
 }: AssessmentSelectorProps) => {
-  const assessments = useAssessments()
-  const [assessmentTabIndex, setAssessmentTabIndex] = useState(0)
-  /*const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
-    [],
-  )*/
-  /*  const [activeSession, setActiveSession] = useState<StudySession | undefined>(
-    undefined,
-  )*/
 
-  /* useEffect(() => {
-    console.log('effect')
-    setActiveSession(activeGroup.sessions.find(session => session.active))
-  }, [activeGroup.sessions])*/
+  const { token } = useSessionDataState()
 
+  const handleError = useErrorHandler()
   const classes = useStyles()
+
+  const [filteredAssessments, setFilteredAssessments] = useState<Assessment[]| undefined>(undefined)
+
+
+  const { data, status, error, run, setData } = useAsync<{
+    assessments: Assessment[]
+    tags: StringDictionary<number>
+  }>({
+    status: 'PENDING',
+    data: null,
+  })
+
+
+
+
+  React.useEffect(() => {
+    ///your async call
+    return run(AssessmentService.getAssessmentsWithResources(undefined, token))
+  }, [run])
+  if (status === 'PENDING') {
+    return <>loading component here</>
+  }
+  if (status === 'REJECTED') {
+    handleError(error!)
+  }
+
+  if (!data?.assessments || (!data?.tags && status === 'RESOLVED')) {
+    return <>No Data </>
+  }
+
+
+
+
 
   const isAssessmentInSession = (
     session: StudySession,
@@ -96,10 +124,14 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
     // setSelectedAssessments(selectedAssessments)
   }
 
-  const renderAssessmentTab = (assessments: Assessment[]): JSX.Element => {
-    return (
-      <div className={clsx('assesmentContainer', classes.assessments)}>
-        {assessments.map((a, index) => (
+
+
+  return (
+    <AssessmentLibraryWrapper tags={data.tags} assessments={data.assessments} onChangeTags={(assessments: Assessment[])=> setFilteredAssessments(assessments)/*setFilterTags(tags)*/}>
+     
+
+  
+        {(filteredAssessments|| data.assessments).map((a, index) => (
           <ToggleButtonGroup
             value={selectedAssessments}
             onChange={toggleAssessment}
@@ -132,27 +164,8 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
             </ToggleButton>
           </ToggleButtonGroup>
         ))}
-      </div>
-    )
-  }
-
-  return (
-    <div>
-      <div className="assessmentTabs">
-        {/*  <TabsMtb
-          value={assessmentTabIndex}
-          handleChange={(val: number) => setAssessmentTabIndex(val)}
-          tabDataObjects={[{label:'Bookmarked Assessment'}, {label: 'Assessment Library'}]}
-        ></TabsMtb>
-
-        <TabPanel value={assessmentTabIndex} index={0} key={'bkm_asmnt'}>
-          {renderAssessmentTab(assessments.filter(a => a.bookmarked))}
-        </TabPanel>
-
-      <TabPanel value={assessmentTabIndex} index={1} key={'asmnt'}>*/}
-        {renderAssessmentTab(assessments)}
-      </div>
-    </div>
+ 
+        </AssessmentLibraryWrapper>
   )
 }
 
