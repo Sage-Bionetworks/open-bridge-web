@@ -43,12 +43,9 @@ type AssessmentLibraryWrapperOwnProps = {
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
-    /*backgroundColor: '#BCD5E4',
-    paddingTop: theme.spacing(4),*/
+  backgroundColor: '#BCD5E4',
+      /*paddingTop: theme.spacing(4),*/
     // margin: `0 ${theme.spacing(4)}px`,
-  },
-  cardLink: {
-    textDecoration: 'none',
   },
   assessmentContainer: {
     padding: theme.spacing(1),

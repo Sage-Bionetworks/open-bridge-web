@@ -84,7 +84,7 @@ export default {
       '/v1/sharedassessments/identifier:{identifier}/resources',
     assessmentResources: '/v1/assessments/identifier:{identifier}/resources', //'/v1/sharedassessments',
     oauthSignIn: '/v3/auth/oauth/signIn',
-    participants: '/v3/participants',
+    selfInfo: '/v3/participants/self',
     /*phoneSignIn: '/v3/auth/phone/signIn',
   reauth: '/v3/auth/reauth',
   reports: '/v3/reports',
@@ -96,6 +96,7 @@ export default {
   sharedmodules: '/v3/sharedmodules',*/
     signIn: '/v3/auth/signIn',
     signOut: '/v3/auth/signOut',
+    
     /* subpopulations: '/v3/subpopulations',
   substudies: '/v3/substudies',
   survey: '/v3/surveys',

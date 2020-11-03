@@ -25,21 +25,17 @@ import UnauthenticatedApp from './UnauthenticatedApp'
 
 const defaultTheme = createMuiTheme()
 
-function getRootURL() {
+/*function getRootURL() {
   const portString = window.location.port ? `:${window.location.port}` : ''
   return `${window.location.protocol}//${window.location.hostname}${portString}/`
-}
+}*/
 
-const inStudy = (location: string) => {
-  const regexPattern = '/studies/[A-Za-z0-9]+/'
-  return location.search(regexPattern) > -1
-}
 
 export const detectSSOCode = async (
   sessionUpdateFn: Function,
   sessionData: SessionData,
 ) => {
-  const redirectURL = getRootURL()
+  //const redirectURL = getRootURL()
   // 'code' handling (from SSO) should be preformed on the root page, and then redirect to original route.
   let code: URL | null | string = new URL(window.location.href)
   // in test environment the searchParams isn't defined
@@ -75,6 +71,27 @@ export const detectSSOCode = async (
 function App() {
   const sessionData = useSessionDataState()
   const sessionUpdateFn = useSessionDataDispatch()
+const token = sessionData.token
+  useEffect(() => {
+    let isSubscribed = true
+    //the whole point of this is to log out the user if their session ha expired on the servier
+    async function getInfo(token: string | undefined) {
+      if (token && isSubscribed) {
+        try {
+          await UserService.getUserInfo(token)
+        } catch (e) {
+          sessionUpdateFn({
+            type: 'LOGOUT'
+          })
+        }
+      }
+    }
+    getInfo(token)
+    return () => {
+      isSubscribed = false
+    }
+  }, [token])
+
   useEffect(() => {
     detectSSOCode(sessionUpdateFn, sessionData)
   })

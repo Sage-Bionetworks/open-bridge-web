@@ -53,10 +53,21 @@ const loginOauth = async (
   return result
 }
 
+
+async function getUserInfo(token: string): Promise<Response<LoggedInUserData>> {
+  const result = await callEndpoint<LoggedInUserData>(
+    constants.endpoints.selfInfo,
+    'GET',
+    {},
+    token,
+  )
+  return result
+}
 const UserService = {
   requestResetPassword,
   loginWithPassword,
   loginOauth,
+  getUserInfo
 }
 
 export default UserService

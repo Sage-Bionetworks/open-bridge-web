@@ -41,41 +41,10 @@ type AssessmentLibraryOwnProps = {
 
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-    /*backgroundColor: '#BCD5E4',
-    paddingTop: theme.spacing(4),*/
-    // margin: `0 ${theme.spacing(4)}px`,
-  },
+
   cardLink: {
     textDecoration: 'none',
-  },
-  assessmentContainer: {
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-    // border: '1px solid black',
-
-    [theme.breakpoints.down('sm')]: {
-      maxWidth: '600px',
-    },
-  },
-  cardGrid: {
-    //const cardWidth = 300
-    display: 'grid',
-    padding: theme.spacing(0),
-    gridTemplateColumns: `repeat(auto-fill,300px)`,
-    gridColumnGap: theme.spacing(2),
-    justifyContent: 'center',
-    gridRowGap: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
-      padding: theme.spacing(3),
-      justifyContent: 'center',
-      gridRowGap: theme.spacing(4),
-    },
-
-    //   style={{ maxWidth: `${(300 + 8) * 5}px`, margin: '0 auto' }}
-  },
+  }
 }))
 
 type AssessmentLibraryProps = AssessmentLibraryOwnProps & RouteComponentProps
