@@ -7,52 +7,55 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  DialogTitle,
   FormControl,
+  IconButton,
   makeStyles,
   MenuItem,
   Select,
   Typography,
 } from '@material-ui/core'
+import CloseIcon from '@material-ui/icons/Close'
 
 import { Assessment, Group, StudySession } from '../../../types/types'
 
-import GroupsEditor from './GoupsEditor'
+import GroupsEditor from '../../../x_old/GoupsEditor'
 
 import AssessmentSelector from './AssessmentSelector'
 
 import actionsReducer, { Types, SessionAction } from './sessionActions'
 import StudyService from '../../../services/study.service'
 import TabPanel from '../../widgets/TabPanel'
-import NewStudySessionContainer from './NewStudySessionContainer'
-import StudySessionContainer from './StudySessionContainer'
+import SessionActionButtons from './SessionActionButtons'
+import SingleSessionContainer from './SingleSessionContainer'
 import { useErrorHandler } from 'react-error-boundary'
 import { useAsync } from '../../../helpers/AsyncHook'
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   root: {},
   bookmarkedAssessments: {
     backgroundColor: '#E2E2E2',
     padding: '20px',
   },
-  /* groupTab: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat( auto-fill, minmax(250px, 1fr) )',
-    gridAutoRows: 'minMax(310px, auto)',
-    gridGap: '20px',
-  },*/
-})
+  closeButton: {
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
+  },
+}))
 
-type SessionsCreatorProps = {
+type SessionCreatorProps = {
   //studyGroups?: Group[]
   // id?: string
   studySessions: StudySession[]
 }
 
-const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
+const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   //studyGroups,
   //id,
   studySessions,
-}: SessionsCreatorProps) => {
+}: SessionCreatorProps) => {
   const classes = useStyles()
 
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
@@ -92,11 +95,19 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
     return <>...loading</>
   }*/
 
-  const updateAssessmentList = (sessionId: string, assessments: Assessment[]) =>
+  const cancelAssessmentSelector = () => {
+    setIsAssessmentDialogOpen(false)
+    setSelectedAssessments([])
+
+  }
+
+  const updateAssessmentList = (sessionId: string, assessments: Assessment[]) =>{
+  console.log(assessments)
     groupsUpdateFn({
       type: Types.UpdateAssessments,
       payload: { sessionId, assessments },
     })
+  }
 
   const updateAssessments = (sessionId: string, assessments: Assessment[]) => {
     console.log('updating')
@@ -120,13 +131,14 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
   if (sessions) {
     return (
       <>
-        <Typography component="h1"> Session Creator</Typography>
+       
         <Box
           display="grid"
           padding="8px"
           gridTemplateColumns="repeat(auto-fill,280px)"
           gridColumnGap="16px"
           gridRowGap="16px"
+          minHeight="400px"
         >
           {sessions.map(session => (
             <Box
@@ -136,7 +148,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
               key={session.id}
               borderColor={session.active ? 'red' : 'blue'}
             >
-              <StudySessionContainer
+              <SingleSessionContainer
                 key={session.id}
                 studySession={session}
                 onShowAssessments={() => setIsAssessmentDialogOpen(true)}
@@ -159,36 +171,13 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
                   })
                 }
                 onUpdateAssessmentList={updateAssessmentList}
-              ></StudySessionContainer>
+              ></SingleSessionContainer>
             </Box>
           ))}
-          {/* <Box
-            width="280px"
-            height="511px"
-            border="1px solid black"
-            bgcolor="#d5e5ec"
-          >
-           <NewStudySessionContainer
-              key={'new_session'}
-              sessions={sessions}
-              onAddSession={(
-                sessions: StudySession[],
-                assessments: Assessment[],
-              ) =>
-                groupsUpdateFn({
-                  type: Types.AddSession,
-                  payload: {
-                    name: 'Session' + sessions.length.toString(),
-                    assessments,
-                    active: true,
-                  },
-                })
-              }
-            ></NewStudySessionContainer>
-          </Box>*/}
+         
         </Box>
         <Box borderTop="1px solid black" key="footer">
-          <NewStudySessionContainer
+          <SessionActionButtons
             key={'new_session'}
             sessions={sessions}
             onAddSession={(
@@ -204,15 +193,24 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
                 },
               })
             }
-          ></NewStudySessionContainer>
+          ></SessionActionButtons>
         </Box>
         <Dialog
-        maxWidth="lg"
+          maxWidth="lg"
           open={isAssessmentDialogOpen}
-          onClose={() => setIsAssessmentDialogOpen(false)}
+          onClose={cancelAssessmentSelector}
           aria-labelledby="form-dialog-title"
-          
         >
+          <DialogTitle>
+            Select assessment(s) to add to session.
+            <IconButton
+              aria-label="close"
+              className={classes.closeButton}
+              onClick={cancelAssessmentSelector}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
           <DialogContent>
             <AssessmentSelector
               selectedAssessments={selectedAssessments}
@@ -221,6 +219,10 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
             ></AssessmentSelector>
           </DialogContent>
           <DialogActions>
+            <Button onClick={cancelAssessmentSelector}>
+              Cancel
+            </Button>
+
             <Button
               variant="contained"
               onClick={() => {
@@ -233,7 +235,7 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
             >
               {!getActiveSession(sessions)
                 ? 'Please select group and session'
-                : `Add Selected to  ${getActiveSession(sessions)?.name} `}
+                : `Add  to  ${getActiveSession(sessions)?.name} `}
             </Button>
           </DialogActions>
         </Dialog>
@@ -242,4 +244,4 @@ const SessionsCreator: FunctionComponent<SessionsCreatorProps> = ({
   } else return <>should not happen</>
 }
 
-export default SessionsCreator
+export default SessionCreator

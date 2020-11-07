@@ -34,18 +34,18 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-type NewStudySessionContainerProps = {
+type SessionActionButtonsProps = {
   onAddSession: Function
   sessions: StudySession[]
 }
 
-const NewStudySessionContainer: FunctionComponent<NewStudySessionContainerProps> = ({
+const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
   onAddSession,
   sessions,
-}: NewStudySessionContainerProps) => {
+}: SessionActionButtonsProps) => {
   const classes = useStyles()
-  const [selectedSession, setSelectedSession] = React.useState<StudySession>(
-    sessions[0],
+  const [selectedSession, setSelectedSession] = React.useState<StudySession | undefined>(
+    sessions.length > 0? sessions[0] : undefined
   )
 
   const copySession = (session: StudySession) => {
@@ -55,35 +55,45 @@ const NewStudySessionContainer: FunctionComponent<NewStudySessionContainerProps>
   }
 
   return (
-    <Box className={/*clsx(classes.root)*/ ''} display="flex" alignItems="flex-start" paddingTop="16px">
+    <Box
+      className={/*clsx(classes.root)*/ ''}
+      display="flex"
+      alignItems="flex-start"
+      paddingTop="16px"
+    >
       <Button
         variant="contained"
         color="secondary"
-        style={{marginRight: '16px'}}
+        style={{ marginRight: '16px' }}
         onClick={() => onAddSession(sessions, [])}
       >
         Create new session
       </Button>
 
-        <Select
-        style={{marginRight: '8px',  marginLeft: '16px', padding: 0, marginTop: '0'}}
-          value={selectedSession.id}
-          onChange={e =>
-            setSelectedSession(
-              sessions.find(session => session.id === e.target.value)!,
-            )
-          }
-          displayEmpty
-          className={classes.selectEmpty}
-          inputProps={{ 'aria-label': 'Without label' }}
-        >
-          {sessions.map(session => (
-            <MenuItem value={session.id} key={session.id}>
-              {session.name}
-            </MenuItem>
-          ))}
-        </Select>
-  
+     {selectedSession &&  [<Select
+        style={{
+          marginRight: '8px',
+          marginLeft: '16px',
+          padding: 0,
+          marginTop: '0',
+        }}
+        value={selectedSession.id}
+        onChange={e =>
+          setSelectedSession(
+            sessions.find(session => session.id === e.target.value)!,
+          )
+        }
+        displayEmpty
+        className={classes.selectEmpty}
+        inputProps={{ 'aria-label': 'Without label' }}
+      >
+        {sessions.map(session => (
+          <MenuItem value={session.id} key={session.id}>
+            {session.name}
+          </MenuItem>
+        ))}
+      </Select>,
+
       <Button
         variant="contained"
         color="secondary"
@@ -92,9 +102,9 @@ const NewStudySessionContainer: FunctionComponent<NewStudySessionContainerProps>
         }
       >
         Duplicate
-      </Button>
+      </Button> ] }
     </Box>
   )
 }
 
-export default NewStudySessionContainer
+export default SessionActionButtons

@@ -157,6 +157,15 @@ export type StudySession = {
   duration: number
   name: string
   assessments: Assessment[]
+ // Guid: string
+/*Name: string
+Bundled: boolean
+Randomized: boolean
+Delay: number
+Interval: number
+Duration: number(period
+Expires number: Period
+Occurrences Number*/
 }
 
 export type Group = {
@@ -166,10 +175,11 @@ export type Group = {
   sessions: StudySession[]
 }
 
+export type StudyStatus =  'DRAFT' | 'ACTIVE' | 'COMPLETED'
 export type Study = {
-  id: string
-  active?: boolean
+  identifier: string
+  status?: StudyStatus
   name: string
-  description: string
-  groups: Group[]
+  subtitle?: string
+  description?: string
 }

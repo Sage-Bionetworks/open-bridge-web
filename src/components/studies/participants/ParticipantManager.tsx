@@ -1,10 +1,10 @@
 import React, { FunctionComponent, useEffect } from 'react'
 import Link from '@material-ui/core/Link'
 import { RouteComponentProps, useParams } from 'react-router-dom'
-import StudyHeader from '../StudyHeader'
+import StudyTopNav from '../StudyTopNav'
 
 //import { StudySessionsProvider } from '../../helpers/StudySessionsContext'
-//import SessionsCreator from './session-creator/SessionsCreator'
+//import SessionCreator from './session-creator/SessionCreator'
 
 type ParticipantManagerOwnProps = {
   title?: string
@@ -46,7 +46,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   return (
     <>
-      <StudyHeader studyId={id} />
+      <StudyTopNav studyId={id} />
       <h2>Participant Managerc</h2>
       studyId {id}
     </>

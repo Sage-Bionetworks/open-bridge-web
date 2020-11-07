@@ -1,9 +1,9 @@
 import AssessmentLibrary from './components/assessments/AssessmentLibrary'
 import ComplianceDashboard from './components/compliance/ComplianceDashboard'
-import StudyManager from './components/studies/StudyManager'
+import StudyList from './components/studies/StudyList'
 import ParticipantManager from './components/studies/participants/ParticipantManager'
 
-import StudyEditor from './components/studies/StudyEditor'
+import StudyBuilder from './components/studies/StudyBuilder'
 import AssessmentDetail from './components/assessments/AssessmentDetail'
 import SessionsLayout from './components/layouts/sessions'
 
@@ -17,11 +17,11 @@ export default [
   {
     path: '/studies',
     name: 'MY STUDIES',
-    Component: StudyManager,
+    Component: StudyList,
     exact: true,
   },
-  { path: '/studies/builder/:id', name: '', Component: StudyEditor },
-  { path: '/studies/builder/:id/:section', name: '', Component: StudyEditor },
+  { path: '/studies/builder/:id', name: '', Component: StudyBuilder },
+  { path: '/studies/builder/:id/:section', name: '', Component: StudyBuilder },
   {
     path: '/studies/:id/participant-manager',
     name: '',

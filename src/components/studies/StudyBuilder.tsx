@@ -8,17 +8,17 @@ import { Route, RouteComponentProps, useParams } from 'react-router-dom'
 import { Box, Button, Grid, Link } from '@material-ui/core'
 import { Switch, matchPath } from 'react-router-dom'
 import Scheduler from './scheduler/Scheduler'
-import SessionsCreator from './session-creator/SessionsCreator'
+import SessionCreator from './session-creator/SessionCreator'
 import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import LoadingComponent from '../widgets/Loader'
 import { SECTIONS as sectionLinks, StudySection } from './sections'
-import LeftNav from './LeftNav'
+import StudyLeftNav from './StudyLeftNav'
 import { useAsync } from '../../helpers/AsyncHook'
 import StudyService from '../../services/study.service'
 import clsx from 'clsx'
 import { TurnedInNotOutlined } from '@material-ui/icons'
-import StudyHeader from './StudyHeader'
+import StudyTopNav from './StudyTopNav'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   mainArea: {
@@ -37,11 +37,11 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
 }))
 
-type StudyEditorOwnProps = {}
+type StudyBuilderOwnProps = {}
 
-type StudyEditorProps = StudyEditorOwnProps & RouteComponentProps
+type StudyBuilderProps = StudyBuilderOwnProps & RouteComponentProps
 
-const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
+const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
   const classes = useStyles()
   const handleError = useErrorHandler()
   let { id, section } = useParams<{ id: string; section: StudySection }>()
@@ -71,8 +71,8 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
   }
 
   const getStudySessions = (study: Study) => {
-    const sessions = study.groups.map(group => group.sessions).flat()
-    return sessions
+    //const sessions = study.groups.map(group => group.sessions).flat()
+    return []
   }
 
   const NavLinks = ({
@@ -115,7 +115,7 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
 
   return (
     <>
-    <StudyHeader studyId={id} currentSection={section}></StudyHeader>
+    <StudyTopNav studyId={id} currentSection={section}></StudyTopNav>
     <Box
       paddingTop="16px"
       bgcolor="#997cbf29"
@@ -123,12 +123,12 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
       position="relative"
     >
    
-      <LeftNav
+      <StudyLeftNav
         open={open}
         onToggle={() => setOpen(prev => !prev)}
         currentSection={section}
         id={id}
-      ></LeftNav>
+      ></StudyLeftNav>
 
       <Box textAlign="center" flexGrow="1" bgcolor="#dde0de">
         <Box
@@ -155,7 +155,7 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
                     path="/studies/builder/:id/session-creator"
                     render={props => {
                       return (
-                        <SessionsCreator
+                        <SessionCreator
                           {...props}
                           studySessions={getStudySessions(study)}
                         />
@@ -178,4 +178,4 @@ const StudyEditor: FunctionComponent<StudyEditorProps> = ({ ...props }) => {
   )
 }
 
-export default StudyEditor
+export default StudyBuilder

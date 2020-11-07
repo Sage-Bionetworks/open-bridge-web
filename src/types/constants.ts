@@ -76,6 +76,7 @@ export default {
   getAppPublicKey: '/v1/apps/self/publicKey',
   masterschedule: '/v3/schedulerconfigs',
   metadata: '/v3/sharedmodules/metadata',*/
+  sessionAssessments: '/v1/sessions/{sessionGuid}/assessments',
     assessments: '/v1/assessments?includeDeleted=false',
     assessmentsShared: '/v1/sharedassessments/?includeDeleted=false',
     assessmentShared: '/v1/sharedassessments/',

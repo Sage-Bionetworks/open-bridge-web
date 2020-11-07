@@ -67,7 +67,7 @@ const rearrangeList = (
   return result
 }
 
-type StudySessionContainerProps = {
+type SingleSessionContainerProps = {
   studySession: StudySession
   onShowAssessments: Function
   onSetActiveSession: Function
@@ -76,14 +76,14 @@ type StudySessionContainerProps = {
   onRemoveSession: Function
 }
 
-const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
+const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = ({
   studySession,
   onShowAssessments,
   onRemoveSession,
   onSetActiveSession,
   onUpdateSessionName,
   onUpdateAssessmentList,
-}: StudySessionContainerProps) => {
+}: SingleSessionContainerProps) => {
   const classes = useStyles()
   const [isEditable, setIsEditable] = React.useState(false)
 
@@ -103,6 +103,7 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   }
 
   const removeAssessment = (assessmentId: string) => {
+    console.log('removing')
     onUpdateAssessmentList(
       studySession.id,
       studySession.assessments.filter(a => a.guid !== assessmentId),
@@ -179,7 +180,7 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
                             <Button
                               variant="text"
                               style={{ padding: '0', minWidth: 'auto' }}
-                              onClick={() => removeAssessment(assessment.guid)}
+                              onClick={(e) => {e.stopPropagation(); removeAssessment(assessment.guid)}}
                             >
                               <DeleteIcon></DeleteIcon>
                             </Button>
@@ -236,4 +237,4 @@ const StudySessionContainer: FunctionComponent<StudySessionContainerProps> = ({
   )
 }
 
-export default StudySessionContainer
+export default SingleSessionContainer

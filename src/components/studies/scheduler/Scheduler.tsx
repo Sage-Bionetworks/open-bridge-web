@@ -13,7 +13,7 @@ import actionsReducer, { Types } from '../session-creator/sessionActions'
 import TabPanel from '../../widgets/TabPanel'
 import LoadingComponent from '../../widgets/Loader'
 import { useErrorHandler } from 'react-error-boundary'
-import SchedulableStudySessionContainer from './SchedulableStudySessionContainer'
+import SchedulableSingleSessionContainer from './SchedulableStudySessionContainer'
 import ObjectDebug from '../../widgets/ObjectDebug'
 
 type SchedulerOwnProps = {
@@ -59,7 +59,7 @@ const Scheduler: FunctionComponent<SchedulerProps> = () => {
       <LoadingComponent reqStatusLoading={reqStatus}>
         <div>
           {sessions.map(session => (
-            <SchedulableStudySessionContainer
+            <SchedulableSingleSessionContainer
               key={session.id}
               studySession={session}
               onSetActiveSession={() =>
@@ -68,7 +68,7 @@ const Scheduler: FunctionComponent<SchedulerProps> = () => {
                   payload: { sessionId: session.id },
                 })
               }
-            ></SchedulableStudySessionContainer>
+            ></SchedulableSingleSessionContainer>
           ))}
         </div>
       </LoadingComponent>

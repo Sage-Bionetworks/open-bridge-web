@@ -1,10 +1,11 @@
+//@ts-nocheck
 import React, { FunctionComponent } from 'react'
 
 import { makeStyles } from '@material-ui/core'
 
-import TabsMtb from '../../widgets/TabsMtb'
+import TabsMtb from '../components/widgets/TabsMtb'
 
-import { Group } from '../../../types/types'
+import { Group } from '../types/types'
 
 const useStyles = makeStyles({})
 

@@ -64,16 +64,16 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
 }))
 
-type LeftNavOwnProps = {
+type StudyLeftNavOwnProps = {
   currentSection?: StudySection
   id?: string
   open: boolean
   onToggle: Function
 }
 
-type LeftNavProps = LeftNavOwnProps
+type StudyLeftNavProps = StudyLeftNavOwnProps
 
-const LeftNav: FunctionComponent<LeftNavProps> = ({
+const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
   id,
   open,
   onToggle,
@@ -126,4 +126,4 @@ const LeftNav: FunctionComponent<LeftNavProps> = ({
   )
 }
 
-export default LeftNav
+export default StudyLeftNav

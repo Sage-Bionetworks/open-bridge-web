@@ -4,12 +4,19 @@ import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import Button from '@material-ui/core/Button'
 import Link from '@material-ui/core/Link'
-import { Box, Dialog, DialogContent, Paper, Typography } from '@material-ui/core'
-import AccountLogin from './../account/AccountLogin'
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  Paper,
+  Typography,
+} from '@material-ui/core'
+import AccountLogin from '../account/AccountLogin'
 import { useSessionDataState } from '../../helpers/AuthContext'
 import Logout from '../account/Logout'
 import SageLogo from '../../assets/sage.svg'
 import { NavLink, BrowserRouter as Router } from 'react-router-dom'
+import BreadCrumb from '../widgets/BreadCrumb'
 
 const useStyles = makeStyles(theme => ({
   toolbarWrapper: {
@@ -37,18 +44,18 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-type StudyHeaderProps = {
+type StudyTopNavProps = {
   //sections:? { name: string; path: string }[]
   studyId: string
   studyName?: string
   currentSection?: string
 }
 
-const StudyHeader: FunctionComponent<StudyHeaderProps> = ({
+const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   studyId,
   studyName,
-  currentSection
-}: StudyHeaderProps) => {
+  currentSection,
+}: StudyTopNavProps) => {
   const links = [
     { path: '/studies/builder/:id/', name: 'STUDY BUILDER' },
     { path: '/studies/:id/participant-manager', name: 'PARTICIPANT MANAGER' },
@@ -67,26 +74,37 @@ const StudyHeader: FunctionComponent<StudyHeaderProps> = ({
         disableGutters
         className={classes.toolbar}
       >
-        <img src={SageLogo} key="home" />
-        {studyName || 'Utitled Study '}
+        <NavLink
+          to={'/'}
+          key="home"
+          className={classes.toolbarLink}
+        
+        >
+          <img src={SageLogo} key="home" />
+        </NavLink>
+      
+        <BreadCrumb
+            links={[{ url: '/Studies', text: '' }]}
+            currentItem={ studyName || 'Utitled Study '}
+          ></BreadCrumb>
         {links
           .filter(section => section.name)
           .map(section => (
-            <>
-              <NavLink
-                to={section.path.replace(':id', studyId)}
-                key={section.path}
-                className={classes.toolbarLink}
-                activeClassName={classes.selectedLink}
-              >
-                {section.name}
-              </NavLink>
-            </>
+            <NavLink
+              to={section.path.replace(':id', studyId)}
+              key={section.path}
+              className={classes.toolbarLink}
+              activeClassName={classes.selectedLink}
+            >
+              {section.name}
+            </NavLink>
           ))}
       </Toolbar>
-      {currentSection && <Typography component="h1">{currentSection}</Typography> }
+      {currentSection && (
+        <Typography component="h1">{currentSection}</Typography>
+      )}
     </Paper>
   )
 }
 
-export default StudyHeader
+export default StudyTopNav

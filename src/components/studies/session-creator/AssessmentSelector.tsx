@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 
-import { Box, Button, makeStyles } from '@material-ui/core'
+import { Box, Button, makeStyles, Typography } from '@material-ui/core'
 import TabPanel from '../../widgets/TabPanel'
 import TabsMtb from '../../widgets/TabsMtb'
 import useAssessments from '../../../helpers/hooks'
@@ -141,10 +141,12 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
     selectedAssessments: Assessment[],
   ) => {
     onUpdateAssessments(selectedAssessments)
-    // setSelectedAssessments(selectedAssessments)
+
   }
 
   return (
+    <div>
+  
     <AssessmentLibraryWrapper
       tags={data.tags}
       assessments={data.assessments}
@@ -187,6 +189,7 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
         </ToggleButtonGroup>
       ))}
     </AssessmentLibraryWrapper>
+    </div>
   )
 }
 

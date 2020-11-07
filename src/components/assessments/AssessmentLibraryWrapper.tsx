@@ -43,7 +43,7 @@ type AssessmentLibraryWrapperOwnProps = {
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
-  backgroundColor: '#BCD5E4',
+  backgroundColor: theme.palette.background.default
       /*paddingTop: theme.spacing(4),*/
     // margin: `0 ${theme.spacing(4)}px`,
   },
@@ -51,8 +51,6 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1),
     textAlign: 'center',
     color: theme.palette.text.secondary,
-    // border: '1px solid black',
-
     [theme.breakpoints.down('sm')]: {
       maxWidth: '600px',
     },
@@ -96,9 +94,9 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
       <Container
         className={classes.assessmentContainer}
         maxWidth="xl"
-        style={{ textAlign: 'center' }}
+  
       >
-        <Box className={clsx(classes.cardGrid)}>
+        <Box className={classes.cardGrid}>
          {children}
         </Box>
       </Container>

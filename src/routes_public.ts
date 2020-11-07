@@ -1,6 +1,6 @@
 import AssessmentLibrary from './components/assessments/AssessmentLibrary'
 
-import StudyEditor from './components/studies/StudyEditor'
+import StudyBuilder from './components/studies/StudyBuilder'
 import AssessmentDetail from './components/assessments/AssessmentDetail'
 import SessionsLayout from './components/layouts/sessions'
 import HowItWorks from './components/static/HowItWorks'

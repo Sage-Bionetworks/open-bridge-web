@@ -144,7 +144,6 @@ function removeSession(
   sessions: StudySession[],
   sessionId: string,
 ): StudySession[] {
-
   return sessions.filter(session => session.id !== sessionId)
 }
 

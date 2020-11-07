@@ -25,8 +25,8 @@ import AssessmentSelector from '../components/studies/AssessmentSelector'
 import actionsReducer, { Types } from './sessionActions'
 import StudyService from '../../../services/study.service'
 import TabPanel from '../../widgets/TabPanel'
-import NewStudySessionContainer from './NewStudySessionContainer'
-import StudySessionContainer from './StudySessionContainer'
+import NewSingleSessionContainer from './NewSingleSessionContainer'
+import SingleSessionContainer from './SingleSessionContainer'
 import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
 import { useSessionDataState } from '../../../helpers/AuthContext'
 import LoadingComponent from '../../widgets/Loader'
@@ -45,15 +45,15 @@ const useStyles = makeStyles({
   },
 })
 
-type SessionsCreatorOldProps = {
+type SessionCreatorOldProps = {
   studyGroups: Group[]
   id: string
 }
 
-const SessionsCreatorOld: FunctionComponent<SessionsCreatorOldProps> = ({
+const SessionCreatorOld: FunctionComponent<SessionCreatorOldProps> = ({
   studyGroups,
   id,
-}: SessionsCreatorOldProps) => {
+}: SessionCreatorOldProps) => {
   /*
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
     [],
@@ -195,7 +195,7 @@ const SessionsCreatorOld: FunctionComponent<SessionsCreatorOldProps> = ({
           >
             <div className={classes.groupTab}>
               {group.sessions.map(session => (
-                <StudySessionContainer
+                <SingleSessionContainer
                   key={session.id}
                   studySession={session}
                   onShowAssessments={() => setIsAssessmentDialogOpen(true)}
@@ -203,14 +203,14 @@ const SessionsCreatorOld: FunctionComponent<SessionsCreatorOldProps> = ({
                   onRemoveSession={removeSession}
                   onUpdateSessionName={updateSessionName}
                   onUpdateAssessmentList={updateAssessmentList}
-                ></StudySessionContainer>
+                ></SingleSessionContainer>
               ))}
 
-              <NewStudySessionContainer
+              <NewSingleSessionContainer
                 key={'new_session'}
                 sessions={group.sessions}
                 onAddSession={addSession}
-              ></NewStudySessionContainer>
+              ></NewSingleSessionContainer>
             </div>
           </TabPanel>
         ))}
@@ -251,4 +251,4 @@ const SessionsCreatorOld: FunctionComponent<SessionsCreatorOldProps> = ({
   return <></>
 }
 
-export default SessionsCreatorOld
+export default SessionCreatorOld

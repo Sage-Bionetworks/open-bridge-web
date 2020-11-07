@@ -7,8 +7,8 @@ import constants from '../types/constants'
 
 const AssessmentService = {
   getAssessments,
-
   getAssessmentsWithResources,
+  getAssessmentsForSession,
 }
 
 
@@ -28,7 +28,7 @@ async function getAssessment(guid: string, token?: string): Promise<Assessment[]
 }
 
 async function getAssessments(token?: string): Promise<Assessment[]> {
-  debugger
+
   const result =token?  await callEndpoint<{ items: Assessment[] }>(
     constants.endpoints.assessments,
     'GET',
@@ -92,6 +92,24 @@ async function getAssessmentsWithResources(
 
     return result
   })
+}
+
+
+
+async function getAssessmentsForSession(sessionId: string, token?: string): Promise<Assessment[]> {
+// aling to do when api is ready
+  /* const result =await callEndpoint<{ items: Assessment[] }>(
+    constants.endpoints.sessionAssessments.replace(
+      '{sessionGuid}',
+      sessionId),
+    'GET',
+    {},
+    token,
+  
+
+  return result*/
+  const x = await getAssessments(token)
+  return x.splice(0, 3)
 }
 
 
