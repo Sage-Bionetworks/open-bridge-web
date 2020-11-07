@@ -4,11 +4,13 @@ import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
-    width: '100%',
+    marginRight: theme.spacing(2),
+    
     borderRadius: '5px',
 
     '&:hover': {
       border: `1px solid ${theme.palette.divider}`,
+      padding: '8px'
     },
   },
 }))
@@ -17,6 +19,7 @@ type EditableProps = {
   text: string
   type: string
   placeholder: string
+  component?: React.ElementType
   children: React.ReactNode
   childRef: React.MutableRefObject<any>
   onReset: Function
@@ -31,6 +34,7 @@ export const Editable: FunctionComponent<EditableProps> = ({
   childRef,
   onReset,
   onTriggerUpdate,
+  component: WrapperElement = 'span',
   ...props
 }) => {
   const [isEditing, setEditing] = useState(false)
@@ -62,6 +66,8 @@ export const Editable: FunctionComponent<EditableProps> = ({
     }
   }
 
+
+
   return (
     <section {...props}>
       {isEditing ? (
@@ -73,7 +79,7 @@ export const Editable: FunctionComponent<EditableProps> = ({
         </div>
       ) : (
         <div className={classes.wrapper} onClick={() => setEditing(true)}>
-          <span>{text || placeholder || 'blah'}</span>
+          <WrapperElement style={{margin: 0}}>{text || placeholder || 'blah'}</WrapperElement>
         </div>
       )}
     </section>
@@ -83,17 +89,20 @@ export const Editable: FunctionComponent<EditableProps> = ({
 type EditableTextboxProps = {
   initValue: string
   onTriggerUpdate: Function
+  component?: React.ElementType
 }
 
 const EditableTextbox: FunctionComponent<EditableTextboxProps> = ({
   initValue,
   onTriggerUpdate,
+  ...rest
 }) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [newValue, setNewValue] = React.useState('')
 
   return (
+
     <Editable
       text={newValue}
       placeholder={initValue}
@@ -101,6 +110,7 @@ const EditableTextbox: FunctionComponent<EditableTextboxProps> = ({
       onReset={() => setNewValue(initValue)}
       onTriggerUpdate={() => onTriggerUpdate(newValue)}
       type="input"
+      {...rest}
     >
       <input
         ref={inputRef}
@@ -108,7 +118,8 @@ const EditableTextbox: FunctionComponent<EditableTextboxProps> = ({
         name="task"
         placeholder={initValue}
         value={newValue}
-        style={{ width: '100%' }}
+        style={{width: '100%', padding: '8px'}}
+ 
         onBlur={e => {
           if (newValue) {
             onTriggerUpdate(newValue)
@@ -119,6 +130,7 @@ const EditableTextbox: FunctionComponent<EditableTextboxProps> = ({
         }}
       />
     </Editable>
+  
   )
 }
 

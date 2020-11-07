@@ -20,6 +20,7 @@ import {
 } from '@material-ui/core'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
 import ClearIcon from '@material-ui/icons/Clear'
+import ClockIcon from '@material-ui/icons/AccessTime'
 import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditableTextbox from '../../widgets/EditableTextbox'
@@ -37,9 +38,11 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },*/
   inner: {
     flexGrow: 1,
-    border: '1px solid #C4C4C4',
+
     padding: '12px',
-    minHeight: '240px',
+    height: '376px',
+
+    overflowY: 'scroll',
 
     '&.empty': {
       border: '1px dashed #C4C4C4',
@@ -120,21 +123,25 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
   const getInner = (studySession: StudySession): JSX.Element => {
     return (
       <>
-        <Box position="relative" padding="8px 18px">
+        <Box position="relative" textAlign="left" paddingBottom="6px" borderBottom = '1px solid black'>
+          <Box marginRight="16px">
           <EditableTextbox
+          component="h4"
             initValue={studySession.name}
             onTriggerUpdate={(newValue: string) =>
               onUpdateSessionName(studySession.id, newValue)
             }
           ></EditableTextbox>
+          </Box>
+         
           <Button
             variant="text"
             style={{
               padding: '0',
               minWidth: 'auto',
               position: 'absolute',
-              right: '4px',
-              top: '4px',
+              right: '-3px',
+              top: '-3px',
             }}
             onClick={e => {
               e.stopPropagation()
@@ -143,57 +150,66 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
           >
             <ClearIcon fontSize="small"></ClearIcon>
           </Button>
+          <Box fontSize="12px" textAlign="right">
+         {getTotalSessionTime(studySession.assessments) || 0} min.
+          <ClockIcon style={{fontSize: "12px", verticalAlign: 'middle'}}></ClockIcon>
+          </Box>
         </Box>
-        - {getTotalSessionTime(studySession.assessments)} min.
+        
+        
         <DragDropContext
           onDragEnd={(dropResult: DropResult) =>
             rearrangeAssessments(studySession.assessments, dropResult)
           }
         >
-          <Droppable droppableId={studySession.id} type="TASK">
-            {(provided, snapshot) => (
-              <div
-                className={clsx({
-                  [classes.inner]: true,
-                  dragging: snapshot.isDraggingOver,
-                })}
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                {studySession.assessments.map((assessment, index) => (
-                  <Draggable
-                    draggableId={assessment.guid}
-                    index={index}
-                    key={assessment.guid}
-                  >
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <AssessmentSmall
-                          assessment={assessment}
-                          isDragging={snapshot.isDragging}
+          <div className={classes.inner}>
+            <Droppable droppableId={studySession.id} type="TASK">
+              {(provided, snapshot) => (
+                <div
+                  className={clsx({
+                    dragging: snapshot.isDraggingOver,
+                  })}
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                >
+                  {studySession.assessments.map((assessment, index) => (
+                    <Draggable
+                      draggableId={assessment.guid}
+                      index={index}
+                      key={assessment.guid}
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
                         >
-                          {isEditable && (
-                            <Button
-                              variant="text"
-                              style={{ padding: '0', minWidth: 'auto' }}
-                              onClick={(e) => {e.stopPropagation(); removeAssessment(assessment.guid)}}
-                            >
-                              <DeleteIcon></DeleteIcon>
-                            </Button>
-                          )}
-                        </AssessmentSmall>
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
+                          <AssessmentSmall
+                            assessment={assessment}
+                            isDragging={snapshot.isDragging}
+                          >
+                            {isEditable && (
+                              <Button
+                                variant="text"
+                                style={{ padding: '0', minWidth: 'auto' }}
+                                onClick={e => {
+                                  e.stopPropagation()
+                                  removeAssessment(assessment.guid)
+                                }}
+                              >
+                                <DeleteIcon></DeleteIcon>
+                              </Button>
+                            )}
+                          </AssessmentSmall>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </div>
         </DragDropContext>
       </>
     )
@@ -212,7 +228,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
         borderTop="1px solid black"
         height="50px"
         display="flex"
-        padding=" 0px 8px"
+        padding=" 0px "
         justifyContent="space-between"
       >
         <FormControlLabel
@@ -228,7 +244,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
         <Button
           onClick={() => onShowAssessments()}
           variant="text"
-          style={{ padding: '0px' }}
+          style={{ padding: '0px', minWidth: 'auto' }}
         >
           <AddIcon></AddIcon>
         </Button>

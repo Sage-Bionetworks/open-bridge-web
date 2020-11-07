@@ -108,8 +108,15 @@ async function getAssessmentsForSession(sessionId: string, token?: string): Prom
   
 
   return result*/
+
   const x = await getAssessments(token)
-  return x.splice(0, 3)
+  const max =  x.length /2
+  const num1 =  Math.floor(Math.random() * Math.floor(max));
+  const num2 =  Math.floor(Math.random() * Math.floor(max));
+  const num3 =  Math.floor(Math.random() * Math.floor(max));
+  const min = Math.min(num1, num2)
+  const max1 = Math.max(num1, num2)
+  return x.splice(min, max1)
 }
 
 

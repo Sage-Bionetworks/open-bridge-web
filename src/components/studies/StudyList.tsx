@@ -138,6 +138,11 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const resetStatusFilters = () =>
     setStatusFilters(sections.map(section => section.status))
 
+
+   const createStudy = () => {
+     //setStudies([...studies, {identifier: }])
+   }
+
   const isSelectedFilter = (filter: StudyStatus) =>
     statusFilters.indexOf(filter) > -1 && statusFilters.length === 1
 
@@ -194,7 +199,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             </li>
           ))}
         </ul>
-        <Button variant="contained">+ Create a Study</Button>
+        <Button variant="contained" onClick={()=>createStudy()}>+ Create a Study</Button>
       </Box>
       <Divider className={classes.divider}></Divider>
       {statusFilters.map((status, index) => (

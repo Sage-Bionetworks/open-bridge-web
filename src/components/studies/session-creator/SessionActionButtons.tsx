@@ -44,15 +44,10 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
   sessions,
 }: SessionActionButtonsProps) => {
   const classes = useStyles()
-  const [selectedSession, setSelectedSession] = React.useState<StudySession | undefined>(
-    sessions.length > 0? sessions[0] : undefined
-  )
+  const [selectedSession, setSelectedSession] = React.useState<
+    StudySession | undefined
+  >(sessions.length > 0 ? sessions[0] : undefined)
 
-  const copySession = (session: StudySession) => {
-    const assessments = session.assessments || []
-
-    onAddSession(sessions, [...assessments])
-  }
 
   return (
     <Box
@@ -70,39 +65,41 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
         Create new session
       </Button>
 
-     {selectedSession &&  [<Select
-        style={{
-          marginRight: '8px',
-          marginLeft: '16px',
-          padding: 0,
-          marginTop: '0',
-        }}
-        value={selectedSession.id}
-        onChange={e =>
-          setSelectedSession(
-            sessions.find(session => session.id === e.target.value)!,
-          )
-        }
-        displayEmpty
-        className={classes.selectEmpty}
-        inputProps={{ 'aria-label': 'Without label' }}
-      >
-        {sessions.map(session => (
-          <MenuItem value={session.id} key={session.id}>
-            {session.name}
-          </MenuItem>
-        ))}
-      </Select>,
+      {selectedSession && [
+        <Select
+          style={{
+            marginRight: '8px',
+            marginLeft: '16px',
+            padding: 0,
+            marginTop: '0',
+          }}
+          value={selectedSession.id}
+          onChange={e =>
+            setSelectedSession(
+              sessions.find(session => session.id === e.target.value)!,
+            )
+          }
+          displayEmpty
+          className={classes.selectEmpty}
+          inputProps={{ 'aria-label': 'Without label' }}
+        >
+          {sessions.map(session => (
+            <MenuItem value={session.id} key={session.id}>
+              {session.name}
+            </MenuItem>
+          ))}
+        </Select>,
 
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={() =>
-          onAddSession(sessions, [...(selectedSession.assessments || [])])
-        }
-      >
-        Duplicate
-      </Button> ] }
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() =>
+            onAddSession(sessions, [...(selectedSession.assessments || [])])
+          }
+        >
+          Duplicate
+        </Button>,
+      ]}
     </Box>
   )
 }

@@ -12,6 +12,7 @@ import {
   IconButton,
   makeStyles,
   MenuItem,
+  Paper,
   Select,
   Typography,
 } from '@material-ui/core'
@@ -19,7 +20,7 @@ import CloseIcon from '@material-ui/icons/Close'
 
 import { Assessment, Group, StudySession } from '../../../types/types'
 
-import GroupsEditor from '../../../x_old/GoupsEditor'
+import GroupsEditor from '../scheduler/GoupsEditor'
 
 import AssessmentSelector from './AssessmentSelector'
 
@@ -32,17 +33,30 @@ import { useErrorHandler } from 'react-error-boundary'
 import { useAsync } from '../../../helpers/AsyncHook'
 
 const useStyles = makeStyles(theme => ({
-  root: {},
-  bookmarkedAssessments: {
-    backgroundColor: '#E2E2E2',
-    padding: '20px',
+  root: {
+    display: "grid",
+    padding: theme.spacing(2),
+    gridTemplateColumns: "repeat(auto-fill,280px)",
+    gridColumnGap: theme.spacing(2),
+    gridRowGap: theme.spacing(2),
+    minHeight: theme.spacing(50),
+    backgroundColor: '#fff'
   },
+
   closeButton: {
     position: 'absolute',
     right: theme.spacing(1),
     top: theme.spacing(1),
     color: theme.palette.grey[500],
   },
+  sessionContainer: {
+    width: "280px",
+    padding: theme.spacing(2),
+
+   
+    backgroundColor: "#F2f2f2"
+
+  }
 }))
 
 type SessionCreatorProps = {
@@ -139,14 +153,15 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
           gridColumnGap="16px"
           gridRowGap="16px"
           minHeight="400px"
+          bgcolor = '#fff'
+
         >
           {sessions.map(session => (
-            <Box
-              width="280px"
-              border="1px solid black"
-              bgcolor="#d5e5ec"
+            <Paper
+            className={classes.sessionContainer}
+           
               key={session.id}
-              borderColor={session.active ? 'red' : 'blue'}
+         
             >
               <SingleSessionContainer
                 key={session.id}
@@ -172,7 +187,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
                 }
                 onUpdateAssessmentList={updateAssessmentList}
               ></SingleSessionContainer>
-            </Box>
+            </Paper>
           ))}
          
         </Box>

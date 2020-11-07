@@ -74,6 +74,12 @@ const theme: Theme = createMuiTheme({
       fontFamily: poppinsFont,
       fontWeight: 600,
     },
+    h4: {
+      fontFamily: poppinsFont,
+      fontWeight: 300,
+      fontSize: '14px',
+      margin: 0
+    },
     subtitle2: {
       fontFamily: playfairDisplayFont,
       fontWeight: 400,

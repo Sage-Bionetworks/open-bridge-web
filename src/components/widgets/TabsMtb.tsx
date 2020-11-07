@@ -125,15 +125,15 @@ const TabsMtb: FunctionComponent<TabProps> = ({
             key={tab.id}
             label={tab.label}
             icon={
-              index === value && onDelete ? (
+              index === value ? (
                 <>
-                  <DeleteIcon
+                {onDelete && <DeleteIcon
                     className={classes.deleteIcon}
                     onClick={(e: SyntheticEvent) => {
                       e.stopPropagation()
                       onDelete(tab.id)
                     }}
-                  ></DeleteIcon>
+                  ></DeleteIcon>}
                   <div className={classes.TE}>
                     <EditableTextbox
                       initValue={tab.label}

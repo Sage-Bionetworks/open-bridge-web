@@ -28,6 +28,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   mainAreaNormal: {
     width: `${280 * 3 + 16 * 3}px`,
+    [theme.breakpoints.down('md')]: {
+      width: `${280 * 2 + 16 * 2}px`,
+    },
   },
   mainAreaWide: {
     width: `${280 * 4 + 16 * 4}px`,
@@ -72,7 +75,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
 
   const getStudySessions = (study: Study) => {
     //const sessions = study.groups.map(group => group.sessions).flat()
-    return []
+   // return StudyService.getStudySessions()
+
   }
 
   const NavLinks = ({
@@ -98,7 +102,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
         <Button
           variant="contained"
           color="primary"
-          href={`/studies/${id}/${section.path}`}
+  
+          href={`/studies/builder/${id}/${section.path}`}
         >
           {section.name}
         </Button>
@@ -148,7 +153,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
                   <Route
                     path="/studies/builder/:id/scheduler"
                     render={props => {
-                      return <Scheduler {...props}></Scheduler>
+                      return <Scheduler {...props}   studySessions={study.sessions}></Scheduler>
                     }}
                   />
                   <Route
@@ -157,7 +162,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
                       return (
                         <SessionCreator
                           {...props}
-                          studySessions={getStudySessions(study)}
+                          studySessions={study.sessions}
                         />
                       )
                     }}

@@ -76,7 +76,7 @@ export const DEFAULT_GROUP: Group = {
     {
       id: '123',
       name: 'Baseline Survey',
-      duration: 30,
+  
       active: true,
       assessments: [
         {
@@ -184,7 +184,7 @@ function addSession(
     id: getRandomId(),
     assessments,
     active: isActive,
-    duration: 0,
+
     name,
   }
   const newGroups = groups.map(group => {

@@ -1,5 +1,7 @@
 /*  General Types ********************************/
 
+import { StudySection } from "../components/studies/sections"
+
 export interface StringDictionary<T> {
   [key: string]: T
 }
@@ -154,7 +156,7 @@ export type Assessment = {
 export type StudySession = {
   id: string
   active?: boolean
-  duration: number
+  //duration: number
   name: string
   assessments: Assessment[]
  // Guid: string
@@ -182,4 +184,20 @@ export type Study = {
   name: string
   subtitle?: string
   description?: string
+  sessions: StudySession[]
+
 }
+
+export type Schedule = {
+  name: string,
+  eventStartId: string,
+  sessions: StudySession[]
+}
+
+export type StudyArm = {
+  name: string,
+  pseudonym: string
+  schedule: Schedule
+  active?: boolean
+}
+
