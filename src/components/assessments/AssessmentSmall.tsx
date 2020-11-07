@@ -10,42 +10,55 @@ import { RouteComponentProps } from 'react-router-dom'
 import { Draggable } from 'react-beautiful-dnd'
 import clsx from 'clsx'
 import { Assessment } from '../../types/types'
-import { Box } from '@material-ui/core'
+import { Box, createStyles, Paper } from '@material-ui/core'
+import AssessmentImage from './AssessmentImage'
 
-const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginBottom: '5px',
+const useStyles = makeStyles(theme =>
+  createStyles({
+    root: {
+      display: 'flex',
 
-    '&.dragging': {
-      border: '1px dashed #cdcdcd',
-      padding: '5px',
- 
+      padding: 0,
+      marginBottom: theme.spacing(1),
+
+      '&.dragging': {
+        border: '1px dashed #000',
+        padding: '5px',
+      },
+      '&:hover': {
+        border: '2px solid #000',
+        // padding: '2px',
+        //margin: '0 -5px'
+      },
     },
-    '&:hover': {
-      border: '1px dashed #cdcdcd',
-      padding: '2px',
-      margin: '0 -5px'
-    },
-  },
 
-  card: {
-    width: '100px',
-    height: '100px',
-  },
-  title: {
-    fontSize: '12px',
-  },
-  actions: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
-  duration: {
-    fontSize: '13px',
-  },
-})
+    card: {
+      width: '96px',
+      height: '96px',
+      flexShrink: 0,
+      display:'flex',
+
+      alignContent: 'space-around',
+      justifyContent: 'space-around'
+    },
+    title: {
+      fontSize: '12px',
+    },
+    text: {
+      padding: theme.spacing(1),
+      paddingRight: theme.spacing(3),
+      backgroundColor: '#E0E0E0',
+      position: 'relative',
+
+      flexGrow: 1,
+      textAlign: 'left'
+
+    },
+    duration: {
+      fontSize: '13px',
+    },
+  }),
+)
 
 type AssessmentSmallOwnProps = {
   assessment: Assessment
@@ -64,27 +77,27 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
   const classes = useStyles()
 
   return (
-    <div className={clsx(classes.root, isDragging && 'dragging')}>
-      <Card className={classes.card}>
-        <CardContent>
-          <Typography
-            className={classes.title}
-            color="textSecondary"
-            gutterBottom
-          >
-            {assessment.title}
-          </Typography>
-        </CardContent>
-      </Card>
-      <div className={classes.actions}>
-        {!isHideDuration && (
-          <div className={classes.duration}>
-            {/*assessment.duration*/} duration to do(min)
-          </div>
-        )}
+    <Paper className={clsx(classes.root, isDragging && 'dragging')}>
+      <Box className={classes.card}>
+        <AssessmentImage
+          isSmall={true}
+          resources={assessment.resources}
+          name={assessment.title}
+        ></AssessmentImage>
+      </Box>
+      <div className={classes.text}>
+        <span className={classes.title}>
+          {assessment.title}
+
+          {!isHideDuration && (
+            <div className={classes.duration}>
+              {/*assessment.duration*/} 0 min
+            </div>
+          )}
+        </span>
         {children}
       </div>
-    </div>
+    </Paper>
   )
 }
 

@@ -13,6 +13,7 @@ import { Assessment, AssessmentResource } from '../../types/types'
 import { Box, CardMedia, createStyles } from '@material-ui/core'
 import { LeakAddTwoTone } from '@material-ui/icons'
 import validated from '../../assets/validated.svg'
+import AssessmentImage from './AssessmentImage'
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -37,15 +38,6 @@ const useStyles = makeStyles(theme =>
       flexGrow: 1,
     },
 
-    media: {
-      height: 180,
-      padding: `${theme.spacing(2)}px ${theme.spacing(2)}px 0 ${theme.spacing(
-        2,
-      )}px`,
-      backgroundPositionY: 'top',
-      display: 'flex',
-      flexDirection: 'row',
-    },
     tags: {
       alignSelf: 'flex-end',
       backgroundColor: '#ccc',
@@ -61,43 +53,7 @@ const useStyles = makeStyles(theme =>
   }),
 )
 
-type TopImageProps = {
-  resources: AssessmentResource[] | undefined
-  name: string
-  children: ReactNode
-}
 
-const TopImage: FunctionComponent<TopImageProps> = ({
-  resources,
-  name,
-  children,
-}: TopImageProps) => {
-  const classes = useStyles()
-  const screens = resources?.filter(
-    resource =>
-      resource.category === 'screenshot' &&
-      !resource.deleted &&
-      resource.upToDate &&
-      resource.url,
-  )
-  let url = '/assets/placeholder.png'
-  if (screens && screens.length) {
-    const portrait = screens.find(
-      screen => screen.title === 'Portrait screenshot',
-    )
-    if (portrait) {
-      url = portrait.url
-    } else {
-      url = screens[0].url
-    }
-  }
-
-  return (
-    <CardMedia className={classes.media} image={url} title={name}>
-      {children}
-    </CardMedia>
-  )
-}
 
 type AssessmentCardOwnProps = {
   assessment: Assessment
@@ -119,11 +75,11 @@ const AssessmentCard: FunctionComponent<AssessmentCardProps> = ({
 
   return (
     <Card className={classes.root}>
-      <TopImage resources={assessment.resources} name={assessment.title}>
+      <AssessmentImage resources={assessment.resources} name={assessment.title}>
         <Typography variant="subtitle2" className={classes.tags}>
           {assessment.tags.join(', ')}
         </Typography>
-      </TopImage>
+      </AssessmentImage >
       <CardContent className={classes.content}>
         <Typography color="textSecondary" gutterBottom>
           {assessment.title}

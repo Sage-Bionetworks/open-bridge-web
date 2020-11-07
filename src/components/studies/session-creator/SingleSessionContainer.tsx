@@ -39,7 +39,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   inner: {
     flexGrow: 1,
 
-    padding: '12px',
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
     height: '376px',
 
     overflowY: 'scroll',
@@ -191,7 +192,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                             {isEditable && (
                               <Button
                                 variant="text"
-                                style={{ padding: '0', minWidth: 'auto' }}
+                                style={{ padding: '0', minWidth: 'auto', position: 'absolute' , top: '35px', right: '8px'}}
                                 onClick={e => {
                                   e.stopPropagation()
                                   removeAssessment(assessment.guid)
