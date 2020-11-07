@@ -3,8 +3,8 @@ import React, { FunctionComponent } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
 type DevelopmentTeamOwnProps = {
-  title: string
-  paragraph: string
+  title?: string
+  paragraph?: string
 }
 
 type DevelopmentTeamProps = DevelopmentTeamOwnProps & RouteComponentProps

@@ -1,7 +1,9 @@
 /*  General Types ********************************/
 
-export interface StringDictionary {
-  [key: string]: any
+import { StudySection } from "../components/studies/sections"
+
+export interface StringDictionary<T> {
+  [key: string]: T
 }
 
 export interface Response<T> {
@@ -147,16 +149,25 @@ export type Assessment = {
   type: string
   version: number
   validationStatus: string
-  duration?: number,
+  duration?: number
   resources?: any[]
 }
 
 export type StudySession = {
   id: string
   active?: boolean
-  duration: number
+  //duration: number
   name: string
   assessments: Assessment[]
+ // Guid: string
+/*Name: string
+Bundled: boolean
+Randomized: boolean
+Delay: number
+Interval: number
+Duration: number(period
+Expires number: Period
+Occurrences Number*/
 }
 
 export type Group = {
@@ -166,10 +177,27 @@ export type Group = {
   sessions: StudySession[]
 }
 
+export type StudyStatus =  'DRAFT' | 'ACTIVE' | 'COMPLETED'
 export type Study = {
-  id: string
-  active?: boolean
+  identifier: string
+  status?: StudyStatus
   name: string
-  description: string
-  groups: Group[]
+  subtitle?: string
+  description?: string
+  sessions: StudySession[]
+
 }
+
+export type Schedule = {
+  name: string,
+  eventStartId: string,
+  sessions: StudySession[]
+}
+
+export type StudyArm = {
+  name: string,
+  pseudonym: string
+  schedule: Schedule
+  active?: boolean
+}
+

@@ -7,47 +7,62 @@ import React, {
 import Link from '@material-ui/core/Link'
 import { RouteComponentProps, useParams } from 'react-router-dom'
 import StudyService from '../../../services/study.service'
-import { RequestStatus } from '../../../types/types'
+import { RequestStatus, StudyArm, StudySession } from '../../../types/types'
 import TabsMtb from '../../widgets/TabsMtb'
-import actionsReducer, { Types } from '../session-creator/sessionActions'
+import actionsReducer, {
+  SessionAction,
+  Types,
+} from '../session-creator/sessionActions'
 import TabPanel from '../../widgets/TabPanel'
 import LoadingComponent from '../../widgets/Loader'
 import { useErrorHandler } from 'react-error-boundary'
-import SchedulableStudySessionContainer from './SchedulableStudySessionContainer'
+import SchedulableSingleSessionContainer from './SchedulableStudySessionContainer'
 import ObjectDebug from '../../widgets/ObjectDebug'
+import GroupsEditor from './GoupsEditor'
+import { AcUnitOutlined } from '@material-ui/icons'
 
 type SchedulerOwnProps = {
-  title?: string
-  paragraph?: string
+  studySessions: StudySession[]
 }
 
 type SchedulerProps = SchedulerOwnProps & RouteComponentProps
 
-const Scheduler: FunctionComponent<SchedulerProps> = () => {
-  const [groups, groupsUpdateFn] = useReducer(actionsReducer, [])
-  const [reqStatus, setRequestStatus] = React.useState<RequestStatus>('PENDING')
+const Scheduler: FunctionComponent<SchedulerProps> = ({
+  studySessions,
+}: SchedulerOwnProps) => {
+  const studyArm: StudyArm = {
+    name: 'Untitled',
+    pseudonym: '',
+    active: true,
+    schedule: {
+      name: 'Undefined',
+      eventStartId: '123',
+      sessions: studySessions,
+    },
+  }
+  const [studyArms, setData] = React.useState<StudyArm[]>([studyArm])
+  const [reqStatus, setRequestStatus] = React.useState<RequestStatus>(
+    'RESOLVED',
+  )
 
-  const [groupTabIndex, setGroupTabIndex] = useState(0)
-  let { id } = useParams<{ id: string }>()
+  // let { id } = useParams<{ id: string }>()
   const handleError = useErrorHandler()
+  const groupsUpdateFn = (action: SessionAction) => {
+    const newState = actionsReducer(studyArms[0].schedule.sessions!, action)
+    console.log('setting data  to ', newState)
+    const rx= studyArms.map((arm, index) => index > 0? arm : {...arm, schedule: {...arm.schedule, sessions: newState}})
+    setData(prev => rx)
+  }
 
-  useEffect(() => {
-    let activeIndex = groups.findIndex(item => item.active === true)
-    if (activeIndex === -1) {
-      activeIndex = 0
-    }
-    setGroupTabIndex(activeIndex)
-  }, [groups])
-
-  useEffect(() => {
+  /* useEffect(() => {
     let isSubscribed = true
 
-    StudyService.getStudy(id).then(
-      study => {
-        if (isSubscribed && study) {
+    StudyService.getStudySessions(id).then(
+      sessions => {
+        if (isSubscribed && sessions) {
           groupsUpdateFn({
-            type: Types.SetGroups,
-            payload: { groups: study.groups },
+            type: Types.SetSessions,
+            payload: { sessions },
           })
           setRequestStatus('RESOLVED')
         }
@@ -58,51 +73,74 @@ const Scheduler: FunctionComponent<SchedulerProps> = () => {
     return () => {
       isSubscribed = false
     }
-  }, [handleError, id])
+  }, [handleError, id])*/
 
   return (
     <>
       <div>Scheduler</div>
-      <ObjectDebug label="groups" data={groups}></ObjectDebug>
+      <ObjectDebug label="groups" data={studyArms}></ObjectDebug>
 
       <LoadingComponent reqStatusLoading={reqStatus}>
-        <TabsMtb
-          value={groupTabIndex}
-          handleChange={(groupIndex: number) => {
-            const id = groups[groupIndex].id
-            groupsUpdateFn({
-              type: Types.SetActiveGroup,
-              payload: { id: id },
-            })
+        <GroupsEditor
+          studyArms={studyArms}
+          onAddStudyArm={
+            () => {}
+            /*groupsUpdateFn({
+              type: Types.AddStudyArm,
+              payload: { isMakeActive: false },
+            })*/
+          }
+          onRemoveStudyArm={(id: string) => {
+            /* groupsUpdateFn({
+              type: Types.RemoveStudyArm,
+              payload: { id },
+            })*/
           }}
-          tabDataObjects={groups.map(group => ({
-            label: group.name,
-            id: group.id,
-          }))}
-        ></TabsMtb>
-
-        {groups.map((group, index) => (
-          <TabPanel
-            value={groups.findIndex(group => group.active)}
-            index={index}
-            key={group.id}
-          >
-            <div>
-              {group.sessions.map(session => (
-                <SchedulableStudySessionContainer
-                  key={session.id}
-                  studySession={session}
-                  onSetActiveSession={() =>
-                    groupsUpdateFn({
-                      type: Types.SetActiveSession,
-                      payload: { sessionId: session.id },
-                    })
-                  }
-                ></SchedulableStudySessionContainer>
-              ))}
-            </div>
-          </TabPanel>
-        ))}
+          onSetActiveStudyArm={(id: string) => {
+            /* groupsUpdateFn({
+              type: Types.SetActiveStudyArm,
+              payload: { id },
+            })*/
+          }}
+          onRenameStudyArm={(id: string, name: string) => {
+            /* groupsUpdateFn({
+              type: Types.RenameStudyArm,
+              payload: { id, name },
+            })*/
+          }}
+          onCopyStudyArm={() => {
+            /*groupsUpdateFn({
+              type: Types.AddStudyArm,
+              payload: {
+                group: groups[groups!.length - 1],
+                isMakeActive: false,
+              },
+            })*/
+          }}
+        >
+          {studyArms.map((studyArm, index) => (
+            <TabPanel
+              value={studyArms.findIndex(studyArm => studyArm.active)}
+              index={index}
+              key={studyArm.name}
+            >
+              <div >
+                {studyArm.schedule.sessions.map(session => (
+                  <SchedulableSingleSessionContainer
+                    key={session.id}
+                    studySession={session}
+                    onSetActiveSession={() =>
+                      groupsUpdateFn({
+                        type: Types.SetActiveSession,
+                        payload: { sessionId: session.id },
+                      })
+                    }
+                  ></SchedulableSingleSessionContainer>
+                ))}
+              </div>
+            </TabPanel>
+          ))}
+        </GroupsEditor>
       </LoadingComponent>
     </>
   )

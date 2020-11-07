@@ -1,8 +1,5 @@
-import React, {
-  FunctionComponent,
-  useState,
-
-} from 'react'
+//@ts-nocheck
+import React, { FunctionComponent, useState } from 'react'
 
 import {
   Button,
@@ -12,26 +9,23 @@ import {
   makeStyles,
 } from '@material-ui/core'
 
-import {
-  Assessment,
-  Group,
-
-  StudySession,
-} from '../../../types/types'
+import { Assessment, Group, StudySession } from '../types/types'
 
 import GroupsEditor from './GoupsEditor'
 
+import AssessmentSelector from '../components/studies/session-creator/AssessmentSelector'
 
-import AssessmentSelector from './AssessmentSelector'
-
-import actionsReducer, { Types, SessionAction } from './sessionActions'
-import StudyService from '../../../services/study.service'
-import TabPanel from '../../widgets/TabPanel'
-import NewStudySessionContainer from './NewStudySessionContainer'
-import StudySessionContainer from './StudySessionContainer'
+import actionsReducer, {
+  Types,
+  SessionAction,
+} from '../components/studies/session-creator/sessionActions'
+import StudyService from '../services/study.service'
+import TabPanel from '../components/widgets/TabPanel'
+import NewSingleSessionContainer from '../components/studies/session-creator/SessionActionButtons'
+import SingleSessionContainer from '../components/studies/session-creator/SingleSessionContainer'
 import { useErrorHandler } from 'react-error-boundary'
 
-import { useAsync } from '../../../helpers/AsyncHook'
+import { useAsync } from '../helpers/AsyncHook'
 
 const useStyles = makeStyles({
   root: {},
@@ -47,15 +41,16 @@ const useStyles = makeStyles({
   },
 })
 
-type SessionsCreatorNewProps = {
+type SessionCreatorNewProps = {
   studyGroups: Group[]
   id: string
 }
 
-const SessionsCreatorNew: FunctionComponent<SessionsCreatorNewProps> = ({
+const SessionCreatorNew: FunctionComponent<SessionCreatorNewProps> = ({
   studyGroups,
   id,
-}: SessionsCreatorNewProps) => {
+}: SessionCreatorNewProps) => {
+  /*
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
     [],
   )
@@ -70,7 +65,7 @@ const SessionsCreatorNew: FunctionComponent<SessionsCreatorNewProps> = ({
     data: [],
   })
   const groupsUpdateFn = (action: SessionAction) => {
-    setData(actionsReducer(groups!, action))
+    //setData(actionsReducer(groups!, action))
   }
 
 
@@ -160,7 +155,7 @@ const SessionsCreatorNew: FunctionComponent<SessionsCreatorNewProps> = ({
             >
               <div className={classes.groupTab}>
                 {group.sessions.map(session => (
-                  <StudySessionContainer
+                  <SingleSessionContainer
                     key={session.id}
                     studySession={session}
                     onShowAssessments={() => setIsAssessmentDialogOpen(true)}
@@ -186,10 +181,10 @@ const SessionsCreatorNew: FunctionComponent<SessionsCreatorNewProps> = ({
                       })
                     }
                     onUpdateAssessmentList={updateAssessmentList}
-                  ></StudySessionContainer>
+                  ></SingleSessionContainer>
                 ))}
 
-                <NewStudySessionContainer
+                <NewSingleSessionContainer
                   key={'new_session'}
                   sessions={group.sessions}
                   onAddSession={ (sessions: StudySession[], assessments: Assessment[]) => 
@@ -201,7 +196,7 @@ const SessionsCreatorNew: FunctionComponent<SessionsCreatorNewProps> = ({
                         active: true,
                       },
                     })}
-                ></NewStudySessionContainer>
+                ></NewSingleSessionContainer>
               </div>
             </TabPanel>
           ))}
@@ -215,7 +210,7 @@ const SessionsCreatorNew: FunctionComponent<SessionsCreatorNewProps> = ({
             <AssessmentSelector
               selectedAssessments={selectedAssessments}
               onUpdateAssessments={setSelectedAssessments}
-              active={getActiveGroupAndSession(groups)}
+              activeSession={getActiveGroupAndSession(groups).session}
             ></AssessmentSelector>
           </DialogContent>
           <DialogActions>
@@ -242,9 +237,9 @@ const SessionsCreatorNew: FunctionComponent<SessionsCreatorNewProps> = ({
         </Dialog>
       </div>
     )
-  } else {
-    return <>No Groups</>
-  }
+  } else {*/
+  return <>No Groups</>
+  // }
 }
 
-export default SessionsCreatorNew
+export default SessionCreatorNew

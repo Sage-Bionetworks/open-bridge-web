@@ -19,7 +19,7 @@ const loginWithPassword = async (
   password: string,
 ): Promise<Response<LoggedInUserData>> => {
   const postData = {
-    appId: "sage-assessment-test", //constants.constants.APP_ID,
+    appId: 'sage-assessment-test', //constants.constants.APP_ID,
     email,
     password,
   }
@@ -42,19 +42,32 @@ const loginOauth = async (
   }
   console.log('token:', authToken)
   /*DO NOt CHECK IN*/
-  return loginWithPassword('username', 'password')
-  /*return await callEndpoint<LoggedInUserData>(
-        constants.endpoints.oauthSignIn,
-        'POST',
-        postData,
+  //return loginWithPassword('username', 'password')
+  debugger
+  const result = await callEndpoint<LoggedInUserData>(
+    constants.endpoints.oauthSignIn,
+    'POST',
+    postData,
+  )
 
-      )*/
+  return result
 }
 
+
+async function getUserInfo(token: string): Promise<Response<LoggedInUserData>> {
+  const result = await callEndpoint<LoggedInUserData>(
+    constants.endpoints.selfInfo,
+    'GET',
+    {},
+    token,
+  )
+  return result
+}
 const UserService = {
   requestResetPassword,
   loginWithPassword,
   loginOauth,
+  getUserInfo
 }
 
 export default UserService

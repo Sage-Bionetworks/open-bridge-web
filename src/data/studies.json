@@ -1,38 +1,39 @@
 {
   "data": [
     {
-      "id": "5476c92a",
+      "identifier": "5476c92a",
       "name": "someStudy",
       "description": "loremIpsum",
-      "groups": [
-        {
-          "id": "123",
-          "name": "Group1",
-          "active": true,
-          "sessions": [
-            {
-              "id": "123",
-              "name": "Baseline Survey",
-              "duration": 30,
-              "active": false,
-              "assessments": []
-            }
-          ]
-        }
-      ]
+      "status": "DRAFT"
+
     },
     {
-      "id": "5476c92c",
+      "identifier": "5476c92c",
       "name": "anotherStudy",
       "description": "loremIpsum dolor",
-      "groups": [
-        {
-          "id": "123",
-          "name": "Group1",
-          "active": true,
-          "sessions": []
-        }
-      ]
+      "status": "DRAFT"
+      
+    },
+    {
+      "identifier": "5476c92c",
+      "name": "anotherStudy",
+      "description": "loremIpsum dolor",
+      "status": "ACTIVE"
+      
+    },
+    {
+      "identifier": "5476c92c",
+      "name": "anotherStudy",
+      "description": "loremIpsum dolor",
+      "status": "ACTIVE"
+      
+    },
+    {
+      "identifier": "5476c92c",
+      "name": "anotherStudy",
+      "description": "loremIpsum dolor",
+      "status": "COMPLETED"
+      
     }
   ]
 }

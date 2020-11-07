@@ -1,0 +1,22 @@
+{
+  "data": [
+    {
+      "id": "12345",
+      "active": false,
+
+      "name": "session1"
+    },
+    {
+        "id": "123456",
+        "active": false,
+  
+        "name": "session2"
+      },
+      {
+        "id": "123457",
+        "active": false,
+  
+        "name": "session3"
+      }
+  ]
+}

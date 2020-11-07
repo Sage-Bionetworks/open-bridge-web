@@ -1,40 +1,52 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 
-import { Button, makeStyles } from '@material-ui/core'
+import { Box, Button, makeStyles, Typography } from '@material-ui/core'
 import TabPanel from '../../widgets/TabPanel'
 import TabsMtb from '../../widgets/TabsMtb'
 import useAssessments from '../../../helpers/hooks'
 import AssessmentCard from '../../assessments/AssessmentCard'
 
-import { Group, Assessment, StudySession } from '../../../types/types'
+import {
+  Group,
+  Assessment,
+  StudySession,
+  StringDictionary,
+} from '../../../types/types'
 
 import clsx from 'clsx'
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab'
-import CheckCircleIcon from '@material-ui/icons/CheckCircle'
+import CheckIcon from '@material-ui/icons/Check'
 import { Session } from 'inspector'
+import AssessmentService from '../../../services/assessment.service'
+import { useAsync } from '../../../helpers/AsyncHook'
+import { useErrorHandler } from 'react-error-boundary'
+import { useSessionDataState } from '../../../helpers/AuthContext'
+import AssessmentLibraryWrapper from '../../assessments/AssessmentLibraryWrapper'
+import { isAbsolute } from 'path'
 
 const useStyles = makeStyles({
-  root: { backgroundColor: '#E2E2E2', padding: '20px' },
-  assessments: {
-    backgroundColor: '#E2E2E2',
-    padding: '20px',
-  },
-  ToggleA: {
+  toggleA: {
     position: 'relative',
+    border: 'none',
+    padding: '0',
   },
-  ToggleADisabled: {
+  toggleADisabled: {
     border: 'none',
     opacity: '.3',
   },
-  ToggleASelected: {
-    border: '2px solid blue',
+  toggleASelected: {
+    border: '2px solid #ccc',
+    opacity: 0.8,
 
-    '& $Overlay': {
+    '& $overlay': {
       opacity: 1,
+    },
+    '& $overlayBackdrop': {
+      opacity: 0.8,
     },
   },
 
-  Overlay: {
+  overlay: {
     position: 'absolute',
     bottom: '0',
 
@@ -52,37 +64,71 @@ const useStyles = makeStyles({
 
     padding: '20px',
   },
+  overlayBackdrop: {
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    backgroundColor: '#fff',
+  },
+  overlayBg: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    border: '10px solid #333',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  check: {
+    position: 'absolute',
+    fontSize: '8rem',
+    color: '#333',
+  },
 })
 
 type AssessmentSelectorProps = {
-  active: {group: Group, session: StudySession | undefined}
-
+  //active: {group: Group, session: StudySession | undefined}
+  activeSession: StudySession | undefined
   onUpdateAssessments: Function
   selectedAssessments: Assessment[]
 }
 
 const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
-  active,
+  activeSession,
   selectedAssessments,
-  onUpdateAssessments
-}:
-AssessmentSelectorProps) => {
-  const assessments = useAssessments()
-  const [assessmentTabIndex, setAssessmentTabIndex] = useState(0)
-  /*const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
-    [],
-  )*/
-/*  const [activeSession, setActiveSession] = useState<StudySession | undefined>(
-    undefined,
-  )*/
+  onUpdateAssessments,
+}: AssessmentSelectorProps) => {
+  const { token } = useSessionDataState()
 
-
- /* useEffect(() => {
-    console.log('effect')
-    setActiveSession(activeGroup.sessions.find(session => session.active))
-  }, [activeGroup.sessions])*/
-
+  const handleError = useErrorHandler()
   const classes = useStyles()
+
+  const [filteredAssessments, setFilteredAssessments] = useState<
+    Assessment[] | undefined
+  >(undefined)
+
+  const { data, status, error, run, setData } = useAsync<{
+    assessments: Assessment[]
+    tags: StringDictionary<number>
+  }>({
+    status: 'PENDING',
+    data: null,
+  })
+
+  React.useEffect(() => {
+    ///your async call
+    return run(AssessmentService.getAssessmentsWithResources(undefined, token))
+  }, [run])
+  if (status === 'PENDING') {
+    return <>loading component here</>
+  }
+  if (status === 'REJECTED') {
+    handleError(error!)
+  }
+
+  if (!data?.assessments || (!data?.tags && status === 'RESOLVED')) {
+    return <>No Data </>
+  }
 
   const isAssessmentInSession = (
     session: StudySession,
@@ -95,66 +141,54 @@ AssessmentSelectorProps) => {
     selectedAssessments: Assessment[],
   ) => {
     onUpdateAssessments(selectedAssessments)
-   // setSelectedAssessments(selectedAssessments)
-  }
 
-  const renderAssessmentTab = (assessments: Assessment[]): JSX.Element => {
-    return (
-      <div className={clsx('assesmentContainer', classes.assessments)}>
-        {assessments.map((a, index) => (
-          <ToggleButtonGroup
-            value={selectedAssessments}
-            onChange={toggleAssessment}
-            aria-label={a.title}
-            key={a.guid}
-          >
-            <ToggleButton
-              aria-label="bold"
-              value={a}
-              disabled={
-                !active.session || isAssessmentInSession(active.session, a.guid)
-              }
-              classes={{
-                root: classes.ToggleA,
-                selected: classes.ToggleASelected,
-                disabled: classes.ToggleADisabled,
-              }}
-            >
-              <AssessmentCard
-                index={index}
-                assessment={a}
-                key={a.guid}
-              ></AssessmentCard>
-              <div className={classes.Overlay}>
-                <CheckCircleIcon
-                  color={'primary'}
-                  style={{ backgroundColor: '#fff' }}
-                ></CheckCircleIcon>
-              </div>
-            </ToggleButton>
-          </ToggleButtonGroup>
-        ))}
-      </div>
-    )
   }
 
   return (
     <div>
-      <div className="assessmentTabs">
-      {/*  <TabsMtb
-          value={assessmentTabIndex}
-          handleChange={(val: number) => setAssessmentTabIndex(val)}
-          tabDataObjects={[{label:'Bookmarked Assessment'}, {label: 'Assessment Library'}]}
-        ></TabsMtb>
-
-        <TabPanel value={assessmentTabIndex} index={0} key={'bkm_asmnt'}>
-          {renderAssessmentTab(assessments.filter(a => a.bookmarked))}
-        </TabPanel>
-
-      <TabPanel value={assessmentTabIndex} index={1} key={'asmnt'}>*/}
-          {renderAssessmentTab(assessments)}
-      
-     </div>
+  
+    <AssessmentLibraryWrapper
+      tags={data.tags}
+      assessments={data.assessments}
+      onChangeTags={
+        (assessments: Assessment[]) =>
+          setFilteredAssessments(assessments) /*setFilterTags(tags)*/
+      }
+    >
+      {(filteredAssessments || data.assessments).map((a, index) => (
+        <ToggleButtonGroup
+          value={selectedAssessments}
+          onChange={toggleAssessment}
+          aria-label={a.title}
+          key={a.guid}
+        >
+          <ToggleButton
+            aria-label="bold"
+            value={a}
+            disabled={
+              !activeSession || isAssessmentInSession(activeSession, a.guid)
+            }
+            classes={{
+              root: classes.toggleA,
+              selected: classes.toggleASelected,
+              disabled: classes.toggleADisabled,
+            }}
+          >
+            <AssessmentCard
+              index={index}
+              assessment={a}
+              key={a.guid}
+            ></AssessmentCard>
+            <div className={classes.overlay}>
+              <div className={classes.overlayBackdrop}></div>
+              <div className={classes.overlayBg}>
+                <CheckIcon className={classes.check}></CheckIcon>
+              </div>
+            </div>
+          </ToggleButton>
+        </ToggleButtonGroup>
+      ))}
+    </AssessmentLibraryWrapper>
     </div>
   )
 }

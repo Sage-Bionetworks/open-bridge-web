@@ -12,7 +12,7 @@ const useAssessments = () => {
         try {
           //setIsLoading(true)
 
-          const assessments = await AssessmentService.getSharedAssessments()
+          const assessments = await AssessmentService.getAssessments()
 
           if (isSubscribed) {
             setAssessments(assessments)

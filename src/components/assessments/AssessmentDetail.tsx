@@ -1,26 +1,46 @@
-import { Box } from '@material-ui/core'
+import {
+  Box,
+  Container,
+  createStyles,
+  makeStyles,
+  Paper,
+} from '@material-ui/core'
 import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 
 import { Link, RouteComponentProps, useParams } from 'react-router-dom'
+import { isClassExpression } from 'typescript'
 import { useAsync } from '../../helpers/AsyncHook'
 import { useSessionDataState } from '../../helpers/AuthContext'
 import AssessmentService from '../../services/assessment.service'
 import { Assessment } from '../../types/types'
 import BreadCrumb from '../widgets/BreadCrumb'
 
+const useStyles = makeStyles(theme =>
+  createStyles({
+    breadCrumbs: {
+      backgroundColor: '#E5E5E5',
+      padding: `${theme.spacing(7)}px ${theme.spacing(5)}px  ${theme.spacing(
+        5,
+      )}px  ${theme.spacing(5)}px`,
+    },
+  }),
+)
 
 type AssessmentDetailOwnProps = {
- // assessment?: Assessment
+  // assessment?: Assessment
 }
 
 type AssessmentDetailProps = AssessmentDetailOwnProps & RouteComponentProps
 
-const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = ({
-  //assessment,
-}) => {
+const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = (
+  {
+    //assessment,
+  },
+) => {
   const { token } = useSessionDataState()
-  const links = [{url: '/assessments', text: 'Assessments'}]
+  const classes = useStyles()
+  const links = [{ url: '/assessments', text: 'Assessments' }]
 
   let { id } = useParams<{ id: string }>()
 
@@ -35,7 +55,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = ({
   })
   React.useEffect(() => {
     ///your async call
-    return run(AssessmentService.getSharedAssessmentsWithResources(id))
+    return run(AssessmentService.getAssessmentsWithResources(id, token))
   }, [run])
   if (status === 'PENDING') {
     return <>loading component here</>
@@ -43,12 +63,20 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = ({
     handleError(error!)
   } else {
     return (
-      <Box>
-        <BreadCrumb links={links} currentItem={data?.assessments[0].title}></BreadCrumb>
-
-        <h2>assessment.img</h2>
-        <p>{data?.assessments[0].title}</p>
-      </Box>
+      <>
+        <Paper className={classes.breadCrumbs}>
+          <BreadCrumb
+            links={links}
+            currentItem={data?.assessments[0].title}
+          ></BreadCrumb>
+        </Paper>
+        <Container maxWidth="lg" style={{ textAlign: 'center' }}>
+          <Paper>
+            <h2>assessment.img</h2>
+            <p>{data?.assessments[0].title}</p>
+          </Paper>
+        </Container>
+      </>
     )
   }
   return <></>

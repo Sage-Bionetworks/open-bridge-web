@@ -5,7 +5,7 @@ export default {
     ENDPOINT: 'https://webservices.sagebridge.org',
   },
 
- /* templateTitles: {
+  /* templateTitles: {
     email_account_exists: 'Account already exists notification (email)',
     email_app_install_link: 'Link to install app (email)',
     email_reset_password: 'Reset password (email)',
@@ -60,7 +60,7 @@ export default {
   },
   retentionReports: ['api', 'biomarin-pku-study', 'crf-module', 'sage-mpower-2'],*/
   endpoints: {
-  /*adminAuth: '/v3/auth/admin',
+    /*adminAuth: '/v3/auth/admin',
   appConfigs: '/v3/appconfigs',
   appConfigElements: '/v3/appconfigs/elements',
   apps: '/v1/apps',
@@ -76,25 +76,29 @@ export default {
   getAppPublicKey: '/v1/apps/self/publicKey',
   masterschedule: '/v3/schedulerconfigs',
   metadata: '/v3/sharedmodules/metadata',*/
-  assessments: '/v1/assessments?includeDeleted=false',
-  assessmentsShared: '/v1/sharedassessments/?includeDeleted=false', 
-  assessmentShared: '/v1/sharedassessments/', 
-  assessmentsSharedResources: '/v1/sharedassessments/identifier:{identifier}/resources',
-  assessmentResources: '/v1/assessments/identifier:{identifier}/resources',  //'/v1/sharedassessments',
-  oauthSignIn: '/v3/auth/oauth/signIn',
-  participants: '/v3/participants',
-  /*phoneSignIn: '/v3/auth/phone/signIn',
+  sessionAssessments: '/v1/sessions/{sessionGuid}/assessments',
+    assessments: '/v1/assessments?includeDeleted=false',
+    assessmentsShared: '/v1/sharedassessments/?includeDeleted=false',
+    assessmentShared: '/v1/sharedassessments/',
+    assessment: '/v1/assessments/',
+    assessmentsSharedResources:
+      '/v1/sharedassessments/identifier:{identifier}/resources',
+    assessmentResources: '/v1/assessments/identifier:{identifier}/resources', //'/v1/sharedassessments',
+    oauthSignIn: '/v3/auth/oauth/signIn',
+    selfInfo: '/v3/participants/self',
+    /*phoneSignIn: '/v3/auth/phone/signIn',
   reauth: '/v3/auth/reauth',
   reports: '/v3/reports',
   requestPhoneSignIn: '/v3/auth/phone',*/
-  requestResetPassword: '/v3/auth/requestResetPassword',
- /* schemaPlans: '/v3/scheduleplans',
+    requestResetPassword: '/v3/auth/requestResetPassword',
+    /* schemaPlans: '/v3/scheduleplans',
   schemas: '/v3/uploadschemas',
   schemasV4: '/v4/uploadschemas',
   sharedmodules: '/v3/sharedmodules',*/
-  signIn: '/v3/auth/signIn',
-  signOut: '/v3/auth/signOut',
- /* subpopulations: '/v3/subpopulations',
+    signIn: '/v3/auth/signIn',
+    signOut: '/v3/auth/signOut',
+    
+    /* subpopulations: '/v3/subpopulations',
   substudies: '/v3/substudies',
   survey: '/v3/surveys',
   surveys: '/v3/surveys',
@@ -105,5 +109,5 @@ export default {
   users: '/v3/users',
   verifyEmail: '/v1/apps/self/verifyEmail',
   verifyAppEmail: '/v1/apps/self/emails/resendVerify'*/
-  }
+  },
 }

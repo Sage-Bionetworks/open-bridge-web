@@ -6,7 +6,6 @@ export type SessionScheduleStartType =
 
 export type SessionScheduleEndType = 'END_STUDY' | 'DATE' | 'N_OCCURENCES'
 
-
 export enum ReoccuranceUnitEnum {
   'DAILY' = 'Every Day',
   'WEEKLY' = 'Every Week',
@@ -36,7 +35,7 @@ export enum ReminderIntervalEnum {
   HR_1 = '1hr. ',
 }
 
-export type ReminderIntervalType ='BEFORE' | 'AFTER'
+export type ReminderIntervalType = 'BEFORE' | 'AFTER'
 
 export type AssessmentOrderType = 'SEQUENTIAL' | 'RANDOM'
 

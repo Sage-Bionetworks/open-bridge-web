@@ -4,12 +4,12 @@ import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import Button from '@material-ui/core/Button'
 import Link from '@material-ui/core/Link'
-import { Box, Dialog, DialogContent } from '@material-ui/core'
+import { Box, Dialog, DialogContent, Paper } from '@material-ui/core'
 import AccountLogin from './../account/AccountLogin'
 import { useSessionDataState } from '../../helpers/AuthContext'
 import Logout from '../account/Logout'
 import SageLogo from '../../assets/sage.svg'
-import { NavLink, BrowserRouter as Router} from 'react-router-dom'
+import { NavLink, BrowserRouter as Router } from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
   toolbarWrapper: {
@@ -33,45 +33,52 @@ const useStyles = makeStyles(theme => ({
     flexShrink: 0,
   },
   selectedLink: {
-    borderBottom: '2px solid black'
-  }
+    borderBottom: '2px solid black',
+  },
 }))
 
 type HeaderProps = {
   sections: { name: string; path: string }[]
   title: string
+  token?: string
 }
 
 const Header: FunctionComponent<HeaderProps> = ({
   sections,
   title,
+  token,
   ...props
 }: HeaderProps) => {
   const classes = useStyles()
-  const sessionData = useSessionDataState()
+  //const sessionData = useSessionDataState()
   const [signInOpen, setSignInOpen] = useState(false)
 
   return (
-
-    <Box className={classes.toolbarWrapper}>
+    <Paper className={classes.toolbarWrapper} elevation={0}>
       <Toolbar
         component="nav"
         variant="dense"
         disableGutters
         className={classes.toolbar}
       >
-        <img src={SageLogo} key="x"/>
+        <img src={SageLogo} key="x" />
         {sections
           .filter(section => section.name)
           .map(section => (
-            <>
-           <NavLink to={section.path}    key={section.name+'1'}  className={classes.toolbarLink}  activeClassName={classes.selectedLink}>
-         {section.name}
-          </NavLink>
-         
-            </>
+       
+              <NavLink
+                to={section.path}
+                key={section.name + '1'}
+                className={classes.toolbarLink}
+                activeClassName={classes.selectedLink}
+              >
+                {section.name}
+              </NavLink>
+       
           ))}
-        {!sessionData.token && (
+        {token ? (
+          <Logout></Logout>
+        ) : (
           <Button
             variant="outlined"
             size="small"
@@ -80,8 +87,6 @@ const Header: FunctionComponent<HeaderProps> = ({
             Sign in
           </Button>
         )}
-
-        {sessionData.token && <Logout></Logout>}
       </Toolbar>
       <Dialog
         open={signInOpen}
@@ -95,8 +100,7 @@ const Header: FunctionComponent<HeaderProps> = ({
           ></AccountLogin>
         </DialogContent>
       </Dialog>
-    </Box>
-
+    </Paper>
   )
 }
 

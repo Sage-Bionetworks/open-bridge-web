@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     border: '1px solid #C4C4C4',
 
     '&.active': {
-      border:  theme.activeBorder,
+      border: theme.activeBorder,
     },
   },
 
@@ -51,16 +51,16 @@ type SessionSchedule = {
   order: 'SEQUENTIAL' | 'RANDOM'
 }
 
-type SchedulableStudySessionContainerProps = {
+type SchedulableSingleSessionContainerProps = {
   studySession: StudySession
   onSetActiveSession: Function
 }
 
-const SchedulableStudySessionContainer: FunctionComponent<SchedulableStudySessionContainerProps> = ({
+const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSessionContainerProps> = ({
   studySession,
 
   onSetActiveSession,
-}: SchedulableStudySessionContainerProps) => {
+}: SchedulableSingleSessionContainerProps) => {
   const classes = useStyles()
   // The first commit of Material-UI
 
@@ -195,4 +195,4 @@ const SchedulableStudySessionContainer: FunctionComponent<SchedulableStudySessio
   )
 }
 
-export default SchedulableStudySessionContainer
+export default SchedulableSingleSessionContainer

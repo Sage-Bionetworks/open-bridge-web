@@ -95,48 +95,45 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
         ))}
       </div>
       <FormGroup aria-label="assessments" row>
-      <FormControlLabel
-        control={
-          <Checkbox
-            value={isGroupAssessments}
-         
-            onChange={e =>
-              onChangeGrouping({
-                isGroupAssessments: e.target.checked,
-                assessmentOrder,
-              })
-            }
-          />
-        }
-        label="Group assessments"
-      />
-
-
-
-      <Typography component="div">
-        <Grid
-          component="label"
-          container
-          alignItems="center"
-          spacing={1}
-          wrap="nowrap"
-        >
-          <Grid item>Sequential</Grid>
-          <Grid item>
-            <Switch
-            color = "primary"
-              checked={assessmentOrder == 'RANDOM'}
-              onChange={e => {
-                console.log('e' + e.target.checked)
-                onSetRandomized(e.target.checked)
-              }}
-              name="checkedC"
+        <FormControlLabel
+          control={
+            <Checkbox
+              value={isGroupAssessments}
+              onChange={e =>
+                onChangeGrouping({
+                  isGroupAssessments: e.target.checked,
+                  assessmentOrder,
+                })
+              }
             />
+          }
+          label="Group assessments"
+        />
+
+        <Typography component="div">
+          <Grid
+            component="label"
+            container
+            alignItems="center"
+            spacing={1}
+            wrap="nowrap"
+          >
+            <Grid item>Sequential</Grid>
+            <Grid item>
+              <Switch
+                color="primary"
+                checked={assessmentOrder == 'RANDOM'}
+                onChange={e => {
+                  console.log('e' + e.target.checked)
+                  onSetRandomized(e.target.checked)
+                }}
+                name="checkedC"
+              />
+            </Grid>
+            <Grid item>Randomized</Grid>
           </Grid>
-          <Grid item>Randomized</Grid>
-        </Grid>
-      </Typography>
-   </FormGroup>
+        </Typography>
+      </FormGroup>
     </>
   )
 }

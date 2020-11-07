@@ -30,40 +30,41 @@ const SelectWithEnum: React.FunctionComponent<SelectWithEnumProps> = ({
   label,
   className,
 }: SelectWithEnumProps) => {
+  console.log(typeof sourceData)
+  console.log(Array.isArray(sourceData), sourceData)
+  console.log(Array.isArray(new Array(5)))
 
-    console.log(typeof sourceData)
-    console.log(Array.isArray(sourceData), sourceData)
-    console.log(Array.isArray( (new Array(5))))
-
-    Object.keys([...Array(5)])
+  Object.keys([...Array(5)])
 
   const classes = useStyles()
 
-  const getKeys = (data: Array<any> | object) :JSX.Element[]=> {
-      
-     if (!Array.isArray(sourceData)) {
-        const result = getEnumKeys(sourceData).map(item => (
-            <MenuItem value={item } key={item as string}>
-              {sourceData[item]}
-            </MenuItem>
-          ))
-        return result
-
-      } else {
-        const result = Object.keys(sourceData).map(item => (
-            <MenuItem value={item} key={item as string}>
-              {item}
-            </MenuItem>
-          ))
-        return result
-
-      }
+  const getKeys = (data: Array<any> | object): JSX.Element[] => {
+    if (!Array.isArray(sourceData)) {
+      const result = getEnumKeys(sourceData).map(item => (
+        <MenuItem value={item} key={item as string}>
+          {sourceData[item]}
+        </MenuItem>
+      ))
+      return result
+    } else {
+      const result = Object.keys(sourceData).map(item => (
+        <MenuItem value={item} key={item as string}>
+          {item}
+        </MenuItem>
+      ))
+      return result
+    }
   }
 
   return (
     <FormControl className={className}>
       <InputLabel htmlFor={id}>{label}</InputLabel>
-      <Select labelId={`${id}-label`} id={id} value={value || ''} onChange={onChange}>
+      <Select
+        labelId={`${id}-label`}
+        id={id}
+        value={value || ''}
+        onChange={onChange}
+      >
         {getKeys(sourceData)}
       </Select>
     </FormControl>
