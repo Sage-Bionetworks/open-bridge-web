@@ -88,7 +88,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
   <AssessmentLibraryWrapper tags={data.tags} assessments={data.assessments} onChangeTags={(assessments: Assessment[])=> setFilteredAssessments(assessments)/*setFilterTags(tags)*/}>
       {(filteredAssessments|| data.assessments).map(
             (a, index) => (
-              <Link to={`${match.url}/${a.guid}`} className={classes.cardLink}>
+              <Link to={`${match.url}/${a.guid}`} className={classes.cardLink}     key={a.guid}>
                 <AssessmentCard
                   index={index}
                   assessment={a}

@@ -57,15 +57,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-function getClientId() {
-  //what is client?
-  if (document.location.origin.indexOf('127.0.0.1') > -1) {
-    return constants.client.local
-  } else if (document.location.origin.indexOf('-staging') > -1) {
-    return constants.client.staging
-  }
-  return constants.client.production
-}
+
 
 const loginWithSynapse = (event: any) => {
   // let payload = createPayload('appId');
@@ -77,7 +69,7 @@ const loginWithSynapse = (event: any) => {
   // storeService.set(ENVIRONMENT, self.environmentObs());
   let array = []
   array.push('response_type=code')
-  array.push('client_id=' + getClientId())
+  array.push('client_id=' +  UserService.getOathEnvironment().client)
   array.push('scope=openid')
   array.push('state=' + encodeURIComponent(state))
   array.push('redirect_uri=' + encodeURIComponent(document.location.origin))
