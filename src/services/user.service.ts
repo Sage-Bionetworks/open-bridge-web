@@ -6,7 +6,7 @@ import { LoggedInUserData, Response } from '../types/types'
 const getOathEnvironment = (): {client: string, vendor: string, redirect: string} => {
  if (document.location.origin.indexOf('127.0.0.1') > -1) {
   return constants.oauth.local
-} else if (document.location.origin.indexOf('-staging') > -1) {
+} else if (document.location.origin.indexOf('staging') > -1) {
   return constants.oauth.staging
 }
 throw ('unknown')
