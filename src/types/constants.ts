@@ -25,17 +25,40 @@ export default {
     { value: 'staging', label: 'Staging' },
     { value: 'production', label: 'Production' },
   ],
-  host: {
+  /*host: {
     local: 'http://localhost:9000',
     develop: 'https://ws-develop.sagebridge.org',
     staging: 'https://ws-staging.sagebridge.org',
     production: 'https://ws.sagebridge.org',
-  },
-  client: {
+  },*/
+
+  oauth: {
+    local: {
+      client: '100062',
+      vendor: 'mtb',
+      redirect: 'http://127.0.0.1:3000'
+
+    },
+    staging: {
+      client: '100069',
+      vendor: 'mtb-staging',
+      redirect: 'https://staging.mobiletoolbox.org'
+
+    }
+
+  }
+ /* client: {
     local: '100062',
-    staging: '100020',
+    staging: '100069',
     production: '100018',
   },
+  vendor: {
+    local: 'mtb',
+    staging: 'mtb-staging',
+    production: '',
+  }*/
+
+
   /*toastr: {
     closeButton: true,
     debug: false,
@@ -59,6 +82,7 @@ export default {
     }
   },
   retentionReports: ['api', 'biomarin-pku-study', 'crf-module', 'sage-mpower-2'],*/
+  ,
   endpoints: {
     /*adminAuth: '/v3/auth/admin',
   appConfigs: '/v3/appconfigs',

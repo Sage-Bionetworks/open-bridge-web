@@ -4,7 +4,12 @@ import UserService from './services/user.service'
 
 import './App.css'
 
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from 'react-router-dom'
 import {
   ThemeProvider,
   Typography,
@@ -30,7 +35,6 @@ const defaultTheme = createMuiTheme()
   return `${window.location.protocol}//${window.location.hostname}${portString}/`
 }*/
 
-
 export const detectSSOCode = async (
   sessionUpdateFn: Function,
   sessionData: SessionData,
@@ -47,10 +51,13 @@ export const detectSSOCode = async (
   if (code && !sessionData.token) {
     try {
       console.log('trying to log in')
+      const env = UserService.getOathEnvironment()
       const loggedIn = await UserService.loginOauth(
         code,
-        'http://127.0.0.1:3000',
+        env.redirect,
+        env.vendor,
       )
+
       sessionUpdateFn({
         type: 'LOGIN',
         payload: {
@@ -61,7 +68,14 @@ export const detectSSOCode = async (
           // userDataGroup: loggedIn.data.dataGroups,
         },
       })
-      window.location.replace('http://127.0.0.1:3000/study-editor')
+      // console.log(env.redirect+ "/studies")
+      // return <Redirect to={env.redirect+ "/studies"} />
+      window.history.replaceState(
+        null,
+        '',
+        `${window.location.origin}/studies`,
+      )
+      // window.location.replace(env.redirect+'/study-editor')
     } catch (e) {
       alert(e.message)
     }
@@ -71,7 +85,7 @@ export const detectSSOCode = async (
 function App() {
   const sessionData = useSessionDataState()
   const sessionUpdateFn = useSessionDataDispatch()
-const token = sessionData.token
+  const token = sessionData.token
   useEffect(() => {
     let isSubscribed = true
     //the whole point of this is to log out the user if their session ha expired on the servier
@@ -81,7 +95,7 @@ const token = sessionData.token
           await UserService.getUserInfo(token)
         } catch (e) {
           sessionUpdateFn({
-            type: 'LOGOUT'
+            type: 'LOGOUT',
           })
         }
       }
@@ -91,7 +105,6 @@ const token = sessionData.token
       isSubscribed = false
     }
   }, [token])
-
   useEffect(() => {
     detectSSOCode(sessionUpdateFn, sessionData)
   })

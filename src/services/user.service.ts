@@ -2,6 +2,16 @@ import { callEndpoint } from '../helpers/utility'
 import constants from '../types/constants'
 import { LoggedInUserData, Response } from '../types/types'
 
+
+const getOathEnvironment = (): {client: string, vendor: string, redirect: string} => {
+ if (document.location.origin.indexOf('127.0.0.1') > -1) {
+  return constants.oauth.local
+} else if (document.location.origin.indexOf('-staging') > -1) {
+  return constants.oauth.staging
+}
+throw ('unknown')
+}
+
 const requestResetPassword = async (email: string): Promise<Response<{}>> => {
   const postData = {
     email,
@@ -33,17 +43,18 @@ const loginWithPassword = async (
 const loginOauth = async (
   authToken: string,
   callbackUrl: string,
+  vendorId: string,
 ): Promise<Response<LoggedInUserData>> => {
   const postData = {
     appId: constants.constants.APP_ID,
-    vendorId: 'synapse',
+    vendorId,
     authToken,
     callbackUrl,
   }
   console.log('token:', authToken)
   /*DO NOt CHECK IN*/
   //return loginWithPassword('username', 'password')
-  debugger
+
   const result = await callEndpoint<LoggedInUserData>(
     constants.endpoints.oauthSignIn,
     'POST',
@@ -64,6 +75,7 @@ async function getUserInfo(token: string): Promise<Response<LoggedInUserData>> {
   return result
 }
 const UserService = {
+  getOathEnvironment,
   requestResetPassword,
   loginWithPassword,
   loginOauth,

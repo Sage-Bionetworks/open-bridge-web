@@ -128,6 +128,7 @@ export const clearSession = () => {
 }
 
 export const setSession = (data: SessionData) => {
+
   sessionStorage.setItem(CONSTANTS.constants.SESSION_NAME, JSON.stringify(data))
 }
 
