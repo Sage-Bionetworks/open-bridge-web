@@ -156,6 +156,7 @@ export type Assessment = {
 export type StudySession = {
   id: string
   active?: boolean
+  studyId: string
   //duration: number
   name: string
   assessments: Assessment[]
@@ -180,11 +181,11 @@ export type Group = {
 export type StudyStatus =  'DRAFT' | 'ACTIVE' | 'COMPLETED'
 export type Study = {
   identifier: string
-  status?: StudyStatus
+  status: StudyStatus
   name: string
   subtitle?: string
   description?: string
-  sessions: StudySession[]
+ // sessions: StudySession[]
 
 }
 
@@ -196,6 +197,7 @@ export type Schedule = {
 
 export type StudyArm = {
   name: string,
+  studyId: string,
   pseudonym: string
   schedule: Schedule
   active?: boolean

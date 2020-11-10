@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FunctionComponent } from 'react'
+import React, { ChangeEvent, FunctionComponent, useEffect } from 'react'
 
 import clsx from 'clsx'
 import {
@@ -43,10 +43,17 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
   onAddSession,
   sessions,
 }: SessionActionButtonsProps) => {
+  console.log('sessions!', sessions)
   const classes = useStyles()
   const [selectedSession, setSelectedSession] = React.useState<
     StudySession | undefined
   >(sessions.length > 0 ? sessions[0] : undefined)
+
+  useEffect(()=> {
+    console.log('changed')
+    setSelectedSession(sessions.length > 0 ? sessions[0] : undefined)
+  }
+  , [sessions.length])
 
 
   return (

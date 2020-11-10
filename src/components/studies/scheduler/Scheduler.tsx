@@ -20,38 +20,70 @@ import SchedulableSingleSessionContainer from './SchedulableStudySessionContaine
 import ObjectDebug from '../../widgets/ObjectDebug'
 import GroupsEditor from './GoupsEditor'
 import { AcUnitOutlined } from '@material-ui/icons'
+import { StudySection } from '../sections'
+import NavButtons from '../NavButtons'
+import { useAsync } from '../../../helpers/AsyncHook'
 
 type SchedulerOwnProps = {
-  studySessions: StudySession[]
+  //studySessions: StudySession[]
+  id: string,
+  section: StudySection
 }
 
 type SchedulerProps = SchedulerOwnProps & RouteComponentProps
 
 const Scheduler: FunctionComponent<SchedulerProps> = ({
-  studySessions,
+  id,
+  section,
+  //studySessions,
 }: SchedulerOwnProps) => {
-  const studyArm: StudyArm = {
+ const studyArm: StudyArm = {
+   studyId: id,
     name: 'Untitled',
     pseudonym: '',
     active: true,
     schedule: {
       name: 'Undefined',
       eventStartId: '123',
-      sessions: studySessions,
+      sessions: [],
     },
   }
-  const [studyArms, setData] = React.useState<StudyArm[]>([studyArm])
-  const [reqStatus, setRequestStatus] = React.useState<RequestStatus>(
+  const handleError = useErrorHandler()
+  console.log('section', section)
+  const { data: studyArms, status, error, run, setData } = useAsync<StudyArm[]>({
+    status: id ? 'PENDING' : 'IDLE',
+    data: [ studyArm],
+  })
+
+  React.useEffect(() => {
+    if (!id) {
+      return
+    }
+    return run(StudyService.getStudySessions(id).then(sessions => sessions))
+  }, [id, run])
+
+  if (status === 'REJECTED') {
+    handleError(error!)
+  } else if (status === 'PENDING') {
+    return <>...loading</>
+  }
+  /*const groupsUpdateFn = (action: SessionAction) => {
+    //setData(actionsReducer(groups!, action))
+  }*/
+
+
+ // const [studyArms, setData] = React.useState<StudyArm[]>([studyArm])
+/*  const [reqStatus, setRequestStatus] = React.useState<RequestStatus>(
     'RESOLVED',
-  )
+  )*/
 
   // let { id } = useParams<{ id: string }>()
-  const handleError = useErrorHandler()
+
   const groupsUpdateFn = (action: SessionAction) => {
-    const newState = actionsReducer(studyArms[0].schedule.sessions!, action)
+   /* const newState = actionsReducer(studyArms[0].schedule.sessions!, action)
     console.log('setting data  to ', newState)
     const rx= studyArms.map((arm, index) => index > 0? arm : {...arm, schedule: {...arm.schedule, sessions: newState}})
-    setData(prev => rx)
+    setData(prev => rx)*/
   }
 
   /* useEffect(() => {
@@ -75,12 +107,16 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
     }
   }, [handleError, id])*/
 
+  if (! studyArms) {
+    return <>NOTHING</>
+  }
+
   return (
     <>
       <div>Scheduler</div>
       <ObjectDebug label="groups" data={studyArms}></ObjectDebug>
 
-      <LoadingComponent reqStatusLoading={reqStatus}>
+      <LoadingComponent reqStatusLoading={status}>
         <GroupsEditor
           studyArms={studyArms}
           onAddStudyArm={
@@ -141,6 +177,7 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
             </TabPanel>
           ))}
         </GroupsEditor>
+        <NavButtons id={id} currentSection={section} onNavigate={((href: string)=> console.log(href))}></NavButtons>
       </LoadingComponent>
     </>
   )

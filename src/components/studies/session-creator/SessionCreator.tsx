@@ -31,16 +31,19 @@ import SessionActionButtons from './SessionActionButtons'
 import SingleSessionContainer from './SingleSessionContainer'
 import { useErrorHandler } from 'react-error-boundary'
 import { useAsync } from '../../../helpers/AsyncHook'
+import { useParams } from 'react-router-dom'
+import { StudySection } from '../sections'
+import NavButtons from '../NavButtons'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    display: "grid",
+    display: 'grid',
     padding: theme.spacing(2),
-    gridTemplateColumns: "repeat(auto-fill,280px)",
+    gridTemplateColumns: 'repeat(auto-fill,280px)',
     gridColumnGap: theme.spacing(2),
     gridRowGap: theme.spacing(2),
     minHeight: theme.spacing(50),
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
   },
 
   closeButton: {
@@ -50,26 +53,33 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.grey[500],
   },
   sessionContainer: {
-    width: "280px",
+    width: '280px',
     padding: theme.spacing(2),
 
-   
-    backgroundColor: "#F2f2f2"
-
-  }
+    backgroundColor: '#F2f2f2',
+  },
+  actionButtons: {
+    borderTop: '1px solid black',
+    backgroundColor: '#FFF',
+    paddingTop: theme.spacing(2),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    paddingBottom: theme.spacing(2),
+  },
 }))
 
 type SessionCreatorProps = {
   //studyGroups?: Group[]
-  // id?: string
-  studySessions: StudySession[]
+  id: string
+  section: StudySection
+  // studySessions: StudySession[]
 }
 
 const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
-  //studyGroups,
-  //id,
-  studySessions,
-}: SessionCreatorProps) => {
+  section,
+  id,
+}: //studySessions,
+SessionCreatorProps) => {
   const classes = useStyles()
 
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
@@ -83,40 +93,39 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     setData(newState)
   }
 
-  /* const { data: sessions, status, error, run, setData } = useAsync<StudySession[]>({
+  const { data: sessions, status, error, run, setData } = useAsync<
+    StudySession[]
+  >({
     status: 'IDLE',
-    data: studySessions|| [],
+    data: [],
   })
-*/
-  const [sessions, setData] = React.useState<StudySession[]>(studySessions)
+
   const handleError = useErrorHandler()
   console.log('sessionsState', sessions)
 
-  /*React.useEffect(() => {
+  React.useEffect(() => {
     if (!id) {
       return
     }
-    return run(StudyService.getStudy(id).then(study => {
-      if (!study) {
-        throw new Error("what are you thinking?")
-      }
-      return study!.groups.map(group =>  group.sessions).flat()}))
+    return run(StudyService.getStudySessions(id).then(sessions => sessions))
   }, [id, run])
 
   if (status === 'REJECTED') {
     handleError(error!)
   } else if (status === 'PENDING') {
     return <>...loading</>
-  }*/
+  }
 
   const cancelAssessmentSelector = () => {
     setIsAssessmentDialogOpen(false)
     setSelectedAssessments([])
-
   }
 
-  const updateAssessmentList = (sessionId: string, assessments: Assessment[]) =>{
-  console.log(assessments)
+  const updateAssessmentList = (
+    sessionId: string,
+    assessments: Assessment[],
+  ) => {
+    console.log(assessments)
     groupsUpdateFn({
       type: Types.UpdateAssessments,
       payload: { sessionId, assessments },
@@ -142,10 +151,14 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     return session
   }
 
+  const save = async (url: string) => {
+   const done = await StudyService.saveStudySessions(id, sessions || [])
+   window.location.replace(url)
+  }
+
   if (sessions) {
     return (
       <>
-       
         <Box
           display="grid"
           padding="8px"
@@ -153,16 +166,10 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
           gridColumnGap="16px"
           gridRowGap="16px"
           minHeight="400px"
-          bgcolor = '#fff'
-
+          bgcolor="#fff"
         >
           {sessions.map(session => (
-            <Paper
-            className={classes.sessionContainer}
-           
-              key={session.id}
-         
-            >
+            <Paper className={classes.sessionContainer} key={session.id}>
               <SingleSessionContainer
                 key={session.id}
                 studySession={session}
@@ -189,9 +196,8 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
               ></SingleSessionContainer>
             </Paper>
           ))}
-         
         </Box>
-        <Box borderTop="1px solid black" key="footer">
+        <Box className={classes.actionButtons} key="actionButtons">
           <SessionActionButtons
             key={'new_session'}
             sessions={sessions}
@@ -204,12 +210,18 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
                 payload: {
                   name: 'Session' + sessions.length.toString(),
                   assessments,
+                  studyId: id,
                   active: true,
                 },
               })
             }
           ></SessionActionButtons>
         </Box>
+        <NavButtons
+          id={id}
+          currentSection={section}
+          onNavigate={save}
+        ></NavButtons>
         <Dialog
           maxWidth="lg"
           open={isAssessmentDialogOpen}
@@ -234,9 +246,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
             ></AssessmentSelector>
           </DialogContent>
           <DialogActions>
-            <Button onClick={cancelAssessmentSelector}>
-              Cancel
-            </Button>
+            <Button onClick={cancelAssessmentSelector}>Cancel</Button>
 
             <Button
               variant="contained"

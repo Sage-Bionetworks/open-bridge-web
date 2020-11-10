@@ -1,52 +1,121 @@
-import { Group, Study, StudySession, StudyStatus } from '../types/types'
-import Studies from '../data/studies.json'
-import Sessions from '../data/sessions.json'
-import { StudySection } from '../components/studies/sections'
+import { Group, Study, StudyArm, StudySession, StudyStatus } from '../types/types'
+
+
 import AssessmentService from './assessment.service'
+import { getRandomId } from '../helpers/utility'
+import {KEYS, MOCKS, setItem, getItem} from './lshelper'
 
 const StudyService = {
   getStudies,
   getStudy,
   saveStudy,
-
   getStudySessions,
+  saveStudySessions
 }
 
+
 async function getStudies(): Promise<Study[]> {
-  //@ts-ignore
-  return Promise.resolve(Studies.data)
+
+  let studies = await getItem<Study[]>(KEYS.STUDIES)
+  if (!studies) {
+    const mocks = MOCKS.STUDIES.map(s => ({...s, status: s.status as StudyStatus }))
+    studies = await setItem<Study[]>(KEYS.STUDIES, mocks)
+  }
+  if (studies === null) {
+    throw 'no studies'
+  }
+  return studies
 }
 
 async function getStudy(id: string): Promise<Study | undefined> {
-  const _study = Studies.data.find(study => study.identifier === id)!
-  const result = await getStudySessions(_study!.identifier)
-  const study: Study = {..._study!, status: _study.status as StudyStatus, sessions: result|| []}
-//@ts-ignore
-  return new Promise(resolve => setTimeout(resolve.bind(null, study), 2))
-  /*return new Promise((resolve, reject) =>
+  const studies = await getStudies()
+  const _study = studies.find(study => study.identifier === id)
+  if (_study) {
+    const study: Study = {
+      ..._study!,
+      status: _study.status as StudyStatus,
+    }
+    return study
+
+  } else {
+ return undefined
+  }
+}
+
+
+async function getAllStudySessions(
+): Promise<StudySession[] | null> {
+  let sessions = await getItem<StudySession[]>(KEYS.STUDY_SESSIONS)
+  if (!sessions) {
+    const mocks = MOCKS.SESSIONS
+    //@ts-ignore
+    sessions = await setItem(KEYS.STUDY_SESSIONS, mocks)
+  }
+  
+  return sessions
+}
+
+
+async function getStudySessions(
+  studyId: string,
+): Promise<StudySession[] | undefined> {
+
+  let sessions = await getAllStudySessions()
+  return sessions?.filter(s => s.studyId=== studyId)
+}
+
+
+
+async function saveStudy(study: Study): Promise<Study[]> {
+  const studies = (await getStudies()) || []
+  let newStudies: Study[]
+  if (studies.find(_study => _study.identifier == study.identifier)) {
+    newStudies = studies.map(_study =>
+      _study.identifier === study.identifier ? _study : study,
+    )
+  } else {
+    newStudies = [...studies, study]
+  }
+
+  const result = await setItem(KEYS.STUDIES, newStudies)
+
+  return result
+}
+
+
+async function saveStudySessions(studyId: string, sessions: StudySession[]): Promise<StudySession[]> {
+  const allSessions = await getAllStudySessions();
+  const others = allSessions?.filter(s=> s.studyId !== studyId) || []
+  const allSessionsUpdated = [...others, ...sessions]
+  const result = await setItem(KEYS.STUDY_SESSIONS, allSessionsUpdated )
+
+  return result
+}
+
+async function getStudyArms(studyId: string): Promise<StudyArm[]> {
+
+
+  let studyArms = await getItem<StudyArm[]>(KEYS.STUDY_ARMS)
+  if(studyArms) {
+    return studyArms.filter(sa=> sa.studyId=== studyId)
+  }
+  /*const newStudyArm: StudyArm = {studyId, name: 'Untitled', pseudonym: ''}
+    const mocks = MOCKS.STUDIES.map(s => ({...s, status: s.status as StudyStatus }))
+    studies = await setItem<Study[]>(KEYS.STUDIES, mocks)
+  }
+  if (studies === null) {
+    throw 'no studies'
+  }
+  return studyArms*/
+  else {
+    return []
+  }
+}
+
+
+/*return new Promise((resolve, reject) =>
     setTimeout(() => reject(new Error("Some Error Just happened")), 1000)
     );*/
-}
-
-async function getStudySessions(id: string): Promise<StudySession[]| undefined> {
-
-  const sessions = Sessions.data 
-  const promises = sessions.map(session  => {
-    return AssessmentService.getAssessmentsForSession(session.id)
-  })
-
-  return Promise.all(promises).then(sessionAssessments=> sessionAssessments.map((assArray, index) => ({...sessions[index], assessments: assArray})))
-
-}
-
-async function saveStudy(study: Study): Promise<Study | undefined> {
-  //const result = Studies.data.find(study => study.id === id)
-console.log('saving')
-  return new Promise(resolve => setTimeout(resolve.bind(null, study), 2000))
-  /*return new Promise((resolve, reject) =>
-    setTimeout(() => reject(new Error("Some Error Just happened")), 1000)
-    );*/
-}
 
 /*async function getStudyGroups(id: string): Promise<Group[]> {
   const result = Studies.data.find(study => study.id === id)
@@ -61,12 +130,11 @@ console.log('saving')
     )
   }*/
 
-  /*return new Promise(resolve =>
+/*return new Promise(resolve =>
         setTimeout(resolve.bind(null, result?.groups), 2000)
     );*/
-  /*return new Promise((resolve, reject) =>
+/*return new Promise((resolve, reject) =>
     setTimeout(() => reject(new Error("Some Error Just happened")), 1000)
     );*/
-
 
 export default StudyService
