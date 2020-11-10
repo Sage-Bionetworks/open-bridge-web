@@ -8,28 +8,28 @@
 
     },
     {
-      "identifier": "5476c92c",
+      "identifier": "5476c92c1",
       "name": "anotherStudy",
       "description": "loremIpsum dolor",
       "status": "DRAFT"
       
     },
     {
-      "identifier": "5476c92c",
+      "identifier": "5476c92c2",
       "name": "anotherStudy",
       "description": "loremIpsum dolor",
       "status": "ACTIVE"
       
     },
     {
-      "identifier": "5476c92c",
+      "identifier": "5476c92c3",
       "name": "anotherStudy",
       "description": "loremIpsum dolor",
       "status": "ACTIVE"
       
     },
     {
-      "identifier": "5476c92c",
+      "identifier": "5476c92c4",
       "name": "anotherStudy",
       "description": "loremIpsum dolor",
       "status": "COMPLETED"

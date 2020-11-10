@@ -14,6 +14,7 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core'
+import { getRandomId } from '../../helpers/utility'
 
 type StudyListOwnProps = {}
 
@@ -139,9 +140,12 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     setStatusFilters(sections.map(section => section.status))
 
 
-   const createStudy = () => {
-     //setStudies([...studies, {identifier: }])
-   }
+   const createStudy = async() => {
+     const newStudy: Study = {identifier: getRandomId() ,  status: 'DRAFT' as StudyStatus, name : 'Untitled'}
+    setStudies([...studies, newStudy])
+   const x = await StudyService.saveStudy(newStudy)
+   setStudies(x)
+  }
 
   const isSelectedFilter = (filter: StudyStatus) =>
     statusFilters.indexOf(filter) > -1 && statusFilters.length === 1
@@ -153,10 +157,10 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         try {
           //setIsLoading(true)
 
-          const assessments = await StudyService.getStudies()
+          const studies = await StudyService.getStudies()
 
           if (isSubscribed) {
-            setStudies(assessments)
+            setStudies(studies)
           }
         } catch (e) {
           // isSubscribed && setError(e)

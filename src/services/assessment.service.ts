@@ -1,9 +1,11 @@
 import { Response, Assessment } from '../types/types'
 
-import Assessments from '../data/assessments.json'
+
 
 import { callEndpoint } from '../helpers/utility'
 import constants from '../types/constants'
+import {KEYS, MOCKS, setItem, getItem} from './lshelper'
+
 
 const AssessmentService = {
   getAssessments,
@@ -30,7 +32,8 @@ async function getAssessment(guid: string, token?: string): Promise<Assessment[]
 async function getAssessments(token?: string): Promise<Assessment[]> {
 
   const result =token?  await callEndpoint<{ items: Assessment[] }>(
-    constants.endpoints.assessments,
+    //constants.endpoints.assessments,
+    constants.endpoints.assessmentShared,
     'GET',
     {},
     token,
@@ -108,15 +111,12 @@ async function getAssessmentsForSession(sessionId: string, token?: string): Prom
   
 
   return result*/
+  const sessionAssessments = await getItem<{sessionId: string, assessments: Assessment[]}[]>(KEYS.ASSESSMENTS) 
+  if (!sessionAssessments) {
+    return []
+  }
+  return sessionAssessments.find(a=> a.sessionId === sessionId)?.assessments || []
 
-  const x = await getAssessments(token)
-  const max =  x.length /2
-  const num1 =  Math.floor(Math.random() * Math.floor(max));
-  const num2 =  Math.floor(Math.random() * Math.floor(max));
-  const num3 =  Math.floor(Math.random() * Math.floor(max));
-  const min = Math.min(num1, num2)
-  const max1 = Math.max(num1, num2)
-  return x.splice(min, max1)
 }
 
 

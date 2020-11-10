@@ -28,6 +28,7 @@ export type ActionPayload = {
   }
 
   [Types.AddSession]: {
+    studyId: string, 
     name: string
     assessments: Assessment[]
     active?: boolean
@@ -60,6 +61,7 @@ export const DEFAULT_GROUP: Group = {
     {
       id: '123',
       name: 'Baseline Survey',
+      studyId: '',
 
       active: true,
       assessments: [
@@ -88,15 +90,18 @@ export const DEFAULT_GROUP: Group = {
 }
 
 function addSession(
+
   sessions: StudySession[],
   name: string,
   assessments: Assessment[],
+  studyId: string,
   isActive: boolean = false,
 ): StudySession[] {
   const session: StudySession = {
     id: getRandomId(),
     assessments,
     active: isActive,
+    studyId,
     //duration: 0,
     name,
   }
@@ -174,8 +179,10 @@ function actionsReducer(
     case Types.AddSession: {
       return addSession(
         sessions,
+
         action.payload.name,
         action.payload.assessments,
+        action.payload.studyId,
         action.payload.active,
       )
     }

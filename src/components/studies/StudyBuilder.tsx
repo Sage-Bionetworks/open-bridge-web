@@ -19,12 +19,18 @@ import StudyService from '../../services/study.service'
 import clsx from 'clsx'
 import { TurnedInNotOutlined } from '@material-ui/icons'
 import StudyTopNav from './StudyTopNav'
+import NavButtons from './NavButtons'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
+  mainAreaWrapper: {
+    textAlign: 'center',
+    flexGrow: 1,
+    // backgroundColor: theme.palette.background.default
+  },
   mainArea: {
     margin: '0 auto',
     minHeight: '100px',
-    backgroundColor: '#cacacd',
+    //backgroundColor: theme.palette.background.default,
   },
   mainAreaNormal: {
     width: `${280 * 3 + 16 * 3}px`,
@@ -75,110 +81,69 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
 
   const getStudySessions = (study: Study) => {
     //const sessions = study.groups.map(group => group.sessions).flat()
-   // return StudyService.getStudySessions()
-
-  }
-
-  const NavLinks = ({
-    sections,
-    currentSection,
-  }: {
-    sections: { name: string; path: StudySection }[]
-    currentSection: StudySection
-  }) => {
-    const currentIndex = sections.findIndex(i => i.path === currentSection)
-    const prev = currentIndex > 0 ? sections[currentIndex - 1] : undefined
-    const next =
-      currentIndex + 1 < sections.length
-        ? sections[currentIndex + 1]
-        : undefined
-
-    const NavLink = (props: any) => {
-      const { id, section } = props
-      if (!section) {
-        return <></>
-      }
-      return (
-        <Button
-          variant="contained"
-          color="primary"
-  
-          href={`/studies/builder/${id}/${section.path}`}
-        >
-          {section.name}
-        </Button>
-      )
-    }
-    const result = (
-      <Box position="fixed" bottom={24} right={24}>
-        <NavLink id={id} section={prev}></NavLink>&nbsp;&nbsp;
-        <NavLink id={id} section={next}></NavLink>
-      </Box>
-    )
-    return result
+    // return StudyService.getStudySessions()
   }
 
   return (
     <>
-    <StudyTopNav studyId={id} currentSection={section}></StudyTopNav>
-    <Box
-      paddingTop="16px"
-      bgcolor="#997cbf29"
-      display="flex"
-      position="relative"
-    >
-   
-      <StudyLeftNav
-        open={open}
-        onToggle={() => setOpen(prev => !prev)}
-        currentSection={section}
-        id={id}
-      ></StudyLeftNav>
+      <StudyTopNav studyId={id} currentSection={section}></StudyTopNav>
+      <Box paddingTop="16px" display="flex" position="relative">
+        <StudyLeftNav
+          open={open}
+          onToggle={() => setOpen(prev => !prev)}
+          currentSection={section}
+          id={id}
+        ></StudyLeftNav>
 
-      <Box textAlign="center" flexGrow="1" bgcolor="#dde0de">
-        <Box
-          className={clsx(classes.mainArea, {
-            [classes.mainAreaNormal]: open,
-            [classes.mainAreaWide]: !open,
-          })}
-        >
- 
-          <ErrorBoundary
-            FallbackComponent={ErrorFallback}
-            onError={ErrorHandler}
+        <Box className={classes.mainAreaWrapper}>
+          <Box
+            className={clsx(classes.mainArea, {
+              [classes.mainAreaNormal]: open,
+              [classes.mainAreaWide]: !open,
+            })}
           >
-            <LoadingComponent reqStatusLoading={status}>
-              {study && (
-                <Switch>
-                  <Route
-                    path="/studies/builder/:id/scheduler"
-                    render={props => {
-                      return <Scheduler {...props}   studySessions={study.sessions}></Scheduler>
-                    }}
-                  />
-                  <Route
-                    path="/studies/builder/:id/session-creator"
-                    render={props => {
-                      return (
-                        <SessionCreator
-                          {...props}
-                          studySessions={study.sessions}
-                        />
-                      )
-                    }}
-                  />
-                </Switch>
-              )}
+            <ErrorBoundary
+              FallbackComponent={ErrorFallback}
+              onError={ErrorHandler}
+            >
+              <LoadingComponent reqStatusLoading={status}>
+                {study && (
+                  <Switch>
+                    <Route
+                      path="/studies/builder/:id/scheduler"
+                      render={props => {
+                        return (
+                          <Scheduler
+                            {...props}
+                            id = {id}
+                            section = {section}
+                          
+                          ></Scheduler>
+                        )
+                      }}
+                    />
+                    <Route
+                      path="/studies/builder/:id/session-creator"
+                      render={props => {
+                        return (
+                          <SessionCreator
+                            {...props}
+                            id = {id}
+                            section = {section}
+                            
+                          />
+                        )
+                      }}
+                    />
+                  </Switch>
+                )}
 
-              <NavLinks
-                sections={sectionLinks}
-                currentSection={section}
-              ></NavLinks>
-            </LoadingComponent>
-          </ErrorBoundary>
+         
+              </LoadingComponent>
+            </ErrorBoundary>
+          </Box>
         </Box>
       </Box>
-    </Box>
     </>
   )
 }
