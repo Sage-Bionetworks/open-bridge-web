@@ -1,16 +1,16 @@
 import React, { FunctionComponent, useState } from 'react'
 
-import { Box, Typography, makeStyles } from '@material-ui/core'
+import { Box, Typography, makeStyles, Paper } from '@material-ui/core'
 
 import clsx from 'clsx'
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   root: {
     minHeight: '310px',
-    padding: '20px',
-    backgroundColor: '#E2E2E2',
+    padding: theme.spacing(2),
+    backgroundColor: '#FFF',
   },
-})
+}))
 
 type TabPanelProps = {
   children?: React.ReactNode
@@ -28,7 +28,7 @@ const TabPanel: FunctionComponent<TabPanelProps> = ({
 }: TabPanelProps) => {
   const classes = useStyles()
   return (
-    <div
+    <Paper
       ref={innerRef}
       role="tabpanel"
       hidden={value !== index}
@@ -41,7 +41,7 @@ const TabPanel: FunctionComponent<TabPanelProps> = ({
           <>{children}</>
         </Box>
       )}
-    </div>
+    </Paper>
   )
 }
 

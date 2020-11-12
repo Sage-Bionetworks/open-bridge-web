@@ -15,6 +15,8 @@ import {
 } from '@material-ui/core'
 
 import { EndDateType, SessionScheduleEndType } from '../../../types/scheduling'
+import SchedulingFormSection from './SchedulingFormSection'
+import SmallTextBox from './SmallTextBox'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -55,8 +57,7 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
   }
 
   return (
-    <FormControl component="fieldset">
-      <FormLabel component="label">Repeat session until:</FormLabel>
+    <SchedulingFormSection label={'Repeat Until:'}>
       <RadioGroup
         aria-label="End Date"
         name="endDate"
@@ -74,38 +75,19 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
         <FormControlLabel
           control={
             <>
-              <Radio
-                value={'DATE'}
-                inputProps={{ 'aria-label': 'Particular Date' }}
-              />
-              <TextField
-                type="date"
-                label="Date"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                value={endDate.date}
-              />
-            </>
-          }
-          label=" "
-        />
-
-        <FormControlLabel
-          control={
-            <>
               <Radio value={'N_OCCURENCES'} />{' '}
-              <TextField
+              <SmallTextBox
                 id="standard-basic"
+                style={{ marginRight: '10px' }}
                 onChange={e => changeEndDateDays(e.target.value)}
                 value={endDate.days || ''}
               />
             </>
           }
-          label="Occurrences"
+          label="occurrences"
         />
       </RadioGroup>
-    </FormControl>
+    </SchedulingFormSection>
   )
 }
 

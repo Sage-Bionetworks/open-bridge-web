@@ -18,12 +18,12 @@ export const MOCKS = {
 
 }
 
-export const setItem = async<T>(key: string, item: T, timeout = 1000): Promise<T>=> {
+export const setItem = async<T>(key: string, item: T, timeout = 100): Promise<T>=> {
     localStorage.setItem(key, JSON.stringify(item))
     return new Promise(resolve => setTimeout(resolve.bind(null, item), timeout))
   }
   
-  export const getItem = async<T>(key: string, timeout = 1000): Promise<T| null>=> {
+  export const getItem = async<T>(key: string, timeout = 100): Promise<T| null>=> {
     
     const item= localStorage.getItem(key)
   

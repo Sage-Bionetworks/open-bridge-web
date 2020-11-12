@@ -24,9 +24,12 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     },
   },
   inner: {
-    border: '1px solid #C4C4C4',
-    padding: '12px',
-    minHeight: '240px',
+    borderTop: '1px solid #000',
+    borderBottom: '1px solid #000',
+    paddingTop: theme.spacing(1),
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2)
+    
   },
 }))
 
@@ -49,9 +52,9 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   onSetRandomized,
 }: AssessmentListProps): JSX.Element => {
   const classes = useStyles()
-  const getLeftMargin = (index: number): number => {
-    return index === 0 ? 0 : -85 * 1
-  }
+
+  console.log(isGroupAssessments, 'ass')
+
 
   const getMargins = (
     index: number,
@@ -89,28 +92,27 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
             <AssessmentSmall
               isHideDuration={assessmentOrder === 'RANDOM'}
               assessment={assessment}
+              hasHover={false}
               isDragging={false}
             ></AssessmentSmall>
           </Box>
         ))}
       </div>
-      <FormGroup aria-label="assessments" row>
+      <FormGroup aria-label="assessments" row style={{marginLeft: '16px'}}>
         <FormControlLabel
           control={
             <Checkbox
-              value={isGroupAssessments}
+        
+              checked = {isGroupAssessments}
               onChange={e =>
-                onChangeGrouping({
-                  isGroupAssessments: e.target.checked,
-                  assessmentOrder,
-                })
+                onChangeGrouping(e.target.checked)
               }
             />
           }
-          label="Group assessments"
+          label="Bundle assessments"
         />
 
-        <Typography component="div">
+        <Typography component="div" style={{marginLeft: '30px'}}>
           <Grid
             component="label"
             container
@@ -122,6 +124,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
             <Grid item>
               <Switch
                 color="primary"
+                disabled = {!isGroupAssessments}
                 checked={assessmentOrder == 'RANDOM'}
                 onChange={e => {
                   console.log('e' + e.target.checked)

@@ -18,30 +18,26 @@ import {
   Checkbox,
   RadioGroup,
   Radio,
+  IconButton,
 } from '@material-ui/core'
 import { createNamedExports } from 'typescript'
-import DeleteIcon from '@material-ui/icons/Delete'
+import DeleteIcon from '@material-ui/icons/Close'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import {
   AssessmentWindowType,
   NotificationFreqEnum,
   ReminderIntervalEnum,
+  UnitEndWindowEnum,
 } from '../../../types/scheduling'
+import { StringDictionary } from '../../../types/types'
+import SmallTextBox from './SmallTextBox'
+import SchedulingFormSection from './SchedulingFormSection'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 200,
-    },
-
-    formControlBlock: {
-      margin: theme.spacing(1),
-      display: 'block',
-      minWidth: 'auto',
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2),
+    smallRadio: {
+      padding: '2px 9px',
+      marginTop: '2px',
     },
   }),
 )
@@ -63,151 +59,167 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
   const classes = useStyles()
 
   const handleChange = (changeType: 'S' | 'E', value: number) => {
-    if (changeType === 'S') {
-      console.log(value, window.end, 'changin start')
-      if (value < window.end) {
-        onChange({ start: value, end: window.end })
-      } else {
-        console.log("can't do")
-        return
-      }
-    } else {
-      if (value > window.start) {
-        onChange({ start: window.start, end: value })
-      } else {
-        console.log('cant')
-        return
-      }
-    }
+    onChange({ start: window.start })
   }
 
-  const getDropdownItems = (): { value: number; label: string }[] => {
-    const menuItems = []
+  const getDropdownItems = (): StringDictionary<string> => {
+    const menuItems: StringDictionary<string> = {}
 
     const formatTime = (hours: number) => {
       var time = new Date(2000, 1, 1, hours)
       return time.toLocaleString('en-US', { hour: 'numeric', hour12: true })
     }
     for (let i = 0; i < 24; i++) {
-      menuItems.push({ value: i, label: formatTime(i) })
+      menuItems[i] = formatTime(i)
     }
     return menuItems
   }
 
   return (
-    <Box>
-      <Box
-        display="flex"
-        alignItems="center"
-        border="1px solid #ccc"
-        marginBottom="10px"
+    <>
+      <SchedulingFormSection
+        label={'Start'}
+        variant="small"
+        style={{
+          backgroundColor: '#BCD5E4',
+          padding: '16px',
+          marginBottom: '0',
+        }}
       >
-        <FormControl className={classes.formControl}>
-          <Select
-            aria-label="from:"
-            id="demo-simple-select"
-            value={window.start}
-            onChange={e => handleChange('S', Number(e.target.value))}
-          >
-            {getDropdownItems().map(item => (
-              <MenuItem value={item.value} key={item.value}>
-                {item.label}
-              </MenuItem>
-            ))}
-          </Select>
-          <FormHelperText>start</FormHelperText>
-        </FormControl>
-
-        <Box> to</Box>
-
-        <FormControl className={classes.formControl}>
-          <Select
-            id="demo-simple-select-helper"
-            value={window.end}
-            onChange={e => handleChange('E', Number(e.target.value))}
-            aria-label="to"
-          >
-            {getDropdownItems().map(item => (
-              <MenuItem value={item.value} key={item.value}>
-                {item.label}
-              </MenuItem>
-            ))}
-          </Select>
-          <FormHelperText>end</FormHelperText>
-        </FormControl>
-        <Button onClick={() => onDelete()}>
+        <SelectWithEnum
+          value={window.start}
+          sourceData={getDropdownItems()}
+          id="from"
+          onChange={(e: any) => handleChange('S', Number(e.target.value))}
+        ></SelectWithEnum>
+        <IconButton
+          style={{ position: 'absolute', top: 0, right: 0 }}
+          edge="end"
+          size="small"
+          onClick={() => onDelete()}
+        >
           <DeleteIcon></DeleteIcon>
-        </Button>
-      </Box>
-      <SelectWithEnum
-        label="Notify Participant"
-        className={classes.formControl}
-        value={window.notification}
-        sourceData={NotificationFreqEnum}
-        id="notificationfreq"
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          onChange({
-            ...window,
-            notification: e.target.value as keyof typeof NotificationFreqEnum,
-          })
-        }
-      ></SelectWithEnum>
-      <Box display="block">
-        <FormControlLabel
-          control={
-            <Checkbox
-              value={window.allowSnooze}
-              onChange={e =>
-                onChange({ ...window, allowSnooze: e.target.checked })
-              }
-            />
-          }
-          label="Allow participant to snooze"
-        />
-      </Box>
-      <SelectWithEnum
-        label="Reminder notification:"
-        className={classes.formControl}
-        value={window.reminder?.interval}
-        sourceData={ReminderIntervalEnum}
-        id="reminder"
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          onChange({
-            ...window,
-            reminder: {
-              interval: e.target.value as keyof typeof ReminderIntervalEnum,
-              type: window.reminder?.type,
-            },
-          })
-        }
-      ></SelectWithEnum>
-      <RadioGroup
-        aria-label="Notification Reminder"
-        name="reminderType"
-        value={window.reminder?.type}
-        onChange={e =>
-          onChange({
-            ...window,
-            reminder: {
-              interval: window.reminder?.interval,
-              type: e.target.value,
-            },
-          })
-        }
-      >
-        <FormControlLabel
-          value={'AFTER'}
-          control={<Radio />}
-          label="after start of window"
-        />
+        </IconButton>
+      </SchedulingFormSection>
+      <Box bgcolor="#bfd9e833" padding="16px" marginBottom="16px">
+        <SchedulingFormSection label={'Expore after'} variant="small">
+          <Box>
+            <Box display="inline-flex" alignItems="center">
+              <SmallTextBox
+                type="number"
+                onChange={(e: any) =>
+                  onChange({
+                    ...window,
+                    end: {
+                      endNumber: e.target.value,
+                      endUnit: window.end.endUnit,
+                    },
+                  })
+                }
+              />
+              <SelectWithEnum
+                value={window.end.endUnit}
+                sourceData={UnitEndWindowEnum}
+                id="windowEndEnum"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  onChange({
+                    ...window,
+                    end: {
+                      endNumber: window.end.endNumber,
+                      endUnit: e.target.value,
+                    },
+                  })
+                }
+              ></SelectWithEnum>
+            </Box>
 
-        <FormControlLabel
-          value={'BEFORE'}
-          control={<Radio />}
-          label="before window expires "
-        />
-      </RadioGroup>
-    </Box>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  value={window.allowAnyFrequency}
+                  onChange={e =>
+                    onChange({ ...window, allowAnyFrequency: e.target.checked })
+                  }
+                />
+              }
+              label="Allow participant to complete this session as often as they like within the window"
+            />
+          </Box>
+        </SchedulingFormSection>
+        <SchedulingFormSection label={'Notify Participant'} variant="small">
+          <Box>
+            <SelectWithEnum
+              value={window.notification}
+              style={{ marginLeft: 0 }}
+              sourceData={NotificationFreqEnum}
+              id="notificationfreq"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onChange({
+                  ...window,
+                  notification: e.target
+                    .value as keyof typeof NotificationFreqEnum,
+                })
+              }
+            ></SelectWithEnum>
+            <FormControlLabel
+              style={{ display: 'block' }}
+              control={
+                <Checkbox
+                  value={window.allowSnooze}
+                  onChange={e =>
+                    onChange({ ...window, allowSnooze: e.target.checked })
+                  }
+                />
+              }
+              label="Allow participant to snooze"
+            />
+          </Box>
+        </SchedulingFormSection>
+        <SchedulingFormSection label={'Reminder notification:'} variant="small">
+          <SelectWithEnum
+            value={window.reminder?.interval}
+            sourceData={ReminderIntervalEnum}
+            id="reminder"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onChange({
+                ...window,
+                reminder: {
+                  interval: e.target.value as keyof typeof ReminderIntervalEnum,
+                  type: window.reminder?.type,
+                },
+              })
+            }
+          ></SelectWithEnum>
+          <RadioGroup
+            aria-label="Notification Reminder"
+            name="reminderType"
+            style={{marginTop: '5px'}}
+            value={window.reminder?.type}
+            onChange={e =>
+              onChange({
+                ...window,
+                reminder: {
+                  interval: window.reminder?.interval,
+                  type: e.target.value,
+                },
+              })
+            }
+          >
+            <FormControlLabel
+              value={'AFTER'}
+              control={<Radio size="small" className={classes.smallRadio}  />}
+              label="after start of window"
+            />
+
+            <FormControlLabel
+              value={'BEFORE'}
+              control={<Radio size="small" className={classes.smallRadio} />}
+              label="before window expires "
+            />
+          </RadioGroup>
+        </SchedulingFormSection>
+      </Box>
+    </>
   )
 }
 

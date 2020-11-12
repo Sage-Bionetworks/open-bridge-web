@@ -30,6 +30,9 @@ const useStyles = makeStyles(theme =>
         // padding: '2px',
         //margin: '0 -5px'
       },
+      '&.no-hover:hover': {
+        border: 'none'
+      }
     },
 
     card: {
@@ -64,6 +67,7 @@ type AssessmentSmallOwnProps = {
   assessment: Assessment
   isDragging?: boolean
   isHideDuration?: boolean
+  hasHover?: boolean
 }
 
 type AssessmentSmallProps = AssessmentSmallOwnProps
@@ -72,12 +76,13 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
   assessment,
   isDragging,
   isHideDuration,
+  hasHover = true,
   children,
 }) => {
   const classes = useStyles()
 
   return (
-    <Paper className={clsx(classes.root, isDragging && 'dragging')}>
+    <Paper className={clsx(classes.root, !hasHover&& 'no-hover', isDragging && 'dragging')}>
       <Box className={classes.card}>
         <AssessmentImage
           isSmall={true}
