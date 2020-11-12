@@ -18,7 +18,7 @@ const useStyles = makeStyles({
     marginRight: '20px',
   },
   tabSelected: {
-    background: '#E2E2E2',
+    background: '#FFF',
     position: 'relative',
   },
   menuRoot: {
@@ -33,9 +33,9 @@ const useStyles = makeStyles({
     right: 5,
     width: '.8em',
   },
-  TE: {
+  TabTitle: {
     position: 'absolute',
-    background: '#E2E2E2',
+    background: '#FFF',
     width: '100%',
 
     padding: '0 20px',
@@ -134,7 +134,7 @@ const TabsMtb: FunctionComponent<TabProps> = ({
                       onDelete(tab.id)
                     }}
                   ></DeleteIcon>}
-                  <div className={classes.TE}>
+                  <div className={classes.TabTitle}>
                     <EditableTextbox
                       initValue={tab.label}
                       onTriggerUpdate={(newText: string) =>

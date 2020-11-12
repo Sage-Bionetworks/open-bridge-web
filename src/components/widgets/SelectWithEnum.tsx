@@ -5,10 +5,18 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Select, MenuItem, FormControl, InputLabel } from '@material-ui/core'
 import { getEnumKeys } from '../../helpers/utility'
 import { EnumType, TextSpan } from 'typescript'
+import clsx from 'clsx'
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   root: {},
-})
+  formControl: {
+    margin: theme.spacing(1),
+  },
+  small: {
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+  },
+}))
 
 export interface SelectWithEnumProps {
   //use the following version instead if you need access to router props
@@ -19,21 +27,22 @@ export interface SelectWithEnumProps {
   id: string
   value?: string | number
   label?: string
-  className?: string
+  style?: React.CSSProperties
+
+  variant?: 'standard' | 'outlined' | 'filled'
+  size?: 'small' | 'normal'
 }
 
-const SelectWithEnum: React.FunctionComponent<SelectWithEnumProps> = ({
+const SelectWithEnum: React.FunctionComponent<SelectWithEnumProps > = ({
   sourceData,
   onChange,
   id,
+  style,
+  variant = 'outlined',
+  size = 'small',
   value,
   label,
-  className,
 }: SelectWithEnumProps) => {
-  console.log(typeof sourceData)
-  console.log(Array.isArray(sourceData), sourceData)
-  console.log(Array.isArray(new Array(5)))
-
   Object.keys([...Array(5)])
 
   const classes = useStyles()
@@ -57,9 +66,11 @@ const SelectWithEnum: React.FunctionComponent<SelectWithEnumProps> = ({
   }
 
   return (
-    <FormControl className={className}>
-      <InputLabel htmlFor={id}>{label}</InputLabel>
+    <FormControl className={classes.formControl} style={style}>
+      {label && <InputLabel htmlFor={id}>{label}</InputLabel>}
       <Select
+        variant={variant}
+        classes={{ select: clsx(size === 'small' && classes.small) }}
         labelId={`${id}-label`}
         id={id}
         value={value || ''}

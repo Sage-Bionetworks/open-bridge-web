@@ -23,10 +23,19 @@ import { AcUnitOutlined } from '@material-ui/icons'
 import { StudySection } from '../sections'
 import NavButtons from '../NavButtons'
 import { useAsync } from '../../../helpers/AsyncHook'
+import {
+  Box,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+} from '@material-ui/core'
+import SchedulingFormSection from './SchedulingFormSection'
 
 type SchedulerOwnProps = {
   //studySessions: StudySession[]
-  id: string,
+  id: string
   section: StudySection
 }
 
@@ -35,10 +44,10 @@ type SchedulerProps = SchedulerOwnProps & RouteComponentProps
 const Scheduler: FunctionComponent<SchedulerProps> = ({
   id,
   section,
-  //studySessions,
-}: SchedulerOwnProps) => {
- const studyArm: StudyArm = {
-   studyId: id,
+}: //studySessions,
+SchedulerOwnProps) => {
+  const studyArm: StudyArm = {
+    studyId: id,
     name: 'Untitled',
     pseudonym: '',
     active: true,
@@ -50,16 +59,23 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
   }
   const handleError = useErrorHandler()
   console.log('section', section)
-  const { data: studyArms, status, error, run, setData } = useAsync<StudyArm[]>({
-    status: id ? 'PENDING' : 'IDLE',
-    data: [ studyArm],
-  })
+  const { data: studyArms, status, error, run, setData } = useAsync<StudyArm[]>(
+    {
+      status: id ? 'PENDING' : 'IDLE',
+      data: [studyArm],
+    },
+  )
 
   React.useEffect(() => {
     if (!id) {
       return
     }
-    return run(StudyService.getStudySessions(id).then(sessions => sessions))
+    return run(
+      StudyService.getStudyArms(id).then(arms => {
+        console.log('arms', arms)
+        return arms
+      }),
+    )
   }, [id, run])
 
   if (status === 'REJECTED') {
@@ -71,50 +87,40 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
     //setData(actionsReducer(groups!, action))
   }*/
 
-
- // const [studyArms, setData] = React.useState<StudyArm[]>([studyArm])
-/*  const [reqStatus, setRequestStatus] = React.useState<RequestStatus>(
+  // const [studyArms, setData] = React.useState<StudyArm[]>([studyArm])
+  /*  const [reqStatus, setRequestStatus] = React.useState<RequestStatus>(
     'RESOLVED',
   )*/
 
   // let { id } = useParams<{ id: string }>()
 
   const groupsUpdateFn = (action: SessionAction) => {
-   /* const newState = actionsReducer(studyArms[0].schedule.sessions!, action)
+    /* const newState = actionsReducer(studyArms[0].schedule.sessions!, action)
     console.log('setting data  to ', newState)
     const rx= studyArms.map((arm, index) => index > 0? arm : {...arm, schedule: {...arm.schedule, sessions: newState}})
     setData(prev => rx)*/
   }
 
-  /* useEffect(() => {
-    let isSubscribed = true
+  const updateStudyArm = (
+    oldState: StudyArm[],
+    index: number,
+    arm: StudyArm,
+  ) => {
+    const x = [...oldState]
 
-    StudyService.getStudySessions(id).then(
-      sessions => {
-        if (isSubscribed && sessions) {
-          groupsUpdateFn({
-            type: Types.SetSessions,
-            payload: { sessions },
-          })
-          setRequestStatus('RESOLVED')
-        }
-      },
-      e => handleError(e),
-    )
+    x.splice(index, 1, arm)
+    console.log(x)
+    setData(x)
+  }
 
-    return () => {
-      isSubscribed = false
-    }
-  }, [handleError, id])*/
-
-  if (! studyArms) {
+  if (!studyArms) {
     return <>NOTHING</>
   }
 
   return (
-    <>
+    <div>
       <div>Scheduler</div>
-      <ObjectDebug label="groups" data={studyArms}></ObjectDebug>
+      {/*<ObjectDebug label="groups" data={studyArms}></ObjectDebug>*/}
 
       <LoadingComponent reqStatusLoading={status}>
         <GroupsEditor
@@ -160,8 +166,37 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
               index={index}
               key={studyArm.name}
             >
-              <div >
-                {studyArm.schedule.sessions.map(session => (
+              <SchedulingFormSection label="Define Day 1:" style={{marginLeft: '325px'}}>
+              <RadioGroup
+                    aria-label="Day 1"
+                    name="day1"
+                    value={studyArm.pseudonym}
+                    onChange={e =>
+                      updateStudyArm(studyArms, index, {
+                        ...studyArms[index],
+                        pseudonym: e.target.value,
+                      })
+                    }
+                  >
+                    <FormControlLabel
+                      value={'ONBOARDING'}
+                      control={<Radio />}
+                      label="Right after completion of onboarding session"
+                    />
+
+                    <FormControlLabel
+                      value={'START_DATE'}
+                      control={<Radio />}
+                      label="Start Date (usually clinic visit) to be defined in Participant Manager"
+                    />
+                  </RadioGroup>
+
+              </SchedulingFormSection>
+              
+           
+
+              {studyArm.schedule.sessions.map(session => (
+                <Box>
                   <SchedulableSingleSessionContainer
                     key={session.id}
                     studySession={session}
@@ -172,14 +207,18 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
                       })
                     }
                   ></SchedulableSingleSessionContainer>
-                ))}
-              </div>
+                </Box>
+              ))}
             </TabPanel>
           ))}
         </GroupsEditor>
-        <NavButtons id={id} currentSection={section} onNavigate={((href: string)=> console.log(href))}></NavButtons>
+        <NavButtons
+          id={id}
+          currentSection={section}
+          onNavigate={(href: string) => console.log(href)}
+        ></NavButtons>
       </LoadingComponent>
-    </>
+    </div>
   )
 }
 

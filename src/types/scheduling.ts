@@ -1,17 +1,32 @@
 export type SessionScheduleStartType =
-  | 'OPEN_APP'
-  | 'BASELINE_DATE'
-  | 'NDAYS_BASELINE'
-  | 'DATE'
+  | 'DAY1'
+  | 'NDAYS_DAY1'
 
-export type SessionScheduleEndType = 'END_STUDY' | 'DATE' | 'N_OCCURENCES'
-
-export enum ReoccuranceUnitEnum {
-  'DAILY' = 'Every Day',
-  'WEEKLY' = 'Every Week',
+export enum UnitHDWMEnum {
+DAY = 'Day',
+HOUR = 'Hour',
+WEEK = 'Week',
+MONTH = 'Month'
 }
 
-export enum WeekdaysEnum {
+export enum UnitEndWindowEnum {
+  HOUR = 'Hours',
+  DAYS = 'Days'
+
+  }
+
+
+export type SessionScheduleEndType = 'END_STUDY' | 'N_OCCURENCES'
+
+export enum ReoccuranceUnitEnum {
+  DAY = 'Day',
+
+  WEEK = 'Week',
+  MONTH = 'Month',
+  YEAR = 'Year'
+}
+
+/*export enum WeekdaysEnum {
   'Su' = '0',
   'M' = '1',
   'T' = '2',
@@ -19,7 +34,7 @@ export enum WeekdaysEnum {
   'TH' = '4',
   'F' = '5',
   'S' = '6',
-}
+}*/
 
 export enum NotificationFreqEnum {
   'START_OF_WINDOW' = 'Start of window',
@@ -39,6 +54,12 @@ export type ReminderIntervalType = 'BEFORE' | 'AFTER'
 
 export type AssessmentOrderType = 'SEQUENTIAL' | 'RANDOM'
 
+export type WindowEndType = {
+
+    endNumber: number,
+    endUnit: UnitEndWindowEnum
+}
+
 export type WindowReminderType = {
   interval: ReminderIntervalEnum
   type: ReminderIntervalType
@@ -46,28 +67,32 @@ export type WindowReminderType = {
 
 export type AssessmentWindowType = {
   start: number
-  end: number
-  allowSnooze?: boolean
-  reminder?: WindowReminderType
+  end: WindowEndType,
+
+  allowAnyFrequency?: boolean,
   notification?: NotificationFreqEnum
+  allowSnooze?: boolean
+
+  reminder?: WindowReminderType
+
 }
 
 export type ReoccuranceType = {
   unit: keyof typeof ReoccuranceUnitEnum
   frequency: number
-  days?: WeekdaysEnum[]
+ // days?: WeekdaysEnum[]
 }
 
 export type StartDateType = {
   type: SessionScheduleStartType
-  days?: number
-  date?: Date
+  offsetNumber?: number
+  offsetUnit?: UnitHDWMEnum
 }
 
 export type EndDateType = {
   type: SessionScheduleEndType
   days?: number
-  date?: Date
+
 }
 
 export type SessionSchedule = {

@@ -17,24 +17,27 @@ import {
   ReoccuranceType,
   AssessmentWindowType,
   EndDateType,
-  WeekdaysEnum,
+  UnitEndWindowEnum
+
 } from '../../../types/scheduling'
 import { ThemeType } from '../../../style/theme'
+import ObjectDebug from '../../widgets/ObjectDebug'
+import SchedulingFormSection from './SchedulingFormSection'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
-    padding: '12px',
-    border: '1px solid #C4C4C4',
+   // padding: '12px',
+   // border: '1px solid #C4C4C4',
 
-    '&.active': {
+   /* '&.active': {
       border: theme.activeBorder,
-    },
+    },*/
   },
 
   formSection: {
-    backgroundColor: '#acacac',
-    padding: '20px',
-    margin: '5px 0',
+   // backgroundColor: '#acacac',
+    padding: theme.spacing(2),
+    marginBottom:  theme.spacing(1)
   },
   formControl: {
     margin: theme.spacing(1),
@@ -66,14 +69,14 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
   const defaultSchedule: SessionSchedule = {
     startDate: {
-      type: 'OPEN_APP',
+      type: 'DAY1',
     },
-    reoccurance: { unit: 'DAILY', frequency: 1, days: [WeekdaysEnum['S']] },
+    reoccurance: { unit: 'DAY', frequency: 1 },
     windows: [],
     endDate: {
       type: 'END_STUDY',
     },
-    isGroupAssessments: true,
+    isGroupAssessments: false,
     order: 'SEQUENTIAL',
   }
   const [schedulableSession, setSchedulableSession] = React.useState<
@@ -84,7 +87,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
   const addNewWindow = () => {
     const newState = { ...schedulableSession }
-    newState.windows.push({ start: 5, end: 17 })
+    newState.windows.push({ start: 5, end: {endNumber: 17, endUnit: UnitEndWindowEnum.DAYS }})
     setSchedulableSession(newState)
   }
 
@@ -115,10 +118,11 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
       className={clsx(classes.root, studySession?.active && 'active')}
       onClick={() => onSetActiveSession(studySession.id)}
     >
+      <ObjectDebug label="schedule" data={schedulableSession}></ObjectDebug>
       <form noValidate autoComplete="off">
         <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
-          <Grid container spacing={2} item xs={12}>
-            <Grid item xs={3}>
+          <Box display="flex">
+            <Box width="324px" flexGrow="0" bgcolor="#BCD5E4" padding="8px">
               <AssessmentList
                 studySession={studySession}
                 onSetRandomized={(isRandomized: boolean) => {
@@ -139,9 +143,9 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                 }
                 assessmentOrder={schedulableSession.order}
               />
-            </Grid>
+            </Box>
 
-            <Grid item xs={9}>
+            <Box bgcolor="#F8F8F8" flexGrow="1">
               <Box className={classes.formSection}>
                 <StartDate
                   startDate={schedulableSession.startDate}
@@ -171,7 +175,8 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               </Box>
 
               <Box className={classes.formSection}>
-                Assessment Window:
+              <SchedulingFormSection label={"Session Window:"}>
+                <Box>
                 {schedulableSession.windows.map((window, index) => (
                   <AssessmentWindow
                     key={`${index}${window.start}${window.end}`}
@@ -185,10 +190,12 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                     window={window}
                   ></AssessmentWindow>
                 ))}
-                <Button onClick={addNewWindow}>Add new window</Button>
+                <Button onClick={addNewWindow} variant="contained">+Add new window</Button>
+               </Box>
+                </SchedulingFormSection>
               </Box>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </ErrorBoundary>
       </form>
     </Box>

@@ -12,23 +12,11 @@ import {
 
 import { getEnumKeys } from '../../../helpers/utility'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
-import {
-  ReoccuranceUnitEnum,
-  ReoccuranceType,
-  WeekdaysEnum,
-} from '../../../types/scheduling'
+import { ReoccuranceUnitEnum, ReoccuranceType } from '../../../types/scheduling'
+import SchedulingFormSection from './SchedulingFormSection'
+import SmallTextBox from './SmallTextBox'
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 120,
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2),
-    },
-  }),
-)
+const useStyles = makeStyles((theme: Theme) => createStyles({}))
 
 export interface RepeatFrequencyProps {
   repeatFrequency: ReoccuranceType
@@ -42,70 +30,39 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
   const classes = useStyles()
 
   return (
-    <>
-      <SelectWithEnum
-        label="Repeat Every"
-        className={classes.formControl}
-        value={repeatFrequency.unit}
-        sourceData={ReoccuranceUnitEnum}
-        id="frequencyunit"
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          onChange({
-            ...repeatFrequency,
-            unit: e.target.value as keyof typeof ReoccuranceUnitEnum,
-          })
-        }
-      ></SelectWithEnum>
+    <SchedulingFormSection label={"Repeat session every:"}>
+      <FormControlLabel
+        control={
+          <>
+            <SmallTextBox
+              value={repeatFrequency.frequency}
+              type="number"
+              id="frequency"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onChange({
+                  ...repeatFrequency,
+                  frequency: Number(e.target.value as string),
+                })
+              }
+            ></SmallTextBox>
 
-      <SelectWithEnum
-        label="Number of times"
-        className={classes.formControl}
-        value={repeatFrequency.frequency}
-        sourceData={[...Array(5)]}
-        id="frequencyunit"
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          onChange({
-            ...repeatFrequency,
-            frequency: Number(e.target.value as string),
-          })
+            <SelectWithEnum
+              aria-label="Repeat Every"
+              value={repeatFrequency.unit}
+              sourceData={ReoccuranceUnitEnum}
+              id="frequencyunit"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onChange({
+                  ...repeatFrequency,
+                  unit: e.target.value as keyof typeof ReoccuranceUnitEnum,
+                })
+              }
+            ></SelectWithEnum>
+          </>
         }
-      ></SelectWithEnum>
-
-      <FormGroup aria-label="position" row>
-        {getEnumKeys(WeekdaysEnum).map(item => (
-          <FormControlLabel
-            value="top"
-            key={item}
-            control={
-              <Checkbox
-                checked={
-                  repeatFrequency.days?.indexOf(WeekdaysEnum[item]) != -1
-                }
-                onChange={e => {
-                  if (e.target.checked) {
-                    onChange({
-                      ...repeatFrequency,
-                      days: repeatFrequency.days
-                        ? [...repeatFrequency.days, WeekdaysEnum[item]]
-                        : [WeekdaysEnum[item]],
-                    })
-                  } else {
-                    onChange({
-                      ...repeatFrequency,
-                      days: repeatFrequency.days!.filter(
-                        day => day !== WeekdaysEnum[item],
-                      ),
-                    })
-                  }
-                }}
-              />
-            }
-            label={item}
-            labelPlacement="top"
-          />
-        ))}
-      </FormGroup>
-    </>
+        label=""
+      />
+    </SchedulingFormSection>
   )
 }
 

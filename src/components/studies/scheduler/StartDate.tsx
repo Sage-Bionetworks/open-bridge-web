@@ -16,19 +16,13 @@ import {
 import {
   SessionScheduleStartType,
   StartDateType,
+  UnitHDWMEnum,
 } from '../../../types/scheduling'
+import SchedulingFormSection from './SchedulingFormSection'
+import SelectWithEnum from '../../widgets/SelectWithEnum'
+import SmallTextBox from './SmallTextBox'
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 120,
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2),
-    },
-  }),
-)
+const useStyles = makeStyles((theme: Theme) => createStyles({}))
 
 export interface StartDateProps {
   startDate: StartDateType
@@ -45,20 +39,22 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
     onChange({ ...startDate, type })
   }
 
-  const changeStartDateDays = (days: string) => {
+  const changeStartDateOffsetNumber = (days: string) => {
+    console.log('days', days)
     if (isNaN(Number.parseInt(days))) {
       throw new Error('Number!')
     }
 
     onChange({
       ...startDate,
-      days: Number(days),
+      offsetNumber: Number(days),
     })
   }
 
+
+
   return (
-    <FormControl component="fieldset">
-      <FormLabel component="label">Start Date:</FormLabel>
+    <SchedulingFormSection label={'Session Starts On:'}>
       <RadioGroup
         aria-label="Start Date"
         name="startDate"
@@ -67,51 +63,35 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
           changeStartDateType(e.target.value as SessionScheduleStartType)
         }
       >
-        <FormControlLabel
-          value={'OPEN_APP'}
-          control={<Radio />}
-          label="When participant opens app"
-        />
-
-        <FormControlLabel
-          value={'BASELINE_DATE'}
-          control={<Radio />}
-          label="Study Start Date defined in participant manager"
-        />
+        <FormControlLabel value={'DAY1'} control={<Radio />} label="Day 1" />
         <FormControlLabel
           control={
             <>
-              <Radio value={'NDAYS_BASELINE'} />{' '}
-              <TextField
-                id="standard-basic"
-                onChange={e => changeStartDateDays(e.target.value)}
-                value={startDate.days || ''}
+              <Radio value={'NDAYS_DAY1'} />{' '}
+              <SmallTextBox
+                type="number"
+                onChange={(e: any) =>
+                  changeStartDateOffsetNumber(e.target.value)
+                }
+                value={startDate.offsetNumber || ''}
               />
+              <SelectWithEnum
+                value={startDate.offsetUnit}
+                sourceData={UnitHDWMEnum}
+                id="offsetUnit"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  onChange({
+                    ...startDate,
+                    offsetUnit: e.target.value,
+                  })
+                }
+              ></SelectWithEnum>
             </>
           }
-          label="days since Study Start Date"
-        />
-        <FormControlLabel
-          control={
-            <>
-              <Radio
-                value={'DATE'}
-                inputProps={{ 'aria-label': 'Particular Date' }}
-              />
-              <TextField
-                type="date"
-                label="Date"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                value={startDate.date}
-              />
-            </>
-          }
-          label=" "
+          label="from Day 1"
         />
       </RadioGroup>
-    </FormControl>
+    </SchedulingFormSection>
   )
 }
 

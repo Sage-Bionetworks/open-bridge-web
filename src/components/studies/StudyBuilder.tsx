@@ -36,7 +36,16 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     width: `${280 * 3 + 16 * 3}px`,
     [theme.breakpoints.down('md')]: {
       width: `${280 * 2 + 16 * 2}px`,
+    }
+  },
+
+  mainAreaWider: {
+      width: `${280 * 4 + 16 * 3}px`,
+    [theme.breakpoints.down('md')]: {
+      width: `${280 * 2 + 16 * 2}px`,
     },
+
+
   },
   mainAreaWide: {
     width: `${280 * 4 + 16 * 4}px`,
@@ -99,6 +108,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
           <Box
             className={clsx(classes.mainArea, {
               [classes.mainAreaNormal]: open,
+              [classes.mainAreaWider]: open&& section === 'scheduler',
               [classes.mainAreaWide]: !open,
             })}
           >
