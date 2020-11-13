@@ -107,6 +107,7 @@ async function getStudyArms(studyId: string): Promise<StudyArm[]> {
     sessions: sessions || [],
   }
   const newStudyArm: StudyArm = {
+    id: getRandomId(),
     studyId,
     active: true,
     name: 'Untitled',

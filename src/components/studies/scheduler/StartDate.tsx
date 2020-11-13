@@ -15,8 +15,8 @@ import {
 
 import {
   SessionScheduleStartType,
-  StartDateType,
-  UnitHDWMEnum,
+  StartDate as StartDateType,
+  HDWMEnum,
 } from '../../../types/scheduling'
 import SchedulingFormSection from './SchedulingFormSection'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
@@ -35,7 +35,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
 }: StartDateProps) => {
   const classes = useStyles()
 
-  const changeStartDateType = (type: SessionScheduleStartType) => {
+  const changeStartDate = (type: SessionScheduleStartType) => {
     onChange({ ...startDate, type })
   }
 
@@ -60,7 +60,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
         name="startDate"
         value={startDate.type}
         onChange={e =>
-          changeStartDateType(e.target.value as SessionScheduleStartType)
+          changeStartDate(e.target.value as SessionScheduleStartType)
         }
       >
         <FormControlLabel value={'DAY1'} control={<Radio />} label="Day 1" />
@@ -77,7 +77,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
               />
               <SelectWithEnum
                 value={startDate.offsetUnit}
-                sourceData={UnitHDWMEnum}
+                sourceData={HDWMEnum}
                 id="offsetUnit"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   onChange({

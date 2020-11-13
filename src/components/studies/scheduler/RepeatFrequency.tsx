@@ -12,14 +12,14 @@ import {
 
 import { getEnumKeys } from '../../../helpers/utility'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
-import { ReoccuranceUnitEnum, ReoccuranceType } from '../../../types/scheduling'
+import { DWMYEnum, Reoccurance } from '../../../types/scheduling'
 import SchedulingFormSection from './SchedulingFormSection'
 import SmallTextBox from './SmallTextBox'
 
 const useStyles = makeStyles((theme: Theme) => createStyles({}))
 
 export interface RepeatFrequencyProps {
-  repeatFrequency: ReoccuranceType
+  repeatFrequency: Reoccurance
   onChange: Function
 }
 
@@ -49,12 +49,12 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
             <SelectWithEnum
               aria-label="Repeat Every"
               value={repeatFrequency.unit}
-              sourceData={ReoccuranceUnitEnum}
+              sourceData={DWMYEnum}
               id="frequencyunit"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 onChange({
                   ...repeatFrequency,
-                  unit: e.target.value as keyof typeof ReoccuranceUnitEnum,
+                  unit: e.target.value as keyof typeof DWMYEnum,
                 })
               }
             ></SelectWithEnum>

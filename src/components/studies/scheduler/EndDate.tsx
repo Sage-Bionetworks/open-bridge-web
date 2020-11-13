@@ -14,7 +14,7 @@ import {
   TextField,
 } from '@material-ui/core'
 
-import { EndDateType, SessionScheduleEndType } from '../../../types/scheduling'
+import { EndDate as EndDateType, SessionScheduleEndType } from '../../../types/scheduling'
 import SchedulingFormSection from './SchedulingFormSection'
 import SmallTextBox from './SmallTextBox'
 
@@ -41,7 +41,7 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
 }: EndDateProps) => {
   const classes = useStyles()
 
-  const changeEndDateType = (type: SessionScheduleEndType) => {
+  const changeEndDate = (type: SessionScheduleEndType) => {
     onChange({ ...endDate, type })
   }
 
@@ -63,7 +63,7 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
         name="endDate"
         value={endDate.type}
         onChange={e =>
-          changeEndDateType(e.target.value as SessionScheduleEndType)
+          changeEndDate(e.target.value as SessionScheduleEndType)
         }
       >
         <FormControlLabel

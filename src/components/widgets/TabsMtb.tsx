@@ -7,10 +7,12 @@ import {
   Menu,
   MenuItem,
   PopoverOrigin,
+  TabsTypeMap,
 } from '@material-ui/core'
 
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditableTextbox from './EditableTextbox'
+import { CSSProperties } from '@material-ui/core/styles/withStyles'
 
 const useStyles = makeStyles({
   tabRoot: {
@@ -55,20 +57,23 @@ type TabProps = {
   }[]
 }
 
-const TabsMtb: FunctionComponent<TabProps> = ({
+const TabsMtb: FunctionComponent<TabProps & CSSProperties> = ({
   handleChange,
   value,
   tabDataObjects,
   addNewLabel,
   menuItems,
   onDelete,
+
   onRenameTab = () => null,
+  ...rest
 }: TabProps) => {
   const classes = useStyles()
 
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null,
   )
+
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     if (newValue !== -10) {
@@ -112,6 +117,7 @@ const TabsMtb: FunctionComponent<TabProps> = ({
   return (
     <>
       <Tabs
+        {...rest}
         value={value}
         onChange={handleTabChange}
         indicatorColor="primary"

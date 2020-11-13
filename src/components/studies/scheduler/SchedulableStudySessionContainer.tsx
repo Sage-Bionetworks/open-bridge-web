@@ -13,11 +13,11 @@ import StartDate from './StartDate'
 import EndDate from './EndDate'
 import AssessmentList from './AssessmentList'
 import {
-  StartDateType,
-  ReoccuranceType,
-  AssessmentWindowType,
-  EndDateType,
-  UnitEndWindowEnum
+  StartDate as StartDateType,
+  Reoccurance as ReoccuranceType,
+  AssessmentWindow as AssessmentWindowType,
+  EndDate as EndDateType,
+  HSsEnum
 
 } from '../../../types/scheduling'
 import { ThemeType } from '../../../style/theme'
@@ -87,7 +87,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
   const addNewWindow = () => {
     const newState = { ...schedulableSession }
-    newState.windows.push({ start: 5, end: {endNumber: 17, endUnit: UnitEndWindowEnum.DAYS }})
+    newState.windows.push({ startHour: 5, end: {endQuantity: 17, endUnit: 'DAY' }})
     setSchedulableSession(newState)
   }
 
@@ -179,7 +179,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                 <Box>
                 {schedulableSession.windows.map((window, index) => (
                   <AssessmentWindow
-                    key={`${index}${window.start}${window.end}`}
+                    key={`${index}${window.startHour}${window.end}`}
                     onDelete={() => {
                       console.log('deleting1', index)
                       deleteWindow(index)

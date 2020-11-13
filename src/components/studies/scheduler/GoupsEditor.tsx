@@ -1,11 +1,12 @@
-//@ts-nocheck
-import React, { FunctionComponent } from 'react'
 
-import { makeStyles } from '@material-ui/core'
+import React, { FunctionComponent, HTMLProps } from 'react'
+
+import { makeStyles, TabProps } from '@material-ui/core'
 
 import TabsMtb from '../../widgets/TabsMtb'
 
 import { StudyArm} from '../../../types/types'
+import { CSSProperties } from '@material-ui/core/styles/withStyles'
 
 const useStyles = makeStyles({})
 
@@ -19,7 +20,7 @@ type StudyArmsEditorProps = {
   children: React.ReactNode
 }
 
-const StudyArmsEditor: FunctionComponent<StudyArmsEditorProps> = React.memo(
+const StudyArmsEditor: FunctionComponent<StudyArmsEditorProps & CSSProperties> = React.memo(
   ({
     studyArms,
     onAddStudyArm,
@@ -27,8 +28,8 @@ const StudyArmsEditor: FunctionComponent<StudyArmsEditorProps> = React.memo(
     onRemoveStudyArm,
     onSetActiveStudyArm,
     onRenameStudyArm,
-
     children,
+    ...rest
   }: StudyArmsEditorProps) => {
     //const [studyArmTabIndex, setStudyArmTabIndex] = useState(0)
 
@@ -48,6 +49,7 @@ const StudyArmsEditor: FunctionComponent<StudyArmsEditorProps> = React.memo(
     return (
       <div>
         <TabsMtb
+        {...rest}
           value={studyArms.findIndex(item => item.active === true)}
           handleChange={(val: number) => {
             handleStudyArmChange(val)

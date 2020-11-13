@@ -29,9 +29,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: '18px',
     fontStyle: 'normal',
     fontWeight: 600,
-    flexShrink:0,
 
-    letterSpacing: '0em',
     textAlign: 'left',
 
     '&.small': {

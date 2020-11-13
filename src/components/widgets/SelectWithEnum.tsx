@@ -50,7 +50,7 @@ const SelectWithEnum: React.FunctionComponent<SelectWithEnumProps > = ({
   const getKeys = (data: Array<any> | object): JSX.Element[] => {
     if (!Array.isArray(sourceData)) {
       const result = getEnumKeys(sourceData).map(item => (
-        <MenuItem value={item} key={item as string}>
+        <MenuItem value={item} key={item as keyof typeof sourceData}>
           {sourceData[item]}
         </MenuItem>
       ))
