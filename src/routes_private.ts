@@ -6,14 +6,15 @@ import ParticipantManager from './components/studies/participants/ParticipantMan
 import StudyBuilder from './components/studies/StudyBuilder'
 import AssessmentDetail from './components/assessments/AssessmentDetail'
 import SessionsLayout from './components/layouts/sessions'
+import AccountSetup from './components/account/AccountSetup'
 
 export default [
-  {
+ /* {
     path: '/compliance-dashboard',
     name: 'COMPLIANCE DASHBOARD',
     Component: ComplianceDashboard,
     exact: true,
-  },
+  },*/
   {
     path: '/studies',
     name: 'MY STUDIES',
@@ -42,8 +43,14 @@ export default [
     exact: true,
   },
   {
+    path: '/my-account',
+    name: 'ACCOUNT',
+    Component: AccountSetup,
+    exact: true,
+  }
+ /* {
     path: '/sessionsLayout',
     name: 'SessionBuilderLayout',
     Component: SessionsLayout,
-  },
+  },*/
 ]

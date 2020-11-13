@@ -10,7 +10,7 @@ import PublicRoutes from './routes_public'
 function UnauthenticatedApp() {
   return (
     <>
-      <Header title="Some Title" sections={PublicRoutes} />
+      <Header  routes={PublicRoutes} />
       <main>
         <Switch>
           {PublicRoutes.map(({ path, Component }, key) => (

@@ -23,6 +23,14 @@ export const playfairDisplayFont = [
   'Arial',
 ].join(',')
 
+export const latoFont = [
+
+  'Lato',
+  'Roboto',
+  'Helvetica',
+  'Arial',
+].join(',')
+
 export const poppinsFont = ['Poppins', 'sans-serif'].join(',')
 
 export type CssVariablesType = {
@@ -95,8 +103,9 @@ const theme: Theme = createMuiTheme({
   palette: {
     divider: '#282828',
     background: {
-      default: '#BCD5E4',
+      default: '#E5E5E5',//'#BCD5E4',
       paper: '#fff',
+      
     },
     text: {
       primary: '#000',
