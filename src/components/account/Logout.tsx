@@ -20,7 +20,7 @@ export const Logout: React.FunctionComponent<LogoutProps> = ({}: LogoutProps) =>
     return <Redirect to={'/'} push={true} />
   } else {
     return (
-      <Button color="primary" variant="outlined" onClick={logout}>
+      <Button variant="text" onClick={logout}>
         Log Out
       </Button>
     )

@@ -2,29 +2,36 @@ export type SessionScheduleStartType =
   | 'DAY1'
   | 'NDAYS_DAY1'
 
-export enum UnitHDWMEnum {
-DAY = 'Day',
-HOUR = 'Hour',
-WEEK = 'Week',
-MONTH = 'Month'
-}
 
-export enum UnitEndWindowEnum {
+
+export enum HSsEnum {
   HOUR = 'Hours',
-  DAYS = 'Days'
-
+  DAY = 'Days'
   }
 
 
 export type SessionScheduleEndType = 'END_STUDY' | 'N_OCCURENCES'
 
-export enum ReoccuranceUnitEnum {
+export enum DWMYEnum {
   DAY = 'Day',
-
   WEEK = 'Week',
   MONTH = 'Month',
   YEAR = 'Year'
 }
+
+export enum DWMYsEnum {
+  DAY = 'Days',
+  WEEK = 'Weeks',
+  MONTH = 'Months',
+  YEAR = 'Years'
+}
+
+export enum HDWMEnum {
+  HOUR = 'Hour',
+  DAY = 'Day',
+  WEEK = 'Week',
+  MONTH = 'Month'
+  }
 
 /*export enum WeekdaysEnum {
   'Su' = '0',
@@ -52,54 +59,62 @@ export enum ReminderIntervalEnum {
 
 export type ReminderIntervalType = 'BEFORE' | 'AFTER'
 
-export type AssessmentOrderType = 'SEQUENTIAL' | 'RANDOM'
+export type AssessmentOrder = 'SEQUENTIAL' | 'RANDOM'
 
 export type WindowEndType = {
-
-    endNumber: number,
-    endUnit: UnitEndWindowEnum
+    endQuantity: number,
+    endUnit:  keyof typeof  HSsEnum
 }
 
 export type WindowReminderType = {
-  interval: ReminderIntervalEnum
+  interval:  keyof typeof  ReminderIntervalEnum
   type: ReminderIntervalType
 }
 
-export type AssessmentWindowType = {
-  start: number
+export type AssessmentWindow = {
+  startHour: number
   end: WindowEndType,
 
-  allowAnyFrequency?: boolean,
+  isAllowAnyFrequency?: boolean,
   notification?: NotificationFreqEnum
-  allowSnooze?: boolean
+  isAllowSnooze?: boolean
 
   reminder?: WindowReminderType
 
 }
 
-export type ReoccuranceType = {
-  unit: keyof typeof ReoccuranceUnitEnum
+export type Reoccurance = {
+  unit: keyof typeof DWMYEnum
   frequency: number
  // days?: WeekdaysEnum[]
 }
 
-export type StartDateType = {
+export type StartDate = {
   type: SessionScheduleStartType
   offsetNumber?: number
-  offsetUnit?: UnitHDWMEnum
+  offsetUnit?: HDWMEnum
 }
 
-export type EndDateType = {
+export type EndDate = {
   type: SessionScheduleEndType
   days?: number
+}
 
+
+
+
+
+export type StudyDuration = {
+  unit:  keyof typeof DWMYsEnum
+  quantity: number
 }
 
 export type SessionSchedule = {
-  startDate: StartDateType
-  reoccurance: ReoccuranceType
-  windows: AssessmentWindowType[]
-  endDate: EndDateType
+
+  startDate: StartDate
+  reoccurance: Reoccurance
+  windows: AssessmentWindow[]
+  endDate: EndDate
   isGroupAssessments?: boolean
-  order: AssessmentOrderType
+  order: AssessmentOrder
 }

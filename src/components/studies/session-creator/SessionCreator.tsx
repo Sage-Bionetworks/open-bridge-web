@@ -86,12 +86,8 @@ SessionCreatorProps) => {
     [],
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
+  const [hasObjectChanged, setHasObjectChanged] = useState(false)
 
-  const groupsUpdateFn = (action: SessionAction) => {
-    const newState = actionsReducer(sessions!, action)
-    console.log('setting data  to ', newState)
-    setData(newState)
-  }
 
   const { data: sessions, status, error, run, setData } = useAsync<
     StudySession[]
@@ -101,7 +97,15 @@ SessionCreatorProps) => {
   })
 
   const handleError = useErrorHandler()
-  console.log('sessionsState', sessions)
+
+
+
+  const sessionsUpdateFn = (action: SessionAction) => {
+    const newState = actionsReducer(sessions!, action)
+    console.log('setting data  to ', newState)
+    setHasObjectChanged(true)
+    setData(newState)
+  }
 
   React.useEffect(() => {
     if (!id) {
@@ -126,7 +130,7 @@ SessionCreatorProps) => {
     assessments: Assessment[],
   ) => {
     console.log(assessments)
-    groupsUpdateFn({
+    sessionsUpdateFn({
       type: Types.UpdateAssessments,
       payload: { sessionId, assessments },
     })
@@ -134,7 +138,7 @@ SessionCreatorProps) => {
 
   const updateAssessments = (sessionId: string, assessments: Assessment[]) => {
     console.log('updating')
-    groupsUpdateFn({
+    sessionsUpdateFn({
       type: Types.UpdateAssessments,
       payload: {
         sessionId,
@@ -152,13 +156,14 @@ SessionCreatorProps) => {
   }
 
   const save = async (url: string) => {
-   const done = await StudyService.saveStudySessions(id, sessions || [])
-   window.location.replace(url)
+    const done = await StudyService.saveStudySessions(id, sessions || [])
+    window.location.replace(url)
   }
 
   if (sessions) {
     return (
       <>
+      objectChanged? {hasObjectChanged? 'yes': 'no'}
         <Box
           display="grid"
           padding="8px"
@@ -175,19 +180,19 @@ SessionCreatorProps) => {
                 studySession={session}
                 onShowAssessments={() => setIsAssessmentDialogOpen(true)}
                 onSetActiveSession={(sessionId: string) =>
-                  groupsUpdateFn({
+                  sessionsUpdateFn({
                     type: Types.SetActiveSession,
                     payload: { sessionId },
                   })
                 }
                 onRemoveSession={(sessionId: string) =>
-                  groupsUpdateFn({
+                  sessionsUpdateFn({
                     type: Types.RemoveSession,
                     payload: { sessionId },
                   })
                 }
                 onUpdateSessionName={(sessionId: string, sessionName: string) =>
-                  groupsUpdateFn({
+                  sessionsUpdateFn({
                     type: Types.UpdateSessionName,
                     payload: { sessionId, sessionName },
                   })
@@ -205,7 +210,7 @@ SessionCreatorProps) => {
               sessions: StudySession[],
               assessments: Assessment[],
             ) =>
-              groupsUpdateFn({
+              sessionsUpdateFn({
                 type: Types.AddSession,
                 payload: {
                   name: 'Session' + sessions.length.toString(),

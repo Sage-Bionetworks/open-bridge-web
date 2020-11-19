@@ -3,49 +3,70 @@ import React, { FunctionComponent, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import Button from '@material-ui/core/Button'
-import Link from '@material-ui/core/Link'
-import { Box, Dialog, DialogContent, Paper } from '@material-ui/core'
+import { Dialog, DialogContent, Paper } from '@material-ui/core'
 import AccountLogin from './../account/AccountLogin'
-import { useSessionDataState } from '../../helpers/AuthContext'
+
 import Logout from '../account/Logout'
-import SageLogo from '../../assets/sage.svg'
-import { NavLink, BrowserRouter as Router } from 'react-router-dom'
+import Logo from '../../assets/logo_mtb.svg'
+import { NavLink } from 'react-router-dom'
+import { latoFont } from '../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   toolbarWrapper: {
-    padding: `${theme.spacing(7)}px ${theme.spacing(5)}px  ${theme.spacing(
-      3,
-    )}px ${theme.spacing(5)}px`,
+    height: '104px',
+    display: 'flex',
+    borderBottom: '1px solid #EAEAEA',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  toolbarTitle: {
-    flex: 1,
-  },
+
   toolbar: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+    paddingRight: theme.spacing(2),
+    paddingLeft: theme.spacing(2),
     justifyContent: 'space-between',
     overflowX: 'auto',
-
-    borderBottom: `1px solid ${theme.palette.divider}`,
+    minHeight: '40px',
   },
   toolbarLink: {
     padding: theme.spacing(1),
     textDecoration: 'none',
-    color: 'inherit',
+
     flexShrink: 0,
+    //agendel todo Lato
+    fontFamily: latoFont,
+    fontStyle: 'normal',
+    fontWeight: 'normal',
+    fontSize: '15px',
+    lineHeight: '18px',
+    color: '#393434',
   },
   selectedLink: {
-    borderBottom: '2px solid black',
+    fontWeight: 'bold',
+    color: '#393434;',
   },
+  login: {
+borderLeft: '1px solid #EAEAEA',
+paddingLeft: theme.spacing(2),
+marginLeft: theme.spacing(2),
+marginTop: theme.spacing(-4),
+paddingTop: theme.spacing(4),
+paddingBottom: theme.spacing(4),
+marginBottom: theme.spacing(-4),
+  }
 }))
 
 type HeaderProps = {
-  sections: { name: string; path: string }[]
-  title: string
+  routes: { name: string; path: string; isRhs?: boolean }[]
+
   token?: string
 }
 
 const Header: FunctionComponent<HeaderProps> = ({
-  sections,
-  title,
+  routes,
+
   token,
   ...props
 }: HeaderProps) => {
@@ -55,37 +76,62 @@ const Header: FunctionComponent<HeaderProps> = ({
 
   return (
     <Paper className={classes.toolbarWrapper} elevation={0}>
-      <Toolbar
+    
+        <img src={Logo} key="Mobile Toolbox"  className={classes.toolbar}/>
+        <Toolbar
         component="nav"
         variant="dense"
         disableGutters
         className={classes.toolbar}
       >
-        <img src={SageLogo} key="x" />
-        {sections
-          .filter(section => section.name)
-          .map(section => (
-       
-              <NavLink
-                to={section.path}
-                key={section.name + '1'}
-                className={classes.toolbarLink}
-                activeClassName={classes.selectedLink}
-              >
-                {section.name}
-              </NavLink>
-       
+        {routes
+          .filter(route => route.name && !route.isRhs)
+          .map(route => (
+            <NavLink
+              to={route.path}
+              key={route.name}
+              className={classes.toolbarLink}
+              activeClassName={classes.selectedLink}
+            >
+              {route.name}
+            </NavLink>
           ))}
+      </Toolbar>
+      <Toolbar
+        component="nav"
+        variant="dense"
+      
+        disableGutters
+        className={classes.toolbar}
+      >
         {token ? (
+          <div className={classes.login}>
           <Logout></Logout>
+          </div>
         ) : (
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() => setSignInOpen(true)}
-          >
-            Sign in
-          </Button>
+          <>
+            {routes
+              .filter(route => route.name && route.isRhs)
+              .map(route => (
+                <NavLink
+                  to={route.path}
+                  key={route.name}
+                  className={classes.toolbarLink}
+                  activeClassName={classes.selectedLink}
+                >
+                  {route.name}
+                </NavLink>
+              ))}
+              <div className={classes.login}>
+            <Button
+              variant="text"
+            className={classes.toolbarLink}
+              onClick={() => setSignInOpen(true)}
+            >
+              Sign in
+            </Button>
+            </div>
+          </>
         )}
       </Toolbar>
       <Dialog

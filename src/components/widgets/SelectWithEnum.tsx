@@ -2,7 +2,7 @@ import React from 'react'
 
 import { makeStyles } from '@material-ui/core/styles'
 
-import { Select, MenuItem, FormControl, InputLabel } from '@material-ui/core'
+import { Select, MenuItem, FormControl, InputLabel, SelectProps } from '@material-ui/core'
 import { getEnumKeys } from '../../helpers/utility'
 import { EnumType, TextSpan } from 'typescript'
 import clsx from 'clsx'
@@ -23,7 +23,7 @@ export interface SelectWithEnumProps {
   //export interface SelectWithEnumProps  extends  RouteComponentProps {
   //Enter your props here
   sourceData: object | Array<any>
-  onChange: any
+
   id: string
   value?: string | number
   label?: string
@@ -33,15 +33,16 @@ export interface SelectWithEnumProps {
   size?: 'small' | 'normal'
 }
 
-const SelectWithEnum: React.FunctionComponent<SelectWithEnumProps > = ({
+const SelectWithEnum: React.FunctionComponent<SelectWithEnumProps & SelectProps > = ({
   sourceData,
-  onChange,
+
   id,
   style,
   variant = 'outlined',
   size = 'small',
   value,
   label,
+  ...rest
 }: SelectWithEnumProps) => {
   Object.keys([...Array(5)])
 
@@ -50,7 +51,7 @@ const SelectWithEnum: React.FunctionComponent<SelectWithEnumProps > = ({
   const getKeys = (data: Array<any> | object): JSX.Element[] => {
     if (!Array.isArray(sourceData)) {
       const result = getEnumKeys(sourceData).map(item => (
-        <MenuItem value={item} key={item as string}>
+        <MenuItem value={item} key={item as keyof typeof sourceData}>
           {sourceData[item]}
         </MenuItem>
       ))
@@ -74,7 +75,7 @@ const SelectWithEnum: React.FunctionComponent<SelectWithEnumProps > = ({
         labelId={`${id}-label`}
         id={id}
         value={value || ''}
-        onChange={onChange}
+        {...rest}
       >
         {getKeys(sourceData)}
       </Select>

@@ -21,7 +21,7 @@ const AuthenticatedApp: FunctionComponent<{ token: string }> = ({ token }) => {
   return (
     <>
       {!inStudy(location.pathname) && (
-        <Header title="Some Title" sections={PrivateRoutes} token={token} />
+        <Header routes={PrivateRoutes} token={token} />
       )}
       <main>
         <Switch>

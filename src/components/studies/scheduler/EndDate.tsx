@@ -14,7 +14,7 @@ import {
   TextField,
 } from '@material-ui/core'
 
-import { EndDateType, SessionScheduleEndType } from '../../../types/scheduling'
+import { EndDate as EndDateType, SessionScheduleEndType } from '../../../types/scheduling'
 import SchedulingFormSection from './SchedulingFormSection'
 import SmallTextBox from './SmallTextBox'
 
@@ -41,19 +41,20 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
 }: EndDateProps) => {
   const classes = useStyles()
 
-  const changeEndDateType = (type: SessionScheduleEndType) => {
+  const changeEndDate = (type: SessionScheduleEndType) => {
     onChange({ ...endDate, type })
   }
 
   const changeEndDateDays = (days: string) => {
-    if (isNaN(Number.parseInt(days))) {
+   /* if (isNaN(Number.parseInt(days))) {
       throw new Error('Number!')
-    }
+    }*/
 
-    onChange({
-      ...endDate,
+    const endDate : EndDateType= {
+      type: 'N_OCCURENCES',
       days: Number(days),
-    })
+    }
+    onChange(endDate)
   }
 
   return (
@@ -63,7 +64,7 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
         name="endDate"
         value={endDate.type}
         onChange={e =>
-          changeEndDateType(e.target.value as SessionScheduleEndType)
+          changeEndDate(e.target.value as SessionScheduleEndType)
         }
       >
         <FormControlLabel
@@ -81,6 +82,7 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
                 style={{ marginRight: '10px' }}
                 onChange={e => changeEndDateDays(e.target.value)}
                 value={endDate.days || ''}
+                onFocus={e=> changeEndDate('N_OCCURENCES')}
               />
             </>
           }

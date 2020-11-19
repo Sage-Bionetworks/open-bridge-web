@@ -49,7 +49,7 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
     )
   }
   const result = (
-    <Box position="fixed" bottom={24} right={24}>
+    <Box paddingTop="16px" textAlign="right">
       <NavLink id={id} section={prev}></NavLink>&nbsp;&nbsp;
       <NavLink id={id} section={next}></NavLink>
     </Box>

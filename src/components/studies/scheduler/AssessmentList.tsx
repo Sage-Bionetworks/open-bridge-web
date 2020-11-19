@@ -53,9 +53,6 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
 }: AssessmentListProps): JSX.Element => {
   const classes = useStyles()
 
-  console.log(isGroupAssessments, 'ass')
-
-
   const getMargins = (
     index: number,
     assessmentsNumber: number,
@@ -127,7 +124,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
                 disabled = {!isGroupAssessments}
                 checked={assessmentOrder == 'RANDOM'}
                 onChange={e => {
-                  console.log('e' + e.target.checked)
+          
                   onSetRandomized(e.target.checked)
                 }}
                 name="checkedC"

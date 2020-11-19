@@ -1,6 +1,7 @@
 /*  General Types ********************************/
 
 import { StudySection } from "../components/studies/sections"
+import { StudyDuration } from "./scheduling"
 
 export interface StringDictionary<T> {
   [key: string]: T
@@ -185,6 +186,7 @@ export type Study = {
   name: string
   subtitle?: string
   description?: string
+  studyDuration?: StudyDuration
  // sessions: StudySession[]
 
 }
@@ -196,6 +198,7 @@ export type Schedule = {
 }
 
 export type StudyArm = {
+  id: string
   name: string,
   studyId: string,
   pseudonym: string

@@ -3,8 +3,8 @@ import React, { FunctionComponent } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
 type AccountCreateOwnProps = {
-  title: string
-  paragraph: string
+  title?: string
+  paragraph?: string
 }
 
 type AccountCreateProps = AccountCreateOwnProps & RouteComponentProps

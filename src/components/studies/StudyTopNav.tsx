@@ -1,46 +1,47 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { FunctionComponent } from 'react'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
-import Button from '@material-ui/core/Button'
-import Link from '@material-ui/core/Link'
-import {
-  Box,
-  Dialog,
-  DialogContent,
-  Paper,
-  Typography,
-} from '@material-ui/core'
-import AccountLogin from '../account/AccountLogin'
-import { useSessionDataState } from '../../helpers/AuthContext'
-import Logout from '../account/Logout'
-import SageLogo from '../../assets/sage.svg'
-import { NavLink, BrowserRouter as Router } from 'react-router-dom'
+
+import Logo from '../../assets/logo_mtb.svg'
+import { Paper, Typography } from '@material-ui/core'
+
+import { NavLink } from 'react-router-dom'
 import BreadCrumb from '../widgets/BreadCrumb'
+import PeopleIcon from '@material-ui/icons/People'
 
 const useStyles = makeStyles(theme => ({
-  toolbarWrapper: {
-    padding: `${theme.spacing(7)}px ${theme.spacing(5)}px  ${theme.spacing(
-      3,
-    )}px ${theme.spacing(5)}px`,
-  },
-  toolbarTitle: {
-    flex: 1,
-  },
-  toolbar: {
-    justifyContent: 'space-between',
-    overflowX: 'auto',
+  toolbarStudyHeader: {
+    height: '104px',
+    display: 'flex',
 
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     borderBottom: `1px solid ${theme.palette.divider}`,
   },
+
+  toolbar: {
+    overflowX: 'auto',
+    alignItems: 'baseline',
+    minHeight: 'auto',
+    display: 'flex',
+    justifyContent: 'space-between',
+    paddingTop: theme.spacing(8),
+  },
   toolbarLink: {
-    padding: theme.spacing(1),
+    padding: '0 16px 0 16px',
+    paddingBottom: theme.spacing(2),
+    flexGrow: 1,
+
     textDecoration: 'none',
     color: 'inherit',
     flexShrink: 0,
   },
   selectedLink: {
     borderBottom: '2px solid black',
+    paddingBottom: '17px',
+    marginButtom: '-1px',
   },
 }))
 
@@ -59,7 +60,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   const links = [
     { path: '/studies/builder/:id/', name: 'STUDY BUILDER' },
     { path: '/studies/:id/participant-manager', name: 'PARTICIPANT MANAGER' },
-    { path: '/studies/:id/compliance', name: 'COMPLIANCE' },
+    { path: '/studies/:id/compliance', name: 'ADHERENCE DATA' },
     { path: '/studies/:id/study-data', name: 'STUDY DATA' },
   ]
 
@@ -67,26 +68,33 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   //const sessionData = useSessionDataState()
 
   return (
-    <Paper className={classes.toolbarWrapper} elevation={0}>
+    <Paper className={classes.toolbarStudyHeader} elevation={0}>
       <Toolbar
         component="nav"
         variant="dense"
         disableGutters
         className={classes.toolbar}
+        style={{
+          marginTop: '48px',
+          paddingTop: '0',
+          alignItems: 'center',
+        }}
       >
         <NavLink
           to={'/'}
           key="home"
           className={classes.toolbarLink}
-        
+          style={{ paddingBottom: '0' }}
         >
-          <img src={SageLogo} key="home" />
+          <img src={Logo} key="home" />
         </NavLink>
-      
+
         <BreadCrumb
-            links={[{ url: '/Studies', text: '' }]}
-            currentItem={ studyName || 'Utitled Study '}
-          ></BreadCrumb>
+          links={[{ url: '/Studies', text: '' }]}
+          currentItem={studyName || 'Utitled Study '}
+        ></BreadCrumb>
+      </Toolbar>
+      <Toolbar className={classes.toolbar}>
         {links
           .filter(section => section.name)
           .map(section => (
@@ -99,6 +107,17 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               {section.name}
             </NavLink>
           ))}
+      </Toolbar>
+      <Toolbar className={classes.toolbar}>
+        <NavLink
+          to={'path-to-shared-settings'.replace(':id', studyId)}
+          key={'path-to-shared-settings'}
+          className={classes.toolbarLink}
+          activeClassName={classes.selectedLink}
+          style={{ display: 'flex' }}
+        >
+          <PeopleIcon></PeopleIcon>&nbsp;&nbsp;Shared settings
+        </NavLink>
       </Toolbar>
       {currentSection && (
         <Typography component="h1">{currentSection}</Typography>

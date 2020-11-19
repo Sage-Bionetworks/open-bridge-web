@@ -24,10 +24,10 @@ import { createNamedExports } from 'typescript'
 import DeleteIcon from '@material-ui/icons/Close'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import {
-  AssessmentWindowType,
+  AssessmentWindow as AssessmentWindowType,
   NotificationFreqEnum,
   ReminderIntervalEnum,
-  UnitEndWindowEnum,
+  HSsEnum,
 } from '../../../types/scheduling'
 import { StringDictionary } from '../../../types/types'
 import SmallTextBox from './SmallTextBox'
@@ -58,10 +58,6 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
 }: AssessmentWindowProps) => {
   const classes = useStyles()
 
-  const handleChange = (changeType: 'S' | 'E', value: number) => {
-    onChange({ start: window.start })
-  }
-
   const getDropdownItems = (): StringDictionary<string> => {
     const menuItems: StringDictionary<string> = {}
 
@@ -87,10 +83,16 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
         }}
       >
         <SelectWithEnum
-          value={window.start}
+          value={window.startHour}
           sourceData={getDropdownItems()}
           id="from"
-          onChange={(e: any) => handleChange('S', Number(e.target.value))}
+            onChange={e =>
+              onChange({
+                ...window,
+                startHour: e.target.value
+              })
+            }
+     
         ></SelectWithEnum>
         <IconButton
           style={{ position: 'absolute', top: 0, right: 0 }}
@@ -102,7 +104,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
         </IconButton>
       </SchedulingFormSection>
       <Box bgcolor="#bfd9e833" padding="16px" marginBottom="16px">
-        <SchedulingFormSection label={'Expore after'} variant="small">
+        <SchedulingFormSection label={'Expire after'} variant="small">
           <Box>
             <Box display="inline-flex" alignItems="center">
               <SmallTextBox
@@ -111,7 +113,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
                   onChange({
                     ...window,
                     end: {
-                      endNumber: e.target.value,
+                      endQuantity: e.target.value,
                       endUnit: window.end.endUnit,
                     },
                   })
@@ -119,13 +121,13 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
               />
               <SelectWithEnum
                 value={window.end.endUnit}
-                sourceData={UnitEndWindowEnum}
+                sourceData={HSsEnum}
                 id="windowEndEnum"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onChange={e =>
                   onChange({
                     ...window,
                     end: {
-                      endNumber: window.end.endNumber,
+                      endQuantity: window.end.endQuantity,
                       endUnit: e.target.value,
                     },
                   })
@@ -136,9 +138,12 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
             <FormControlLabel
               control={
                 <Checkbox
-                  value={window.allowAnyFrequency}
+                  value={window.isAllowAnyFrequency}
                   onChange={e =>
-                    onChange({ ...window, allowAnyFrequency: e.target.checked })
+                    onChange({
+                      ...window,
+                      isAllowAnyFrequency: e.target.checked,
+                    })
                   }
                 />
               }
@@ -153,7 +158,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
               style={{ marginLeft: 0 }}
               sourceData={NotificationFreqEnum}
               id="notificationfreq"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onChange={e =>
                 onChange({
                   ...window,
                   notification: e.target
@@ -165,9 +170,9 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
               style={{ display: 'block' }}
               control={
                 <Checkbox
-                  value={window.allowSnooze}
+                  value={window.isAllowSnooze}
                   onChange={e =>
-                    onChange({ ...window, allowSnooze: e.target.checked })
+                    onChange({ ...window, isAllowSnooze: e.target.checked })
                   }
                 />
               }
@@ -180,7 +185,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
             value={window.reminder?.interval}
             sourceData={ReminderIntervalEnum}
             id="reminder"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange={e =>
               onChange({
                 ...window,
                 reminder: {
@@ -193,8 +198,10 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
           <RadioGroup
             aria-label="Notification Reminder"
             name="reminderType"
-            style={{marginTop: '5px'}}
+            
+            style={{ marginTop: '5px' }}
             value={window.reminder?.type}
+
             onChange={e =>
               onChange({
                 ...window,
@@ -207,13 +214,15 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
           >
             <FormControlLabel
               value={'AFTER'}
-              control={<Radio size="small" className={classes.smallRadio}  />}
+              control={<Radio size="small" className={classes.smallRadio} />}
               label="after start of window"
+              disabled={!window.reminder?.interval || window.reminder?.interval ==='NONE'}
             />
 
             <FormControlLabel
               value={'BEFORE'}
               control={<Radio size="small" className={classes.smallRadio} />}
+              disabled={!window.reminder?.interval || window.reminder?.interval ==='NONE'}
               label="before window expires "
             />
           </RadioGroup>

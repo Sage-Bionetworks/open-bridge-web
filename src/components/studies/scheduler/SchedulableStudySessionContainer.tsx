@@ -13,12 +13,11 @@ import StartDate from './StartDate'
 import EndDate from './EndDate'
 import AssessmentList from './AssessmentList'
 import {
-  StartDateType,
-  ReoccuranceType,
-  AssessmentWindowType,
-  EndDateType,
-  UnitEndWindowEnum
-
+  StartDate as StartDateType,
+  Reoccurance as ReoccuranceType,
+  AssessmentWindow as AssessmentWindowType,
+  EndDate as EndDateType,
+  HSsEnum,
 } from '../../../types/scheduling'
 import { ThemeType } from '../../../style/theme'
 import ObjectDebug from '../../widgets/ObjectDebug'
@@ -26,18 +25,17 @@ import SchedulingFormSection from './SchedulingFormSection'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
-   // padding: '12px',
-   // border: '1px solid #C4C4C4',
-
-   /* '&.active': {
+    // padding: '12px',
+    // border: '1px solid #C4C4C4',
+    /* '&.active': {
       border: theme.activeBorder,
     },*/
   },
 
   formSection: {
-   // backgroundColor: '#acacac',
+    // backgroundColor: '#acacac',
     padding: theme.spacing(2),
-    marginBottom:  theme.spacing(1)
+    marginBottom: theme.spacing(1),
   },
   formControl: {
     margin: theme.spacing(1),
@@ -65,8 +63,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   onSetActiveSession,
 }: SchedulableSingleSessionContainerProps) => {
   const classes = useStyles()
-  // The first commit of Material-UI
-
+ 
   const defaultSchedule: SessionSchedule = {
     startDate: {
       type: 'DAY1',
@@ -83,11 +80,14 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     SessionSchedule
   >(defaultSchedule)
 
-  console.log('rerenderSSession', schedulableSession)
+
 
   const addNewWindow = () => {
     const newState = { ...schedulableSession }
-    newState.windows.push({ start: 5, end: {endNumber: 17, endUnit: UnitEndWindowEnum.DAYS }})
+    newState.windows.push({
+      startHour: 5,
+      end: { endQuantity: 17, endUnit: 'DAY' },
+    })
     setSchedulableSession(newState)
   }
 
@@ -104,6 +104,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
   const updateWindow = (window: AssessmentWindowType, index: number) => {
     setSchedulableSession(oldSession => {
+      console.log('upladingWindowTo: ', window)
       return {
         ...oldSession,
         windows: oldSession.windows.map((item, i) =>
@@ -175,23 +176,25 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               </Box>
 
               <Box className={classes.formSection}>
-              <SchedulingFormSection label={"Session Window:"}>
-                <Box>
-                {schedulableSession.windows.map((window, index) => (
-                  <AssessmentWindow
-                    key={`${index}${window.start}${window.end}`}
-                    onDelete={() => {
-                      console.log('deleting1', index)
-                      deleteWindow(index)
-                    }}
-                    onChange={(window: AssessmentWindowType) =>
-                      updateWindow(window, index)
-                    }
-                    window={window}
-                  ></AssessmentWindow>
-                ))}
-                <Button onClick={addNewWindow} variant="contained">+Add new window</Button>
-               </Box>
+                <SchedulingFormSection label={'Session Window:'}>
+                  <Box>
+                    {schedulableSession.windows.map((window, index) => (
+                      <AssessmentWindow
+                        key={`${index}${window.startHour}${window.end}`}
+                        onDelete={() => {
+                          console.log('deleting1', index)
+                          deleteWindow(index)
+                        }}
+                        onChange={(window: AssessmentWindowType) =>
+                          updateWindow(window, index)
+                        }
+                        window={window}
+                      ></AssessmentWindow>
+                    ))}
+                    <Button onClick={addNewWindow} variant="contained">
+                      +Add new window
+                    </Button>
+                  </Box>
                 </SchedulingFormSection>
               </Box>
             </Box>
