@@ -85,7 +85,6 @@ SchedulerOwnProps) => {
   }*/
   const handleError = useErrorHandler()
   const classes = useStyles()
-  console.log('section', section)
   const {
     data: studyArms,
     status,
@@ -165,7 +164,7 @@ SchedulerOwnProps) => {
     const x = [...oldState]
 
     x.splice(index, 1, arm)
-    console.log(x)
+
     setData(x)
   }
 
@@ -199,7 +198,7 @@ SchedulerOwnProps) => {
               value={studyDuration?.unit}
               sourceData={HDWMEnum}
               id="offsetUnit"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onChange={e =>
                 //@ts-ignore
                 updateStudyDuration(undefined, e.target.value)
               }

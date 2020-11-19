@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
       width: theme.spacing(12),
       lineHeight: 1.4,
       fontWeight: 400,
-      fontSize: '16px',
+      fontSize: '14px',
 
     }
   },
@@ -59,7 +59,6 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
  
 }: SchedulingFormSectionProps) => {
   const classes = useStyles()
-  console.log('style', style)
 
   return (
     <>

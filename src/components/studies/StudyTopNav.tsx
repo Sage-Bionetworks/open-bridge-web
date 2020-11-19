@@ -1,26 +1,20 @@
-import React, { FunctionComponent} from 'react'
+import React, { FunctionComponent } from 'react'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 
 import Logo from '../../assets/logo_mtb.svg'
-import {
+import { Paper, Typography } from '@material-ui/core'
 
-  Paper,
-  Typography,
-} from '@material-ui/core'
-
-
-import { NavLink} from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import BreadCrumb from '../widgets/BreadCrumb'
-import PeopleIcon from '@material-ui/icons/People';
+import PeopleIcon from '@material-ui/icons/People'
 
 const useStyles = makeStyles(theme => ({
   toolbarStudyHeader: {
-   
     height: '104px',
     display: 'flex',
- 
+
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -28,19 +22,17 @@ const useStyles = makeStyles(theme => ({
   },
 
   toolbar: {
-
     overflowX: 'auto',
     alignItems: 'baseline',
     minHeight: 'auto',
     display: 'flex',
     justifyContent: 'space-between',
     paddingTop: theme.spacing(8),
- 
   },
   toolbarLink: {
     padding: '0 16px 0 16px',
     paddingBottom: theme.spacing(2),
-    flexGrow:1,
+    flexGrow: 1,
 
     textDecoration: 'none',
     color: 'inherit',
@@ -83,12 +75,17 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
         disableGutters
         className={classes.toolbar}
         style={{
-        marginTop: '48px',
-        paddingTop: '0',
-        alignItems: 'center'}}
+          marginTop: '48px',
+          paddingTop: '0',
+          alignItems: 'center',
+        }}
       >
-      
-        <NavLink to={'/'} key="home" className={classes.toolbarLink} style={{paddingBottom: '0'}}>
+        <NavLink
+          to={'/'}
+          key="home"
+          className={classes.toolbarLink}
+          style={{ paddingBottom: '0' }}
+        >
           <img src={Logo} key="home" />
         </NavLink>
 
@@ -96,7 +93,6 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
           links={[{ url: '/Studies', text: '' }]}
           currentItem={studyName || 'Utitled Study '}
         ></BreadCrumb>
-
       </Toolbar>
       <Toolbar className={classes.toolbar}>
         {links
@@ -118,11 +114,9 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
           key={'path-to-shared-settings'}
           className={classes.toolbarLink}
           activeClassName={classes.selectedLink}
-          style={{display: 'flex'}}
+          style={{ display: 'flex' }}
         >
-          <PeopleIcon ></PeopleIcon>&nbsp;&nbsp;Shared settings
-        
- 
+          <PeopleIcon></PeopleIcon>&nbsp;&nbsp;Shared settings
         </NavLink>
       </Toolbar>
       {currentSection && (

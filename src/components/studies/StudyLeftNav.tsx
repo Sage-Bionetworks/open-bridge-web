@@ -11,13 +11,14 @@ import {
   ListItemText,
   makeStyles,
   Theme,
+  Typography,
 } from '@material-ui/core'
-import { ThemeType } from '../../style/theme'
+import { poppinsFont, ThemeType } from '../../style/theme'
 import { SECTIONS as sectionLinks, StudySection } from './sections'
 import clsx from 'clsx'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import SomeIcon from '@material-ui/icons/FaceOutlined'
+import SomeIcon from '@material-ui/icons/SentimentVerySatisfied';
 
 const drawerWidth = 212
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -41,26 +42,57 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
-    })
+    }),
   },
   drawerClose: {
-   transition: theme.transitions.create('width', {
+    transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
     overflowX: 'hidden',
-    width: theme.spacing(7) + 1,
+    width: theme.spacing(6),
     [theme.breakpoints.up('sm')]: {
-      width: theme.spacing(9) + 1,
+      width: theme.spacing(6),
     },
   },
 
-  llink: {
+  listItem: {
     color: theme.palette.action.active,
-    padding: theme.spacing(1),
+    paddingLeft: theme.spacing(8),
+    paddingTop: theme.spacing(1.5),
+    paddingBottom: theme.spacing(1.5),
+
+    '&$listItemActive': {
+      borderLeft: '4px solid #BCD5E4',
+      backgroundColor: '#FAFAFA',
+      paddingLeft: theme.spacing(7.5),
+    },
+    '&$listItemCollapsed': {
+      paddingLeft:  theme.spacing(1)
+    },
+    '&$listItemActive&$listItemCollapsed': {
+      paddingLeft:  theme.spacing(.5)
+    }
+  },
+  listItemActive: {},
+  listItemCollapsed: {},
+
+  link: {
+    fontFamily: poppinsFont,
+    color: '#282828',
+    /*  color: theme.palette.action.active,
+    paddingLeft: theme.spacing(8),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),*/
   },
   drawerPaper: {
+    fontSize: '14px',
     position: 'static',
+    border: 'none',
+
+    backgroundColor: '#F2F2F2',
+    boxShadow:
+      '0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12)',
   },
 }))
 
@@ -90,6 +122,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
   return (
     <Drawer
       variant="permanent"
+      elevation={1}
       className={clsx(classes.drawer, {
         [classes.drawerOpen]: open,
         [classes.drawerClose]: !open,
@@ -101,24 +134,46 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
         }),
       }}
     >
-      <div>
-        <IconButton onClick={toggleDrawer}>
+      <div
+        style={{
+          textAlign: 'right',
+          height: '48px',
+          backgroundColor: '#FAFAFA',
+        }}
+      >
+        <IconButton
+          onClick={toggleDrawer}
+          style={{ borderRadius: 0, width: '48px', height: '100%;' }}
+        >
           {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
       </div>
-      <Divider />
+
       <List>
         {sectionLinks.map((sectionLink, index) => (
           <ListItem
             component="a"
             key={sectionLink.path}
             href={sectionLink.path}
+            className={clsx(classes.listItem, {
+              [classes.listItemActive]: sectionLink.path === currentSection,
+              [classes.listItemCollapsed]: !open
+            })}
           >
-            <ListItemIcon>
+            <ListItemIcon style={{ display: open ? 'none' : 'block' }}>
               <SomeIcon />
             </ListItemIcon>
 
-            <ListItemText primary={sectionLink.name} />
+            <ListItemText
+              disableTypography
+              primary={
+                <Typography component="span" className={classes.link}>
+                  {' '}
+                  {sectionLink.name}
+                </Typography>
+              }
+              style={{ display: open ? 'block' : 'none' }}
+            />
           </ListItem>
         ))}
       </List>

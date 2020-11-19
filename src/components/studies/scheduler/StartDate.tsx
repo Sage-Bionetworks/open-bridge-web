@@ -36,13 +36,17 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
   const classes = useStyles()
 
   const changeStartDate = (type: SessionScheduleStartType) => {
-    onChange({ ...startDate, type })
+    if (type === 'DAY1') {
+      onChange({ type: 'DAY1' })
+    } else {
+      onChange({ ...startDate, type })
+    }
   }
 
   const changeStartDateOffsetNumber = (days: string) => {
-    console.log('days', days)
-    if (isNaN(Number.parseInt(days))) {
-      throw new Error('Number!')
+
+    if (isNaN(Number.parseInt(days))|| parseInt(days) < 1) {
+      return
     }
 
     onChange({
@@ -50,8 +54,6 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
       offsetNumber: Number(days),
     })
   }
-
-
 
   return (
     <SchedulingFormSection label={'Session Starts On:'}>
@@ -74,12 +76,15 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
                   changeStartDateOffsetNumber(e.target.value)
                 }
                 value={startDate.offsetNumber || ''}
+                onFocus={() => changeStartDate('NDAYS_DAY1')}
               />
+              
               <SelectWithEnum
                 value={startDate.offsetUnit}
                 sourceData={HDWMEnum}
                 id="offsetUnit"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onFocus={() => changeStartDate('NDAYS_DAY1')}
+                onChange={e =>
                   onChange({
                     ...startDate,
                     offsetUnit: e.target.value,

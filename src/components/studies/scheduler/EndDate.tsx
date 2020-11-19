@@ -46,14 +46,15 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
   }
 
   const changeEndDateDays = (days: string) => {
-    if (isNaN(Number.parseInt(days))) {
+   /* if (isNaN(Number.parseInt(days))) {
       throw new Error('Number!')
-    }
+    }*/
 
-    onChange({
-      ...endDate,
+    const endDate : EndDateType= {
+      type: 'N_OCCURENCES',
       days: Number(days),
-    })
+    }
+    onChange(endDate)
   }
 
   return (
@@ -81,6 +82,7 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
                 style={{ marginRight: '10px' }}
                 onChange={e => changeEndDateDays(e.target.value)}
                 value={endDate.days || ''}
+                onFocus={e=> changeEndDate('N_OCCURENCES')}
               />
             </>
           }

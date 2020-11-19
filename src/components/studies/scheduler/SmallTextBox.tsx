@@ -20,19 +20,42 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export interface SmallTextBoxProps {
+isLessThanOneAllowed?: boolean
 
 }
 
 const SmallTextBox: React.FunctionComponent<SmallTextBoxProps & TextFieldProps> = (
-  props: SmallTextBoxProps,
+  {isLessThanOneAllowed, onChange, ...other}
 ) => {
   const classes = useStyles()
-  const { ...other } = props
+  //const { ...other } = props
+
+
+  const change = (e: React.ChangeEvent<HTMLTextAreaElement| HTMLInputElement>) => {
+   if (!onChange) {
+      return
+    }
+    const type = other.type
+
+    if (e.target.value.length=== 0) {
+      onChange(e)
+    }
+
+    if ((type === "number") && (isNaN(Number.parseInt(e.target.value)) || (Number.parseInt(e.target.value)<1 && !isLessThanOneAllowed))) {
+      return
+    }
+  
+      onChange(e)
+   
+  }
+
 
   return (
     <TextField
       className={classes.text}
       {...other}
+
+      onChange={(e)=> change(e)}
       variant="outlined"
     />
   )

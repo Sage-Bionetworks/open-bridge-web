@@ -86,7 +86,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
           value={window.startHour}
           sourceData={getDropdownItems()}
           id="from"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange={e =>
               onChange({
                 ...window,
                 startHour: e.target.value
@@ -104,7 +104,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
         </IconButton>
       </SchedulingFormSection>
       <Box bgcolor="#bfd9e833" padding="16px" marginBottom="16px">
-        <SchedulingFormSection label={'Expore after'} variant="small">
+        <SchedulingFormSection label={'Expire after'} variant="small">
           <Box>
             <Box display="inline-flex" alignItems="center">
               <SmallTextBox
@@ -123,7 +123,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
                 value={window.end.endUnit}
                 sourceData={HSsEnum}
                 id="windowEndEnum"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onChange={e =>
                   onChange({
                     ...window,
                     end: {
@@ -158,7 +158,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
               style={{ marginLeft: 0 }}
               sourceData={NotificationFreqEnum}
               id="notificationfreq"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onChange={e =>
                 onChange({
                   ...window,
                   notification: e.target
@@ -185,7 +185,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
             value={window.reminder?.interval}
             sourceData={ReminderIntervalEnum}
             id="reminder"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange={e =>
               onChange({
                 ...window,
                 reminder: {
@@ -198,8 +198,10 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
           <RadioGroup
             aria-label="Notification Reminder"
             name="reminderType"
+            
             style={{ marginTop: '5px' }}
             value={window.reminder?.type}
+
             onChange={e =>
               onChange({
                 ...window,
@@ -214,11 +216,13 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
               value={'AFTER'}
               control={<Radio size="small" className={classes.smallRadio} />}
               label="after start of window"
+              disabled={!window.reminder?.interval || window.reminder?.interval ==='NONE'}
             />
 
             <FormControlLabel
               value={'BEFORE'}
               control={<Radio size="small" className={classes.smallRadio} />}
+              disabled={!window.reminder?.interval || window.reminder?.interval ==='NONE'}
               label="before window expires "
             />
           </RadioGroup>

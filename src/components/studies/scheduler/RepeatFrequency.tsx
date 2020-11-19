@@ -51,7 +51,7 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
               value={repeatFrequency.unit}
               sourceData={DWMYEnum}
               id="frequencyunit"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onChange={e =>
                 onChange({
                   ...repeatFrequency,
                   unit: e.target.value as keyof typeof DWMYEnum,
