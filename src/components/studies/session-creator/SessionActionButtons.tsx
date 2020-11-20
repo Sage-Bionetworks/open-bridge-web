@@ -1,24 +1,14 @@
-import React, { ChangeEvent, FunctionComponent, useEffect } from 'react'
+import React, { FunctionComponent, useEffect } from 'react'
 
-import clsx from 'clsx'
-import {
-  makeStyles,
-  Box,
-  Button,
-  InputLabel,
-  MenuItem,
-  Select,
-  FormControl,
-} from '@material-ui/core'
+import { makeStyles, Box, Button, MenuItem, Select } from '@material-ui/core'
 
 import { StudySession } from '../../../types/types'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    padding: '12px',
-    border: '1px solid #C4C4C4',
-    width: '265px',
-    marginRight: '26px',
+    display: 'flex',
+    alignItems: 'flex-start',
+    paddingTop: theme.spacing(2),
   },
   label: {
     fontSize: 18,
@@ -30,7 +20,11 @@ const useStyles = makeStyles(theme => ({
     whiteSpace: 'nowrap',
   },
   selectEmpty: {
-    marginTop: theme.spacing(2),
+    marginTop: 0,
+
+    marginRight: theme.spacing(1),
+    marginLeft: theme.spacing(2),
+    padding: 0,
   },
 }))
 
@@ -43,26 +37,26 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
   onAddSession,
   sessions,
 }: SessionActionButtonsProps) => {
-  console.log('sessions!', sessions)
   const classes = useStyles()
-  const [selectedSession, setSelectedSession] = React.useState<
-    StudySession | undefined
-  >(sessions.length > 0 ? sessions[0] : undefined)
+  const [selectedSessionId, setSelectedSessionId] = React.useState<
+    string | undefined
+  >(sessions.length > 0 ? sessions[0].id : undefined)
 
-  useEffect(()=> {
-    console.log('changed')
-    setSelectedSession(sessions.length > 0 ? sessions[0] : undefined)
+  useEffect(() => {
+    setSelectedSessionId(sessions.length > 0 ? sessions[0].id : undefined)
+  }, [sessions.length])
+
+  const duplicateSession = (selectedId?: string) => {
+    const session = sessions.find(s => s.id === selectedId)
+    if (!selectedId || !session || session.assessments.length === 0) {
+      onAddSession(sessions, [])
+    } else {
+      onAddSession(sessions, [...session.assessments])
+    }
   }
-  , [sessions.length])
-
 
   return (
-    <Box
-      className={/*clsx(classes.root)*/ ''}
-      display="flex"
-      alignItems="flex-start"
-      paddingTop="16px"
-    >
+    <Box className={classes.root}>
       <Button
         variant="contained"
         color="secondary"
@@ -72,20 +66,10 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
         Create new session
       </Button>
 
-      {selectedSession && [
+      {selectedSessionId && [
         <Select
-          style={{
-            marginRight: '8px',
-            marginLeft: '16px',
-            padding: 0,
-            marginTop: '0',
-          }}
-          value={selectedSession.id}
-          onChange={e =>
-            setSelectedSession(
-              sessions.find(session => session.id === e.target.value)!,
-            )
-          }
+          value={selectedSessionId}
+          onChange={e => setSelectedSessionId(e.target.value as string)}
           displayEmpty
           className={classes.selectEmpty}
           inputProps={{ 'aria-label': 'Without label' }}
@@ -96,13 +80,10 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
             </MenuItem>
           ))}
         </Select>,
-
         <Button
           variant="contained"
           color="secondary"
-          onClick={() =>
-            onAddSession(sessions, [...(selectedSession.assessments || [])])
-          }
+          onClick={() => duplicateSession(selectedSessionId)}
         >
           Duplicate
         </Button>,

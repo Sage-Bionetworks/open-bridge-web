@@ -4,11 +4,12 @@ import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 
 import Logo from '../../assets/logo_mtb.svg'
-import { Paper, Typography } from '@material-ui/core'
+import { Hidden, IconButton, Paper, Typography } from '@material-ui/core'
 
 import { NavLink } from 'react-router-dom'
 import BreadCrumb from '../widgets/BreadCrumb'
 import PeopleIcon from '@material-ui/icons/People'
+import MenuIcon from '@material-ui/icons/Menu'
 
 const useStyles = makeStyles(theme => ({
   toolbarStudyHeader: {
@@ -43,6 +44,15 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: '17px',
     marginButtom: '-1px',
   },
+  menuButton: {
+    marginRight: theme.spacing(2),
+    float: 'right',
+    '&::after':  {
+      content: "",
+      display: 'table',
+      clear: 'both'
+    }
+  },
 }))
 
 type StudyTopNavProps = {
@@ -63,11 +73,24 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
     { path: '/studies/:id/compliance', name: 'ADHERENCE DATA' },
     { path: '/studies/:id/study-data', name: 'STUDY DATA' },
   ]
-
+  const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
   //const sessionData = useSessionDataState()
 
   return (
+    <>
+    <Hidden lgUp>
+    <IconButton
+      color="inherit"
+      aria-label="Open drawer"
+      edge="end"
+      onClick={() => setIsMobileOpen(!isMobileOpen)}
+      className={classes.menuButton}
+    >
+      <MenuIcon></MenuIcon>
+    </IconButton>
+  </Hidden>
+  <Hidden mdDown>
     <Paper className={classes.toolbarStudyHeader} elevation={0}>
       <Toolbar
         component="nav"
@@ -123,7 +146,9 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
         <Typography component="h1">{currentSection}</Typography>
       )}
     </Paper>
-  )
+ 
+ </Hidden> 
+ </>)
 }
 
 export default StudyTopNav

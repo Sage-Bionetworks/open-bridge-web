@@ -8,37 +8,31 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
   IconButton,
   makeStyles,
-  MenuItem,
   Paper,
-  Select,
-  Typography,
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 
 import { Assessment, Group, StudySession } from '../../../types/types'
 
-import GroupsEditor from '../scheduler/GoupsEditor'
-
 import AssessmentSelector from './AssessmentSelector'
 
 import actionsReducer, { Types, SessionAction } from './sessionActions'
 import StudyService from '../../../services/study.service'
-import TabPanel from '../../widgets/TabPanel'
+
 import SessionActionButtons from './SessionActionButtons'
 import SingleSessionContainer from './SingleSessionContainer'
 import { useErrorHandler } from 'react-error-boundary'
 import { useAsync } from '../../../helpers/AsyncHook'
-import { useParams } from 'react-router-dom'
+
 import { StudySection } from '../sections'
 import NavButtons from '../NavButtons'
 
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'grid',
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
     gridTemplateColumns: 'repeat(auto-fill,280px)',
     gridColumnGap: theme.spacing(2),
     gridRowGap: theme.spacing(2),
@@ -55,7 +49,6 @@ const useStyles = makeStyles(theme => ({
   sessionContainer: {
     width: '280px',
     padding: theme.spacing(2),
-
     backgroundColor: '#F2f2f2',
   },
   actionButtons: {
@@ -88,7 +81,6 @@ SessionCreatorProps) => {
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
   const [hasObjectChanged, setHasObjectChanged] = useState(false)
 
-
   const { data: sessions, status, error, run, setData } = useAsync<
     StudySession[]
   >({
@@ -98,11 +90,8 @@ SessionCreatorProps) => {
 
   const handleError = useErrorHandler()
 
-
-
   const sessionsUpdateFn = (action: SessionAction) => {
     const newState = actionsReducer(sessions!, action)
-    console.log('setting data  to ', newState)
     setHasObjectChanged(true)
     setData(newState)
   }
@@ -163,16 +152,8 @@ SessionCreatorProps) => {
   if (sessions) {
     return (
       <>
-      objectChanged? {hasObjectChanged? 'yes': 'no'}
-        <Box
-          display="grid"
-          padding="8px"
-          gridTemplateColumns="repeat(auto-fill,280px)"
-          gridColumnGap="16px"
-          gridRowGap="16px"
-          minHeight="400px"
-          bgcolor="#fff"
-        >
+        objectChanged? {hasObjectChanged ? 'yes' : 'no'}
+        <Box className={classes.root}>
           {sessions.map(session => (
             <Paper className={classes.sessionContainer} key={session.id}>
               <SingleSessionContainer
