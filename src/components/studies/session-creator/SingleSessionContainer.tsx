@@ -27,24 +27,47 @@ import EditableTextbox from '../../widgets/EditableTextbox'
 import { ThemeType } from '../../../style/theme'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
-  /*  root: {
-    padding: '12px',
-    border: '1px solid #C4C4C4',
-    width: '265px',
-    marginRight: '26px',
-    '&.active': {
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    /*'&.active': {
       border: theme.activeBorder,
-    },
-  },*/
+    },*/
+  },
   inner: {
+    position: 'relative',
+    textAlign: 'left',
+    paddingBottom: theme.spacing(1),
+    borderBottom: '1px solid black',
+  },
+  btnDeleteSession: {
+    padding: '0',
+    minWidth: 'auto',
+    position: 'absolute',
+    right: '-3px',
+    top: '-3px',
+  },
+  btnDeleteAssessment: {
+    padding: '0',
+    minWidth: 'auto',
+    position: 'absolute',
+    top: '35px',
+    right: theme.spacing(1),
+  },
+  actions: {
+    borderTop: '1px solid black',
+    height: theme.spacing(6),
+    display: 'flex',
+    padding: 0,
+    justifyContent: 'space-between',
+  },
+  droppable: {
     flexGrow: 1,
-
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
     height: '376px',
-
     overflowY: 'scroll',
-
     '&.empty': {
       border: '1px dashed #C4C4C4',
     },
@@ -124,26 +147,20 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
   const getInner = (studySession: StudySession): JSX.Element => {
     return (
       <>
-        <Box position="relative" textAlign="left" paddingBottom="6px" borderBottom = '1px solid black'>
+        <Box className={classes.inner}>
           <Box marginRight="16px">
-          <EditableTextbox
-          component="h4"
-            initValue={studySession.name}
-            onTriggerUpdate={(newValue: string) =>
-              onUpdateSessionName(studySession.id, newValue)
-            }
-          ></EditableTextbox>
+            <EditableTextbox
+              component="h4"
+              initValue={studySession.name}
+              onTriggerUpdate={(newValue: string) =>
+                onUpdateSessionName(studySession.id, newValue)
+              }
+            ></EditableTextbox>
           </Box>
-         
+
           <Button
             variant="text"
-            style={{
-              padding: '0',
-              minWidth: 'auto',
-              position: 'absolute',
-              right: '-3px',
-              top: '-3px',
-            }}
+            className={classes.btnDeleteSession}
             onClick={e => {
               e.stopPropagation()
               onRemoveSession(studySession.id)
@@ -152,19 +169,20 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
             <ClearIcon fontSize="small"></ClearIcon>
           </Button>
           <Box fontSize="12px" textAlign="right">
-         {getTotalSessionTime(studySession.assessments) || 0} min.
-          <ClockIcon style={{fontSize: "12px", verticalAlign: 'middle'}}></ClockIcon>
+            {getTotalSessionTime(studySession.assessments) || 0} min.
+            <ClockIcon
+              style={{ fontSize: '12px', verticalAlign: 'middle' }}
+            ></ClockIcon>
           </Box>
         </Box>
-        
-        
+
         <DragDropContext
           onDragEnd={(dropResult: DropResult) =>
             rearrangeAssessments(studySession.assessments, dropResult)
           }
         >
-          <div className={classes.inner}>
-            <Droppable droppableId={studySession.id} type="TASK">
+          <div className={classes.droppable}>
+            <Droppable droppableId={studySession.id} type="ASSESSMENT">
               {(provided, snapshot) => (
                 <div
                   className={clsx({
@@ -173,6 +191,12 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                 >
+                  {studySession.assessments.length === 0 && (
+                    <Box marginTop="60px" padding="20px">
+                      Add assessments to this session by clicking on the "+"
+                      below.{' '}
+                    </Box>
+                  )}
                   {studySession.assessments.map((assessment, index) => (
                     <Draggable
                       draggableId={assessment.guid}
@@ -192,7 +216,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                             {isEditable && (
                               <Button
                                 variant="text"
-                                style={{ padding: '0', minWidth: 'auto', position: 'absolute' , top: '35px', right: '8px'}}
+                                className={classes.btnDeleteAssessment}
                                 onClick={e => {
                                   e.stopPropagation()
                                   removeAssessment(assessment.guid)
@@ -217,21 +241,12 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
   }
   return (
     <Box
-      className={/*clsx(classes.root, studySession?.active && 'active')*/ ''}
-      display="flex"
-      flexDirection="column"
-      height="100%"
+      className={clsx(classes.root /*, studySession?.active && 'active')*/)}
       onClick={() => onSetActiveSession(studySession.id)}
     >
       {getInner(studySession)}
 
-      <Box
-        borderTop="1px solid black"
-        height="50px"
-        display="flex"
-        padding=" 0px "
-        justifyContent="space-between"
-      >
+      <Box className={classes.actions}>
         <FormControlLabel
           control={
             <Switch

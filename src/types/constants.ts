@@ -1,6 +1,7 @@
 export default {
   constants: {
     APP_ID: 'mtb-user-testing',
+    STUDY_ID: 'mtb-user-testing',
     SESSION_NAME: 'bridge-session-mtb-user-testing',
     ENDPOINT: 'https://webservices.sagebridge.org',
   },
@@ -110,6 +111,9 @@ export default {
     assessmentResources: '/v1/assessments/identifier:{identifier}/resources', //'/v1/sharedassessments',
     oauthSignIn: '/v3/auth/oauth/signIn',
     selfInfo: '/v3/participants/self',
+    enrollments: '/v5/studies/{studyId}/enrollments',
+    participants: '/v3/participants/search',
+
     /*phoneSignIn: '/v3/auth/phone/signIn',
   reauth: '/v3/auth/reauth',
   reports: '/v3/reports',
