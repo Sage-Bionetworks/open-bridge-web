@@ -1472,6 +1472,19 @@
   resolved "https://registry.yarnpkg.com/@sheerun/mutationobserver-shim/-/mutationobserver-shim-0.3.3.tgz#5405ee8e444ed212db44e79351f0c70a582aae25"
   integrity sha512-DetpxZw1fzPD5xUBrIAoplLChO2VB8DlL5Gg+I1IR9b2wPqYIca2WSUxL5g1vLeR4MsQq1NeWriXAVffV+U1Fw==
 
+"@super-effective/colorutils@^1.0.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@super-effective/colorutils/-/colorutils-1.1.1.tgz#53f926c569a2ceae674929bc3e96ea10f996a605"
+  integrity sha512-q8jaF8OhgZzGLKoxWgyJJ3Az3dLr/jxepJ+km6LxYzcPn/9oI3Mx2UG/XhFjomvVMZxcK2bGUi0n1+R7g42+Ig==
+
+"@super-effective/react-color-picker@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@super-effective/react-color-picker/-/react-color-picker-1.2.0.tgz#fd960a9c15c1deeec05af404c0a0c0c027e17ba0"
+  integrity sha512-tJr38s8t/qDhFF2xfsvkWBe40h9X4bJ8EiW9kFYeaHvf0kbSqJ4DrWXLfSjPqdLVus+WRyHfdsW510apEw391A==
+  dependencies:
+    "@super-effective/colorutils" "^1.0.1"
+    classnames "^2.2.6"
+
 "@svgr/babel-plugin-add-jsx-attribute@^4.2.0":
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/@svgr/babel-plugin-add-jsx-attribute/-/babel-plugin-add-jsx-attribute-4.2.0.tgz#dadcb6218503532d6884b210e7f3c502caaa44b1"
@@ -3111,6 +3124,11 @@ class-utils@^0.3.5:
     define-property "^0.2.5"
     isobject "^3.0.0"
     static-extend "^0.1.1"
+
+classnames@^2.2.6:
+  version "2.2.6"
+  resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.6.tgz#43935bffdd291f326dad0a205309b38d00f650ce"
+  integrity sha512-JR/iSQOSt+LQIWwrwEzJ9uk0xfN3mTVYMwt1Ir5mUcSN6pU+V4zQFFaJsclJbPuAUQH+yfWef6tm7l1quW3C8Q==
 
 clean-css@^4.2.3:
   version "4.2.3"
