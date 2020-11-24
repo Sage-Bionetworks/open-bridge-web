@@ -16,6 +16,8 @@ import {
 } from '@material-ui/core'
 import { getRandomId } from '../../helpers/utility'
 
+
+
 type StudyListOwnProps = {}
 
 type StudySublistProps = {
@@ -77,6 +79,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: '1.4rem',
     textAlign: 'left',
   },
+
 }))
 
 const sections = [
@@ -116,7 +119,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
           .filter(study => study.status === status)
           .map(study => (
             <Link
-            style={{textDecoration: 'none'}}
+              style={{ textDecoration: 'none' }}
               key={study.identifier}
               variant="body2"
               href={`/studies/builder/${study.identifier}/session-creator`}
@@ -132,6 +135,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
 const StudyList: FunctionComponent<StudyListProps> = () => {
   const [studies, setStudies] = React.useState<Study[]>([])
   const classes = useStyles()
+
   const [statusFilters, setStatusFilters] = React.useState<StudyStatus[]>(
     sections.map(section => section.status),
   )
@@ -139,12 +143,15 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const resetStatusFilters = () =>
     setStatusFilters(sections.map(section => section.status))
 
-
-   const createStudy = async() => {
-     const newStudy: Study = {identifier: getRandomId() ,  status: 'DRAFT' as StudyStatus, name : 'Untitled'}
+  const createStudy = async () => {
+    const newStudy: Study = {
+      identifier: getRandomId(),
+      status: 'DRAFT' as StudyStatus,
+      name: 'Untitled',
+    }
     setStudies([...studies, newStudy])
-   const x = await StudyService.saveStudy(newStudy)
-   setStudies(x)
+    const x = await StudyService.saveStudy(newStudy)
+    setStudies(x)
   }
 
   const isSelectedFilter = (filter: StudyStatus) =>
@@ -179,6 +186,8 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   return (
     <Container maxWidth="xl" className={classes.studyContainer}>
+
+
       <Box display="flex" justifyContent="space-between">
         <ul className={classes.filters} aria-label="filters">
           <li className={classes.filterItem}>View by:</li>
@@ -203,7 +212,9 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             </li>
           ))}
         </ul>
-        <Button variant="contained" onClick={()=>createStudy()}>+ Create a Study</Button>
+        <Button variant="contained" onClick={() => createStudy()}>
+          + Create a Study
+        </Button>
       </Box>
       <Divider className={classes.divider}></Divider>
       {statusFilters.map((status, index) => (

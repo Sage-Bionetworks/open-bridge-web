@@ -161,6 +161,7 @@ export type StudySession = {
   //duration: number
   name: string
   assessments: Assessment[]
+  order?: number
  // Guid: string
 /*Name: string
 Bundled: boolean

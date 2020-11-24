@@ -26,10 +26,9 @@ import { ReactComponent as PhoneBg } from '../../../assets/phone_bg.svg'
 import ReactComponent from '../../../assets/phone_bg.svg'
 import { BorderTopRounded } from '@material-ui/icons'
 import { bytesToSize } from '../../../helpers/utility'
-import ReactColorPicker from '@super-effective/react-color-picker';
+import ReactColorPicker from '@super-effective/react-color-picker'
 
-
-const topBarHeight="48px"
+const topBarHeight = '48px'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -48,7 +47,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     width: '100%',
     height: topBarHeight,
     borderRadius: '40px 40px 0 0',
-   //backgroundColor: 'red',
+    //backgroundColor: 'red',
     borderStyle: 'solid',
     borderWidth: '3px 3px 1px 3px',
     borderColor: 'black',
@@ -182,13 +181,15 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
       <Paper className={classes.root} elevation={2}>
         <Box className={classes.section}>
           <Box className={classes.phone}>
-            <div className={classes.phoneTopBar} style={{backgroundColor: color || 'transparent'}}>
-            
-            
-            
-            {previewFile && <img src={previewFile.body} style={{height: topBarHeight}}/>}
-            
-            </div>phone
+            <div
+              className={classes.phoneTopBar}
+              style={{ backgroundColor: color || 'transparent' }}
+            >
+              {previewFile && (
+                <img src={previewFile.body} style={{ height: topBarHeight }} />
+              )}
+            </div>
+            phone
           </Box>
           <Box className={classes.fields}>
             <div className={classes.preview}>
@@ -197,8 +198,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
                   {previewFile.name} ({bytesToSize(previewFile.size)})
                 </div>
               )}
-         
-            
             </div>
 
             {isLoading && (
@@ -206,12 +205,15 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
                 <CircularProgress color="primary" />
               </div>
             )}
-<Typography variant="h4"> Upload logo</Typography>
+            <Typography variant="h4"> Upload logo</Typography>
             {getActionButtons(previewFile?.file)}
-<p>&nbsp;</p>
-<Typography variant="h4"> Slelect Log background color</Typography>
+            <p>&nbsp;</p>
+            <Typography variant="h4"> Slelect Log background color</Typography>
 
-            <ReactColorPicker color={color} onChange={(color: string)=> setColor(color)} />
+            <ReactColorPicker
+              color={color}
+              onChange={(color: string) => setColor(color)}
+            />
 
             <TextField
               id="outlined-textarea"

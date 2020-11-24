@@ -64,7 +64,7 @@ async function getStudySessions(
   studyId: string,
 ): Promise<StudySession[] | undefined> {
   let sessions = await getAllStudySessions()
-  return sessions?.filter(s => s.studyId === studyId)
+  return sessions?.filter(s => s.studyId === studyId).map((s, index)=> ({...s, order: index}))
 }
 
 async function saveStudy(study: Study): Promise<Study[]> {

@@ -25,6 +25,7 @@ import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditableTextbox from '../../widgets/EditableTextbox'
 import { ThemeType } from '../../../style/theme'
+import SessionIcon from '../../widgets/SessionIcon'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -149,6 +150,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
       <>
         <Box className={classes.inner}>
           <Box marginRight="16px">
+          <SessionIcon  index={studySession.order}>
             <EditableTextbox
               component="h4"
               initValue={studySession.name}
@@ -156,6 +158,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                 onUpdateSessionName(studySession.id, newValue)
               }
             ></EditableTextbox>
+            </SessionIcon>
           </Box>
 
           <Button
