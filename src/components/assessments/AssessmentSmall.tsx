@@ -1,13 +1,5 @@
 import React, { FunctionComponent } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import Card from '@material-ui/core/Card'
-import CardActions from '@material-ui/core/CardActions'
-import CardContent from '@material-ui/core/CardContent'
-import Button from '@material-ui/core/Button'
-import Typography from '@material-ui/core/Typography'
-
-import { RouteComponentProps } from 'react-router-dom'
-import { Draggable } from 'react-beautiful-dnd'
 import clsx from 'clsx'
 import { Assessment } from '../../types/types'
 import { Box, createStyles, Paper } from '@material-ui/core'
@@ -17,7 +9,6 @@ const useStyles = makeStyles(theme =>
   createStyles({
     root: {
       display: 'flex',
-
       padding: 0,
       marginBottom: theme.spacing(1),
 
@@ -27,22 +18,30 @@ const useStyles = makeStyles(theme =>
       },
       '&:hover': {
         border: '2px solid #000',
-        // padding: '2px',
-        //margin: '0 -5px'
+
+        '& $text $hoverImage': {
+          display: 'block',
+          position: 'absolute',
+          right: '5px',
+          width: '20px',
+          height: '20px',
+          top: '0',
+          bottom: '0',
+          margin: 'auto',
+        },
       },
       '&.no-hover:hover': {
-        border: 'none'
-      }
+        border: 'none',
+      },
     },
 
     card: {
       width: '96px',
       height: '96px',
       flexShrink: 0,
-      display:'flex',
-
+      display: 'flex',
       alignContent: 'space-around',
-      justifyContent: 'space-around'
+      justifyContent: 'space-around',
     },
     title: {
       fontSize: '12px',
@@ -54,11 +53,13 @@ const useStyles = makeStyles(theme =>
       position: 'relative',
 
       flexGrow: 1,
-      textAlign: 'left'
-
+      textAlign: 'left',
     },
     duration: {
       fontSize: '13px',
+    },
+    hoverImage: {
+      display: 'none',
     },
   }),
 )
@@ -82,7 +83,13 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
   const classes = useStyles()
 
   return (
-    <Paper className={clsx(classes.root, !hasHover&& 'no-hover', isDragging && 'dragging')}>
+    <Paper
+      className={clsx(
+        classes.root,
+        !hasHover && 'no-hover',
+        isDragging && 'dragging',
+      )}
+    >
       <Box className={classes.card}>
         <AssessmentImage
           isSmall={true}
@@ -91,6 +98,7 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
         ></AssessmentImage>
       </Box>
       <div className={classes.text}>
+        <div className={classes.hoverImage}> &#9776;</div>
         <span className={classes.title}>
           {assessment.title}
 

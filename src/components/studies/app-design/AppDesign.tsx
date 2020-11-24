@@ -1,13 +1,13 @@
 import React, {
-  FunctionComponent,
+
   useState,
-  useEffect,
+
   ChangeEvent,
 } from 'react'
-import { RouteComponentProps, useParams } from 'react-router-dom'
+
 import { makeStyles } from '@material-ui/core/styles'
 import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
-import LoadingComponent from '../../widgets/Loader'
+
 import { useAsync } from '../../../helpers/AsyncHook'
 import { StudySection } from '../sections'
 import StudyService from '../../../services/study.service'
@@ -22,8 +22,8 @@ import {
   Typography,
 } from '@material-ui/core'
 import { ThemeType } from '../../../style/theme'
-import { ReactComponent as PhoneBg } from '../../../assets/phone_bg.svg'
-import ReactComponent from '../../../assets/phone_bg.svg'
+//import { ReactComponent as PhoneBg } from '../../../assets/phone_bg.svg'
+import PhoneBg  from '../../../assets/phone_bg.svg'
 import { BorderTopRounded } from '@material-ui/icons'
 import { bytesToSize } from '../../../helpers/utility'
 import ReactColorPicker from '@super-effective/react-color-picker'
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     display: 'flex',
   },
   phone: {
-    backgroundImage: 'url(' + ReactComponent + ')',
+    backgroundImage: 'url(' +  PhoneBg  + ')',
     width: '308px',
     height: '635px',
     backgroundRepeat: 'no-repeat',
