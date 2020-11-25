@@ -180,10 +180,21 @@ export const useSessionStorage = (
 }
 
 export const getRandomId = (): string => {
-  const uint32 = window.crypto.getRandomValues(new Uint32Array(1))[0]
-  console.log('newId', uint32.toString(16))
-  return uint32.toString(16)
+  return Date.now().toString(36) + Math.random().toString(36).substr(2)
 }
 
 export const getEnumKeys = <T>(enum1: T): (keyof T)[] =>
   Object.keys(enum1) as (keyof T)[]
+
+
+  export const bytesToSize = (bytes: number) => {
+    const sizes = ['bytes', 'kb', 'MB', 'GB', 'TB']
+    if (bytes === 0) return 'n/a'
+    const i = parseInt(
+      Math.floor(Math.log(bytes) / Math.log(1024)).toString(),
+      10,
+    )
+    if (i === 0) return `${bytes} ${sizes[i]})`
+    return `${(bytes / 1024 ** i).toFixed(1)}${sizes[i]}`
+  }
+  

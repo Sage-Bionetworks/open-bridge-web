@@ -15,12 +15,14 @@ import {
   Typography,
 } from '@material-ui/core'
 import { getRandomId } from '../../helpers/utility'
+import ConfirmationDialog from '../widgets/ConfirmationDialog'
 
 type StudyListOwnProps = {}
 
 type StudySublistProps = {
   status: StudyStatus
   studies: Study[]
+  onAction: Function
 }
 
 const studyCardWidth = '253'
@@ -102,9 +104,9 @@ type StudyListProps = StudyListOwnProps & RouteComponentProps
 const StudySublist: FunctionComponent<StudySublistProps> = ({
   studies,
   status,
+  onAction,
 }: StudySublistProps) => {
   const classes = useStyles()
-
   const item = sections.find(section => section.status === status)!
   return (
     <>
@@ -116,12 +118,15 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
           .filter(study => study.status === status)
           .map(study => (
             <Link
-            style={{textDecoration: 'none'}}
+              style={{ textDecoration: 'none' }}
               key={study.identifier}
               variant="body2"
               href={`/studies/builder/${study.identifier}/session-creator`}
             >
-              <StudyCard study={study}></StudyCard>
+              <StudyCard
+                study={study}
+                onDelete={(id: Study) => onAction(id.identifier, 'DELETE')}
+              ></StudyCard>
             </Link>
           ))}
       </Box>
@@ -132,6 +137,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
 const StudyList: FunctionComponent<StudyListProps> = () => {
   const [studies, setStudies] = React.useState<Study[]>([])
   const classes = useStyles()
+
   const [statusFilters, setStatusFilters] = React.useState<StudyStatus[]>(
     sections.map(section => section.status),
   )
@@ -139,12 +145,29 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const resetStatusFilters = () =>
     setStatusFilters(sections.map(section => section.status))
 
-
-   const createStudy = async() => {
-     const newStudy: Study = {identifier: getRandomId() ,  status: 'DRAFT' as StudyStatus, name : 'Untitled'}
+  const createStudy = async () => {
+    const newStudy: Study = {
+      identifier: getRandomId(),
+      status: 'DRAFT' as StudyStatus,
+      name: 'Untitled',
+    }
     setStudies([...studies, newStudy])
-   const x = await StudyService.saveStudy(newStudy)
-   setStudies(x)
+    const x = await StudyService.saveStudy(newStudy)
+    setStudies(x)
+  }
+
+  const onAction = async (type: string, studyId: string) => {
+    console.log('hi'+studyId+ type)
+    switch (type) {
+      case 'DELETE':
+        const s = await StudyService.removeStudy(studyId)
+        console.log(studies.length)
+        console.log(s.length)
+        setStudies(s)
+        return
+      default: {
+      }
+    }
   }
 
   const isSelectedFilter = (filter: StudyStatus) =>
@@ -203,12 +226,18 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             </li>
           ))}
         </ul>
-        <Button variant="contained" onClick={()=>createStudy()}>+ Create a Study</Button>
+        <Button variant="contained" onClick={() => createStudy()}>
+          + Create a Study
+        </Button>
       </Box>
       <Divider className={classes.divider}></Divider>
       {statusFilters.map((status, index) => (
         <>
-          <StudySublist studies={studies} status={status} />
+          <StudySublist
+            studies={studies}
+            status={status}
+            onAction={(type: string, id: string) => onAction( id, type)}
+          />
           {index < 2 && <Divider className={classes.divider}></Divider>}
         </>
       ))}

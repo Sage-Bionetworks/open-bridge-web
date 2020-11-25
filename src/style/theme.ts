@@ -118,6 +118,9 @@ const theme: Theme = createMuiTheme({
     primary: {
       main: '#2196f3',
     },
+    error: {
+      main: '#FCD2D2'
+    }
   },
 })
 

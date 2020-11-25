@@ -102,12 +102,13 @@ function addSession(
     assessments,
     active: isActive,
     studyId,
+    order: sessions.length,
     //duration: 0,
     name,
   }
 
   const result = [
-    ...sessions.map(session => ({ ...session, active: false })),
+    ...sessions.map((session, index) => ({ ...session, active: false , order: index})),
     {
       ...session,
     },
@@ -149,7 +150,7 @@ function removeSession(
   sessions: StudySession[],
   sessionId: string,
 ): StudySession[] {
-  return sessions.filter(session => session.id !== sessionId)
+  return sessions.filter(session => session.id !== sessionId).map((s, index) =>({ ...s, order: index }))
 }
 
 function updateAssessments(

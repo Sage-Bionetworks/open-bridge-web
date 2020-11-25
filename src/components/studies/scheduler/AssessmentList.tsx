@@ -13,6 +13,7 @@ import React from 'react'
 import { ThemeType } from '../../../style/theme'
 import { StudySession } from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
+import SessionIcon from '../../widgets/SessionIcon'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -42,6 +43,7 @@ export interface AssessmentListProps {
   assessmentOrder: 'SEQUENTIAL' | 'RANDOM'
   onChangeGrouping: Function
   onSetRandomized: Function
+
 }
 
 const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
@@ -50,6 +52,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   isGroupAssessments,
   onChangeGrouping,
   onSetRandomized,
+
 }: AssessmentListProps): JSX.Element => {
   const classes = useStyles()
 
@@ -66,7 +69,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   }
   return (
     <>
-      <span>{studySession.name}</span>-{' '}
+   <SessionIcon index={studySession.order}><span>{studySession.name} - {} </span></SessionIcon> 
       {studySession.assessments.reduce(
         (prev, curr) => prev + Number(curr.duration),
         0,

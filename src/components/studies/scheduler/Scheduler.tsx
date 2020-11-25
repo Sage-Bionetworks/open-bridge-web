@@ -292,7 +292,7 @@ SchedulerOwnProps) => {
                   </RadioGroup>
                 </SchedulingFormSection>
 
-                {studyArm.schedule.sessions.map(session => (
+                {studyArm.schedule.sessions.map((session, index) => (
                   <Box>
                     <SchedulableSingleSessionContainer
                       key={session.id}

@@ -20,6 +20,7 @@ import clsx from 'clsx'
 import { TurnedInNotOutlined } from '@material-ui/icons'
 import StudyTopNav from './StudyTopNav'
 import NavButtons from './NavButtons'
+import AppDesign from './app-design/AppDesign'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   mainAreaWrapper: {
@@ -36,16 +37,14 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     width: `${280 * 3 + 16 * 3}px`,
     [theme.breakpoints.down('md')]: {
       width: `${280 * 2 + 16 * 2}px`,
-    }
+    },
   },
 
   mainAreaWider: {
-      width: `${280 * 4 + 16 * 3}px`,
+    width: `${280 * 4 + 16 * 3}px`,
     [theme.breakpoints.down('md')]: {
       width: `760px`,
     },
-
-
   },
   mainAreaWide: {
     width: `${280 * 4 + 16 * 4}px`,
@@ -108,7 +107,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
           <Box
             className={clsx(classes.mainArea, {
               [classes.mainAreaNormal]: open,
-              [classes.mainAreaWider]: open&& section === 'scheduler',
+              [classes.mainAreaWider]: open && section === 'scheduler',
               [classes.mainAreaWide]: !open,
             })}
           >
@@ -125,9 +124,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
                         return (
                           <Scheduler
                             {...props}
-                            id = {id}
-                            section = {section}
-                          
+                            id={id}
+                            section={section}
                           ></Scheduler>
                         )
                       }}
@@ -138,17 +136,23 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
                         return (
                           <SessionCreator
                             {...props}
-                            id = {id}
-                            section = {section}
-                            
+                            id={id}
+                            section={section}
                           />
+                        )
+                      }}
+                    />
+
+                    <Route
+                      path="/studies/builder/:id/branding"
+                      render={props => {
+                        return (
+                          <AppDesign {...props} id={id} section={section} />
                         )
                       }}
                     />
                   </Switch>
                 )}
-
-         
               </LoadingComponent>
             </ErrorBoundary>
           </Box>

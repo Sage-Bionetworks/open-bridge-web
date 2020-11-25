@@ -25,6 +25,8 @@ import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditableTextbox from '../../widgets/EditableTextbox'
 import { ThemeType } from '../../../style/theme'
+import SessionIcon from '../../widgets/SessionIcon'
+import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -113,6 +115,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
 }: SingleSessionContainerProps) => {
   const classes = useStyles()
   const [isEditable, setIsEditable] = React.useState(false)
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
 
   const rearrangeAssessments = (
     assessments: Assessment[],
@@ -149,6 +152,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
       <>
         <Box className={classes.inner}>
           <Box marginRight="16px">
+          <SessionIcon  index={studySession.order}>
             <EditableTextbox
               component="h4"
               initValue={studySession.name}
@@ -156,6 +160,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                 onUpdateSessionName(studySession.id, newValue)
               }
             ></EditableTextbox>
+            </SessionIcon>
           </Box>
 
           <Button
@@ -163,7 +168,8 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
             className={classes.btnDeleteSession}
             onClick={e => {
               e.stopPropagation()
-              onRemoveSession(studySession.id)
+              //onRemoveSession(studySession.id)
+              setIsConfirmDeleteOpen(true)
             }}
           >
             <ClearIcon fontSize="small"></ClearIcon>
@@ -240,6 +246,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
     )
   }
   return (
+    <>
     <Box
       className={clsx(classes.root /*, studySession?.active && 'active')*/)}
       onClick={() => onSetActiveSession(studySession.id)}
@@ -266,6 +273,21 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
         </Button>
       </Box>
     </Box>
+    <ConfirmationDialog
+        isOpen={isConfirmDeleteOpen}
+        title={'Delete Session'}
+        type={'DELETE'}
+        onCancel={()=>setIsConfirmDeleteOpen(false)}
+        onConfirm={() => {
+          setIsConfirmDeleteOpen(false)
+          onRemoveSession(studySession.id)
+        }}
+      >
+        <div>
+          Are you sure you would like to permanently delete: <p>{studySession.name}</p>
+        </div>
+      </ConfirmationDialog>
+    </>
   )
 }
 

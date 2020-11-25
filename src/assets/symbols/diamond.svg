@@ -1,0 +1,7 @@
+<svg  viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+  <!-- Example of a polygon with the default fill -->
+  <polygon points="1,6 6,1 11, 6 6,11"   stroke-width="1" />
+
+  <!-- Example of the same polygon shape with stroke and no fill -->
+
+</svg>
