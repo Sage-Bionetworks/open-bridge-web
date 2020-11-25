@@ -15,14 +15,14 @@ import {
   Typography,
 } from '@material-ui/core'
 import { getRandomId } from '../../helpers/utility'
-
-
+import ConfirmationDialog from '../widgets/ConfirmationDialog'
 
 type StudyListOwnProps = {}
 
 type StudySublistProps = {
   status: StudyStatus
   studies: Study[]
+  onAction: Function
 }
 
 const studyCardWidth = '253'
@@ -79,7 +79,6 @@ const useStyles = makeStyles(theme => ({
     fontSize: '1.4rem',
     textAlign: 'left',
   },
-
 }))
 
 const sections = [
@@ -105,9 +104,9 @@ type StudyListProps = StudyListOwnProps & RouteComponentProps
 const StudySublist: FunctionComponent<StudySublistProps> = ({
   studies,
   status,
+  onAction,
 }: StudySublistProps) => {
   const classes = useStyles()
-
   const item = sections.find(section => section.status === status)!
   return (
     <>
@@ -124,7 +123,10 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
               variant="body2"
               href={`/studies/builder/${study.identifier}/session-creator`}
             >
-              <StudyCard study={study}></StudyCard>
+              <StudyCard
+                study={study}
+                onDelete={(id: Study) => onAction(id.identifier, 'DELETE')}
+              ></StudyCard>
             </Link>
           ))}
       </Box>
@@ -152,6 +154,20 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     setStudies([...studies, newStudy])
     const x = await StudyService.saveStudy(newStudy)
     setStudies(x)
+  }
+
+  const onAction = async (type: string, studyId: string) => {
+    console.log('hi'+studyId+ type)
+    switch (type) {
+      case 'DELETE':
+        const s = await StudyService.removeStudy(studyId)
+        console.log(studies.length)
+        console.log(s.length)
+        setStudies(s)
+        return
+      default: {
+      }
+    }
   }
 
   const isSelectedFilter = (filter: StudyStatus) =>
@@ -186,8 +202,6 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   return (
     <Container maxWidth="xl" className={classes.studyContainer}>
-
-
       <Box display="flex" justifyContent="space-between">
         <ul className={classes.filters} aria-label="filters">
           <li className={classes.filterItem}>View by:</li>
@@ -219,7 +233,11 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       <Divider className={classes.divider}></Divider>
       {statusFilters.map((status, index) => (
         <>
-          <StudySublist studies={studies} status={status} />
+          <StudySublist
+            studies={studies}
+            status={status}
+            onAction={(type: string, id: string) => onAction( id, type)}
+          />
           {index < 2 && <Divider className={classes.divider}></Divider>}
         </>
       ))}

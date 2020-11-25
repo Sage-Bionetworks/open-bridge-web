@@ -15,9 +15,10 @@ const StudyService = {
   getStudies,
   getStudy,
   saveStudy,
+  removeStudy,
   getStudySessions,
   saveStudySessions,
-  getStudyArms
+  getStudyArms,
 }
 
 async function getStudies(): Promise<Study[]> {
@@ -64,7 +65,9 @@ async function getStudySessions(
   studyId: string,
 ): Promise<StudySession[] | undefined> {
   let sessions = await getAllStudySessions()
-  return sessions?.filter(s => s.studyId === studyId).map((s, index)=> ({...s, order: index}))
+  return sessions
+    ?.filter(s => s.studyId === studyId)
+    .map((s, index) => ({ ...s, order: index }))
 }
 
 async function saveStudy(study: Study): Promise<Study[]> {
@@ -77,9 +80,14 @@ async function saveStudy(study: Study): Promise<Study[]> {
   } else {
     newStudies = [...studies, study]
   }
-
   const result = await setItem(KEYS.STUDIES, newStudies)
+  return result
+}
 
+async function removeStudy(studyId: string): Promise<Study[]> {
+  const studies = (await getStudies()) || []
+  const newStudies = studies.filter(s => s.identifier !== studyId)
+  const result = await setItem(KEYS.STUDIES, newStudies)
   return result
 }
 
@@ -97,7 +105,7 @@ async function saveStudySessions(
 
 async function getStudyArms(studyId: string): Promise<StudyArm[]> {
   let result
- /* let studyArms = await getItem<StudyArm[]>(KEYS.STUDY_ARMS)
+  /* let studyArms = await getItem<StudyArm[]>(KEYS.STUDY_ARMS)
   let result =  studyArms?.filter(sa => sa.studyId === studyId)
  if(!result || result.length === 0){*/
   const sessions = await getStudySessions(studyId)
@@ -115,9 +123,8 @@ async function getStudyArms(studyId: string): Promise<StudyArm[]> {
     schedule,
   }
   result = [newStudyArm]
-//}
-result[0] = {...result[0], active: true}
-
+  //}
+  result[0] = { ...result[0], active: true }
 
   return result
 }
