@@ -35,7 +35,7 @@ const ObjectDebug: React.FunctionComponent<ObjectDebugProps> = ({
           <Typography>{label}</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography>
+          <Typography component="div">
             <pre>{JSON.stringify(data, null, 2)}</pre>
           </Typography>
         </AccordionDetails>
