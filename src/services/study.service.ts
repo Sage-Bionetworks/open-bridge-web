@@ -74,8 +74,9 @@ async function saveStudy(study: Study): Promise<Study[]> {
   const studies = (await getStudies()) || []
   let newStudies: Study[]
   if (studies.find(_study => _study.identifier == study.identifier)) {
+    //if study exist
     newStudies = studies.map(_study =>
-      _study.identifier === study.identifier ? _study : study,
+      _study.identifier === study.identifier ? study : _study,
     )
   } else {
     newStudies = [...studies, study]

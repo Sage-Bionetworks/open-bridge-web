@@ -10,103 +10,167 @@ import clsx from 'clsx'
 import { Study } from '../../types/types'
 import { ThemeType } from '../../style/theme'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
-import { Box, IconButton, Menu, MenuItem } from '@material-ui/core'
+import { Box, IconButton, Menu, MenuItem, TextField } from '@material-ui/core'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
+import EditableTextbox from '../widgets/EditableTextbox'
+
+const DraftIcon = () => {
+  return (
+    <Box
+      width="100%"
+      height="4px"
+      borderRadius="5px"
+      bgcolor="#C4C4C4"
+      position="relative"
+    >
+      <Box
+        width="20%"
+        height="4px"
+        borderRadius="5px 0 0 5px"
+        bgcolor="#3E3030"
+        position="absolute"
+      ></Box>
+    </Box>
+  )
+}
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
     width: '253px',
     height: '188px',
     border: '1px solid gray',
+    position: 'relative',
   },
 
   title: {
     fontSize: 14,
     color: theme.testColor,
   },
-  pos: {
-    marginBottom: 12,
-  },
 }))
 
-type StudyCardOwnProps = {
-  study: Study
-  onDelete?: Function
+const cancelPropagation = (e: React.MouseEvent) => {
+  e.stopPropagation()
+  e.preventDefault()
 }
 
-type StudyCardProps = StudyCardOwnProps
+const CardBottom: FunctionComponent<{ study: Study }> = ({
+  study,
+}: {
+  study: Study
+}) => {
+  return (
+    <Box
+      display="flex"
+      textAlign="left"
+      paddingTop="8px"
+      position="absolute"
+      bottom="8px"
+      left="8px"
+      right="8px"
+    >
+      {study.identifier}
+    </Box>
+  )
+}
 
-const StudyCard: FunctionComponent<StudyCardProps> = ({ study, onDelete }) => {
+const CardTop: FunctionComponent<StudyCardProps> = ({
+  study,
+  onSetAnchor,
+}: StudyCardProps) => {
+  return (
+    <Box display="flex" textAlign="left" paddingTop="8px">
+      {study.status !== 'COMPLETED' && (
+        <IconButton
+          style={{ padding: '0' }}
+          onClick={e => {
+            cancelPropagation(e)
+            onSetAnchor(e.currentTarget)
+          }}
+        >
+          <MoreVertIcon />
+        </IconButton>
+      )}
+      {study.status}
+    </Box>
+  )
+}
+
+type StudyCardProps = {
+  study: Study
+  onSetAnchor: Function
+  isRename?: boolean
+  onRename?: Function
+}
+
+const StudyCard: FunctionComponent<StudyCardProps> = ({
+  study,
+  onSetAnchor,
+  isRename,
+  onRename,
+}) => {
   const classes = useStyles()
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const handleMenuClose = () => {
-    setAnchorEl(null)
-  }
-  const closeConfirmationDialog = () => {
-    setIsConfirmDeleteOpen(false)
-    setAnchorEl(null)
-  }
-  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
-  // const bull = <span className={classes.bullet}>•</span>
+  const input = React.createRef<HTMLInputElement>()
 
-  //console.log('className', className)
-
+  const handleKeyDown = (
+    event: React.KeyboardEvent,
+    name: string | undefined,
+  ) => {
+    if (!onRename) {
+      return
+    }
+    const { key } = event
+    const keys = ['Escape', 'Tab']
+    const enterKey = 'Enter'
+    const allKeys = [...keys, enterKey]
+    console.log(key)
+    if (key === 'Escape') {
+      onRename(study.name)
+    }
+    if (key === 'Tab' || key === enterKey) {
+      onRename(name)
+    }
+  }
   return (
     <>
-      <Card className={classes.root}>
-        <Box display="flex" textAlign="left" paddingTop="8px">
-          <IconButton
-            style={{ padding: '0' }}
-            onClick={e => {
-              e.stopPropagation()
-              e.preventDefault()
-              setAnchorEl(e.currentTarget)
-            }}
-          >
-            <MoreVertIcon />
-          </IconButton>
-          {study.status}
-        </Box>
+      <Card
+        className={classes.root}
+        onClick={e => {
+          if (isRename) {
+            cancelPropagation(e)
+          }
+        }}
+      >
+        <>
+          <CardTop study={study} onSetAnchor={onSetAnchor}></CardTop>
+        </>
         <CardContent>
-          <Typography variant="h6" color="textSecondary" gutterBottom>
-            {study.name}
-          </Typography>
+          <div>
+            {!isRename && (
+              <Typography variant="h6" color="textSecondary" gutterBottom>
+                {study.name}
+              </Typography>
+            )}
+            {isRename && (
+              <TextField
+                variant="outlined"
+                defaultValue={study.name}
+                size="small"
+                style={{ marginBottom: '16px' }}
+                inputRef={input}
+                onBlur={e => onRename && onRename(input.current?.value)}
+                onKeyDown={e => handleKeyDown(e, input.current?.value)}
+                onClick={e => cancelPropagation(e)}
+              />
+            )}
+          </div>
+
+          {study.status === 'DRAFT' && <DraftIcon />}
           <Typography className={classes.title} color="textSecondary">
             {study.description}
           </Typography>
         </CardContent>
-        <Menu
-          id="simple-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={handleMenuClose}>View</MenuItem>
-          <MenuItem onClick={handleMenuClose}>Duplicate study</MenuItem>
-          <MenuItem onClick={handleMenuClose}>Rename study</MenuItem>
-          {onDelete && (
-            <MenuItem onClick={() => setIsConfirmDeleteOpen(true)}>
-              Delete study
-            </MenuItem>
-          )}
-          <MenuItem onClick={handleMenuClose}>Create version</MenuItem>
-        </Menu>
+        <CardBottom study={study}></CardBottom>
       </Card>
-      <ConfirmationDialog
-        isOpen={isConfirmDeleteOpen}
-        title={'Delete Study'}
-        type={'DELETE'}
-        onCancel={closeConfirmationDialog}
-        onConfirm={() => {
-          closeConfirmationDialog()
-          onDelete!(study)
-        }}
-      >
-        <div>
-          Are you sure you would like to permanently delete: <p>{study.name}</p>
-        </div>
-      </ConfirmationDialog>
     </>
   )
 }

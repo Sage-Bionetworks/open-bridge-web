@@ -9,13 +9,13 @@ import {
   Button,
   Container,
   Divider,
-  List,
-  ListItem,
   makeStyles,
-  Typography,
+  Menu,
+  MenuItem,
 } from '@material-ui/core'
 import { getRandomId } from '../../helpers/utility'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
+import { MTBHeading } from '../widgets/Headings'
 
 type StudyListOwnProps = {}
 
@@ -23,7 +23,10 @@ type StudySublistProps = {
   status: StudyStatus
   studies: Study[]
   onAction: Function
+  renameStudyId: string
 }
+
+type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME'
 
 const studyCardWidth = '253'
 
@@ -31,8 +34,6 @@ const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
-    /*paddingTop: theme.spacing(4),*/
-    // margin: `0 ${theme.spacing(4)}px`,
   },
   studyContainer: {
     padding: theme.spacing(1),
@@ -49,7 +50,6 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(0),
     gridTemplateColumns: `repeat(auto-fill,${studyCardWidth}px)`,
     gridColumnGap: theme.spacing(2),
-    justifyContent: 'center',
     gridRowGap: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
       padding: theme.spacing(3),
@@ -57,7 +57,6 @@ const useStyles = makeStyles(theme => ({
       gridRowGap: theme.spacing(4),
     },
 
-    //   style={{ maxWidth: `${(300 + 8) * 5}px`, margin: '0 auto' }}
   },
   divider: {
     margin: `${theme.spacing(1)}px 0 ${theme.spacing(5)}px 0`,
@@ -67,17 +66,11 @@ const useStyles = makeStyles(theme => ({
     listStyle: 'none',
     alignSelf: 'flex-end',
     margin: '0',
+    paddingLeft: 0,
   },
 
   filterItem: {
     display: 'inline-block',
-  },
-
-  subtitle: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    fontSize: '1.4rem',
-    textAlign: 'left',
   },
 }))
 
@@ -104,31 +97,44 @@ type StudyListProps = StudyListOwnProps & RouteComponentProps
 const StudySublist: FunctionComponent<StudySublistProps> = ({
   studies,
   status,
+  //onSetAnchor,
+  renameStudyId,
   onAction,
 }: StudySublistProps) => {
   const classes = useStyles()
   const item = sections.find(section => section.status === status)!
+  const displayStudies = studies.filter(study => study.status === status)
+
+  if (!displayStudies.length) {
+    return <></>
+  }
   return (
     <>
-      <Typography variant="subtitle1" className={classes.subtitle}>
+      <MTBHeading variant={'h2'} align={'left'}>
+        {' '}
         {item.title}
-      </Typography>
+      </MTBHeading>
+
       <Box className={classes.cardGrid}>
-        {studies
-          .filter(study => study.status === status)
-          .map(study => (
-            <Link
-              style={{ textDecoration: 'none' }}
-              key={study.identifier}
-              variant="body2"
-              href={`/studies/builder/${study.identifier}/session-creator`}
-            >
-              <StudyCard
-                study={study}
-                onDelete={(id: Study) => onAction(id.identifier, 'DELETE')}
-              ></StudyCard>
-            </Link>
-          ))}
+        {displayStudies.map(study => (
+          <Link
+            style={{ textDecoration: 'none' }}
+            key={study.identifier}
+            variant="body2"
+            href={`/studies/builder/${study.identifier}/session-creator`}
+          >
+            <StudyCard
+              study={study}
+              onRename={(newName: string) => {
+                onAction({ ...study, name: newName }, 'RENAME')
+              }}
+              isRename={renameStudyId === study.identifier}
+              onSetAnchor={(e: HTMLElement) => {
+                onAction(study, 'ANCHOR', e)
+              }}
+            ></StudyCard>
+          </Link>
+        ))}
       </Box>
     </>
   )
@@ -136,7 +142,21 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
 
 const StudyList: FunctionComponent<StudyListProps> = () => {
   const [studies, setStudies] = React.useState<Study[]>([])
+  const [menuAnchor, setMenuAnchor] = React.useState<null | {
+    study: Study
+    anchorEl: HTMLElement
+  }>(null)
+  const [renameStudyId, setRenameStudyId] = React.useState('')
   const classes = useStyles()
+  // const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const handleMenuClose = () => {
+    setMenuAnchor(null)
+  }
+  const closeConfirmationDialog = () => {
+    setIsConfirmDeleteOpen(false)
+    setMenuAnchor(null)
+  }
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
 
   const [statusFilters, setStatusFilters] = React.useState<StudyStatus[]>(
     sections.map(section => section.status),
@@ -149,22 +169,43 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     const newStudy: Study = {
       identifier: getRandomId(),
       status: 'DRAFT' as StudyStatus,
-      name: 'Untitled',
+      name: 'Untitled Study',
     }
     setStudies([...studies, newStudy])
     const x = await StudyService.saveStudy(newStudy)
     setStudies(x)
   }
 
-  const onAction = async (type: string, studyId: string) => {
-    console.log('hi'+studyId+ type)
+  const onAction = async (study: Study, type: StudyAction) => {
+    handleMenuClose()
+    let result
     switch (type) {
+      case 'RENAME':
+        setStudies(
+          studies.map(s => (s.identifier !== study.identifier ? s : study)),
+        )
+        console.log('studies', studies)
+        result = await StudyService.saveStudy(study)
+        setStudies(result)
+        setRenameStudyId('')
+        return
+
       case 'DELETE':
-        const s = await StudyService.removeStudy(studyId)
+        const s = await StudyService.removeStudy(study.identifier)
         console.log(studies.length)
         console.log(s.length)
         setStudies(s)
         return
+      case 'DUPLICATE':
+        //const study = studies.find(s => s.identifier === tudy.identifier)
+        const newStudy = {
+          ...study!,
+          identifier: getRandomId(),
+          name: `Copy of ${study!.name}`,
+        }
+        setStudies([...studies, newStudy])
+        result = await StudyService.saveStudy(newStudy)
+        setStudies(result)
       default: {
       }
     }
@@ -201,7 +242,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   }, [])
 
   return (
-    <Container maxWidth="xl" className={classes.studyContainer}>
+    <Container maxWidth="lg" className={classes.studyContainer}>
       <Box display="flex" justifyContent="space-between">
         <ul className={classes.filters} aria-label="filters">
           <li className={classes.filterItem}>View by:</li>
@@ -214,7 +255,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             </Button>
           </li>
           {sections.map(section => (
-            <li className={classes.filterItem}>
+            <li className={classes.filterItem} key={section.status}>
               <Button
                 onClick={() => setStatusFilters([section.status])}
                 style={{
@@ -231,16 +272,72 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         </Button>
       </Box>
       <Divider className={classes.divider}></Divider>
-      {statusFilters.map((status, index) => (
-        <>
-          <StudySublist
-            studies={studies}
-            status={status}
-            onAction={(type: string, id: string) => onAction( id, type)}
-          />
-          {index < 2 && <Divider className={classes.divider}></Divider>}
-        </>
-      ))}
+      {studies.length === 0 && (
+        <div>
+          You currently have no studies created. To begin, please click on
+          Create New Study.
+        </div>
+      )}
+      {studies.length > 0 &&
+        statusFilters.map((status, index) => (
+          <Box style={{ paddingBottom: index < 2 ? '24px' : '0' }} key={status}>
+            <StudySublist
+              studies={studies}
+              renameStudyId={renameStudyId}
+              status={status}
+              onAction={(s: Study, action: StudyAction, e: any) => {
+                action === 'ANCHOR'
+                  ? setMenuAnchor({ study: s, anchorEl: e })
+                  : onAction(s, action)
+              }}
+            />
+            {/*index < 2 && <Divider className={classes.divider}></Divider>*/}
+          </Box>
+        ))}
+
+      <Menu
+        id="simple-menu"
+        anchorEl={menuAnchor?.anchorEl}
+        keepMounted
+        open={Boolean(menuAnchor?.anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={handleMenuClose}>View</MenuItem>
+        {menuAnchor?.study.status === 'DRAFT' && (
+          <MenuItem
+            onClick={() => {
+              setRenameStudyId(menuAnchor?.study.identifier)
+              handleMenuClose()
+            }}
+          >
+            Rename study
+          </MenuItem>
+        )}
+
+        <MenuItem onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>
+          Duplicate study
+        </MenuItem>
+
+        <MenuItem onClick={() => setIsConfirmDeleteOpen(true)}>
+          Delete study
+        </MenuItem>
+      </Menu>
+
+      <ConfirmationDialog
+        isOpen={isConfirmDeleteOpen}
+        title={'Delete Study'}
+        type={'DELETE'}
+        onCancel={closeConfirmationDialog}
+        onConfirm={() => {
+          closeConfirmationDialog()
+          onAction(menuAnchor!.study, 'DELETE')
+        }}
+      >
+        <div>
+          Are you sure you would like to permanently delete:{' '}
+          <p>{menuAnchor?.study.name}</p>
+        </div>
+      </ConfirmationDialog>
     </Container>
   )
 }

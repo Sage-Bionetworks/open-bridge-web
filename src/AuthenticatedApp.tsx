@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react'
-import Header from './components/widgets/Header'
+import TopNav from './components/widgets/AppTopNav'
 
 import './App.css'
 
@@ -21,7 +21,7 @@ const AuthenticatedApp: FunctionComponent<{ token: string }> = ({ token }) => {
   return (
     <>
       {!inStudy(location.pathname) && (
-        <Header routes={PrivateRoutes} token={token} />
+        <TopNav routes={PrivateRoutes} token={token} />
       )}
       <main>
         <Switch>

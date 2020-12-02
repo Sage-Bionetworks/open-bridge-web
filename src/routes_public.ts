@@ -33,6 +33,13 @@ export default [
     Component: Plans,
     exact: true,
   },
+  {
+    path: '/layouts',
+    name: '',
+    Component: SessionsLayout,
+    exact: true,
+  },
+
 
   {
     path: '/development-team',

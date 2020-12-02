@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import Header from './components/widgets/Header'
 import UserService from './services/user.service'
 
 import './App.css'
