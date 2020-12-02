@@ -13,7 +13,7 @@ import {
   Paper,
 } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/Menu'
-import AccountLogin from './../account/AccountLogin'
+import AccountLogin from '../account/AccountLogin'
 
 import Logout from '../account/Logout'
 import Logo from '../../assets/logo_mtb.svg'
@@ -98,7 +98,7 @@ const useStyles = makeStyles(theme => ({
     margin: '20px 0px',
     backgroundColor: '#2A2A2A',
   },
-  drawerHeader: {
+  /*drawerHeader: {
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(0, 1),
@@ -111,19 +111,19 @@ const useStyles = makeStyles(theme => ({
   },
   drawerCloseIcon: {
     color: '#2A2A2A',
-  },
+  },*/
   drawerPaper: {
     width: drawerWidth,
   },
 }))
 
-type HeaderProps = {
+type AppTopNavProps = {
   routes: { name: string; path: string; isRhs?: boolean }[]
   token?: string
 }
 
 const MenuLinks: FunctionComponent<
-  HeaderProps & {
+  AppTopNavProps & {
     className: string
     activeClassName: string
   }
@@ -145,7 +145,7 @@ const MenuLinks: FunctionComponent<
 }
 
 const MenuLinksRhs: FunctionComponent<
-  HeaderProps & {
+  AppTopNavProps & {
     className: string
     activeClassName: string
   }
@@ -173,12 +173,12 @@ const MenuLinksRhs: FunctionComponent<
   return <>{links}</>
 }
 
-const Header: FunctionComponent<HeaderProps> = ({
+const AppTopNav: FunctionComponent<AppTopNavProps> = ({
   routes,
 
   token,
   ...props
-}: HeaderProps) => {
+}: AppTopNavProps) => {
   const classes = useStyles()
   const [isSignInOpen, setIsSignInOpen] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
@@ -315,4 +315,4 @@ const Header: FunctionComponent<HeaderProps> = ({
   )
 }
 
-export default Header
+export default AppTopNav

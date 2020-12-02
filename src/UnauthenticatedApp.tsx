@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import Header from './components/widgets/Header'
+import TopNav from './components/widgets/AppTopNav'
 
 import './App.css'
 
@@ -10,7 +10,7 @@ import PublicRoutes from './routes_public'
 function UnauthenticatedApp() {
   return (
     <>
-      <Header  routes={PublicRoutes} />
+      <TopNav  routes={PublicRoutes} />
       <main>
         <Switch>
           {PublicRoutes.map(({ path, Component }, key) => (
