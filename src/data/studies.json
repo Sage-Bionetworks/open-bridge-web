@@ -2,35 +2,35 @@
   "data": [
     {
       "identifier": "5476c92a",
-      "name": "someStudy",
+      "name": "someStudy1",
       "description": "loremIpsum",
       "status": "DRAFT"
 
     },
     {
       "identifier": "5476c92c1",
-      "name": "anotherStudy",
+      "name": "anotherStudy1",
       "description": "loremIpsum dolor",
       "status": "DRAFT"
       
     },
     {
       "identifier": "5476c92c2",
-      "name": "anotherStudy",
+      "name": "anotherStudy2",
       "description": "loremIpsum dolor",
       "status": "ACTIVE"
       
     },
     {
       "identifier": "5476c92c3",
-      "name": "anotherStudy",
+      "name": "anotherStudy3",
       "description": "loremIpsum dolor",
       "status": "ACTIVE"
       
     },
     {
       "identifier": "5476c92c4",
-      "name": "anotherStudy",
+      "name": "anotherStudy4",
       "description": "loremIpsum dolor",
       "status": "COMPLETED"
       
