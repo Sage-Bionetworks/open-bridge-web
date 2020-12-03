@@ -187,7 +187,7 @@ export type Study = {
   name: string
   subtitle?: string
   description?: string
-  studyDuration?: StudyDuration
+  studyDuration?: StudyDuration 
  // sessions: StudySession[]
 
 }

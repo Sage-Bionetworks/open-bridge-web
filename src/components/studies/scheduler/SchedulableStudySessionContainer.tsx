@@ -67,8 +67,9 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   const defaultSchedule: SessionSchedule = {
     startDate: {
       type: 'DAY1',
+
     },
-    reoccurance: { unit: 'DAY', frequency: 1 },
+    reoccurance: '', //'P1D', //{ unit: 'd', frequency: 1 },
     windows: [],
     endDate: {
       type: 'END_STUDY',
@@ -86,7 +87,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     const newState = { ...schedulableSession }
     newState.windows.push({
       startHour: 5,
-      end: { endQuantity: 17, endUnit: 'DAY' },
+      end: { endQuantity: 17, endUnit: 'd' },
     })
     setSchedulableSession(newState)
   }
@@ -150,8 +151,10 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               <Box className={classes.formSection}>
                 <StartDate
                   startDate={schedulableSession.startDate}
-                  onChange={(startDate: StartDateType) =>
+                  onChange={(startDate: StartDateType) => {
+                    console.log('!shcing start to', startDate)
                     setSchedulableSession(prev => ({ ...prev, startDate }))
+                  }
                   }
                 ></StartDate>
               </Box>

@@ -15,6 +15,8 @@ import SelectWithEnum from '../../widgets/SelectWithEnum'
 import { DWMYEnum, Reoccurance } from '../../../types/scheduling'
 import SchedulingFormSection from './SchedulingFormSection'
 import SmallTextBox from './SmallTextBox'
+import moment, { DurationInputObject } from 'moment'
+import Duration from './Duration'
 
 const useStyles = makeStyles((theme: Theme) => createStyles({}))
 
@@ -30,35 +32,16 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
   const classes = useStyles()
 
   return (
-    <SchedulingFormSection label={"Repeat session every:"}>
+    <SchedulingFormSection label={'Repeat session every:'}>
       <FormControlLabel
         control={
-          <>
-            <SmallTextBox
-              value={repeatFrequency.frequency}
-              type="number"
-              id="frequency"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                onChange({
-                  ...repeatFrequency,
-                  frequency: Number(e.target.value as string),
-                })
-              }
-            ></SmallTextBox>
-
-            <SelectWithEnum
-              aria-label="Repeat Every"
-              value={repeatFrequency.unit}
-              sourceData={DWMYEnum}
-              id="frequencyunit"
-              onChange={e =>
-                onChange({
-                  ...repeatFrequency,
-                  unit: e.target.value as keyof typeof DWMYEnum,
-                })
-              }
-            ></SelectWithEnum>
-          </>
+          <Duration
+            onChange={e => {console.log(e); onChange(e)}}
+            durationString={repeatFrequency || '    '}
+            unitLabel="Repeat Every"
+            numberLabel="frequency number"
+            unitData={DWMYEnum}
+          ></Duration>
         }
         label=""
       />
