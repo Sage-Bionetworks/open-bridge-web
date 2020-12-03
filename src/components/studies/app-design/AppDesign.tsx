@@ -1,20 +1,12 @@
-import React, {
-
-  useState,
-
-  ChangeEvent,
-} from 'react'
-
+import React, { useState, ChangeEvent } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
+import { useErrorHandler } from 'react-error-boundary'
 
-import { useAsync } from '../../../helpers/AsyncHook'
 import { StudySection } from '../sections'
-import StudyService from '../../../services/study.service'
+
 import {
   Box,
   Button,
-  Card,
   CircularProgress,
   Divider,
   Paper,
@@ -23,10 +15,11 @@ import {
 } from '@material-ui/core'
 import { ThemeType } from '../../../style/theme'
 //import { ReactComponent as PhoneBg } from '../../../assets/phone_bg.svg'
-import PhoneBg  from '../../../assets/phone_bg.svg'
+import PhoneBg from '../../../assets/phone_bg.svg'
 import { BorderTopRounded } from '@material-ui/icons'
 import { bytesToSize } from '../../../helpers/utility'
 import ReactColorPicker from '@super-effective/react-color-picker'
+import { useStudy } from '../../../helpers/hooks'
 
 const topBarHeight = '48px'
 
@@ -38,7 +31,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     display: 'flex',
   },
   phone: {
-    backgroundImage: 'url(' +  PhoneBg  + ')',
+    backgroundImage: 'url(' + PhoneBg + ')',
     width: '308px',
     height: '635px',
     backgroundRepeat: 'no-repeat',
@@ -91,9 +84,6 @@ type UploadedFile = {
 }
 
 export interface AppDesignProps {
-  //use the following version instead if you need access to router props
-  //export interface AppDesignProps  extends  RouteComponentProps {
-  //Enter your props here
   id: string
   section: StudySection
 }
@@ -109,18 +99,12 @@ function getPreviewForImage(file: File): PreviewFile {
 }
 
 const AppDesign: React.FunctionComponent<AppDesignProps> = ({
-  id,
-  section,
+  id
 }: AppDesignProps) => {
   const handleError = useErrorHandler()
   const classes = useStyles()
-  //if you need search params use the following
-  //const { param } = useParams<{ param: string}>()
-  //<T> is the type of data you are retrieving
-  const { data, status, error, run, setData } = useAsync<any>({
-    status: 'PENDING',
-    data: null,
-  })
+
+  const { data, status, error } = useStudy(id)
 
   const [color, setColor] = useState<string | undefined>()
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
@@ -165,13 +149,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     return getUploadButton('Upload')
   }
 
-  React.useEffect(() => {
-    if (!id) {
-      return
-    }
-    ///your async call
-    return run(StudyService.getStudy(id))
-  }, [id, run])
+
   if (status === 'PENDING') {
     return <>loading component here</>
   } else if (status === 'REJECTED') {

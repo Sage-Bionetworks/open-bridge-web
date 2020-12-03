@@ -40,24 +40,21 @@ import { DWMYsEnum, StudyDuration, HDWMEnum } from '../../../types/scheduling'
 import SmallTextBox from './SmallTextBox'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import { poppinsFont } from '../../../style/theme'
-
+import Duration from './Duration'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     labelDuration: {
       paddingTop: theme.spacing(1),
       paddingRight: theme.spacing(2),
-   
+
       fontFamily: poppinsFont,
       fontSize: '18px',
       fontStyle: 'normal',
       fontWeight: 600,
     },
-  
   }),
 )
-
-
 
 type SchedulerOwnProps = {
   //studySessions: StudySession[]
@@ -125,6 +122,7 @@ SchedulerOwnProps) => {
     }
     return getStudy(
       StudyService.getStudy(id).then(study => {
+        console.log('duration', study?.studyDuration)
         return study?.studyDuration || {}
       }),
     )
@@ -168,21 +166,6 @@ SchedulerOwnProps) => {
     setData(x)
   }
 
-  const updateStudyDuration = (
-    quantity?: number,
-    unit?: keyof typeof DWMYsEnum,
-  ) => {
-    const duration = studyDuration
-      ? { ...studyDuration }
-      : ({} as StudyDuration)
-    if (quantity) {
-      duration.quantity = quantity
-    }
-    if (unit) {
-      duration.unit = unit
-    }
-    setStudyDuration(duration)
-  }
 
   if (!studyArms) {
     return <h1>Please add some sessions to this study</h1>
@@ -191,34 +174,26 @@ SchedulerOwnProps) => {
   return (
     <div>
       <FormControlLabel
-      classes={{label: classes.labelDuration}}
-        control={
-          <>
-            <SelectWithEnum
-              value={studyDuration?.unit}
-              sourceData={HDWMEnum}
-              id="offsetUnit"
-              onChange={e =>
-                //@ts-ignore
-                updateStudyDuration(undefined, e.target.value)
-              }
-            ></SelectWithEnum>
-            <SmallTextBox
-              value={studyDuration?.quantity || ''}
-              type="number"
-              onChange={(e: any) =>
-                updateStudyDuration(e.target.value, undefined)
-              }
-            />
-          </>
-        }
+        classes={{ label: classes.labelDuration }}
         label="Study Duration"
-        style={{fontSize: '16px'}}
+        style={{ fontSize: '16px' }}
         labelPlacement="start"
+        control={
+      
+            <Duration
+              onChange={e => setStudyDuration(e)}
+              durationString={studyDuration || ''}
+              unitLabel="study duration unit"
+              numberLabel="study duration number"
+              unitData={HDWMEnum}
+            ></Duration>
+      
+        }
+    
       />
 
       {/*<ObjectDebug label="groups" data={studyArms}></ObjectDebug>*/}
-      {studyDuration?.quantity !== undefined && studyDuration.unit && (
+      {studyDuration && (
         <>
           <GroupsEditor
             studyArms={studyArms}
@@ -293,7 +268,7 @@ SchedulerOwnProps) => {
                 </SchedulingFormSection>
 
                 {studyArm.schedule.sessions.map((session, index) => (
-                  <Box>
+                  <Box key={session.id}>
                     <SchedulableSingleSessionContainer
                       key={session.id}
                       studySession={session}

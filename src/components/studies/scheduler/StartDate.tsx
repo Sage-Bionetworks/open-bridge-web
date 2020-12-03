@@ -21,6 +21,7 @@ import {
 import SchedulingFormSection from './SchedulingFormSection'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import SmallTextBox from './SmallTextBox'
+import Duration from './Duration'
 
 const useStyles = makeStyles((theme: Theme) => createStyles({}))
 
@@ -35,25 +36,17 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
 }: StartDateProps) => {
   const classes = useStyles()
 
+
   const changeStartDate = (type: SessionScheduleStartType) => {
     if (type === 'DAY1') {
-      onChange({ type: 'DAY1' })
+
+      onChange({ type: 'DAY1', offset: undefined })
     } else {
       onChange({ ...startDate, type })
     }
   }
 
-  const changeStartDateOffsetNumber = (days: string) => {
-
-    if (isNaN(Number.parseInt(days))|| parseInt(days) < 1) {
-      return
-    }
-
-    onChange({
-      ...startDate,
-      offsetNumber: Number(days),
-    })
-  }
+  
 
   return (
     <SchedulingFormSection label={'Session Starts On:'}>
@@ -70,27 +63,19 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
           control={
             <>
               <Radio value={'NDAYS_DAY1'} />{' '}
-              <SmallTextBox
-                type="number"
-                onChange={(e: any) =>
-                  changeStartDateOffsetNumber(e.target.value)
-                }
-                value={startDate.offsetNumber || ''}
+              <Duration
                 onFocus={() => changeStartDate('NDAYS_DAY1')}
-              />
-              
-              <SelectWithEnum
-                value={startDate.offsetUnit}
-                sourceData={HDWMEnum}
-                id="offsetUnit"
-                onFocus={() => changeStartDate('NDAYS_DAY1')}
-                onChange={e =>
+                onChange={e => {
                   onChange({
                     ...startDate,
-                    offsetUnit: e.target.value,
+                    offset: e,
                   })
-                }
-              ></SelectWithEnum>
+                }}
+                durationString={startDate.offset}
+                unitLabel="Repeat Every"
+                numberLabel="frequency number"
+                unitData={HDWMEnum}
+              ></Duration>
             </>
           }
           label="from Day 1"

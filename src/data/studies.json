@@ -4,7 +4,8 @@
       "identifier": "5476c92a",
       "name": "someStudy1",
       "description": "loremIpsum",
-      "status": "DRAFT"
+      "status": "DRAFT",
+      "studyDuration": "P3M"
 
     },
     {

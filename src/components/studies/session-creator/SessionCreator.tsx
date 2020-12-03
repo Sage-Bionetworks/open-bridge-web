@@ -28,6 +28,7 @@ import { useAsync } from '../../../helpers/AsyncHook'
 
 import { StudySection } from '../sections'
 import NavButtons from '../NavButtons'
+import { useStudy, useStudySessions } from '../../../helpers/hooks'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -62,17 +63,14 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type SessionCreatorProps = {
-  //studyGroups?: Group[]
   id: string
   section: StudySection
-  // studySessions: StudySession[]
 }
 
 const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   section,
   id,
-}: //studySessions,
-SessionCreatorProps) => {
+}: SessionCreatorProps) => {
   const classes = useStyles()
 
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
@@ -80,14 +78,7 @@ SessionCreatorProps) => {
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
   const [hasObjectChanged, setHasObjectChanged] = useState(false)
-
-  const { data: sessions, status, error, run, setData } = useAsync<
-    StudySession[]
-  >({
-    status: 'IDLE',
-    data: [],
-  })
-
+  const { data: sessions, status, error, run, setData } = useStudySessions(id)
   const handleError = useErrorHandler()
 
   const sessionsUpdateFn = (action: SessionAction) => {
@@ -95,13 +86,6 @@ SessionCreatorProps) => {
     setHasObjectChanged(true)
     setData(newState)
   }
-
-  React.useEffect(() => {
-    if (!id) {
-      return
-    }
-    return run(StudyService.getStudySessions(id).then(sessions => sessions))
-  }, [id, run])
 
   if (status === 'REJECTED') {
     handleError(error!)

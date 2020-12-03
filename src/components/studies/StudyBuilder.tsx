@@ -21,6 +21,7 @@ import { TurnedInNotOutlined } from '@material-ui/icons'
 import StudyTopNav from './StudyTopNav'
 import NavButtons from './NavButtons'
 import AppDesign from './app-design/AppDesign'
+import { useStudy } from '../../helpers/hooks'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   mainAreaWrapper: {
@@ -63,19 +64,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
   const handleError = useErrorHandler()
   let { id, section } = useParams<{ id: string; section: StudySection }>()
 
-  const { data: study, status, error, run } = useAsync<Study>({
-    status: id ? 'PENDING' : 'IDLE',
-    data: null,
-  })
+  const { data: study, status, error, } = useStudy(id)
 
   const [open, setOpen] = React.useState(true)
 
-  React.useEffect(() => {
-    if (!id) {
-      return
-    }
-    return run(StudyService.getStudy(id))
-  }, [id, run])
+
 
   if (status === 'IDLE') {
     return <>'no id'</>
@@ -87,10 +80,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
     }
   }
 
-  const getStudySessions = (study: Study) => {
-    //const sessions = study.groups.map(group => group.sessions).flat()
-    // return StudyService.getStudySessions()
-  }
+
 
   return (
     <>

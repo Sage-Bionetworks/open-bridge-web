@@ -5,32 +5,33 @@ export type SessionScheduleStartType =
 
 
 export enum HSsEnum {
-  HOUR = 'Hours',
-  DAY = 'Days'
+  h = 'Hours',
+  d = 'Days'
   }
 
 
 export type SessionScheduleEndType = 'END_STUDY' | 'N_OCCURENCES'
 
 export enum DWMYEnum {
-  DAY = 'Day',
-  WEEK = 'Week',
-  MONTH = 'Month',
-  YEAR = 'Year'
+  d = 'Day',
+  w = 'Week',
+ M = 'Month',
+  y = 'Year'
+
 }
 
 export enum DWMYsEnum {
-  DAY = 'Days',
-  WEEK = 'Weeks',
-  MONTH = 'Months',
-  YEAR = 'Years'
+  d = 'Days',
+  w = 'Weeks',
+  M = 'Months',
+  y = 'Years'
 }
 
 export enum HDWMEnum {
-  HOUR = 'Hour',
-  DAY = 'Day',
-  WEEK = 'Week',
-  MONTH = 'Month'
+  h= 'Hour',
+  d = 'Day',
+  w = 'Week',
+  M = 'Month'
   }
 
 /*export enum WeekdaysEnum {
@@ -83,16 +84,17 @@ export type AssessmentWindow = {
 
 }
 
-export type Reoccurance = {
+export type Reoccurance = string/*{
   unit: keyof typeof DWMYEnum
   frequency: number
  // days?: WeekdaysEnum[]
-}
+}*/
 
 export type StartDate = {
   type: SessionScheduleStartType
-  offsetNumber?: number
-  offsetUnit?: HDWMEnum
+ // offsetNumber?: number
+ // offsetUnit?: HDWMEnum
+ offset?: string
 }
 
 export type EndDate = {
@@ -104,10 +106,10 @@ export type EndDate = {
 
 
 
-export type StudyDuration = {
+export type StudyDuration =  string/*{
   unit:  keyof typeof DWMYsEnum
   quantity: number
-}
+}*/
 
 export type SessionSchedule = {
 

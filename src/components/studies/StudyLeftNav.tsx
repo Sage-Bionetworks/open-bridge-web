@@ -143,7 +143,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
       >
         <IconButton
           onClick={toggleDrawer}
-          style={{ borderRadius: 0, width: '48px', height: '100%;' }}
+          style={{ borderRadius: 0, width: '48px', height: '100%' }}
         >
           {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
