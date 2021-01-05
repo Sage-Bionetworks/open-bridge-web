@@ -104,6 +104,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   const classes = useStyles()
   const item = sections.find(section => section.status === status)!
   const displayStudies = studies.filter(study => study.status === status)
+  const studyLink =  status === 'DRAFT'? `/studies/builder/:id/session-creator` : `/studies/:id/participant-manager`
 
   if (!displayStudies.length) {
     return <></>
@@ -121,7 +122,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
             style={{ textDecoration: 'none' }}
             key={study.identifier}
             variant="body2"
-            href={`/studies/builder/${study.identifier}/session-creator`}
+            href={ studyLink.replace(':id', study.identifier)}
           >
             <StudyCard
               study={study}
