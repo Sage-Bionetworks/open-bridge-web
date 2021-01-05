@@ -16,6 +16,8 @@ import {
   FormControlLabel,
   Checkbox,
   Snackbar,
+  InputAdornment,
+  IconButton,
 } from '@material-ui/core'
 import Alert, { AlertProps } from '@material-ui/lab/Alert'
 
@@ -23,6 +25,7 @@ import {
   useSessionDataState,
   useSessionDataDispatch,
 } from '../../helpers/AuthContext'
+import { Visibility, VisibilityOff } from '@material-ui/icons'
 
 type AccountLoginOwnProps = {
   callbackFn: Function
@@ -57,8 +60,6 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-
-
 const loginWithSynapse = (event: any) => {
   // let payload = createPayload('appId');
   // let appKey = payload.appId;
@@ -69,7 +70,7 @@ const loginWithSynapse = (event: any) => {
   // storeService.set(ENVIRONMENT, self.environmentObs());
   let array = []
   array.push('response_type=code')
-  array.push('client_id=' +  UserService.getOathEnvironment().client)
+  array.push('client_id=' + UserService.getOathEnvironment().client)
   array.push('scope=openid')
   array.push('state=' + encodeURIComponent(state))
   array.push('redirect_uri=' + encodeURIComponent(document.location.origin))
@@ -103,6 +104,7 @@ const loginWithPassword = (event: FormEvent) => {}
 const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [isForgotPassword, setIsForgotPassword] = useState(false)
   const [alertMsg, setAlertMsg] = useState<
     { msg: string; type: AlertProps['severity'] } | undefined
@@ -192,11 +194,25 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
                 fullWidth
                 name="password"
                 label="Password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 id="password"
                 value={password}
                 onChange={event => setPassword(event.target.value)}
                 autoComplete="current-password"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => setShowPassword(!showPassword)}
+                        onMouseDown={e => e.preventDefault()}
+                        edge="end"
+                      >
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
               <FormControlLabel
                 control={<Checkbox value="remember" />}
