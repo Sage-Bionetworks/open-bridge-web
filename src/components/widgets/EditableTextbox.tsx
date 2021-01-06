@@ -51,7 +51,6 @@ export const Editable: FunctionComponent<EditableProps> = ({
     const keys = ['Escape', 'Tab']
     const enterKey = 'Enter'
     const allKeys = [...keys, enterKey]
-    console.log(key)
     if (key === 'Escape') {
       onReset()
     }
@@ -79,7 +78,7 @@ export const Editable: FunctionComponent<EditableProps> = ({
         </div>
       ) : (
         <div className={classes.wrapper} onClick={() => setEditing(true)}>
-          <WrapperElement style={{margin: 0}}>{text || placeholder || 'blah'}</WrapperElement>
+          <WrapperElement style={{margin: 0}}>{text || placeholder || ' '}</WrapperElement>
         </div>
       )}
     </section>
