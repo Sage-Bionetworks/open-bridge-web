@@ -8,6 +8,7 @@ import { Route, RouteComponentProps, useParams } from 'react-router-dom'
 import { Box, Button, Grid, Link } from '@material-ui/core'
 import { Switch, matchPath } from 'react-router-dom'
 import Scheduler from './scheduler/Scheduler'
+import Launch from './launch/Launch'
 import SessionCreator from './session-creator/SessionCreator'
 import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
@@ -64,11 +65,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
   const handleError = useErrorHandler()
   let { id, section } = useParams<{ id: string; section: StudySection }>()
 
-  const { data: study, status, error, } = useStudy(id)
+  const { data: study, status, error } = useStudy(id)
 
   const [open, setOpen] = React.useState(true)
-
-
 
   if (status === 'IDLE') {
     return <>'no id'</>
@@ -79,8 +78,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
       throw new Error('This session does not exist')
     }
   }
-
-
 
   return (
     <>
@@ -139,6 +136,13 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
                         return (
                           <AppDesign {...props} id={id} section={section} />
                         )
+                      }}
+                    />
+
+                    <Route
+                      path="/studies/builder/:id/launch"
+                      render={props => {
+                        return <Launch {...props} id={id} section={section} />
                       }}
                     />
                   </Switch>

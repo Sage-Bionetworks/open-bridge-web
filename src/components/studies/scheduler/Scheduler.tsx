@@ -27,6 +27,7 @@ import {
   Box,
   Button,
   createStyles,
+  Fab,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -80,6 +81,7 @@ SchedulerOwnProps) => {
       sessions: [],
     },
   }*/
+  const [hasObjectChanged, setHasObjectChanged] = useState(false)
   const handleError = useErrorHandler()
   const classes = useStyles()
   const {
@@ -148,6 +150,7 @@ SchedulerOwnProps) => {
   // let { id } = useParams<{ id: string }>()
 
   const groupsUpdateFn = (action: SessionAction) => {
+    setHasObjectChanged(true)
     /* const newState = actionsReducer(studyArms[0].schedule.sessions!, action)
     console.log('setting data  to ', newState)
     const rx= studyArms.map((arm, index) => index > 0? arm : {...arm, schedule: {...arm.schedule, sessions: newState}})
@@ -173,6 +176,9 @@ SchedulerOwnProps) => {
 
   return (
     <div>
+       <Fab color="primary" onClick={()=>setHasObjectChanged(false)} aria-label="add" style={{position: 'fixed', right: '30px', zIndex: 100, display: hasObjectChanged? 'block': 'none' }}>
+        Save
+      </Fab>
       <FormControlLabel
         classes={{ label: classes.labelDuration }}
         label="Study Duration"

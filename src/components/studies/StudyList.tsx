@@ -56,7 +56,6 @@ const useStyles = makeStyles(theme => ({
       justifyContent: 'center',
       gridRowGap: theme.spacing(4),
     },
-
   },
   divider: {
     margin: `${theme.spacing(1)}px 0 ${theme.spacing(5)}px 0`,
@@ -104,7 +103,10 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   const classes = useStyles()
   const item = sections.find(section => section.status === status)!
   const displayStudies = studies.filter(study => study.status === status)
-  const studyLink =  status === 'DRAFT'? `/studies/builder/:id/session-creator` : `/studies/:id/participant-manager`
+  const studyLink =
+    status === 'DRAFT'
+      ? `/studies/builder/:id/session-creator`
+      : `/studies/:id/participant-manager`
 
   if (!displayStudies.length) {
     return <></>
@@ -122,7 +124,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
             style={{ textDecoration: 'none' }}
             key={study.identifier}
             variant="body2"
-            href={ studyLink.replace(':id', study.identifier)}
+            href={studyLink.replace(':id', study.identifier)}
           >
             <StudyCard
               study={study}
@@ -197,6 +199,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         console.log(s.length)
         setStudies(s)
         return
+
       case 'DUPLICATE':
         //const study = studies.find(s => s.identifier === tudy.identifier)
         const newStudy = {
@@ -207,6 +210,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         setStudies([...studies, newStudy])
         result = await StudyService.saveStudy(newStudy)
         setStudies(result)
+        return
       default: {
       }
     }
