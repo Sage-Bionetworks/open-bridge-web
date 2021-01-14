@@ -120,7 +120,7 @@ async function getStudyArms(studyId: string): Promise<StudyArm[]> {
     studyId,
     active: true,
     name: 'Untitled',
-    pseudonym: '',
+
     schedule,
   }
   result = [newStudyArm]

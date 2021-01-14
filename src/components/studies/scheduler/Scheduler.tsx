@@ -1,47 +1,36 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useReducer,
-  useState,
-} from 'react'
-import Link from '@material-ui/core/Link'
-import { RouteComponentProps, useParams } from 'react-router-dom'
-import StudyService from '../../../services/study.service'
-import { RequestStatus, StudyArm, StudySession } from '../../../types/types'
-import TabsMtb from '../../widgets/TabsMtb'
-import actionsReducer, {
-  SessionAction,
-  Types,
-} from '../session-creator/sessionActions'
-import TabPanel from '../../widgets/TabPanel'
-import LoadingComponent from '../../widgets/Loader'
-import { useErrorHandler } from 'react-error-boundary'
-import SchedulableSingleSessionContainer from './SchedulableStudySessionContainer'
-import ObjectDebug from '../../widgets/ObjectDebug'
-import GroupsEditor from './GoupsEditor'
-import { AcUnitOutlined } from '@material-ui/icons'
-import { StudySection } from '../sections'
-import NavButtons from '../NavButtons'
-import { useAsync } from '../../../helpers/AsyncHook'
 import {
   Box,
-  Button,
   createStyles,
   Fab,
-  FormControl,
   FormControlLabel,
-  FormLabel,
   makeStyles,
-  Radio,
-  RadioGroup,
-  Theme,
+  Theme
 } from '@material-ui/core'
-import SchedulingFormSection from './SchedulingFormSection'
-import { DWMYsEnum, StudyDuration, HDWMEnum } from '../../../types/scheduling'
-import SmallTextBox from './SmallTextBox'
-import SelectWithEnum from '../../widgets/SelectWithEnum'
+import React, { FunctionComponent, useState } from 'react'
+import { useErrorHandler } from 'react-error-boundary'
+import { RouteComponentProps } from 'react-router-dom'
+import { useAsync } from '../../../helpers/AsyncHook'
+import StudyService from '../../../services/study.service'
 import { poppinsFont } from '../../../style/theme'
+import {
+  HDWMEnum,
+  SessionSchedule,
+  StudyDuration,
+  StudyStartPseudonym
+} from '../../../types/scheduling'
+import { StudyArm } from '../../../types/types'
+import ObjectDebug from '../../widgets/ObjectDebug'
+import NavButtons from '../NavButtons'
+import { StudySection } from '../sections'
 import Duration from './Duration'
+import IntroInfo from './IntroInfo'
+import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
+import actionsReducer, {
+  ActionTypes,
+  SessionScheduleAction
+} from './scheduleActions'
+import StudyStartDate from './StudyStartDate'
+import TimelinePlot from './TimelinePlot'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -95,6 +84,7 @@ SchedulerOwnProps) => {
     data: [],
   })
 
+
   const {
     data: studyDuration,
     status: studyStatus,
@@ -105,6 +95,15 @@ SchedulerOwnProps) => {
     status: id ? 'PENDING' : 'IDLE',
     data: {} as StudyDuration,
   })
+
+  //the intro screen is done
+  const setInitialInfo = (duration: string, start: StudyStartPseudonym) => {
+    setStudyDuration(duration)
+    updateStudyArm(studyArms!, 0, {
+      ...studyArms![0],
+      pseudonym: start,
+    })
+  }
 
   React.useEffect(() => {
     if (!id) {
@@ -125,7 +124,7 @@ SchedulerOwnProps) => {
     return getStudy(
       StudyService.getStudy(id).then(study => {
         console.log('duration', study?.studyDuration)
-        return study?.studyDuration || {}
+        return study?.studyDuration
       }),
     )
   }, [id, getStudy])
@@ -149,7 +148,27 @@ SchedulerOwnProps) => {
 
   // let { id } = useParams<{ id: string }>()
 
-  const groupsUpdateFn = (action: SessionAction) => {
+  /*const sessionsUpdateFn = (action: SessionAction) => {
+    const newState = actionsReducer(sessions!, action)
+    setHasObjectChanged(true)
+    setData(newState)
+  }*/
+
+  const scheduleUpdateFn = (action: SessionScheduleAction) => {
+    const newState = actionsReducer(studyArms![0].schedule!.sessions, action)
+    setHasObjectChanged(true)
+    console.log('new state --> ' + newState)
+    //debugger
+    const newStudyArmSchedule = {
+      ...studyArms![0].schedule!,
+      sessions: newState,
+    }
+    const newStudyArm: StudyArm = {
+      ...studyArms![0],
+      schedule: newStudyArmSchedule,
+    }
+    updateStudyArm(studyArms, 0, newStudyArm)
+    // setData({... studyArms![0].schedule, sessions: newState})
     setHasObjectChanged(true)
     /* const newState = actionsReducer(studyArms[0].schedule.sessions!, action)
     console.log('setting data  to ', newState)
@@ -158,17 +177,21 @@ SchedulerOwnProps) => {
   }
 
   const updateStudyArm = (
-    oldState: StudyArm[],
+    oldState: StudyArm[] | null,
     index: number,
     arm: StudyArm,
   ) => {
-    const x = [...oldState]
+    let x: StudyArm[]
+    if (!oldState) {
+      x = [arm]
+    } else {
+      x = [...oldState]
 
-    x.splice(index, 1, arm)
+      x.splice(index, 1, arm)
+    }
 
     setData(x)
   }
-
 
   if (!studyArms) {
     return <h1>Please add some sessions to this study</h1>
@@ -176,120 +199,79 @@ SchedulerOwnProps) => {
 
   return (
     <div>
-       <Fab color="primary" onClick={()=>setHasObjectChanged(false)} aria-label="add" style={{position: 'fixed', right: '30px', zIndex: 100, display: hasObjectChanged? 'block': 'none' }}>
+      <Fab
+        color="primary"
+        onClick={() => setHasObjectChanged(false)}
+        aria-label="add"
+        style={{
+          position: 'fixed',
+          right: '30px',
+          zIndex: 100,
+          display: hasObjectChanged ? 'block' : 'none',
+        }}
+      >
         Save
       </Fab>
-      <FormControlLabel
-        classes={{ label: classes.labelDuration }}
-        label="Study Duration"
-        style={{ fontSize: '16px' }}
-        labelPlacement="start"
-        control={
-      
-            <Duration
-              onChange={e => setStudyDuration(e)}
-              durationString={studyDuration || ''}
-              unitLabel="study duration unit"
-              numberLabel="study duration number"
-              unitData={HDWMEnum}
-            ></Duration>
-      
-        }
-    
-      />
 
-      {/*<ObjectDebug label="groups" data={studyArms}></ObjectDebug>*/}
+      {!studyDuration && <IntroInfo onContinue={setInitialInfo}></IntroInfo>}
+
+      {/**/}
       {studyDuration && (
         <>
-          <GroupsEditor
-            studyArms={studyArms}
-            onAddStudyArm={
-              () => {}
-              /*groupsUpdateFn({
-              type: Types.AddStudyArm,
-              payload: { isMakeActive: false },
-            })*/
+          <ObjectDebug
+            label="groups"
+            data={
+              studyArms[0].schedule?.sessions.map(s => s.sessionSchedule) || {}
             }
-            onRemoveStudyArm={(id: string) => {
-              /* groupsUpdateFn({
-              type: Types.RemoveStudyArm,
-              payload: { id },
-            })*/
-            }}
-            onSetActiveStudyArm={(id: string) => {
-              /* groupsUpdateFn({
-              type: Types.SetActiveStudyArm,
-              payload: { id },
-            })*/
-            }}
-            onRenameStudyArm={(id: string, name: string) => {
-              /* groupsUpdateFn({
-              type: Types.RenameStudyArm,
-              payload: { id, name },
-            })*/
-            }}
-            onCopyStudyArm={() => {
-              /*groupsUpdateFn({
-              type: Types.AddStudyArm,
-              payload: {
-                group: groups[groups!.length - 1],
-                isMakeActive: false,
-              },
-            })*/
-            }}
-          >
-            {studyArms.map((studyArm, index) => (
-              <TabPanel
-                value={studyArms.findIndex(studyArm => studyArm.active)}
-                index={index}
-                key={studyArm.name}
-              >
-                <SchedulingFormSection
-                  label="Define Day 1:"
-                  style={{ marginLeft: '325px' }}
-                >
-                  <RadioGroup
-                    aria-label="Day 1"
-                    name="day1"
-                    value={studyArm.pseudonym}
-                    onChange={e =>
-                      updateStudyArm(studyArms, index, {
-                        ...studyArms[index],
-                        pseudonym: e.target.value,
+          ></ObjectDebug>
+          <FormControlLabel
+            classes={{ label: classes.labelDuration }}
+            label="Study duration:"
+            style={{ fontSize: '14px' }}
+            labelPlacement="start"
+            control={
+              <Duration
+                onChange={e => setStudyDuration(e)}
+                durationString={studyDuration || ''}
+                unitLabel="study duration unit"
+                numberLabel="study duration number"
+                unitData={HDWMEnum}
+              ></Duration>
+            }
+          />
+
+          {studyArms.map((studyArm, index) => (
+            <Box bgcolor="#fff" padding="16px" marginTop="24px" key={index}>
+              <TimelinePlot></TimelinePlot>
+              <StudyStartDate
+                style={{ marginTop: '16px' }}
+                pseudonym={studyArm.pseudonym}
+                onChange={(pseudonym: StudyStartPseudonym) =>
+                  updateStudyArm(studyArms, index, {
+                    ...studyArms[index],
+                    pseudonym,
+                  })
+                }
+              />
+
+              {studyArm.schedule?.sessions.map((session, index) => (
+                <Box key={session.id}>
+                  <SchedulableSingleSessionContainer
+                    key={session.id}
+                    studySession={session}
+                    onUpdateSessionSchedule={(schedule: SessionSchedule) => {
+                      console.log('updating schedule')
+                      scheduleUpdateFn({
+                        type: ActionTypes.UpdateSessionSchedule,
+                        payload: { sessionId: session.id, schedule },
                       })
-                    }
-                  >
-                    <FormControlLabel
-                      value={'ONBOARDING'}
-                      control={<Radio />}
-                      label="Right after completion of onboarding session"
-                    />
+                    }}
+                  ></SchedulableSingleSessionContainer>
+                </Box>
+              ))}
+            </Box>
+          ))}
 
-                    <FormControlLabel
-                      value={'START_DATE'}
-                      control={<Radio />}
-                      label="Start Date (usually clinic visit) to be defined in Participant Manager"
-                    />
-                  </RadioGroup>
-                </SchedulingFormSection>
-
-                {studyArm.schedule.sessions.map((session, index) => (
-                  <Box key={session.id}>
-                    <SchedulableSingleSessionContainer
-                      key={session.id}
-                      studySession={session}
-                      onSetActiveSession={() =>
-                        groupsUpdateFn({
-                          type: Types.SetActiveSession,
-                          payload: { sessionId: session.id },
-                        })
-                      }
-                    ></SchedulableSingleSessionContainer>
-                  </Box>
-                ))}
-              </TabPanel>
-            ))}
-          </GroupsEditor>
           <NavButtons
             id={id}
             currentSection={section}

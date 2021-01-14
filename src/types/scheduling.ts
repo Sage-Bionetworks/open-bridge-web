@@ -1,3 +1,4 @@
+
 export type SessionScheduleStartType =
   | 'DAY1'
   | 'NDAYS_DAY1'
@@ -5,32 +6,32 @@ export type SessionScheduleStartType =
 
 
 export enum HSsEnum {
-  h = 'Hours',
-  d = 'Days'
+  H = 'Hours',
+  D = 'Days'
   }
 
 
 export type SessionScheduleEndType = 'END_STUDY' | 'N_OCCURENCES'
 
 export enum DWMYEnum {
-  d = 'Day',
-  w = 'Week',
+  D = 'Day',
+  W = 'Week',
  M = 'Month',
-  y = 'Year'
+  Y = 'Year'
 
 }
 
 export enum DWMYsEnum {
-  d = 'Days',
-  w = 'Weeks',
+ D = 'Days',
+  W = 'Weeks',
   M = 'Months',
-  y = 'Years'
+  Y = 'Years'
 }
 
 export enum HDWMEnum {
-  h= 'Hour',
-  d = 'Day',
-  w = 'Week',
+  H= 'Hour',
+  D = 'Day',
+  W = 'Week',
   M = 'Month'
   }
 
@@ -62,14 +63,16 @@ export type ReminderIntervalType = 'BEFORE' | 'AFTER'
 
 export type AssessmentOrder = 'SEQUENTIAL' | 'RANDOM'
 
-export type WindowEndType = {
-    endQuantity: number,
-    endUnit:  keyof typeof  HSsEnum
-}
+export type StudyStartPseudonym = 'ONBOARDING' | 'START_DATE'
 
-export type WindowReminderType = {
+export type WindowEndType = string/*{
+    //endQuantity: number,
+    //endUnit:  keyof typeof  HSsEnum
+}*/
+
+export type ReminderType = {
   interval:  keyof typeof  ReminderIntervalEnum
-  type: ReminderIntervalType
+  type?: ReminderIntervalType
 }
 
 export type AssessmentWindow = {
@@ -77,10 +80,7 @@ export type AssessmentWindow = {
   end: WindowEndType,
 
   isAllowAnyFrequency?: boolean,
-  notification?: NotificationFreqEnum
-  isAllowSnooze?: boolean
-
-  reminder?: WindowReminderType
+ 
 
 }
 
@@ -115,8 +115,13 @@ export type SessionSchedule = {
 
   startDate: StartDate
   reoccurance: Reoccurance
+  notification?: keyof typeof NotificationFreqEnum
+  isAllowSnooze?: boolean
+
+  reminder?: ReminderType
   windows: AssessmentWindow[]
   endDate: EndDate
   isGroupAssessments?: boolean
   order: AssessmentOrder
+
 }

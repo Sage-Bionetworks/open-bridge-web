@@ -1,27 +1,19 @@
-import React from 'react'
-
-import { makeStyles } from '@material-ui/core/styles'
-
 import {
-  FormControl,
   createStyles,
-  Theme,
   FormControlLabel,
-  FormLabel,
   Radio,
   RadioGroup,
-  TextField,
+  Theme
 } from '@material-ui/core'
-
+import { makeStyles } from '@material-ui/core/styles'
+import React from 'react'
 import {
-  SessionScheduleStartType,
-  StartDate as StartDateType,
   HDWMEnum,
+  SessionScheduleStartType,
+  StartDate as StartDateType
 } from '../../../types/scheduling'
-import SchedulingFormSection from './SchedulingFormSection'
-import SelectWithEnum from '../../widgets/SelectWithEnum'
-import SmallTextBox from './SmallTextBox'
 import Duration from './Duration'
+import SchedulingFormSection from './SchedulingFormSection'
 
 const useStyles = makeStyles((theme: Theme) => createStyles({}))
 
@@ -35,18 +27,22 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
   onChange,
 }: StartDateProps) => {
   const classes = useStyles()
+  console.log('startDate' + startDate.offset)
+  const [x, setX] = React.useState(startDate.offset)
 
+  React.useEffect(() => {
+    setX(startDate.offset)
+  }, [startDate.offset])
 
   const changeStartDate = (type: SessionScheduleStartType) => {
     if (type === 'DAY1') {
-
       onChange({ type: 'DAY1', offset: undefined })
     } else {
-      onChange({ ...startDate, type })
+      if (startDate.type !== 'NDAYS_DAY1') {
+        onChange({ ...startDate, type })
+      }
     }
   }
-
-  
 
   return (
     <SchedulingFormSection label={'Session Starts On:'}>
@@ -66,12 +62,13 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
               <Duration
                 onFocus={() => changeStartDate('NDAYS_DAY1')}
                 onChange={e => {
+                  setX(e.toString())
                   onChange({
                     ...startDate,
                     offset: e,
                   })
                 }}
-                durationString={startDate.offset}
+                durationString={x}
                 unitLabel="Repeat Every"
                 numberLabel="frequency number"
                 unitData={HDWMEnum}

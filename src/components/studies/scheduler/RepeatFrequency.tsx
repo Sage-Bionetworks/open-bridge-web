@@ -1,22 +1,9 @@
-import React from 'react'
-
+import { createStyles, FormControlLabel, Theme } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-
-import {
-  createStyles,
-  Theme,
-  FormGroup,
-  Checkbox,
-  FormControlLabel,
-} from '@material-ui/core'
-
-import { getEnumKeys } from '../../../helpers/utility'
-import SelectWithEnum from '../../widgets/SelectWithEnum'
+import React from 'react'
 import { DWMYEnum, Reoccurance } from '../../../types/scheduling'
-import SchedulingFormSection from './SchedulingFormSection'
-import SmallTextBox from './SmallTextBox'
-import moment, { DurationInputObject } from 'moment'
 import Duration from './Duration'
+import SchedulingFormSection from './SchedulingFormSection'
 
 const useStyles = makeStyles((theme: Theme) => createStyles({}))
 
@@ -32,11 +19,15 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
   const classes = useStyles()
 
   return (
-    <SchedulingFormSection label={'Repeat session every:'}>
+    <SchedulingFormSection label={'Run this session every:'}>
       <FormControlLabel
+        style={{ marginLeft: '0' }}
         control={
           <Duration
-            onChange={e => {console.log(e); onChange(e)}}
+            onChange={e => {
+              console.log(e)
+              onChange(e)
+            }}
             durationString={repeatFrequency || '    '}
             unitLabel="Repeat Every"
             numberLabel="frequency number"
