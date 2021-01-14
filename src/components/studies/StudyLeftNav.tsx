@@ -1,25 +1,20 @@
-import React, { FunctionComponent, useEffect } from 'react'
-import Link from '@material-ui/core/Link'
 import {
-  Box,
-  Divider,
   Drawer,
   IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Theme,
-  Typography,
+
+
+
+
+  makeStyles
 } from '@material-ui/core'
-import { poppinsFont, ThemeType } from '../../style/theme'
-import { SECTIONS as sectionLinks, StudySection } from './sections'
-import clsx from 'clsx'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import SomeIcon from '@material-ui/icons/SentimentVerySatisfied'
+import clsx from 'clsx'
+import React, { FunctionComponent } from 'react'
 import { NavLink } from 'react-router-dom'
+import { poppinsFont, ThemeType } from '../../style/theme'
+import { SECTIONS as sectionLinks, StudySection } from './sections'
 
 const drawerWidth = 212
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -159,6 +154,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
       <ul className={classes.list}>
         {sectionLinks.map((sectionLink, index) => (
           <li
+          key={sectionLink.path}
             className={clsx(classes.listItem, {
               [classes.listItemActive]: sectionLink.path === currentSection,
               [classes.listItemCollapsed]: !open,

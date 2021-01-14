@@ -133,7 +133,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
       </Toolbar>
       <Toolbar className={classes.toolbar}>
         <NavLink
-          to={'path-to-shared-settings'.replace(':id', studyId)}
+          to={'/studies/:id/shared-settings'.replace(':id', studyId)}
           key={'path-to-shared-settings'}
           className={classes.toolbarLink}
           activeClassName={classes.selectedLink}
