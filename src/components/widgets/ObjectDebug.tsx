@@ -1,13 +1,11 @@
-import React from 'react'
-
-import { makeStyles } from '@material-ui/core/styles'
-
 import {
   Accordion,
-  AccordionSummary,
-  Typography,
   AccordionDetails,
+  AccordionSummary,
+  Typography
 } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+import React from 'react'
 
 const useStyles = makeStyles({
   root: {},
@@ -35,7 +33,7 @@ const ObjectDebug: React.FunctionComponent<ObjectDebugProps> = ({
           <Typography>{label}</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography component="div">
+          <Typography component="div" style={{ textAlign: 'left' }}>
             <pre>{JSON.stringify(data, null, 2)}</pre>
           </Typography>
         </AccordionDetails>

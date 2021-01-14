@@ -22,6 +22,7 @@ import {
 import ParticipantTable, { HeadCell } from './ParticipantTable'
 
 import HideWhen from '../../widgets/HideWhen'
+import StudyTopNav from '../StudyTopNav'
 
 const useStyles = makeStyles({
   root: {},
@@ -99,6 +100,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = ({
   } else if (status === 'RESOLVED') {
     return (
       <div className={classes.root}>
+           <StudyTopNav studyId={id} currentSection={''}></StudyTopNav>
         StudyId: {id}
         <ObjectDebug label="part" data={data}></ObjectDebug>
         <Box border="1px slid black">
