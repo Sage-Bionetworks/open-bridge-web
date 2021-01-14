@@ -7,6 +7,7 @@ import StudyBuilder from './components/studies/StudyBuilder'
 import AssessmentDetail from './components/assessments/AssessmentDetail'
 import SessionsLayout from './components/layouts/sessions'
 import AccountSetup from './components/account/AccountSetup'
+import Sharing from './components/shared/Sharing'
 
 export default [
  /* {
@@ -28,6 +29,12 @@ export default [
     name: '',
     exact: false,
     Component: ParticipantManager,
+  },
+  {
+    path: '/studies/:id/shared-settings',
+    name: '',
+    exact: false,
+    Component: Sharing,
   },
 
   {

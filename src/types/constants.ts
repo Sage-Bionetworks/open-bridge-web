@@ -4,6 +4,7 @@ export default {
     STUDY_ID: 'mtb-user-testing',
     SESSION_NAME: 'bridge-session-mtb-user-testing',
     ENDPOINT: 'https://webservices.sagebridge.org',
+    SYNAPSE_ENDPOINT: 'https://repo-prod.prod.sagebase.org',
   },
 
   /* templateTitles: {

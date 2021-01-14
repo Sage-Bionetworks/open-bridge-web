@@ -74,10 +74,11 @@ export const callEndpoint = async <T>(
   method: 'POST' | 'GET' = 'POST',
   data: StringDictionary<any>,
   token?: string,
+  isSynapseEndpoint?: boolean
 ): Promise<Response<T>> => {
   const ls = window.localStorage
   const isE2E = ls.getItem('crc_e2e')
-  let url = `${CONSTANTS.constants.ENDPOINT}${endpoint}`
+  let url = isSynapseEndpoint? `${CONSTANTS.constants.SYNAPSE_ENDPOINT}${endpoint}` : `${CONSTANTS.constants.ENDPOINT}${endpoint}`
   if (isE2E) {
     return callEndpointXHR(url, method, data, token)
   }
