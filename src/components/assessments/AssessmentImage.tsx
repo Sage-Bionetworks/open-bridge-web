@@ -24,6 +24,7 @@ type AssessmentImageProps = {
     name: string
     isSmall?: boolean
     children?: ReactNode
+    variant?: 'PORTRAIT' | 'LANDSCAPE'
  
   }
   
@@ -31,6 +32,7 @@ type AssessmentImageProps = {
     resources,
     name,
     isSmall=false,
+    variant='PORTRAIT',
     children = <></>,
   }: AssessmentImageProps) => {
     const classes = useStyles()
@@ -44,11 +46,11 @@ type AssessmentImageProps = {
     let url = ''
     if (screens && screens.length) {
 
-      const portrait = screens.find(
-        screen => screen.title === 'Portrait screenshot',
+      const prefferred = screens.find(
+        screen => screen.title === (variant=== 'PORTRAIT'? 'Portrait screenshot': 'Landscape screenshot')
       )
-      if (portrait) {
-        url = portrait.url
+      if (prefferred) {
+        url = prefferred.url
       } else {
         url = screens[0].url
       }
