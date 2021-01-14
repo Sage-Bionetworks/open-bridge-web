@@ -28,7 +28,7 @@ export type ActionPayload = {
   }
 
   [Types.AddSession]: {
-    studyId: string, 
+    studyId: string
     name: string
     assessments: Assessment[]
     active?: boolean
@@ -90,7 +90,6 @@ export const DEFAULT_GROUP: Group = {
 }
 
 function addSession(
-
   sessions: StudySession[],
   name: string,
   assessments: Assessment[],
@@ -108,7 +107,11 @@ function addSession(
   }
 
   const result = [
-    ...sessions.map((session, index) => ({ ...session, active: false , order: index})),
+    ...sessions.map((session, index) => ({
+      ...session,
+      active: false,
+      order: index,
+    })),
     {
       ...session,
     },
@@ -150,7 +153,9 @@ function removeSession(
   sessions: StudySession[],
   sessionId: string,
 ): StudySession[] {
-  return sessions.filter(session => session.id !== sessionId).map((s, index) =>({ ...s, order: index }))
+  return sessions
+    .filter(session => session.id !== sessionId)
+    .map((s, index) => ({ ...s, order: index }))
 }
 
 function updateAssessments(

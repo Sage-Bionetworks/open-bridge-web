@@ -3,14 +3,14 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
-  Theme
+  Theme,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import {
   ReminderIntervalEnum,
   ReminderIntervalType,
-  ReminderType
+  ReminderType,
 } from '../../../types/scheduling'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import SchedulingFormSection from './SchedulingFormSection'

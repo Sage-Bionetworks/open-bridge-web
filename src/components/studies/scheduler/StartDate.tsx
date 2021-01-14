@@ -3,14 +3,14 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
-  Theme
+  Theme,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import {
   HDWMEnum,
   SessionScheduleStartType,
-  StartDate as StartDateType
+  StartDate as StartDateType,
 } from '../../../types/scheduling'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'

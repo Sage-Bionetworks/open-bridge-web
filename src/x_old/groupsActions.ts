@@ -46,7 +46,7 @@ export type ActionPayload = {
   [Types.AddSession]: {
     name: string
     assessments: Assessment[]
-    studyId: string,
+    studyId: string
     active?: boolean
   }
   [Types.RemoveSession]: {
@@ -77,7 +77,7 @@ export const DEFAULT_GROUP: Group = {
     {
       id: '123',
       name: 'Baseline Survey',
-  studyId: 'wer',
+      studyId: 'wer',
       active: true,
       assessments: [
         {

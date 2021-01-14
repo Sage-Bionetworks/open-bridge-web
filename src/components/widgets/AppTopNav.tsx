@@ -61,11 +61,11 @@ const useStyles = makeStyles(theme => ({
   menuButton: {
     marginRight: theme.spacing(2),
     float: 'right',
-    '&::after':  {
-      content: "",
+    '&::after': {
+      content: '',
       display: 'table',
-      clear: 'both'
-    }
+      clear: 'both',
+    },
   },
   login: {
     borderLeft: '1px solid #EAEAEA',
@@ -274,10 +274,14 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             <div className={classes.drawerMenuItem}>
               <Logout
                 element={
-                  <Button variant="text" className={classes.drawerMenuItem} style={{
-                    paddingLeft: '0',
-                    backgroundColor: 'transparent'
-                  }}>
+                  <Button
+                    variant="text"
+                    className={classes.drawerMenuItem}
+                    style={{
+                      paddingLeft: '0',
+                      backgroundColor: 'transparent',
+                    }}
+                  >
                     Log out
                   </Button>
                 }
@@ -290,7 +294,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                 onClick={() => setIsSignInOpen(true)}
                 style={{
                   paddingLeft: '0',
-                  backgroundColor: 'transparent'
+                  backgroundColor: 'transparent',
                 }}
               >
                 Sign in

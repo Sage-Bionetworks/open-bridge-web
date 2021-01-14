@@ -1,25 +1,10 @@
-import React, { useState, ChangeEvent } from 'react'
+import { Button, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import React, { useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
-
-import { StudySection } from '../sections'
-
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Divider,
-  Paper,
-  TextField,
-  Typography,
-} from '@material-ui/core'
-import { ThemeType } from '../../../style/theme'
-//import { ReactComponent as PhoneBg } from '../../../assets/phone_bg.svg'
-import PhoneBg from '../../../assets/phone_bg.svg'
-import { BorderTopRounded } from '@material-ui/icons'
-import { bytesToSize } from '../../../helpers/utility'
-import ReactColorPicker from '@super-effective/react-color-picker'
 import { useStudy } from '../../../helpers/hooks'
+import { ThemeType } from '../../../style/theme'
+import { StudySection } from '../sections'
 import LaunchStepper from './LaunchStepper'
 
 const useStyles = makeStyles((theme: ThemeType) => ({

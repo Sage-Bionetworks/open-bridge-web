@@ -1,40 +1,23 @@
 import {
   Box,
-
-
-
-
-
-
-
-
-
-  Checkbox, createStyles,
-
-
+  Checkbox,
+  createStyles,
   FormControlLabel,
-
-
-
   IconButton,
-  Paper, Theme
+  Paper,
+  Theme,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import DeleteIcon from '@material-ui/icons/Close'
 import React from 'react'
 import {
   AssessmentWindow as AssessmentWindowType,
-
-
-  HSsEnum
+  HSsEnum,
 } from '../../../types/scheduling'
 import { StringDictionary } from '../../../types/types'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
-
-
-
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -77,10 +60,23 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
   }
 
   return (
-    <Paper style={{backgroundColor: "#bfd9e833", paddingBottom: '16px', marginBottom: '16px'}} elevation={2}>
+    <Paper
+      style={{
+        backgroundColor: '#bfd9e833',
+        paddingBottom: '16px',
+        marginBottom: '16px',
+      }}
+      elevation={2}
+    >
       <Box position="relative">
-        <Box bgcolor="#BCD5E4" height="48px" textAlign="center" lineHeight="48px" width="48px">
-          {index+1}.
+        <Box
+          bgcolor="#BCD5E4"
+          height="48px"
+          textAlign="center"
+          lineHeight="48px"
+          width="48px"
+        >
+          {index + 1}.
         </Box>
         <IconButton
           style={{ position: 'absolute', top: '12px', right: '16px' }}
@@ -91,7 +87,12 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
           <DeleteIcon></DeleteIcon>
         </IconButton>
       </Box>
-      <SchedulingFormSection label={'Start'} variant="small"  border={false} style={{padding:"0 16px"}}>
+      <SchedulingFormSection
+        label={'Start'}
+        variant="small"
+        border={false}
+        style={{ padding: '0 16px' }}
+      >
         <SelectWithEnum
           value={window.startHour}
           sourceData={getDropdownItems()}
@@ -104,48 +105,49 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
           }
         ></SelectWithEnum>
       </SchedulingFormSection>
-    
-        <SchedulingFormSection label={'Expire after'} variant="small" border={false} style={{padding:"0 16px"}}>
-       
-            <Box display="inline-flex" alignItems="center">
-            <Duration
+
+      <SchedulingFormSection
+        label={'Expire after'}
+        variant="small"
+        border={false}
+        style={{ padding: '0 16px' }}
+      >
+        <Box display="inline-flex" alignItems="center">
+          <Duration
             onChange={e => {
-              console.log(e)
-              console.log(e)
               onChange({
                 ...window,
-                end:e})
+                end: e,
+              })
             }}
             durationString={window.end || '    '}
             unitLabel="Repeat Every"
             numberLabel="frequency number"
             unitData={HSsEnum}
           ></Duration>
-
-            </Box>
-
-           
-    
-        </SchedulingFormSection>
-        <SchedulingFormSection label={''} variant="small" border={false} style={{padding:"0 16px"}}>
-       
-
+        </Box>
+      </SchedulingFormSection>
+      <SchedulingFormSection
+        label={''}
+        variant="small"
+        border={false}
+        style={{ padding: '0 16px' }}
+      >
         <FormControlLabel
-              control={
-                <Checkbox
-                  value={window.isAllowAnyFrequency}
-                  onChange={e =>
-                    onChange({
-                      ...window,
-                      isAllowAnyFrequency: e.target.checked,
-                    })
-                  }
-                />
+          control={
+            <Checkbox
+              value={window.isAllowAnyFrequency}
+              onChange={e =>
+                onChange({
+                  ...window,
+                  isAllowAnyFrequency: e.target.checked,
+                })
               }
-              label="Allow participant to complete this session as often as they like within the window"
             />
-            </SchedulingFormSection>
-   
+          }
+          label="Allow participant to complete this session as often as they like within the window"
+        />
+      </SchedulingFormSection>
     </Paper>
   )
 }

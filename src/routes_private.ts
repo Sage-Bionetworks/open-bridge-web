@@ -10,7 +10,7 @@ import AccountSetup from './components/account/AccountSetup'
 import Sharing from './components/shared/Sharing'
 
 export default [
- /* {
+  /* {
     path: '/compliance-dashboard',
     name: 'COMPLIANCE DASHBOARD',
     Component: ComplianceDashboard,
@@ -54,8 +54,8 @@ export default [
     name: 'ACCOUNT',
     Component: AccountSetup,
     exact: true,
-  }
- /* {
+  },
+  /* {
     path: '/sessionsLayout',
     name: 'SessionBuilderLayout',
     Component: SessionsLayout,

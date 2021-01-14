@@ -1,29 +1,11 @@
-import React, { FunctionComponent, useState, useEffect } from 'react'
 import {
-  match,
-  RouteComponentProps,
-  useParams,
-  Link,
-  Route,
-} from 'react-router-dom'
-import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
-import LoadingComponent from '../widgets/Loader'
-import { useAsync } from '../../helpers/AsyncHook'
-
-import {
-  Grid,
-  Paper,
-  makeStyles,
-  Hidden,
-  Box,
-  Container,
-  Slider,
   Checkbox,
   FormControlLabel,
+  makeStyles,
+  Paper,
 } from '@material-ui/core'
-import clsx from 'clsx'
+import React, { FunctionComponent } from 'react'
 import { Assessment, StringDictionary } from '../../types/types'
-import { RSA_SSLV23_PADDING } from 'constants'
 
 type AssessmentLibraryFilterProps = {
   assessments: Assessment[]
@@ -54,13 +36,10 @@ AssessmentLibraryFilterProps) => {
     assessments.map(a => a.duration || 0)
   const [selectedTags, setSelectedTags] = React.useState<string[]>([])
 
-
-
   const hasAnyTags = (assessment: Assessment, tags: string[]) => {
     const intersection = assessment.tags.filter(tag => tags.includes(tag))
     return intersection.length > 0
   }
-
 
   const getFilteredAssessments = (
     assessments: Assessment[],
@@ -81,14 +60,13 @@ AssessmentLibraryFilterProps) => {
     onChangeTags(getFilteredAssessments(assessments, result))
   }
 
-
   return (
     <Paper className={classes.root}>
       <FormControlLabel
         key="allConstructs"
         control={
           <Checkbox
-            checked={selectedTags.length == 0}
+            checked={selectedTags.length === 0}
             onChange={event => {
               if (event.target.checked) {
                 setSelectedTags([])

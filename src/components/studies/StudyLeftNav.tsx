@@ -1,12 +1,4 @@
-import {
-  Drawer,
-  IconButton,
-
-
-
-
-  makeStyles
-} from '@material-ui/core'
+import { Drawer, IconButton, makeStyles } from '@material-ui/core'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import SomeIcon from '@material-ui/icons/SentimentVerySatisfied'
@@ -154,7 +146,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
       <ul className={classes.list}>
         {sectionLinks.map((sectionLink, index) => (
           <li
-          key={sectionLink.path}
+            key={sectionLink.path}
             className={clsx(classes.listItem, {
               [classes.listItemActive]: sectionLink.path === currentSection,
               [classes.listItemCollapsed]: !open,

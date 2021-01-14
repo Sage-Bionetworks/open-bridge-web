@@ -1,39 +1,32 @@
-
-export type SessionScheduleStartType =
-  | 'DAY1'
-  | 'NDAYS_DAY1'
-
-
+export type SessionScheduleStartType = 'DAY1' | 'NDAYS_DAY1'
 
 export enum HSsEnum {
   H = 'Hours',
-  D = 'Days'
-  }
-
+  D = 'Days',
+}
 
 export type SessionScheduleEndType = 'END_STUDY' | 'N_OCCURENCES'
 
 export enum DWMYEnum {
   D = 'Day',
   W = 'Week',
- M = 'Month',
-  Y = 'Year'
-
+  M = 'Month',
+  Y = 'Year',
 }
 
 export enum DWMYsEnum {
- D = 'Days',
+  D = 'Days',
   W = 'Weeks',
   M = 'Months',
-  Y = 'Years'
+  Y = 'Years',
 }
 
 export enum HDWMEnum {
-  H= 'Hour',
+  H = 'Hour',
   D = 'Day',
   W = 'Week',
-  M = 'Month'
-  }
+  M = 'Month',
+}
 
 /*export enum WeekdaysEnum {
   'Su' = '0',
@@ -65,26 +58,24 @@ export type AssessmentOrder = 'SEQUENTIAL' | 'RANDOM'
 
 export type StudyStartPseudonym = 'ONBOARDING' | 'START_DATE'
 
-export type WindowEndType = string/*{
+export type WindowEndType = string /*{
     //endQuantity: number,
     //endUnit:  keyof typeof  HSsEnum
 }*/
 
 export type ReminderType = {
-  interval:  keyof typeof  ReminderIntervalEnum
+  interval: keyof typeof ReminderIntervalEnum
   type?: ReminderIntervalType
 }
 
 export type AssessmentWindow = {
   startHour: number
-  end: WindowEndType,
+  end: WindowEndType
 
-  isAllowAnyFrequency?: boolean,
- 
-
+  isAllowAnyFrequency?: boolean
 }
 
-export type Reoccurance = string/*{
+export type Reoccurance = string /*{
   unit: keyof typeof DWMYEnum
   frequency: number
  // days?: WeekdaysEnum[]
@@ -92,9 +83,9 @@ export type Reoccurance = string/*{
 
 export type StartDate = {
   type: SessionScheduleStartType
- // offsetNumber?: number
- // offsetUnit?: HDWMEnum
- offset?: string
+  // offsetNumber?: number
+  // offsetUnit?: HDWMEnum
+  offset?: string
 }
 
 export type EndDate = {
@@ -102,17 +93,12 @@ export type EndDate = {
   days?: number
 }
 
-
-
-
-
-export type StudyDuration =  string/*{
+export type StudyDuration = string /*{
   unit:  keyof typeof DWMYsEnum
   quantity: number
 }*/
 
 export type SessionSchedule = {
-
   startDate: StartDate
   reoccurance: Reoccurance
   notification?: keyof typeof NotificationFreqEnum
@@ -123,5 +109,4 @@ export type SessionSchedule = {
   endDate: EndDate
   isGroupAssessments?: boolean
   order: AssessmentOrder
-
 }

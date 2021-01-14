@@ -3,13 +3,13 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
-  Theme
+  Theme,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import {
   EndDate as EndDateType,
-  SessionScheduleEndType
+  SessionScheduleEndType,
 } from '../../../types/scheduling'
 import SmallTextBox from '../../widgets/SmallTextBox'
 import SchedulingFormSection from './SchedulingFormSection'

@@ -30,7 +30,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
   style,
 }: StudyStartDateProps) => {
   const classes = useStyles()
-  const options: StudyStartPseudonym [] = ['ONBOARDING' , 'START_DATE']
+  const options: StudyStartPseudonym[] = ['ONBOARDING', 'START_DATE']
 
   const label = isIntro ? (
     <Box marginTop="20px">
@@ -53,7 +53,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
         aria-label="Day 1"
         name="day1"
         value={pseudonym}
-        onChange={e => onChange(e.target.value as StudyStartPseudonym )}
+        onChange={e => onChange(e.target.value as StudyStartPseudonym)}
       >
         <FormControlLabel
           value={options[0]}

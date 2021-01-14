@@ -10,15 +10,13 @@ import {
 } from '@material-ui/core'
 import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
-
-import { Link, RouteComponentProps, useParams } from 'react-router-dom'
-import { isClassExpression } from 'typescript'
+import { RouteComponentProps, useParams } from 'react-router-dom'
 import { useAsync } from '../../helpers/AsyncHook'
 import { useSessionDataState } from '../../helpers/AuthContext'
 import AssessmentService from '../../services/assessment.service'
 import { Assessment } from '../../types/types'
 import BreadCrumb from '../widgets/BreadCrumb'
-import { MTBHeading, MTBHeadingH1 } from '../widgets/Headings'
+import { MTBHeading } from '../widgets/Headings'
 import ObjectDebug from '../widgets/ObjectDebug'
 import AssessmentImage from './AssessmentImage'
 
@@ -93,7 +91,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = (
         <Container maxWidth="lg" style={{ textAlign: 'center' }}>
           <Paper className="classes.container">
             <Box display="flex">
-              <Box width="530px" marginRight="32px" >
+              <Box width="530px" marginRight="32px">
                 <AssessmentImage
                   name="X"
                   resources={data.resources}

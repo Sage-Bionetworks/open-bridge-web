@@ -1,30 +1,23 @@
-import React, { useEffect } from 'react'
-import UserService from './services/user.service'
-
-import './App.css'
-
 import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from 'react-router-dom'
-import {
+  Container,
+  createMuiTheme,
+  CssBaseline,
   ThemeProvider,
   Typography,
-  CssBaseline,
-  createMuiTheme,
-  Container,
 } from '@material-ui/core'
-import { theme, cssVariables } from './style/theme'
+import React, { useEffect } from 'react'
+import { ErrorBoundary } from 'react-error-boundary'
+import { BrowserRouter as Router } from 'react-router-dom'
+import './App.css'
+import AuthenticatedApp from './AuthenticatedApp'
+import { ErrorFallback, ErrorHandler } from './components/widgets/ErrorHandler'
 import {
   useSessionDataDispatch,
   useSessionDataState,
 } from './helpers/AuthContext'
+import UserService from './services/user.service'
+import { cssVariables, theme } from './style/theme'
 import { SessionData } from './types/types'
-import { ErrorFallback, ErrorHandler } from './components/widgets/ErrorHandler'
-import { ErrorBoundary } from 'react-error-boundary'
-import AuthenticatedApp from './AuthenticatedApp'
 import UnauthenticatedApp from './UnauthenticatedApp'
 
 const defaultTheme = createMuiTheme()
@@ -69,11 +62,7 @@ export const detectSSOCode = async (
       })
       // console.log(env.redirect+ "/studies")
       // return <Redirect to={env.redirect+ "/studies"} />
-      window.history.replaceState(
-        null,
-        '',
-        `${window.location.origin}/studies`,
-      )
+      window.history.replaceState(null, '', `${window.location.origin}/studies`)
       // window.location.replace(env.redirect+'/study-editor')
     } catch (e) {
       alert(e.message)

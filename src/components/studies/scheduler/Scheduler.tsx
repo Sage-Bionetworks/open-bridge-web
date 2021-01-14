@@ -4,7 +4,7 @@ import {
   Fab,
   FormControlLabel,
   makeStyles,
-  Theme
+  Theme,
 } from '@material-ui/core'
 import React, { FunctionComponent, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
@@ -16,7 +16,7 @@ import {
   HDWMEnum,
   SessionSchedule,
   StudyDuration,
-  StudyStartPseudonym
+  StudyStartPseudonym,
 } from '../../../types/scheduling'
 import { StudyArm } from '../../../types/types'
 import ObjectDebug from '../../widgets/ObjectDebug'
@@ -27,7 +27,7 @@ import IntroInfo from './IntroInfo'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
-  SessionScheduleAction
+  SessionScheduleAction,
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import TimelinePlot from './TimelinePlot'
@@ -83,7 +83,6 @@ SchedulerOwnProps) => {
     status: id ? 'PENDING' : 'IDLE',
     data: [],
   })
-
 
   const {
     data: studyDuration,

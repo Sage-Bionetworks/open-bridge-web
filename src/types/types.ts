@@ -1,6 +1,10 @@
 /*  General Types ********************************/
 
-import { SessionSchedule, StudyDuration, StudyStartPseudonym } from './scheduling'
+import {
+  SessionSchedule,
+  StudyDuration,
+  StudyStartPseudonym,
+} from './scheduling'
 
 export interface StringDictionary<T> {
   [key: string]: T

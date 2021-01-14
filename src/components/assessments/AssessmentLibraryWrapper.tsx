@@ -1,34 +1,6 @@
-import React, { FunctionComponent, useState, useEffect, ReactNode } from 'react'
-import {
-  match,
-  RouteComponentProps,
-  useParams,
-  Link,
-  Route,
-} from 'react-router-dom'
-import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
-import LoadingComponent from '../widgets/Loader'
-import { useAsync } from '../../helpers/AsyncHook'
-
-import {
-  Grid,
-  Paper,
-  makeStyles,
-  Hidden,
-  Box,
-  Container,
-  Slider,
-  Checkbox,
-  FormControlLabel,
-} from '@material-ui/core'
-import clsx from 'clsx'
-
-//import useAssessments from './../../helpers/hooks'
-import { useSessionDataState } from '../../helpers/AuthContext'
+import { Box, Container, makeStyles } from '@material-ui/core'
+import React, { FunctionComponent, ReactNode } from 'react'
 import { Assessment, StringDictionary } from '../../types/types'
-import AssessmentService from '../../services/assessment.service'
-import AssessmentCard from './AssessmentCard'
-import AssessmentDetail from './AssessmentDetail'
 import AssessmentLibraryFilter from './AssessmentLibraryFilter'
 
 type AssessmentLibraryWrapperOwnProps = {
@@ -38,13 +10,11 @@ type AssessmentLibraryWrapperOwnProps = {
   onChangeTags: Function
 }
 
-
-
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
-  backgroundColor: theme.palette.background.default
-      /*paddingTop: theme.spacing(4),*/
+    backgroundColor: theme.palette.background.default,
+    /*paddingTop: theme.spacing(4),*/
     // margin: `0 ${theme.spacing(4)}px`,
   },
   assessmentContainer: {
@@ -73,17 +43,16 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-type AssessmentLibraryWrapperProps = AssessmentLibraryWrapperOwnProps 
+type AssessmentLibraryWrapperProps = AssessmentLibraryWrapperOwnProps
 
 const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps> = ({
-
   children,
-  tags, assessments,
-  onChangeTags
+  tags,
+  assessments,
+  onChangeTags,
 }: AssessmentLibraryWrapperProps) => {
   const classes = useStyles()
 
-  
   return (
     <Box className={classes.root}>
       <AssessmentLibraryFilter
@@ -91,14 +60,8 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
         assessments={assessments}
         onChangeTags={(tags: string[]) => onChangeTags(tags)}
       />
-      <Container
-        className={classes.assessmentContainer}
-        maxWidth="xl"
-  
-      >
-        <Box className={classes.cardGrid}>
-         {children}
-        </Box>
+      <Container className={classes.assessmentContainer} maxWidth="xl">
+        <Box className={classes.cardGrid}>{children}</Box>
       </Container>
     </Box>
   )

@@ -6,7 +6,7 @@ import {
   Grid,
   makeStyles,
   Switch,
-  Typography
+  Typography,
 } from '@material-ui/core'
 import ClockIcon from '@material-ui/icons/AccessTime'
 import clsx from 'clsx'
@@ -126,41 +126,43 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
           </Box>
         ))}
       </div>
-      {studySession.assessments.length> 1 && (<FormGroup aria-label="assessments" row style={{ marginLeft: '16px' }}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={isGroupAssessments}
-              onChange={e => onChangeGrouping(e.target.checked)}
-            />
-          }
-          label="Bundle assessments"
-        />
-
-        <Typography component="div" style={{ marginLeft: '30px' }}>
-          <Grid
-            component="label"
-            container
-            alignItems="center"
-            spacing={1}
-            wrap="nowrap"
-          >
-            <Grid item>Sequential</Grid>
-            <Grid item>
-              <Switch
-                color="primary"
-                disabled={!isGroupAssessments}
-                checked={assessmentOrder == 'RANDOM'}
-                onChange={e => {
-                  onSetRandomized(e.target.checked)
-                }}
-                name="checkedC"
+      {studySession.assessments.length > 1 && (
+        <FormGroup aria-label="assessments" row style={{ marginLeft: '16px' }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={isGroupAssessments}
+                onChange={e => onChangeGrouping(e.target.checked)}
               />
+            }
+            label="Bundle assessments"
+          />
+
+          <Typography component="div" style={{ marginLeft: '30px' }}>
+            <Grid
+              component="label"
+              container
+              alignItems="center"
+              spacing={1}
+              wrap="nowrap"
+            >
+              <Grid item>Sequential</Grid>
+              <Grid item>
+                <Switch
+                  color="primary"
+                  disabled={!isGroupAssessments}
+                  checked={assessmentOrder == 'RANDOM'}
+                  onChange={e => {
+                    onSetRandomized(e.target.checked)
+                  }}
+                  name="checkedC"
+                />
+              </Grid>
+              <Grid item>Randomized</Grid>
             </Grid>
-            <Grid item>Randomized</Grid>
-          </Grid>
-        </Typography>
-      </FormGroup>)}
+          </Typography>
+        </FormGroup>
+      )}
     </>
   )
 }

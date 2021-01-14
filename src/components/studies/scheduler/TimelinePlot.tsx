@@ -9,7 +9,6 @@ export interface TimelinePlotProps {}
 const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({}: TimelinePlotProps) => {
   const classes = useStyles()
 
-
   return (
     <Box border="1px solid black" padding="30px" bgcolor="#ECECEC">
       This timeline viewer will update to provide a visual summary of the

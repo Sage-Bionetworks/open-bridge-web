@@ -21,7 +21,7 @@ export enum ActionTypes {
   SetActiveSession = 'SEAT_ACTIVE_SESSION',
   UpdateSessionName = 'UPDATE_SESSION_NAME',
   UpdateAssessments = 'UPDATE_ASSESSMENTS',*/
-  UpdateSessionSchedule = 'UPDATE_SCHEDULE'
+  UpdateSessionSchedule = 'UPDATE_SCHEDULE',
 }
 /*
 export type Schedule = {
@@ -31,7 +31,6 @@ export type Schedule = {
 }
 */
 export type ActionPayload = {
-  
   [ActionTypes.UpdateSessionSchedule]: {
     sessionId: string
     schedule: SessionSchedule
@@ -79,7 +78,6 @@ export type SessionScheduleAction = ActionMap<ActionPayload>[keyof ActionMap<
 }*/
 
 function addSession(
-
   sessions: StudySession[],
   name: string,
   assessments: Assessment[],
@@ -97,7 +95,11 @@ function addSession(
   }
 
   const result = [
-    ...sessions.map((session, index) => ({ ...session, active: false , order: index})),
+    ...sessions.map((session, index) => ({
+      ...session,
+      active: false,
+      order: index,
+    })),
     {
       ...session,
     },
@@ -144,7 +146,7 @@ function updateSessionSchedule(
     if (session.id !== sessionId) {
       return session
     } else {
-      return { ...session, sessionSchedule}
+      return { ...session, sessionSchedule }
     }
   })
   return result
@@ -178,7 +180,7 @@ function actionsReducer(
   action: SessionScheduleAction,
 ): StudySession[] {
   switch (action.type) {
-     /*case Types.UpdateSessionSchedule: {
+    /*case Types.UpdateSessionSchedule: {
       return action.payload.sessions
     }
 

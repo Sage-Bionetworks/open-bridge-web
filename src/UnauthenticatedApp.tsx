@@ -1,16 +1,13 @@
-import React, { useEffect } from 'react'
-import TopNav from './components/widgets/AppTopNav'
-
+import React from 'react'
+import { Route, Switch } from 'react-router-dom'
 import './App.css'
-
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-
+import TopNav from './components/widgets/AppTopNav'
 import PublicRoutes from './routes_public'
 
 function UnauthenticatedApp() {
   return (
     <>
-      <TopNav  routes={PublicRoutes} />
+      <TopNav routes={PublicRoutes} />
       <main>
         <Switch>
           {PublicRoutes.map(({ path, Component }, key) => (

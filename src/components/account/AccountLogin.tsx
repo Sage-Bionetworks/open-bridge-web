@@ -1,31 +1,28 @@
+import {
+  Button,
+  Checkbox,
+  Container,
+  FormControlLabel,
+  Grid,
+  IconButton,
+  InputAdornment,
+  Link,
+  makeStyles,
+  Snackbar,
+  TextField,
+  Typography,
+} from '@material-ui/core'
+import { Visibility, VisibilityOff } from '@material-ui/icons'
+import Alert, { AlertProps } from '@material-ui/lab/Alert'
 import React, { FormEvent, FunctionComponent, useState } from 'react'
 import { ReactComponent as SageLogo } from '../../assets/sage.svg'
-import constants from '../../types/constants'
+import {
+  useSessionDataDispatch,
+  useSessionDataState,
+} from '../../helpers/AuthContext'
 import storeService from '../../services/store_service'
 import UserService from '../../services/user.service'
 import PasswordReset from './PasswordReset'
-import {
-  Button,
-  TextField,
-  Grid,
-  Paper,
-  Typography,
-  Link,
-  Container,
-  makeStyles,
-  FormControlLabel,
-  Checkbox,
-  Snackbar,
-  InputAdornment,
-  IconButton,
-} from '@material-ui/core'
-import Alert, { AlertProps } from '@material-ui/lab/Alert'
-
-import {
-  useSessionDataState,
-  useSessionDataDispatch,
-} from '../../helpers/AuthContext'
-import { Visibility, VisibilityOff } from '@material-ui/icons'
 
 type AccountLoginOwnProps = {
   callbackFn: Function

@@ -1,18 +1,13 @@
-import React, { FunctionComponent, ReactNode } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import { createStyles } from '@material-ui/core'
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
-import Button from '@material-ui/core/Button'
+import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-
-import { RouteComponentProps } from 'react-router-dom'
-import { Draggable } from 'react-beautiful-dnd'
 import clsx from 'clsx'
-import { Assessment, AssessmentResource } from '../../types/types'
-import { Box, CardMedia, createStyles } from '@material-ui/core'
-import { LeakAddTwoTone } from '@material-ui/icons'
+import React, { FunctionComponent } from 'react'
 import validated from '../../assets/validated.svg'
+import { Assessment } from '../../types/types'
 import AssessmentImage from './AssessmentImage'
 
 const useStyles = makeStyles(theme =>
@@ -53,8 +48,6 @@ const useStyles = makeStyles(theme =>
   }),
 )
 
-
-
 type AssessmentCardOwnProps = {
   assessment: Assessment
   index: number
@@ -79,7 +72,7 @@ const AssessmentCard: FunctionComponent<AssessmentCardProps> = ({
         <Typography variant="subtitle2" className={classes.tags}>
           {assessment.tags.join(', ')}
         </Typography>
-      </AssessmentImage >
+      </AssessmentImage>
       <CardContent className={classes.content}>
         <Typography color="textSecondary" gutterBottom>
           {assessment.title}

@@ -1,17 +1,11 @@
-import React from 'react'
-
 import { makeStyles } from '@material-ui/core/styles'
-
-import Link from '@material-ui/core/Link'
-import BackIcon from '@material-ui/icons/KeyboardBackspace'
-
-import { Typography } from '@material-ui/core'
-import { ReactComponent as Rect } from '../../assets/symbols/rect.svg'
+import clsx from 'clsx'
+import React from 'react'
 import { ReactComponent as Circle } from '../../assets/symbols/circle.svg'
 import { ReactComponent as Diamond } from '../../assets/symbols/diamond.svg'
+import { ReactComponent as Rect } from '../../assets/symbols/rect.svg'
 import { ReactComponent as Star } from '../../assets/symbols/star.svg'
 import { ReactComponent as Triangle } from '../../assets/symbols/triangle.svg'
-import clsx from 'clsx'
 
 const useStyles = makeStyles({
   root: {
@@ -58,7 +52,8 @@ const SessionIcon: React.FunctionComponent<SessionIconProps> = ({
   ]
 
   return (
-    <div className={classes.root}>{elements[index]} {children}
+    <div className={classes.root}>
+      {elements[index]} {children}
     </div>
   )
 }

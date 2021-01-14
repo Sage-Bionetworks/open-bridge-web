@@ -1,28 +1,18 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
-
-import { Box, Button, makeStyles, Typography } from '@material-ui/core'
-import TabPanel from '../../widgets/TabPanel'
-import TabsMtb from '../../widgets/TabsMtb'
-import useAssessments from '../../../helpers/hooks'
-import AssessmentCard from '../../assessments/AssessmentCard'
-
-import {
-  Group,
-  Assessment,
-  StudySession,
-  StringDictionary,
-} from '../../../types/types'
-
-import clsx from 'clsx'
-import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab'
+import { makeStyles } from '@material-ui/core'
 import CheckIcon from '@material-ui/icons/Check'
-import { Session } from 'inspector'
-import AssessmentService from '../../../services/assessment.service'
-import { useAsync } from '../../../helpers/AsyncHook'
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
+import React, { FunctionComponent, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
+import { useAsync } from '../../../helpers/AsyncHook'
 import { useSessionDataState } from '../../../helpers/AuthContext'
+import AssessmentService from '../../../services/assessment.service'
+import {
+  Assessment,
+  StringDictionary,
+  StudySession,
+} from '../../../types/types'
+import AssessmentCard from '../../assessments/AssessmentCard'
 import AssessmentLibraryWrapper from '../../assessments/AssessmentLibraryWrapper'
-import { isAbsolute } from 'path'
 
 const useStyles = makeStyles({
   toggleA: {
@@ -141,54 +131,52 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
     selectedAssessments: Assessment[],
   ) => {
     onUpdateAssessments(selectedAssessments)
-
   }
 
   return (
     <div>
-  
-    <AssessmentLibraryWrapper
-      tags={data.tags}
-      assessments={data.assessments}
-      onChangeTags={
-        (assessments: Assessment[]) =>
-          setFilteredAssessments(assessments) /*setFilterTags(tags)*/
-      }
-    >
-      {(filteredAssessments || data.assessments).map((a, index) => (
-        <ToggleButtonGroup
-          value={selectedAssessments}
-          onChange={toggleAssessment}
-          aria-label={a.title}
-          key={a.guid}
-        >
-          <ToggleButton
-            aria-label="bold"
-            value={a}
-            disabled={
-              !activeSession || isAssessmentInSession(activeSession, a.guid)
-            }
-            classes={{
-              root: classes.toggleA,
-              selected: classes.toggleASelected,
-              disabled: classes.toggleADisabled,
-            }}
+      <AssessmentLibraryWrapper
+        tags={data.tags}
+        assessments={data.assessments}
+        onChangeTags={
+          (assessments: Assessment[]) =>
+            setFilteredAssessments(assessments) /*setFilterTags(tags)*/
+        }
+      >
+        {(filteredAssessments || data.assessments).map((a, index) => (
+          <ToggleButtonGroup
+            value={selectedAssessments}
+            onChange={toggleAssessment}
+            aria-label={a.title}
+            key={a.guid}
           >
-            <AssessmentCard
-              index={index}
-              assessment={a}
-              key={a.guid}
-            ></AssessmentCard>
-            <div className={classes.overlay}>
-              <div className={classes.overlayBackdrop}></div>
-              <div className={classes.overlayBg}>
-                <CheckIcon className={classes.check}></CheckIcon>
+            <ToggleButton
+              aria-label="bold"
+              value={a}
+              disabled={
+                !activeSession || isAssessmentInSession(activeSession, a.guid)
+              }
+              classes={{
+                root: classes.toggleA,
+                selected: classes.toggleASelected,
+                disabled: classes.toggleADisabled,
+              }}
+            >
+              <AssessmentCard
+                index={index}
+                assessment={a}
+                key={a.guid}
+              ></AssessmentCard>
+              <div className={classes.overlay}>
+                <div className={classes.overlayBackdrop}></div>
+                <div className={classes.overlayBg}>
+                  <CheckIcon className={classes.check}></CheckIcon>
+                </div>
               </div>
-            </div>
-          </ToggleButton>
-        </ToggleButtonGroup>
-      ))}
-    </AssessmentLibraryWrapper>
+            </ToggleButton>
+          </ToggleButtonGroup>
+        ))}
+      </AssessmentLibraryWrapper>
     </div>
   )
 }

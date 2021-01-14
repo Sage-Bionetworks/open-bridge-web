@@ -3,7 +3,7 @@ import {
   Button,
   Checkbox,
   FormControlLabel,
-  makeStyles
+  makeStyles,
 } from '@material-ui/core'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
@@ -16,7 +16,7 @@ import {
   ReminderType,
   Reoccurance as ReoccuranceType,
   SessionSchedule,
-  StartDate as StartDateType
+  StartDate as StartDateType,
 } from '../../../types/scheduling'
 import { StudySession } from '../../../types/types'
 import { ErrorFallback, ErrorHandler } from '../../widgets/ErrorHandler'
@@ -81,12 +81,9 @@ SchedulableSingleSessionContainerProps) => {
     isGroupAssessments: false,
     order: 'SEQUENTIAL',
   }
-  const [
-    schedulableSession,
-    setSchedulableSession,
-  ] = React.useState<SessionSchedule>(
-    studySession.sessionSchedule || defaultSchedule,
-  )
+  const [schedulableSession, setSchedulableSession] = React.useState<
+    SessionSchedule
+  >(studySession.sessionSchedule || defaultSchedule)
 
   React.useEffect(() => {
     setSchedulableSession(studySession.sessionSchedule || defaultSchedule)
