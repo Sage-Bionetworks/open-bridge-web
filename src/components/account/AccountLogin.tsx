@@ -10,18 +10,19 @@ import {
   makeStyles,
   Snackbar,
   TextField,
-  Typography,
+  Typography
 } from '@material-ui/core'
 import { Visibility, VisibilityOff } from '@material-ui/icons'
 import Alert, { AlertProps } from '@material-ui/lab/Alert'
-import React, { FormEvent, FunctionComponent, useState } from 'react'
+import React, { FunctionComponent, useState } from 'react'
 import { ReactComponent as SageLogo } from '../../assets/sage.svg'
 import {
   useSessionDataDispatch,
-  useSessionDataState,
+  useSessionDataState
 } from '../../helpers/AuthContext'
 import storeService from '../../services/store_service'
 import UserService from '../../services/user.service'
+import Loader from '../widgets/Loader'
 import PasswordReset from './PasswordReset'
 
 type AccountLoginOwnProps = {
@@ -30,15 +31,12 @@ type AccountLoginOwnProps = {
 
 type AccountLoginProps = AccountLoginOwnProps
 
-const ENVIRONMENT = 'environment'
 const OAUTH_STATE = 'synState'
-const PHONE_SUCCESS_MSG =
-  'An SMS message has been sent to that phone number; enter the code to sign in.'
-const APP_KEY = 'appKey'
+/*
 const SUCCESS_MSG =
   'An email has been sent to that address with instructions on changing your password.'
 const COLLECTING_EMAIL = ['SignIn', 'ForgotPassword']
-const OTHER_THAN_PHONE = ['SignIn', 'ExternalIdSignIn', 'ForgotPassword']
+const OTHER_THAN_PHONE = ['SignIn', 'ExternalIdSignIn', 'ForgotPassword']*/
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -58,13 +56,9 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const loginWithSynapse = (event: any) => {
-  // let payload = createPayload('appId');
-  // let appKey = payload.appId;
   let state = new Date().getTime().toString(32)
-
-  //storeService.set(APP_KEY, appKey);
   storeService.set(OAUTH_STATE, state)
-  // storeService.set(ENVIRONMENT, self.environmentObs());
+
   let array = []
   array.push('response_type=code')
   array.push('client_id=' + UserService.getOathEnvironment().client)
@@ -90,13 +84,6 @@ const loginWithSynapse = (event: any) => {
       })
   }*/
 }
-
-const loginWithPassword = (event: FormEvent) => {}
-/* event.preventDefault();
-  
-  this.props.history.push("/home");
-  } else {
-  alert('Incorrect Credntials!');*/
 
 const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
   const [username, setUsername] = useState('')
@@ -134,6 +121,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
             // userDataGroup: loggedIn.data.dataGroups,
           },
         })
+
         callbackFn()
       } else {
         setAlertMsg({
@@ -166,10 +154,12 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
             Sign in
           </Typography>
           <div className={classes.paper}>
-            <Button onClick={e => loginWithSynapse(e)}>
+            <Button  variant = "contained" onClick={e => loginWithSynapse(e)}>
               <SageLogo></SageLogo>
-              Sign in with your Synapse account
+              &nbsp; &nbsp;Sign in with your Synapse account
             </Button>
+            <Typography component="h3" style={{marginTop:"16px"}} >OR </Typography>
+
             <form className={classes.form} noValidate onSubmit={e => signIn(e)}>
               <TextField
                 variant="outlined"
@@ -215,14 +205,16 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
                 control={<Checkbox value="remember" />}
                 label="Remember me"
               />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                className={classes.submit}
-              >
-                Sign In
-              </Button>
+              <Loader reqStatusLoading={isLoading} loaderSize="2rem" variant='small'>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  className={classes.submit}
+                >
+                  Sign In
+                </Button>
+              </Loader>
               <Grid container>
                 <Grid item xs>
                   <Button
