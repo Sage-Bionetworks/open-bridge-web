@@ -1,25 +1,31 @@
-import React, { ReactNode } from 'react'
-
-import { makeStyles } from '@material-ui/core/styles'
-import { useErrorHandler } from 'react-error-boundary'
 import { Box, FormControl, FormLabel } from '@material-ui/core'
-import { poppinsFont } from '../../../style/theme'
+import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
+import React, { ReactNode } from 'react'
+import { poppinsFont } from '../../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   root: {
     marginBottom: theme.spacing(2),
     paddingBottom: theme.spacing(2),
-    borderBottom: '1px solid #BBC3CD'
+    borderBottom: '1px solid #BBC3CD',
+
+    '&.no-border': {
+      border: 'none',
+    },
   },
   formControl: {
     flexDirection: 'row',
-    textAlign:'left',
+    textAlign: 'left',
 
     display: 'flex',
     justifyContent: 'flex-start',
     alignContent: 'center',
     alignItems: 'flex-start',
+
+    '&.small': {
+      alignItems: 'center',
+    },
   },
   label: {
     paddingTop: theme.spacing(1),
@@ -29,6 +35,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: '18px',
     fontStyle: 'normal',
     fontWeight: 600,
+    flexShrink: 0,
 
     textAlign: 'left',
 
@@ -38,17 +45,16 @@ const useStyles = makeStyles(theme => ({
       lineHeight: 1.4,
       fontWeight: 400,
       fontSize: '14px',
-
-    }
+    },
   },
-
 }))
 
 export interface SchedulingFormSectionProps {
-  label: string | Element
+  label: ReactNode
   children: ReactNode
   style?: React.CSSProperties
   variant?: 'small'
+  border?: boolean
 }
 
 const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps> = ({
@@ -56,15 +62,31 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
   style,
   variant,
   children,
- 
+  border = true,
 }: SchedulingFormSectionProps) => {
   const classes = useStyles()
 
   return (
     <>
-      <Box className={clsx(classes.root, variant==="small"&& 'small')} style={style} >
-        <FormControl component="div" className={classes.formControl}>
-          <FormLabel component="label" className={clsx(classes.label, variant==="small"&& 'small')} >
+      <Box
+        className={clsx(
+          classes.root,
+          variant === 'small' && 'small',
+          border === false && 'no-border',
+        )}
+        style={style}
+      >
+        <FormControl
+          component="div"
+          className={clsx(classes.formControl, variant === 'small' && 'small')}
+        >
+          <FormLabel
+            component="label"
+            className={clsx(
+              typeof label === 'string' && classes.label,
+              variant === 'small' && 'small',
+            )}
+          >
             {label}
           </FormLabel>
           {children}

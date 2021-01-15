@@ -1,17 +1,18 @@
 import {
-  FormControlLabel,
-  Checkbox,
-  makeStyles,
-  Grid,
-  Typography,
-  Switch,
   Box,
+  Checkbox,
+  FormControlLabel,
   FormGroup,
+  Grid,
+  makeStyles,
+  Switch,
+  Typography,
 } from '@material-ui/core'
+import ClockIcon from '@material-ui/icons/AccessTime'
 import clsx from 'clsx'
 import React from 'react'
 import { ThemeType } from '../../../style/theme'
-import { StudySession } from '../../../types/types'
+import { Assessment, StudySession } from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
 import SessionIcon from '../../widgets/SessionIcon'
 
@@ -29,8 +30,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     borderBottom: '1px solid #000',
     paddingTop: theme.spacing(1),
     paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2)
-    
+    paddingRight: theme.spacing(2),
   },
 }))
 
@@ -43,7 +43,36 @@ export interface AssessmentListProps {
   assessmentOrder: 'SEQUENTIAL' | 'RANDOM'
   onChangeGrouping: Function
   onSetRandomized: Function
+}
 
+export interface SessionHeaderProps {
+  order: number
+  name: string
+  assessments: Assessment[]
+}
+const SessionHeader: React.FunctionComponent<SessionHeaderProps> = ({
+  order,
+  name,
+  assessments,
+}: SessionHeaderProps) => {
+  const totalTime = assessments.reduce(
+    (prev, curr) => prev + Number(curr.duration),
+    0,
+  )
+  const result = (
+    <Box>
+      <SessionIcon index={order}>
+        <span>{name}</span>
+      </SessionIcon>
+      <Box textAlign="right" paddingBottom="16px">
+        {totalTime} min &nbsp;&nbsp;
+        <ClockIcon
+          style={{ fontSize: '12px', verticalAlign: 'middle' }}
+        ></ClockIcon>
+      </Box>
+    </Box>
+  )
+  return result
 }
 
 const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
@@ -52,7 +81,6 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   isGroupAssessments,
   onChangeGrouping,
   onSetRandomized,
-
 }: AssessmentListProps): JSX.Element => {
   const classes = useStyles()
 
@@ -69,12 +97,12 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   }
   return (
     <>
-   <SessionIcon index={studySession.order}><span>{studySession.name} - {} </span></SessionIcon> 
-      {studySession.assessments.reduce(
-        (prev, curr) => prev + Number(curr.duration),
-        0,
-      )}{' '}
-      min.
+      <SessionHeader
+        order={studySession.order!}
+        name={studySession.name}
+        assessments={studySession.assessments}
+      ></SessionHeader>
+
       <div
         className={clsx({
           [classes.inner]: true,
@@ -98,45 +126,43 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
           </Box>
         ))}
       </div>
-      <FormGroup aria-label="assessments" row style={{marginLeft: '16px'}}>
-        <FormControlLabel
-          control={
-            <Checkbox
-        
-              checked = {isGroupAssessments}
-              onChange={e =>
-                onChangeGrouping(e.target.checked)
-              }
-            />
-          }
-          label="Bundle assessments"
-        />
-
-        <Typography component="div" style={{marginLeft: '30px'}}>
-          <Grid
-            component="label"
-            container
-            alignItems="center"
-            spacing={1}
-            wrap="nowrap"
-          >
-            <Grid item>Sequential</Grid>
-            <Grid item>
-              <Switch
-                color="primary"
-                disabled = {!isGroupAssessments}
-                checked={assessmentOrder == 'RANDOM'}
-                onChange={e => {
-          
-                  onSetRandomized(e.target.checked)
-                }}
-                name="checkedC"
+      {studySession.assessments.length > 1 && (
+        <FormGroup aria-label="assessments" row style={{ marginLeft: '16px' }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={isGroupAssessments}
+                onChange={e => onChangeGrouping(e.target.checked)}
               />
+            }
+            label="Bundle assessments"
+          />
+
+          <Typography component="div" style={{ marginLeft: '30px' }}>
+            <Grid
+              component="label"
+              container
+              alignItems="center"
+              spacing={1}
+              wrap="nowrap"
+            >
+              <Grid item>Sequential</Grid>
+              <Grid item>
+                <Switch
+                  color="primary"
+                  disabled={!isGroupAssessments}
+                  checked={assessmentOrder == 'RANDOM'}
+                  onChange={e => {
+                    onSetRandomized(e.target.checked)
+                  }}
+                  name="checkedC"
+                />
+              </Grid>
+              <Grid item>Randomized</Grid>
             </Grid>
-            <Grid item>Randomized</Grid>
-          </Grid>
-        </Typography>
-      </FormGroup>
+          </Typography>
+        </FormGroup>
+      )}
     </>
   )
 }

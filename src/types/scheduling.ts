@@ -1,38 +1,32 @@
-export type SessionScheduleStartType =
-  | 'DAY1'
-  | 'NDAYS_DAY1'
-
-
+export type SessionScheduleStartType = 'DAY1' | 'NDAYS_DAY1'
 
 export enum HSsEnum {
-  h = 'Hours',
-  d = 'Days'
-  }
-
+  H = 'Hours',
+  D = 'Days',
+}
 
 export type SessionScheduleEndType = 'END_STUDY' | 'N_OCCURENCES'
 
 export enum DWMYEnum {
-  d = 'Day',
-  w = 'Week',
- M = 'Month',
-  y = 'Year'
-
+  D = 'Day',
+  W = 'Week',
+  M = 'Month',
+  Y = 'Year',
 }
 
 export enum DWMYsEnum {
-  d = 'Days',
-  w = 'Weeks',
+  D = 'Days',
+  W = 'Weeks',
   M = 'Months',
-  y = 'Years'
+  Y = 'Years',
 }
 
 export enum HDWMEnum {
-  h= 'Hour',
-  d = 'Day',
-  w = 'Week',
-  M = 'Month'
-  }
+  H = 'Hour',
+  D = 'Day',
+  W = 'Week',
+  M = 'Month',
+}
 
 /*export enum WeekdaysEnum {
   'Su' = '0',
@@ -62,29 +56,26 @@ export type ReminderIntervalType = 'BEFORE' | 'AFTER'
 
 export type AssessmentOrder = 'SEQUENTIAL' | 'RANDOM'
 
-export type WindowEndType = {
-    endQuantity: number,
-    endUnit:  keyof typeof  HSsEnum
-}
+export type StudyStartPseudonym = 'ONBOARDING' | 'START_DATE'
 
-export type WindowReminderType = {
-  interval:  keyof typeof  ReminderIntervalEnum
-  type: ReminderIntervalType
+export type WindowEndType = string /*{
+    //endQuantity: number,
+    //endUnit:  keyof typeof  HSsEnum
+}*/
+
+export type ReminderType = {
+  interval: keyof typeof ReminderIntervalEnum
+  type?: ReminderIntervalType
 }
 
 export type AssessmentWindow = {
   startHour: number
-  end: WindowEndType,
+  end: WindowEndType
 
-  isAllowAnyFrequency?: boolean,
-  notification?: NotificationFreqEnum
-  isAllowSnooze?: boolean
-
-  reminder?: WindowReminderType
-
+  isAllowAnyFrequency?: boolean
 }
 
-export type Reoccurance = string/*{
+export type Reoccurance = string /*{
   unit: keyof typeof DWMYEnum
   frequency: number
  // days?: WeekdaysEnum[]
@@ -92,9 +83,9 @@ export type Reoccurance = string/*{
 
 export type StartDate = {
   type: SessionScheduleStartType
- // offsetNumber?: number
- // offsetUnit?: HDWMEnum
- offset?: string
+  // offsetNumber?: number
+  // offsetUnit?: HDWMEnum
+  offset?: string
 }
 
 export type EndDate = {
@@ -102,19 +93,18 @@ export type EndDate = {
   days?: number
 }
 
-
-
-
-
-export type StudyDuration =  string/*{
+export type StudyDuration = string /*{
   unit:  keyof typeof DWMYsEnum
   quantity: number
 }*/
 
 export type SessionSchedule = {
-
   startDate: StartDate
   reoccurance: Reoccurance
+  notification?: keyof typeof NotificationFreqEnum
+  isAllowSnooze?: boolean
+
+  reminder?: ReminderType
   windows: AssessmentWindow[]
   endDate: EndDate
   isGroupAssessments?: boolean

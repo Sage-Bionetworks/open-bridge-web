@@ -65,7 +65,7 @@ function countReducer(state: SessionData, action: Action): SessionData {
         name: action.payload!.name,
         // userDataGroup: action.payload!.userDataGroup
       }
- 
+
       setSession(newState)
       return newState
 

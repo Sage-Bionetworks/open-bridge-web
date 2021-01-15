@@ -4,6 +4,7 @@ export default {
     STUDY_ID: 'mtb-user-testing',
     SESSION_NAME: 'bridge-session-mtb-user-testing',
     ENDPOINT: 'https://webservices.sagebridge.org',
+    SYNAPSE_ENDPOINT: 'https://repo-prod.prod.sagebase.org',
   },
 
   /* templateTitles: {
@@ -37,18 +38,15 @@ export default {
     local: {
       client: '100062',
       vendor: 'mtb',
-      redirect: 'http://127.0.0.1:3000'
-
+      redirect: 'http://127.0.0.1:3000',
     },
     staging: {
       client: '100069',
       vendor: 'mtb-staging',
-      redirect: 'https://staging.mobiletoolbox.org'
-
-    }
-
-  }
- /* client: {
+      redirect: 'https://staging.mobiletoolbox.org',
+    },
+  },
+  /* client: {
     local: '100062',
     staging: '100069',
     production: '100018',
@@ -58,7 +56,6 @@ export default {
     staging: 'mtb-staging',
     production: '',
   }*/
-
 
   /*toastr: {
     closeButton: true,
@@ -83,7 +80,6 @@ export default {
     }
   },
   retentionReports: ['api', 'biomarin-pku-study', 'crf-module', 'sage-mpower-2'],*/
-  ,
   endpoints: {
     /*adminAuth: '/v3/auth/admin',
   appConfigs: '/v3/appconfigs',
@@ -101,7 +97,7 @@ export default {
   getAppPublicKey: '/v1/apps/self/publicKey',
   masterschedule: '/v3/schedulerconfigs',
   metadata: '/v3/sharedmodules/metadata',*/
-  sessionAssessments: '/v1/sessions/{sessionGuid}/assessments',
+    sessionAssessments: '/v1/sessions/{sessionGuid}/assessments',
     assessments: '/v1/assessments?includeDeleted=false',
     assessmentsShared: '/v1/sharedassessments/?includeDeleted=false',
     assessmentShared: '/v1/sharedassessments/',
@@ -125,7 +121,7 @@ export default {
   sharedmodules: '/v3/sharedmodules',*/
     signIn: '/v3/auth/signIn',
     signOut: '/v3/auth/signOut',
-    
+
     /* subpopulations: '/v3/subpopulations',
   substudies: '/v3/substudies',
   survey: '/v3/surveys',

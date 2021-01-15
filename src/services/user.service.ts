@@ -2,14 +2,17 @@ import { callEndpoint } from '../helpers/utility'
 import constants from '../types/constants'
 import { LoggedInUserData, Response } from '../types/types'
 
-
-const getOathEnvironment = (): {client: string, vendor: string, redirect: string} => {
- if (document.location.origin.indexOf('127.0.0.1') > -1) {
-  return constants.oauth.local
-} else if (document.location.origin.indexOf('staging') > -1) {
-  return constants.oauth.staging
-}
-throw ('unknown')
+const getOathEnvironment = (): {
+  client: string
+  vendor: string
+  redirect: string
+} => {
+  if (document.location.origin.indexOf('127.0.0.1') > -1) {
+    return constants.oauth.local
+  } else if (document.location.origin.indexOf('staging') > -1) {
+    return constants.oauth.staging
+  }
+  throw 'unknown'
 }
 
 const requestResetPassword = async (email: string): Promise<Response<{}>> => {
@@ -64,7 +67,6 @@ const loginOauth = async (
   return result
 }
 
-
 async function getUserInfo(token: string): Promise<Response<LoggedInUserData>> {
   const result = await callEndpoint<LoggedInUserData>(
     constants.endpoints.selfInfo,
@@ -79,7 +81,7 @@ const UserService = {
   requestResetPassword,
   loginWithPassword,
   loginOauth,
-  getUserInfo
+  getUserInfo,
 }
 
 export default UserService

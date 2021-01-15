@@ -13,6 +13,7 @@ import {
   Paper,
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
+import Fab from '@material-ui/core/Fab'
 
 import { Assessment, Group, StudySession } from '../../../types/types'
 
@@ -24,11 +25,12 @@ import StudyService from '../../../services/study.service'
 import SessionActionButtons from './SessionActionButtons'
 import SingleSessionContainer from './SingleSessionContainer'
 import { useErrorHandler } from 'react-error-boundary'
-import { useAsync } from '../../../helpers/AsyncHook'
 
 import { StudySection } from '../sections'
 import NavButtons from '../NavButtons'
 import { useStudy, useStudySessions } from '../../../helpers/hooks'
+import NavigationPrompt from 'react-router-navigation-prompt'
+import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -130,12 +132,35 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
 
   const save = async (url: string) => {
     const done = await StudyService.saveStudySessions(id, sessions || [])
+    console.log('done')
     window.location.replace(url)
   }
 
   if (sessions) {
     return (
       <>
+        <NavigationPrompt when={hasObjectChanged}>
+          {({ onConfirm, onCancel }) => (
+            <ConfirmationDialog
+              isOpen={hasObjectChanged}
+              type={'NAVIGATE'}
+              onCancel={onCancel}
+              onConfirm={onConfirm}
+            />
+          )}
+        </NavigationPrompt>
+        <Fab
+          color="primary"
+          onClick={() => setHasObjectChanged(false)}
+          aria-label="add"
+          style={{
+            position: 'absolute',
+            right: '30px',
+            display: hasObjectChanged ? 'block' : 'none',
+          }}
+        >
+          Save
+        </Fab>
         objectChanged? {hasObjectChanged ? 'yes' : 'no'}
         <Box className={classes.root}>
           {sessions.map(session => (

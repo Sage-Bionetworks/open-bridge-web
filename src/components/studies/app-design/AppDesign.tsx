@@ -1,9 +1,3 @@
-import React, { useState, ChangeEvent } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { useErrorHandler } from 'react-error-boundary'
-
-import { StudySection } from '../sections'
-
 import {
   Box,
   Button,
@@ -13,13 +7,16 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core'
-import { ThemeType } from '../../../style/theme'
+import { makeStyles } from '@material-ui/core/styles'
+import ReactColorPicker from '@super-effective/react-color-picker'
+import React, { ChangeEvent, useState } from 'react'
+import { useErrorHandler } from 'react-error-boundary'
 //import { ReactComponent as PhoneBg } from '../../../assets/phone_bg.svg'
 import PhoneBg from '../../../assets/phone_bg.svg'
-import { BorderTopRounded } from '@material-ui/icons'
-import { bytesToSize } from '../../../helpers/utility'
-import ReactColorPicker from '@super-effective/react-color-picker'
 import { useStudy } from '../../../helpers/hooks'
+import { bytesToSize } from '../../../helpers/utility'
+import { ThemeType } from '../../../style/theme'
+import { StudySection } from '../sections'
 
 const topBarHeight = '48px'
 
@@ -99,7 +96,7 @@ function getPreviewForImage(file: File): PreviewFile {
 }
 
 const AppDesign: React.FunctionComponent<AppDesignProps> = ({
-  id
+  id,
 }: AppDesignProps) => {
   const handleError = useErrorHandler()
   const classes = useStyles()
@@ -148,7 +145,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
 
     return getUploadButton('Upload')
   }
-
 
   if (status === 'PENDING') {
     return <>loading component here</>

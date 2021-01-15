@@ -10,15 +10,15 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2),
     backgroundColor: '#FFF',
   },
-  disabled:  {
-    position: "absolute",
+  disabled: {
+    position: 'absolute',
     top: 0,
     backgroundColor: '#ddd',
-left: 0,
+    left: 0,
     height: '100%',
     width: '100%',
     opacity: '.8',
-  }
+  },
 }))
 
 type TabPanelProps = {
@@ -40,7 +40,6 @@ const TabPanel: FunctionComponent<TabPanelProps> = ({
   const classes = useStyles()
   return (
     <Paper
-
       ref={innerRef}
       role="tabpanel"
       hidden={value !== index}
@@ -49,10 +48,10 @@ const TabPanel: FunctionComponent<TabPanelProps> = ({
       {...other}
     >
       {value === index && (
-      <Box className={classes.root} position="relative">
+        <Box className={classes.root} position="relative">
           <>{children}</>
-          {disabled && <Box  className={classes.disabled}> </Box>}
-     </Box>
+          {disabled && <Box className={classes.disabled}> </Box>}
+        </Box>
       )}
     </Paper>
   )

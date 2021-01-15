@@ -1,7 +1,10 @@
 /*  General Types ********************************/
 
-import { StudySection } from "../components/studies/sections"
-import { StudyDuration } from "./scheduling"
+import {
+  SessionSchedule,
+  StudyDuration,
+  StudyStartPseudonym,
+} from './scheduling'
 
 export interface StringDictionary<T> {
   [key: string]: T
@@ -162,8 +165,9 @@ export type StudySession = {
   name: string
   assessments: Assessment[]
   order?: number
- // Guid: string
-/*Name: string
+  sessionSchedule?: SessionSchedule
+  // Guid: string
+  /*Name: string
 Bundled: boolean
 Randomized: boolean
 Delay: number
@@ -180,30 +184,28 @@ export type Group = {
   sessions: StudySession[]
 }
 
-export type StudyStatus =  'DRAFT' | 'ACTIVE' | 'COMPLETED'
+export type StudyStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'
 export type Study = {
   identifier: string
   status: StudyStatus
   name: string
   subtitle?: string
   description?: string
-  studyDuration?: StudyDuration 
- // sessions: StudySession[]
-
+  studyDuration?: StudyDuration
+  // sessions: StudySession[]
 }
 
 export type Schedule = {
-  name: string,
-  eventStartId: string,
+  name: string
+  eventStartId: string
   sessions: StudySession[]
 }
 
 export type StudyArm = {
   id: string
-  name: string,
-  studyId: string,
-  pseudonym: string
-  schedule: Schedule
+  name: string
+  studyId: string
+  pseudonym?: StudyStartPseudonym
+  schedule?: Schedule
   active?: boolean
 }
-

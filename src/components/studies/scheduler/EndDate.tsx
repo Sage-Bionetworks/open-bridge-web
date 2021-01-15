@@ -1,22 +1,18 @@
-import React from 'react'
-
-import { makeStyles } from '@material-ui/core/styles'
-
 import {
-  Box,
-  FormControl,
   createStyles,
-  Theme,
   FormControlLabel,
-  FormLabel,
   Radio,
   RadioGroup,
-  TextField,
+  Theme,
 } from '@material-ui/core'
-
-import { EndDate as EndDateType, SessionScheduleEndType } from '../../../types/scheduling'
+import { makeStyles } from '@material-ui/core/styles'
+import React from 'react'
+import {
+  EndDate as EndDateType,
+  SessionScheduleEndType,
+} from '../../../types/scheduling'
+import SmallTextBox from '../../widgets/SmallTextBox'
 import SchedulingFormSection from './SchedulingFormSection'
-import SmallTextBox from './SmallTextBox'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,11 +42,11 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
   }
 
   const changeEndDateDays = (days: string) => {
-   /* if (isNaN(Number.parseInt(days))) {
+    /* if (isNaN(Number.parseInt(days))) {
       throw new Error('Number!')
     }*/
 
-    const endDate : EndDateType= {
+    const endDate: EndDateType = {
       type: 'N_OCCURENCES',
       days: Number(days),
     }
@@ -58,14 +54,12 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
   }
 
   return (
-    <SchedulingFormSection label={'Repeat Until:'}>
+    <SchedulingFormSection label={'End after:'}>
       <RadioGroup
         aria-label="End Date"
         name="endDate"
         value={endDate.type}
-        onChange={e =>
-          changeEndDate(e.target.value as SessionScheduleEndType)
-        }
+        onChange={e => changeEndDate(e.target.value as SessionScheduleEndType)}
       >
         <FormControlLabel
           value={'END_STUDY'}
@@ -82,11 +76,11 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
                 style={{ marginRight: '10px' }}
                 onChange={e => changeEndDateDays(e.target.value)}
                 value={endDate.days || ''}
-                onFocus={e=> changeEndDate('N_OCCURENCES')}
+                onFocus={e => changeEndDate('N_OCCURENCES')}
               />
             </>
           }
-          label="occurrences"
+          label="times"
         />
       </RadioGroup>
     </SchedulingFormSection>

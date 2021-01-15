@@ -79,7 +79,6 @@ interface ParticipantTableHeaderProps<T> {
 }
 
 interface ParticipantTableProps {
-
   rows: any[]
   headCells: any[]
 }
@@ -357,10 +356,12 @@ const ParticipantTable: FunctionComponent<ParticipantTableProps> = ({
                             padding="none"
                             key={key.id}
                           >
-                        {row[key.id]}
+                            {row[key.id]}
                           </TableCell>
                         ) : (
-                          <TableCell align="right"          key={key.id}>{row[key.id]}</TableCell>
+                          <TableCell align="right" key={key.id}>
+                            {row[key.id]}
+                          </TableCell>
                         ),
                       )}
                     </TableRow>

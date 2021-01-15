@@ -152,14 +152,14 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
       <>
         <Box className={classes.inner}>
           <Box marginRight="16px">
-          <SessionIcon  index={studySession.order}>
-            <EditableTextbox
-              component="h4"
-              initValue={studySession.name}
-              onTriggerUpdate={(newValue: string) =>
-                onUpdateSessionName(studySession.id, newValue)
-              }
-            ></EditableTextbox>
+            <SessionIcon index={studySession.order}>
+              <EditableTextbox
+                component="h4"
+                initValue={studySession.name}
+                onTriggerUpdate={(newValue: string) =>
+                  onUpdateSessionName(studySession.id, newValue)
+                }
+              ></EditableTextbox>
             </SessionIcon>
           </Box>
 
@@ -247,44 +247,45 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
   }
   return (
     <>
-    <Box
-      className={clsx(classes.root /*, studySession?.active && 'active')*/)}
-      onClick={() => onSetActiveSession(studySession.id)}
-    >
-      {getInner(studySession)}
+      <Box
+        className={clsx(classes.root /*, studySession?.active && 'active')*/)}
+        onClick={() => onSetActiveSession(studySession.id)}
+      >
+        {getInner(studySession)}
 
-      <Box className={classes.actions}>
-        <FormControlLabel
-          control={
-            <Switch
-              value={isEditable}
-              onChange={e => setIsEditable(e.target.checked)}
-            />
-          }
-          label="Edit"
-        />
+        <Box className={classes.actions}>
+          <FormControlLabel
+            control={
+              <Switch
+                value={isEditable}
+                onChange={e => setIsEditable(e.target.checked)}
+              />
+            }
+            label="Edit"
+          />
 
-        <Button
-          onClick={() => onShowAssessments()}
-          variant="text"
-          style={{ padding: '0px', minWidth: 'auto' }}
-        >
-          <AddIcon></AddIcon>
-        </Button>
+          <Button
+            onClick={() => onShowAssessments()}
+            variant="text"
+            style={{ padding: '0px', minWidth: 'auto' }}
+          >
+            <AddIcon></AddIcon>
+          </Button>
+        </Box>
       </Box>
-    </Box>
-    <ConfirmationDialog
+      <ConfirmationDialog
         isOpen={isConfirmDeleteOpen}
         title={'Delete Session'}
         type={'DELETE'}
-        onCancel={()=>setIsConfirmDeleteOpen(false)}
+        onCancel={() => setIsConfirmDeleteOpen(false)}
         onConfirm={() => {
           setIsConfirmDeleteOpen(false)
           onRemoveSession(studySession.id)
         }}
       >
         <div>
-          Are you sure you would like to permanently delete: <p>{studySession.name}</p>
+          Are you sure you would like to permanently delete:{' '}
+          <p>{studySession.name}</p>
         </div>
       </ConfirmationDialog>
     </>

@@ -1,27 +1,16 @@
-import React, { FunctionComponent, useState, useEffect } from 'react'
-import { RouteComponentProps, useParams } from 'react-router-dom'
+import { Box, Button, Grid, Switch } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
-import LoadingComponent from '../../widgets/Loader'
-import { useAsync } from '../../../helpers/AsyncHook'
-import ParticipantService from '../../../services/participants.service'
-import { useSessionDataState } from '../../../helpers/AuthContext'
 import DeleteIcon from '@material-ui/icons/Delete'
-import ObjectDebug from '../../widgets/ObjectDebug'
-import {
-  Box,
-  Button,
-  createStyles,
-  FormControlLabel,
-  Grid,
-  IconButton,
-  Switch,
-  Theme,
-  withStyles,
-} from '@material-ui/core'
-import ParticipantTable, { HeadCell } from './ParticipantTable'
-
+import React, { FunctionComponent } from 'react'
+import { useErrorHandler } from 'react-error-boundary'
+import { RouteComponentProps, useParams } from 'react-router-dom'
+import { useAsync } from '../../../helpers/AsyncHook'
+import { useSessionDataState } from '../../../helpers/AuthContext'
+import ParticipantService from '../../../services/participants.service'
 import HideWhen from '../../widgets/HideWhen'
+import ObjectDebug from '../../widgets/ObjectDebug'
+import StudyTopNav from '../StudyTopNav'
+import ParticipantTable, { HeadCell } from './ParticipantTable'
 
 const useStyles = makeStyles({
   root: {},
@@ -99,6 +88,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = ({
   } else if (status === 'RESOLVED') {
     return (
       <div className={classes.root}>
+        <StudyTopNav studyId={id} currentSection={''}></StudyTopNav>
         StudyId: {id}
         <ObjectDebug label="part" data={data}></ObjectDebug>
         <Box border="1px slid black">
@@ -117,7 +107,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = ({
 
           <Box>
             <HideWhen hideWhen={!isEdit}>
-              <div style={{display: 'inline'}}>
+              <div style={{ display: 'inline' }}>
                 <Button>Move to</Button>
 
                 <Button>Unlink phone number</Button>

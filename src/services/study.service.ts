@@ -1,15 +1,12 @@
+import { getRandomId } from '../helpers/utility'
 import {
-  Group,
   Schedule,
   Study,
   StudyArm,
   StudySession,
   StudyStatus,
 } from '../types/types'
-
-import AssessmentService from './assessment.service'
-import { getRandomId } from '../helpers/utility'
-import { KEYS, MOCKS, setItem, getItem } from './lshelper'
+import { getItem, KEYS, MOCKS, setItem } from './lshelper'
 
 const StudyService = {
   getStudies,
@@ -73,7 +70,7 @@ async function getStudySessions(
 async function saveStudy(study: Study): Promise<Study[]> {
   const studies = (await getStudies()) || []
   let newStudies: Study[]
-  if (studies.find(_study => _study.identifier == study.identifier)) {
+  if (studies.find(_study => _study.identifier === study.identifier)) {
     //if study exist
     newStudies = studies.map(_study =>
       _study.identifier === study.identifier ? study : _study,
@@ -120,7 +117,7 @@ async function getStudyArms(studyId: string): Promise<StudyArm[]> {
     studyId,
     active: true,
     name: 'Untitled',
-    pseudonym: '',
+
     schedule,
   }
   result = [newStudyArm]

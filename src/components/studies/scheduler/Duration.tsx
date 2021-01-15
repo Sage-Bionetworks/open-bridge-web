@@ -1,13 +1,9 @@
-import React from 'react'
-
-import { makeStyles } from '@material-ui/core/styles'
-
 import { createStyles, StandardTextFieldProps, Theme } from '@material-ui/core'
-
-import SelectWithEnum from '../../widgets/SelectWithEnum'
-
-import SmallTextBox from './SmallTextBox'
+import { makeStyles } from '@material-ui/core/styles'
 import moment from 'moment'
+import React from 'react'
+import SelectWithEnum from '../../widgets/SelectWithEnum'
+import SmallTextBox from '../../widgets/SmallTextBox'
 
 const useStyles = makeStyles((theme: Theme) => createStyles({}))
 
@@ -20,7 +16,9 @@ export interface DurationProps {
   numberLabel: string
 }
 
-const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> = ({
+const Duration: React.FunctionComponent<
+  DurationProps & StandardTextFieldProps
+> = ({
   durationString,
   unitData,
   onChange,
@@ -30,7 +28,7 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
 }: DurationProps) => {
   const classes = useStyles()
 
-  const units: { [key: string]: moment.unitOfTime.Base } = {
+  /* const units: { [key: string]: moment.unitOfTime.Base } = {
     Y: 'y',
     M: 'M',
     W: 'w',
@@ -38,47 +36,54 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
     H: 'h',
     TM: 'm',
     S: 's',
-  }
+  }*/
 
-  const [unt, setUnit] = React.useState<moment.unitOfTime.Base | undefined>(
-    undefined,
-  )
+  const [unt, setUnit] = React.useState<string | undefined>(undefined)
   const [num, setNum] = React.useState<number | undefined>(undefined)
 
   React.useEffect(() => {
     try {
       if (!durationString /*|| !durationString.includes('P')*/) {
-        throw 'no value'
+        throw durationString + 'no value!'
       }
-      console.log('duration', durationString)
+      //console.log('duration', durationString)
       const hasTime = durationString.includes('T')
-      console.log(hasTime)
+      //console.log(hasTime)
       let unit = durationString[durationString.length - 1]
-      unit = unit === 'M' && hasTime ? 'TM' : unit
-      console.log('unit is', unit)
-      console.log('unitdata', unitData)
-      const parsedDuration = moment.duration(durationString)
-      console.log('parsedD', parsedDuration)
+      //unit = unit === 'M' && hasTime ? 'TM' : unit
+      //console.log('unit is', unit)
+      //console.log('unitdata', unitData)
+      console.log(durationString, ':about to parse')
+      //debugger
 
-      const n = parsedDuration.as(units[unit] as moment.unitOfTime.Base)
+      // const parsedDuration = moment.duration(durationString)
+      //console.log('parsedD', parsedDuration)
+      var numberPattern = /\d+/g
+      const num = durationString.match(numberPattern)
+      const n = num ? Number(num[0]) : 0
 
-      console.log('unittype:', typeof unit)
+      //const n = durationString.//parsedDuration.as(units[unit] as moment.unitOfTime.Base)
+
+      //console.log('unittype:', typeof unit)
       console.log('n', n)
 
-      setUnit(units[unit])
+      setUnit(unit)
       setNum(n)
     } catch (e) {
-      console.log(e)
+      console.log(e + 'caught error')
       setUnit(undefined)
       setNum(undefined)
     }
   }, [durationString])
 
-  const changeValue = (value?: number, unit?: moment.unitOfTime.Base) => {
+  const changeValue = (value?: number, unit?: string) => {
+    console.log('changing value:' + value)
     if (unit) {
+      console.log('has unit: ' + unit)
       setUnit(unit)
     }
     if (value) {
+      console.log('has value: ' + value)
       setNum(value)
     }
     if (!unit || !value) {
@@ -87,8 +92,10 @@ const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> 
     //dont' use that since it will change the units
     //const convertedDuraion = moment.duration({ [unit]: value }).toISOString()
     //compose a perdio
-    const durationUnit = Object.keys(units).find(key => units[key] === unit)!
-    const p = `P${value}${durationUnit}`
+    // const durationUnit = Object.keys(units).find(key => units[key] === unit)!
+    const time = unit === 'H' || unit === 'M' ? 'T' : ''
+    const p = `P${time}${value}${unit}`
+    console.log(p, 'set p')
 
     onChange(p)
   }

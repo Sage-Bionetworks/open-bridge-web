@@ -5,12 +5,12 @@ import clsx from 'clsx'
 const useStyles = makeStyles(theme => ({
   wrapper: {
     marginRight: theme.spacing(2),
-    
+
     borderRadius: '5px',
 
     '&:hover': {
       border: `1px solid ${theme.palette.divider}`,
-      padding: '8px'
+      padding: '8px',
     },
   },
 }))
@@ -51,7 +51,6 @@ export const Editable: FunctionComponent<EditableProps> = ({
     const keys = ['Escape', 'Tab']
     const enterKey = 'Enter'
     const allKeys = [...keys, enterKey]
-    console.log(key)
     if (key === 'Escape') {
       onReset()
     }
@@ -66,8 +65,6 @@ export const Editable: FunctionComponent<EditableProps> = ({
     }
   }
 
-
-
   return (
     <section {...props}>
       {isEditing ? (
@@ -79,7 +76,9 @@ export const Editable: FunctionComponent<EditableProps> = ({
         </div>
       ) : (
         <div className={classes.wrapper} onClick={() => setEditing(true)}>
-          <WrapperElement style={{margin: 0}}>{text || placeholder || 'blah'}</WrapperElement>
+          <WrapperElement style={{ margin: 0 }}>
+            {text || placeholder || ' '}
+          </WrapperElement>
         </div>
       )}
     </section>
@@ -102,7 +101,6 @@ const EditableTextbox: FunctionComponent<EditableTextboxProps> = ({
   const [newValue, setNewValue] = React.useState('')
 
   return (
-
     <Editable
       text={newValue}
       placeholder={initValue}
@@ -118,8 +116,7 @@ const EditableTextbox: FunctionComponent<EditableTextboxProps> = ({
         name="task"
         placeholder={initValue}
         value={newValue}
-        style={{width: '100%', padding: '8px'}}
- 
+        style={{ width: '100%', padding: '8px' }}
         onBlur={e => {
           if (newValue) {
             onTriggerUpdate(newValue)
@@ -130,7 +127,6 @@ const EditableTextbox: FunctionComponent<EditableTextboxProps> = ({
         }}
       />
     </Editable>
-  
   )
 }
 

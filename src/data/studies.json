@@ -6,35 +6,30 @@
       "description": "loremIpsum",
       "status": "DRAFT",
       "studyDuration": "P3M"
-
     },
     {
       "identifier": "5476c92c1",
       "name": "anotherStudy1",
       "description": "loremIpsum dolor",
       "status": "DRAFT"
-      
     },
     {
       "identifier": "5476c92c2",
       "name": "anotherStudy2",
       "description": "loremIpsum dolor",
       "status": "ACTIVE"
-      
     },
     {
       "identifier": "5476c92c3",
       "name": "anotherStudy3",
       "description": "loremIpsum dolor",
       "status": "ACTIVE"
-      
     },
     {
       "identifier": "5476c92c4",
       "name": "anotherStudy4",
       "description": "loremIpsum dolor",
       "status": "COMPLETED"
-      
     }
   ]
 }

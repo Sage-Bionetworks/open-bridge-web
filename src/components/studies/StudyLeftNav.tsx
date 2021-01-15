@@ -1,24 +1,12 @@
-import React, { FunctionComponent, useEffect } from 'react'
-import Link from '@material-ui/core/Link'
-import {
-  Box,
-  Divider,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Theme,
-  Typography,
-} from '@material-ui/core'
-import { poppinsFont, ThemeType } from '../../style/theme'
-import { SECTIONS as sectionLinks, StudySection } from './sections'
-import clsx from 'clsx'
+import { Drawer, IconButton, makeStyles } from '@material-ui/core'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import SomeIcon from '@material-ui/icons/SentimentVerySatisfied';
+import SomeIcon from '@material-ui/icons/SentimentVerySatisfied'
+import clsx from 'clsx'
+import React, { FunctionComponent } from 'react'
+import { NavLink } from 'react-router-dom'
+import { poppinsFont, ThemeType } from '../../style/theme'
+import { SECTIONS as sectionLinks, StudySection } from './sections'
 
 const drawerWidth = 212
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -55,24 +43,30 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       width: theme.spacing(6),
     },
   },
+  list: {
+    margin: '0',
+    padding: '0',
+    position: 'relative',
+    listStyle: 'none',
+  },
 
   listItem: {
     color: theme.palette.action.active,
-    paddingLeft: theme.spacing(8),
+    paddingLeft: theme.spacing(2),
     paddingTop: theme.spacing(1.5),
     paddingBottom: theme.spacing(1.5),
 
     '&$listItemActive': {
       borderLeft: '4px solid #BCD5E4',
       backgroundColor: '#FAFAFA',
-      paddingLeft: theme.spacing(7.5),
+      paddingLeft: theme.spacing(1.5),
     },
     '&$listItemCollapsed': {
-      paddingLeft:  theme.spacing(1)
+      paddingLeft: theme.spacing(1),
     },
     '&$listItemActive&$listItemCollapsed': {
-      paddingLeft:  theme.spacing(.5)
-    }
+      paddingLeft: theme.spacing(0.5),
+    },
   },
   listItemActive: {},
   listItemCollapsed: {},
@@ -80,6 +74,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   link: {
     fontFamily: poppinsFont,
     color: '#282828',
+    textDecoration: 'none',
     /*  color: theme.palette.action.active,
     paddingLeft: theme.spacing(8),
     paddingTop: theme.spacing(2),
@@ -148,35 +143,28 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
           {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
       </div>
-
-      <List>
+      <ul className={classes.list}>
         {sectionLinks.map((sectionLink, index) => (
-          <ListItem
-            component="a"
+          <li
             key={sectionLink.path}
-            href={sectionLink.path}
             className={clsx(classes.listItem, {
               [classes.listItemActive]: sectionLink.path === currentSection,
-              [classes.listItemCollapsed]: !open
+              [classes.listItemCollapsed]: !open,
             })}
           >
-            <ListItemIcon style={{ display: open ? 'none' : 'block' }}>
-              <SomeIcon />
-            </ListItemIcon>
-
-            <ListItemText
-              disableTypography
-              primary={
-                <Typography component="span" className={classes.link}>
-                  {' '}
-                  {sectionLink.name}
-                </Typography>
-              }
-              style={{ display: open ? 'block' : 'none' }}
-            />
-          </ListItem>
+            <NavLink
+              key={sectionLink.path}
+              to={sectionLink.path}
+              className={classes.link}
+            >
+              <div style={{ display: 'flex' }}>
+                <SomeIcon style={{ marginRight: '16px' }} />
+                <span>{sectionLink.name}</span>
+              </div>
+            </NavLink>
+          </li>
         ))}
-      </List>
+      </ul>
     </Drawer>
   )
 }

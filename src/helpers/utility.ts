@@ -74,10 +74,13 @@ export const callEndpoint = async <T>(
   method: 'POST' | 'GET' = 'POST',
   data: StringDictionary<any>,
   token?: string,
+  isSynapseEndpoint?: boolean,
 ): Promise<Response<T>> => {
   const ls = window.localStorage
   const isE2E = ls.getItem('crc_e2e')
-  let url = `${CONSTANTS.constants.ENDPOINT}${endpoint}`
+  let url = isSynapseEndpoint
+    ? `${CONSTANTS.constants.SYNAPSE_ENDPOINT}${endpoint}`
+    : `${CONSTANTS.constants.ENDPOINT}${endpoint}`
   if (isE2E) {
     return callEndpointXHR(url, method, data, token)
   }
@@ -128,7 +131,6 @@ export const clearSession = () => {
 }
 
 export const setSession = (data: SessionData) => {
-
   sessionStorage.setItem(CONSTANTS.constants.SESSION_NAME, JSON.stringify(data))
 }
 
@@ -186,15 +188,13 @@ export const getRandomId = (): string => {
 export const getEnumKeys = <T>(enum1: T): (keyof T)[] =>
   Object.keys(enum1) as (keyof T)[]
 
-
-  export const bytesToSize = (bytes: number) => {
-    const sizes = ['bytes', 'kb', 'MB', 'GB', 'TB']
-    if (bytes === 0) return 'n/a'
-    const i = parseInt(
-      Math.floor(Math.log(bytes) / Math.log(1024)).toString(),
-      10,
-    )
-    if (i === 0) return `${bytes} ${sizes[i]})`
-    return `${(bytes / 1024 ** i).toFixed(1)}${sizes[i]}`
-  }
-  
+export const bytesToSize = (bytes: number) => {
+  const sizes = ['bytes', 'kb', 'MB', 'GB', 'TB']
+  if (bytes === 0) return 'n/a'
+  const i = parseInt(
+    Math.floor(Math.log(bytes) / Math.log(1024)).toString(),
+    10,
+  )
+  if (i === 0) return `${bytes} ${sizes[i]})`
+  return `${(bytes / 1024 ** i).toFixed(1)}${sizes[i]}`
+}

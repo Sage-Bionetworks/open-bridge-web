@@ -47,11 +47,11 @@ const useStyles = makeStyles(theme => ({
   menuButton: {
     marginRight: theme.spacing(2),
     float: 'right',
-    '&::after':  {
-      content: "",
+    '&::after': {
+      content: '',
       display: 'table',
-      clear: 'both'
-    }
+      clear: 'both',
+    },
   },
 }))
 
@@ -79,76 +79,76 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
 
   return (
     <>
-    <Hidden lgUp>
-    <IconButton
-      color="inherit"
-      aria-label="Open drawer"
-      edge="end"
-      onClick={() => setIsMobileOpen(!isMobileOpen)}
-      className={classes.menuButton}
-    >
-      <MenuIcon></MenuIcon>
-    </IconButton>
-  </Hidden>
-  <Hidden mdDown>
-    <Paper className={classes.toolbarStudyHeader} elevation={0}>
-      <Toolbar
-        component="nav"
-        variant="dense"
-        disableGutters
-        className={classes.toolbar}
-        style={{
-          marginTop: '48px',
-          paddingTop: '0',
-          alignItems: 'center',
-        }}
-      >
-        <NavLink
-          to={'/'}
-          key="home"
-          className={classes.toolbarLink}
-          style={{ paddingBottom: '0' }}
+      <Hidden lgUp>
+        <IconButton
+          color="inherit"
+          aria-label="Open drawer"
+          edge="end"
+          onClick={() => setIsMobileOpen(!isMobileOpen)}
+          className={classes.menuButton}
         >
-          <img src={Logo} key="home" />
-        </NavLink>
-
-        <BreadCrumb
-          links={[{ url: '/Studies', text: '' }]}
-          currentItem={studyName || 'Utitled Study '}
-        ></BreadCrumb>
-      </Toolbar>
-      <Toolbar className={classes.toolbar}>
-        {links
-          .filter(section => section.name)
-          .map(section => (
+          <MenuIcon></MenuIcon>
+        </IconButton>
+      </Hidden>
+      <Hidden mdDown>
+        <Paper className={classes.toolbarStudyHeader} elevation={0}>
+          <Toolbar
+            component="nav"
+            variant="dense"
+            disableGutters
+            className={classes.toolbar}
+            style={{
+              marginTop: '48px',
+              paddingTop: '0',
+              alignItems: 'center',
+            }}
+          >
             <NavLink
-              to={section.path.replace(':id', studyId)}
-              key={section.path}
+              to={'/'}
+              key="home"
+              className={classes.toolbarLink}
+              style={{ paddingBottom: '0' }}
+            >
+              <img src={Logo} key="home" />
+            </NavLink>
+
+            <BreadCrumb
+              links={[{ url: '/Studies', text: '' }]}
+              currentItem={studyName || 'Utitled Study '}
+            ></BreadCrumb>
+          </Toolbar>
+          <Toolbar className={classes.toolbar}>
+            {links
+              .filter(section => section.name)
+              .map(section => (
+                <NavLink
+                  to={section.path.replace(':id', studyId)}
+                  key={section.path}
+                  className={classes.toolbarLink}
+                  activeClassName={classes.selectedLink}
+                >
+                  {section.name}
+                </NavLink>
+              ))}
+          </Toolbar>
+          <Toolbar className={classes.toolbar}>
+            <NavLink
+              to={'/studies/:id/shared-settings'.replace(':id', studyId)}
+              key={'path-to-shared-settings'}
               className={classes.toolbarLink}
               activeClassName={classes.selectedLink}
+              style={{ display: 'flex' }}
             >
-              {section.name}
+              <PeopleIcon></PeopleIcon>&nbsp;&nbsp;Shared settings
             </NavLink>
-          ))}
-      </Toolbar>
-      <Toolbar className={classes.toolbar}>
-        <NavLink
-          to={'path-to-shared-settings'.replace(':id', studyId)}
-          key={'path-to-shared-settings'}
-          className={classes.toolbarLink}
-          activeClassName={classes.selectedLink}
-          style={{ display: 'flex' }}
-        >
-          <PeopleIcon></PeopleIcon>&nbsp;&nbsp;Shared settings
-        </NavLink>
-      </Toolbar>
-      {currentSection && (
-        <Typography component="h1">{currentSection}</Typography>
-      )}
-    </Paper>
- 
- </Hidden> 
- </>)
+          </Toolbar>
+          {currentSection && (
+            <Typography component="h1">{currentSection}</Typography>
+          )}
+        </Paper>
+      </Hidden>
+    </>
+  )
 }
 
 export default StudyTopNav

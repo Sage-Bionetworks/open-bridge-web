@@ -40,7 +40,6 @@ export default [
     exact: true,
   },
 
-
   {
     path: '/development-team',
     name: 'DEVELOPMENT TEAM',
@@ -50,7 +49,6 @@ export default [
     path: '/create-account',
     name: 'CREATE ACCOUNT',
     Component: AccountCreate,
-    isRhs: true
+    isRhs: true,
   },
-  
 ]

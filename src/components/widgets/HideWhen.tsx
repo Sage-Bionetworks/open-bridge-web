@@ -14,13 +14,13 @@ const HideWhen: React.FunctionComponent<HideWhenProps> = props => {
   const classes = useStyles()
   const children = React.Children.toArray(props.children)
 
-
   if (children.length === 1) {
-    const visibility = props.hideWhen
-      ? 'hidden' 
-      : 'visible' 
-      const style = {...(children[0] as React.ReactElement<any>).props.style, visibility};
-      console.log(style, 'style')
+    const visibility = props.hideWhen ? 'hidden' : 'visible'
+    const style = {
+      ...(children[0] as React.ReactElement<any>).props.style,
+      visibility,
+    }
+    console.log(style, 'style')
 
     return React.cloneElement(children[0] as React.ReactElement<any>, {
       style: style,

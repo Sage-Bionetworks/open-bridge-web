@@ -2,7 +2,13 @@ import React from 'react'
 
 import { makeStyles } from '@material-ui/core/styles'
 
-import { Select, MenuItem, FormControl, InputLabel, SelectProps } from '@material-ui/core'
+import {
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  SelectProps,
+} from '@material-ui/core'
 import { getEnumKeys } from '../../helpers/utility'
 import { EnumType, TextSpan } from 'typescript'
 import clsx from 'clsx'
@@ -33,7 +39,9 @@ export interface SelectWithEnumProps {
   size?: 'small' | 'normal'
 }
 
-const SelectWithEnum: React.FunctionComponent<SelectWithEnumProps & SelectProps > = ({
+const SelectWithEnum: React.FunctionComponent<
+  SelectWithEnumProps & SelectProps
+> = ({
   sourceData,
 
   id,

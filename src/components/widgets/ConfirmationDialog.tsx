@@ -10,7 +10,6 @@ import { ReactComponent as Delete } from '../../assets/trash.svg'
 import { IconButton, makeStyles } from '@material-ui/core'
 import { latoFont, poppinsFont } from '../../style/theme'
 
-
 const useStyles = makeStyles(theme => ({
   dialogTitle: {},
   closeButton: {
@@ -48,19 +47,19 @@ const useStyles = makeStyles(theme => ({
 
 type ConfirmationDialogProps = {
   isOpen: boolean
-  type?: 'DELETE'
-  title: string
+  type: 'DELETE' | 'NAVIGATE'
+  title?: string
   cancelText?: string
   actionText?: string
   onCancel: Function
   onConfirm: Function
-  children: JSX.Element
+  children?: JSX.Element
 }
 
 const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   isOpen,
   onCancel,
-  title,
+  title = 'Navigate Away? ',
   type,
   onConfirm,
   children,
@@ -68,6 +67,13 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   actionText = 'OK',
 }) => {
   const classes = useStyles()
+  const navigateBody = (
+    <div>
+      Looks like you have some unsaved Changes.
+      <br /> Are you sure you want to leave?
+    </div>
+  )
+  let body = type === 'NAVIGATE' ? navigateBody : children
 
   return (
     <Dialog
@@ -94,7 +100,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          {children}
+          {body}
         </DialogContentText>
       </DialogContent>
       <DialogActions>

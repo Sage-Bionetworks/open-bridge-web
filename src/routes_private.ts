@@ -7,9 +7,10 @@ import StudyBuilder from './components/studies/StudyBuilder'
 import AssessmentDetail from './components/assessments/AssessmentDetail'
 import SessionsLayout from './components/layouts/sessions'
 import AccountSetup from './components/account/AccountSetup'
+import Sharing from './components/shared/Sharing'
 
 export default [
- /* {
+  /* {
     path: '/compliance-dashboard',
     name: 'COMPLIANCE DASHBOARD',
     Component: ComplianceDashboard,
@@ -29,6 +30,12 @@ export default [
     exact: false,
     Component: ParticipantManager,
   },
+  {
+    path: '/studies/:id/shared-settings',
+    name: '',
+    exact: false,
+    Component: Sharing,
+  },
 
   {
     path: '/assessments',
@@ -47,8 +54,8 @@ export default [
     name: 'ACCOUNT',
     Component: AccountSetup,
     exact: true,
-  }
- /* {
+  },
+  /* {
     path: '/sessionsLayout',
     name: 'SessionBuilderLayout',
     Component: SessionsLayout,

@@ -18,7 +18,13 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import SomeIcon from '@material-ui/icons/FaceOutlined'
-import { MTBHeadingH1, MTBHeadingH2, MTBHeadingH3, MTBHeadingH4, MTBHeadingH5  } from '../widgets/Headings'
+import {
+  MTBHeadingH1,
+  MTBHeadingH2,
+  MTBHeadingH3,
+  MTBHeadingH4,
+  MTBHeadingH5,
+} from '../widgets/Headings'
 
 const drawerWidth = 212
 
@@ -123,7 +129,6 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
       display="flex"
       position="relative"
     >
-  
       <Drawer
         variant="permanent"
         className={clsx(classes.drawer, {
@@ -170,11 +175,11 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
             [classes.mainAreaWide]: !open,
           })}
         >
-        <MTBHeadingH1>H1_Playfair Display_italic_21 </MTBHeadingH1>
-        <MTBHeadingH2>H2_Poppins_Semibold_18pt</MTBHeadingH2>
-        <MTBHeadingH3>H3_Lato_Regular, 15pt, Top nav</MTBHeadingH3>
-        <MTBHeadingH4>H4_Lato_Bold, 15pt Selected top nav</MTBHeadingH4>
-        <MTBHeadingH5>H5_Poppins Regular, 14pt Left Nav Button</MTBHeadingH5>
+          <MTBHeadingH1>H1_Playfair Display_italic_21 </MTBHeadingH1>
+          <MTBHeadingH2>H2_Poppins_Semibold_18pt</MTBHeadingH2>
+          <MTBHeadingH3>H3_Lato_Regular, 15pt, Top nav</MTBHeadingH3>
+          <MTBHeadingH4>H4_Lato_Bold, 15pt Selected top nav</MTBHeadingH4>
+          <MTBHeadingH5>H5_Poppins Regular, 14pt Left Nav Button</MTBHeadingH5>
           <Box
             display="grid"
             padding="8px"
@@ -182,7 +187,6 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
             gridColumnGap="16px"
             gridRowGap="16px"
           >
-        
             {cards.map(card => (
               <Box
                 width="280px"

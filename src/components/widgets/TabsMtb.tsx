@@ -74,7 +74,6 @@ const TabsMtb: FunctionComponent<TabProps & CSSProperties> = ({
     null,
   )
 
-
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     if (newValue !== -10) {
       console.log('Tab change newValue Tabs', newValue)
@@ -133,13 +132,15 @@ const TabsMtb: FunctionComponent<TabProps & CSSProperties> = ({
             icon={
               index === value ? (
                 <>
-                {onDelete && <DeleteIcon
-                    className={classes.deleteIcon}
-                    onClick={(e: SyntheticEvent) => {
-                      e.stopPropagation()
-                      onDelete(tab.id)
-                    }}
-                  ></DeleteIcon>}
+                  {onDelete && (
+                    <DeleteIcon
+                      className={classes.deleteIcon}
+                      onClick={(e: SyntheticEvent) => {
+                        e.stopPropagation()
+                        onDelete(tab.id)
+                      }}
+                    ></DeleteIcon>
+                  )}
                   <div className={classes.TabTitle}>
                     <EditableTextbox
                       initValue={tab.label}

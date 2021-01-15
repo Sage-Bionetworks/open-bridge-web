@@ -23,13 +23,7 @@ export const playfairDisplayFont = [
   'Arial',
 ].join(',')
 
-export const latoFont = [
-
-  'Lato',
-  'Roboto',
-  'Helvetica',
-  'Arial',
-].join(',')
+export const latoFont = ['Lato', 'Roboto', 'Helvetica', 'Arial'].join(',')
 
 export const poppinsFont = ['Poppins', 'sans-serif'].join(',')
 
@@ -86,7 +80,7 @@ const theme: Theme = createMuiTheme({
       fontFamily: poppinsFont,
       fontWeight: 300,
       fontSize: '14px',
-      margin: 0
+      margin: 0,
     },
     subtitle2: {
       fontFamily: playfairDisplayFont,
@@ -103,9 +97,8 @@ const theme: Theme = createMuiTheme({
   palette: {
     divider: '#282828',
     background: {
-      default: '#E5E5E5',//'#BCD5E4',
+      default: '#E5E5E5', //'#BCD5E4',
       paper: '#fff',
-      
     },
     text: {
       primary: '#000',
@@ -119,8 +112,8 @@ const theme: Theme = createMuiTheme({
       main: '#2196f3',
     },
     error: {
-      main: '#FCD2D2'
-    }
+      main: '#FCD2D2',
+    },
   },
 })
 
