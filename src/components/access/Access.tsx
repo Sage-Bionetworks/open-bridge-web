@@ -9,17 +9,17 @@ import {
   IconButton,
   makeStyles,
   Radio,
-  TextField,
+  TextField
 } from '@material-ui/core'
-
-import React, { FunctionComponent, useState } from 'react'
-
-import { RouteComponentProps, useParams } from 'react-router-dom'
-import StudyTopNav from '../studies/StudyTopNav'
 import CloseIcon from '@material-ui/icons/Close'
-
-import { callEndpoint } from '../../helpers/utility'
+import React, { FunctionComponent, useState } from 'react'
+import { useErrorHandler } from 'react-error-boundary'
+import { RouteComponentProps, useParams } from 'react-router-dom'
+import { useAsync } from '../../helpers/AsyncHook'
 import { useSessionDataState } from '../../helpers/AuthContext'
+import AccessService from '../../services/access.service'
+import StudyTopNav from '../studies/StudyTopNav'
+import Loader from '../widgets/Loader'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -32,44 +32,65 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-type SharingOwnProps = {
+type AccessOwnProps = {
   title?: string
   paragraph?: string
 }
 
-type SharingProps = SharingOwnProps & RouteComponentProps
+type AccessProps = AccessOwnProps & RouteComponentProps
 
-const Sharing: FunctionComponent<SharingProps> = ({
+const Access: FunctionComponent<AccessProps> = ({
   title = 'something',
   paragraph,
 }) => {
   const classes = useStyles()
   let { id } = useParams<{ id: string }>()
   const [x, setX] = useState<number[]>([])
-  const { token } = useSessionDataState()
+  const [isOpenInvite, setIsOpenInvite] = React.useState(false)
+
+  const { token, orgMembership } = useSessionDataState()
+
+  const handleError = useErrorHandler()
+
+  const { data: members, status, error, run, setData } = useAsync<any>({
+    status: 'PENDING',
+    data: [],
+  })
+
+  React.useEffect(() => {
+    ///your async call
+
+    return run(
+      (async function (orgMembership, token) {
+     
+        const members = await AccessService.getAccountsForOrg(token!, orgMembership!)
+       return members
+      })(orgMembership, token),
+    )
+  }, [run])
+
+  React.useEffect(() => {}, [orgMembership])
 
   const invite = () => {}
-  const synapseAliasToUserId = (alias: string = 'agendel@synapse.org') => {
-    if (!alias) {
-      return Promise.resolve(alias)
-    }
-    alias = alias.replace('@synapse.org', '').trim()
-    if (/^\d+$/.test(alias)) {
-      return Promise.resolve(alias)
-    }
-    return fetch(
-      'https://repo-prod.prod.sagebase.org/repo/v1/principal/alias',
-      {
-        method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ alias: alias, type: 'USER_NAME' }),
-      },
-    ).then(response => {
-      return response.json().then(json => {
-        return Promise.resolve(json.principalId)
-      })
-    })
+  const synapseAliasToUserId = async (
+    alias: string = 'agendel@synapse.org',
+  ) => {
+    const synapseId = await AccessService.getAliasFromSynapseByEmail(alias)
+
+    const isSuccess = await AccessService.createAccount(
+      token!,
+      alias,
+      synapseId,
+      orgMembership!,
+    )
+    console.log(isSuccess)
+  }
+
+  if (status === 'PENDING') {
+    return <Loader reqStatusLoading={true}></Loader>
+  }
+  if (status === 'REJECTED') {
+    handleError(error!)
   }
 
   return (
@@ -78,9 +99,12 @@ const Sharing: FunctionComponent<SharingProps> = ({
       <Container maxWidth="lg" className={classes.root}>
         <Box marginRight="40px">
           <h3>Team Members</h3>
-          Alina Gendel
+            <ul>
+          {members.map((member: any) => (
+           <li>{`${member.firstName} ${member.lastName}${member.email ?  ': '+ member.email: ''}`}</li>))}
+           </ul>
           <Divider />
-          <Button onClick={() => invite()}>Invite member</Button>
+          <Button onClick={() => setIsOpenInvite(true)} variant="contained">Invite member</Button>
         </Box>
         <Box>
           <h3>Access Type</h3>
@@ -153,18 +177,24 @@ const Sharing: FunctionComponent<SharingProps> = ({
           </table>
         </Box>
       </Container>
-      <Dialog open={true} maxWidth="lg" aria-labelledby="form-dialog-title">
+     {status === 'RESOLVED' && <Dialog open={isOpenInvite} maxWidth="lg" aria-labelledby="form-dialog-title">
         <DialogTitle>
           Invite Team Members
           <IconButton
             aria-label="close"
             className={'' /*classes.closeButton*/}
-            onClick={() => {}}
+            onClick={() => setIsOpenInvite(false)}
+            style={{position: 'absolute', top: '16px', right: '16px' }}
           >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
         <DialogContent>
+          Current Team Members
+          <ul>
+          {members.map((member: any) => (
+           <li>{member.email}</li>))}
+           </ul>
           <TextField multiline={true} label="Email:"></TextField>
         </DialogContent>
         <Button
@@ -172,9 +202,9 @@ const Sharing: FunctionComponent<SharingProps> = ({
         >
           Next
         </Button>
-      </Dialog>
+      </Dialog>}
     </>
   )
 }
 
-export default Sharing
+export default Access

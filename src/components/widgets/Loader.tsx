@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 }))
 
 export type LoadingComponentType = {
-  children: React.ReactNode
+  children?: React.ReactNode
   reqStatusLoading: RequestStatus | boolean
   variant?: 'full' | 'small'
   style?: any
