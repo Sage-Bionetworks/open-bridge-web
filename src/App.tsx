@@ -3,7 +3,7 @@ import {
   createMuiTheme,
   CssBaseline,
   ThemeProvider,
-  Typography,
+  Typography
 } from '@material-ui/core'
 import React, { useEffect } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -13,7 +13,7 @@ import AuthenticatedApp from './AuthenticatedApp'
 import { ErrorFallback, ErrorHandler } from './components/widgets/ErrorHandler'
 import {
   useSessionDataDispatch,
-  useSessionDataState,
+  useSessionDataState
 } from './helpers/AuthContext'
 import UserService from './services/user.service'
 import { cssVariables, theme } from './style/theme'
@@ -56,6 +56,7 @@ export const detectSSOCode = async (
           ...sessionData,
           token: loggedIn.data.sessionToken,
           name: loggedIn.data.firstName,
+          orgMembership: loggedIn.data.orgMembership,
           // consented: loggedIn.data.consented,
           // userDataGroup: loggedIn.data.dataGroups,
         },

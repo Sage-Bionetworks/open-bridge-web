@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { setSession, getSession, clearSession } from './utility'
 import { SessionData } from '../types/types'
+import { clearSession, getSession, setSession } from './utility'
 
 type ActionType = 'LOGIN' | 'LOGOUT' | 'SET_ALERT' | 'CLEAR_ALERT'
 /*| 'CONSENT'
@@ -11,6 +11,7 @@ type SessionDataProviderProps = { children: React.ReactNode }
 
 const initialState = {
   token: undefined,
+  orgMembership: undefined,
   userDataGroup: [],
 }
 
@@ -61,6 +62,7 @@ function countReducer(state: SessionData, action: Action): SessionData {
       const newState = {
         ...state,
         token: action.payload!.token,
+        orgMembership:action.payload!.orgMembership,
         //consented: action.payload!.consented,
         name: action.payload!.name,
         // userDataGroup: action.payload!.userDataGroup
@@ -74,6 +76,7 @@ function countReducer(state: SessionData, action: Action): SessionData {
       return {
         ...state,
         token: undefined,
+        orgMembership: undefined,
         //consented: undefined,
         // alert: undefined,
         // userDataGroup: []

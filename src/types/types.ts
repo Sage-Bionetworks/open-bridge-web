@@ -3,7 +3,7 @@
 import {
   SessionSchedule,
   StudyDuration,
-  StudyStartPseudonym,
+  StudyStartPseudonym
 } from './scheduling'
 
 export interface StringDictionary<T> {
@@ -32,6 +32,7 @@ export interface UserData {
 
 export interface LoggedInUserData extends UserData {
   sessionToken: string
+  orgMembership: string
   //consented: boolean
   sharingScope: string
 
@@ -93,6 +94,7 @@ export interface SignInDataEmail extends SignInData {
 
 export type SessionData = {
   token: string | undefined
+  orgMembership: string| undefined
   name?: string
   alert?: string
 }
