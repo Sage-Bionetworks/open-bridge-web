@@ -60,6 +60,16 @@ const theme: Theme = createMuiTheme({
     MuiCssBaseline: {
       '@global': globals,
     },
+    MuiButton: {
+      containedPrimary: {
+        backgroundColor: '#000',
+
+        '&:hover': {
+          backgroundColor: '#634848'
+
+        }
+      }
+    }
   },
   props: {
     // Name of the component ⚛️
@@ -67,6 +77,8 @@ const theme: Theme = createMuiTheme({
       // The properties to apply
       disableRipple: true, // No more ripple, on the whole application 💣!
     },
+   
+
   },
   spacing: 8,
 

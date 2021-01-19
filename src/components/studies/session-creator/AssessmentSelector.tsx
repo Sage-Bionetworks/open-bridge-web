@@ -6,10 +6,10 @@ import { useErrorHandler } from 'react-error-boundary'
 import { useAsync } from '../../../helpers/AsyncHook'
 import { useSessionDataState } from '../../../helpers/AuthContext'
 import AssessmentService from '../../../services/assessment.service'
+import { StudySession } from '../../../types/scheduling'
 import {
   Assessment,
-  StringDictionary,
-  StudySession,
+  StringDictionary
 } from '../../../types/types'
 import AssessmentCard from '../../assessments/AssessmentCard'
 import AssessmentLibraryWrapper from '../../assessments/AssessmentLibraryWrapper'

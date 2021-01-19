@@ -1,9 +1,10 @@
 /*  General Types ********************************/
 
 import {
-  SessionSchedule,
-  StudyDuration,
-  StudyStartPseudonym
+  Schedule,
+
+
+  StartEventId, StudyDuration
 } from './scheduling'
 
 export interface StringDictionary<T> {
@@ -159,32 +160,8 @@ export type Assessment = {
   resources?: any[]
 }
 
-export type StudySession = {
-  id: string
-  active?: boolean
-  studyId: string
-  //duration: number
-  name: string
-  assessments: Assessment[]
-  order?: number
-  sessionSchedule?: SessionSchedule
-  // Guid: string
-  /*Name: string
-Bundled: boolean
-Randomized: boolean
-Delay: number
-Interval: number
-Duration: number(period
-Expires number: Period
-Occurrences Number*/
-}
 
-export type Group = {
-  active?: boolean
-  id: string
-  name: string
-  sessions: StudySession[]
-}
+
 
 export type StudyStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'
 export type Study = {
@@ -197,17 +174,12 @@ export type Study = {
   // sessions: StudySession[]
 }
 
-export type Schedule = {
-  name: string
-  eventStartId: string
-  sessions: StudySession[]
-}
 
 export type StudyArm = {
   id: string
   name: string
   studyId: string
-  pseudonym?: StudyStartPseudonym
+ startEventId?: StartEventId
   schedule?: Schedule
   active?: boolean
 }

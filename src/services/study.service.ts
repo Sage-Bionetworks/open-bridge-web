@@ -1,11 +1,5 @@
-import { getRandomId } from '../helpers/utility'
-import {
-  Schedule,
-  Study,
-  StudyArm,
-  StudySession,
-  StudyStatus,
-} from '../types/types'
+import { Schedule, StudySession } from '../types/scheduling'
+import { Study, StudyStatus } from '../types/types'
 import { getItem, KEYS, MOCKS, setItem } from './lshelper'
 
 const StudyService = {
@@ -15,7 +9,7 @@ const StudyService = {
   removeStudy,
   getStudySessions,
   saveStudySessions,
-  getStudyArms,
+  getStudySchedule,
 }
 
 async function getStudies(): Promise<Study[]> {
@@ -97,11 +91,18 @@ async function saveStudySessions(
   const others = allSessions?.filter(s => s.studyId !== studyId) || []
   const allSessionsUpdated = [...others, ...sessions]
   const result = await setItem(KEYS.STUDY_SESSIONS, allSessionsUpdated)
-
+  var promise = new Promise(function (resolve, reject) {
+    console.log('waiting')
+    window.setTimeout(function () {
+      resolve(result)
+    }, 2000)
+  })
+  var x = await promise
+  console.log('done')
   return result
 }
 
-async function getStudyArms(studyId: string): Promise<StudyArm[]> {
+async function getStudySchedule(studyId: string): Promise<Schedule> {
   let result
   /* let studyArms = await getItem<StudyArm[]>(KEYS.STUDY_ARMS)
   let result =  studyArms?.filter(sa => sa.studyId === studyId)
@@ -109,10 +110,10 @@ async function getStudyArms(studyId: string): Promise<StudyArm[]> {
   const sessions = await getStudySessions(studyId)
   const schedule: Schedule = {
     name: 'Untitled',
-    eventStartId: '123',
+    startEventId: 'ONBOARDING',
     sessions: sessions || [],
   }
-  const newStudyArm: StudyArm = {
+  /*const newStudyArm: StudyArm = {
     id: getRandomId(),
     studyId,
     active: true,
@@ -122,9 +123,9 @@ async function getStudyArms(studyId: string): Promise<StudyArm[]> {
   }
   result = [newStudyArm]
   //}
-  result[0] = { ...result[0], active: true }
+  result[0] = { ...result[0], active: true }*/
 
-  return result
+  return schedule
 }
 
 /*return new Promise((resolve, reject) =>

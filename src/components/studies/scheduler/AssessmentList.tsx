@@ -6,13 +6,14 @@ import {
   Grid,
   makeStyles,
   Switch,
-  Typography,
+  Typography
 } from '@material-ui/core'
 import ClockIcon from '@material-ui/icons/AccessTime'
 import clsx from 'clsx'
 import React from 'react'
 import { ThemeType } from '../../../style/theme'
-import { Assessment, StudySession } from '../../../types/types'
+import { StudySession } from '../../../types/scheduling'
+import { Assessment } from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
 import SessionIcon from '../../widgets/SessionIcon'
 

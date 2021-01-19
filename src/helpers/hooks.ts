@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
-import { Assessment, Study, StudySession } from '../types/types'
+import React, { useEffect, useState } from 'react'
 import AssessmentService from '../services/assessment.service'
-import { useAsync } from './AsyncHook'
-import React from 'react'
 import StudyService from '../services/study.service'
+import { StudySession } from '../types/scheduling'
+import { Assessment, Study } from '../types/types'
+import { useAsync } from './AsyncHook'
 
 const useAssessments = () => {
   const [assessments, setAssessments] = useState<Assessment[]>([])

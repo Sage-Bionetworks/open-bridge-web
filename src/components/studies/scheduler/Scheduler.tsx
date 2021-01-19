@@ -4,7 +4,7 @@ import {
   Fab,
   FormControlLabel,
   makeStyles,
-  Theme,
+  Theme
 } from '@material-ui/core'
 import React, { FunctionComponent, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
@@ -14,11 +14,11 @@ import StudyService from '../../../services/study.service'
 import { poppinsFont } from '../../../style/theme'
 import {
   HDWMEnum,
+  Schedule,
   SessionSchedule,
-  StudyDuration,
-  StudyStartPseudonym,
+  StartEventId,
+  StudyDuration
 } from '../../../types/scheduling'
-import { StudyArm } from '../../../types/types'
 import ObjectDebug from '../../widgets/ObjectDebug'
 import NavButtons from '../NavButtons'
 import { StudySection } from '../sections'
@@ -27,7 +27,7 @@ import IntroInfo from './IntroInfo'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
-  SessionScheduleAction,
+  SessionScheduleAction
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import TimelinePlot from './TimelinePlot'
@@ -47,9 +47,9 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 type SchedulerOwnProps = {
-  //studySessions: StudySession[]
   id: string
   section: StudySection
+  nextSection?: StudySection
 }
 
 type SchedulerProps = SchedulerOwnProps & RouteComponentProps
@@ -57,31 +57,21 @@ type SchedulerProps = SchedulerOwnProps & RouteComponentProps
 const Scheduler: FunctionComponent<SchedulerProps> = ({
   id,
   section,
-}: //studySessions,
-SchedulerOwnProps) => {
-  /*const studyArm: StudyArm = {
-    studyId: id,
-    name: 'Untitled',
-    pseudonym: '',
-    active: true,
-    schedule: {
-      name: 'Undefined',
-      eventStartId: '123',
-      sessions: [],
-    },
-  }*/
+  nextSection,
+}: SchedulerOwnProps) => {
   const [hasObjectChanged, setHasObjectChanged] = useState(false)
+  const [saveLoader, setSaveLoader] = useState(false)
   const handleError = useErrorHandler()
   const classes = useStyles()
   const {
-    data: studyArms,
+    data: schedule,
     status,
     error,
-    run: getStudyArms,
-    setData,
-  } = useAsync<StudyArm[]>({
+    run: getStudySchedule,
+    setData: setSchedule,
+  } = useAsync<Schedule>({
     status: id ? 'PENDING' : 'IDLE',
-    data: [],
+    data: null,
   })
 
   const {
@@ -96,25 +86,46 @@ SchedulerOwnProps) => {
   })
 
   //the intro screen is done
-  const setInitialInfo = (duration: string, start: StudyStartPseudonym) => {
+  const setInitialInfo = (duration: string, start: StartEventId) => {
     setStudyDuration(duration)
-    updateStudyArm(studyArms!, 0, {
-      ...studyArms![0],
-      pseudonym: start,
-    })
+    setSchedule({ ...schedule, startEventId: start })
   }
+
+  const save = async (url?: string) => {
+    console.log(url)
+    setSaveLoader(true)
+    const done = await StudyService.saveStudySessions(
+      id,
+      schedule?.sessions || [],
+    )
+    setHasObjectChanged(false)
+    setSaveLoader(false)
+    if (url) {
+      window.location.replace(url)
+    }
+  }
+
+  React.useEffect(() => {
+    console.log(
+      `nextSection: ${nextSection}, section: ${section}, ${
+        nextSection === section
+      }`,
+    )
+    if (nextSection !== section) {
+      if (hasObjectChanged) {
+        save(`/studies/builder/${id}/${nextSection}`)
+      } else {
+        window.location.replace(`/studies/builder/${id}/${nextSection}`)
+      }
+    }
+  }, [nextSection, section])
 
   React.useEffect(() => {
     if (!id) {
       return
     }
-    return getStudyArms(
-      StudyService.getStudyArms(id).then(arms => {
-        console.log('arms', arms)
-        return arms
-      }),
-    )
-  }, [id, getStudyArms])
+    return getStudySchedule(StudyService.getStudySchedule(id).then(s => s))
+  }, [id, getStudySchedule])
 
   React.useEffect(() => {
     if (!id) {
@@ -136,63 +147,15 @@ SchedulerOwnProps) => {
   } else if (status === 'PENDING' || studyStatus === 'PENDING') {
     return <>...loading</>
   }
-  /*const groupsUpdateFn = (action: SessionAction) => {
-    //setData(actionsReducer(groups!, action))
-  }*/
-
-  // const [studyArms, setData] = React.useState<StudyArm[]>([studyArm])
-  /*  const [reqStatus, setRequestStatus] = React.useState<RequestStatus>(
-    'RESOLVED',
-  )*/
-
-  // let { id } = useParams<{ id: string }>()
-
-  /*const sessionsUpdateFn = (action: SessionAction) => {
-    const newState = actionsReducer(sessions!, action)
-    setHasObjectChanged(true)
-    setData(newState)
-  }*/
 
   const scheduleUpdateFn = (action: SessionScheduleAction) => {
-    const newState = actionsReducer(studyArms![0].schedule!.sessions, action)
+    const sessions = actionsReducer(schedule!.sessions, action)
     setHasObjectChanged(true)
-    console.log('new state --> ' + newState)
-    //debugger
-    const newStudyArmSchedule = {
-      ...studyArms![0].schedule!,
-      sessions: newState,
-    }
-    const newStudyArm: StudyArm = {
-      ...studyArms![0],
-      schedule: newStudyArmSchedule,
-    }
-    updateStudyArm(studyArms, 0, newStudyArm)
-    // setData({... studyArms![0].schedule, sessions: newState})
-    setHasObjectChanged(true)
-    /* const newState = actionsReducer(studyArms[0].schedule.sessions!, action)
-    console.log('setting data  to ', newState)
-    const rx= studyArms.map((arm, index) => index > 0? arm : {...arm, schedule: {...arm.schedule, sessions: newState}})
-    setData(prev => rx)*/
+    console.log('new state  updated --> ' + sessions)
+    setSchedule({ ...schedule, sessions })
   }
 
-  const updateStudyArm = (
-    oldState: StudyArm[] | null,
-    index: number,
-    arm: StudyArm,
-  ) => {
-    let x: StudyArm[]
-    if (!oldState) {
-      x = [arm]
-    } else {
-      x = [...oldState]
-
-      x.splice(index, 1, arm)
-    }
-
-    setData(x)
-  }
-
-  if (!studyArms) {
+  if (!schedule) {
     return <h1>Please add some sessions to this study</h1>
   }
 
@@ -219,9 +182,7 @@ SchedulerOwnProps) => {
         <>
           <ObjectDebug
             label="groups"
-            data={
-              studyArms[0].schedule?.sessions.map(s => s.sessionSchedule) || {}
-            }
+            data={schedule?.sessions.map(s => s.sessionSchedule) || {}}
           ></ObjectDebug>
           <FormControlLabel
             classes={{ label: classes.labelDuration }}
@@ -238,38 +199,33 @@ SchedulerOwnProps) => {
               ></Duration>
             }
           />
+          <Box bgcolor="#fff" padding="16px" marginTop="24px">
+            <TimelinePlot></TimelinePlot>
+            <StudyStartDate
+              style={{ marginTop: '16px' }}
+              startEventId={schedule.startEventId as StartEventId}
+              onChange={(startEventId: StartEventId) =>
+                setSchedule({ ...schedule, startEventId })
+              }
+            />
 
-          {studyArms.map((studyArm, index) => (
-            <Box bgcolor="#fff" padding="16px" marginTop="24px" key={index}>
-              <TimelinePlot></TimelinePlot>
-              <StudyStartDate
-                style={{ marginTop: '16px' }}
-                pseudonym={studyArm.pseudonym}
-                onChange={(pseudonym: StudyStartPseudonym) =>
-                  updateStudyArm(studyArms, index, {
-                    ...studyArms[index],
-                    pseudonym,
-                  })
-                }
-              />
-
-              {studyArm.schedule?.sessions.map((session, index) => (
-                <Box key={session.id}>
-                  <SchedulableSingleSessionContainer
-                    key={session.id}
-                    studySession={session}
-                    onUpdateSessionSchedule={(schedule: SessionSchedule) => {
-                      console.log('updating schedule')
-                      scheduleUpdateFn({
-                        type: ActionTypes.UpdateSessionSchedule,
-                        payload: { sessionId: session.id, schedule },
-                      })
-                    }}
-                  ></SchedulableSingleSessionContainer>
-                </Box>
-              ))}
-            </Box>
-          ))}
+            {schedule?.sessions.map((session, index) => (
+              <Box key={session.id}>
+                <SchedulableSingleSessionContainer
+                  key={session.id}
+                  studySession={session}
+                  onSaveSessionSchedule={save}
+                  onUpdateSessionSchedule={(schedule: SessionSchedule) => {
+                    console.log('updating schedule')
+                    scheduleUpdateFn({
+                      type: ActionTypes.UpdateSessionSchedule,
+                      payload: { sessionId: session.id, schedule },
+                    })
+                  }}
+                ></SchedulableSingleSessionContainer>
+              </Box>
+            ))}
+          </Box>
 
           <NavButtons
             id={id}

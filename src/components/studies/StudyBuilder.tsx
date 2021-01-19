@@ -56,7 +56,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
   const classes = useStyles()
   const handleError = useErrorHandler()
   let { id, section } = useParams<{ id: string; section: StudySection }>()
-
+  const [nextSection, setNextSection] = React.useState<StudySection>(section)
   const { data: study, status, error } = useStudy(id)
 
   const [open, setOpen] = React.useState(true)
@@ -79,6 +79,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
           open={open}
           onToggle={() => setOpen(prev => !prev)}
           currentSection={section}
+          onNavigate={(loc: StudySection) => {
+            console.log(loc)
+            console.log('setting')
+            setNextSection(loc)
+          }}
           id={id}
         ></StudyLeftNav>
 
@@ -105,6 +110,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
                             {...props}
                             id={id}
                             section={section}
+                            nextSection={nextSection}
                           ></Scheduler>
                         )
                       }}
@@ -116,6 +122,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
                           <SessionCreator
                             {...props}
                             id={id}
+                            nextSection={nextSection}
                             section={section}
                           />
                         )

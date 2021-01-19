@@ -1,3 +1,5 @@
+import { Assessment } from "./types"
+
 export type SessionScheduleStartType = 'DAY1' | 'NDAYS_DAY1'
 
 export enum HSsEnum {
@@ -56,14 +58,14 @@ export type ReminderIntervalType = 'BEFORE' | 'AFTER'
 
 export type AssessmentOrder = 'SEQUENTIAL' | 'RANDOM'
 
-export type StudyStartPseudonym = 'ONBOARDING' | 'START_DATE'
+export type StartEventId = 'ONBOARDING' | 'START_DATE'
 
 export type WindowEndType = string /*{
     //endQuantity: number,
     //endUnit:  keyof typeof  HSsEnum
 }*/
 
-export type ReminderType = {
+export type NotificationReminder = {
   interval: keyof typeof ReminderIntervalEnum
   type?: ReminderIntervalType
 }
@@ -104,9 +106,41 @@ export type SessionSchedule = {
   notification?: keyof typeof NotificationFreqEnum
   isAllowSnooze?: boolean
 
-  reminder?: ReminderType
+  reminder?: NotificationReminder
   windows: AssessmentWindow[]
   endDate: EndDate
   isGroupAssessments?: boolean
   order: AssessmentOrder
+  subjectLine?: string
+  bodyText?: string
 }
+
+
+
+export type StudySession = {
+  id: string
+  active?: boolean
+  studyId: string
+  //duration: number
+  name: string
+  assessments: Assessment[]
+  order?: number
+  sessionSchedule?: SessionSchedule
+  // Guid: string
+  /*Name: string
+Bundled: boolean
+Randomized: boolean
+Delay: number
+Interval: number
+Duration: number(period
+Expires number: Period
+Occurrences Number*/
+}
+
+export type Schedule = {
+  name: string
+  startEventId: StartEventId
+  ownderId?: string //todo
+  sessions: StudySession[]
+}
+

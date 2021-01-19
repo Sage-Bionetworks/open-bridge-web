@@ -1,6 +1,6 @@
 import { getRandomId } from '../../../helpers/utility'
-import { SessionSchedule } from '../../../types/scheduling'
-import { Assessment, StudySession } from '../../../types/types'
+import { SessionSchedule, StudySession } from '../../../types/scheduling'
+import { Assessment } from '../../../types/types'
 
 type ActionMap<M extends { [index: string]: any }> = {
   [Key in keyof M]: M[Key] extends undefined
@@ -26,7 +26,7 @@ export enum ActionTypes {
 /*
 export type Schedule = {
   name: string
-  eventStartId: string
+  startEventId: string
   sessions: StudySession[]
 }
 */
@@ -41,41 +41,6 @@ export type SessionScheduleAction = ActionMap<ActionPayload>[keyof ActionMap<
   ActionPayload
 >]
 
-/*export const DEFAULT_GROUP: Group = {
-  id: '123',
-  name: 'Group1',
-  active: true,
-  sessions: [
-    {
-      id: '123',
-      name: 'Baseline Survey',
-      studyId: '',
-
-      active: true,
-      assessments: [
-        {
-          guid: '7g-e13Km5yHrtjifvhtVN60-',
-          identifier: 'number-match',
-          revision: 1,
-          ownerId: 'sage-bionetworks',
-          title: 'Number Match',
-          summary:
-            'Fill in items, one row at a time, according to a code/legend on the top of the screen.',
-          osName: 'iPhone OS',
-          validationStatus: '',
-          normingStatus: '',
-          tags: ['cognitive', 'episodic-memory'],
-          customizationFields: {},
-          createdOn: '2020-10-05T20:34:41.421Z',
-          modifiedOn: '2020-10-05T20:34:41.421Z',
-          deleted: false,
-          version: 1,
-          type: 'Assessment',
-        },
-      ],
-    },
-  ],
-}*/
 
 function addSession(
   sessions: StudySession[],

@@ -3,8 +3,9 @@ import {
   Button,
   Checkbox,
   FormControlLabel,
-  makeStyles,
+  makeStyles
 } from '@material-ui/core'
+import SaveIcon from '@material-ui/icons/Save'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -13,12 +14,12 @@ import {
   AssessmentWindow as AssessmentWindowType,
   EndDate as EndDateType,
   NotificationFreqEnum,
-  ReminderType,
+  NotificationReminder,
   Reoccurance as ReoccuranceType,
   SessionSchedule,
   StartDate as StartDateType,
+  StudySession
 } from '../../../types/scheduling'
-import { StudySession } from '../../../types/types'
 import { ErrorFallback, ErrorHandler } from '../../widgets/ErrorHandler'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import AssessmentList from './AssessmentList'
@@ -38,10 +39,19 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     },*/
     marginBottom: theme.spacing(2),
   },
+  assessments: {
+    width: "286px",
+    flexGrow: 0,
+    flexShrink: 0,
+    backgroundColor: "#BCD5E4",
+    padding: theme.spacing(1)
+   
+  },
 
   formSection: {
     // backgroundColor: '#acacac',
-    padding: `0 ${theme.spacing(4)}px 0 ${theme.spacing(4)}px`,
+    padding: `${theme.spacing(3)}px  ${theme.spacing(4)}px 0px ${theme.spacing(4)}px`,
+    textAlign: 'left'
     // marginBottom: theme.spacing(1),
   },
   formControl: {
@@ -58,6 +68,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 type SchedulableSingleSessionContainerProps = {
   studySession: StudySession
   onUpdateSessionSchedule: Function
+  onSaveSessionSchedule: Function
 
   //onSetActiveSession: Function
 }
@@ -65,6 +76,7 @@ type SchedulableSingleSessionContainerProps = {
 const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSessionContainerProps> = ({
   studySession,
   onUpdateSessionSchedule,
+  onSaveSessionSchedule
 }: // onSetActiveSession,
 SchedulableSingleSessionContainerProps) => {
   const classes = useStyles()
@@ -81,18 +93,18 @@ SchedulableSingleSessionContainerProps) => {
     isGroupAssessments: false,
     order: 'SEQUENTIAL',
   }
-  const [schedulableSession, setSchedulableSession] = React.useState<
-    SessionSchedule
-  >(studySession.sessionSchedule || defaultSchedule)
+  const [
+    schedulableSession,
+    setSchedulableSession,
+  ] = React.useState<SessionSchedule>(
+    studySession.sessionSchedule || defaultSchedule,
+  )
 
   React.useEffect(() => {
     setSchedulableSession(studySession.sessionSchedule || defaultSchedule)
   }, [studySession.sessionSchedule])
 
   const updateSessionSchedule = (newSession: SessionSchedule) => {
-    //setSchedulableSession(newSession)
-    // console.log(newSession, 'updating')
-    // setSchedulableSession(newSession)
     onUpdateSessionSchedule(newSession)
   }
 
@@ -136,12 +148,7 @@ SchedulableSingleSessionContainerProps) => {
       <form noValidate autoComplete="off">
         <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
           <Box display="flex">
-            <Box
-              width="282px"
-              flexGrow="0"
-              flexShrink="0"
-              bgcolor="#BCD5E4"
-              padding="8px"
+            <Box className={classes.assessments}
             >
               <AssessmentList
                 studySession={studySession}
@@ -242,7 +249,7 @@ SchedulableSingleSessionContainerProps) => {
                     </SchedulingFormSection>
                     <ReminderNotification
                       reminder={schedulableSession.reminder}
-                      onChange={(reminder: ReminderType) =>
+                      onChange={(reminder: NotificationReminder) =>
                         updateSessionSchedule({
                           ...schedulableSession,
                           reminder,
@@ -272,6 +279,16 @@ SchedulableSingleSessionContainerProps) => {
                     </SchedulingFormSection>
                   </Box>
                 </SchedulingFormSection>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  style={{marginBottom: '16px'}}
+                  onClick={()=>onSaveSessionSchedule()}
+                  startIcon={<SaveIcon />}
+                >
+                  Save
+                </Button>
               </Box>
             </Box>
           </Box>

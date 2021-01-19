@@ -1,6 +1,6 @@
 import { Box, Button, makeStyles, MenuItem, Select } from '@material-ui/core'
 import React, { FunctionComponent, useEffect } from 'react'
-import { StudySession } from '../../../types/types'
+import { StudySession } from '../../../types/scheduling'
 
 
 
