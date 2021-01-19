@@ -1,4 +1,4 @@
-import { Drawer, IconButton, makeStyles } from '@material-ui/core'
+import { Button, Drawer, IconButton, makeStyles } from '@material-ui/core'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import SomeIcon from '@material-ui/icons/SentimentVerySatisfied'
@@ -96,6 +96,7 @@ type StudyLeftNavOwnProps = {
   id?: string
   open: boolean
   onToggle: Function
+  onNavigate: Function
 }
 
 type StudyLeftNavProps = StudyLeftNavOwnProps
@@ -104,6 +105,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
   id,
   open,
   onToggle,
+  onNavigate,
   currentSection = 'sessions-creator',
 }) => {
   const classes = useStyles()
@@ -152,7 +154,17 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
               [classes.listItemCollapsed]: !open,
             })}
           >
-            <NavLink
+              <Button
+              key={sectionLink.path}
+              onClick={()=>onNavigate(sectionLink.path)}
+              className={classes.link}
+            >
+              <div style={{ display: 'flex' }}>
+                <SomeIcon style={{ marginRight: '16px' }} />
+                <span>{sectionLink.name}</span>
+              </div>
+            </Button>
+            {false && <NavLink
               key={sectionLink.path}
               to={sectionLink.path}
               className={classes.link}
@@ -161,7 +173,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
                 <SomeIcon style={{ marginRight: '16px' }} />
                 <span>{sectionLink.name}</span>
               </div>
-            </NavLink>
+            </NavLink>}
           </li>
         ))}
       </ul>

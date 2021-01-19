@@ -50,7 +50,7 @@ async function createAccount(
   role: string = 'developer',
 ): Promise<any> {
   const postData = {
-    appId: 'sage-assessment-test', //constants.constants.APP_ID,
+    appId: constants.constants.APP_ID,
     email,
     synapseUserId,
     dataGroups: ['test_user'],
