@@ -1,6 +1,6 @@
 import {
   Container,
-  createMuiTheme,
+
   CssBaseline,
   ThemeProvider,
   Typography
@@ -20,7 +20,7 @@ import { cssVariables, theme } from './style/theme'
 import { SessionData } from './types/types'
 import UnauthenticatedApp from './UnauthenticatedApp'
 
-const defaultTheme = createMuiTheme()
+//const defaultTheme = createMuiTheme()
 
 /*function getRootURL() {
   const portString = window.location.port ? `:${window.location.port}` : ''
@@ -57,13 +57,16 @@ export const detectSSOCode = async (
           token: loggedIn.data.sessionToken,
           name: loggedIn.data.firstName,
           orgMembership: loggedIn.data.orgMembership,
-          // consented: loggedIn.data.consented,
-          // userDataGroup: loggedIn.data.dataGroups,
+         dataGroups: loggedIn.data.dataGroups,
         },
       })
       // console.log(env.redirect+ "/studies")
       // return <Redirect to={env.redirect+ "/studies"} />
-      window.history.replaceState(null, '', `${window.location.origin}/studies`)
+
+      setTimeout(() => {
+        window.location.replace(`${window.location.origin}/studies`)
+      }, 100)
+      // window.location.replace(`${window.location.origin}/studies`)
       // window.location.replace(env.redirect+'/study-editor')
     } catch (e) {
       alert(e.message)

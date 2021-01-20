@@ -12,7 +12,7 @@ type SessionDataProviderProps = { children: React.ReactNode }
 const initialState = {
   token: undefined,
   orgMembership: undefined,
-  userDataGroup: [],
+  dataGroups: [],
 }
 
 const SessionDataStateContext = React.createContext<SessionData | undefined>(
@@ -65,7 +65,7 @@ function countReducer(state: SessionData, action: Action): SessionData {
         orgMembership:action.payload!.orgMembership,
         //consented: action.payload!.consented,
         name: action.payload!.name,
-        // userDataGroup: action.payload!.userDataGroup
+       dataGroups: action.payload!.dataGroups
       }
 
       setSession(newState)
@@ -79,7 +79,7 @@ function countReducer(state: SessionData, action: Action): SessionData {
         orgMembership: undefined,
         //consented: undefined,
         // alert: undefined,
-        // userDataGroup: []
+        dataGroups: []
       }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`)

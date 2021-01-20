@@ -34,6 +34,7 @@ export interface UserData {
 export interface LoggedInUserData extends UserData {
   sessionToken: string
   orgMembership: string
+  dataGroups?: string[] 
   //consented: boolean
   sharingScope: string
 
@@ -96,6 +97,7 @@ export interface SignInDataEmail extends SignInData {
 export type SessionData = {
   token: string | undefined
   orgMembership: string| undefined
+  dataGroups?: string[]
   name?: string
   alert?: string
 }
