@@ -1,19 +1,27 @@
-import Studies from '../data/studies.json'
-import Sessions from '../data/sessions.json'
 import Assessments from '../data/assessments.json'
-import { Assessment } from '@material-ui/icons'
+import Sessions from '../data/sessions.json'
+import Studies from '../data/studies.json'
+import { Schedule } from '../types/scheduling'
+
+const schedule: Schedule = {
+  name: 'someSched',
+  startEventId: 'ONBOARDING',
+  sessions: [],
+}
 
 export const KEYS = {
   STUDIES: 'STUDIES',
   ASSESSMENTS: 'ASSESSMENTS',
   STUDY_SESSIONS: 'STUDY_SESSIONS',
   STUDY_ARMS: 'STUDY_ARMS',
+  SCHEDULES: 'SCHEDULES',
 }
 
 export const MOCKS = {
   SESSIONS: Sessions.data,
   STUDIES: Studies.data,
   ASSESSMENTS: Assessments.data,
+  SCHEDULE: schedule,
 }
 
 export const setItem = async <T>(

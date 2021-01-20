@@ -1,15 +1,18 @@
 import {
   Box,
+  Button,
   createStyles,
-  Fab,
   FormControlLabel,
   makeStyles,
   Theme
 } from '@material-ui/core'
+import SaveIcon from '@material-ui/icons/Save'
 import React, { FunctionComponent, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps } from 'react-router-dom'
+import NavigationPrompt from 'react-router-navigation-prompt'
 import { useAsync } from '../../../helpers/AsyncHook'
+import { navigateAndSave } from '../../../helpers/utility'
 import StudyService from '../../../services/study.service'
 import { poppinsFont } from '../../../style/theme'
 import {
@@ -19,7 +22,8 @@ import {
   StartEventId,
   StudyDuration
 } from '../../../types/scheduling'
-import ObjectDebug from '../../widgets/ObjectDebug'
+import ConfirmationDialog from '../../widgets/ConfirmationDialog'
+import LoadingComponent from '../../widgets/Loader'
 import NavButtons from '../NavButtons'
 import { StudySection } from '../sections'
 import Duration from './Duration'
@@ -37,11 +41,16 @@ const useStyles = makeStyles((theme: Theme) =>
     labelDuration: {
       paddingTop: theme.spacing(1),
       paddingRight: theme.spacing(2),
-
       fontFamily: poppinsFont,
       fontSize: '18px',
       fontStyle: 'normal',
       fontWeight: 600,
+    },
+    scheduleHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingRight: theme.spacing(2),
     },
   }),
 )
@@ -63,40 +72,21 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
   const [saveLoader, setSaveLoader] = useState(false)
   const handleError = useErrorHandler()
   const classes = useStyles()
-  const {
-    data: schedule,
-    status,
-    error,
-    run: getStudySchedule,
-    setData: setSchedule,
-  } = useAsync<Schedule>({
+  const { data, status, error, run, setData } = useAsync<{
+    schedule?: Schedule
+    studyDuration?: StudyDuration
+  }>({
     status: id ? 'PENDING' : 'IDLE',
-    data: null,
+    data: {},
   })
-
-  const {
-    data: studyDuration,
-    status: studyStatus,
-    error: studyError,
-    run: getStudy,
-    setData: setStudyDuration,
-  } = useAsync<StudyDuration>({
-    status: id ? 'PENDING' : 'IDLE',
-    data: {} as StudyDuration,
-  })
-
-  //the intro screen is done
-  const setInitialInfo = (duration: string, start: StartEventId) => {
-    setStudyDuration(duration)
-    setSchedule({ ...schedule, startEventId: start })
-  }
 
   const save = async (url?: string) => {
     console.log(url)
     setSaveLoader(true)
-    const done = await StudyService.saveStudySessions(
+    const done = await StudyService.saveStudySchedule(
       id,
-      schedule?.sessions || [],
+      data!.schedule!,
+      data!.studyDuration!,
     )
     setHasObjectChanged(false)
     setSaveLoader(false)
@@ -105,118 +95,162 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
     }
   }
 
+  const saveSession = async (sessionId: string) => {
+    save()
+  }
+
   React.useEffect(() => {
-    console.log(
-      `nextSection: ${nextSection}, section: ${section}, ${
-        nextSection === section
-      }`,
-    )
-    if (nextSection !== section) {
-      if (hasObjectChanged) {
-        save(`/studies/builder/${id}/${nextSection}`)
-      } else {
-        window.location.replace(`/studies/builder/${id}/${nextSection}`)
-      }
-    }
+    navigateAndSave(id, nextSection, section, hasObjectChanged, save)
   }, [nextSection, section])
 
-  React.useEffect(() => {
-    if (!id) {
-      return
-    }
-    return getStudySchedule(StudyService.getStudySchedule(id).then(s => s))
-  }, [id, getStudySchedule])
+  const getData = async (id: string) => {
+    const schedule = await StudyService.getStudySchedule(id)
+    const study = await StudyService.getStudy(id)
 
+    return { schedule, studyDuration: study?.studyDuration }
+  }
+
+  //get initial data
   React.useEffect(() => {
     if (!id) {
       return
     }
-    return getStudy(
-      StudyService.getStudy(id).then(study => {
-        console.log('duration', study?.studyDuration)
-        return study?.studyDuration
-      }),
-    )
-  }, [id, getStudy])
+    return run(getData(id))
+  }, [id, run])
 
   if (status === 'REJECTED') {
     handleError(error!)
   }
-  if (studyStatus === 'REJECTED') {
-    handleError(studyError!)
-  } else if (status === 'PENDING' || studyStatus === 'PENDING') {
+  if (status === 'REJECTED') {
+    handleError(error!)
+  } else if (status === 'PENDING') {
     return <>...loading</>
   }
 
-  const scheduleUpdateFn = (action: SessionScheduleAction) => {
-    const sessions = actionsReducer(schedule!.sessions, action)
+  //setting new state
+  const updateData = (schedule: Schedule | null, duration: string) => {
     setHasObjectChanged(true)
-    console.log('new state  updated --> ' + sessions)
-    setSchedule({ ...schedule, sessions })
+
+    console.log('setting data tp ' + { schedule, duration })
+    setData({ schedule, studyDuration: duration })
   }
 
-  if (!schedule) {
-    return <h1>Please add some sessions to this study</h1>
+  //set duration part
+  const setStudyDuration = (duration: string) => {
+    updateData({ ...data!.schedule! }, duration)
+  }
+
+  //updating the schedule part
+  const setSchedule = (schedule: Schedule) => {
+    const duration = data!.studyDuration
+    updateData(schedule, duration || '')
+  }
+
+  //updating on the intro screen
+  const setInitialInfo = async (duration: string, start: StartEventId) => {
+    if (!data?.schedule) {
+      return
+    }
+    const schedule = { ...data.schedule, startEventId: start }
+    setSaveLoader(true)
+    const done = await StudyService.saveStudySchedule(id, schedule, duration)
+    setSaveLoader(false)
+    updateData(schedule, duration)
+    save()
+  }
+
+  const scheduleUpdateFn = (action: SessionScheduleAction) => {
+    if (!data) {
+      return
+    }
+    const sessions = actionsReducer(data.schedule!.sessions, action)
+    const newSchedule = { ...data.schedule!, sessions }
+    updateData(newSchedule, data.studyDuration || '')
+  }
+
+  if (!data?.schedule) {
+    console.log(data, 'data')
+    return <h1>Please add some sessions to this study </h1>
   }
 
   return (
-    <div>
-      <Fab
-        color="primary"
-        onClick={() => setHasObjectChanged(false)}
-        aria-label="add"
+    <>
+      <LoadingComponent
+        reqStatusLoading={saveLoader}
+        loaderSize="2rem"
+        variant="small"
         style={{
+          display: hasObjectChanged ? 'block' : 'none',
+          width: '30px',
+          marginBottom: '16px',
           position: 'fixed',
           right: '30px',
+          top: '50%',
           zIndex: 100,
-          display: hasObjectChanged ? 'block' : 'none',
         }}
-      >
-        Save
-      </Fab>
+      ></LoadingComponent>
+      <NavigationPrompt when={hasObjectChanged}>
+        {({ onConfirm, onCancel }) => (
+          <ConfirmationDialog
+            isOpen={hasObjectChanged}
+            type={'NAVIGATE'}
+            onCancel={onCancel}
+            onConfirm={onConfirm}
+          />
+        )}
+      </NavigationPrompt>
 
-      {!studyDuration && <IntroInfo onContinue={setInitialInfo}></IntroInfo>}
+      {!data.studyDuration && (
+        <IntroInfo onContinue={setInitialInfo}></IntroInfo>
+      )}
 
       {/**/}
-      {studyDuration && (
-        <>
-          <ObjectDebug
-            label="groups"
-            data={schedule?.sessions.map(s => s.sessionSchedule) || {}}
-          ></ObjectDebug>
-          <FormControlLabel
-            classes={{ label: classes.labelDuration }}
-            label="Study duration:"
-            style={{ fontSize: '14px' }}
-            labelPlacement="start"
-            control={
-              <Duration
-                onChange={e => setStudyDuration(e)}
-                durationString={studyDuration || ''}
-                unitLabel="study duration unit"
-                numberLabel="study duration number"
-                unitData={HDWMEnum}
-              ></Duration>
-            }
-          />
+      {data.studyDuration && (
+        <Box textAlign="left">
+          <div className={classes.scheduleHeader}>
+            <FormControlLabel
+              classes={{ label: classes.labelDuration }}
+              label="Study duration:"
+              style={{ fontSize: '14px' }}
+              labelPlacement="start"
+              control={
+                <Duration
+                  onChange={e => setStudyDuration(e.toString())}
+                  durationString={data.studyDuration || ''}
+                  unitLabel="study duration unit"
+                  numberLabel="study duration number"
+                  unitData={HDWMEnum}
+                ></Duration>
+              }
+            />
+            {hasObjectChanged && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => save()}
+                startIcon={<SaveIcon />}
+              >
+                Save changes
+              </Button>
+            )}
+          </div>
           <Box bgcolor="#fff" padding="16px" marginTop="24px">
             <TimelinePlot></TimelinePlot>
             <StudyStartDate
               style={{ marginTop: '16px' }}
-              startEventId={schedule.startEventId as StartEventId}
+              startEventId={data.schedule.startEventId as StartEventId}
               onChange={(startEventId: StartEventId) =>
-                setSchedule({ ...schedule, startEventId })
+                setSchedule({ ...data.schedule!, startEventId })
               }
             />
 
-            {schedule?.sessions.map((session, index) => (
+            {data.schedule.sessions.map((session, index) => (
               <Box key={session.id}>
                 <SchedulableSingleSessionContainer
                   key={session.id}
                   studySession={session}
-                  onSaveSessionSchedule={save}
+                  onSaveSessionSchedule={() => saveSession(session.id)}
                   onUpdateSessionSchedule={(schedule: SessionSchedule) => {
-                    console.log('updating schedule')
                     scheduleUpdateFn({
                       type: ActionTypes.UpdateSessionSchedule,
                       payload: { sessionId: session.id, schedule },
@@ -230,11 +264,11 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
           <NavButtons
             id={id}
             currentSection={section}
-            onNavigate={(href: string) => console.log(href)}
+            onNavigate={save}
           ></NavButtons>
-        </>
+        </Box>
       )}
-    </div>
+    </>
   )
 }
 

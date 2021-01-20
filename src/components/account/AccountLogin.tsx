@@ -118,7 +118,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
             orgMembership: loggedIn.data.orgMembership,
             name: loggedIn.data.firstName,
             // consented: loggedIn.data.consented,
-            // userDataGroup: loggedIn.data.dataGroups,
+            dataGroups: loggedIn.data.dataGroups,
           },
         })
 

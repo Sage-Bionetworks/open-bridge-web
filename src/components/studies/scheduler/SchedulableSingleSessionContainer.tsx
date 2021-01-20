@@ -40,18 +40,19 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginBottom: theme.spacing(2),
   },
   assessments: {
-    width: "286px",
+    width: '286px',
     flexGrow: 0,
     flexShrink: 0,
-    backgroundColor: "#BCD5E4",
-    padding: theme.spacing(1)
-   
+    backgroundColor: '#BCD5E4',
+    padding: theme.spacing(1),
   },
 
   formSection: {
     // backgroundColor: '#acacac',
-    padding: `${theme.spacing(3)}px  ${theme.spacing(4)}px 0px ${theme.spacing(4)}px`,
-    textAlign: 'left'
+    padding: `${theme.spacing(3)}px  ${theme.spacing(4)}px 0px ${theme.spacing(
+      4,
+    )}px`,
+    textAlign: 'left',
     // marginBottom: theme.spacing(1),
   },
   formControl: {
@@ -76,7 +77,7 @@ type SchedulableSingleSessionContainerProps = {
 const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSessionContainerProps> = ({
   studySession,
   onUpdateSessionSchedule,
-  onSaveSessionSchedule
+  onSaveSessionSchedule,
 }: // onSetActiveSession,
 SchedulableSingleSessionContainerProps) => {
   const classes = useStyles()
@@ -148,8 +149,7 @@ SchedulableSingleSessionContainerProps) => {
       <form noValidate autoComplete="off">
         <ErrorBoundary FallbackComponent={ErrorFallback} onError={ErrorHandler}>
           <Box display="flex">
-            <Box className={classes.assessments}
-            >
+            <Box className={classes.assessments}>
               <AssessmentList
                 studySession={studySession}
                 onSetRandomized={(isRandomized: boolean) => {
@@ -283,11 +283,11 @@ SchedulableSingleSessionContainerProps) => {
                   variant="contained"
                   color="primary"
                   size="small"
-                  style={{marginBottom: '16px'}}
-                  onClick={()=>onSaveSessionSchedule()}
+                  style={{ marginBottom: '16px' }}
+                  onClick={() => onSaveSessionSchedule()}
                   startIcon={<SaveIcon />}
                 >
-                  Save
+                  Save Changes
                 </Button>
               </Box>
             </Box>
