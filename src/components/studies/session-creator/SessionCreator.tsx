@@ -15,7 +15,7 @@ import React, { FunctionComponent, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import { useAsync } from '../../../helpers/AsyncHook'
-import { navigateAndSave } from '../../../helpers/utility'
+import { useNavigate } from '../../../helpers/hooks'
 import StudyService from '../../../services/study.service'
 import { StudySession } from '../../../types/scheduling'
 import { Assessment } from '../../../types/types'
@@ -80,11 +80,10 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     [],
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
-  const [hasObjectChanged, setHasObjectChanged] = useState(false)
-  const [saveLoader, setSaveLoader] = useState(false)
+ 
+  //const [saveLoader, setSaveLoader] = useState(false)
 
-  //const { data: sessions, status, error, run, setData } = useStudySessions(id)
-
+ 
   const { data: sessions, status, error, run, setData, setError } = useAsync<
     StudySession[]
   >({
@@ -92,7 +91,10 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     data: null,
   })
 
-  const save = async (url?: string) => {
+  const {hasObjectChanged, setHasObjectChanged, saveLoader, setSaveLoader, save} = useNavigate(id, section, nextSection|| '', async ()=> {await StudyService.saveStudySessions(id, sessions || []); return})
+
+/*
+  async function save (url?: string)  {
     setSaveLoader(true)
     const done = await StudyService.saveStudySessions(id, sessions || [])
     setHasObjectChanged(false)
@@ -100,7 +102,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     if (url) {
       window.location.replace(url)
     }
-  }
+  }*/
   // get the sessions
   React.useEffect(() => {
     if (!id) {
@@ -115,16 +117,13 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     if (!hasObjectChanged) {
       return
     }
-    save().then(() => {
-      console.log('saved')
+   save().then(() => {
+     console.log('saved')
     })
   }, [hasObjectChanged])
 
   const handleError = useErrorHandler()
 
-  React.useEffect(() => {
-    navigateAndSave(id, nextSection, section, hasObjectChanged, save)
-  }, [nextSection, section])
 
   const sessionsUpdateFn = (action: SessionAction) => {
     const newState = actionsReducer(sessions!, action)

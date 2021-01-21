@@ -65,7 +65,7 @@ export const detectSSOCode = async (
 
       setTimeout(() => {
         window.location.replace(`${window.location.origin}/studies`)
-      }, 100)
+      }, 1000)
       // window.location.replace(`${window.location.origin}/studies`)
       // window.location.replace(env.redirect+'/study-editor')
     } catch (e) {

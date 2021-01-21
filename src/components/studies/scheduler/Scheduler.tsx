@@ -7,12 +7,12 @@ import {
   Theme
 } from '@material-ui/core'
 import SaveIcon from '@material-ui/icons/Save'
-import React, { FunctionComponent, useState } from 'react'
+import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps } from 'react-router-dom'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import { useAsync } from '../../../helpers/AsyncHook'
-import { navigateAndSave } from '../../../helpers/utility'
+import { useNavigate } from '../../../helpers/hooks'
 import StudyService from '../../../services/study.service'
 import { poppinsFont } from '../../../style/theme'
 import {
@@ -68,8 +68,7 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
   section,
   nextSection,
 }: SchedulerOwnProps) => {
-  const [hasObjectChanged, setHasObjectChanged] = useState(false)
-  const [saveLoader, setSaveLoader] = useState(false)
+
   const handleError = useErrorHandler()
   const classes = useStyles()
   const { data, status, error, run, setData } = useAsync<{
@@ -80,28 +79,30 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
     data: {},
   })
 
-  const save = async (url?: string) => {
-    console.log(url)
-    setSaveLoader(true)
-    const done = await StudyService.saveStudySchedule(
+  const [isInitialInfoSet, setIsInitialInfoSet] = React.useState(false)
+  const {hasObjectChanged, setHasObjectChanged, saveLoader, setSaveLoader, save} = useNavigate(id, section, nextSection|| '', async()=>{
+    await StudyService.saveStudySchedule(
       id,
       data!.schedule!,
       data!.studyDuration!,
     )
-    setHasObjectChanged(false)
-    setSaveLoader(false)
-    if (url) {
-      window.location.replace(url)
+    return
+  })
+
+   React.useEffect(() => {
+    if (!isInitialInfoSet) {
+      return
     }
-  }
+   save().then(() => {
+     console.log('saved')
+    })
+  }, [isInitialInfoSet])
+
 
   const saveSession = async (sessionId: string) => {
     save()
   }
 
-  React.useEffect(() => {
-    navigateAndSave(id, nextSection, section, hasObjectChanged, save)
-  }, [nextSection, section])
 
   const getData = async (id: string) => {
     const schedule = await StudyService.getStudySchedule(id)
@@ -127,6 +128,8 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
     return <>...loading</>
   }
 
+ 
+
   //setting new state
   const updateData = (schedule: Schedule | null, duration: string) => {
     setHasObjectChanged(true)
@@ -148,15 +151,15 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
 
   //updating on the intro screen
   const setInitialInfo = async (duration: string, start: StartEventId) => {
+  
     if (!data?.schedule) {
       return
     }
     const schedule = { ...data.schedule, startEventId: start }
-    setSaveLoader(true)
-    const done = await StudyService.saveStudySchedule(id, schedule, duration)
-    setSaveLoader(false)
+
     updateData(schedule, duration)
-    save()
+     setIsInitialInfoSet(true)
+
   }
 
   const scheduleUpdateFn = (action: SessionScheduleAction) => {
@@ -200,12 +203,12 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
         )}
       </NavigationPrompt>
 
-      {!data.studyDuration && (
+      {!data.schedule.startEventId  && (
         <IntroInfo onContinue={setInitialInfo}></IntroInfo>
       )}
 
       {/**/}
-      {data.studyDuration && (
+      {data.schedule.startEventId && (
         <Box textAlign="left">
           <div className={classes.scheduleHeader}>
             <FormControlLabel

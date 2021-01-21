@@ -140,7 +140,7 @@ Occurrences Number*/
 export type Schedule = {
   studyId?: string, 
   name: string
-  startEventId: StartEventId
+  startEventId?: StartEventId
   ownerId?: string //todo
   sessions: StudySession[]
 }

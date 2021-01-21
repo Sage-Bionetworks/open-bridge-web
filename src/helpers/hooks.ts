@@ -4,6 +4,7 @@ import StudyService from '../services/study.service'
 import { StudySession } from '../types/scheduling'
 import { Assessment, Study } from '../types/types'
 import { useAsync } from './AsyncHook'
+import { navigateAndSave } from './utility'
 
 const useAssessments = () => {
   const [assessments, setAssessments] = useState<Assessment[]>([])
@@ -60,6 +61,35 @@ export const useStudySessions = (id: string | undefined) => {
     data,
     run,
   }
+}
+
+
+export const useNavigate = (id: string, section: string, nextSection: string, savePromise: Function) => {
+  
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
+  const [saveLoader, setSaveLoader] = React.useState(false)
+
+  async function save (url?: string)  {
+    console.log(
+      'hook save'
+    )
+    setSaveLoader(true)
+    const done = await savePromise()// await StudyService.saveStudySessions(id, sessions || [])
+    setHasObjectChanged(false)
+    setSaveLoader(false)
+    if (url) {
+      window.location.replace(url)
+    }
+  }
+  
+  
+  
+  
+  React.useEffect(() => {
+    navigateAndSave(id, nextSection, section, hasObjectChanged, save)
+  }, [id, nextSection, section])
+
+  return {hasObjectChanged, setHasObjectChanged, saveLoader, setSaveLoader, save}
 }
 
 export const useStudy = (id: string | undefined) => {

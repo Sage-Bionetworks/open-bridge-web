@@ -5,7 +5,7 @@ import { Schedule } from '../types/scheduling'
 
 const schedule: Schedule = {
   name: 'someSched',
-  startEventId: 'ONBOARDING',
+  startEventId: undefined,
   sessions: [],
 }
 
