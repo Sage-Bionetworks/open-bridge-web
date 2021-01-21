@@ -65,11 +65,21 @@ const theme: Theme = createMuiTheme({
         backgroundColor: '#000',
 
         '&:hover': {
-          backgroundColor: '#634848'
+          backgroundColor: '#634848',
+        },
+      },
+    },
 
-        }
-      }
-    }
+    MuiInputBase: {
+      input: {
+        backgroundColor: '#BCD5E4',
+      },
+      colorSecondary: {
+        '& input': {
+          backgroundColor: 'white',
+        },
+      },
+    },
   },
   props: {
     // Name of the component ⚛️
@@ -77,8 +87,6 @@ const theme: Theme = createMuiTheme({
       // The properties to apply
       disableRipple: true, // No more ripple, on the whole application 💣!
     },
-   
-
   },
   spacing: 8,
 

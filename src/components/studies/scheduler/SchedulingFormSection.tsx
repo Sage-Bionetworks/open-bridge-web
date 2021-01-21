@@ -31,6 +31,9 @@ const useStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(1),
     paddingRight: theme.spacing(4),
     width: theme.spacing(28),
+    [theme.breakpoints.down('md')]: {
+      width: theme.spacing(12.5),
+    },
     fontFamily: poppinsFont,
     fontSize: '18px',
     fontStyle: 'normal',
@@ -45,6 +48,7 @@ const useStyles = makeStyles(theme => ({
       lineHeight: 1.4,
       fontWeight: 400,
       fontSize: '14px',
+
     },
   },
 }))

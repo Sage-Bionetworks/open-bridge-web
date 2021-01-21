@@ -3,7 +3,8 @@ import {
   Button,
   Checkbox,
   FormControlLabel,
-  makeStyles
+  makeStyles,
+  TextField
 } from '@material-ui/core'
 import SaveIcon from '@material-ui/icons/Save'
 import clsx from 'clsx'
@@ -275,6 +276,23 @@ SchedulableSingleSessionContainerProps) => {
                         label="Allow participant to snooze"
                       />
                     </SchedulingFormSection>
+                    <SchedulingFormSection
+                      label={'Subject line:'}
+                      variant="small"
+                      border={false}
+                    >
+                      <TextField color="secondary" multiline={false} fullWidth={true} variant="outlined"></TextField>
+                    </SchedulingFormSection>
+
+                    <SchedulingFormSection
+                      label={'Body text(40 character limit)'}
+                      variant="small"
+                      border={false}
+                    >
+                      <TextField color="secondary" multiline={true}  fullWidth={true}  variant="outlined"></TextField>
+                    </SchedulingFormSection>
+
+      
                   </Box>
                 </SchedulingFormSection>
                 <Button
