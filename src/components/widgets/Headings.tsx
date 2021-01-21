@@ -1,13 +1,7 @@
-import React from 'react'
-
-import { makeStyles } from '@material-ui/core/styles'
-import Link from '@material-ui/core/Link'
-import BackIcon from '@material-ui/icons/KeyboardBackspace'
-import Breadcrumbs from '@material-ui/core/Breadcrumbs/Breadcrumbs'
-import { Typography } from '@material-ui/core'
 import { styled } from '@material-ui/core/styles'
 import Heading, { TypographyProps } from '@material-ui/core/Typography'
-import { playfairDisplayFont, poppinsFont, latoFont } from '../../style/theme'
+import { latoFont, playfairDisplayFont, poppinsFont } from '../../style/theme'
+
 
 export const MTBHeading = styled(Heading)({
   fontFamily: playfairDisplayFont,

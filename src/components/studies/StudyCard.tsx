@@ -1,18 +1,15 @@
-import React, { FunctionComponent } from 'react'
-import { makeStyles, Theme } from '@material-ui/core/styles'
+import { Box, IconButton, TextField } from '@material-ui/core'
 import Card from '@material-ui/core/Card'
-
 import CardContent from '@material-ui/core/CardContent'
-
+import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-
-import clsx from 'clsx'
-import { Study } from '../../types/types'
-import { ThemeType } from '../../style/theme'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
-import { Box, IconButton, Menu, MenuItem, TextField } from '@material-ui/core'
-import ConfirmationDialog from '../widgets/ConfirmationDialog'
-import EditableTextbox from '../widgets/EditableTextbox'
+import React, { FunctionComponent } from 'react'
+import { ThemeType } from '../../style/theme'
+import { Study } from '../../types/types'
+
+
+
 
 const DraftIcon = () => {
   return (

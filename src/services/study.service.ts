@@ -10,7 +10,7 @@ const StudyService = {
   getStudySessions,
   saveStudySessions,
   getStudySchedule,
-  saveStudySchedule
+  saveStudySchedule,
 }
 
 async function getStudies(): Promise<Study[]> {
@@ -107,25 +107,26 @@ async function saveStudySchedule(
   study.studyDuration = duration
 
   //save study
-  const result1 = await saveStudy(study)
-
+  await saveStudy(study)
   //save sessions
   const allSessions = await getAllStudySessions()
   const others = allSessions?.filter(s => s.studyId !== studyId) || []
   const sessions = schedule.sessions
   const allSessionsUpdated = [...others, ...sessions]
-  const result2 = await setItem(KEYS.STUDY_SESSIONS, allSessionsUpdated)
+  await setItem(KEYS.STUDY_SESSIONS, allSessionsUpdated)
 
   //save schedule
   const allSchedules = await getAllSchedules()
   const otherSched = allSchedules?.filter(s => s.studyId !== studyId) || []
-  const allSchedsUpdated = [...otherSched, {
-    ...schedule,
-    studyId: studyId,
-  }]
-  const result3 = await setItem(KEYS.SCHEDULES,  allSchedsUpdated)
+  const allSchedsUpdated = [
+    ...otherSched,
+    {
+      ...schedule,
+      studyId: studyId,
+    },
+  ]
+  await setItem(KEYS.SCHEDULES, allSchedsUpdated)
 
-  console.log('done')
   return
 }
 
@@ -143,23 +144,20 @@ async function saveStudySessions(
       resolve(result)
     }, 2000)
   })
-  var x = await promise
-  console.log('done')
+  await promise
+
   return result
 }
 
 //returns scehdule and sessions
 async function getStudySchedule(studyId: string): Promise<Schedule> {
-  /* let studyArms = await getItem<StudyArm[]>(KEYS.STUDY_ARMS)
-  let result =  studyArms?.filter(sa => sa.studyId === studyId)
- if(!result || result.length === 0){*/
   let sessions = await getStudySessions(studyId)
   let schedules = await getItem<Schedule[]>(KEYS.SCHEDULES)
   let schedule = schedules?.filter(sa => sa.studyId === studyId)?.[0]
   if (!schedule) {
     const mocks = MOCKS.SCHEDULE
     schedule = mocks
-    schedule.studyId  = studyId
+    schedule.studyId = studyId
     //@ts-ignore
     await setItem(KEYS.SCHEDULES, [mocks])
   }

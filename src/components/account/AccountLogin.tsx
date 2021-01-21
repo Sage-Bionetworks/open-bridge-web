@@ -94,7 +94,6 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
     { msg: string; type: AlertProps['severity'] } | undefined
   >()
 
-  const [authflag, setAuthflag] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const sessionData = useSessionDataState()
   const sessionUpdateFn = useSessionDataDispatch()
