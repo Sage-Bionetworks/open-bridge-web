@@ -10,6 +10,7 @@ import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import LoadingComponent from '../widgets/Loader'
 import AppDesign from './app-design/AppDesign'
 import Launch from './launch/Launch'
+import PassiveFeatures from './passive-features/PassiveFeatures'
 import Scheduler from './scheduler/Scheduler'
 import { StudySection } from './sections'
 import SessionCreator from './session-creator/SessionCreator'
@@ -82,6 +83,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
           onNavigate={(loc: StudySection) => {
             console.log(loc)
             console.log('setting')
+        
             setNextSection(loc)
           }}
           id={id}
@@ -133,7 +135,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
                       path="/studies/builder/:id/branding"
                       render={props => {
                         return (
-                          <AppDesign {...props} id={id} section={section} />
+                          <AppDesign {...props} id={id} section={section}   nextSection={nextSection}/>
                         )
                       }}
                     />
@@ -141,7 +143,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
                     <Route
                       path="/studies/builder/:id/launch"
                       render={props => {
-                        return <Launch {...props} id={id} section={section} />
+                        return <Launch {...props} id={id} section={section}          nextSection={nextSection}/>
+                      }}
+                    />
+
+<Route
+                      path="/studies/builder/:id/passive-features"
+                      render={props => {
+                        return <PassiveFeatures {...props} id={id} section={section}          nextSection={nextSection}/>
                       }}
                     />
                   </Switch>
