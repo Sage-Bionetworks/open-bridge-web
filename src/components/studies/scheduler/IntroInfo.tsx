@@ -2,12 +2,12 @@ import {
   Button,
   createStyles,
   FormControlLabel,
-  Theme,
+  Theme
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import { poppinsFont } from '../../../style/theme'
-import { HDWMEnum, StudyStartPseudonym } from '../../../types/scheduling'
+import { HDWMEnum, StartEventId } from '../../../types/scheduling'
 import Duration from './Duration'
 import StudyStartDate from './StudyStartDate'
 
@@ -34,8 +34,8 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
 }: IntroInfoProps) => {
   const classes = useStyles()
   const [duration, setDuration] = React.useState<any>('')
-  const [startPseudonym, setStartPseudonym] = React.useState<
-    StudyStartPseudonym | undefined
+  const [startEventId, setstartEventId] = React.useState<
+    StartEventId | undefined
   >(undefined)
 
   return (
@@ -58,15 +58,15 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
 
       <StudyStartDate
         isIntro={true}
-        onChange={(pseudonym: StudyStartPseudonym) =>
-          setStartPseudonym(pseudonym)
+        onChange={(pseudonym: StartEventId) =>
+          setstartEventId(pseudonym)
         }
       />
 
       <Button
         variant="contained"
-        onClick={e => onContinue(duration, startPseudonym)}
-        disabled={!(duration && startPseudonym)}
+        onClick={e => onContinue(duration, startEventId)}
+        disabled={!(duration && startEventId)}
       >
         Continue
       </Button>

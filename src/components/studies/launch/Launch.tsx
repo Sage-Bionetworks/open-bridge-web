@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import React, { useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { useStudy } from '../../../helpers/hooks'
+import { navigateAndSave } from '../../../helpers/utility'
 import { ThemeType } from '../../../style/theme'
 import { StudySection } from '../sections'
 import LaunchStepper from './LaunchStepper'
@@ -23,6 +24,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 export interface LaunchProps {
   id: string
   section: StudySection
+  nextSection?: StudySection
 }
 
 function getSteps() {
@@ -50,7 +52,7 @@ function getStepContent(step: number) {
   }
 }
 
-const Launch: React.FunctionComponent<LaunchProps> = ({ id }: LaunchProps) => {
+const Launch: React.FunctionComponent<LaunchProps> = ({ id, section, nextSection }: LaunchProps) => {
   const handleError = useErrorHandler()
   const classes = useStyles()
 
@@ -58,6 +60,22 @@ const Launch: React.FunctionComponent<LaunchProps> = ({ id }: LaunchProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [steps, setSteps] = useState(getSteps())
   const [activeStep, setActiveStep] = React.useState(0)
+  
+  const [hasObjectChanged, setHasObjectChanged] = useState(false)
+  const [saveLoader, setSaveLoader] = useState(false)
+  const save = async (url?: string) => {
+
+    setSaveLoader(true)
+    setHasObjectChanged(false)
+    setSaveLoader(false)
+    if (url) {
+      window.location.replace(url)
+    }
+  }
+
+  React.useEffect(() => {
+    navigateAndSave(id, nextSection, section, hasObjectChanged, save)
+  }, [nextSection, section])
 
   const handleNext = () => {
     const newSteps = steps.map((s, i) =>

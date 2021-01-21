@@ -1,32 +1,38 @@
-import React, { FunctionComponent, useRef } from 'react'
-
-import { Assessment, StudySession } from '../../../types/types'
 import {
-  Droppable,
-  Draggable,
-  DragDropContext,
-  DraggableLocation,
-  DropResult,
-} from 'react-beautiful-dnd'
-
-import clsx from 'clsx'
-import {
-  makeStyles,
   Box,
   Button,
-  FormLabel,
-  Switch,
-  FormControlLabel,
+
+
+  FormControlLabel, makeStyles,
+
+
+
+  Switch
 } from '@material-ui/core'
-import AssessmentSmall from '../../assessments/AssessmentSmall'
-import ClearIcon from '@material-ui/icons/Clear'
 import ClockIcon from '@material-ui/icons/AccessTime'
 import AddIcon from '@material-ui/icons/Add'
+import ClearIcon from '@material-ui/icons/Clear'
 import DeleteIcon from '@material-ui/icons/Delete'
-import EditableTextbox from '../../widgets/EditableTextbox'
+import clsx from 'clsx'
+import React, { FunctionComponent } from 'react'
+import {
+  DragDropContext, Draggable,
+
+  DraggableLocation, Droppable,
+
+
+
+  DropResult
+} from 'react-beautiful-dnd'
 import { ThemeType } from '../../../style/theme'
-import SessionIcon from '../../widgets/SessionIcon'
+import { StudySession } from '../../../types/scheduling'
+import { Assessment } from '../../../types/types'
+import AssessmentSmall from '../../assessments/AssessmentSmall'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
+import EditableTextbox from '../../widgets/EditableTextbox'
+import SessionIcon from '../../widgets/SessionIcon'
+
+
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {

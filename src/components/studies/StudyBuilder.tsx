@@ -10,6 +10,7 @@ import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import LoadingComponent from '../widgets/Loader'
 import AppDesign from './app-design/AppDesign'
 import Launch from './launch/Launch'
+import PassiveFeatures from './passive-features/PassiveFeatures'
 import Scheduler from './scheduler/Scheduler'
 import { StudySection } from './sections'
 import SessionCreator from './session-creator/SessionCreator'
@@ -56,7 +57,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
   const classes = useStyles()
   const handleError = useErrorHandler()
   let { id, section } = useParams<{ id: string; section: StudySection }>()
-
+  const [nextSection, setNextSection] = React.useState<StudySection>(section)
   const { data: study, status, error } = useStudy(id)
 
   const [open, setOpen] = React.useState(true)
@@ -79,6 +80,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
           open={open}
           onToggle={() => setOpen(prev => !prev)}
           currentSection={section}
+          onNavigate={(loc: StudySection) => {
+            console.log(loc)
+            console.log('setting')
+        
+            setNextSection(loc)
+          }}
           id={id}
         ></StudyLeftNav>
 
@@ -105,6 +112,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
                             {...props}
                             id={id}
                             section={section}
+                            nextSection={nextSection}
                           ></Scheduler>
                         )
                       }}
@@ -116,6 +124,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
                           <SessionCreator
                             {...props}
                             id={id}
+                            nextSection={nextSection}
                             section={section}
                           />
                         )
@@ -126,7 +135,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
                       path="/studies/builder/:id/branding"
                       render={props => {
                         return (
-                          <AppDesign {...props} id={id} section={section} />
+                          <AppDesign {...props} id={id} section={section}   nextSection={nextSection}/>
                         )
                       }}
                     />
@@ -134,7 +143,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
                     <Route
                       path="/studies/builder/:id/launch"
                       render={props => {
-                        return <Launch {...props} id={id} section={section} />
+                        return <Launch {...props} id={id} section={section}          nextSection={nextSection}/>
+                      }}
+                    />
+
+<Route
+                      path="/studies/builder/:id/passive-features"
+                      render={props => {
+                        return <PassiveFeatures {...props} id={id} section={section}          nextSection={nextSection}/>
                       }}
                     />
                   </Switch>

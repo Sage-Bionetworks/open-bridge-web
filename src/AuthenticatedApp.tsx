@@ -1,14 +1,7 @@
 import React, { FunctionComponent } from 'react'
-import TopNav from './components/widgets/AppTopNav'
-
+import { Route, Switch, useLocation } from 'react-router-dom'
 import './App.css'
-
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  useLocation,
-} from 'react-router-dom'
+import TopNav from './components/widgets/AppTopNav'
 import PrivateRoutes from './routes_private'
 
 const AuthenticatedApp: FunctionComponent<{ token: string }> = ({ token }) => {

@@ -11,8 +11,6 @@ type LogoutProps = {
 export const Logout: React.FunctionComponent<LogoutProps> = ({
   element,
 }: LogoutProps) => {
-  const classes = useStyles()
-
   const [navigate, setNavigate] = useState(false)
 
   const sessionUpdateFn = useSessionDataDispatch()

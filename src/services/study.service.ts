@@ -1,11 +1,5 @@
-import { getRandomId } from '../helpers/utility'
-import {
-  Schedule,
-  Study,
-  StudyArm,
-  StudySession,
-  StudyStatus,
-} from '../types/types'
+import { Schedule, StudyDuration, StudySession } from '../types/scheduling'
+import { Study, StudyStatus } from '../types/types'
 import { getItem, KEYS, MOCKS, setItem } from './lshelper'
 
 const StudyService = {
@@ -15,7 +9,8 @@ const StudyService = {
   removeStudy,
   getStudySessions,
   saveStudySessions,
-  getStudyArms,
+  getStudySchedule,
+  saveStudySchedule,
 }
 
 async function getStudies(): Promise<Study[]> {
@@ -58,6 +53,17 @@ async function getAllStudySessions(): Promise<StudySession[] | null> {
   return sessions
 }
 
+async function getAllSchedules(): Promise<Schedule[] | null> {
+  let s = await getItem<Schedule[]>(KEYS.SCHEDULES)
+  if (!s) {
+    const mocks = MOCKS.SCHEDULE
+    //@ts-ignore
+    s = await setItem(KEYS.SCHEDULES, [mocks])
+  }
+
+  return s
+}
+
 async function getStudySessions(
   studyId: string,
 ): Promise<StudySession[] | undefined> {
@@ -89,6 +95,41 @@ async function removeStudy(studyId: string): Promise<Study[]> {
   return result
 }
 
+async function saveStudySchedule(
+  studyId: string,
+  schedule: Schedule,
+  duration: StudyDuration,
+): Promise<void> {
+  const study = await getStudy(studyId)
+  if (!study) {
+    return Promise.reject('no study')
+  }
+  study.studyDuration = duration
+
+  //save study
+  await saveStudy(study)
+  //save sessions
+  const allSessions = await getAllStudySessions()
+  const others = allSessions?.filter(s => s.studyId !== studyId) || []
+  const sessions = schedule.sessions
+  const allSessionsUpdated = [...others, ...sessions]
+  await setItem(KEYS.STUDY_SESSIONS, allSessionsUpdated)
+
+  //save schedule
+  const allSchedules = await getAllSchedules()
+  const otherSched = allSchedules?.filter(s => s.studyId !== studyId) || []
+  const allSchedsUpdated = [
+    ...otherSched,
+    {
+      ...schedule,
+      studyId: studyId,
+    },
+  ]
+  await setItem(KEYS.SCHEDULES, allSchedsUpdated)
+
+  return
+}
+
 async function saveStudySessions(
   studyId: string,
   sessions: StudySession[],
@@ -97,34 +138,31 @@ async function saveStudySessions(
   const others = allSessions?.filter(s => s.studyId !== studyId) || []
   const allSessionsUpdated = [...others, ...sessions]
   const result = await setItem(KEYS.STUDY_SESSIONS, allSessionsUpdated)
+  var promise = new Promise(function (resolve, reject) {
+    console.log('waiting')
+    window.setTimeout(function () {
+      resolve(result)
+    }, 2000)
+  })
+  await promise
 
   return result
 }
 
-async function getStudyArms(studyId: string): Promise<StudyArm[]> {
-  let result
-  /* let studyArms = await getItem<StudyArm[]>(KEYS.STUDY_ARMS)
-  let result =  studyArms?.filter(sa => sa.studyId === studyId)
- if(!result || result.length === 0){*/
-  const sessions = await getStudySessions(studyId)
-  const schedule: Schedule = {
-    name: 'Untitled',
-    eventStartId: '123',
-    sessions: sessions || [],
+//returns scehdule and sessions
+async function getStudySchedule(studyId: string): Promise<Schedule> {
+  let sessions = await getStudySessions(studyId)
+  let schedules = await getItem<Schedule[]>(KEYS.SCHEDULES)
+  let schedule = schedules?.filter(sa => sa.studyId === studyId)?.[0]
+  if (!schedule) {
+    const mocks = MOCKS.SCHEDULE
+    schedule = mocks
+    schedule.studyId = studyId
+    //@ts-ignore
+    await setItem(KEYS.SCHEDULES, [mocks])
   }
-  const newStudyArm: StudyArm = {
-    id: getRandomId(),
-    studyId,
-    active: true,
-    name: 'Untitled',
 
-    schedule,
-  }
-  result = [newStudyArm]
-  //}
-  result[0] = { ...result[0], active: true }
-
-  return result
+  return { ...schedule, sessions: sessions || [] }
 }
 
 /*return new Promise((resolve, reject) =>

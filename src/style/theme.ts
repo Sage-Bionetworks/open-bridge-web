@@ -60,6 +60,26 @@ const theme: Theme = createMuiTheme({
     MuiCssBaseline: {
       '@global': globals,
     },
+    MuiButton: {
+      containedPrimary: {
+        backgroundColor: '#000',
+
+        '&:hover': {
+          backgroundColor: '#634848',
+        },
+      },
+    },
+
+    MuiInputBase: {
+      input: {
+        backgroundColor: '#BCD5E4',
+      },
+      colorSecondary: {
+        '& input': {
+          backgroundColor: 'white',
+        },
+      },
+    },
   },
   props: {
     // Name of the component ⚛️

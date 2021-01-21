@@ -1,13 +1,11 @@
-import AssessmentLibrary from './components/assessments/AssessmentLibrary'
-import ComplianceDashboard from './components/compliance/ComplianceDashboard'
-import StudyList from './components/studies/StudyList'
-import ParticipantManager from './components/studies/participants/ParticipantManager'
-
-import StudyBuilder from './components/studies/StudyBuilder'
-import AssessmentDetail from './components/assessments/AssessmentDetail'
-import SessionsLayout from './components/layouts/sessions'
 import AccountSetup from './components/account/AccountSetup'
-import Sharing from './components/shared/Sharing'
+import AssessmentDetail from './components/assessments/AssessmentDetail'
+import AssessmentLibrary from './components/assessments/AssessmentLibrary'
+import Sharing from './components/shared/Access'
+import ParticipantManager from './components/studies/participants/ParticipantManager'
+import StudyBuilder from './components/studies/StudyBuilder'
+import StudyList from './components/studies/StudyList'
+
 
 export default [
   /* {

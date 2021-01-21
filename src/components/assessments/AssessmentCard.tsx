@@ -4,7 +4,6 @@ import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import validated from '../../assets/validated.svg'
 import { Assessment } from '../../types/types'
@@ -61,10 +60,6 @@ const AssessmentCard: FunctionComponent<AssessmentCardProps> = ({
   index,
 }) => {
   const classes = useStyles()
-  // const bull = <span className={classes.bullet}>•</span>
-
-  const className = clsx({ [classes.root]: true, [classes.dragging]: false })
-  //console.log('className', className)
 
   return (
     <Card className={classes.root}>

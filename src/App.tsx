@@ -1,9 +1,8 @@
 import {
   Container,
-  createMuiTheme,
   CssBaseline,
   ThemeProvider,
-  Typography,
+  Typography
 } from '@material-ui/core'
 import React, { useEffect } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -13,14 +12,14 @@ import AuthenticatedApp from './AuthenticatedApp'
 import { ErrorFallback, ErrorHandler } from './components/widgets/ErrorHandler'
 import {
   useSessionDataDispatch,
-  useSessionDataState,
+  useSessionDataState
 } from './helpers/AuthContext'
 import UserService from './services/user.service'
 import { cssVariables, theme } from './style/theme'
 import { SessionData } from './types/types'
 import UnauthenticatedApp from './UnauthenticatedApp'
 
-const defaultTheme = createMuiTheme()
+//const defaultTheme = createMuiTheme()
 
 /*function getRootURL() {
   const portString = window.location.port ? `:${window.location.port}` : ''
@@ -56,13 +55,12 @@ export const detectSSOCode = async (
           ...sessionData,
           token: loggedIn.data.sessionToken,
           name: loggedIn.data.firstName,
-          // consented: loggedIn.data.consented,
-          // userDataGroup: loggedIn.data.dataGroups,
+          orgMembership: loggedIn.data.orgMembership,
+          dataGroups: loggedIn.data.dataGroups,
         },
       })
-      // console.log(env.redirect+ "/studies")
-      // return <Redirect to={env.redirect+ "/studies"} />
-      window.history.replaceState(null, '', `${window.location.origin}/studies`)
+
+      window.location.replace(`${window.location.origin}/studies`)
       // window.location.replace(env.redirect+'/study-editor')
     } catch (e) {
       alert(e.message)
@@ -82,9 +80,12 @@ function App() {
         try {
           await UserService.getUserInfo(token)
         } catch (e) {
-          sessionUpdateFn({
-            type: 'LOGOUT',
-          })
+          if (e.statusCode && e.statusCode >= 400) {
+            sessionUpdateFn({
+              type: 'LOGOUT',
+            })
+            alert('Authentication Error')
+          }
         }
       }
     }
@@ -95,7 +96,7 @@ function App() {
   }, [token])
   useEffect(() => {
     detectSSOCode(sessionUpdateFn, sessionData)
-  })
+  }, [sessionData.token])
 
   return (
     <ThemeProvider theme={{ ...theme, ...cssVariables }}>

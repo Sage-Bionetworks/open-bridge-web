@@ -94,7 +94,6 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
     { msg: string; type: AlertProps['severity'] } | undefined
   >()
 
-  const [authflag, setAuthflag] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const sessionData = useSessionDataState()
   const sessionUpdateFn = useSessionDataDispatch()
@@ -109,16 +108,16 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
     try {
       const loggedIn = await UserService.loginWithPassword(username, password)
       const consented = loggedIn.status !== 412
-      if (loggedIn.ok || !consented) {
-        console.log('handleLogin')
+      if (loggedIn.ok || !consented) {        
         sessionUpdateFn({
           type: 'LOGIN',
           payload: {
             ...sessionData,
             token: loggedIn.data.sessionToken,
+            orgMembership: loggedIn.data.orgMembership,
             name: loggedIn.data.firstName,
             // consented: loggedIn.data.consented,
-            // userDataGroup: loggedIn.data.dataGroups,
+            dataGroups: loggedIn.data.dataGroups,
           },
         })
 

@@ -3,14 +3,14 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
-  Theme,
+  Theme
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import {
   HDWMEnum,
   SessionScheduleStartType,
-  StartDate as StartDateType,
+  StartDate as StartDateType
 } from '../../../types/scheduling'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
@@ -27,21 +27,23 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
   onChange,
 }: StartDateProps) => {
   const classes = useStyles()
-  console.log('startDate' + startDate.offset)
-  const [x, setX] = React.useState(startDate.offset)
+
+  const [startDateOffset, setStartDateOffset] = React.useState(startDate.offset)
 
   React.useEffect(() => {
-    setX(startDate.offset)
+    setStartDateOffset(startDate.offset)
   }, [startDate.offset])
 
   const changeStartDate = (type: SessionScheduleStartType) => {
-    if (type === 'DAY1') {
-      onChange({ type: 'DAY1', offset: undefined })
-    } else {
-      if (startDate.type !== 'NDAYS_DAY1') {
-        onChange({ ...startDate, type })
-      }
-    }
+   if (type !== startDate.type) {
+      onChange({ ...startDate, type })
+  
+   }
+   // } else {
+    //  if (startDate.type !== 'NDAYS_DAY1') {
+      //  onChange({ ...startDate, type })
+     // }
+    //}
   }
 
   return (
@@ -62,13 +64,13 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
               <Duration
                 onFocus={() => changeStartDate('NDAYS_DAY1')}
                 onChange={e => {
-                  setX(e.toString())
+                  setStartDateOffset(e.toString())
                   onChange({
                     ...startDate,
                     offset: e,
                   })
                 }}
-                durationString={x}
+                durationString={startDateOffset}
                 unitLabel="Repeat Every"
                 numberLabel="frequency number"
                 unitData={HDWMEnum}

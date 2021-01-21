@@ -1,36 +1,33 @@
-import React, { FunctionComponent, useState } from 'react'
-
 import {
   Box,
   Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   IconButton,
   makeStyles,
-  Paper,
+  Paper
 } from '@material-ui/core'
-import CloseIcon from '@material-ui/icons/Close'
 import Fab from '@material-ui/core/Fab'
-
-import { Assessment, Group, StudySession } from '../../../types/types'
-
-import AssessmentSelector from './AssessmentSelector'
-
-import actionsReducer, { Types, SessionAction } from './sessionActions'
-import StudyService from '../../../services/study.service'
-
-import SessionActionButtons from './SessionActionButtons'
-import SingleSessionContainer from './SingleSessionContainer'
+import CloseIcon from '@material-ui/icons/Close'
+import React, { FunctionComponent, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
-
-import { StudySection } from '../sections'
-import NavButtons from '../NavButtons'
-import { useStudy, useStudySessions } from '../../../helpers/hooks'
 import NavigationPrompt from 'react-router-navigation-prompt'
+import { useAsync } from '../../../helpers/AsyncHook'
+import { useNavigate } from '../../../helpers/hooks'
+import StudyService from '../../../services/study.service'
+import { StudySession } from '../../../types/scheduling'
+import { Assessment } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
+import LoadingComponent from '../../widgets/Loader'
+import NavButtons from '../NavButtons'
+import { StudySection } from '../sections'
+import AssessmentSelector from './AssessmentSelector'
+import SessionActionButtons from './SessionActionButtons'
+import actionsReducer, { SessionAction, Types } from './sessionActions'
+import SingleSessionContainer from './SingleSessionContainer'
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -61,16 +58,20 @@ const useStyles = makeStyles(theme => ({
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
     paddingBottom: theme.spacing(2),
+    display: 'flex',
+    justifyContent: 'space-between',
   },
 }))
 
 type SessionCreatorProps = {
   id: string
   section: StudySection
+  nextSection?: StudySection
 }
 
 const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   section,
+  nextSection,
   id,
 }: SessionCreatorProps) => {
   const classes = useStyles()
@@ -79,14 +80,56 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     [],
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
-  const [hasObjectChanged, setHasObjectChanged] = useState(false)
-  const { data: sessions, status, error, run, setData } = useStudySessions(id)
+ 
+  //const [saveLoader, setSaveLoader] = useState(false)
+
+ 
+  const { data: sessions, status, error, run, setData, setError } = useAsync<
+    StudySession[]
+  >({
+    status: id ? 'PENDING' : 'IDLE',
+    data: null,
+  })
+
+  const {hasObjectChanged, setHasObjectChanged, saveLoader, setSaveLoader, save} = useNavigate(id, section, nextSection|| '', async ()=> {await StudyService.saveStudySessions(id, sessions || []); return})
+
+/*
+  async function save (url?: string)  {
+    setSaveLoader(true)
+    const done = await StudyService.saveStudySessions(id, sessions || [])
+    setHasObjectChanged(false)
+    setSaveLoader(false)
+    if (url) {
+      window.location.replace(url)
+    }
+  }*/
+  // get the sessions
+  React.useEffect(() => {
+    if (!id) {
+      return
+    }
+    console.log('effect running')
+    return run(StudyService.getStudySessions(id).then(sessions => sessions))
+  }, [id, run])
+
+  // save on data change
+  React.useEffect(() => {
+    if (!hasObjectChanged) {
+      return
+    }
+   save().then(() => {
+     console.log('saved')
+    })
+  }, [hasObjectChanged])
+
   const handleError = useErrorHandler()
+
 
   const sessionsUpdateFn = (action: SessionAction) => {
     const newState = actionsReducer(sessions!, action)
-    setHasObjectChanged(true)
+
     setData(newState)
+    if (action.type !== 'SET_ACTIVE_SESSION') setHasObjectChanged(true)
   }
 
   if (status === 'REJECTED') {
@@ -128,12 +171,6 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   ): StudySession | undefined => {
     const session = sessions.find(session => session.active)
     return session
-  }
-
-  const save = async (url: string) => {
-    const done = await StudyService.saveStudySessions(id, sessions || [])
-    console.log('done')
-    window.location.replace(url)
   }
 
   if (sessions) {
@@ -211,6 +248,13 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
               })
             }
           ></SessionActionButtons>
+
+          <LoadingComponent
+            reqStatusLoading={saveLoader}
+            variant="small"
+            loaderSize="2rem"
+            style={{ width: '2rem' }}
+          ></LoadingComponent>
         </Box>
         <NavButtons
           id={id}

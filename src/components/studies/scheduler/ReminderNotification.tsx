@@ -3,14 +3,13 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
-  Theme,
+  Theme
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import {
-  ReminderIntervalEnum,
-  ReminderIntervalType,
-  ReminderType,
+  NotificationReminder, ReminderIntervalEnum,
+  ReminderIntervalType
 } from '../../../types/scheduling'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import SchedulingFormSection from './SchedulingFormSection'
@@ -25,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 export interface ReminderNotificationProps {
-  reminder?: ReminderType
+  reminder?: NotificationReminder
   onChange: Function
 }
 

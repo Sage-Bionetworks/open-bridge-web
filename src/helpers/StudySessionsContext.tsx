@@ -1,15 +1,15 @@
 import * as React from 'react'
-
-import { Group, StudySession } from '../types/types'
 import SessionCreatorActions, {
-  DEFAULT_GROUP,
-  SessionAction,
+
+  SessionAction
 } from '../components/studies/session-creator/sessionActions'
+import { StudySession } from '../types/scheduling'
+
 
 type Dispatch = (action: SessionAction) => void
 type StudySessionsProviderProps = { children: React.ReactNode }
 
-const initialState: StudySession[] = DEFAULT_GROUP.sessions
+const initialState: StudySession[] = []
 
 const StudySessionsStateContext = React.createContext<
   StudySession[] | undefined
@@ -57,6 +57,5 @@ export {
   StudySessionsProvider,
   useStudySessionsState,
   useStudySessionsDispatch,
-  //defaultGroup,
-  //actionsReducer,
 }
+

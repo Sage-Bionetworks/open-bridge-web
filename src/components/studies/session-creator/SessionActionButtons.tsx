@@ -1,13 +1,14 @@
+import { Box, Button, makeStyles, MenuItem, Select } from '@material-ui/core'
 import React, { FunctionComponent, useEffect } from 'react'
+import { StudySession } from '../../../types/scheduling'
 
-import { makeStyles, Box, Button, MenuItem, Select } from '@material-ui/core'
 
-import { StudySession } from '../../../types/types'
 
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
     alignItems: 'flex-start',
+    flexShrink: 0,
     paddingTop: theme.spacing(2),
   },
   label: {
@@ -88,6 +89,7 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
           Duplicate
         </Button>,
       ]}
+   
     </Box>
   )
 }

@@ -5,7 +5,7 @@ import {
   Divider,
   Paper,
   TextField,
-  Typography,
+  Typography
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import ReactColorPicker from '@super-effective/react-color-picker'
@@ -14,7 +14,7 @@ import { useErrorHandler } from 'react-error-boundary'
 //import { ReactComponent as PhoneBg } from '../../../assets/phone_bg.svg'
 import PhoneBg from '../../../assets/phone_bg.svg'
 import { useStudy } from '../../../helpers/hooks'
-import { bytesToSize } from '../../../helpers/utility'
+import { bytesToSize, navigateAndSave } from '../../../helpers/utility'
 import { ThemeType } from '../../../style/theme'
 import { StudySection } from '../sections'
 
@@ -83,6 +83,7 @@ type UploadedFile = {
 export interface AppDesignProps {
   id: string
   section: StudySection
+  nextSection?: StudySection
 }
 
 function getPreviewForImage(file: File): PreviewFile {
@@ -97,6 +98,7 @@ function getPreviewForImage(file: File): PreviewFile {
 
 const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   id,
+  section, nextSection
 }: AppDesignProps) => {
   const handleError = useErrorHandler()
   const classes = useStyles()
@@ -109,6 +111,22 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   const [isLoading, setIsLoading] = useState(false)
 
   const [logo, setLogo] = useState()
+
+  const [hasObjectChanged, setHasObjectChanged] = useState(false)
+  const [saveLoader, setSaveLoader] = useState(false)
+  const save = async (url?: string) => {
+
+    setSaveLoader(true)
+    setHasObjectChanged(false)
+    setSaveLoader(false)
+    if (url) {
+      window.location.replace(url)
+    }
+  }
+
+  React.useEffect(() => {
+    navigateAndSave(id, nextSection, section, hasObjectChanged, save)
+  }, [nextSection, section])
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     event.persist()

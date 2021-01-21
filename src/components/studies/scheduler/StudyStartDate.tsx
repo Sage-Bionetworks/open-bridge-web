@@ -1,36 +1,33 @@
-import React from 'react'
-
-import { makeStyles } from '@material-ui/core/styles'
-
 import {
+  Box,
   createStyles,
-  Theme,
   FormControlLabel,
   Radio,
   RadioGroup,
-  Box,
+  Theme
 } from '@material-ui/core'
-
-import { StudyStartPseudonym } from '../../../types/scheduling'
+import { makeStyles } from '@material-ui/core/styles'
+import React from 'react'
+import { StartEventId } from '../../../types/scheduling'
 import SchedulingFormSection from './SchedulingFormSection'
 
 const useStyles = makeStyles((theme: Theme) => createStyles({}))
 
 export interface StudyStartDateProps {
   isIntro?: boolean
-  pseudonym?: StudyStartPseudonym
-  onChange: (n: StudyStartPseudonym) => void
+  startEventId?: StartEventId
+  onChange: (n: StartEventId) => void
   style?: React.CSSProperties
 }
 
 const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
-  pseudonym,
+  startEventId,
   onChange,
   isIntro,
   style,
 }: StudyStartDateProps) => {
   const classes = useStyles()
-  const options: StudyStartPseudonym[] = ['ONBOARDING', 'START_DATE']
+  const options: StartEventId[] = ['ONBOARDING', 'START_DATE']
 
   const label = isIntro ? (
     <Box marginTop="20px">
@@ -52,8 +49,8 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
       <RadioGroup
         aria-label="Day 1"
         name="day1"
-        value={pseudonym}
-        onChange={e => onChange(e.target.value as StudyStartPseudonym)}
+        value={startEventId}
+        onChange={e => onChange(e.target.value as StartEventId)}
       >
         <FormControlLabel
           value={options[0]}

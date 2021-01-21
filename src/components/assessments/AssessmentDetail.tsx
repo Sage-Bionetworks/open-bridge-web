@@ -6,7 +6,7 @@ import {
   makeStyles,
   Paper,
   Typography,
-  useTheme,
+  useTheme
 } from '@material-ui/core'
 import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
@@ -35,20 +35,18 @@ const useStyles = makeStyles(theme =>
 )
 
 type AssessmentDetailOwnProps = {
-  // assessment?: Assessment
+
 }
 
 type AssessmentDetailProps = AssessmentDetailOwnProps & RouteComponentProps
 
 const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = (
-  {
-    //assessment,
-  },
+
 ) => {
   const { token } = useSessionDataState()
   const classes = useStyles()
   const theme = useTheme()
-  console.log(theme.spacing(4), 'theme')
+
   const links = [{ url: '/assessments', text: 'Assessments' }]
 
   let { id } = useParams<{ id: string }>()
@@ -70,13 +68,13 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = (
           tags,
         } = await AssessmentService.getAssessmentsWithResources(id, token)
         if (assessments.length === 0) {
-          throw 'no assessment found'
+          throw ('no assessment found')
         } else {
           return assessments[0]
         }
       })(id, token),
     )
-  }, [run])
+  }, [run, id, token])
   if (status === 'PENDING' || !data) {
     return <>loading component here</>
   } else if (status === 'REJECTED') {
