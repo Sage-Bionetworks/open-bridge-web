@@ -1,6 +1,5 @@
 import {
   Container,
-
   CssBaseline,
   ThemeProvider,
   Typography
@@ -57,16 +56,11 @@ export const detectSSOCode = async (
           token: loggedIn.data.sessionToken,
           name: loggedIn.data.firstName,
           orgMembership: loggedIn.data.orgMembership,
-         dataGroups: loggedIn.data.dataGroups,
+          dataGroups: loggedIn.data.dataGroups,
         },
       })
-      // console.log(env.redirect+ "/studies")
-      // return <Redirect to={env.redirect+ "/studies"} />
 
-      setTimeout(() => {
-        window.location.replace(`${window.location.origin}/studies`)
-      }, 1000)
-      // window.location.replace(`${window.location.origin}/studies`)
+      window.location.replace(`${window.location.origin}/studies`)
       // window.location.replace(env.redirect+'/study-editor')
     } catch (e) {
       alert(e.message)
@@ -86,9 +80,12 @@ function App() {
         try {
           await UserService.getUserInfo(token)
         } catch (e) {
-          sessionUpdateFn({
-            type: 'LOGOUT',
-          })
+          if (e.statusCode && e.statusCode >= 400) {
+            sessionUpdateFn({
+              type: 'LOGOUT',
+            })
+            alert('Authentication Error')
+          }
         }
       }
     }
@@ -99,7 +96,7 @@ function App() {
   }, [token])
   useEffect(() => {
     detectSSOCode(sessionUpdateFn, sessionData)
-  })
+  }, [sessionData.token])
 
   return (
     <ThemeProvider theme={{ ...theme, ...cssVariables }}>
