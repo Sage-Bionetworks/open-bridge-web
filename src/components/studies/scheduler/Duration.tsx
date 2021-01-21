@@ -53,7 +53,7 @@ const Duration: React.FunctionComponent<
       //unit = unit === 'M' && hasTime ? 'TM' : unit
       //console.log('unit is', unit)
       //console.log('unitdata', unitData)
-      console.log(durationString, ':about to parse')
+      //console.log(durationString, ':about to parse')
       //debugger
 
       // const parsedDuration = moment.duration(durationString)
@@ -65,7 +65,7 @@ const Duration: React.FunctionComponent<
       //const n = durationString.//parsedDuration.as(units[unit] as moment.unitOfTime.Base)
 
       //console.log('unittype:', typeof unit)
-      console.log('n', n)
+      //console.log('n', n)
 
       setUnit(unit)
       setNum(n)
@@ -77,13 +77,13 @@ const Duration: React.FunctionComponent<
   }, [durationString])
 
   const changeValue = (value?: number, unit?: string) => {
-    console.log('changing value:' + value)
+    //console.log('changing value:' + value)
     if (unit) {
-      console.log('has unit: ' + unit)
+      //console.log('has unit: ' + unit)
       setUnit(unit)
     }
     if (value) {
-      console.log('has value: ' + value)
+      //console.log('has value: ' + value)
       setNum(value)
     }
     if (!unit || !value) {
@@ -95,7 +95,7 @@ const Duration: React.FunctionComponent<
     // const durationUnit = Object.keys(units).find(key => units[key] === unit)!
     const time = unit === 'H' || unit === 'M' ? 'T' : ''
     const p = `P${time}${value}${unit}`
-    console.log(p, 'set p')
+    //console.log(p, 'set p')
 
     onChange(p)
   }

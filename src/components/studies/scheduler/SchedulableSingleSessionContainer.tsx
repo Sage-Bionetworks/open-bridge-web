@@ -176,8 +176,6 @@ SchedulableSingleSessionContainerProps) => {
                 <StartDate
                   startDate={schedulableSession.startDate}
                   onChange={(startDate: StartDateType) => {
-                    console.log('!shcing start to', startDate)
-
                     updateSessionSchedule({ ...schedulableSession, startDate })
                     //setSchedulableSession(prev => ({ ...prev, startDate }))
                   }}
@@ -233,7 +231,7 @@ SchedulableSingleSessionContainerProps) => {
                       border={false}
                     >
                       <SelectWithEnum
-                        value={schedulableSession.notification}
+                        value={schedulableSession.notification || 'RANDOM'}
                         style={{ marginLeft: 0 }}
                         sourceData={NotificationFreqEnum}
                         id="notificationfreq"
