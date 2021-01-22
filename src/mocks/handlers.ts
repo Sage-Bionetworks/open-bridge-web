@@ -103,14 +103,15 @@ export const handlers = [
 
   //update study
   rest.post(`*${constants.endpoints.study}`, async (req, res, ctx) => {
-    const { study } = req.params
+    const { id } = req.params
+    const study = req.body as Study
     const studies = (await getStudies()) || []
 
     let newStudies: Study[]
-    if (studies.find(_study => _study.identifier === study.identifier)) {
+    if (studies.find(s => s.identifier === id)) {
       //if study exist
-      newStudies = studies.map(_study =>
-        _study.identifier === study.identifier ? study : _study,
+      newStudies = studies.map(s =>
+        s.identifier === id ? study : s,
       )
     } else {
       newStudies = [...studies, study]
@@ -140,7 +141,7 @@ export const handlers = [
     return res(
       ctx.status(200),
       ctx.json({
-        items: schedule,
+        data: schedule,
       }),
     )
   }),

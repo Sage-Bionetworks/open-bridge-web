@@ -100,7 +100,7 @@ async function saveStudySchedule(
   const studySessions = await callEndpoint<any>(
     constants.endpoints.scheduleSessions.replace(':id', studyId),
     'POST',
-    schedule,
+    schedule.sessions,
     token,
   )
 
@@ -108,7 +108,7 @@ async function saveStudySchedule(
   const sched = await callEndpoint<any>(
     constants.endpoints.schedule.replace(':id', studyId),
     'POST',
-    {},
+    schedule,
     token,
   )
   console.log(studySessions, sched)

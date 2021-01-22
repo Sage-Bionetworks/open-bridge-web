@@ -66,20 +66,21 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
         Create new session
       </Button>
 
-      {selectedSessionId && [
+      {selectedSessionId && <>
         <Select
-          value={selectedSessionId}
-          onChange={e => setSelectedSessionId(e.target.value as string)}
-          displayEmpty
-          className={classes.selectEmpty}
-          inputProps={{ 'aria-label': 'Without label' }}
-        >
-          {sessions.map((session, index) => (
-            <MenuItem value={session.id} key={session.id+index}>
-              {session.name}
-            </MenuItem>
-          ))}
-        </Select>,
+        key='session_select'
+        value={selectedSessionId}
+        onChange={e => setSelectedSessionId(e.target.value as string)}
+        displayEmpty
+        className={classes.selectEmpty}
+        inputProps={{ 'aria-label': 'Without label' }}
+      >
+        {sessions.map((session, index) => (
+          <MenuItem value={session.id} key={`${session.id}menu${index}`}>
+            {session.name}
+          </MenuItem>
+        ))}
+      </Select>,
         <Button
           key="duplicate_session"
           variant="contained"
@@ -88,7 +89,7 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
         >
           Duplicate
         </Button>,
-      ]}
+     </>}
     </Box>
   )
 }
