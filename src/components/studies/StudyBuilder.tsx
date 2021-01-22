@@ -56,6 +56,7 @@ type StudyBuilderProps = StudyBuilderOwnProps & RouteComponentProps
 const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
   const classes = useStyles()
   const handleError = useErrorHandler()
+ 
   let { id, section } = useParams<{ id: string; section: StudySection }>()
   const [nextSection, setNextSection] = React.useState<StudySection>(section)
   const { data: study, status, error } = useStudy(id)

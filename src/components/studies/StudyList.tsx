@@ -1,9 +1,3 @@
-import React, { FunctionComponent, useEffect } from 'react'
-import Link from '@material-ui/core/Link'
-import { RouteComponentProps } from 'react-router-dom'
-import StudyService from '../../services/study.service'
-import { Study, StudyStatus } from '../../types/types'
-import StudyCard from './StudyCard'
 import {
   Box,
   Button,
@@ -11,11 +5,18 @@ import {
   Divider,
   makeStyles,
   Menu,
-  MenuItem,
+  MenuItem
 } from '@material-ui/core'
+import Link from '@material-ui/core/Link'
+import React, { FunctionComponent, useEffect } from 'react'
+import { RouteComponentProps } from 'react-router-dom'
+import { useSessionDataState } from '../../helpers/AuthContext'
 import { getRandomId } from '../../helpers/utility'
+import StudyService from '../../services/study.service'
+import { Study, StudyStatus } from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import { MTBHeading } from '../widgets/Headings'
+import StudyCard from './StudyCard'
 
 type StudyListOwnProps = {}
 
@@ -144,6 +145,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
 }
 
 const StudyList: FunctionComponent<StudyListProps> = () => {
+  const { token} = useSessionDataState()
   const [studies, setStudies] = React.useState<Study[]>([])
   const [menuAnchor, setMenuAnchor] = React.useState<null | {
     study: Study
@@ -175,11 +177,14 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       name: 'Untitled Study',
     }
     setStudies([...studies, newStudy])
-    const x = await StudyService.saveStudy(newStudy)
+    const x = await StudyService.saveStudy(newStudy, token!)
     setStudies(x)
   }
 
   const onAction = async (study: Study, type: StudyAction) => {
+    if (!token) {
+      return
+    }
     handleMenuClose()
     let result
     switch (type) {
@@ -188,13 +193,13 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           studies.map(s => (s.identifier !== study.identifier ? s : study)),
         )
         console.log('studies', studies)
-        result = await StudyService.saveStudy(study)
+        result = await StudyService.saveStudy(study, token)
         setStudies(result)
         setRenameStudyId('')
         return
 
       case 'DELETE':
-        const s = await StudyService.removeStudy(study.identifier)
+        const s = await StudyService.removeStudy(study.identifier, token)
         console.log(studies.length)
         console.log(s.length)
         setStudies(s)
@@ -208,7 +213,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           name: `Copy of ${study!.name}`,
         }
         setStudies([...studies, newStudy])
-        result = await StudyService.saveStudy(newStudy)
+        result = await StudyService.saveStudy(newStudy,token)
         setStudies(result)
         return
       default: {
@@ -226,7 +231,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         try {
           //setIsLoading(true)
 
-          const studies = await StudyService.getStudies()
+          const studies = await StudyService.getStudies(token!)
 
           if (isSubscribed) {
             setStudies(studies)

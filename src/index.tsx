@@ -1,12 +1,18 @@
 import React, { Suspense } from 'react'
-import ReactDOM from 'react-dom'
-import './index.css'
-import App from './App'
-import * as serviceWorker from './serviceWorker'
 import 'react-app-polyfill/ie11'
 import 'react-app-polyfill/stable'
-
+import ReactDOM from 'react-dom'
+import App from './App'
 import { SessionDataProvider } from './helpers/AuthContext'
+import './index.css'
+
+
+if (process.env.NODE_ENV === 'development') {
+  console.log('development')
+  const { worker } = require('./mocks/browser')
+  worker.start()
+}
+
 
 ReactDOM.render(
   <React.StrictMode>
@@ -22,4 +28,4 @@ ReactDOM.render(
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister()
+//serviceWorker.unregister()

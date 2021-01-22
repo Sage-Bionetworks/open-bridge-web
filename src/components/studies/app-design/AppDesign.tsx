@@ -98,9 +98,11 @@ function getPreviewForImage(file: File): PreviewFile {
 
 const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   id,
-  section, nextSection
+  section,
+  nextSection,
 }: AppDesignProps) => {
   const handleError = useErrorHandler()
+
   const classes = useStyles()
 
   const { data, status, error } = useStudy(id)
@@ -115,7 +117,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   const [hasObjectChanged, setHasObjectChanged] = useState(false)
   const [saveLoader, setSaveLoader] = useState(false)
   const save = async (url?: string) => {
-
     setSaveLoader(true)
     setHasObjectChanged(false)
     setSaveLoader(false)

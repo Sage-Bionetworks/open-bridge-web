@@ -2,8 +2,10 @@ import { useState } from 'react'
 import CONSTANTS from '../types/constants'
 import { Response, SessionData, StringDictionary } from '../types/types'
 
+type RestMethod = 'POST' | 'GET' | 'DELETE'
+
 function makeRequest(
-  method: 'POST' | 'GET' = 'POST',
+  method: RestMethod  = 'POST',
   url: string,
   body: any,
   token?: string,
@@ -41,7 +43,7 @@ function makeRequest(
 
 export const callEndpointXHR = async <T>(
   endpoint: string,
-  method: 'POST' | 'GET' = 'POST',
+  method: RestMethod  = 'POST',
   data: StringDictionary<any>,
   token?: string,
 ): Promise<Response<T>> => {
@@ -68,7 +70,7 @@ export const callEndpointXHR = async <T>(
 
 export const callEndpoint = async <T>(
   endpoint: string,
-  method: 'POST' | 'GET' = 'POST',
+  method: RestMethod  = 'POST',
   data: StringDictionary<any>,
   token?: string,
   isSynapseEndpoint?: boolean,

@@ -2,8 +2,6 @@ import { Box, Button, makeStyles, MenuItem, Select } from '@material-ui/core'
 import React, { FunctionComponent, useEffect } from 'react'
 import { StudySession } from '../../../types/scheduling'
 
-
-
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
@@ -59,6 +57,7 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
   return (
     <Box className={classes.root}>
       <Button
+        key="add_session"
         variant="contained"
         color="secondary"
         style={{ marginRight: '16px' }}
@@ -75,13 +74,14 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
           className={classes.selectEmpty}
           inputProps={{ 'aria-label': 'Without label' }}
         >
-          {sessions.map(session => (
-            <MenuItem value={session.id} key={session.id}>
+          {sessions.map((session, index) => (
+            <MenuItem value={session.id} key={session.id+index}>
               {session.name}
             </MenuItem>
           ))}
         </Select>,
         <Button
+          key="duplicate_session"
           variant="contained"
           color="secondary"
           onClick={() => duplicateSession(selectedSessionId)}
@@ -89,7 +89,6 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
           Duplicate
         </Button>,
       ]}
-   
     </Box>
   )
 }

@@ -12,6 +12,7 @@ import { useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps } from 'react-router-dom'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import { useAsync } from '../../../helpers/AsyncHook'
+import { useSessionDataState } from '../../../helpers/AuthContext'
 import { useNavigate } from '../../../helpers/hooks'
 import StudyService from '../../../services/study.service'
 import { poppinsFont } from '../../../style/theme'
@@ -68,7 +69,7 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
   section,
   nextSection,
 }: SchedulerOwnProps) => {
-
+  const { token} = useSessionDataState()
   const handleError = useErrorHandler()
   const classes = useStyles()
   const { data, status, error, run, setData } = useAsync<{
@@ -85,6 +86,7 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
       id,
       data!.schedule!,
       data!.studyDuration!,
+      token!
     )
     return
   })
@@ -105,19 +107,19 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
 
 
   const getData = async (id: string) => {
-    const schedule = await StudyService.getStudySchedule(id)
-    const study = await StudyService.getStudy(id)
+    const schedule = await StudyService.getStudySchedule(id, token!)
+    const study = await StudyService.getStudy(id, token!)
 
     return { schedule, studyDuration: study?.studyDuration }
   }
 
   //get initial data
   React.useEffect(() => {
-    if (!id) {
+    if (!id || !token) {
       return
     }
     return run(getData(id))
-  }, [id, run])
+  }, [id, run, token])
 
   if (status === 'REJECTED') {
     handleError(error!)
