@@ -13,8 +13,8 @@ import React, { ChangeEvent, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 //import { ReactComponent as PhoneBg } from '../../../assets/phone_bg.svg'
 import PhoneBg from '../../../assets/phone_bg.svg'
-import { useStudy } from '../../../helpers/hooks'
-import { bytesToSize, navigateAndSave } from '../../../helpers/utility'
+import { useNavigate, useStudy } from '../../../helpers/hooks'
+import { bytesToSize } from '../../../helpers/utility'
 import { ThemeType } from '../../../style/theme'
 import { StudySection } from '../sections'
 
@@ -82,8 +82,11 @@ type UploadedFile = {
 
 export interface AppDesignProps {
   id: string
+
+  onNavigate: Function
   section: StudySection
-  nextSection?: StudySection
+  nextSection: StudySection
+  children?: React.ReactNode
 }
 
 function getPreviewForImage(file: File): PreviewFile {
@@ -100,6 +103,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   id,
   section,
   nextSection,
+  onNavigate
 }: AppDesignProps) => {
   const handleError = useErrorHandler()
 
@@ -110,25 +114,16 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   const [color, setColor] = useState<string | undefined>()
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+
 
   const [logo, setLogo] = useState()
 
-  const [hasObjectChanged, setHasObjectChanged] = useState(false)
-  const [saveLoader, setSaveLoader] = useState(false)
-  const save = async (url?: string) => {
-    setSaveLoader(true)
-    setHasObjectChanged(false)
-    setSaveLoader(false)
-    if (url) {
-      window.location.replace(url)
-    }
-  }
 
-  React.useEffect(() => {
-    navigateAndSave(id, nextSection, section, hasObjectChanged, save)
-  }, [nextSection, section])
+  const {hasObjectChanged, setHasObjectChanged, saveLoader,  save} = useNavigate(section, nextSection, async()=>{
+  
+  }, ()=> onNavigate(nextSection, data))
 
+  
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     event.persist()
     if (!event.target.files) {
@@ -193,7 +188,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
               )}
             </div>
 
-            {isLoading && (
+            {saveLoader && (
               <div className="text-center">
                 <CircularProgress color="primary" />
               </div>

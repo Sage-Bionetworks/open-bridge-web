@@ -3,13 +3,15 @@ import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
-import { Route, RouteComponentProps, Switch, useParams } from 'react-router-dom'
-import { useStudy } from '../../helpers/hooks'
+import { RouteComponentProps, useParams } from 'react-router-dom'
+import { useStudyBuilderInfo } from '../../helpers/hooks'
 import { ThemeType } from '../../style/theme'
+import { Schedule, StudyDuration } from '../../types/scheduling'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import LoadingComponent from '../widgets/Loader'
 import AppDesign from './app-design/AppDesign'
 import Launch from './launch/Launch'
+import NavButtons from './NavButtons'
 import PassiveFeatures from './passive-features/PassiveFeatures'
 import Scheduler from './scheduler/Scheduler'
 import { StudySection } from './sections'
@@ -56,21 +58,34 @@ type StudyBuilderProps = StudyBuilderOwnProps & RouteComponentProps
 const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
   const classes = useStyles()
   const handleError = useErrorHandler()
- 
-  let { id, section } = useParams<{ id: string; section: StudySection }>()
-  const [nextSection, setNextSection] = React.useState<StudySection>(section)
-  const { data: study, status, error } = useStudy(id)
+
+  let { id, section: _section } = useParams<{
+    id: string
+    section: StudySection
+  }>()
+  const [section, setSection] = React.useState(_section)
+  const [nextSection, setNextSection] = React.useState<StudySection>(_section)
+  //const { data: study, status, error } = useStudy(id)
+  const { data: builderInfo, status, error, setData } = useStudyBuilderInfo(id)
 
   const [open, setOpen] = React.useState(true)
+
+  function moveToNextSection(_section: StudySection) {
+    window.history.pushState(null, '', _section)
+    setSection(_section)
+  }
 
   if (status === 'IDLE') {
     return <>'no id'</>
   } else if (status === 'REJECTED') {
     handleError(error!)
   } else if (status === 'RESOLVED') {
-    if (!study) {
+    if (!builderInfo?.study) {
       throw new Error('This session does not exist')
     }
+  }
+  if (!builderInfo) {
+    return <></>
   }
 
   return (
@@ -84,7 +99,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
           onNavigate={(loc: StudySection) => {
             console.log(loc)
             console.log('setting')
-        
+
             setNextSection(loc)
           }}
           id={id}
@@ -103,58 +118,124 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
               onError={ErrorHandler}
             >
               <LoadingComponent reqStatusLoading={status}>
-                {study && (
-                  <Switch>
-                    <Route
-                      path="/studies/builder/:id/scheduler"
-                      render={props => {
-                        return (
-                          <Scheduler
-                            {...props}
-                            id={id}
-                            section={section}
-                            nextSection={nextSection}
-                          ></Scheduler>
-                        )
-                      }}
-                    />
-                    <Route
-                      path="/studies/builder/:id/session-creator"
-                      render={props => {
-                        return (
-                          <SessionCreator
-                            {...props}
-                            id={id}
-                            nextSection={nextSection}
-                            section={section}
-                          />
-                        )
-                      }}
-                    />
+                {section === 'scheduler' && (
+                  <Scheduler
+                    {...props}
+                    id={id}
+                    section={section}
+                    nextSection={nextSection}
+                    schedule={builderInfo.schedule}
+                    studyDuration={builderInfo.study?.studyDuration}
+                    onNavigate={(
+                      section: StudySection,
+                      data: {
+                        schedule: Schedule
+                        studyDuration: StudyDuration
+                      },
+                    ) => {
+                      setData({
+                        ...builderInfo,
+                        schedule: data.schedule,
+                        study: {
+                          ...builderInfo.study,
+                          duration: data.studyDuration,
+                        },
+                      })
+                      moveToNextSection(section)
+                    }}
+                  >
+                    <NavButtons
+                      id={id}
+                      currentSection={section}
+                      onNavigate={(next: StudySection) => setNextSection(next)}
+                    ></NavButtons>
+                  </Scheduler>
+                )}
+                {section === 'session-creator' && (
+                  <SessionCreator
+                    {...props}
+                    id={id}
+                    nextSection={nextSection}
+                    section={section}
+                    sessions={builderInfo.schedule?.sessions || []}
+                    onNavigate={(
+                      _section: StudySection,
+                      data: StudySection[],
+                    ) => {
+                      console.log(_section)
+                      setData({
+                        ...builderInfo,
+                        schedule: { ...builderInfo.schedule, sessions: data },
+                      })
 
-                    <Route
-                      path="/studies/builder/:id/branding"
-                      render={props => {
-                        return (
-                          <AppDesign {...props} id={id} section={section}   nextSection={nextSection}/>
-                        )
-                      }}
-                    />
+                      moveToNextSection(_section)
 
-                    <Route
-                      path="/studies/builder/:id/launch"
-                      render={props => {
-                        return <Launch {...props} id={id} section={section}          nextSection={nextSection}/>
-                      }}
-                    />
+                      console.log('section' + section)
+                    }}
+                  >
+                    <NavButtons
+                      id={id}
+                      currentSection={section}
+                      onNavigate={(next: StudySection) => setNextSection(next)}
+                    ></NavButtons>
+                  </SessionCreator>
+                )}
 
-<Route
-                      path="/studies/builder/:id/passive-features"
-                      render={props => {
-                        return <PassiveFeatures {...props} id={id} section={section}          nextSection={nextSection}/>
-                      }}
-                    />
-                  </Switch>
+                {section === 'branding' && (
+                  <AppDesign
+                    {...props}
+                    id={id}
+                    section={section}
+                    nextSection={nextSection}
+                    onNavigate={(_section: StudySection, data: any) => {
+                      console.log(_section)
+                      moveToNextSection(_section)
+                    }}
+                  >
+                    <NavButtons
+                      id={id}
+                      currentSection={section}
+                      onNavigate={(next: StudySection) => setNextSection(next)}
+                    ></NavButtons>
+                  </AppDesign>
+                )}
+
+                {section === 'launch' && (
+                  <Launch
+                    {...props}
+                    id={id}
+                    section={section}
+                    nextSection={nextSection}
+                    onNavigate={(_section: StudySection, data: any) => {
+                      console.log(_section)
+                      moveToNextSection(_section)
+                    }}
+                  >
+                    <NavButtons
+                      id={id}
+                      currentSection={section}
+                      onNavigate={(next: StudySection) => setNextSection(next)}
+                    ></NavButtons>
+                  </Launch>
+                )}
+
+                {section === 'passive-features' && (
+                  <PassiveFeatures
+                    {...props}
+                    id={id}
+                    section={section}
+                    nextSection={nextSection}
+                    onNavigate={(_section: StudySection, data: any) => {
+                      console.log(_section)
+                      moveToNextSection(_section)
+                    }}
+                  >
+                    <NavButtons
+                      id={id}
+                      currentSection={section}
+                      onNavigate={(next: StudySection) => setNextSection(next)}
+                    ></NavButtons>
+                  </PassiveFeatures>
                 )}
               </LoadingComponent>
             </ErrorBoundary>

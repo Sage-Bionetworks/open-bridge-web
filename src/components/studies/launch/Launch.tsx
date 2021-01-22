@@ -2,8 +2,7 @@ import { Button, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
-import { useStudy } from '../../../helpers/hooks'
-import { navigateAndSave } from '../../../helpers/utility'
+import { useNavigate, useStudy } from '../../../helpers/hooks'
 import { ThemeType } from '../../../style/theme'
 import { StudySection } from '../sections'
 import LaunchStepper from './LaunchStepper'
@@ -24,7 +23,10 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 export interface LaunchProps {
   id: string
   section: StudySection
-  nextSection?: StudySection
+  nextSection: StudySection
+  onNavigate: Function
+
+  children?: React.ReactNode
 }
 
 function getSteps() {
@@ -52,7 +54,7 @@ function getStepContent(step: number) {
   }
 }
 
-const Launch: React.FunctionComponent<LaunchProps> = ({ id, section, nextSection }: LaunchProps) => {
+const Launch: React.FunctionComponent<LaunchProps> = ({ id, section, nextSection, onNavigate }: LaunchProps) => {
   const handleError = useErrorHandler()
   const classes = useStyles()
 
@@ -62,21 +64,10 @@ const Launch: React.FunctionComponent<LaunchProps> = ({ id, section, nextSection
   const [steps, setSteps] = useState(getSteps())
   const [activeStep, setActiveStep] = React.useState(0)
   
-  const [hasObjectChanged, setHasObjectChanged] = useState(false)
-  const [saveLoader, setSaveLoader] = useState(false)
-  const save = async (url?: string) => {
 
-    setSaveLoader(true)
-    setHasObjectChanged(false)
-    setSaveLoader(false)
-    if (url) {
-      window.location.replace(url)
-    }
-  }
-
-  React.useEffect(() => {
-    navigateAndSave(id, nextSection, section, hasObjectChanged, save)
-  }, [nextSection, section])
+  const {hasObjectChanged, setHasObjectChanged, saveLoader,  save} = useNavigate(section, nextSection, async()=>{
+  
+  }, ()=> onNavigate(nextSection, data))
 
   const handleNext = () => {
     const newSteps = steps.map((s, i) =>

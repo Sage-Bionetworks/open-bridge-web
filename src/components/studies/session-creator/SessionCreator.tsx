@@ -14,7 +14,6 @@ import CloseIcon from '@material-ui/icons/Close'
 import React, { FunctionComponent, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { useAsync } from '../../../helpers/AsyncHook'
 import { useSessionDataState } from '../../../helpers/AuthContext'
 import { useNavigate } from '../../../helpers/hooks'
 import StudyService from '../../../services/study.service'
@@ -22,13 +21,11 @@ import { StudySession } from '../../../types/scheduling'
 import { Assessment } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import LoadingComponent from '../../widgets/Loader'
-import NavButtons from '../NavButtons'
 import { StudySection } from '../sections'
 import AssessmentSelector from './AssessmentSelector'
 import SessionActionButtons from './SessionActionButtons'
 import actionsReducer, { SessionAction, Types } from './sessionActions'
 import SingleSessionContainer from './SingleSessionContainer'
-
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -66,14 +63,20 @@ const useStyles = makeStyles(theme => ({
 
 type SessionCreatorProps = {
   id: string
+  sessions: StudySession[]
+  onNavigate: Function
   section: StudySection
-  nextSection?: StudySection
+  nextSection: StudySection
+  children?: React.ReactNode
 }
 
 const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   section,
   nextSection,
+  sessions: studySessions,
+  onNavigate,
   id,
+  children,
 }: SessionCreatorProps) => {
   const classes = useStyles()
 
@@ -81,63 +84,43 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     [],
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
-  const { token} = useSessionDataState()
- 
-  //const [saveLoader, setSaveLoader] = useState(false)
+  const { token } = useSessionDataState()
+  const [sessions, setData] = React.useState(studySessions)
 
- 
-  const { data: sessions, status, error, run, setData, setError } = useAsync<
-    StudySession[]
-  >({
-    status: id ? 'PENDING' : 'IDLE',
-    data: null,
-  })
+  console.log('section' + section + 'next' + nextSection)
 
-  const {hasObjectChanged, setHasObjectChanged, saveLoader, setSaveLoader, save} = useNavigate(id, section, nextSection|| '', async ()=> {await StudyService.saveStudySessions(id, sessions || [], token!); return})
-
-/*
-  async function save (url?: string)  {
-    setSaveLoader(true)
-    const done = await StudyService.saveStudySessions(id, sessions || [])
-    setHasObjectChanged(false)
-    setSaveLoader(false)
-    if (url) {
-      window.location.replace(url)
-    }
-  }*/
-  // get the sessions
-  React.useEffect(() => {
-    if (!id) {
+  const {
+    hasObjectChanged,
+    setHasObjectChanged,
+    saveLoader,
+    save,
+  } = useNavigate(
+    section,
+    nextSection,
+    async () => {
+      await StudyService.saveStudySessions(id, sessions || [], token!)
       return
-    }
-    console.log('effect running')
-    return run(StudyService.getStudySessions(id, token!).then(sessions => sessions))
-  }, [id, run])
+    },
+    (x: StudySection) => onNavigate(x, sessions),
+  )
 
   // save on data change
   React.useEffect(() => {
     if (!hasObjectChanged) {
       return
     }
-   save().then(() => {
-     console.log('saved')
+    save().then(() => {
+      console.log('saved')
     })
   }, [hasObjectChanged])
 
   const handleError = useErrorHandler()
-
 
   const sessionsUpdateFn = (action: SessionAction) => {
     const newState = actionsReducer(sessions!, action)
 
     setData(newState)
     if (action.type !== 'SET_ACTIVE_SESSION') setHasObjectChanged(true)
-  }
-
-  if (status === 'REJECTED') {
-    handleError(error!)
-  } else if (status === 'PENDING') {
-    return <>...loading</>
   }
 
   const cancelAssessmentSelector = () => {
@@ -258,11 +241,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
             style={{ width: '2rem' }}
           ></LoadingComponent>
         </Box>
-        <NavButtons
-          id={id}
-          currentSection={section}
-          onNavigate={save}
-        ></NavButtons>
+        {children}
         <Dialog
           maxWidth="lg"
           open={isAssessmentDialogOpen}

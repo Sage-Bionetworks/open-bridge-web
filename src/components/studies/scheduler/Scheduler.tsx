@@ -7,11 +7,10 @@ import {
   Theme
 } from '@material-ui/core'
 import SaveIcon from '@material-ui/icons/Save'
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, ReactNode } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps } from 'react-router-dom'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { useAsync } from '../../../helpers/AsyncHook'
 import { useSessionDataState } from '../../../helpers/AuthContext'
 import { useNavigate } from '../../../helpers/hooks'
 import StudyService from '../../../services/study.service'
@@ -25,7 +24,6 @@ import {
 } from '../../../types/scheduling'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import LoadingComponent from '../../widgets/Loader'
-import NavButtons from '../NavButtons'
 import { StudySection } from '../sections'
 import Duration from './Duration'
 import IntroInfo from './IntroInfo'
@@ -59,7 +57,11 @@ const useStyles = makeStyles((theme: Theme) =>
 type SchedulerOwnProps = {
   id: string
   section: StudySection
-  nextSection?: StudySection
+  nextSection: StudySection
+  schedule: Schedule | null
+  studyDuration?: StudyDuration
+  onNavigate: Function
+  children: ReactNode
 }
 
 type SchedulerProps = SchedulerOwnProps & RouteComponentProps
@@ -68,20 +70,29 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
   id,
   section,
   nextSection,
+  schedule: _schedule ,
+  studyDuration: _duration,
+  onNavigate,
+  children
 }: SchedulerOwnProps) => {
   const { token} = useSessionDataState()
   const handleError = useErrorHandler()
   const classes = useStyles()
-  const { data, status, error, run, setData } = useAsync<{
+  const [data, setData]= React.useState<{
+    schedule: Schedule | null
+    studyDuration?: StudyDuration
+  }>({schedule: _schedule , studyDuration: _duration})
+ 
+ /* const { data, status, error, run, setData } = useAsync<{
     schedule?: Schedule
     studyDuration?: StudyDuration
   }>({
     status: id ? 'PENDING' : 'IDLE',
     data: {},
-  })
+  })*/
 
   const [isInitialInfoSet, setIsInitialInfoSet] = React.useState(false)
-  const {hasObjectChanged, setHasObjectChanged, saveLoader, setSaveLoader, save} = useNavigate(id, section, nextSection|| '', async()=>{
+  const {hasObjectChanged, setHasObjectChanged, saveLoader,  save} = useNavigate(section, nextSection, async()=>{
     await StudyService.saveStudySchedule(
       id,
       data!.schedule!,
@@ -89,7 +100,7 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
       token!
     )
     return
-  })
+  }, ()=> onNavigate(nextSection, data))
 
    React.useEffect(() => {
     if (!isInitialInfoSet) {
@@ -106,7 +117,7 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
   }
 
 
-  const getData = async (id: string) => {
+  /*const getData = async (id: string) => {
     const schedule = await StudyService.getStudySchedule(id, token!)
     const study = await StudyService.getStudy(id, token!)
 
@@ -128,7 +139,7 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
     handleError(error!)
   } else if (status === 'PENDING') {
     return <>...loading</>
-  }
+  }*/
 
  
 
@@ -266,11 +277,7 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
             ))}
           </Box>
 
-          <NavButtons
-            id={id}
-            currentSection={section}
-            onNavigate={save}
-          ></NavButtons>
+          {children}
         </Box>
       )}
     </>

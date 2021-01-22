@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
+import { StudySection } from '../components/studies/sections'
 import AssessmentService from '../services/assessment.service'
 import StudyService from '../services/study.service'
-import { StudySession } from '../types/scheduling'
+import { Schedule, StudySession } from '../types/scheduling'
 import { Assessment, Study } from '../types/types'
 import { useAsync } from './AsyncHook'
 import { useSessionDataState } from './AuthContext'
-import { navigateAndSave } from './utility'
 
 const useAssessments = () => {
   const [assessments, setAssessments] = useState<Assessment[]>([])
@@ -66,12 +66,13 @@ export const useStudySessions = (id: string | undefined) => {
 }
 
 
-export const useNavigate = (id: string, section: string, nextSection: string, savePromise: Function) => {
+export const useNavigate = (section: StudySection, nextSection: StudySection, savePromise: Function, parentCallback: Function) => {
   
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [saveLoader, setSaveLoader] = React.useState(false)
 
-  async function save (url?: string)  {
+  async function save (nextSection?: StudySection)  {
+    if (hasObjectChanged) {
     console.log(
       'hook save'
     )
@@ -79,20 +80,64 @@ export const useNavigate = (id: string, section: string, nextSection: string, sa
     const done = await savePromise()// await StudyService.saveStudySessions(id, sessions || [])
     setHasObjectChanged(false)
     setSaveLoader(false)
-    if (url) {
-      window.location.replace(url)
+    }
+    if (nextSection) {
+      parentCallback(nextSection)
     }
   }
+
+
   
   
   
   
   React.useEffect(() => {
-    navigateAndSave(id, nextSection, section, hasObjectChanged, save)
-  }, [id, nextSection, section])
+    if (nextSection !== section) {
+      save(nextSection)
+    }
+  }, [nextSection, section])
 
   return {hasObjectChanged, setHasObjectChanged, saveLoader, setSaveLoader, save}
 }
+
+
+export const useStudyBuilderInfo  = (id: string | undefined) => {
+  const { token} = useSessionDataState()
+  
+  const { data, status, error, run, setData } = useAsync<{
+    schedule: Schedule  | null
+    study: Study | null
+  }>({
+    status: id ? 'PENDING' : 'IDLE',
+    data: {schedule: null, study: null},
+  })
+
+  const getData = async (id: string) => {
+    const schedule = await StudyService.getStudySchedule(id, token!)
+    const study = await StudyService.getStudy(id, token!)
+
+    return { schedule, study }
+  }
+
+
+  React.useEffect(() => {
+    if (!id || !token) {
+      return
+    }
+    return run(getData(id))
+  }, [id, run, token])
+
+  return {
+    setData,
+ 
+    error,
+    status,
+    data,
+    run,
+  }
+}
+
+
 
 export const useStudy = (id: string | undefined) => {
   const { token} = useSessionDataState()

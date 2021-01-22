@@ -197,25 +197,3 @@ export const bytesToSize = (bytes: number) => {
   if (i === 0) return `${bytes} ${sizes[i]})`
   return `${(bytes / 1024 ** i).toFixed(1)}${sizes[i]}`
 }
-
-export const navigateAndSave = (
-  id: string | undefined,
-  nextSection: string | undefined,
-  section: string,
-  hasObjectChanged: boolean,
-  fn: Function,
-) => {
-  console.log('navigate called')
-  console.log(
-    `nextSection: ${nextSection}, section: ${section}, ${
-      nextSection === section
-    }`,
-  )
-  if (nextSection !== section) {
-    if (hasObjectChanged) {
-      fn(`/studies/builder/${id}/${nextSection}`)
-    } else {
-      window.location.replace(`/studies/builder/${id}/${nextSection}`)
-    }
-  }
-}
