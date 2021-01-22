@@ -1,8 +1,7 @@
 import { makeStyles } from '@material-ui/core/styles'
 import React, { useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
-import { useStudy } from '../../../helpers/hooks'
-import { navigateAndSave } from '../../../helpers/utility'
+import { useNavigate, useStudy } from '../../../helpers/hooks'
 import { ThemeType } from '../../../style/theme'
 import { StudySection } from '../sections'
 
@@ -17,11 +16,14 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 export interface PassiveFeaturesProps {
   id: string
   section: StudySection
-  nextSection?: StudySection
+  nextSection: StudySection
+  onNavigate: Function
+
+  children?: React.ReactNode
 }
 
 
-const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({ id, section, nextSection }: PassiveFeaturesProps) => {
+const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({ id, section, nextSection, onNavigate }: PassiveFeaturesProps) => {
   const handleError = useErrorHandler()
 
   const classes = useStyles()
@@ -31,21 +33,10 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({ id, se
 
   const [activeStep, setActiveStep] = React.useState(0)
   
-  const [hasObjectChanged, setHasObjectChanged] = useState(false)
-  const [saveLoader, setSaveLoader] = useState(false)
-  const save = async (url?: string) => {
-
-    setSaveLoader(true)
-    setHasObjectChanged(false)
-    setSaveLoader(false)
-    if (url) {
-      window.location.replace(url)
-    }
-  }
-
-  React.useEffect(() => {
-    navigateAndSave(id, nextSection, section, hasObjectChanged, save)
-  }, [nextSection, section])
+  
+  const {hasObjectChanged, setHasObjectChanged, saveLoader,  save} = useNavigate(section, nextSection, async()=>{
+  
+  }, ()=> onNavigate(nextSection, data))
 
  
   return (

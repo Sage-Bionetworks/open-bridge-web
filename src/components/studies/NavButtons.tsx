@@ -1,9 +1,9 @@
-import React from 'react'
-
-import { makeStyles } from '@material-ui/core/styles'
-
 import { Box, Button } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+import React from 'react'
 import { SECTIONS as sectionLinks, StudySection } from './sections'
+
+
 
 const useStyles = makeStyles({
   root: {},
@@ -41,7 +41,7 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
       <Button
         variant="contained"
         color="primary"
-        onClick={() => onNavigate(`/studies/builder/${id}/${section.path}`)}
+        onClick={() => onNavigate(section.path/*`/studies/builder/${id}/${section.path}`*/)}
         //onClick={()=> go(`/studies/builder/${id}/${section.path}`)}
       >
         {section.name}
