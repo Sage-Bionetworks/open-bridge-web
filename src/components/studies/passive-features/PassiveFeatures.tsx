@@ -23,6 +23,7 @@ export interface PassiveFeaturesProps {
 
 const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({ id, section, nextSection }: PassiveFeaturesProps) => {
   const handleError = useErrorHandler()
+
   const classes = useStyles()
 
   const { data, status, error } = useStudy(id)

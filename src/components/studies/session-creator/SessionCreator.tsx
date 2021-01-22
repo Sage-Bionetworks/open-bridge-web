@@ -15,6 +15,7 @@ import React, { FunctionComponent, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import { useAsync } from '../../../helpers/AsyncHook'
+import { useSessionDataState } from '../../../helpers/AuthContext'
 import { useNavigate } from '../../../helpers/hooks'
 import StudyService from '../../../services/study.service'
 import { StudySession } from '../../../types/scheduling'
@@ -80,6 +81,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     [],
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
+  const { token} = useSessionDataState()
  
   //const [saveLoader, setSaveLoader] = useState(false)
 
@@ -91,7 +93,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     data: null,
   })
 
-  const {hasObjectChanged, setHasObjectChanged, saveLoader, setSaveLoader, save} = useNavigate(id, section, nextSection|| '', async ()=> {await StudyService.saveStudySessions(id, sessions || []); return})
+  const {hasObjectChanged, setHasObjectChanged, saveLoader, setSaveLoader, save} = useNavigate(id, section, nextSection|| '', async ()=> {await StudyService.saveStudySessions(id, sessions || [], token!); return})
 
 /*
   async function save (url?: string)  {
@@ -109,7 +111,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
       return
     }
     console.log('effect running')
-    return run(StudyService.getStudySessions(id).then(sessions => sessions))
+    return run(StudyService.getStudySessions(id, token!).then(sessions => sessions))
   }, [id, run])
 
   // save on data change

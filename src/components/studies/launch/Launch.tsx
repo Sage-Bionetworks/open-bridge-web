@@ -56,6 +56,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({ id, section, nextSection
   const handleError = useErrorHandler()
   const classes = useStyles()
 
+
   const { data, status, error } = useStudy(id)
   const [isLoading, setIsLoading] = useState(false)
   const [steps, setSteps] = useState(getSteps())

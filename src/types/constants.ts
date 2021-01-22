@@ -112,6 +112,12 @@ export default {
     accountCreate: '/v1/accounts',
     getAccountsForOrg: '/v1/organizations/{orgId}/members',
 
+    //new made up
+    studies: '/v1/studies',
+    study: '/v1/studies/:id',
+
+    schedule: 'v1/schedule/:id',
+    scheduleSessions: 'v1/schedule/:id/sessions',
 
     /*phoneSignIn: '/v3/auth/phone/signIn',
   reauth: '/v3/auth/reauth',

@@ -4,6 +4,7 @@ import StudyService from '../services/study.service'
 import { StudySession } from '../types/scheduling'
 import { Assessment, Study } from '../types/types'
 import { useAsync } from './AsyncHook'
+import { useSessionDataState } from './AuthContext'
 import { navigateAndSave } from './utility'
 
 const useAssessments = () => {
@@ -45,12 +46,13 @@ export const useStudySessions = (id: string | undefined) => {
     status: id ? 'PENDING' : 'IDLE',
     data: null,
   })
+  const { token} = useSessionDataState()
 
   React.useEffect(() => {
     if (!id) {
       return
     }
-    return run(StudyService.getStudySessions(id).then(sessions => sessions))
+    return run(StudyService.getStudySessions(id, token!).then(sessions => sessions))
   }, [id, run])
 
   return {
@@ -93,17 +95,18 @@ export const useNavigate = (id: string, section: string, nextSection: string, sa
 }
 
 export const useStudy = (id: string | undefined) => {
+  const { token} = useSessionDataState()
   const { data, status, error, run, setData, setError } = useAsync<Study>({
     status: id ? 'PENDING' : 'IDLE',
     data: null,
   })
 
   React.useEffect(() => {
-    if (!id) {
+    if (!id || !token) {
       return
     }
-    return run(StudyService.getStudy(id))
-  }, [id, run])
+    return run(StudyService.getStudy(id, token))
+  }, [id, run, token])
 
   return {
     setData,
