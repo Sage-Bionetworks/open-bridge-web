@@ -1,7 +1,7 @@
+import AccessSettings from './components/access-settings/AccessSettings'
 import AccountSetup from './components/account/AccountSetup'
 import AssessmentDetail from './components/assessments/AssessmentDetail'
 import AssessmentLibrary from './components/assessments/AssessmentLibrary'
-import Sharing from './components/shared/Access'
 import ParticipantManager from './components/studies/participants/ParticipantManager'
 import StudyBuilder from './components/studies/StudyBuilder'
 import StudyList from './components/studies/StudyList'
@@ -29,10 +29,10 @@ export default [
     Component: ParticipantManager,
   },
   {
-    path: '/studies/:id/shared-settings',
+    path: '/studies/:id/access-settings',
     name: '',
     exact: false,
-    Component: Sharing,
+    Component: AccessSettings,
   },
 
   {

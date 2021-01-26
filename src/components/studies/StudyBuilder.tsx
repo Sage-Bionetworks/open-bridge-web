@@ -88,6 +88,119 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
     return <></>
   }
 
+  const ChildComponent: FunctionComponent<{}> = (): JSX.Element => {
+    const navButtons = (
+      <NavButtons
+        id={id}
+        currentSection={section}
+        onNavigate={(next: StudySection) => setNextSection(next)}
+      ></NavButtons>
+    )
+    switch (section) {
+      case 'scheduler':
+        return (
+          <Scheduler
+            {...props}
+            id={id}
+            section={section}
+            nextSection={nextSection}
+            schedule={builderInfo.schedule}
+            studyDuration={builderInfo.study?.studyDuration}
+            onNavigate={(
+              section: StudySection,
+              data: {
+                schedule: Schedule
+                studyDuration: StudyDuration
+              },
+            ) => {
+              setData({
+                ...builderInfo,
+                schedule: data.schedule,
+                study: {
+                  ...builderInfo.study,
+                  duration: data.studyDuration,
+                },
+              })
+              moveToNextSection(section)
+            }}
+          >
+            {navButtons}
+          </Scheduler>
+        )
+      case 'session-creator':
+        return (
+          <SessionCreator
+            {...props}
+            id={id}
+            nextSection={nextSection}
+            section={section}
+            sessions={builderInfo.schedule?.sessions || []}
+            onNavigate={(_section: StudySection, data: StudySection[]) => {
+              console.log(_section)
+              setData({
+                ...builderInfo,
+                schedule: { ...builderInfo.schedule, sessions: data },
+              })
+
+              moveToNextSection(_section)
+
+              console.log('section' + section)
+            }}
+          >
+            {navButtons}
+          </SessionCreator>
+        )
+      case 'branding':
+        return (
+          <AppDesign
+            {...props}
+            id={id}
+            section={section}
+            nextSection={nextSection}
+            onNavigate={(_section: StudySection, data: any) => {
+              console.log(_section)
+              moveToNextSection(_section)
+            }}
+          >
+            {navButtons}
+          </AppDesign>
+        )
+      case 'launch':
+        return (
+          <Launch
+            {...props}
+            id={id}
+            section={section}
+            nextSection={nextSection}
+            onNavigate={(_section: StudySection, data: any) => {
+              console.log(_section)
+              moveToNextSection(_section)
+            }}
+          >
+            {navButtons}
+          </Launch>
+        )
+      case 'passive-features':
+        return (
+          <PassiveFeatures
+            {...props}
+            id={id}
+            section={section}
+            nextSection={nextSection}
+            onNavigate={(_section: StudySection, data: any) => {
+              console.log(_section)
+              moveToNextSection(_section)
+            }}
+          >
+            {navButtons}
+          </PassiveFeatures>
+        )
+
+      default:
+        return <></>
+    }
+  }
+
   return (
     <>
       <StudyTopNav studyId={id} currentSection={section}></StudyTopNav>
@@ -97,9 +210,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
           onToggle={() => setOpen(prev => !prev)}
           currentSection={section}
           onNavigate={(loc: StudySection) => {
-            console.log(loc)
-            console.log('setting')
-
             setNextSection(loc)
           }}
           id={id}
@@ -118,125 +228,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
               onError={ErrorHandler}
             >
               <LoadingComponent reqStatusLoading={status}>
-                {section === 'scheduler' && (
-                  <Scheduler
-                    {...props}
-                    id={id}
-                    section={section}
-                    nextSection={nextSection}
-                    schedule={builderInfo.schedule}
-                    studyDuration={builderInfo.study?.studyDuration}
-                    onNavigate={(
-                      section: StudySection,
-                      data: {
-                        schedule: Schedule
-                        studyDuration: StudyDuration
-                      },
-                    ) => {
-                      setData({
-                        ...builderInfo,
-                        schedule: data.schedule,
-                        study: {
-                          ...builderInfo.study,
-                          duration: data.studyDuration,
-                        },
-                      })
-                      moveToNextSection(section)
-                    }}
-                  >
-                    <NavButtons
-                      id={id}
-                      currentSection={section}
-                      onNavigate={(next: StudySection) => setNextSection(next)}
-                    ></NavButtons>
-                  </Scheduler>
-                )}
-                {section === 'session-creator' && (
-                  <SessionCreator
-                    {...props}
-                    id={id}
-                    nextSection={nextSection}
-                    section={section}
-                    sessions={builderInfo.schedule?.sessions || []}
-                    onNavigate={(
-                      _section: StudySection,
-                      data: StudySection[],
-                    ) => {
-                      console.log(_section)
-                      setData({
-                        ...builderInfo,
-                        schedule: { ...builderInfo.schedule, sessions: data },
-                      })
-
-                      moveToNextSection(_section)
-
-                      console.log('section' + section)
-                    }}
-                  >
-                    <NavButtons
-                      id={id}
-                      currentSection={section}
-                      onNavigate={(next: StudySection) => setNextSection(next)}
-                    ></NavButtons>
-                  </SessionCreator>
-                )}
-
-                {section === 'branding' && (
-                  <AppDesign
-                    {...props}
-                    id={id}
-                    section={section}
-                    nextSection={nextSection}
-                    onNavigate={(_section: StudySection, data: any) => {
-                      console.log(_section)
-                      moveToNextSection(_section)
-                    }}
-                  >
-                    <NavButtons
-                      id={id}
-                      currentSection={section}
-                      onNavigate={(next: StudySection) => setNextSection(next)}
-                    ></NavButtons>
-                  </AppDesign>
-                )}
-
-                {section === 'launch' && (
-                  <Launch
-                    {...props}
-                    id={id}
-                    section={section}
-                    nextSection={nextSection}
-                    onNavigate={(_section: StudySection, data: any) => {
-                      console.log(_section)
-                      moveToNextSection(_section)
-                    }}
-                  >
-                    <NavButtons
-                      id={id}
-                      currentSection={section}
-                      onNavigate={(next: StudySection) => setNextSection(next)}
-                    ></NavButtons>
-                  </Launch>
-                )}
-
-                {section === 'passive-features' && (
-                  <PassiveFeatures
-                    {...props}
-                    id={id}
-                    section={section}
-                    nextSection={nextSection}
-                    onNavigate={(_section: StudySection, data: any) => {
-                      console.log(_section)
-                      moveToNextSection(_section)
-                    }}
-                  >
-                    <NavButtons
-                      id={id}
-                      currentSection={section}
-                      onNavigate={(next: StudySection) => setNextSection(next)}
-                    ></NavButtons>
-                  </PassiveFeatures>
-                )}
+                <ChildComponent></ChildComponent>
               </LoadingComponent>
             </ErrorBoundary>
           </Box>

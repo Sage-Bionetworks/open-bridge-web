@@ -5,7 +5,9 @@ import {
 
 
   StartEventId, StudyDuration
-} from './scheduling'
+} from './scheduling';
+
+export type ValueOf<T> = T[keyof T];
 
 export interface StringDictionary<T> {
   [key: string]: T
