@@ -85,11 +85,6 @@ export const useNavigate = (section: StudySection, nextSection: StudySection, sa
       parentCallback(nextSection)
     }
   }
-
-
-  
-  
-  
   
   React.useEffect(() => {
     if (nextSection !== section) {

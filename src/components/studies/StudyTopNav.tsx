@@ -1,15 +1,15 @@
-import React, { FunctionComponent } from 'react'
-
+import { Hidden, IconButton, Paper, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
-
-import Logo from '../../assets/logo_mtb.svg'
-import { Hidden, IconButton, Paper, Typography } from '@material-ui/core'
-
-import { NavLink } from 'react-router-dom'
-import BreadCrumb from '../widgets/BreadCrumb'
-import PeopleIcon from '@material-ui/icons/People'
 import MenuIcon from '@material-ui/icons/Menu'
+import PeopleIcon from '@material-ui/icons/People'
+import React, { FunctionComponent } from 'react'
+import { NavLink } from 'react-router-dom'
+import Logo from '../../assets/logo_mtb.svg'
+import BreadCrumb from '../widgets/BreadCrumb'
+
+
+
 
 const useStyles = makeStyles(theme => ({
   toolbarStudyHeader: {
@@ -133,13 +133,13 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
           </Toolbar>
           <Toolbar className={classes.toolbar}>
             <NavLink
-              to={'/studies/:id/shared-settings'.replace(':id', studyId)}
-              key={'path-to-shared-settings'}
+              to={'/studies/:id/access-settings'.replace(':id', studyId)}
+              key={'path-to-access-settings'}
               className={classes.toolbarLink}
               activeClassName={classes.selectedLink}
               style={{ display: 'flex' }}
             >
-              <PeopleIcon></PeopleIcon>&nbsp;&nbsp;Shared settings
+              <PeopleIcon></PeopleIcon>&nbsp;&nbsp;Access settings
             </NavLink>
           </Toolbar>
           {currentSection && (

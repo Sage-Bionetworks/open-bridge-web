@@ -4,7 +4,7 @@ import constants from '../types/constants'
 const AccessService = {
   createAccount,
   getAliasFromSynapseByEmail,
-  getAccountsForOrg
+  getAccountsForOrg,
 }
 
 async function getAliasFromSynapseByEmail(
@@ -14,38 +14,56 @@ async function getAliasFromSynapseByEmail(
   if (/^\d+$/.test(alias)) {
     return Promise.resolve(alias)
   }
-  const result = await fetch(
-    'https://repo-prod.prod.sagebase.org/repo/v1/principal/alias',
-    {
-      method: 'POST',
-      mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ alias: alias, type: 'USER_NAME' }),
-    },
+
+  const response1 = await callEndpoint<{ principalId: string }>(
+    '/repo/v1/principal/alias',
+    'POST',
+    { alias: alias, type: 'USER_NAME' },
+    undefined,
+    true,
   )
-  const json = await result.json()
-  return json.principalId
+
+  const response2 = await callEndpoint<{
+    userProfile: {
+      // userId: string
+      firstName: string
+      lastName: string
+      //ownerId: string
+    }
+  }>(
+    '/repo/v1/user/' + response1.data.principalId + '/bundle',
+    'GET',
+    { MASK: 0x1 },
+    undefined,
+    true,
+  )
+
+  return {
+    principalId: response1.data.principalId,
+    firstName: response2.data.userProfile.firstName,
+    lastName: response2.data.userProfile.lastName,
+  }
+  //return json.principalId
 }
 
-
-
 async function getAccountsForOrg(
-    token: string,
+  token: string,
 
-    orgId: string,
+  orgId: string,
+): Promise<any> {
+  console.log('GETTING ACCOUNTS')
+  const e = constants.endpoints.getAccountsForOrg.replace('{orgId}', orgId)
+  const result = await callEndpoint<any>(e, 'POST', {}, token)
 
-  ): Promise<any> {
-   console.log('GETTING ACCOUNTS')
-    const e = constants.endpoints.getAccountsForOrg.replace('{orgId}', orgId)
-    const result = await callEndpoint<any>(e, 'POST', {}, token)
-
-   return result.data.items
-  }
+  return result.data.items
+}
 
 async function createAccount(
   token: string,
   email: string,
   synapseUserId: string,
+  firstName: string,
+  lastName: string,
   orgMembership: string,
   role: string = 'developer',
 ): Promise<any> {
@@ -54,6 +72,8 @@ async function createAccount(
     email,
     synapseUserId,
     dataGroups: ['test_user'],
+    firstName,
+    lastName,
     orgMembership,
     roles: [role],
   }
@@ -63,4 +83,4 @@ async function createAccount(
   return result.ok
 }
 
-export default  AccessService
+export default AccessService
