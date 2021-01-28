@@ -28,7 +28,7 @@ import MemberInvite, { NewOrgAccount } from './MemberInvite'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    border: '1px solid black',
+    //border: '1px solid black',
     marginTop: theme.spacing(12),
     display: 'flex',
     padding: 0,
@@ -216,12 +216,14 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
   return (
     <>
       <StudyTopNav studyId={id} currentSection={''}></StudyTopNav>
-      <Container maxWidth="lg" className={classes.root}>
+      <Container maxWidth="md" className={classes.root}>
+        <Paper elevation={2} style={{width: '100%'}}>
         <AccountListing token={token!} members={members}>
           <Button onClick={() => setIsOpenInvite(true)} variant="contained">
             Invite Team Members
           </Button>
         </AccountListing>
+        </Paper>
       </Container>
       {status === 'RESOLVED' && (
         <Dialog

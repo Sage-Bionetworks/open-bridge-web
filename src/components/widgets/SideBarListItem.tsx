@@ -10,7 +10,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   listItem: {
     color: theme.palette.action.active,
     paddingLeft: theme.spacing(2),
-  
 
     '&$listItemActive': {
       borderLeft: '4px solid #BCD5E4',
@@ -27,12 +26,27 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       backgroundColor: '#f7f7f7',
     },
   },
+
+  listItemDark: {
+    color: theme.palette.common.white,
+    '& $linkLabel': {
+      color: theme.palette.common.white,
+    },
+
+    '&$listItemActive': {
+      borderLeft: '4px solid #FFE500',
+      backgroundColor: '#444',
+    },
+    '&:hover': {
+      backgroundColor: '#333',
+    },
+  },
   listItemActive: {},
   listItemCollapsed: {},
 
   link: {
     fontFamily: poppinsFont,
-    color: '#282828',
+
     width: '100%',
     textDecoration: 'none',
     '&:hover': {
@@ -44,43 +58,46 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   linkLabel: {
     justifyContent: 'flex-start',
+    color: '#282828',
   },
 }))
 
 export interface SideBarListItemProps {
-  key: string,
-  isOpen: boolean,
-  isActive: boolean,
+  itemKey: string
+  isOpen: boolean
+  isActive: boolean
   onClick: Function
   children: React.ReactNode
-
+  variant?: 'light' | 'dark'
 }
 
 const SideBarListItem: React.FunctionComponent<SideBarListItemProps> = ({
-  key,
+  itemKey,
   isOpen,
   isActive,
   onClick,
-  children
+  children,
+  variant='light'
 }: SideBarListItemProps) => {
   const classes = useStyles()
   return (
     <li
-    key={key}
-    className={clsx(classes.listItem, {
-      [classes.listItemActive]: isActive,
-      [classes.listItemCollapsed]: !isOpen,
-    })}
-  >
-    <Button
-      key={`${key}_button`}
-      onClick={()=>onClick()}
-      className={classes.link}
-      classes={{ label: classes.linkLabel }}
+      key={itemKey}
+      className={clsx(classes.listItem, {
+        [classes.listItemDark]: variant === 'dark', 
+        [classes.listItemActive]: isActive,
+        [classes.listItemCollapsed]: !isOpen,
+      })}
     >
-      {children}
-    </Button>
-  </li>
+      <Button
+        key={`${itemKey}_button`}
+        onClick={() => onClick()}
+        className={classes.link}
+        classes={{ label: classes.linkLabel }}
+      >
+        {children}
+      </Button>
+    </li>
   )
 }
 
