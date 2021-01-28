@@ -53,8 +53,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   listItem: {
     color: theme.palette.action.active,
     paddingLeft: theme.spacing(2),
-    paddingTop: theme.spacing(1.5),
-    paddingBottom: theme.spacing(1.5),
+    //paddingTop: theme.spacing(1.5),
+    //paddingBottom: theme.spacing(1.5),
 
     '&$listItemActive': {
       borderLeft: '4px solid #BCD5E4',
@@ -67,6 +67,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     '&$listItemActive&$listItemCollapsed': {
       paddingLeft: theme.spacing(0.5),
     },
+    '&:hover': {
+      backgroundColor: '#f7f7f7',
+    },
   },
   listItemActive: {},
   listItemCollapsed: {},
@@ -74,11 +77,17 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   link: {
     fontFamily: poppinsFont,
     color: '#282828',
+    width: '100%',
     textDecoration: 'none',
-    /*  color: theme.palette.action.active,
-    paddingLeft: theme.spacing(8),
+    '&:hover': {
+      backgroundColor: 'inherit',
+    },
+
     paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),*/
+    paddingBottom: theme.spacing(2),
+  },
+  linkLabel: {
+    justifyContent: 'flex-start',
   },
   drawerPaper: {
     fontSize: '14px',
@@ -109,10 +118,8 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
   currentSection = 'sessions-creator',
 }) => {
   const classes = useStyles()
-  //const [open, setOpen] = React.useState(false)
 
   const toggleDrawer = () => {
-    //setOpen(prev => !prev)
     onToggle()
   }
 
@@ -154,26 +161,29 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
               [classes.listItemCollapsed]: !open,
             })}
           >
-              <Button
+            <Button
               key={sectionLink.path}
-              onClick={()=>onNavigate(sectionLink.path)}
+              onClick={() => onNavigate(sectionLink.path)}
               className={classes.link}
+              classes={{ label: classes.linkLabel }}
             >
               <div style={{ display: 'flex' }}>
                 <SomeIcon style={{ marginRight: '16px' }} />
                 <span>{sectionLink.name}</span>
               </div>
             </Button>
-            {false && <NavLink
-              key={sectionLink.path}
-              to={sectionLink.path}
-              className={classes.link}
-            >
-              <div style={{ display: 'flex' }}>
-                <SomeIcon style={{ marginRight: '16px' }} />
-                <span>{sectionLink.name}</span>
-              </div>
-            </NavLink>}
+            {false && (
+              <NavLink
+                key={sectionLink.path}
+                to={sectionLink.path}
+                className={classes.link}
+              >
+                <div style={{ display: 'flex' }}>
+                  <SomeIcon style={{ marginRight: '16px' }} />
+                  <span>{sectionLink.name}</span>
+                </div>
+              </NavLink>
+            )}
           </li>
         ))}
       </ul>
