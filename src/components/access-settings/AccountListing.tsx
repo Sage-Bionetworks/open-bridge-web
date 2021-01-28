@@ -8,7 +8,6 @@ import Loader from '../widgets/Loader'
 import SideBarListItem from '../widgets/SideBarListItem'
 import AccessGrid, { Access, getAccessFromRoles } from './AccessGrid'
 
-
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: 'flex',
@@ -22,13 +21,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingTop: theme.spacing(4),
     paddingRight: 0,
   },
-  list: globals.listReset
-
+  list: globals.listReset,
 }))
 
 type AccountListingProps = {
   token: string
-  // orgMembership: string
   children?: ReactNode
   members: OrgUser[]
 }
@@ -58,7 +55,6 @@ const NameDisplay: FunctionComponent<any> = ({
 
 const AccountListing: FunctionComponent<AccountListingProps> = ({
   token,
-  //orgMembership,
   members,
   children,
 }: AccountListingProps) => {
@@ -66,11 +62,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
 
   const handleError = useErrorHandler()
 
-  /* const { data: members, status, error, run, setData } = useAsync<any>({
-    status: 'PENDING',
-    data: [],
-  })*/
-const [currentMemberId, setCurrentMemberId]= React.useState(members[0].id)
+  const [currentMemberId, setCurrentMemberId] = React.useState(members[0].id)
   const [access, setAccess] = React.useState<Access | undefined>()
   const [isAccessLoading, setIsAccessLoading] = React.useState(true)
 
@@ -83,35 +75,12 @@ const [currentMemberId, setCurrentMemberId]= React.useState(members[0].id)
     setAccess(access)
     setIsAccessLoading(false)
   }
-  /* React.useEffect(() => {
-    ///your async call
-
-    return run(
-      (async function (orgMembership, token) {
-        const members = await AccessService.getAccountsForOrg(
-          token,
-          orgMembership,
-        )
-        return members
-      })(orgMembership, token),
-    )
-  }, [run])*/
 
   React.useEffect(() => {
-    
-
     ;(async function (id) {
-
       updateAccess(id)
     })(currentMemberId)
   }, [currentMemberId])
-
-  /* if (status === 'PENDING') {
-    return <Loader reqStatusLoading={true}></Loader>
-  }
-  if (status === 'REJECTED') {
-    handleError(error!)
-  }*/
 
   return (
     <Box className={classes.root}>
@@ -120,12 +89,13 @@ const [currentMemberId, setCurrentMemberId]= React.useState(members[0].id)
         <ul className={classes.list}>
           {members.map((member: any, index: number) => (
             <SideBarListItem
-              key={member.id}
+              itemKey={member.id}
+              variant={'dark'}
               isOpen={true}
-              isActive={member.id===currentMemberId}
+              isActive={member.id === currentMemberId}
               onClick={() => setCurrentMemberId(member.id)}
             >
-              <div style={{ display: 'flex' }}>
+              <div style={{paddingLeft: '8px', textAlign: 'left'}}>
                 <NameDisplay {...member}></NameDisplay>
               </div>
             </SideBarListItem>
