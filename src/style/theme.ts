@@ -69,6 +69,19 @@ const theme: Theme = createMuiTheme({
         },
       },
     },
+    MuiSwitch: {
+      colorPrimary: {
+        '&.Mui-checked': {
+          color: '#fff',
+
+          '& + .MuiSwitch-track': {
+            backgroundColor: '#7FC7F0'
+            
+
+          }
+        }
+      }
+    },
 
     MuiInputBase: {
       input: {
@@ -116,6 +129,10 @@ const theme: Theme = createMuiTheme({
 
   palette: {
     divider: '#282828',
+    common: {
+      black: '#2E2E2E'
+
+    },
     background: {
       default: '#E5E5E5', //'#BCD5E4',
       paper: '#fff',
@@ -132,7 +149,9 @@ const theme: Theme = createMuiTheme({
       main: '#2196f3',
     },
     error: {
-      main: '#FCD2D2',
+      main: '#EE6070',
+
+      light: '#FCD2D2',
     },
   },
 })

@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
 
 export const AccessRestriction = ['NO_ACCESS', 'VIEWER', 'EDITOR']
 
-type AccessProps = {
+type AccessGridProps = {
   access: Access
   onUpdate?: Function
   isEdit?: boolean
@@ -38,23 +38,24 @@ export type Access = {
   STUDY_BUILDER: typeof AccessRestriction[number]
   PARTICIPANT_MANAGER: typeof AccessRestriction[number]
   ADHERENCE_DATA: typeof AccessRestriction[number]
+  STUDY_DATA: typeof AccessRestriction[number]
 }
 
 const roles: AccessLabel[] = [
   { STUDY_BUILDER: 'STUDY BUILDER' },
   { PARTICIPANT_MANAGER: 'PARTICIPANT MANAGER' },
   { ADHERENCE_DATA: 'ADHERENCE DATA' },
+  { STUDY_DATA: 'STUDY DATA' },
 ]
 
 
-const Access: FunctionComponent<AccessProps> = ({
+const AccessGrid: FunctionComponent<AccessGridProps> = ({
   access,
   onUpdate,
   isEdit,
-}: AccessProps) => {
+}: AccessGridProps) => {
   const classes = useStyles()
 
-  //const [access, setAccess] = React.useState<Access>(_access)
 
   const isEqualToCurrentValue = (restriction: string, role_key: AccessLabel): boolean =>{
     const key = Object.keys(role_key)[0] as keyof(Access)
@@ -73,18 +74,22 @@ const Access: FunctionComponent<AccessProps> = ({
     <Box>
       <h3>Access Type</h3>
       <table cellPadding="0" cellSpacing="0" width="100%">
+        <thead>
         <tr>
           <th></th>
           <th className={classes.data}>No Access</th>
           <th className={classes.data}>Viewer</th>
           <th className={classes.data}>Editor</th>
         </tr>
+        </thead>
+        <tbody>
         {roles.map((role_key: AccessLabel, index: number) => (
-          <tr>
-            <td className={classes.cell}>{Object.values(role_key)}</td>
+       
+          <tr key={index}>
+            <td className={classes.cell} key={Object.values(role_key)[0]+index}>{Object.values(role_key)}</td>
 
             {AccessRestriction.map(restriction => (
-              <td className={clsx(classes.cell, classes.data)}>
+              <td className={clsx(classes.cell, classes.data)}  key={Object.values(role_key)[0]+restriction+index}>
                 {! isEdit && isEqualToCurrentValue(restriction,role_key) ? <div className={classes.dot}/> :<>&nbsp;</>
                 }
                 {isEdit && <Radio
@@ -100,9 +105,10 @@ const Access: FunctionComponent<AccessProps> = ({
             ))}
           </tr>
         ))}
+        </tbody>
       </table>
     </Box>
   )
 }
 
-export default Access
+export default AccessGrid

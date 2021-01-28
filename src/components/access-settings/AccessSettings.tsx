@@ -8,19 +8,23 @@ import {
   Divider,
   IconButton,
   makeStyles,
-
-  TextField
+  Paper,
+  Typography
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
+import MailOutlineIcon from '@material-ui/icons/MailOutline'
+import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps, useParams } from 'react-router-dom'
+import { ReactComponent as Delete } from '../../assets/trash.svg'
 import { useAsync } from '../../helpers/AsyncHook'
 import { useSessionDataState } from '../../helpers/AuthContext'
 import AccessService from '../../services/access.service'
 import StudyTopNav from '../studies/StudyTopNav'
 import Loader from '../widgets/Loader'
 import AccessGrid, { Access } from './AccessGrid'
+import MemberInvite, { NewOrgAccount, NO_ACCESS } from './MemberInvite'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -31,37 +35,67 @@ const useStyles = makeStyles(theme => ({
       3,
     )}px, ${theme.spacing(5)}px`,
   },
-}))
+  NewOrgAccount: {
+    position: 'relative',
+    marginBottom: theme.spacing(2),
 
-//export const AccessRestriction = ['NO_ACCESS', 'VIEWER', 'EDITOR']
+    padding: `${theme.spacing(6)}px ${theme.spacing(12)}px  ${theme.spacing(
+      8,
+    )}px ${theme.spacing(12)}px`,
+
+    '&$error': {
+      border: `1px solid ${theme.palette.error.main}`,
+    },
+  },
+  addNewDialogHeader: {
+    color: theme.palette.common.white,
+    backgroundColor: theme.palette.common.black,
+    textAlign: 'center',
+    paddingTop: theme.spacing(10),
+    paddingBottom: theme.spacing(4),
+    paddingRight: theme.spacing(6),
+    paddingLeft: theme.spacing(6),
+  },
+  addNewDialogBody: {
+    paddingTop: theme.spacing(10),
+    paddingRight: theme.spacing(21),
+    paddingLeft: theme.spacing(21),
+    paddingBottom: theme.spacing(3),
+    backgroundColor: theme.palette.background.default,
+  },
+  closeButton: {
+    position: 'absolute',
+    right: theme.spacing(3),
+    top: theme.spacing(3),
+    padding: 0,
+    color: theme.palette.common.white,
+  },
+  buttons: {
+    margin: '8px',
+    display: 'flex',
+    justifyContent: 'flex-end',
+
+    '& > *': {
+      '&:not(:last-child)': {
+        marginRight: '10px',
+      },
+    },
+  },
+  error: {},
+}))
 
 type AccessSettingsOwnProps = {
   title?: string
   paragraph?: string
 }
-/*
-export type AccessLabel = {
-  [key: string]: string
-}
 
-export type Access = {
-  STUDY_BUILDER: typeof AccessRestriction[number]
-  PARTICIPANT_MANAGER: typeof AccessRestriction[number]
-  ADHERENCE_DATA: typeof AccessRestriction[number]
-}
-
-
-const roles: AccessLabel[] = [
-  { STUDY_BUILDER: 'STUDY BUILDER' },
-  { PARTICIPANT_MANAGER: 'PARTICIPANT MANAGER' },
-  { ADHERENCE_DATA: 'ADHERENCE DATA' },*/
-//]
 type AccessSettingsProps = AccessSettingsOwnProps & RouteComponentProps
 
 const NameDisplay: FunctionComponent<any> = ({
   firstName,
   lastName,
   email,
+  id,
 }): JSX.Element => {
   const firstLine =
     firstName || lastName ? (
@@ -71,25 +105,74 @@ const NameDisplay: FunctionComponent<any> = ({
     ) : (
       <></>
     )
+
   return (
-    <li>
-      {firstLine} <span>{email}</span>
-    </li>
+    <>
+      {firstLine}{' '}
+      <span>
+        {id} {email}
+      </span>
+    </>
   )
 }
 
-const AccessSettings: FunctionComponent<AccessSettingsProps> = ({
-  title = 'something',
-  paragraph,
-}) => {
+function CreateNewOrgAccountTemplate() {
+  const newOrgAccount: NewOrgAccount = {
+    id: new Date().getTime() + ' ' + Math.random,
+    access: NO_ACCESS,
+    isAdded: false,
+  }
+  return newOrgAccount
+}
+
+async function createNewAccount(
+  email: string,
+  access: Access,
+  token: string,
+  currentUserOrg: string,
+) {
+  const mapAccessToRole = (access: Access): string => {
+    return 'developer'
+  }
+  try {
+    const {
+      principalId,
+      firstName,
+      lastName,
+    } = await AccessService.getAliasFromSynapseByEmail(email)
+
+    const isSuccess = await AccessService.createAccount(
+      token!,
+      email,
+      principalId,
+      firstName,
+      lastName,
+      currentUserOrg,
+      mapAccessToRole(access),
+    )
+    return [true]
+  } catch (error: any) {
+    return [false, error]
+  }
+}
+function filterNewAccountsByAdded(
+  accounts: NewOrgAccount[],
+  isAdded: boolean = true,
+) {
+  const result = accounts.filter(acct => acct.isAdded === isAdded)
+  return result
+}
+
+const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
   const classes = useStyles()
   let { id } = useParams<{ id: string }>()
-  const [access, setAccess] = React.useState<Access>({
-    STUDY_BUILDER: 'NO_ACCESS',
-    PARTICIPANT_MANAGER: 'NO_ACCESS',
-    ADHERENCE_DATA: 'NO_ACCESS',
-  })
+
+  const [access, setAccess] = React.useState<Access>({ ...NO_ACCESS })
+
   const [isOpenInvite, setIsOpenInvite] = React.useState(false)
+  const [newOrgAccounts, setNewOrgAccounts] = React.useState<NewOrgAccount[]>([
+    CreateNewOrgAccountTemplate(),
+  ])
 
   const { token, orgMembership } = useSessionDataState()
 
@@ -116,24 +199,43 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({
 
   React.useEffect(() => {}, [orgMembership])
 
-  const synapseAliasToUserId = async (
-    alias: string = 'agendel_test@synapse.org',
-  ) => {
-    const {
-      principalId,
-      firstName,
-      lastName,
-    } = await AccessService.getAliasFromSynapseByEmail(alias)
+  const closeInviteDialog = () => {
+    setNewOrgAccounts(_ => [CreateNewOrgAccountTemplate()])
+    setIsOpenInvite(false)
+  }
 
-    const isSuccess = await AccessService.createAccount(
-      token!,
-      alias,
-      principalId,
-      firstName,
-      lastName,
-      orgMembership!,
+  const removeNewOrgAccount = (accountId: string) => {
+    const remaining = newOrgAccounts.filter((acct, i) => acct.id !== accountId)
+    setNewOrgAccounts(_ => remaining)
+  }
+
+  const updateNewOrgAccount = (updatedNewAccount: NewOrgAccount) => {
+    setNewOrgAccounts(prev =>
+      prev.map(acct => {
+        return acct.id !== updatedNewAccount.id ? acct : updatedNewAccount
+      }),
     )
-    console.log(isSuccess)
+  }
+
+  const inviteUsers = async (newAccounts: NewOrgAccount[]) => {
+    for (const account of newAccounts.filter(a => !a.isAdded)) {
+      if (!account.email) {
+        updateNewOrgAccount({ ...account, error: 'No email provided' })
+        return
+      }
+      const [success, error] = await createNewAccount(
+        account.email,
+        account.access,
+        token!,
+        orgMembership!,
+      )
+      if (success) {
+        updateNewOrgAccount({ ...account, isAdded: true })
+      } else {
+        const errorString = error.message || error.reason
+        updateNewOrgAccount({ ...account, error: errorString })
+      }
+    }
   }
 
   if (status === 'PENDING') {
@@ -143,11 +245,6 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({
     handleError(error!)
   }
 
-  /*const updateAccess = (restriction: string, accessObject: AccessLabel) => {
-    const accessKey = Object.keys(accessObject)[0]
-    setAccess({ ...access, [accessKey]: restriction })
-  }*/
-
   return (
     <>
       <StudyTopNav studyId={id} currentSection={''}></StudyTopNav>
@@ -155,39 +252,151 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({
         <Box marginRight="40px">
           <h3>Team Members</h3>
           <ul>
-            {members.map((member: any) => (
-              <NameDisplay {...member}></NameDisplay>
-            ))}{' '}
+            {members.map((member: any, index: number) => (
+              <li key={member.email + index}>
+                <NameDisplay {...member}></NameDisplay>
+              </li>
+            ))}
           </ul>
           <Divider />
           <Button onClick={() => setIsOpenInvite(true)} variant="contained">
-            Invite member
+            Invite Team Members
           </Button>
         </Box>
-      <AccessGrid access={access} onUpdate={((_access: Access)=> setAccess(_access))} isEdit={true}></AccessGrid>
-       
+        <AccessGrid
+          access={access}
+          onUpdate={(_access: Access) => setAccess(_access)}
+          isEdit={true}
+        ></AccessGrid>
       </Container>
       {status === 'RESOLVED' && (
         <Dialog
           open={isOpenInvite}
-          maxWidth="lg"
+          maxWidth="md"
+          fullWidth
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle>
-            Invite Team Members
+          <DialogTitle className={classes.addNewDialogHeader} disableTypography>
+            <MailOutlineIcon style={{ width: '25px' }}></MailOutlineIcon>
+            <Typography variant="subtitle2" style={{ fontSize: '25px' }}>
+              Invite Team Members
+            </Typography>
             <IconButton
               aria-label="close"
-              className={'' /*classes.closeButton*/}
-              onClick={() => setIsOpenInvite(false)}
-              style={{ position: 'absolute', top: '16px', right: '16px' }}
+              className={classes.closeButton}
+              onClick={() => {
+                closeInviteDialog()
+              }}
             >
               <CloseIcon />
             </IconButton>
           </DialogTitle>
-          <DialogContent>
-            <TextField multiline={true} label="Email:" fullWidth></TextField>
+          <DialogContent className={classes.addNewDialogBody}>
+            <pre>
+              Enter 'sErr' in email address to simulate synapse error. Enter
+              'bErr' in email address to simulate bridge error.
+            </pre>
+            {filterNewAccountsByAdded(newOrgAccounts).length > 0 && (
+              <>
+                <Paper
+                  elevation={2}
+                  style={{ margin: '16px 0' }}
+                  key={'success'}
+                  className={clsx(classes.NewOrgAccount)}
+                >
+                  <strong>Added Succesfully</strong>
+                  <br /> <br />
+                  {filterNewAccountsByAdded(newOrgAccounts)
+                    .map(acct => acct.email)
+                    .join(', ')}
+                </Paper>
+              </>
+            )}
+
+            {filterNewAccountsByAdded(newOrgAccounts, false).map(
+              (newOrgAccount, index) => (
+                <Paper
+                  elevation={2}
+                  className={clsx(
+                    classes.NewOrgAccount,
+                    newOrgAccount.error && classes.error,
+                  )}
+                  key={index + new Date().getTime()}
+                >
+                  {newOrgAccounts.length > 1 && (
+                    <IconButton
+                      aria-label="close"
+                      className={classes.closeButton}
+                      onClick={() => removeNewOrgAccount(newOrgAccount.id)}
+                    >
+                      <Delete></Delete>
+                    </IconButton>
+                  )}
+                  <MemberInvite
+                    newOrgAccount={newOrgAccount}
+                    index={index}
+                    onUpdate={(newOrgAccount: NewOrgAccount) =>
+                      updateNewOrgAccount(newOrgAccount)
+                    }
+                  />
+                </Paper>
+              ),
+            )}
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={() =>
+                setNewOrgAccounts(prev => [
+                  ...prev,
+                  CreateNewOrgAccountTemplate(),
+                ])
+              }
+            >
+              + Add Another Member
+            </Button>
+            <Box className={classes.buttons}>
+              <Button
+                onClick={() => closeInviteDialog()}
+                color="secondary"
+                variant="outlined"
+                style={{
+                  display:
+                    filterNewAccountsByAdded(newOrgAccounts, false).length === 0
+                      ? 'none'
+                      : 'inherit',
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => inviteUsers(newOrgAccounts)}
+                color="primary"
+                variant="contained"
+                style={{
+                  display:
+                    filterNewAccountsByAdded(newOrgAccounts, false).length === 0
+                      ? 'none'
+                      : 'inherit',
+                }}
+              >
+                <MailOutlineIcon />
+                &nbsp;Invite To Study
+              </Button>
+              <Button
+                onClick={() => closeInviteDialog()}
+                color="primary"
+                variant="contained"
+                style={{
+                  display:
+                    filterNewAccountsByAdded(newOrgAccounts, false).length === 0
+                      ? 'inherit'
+                      : 'none',
+                }}
+              >
+                Done
+              </Button>
+            </Box>
           </DialogContent>
-          <Button onClick={() => synapseAliasToUserId()}>Next</Button>
         </Dialog>
       )}
     </>
