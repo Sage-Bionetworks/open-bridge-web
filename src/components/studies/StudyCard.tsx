@@ -7,9 +7,8 @@ import MoreVertIcon from '@material-ui/icons/MoreVert'
 import React, { FunctionComponent } from 'react'
 import { ThemeType } from '../../style/theme'
 import { Study } from '../../types/types'
-
-
-
+import LiveIcon from './LiveIcon'
+import participants_icon from '../../assets/participants_icon.svg'
 
 const DraftIcon = () => {
   return (
@@ -33,10 +32,14 @@ const DraftIcon = () => {
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
-    width: '253px',
-    height: '188px',
+    width: '290px',
+    height: '184px',
     border: '1px solid gray',
     position: 'relative',
+    backgroundColor: '#FFFFFF',
+    borderRadius: '0px',
+    borderWidth: '0px',
+    boxShadow: '0 4px 4px 0 rgb(0 0 0 / 35%)',
   },
 
   title: {
@@ -65,7 +68,26 @@ const CardBottom: FunctionComponent<{ study: Study }> = ({
       left="8px"
       right="8px"
     >
-      {study.identifier}
+      {study.status === 'DRAFT' ? (
+        study.identifier
+      ) : (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            width: '100%',
+            padding: '0 10px',
+            marginBottom: '5px',
+            alignItems: 'center',
+          }}
+        >
+          <img
+            src={participants_icon}
+            style={{ width: '25px', height: '25px', marginRight: '3px' }}
+          />
+          56
+        </div>
+      )}
     </Box>
   )
 }
@@ -74,9 +96,30 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
   study,
   onSetAnchor,
 }: StudyCardProps) => {
+  function getCorrectCardName(status: string): string {
+    if (status === 'DRAFT') {
+      return 'Draft'
+    } else if (status === 'COMPLETED') {
+      return 'Closed'
+    } else {
+      return 'Live'
+    }
+  }
+
   return (
-    <Box display="flex" textAlign="left" paddingTop="8px">
-      {study.status !== 'COMPLETED' && (
+    <Box
+      display="flex"
+      textAlign="left"
+      paddingTop="8px"
+      style={{
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: '10px 10px',
+        alignItems: 'center',
+      }}
+    >
+      {study.status !== 'COMPLETED' ? (
         <IconButton
           style={{ padding: '0' }}
           onClick={e => {
@@ -86,8 +129,22 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
         >
           <MoreVertIcon />
         </IconButton>
+      ) : (
+        <div />
       )}
-      {study.status}
+      {study.status === 'ACTIVE' ? (
+        <LiveIcon />
+      ) : (
+        <div
+          style={{
+            fontFamily: 'Playfair Display',
+            fontStyle: 'italic',
+            fontSize: '15',
+          }}
+        >
+          {getCorrectCardName(study.status)}
+        </div>
+      )}
     </Box>
   )
 }
