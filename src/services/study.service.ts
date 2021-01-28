@@ -61,14 +61,16 @@ async function getStudySessions(
 }
 
 async function saveStudy(study: Study, token: string): Promise<Study[]> {
-  const { data } = await callEndpoint<{ items: Study[] }>(
+  await callEndpoint<{ items: Study[] }>(
     constants.endpoints.study.replace(':id', study.identifier),
     'POST',
     study,
     token,
   )
 
-  return data.items
+  const data = await getStudies(token)
+
+  return data
 }
 
 async function removeStudy(studyId: string, token: string): Promise<Study[]> {
