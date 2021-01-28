@@ -5,7 +5,6 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Divider,
   IconButton,
   makeStyles,
   Paper,
@@ -23,17 +22,16 @@ import { useSessionDataState } from '../../helpers/AuthContext'
 import AccessService from '../../services/access.service'
 import StudyTopNav from '../studies/StudyTopNav'
 import Loader from '../widgets/Loader'
-import AccessGrid, { Access } from './AccessGrid'
-import MemberInvite, { NewOrgAccount, NO_ACCESS } from './MemberInvite'
+import { Access, NO_ACCESS } from './AccessGrid'
+import AccountListing from './AccountListing'
+import MemberInvite, { NewOrgAccount } from './MemberInvite'
 
 const useStyles = makeStyles(theme => ({
   root: {
     border: '1px solid black',
     marginTop: theme.spacing(12),
     display: 'flex',
-    padding: `${theme.spacing(3)}px, ${theme.spacing(5)}px, ${theme.spacing(
-      3,
-    )}px, ${theme.spacing(5)}px`,
+    padding: 0,
   },
   NewOrgAccount: {
     position: 'relative',
@@ -91,31 +89,6 @@ type AccessSettingsOwnProps = {
 
 type AccessSettingsProps = AccessSettingsOwnProps & RouteComponentProps
 
-const NameDisplay: FunctionComponent<any> = ({
-  firstName,
-  lastName,
-  email,
-  id,
-}): JSX.Element => {
-  const firstLine =
-    firstName || lastName ? (
-      <strong>
-        {[firstName, lastName].join(' ')} <br />
-      </strong>
-    ) : (
-      <></>
-    )
-
-  return (
-    <>
-      {firstLine}{' '}
-      <span>
-        {id} {email}
-      </span>
-    </>
-  )
-}
-
 function CreateNewOrgAccountTemplate() {
   const newOrgAccount: NewOrgAccount = {
     id: new Date().getTime() + ' ' + Math.random,
@@ -166,9 +139,6 @@ function filterNewAccountsByAdded(
 const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
   const classes = useStyles()
   let { id } = useParams<{ id: string }>()
-
-  const [access, setAccess] = React.useState<Access>({ ...NO_ACCESS })
-
   const [isOpenInvite, setIsOpenInvite] = React.useState(false)
   const [newOrgAccounts, setNewOrgAccounts] = React.useState<NewOrgAccount[]>([
     CreateNewOrgAccountTemplate(),
@@ -196,8 +166,6 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
       })(orgMembership, token),
     )
   }, [run])
-
-  React.useEffect(() => {}, [orgMembership])
 
   const closeInviteDialog = () => {
     setNewOrgAccounts(_ => [CreateNewOrgAccountTemplate()])
@@ -249,25 +217,11 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
     <>
       <StudyTopNav studyId={id} currentSection={''}></StudyTopNav>
       <Container maxWidth="lg" className={classes.root}>
-        <Box marginRight="40px">
-          <h3>Team Members</h3>
-          <ul>
-            {members.map((member: any, index: number) => (
-              <li key={member.email + index}>
-                <NameDisplay {...member}></NameDisplay>
-              </li>
-            ))}
-          </ul>
-          <Divider />
+        <AccountListing token={token!} members={members}>
           <Button onClick={() => setIsOpenInvite(true)} variant="contained">
             Invite Team Members
           </Button>
-        </Box>
-        <AccessGrid
-          access={access}
-          onUpdate={(_access: Access) => setAccess(_access)}
-          isEdit={true}
-        ></AccessGrid>
+        </AccountListing>
       </Container>
       {status === 'RESOLVED' && (
         <Dialog

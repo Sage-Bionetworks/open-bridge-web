@@ -1,11 +1,11 @@
-import { Button, Drawer, IconButton, makeStyles } from '@material-ui/core'
+import { Drawer, IconButton, makeStyles } from '@material-ui/core'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import SomeIcon from '@material-ui/icons/SentimentVerySatisfied'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
-import { NavLink } from 'react-router-dom'
-import { poppinsFont, ThemeType } from '../../style/theme'
+import { ThemeType } from '../../style/theme'
+import SideBarListItem from '../widgets/SideBarListItem'
 import { SECTIONS as sectionLinks, StudySection } from './sections'
 
 const drawerWidth = 212
@@ -48,46 +48,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     padding: '0',
     position: 'relative',
     listStyle: 'none',
-  },
-
-  listItem: {
-    color: theme.palette.action.active,
-    paddingLeft: theme.spacing(2),
-    //paddingTop: theme.spacing(1.5),
-    //paddingBottom: theme.spacing(1.5),
-
-    '&$listItemActive': {
-      borderLeft: '4px solid #BCD5E4',
-      backgroundColor: '#FAFAFA',
-      paddingLeft: theme.spacing(1.5),
-    },
-    '&$listItemCollapsed': {
-      paddingLeft: theme.spacing(1),
-    },
-    '&$listItemActive&$listItemCollapsed': {
-      paddingLeft: theme.spacing(0.5),
-    },
-    '&:hover': {
-      backgroundColor: '#f7f7f7',
-    },
-  },
-  listItemActive: {},
-  listItemCollapsed: {},
-
-  link: {
-    fontFamily: poppinsFont,
-    color: '#282828',
-    width: '100%',
-    textDecoration: 'none',
-    '&:hover': {
-      backgroundColor: 'inherit',
-    },
-
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-  },
-  linkLabel: {
-    justifyContent: 'flex-start',
   },
   drawerPaper: {
     fontSize: '14px',
@@ -154,37 +114,17 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
       </div>
       <ul className={classes.list}>
         {sectionLinks.map((sectionLink, index) => (
-          <li
+          <SideBarListItem
             key={sectionLink.path}
-            className={clsx(classes.listItem, {
-              [classes.listItemActive]: sectionLink.path === currentSection,
-              [classes.listItemCollapsed]: !open,
-            })}
+            isOpen={open}
+            isActive={sectionLink.path === currentSection}
+            onClick={() => onNavigate(sectionLink.path)}
           >
-            <Button
-              key={sectionLink.path}
-              onClick={() => onNavigate(sectionLink.path)}
-              className={classes.link}
-              classes={{ label: classes.linkLabel }}
-            >
-              <div style={{ display: 'flex' }}>
-                <SomeIcon style={{ marginRight: '16px' }} />
-                <span>{sectionLink.name}</span>
-              </div>
-            </Button>
-            {false && (
-              <NavLink
-                key={sectionLink.path}
-                to={sectionLink.path}
-                className={classes.link}
-              >
-                <div style={{ display: 'flex' }}>
-                  <SomeIcon style={{ marginRight: '16px' }} />
-                  <span>{sectionLink.name}</span>
-                </div>
-              </NavLink>
-            )}
-          </li>
+            <div style={{ display: 'flex' }}>
+              <SomeIcon style={{ marginRight: '16px' }} />
+              <span>{sectionLink.name}</span>
+            </div>
+          </SideBarListItem>
         ))}
       </ul>
     </Drawer>

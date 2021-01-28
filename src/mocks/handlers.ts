@@ -265,7 +265,7 @@ export const handlers = [
   ),
 
   //create account
-  rest.post(`*${constants.endpoints.accountCreate}`, async (req, res, ctx) => {
+  rest.post(`*${constants.endpoints.bridgeAccount}`, async (req, res, ctx) => {
     //@ts-ignore
     const email = req.body!.email
 

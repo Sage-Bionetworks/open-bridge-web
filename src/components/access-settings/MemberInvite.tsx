@@ -7,18 +7,13 @@ import {
 } from '@material-ui/core'
 import React, { FunctionComponent } from 'react'
 import ErrorDisplay from '../widgets/ErrorDisplay'
-import AccessGrid, { Access } from './AccessGrid'
+import AccessGrid, { Access, getAccessFromRoles } from './AccessGrid'
 
 const useStyles = makeStyles(theme => ({
   root: {},
 }))
 
-export const NO_ACCESS: Access = {
-  STUDY_BUILDER: 'NO_ACCESS',
-  PARTICIPANT_MANAGER: 'NO_ACCESS',
-  ADHERENCE_DATA: 'NO_ACCESS',
-  STUDY_DATA: 'NO_ACCESS',
-}
+
 
 export type NewOrgAccount = {
   id: string
@@ -50,12 +45,12 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
   const updateCoadmin = (isChecked: boolean) => {
     setCoadmin(isChecked)
     if (isChecked) {
-      setAccess({
+      setAccess(getAccessFromRoles(['org_admin'])/*{
         STUDY_BUILDER: 'EDITOR',
         PARTICIPANT_MANAGER: 'EDITOR',
         ADHERENCE_DATA: 'EDITOR',
         STUDY_DATA: 'VIEWER',
-      })
+      }*/)
     }
   }
 

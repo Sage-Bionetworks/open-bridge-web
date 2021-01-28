@@ -1,10 +1,12 @@
 import { callEndpoint } from '../helpers/utility'
 import constants from '../types/constants'
+import { OrgUser, UserData } from '../types/types'
 
 const AccessService = {
   createAccount,
   getAliasFromSynapseByEmail,
   getAccountsForOrg,
+  getIndividualAccount
 }
 
 async function getAliasFromSynapseByEmail(
@@ -57,15 +59,28 @@ async function getAccountsForOrg(
   token: string,
 
   orgId: string,
-): Promise<any> {
+): Promise<UserData[]> {
   console.log('GETTING ACCOUNTS')
   const endpoint = constants.endpoints.getAccountsForOrg.replace(
     ':orgId',
     orgId,
   )
-  const result = await callEndpoint<any>(endpoint, 'POST', {}, token)
+  const result = await callEndpoint<{items: OrgUser[]}>(endpoint, 'POST', {}, token)
 
   return result.data.items
+}
+
+
+async function getIndividualAccount(
+  token: string,
+
+  userId: string,
+): Promise<OrgUser> {
+
+  const endpoint = `${constants.endpoints.bridgeAccount}/${userId}`
+  const result = await callEndpoint<OrgUser>(endpoint, 'GET', {}, token)
+
+  return result.data
 }
 
 async function createAccount(
@@ -88,7 +103,7 @@ async function createAccount(
     roles: [role],
   }
   const result = await callEndpoint<any>(
-    constants.endpoints.accountCreate,
+    constants.endpoints.bridgeAccount,
     'POST',
     postData,
     token,

@@ -1,7 +1,7 @@
 import { createMuiTheme, Theme } from '@material-ui/core'
 import { CSSProperties } from '@material-ui/core/styles/withStyles'
 
-type cssDict = {
+type cssGlobalClasses = {
   [key: string]: CSSProperties
 }
 
@@ -44,14 +44,20 @@ const cssVariables = {
 }
 
 //those are global css classes
-const globals: cssDict = {
-  '.assesmentContainer': {
+const globals: cssGlobalClasses = {
+ /* '.assesmentContainer': {
     justifyContent: 'flex-start',
     fontSize: '26px',
 
     display: 'flex',
     flexWrap: 'wrap',
     overflowWrap: 'normal',
+  },*/
+  listReset: {
+    margin: '0',
+    padding: '0',
+    position: 'relative',
+    listStyle: 'none',
   },
 }
 
