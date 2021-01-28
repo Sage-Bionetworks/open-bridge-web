@@ -110,9 +110,7 @@ export const handlers = [
     let newStudies: Study[]
     if (studies.find(s => s.identifier === id)) {
       //if study exist
-      newStudies = studies.map(s =>
-        s.identifier === id ? study : s,
-      )
+      newStudies = studies.map(s => (s.identifier === id ? study : s))
     } else {
       newStudies = [...studies, study]
     }
@@ -150,7 +148,7 @@ export const handlers = [
   rest.post(`*${constants.endpoints.schedule}`, async (req, res, ctx) => {
     const { id } = req.params
     const sched: Schedule = req.body as Schedule
-    
+
     const allSchedules = await getAllSchedules()
     const otherSched = allSchedules?.filter(s => s.studyId !== id) || []
     const allSchedsUpdated = [
@@ -210,4 +208,81 @@ export const handlers = [
       )
     },
   ),
+
+  /* ****************************
+   * THOSE ENDPOINTS EXIST. THEY ARE REPLACED FOR TESTING. COMMENT THEM OUT TO GET THE REAL RESPONSE
+   *************************  */
+  //to get the error from synapse pass email w/ synapseErr to get error from bridge pass email w/ bridgeErr
+
+  //get principal id from synapse
+
+  rest.post(
+    `*${constants.endpoints.synapseGetAlias}`,
+    async (req, res, ctx) => {
+      //@ts-ignore
+      const alias = req.body!.alias
+      const isError = alias.indexOf('sErr') > -1
+      if (isError) {
+        return res(
+          ctx.status(404),
+          ctx.json({ reason: 'Not found in synapse' }),
+        )
+      }
+
+      return res(
+        ctx.status(200),
+        ctx.json({
+          principalId: 3420774,
+        }),
+      )
+    },
+  ),
+
+  //get profile from synapse
+  rest.get(
+    `*${constants.endpoints.synapseGetUserProfile}`,
+    async (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          userId: '3420774',
+          userProfile: {
+            ownerId: '3420774',
+            firstName: 'Alina!!!',
+            lastName: 'Testing!!!',
+            userName: 'agendel_test',
+            summary: '',
+            position: '',
+            location: '',
+            industry: '',
+            company: '',
+            url: '',
+            createdOn: '2021-01-12T01:51:16.000Z',
+          },
+        }),
+      )
+    },
+  ),
+
+  //create account
+  rest.post(`*${constants.endpoints.bridgeAccount}`, async (req, res, ctx) => {
+    //@ts-ignore
+    const email = req.body!.email
+
+    const isError = email.indexOf('bErr') > -1
+    if (isError) {
+      return res(
+        ctx.status(409),
+        ctx.json({ message: 'Error from adding a user account' }),
+      )
+    }
+
+    return res(
+      ctx.status(200),
+      ctx.json({
+        identifier: 'U6tVUQfQr2GYDROdeTNLa6LB',
+        type: 'IdentifierHolder',
+      }),
+    )
+  }),
 ]
