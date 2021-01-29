@@ -83,7 +83,6 @@ const useStyles = makeStyles(theme => ({
       transform: 'translateY(1px)',
       backgroundColor: '#3A3A3A',
     },
-    textTransform: 'none',
   },
 }))
 
@@ -301,7 +300,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           onClick={() => createStudy()}
           className={classes.createStudyButton}
         >
-          + Create a Study
+          + Create New Study
         </Button>
       </Box>
       <Divider className={classes.divider}></Divider>
