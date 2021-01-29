@@ -215,7 +215,7 @@ export const handlers = [
   //to get the error from synapse pass email w/ synapseErr to get error from bridge pass email w/ bridgeErr
 
   //get principal id from synapse
-
+/*
   rest.post(
     `*${constants.endpoints.synapseGetAlias}`,
     async (req, res, ctx) => {
@@ -284,5 +284,22 @@ export const handlers = [
         type: 'IdentifierHolder',
       }),
     )
-  }),
+  }),*/
+
+  //delete account
+  rest.delete(
+    `*${constants.endpoints.bridgeAccount}`,
+    async (req, res, ctx) => {
+      //@ts-ignore
+      const { id } = req.params
+
+      return res(
+        ctx.status(200),
+        ctx.json({
+          identifier: 'U6tVUQfQr2GYDROdeTNLa6LB',
+          type: 'IdentifierHolder',
+        }),
+      )
+    },
+  ),
 ]

@@ -13,6 +13,8 @@ const initialState = {
   token: undefined,
   orgMembership: undefined,
   dataGroups: [],
+  roles:[],
+  id:''
 }
 
 const SessionDataStateContext = React.createContext<SessionData | undefined>(
@@ -65,7 +67,9 @@ function countReducer(state: SessionData, action: Action): SessionData {
         orgMembership:action.payload!.orgMembership,
         //consented: action.payload!.consented,
         name: action.payload!.name,
-       dataGroups: action.payload!.dataGroups
+       dataGroups: action.payload!.dataGroups,
+       roles: action.payload!.roles,
+       id: action.payload!.id
       }
 
       setSession(newState)
