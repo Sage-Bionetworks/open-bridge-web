@@ -36,16 +36,13 @@ const useStyles = makeStyles(theme => ({
   yellowButton: {
     marginTop: theme.spacing(2),
     backgroundColor: '#FFE500',
-    color: '#000'
-  
+    color: '#000',
   },
   newOrgAccount: {
     position: 'relative',
     marginBottom: theme.spacing(2),
 
-    padding: `${theme.spacing(6)}px ${theme.spacing(12)}px  ${theme.spacing(
-      8,
-    )}px ${theme.spacing(12)}px`,
+    padding: theme.spacing(6, 12, 8, 12),
 
     '&$error': {
       border: `1px solid ${theme.palette.error.main}`,
@@ -55,16 +52,10 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.common.white,
     backgroundColor: theme.palette.common.black,
     textAlign: 'center',
-    paddingTop: theme.spacing(10),
-    paddingBottom: theme.spacing(4),
-    paddingRight: theme.spacing(6),
-    paddingLeft: theme.spacing(6),
+    padding: theme.spacing(10, 6, 4, 6),
   },
   addNewDialogBody: {
-    paddingTop: theme.spacing(10),
-    paddingRight: theme.spacing(21),
-    paddingLeft: theme.spacing(21),
-    paddingBottom: theme.spacing(3),
+    padding: theme.spacing(10, 21, 3, 21),
     backgroundColor: theme.palette.background.default,
   },
   closeButton: {
@@ -120,7 +111,7 @@ async function createNewAccount(
       lastName,
     } = await AccessService.getAliasFromSynapseByEmail(email)
 
-    const isSuccess = await AccessService.createAccount(
+    const isSuccess = await AccessService.createIndividualAccount(
       token!,
       email,
       principalId,
@@ -168,7 +159,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
           token!,
           orgMembership!,
         )
-      
+
         return members
       })(orgMembership, token),
     )
@@ -224,12 +215,16 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
     <>
       <StudyTopNav studyId={id} currentSection={''}></StudyTopNav>
       <Container maxWidth="md" className={classes.root}>
-        <Paper elevation={2} style={{width: '100%'}}>
-        <AccountListing token={token!} members={members}>
-          <Button onClick={() => setIsOpenInvite(true)} variant="contained" className={classes.yellowButton}>
-            Invite a Member
-          </Button>
-        </AccountListing>
+        <Paper elevation={2} style={{ width: '100%' }}>
+          <AccountListing token={token!} members={members}>
+            <Button
+              onClick={() => setIsOpenInvite(true)}
+              variant="contained"
+              className={classes.yellowButton}
+            >
+              Invite a Member
+            </Button>
+          </AccountListing>
         </Paper>
       </Container>
       {status === 'RESOLVED' && (
