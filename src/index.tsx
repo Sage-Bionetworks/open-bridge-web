@@ -6,17 +6,30 @@ import App from './App'
 import { SessionDataProvider } from './helpers/AuthContext'
 import './index.css'
 
+function isDevelopment() {
+  return (
+    window.location.hostname === 'localhost' ||
+    // [::1] is the IPv6 localhost address.
+    window.location.hostname === '[::1]' ||
+    // or we are on staging
+    window.location.hostname.includes('staging') ||
+    // 127.0.0.0/8 are considered localhost for IPv4.
+    window.location.hostname.match(
+      /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/,
+    )
+  )
+}
 
-
-
-if (process.env.NODE_ENV === 'development' || /*AGENDEL REDO!*/ process.env.NODE_ENV === 'production' ) {
+if (
+  process.env.NODE_ENV === 'development' ||
+  /*AGENDEL REDO!*/ isDevelopment()
+) {
   console.log('development')
   const { worker } = require('./mocks/browser')
   worker.start()
 } else {
-  console.log(process.env.NODE_ENV )
+  console.log(process.env.NODE_ENV)
 }
-
 
 ReactDOM.render(
   <React.StrictMode>
