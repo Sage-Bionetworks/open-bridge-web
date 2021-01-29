@@ -43,6 +43,7 @@ export interface LoggedInUserData extends UserData {
 export interface OrgUser extends LoggedInUserData {
   roles: AdminRoles[]
   status: string
+  email?: string
   synapseUserId: string
 }
 

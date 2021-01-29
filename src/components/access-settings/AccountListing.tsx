@@ -1,4 +1,4 @@
-import { Box, Divider, makeStyles, Theme } from '@material-ui/core'
+import { Box, makeStyles, Theme } from '@material-ui/core'
 import React, { FunctionComponent, ReactNode } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import AccessService from '../../services/access.service'
@@ -20,8 +20,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.common.white,
     paddingTop: theme.spacing(4),
     paddingRight: 0,
+    paddingLeft: theme.spacing(3.5),
+    paddingBottom: theme.spacing(3)
+
   },
-  list: globals.listReset,
+  list: {...globals.listReset, marginLeft: -theme.spacing(3.5)},
 }))
 
 type AccountListingProps = {
@@ -35,15 +38,16 @@ const NameDisplay: FunctionComponent<any> = ({
   lastName,
   email,
   id,
+  synapseUserId,
   ...rest
-}): JSX.Element => {
+}: OrgUser): JSX.Element => {
   const firstLine =
     firstName || lastName ? (
       <strong>
         {[firstName, lastName].join(' ')} <br />
       </strong>
     ) : (
-      <></>
+      <strong>{synapseUserId}</strong>
     )
 
   return (
@@ -59,11 +63,14 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   children,
 }: AccountListingProps) => {
   const classes = useStyles()
+  console.log('MEML:' + members.length)
 
   const handleError = useErrorHandler()
 
   const [currentMemberId, setCurrentMemberId] = React.useState(members[0].id)
-  const [access, setAccess] = React.useState<Access | undefined>()
+  const [currentMemberAccess, setCurrentMemberAccess] = React.useState<
+    { access: Access; member: OrgUser } | undefined
+  >()
   const [isAccessLoading, setIsAccessLoading] = React.useState(true)
 
   const updateAccess = async (memberId: string) => {
@@ -72,7 +79,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     console.log(member.roles.join(','))
     const access = getAccessFromRoles(member.roles)
 
-    setAccess(access)
+    setCurrentMemberAccess({ access, member })
     setIsAccessLoading(false)
   }
 
@@ -86,8 +93,8 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     <Box className={classes.root}>
       <Box className={classes.listing}>
         <h3>Team Members</h3>
-        <ul className={classes.list}>
-          {members.map((member: any, index: number) => (
+        <ul className={classes.list} style={{maxHeight: '400px', overflow: 'scroll', marginBottom: '16px'}}>
+          {[...members, ...members].map((member: any, index: number) => (
             <SideBarListItem
               itemKey={member.id}
               variant={'dark'}
@@ -95,21 +102,37 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
               isActive={member.id === currentMemberId}
               onClick={() => setCurrentMemberId(member.id)}
             >
-              <div style={{paddingLeft: '8px', textAlign: 'left'}}>
+              <div style={{ paddingLeft: '8px', textAlign: 'left' }}>
                 <NameDisplay {...member}></NameDisplay>
               </div>
             </SideBarListItem>
           ))}
         </ul>
-        <Divider />
+  <Box textAlign="center" paddingRight={"24px"}>
         {children}
+        </Box>
       </Box>
-      <Loader reqStatusLoading={!access || isAccessLoading}>
-        <AccessGrid
-          access={access!}
-          onUpdate={(_access: Access) => setAccess(_access)}
-          isEdit={true}
-        ></AccessGrid>
+      <Loader
+        reqStatusLoading={!currentMemberAccess?.member || isAccessLoading}
+      >
+        {currentMemberAccess && (
+          <div>
+            <h3 style={{marginBottom: "80px", marginTop: "100px"}}>
+              {' '}
+              <NameDisplay {...currentMemberAccess!.member}></NameDisplay>
+            </h3>
+            <AccessGrid
+              access={currentMemberAccess!.access!}
+              onUpdate={(_access: Access) =>
+                setCurrentMemberAccess({
+                  member: currentMemberAccess!.member,
+                  access: _access,
+                })
+              }
+              isEdit={true}
+            ></AccessGrid>
+          </div>
+        )}
       </Loader>
     </Box>
   )

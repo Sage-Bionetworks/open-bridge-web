@@ -33,7 +33,13 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     padding: 0,
   },
-  NewOrgAccount: {
+  yellowButton: {
+    marginTop: theme.spacing(2),
+    backgroundColor: '#FFE500',
+    color: '#000'
+  
+  },
+  newOrgAccount: {
     position: 'relative',
     marginBottom: theme.spacing(2),
 
@@ -162,6 +168,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
           token!,
           orgMembership!,
         )
+      
         return members
       })(orgMembership, token),
     )
@@ -219,8 +226,8 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
       <Container maxWidth="md" className={classes.root}>
         <Paper elevation={2} style={{width: '100%'}}>
         <AccountListing token={token!} members={members}>
-          <Button onClick={() => setIsOpenInvite(true)} variant="contained">
-            Invite Team Members
+          <Button onClick={() => setIsOpenInvite(true)} variant="contained" className={classes.yellowButton}>
+            Invite a Member
           </Button>
         </AccountListing>
         </Paper>
@@ -258,7 +265,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
                   elevation={2}
                   style={{ margin: '16px 0' }}
                   key={'success'}
-                  className={clsx(classes.NewOrgAccount)}
+                  className={clsx(classes.newOrgAccount)}
                 >
                   <strong>Added Succesfully</strong>
                   <br /> <br />
@@ -274,7 +281,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
                 <Paper
                   elevation={2}
                   className={clsx(
-                    classes.NewOrgAccount,
+                    classes.newOrgAccount,
                     newOrgAccount.error && classes.error,
                   )}
                   key={index + new Date().getTime()}
