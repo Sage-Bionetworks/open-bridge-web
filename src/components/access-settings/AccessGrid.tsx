@@ -113,7 +113,7 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
 
   return (
     <Box>
-      <h3>Access Type</h3>
+     
       <table cellPadding="0" cellSpacing="0" width="100%">
         <thead>
           <tr>
