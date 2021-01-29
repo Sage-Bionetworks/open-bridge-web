@@ -13,8 +13,6 @@ const useStyles = makeStyles(theme => ({
   root: {},
 }))
 
-
-
 export type NewOrgAccount = {
   id: string
   access: Access
@@ -45,12 +43,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
   const updateCoadmin = (isChecked: boolean) => {
     setCoadmin(isChecked)
     if (isChecked) {
-      setAccess(getAccessFromRoles(['org_admin'])/*{
-        STUDY_BUILDER: 'EDITOR',
-        PARTICIPANT_MANAGER: 'EDITOR',
-        ADHERENCE_DATA: 'EDITOR',
-        STUDY_DATA: 'VIEWER',
-      }*/)
+      setAccess(getAccessFromRoles(['org_admin']))
     }
   }
 
@@ -66,8 +59,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
         value={email || ''}
       ></TextField>
       {newOrgAccount.error && (
-        <ErrorDisplay>{newOrgAccount.error.toString()}
-        </ErrorDisplay>
+        <ErrorDisplay>{newOrgAccount.error.toString()}</ErrorDisplay>
       )}
       <FormControlLabel
         control={

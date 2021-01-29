@@ -98,7 +98,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
         }),
       }}
     >
-      <Box textAlign='right' height= {6} bgcolor='#FAFAFA'>
+      <Box textAlign='right' height="48px" bgcolor='#FAFAFA'>
         <IconButton
           onClick={toggleDrawer}
           style={{ borderRadius: 0, width: '48px', height: '100%' }}
@@ -115,7 +115,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
             onClick={() => onNavigate(sectionLink.path)}
           >
             <div style={{ display: 'flex' }}>
-              <SomeIcon style={{ marginRight: 2 }} />
+              <SomeIcon style={{ marginRight: "16px" }} />
               <span>{sectionLink.name}</span>
             </div>
           </SideBarListItem>

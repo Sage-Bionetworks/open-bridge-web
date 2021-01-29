@@ -18,13 +18,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginRight: theme.spacing(15),
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
-    paddingTop: theme.spacing(4),
-    paddingRight: 0,
-    paddingLeft: theme.spacing(3.5),
-    paddingBottom: theme.spacing(3)
-
+    padding: theme.spacing(4, 0 ,3, 3.5)
   },
-  list: {...globals.listReset, marginLeft: -theme.spacing(3.5)},
+  list: { ...globals.listReset, marginLeft: -theme.spacing(3.5) },
 }))
 
 type AccountListingProps = {
@@ -93,7 +89,14 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     <Box className={classes.root}>
       <Box className={classes.listing}>
         <h3>Team Members</h3>
-        <ul className={classes.list} style={{maxHeight: '400px', overflow: 'scroll', marginBottom: '16px'}}>
+        <ul
+          className={classes.list}
+          style={{
+            maxHeight: '400px',
+            overflow: 'scroll',
+            marginBottom: '16px',
+          }}
+        >
           {[...members, ...members].map((member: any, index: number) => (
             <SideBarListItem
               itemKey={member.id}
@@ -108,8 +111,8 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
             </SideBarListItem>
           ))}
         </ul>
-  <Box textAlign="center" paddingRight={"24px"}>
-        {children}
+        <Box textAlign="center" pr={3}>
+          {children}
         </Box>
       </Box>
       <Loader
@@ -117,7 +120,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
       >
         {currentMemberAccess && (
           <div>
-            <h3 style={{marginBottom: "80px", marginTop: "100px"}}>
+            <h3 style={{ marginBottom: '80px', marginTop: '100px' }}>
               {' '}
               <NameDisplay {...currentMemberAccess!.member}></NameDisplay>
             </h3>

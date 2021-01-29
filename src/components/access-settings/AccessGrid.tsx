@@ -55,37 +55,35 @@ export const NO_ACCESS: Access = {
   STUDY_DATA: 'NO_ACCESS',
 }
 
-
-
 export function getAccessFromRoles(roles: AdminRoles[]): Access {
-  if (roles.includes('admin')){
+  if (roles.includes('admin')) {
     return {
       STUDY_BUILDER: 'EDITOR',
       PARTICIPANT_MANAGER: 'EDITOR',
       ADHERENCE_DATA: 'EDITOR',
       STUDY_DATA: 'VIEWER',
-    }}
+    }
+  }
 
-
-    if (roles.includes('researcher')){
+  if (roles.includes('researcher')) {
     return {
       STUDY_BUILDER: 'VIEWER',
       PARTICIPANT_MANAGER: 'EDITOR',
       ADHERENCE_DATA: 'EDITOR',
       STUDY_DATA: 'VIEWER',
-    }}
+    }
+  }
 
+  if (roles.includes('developer')) {
+    return {
+      STUDY_BUILDER: 'EDITOR',
+      PARTICIPANT_MANAGER: 'VIEWER',
+      ADHERENCE_DATA: 'VIEWER',
+      STUDY_DATA: 'VIEWER',
+    }
+  }
 
-    if (roles.includes('developer')){
-      return {
-        STUDY_BUILDER: 'EDITOR',
-        PARTICIPANT_MANAGER: 'VIEWER',
-        ADHERENCE_DATA: 'VIEWER',
-        STUDY_DATA: 'VIEWER',
-      }}
-    
-      return NO_ACCESS
-  
+  return NO_ACCESS
 }
 
 const AccessGrid: FunctionComponent<AccessGridProps> = ({
@@ -113,7 +111,6 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
 
   return (
     <Box>
-     
       <table cellPadding="0" cellSpacing="0" width="100%">
         <thead>
           <tr>
