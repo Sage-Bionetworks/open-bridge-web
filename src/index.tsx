@@ -7,7 +7,9 @@ import { SessionDataProvider } from './helpers/AuthContext'
 import './index.css'
 
 
-if (process.env.NODE_ENV === 'development') {
+
+
+if (process.env.NODE_ENV === 'development' || /*AGENDEL REDO!*/ process.env.NODE_ENV === 'production' ) {
   console.log('development')
   const { worker } = require('./mocks/browser')
   worker.start()
