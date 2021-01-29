@@ -110,8 +110,9 @@ async function createIndividualAccount(
     orgMembership,
     roles: [role],
   }
+  const endpoint = constants.endpoints.bridgeAccount.replace(':id', '')
   const result = await callEndpoint<any>(
-    constants.endpoints.bridgeAccount,
+    endpoint,
     'POST',
     postData,
     token,

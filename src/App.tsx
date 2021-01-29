@@ -57,6 +57,8 @@ export const detectSSOCode = async (
           name: loggedIn.data.firstName,
           orgMembership: loggedIn.data.orgMembership,
           dataGroups: loggedIn.data.dataGroups,
+          roles: loggedIn.data.roles,
+          id: loggedIn.data.id
         },
       })
 

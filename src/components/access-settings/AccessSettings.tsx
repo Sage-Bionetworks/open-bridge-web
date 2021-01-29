@@ -20,6 +20,7 @@ import { ReactComponent as Delete } from '../../assets/trash.svg'
 import { useAsync } from '../../helpers/AsyncHook'
 import { useSessionDataState } from '../../helpers/AuthContext'
 import AccessService from '../../services/access.service'
+import { OrgUser } from '../../types/types'
 import StudyTopNav from '../studies/StudyTopNav'
 import Loader from '../widgets/Loader'
 import { Access, NO_ACCESS } from './AccessGrid'
@@ -58,7 +59,7 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(10, 21, 3, 21),
     backgroundColor: theme.palette.background.default,
   },
-  closeButton: {
+  iconButton: {
     position: 'absolute',
     right: theme.spacing(3),
     top: theme.spacing(3),
@@ -66,13 +67,13 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.common.white,
   },
   buttons: {
-    margin: '8px',
+    margin: theme.spacing(1),
     display: 'flex',
     justifyContent: 'flex-end',
 
     '& > *': {
       '&:not(:last-child)': {
-        marginRight: '10px',
+        marginRight: theme.spacing(1),
       },
     },
   },
@@ -141,7 +142,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
     CreateNewOrgAccountTemplate(),
   ])
 
-  const { token, orgMembership } = useSessionDataState()
+  const { token, orgMembership, roles, id:loggedInId } = useSessionDataState()
 
   const handleError = useErrorHandler()
 
@@ -150,17 +151,23 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
     data: [],
   })
 
+  async function  getMembers(orgMembership: string, token: string) {
+    const members = await AccessService.getAccountsForOrg(
+      token!,
+      orgMembership!,
+    )
+    const meIndex = members.findIndex(m=> m.id=== loggedInId)
+    const result =  [members[meIndex], ...members.slice(0,meIndex), ...members.slice(meIndex+1, members.length )]
+  return result
+  }
+
   React.useEffect(() => {
     ///your async call
 
     return run(
       (async function (orgMembership, token) {
-        const members = await AccessService.getAccountsForOrg(
-          token!,
-          orgMembership!,
-        )
-
-        return members
+       const result = getMembers(orgMembership!, token!)
+      return result
       })(orgMembership, token),
     )
   }, [run])
@@ -181,6 +188,17 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
         return acct.id !== updatedNewAccount.id ? acct : updatedNewAccount
       }),
     )
+  }
+  const deleteExistingAccount=async (member: OrgUser) => {
+    await AccessService.deleteIndividualAccount(token!, member.id)
+    const result = await getMembers(orgMembership!, token!)
+    setData(result)
+    debugger
+  }
+
+  const updateExistingUserRole=async (member: OrgUser, access: Access) => {
+    const result = await AccessService.deleteIndividualAccount(token!, id)
+    debugger
   }
 
   const inviteUsers = async (newAccounts: NewOrgAccount[]) => {
@@ -216,7 +234,8 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
       <StudyTopNav studyId={id} currentSection={''}></StudyTopNav>
       <Container maxWidth="md" className={classes.root}>
         <Paper elevation={2} style={{ width: '100%' }}>
-          <AccountListing token={token!} members={members}>
+          <AccountListing token={token!} members={members} myRoles={roles} onDelete= {(account: OrgUser)=> deleteExistingAccount(account)}
+          onUpdate= {(account: OrgUser, access: Access)=> updateExistingUserRole(account, access)}>
             <Button
               onClick={() => setIsOpenInvite(true)}
               variant="contained"
@@ -241,7 +260,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
             </Typography>
             <IconButton
               aria-label="close"
-              className={classes.closeButton}
+              className={classes.iconButton}
               onClick={() => {
                 closeInviteDialog()
               }}
@@ -283,8 +302,8 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
                 >
                   {newOrgAccounts.length > 1 && (
                     <IconButton
-                      aria-label="close"
-                      className={classes.closeButton}
+                      aria-label="delete"
+                      className={classes.iconButton}
                       onClick={() => removeNewOrgAccount(newOrgAccount.id)}
                     >
                       <Delete></Delete>

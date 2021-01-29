@@ -29,6 +29,7 @@ export interface UserData {
   username?: string
   firstName: string
   lastName: string
+  id: string
  // email?: string
 }
 
@@ -36,12 +37,13 @@ export interface LoggedInUserData extends UserData {
   sessionToken: string
   orgMembership: string
   dataGroups?: string[]
+  roles: AdminRoles[]
 
-  id: string
+ 
 }
 
 export interface OrgUser extends LoggedInUserData {
-  roles: AdminRoles[]
+  
   status: string
   email?: string
   synapseUserId: string
@@ -78,8 +80,10 @@ export type SessionData = {
   token: string | undefined
   orgMembership: string | undefined
   dataGroups?: string[]
+  roles: AdminRoles[]
   name?: string
-  alert?: string
+  alert?: string,
+  id: string
 }
 
 /****************  */

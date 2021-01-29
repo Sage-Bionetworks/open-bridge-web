@@ -31,7 +31,6 @@ export default [
   {
     path: '/studies/:id/access-settings',
     name: '',
-    exact: false,
     Component: AccessSettings,
   },
 

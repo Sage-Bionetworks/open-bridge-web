@@ -43,7 +43,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
   const updateCoadmin = (isChecked: boolean) => {
     setCoadmin(isChecked)
     if (isChecked) {
-      setAccess(getAccessFromRoles(['org_admin']))
+      setAccess(getAccessFromRoles(['admin']))
     }
   }
 
