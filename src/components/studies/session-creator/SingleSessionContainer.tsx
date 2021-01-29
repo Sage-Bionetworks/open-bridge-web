@@ -157,7 +157,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
     return (
       <>
         <Box className={classes.inner}>
-          <Box marginRight="16px">
+          <Box marginRight={2}>
             <SessionIcon index={studySession.order}>
               <EditableTextbox
                 component="h4"
@@ -204,7 +204,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                   {...provided.droppableProps}
                 >
                   {studySession.assessments.length === 0 && (
-                    <Box marginTop="60px" padding="20px">
+                    <Box marginTop={7} padding={2}>
                       Add assessments to this session by clicking on the "+"
                       below.{' '}
                     </Box>

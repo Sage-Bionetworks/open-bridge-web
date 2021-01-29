@@ -31,8 +31,7 @@ const useStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(8),
   },
   toolbarLink: {
-    padding: '0 16px 0 16px',
-    paddingBottom: theme.spacing(2),
+    padding: theme.spacing(0, 2, 2, 2),
     flexGrow: 1,
 
     textDecoration: 'none',
@@ -41,7 +40,7 @@ const useStyles = makeStyles(theme => ({
   },
   selectedLink: {
     borderBottom: '2px solid black',
-    paddingBottom: '17px',
+    paddingBottom: theme.spacing(2),
     marginButtom: '-1px',
   },
   menuButton: {

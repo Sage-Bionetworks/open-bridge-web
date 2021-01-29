@@ -1,4 +1,4 @@
-import { Drawer, IconButton, makeStyles } from '@material-ui/core'
+import { Box, Drawer, IconButton, makeStyles } from '@material-ui/core'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import SomeIcon from '@material-ui/icons/SentimentVerySatisfied'
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     listStyle: 'none',
 
     '& li': {
-      padding: '10px 0',
+      padding: theme.spacing(10, 0),
       fontSize: 18,
     },
   },
@@ -98,20 +98,14 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
         }),
       }}
     >
-      <div
-        style={{
-          textAlign: 'right',
-          height: '48px',
-          backgroundColor: '#FAFAFA',
-        }}
-      >
+      <Box textAlign='right' height= {6} bgcolor='#FAFAFA'>
         <IconButton
           onClick={toggleDrawer}
           style={{ borderRadius: 0, width: '48px', height: '100%' }}
         >
           {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
-      </div>
+      </Box>
       <ul className={classes.list}>
         {sectionLinks.map((sectionLink, index) => (
           <SideBarListItem
@@ -121,7 +115,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
             onClick={() => onNavigate(sectionLink.path)}
           >
             <div style={{ display: 'flex' }}>
-              <SomeIcon style={{ marginRight: '16px' }} />
+              <SomeIcon style={{ marginRight: 2 }} />
               <span>{sectionLink.name}</span>
             </div>
           </SideBarListItem>
