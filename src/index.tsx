@@ -11,6 +11,8 @@ if (process.env.NODE_ENV === 'development') {
   console.log('development')
   const { worker } = require('./mocks/browser')
   worker.start()
+} else {
+  console.log(process.env.NODE_ENV )
 }
 
 
