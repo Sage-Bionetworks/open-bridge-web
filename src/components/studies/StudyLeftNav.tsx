@@ -7,6 +7,12 @@ import React, { FunctionComponent } from 'react'
 import { ThemeType } from '../../style/theme'
 import SideBarListItem from '../widgets/SideBarListItem'
 import { SECTIONS as sectionLinks, StudySection } from './sections'
+import CreateSessionIcon from '../../assets/create_session_icon.svg'
+import CustomizeAppIcon from '../../assets/customize_app_icon.svg'
+import LaunchStudyIcon from '../../assets/launch_study_icon.svg'
+import PassiveFeaturesIcon from '../../assets/passive_features_icon.svg'
+import PreviewStudyIcon from '../../assets/preview_study_icon.svg'
+import ScheduleSesssionsIcon from '../../assets/schedule_sessions_icon.svg'
 
 const drawerWidth = 212
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -79,6 +85,15 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
 }) => {
   const classes = useStyles()
 
+  const navIcons = [
+    CustomizeAppIcon,
+    CreateSessionIcon,
+    ScheduleSesssionsIcon,
+    PassiveFeaturesIcon,
+    PreviewStudyIcon,
+    LaunchStudyIcon,
+  ]
+
   const toggleDrawer = () => {
     onToggle()
   }
@@ -98,7 +113,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
         }),
       }}
     >
-      <Box textAlign='right' height="48px" bgcolor='#FAFAFA'>
+      <Box textAlign="right" height="48px" bgcolor="#FAFAFA">
         <IconButton
           onClick={toggleDrawer}
           style={{ borderRadius: 0, width: '48px', height: '100%' }}
@@ -115,7 +130,10 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
             onClick={() => onNavigate(sectionLink.path)}
           >
             <div style={{ display: 'flex' }}>
-              <SomeIcon style={{ marginRight: "16px" }} />
+              <img
+                src={navIcons[index]}
+                style={{ marginRight: '16px', width: '17px', height: '17px' }}
+              />
               <span>{sectionLink.name}</span>
             </div>
           </SideBarListItem>
