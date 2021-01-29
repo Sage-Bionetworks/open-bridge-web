@@ -44,7 +44,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
   title: {
     fontSize: 14,
-    color: theme.testColor,
+    fontFamily: 'Lato',
+    fontWeight: 'bold',
+    fontStyle: '12px',
   },
 }))
 
@@ -71,21 +73,37 @@ const CardBottom: FunctionComponent<{ study: Study }> = ({
       {study.status === 'DRAFT' ? (
         study.identifier
       ) : (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            width: '100%',
-            padding: '0 10px',
-            marginBottom: '5px',
-            alignItems: 'center',
-          }}
-        >
-          <img
-            src={participants_icon}
-            style={{ width: '25px', height: '25px', marginRight: '3px' }}
-          />
-          56
+        <div style={{ width: '100%', padding: '0 5px' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              width: '100%',
+              alignItems: 'center',
+              fontFamily: 'Lato',
+              fontSize: '12px',
+            }}
+          >
+            <img
+              src={participants_icon}
+              style={{ width: '25px', height: '25px', marginRight: '3px' }}
+            />
+            56
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%',
+              fontFamily: 'Lato',
+              fontWeight: 'lighter',
+            }}
+          >
+            <text>Launched: Nov. 1, 2019 @ 4:45 pm</text>
+            <text>Lynn B.</text>
+          </div>
         </div>
       )}
     </Box>
@@ -139,7 +157,7 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
           style={{
             fontFamily: 'Playfair Display',
             fontStyle: 'italic',
-            fontSize: '15',
+            fontSize: 'small',
           }}
         >
           {getCorrectCardName(study.status)}
@@ -200,7 +218,12 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
         <CardContent>
           <div>
             {!isRename && (
-              <Typography variant="h6" color="textSecondary" gutterBottom>
+              <Typography
+                variant="h6"
+                color="textSecondary"
+                style={{ fontFamily: 'Poppins', fontSize: '18px' }}
+                gutterBottom={study.status === 'DRAFT' ? true : false}
+              >
                 {study.name}
               </Typography>
             )}
@@ -217,11 +240,12 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
               />
             )}
           </div>
-
           {study.status === 'DRAFT' && <DraftIcon />}
-          <Typography className={classes.title} color="textSecondary">
-            {study.description}
-          </Typography>
+          {study.status !== 'DRAFT' && (
+            <Typography className={classes.title} color="textSecondary">
+              Study ID: {study.identifier}
+            </Typography>
+          )}
         </CardContent>
         <CardBottom study={study}></CardBottom>
       </Card>

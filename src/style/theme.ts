@@ -63,7 +63,7 @@ const theme: Theme = createMuiTheme({
     MuiButton: {
       containedPrimary: {
         backgroundColor: '#000',
-
+        textTransform: 'none',
         '&:hover': {
           backgroundColor: '#634848',
         },

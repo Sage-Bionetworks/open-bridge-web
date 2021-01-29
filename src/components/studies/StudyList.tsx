@@ -83,6 +83,7 @@ const useStyles = makeStyles(theme => ({
       transform: 'translateY(1px)',
       backgroundColor: '#3A3A3A',
     },
+    textTransform: 'none',
   },
 }))
 
