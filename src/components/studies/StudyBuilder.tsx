@@ -204,7 +204,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
   return (
     <>
       <StudyTopNav studyId={id} currentSection={section}></StudyTopNav>
-      <Box paddingTop="16px" display="flex" position="relative">
+      <Box paddingTop={2} display="flex" position="relative">
         <StudyLeftNav
           open={open}
           onToggle={() => setOpen(prev => !prev)}

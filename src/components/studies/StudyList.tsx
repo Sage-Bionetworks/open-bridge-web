@@ -305,7 +305,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         </Button>
       </Box>
       <Divider className={classes.divider}></Divider>
-      {studies.length === 0 && (
+      {studies?.length === 0 && (
         <div>
           You currently have no studies created. To begin, please click on
           Create New Study.

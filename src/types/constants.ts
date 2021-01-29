@@ -109,8 +109,11 @@ export default {
     selfInfo: '/v3/participants/self',
     enrollments: '/v5/studies/{studyId}/enrollments',
     participants: '/v3/participants/search',
-    accountCreate: '/v1/accounts',
-    getAccountsForOrg: '/v1/organizations/{orgId}/members',
+    
+    bridgeAccount: '/v1/accounts/:id',
+    getAccountsForOrg: '/v1/organizations/:orgId/members',
+    synapseGetAlias: '/repo/v1/principal/alias',
+    synapseGetUserProfile:'/repo/v1/user/:id/bundle',
 
     //new made up
     studies: '/v1/studies',

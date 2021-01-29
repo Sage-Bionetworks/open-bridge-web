@@ -31,9 +31,7 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
   const NavLink = (props: any) => {
     const { id, section } = props
 
-    const go = (loc: string) => {
-      window.location.replace(loc)
-    }
+
     if (!section) {
       return <></>
     }
@@ -41,15 +39,14 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
       <Button
         variant="contained"
         color="primary"
-        onClick={() => onNavigate(section.path/*`/studies/builder/${id}/${section.path}`*/)}
-        //onClick={()=> go(`/studies/builder/${id}/${section.path}`)}
+        onClick={() => onNavigate(section.path)}
       >
         {section.name}
       </Button>
     )
   }
   const result = (
-    <Box paddingTop="16px" textAlign="right">
+    <Box paddingTop={2} textAlign="right">
       <NavLink id={id} section={prev}></NavLink>&nbsp;&nbsp;
       <NavLink id={id} section={next}></NavLink>
     </Box>

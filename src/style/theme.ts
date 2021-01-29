@@ -1,7 +1,7 @@
 import { createMuiTheme, Theme } from '@material-ui/core'
 import { CSSProperties } from '@material-ui/core/styles/withStyles'
 
-type cssDict = {
+type cssGlobalClasses = {
   [key: string]: CSSProperties
 }
 
@@ -44,14 +44,20 @@ const cssVariables = {
 }
 
 //those are global css classes
-const globals: cssDict = {
-  '.assesmentContainer': {
+const globals: cssGlobalClasses = {
+ /* '.assesmentContainer': {
     justifyContent: 'flex-start',
     fontSize: '26px',
 
     display: 'flex',
     flexWrap: 'wrap',
     overflowWrap: 'normal',
+  },*/
+  listReset: {
+    margin: '0',
+    padding: '0',
+    position: 'relative',
+    listStyle: 'none',
   },
 }
 
@@ -68,6 +74,19 @@ const theme: Theme = createMuiTheme({
           backgroundColor: '#634848',
         },
       },
+    },
+    MuiSwitch: {
+      colorPrimary: {
+        '&.Mui-checked': {
+          color: '#fff',
+
+          '& + .MuiSwitch-track': {
+            backgroundColor: '#7FC7F0'
+            
+
+          }
+        }
+      }
     },
 
     MuiInputBase: {
@@ -116,6 +135,10 @@ const theme: Theme = createMuiTheme({
 
   palette: {
     divider: '#282828',
+    common: {
+      black: '#2E2E2E'
+
+    },
     background: {
       default: '#E5E5E5', //'#BCD5E4',
       paper: '#fff',
@@ -132,7 +155,9 @@ const theme: Theme = createMuiTheme({
       main: '#2196f3',
     },
     error: {
-      main: '#FCD2D2',
+      main: '#EE6070',
+
+      light: '#FCD2D2',
     },
   },
 })

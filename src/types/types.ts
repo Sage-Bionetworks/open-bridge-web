@@ -1,13 +1,6 @@
 /*  General Types ********************************/
 
-import {
-  Schedule,
-
-
-  StartEventId, StudyDuration
-} from './scheduling';
-
-export type ValueOf<T> = T[keyof T];
+import { Schedule, StartEventId, StudyDuration } from './scheduling'
 
 export interface StringDictionary<T> {
   [key: string]: T
@@ -23,52 +16,37 @@ export type RequestStatus = 'IDLE' | 'PENDING' | 'RESOLVED' | 'REJECTED'
 
 /*  User Types ********************************/
 
+
+export type AdminRoles =
+  'developer'|
+  'researcher'|
+  'study_coordinator'|
+  'admin'|
+  'org_admin'|
+  'worker'
+
 export interface UserData {
   username?: string
   firstName: string
   lastName: string
-  email?: string
-  //phone?: Phone
-  clientData: object
-  //attributes?: UserAttributes
+ // email?: string
 }
 
 export interface LoggedInUserData extends UserData {
   sessionToken: string
   orgMembership: string
-  dataGroups?: string[] 
-  //consented: boolean
-  sharingScope: string
+  dataGroups?: string[]
 
   id: string
 }
 
-/*
-export type EmailSigninParams = {
-  email: string
-  token: string
-  password?: string
+export interface OrgUser extends LoggedInUserData {
+  roles: AdminRoles[]
+  status: string
+  email?: string
+  synapseUserId: string
 }
 
-
-
-
-
-
-export type LoginType = 'PHONE' | 'EMAIL'
-export type Phone = {
-  number: string
-  regionCode: string
-}
-
-export type UserAttributes = {
-  address: string
-  city: string
-  state: string
-  zip_code: string
-  dob: string
-  gender: string
-}*/
 
 /*
 export interface RegistrationData {
@@ -98,7 +76,7 @@ export interface SignInDataEmail extends SignInData {
 
 export type SessionData = {
   token: string | undefined
-  orgMembership: string| undefined
+  orgMembership: string | undefined
   dataGroups?: string[]
   name?: string
   alert?: string
@@ -164,9 +142,6 @@ export type Assessment = {
   resources?: any[]
 }
 
-
-
-
 export type StudyStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'
 export type Study = {
   identifier: string
@@ -178,12 +153,11 @@ export type Study = {
   // sessions: StudySession[]
 }
 
-
 export type StudyArm = {
   id: string
   name: string
   studyId: string
- startEventId?: StartEventId
+  startEventId?: StartEventId
   schedule?: Schedule
   active?: boolean
 }

@@ -1,8 +1,3 @@
-import React, { FunctionComponent, useState } from 'react'
-
-import { makeStyles } from '@material-ui/core/styles'
-import Toolbar from '@material-ui/core/Toolbar'
-import Button from '@material-ui/core/Button'
 import {
   Dialog,
   DialogContent,
@@ -10,15 +5,20 @@ import {
   Drawer,
   Hidden,
   IconButton,
-  Paper,
+  Paper
 } from '@material-ui/core'
+import Button from '@material-ui/core/Button'
+import { makeStyles } from '@material-ui/core/styles'
+import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
-import AccountLogin from '../account/AccountLogin'
-
-import Logout from '../account/Logout'
+import React, { FunctionComponent, useState } from 'react'
+import { NavLink } from 'react-router-dom'
 import Logo from '../../assets/logo_mtb.svg'
-import { NavLink, NavLinkProps } from 'react-router-dom'
 import { latoFont } from '../../style/theme'
+import AccountLogin from '../account/AccountLogin'
+import Logout from '../account/Logout'
+
+
 
 const drawerWidth = '285px'
 
@@ -33,10 +33,7 @@ const useStyles = makeStyles(theme => ({
   },
 
   toolbar: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-    paddingRight: theme.spacing(2),
-    paddingLeft: theme.spacing(2),
+    padding: theme.spacing(4, 2),
     justifyContent: 'space-between',
     overflowX: 'auto',
     minHeight: '40px',
@@ -69,12 +66,8 @@ const useStyles = makeStyles(theme => ({
   },
   login: {
     borderLeft: '1px solid #EAEAEA',
-    paddingLeft: theme.spacing(2),
-    marginLeft: theme.spacing(2),
-    marginTop: theme.spacing(-4),
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-    marginBottom: theme.spacing(-4),
+    padding: theme.spacing(4,2 ),
+    margin: theme.spacing(-4, 0, -4, 2)
   },
   drawer: {
     width: drawerWidth,
@@ -91,27 +84,14 @@ const useStyles = makeStyles(theme => ({
     fontSize: '15px',
     lineHeight: '18px',
     color: '#393434',
-    padding: '10px 0px 10px 40px',
+    padding: theme.spacing(1.5, 0, 1.5, 5)
   },
   drawerMenuSeparator: {
     height: '2px',
     margin: '20px 0px',
     backgroundColor: '#2A2A2A',
   },
-  /*drawerHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    justifyContent: 'flex-end',
-    height: '72px',
-    marginBottom: '10px',
-  },
-  drawerCloseButton: {
-    width: '48px',
-  },
-  drawerCloseIcon: {
-    color: '#2A2A2A',
-  },*/
+
   drawerPaper: {
     width: drawerWidth,
   },
