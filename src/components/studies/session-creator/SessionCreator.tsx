@@ -52,10 +52,7 @@ const useStyles = makeStyles(theme => ({
   actionButtons: {
     borderTop: '1px solid black',
     backgroundColor: '#FFF',
-    paddingTop: theme.spacing(2),
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-    paddingBottom: theme.spacing(2),
+    padding: theme.spacing(2, 1),
     display: 'flex',
     justifyContent: 'space-between',
   },
