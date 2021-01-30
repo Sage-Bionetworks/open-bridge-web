@@ -110,7 +110,11 @@ const CardBottom: FunctionComponent<{
             fontSize: '10px',
           }}
         >
-          <text>[Launched: Nov. 1, 2019 @ 4:45 pm]</text>
+          <text>
+            {study.status === 'DRAFT'
+              ? '[Dec. 2nd, 2018 @ 4:45pm]'
+              : '[Launched: Nov. 1, 2019 @ 4:45 pm]'}
+          </text>
           <text>[Lynn B.]</text>
         </div>
       </div>
@@ -159,13 +163,17 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
         <div />
       )}
       {study.status === 'ACTIVE' ? (
-        <LiveIcon />
+        <div style={{ marginTop: '5px', marginRight: '5px' }}>
+          <LiveIcon />
+        </div>
       ) : (
         <div
           style={{
             fontFamily: 'Playfair Display',
             fontStyle: 'italic',
             fontSize: 'small',
+            marginTop: '5px',
+            marginRight: '10px',
           }}
         >
           {getCorrectCardName(study.status)}
