@@ -132,7 +132,13 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
             <div style={{ display: 'flex' }}>
               <img
                 src={navIcons[index]}
-                style={{ marginRight: '16px', width: '17px', height: '17px' }}
+                style={{
+                  marginRight: '16px',
+                  width: '18px',
+                  height: '18px',
+                  alignSelf: 'center',
+                  justifyContent: 'center',
+                }}
               />
               <span>{sectionLink.name}</span>
             </div>

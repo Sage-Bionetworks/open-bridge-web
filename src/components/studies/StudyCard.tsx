@@ -55,11 +55,9 @@ const cancelPropagation = (e: React.MouseEvent) => {
   e.preventDefault()
 }
 
-const CardBottom: FunctionComponent<{ study: Study }> = ({
-  study,
-}: {
+const CardBottom: FunctionComponent<{
   study: Study
-}) => {
+}> = ({ study }: { study: Study }) => {
   return (
     <Box
       display="flex"
@@ -70,10 +68,18 @@ const CardBottom: FunctionComponent<{ study: Study }> = ({
       left="8px"
       right="8px"
     >
-      {study.status === 'DRAFT' ? (
-        study.identifier
-      ) : (
-        <div style={{ width: '100%', padding: '0 5px' }}>
+      <div style={{ width: '100%', padding: '0 5px' }}>
+        {study.status === 'DRAFT' ? (
+          <text
+            style={{
+              fontFamily: 'Lato',
+              fontSize: '10px',
+              fontWeight: 'lighter',
+            }}
+          >
+            Last edited:
+          </text>
+        ) : (
           <div
             style={{
               display: 'flex',
@@ -88,24 +94,26 @@ const CardBottom: FunctionComponent<{ study: Study }> = ({
               src={participants_icon}
               style={{ width: '25px', height: '25px', marginRight: '3px' }}
             />
-            56
+            [56]
           </div>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '100%',
-              fontFamily: 'Lato',
-              fontWeight: 'lighter',
-            }}
-          >
-            <text>Launched: Nov. 1, 2019 @ 4:45 pm</text>
-            <text>Lynn B.</text>
-          </div>
+        )}
+
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            fontFamily: 'Lato',
+            fontWeight: 'lighter',
+            fontSize: '10px',
+          }}
+        >
+          <text>[Launched: Nov. 1, 2019 @ 4:45 pm]</text>
+          <text>[Lynn B.]</text>
         </div>
-      )}
+      </div>
     </Box>
   )
 }
