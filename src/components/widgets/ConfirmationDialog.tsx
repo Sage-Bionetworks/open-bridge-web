@@ -41,7 +41,33 @@ const useStyles = makeStyles(theme => ({
     lineHeight: '19px',
   },
   confirmButton: {
-    backgroundColor: theme.palette.error.main,
+    width: '74px',
+    height: '49px',
+    background: '#FCD2D2',
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+    borderRadius: '0px',
+    '&:hover': {
+      transform: 'translateY(1px)',
+      backgroundColor: '#EDC6C6',
+    },
+  },
+  dialogPaper: {
+    width: '302px',
+    height: '275px',
+  },
+  createStudyButton: {
+    width: '140px',
+    height: '49px',
+    outline: 'none',
+    borderRadius: '0px',
+    borderColor: 'black',
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    background: '#FCFCFC',
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+    '&:hover': {
+      transform: 'translateY(1px)',
+    },
   },
 }))
 
@@ -64,7 +90,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   onConfirm,
   children,
   cancelText = 'Cancel',
-  actionText = 'OK',
+  actionText = 'Delete',
 }) => {
   const classes = useStyles()
   const navigateBody = (
@@ -82,6 +108,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
       className={classes.dialogTitle}
+      classes={{ paper: classes.dialogPaper }}
     >
       <DialogTitle
         id="alert-dialog-title"
@@ -103,9 +130,21 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
           {body}
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={() => onCancel()} color="default" variant="contained">
-          {cancelText}
+      <DialogActions
+        style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-evenly',
+          marginBottom: '10px',
+        }}
+      >
+        <Button
+          onClick={() => onCancel()}
+          color="default"
+          variant="contained"
+          className={classes.createStudyButton}
+        >
+          + Create a Study
         </Button>
         <Button
           onClick={() => onConfirm()}
