@@ -14,15 +14,11 @@ import CloseIcon from '@material-ui/icons/Close'
 import MailOutlineIcon from '@material-ui/icons/MailOutline'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
-import { useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps, useParams } from 'react-router-dom'
 import { ReactComponent as Delete } from '../../assets/trash.svg'
-import { useAsync } from '../../helpers/AsyncHook'
 import { useSessionDataState } from '../../helpers/AuthContext'
 import AccessService from '../../services/access.service'
-import { OrgUser } from '../../types/types'
 import StudyTopNav from '../studies/StudyTopNav'
-import Loader from '../widgets/Loader'
 import { Access, NO_ACCESS } from './AccessGrid'
 import AccountListing from './AccountListing'
 import MemberInvite, { NewOrgAccount } from './MemberInvite'
@@ -142,16 +138,18 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
     CreateNewOrgAccountTemplate(),
   ])
 
-  const { token, orgMembership, roles, id:loggedInId } = useSessionDataState()
+  const sessionData = useSessionDataState()
+  const { token, orgMembership, roles, id:loggedInId } = sessionData 
+  const [updateToggle, setUpdateToggle] = React.useState(false)
 
-  const handleError = useErrorHandler()
+  //const handleError = useErrorHandler()
 
-  const { data: members, status, error, run, setData } = useAsync<any>({
+  /*const { data: members, status, error, run, setData } = useAsync<any>({
     status: 'PENDING',
     data: [],
-  })
+  })*/
 
-  async function  getMembers(orgMembership: string, token: string) {
+ /* async function  getMembers(orgMembership: string, token: string) {
     const members = await AccessService.getAccountsForOrg(
       token!,
       orgMembership!,
@@ -159,9 +157,9 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
     const meIndex = members.findIndex(m=> m.id=== loggedInId)
     const result =  [members[meIndex], ...members.slice(0,meIndex), ...members.slice(meIndex+1, members.length )]
   return result
-  }
+  }*/
 
-  React.useEffect(() => {
+ /* React.useEffect(() => {
     ///your async call
 
     return run(
@@ -170,7 +168,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
       return result
       })(orgMembership, token),
     )
-  }, [run])
+  }, [run])*/
 
   const closeInviteDialog = () => {
     setNewOrgAccounts(_ => [CreateNewOrgAccountTemplate()])
@@ -188,17 +186,6 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
         return acct.id !== updatedNewAccount.id ? acct : updatedNewAccount
       }),
     )
-  }
-  const deleteExistingAccount=async (member: OrgUser) => {
-    await AccessService.deleteIndividualAccount(token!, member.id)
-    const result = await getMembers(orgMembership!, token!)
-    setData(result)
-    debugger
-  }
-
-  const updateExistingUserRole=async (member: OrgUser, access: Access) => {
-    const result = await AccessService.deleteIndividualAccount(token!, id)
-    debugger
   }
 
   const inviteUsers = async (newAccounts: NewOrgAccount[]) => {
@@ -220,22 +207,22 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
         updateNewOrgAccount({ ...account, error: errorString })
       }
     }
+    setUpdateToggle(prev=>!prev)
   }
 
-  if (status === 'PENDING') {
+ /* if (status === 'PENDING') {
     return <Loader reqStatusLoading={true}></Loader>
   }
   if (status === 'REJECTED') {
     handleError(error!)
-  }
+  }*/
 
   return (
     <>
       <StudyTopNav studyId={id} currentSection={''}></StudyTopNav>
       <Container maxWidth="md" className={classes.root}>
         <Paper elevation={2} style={{ width: '100%' }}>
-          <AccountListing token={token!} members={members} myRoles={roles} onDelete= {(account: OrgUser)=> deleteExistingAccount(account)}
-          onUpdate= {(account: OrgUser, access: Access)=> updateExistingUserRole(account, access)}>
+          <AccountListing sessionData={sessionData}  updateToggle={updateToggle}>
             <Button
               onClick={() => setIsOpenInvite(true)}
               variant="contained"
@@ -246,8 +233,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
           </AccountListing>
         </Paper>
       </Container>
-      {status === 'RESOLVED' && (
-        <Dialog
+     <Dialog
           open={isOpenInvite}
           maxWidth="md"
           fullWidth
@@ -375,7 +361,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
             </Box>
           </DialogContent>
         </Dialog>
-      )}
+   
     </>
   )
 }

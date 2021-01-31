@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 }))
 
 export interface SideBarListItemProps {
-  itemKey: string
+
   isOpen: boolean
   isActive: boolean
   onClick: Function
@@ -72,7 +72,7 @@ export interface SideBarListItemProps {
 }
 
 const SideBarListItem: React.FunctionComponent<SideBarListItemProps> = ({
-  itemKey,
+
   isOpen,
   isActive,
   onClick,
@@ -82,7 +82,7 @@ const SideBarListItem: React.FunctionComponent<SideBarListItemProps> = ({
   const classes = useStyles()
   return (
     <li
-      key={itemKey}
+  
       className={clsx(classes.listItem, {
         [classes.listItemDark]: variant === 'dark', 
         [classes.listItemActive]: isActive,
@@ -90,7 +90,7 @@ const SideBarListItem: React.FunctionComponent<SideBarListItemProps> = ({
       })}
     >
       <Button
-        key={`${itemKey}_button`}
+   
         onClick={() => onClick()}
         className={classes.link}
         classes={{ label: classes.linkLabel }}
