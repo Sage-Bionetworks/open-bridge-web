@@ -142,33 +142,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
   const { token, orgMembership, roles, id:loggedInId } = sessionData 
   const [updateToggle, setUpdateToggle] = React.useState(false)
 
-  //const handleError = useErrorHandler()
-
-  /*const { data: members, status, error, run, setData } = useAsync<any>({
-    status: 'PENDING',
-    data: [],
-  })*/
-
- /* async function  getMembers(orgMembership: string, token: string) {
-    const members = await AccessService.getAccountsForOrg(
-      token!,
-      orgMembership!,
-    )
-    const meIndex = members.findIndex(m=> m.id=== loggedInId)
-    const result =  [members[meIndex], ...members.slice(0,meIndex), ...members.slice(meIndex+1, members.length )]
-  return result
-  }*/
-
- /* React.useEffect(() => {
-    ///your async call
-
-    return run(
-      (async function (orgMembership, token) {
-       const result = getMembers(orgMembership!, token!)
-      return result
-      })(orgMembership, token),
-    )
-  }, [run])*/
+ 
 
   const closeInviteDialog = () => {
     setNewOrgAccounts(_ => [CreateNewOrgAccountTemplate()])
@@ -209,13 +183,6 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
     }
     setUpdateToggle(prev=>!prev)
   }
-
- /* if (status === 'PENDING') {
-    return <Loader reqStatusLoading={true}></Loader>
-  }
-  if (status === 'REJECTED') {
-    handleError(error!)
-  }*/
 
   return (
     <>

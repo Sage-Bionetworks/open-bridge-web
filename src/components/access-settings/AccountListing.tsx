@@ -92,7 +92,6 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
 }: AccountListingProps) => {
   const classes = useStyles()
   const { token, roles, id, orgMembership } = sessionData
-  console.log('MEML:' + roles.join(','))
 
   const handleError = useErrorHandler()
 
@@ -122,7 +121,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   }
 
   React.useEffect(() => {
-    ///your async call
+
 
     return run(
       (async function (orgMembership, token) {
@@ -138,7 +137,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     await AccessService.deleteIndividualAccount(token!, member.id)
     const result = await getMembers(orgMembership!, token!)
     setData(result)
-    debugger
+
   }
 
   const updateRolesForExistingAccount = async ({
@@ -156,7 +155,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     )
     const result = await getMembers(orgMembership!, token!)
     setData(result)
-    debugger
+
   }
 
   const updateAccess = async (memberId: string) => {
