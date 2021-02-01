@@ -96,7 +96,7 @@ export const useNavigate = (section: StudySection, nextSection: StudySection, sa
 }
 
 
-export const useStudyBuilderInfo  = (id: string | undefined) => {
+export const useStudyBuilderInfo  = (id: string | undefined, section: StudySection) => {
   const { token} = useSessionDataState()
   
   const { data, status, error, run, setData } = useAsync<{
@@ -120,7 +120,7 @@ export const useStudyBuilderInfo  = (id: string | undefined) => {
       return
     }
     return run(getData(id))
-  }, [id, run, token])
+  }, [id, run, token, section])
 
   return {
     setData,

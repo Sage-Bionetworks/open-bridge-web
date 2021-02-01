@@ -66,7 +66,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
   const [section, setSection] = React.useState(_section)
   const [nextSection, setNextSection] = React.useState<StudySection>(_section)
   //const { data: study, status, error } = useStudy(id)
-  const { data: builderInfo, status, error, setData } = useStudyBuilderInfo(id)
+  const { data: builderInfo, status, error, setData } = useStudyBuilderInfo(id, section)
 
   const [open, setOpen] = React.useState(true)
 
