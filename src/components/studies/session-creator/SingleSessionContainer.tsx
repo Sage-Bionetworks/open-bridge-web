@@ -139,7 +139,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
   }
 
   const removeAssessment = (assessmentId: string) => {
-    console.log('removing')
+
     onUpdateAssessmentList(
       studySession.id,
       studySession.assessments.filter(a => a.guid !== assessmentId),

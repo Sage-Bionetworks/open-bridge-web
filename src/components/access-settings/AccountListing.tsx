@@ -2,13 +2,18 @@ import { Box, Button, makeStyles, Theme } from '@material-ui/core'
 import React, { FunctionComponent, ReactNode } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { ReactComponent as Delete } from '../../assets/trash.svg'
+import { useAsync } from '../../helpers/AsyncHook'
 import AccessService from '../../services/access.service'
 import { globals } from '../../style/theme'
-import { AdminRoles, OrgUser } from '../../types/types'
+import { OrgUser, SessionData } from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import Loader from '../widgets/Loader'
 import SideBarListItem from '../widgets/SideBarListItem'
-import AccessGrid, { Access, getAccessFromRoles } from './AccessGrid'
+import AccessGrid, {
+  Access,
+  getAccessFromRoles,
+  getRolesFromAccess
+} from './AccessGrid'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -17,28 +22,25 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   listing: {
     width: theme.spacing(39),
-    marginRight: theme.spacing(15),
+    // marginRight: theme.spacing(15),
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
     padding: theme.spacing(4, 0, 3, 3.5),
   },
   list: { ...globals.listReset, marginLeft: -theme.spacing(3.5) },
   buttons: {
-    position: 'absolute',
-    width: '100%',
     display: 'flex',
+    marginTop: theme.spacing(6),
     justifyContent: 'space-between',
     bottom: theme.spacing(4),
   },
 }))
 
 type AccountListingProps = {
-  token: string
   children?: ReactNode
-  members: OrgUser[]
-  myRoles: AdminRoles[]
-  onDelete: Function,
-  onUpdate: Function
+
+  updateToggle: boolean
+  sessionData: SessionData
 }
 
 function getNameDisplay({
@@ -84,28 +86,81 @@ const NameDisplay: FunctionComponent<any> = ({
 }
 
 const AccountListing: FunctionComponent<AccountListingProps> = ({
-  token,
-  members,
+  updateToggle,
+  sessionData,
   children,
-  myRoles,
-  onDelete,
-  onUpdate
 }: AccountListingProps) => {
   const classes = useStyles()
-  console.log('MEML:' + myRoles.join(','))
+  const { token, roles, id, orgMembership } = sessionData
 
   const handleError = useErrorHandler()
 
-  const [currentMemberId, setCurrentMemberId] = React.useState(members[0].id)
   const [currentMemberAccess, setCurrentMemberAccess] = React.useState<
     { access: Access; member: OrgUser } | undefined
   >()
   const [isAccessLoading, setIsAccessLoading] = React.useState(true)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
 
+  const { data: members, status, error, run, setData } = useAsync<any>({
+    status: 'PENDING',
+    data: [],
+  })
+
+  async function getMembers(orgMembership: string, token: string) {
+    const members = await AccessService.getAccountsForOrg(
+      token!,
+      orgMembership!,
+    )
+    const meIndex = members.findIndex(m => m.id === id)
+    const result = [
+      members[meIndex],
+      ...members.slice(0, meIndex),
+      ...members.slice(meIndex + 1, members.length),
+    ]
+    return result
+  }
+
+  React.useEffect(() => {
+
+
+    return run(
+      (async function (orgMembership, token) {
+        console.log(token, orgMembership)
+        const result = getMembers(orgMembership!, token!)
+
+        return result
+      })(orgMembership, token),
+    )
+  }, [run, orgMembership!, token!, updateToggle])
+
+  const deleteExistingAccount = async (member: OrgUser) => {
+    await AccessService.deleteIndividualAccount(token!, member.id)
+    const result = await getMembers(orgMembership!, token!)
+    setData(result)
+
+  }
+
+  const updateRolesForExistingAccount = async ({
+    member,
+    access,
+  }: {
+    member: OrgUser
+    access: Access
+  }) => {
+    const roles = getRolesFromAccess(access)
+    const user = await AccessService.updateIndividualAccountRoles(
+      token!,
+      member.id,
+      roles,
+    )
+    const result = await getMembers(orgMembership!, token!)
+    setData(result)
+
+  }
+
   const updateAccess = async (memberId: string) => {
     setIsAccessLoading(true)
-    const member = await AccessService.getIndividualAccount(token, memberId)
+    const member = await AccessService.getIndividualAccount(token!, memberId)
     console.log(member.roles.join(','))
     const access = getAccessFromRoles(member.roles)
 
@@ -113,18 +168,24 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     setIsAccessLoading(false)
   }
 
-
-
   React.useEffect(() => {
     ;(async function (id) {
+      if (!id) {
+        return
+      }
       updateAccess(id)
-    })(currentMemberId)
-  }, [currentMemberId])
+    })(members ? members[0]?.id : undefined)
+  }, [members])
+
+  if (status === 'REJECTED') {
+    handleError(error!)
+  }
 
   return (
     <Box className={classes.root}>
       <Box className={classes.listing}>
         <h3>Team Members</h3>
+        {status === 'PENDING' && <Loader reqStatusLoading={true}></Loader>}{' '}
         <ul
           className={classes.list}
           style={{
@@ -133,25 +194,33 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
             marginBottom: '16px',
           }}
         >
-          {members.map((member: any, index: number) => (
-            <SideBarListItem
-              itemKey={member.id}
-              variant={'dark'}
-              isOpen={true}
-              isActive={member.id === currentMemberId}
-              onClick={() => setCurrentMemberId(member.id)}
-            >
-              <div
-                style={{ paddingLeft: '8px', textAlign: 'left', width: '100%' }}
+          {members &&
+            members.map((member: any, index: number) => (
+              <SideBarListItem
+                key={member.id}
+                variant={'dark'}
+                isOpen={true}
+                isActive={
+                  member.id ===
+                  /*currentMemberId*/ currentMemberAccess?.member.id
+                }
+                onClick={() => updateAccess(member.id)}
               >
-                <NameDisplay
-                  member={member}
-                  roles={myRoles}
-                  index={index}
-                ></NameDisplay>
-              </div>
-            </SideBarListItem>
-          ))}
+                <div
+                  style={{
+                    paddingLeft: '8px',
+                    textAlign: 'left',
+                    width: '100%',
+                  }}
+                >
+                  <NameDisplay
+                    member={member}
+                    roles={roles}
+                    index={index}
+                  ></NameDisplay>
+                </div>
+              </SideBarListItem>
+            ))}
         </ul>
         <Box textAlign="center" pr={3}>
           {children}
@@ -159,14 +228,15 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
       </Box>
       <Loader
         reqStatusLoading={!currentMemberAccess?.member || isAccessLoading}
+        style={{ width: 'auto', margin: '0 auto' }}
       >
         {currentMemberAccess && (
-          <div style={{ position: 'relative' }}>
+          <Box pl={15} position="relative">
             <h3 style={{ marginBottom: '80px', marginTop: '100px' }}>
               {' '}
               <NameDisplay
                 member={currentMemberAccess!.member}
-                roles={myRoles}
+                roles={roles}
                 index={-1}
               ></NameDisplay>
             </h3>
@@ -181,7 +251,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
               isEdit={true}
             ></AccessGrid>
 
-            {myRoles.includes('admin') && (
+            {roles.includes('admin') && (
               <Box className={classes.buttons}>
                 <Button
                   aria-label="delete"
@@ -196,7 +266,9 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                   aria-label="save changes"
                   color="primary"
                   variant="contained"
-                  onClick={() => {}}
+                  onClick={() =>
+                    updateRolesForExistingAccount(currentMemberAccess!)
+                  }
                 >
                   Save changes
                 </Button>
@@ -209,19 +281,21 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
               type={'DELETE'}
               onCancel={() => setIsConfirmDeleteOpen(false)}
               onConfirm={() => {
-                const member = {...currentMemberAccess!.member}
-                setCurrentMemberId(members[0].id)
-                onDelete(member)
-              
+                const member = { ...currentMemberAccess!.member }
+                // setCurrentMemberId(members[0].id)
+                deleteExistingAccount(member)
+
                 setIsConfirmDeleteOpen(false)
               }}
             >
-              <div><strong>
-                Are you sure you would like to permanently delete{' '}
-                {getNameDisplay(currentMemberAccess!.member)}</strong>
+              <div>
+                <strong>
+                  Are you sure you would like to permanently delete{' '}
+                  {getNameDisplay(currentMemberAccess!.member)}
+                </strong>
               </div>
             </ConfirmationDialog>
-          </div>
+          </Box>
         )}
       </Loader>
     </Box>

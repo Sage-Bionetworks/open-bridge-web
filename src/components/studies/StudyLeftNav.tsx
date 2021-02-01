@@ -109,7 +109,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
       <ul className={classes.list}>
         {sectionLinks.map((sectionLink, index) => (
           <SideBarListItem
-            itemKey={sectionLink.path}
+            key={sectionLink.path}
             isOpen={open}
             isActive={sectionLink.path === currentSection}
             onClick={() => onNavigate(sectionLink.path)}

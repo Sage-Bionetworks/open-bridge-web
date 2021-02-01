@@ -129,7 +129,6 @@ async function saveStudySessions(
     sessions,
     token,
   )
-
   var promise = new Promise(function (resolve, reject) {
     console.log('waiting')
     window.setTimeout(function () {

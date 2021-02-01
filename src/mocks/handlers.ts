@@ -41,7 +41,6 @@ export const handlers = [
   rest.get(`*${constants.endpoints.studies}`, async (req, res, ctx) => {
     // Check if the user is authenticated in this session
     //const isAuthenticated = sessionStorage.getItem('is-authenticated')
-    console.log('find')
 
     const studies = await getStudies()
     if (studies === null) {
@@ -100,6 +99,8 @@ export const handlers = [
       }),
     )
   }),
+
+
 
   //update study
   rest.post(`*${constants.endpoints.study}`, async (req, res, ctx) => {
@@ -198,6 +199,7 @@ export const handlers = [
       const others = allSessions?.filter(s => s.studyId !== id) || []
 
       const allSessionsUpdated = [...others, ...sessions]
+
       await setItem(KEYS.STUDY_SESSIONS, allSessionsUpdated)
 
       return res(
@@ -287,7 +289,7 @@ export const handlers = [
   }),*/
 
   //delete account
-  rest.delete(
+ /* rest.delete(
     `*${constants.endpoints.bridgeAccount}`,
     async (req, res, ctx) => {
       //@ts-ignore
@@ -301,5 +303,5 @@ export const handlers = [
         }),
       )
     },
-  ),
+  ),*/
 ]
