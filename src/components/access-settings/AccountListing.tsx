@@ -9,7 +9,11 @@ import { OrgUser, SessionData } from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import Loader from '../widgets/Loader'
 import SideBarListItem from '../widgets/SideBarListItem'
-import AccessGrid, { Access, getAccessFromRoles } from './AccessGrid'
+import AccessGrid, {
+  Access,
+  getAccessFromRoles,
+  getRolesFromAccess
+} from './AccessGrid'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -18,15 +22,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   listing: {
     width: theme.spacing(39),
-   // marginRight: theme.spacing(15),
+    // marginRight: theme.spacing(15),
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
     padding: theme.spacing(4, 0, 3, 3.5),
   },
   list: { ...globals.listReset, marginLeft: -theme.spacing(3.5) },
   buttons: {
-  
-
     display: 'flex',
     marginTop: theme.spacing(6),
     justifyContent: 'space-between',
@@ -35,16 +37,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 type AccountListingProps = {
-  // token: string
   children?: ReactNode
-  // myId: string,
-  //  members: OrgUser[]
-  //myRoles: AdminRoles[]
+
   updateToggle: boolean
   sessionData: SessionData
-
-  // onDelete: Function,
-  // onUpdate: Function
 }
 
 function getNameDisplay({
@@ -90,23 +86,16 @@ const NameDisplay: FunctionComponent<any> = ({
 }
 
 const AccountListing: FunctionComponent<AccountListingProps> = ({
-  //token,
-  // myId,
   updateToggle,
   sessionData,
-  // members,
   children,
-}: //myRoles,
-
-AccountListingProps) => {
+}: AccountListingProps) => {
   const classes = useStyles()
   const { token, roles, id, orgMembership } = sessionData
   console.log('MEML:' + roles.join(','))
 
   const handleError = useErrorHandler()
-  //const { orgMembership} = useSessionDataState()
 
-  // const [currentMemberId, setCurrentMemberId] = React.useState(members[0].id)
   const [currentMemberAccess, setCurrentMemberAccess] = React.useState<
     { access: Access; member: OrgUser } | undefined
   >()
@@ -152,8 +141,21 @@ AccountListingProps) => {
     debugger
   }
 
-  const updateExistingUserRole = async (member: OrgUser, access: Access) => {
-    // const result = await AccessService.deleteIndividualAccount(token!, id)
+  const updateRolesForExistingAccount = async ({
+    member,
+    access,
+  }: {
+    member: OrgUser
+    access: Access
+  }) => {
+    const roles = getRolesFromAccess(access)
+    const user = await AccessService.updateIndividualAccountRoles(
+      token!,
+      member.id,
+      roles,
+    )
+    const result = await getMembers(orgMembership!, token!)
+    setData(result)
     debugger
   }
 
@@ -226,11 +228,11 @@ AccountListingProps) => {
         </Box>
       </Box>
       <Loader
-        reqStatusLoading={!currentMemberAccess?.member || isAccessLoading }
-        style={{width: 'auto', margin: '0 auto'}}
+        reqStatusLoading={!currentMemberAccess?.member || isAccessLoading}
+        style={{ width: 'auto', margin: '0 auto' }}
       >
         {currentMemberAccess && (
-          <Box pl={15} position='relative'>
+          <Box pl={15} position="relative">
             <h3 style={{ marginBottom: '80px', marginTop: '100px' }}>
               {' '}
               <NameDisplay
@@ -265,7 +267,9 @@ AccountListingProps) => {
                   aria-label="save changes"
                   color="primary"
                   variant="contained"
-                  onClick={() => {}}
+                  onClick={() =>
+                    updateRolesForExistingAccount(currentMemberAccess!)
+                  }
                 >
                   Save changes
                 </Button>

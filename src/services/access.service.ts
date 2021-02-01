@@ -8,6 +8,7 @@ const AccessService = {
   getAliasFromSynapseByEmail,
   getAccountsForOrg,
   getIndividualAccount,
+  updateIndividualAccountRoles,
 }
 
 async function getAliasFromSynapseByEmail(
@@ -52,8 +53,6 @@ async function getAliasFromSynapseByEmail(
   }
 }
 
-
-
 async function getAccountsForOrg(
   token: string,
   orgId: string,
@@ -72,12 +71,11 @@ async function getAccountsForOrg(
   return result.data.items
 }
 
-
 async function getIndividualAccount(
   token: string,
   userId: string,
 ): Promise<OrgUser> {
-  const endpoint = constants.endpoints.bridgeAccount.replace(':id',userId)
+  const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
   const result = await callEndpoint<OrgUser>(endpoint, 'GET', {}, token)
   return result.data
 }
@@ -86,7 +84,7 @@ async function deleteIndividualAccount(
   token: string,
   userId: string,
 ): Promise<OrgUser> {
-  const endpoint = constants.endpoints.bridgeAccount.replace(':id',userId)
+  const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
   const result = await callEndpoint<OrgUser>(endpoint, 'DELETE', {}, token)
   return result.data
 }
@@ -111,14 +109,22 @@ async function createIndividualAccount(
     roles: [role],
   }
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', '')
-  const result = await callEndpoint<any>(
-    endpoint,
-    'POST',
-    postData,
-    token,
-  )
+  const result = await callEndpoint<any>(endpoint, 'POST', postData, token)
 
   return result.ok
+}
+
+async function updateIndividualAccountRoles(
+  token: string,
+  userId: string,
+  roles: string[],
+): Promise<any> {
+  const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
+  const userResponse = await callEndpoint<OrgUser>(endpoint, 'GET', {}, token)
+  const data = userResponse.data
+  const updatedUser = { ...data, roles }
+  const result = await callEndpoint<any>(endpoint, 'POST', updatedUser, token)
+  return result.data
 }
 
 export default AccessService
