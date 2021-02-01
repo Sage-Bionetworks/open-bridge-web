@@ -55,8 +55,8 @@ const useStyles = makeStyles(theme => ({
     width: '302px',
     height: '275px',
   },
-  createStudyButton: {
-    width: '140px',
+  cancelButton: {
+    width: '120px',
     height: '49px',
     outline: 'none',
     borderRadius: '0px',
@@ -75,7 +75,7 @@ type ConfirmationDialogProps = {
   isOpen: boolean
   type: 'DELETE' | 'NAVIGATE'
   title?: string
-  cancelText?: string
+  createNewStudyText?: string
   actionText?: string
   onCancel: Function
   onConfirm: Function
@@ -89,7 +89,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   type,
   onConfirm,
   children,
-  cancelText = 'Cancel',
+  createNewStudyText = 'Cancel',
   actionText = 'Delete',
 }) => {
   const classes = useStyles()
@@ -142,9 +142,9 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
           onClick={() => onCancel()}
           color="default"
           variant="contained"
-          className={classes.createStudyButton}
+          className={classes.cancelButton}
         >
-          + Create a Study
+          {createNewStudyText}
         </Button>
         <Button
           onClick={() => onConfirm()}

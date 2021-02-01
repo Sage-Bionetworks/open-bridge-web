@@ -342,17 +342,15 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
               handleMenuClose()
             }}
           >
-            Rename study
+            Rename
           </MenuItem>
         )}
 
         <MenuItem onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>
-          Duplicate study
+          Duplicate
         </MenuItem>
 
-        <MenuItem onClick={() => setIsConfirmDeleteOpen(true)}>
-          Delete study
-        </MenuItem>
+        <MenuItem onClick={() => setIsConfirmDeleteOpen(true)}>Delete</MenuItem>
       </Menu>
 
       <ConfirmationDialog
