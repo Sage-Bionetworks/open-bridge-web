@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    padding: `0px ${theme.spacing(0.5)}px`,
+    padding: theme.spacing(0, 0.5),
   },
   icon: {
     width: '20px',

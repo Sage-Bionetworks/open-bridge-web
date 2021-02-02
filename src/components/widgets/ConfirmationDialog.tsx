@@ -71,7 +71,7 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     display: 'flex',
     justifyContent: 'space-evenly',
-    marginBottom: `${theme.spacing(2.5)}px`,
+    marginBottom: theme.spacing(2.5),
   },
 }))
 

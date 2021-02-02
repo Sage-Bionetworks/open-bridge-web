@@ -74,7 +74,7 @@ const useStyles = makeStyles(theme => ({
   },
 
   createStudyButton: {
-    margin: `${theme.spacing(5)}px ${theme.spacing(2)}px ${theme.spacing(3)}px`,
+    margin: theme.spacing(5, 2, 3),
     width: '160px',
     height: '49px',
     backgroundColor: '#3A3A3A',

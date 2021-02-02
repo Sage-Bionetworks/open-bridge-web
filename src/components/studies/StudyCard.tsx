@@ -48,21 +48,21 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontStyle: '12px',
   },
   liveIconContainer: {
-    marginTop: `${theme.spacing(0.5)}px`,
-    marginRight: `${theme.spacing(0.5)}px`,
+    marginTop: theme.spacing(0.5),
+    marginRight: theme.spacing(0.5),
   },
   cardStatus: {
     fontFamily: 'Playfair Display',
     fontStyle: 'italic',
     fontSize: 'small',
-    marginTop: `${theme.spacing(0.5)}px`,
-    marginRight: `${theme.spacing(1.25)}px`,
+    marginTop: theme.spacing(0.5),
+    marginRight: theme.spacing(1.25),
   },
   cardTopContainer: {
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: `${theme.spacing(1.25)}px ${theme.spacing(1.25)}px`,
+    padding: theme.spacing(1.25, 1.25),
     alignItems: 'center',
   },
   lastEditedTest: {
@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   participantsIcon: {
     width: '25px',
     height: '25px',
-    marginRight: `${theme.spacing(0.5)}`,
+    marginRight: theme.spacing(0.5),
   },
   studyStatusRow: {
     display: 'flex',
@@ -95,14 +95,14 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   cardBottomContainer: {
     width: '100%',
-    padding: `0 ${theme.spacing(0.5)}`,
+    padding: theme.spacing(0.5),
   },
   studyNameText: {
     fontFamily: 'Poppins',
     fontSize: '18px',
   },
   studyCardTextField: {
-    marginBottom: `${theme.spacing(2)}`,
+    marginBottom: theme.spacing(2),
   },
 }))
 
