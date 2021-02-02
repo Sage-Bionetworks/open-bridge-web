@@ -4,7 +4,7 @@ import { useErrorHandler } from 'react-error-boundary'
 import { Link, RouteComponentProps } from 'react-router-dom'
 import { useAsync } from '../../helpers/AsyncHook'
 //import useAssessments from './../../helpers/hooks'
-import { useSessionDataState } from '../../helpers/AuthContext'
+import { useUserSessionDataState } from '../../helpers/AuthContext'
 import AssessmentService from '../../services/assessment.service'
 import { Assessment, StringDictionary } from '../../types/types'
 import AssessmentCard from './AssessmentCard'
@@ -28,7 +28,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
 }: AssessmentLibraryProps) => {
   const classes = useStyles()
 
-  const { token } = useSessionDataState()
+  const { token } = useUserSessionDataState()
 
   const handleError = useErrorHandler()
 

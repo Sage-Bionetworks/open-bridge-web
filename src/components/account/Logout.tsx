@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core'
 import React, { useState } from 'react'
 import { Redirect } from 'react-router'
-import { useSessionDataDispatch } from '../../helpers/AuthContext'
+import { useUserSessionDataDispatch } from '../../helpers/AuthContext'
 
 const useStyles = makeStyles(theme => ({}))
 type LogoutProps = {
@@ -13,7 +13,7 @@ export const Logout: React.FunctionComponent<LogoutProps> = ({
 }: LogoutProps) => {
   const [navigate, setNavigate] = useState(false)
 
-  const sessionUpdateFn = useSessionDataDispatch()
+  const sessionUpdateFn = useUserSessionDataDispatch()
   const logout = () => {
     sessionUpdateFn({ type: 'LOGOUT' })
     setNavigate(true)

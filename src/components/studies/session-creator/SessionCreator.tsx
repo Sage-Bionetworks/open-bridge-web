@@ -14,7 +14,7 @@ import CloseIcon from '@material-ui/icons/Close'
 import React, { FunctionComponent, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { useSessionDataState } from '../../../helpers/AuthContext'
+import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import { useNavigate } from '../../../helpers/hooks'
 import StudyService from '../../../services/study.service'
 import { StudySession } from '../../../types/scheduling'
@@ -81,7 +81,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     [],
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
-  const { token } = useSessionDataState()
+  const { token } = useUserSessionDataState()
   const [sessions, setData] = React.useState(studySessions)
 
   console.log('section' + section + 'next' + nextSection)

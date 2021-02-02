@@ -5,7 +5,7 @@ import StudyService from '../services/study.service'
 import { Schedule, StudySession } from '../types/scheduling'
 import { Assessment, Study } from '../types/types'
 import { useAsync } from './AsyncHook'
-import { useSessionDataState } from './AuthContext'
+import { useUserSessionDataState } from './AuthContext'
 
 const useAssessments = () => {
   const [assessments, setAssessments] = useState<Assessment[]>([])
@@ -46,7 +46,7 @@ export const useStudySessions = (id: string | undefined) => {
     status: id ? 'PENDING' : 'IDLE',
     data: null,
   })
-  const { token} = useSessionDataState()
+  const { token} = useUserSessionDataState()
 
   React.useEffect(() => {
     if (!id) {
@@ -97,7 +97,7 @@ export const useNavigate = (section: StudySection, nextSection: StudySection, sa
 
 
 export const useStudyBuilderInfo  = (id: string | undefined, section: StudySection) => {
-  const { token} = useSessionDataState()
+  const { token} = useUserSessionDataState()
   
   const { data, status, error, run, setData } = useAsync<{
     schedule: Schedule  | null
@@ -135,7 +135,7 @@ export const useStudyBuilderInfo  = (id: string | undefined, section: StudySecti
 
 
 export const useStudy = (id: string | undefined) => {
-  const { token} = useSessionDataState()
+  const { token} = useUserSessionDataState()
   const { data, status, error, run, setData, setError } = useAsync<Study>({
     status: id ? 'PENDING' : 'IDLE',
     data: null,

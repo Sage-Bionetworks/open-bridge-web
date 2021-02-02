@@ -1,13 +1,13 @@
 import * as React from 'react'
-import { SessionData } from '../types/types'
+import { UserSessionData } from '../types/types'
 import { clearSession, getSession, setSession } from './utility'
 
 type ActionType = 'LOGIN' | 'LOGOUT' | 'SET_ALERT' | 'CLEAR_ALERT'
 /*| 'CONSENT'
   | 'WITHDRAW'*/
-type Action = { type: ActionType; payload?: SessionData }
+type Action = { type: ActionType; payload?: UserSessionData }
 type Dispatch = (action: Action) => void
-type SessionDataProviderProps = { children: React.ReactNode }
+type UserSessionDataProviderProps = { children: React.ReactNode }
 
 const initialState = {
   token: undefined,
@@ -17,14 +17,14 @@ const initialState = {
   id:''
 }
 
-const SessionDataStateContext = React.createContext<SessionData | undefined>(
+const UserSessionDataStateContext = React.createContext<UserSessionData | undefined>(
   undefined,
 )
-const SessionDataDispatchContext = React.createContext<Dispatch | undefined>(
+const UserSessionDataDispatchContext = React.createContext<Dispatch | undefined>(
   undefined,
 )
 
-function countReducer(state: SessionData, action: Action): SessionData {
+function countReducer(state: UserSessionData, action: Action): UserSessionData {
   switch (action.type) {
     case 'SET_ALERT': {
       const newState = {
@@ -91,34 +91,34 @@ function countReducer(state: SessionData, action: Action): SessionData {
   }
 }
 
-function SessionDataProvider({ children }: SessionDataProviderProps) {
+function UserSessionDataProvider({ children }: UserSessionDataProviderProps) {
   const [state, dispatch] = React.useReducer(
     countReducer,
     getSession() || initialState,
   )
   return (
-    <SessionDataStateContext.Provider value={state}>
-      <SessionDataDispatchContext.Provider value={dispatch}>
+    <UserSessionDataStateContext.Provider value={state}>
+      <UserSessionDataDispatchContext.Provider value={dispatch}>
         {children}
-      </SessionDataDispatchContext.Provider>
-    </SessionDataStateContext.Provider>
+      </UserSessionDataDispatchContext.Provider>
+    </UserSessionDataStateContext.Provider>
   )
 }
 
-function useSessionDataState() {
-  const context = React.useContext(SessionDataStateContext)
+function useUserSessionDataState() {
+  const context = React.useContext(UserSessionDataStateContext)
   if (context === undefined) {
-    throw new Error('useSessionDataState must be used within a AuthContext')
+    throw new Error('useUserSessionDataState must be used within a AuthContext')
   }
   return context
 }
 
-function useSessionDataDispatch() {
-  const context = React.useContext(SessionDataDispatchContext)
+function useUserSessionDataDispatch() {
+  const context = React.useContext(UserSessionDataDispatchContext)
   if (context === undefined) {
-    throw new Error('useSessionDataDispatch must be used within a AuthContext')
+    throw new Error('useUserSessionDataDispatch must be used within a AuthContext')
   }
   return context
 }
 
-export { SessionDataProvider, useSessionDataState, useSessionDataDispatch }
+export { UserSessionDataProvider, useUserSessionDataState, useUserSessionDataDispatch }

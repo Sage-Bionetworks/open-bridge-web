@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import CONSTANTS from '../types/constants'
-import { Response, SessionData, StringDictionary } from '../types/types'
+import { Response, StringDictionary, UserSessionData } from '../types/types'
 
 type RestMethod = 'POST' | 'GET' | 'DELETE'
 
@@ -114,7 +114,7 @@ export const callEndpoint = async <T>(
   return { status: response.status, data: result, ok: response.ok }
 }
 
-export const getSession = (): SessionData | undefined => {
+export const getSession = (): UserSessionData | undefined => {
   const item = sessionStorage.getItem(CONSTANTS.constants.SESSION_NAME) || ''
   try {
     const json = JSON.parse(item)
@@ -129,7 +129,7 @@ export const clearSession = () => {
   sessionStorage.clear()
 }
 
-export const setSession = (data: SessionData) => {
+export const setSession = (data: UserSessionData) => {
   sessionStorage.setItem(CONSTANTS.constants.SESSION_NAME, JSON.stringify(data))
 }
 

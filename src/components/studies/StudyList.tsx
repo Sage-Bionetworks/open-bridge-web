@@ -10,7 +10,7 @@ import {
 import Link from '@material-ui/core/Link'
 import React, { FunctionComponent, useEffect } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
-import { useSessionDataState } from '../../helpers/AuthContext'
+import { useUserSessionDataState } from '../../helpers/AuthContext'
 import { getRandomId } from '../../helpers/utility'
 import StudyService from '../../services/study.service'
 import { Study, StudyStatus } from '../../types/types'
@@ -158,7 +158,11 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
 }
 
 const StudyList: FunctionComponent<StudyListProps> = () => {
+<<<<<<< HEAD
   const { token } = useSessionDataState()
+=======
+  const { token} = useUserSessionDataState()
+>>>>>>> rename sessionData to userSessionData
   const [studies, setStudies] = React.useState<Study[]>([])
   const [menuAnchor, setMenuAnchor] = React.useState<null | {
     study: Study
