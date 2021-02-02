@@ -83,6 +83,7 @@ const useStyles = makeStyles(theme => ({
       transform: 'translateY(1px)',
       backgroundColor: '#3A3A3A',
     },
+    fontFamily: 'Lato',
   },
 }))
 
@@ -274,6 +275,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
               style={{
                 color: 'inherit',
                 fontWeight: statusFilters.length > 1 ? 'bolder' : 'normal',
+                fontFamily: 'Poppins',
               }}
             >
               All
@@ -288,6 +290,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                   fontWeight: isSelectedFilter(section.status)
                     ? 'bolder'
                     : 'normal',
+                  fontFamily: 'Poppins',
                 }}
               >
                 {section.filterTitle}

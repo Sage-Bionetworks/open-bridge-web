@@ -46,6 +46,7 @@ const useStyles = makeStyles(theme => ({
     background: theme.palette.error.light,
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
     borderRadius: '0px',
+    fontFamily: 'Lato',
     '&:hover': {
       transform: 'translateY(1px)',
       backgroundColor: '#EDC6C6',
@@ -63,6 +64,7 @@ const useStyles = makeStyles(theme => ({
     border: '1px solid black',
     background: '#FCFCFC',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+    fontFamily: 'Lato',
     '&:hover': {
       transform: 'translateY(1px)',
     },

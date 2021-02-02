@@ -15,6 +15,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     padding: theme.spacing(0, 0.5),
+    fontFamily: "Lato"
   },
   icon: {
     width: '20px',
