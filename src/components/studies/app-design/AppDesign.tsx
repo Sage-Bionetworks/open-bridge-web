@@ -196,7 +196,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
             <Typography variant="h4"> Upload logo</Typography>
             {getActionButtons(previewFile?.file)}
             <p>&nbsp;</p>
-            <Typography variant="h4"> Slelect Log background color</Typography>
+            <Typography variant="h4"> Select Log background color</Typography>
 
             <ReactColorPicker
               color={color}

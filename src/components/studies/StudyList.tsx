@@ -5,7 +5,7 @@ import {
   Divider,
   makeStyles,
   Menu,
-  MenuItem
+  MenuItem,
 } from '@material-ui/core'
 import Link from '@material-ui/core/Link'
 import React, { FunctionComponent, useEffect } from 'react'
@@ -29,7 +29,7 @@ type StudySublistProps = {
 
 type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME'
 
-const studyCardWidth = '253'
+const studyCardWidth = '290'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -71,6 +71,18 @@ const useStyles = makeStyles(theme => ({
 
   filterItem: {
     display: 'inline-block',
+  },
+
+  createStudyButton: {
+    margin: theme.spacing(5, 2, 3),
+    width: '160px',
+    height: '49px',
+    backgroundColor: '#3A3A3A',
+    color: 'white',
+    '&:hover': {
+      transform: 'translateY(1px)',
+      backgroundColor: '#3A3A3A',
+    },
   },
 }))
 
@@ -145,7 +157,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
 }
 
 const StudyList: FunctionComponent<StudyListProps> = () => {
-  const { token} = useSessionDataState()
+  const { token } = useSessionDataState()
   const [studies, setStudies] = React.useState<Study[]>([])
   const [menuAnchor, setMenuAnchor] = React.useState<null | {
     study: Study
@@ -213,7 +225,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           name: `Copy of ${study!.name}`,
         }
         setStudies([...studies, newStudy])
-        result = await StudyService.saveStudy(newStudy,token)
+        result = await StudyService.saveStudy(newStudy, token)
         setStudies(result)
         return
       default: {
@@ -259,7 +271,10 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           <li className={classes.filterItem}>
             <Button
               onClick={resetStatusFilters}
-              style={{ color: statusFilters.length > 1 ? 'red' : 'inherit' }}
+              style={{
+                color: 'inherit',
+                fontWeight: statusFilters.length > 1 ? 'bolder' : 'normal',
+              }}
             >
               All
             </Button>
@@ -269,7 +284,10 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
               <Button
                 onClick={() => setStatusFilters([section.status])}
                 style={{
-                  color: isSelectedFilter(section.status) ? 'red' : 'inherit',
+                  color: 'inherit',
+                  fontWeight: isSelectedFilter(section.status)
+                    ? 'bolder'
+                    : 'normal',
                 }}
               >
                 {section.filterTitle}
@@ -277,8 +295,12 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             </li>
           ))}
         </ul>
-        <Button variant="contained" onClick={() => createStudy()}>
-          + Create a Study
+        <Button
+          variant="contained"
+          onClick={() => createStudy()}
+          className={classes.createStudyButton}
+        >
+          + Create New Study
         </Button>
       </Box>
       <Divider className={classes.divider}></Divider>
@@ -320,17 +342,15 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
               handleMenuClose()
             }}
           >
-            Rename study
+            Rename
           </MenuItem>
         )}
 
         <MenuItem onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>
-          Duplicate study
+          Duplicate
         </MenuItem>
 
-        <MenuItem onClick={() => setIsConfirmDeleteOpen(true)}>
-          Delete study
-        </MenuItem>
+        <MenuItem onClick={() => setIsConfirmDeleteOpen(true)}>Delete</MenuItem>
       </Menu>
 
       <ConfirmationDialog

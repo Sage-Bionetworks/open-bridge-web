@@ -7,9 +7,8 @@ import MoreVertIcon from '@material-ui/icons/MoreVert'
 import React, { FunctionComponent } from 'react'
 import { ThemeType } from '../../style/theme'
 import { Study } from '../../types/types'
-
-
-
+import LiveIcon from './LiveIcon'
+import participants_icon from '../../assets/participants_icon.svg'
 
 const DraftIcon = () => {
   return (
@@ -33,15 +32,77 @@ const DraftIcon = () => {
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
-    width: '253px',
-    height: '188px',
+    width: '290px',
+    height: '184px',
     border: '1px solid gray',
     position: 'relative',
+    backgroundColor: '#FFFFFF',
+    borderRadius: '0px',
+    borderWidth: '0px',
+    boxShadow: '0 4px 4px 0 rgb(0 0 0 / 35%)',
   },
-
   title: {
     fontSize: 14,
-    color: theme.testColor,
+    fontFamily: 'Lato',
+    fontWeight: 'bold',
+    fontStyle: '12px',
+  },
+  liveIconContainer: {
+    marginTop: theme.spacing(0.5),
+    marginRight: theme.spacing(0.5),
+  },
+  cardStatus: {
+    fontFamily: 'Playfair Display',
+    fontStyle: 'italic',
+    fontSize: 'small',
+    marginTop: theme.spacing(0.5),
+    marginRight: theme.spacing(1.25),
+  },
+  cardTopContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: theme.spacing(1.25, 1.25),
+    alignItems: 'center',
+  },
+  lastEditedTest: {
+    fontFamily: 'Lato',
+    fontSize: '10px',
+    fontWeight: 'lighter',
+  },
+  participantsRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'center',
+    fontFamily: 'Lato',
+    fontSize: '12px',
+  },
+  participantsIcon: {
+    width: '25px',
+    height: '25px',
+    marginRight: theme.spacing(0.5),
+  },
+  studyStatusRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    fontFamily: 'Lato',
+    fontWeight: 'lighter',
+    fontSize: '10px',
+  },
+  cardBottomContainer: {
+    width: '100%',
+    padding: theme.spacing(0.5),
+  },
+  studyNameText: {
+    fontFamily: 'Poppins',
+    fontSize: '18px',
+  },
+  studyCardTextField: {
+    marginBottom: theme.spacing(2),
   },
 }))
 
@@ -50,11 +111,10 @@ const cancelPropagation = (e: React.MouseEvent) => {
   e.preventDefault()
 }
 
-const CardBottom: FunctionComponent<{ study: Study }> = ({
-  study,
-}: {
+const CardBottom: FunctionComponent<{
   study: Study
-}) => {
+}> = ({ study }: { study: Study }) => {
+  const classes = useStyles()
   return (
     <Box
       display="flex"
@@ -65,7 +125,25 @@ const CardBottom: FunctionComponent<{ study: Study }> = ({
       left="8px"
       right="8px"
     >
-      {study.identifier}
+      <div className={classes.cardBottomContainer}>
+        {study.status === 'DRAFT' ? (
+          <text className={classes.lastEditedTest}>Last edited:</text>
+        ) : (
+          <div className={classes.participantsRow}>
+            <img src={participants_icon} className={classes.participantsIcon} />
+            [56]
+          </div>
+        )}
+
+        <div className={classes.studyStatusRow}>
+          <text>
+            {study.status === 'DRAFT'
+              ? '[Dec. 2nd, 2018 @ 4:45pm]'
+              : '[Launched: Nov. 1, 2019 @ 4:45 pm]'}
+          </text>
+          <text>[Lynn B.]</text>
+        </div>
+      </div>
     </Box>
   )
 }
@@ -74,9 +152,25 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
   study,
   onSetAnchor,
 }: StudyCardProps) => {
+  function getCorrectCardName(status: string): string {
+    if (status === 'DRAFT') {
+      return 'Draft'
+    } else if (status === 'COMPLETED') {
+      return 'Closed'
+    } else {
+      return 'Live'
+    }
+  }
+  const classes = useStyles()
+
   return (
-    <Box display="flex" textAlign="left" paddingTop="8px">
-      {study.status !== 'COMPLETED' && (
+    <Box
+      display="flex"
+      textAlign="left"
+      paddingTop="8px"
+      className={classes.cardTopContainer}
+    >
+      {study.status !== 'COMPLETED' ? (
         <IconButton
           style={{ padding: '0' }}
           onClick={e => {
@@ -86,8 +180,18 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
         >
           <MoreVertIcon />
         </IconButton>
+      ) : (
+        <div />
       )}
-      {study.status}
+      {study.status === 'ACTIVE' ? (
+        <div className={classes.liveIconContainer}>
+          <LiveIcon />
+        </div>
+      ) : (
+        <div className={classes.cardStatus}>
+          {getCorrectCardName(study.status)}
+        </div>
+      )}
     </Box>
   )
 }
@@ -143,7 +247,12 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
         <CardContent>
           <div>
             {!isRename && (
-              <Typography variant="h6" color="textSecondary" gutterBottom>
+              <Typography
+                variant="h6"
+                color="textSecondary"
+                className={classes.studyNameText}
+                gutterBottom={study.status === 'DRAFT' ? true : false}
+              >
                 {study.name}
               </Typography>
             )}
@@ -152,7 +261,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
                 variant="outlined"
                 defaultValue={study.name}
                 size="small"
-                style={{ marginBottom: '16px' }}
+                className={classes.studyCardTextField}
                 inputRef={input}
                 onBlur={e => onRename && onRename(input.current?.value)}
                 onKeyDown={e => handleKeyDown(e, input.current?.value)}
@@ -160,11 +269,12 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
               />
             )}
           </div>
-
           {study.status === 'DRAFT' && <DraftIcon />}
-          <Typography className={classes.title} color="textSecondary">
-            {study.description}
-          </Typography>
+          {study.status !== 'DRAFT' && (
+            <Typography className={classes.title} color="textSecondary">
+              Study ID: {study.identifier}
+            </Typography>
+          )}
         </CardContent>
         <CardBottom study={study}></CardBottom>
       </Card>

@@ -45,7 +45,7 @@ const cssVariables = {
 
 //those are global css classes
 const globals: cssGlobalClasses = {
- /* '.assesmentContainer': {
+  /* '.assesmentContainer': {
     justifyContent: 'flex-start',
     fontSize: '26px',
 
@@ -69,7 +69,6 @@ const theme: Theme = createMuiTheme({
     MuiButton: {
       containedPrimary: {
         backgroundColor: '#000',
-
         '&:hover': {
           backgroundColor: '#634848',
         },
@@ -81,14 +80,11 @@ const theme: Theme = createMuiTheme({
           color: '#fff',
 
           '& + .MuiSwitch-track': {
-            backgroundColor: '#7FC7F0'
-            
-
-          }
-        }
-      }
+            backgroundColor: '#7FC7F0',
+          },
+        },
+      },
     },
-
     MuiInputBase: {
       input: {
         backgroundColor: '#BCD5E4',
@@ -126,7 +122,9 @@ const theme: Theme = createMuiTheme({
       fontWeight: 400,
       fontStyle: 'italic',
     },
-
+    button: {
+      textTransform: 'none',
+    },
     /*htmlFontSize: 10,
     button: {
       textTransform: 'none',
@@ -136,8 +134,7 @@ const theme: Theme = createMuiTheme({
   palette: {
     divider: '#282828',
     common: {
-      black: '#2E2E2E'
-
+      black: '#2E2E2E',
     },
     background: {
       default: '#E5E5E5', //'#BCD5E4',
@@ -150,13 +147,11 @@ const theme: Theme = createMuiTheme({
     secondary: {
       main: '#6e818a',
     },
-
     primary: {
       main: '#2196f3',
     },
     error: {
       main: '#EE6070',
-
       light: '#FCD2D2',
     },
   },

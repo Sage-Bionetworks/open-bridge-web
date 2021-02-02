@@ -7,6 +7,12 @@ import React, { FunctionComponent } from 'react'
 import { ThemeType } from '../../style/theme'
 import SideBarListItem from '../widgets/SideBarListItem'
 import { SECTIONS as sectionLinks, StudySection } from './sections'
+import CreateSessionIcon from '../../assets/create_session_icon.svg'
+import CustomizeAppIcon from '../../assets/customize_app_icon.svg'
+import LaunchStudyIcon from '../../assets/launch_study_icon.svg'
+import PassiveFeaturesIcon from '../../assets/passive_features_icon.svg'
+import PreviewStudyIcon from '../../assets/preview_study_icon.svg'
+import ScheduleSesssionsIcon from '../../assets/schedule_sessions_icon.svg'
 
 const drawerWidth = 212
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -53,10 +59,19 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontSize: '14px',
     position: 'static',
     border: 'none',
-
     backgroundColor: '#F2F2F2',
     boxShadow:
       '0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12)',
+  },
+  navIcon: {
+    marginRight: theme.spacing(2),
+    width: '18px',
+    height: '18px',
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  navIconImageContainer: {
+    display: 'flex',
   },
 }))
 
@@ -79,6 +94,15 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
 }) => {
   const classes = useStyles()
 
+  const navIcons = [
+    CustomizeAppIcon,
+    CreateSessionIcon,
+    ScheduleSesssionsIcon,
+    PassiveFeaturesIcon,
+    PreviewStudyIcon,
+    LaunchStudyIcon,
+  ]
+
   const toggleDrawer = () => {
     onToggle()
   }
@@ -98,7 +122,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
         }),
       }}
     >
-      <Box textAlign='right' height="48px" bgcolor='#FAFAFA'>
+      <Box textAlign="right" height="48px" bgcolor="#FAFAFA">
         <IconButton
           onClick={toggleDrawer}
           style={{ borderRadius: 0, width: '48px', height: '100%' }}
@@ -114,8 +138,8 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
             isActive={sectionLink.path === currentSection}
             onClick={() => onNavigate(sectionLink.path)}
           >
-            <div style={{ display: 'flex' }}>
-              <SomeIcon style={{ marginRight: "16px" }} />
+            <div className={classes.navIconImageContainer}>
+              <img src={navIcons[index]} className={classes.navIcon} />
               <span>{sectionLink.name}</span>
             </div>
           </SideBarListItem>

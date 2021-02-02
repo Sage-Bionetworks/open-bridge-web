@@ -41,7 +41,37 @@ const useStyles = makeStyles(theme => ({
     lineHeight: '19px',
   },
   confirmButton: {
-    backgroundColor: theme.palette.error.main,
+    width: '74px',
+    height: '49px',
+    background: theme.palette.error.light,
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+    borderRadius: '0px',
+    '&:hover': {
+      transform: 'translateY(1px)',
+      backgroundColor: '#EDC6C6',
+    },
+  },
+  dialogPaper: {
+    width: '302px',
+    height: '275px',
+  },
+  cancelButton: {
+    width: '120px',
+    height: '49px',
+    outline: 'none',
+    borderRadius: '0px',
+    border: '1px solid black',
+    background: '#FCFCFC',
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+    '&:hover': {
+      transform: 'translateY(1px)',
+    },
+  },
+  dialogButtonsContainer: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-evenly',
+    marginBottom: theme.spacing(2.5),
   },
 }))
 
@@ -64,7 +94,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   onConfirm,
   children,
   cancelText = 'Cancel',
-  actionText = 'OK',
+  actionText = 'Delete',
 }) => {
   const classes = useStyles()
   const navigateBody = (
@@ -82,6 +112,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
       className={classes.dialogTitle}
+      classes={{ paper: classes.dialogPaper }}
     >
       <DialogTitle
         id="alert-dialog-title"
@@ -103,8 +134,13 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
           {body}
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={() => onCancel()} color="default" variant="contained">
+      <DialogActions className={classes.dialogButtonsContainer}>
+        <Button
+          onClick={() => onCancel()}
+          color="default"
+          variant="contained"
+          className={classes.cancelButton}
+        >
           {cancelText}
         </Button>
         <Button
