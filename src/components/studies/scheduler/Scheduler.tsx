@@ -11,7 +11,7 @@ import React, { FunctionComponent, ReactNode } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps } from 'react-router-dom'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { useSessionDataState } from '../../../helpers/AuthContext'
+import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import { useNavigate } from '../../../helpers/hooks'
 import StudyService from '../../../services/study.service'
 import { poppinsFont } from '../../../style/theme'
@@ -75,7 +75,7 @@ const Scheduler: FunctionComponent<SchedulerProps> = ({
   onNavigate,
   children
 }: SchedulerOwnProps) => {
-  const { token} = useSessionDataState()
+  const { token} = useUserSessionDataState()
   const handleError = useErrorHandler()
   const classes = useStyles()
   const [data, setData]= React.useState<{

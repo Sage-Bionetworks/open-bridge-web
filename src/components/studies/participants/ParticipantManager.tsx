@@ -3,10 +3,12 @@ import { makeStyles } from '@material-ui/core/styles'
 import DeleteIcon from '@material-ui/icons/Delete'
 import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
+import { CSVReader } from 'react-papaparse'
 import { RouteComponentProps, useParams } from 'react-router-dom'
 import { useAsync } from '../../../helpers/AsyncHook'
-import { useSessionDataState } from '../../../helpers/AuthContext'
+import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import ParticipantService from '../../../services/participants.service'
+import { ParticipanRecord } from '../../../types/types'
 import HideWhen from '../../widgets/HideWhen'
 import ObjectDebug from '../../widgets/ObjectDebug'
 import StudyTopNav from '../StudyTopNav'
@@ -26,11 +28,60 @@ type ParticipantManagerOwnProps = {
 }
 
 interface Data {
-  calories: number
-  carbs: number
-  fat: number
-  name: string
-  protein: number
+  id: string
+  [key: string]: string | number
+}
+
+const headCells: HeadCell<Data>[] = [
+  {
+    id: 'firstName',
+    numeric: false,
+    disablePadding: true,
+    label: 'firstName',
+  },
+  { id: 'lastName', numeric: true, disablePadding: false, label: 'lastName' },
+
+  {
+    id: 'createdOn',
+    numeric: true,
+    disablePadding: false,
+    label: 'createdOn',
+  },
+  { id: 'status', numeric: true, disablePadding: false, label: 'status' },
+]
+
+const participantRecordTemplate: ParticipanRecord = {
+ 
+  phoneNumber: '',
+  healthCode: '',
+  clinicVisit: null,
+  status: '',
+  altId: '',
+  notes: '',
+}
+type keys = keyof ParticipanRecord 
+
+function parseCSVToJSON(rows: any[]):Partial<ParticipanRecord>[] {
+  const keys = Object.keys(participantRecordTemplate) as keys[]
+  let i = 0
+  const objects:Partial<ParticipanRecord>[] = []
+  for (const row of rows) {
+    console.log('row'+i)
+    console.log(row.data)
+    console.log(JSON.stringify(row.data))
+    let index = 0
+    let o: Partial<ParticipanRecord> = {}
+    // const newParticipant = {...participantRecordTemplate}
+    for (const key of keys) {
+      o[key] = row.data[index]
+      //@ts-ignore
+      console.log(o[key])
+      index++
+    }
+    i++
+    objects.push(o)
+  }
+  return objects
 }
 
 type ParticipantManagerProps = ParticipantManagerOwnProps & RouteComponentProps
@@ -45,34 +96,25 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = ({
   //if you need search params use the following
   //const { param } = useParams<{ param: string}>()
   //<T> is the type of data you are retrieving
-  const { token } = useSessionDataState()
+  const { token } = useUserSessionDataState()
   const { data, status, error, run, setData } = useAsync<any>({
     status: 'PENDING',
     data: null,
   })
 
-  interface Data {
-    id: string
-    [key: string]: string | number
+  const uploadFromCsv = () => {}
+  const handleOnDrop = (data: any) => {
+    console.log('---------------------------')
+    //console.log(data)
+    const objects = parseCSVToJSON(data)
+    debugger
+    console.log(objects)
+    console.log('---------------------------')
   }
 
-  const headCells: HeadCell<Data>[] = [
-    {
-      id: 'firstName',
-      numeric: false,
-      disablePadding: true,
-      label: 'firstName',
-    },
-    { id: 'lastName', numeric: true, disablePadding: false, label: 'lastName' },
-
-    {
-      id: 'createdOn',
-      numeric: true,
-      disablePadding: false,
-      label: 'createdOn',
-    },
-    { id: 'status', numeric: true, disablePadding: false, label: 'status' },
-  ]
+  const handleOnError = (err: any, file: any, inputElem: any, reason: any) => {
+    console.log(err)
+  }
 
   React.useEffect(() => {
     /* if (! studyId) {
@@ -122,6 +164,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = ({
             rows={data}
             headCells={headCells}
           ></ParticipantTable>
+          <CSVReader onDrop={handleOnDrop} onError={handleOnError}>
+            <span>Drop CSV file here or click to upload.</span>
+          </CSVReader>
+          <Button onClick={() => uploadFromCsv()}>Upload from CSV</Button>
         </Box>
       </div>
     )

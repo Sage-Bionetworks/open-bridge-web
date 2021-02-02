@@ -1,11 +1,9 @@
-import React, { FunctionComponent, HTMLProps } from 'react'
-
-import { makeStyles, TabProps } from '@material-ui/core'
-
+import { makeStyles } from '@material-ui/core'
+import { CSSProperties } from '@material-ui/core/styles/withStyles'
+import React, { FunctionComponent } from 'react'
+import { StudyArm } from '../../../types/types'
 import TabsMtb from '../../widgets/TabsMtb'
 
-import { StudyArm } from '../../../types/types'
-import { CSSProperties } from '@material-ui/core/styles/withStyles'
 
 const useStyles = makeStyles({})
 

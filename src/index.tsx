@@ -3,7 +3,7 @@ import 'react-app-polyfill/ie11'
 import 'react-app-polyfill/stable'
 import ReactDOM from 'react-dom'
 import App from './App'
-import { SessionDataProvider } from './helpers/AuthContext'
+import { UserSessionDataProvider } from './helpers/AuthContext'
 import './index.css'
 
 function isDevelopment() {
@@ -33,11 +33,11 @@ if (
 
 ReactDOM.render(
   <React.StrictMode>
-    <SessionDataProvider>
+    <UserSessionDataProvider>
       <Suspense fallback={null}>
         <App />
       </Suspense>
-    </SessionDataProvider>
+    </UserSessionDataProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 )
