@@ -9,27 +9,24 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: '#51A3A3',
     outline: 'none',
     display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
     color: 'white',
     fontWeight: 'bold',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    padding: `0px ${theme.spacing(0.5)}px`,
+  },
+  icon: {
+    width: '20px',
+    height: '20px',
   },
 }))
 
 const LiveIcon: React.FC<{}> = props => {
   const classes = useStyles()
   return (
-    <div
-      className={classes.liveContainer}
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        alignItems: 'center',
-        padding: '0px 3px',
-      }}
-    >
-      <img src={LiveIconImage} style={{ width: '20px', height: '20px' }}></img>
+    <div className={classes.liveContainer}>
+      <img src={LiveIconImage} className={classes.icon}></img>
       <div>Live</div>
     </div>
   )

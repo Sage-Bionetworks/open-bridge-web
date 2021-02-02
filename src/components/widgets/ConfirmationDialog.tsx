@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
   confirmButton: {
     width: '74px',
     height: '49px',
-    background: '#FCD2D2',
+    background: theme.palette.error.light,
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
     borderRadius: '0px',
     '&:hover': {
@@ -60,14 +60,18 @@ const useStyles = makeStyles(theme => ({
     height: '49px',
     outline: 'none',
     borderRadius: '0px',
-    borderColor: 'black',
-    borderWidth: '1px',
-    borderStyle: 'solid',
+    border: '1px solid black',
     background: '#FCFCFC',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
     '&:hover': {
       transform: 'translateY(1px)',
     },
+  },
+  dialogButtonsContainer: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-evenly',
+    marginBottom: `${theme.spacing(2.5)}px`,
   },
 }))
 
@@ -75,7 +79,7 @@ type ConfirmationDialogProps = {
   isOpen: boolean
   type: 'DELETE' | 'NAVIGATE'
   title?: string
-  createNewStudyText?: string
+  cancelText?: string
   actionText?: string
   onCancel: Function
   onConfirm: Function
@@ -89,7 +93,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   type,
   onConfirm,
   children,
-  createNewStudyText = 'Cancel',
+  cancelText = 'Cancel',
   actionText = 'Delete',
 }) => {
   const classes = useStyles()
@@ -130,21 +134,14 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
           {body}
         </DialogContentText>
       </DialogContent>
-      <DialogActions
-        style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'space-evenly',
-          marginBottom: '10px',
-        }}
-      >
+      <DialogActions className={classes.dialogButtonsContainer}>
         <Button
           onClick={() => onCancel()}
           color="default"
           variant="contained"
           className={classes.cancelButton}
         >
-          {createNewStudyText}
+          {cancelText}
         </Button>
         <Button
           onClick={() => onConfirm()}

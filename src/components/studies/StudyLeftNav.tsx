@@ -59,10 +59,19 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontSize: '14px',
     position: 'static',
     border: 'none',
-
     backgroundColor: '#F2F2F2',
     boxShadow:
       '0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12)',
+  },
+  navIcon: {
+    marginRight: `${theme.spacing(2)}px`,
+    width: '18px',
+    height: '18px',
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  navIconImageContainer: {
+    display: 'flex',
   },
 }))
 
@@ -129,17 +138,8 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
             isActive={sectionLink.path === currentSection}
             onClick={() => onNavigate(sectionLink.path)}
           >
-            <div style={{ display: 'flex' }}>
-              <img
-                src={navIcons[index]}
-                style={{
-                  marginRight: '16px',
-                  width: '18px',
-                  height: '18px',
-                  alignSelf: 'center',
-                  justifyContent: 'center',
-                }}
-              />
+            <div className={classes.navIconImageContainer}>
+              <img src={navIcons[index]} className={classes.navIcon} />
               <span>{sectionLink.name}</span>
             </div>
           </SideBarListItem>

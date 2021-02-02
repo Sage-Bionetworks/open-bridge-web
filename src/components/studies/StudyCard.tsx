@@ -41,12 +41,68 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     borderWidth: '0px',
     boxShadow: '0 4px 4px 0 rgb(0 0 0 / 35%)',
   },
-
   title: {
     fontSize: 14,
     fontFamily: 'Lato',
     fontWeight: 'bold',
     fontStyle: '12px',
+  },
+  liveIconContainer: {
+    marginTop: `${theme.spacing(0.5)}px`,
+    marginRight: `${theme.spacing(0.5)}px`,
+  },
+  cardStatus: {
+    fontFamily: 'Playfair Display',
+    fontStyle: 'italic',
+    fontSize: 'small',
+    marginTop: `${theme.spacing(0.5)}px`,
+    marginRight: `${theme.spacing(1.25)}px`,
+  },
+  cardTopContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: `${theme.spacing(1.25)}px ${theme.spacing(1.25)}px`,
+    alignItems: 'center',
+  },
+  lastEditedTest: {
+    fontFamily: 'Lato',
+    fontSize: '10px',
+    fontWeight: 'lighter',
+  },
+  participantsRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'center',
+    fontFamily: 'Lato',
+    fontSize: '12px',
+  },
+  participantsIcon: {
+    width: '25px',
+    height: '25px',
+    marginRight: `${theme.spacing(0.5)}`,
+  },
+  studyStatusRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    fontFamily: 'Lato',
+    fontWeight: 'lighter',
+    fontSize: '10px',
+  },
+  cardBottomContainer: {
+    width: '100%',
+    padding: `0 ${theme.spacing(0.5)}`,
+  },
+  studyNameText: {
+    fontFamily: 'Poppins',
+    fontSize: '18px',
+  },
+  studyCardTextField: {
+    marginBottom: `${theme.spacing(2)}`,
   },
 }))
 
@@ -58,6 +114,7 @@ const cancelPropagation = (e: React.MouseEvent) => {
 const CardBottom: FunctionComponent<{
   study: Study
 }> = ({ study }: { study: Study }) => {
+  const classes = useStyles()
   return (
     <Box
       display="flex"
@@ -68,48 +125,17 @@ const CardBottom: FunctionComponent<{
       left="8px"
       right="8px"
     >
-      <div style={{ width: '100%', padding: '0 5px' }}>
+      <div className={classes.cardBottomContainer}>
         {study.status === 'DRAFT' ? (
-          <text
-            style={{
-              fontFamily: 'Lato',
-              fontSize: '10px',
-              fontWeight: 'lighter',
-            }}
-          >
-            Last edited:
-          </text>
+          <text className={classes.lastEditedTest}>Last edited:</text>
         ) : (
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              width: '100%',
-              alignItems: 'center',
-              fontFamily: 'Lato',
-              fontSize: '12px',
-            }}
-          >
-            <img
-              src={participants_icon}
-              style={{ width: '25px', height: '25px', marginRight: '3px' }}
-            />
+          <div className={classes.participantsRow}>
+            <img src={participants_icon} className={classes.participantsIcon} />
             [56]
           </div>
         )}
 
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-            fontFamily: 'Lato',
-            fontWeight: 'lighter',
-            fontSize: '10px',
-          }}
-        >
+        <div className={classes.studyStatusRow}>
           <text>
             {study.status === 'DRAFT'
               ? '[Dec. 2nd, 2018 @ 4:45pm]'
@@ -135,19 +161,14 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
       return 'Live'
     }
   }
+  const classes = useStyles()
 
   return (
     <Box
       display="flex"
       textAlign="left"
       paddingTop="8px"
-      style={{
-        width: '100%',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        padding: '10px 10px',
-        alignItems: 'center',
-      }}
+      className={classes.cardTopContainer}
     >
       {study.status !== 'COMPLETED' ? (
         <IconButton
@@ -163,19 +184,11 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
         <div />
       )}
       {study.status === 'ACTIVE' ? (
-        <div style={{ marginTop: '5px', marginRight: '5px' }}>
+        <div className={classes.liveIconContainer}>
           <LiveIcon />
         </div>
       ) : (
-        <div
-          style={{
-            fontFamily: 'Playfair Display',
-            fontStyle: 'italic',
-            fontSize: 'small',
-            marginTop: '5px',
-            marginRight: '10px',
-          }}
-        >
+        <div className={classes.cardStatus}>
           {getCorrectCardName(study.status)}
         </div>
       )}
@@ -237,7 +250,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
               <Typography
                 variant="h6"
                 color="textSecondary"
-                style={{ fontFamily: 'Poppins', fontSize: '18px' }}
+                className={classes.studyNameText}
                 gutterBottom={study.status === 'DRAFT' ? true : false}
               >
                 {study.name}
@@ -248,7 +261,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
                 variant="outlined"
                 defaultValue={study.name}
                 size="small"
-                style={{ marginBottom: '16px' }}
+                className={classes.studyCardTextField}
                 inputRef={input}
                 onBlur={e => onRename && onRename(input.current?.value)}
                 onKeyDown={e => handleKeyDown(e, input.current?.value)}

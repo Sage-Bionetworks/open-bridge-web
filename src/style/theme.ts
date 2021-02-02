@@ -147,13 +147,11 @@ const theme: Theme = createMuiTheme({
     secondary: {
       main: '#6e818a',
     },
-
     primary: {
       main: '#2196f3',
     },
     error: {
       main: '#EE6070',
-
       light: '#FCD2D2',
     },
   },
