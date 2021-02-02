@@ -5,7 +5,7 @@ import {
   Divider,
   makeStyles,
   Menu,
-  MenuItem,
+  MenuItem
 } from '@material-ui/core'
 import Link from '@material-ui/core/Link'
 import React, { FunctionComponent, useEffect } from 'react'
@@ -158,11 +158,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
 }
 
 const StudyList: FunctionComponent<StudyListProps> = () => {
-<<<<<<< HEAD
-  const { token } = useSessionDataState()
-=======
   const { token} = useUserSessionDataState()
->>>>>>> rename sessionData to userSessionData
   const [studies, setStudies] = React.useState<Study[]>([])
   const [menuAnchor, setMenuAnchor] = React.useState<null | {
     study: Study
