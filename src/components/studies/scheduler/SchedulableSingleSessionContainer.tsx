@@ -144,7 +144,7 @@ SchedulableSingleSessionContainerProps) => {
 
   return (
     <Box
-      className={clsx(classes.root, studySession?.active && 'active')}
+      className={clsx(classes.root /*, studySession?.active && 'active'*/)}
       onClick={() => {} /*onSetActiveSession(studySession.id)*/}
     >
       <form noValidate autoComplete="off">
@@ -281,7 +281,12 @@ SchedulableSingleSessionContainerProps) => {
                       variant="small"
                       border={false}
                     >
-                      <TextField color="secondary" multiline={false} fullWidth={true} variant="outlined"></TextField>
+                      <TextField
+                        color="secondary"
+                        multiline={false}
+                        fullWidth={true}
+                        variant="outlined"
+                      ></TextField>
                     </SchedulingFormSection>
 
                     <SchedulingFormSection
@@ -289,10 +294,13 @@ SchedulableSingleSessionContainerProps) => {
                       variant="small"
                       border={false}
                     >
-                      <TextField color="secondary" multiline={true}  fullWidth={true}  variant="outlined"></TextField>
+                      <TextField
+                        color="secondary"
+                        multiline={true}
+                        fullWidth={true}
+                        variant="outlined"
+                      ></TextField>
                     </SchedulingFormSection>
-
-      
                   </Box>
                 </SchedulingFormSection>
                 <Button

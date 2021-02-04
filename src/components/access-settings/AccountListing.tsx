@@ -5,7 +5,7 @@ import { ReactComponent as Delete } from '../../assets/trash.svg'
 import { useAsync } from '../../helpers/AsyncHook'
 import AccessService from '../../services/access.service'
 import { globals } from '../../style/theme'
-import { OrgUser, SessionData } from '../../types/types'
+import { OrgUser, UserSessionData } from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import Loader from '../widgets/Loader'
 import SideBarListItem from '../widgets/SideBarListItem'
@@ -40,7 +40,7 @@ type AccountListingProps = {
   children?: ReactNode
 
   updateToggle: boolean
-  sessionData: SessionData
+  sessionData: UserSessionData
 }
 
 function getNameDisplay({

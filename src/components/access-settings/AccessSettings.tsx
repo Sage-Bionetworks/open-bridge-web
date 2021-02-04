@@ -16,7 +16,7 @@ import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { RouteComponentProps, useParams } from 'react-router-dom'
 import { ReactComponent as Delete } from '../../assets/trash.svg'
-import { useSessionDataState } from '../../helpers/AuthContext'
+import { useUserSessionDataState } from '../../helpers/AuthContext'
 import AccessService from '../../services/access.service'
 import StudyTopNav from '../studies/StudyTopNav'
 import { Access, NO_ACCESS } from './AccessGrid'
@@ -138,7 +138,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
     CreateNewOrgAccountTemplate(),
   ])
 
-  const sessionData = useSessionDataState()
+  const sessionData = useUserSessionDataState()
   const { token, orgMembership, roles, id:loggedInId } = sessionData 
   const [updateToggle, setUpdateToggle] = React.useState(false)
 
