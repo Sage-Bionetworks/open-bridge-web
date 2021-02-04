@@ -115,7 +115,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }
 
   const changeSection = async (next: StudySection) => {
-    console.log('navigating to ', next)
+  if (section === next) {
+    return
+  }
+
     let saveFn: Function | undefined = undefined
     //where we are currently
     switch (section) {
@@ -197,6 +200,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           <SessionCreator
             {...props}
             id={id}
+            onSave={() => saveStudySessions()}
             sessions={builderInfo.schedule?.sessions || []}
             onUpdate={(data: StudySection[]) => {
               //console.log(_section)

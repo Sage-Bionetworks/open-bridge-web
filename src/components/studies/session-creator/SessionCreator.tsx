@@ -10,6 +10,7 @@ import {
   Paper
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
+import SaveIcon from '@material-ui/icons/Save'
 import React, { FunctionComponent, useState } from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import { StudySession } from '../../../types/scheduling'
@@ -54,11 +55,12 @@ const useStyles = makeStyles(theme => ({
 type SessionCreatorProps = {
   id: string
   sessions: StudySession[]
+  onSave: Function
 }
 
 const SessionCreator: FunctionComponent<
   SessionCreatorProps & StudyBuilderComponentProps
-> = ({ sessions, id, onUpdate, hasObjectChanged, saveLoader, children }:   SessionCreatorProps & StudyBuilderComponentProps) => {
+> = ({ sessions, id, onUpdate, hasObjectChanged, saveLoader, children, onSave }:   SessionCreatorProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
 
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
@@ -123,6 +125,17 @@ const SessionCreator: FunctionComponent<
             />
           )}
         </NavigationPrompt>
+        {(hasObjectChanged && !saveLoader) && 
+              <Button
+                variant="contained"
+                color="primary"
+                style={{marginBottom: '32px'}}
+                onClick={() => onSave()}
+                startIcon={<SaveIcon />}
+              >
+                Save changes
+              </Button>
+            }
         <Box className={classes.root}>
           {sessions.map(session => (
             <Paper className={classes.sessionContainer} key={session.id}>
