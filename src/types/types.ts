@@ -104,6 +104,19 @@ export type Study = {
   // sessions: StudySession[]
 }
 
+export type StudyBuilderInfo = {
+  schedule: Schedule
+  study: Study
+}
+
+export type StudyBuilderComponentProps = {
+  onUpdate: Function
+  children?: React.ReactNode
+  hasObjectChanged: boolean
+  saveLoader: boolean
+
+}
+
 export type ParticipanRecord = {
   isSelected?: boolean
   phoneNumber: string

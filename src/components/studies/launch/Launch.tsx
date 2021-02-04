@@ -1,10 +1,8 @@
 import { Button, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { useState } from 'react'
-import { useErrorHandler } from 'react-error-boundary'
-import { useNavigate, useStudy } from '../../../helpers/hooks'
 import { ThemeType } from '../../../style/theme'
-import { StudySection } from '../sections'
+import { StudyBuilderComponentProps } from '../../../types/types'
 import LaunchStepper from './LaunchStepper'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -22,11 +20,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
 export interface LaunchProps {
   id: string
-  section: StudySection
-  nextSection: StudySection
-  onNavigate: Function
-
-  children?: React.ReactNode
 }
 
 function getSteps() {
@@ -54,20 +47,21 @@ function getStepContent(step: number) {
   }
 }
 
-const Launch: React.FunctionComponent<LaunchProps> = ({ id, section, nextSection, onNavigate }: LaunchProps) => {
-  const handleError = useErrorHandler()
+const Launch: React.FunctionComponent<
+  LaunchProps & StudyBuilderComponentProps
+> = ({
+  id,
+  onUpdate,
+  hasObjectChanged,
+  saveLoader,
+  children,
+}: LaunchProps & StudyBuilderComponentProps) => {
+
   const classes = useStyles()
 
-
-  const { data, status, error } = useStudy(id)
-  const [isLoading, setIsLoading] = useState(false)
   const [steps, setSteps] = useState(getSteps())
   const [activeStep, setActiveStep] = React.useState(0)
-  
 
-  const {hasObjectChanged, setHasObjectChanged, saveLoader,  save} = useNavigate(section, nextSection, async()=>{
-  
-  }, ()=> onNavigate(nextSection, data))
 
   const handleNext = () => {
     const newSteps = steps.map((s, i) =>

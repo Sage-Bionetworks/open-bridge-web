@@ -13,10 +13,10 @@ import React, { ChangeEvent, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 //import { ReactComponent as PhoneBg } from '../../../assets/phone_bg.svg'
 import PhoneBg from '../../../assets/phone_bg.svg'
-import { useNavigate, useStudy } from '../../../helpers/hooks'
+import { useStudy } from '../../../helpers/hooks'
 import { bytesToSize } from '../../../helpers/utility'
 import { ThemeType } from '../../../style/theme'
-import { StudySection } from '../sections'
+import { StudyBuilderComponentProps } from '../../../types/types'
 
 const topBarHeight = '48px'
 
@@ -83,10 +83,6 @@ type UploadedFile = {
 export interface AppDesignProps {
   id: string
 
-  onNavigate: Function
-  section: StudySection
-  nextSection: StudySection
-  children?: React.ReactNode
 }
 
 function getPreviewForImage(file: File): PreviewFile {
@@ -99,12 +95,10 @@ function getPreviewForImage(file: File): PreviewFile {
   }
 }
 
-const AppDesign: React.FunctionComponent<AppDesignProps> = ({
+const AppDesign: React.FunctionComponent<AppDesignProps & StudyBuilderComponentProps> = ({
   id,
-  section,
-  nextSection,
-  onNavigate
-}: AppDesignProps) => {
+  hasObjectChanged, saveLoader, children
+}: AppDesignProps &  StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
   const classes = useStyles()
@@ -119,9 +113,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   const [logo, setLogo] = useState()
 
 
-  const {hasObjectChanged, setHasObjectChanged, saveLoader,  save} = useNavigate(section, nextSection, async()=>{
-  
-  }, ()=> onNavigate(nextSection, data))
 
   
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
