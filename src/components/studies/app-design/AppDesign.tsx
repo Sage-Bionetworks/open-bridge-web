@@ -13,10 +13,10 @@ import React, { ChangeEvent, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 //import { ReactComponent as PhoneBg } from '../../../assets/phone_bg.svg'
 import PhoneBg from '../../../assets/phone_bg.svg'
-import { useStudy } from '../../../helpers/hooks'
 import { bytesToSize } from '../../../helpers/utility'
 import { ThemeType } from '../../../style/theme'
 import { StudyBuilderComponentProps } from '../../../types/types'
+
 
 const topBarHeight = '48px'
 
@@ -103,7 +103,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps & StudyBuilderComponentP
 
   const classes = useStyles()
 
-  const { data, status, error } = useStudy(id)
 
   const [color, setColor] = useState<string | undefined>()
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
@@ -151,11 +150,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps & StudyBuilderComponentP
     return getUploadButton('Upload')
   }
 
-  if (status === 'PENDING') {
-    return <>loading component here</>
-  } else if (status === 'REJECTED') {
-    handleError(error!)
-  } else if (status === 'RESOLVED') {
     return (
       <Paper className={classes.root} elevation={2}>
         <Box className={classes.section}>
@@ -219,7 +213,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps & StudyBuilderComponentP
       </Paper>
     )
   }
-  return <></>
-}
+  
+
 
 export default AppDesign
