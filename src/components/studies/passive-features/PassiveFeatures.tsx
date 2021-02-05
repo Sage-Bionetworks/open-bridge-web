@@ -1,9 +1,9 @@
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import { useErrorHandler } from 'react-error-boundary'
-import { useStudy } from '../../../helpers/hooks'
 import { ThemeType } from '../../../style/theme'
 import { StudyBuilderComponentProps } from '../../../types/types'
+
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {},
@@ -26,7 +26,6 @@ const PassiveFeatures: React.FunctionComponent<
 
   const classes = useStyles()
 
-  const { data, status, error } = useStudy(id)
 
   const [activeStep, setActiveStep] = React.useState(0)
 
