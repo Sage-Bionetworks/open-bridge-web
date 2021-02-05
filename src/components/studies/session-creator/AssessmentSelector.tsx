@@ -7,10 +7,7 @@ import { useAsync } from '../../../helpers/AsyncHook'
 import { useSessionDataState } from '../../../helpers/AuthContext'
 import AssessmentService from '../../../services/assessment.service'
 import { StudySession } from '../../../types/scheduling'
-import {
-  Assessment,
-  StringDictionary
-} from '../../../types/types'
+import { Assessment, StringDictionary } from '../../../types/types'
 import AssessmentCard from '../../assessments/AssessmentCard'
 import AssessmentLibraryWrapper from '../../assessments/AssessmentLibraryWrapper'
 
@@ -124,7 +121,8 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
     session: StudySession,
     assessmentId: string,
   ): boolean =>
-    session.assessments.find(item => item.guid === assessmentId) !== undefined
+    session.assessments.find(item => item.originGuid === assessmentId) !==
+    undefined
 
   const toggleAssessment = (
     event: React.MouseEvent<HTMLElement>,
@@ -132,7 +130,6 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
   ) => {
     onUpdateAssessments(selectedAssessments)
   }
-
   return (
     <div>
       <AssessmentLibraryWrapper

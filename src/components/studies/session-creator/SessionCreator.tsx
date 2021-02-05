@@ -7,7 +7,8 @@ import {
   DialogTitle,
   IconButton,
   makeStyles,
-  Paper
+  Paper,
+  CircularProgress,
 } from '@material-ui/core'
 import Fab from '@material-ui/core/Fab'
 import CloseIcon from '@material-ui/icons/Close'
@@ -17,6 +18,7 @@ import NavigationPrompt from 'react-router-navigation-prompt'
 import { useSessionDataState } from '../../../helpers/AuthContext'
 import { useNavigate } from '../../../helpers/hooks'
 import StudyService from '../../../services/study.service'
+import AssessmentService from '../../../services/assessment.service'
 import { StudySession } from '../../../types/scheduling'
 import { Assessment } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
@@ -26,6 +28,7 @@ import AssessmentSelector from './AssessmentSelector'
 import SessionActionButtons from './SessionActionButtons'
 import actionsReducer, { SessionAction, Types } from './sessionActions'
 import SingleSessionContainer from './SingleSessionContainer'
+import { findAllByDisplayValue } from '@testing-library/react'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -56,6 +59,9 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'space-between',
   },
+  circularProgress: {
+    marginRight: '20px',
+  },
 }))
 
 type SessionCreatorProps = {
@@ -83,6 +89,10 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
   const { token } = useSessionDataState()
   const [sessions, setData] = React.useState(studySessions)
+  const [
+    isAddingAssessmentToSession,
+    setIsAddingAssessmentToSession,
+  ] = useState(false)
 
   console.log('section' + section + 'next' + nextSection)
 
@@ -115,7 +125,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
 
   const sessionsUpdateFn = (action: SessionAction) => {
     const newState = actionsReducer(sessions!, action)
-
+    console.log('new state', newState)
     setData(newState)
     if (action.type !== 'SET_ACTIVE_SESSION') setHasObjectChanged(true)
   }
@@ -136,8 +146,30 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     })
   }
 
-  const updateAssessments = (sessionId: string, assessments: Assessment[]) => {
+  const updateAssessments = async (
+    sessionId: string,
+    previousAssessments: Assessment[],
+  ) => {
     console.log('updating')
+    const assessments: Assessment[] = []
+    const currentSession = sessions.find(session => session.id === sessionId)
+    for (let i = 0; i < previousAssessments.length; i++) {
+      const assessment = previousAssessments[i]
+      // Check to see if the assessment was already in the list
+      if (!currentSession!.assessments.includes(assessment)) {
+        const newAssessment = await AssessmentService.importAssessmentIntoLocalContext(
+          assessment.guid,
+          assessment.ownerId,
+          token!,
+        )
+        const assessmentWithResources = await AssessmentService.getResource(
+          newAssessment,
+        )
+        assessments.push(assessmentWithResources)
+      } else {
+        assessments.push(assessment)
+      }
+    }
     sessionsUpdateFn({
       type: Types.UpdateAssessments,
       payload: {
@@ -262,24 +294,35 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
               activeSession={getActiveSession(sessions!)}
             ></AssessmentSelector>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={cancelAssessmentSelector}>Cancel</Button>
+          {!isAddingAssessmentToSession ? (
+            <DialogActions>
+              <Button onClick={cancelAssessmentSelector}>Cancel</Button>
 
-            <Button
-              variant="contained"
-              onClick={() => {
-                updateAssessments(getActiveSession(sessions)!.id, [
-                  ...getActiveSession(sessions)!.assessments,
-                  ...selectedAssessments,
-                ])
-                setSelectedAssessments([])
-              }}
-            >
-              {!getActiveSession(sessions)
-                ? 'Please select group and session'
-                : `Add  to  ${getActiveSession(sessions)?.name} `}
-            </Button>
-          </DialogActions>
+              <Button
+                variant="contained"
+                onClick={async () => {
+                  setIsAddingAssessmentToSession(true)
+                  await updateAssessments(getActiveSession(sessions)!.id, [
+                    ...getActiveSession(sessions)!.assessments,
+                    ...selectedAssessments,
+                  ])
+                  setSelectedAssessments([])
+                  setIsAddingAssessmentToSession(false)
+                }}
+              >
+                {!getActiveSession(sessions)
+                  ? 'Please select group and session'
+                  : `Add  to ${getActiveSession(sessions)?.name} `}
+              </Button>
+            </DialogActions>
+          ) : (
+            <DialogActions>
+              <CircularProgress
+                className={classes.circularProgress}
+                size={'25px'}
+              />
+            </DialogActions>
+          )}
         </Dialog>
       </>
     )

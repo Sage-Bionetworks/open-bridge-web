@@ -144,6 +144,7 @@ export type Assessment = {
   validationStatus: string
   duration?: number
   resources?: any[]
+  originGuid?: string
 }
 
 export type StudyStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'

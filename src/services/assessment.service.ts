@@ -8,6 +8,8 @@ const AssessmentService = {
   getAssessments,
   getAssessmentsWithResources,
   getAssessmentsForSession,
+  importAssessmentIntoLocalContext,
+  getResource,
 }
 
 async function getAssessment(
@@ -30,6 +32,22 @@ async function getAssessment(
   return [result.data]
 }
 
+async function importAssessmentIntoLocalContext(
+  guid: string,
+  ownerId: string,
+  token: string,
+) {
+  const assessment = await callEndpoint<Assessment>(
+    `${constants.endpoints.assessmentShared}${guid}/import`,
+    `POST`,
+    {
+      ownerId: ownerId,
+    },
+    token,
+  )
+  return assessment.data
+}
+
 async function getAssessments(token?: string): Promise<Assessment[]> {
   const result = token
     ? await callEndpoint<{ items: Assessment[] }>(
@@ -48,7 +66,7 @@ async function getAssessments(token?: string): Promise<Assessment[]> {
   return result.data.items
 }
 
-const getResource = async (assessment: Assessment): Promise<Assessment> => {
+async function getResource(assessment: Assessment): Promise<Assessment> {
   const endPoint = constants.endpoints.assessmentsSharedResources.replace(
     '{identifier}',
     assessment.identifier,
