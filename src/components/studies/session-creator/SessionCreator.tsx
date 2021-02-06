@@ -18,7 +18,6 @@ import NavigationPrompt from 'react-router-navigation-prompt'
 import { useSessionDataState } from '../../../helpers/AuthContext'
 import { useNavigate } from '../../../helpers/hooks'
 import StudyService from '../../../services/study.service'
-import AssessmentService from '../../../services/assessment.service'
 import { StudySession } from '../../../types/scheduling'
 import { Assessment } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
@@ -28,6 +27,7 @@ import AssessmentSelector from './AssessmentSelector'
 import SessionActionButtons from './SessionActionButtons'
 import actionsReducer, { SessionAction, Types } from './sessionActions'
 import SingleSessionContainer from './SingleSessionContainer'
+import AssessmentService from '../../../services/assessment.service'
 
 const useStyles = makeStyles(theme => ({
   root: {
