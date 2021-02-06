@@ -132,6 +132,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
 
   const sessionsUpdateFn = (action: SessionAction) => {
     const newState = actionsReducer(sessions!, action)
+
     setData(newState)
     if (action.type !== 'SET_ACTIVE_SESSION') setHasObjectChanged(true)
   }
@@ -145,6 +146,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     sessionId: string,
     assessments: Assessment[],
   ) => {
+    console.log(assessments)
     sessionsUpdateFn({
       type: Types.UpdateAssessments,
       payload: { sessionId, assessments },
