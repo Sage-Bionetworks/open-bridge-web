@@ -28,7 +28,6 @@ import AssessmentSelector from './AssessmentSelector'
 import SessionActionButtons from './SessionActionButtons'
 import actionsReducer, { SessionAction, Types } from './sessionActions'
 import SingleSessionContainer from './SingleSessionContainer'
-import { findAllByDisplayValue } from '@testing-library/react'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -133,7 +132,6 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
 
   const sessionsUpdateFn = (action: SessionAction) => {
     const newState = actionsReducer(sessions!, action)
-    console.log('new state', newState)
     setData(newState)
     if (action.type !== 'SET_ACTIVE_SESSION') setHasObjectChanged(true)
   }
@@ -147,7 +145,6 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     sessionId: string,
     assessments: Assessment[],
   ) => {
-    console.log(assessments)
     sessionsUpdateFn({
       type: Types.UpdateAssessments,
       payload: { sessionId, assessments },
