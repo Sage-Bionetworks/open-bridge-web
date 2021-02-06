@@ -59,8 +59,16 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'space-between',
   },
-  circularProgress: {
-    marginRight: '20px',
+  addingAssessmentsBackdrop: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#F5F5F5',
+    zIndex: 500,
+    position: 'absolute',
+    opacity: 0.7,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 }))
 
@@ -277,6 +285,11 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
           onClose={cancelAssessmentSelector}
           aria-labelledby="form-dialog-title"
         >
+          {isAddingAssessmentToSession && (
+            <div className={classes.addingAssessmentsBackdrop}>
+              <CircularProgress size={'5rem'} color="primary" />
+            </div>
+          )}
           <DialogTitle>
             Select assessment(s) to add to session.
             <IconButton
@@ -294,7 +307,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
               activeSession={getActiveSession(sessions!)}
             ></AssessmentSelector>
           </DialogContent>
-          {!isAddingAssessmentToSession ? (
+          {!isAddingAssessmentToSession && (
             <DialogActions>
               <Button onClick={cancelAssessmentSelector}>Cancel</Button>
 
@@ -314,13 +327,6 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
                   ? 'Please select group and session'
                   : `Add  to ${getActiveSession(sessions)?.name} `}
               </Button>
-            </DialogActions>
-          ) : (
-            <DialogActions>
-              <CircularProgress
-                className={classes.circularProgress}
-                size={'25px'}
-              />
             </DialogActions>
           )}
         </Dialog>

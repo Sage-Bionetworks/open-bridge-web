@@ -127,7 +127,7 @@ const CardBottom: FunctionComponent<{
     >
       <div className={classes.cardBottomContainer}>
         {study.status === 'DRAFT' ? (
-          <text className={classes.lastEditedTest}>Last edited:</text>
+          <div className={classes.lastEditedTest}>Last edited:</div>
         ) : (
           <div className={classes.participantsRow}>
             <img src={participants_icon} className={classes.participantsIcon} />
@@ -136,12 +136,12 @@ const CardBottom: FunctionComponent<{
         )}
 
         <div className={classes.studyStatusRow}>
-          <text>
+          <div>
             {study.status === 'DRAFT'
               ? '[Dec. 2nd, 2018 @ 4:45pm]'
               : '[Launched: Nov. 1, 2019 @ 4:45 pm]'}
-          </text>
-          <text>[Lynn B.]</text>
+          </div>
+          <div>[Lynn B.]</div>
         </div>
       </div>
     </Box>
