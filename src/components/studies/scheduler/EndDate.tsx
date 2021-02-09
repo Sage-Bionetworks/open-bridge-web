@@ -77,7 +77,7 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
                 style={{ marginRight: '10px' }}
                 onChange={e => changeEndDateDays(e.target.value)}
                 value={endDate.days || ''}
-                onFocus={e => changeEndDate('N_OCCURENCES')}
+                
               />
             </>
           }

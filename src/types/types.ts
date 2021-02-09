@@ -114,17 +114,18 @@ export type StudyBuilderComponentProps = {
   children?: React.ReactNode
   hasObjectChanged: boolean
   saveLoader: boolean
-
 }
 
-export type ParticipanRecord = {
+export type ParticipantAccountSummary = {
   isSelected?: boolean
-  phoneNumber: string
-  healthCode: string 
-  clinicVisit: Date | null
-  status: string
-  altId: string
-  notes: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  id: string
+  externalIds: StringDictionary<string>
+  studyExternalId?: string
+  status: 'unverified' | 'pending' | 'verified'
 }
 
 // POST MVP
