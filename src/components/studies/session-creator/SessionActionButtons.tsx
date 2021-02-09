@@ -27,14 +27,8 @@ const useStyles = makeStyles(theme => ({
     outline: 'none',
     boxSizing: 'border-box',
     backgroundColor: '#F2F2F2',
-    borderBottom: '0px',
-    '&:hover:not(.Mui-disabled):not(.Mui-focused):not(.Mui-error):before': {
-      borderBottom: '0px',
-    },
-    '&:active': {
-      borderBottom: '0px',
-    },
     fontFamily: 'Lato',
+    cursor: 'pointer',
   },
   createNewSession: {
     borderRadius: '0px',
@@ -61,13 +55,13 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: '#BCD5E4',
     },
     fontFamily: 'Lato',
-    boxShadow: `0px 4px 4px rgba(0, 0, 0, 0.25)`,
+    boxShadow: `1px 4px 4px rgba(0, 0, 0, 0.25)`,
   },
   menuItem: {
-    root: {
-      backgroundColor: '#F2F2F2',
-    },
     fontFamily: 'Lato',
+  },
+  selectMenu: {
+    backgroundColor: '#F2F2F2',
   },
 }))
 
@@ -119,6 +113,7 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
             className={classes.selectEmpty}
             inputProps={{ 'aria-label': 'Without label' }}
             disableUnderline={true}
+            classes={{ selectMenu: classes.selectMenu }}
           >
             {sessions.map((session, index) => (
               <MenuItem
