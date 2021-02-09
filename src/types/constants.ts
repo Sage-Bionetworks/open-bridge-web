@@ -108,7 +108,9 @@ export default {
     oauthSignIn: '/v3/auth/oauth/signIn',
     selfInfo: '/v3/participants/self',
     enrollments: '/v5/studies/{studyId}/enrollments',
-    participants: '/v5/studies/:id/participants/search',
+    participantsSearch: '/v5/studies/:id/participants/search',
+    participant: '/v5/studies/:id/participants',
+    
     
     bridgeAccount: '/v1/accounts/:id',
     getAccountsForOrg: '/v1/organizations/:orgId/members',
