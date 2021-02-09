@@ -10,24 +10,19 @@ import {
   Paper,
   CircularProgress,
 } from '@material-ui/core'
-import Fab from '@material-ui/core/Fab'
 import CloseIcon from '@material-ui/icons/Close'
+import SaveIcon from '@material-ui/icons/Save'
 import React, { FunctionComponent, useState } from 'react'
-import { useErrorHandler } from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { useSessionDataState } from '../../../helpers/AuthContext'
-import { useNavigate } from '../../../helpers/hooks'
-import StudyService from '../../../services/study.service'
 import { StudySession } from '../../../types/scheduling'
-import { Assessment } from '../../../types/types'
+import { Assessment, StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
-import LoadingComponent from '../../widgets/Loader'
-import { StudySection } from '../sections'
 import AssessmentSelector from './AssessmentSelector'
 import SessionActionButtons from './SessionActionButtons'
 import actionsReducer, { SessionAction, Types } from './sessionActions'
 import SingleSessionContainer from './SingleSessionContainer'
 import AssessmentService from '../../../services/assessment.service'
+import { useUserSessionDataState } from '../../../helpers/AuthContext'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -74,67 +69,38 @@ const useStyles = makeStyles(theme => ({
 type SessionCreatorProps = {
   id: string
   sessions: StudySession[]
-  onNavigate: Function
-  section: StudySection
-  nextSection: StudySection
-  children?: React.ReactNode
+  onSave: Function
 }
 
-const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
-  section,
-  nextSection,
-  sessions: studySessions,
-  onNavigate,
+const SessionCreator: FunctionComponent<
+  SessionCreatorProps & StudyBuilderComponentProps
+> = ({
+  sessions,
   id,
+  onUpdate,
+  hasObjectChanged,
+  saveLoader,
   children,
-}: SessionCreatorProps) => {
+  onSave,
+}: SessionCreatorProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
 
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
     [],
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
-  const { token } = useSessionDataState()
-  const [sessions, setData] = React.useState(studySessions)
+  const { token } = useUserSessionDataState()
   const [
     isAddingAssessmentToSession,
     setIsAddingAssessmentToSession,
   ] = useState(false)
-
-  console.log('section' + section + 'next' + nextSection)
-
-  const {
-    hasObjectChanged,
-    setHasObjectChanged,
-    saveLoader,
-    save,
-  } = useNavigate(
-    section,
-    nextSection,
-    async () => {
-      await StudyService.saveStudySessions(id, sessions || [], token!)
-      return
-    },
-    (x: StudySection) => onNavigate(x, sessions),
+  const [activeSession, setActiveSession] = React.useState(
+    sessions.length > 0 ? sessions[0].id : undefined,
   )
 
-  // save on data change
-  React.useEffect(() => {
-    if (!hasObjectChanged) {
-      return
-    }
-    save().then(() => {
-      console.log('saved')
-    })
-  }, [hasObjectChanged])
-
-  const handleError = useErrorHandler()
-
   const sessionsUpdateFn = (action: SessionAction) => {
-    const newState = actionsReducer(sessions!, action)
-
-    setData(newState)
-    if (action.type !== 'SET_ACTIVE_SESSION') setHasObjectChanged(true)
+    const newState = actionsReducer(sessions, action)
+    onUpdate(newState)
   }
 
   const cancelAssessmentSelector = () => {
@@ -185,7 +151,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   const getActiveSession = (
     sessions: StudySession[],
   ): StudySession | undefined => {
-    const session = sessions.find(session => session.active)
+    const session = sessions.find(session => session.id === activeSession)
     return session
   }
 
@@ -202,19 +168,17 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
             />
           )}
         </NavigationPrompt>
-        <Fab
-          color="primary"
-          onClick={() => setHasObjectChanged(false)}
-          aria-label="add"
-          style={{
-            position: 'absolute',
-            right: '30px',
-            display: hasObjectChanged ? 'block' : 'none',
-          }}
-        >
-          Save
-        </Fab>
-        objectChanged? {hasObjectChanged ? 'yes' : 'no'}
+        {hasObjectChanged && !saveLoader && (
+          <Button
+            variant="contained"
+            color="primary"
+            style={{ marginBottom: '32px' }}
+            onClick={() => onSave()}
+            startIcon={<SaveIcon />}
+          >
+            Save changes
+          </Button>
+        )}
         <Box className={classes.root}>
           {sessions.map(session => (
             <Paper className={classes.sessionContainer} key={session.id}>
@@ -223,10 +187,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
                 studySession={session}
                 onShowAssessments={() => setIsAssessmentDialogOpen(true)}
                 onSetActiveSession={(sessionId: string) =>
-                  sessionsUpdateFn({
-                    type: Types.SetActiveSession,
-                    payload: { sessionId },
-                  })
+                  setActiveSession(sessionId)
                 }
                 onRemoveSession={(sessionId: string) =>
                   sessionsUpdateFn({
@@ -259,18 +220,10 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
                   name: 'Session' + sessions.length.toString(),
                   assessments,
                   studyId: id,
-                  active: true,
                 },
               })
             }
           ></SessionActionButtons>
-
-          <LoadingComponent
-            reqStatusLoading={saveLoader}
-            variant="small"
-            loaderSize="2rem"
-            style={{ width: '2rem' }}
-          ></LoadingComponent>
         </Box>
         {children}
         <Dialog
@@ -298,7 +251,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
             <AssessmentSelector
               selectedAssessments={selectedAssessments}
               onUpdateAssessments={setSelectedAssessments}
-              activeSession={getActiveSession(sessions!)}
+              activeSession={getActiveSession(sessions)}
             ></AssessmentSelector>
           </DialogContent>
           {!isAddingAssessmentToSession && (

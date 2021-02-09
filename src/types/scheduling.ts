@@ -119,22 +119,13 @@ export type SessionSchedule = {
 
 export type StudySession = {
   id: string
-  active?: boolean
   studyId: string
-  //duration: number
+
   name: string
   assessments: Assessment[]
   order?: number
   sessionSchedule?: SessionSchedule
-  // Guid: string
-  /*Name: string
-Bundled: boolean
-Randomized: boolean
-Delay: number
-Interval: number
-Duration: number(period
-Expires number: Period
-Occurrences Number*/
+ 
 }
 
 export type Schedule = {

@@ -74,7 +74,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   ]
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
-  //const sessionData = useSessionDataState()
+  //const sessionData = useUserSessionDataState()
 
   return (
     <>

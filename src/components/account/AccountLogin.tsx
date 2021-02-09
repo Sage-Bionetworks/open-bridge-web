@@ -17,8 +17,8 @@ import Alert, { AlertProps } from '@material-ui/lab/Alert'
 import React, { FunctionComponent, useState } from 'react'
 import { ReactComponent as SageLogo } from '../../assets/sage.svg'
 import {
-  useSessionDataDispatch,
-  useSessionDataState
+  useUserSessionDataDispatch,
+  useUserSessionDataState
 } from '../../helpers/AuthContext'
 import storeService from '../../services/store_service'
 import UserService from '../../services/user.service'
@@ -95,8 +95,8 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
   >()
 
   const [isLoading, setIsLoading] = useState(false)
-  const sessionData = useSessionDataState()
-  const sessionUpdateFn = useSessionDataDispatch()
+  const sessionData = useUserSessionDataState()
+  const sessionUpdateFn = useUserSessionDataDispatch()
 
   const classes = useStyles()
 

@@ -4,7 +4,7 @@ import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
 import React, { FunctionComponent, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { useAsync } from '../../../helpers/AsyncHook'
-import { useSessionDataState } from '../../../helpers/AuthContext'
+import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import AssessmentService from '../../../services/assessment.service'
 import { StudySession } from '../../../types/scheduling'
 import { Assessment, StringDictionary } from '../../../types/types'
@@ -85,7 +85,7 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
   selectedAssessments,
   onUpdateAssessments,
 }: AssessmentSelectorProps) => {
-  const { token } = useSessionDataState()
+  const { token } = useUserSessionDataState()
 
   const handleError = useErrorHandler()
   const classes = useStyles()

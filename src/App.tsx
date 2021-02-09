@@ -11,12 +11,12 @@ import './App.css'
 import AuthenticatedApp from './AuthenticatedApp'
 import { ErrorFallback, ErrorHandler } from './components/widgets/ErrorHandler'
 import {
-  useSessionDataDispatch,
-  useSessionDataState
+  useUserSessionDataDispatch,
+  useUserSessionDataState
 } from './helpers/AuthContext'
 import UserService from './services/user.service'
 import { cssVariables, theme } from './style/theme'
-import { SessionData } from './types/types'
+import { UserSessionData } from './types/types'
 import UnauthenticatedApp from './UnauthenticatedApp'
 
 //const defaultTheme = createMuiTheme()
@@ -28,7 +28,7 @@ import UnauthenticatedApp from './UnauthenticatedApp'
 
 export const detectSSOCode = async (
   sessionUpdateFn: Function,
-  sessionData: SessionData,
+  sessionData: UserSessionData,
 ) => {
   //const redirectURL = getRootURL()
   // 'code' handling (from SSO) should be preformed on the root page, and then redirect to original route.
@@ -71,8 +71,8 @@ export const detectSSOCode = async (
 }
 
 function App() {
-  const sessionData = useSessionDataState()
-  const sessionUpdateFn = useSessionDataDispatch()
+  const sessionData = useUserSessionDataState()
+  const sessionUpdateFn = useUserSessionDataDispatch()
   const token = sessionData.token
   useEffect(() => {
     let isSubscribed = true

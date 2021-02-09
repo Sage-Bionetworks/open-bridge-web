@@ -18,7 +18,7 @@ export enum Types {
 
   AddSession = 'ADD_SESSION',
   RemoveSession = 'REMOVE_SESSION',
-  SetActiveSession = 'SET_ACTIVE_SESSION',
+ // SetActiveSession = 'SET_ACTIVE_SESSION',
   UpdateSessionName = 'UPDATE_SESSION_NAME',
   UpdateAssessments = 'UPDATE_ASSESSMENTS',
 }
@@ -32,14 +32,14 @@ export type ActionPayload = {
     studyId: string
     name: string
     assessments: Assessment[]
-    active?: boolean
+   // active?: boolean
   }
   [Types.RemoveSession]: {
     sessionId: string
   }
-  [Types.SetActiveSession]: {
+ /* [Types.SetActiveSession]: {
     sessionId: string
-  }
+  }*/
   [Types.UpdateSessionName]: {
     sessionId: string
     sessionName: string
@@ -62,7 +62,7 @@ function addSession(
   const session: StudySession = {
     id: getRandomId(),
     assessments,
-    active: isActive,
+   // active: isActive,
     studyId,
     order: sessions.length,
     //duration: 0,
@@ -72,7 +72,7 @@ function addSession(
   const result = [
     ...sessions.map((session, index) => ({
       ...session,
-      active: false,
+     // active: false,
       order: index,
     })),
     {
@@ -84,7 +84,7 @@ function addSession(
   return result
 }
 
-function setActiveSession(
+/*function setActiveSession(
   sessions: StudySession[],
   sessionId: string,
 ): StudySession[] {
@@ -94,7 +94,7 @@ function setActiveSession(
   }))
 
   return result
-}
+}*/
 
 function updateSessionName(
   sessions: StudySession[],
@@ -152,12 +152,12 @@ function actionsReducer(
         action.payload.name,
         action.payload.assessments,
         action.payload.studyId,
-        action.payload.active,
+       // action.payload.active,
       )
     }
-    case Types.SetActiveSession: {
+    /*case Types.SetActiveSession: {
       return setActiveSession(sessions, action.payload.sessionId)
-    }
+    }*/
 
     case Types.UpdateSessionName: {
       return updateSessionName(

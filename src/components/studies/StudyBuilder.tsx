@@ -4,7 +4,9 @@ import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps, useParams } from 'react-router-dom'
+import { useUserSessionDataState } from '../../helpers/AuthContext'
 import { useStudyBuilderInfo } from '../../helpers/hooks'
+import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
 import { Schedule, StudyDuration } from '../../types/scheduling'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
@@ -55,7 +57,9 @@ type StudyBuilderOwnProps = {}
 
 type StudyBuilderProps = StudyBuilderOwnProps & RouteComponentProps
 
-const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
+const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
+  ...otherProps
+}) => {
   const classes = useStyles()
   const handleError = useErrorHandler()
 
@@ -65,22 +69,44 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
   }>()
   const [section, setSection] = React.useState(_section)
   const [nextSection, setNextSection] = React.useState<StudySection>(_section)
-  //const { data: study, status, error } = useStudy(id)
-  const { data: builderInfo, status, error, setData } = useStudyBuilderInfo(id, section)
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
+  const [saveLoader, setSaveLoader] = React.useState(false)
+  const { token } = useUserSessionDataState()
+  const { data: builderInfo, status, error, setData } = useStudyBuilderInfo(id)
 
   const [open, setOpen] = React.useState(true)
 
-  function moveToNextSection(_section: StudySection) {
-    window.history.pushState(null, '', _section)
-    setSection(_section)
+  const saveStudySessions = async () => {
+    setSaveLoader(true)
+    await StudyService.saveStudySessions(
+      id,
+      builderInfo!.schedule.sessions || [],
+      token!,
+    )
+    setHasObjectChanged(false)
+    setSaveLoader(false)
+    return
+  }
+
+  const saveSchedulerData = async () => {
+    setSaveLoader(true)
+    await StudyService.saveStudySchedule(
+      id,
+      builderInfo!.schedule,
+      builderInfo!.study.studyDuration!,
+      token!,
+    )
+    setHasObjectChanged(false)
+    setSaveLoader(false)
+    return
   }
 
   if (status === 'IDLE') {
     return <>'no id'</>
   } else if (status === 'REJECTED') {
     handleError(error!)
-  } else if (status === 'RESOLVED') {
-    if (!builderInfo?.study) {
+  } else if (status === 'RESOLVED' && builderInfo) {
+    if (!builderInfo.study) {
       throw new Error('This session does not exist')
     }
   }
@@ -88,40 +114,82 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
     return <></>
   }
 
+  const changeSection = async (next: StudySection) => {
+  if (section === next) {
+    return
+  }
+
+    let saveFn: Function | undefined = undefined
+    //where we are currently
+    switch (section) {
+      case 'scheduler': {
+        saveFn = saveSchedulerData
+        break
+
+      }
+      case 'session-creator': {
+        saveFn = saveStudySessions
+        break
+      }
+      default: {
+      }
+    }
+    /*'description'
+  | 'team-settings'
+  | 'timeline-viewer'
+  | 'passive-features'
+  | 'branding'
+  | 'irb'
+  | 'preview'
+  | 'alerts'
+  | 'launch'*/
+    if (saveFn && hasObjectChanged) {
+      await saveFn()
+    }
+    window.history.pushState(null, '', next)
+    setSection(next)
+  }
+
   const ChildComponent: FunctionComponent<{}> = (): JSX.Element => {
     const navButtons = (
       <NavButtons
         id={id}
         currentSection={section}
-        onNavigate={(next: StudySection) => setNextSection(next)}
+        onNavigate={(section: StudySection) => changeSection(section)}
       ></NavButtons>
     )
+    const props = {
+      hasObjectChanged: hasObjectChanged,
+      saveLoader: saveLoader,
+    }
     switch (section) {
       case 'scheduler':
         return (
           <Scheduler
             {...props}
             id={id}
-            section={section}
-            nextSection={nextSection}
             schedule={builderInfo.schedule}
             studyDuration={builderInfo.study?.studyDuration}
-            onNavigate={(
-              section: StudySection,
-              data: {
-                schedule: Schedule
-                studyDuration: StudyDuration
-              },
-            ) => {
+            hasObjectChanged={hasObjectChanged}
+            saveLoader={saveLoader}
+            onSave={() => saveSchedulerData()}
+            onUpdate={({
+              schedule,
+              studyDuration,
+            }: {
+              schedule: Schedule
+              studyDuration: StudyDuration
+            }) => {
+              setHasObjectChanged(true)
+              console.log('updating duration', studyDuration)
               setData({
                 ...builderInfo,
-                schedule: data.schedule,
+                schedule: schedule,
                 study: {
                   ...builderInfo.study,
-                  duration: data.studyDuration,
+                  studyDuration,
                 },
               })
-              moveToNextSection(section)
             }}
           >
             {navButtons}
@@ -132,19 +200,15 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
           <SessionCreator
             {...props}
             id={id}
-            nextSection={nextSection}
-            section={section}
+            onSave={() => saveStudySessions()}
             sessions={builderInfo.schedule?.sessions || []}
-            onNavigate={(_section: StudySection, data: StudySection[]) => {
-              console.log(_section)
+            onUpdate={(data: StudySection[]) => {
+              //console.log(_section)
+              setHasObjectChanged(true)
               setData({
                 ...builderInfo,
                 schedule: { ...builderInfo.schedule, sessions: data },
               })
-
-              moveToNextSection(_section)
-
-              console.log('section' + section)
             }}
           >
             {navButtons}
@@ -155,11 +219,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
           <AppDesign
             {...props}
             id={id}
-            section={section}
-            nextSection={nextSection}
-            onNavigate={(_section: StudySection, data: any) => {
+            onUpdate={(_section: StudySection, data: any) => {
               console.log(_section)
-              moveToNextSection(_section)
+              // moveToNextSection(_section)
             }}
           >
             {navButtons}
@@ -170,11 +232,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
           <Launch
             {...props}
             id={id}
-            section={section}
-            nextSection={nextSection}
-            onNavigate={(_section: StudySection, data: any) => {
+            onUpdate={(_section: StudySection, data: any) => {
               console.log(_section)
-              moveToNextSection(_section)
+              // moveToNextSection(_section)
             }}
           >
             {navButtons}
@@ -185,11 +245,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
           <PassiveFeatures
             {...props}
             id={id}
-            section={section}
-            nextSection={nextSection}
-            onNavigate={(_section: StudySection, data: any) => {
+            onUpdate={(_section: StudySection, data: any) => {
               console.log(_section)
-              moveToNextSection(_section)
+              // moveToNextSection(_section)
             }}
           >
             {navButtons}
@@ -204,13 +262,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
   return (
     <>
       <StudyTopNav studyId={id} currentSection={section}></StudyTopNav>
+      <span> {hasObjectChanged ? 'object changed' : 'no change'}</span>
       <Box paddingTop={2} display="flex" position="relative">
         <StudyLeftNav
           open={open}
           onToggle={() => setOpen(prev => !prev)}
           currentSection={section}
-          onNavigate={(loc: StudySection) => {
-            setNextSection(loc)
+          onNavigate={(section: StudySection) => {
+            changeSection(section)
           }}
           id={id}
         ></StudyLeftNav>
@@ -223,12 +282,20 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({ ...props }) => {
               [classes.mainAreaWide]: !open,
             })}
           >
+               <LoadingComponent
+            reqStatusLoading={saveLoader}
+            variant="small"
+            loaderSize="2rem"
+            style={{ width: '2rem', position: 'absolute', top:'30px', left: '50%' }}
+          ></LoadingComponent>
+
+          
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
               onError={ErrorHandler}
             >
-              <LoadingComponent reqStatusLoading={status}>
-                <ChildComponent></ChildComponent>
+              <LoadingComponent reqStatusLoading={status || !builderInfo}>
+                {builderInfo && <ChildComponent></ChildComponent>}
               </LoadingComponent>
             </ErrorBoundary>
           </Box>
