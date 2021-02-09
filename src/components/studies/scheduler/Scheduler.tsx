@@ -11,17 +11,22 @@ import React, { FunctionComponent } from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import { poppinsFont } from '../../../style/theme'
 import {
+  AssessmentOrder,
   HDWMEnum,
   Schedule,
   SessionSchedule,
   StartEventId,
-  StudyDuration
+  StudyDuration,
+  StudySession
 } from '../../../types/scheduling'
 import { StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
+import AssessmentList from './AssessmentList'
 import Duration from './Duration'
 import IntroInfo from './IntroInfo'
-import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
+import SchedulableSingleSessionContainer, {
+  defaultSchedule
+} from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
   SessionScheduleAction
@@ -38,6 +43,13 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: '18px',
       fontStyle: 'normal',
       fontWeight: 600,
+    },
+    assessments: {
+      width: '286px',
+      flexGrow: 0,
+      flexShrink: 0,
+      backgroundColor: '#BCD5E4',
+      padding: theme.spacing(1),
     },
     scheduleHeader: {
       display: 'flex',
@@ -67,12 +79,12 @@ const Scheduler: FunctionComponent<
   children,
 }: SchedulerProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
- // const [isInitialInfoSet, setIsInitialInfoSet] = React.useState(studyDuration && _schedule.startEventId)
+  // const [isInitialInfoSet, setIsInitialInfoSet] = React.useState(studyDuration && _schedule.startEventId)
   const [schedule, setSchedule] = React.useState({ ..._schedule })
   const [duration, setDuration] = React.useState(studyDuration)
-  const[hasObjectChanged, setHasObjectChanged] = React.useState(_changed)
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(_changed)
   console.log('rerender', duration)
- /* React.useEffect(() => {
+  /* React.useEffect(() => {
     const timer = setInterval(() => {
       const equal = _.isEqual(_schedule, schedule) && _.isEqual(studyDuration, duration)
       if (!equal) {
@@ -84,7 +96,7 @@ const Scheduler: FunctionComponent<
     return () => clearInterval(timer)
   })*/
 
- /* React.useEffect(() => {
+  /* React.useEffect(() => {
     if (!isInitialInfoSet) {
       return
     }
@@ -118,7 +130,7 @@ const Scheduler: FunctionComponent<
   const setInitialInfo = async (duration: string, start: StartEventId) => {
     const _schedule = { ...schedule, startEventId: start }
     updateData(_schedule, duration)
-   // setIsInitialInfoSet(true)
+    // setIsInitialInfoSet(true)
   }
 
   const scheduleUpdateFn = (action: SessionScheduleAction) => {
@@ -127,9 +139,33 @@ const Scheduler: FunctionComponent<
     updateData(newSchedule, studyDuration || '')
   }
 
+  const updateAssessments = (
+    session: StudySession,
+    {
+      isRandomized,
+      isGroupAssessments,
+    }: { isRandomized?: boolean; isGroupAssessments?: boolean },
+  ) => {
+    const updatedSchedule = session.sessionSchedule || defaultSchedule
+    if (isRandomized !== undefined) {
+      const order: AssessmentOrder = isRandomized ? 'RANDOM' : 'SEQUENTIAL'
+      updatedSchedule.order = order
+    }
+    if (isGroupAssessments !== undefined) {
+      updatedSchedule.isGroupAssessments = isGroupAssessments
+    }
+
+    scheduleUpdateFn({
+      type: ActionTypes.UpdateSessionSchedule,
+      payload: {
+        sessionId: session.id,
+        schedule: updatedSchedule,
+      },
+    })
+  }
+
   return (
     <>
-     
       <NavigationPrompt when={hasObjectChanged}>
         {({ onConfirm, onCancel }) => (
           <ConfirmationDialog
@@ -141,7 +177,7 @@ const Scheduler: FunctionComponent<
         )}
       </NavigationPrompt>
 
-      {!schedule.startEventId &&  (
+      {!schedule.startEventId && (
         <IntroInfo onContinue={setInitialInfo}></IntroInfo>
       )}
 
@@ -181,14 +217,30 @@ const Scheduler: FunctionComponent<
               style={{ marginTop: '16px' }}
               startEventId={schedule.startEventId as StartEventId}
               onChange={(startEventId: StartEventId) => {
-                
                 updateSchedule({ ...schedule, startEventId })
-              }
-              }
+              }}
             />
 
             {schedule.sessions.map((session, index) => (
-              <Box key={session.id}>
+              <Box mb={2} display="flex">
+                <Box className={classes.assessments}>
+                  <AssessmentList
+                    studySession={session}
+                    onSetRandomized={(isRandomized: boolean) =>
+                      updateAssessments(session, { isRandomized })
+                    }
+                    onChangeGrouping={(isGroupAssessments: boolean) =>
+                      updateAssessments(session, { isGroupAssessments })
+                    }
+                    isGroupAssessments={
+                      session.sessionSchedule?.isGroupAssessments || false
+                    }
+                    assessmentOrder={
+                      session.sessionSchedule?.order || 'SEQUENTIAL'
+                    }
+                  />
+                </Box>
+
                 <SchedulableSingleSessionContainer
                   key={session.id}
                   studySession={session}
