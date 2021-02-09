@@ -156,26 +156,21 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   const updateAssessments = async (
     sessionId: string,
     previousAssessments: Assessment[],
+    newAssessments: Assessment[],
   ) => {
     console.log('updating')
-    const assessments: Assessment[] = []
-    const currentSession = sessions.find(session => session.id === sessionId)
-    for (let i = 0; i < previousAssessments.length; i++) {
-      const assessment = previousAssessments[i]
-      // Check to see if the assessment was already in the list
-      if (!currentSession!.assessments.includes(assessment)) {
-        const newAssessment = await AssessmentService.importAssessmentIntoLocalContext(
-          assessment.guid,
-          assessment.ownerId,
-          token!,
-        )
-        const assessmentWithResources = await AssessmentService.getResource(
-          newAssessment,
-        )
-        assessments.push(assessmentWithResources)
-      } else {
-        assessments.push(assessment)
-      }
+    const assessments: Assessment[] = [...previousAssessments]
+    for (let i = 0; i < newAssessments.length; i++) {
+      const assessment = newAssessments[i]
+      const newAssessment = await AssessmentService.importAssessmentIntoLocalContext(
+        assessment.guid,
+        assessment.ownerId,
+        token!,
+      )
+      const assessmentWithResources = await AssessmentService.getResource(
+        newAssessment,
+      )
+      assessments.push(assessmentWithResources)
     }
     sessionsUpdateFn({
       type: Types.UpdateAssessments,
@@ -314,10 +309,11 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
                 variant="contained"
                 onClick={async () => {
                   setIsAddingAssessmentToSession(true)
-                  await updateAssessments(getActiveSession(sessions)!.id, [
-                    ...getActiveSession(sessions)!.assessments,
-                    ...selectedAssessments,
-                  ])
+                  await updateAssessments(
+                    getActiveSession(sessions)!.id,
+                    [...getActiveSession(sessions)!.assessments],
+                    [...selectedAssessments],
+                  )
                   setSelectedAssessments([])
                   setIsAddingAssessmentToSession(false)
                 }}
