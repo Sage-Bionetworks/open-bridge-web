@@ -4,7 +4,7 @@ import {
   Checkbox,
   FormControlLabel,
   makeStyles,
-  TextField
+  TextField,
 } from '@material-ui/core'
 import SaveIcon from '@material-ui/icons/Save'
 import clsx from 'clsx'
@@ -19,7 +19,7 @@ import {
   Reoccurance as ReoccuranceType,
   SessionSchedule,
   StartDate as StartDateType,
-  StudySession
+  StudySession,
 } from '../../../types/scheduling'
 import { ErrorFallback, ErrorHandler } from '../../widgets/ErrorHandler'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
@@ -286,6 +286,13 @@ SchedulableSingleSessionContainerProps) => {
                         multiline={false}
                         fullWidth={true}
                         variant="outlined"
+                        onChange={event => {
+                          const { value } = event.target
+                          updateSessionSchedule({
+                            ...schedulableSession,
+                            subjectLine: value,
+                          })
+                        }}
                       ></TextField>
                     </SchedulingFormSection>
 
@@ -299,6 +306,13 @@ SchedulableSingleSessionContainerProps) => {
                         multiline={true}
                         fullWidth={true}
                         variant="outlined"
+                        onChange={event => {
+                          const { value } = event.target
+                          updateSessionSchedule({
+                            ...schedulableSession,
+                            bodyText: value,
+                          })
+                        }}
                       ></TextField>
                     </SchedulingFormSection>
                   </Box>
