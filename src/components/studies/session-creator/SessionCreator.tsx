@@ -311,8 +311,8 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
                   setIsAddingAssessmentToSession(true)
                   await updateAssessments(
                     getActiveSession(sessions)!.id,
-                    [...getActiveSession(sessions)!.assessments],
-                    [...selectedAssessments],
+                    getActiveSession(sessions)!.assessments,
+                    selectedAssessments,
                   )
                   setSelectedAssessments([])
                   setIsAddingAssessmentToSession(false)
