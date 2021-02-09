@@ -51,12 +51,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       width: `${280 * 3 + 16 * 3}px`,
     },
   },
-  customizeAppButton: {
-    backgroundColor: '#FCFCFC',
-    border: '1px solid black',
-    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-    borderRadius: '0px',
-  },
 }))
 
 type StudyBuilderOwnProps = {}
@@ -79,7 +73,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   const [saveLoader, setSaveLoader] = React.useState(false)
   const { token } = useUserSessionDataState()
   const { data: builderInfo, status, error, setData } = useStudyBuilderInfo(id)
-  //const { data: study, status, error } = useStudy(id)
 
   const [open, setOpen] = React.useState(true)
 
