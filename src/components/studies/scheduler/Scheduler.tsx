@@ -7,7 +7,6 @@ import {
   Theme
 } from '@material-ui/core'
 import SaveIcon from '@material-ui/icons/Save'
-import * as _ from 'lodash'
 import React, { FunctionComponent } from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import { poppinsFont } from '../../../style/theme'
@@ -68,12 +67,12 @@ const Scheduler: FunctionComponent<
   children,
 }: SchedulerProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
-  const [isInitialInfoSet, setIsInitialInfoSet] = React.useState(false)
+ // const [isInitialInfoSet, setIsInitialInfoSet] = React.useState(studyDuration && _schedule.startEventId)
   const [schedule, setSchedule] = React.useState({ ..._schedule })
   const [duration, setDuration] = React.useState(studyDuration)
   const[hasObjectChanged, setHasObjectChanged] = React.useState(_changed)
   console.log('rerender', duration)
-  React.useEffect(() => {
+ /* React.useEffect(() => {
     const timer = setInterval(() => {
       const equal = _.isEqual(_schedule, schedule) && _.isEqual(studyDuration, duration)
       if (!equal) {
@@ -83,15 +82,15 @@ const Scheduler: FunctionComponent<
     }, 5000)
     // Clear timeout if the component is unmounted
     return () => clearInterval(timer)
-  })
+  })*/
 
-  React.useEffect(() => {
+ /* React.useEffect(() => {
     if (!isInitialInfoSet) {
       return
     }
 
     onSave()
-  }, [isInitialInfoSet])
+  }, [isInitialInfoSet])*/
 
   const saveSession = async (sessionId: string) => {
     onSave()
@@ -102,6 +101,7 @@ const Scheduler: FunctionComponent<
     setSchedule(schedule)
     setDuration(duration)
     setHasObjectChanged(true)
+    onUpdate({ schedule, studyDuration: duration })
   }
 
   //set duration part
@@ -118,7 +118,7 @@ const Scheduler: FunctionComponent<
   const setInitialInfo = async (duration: string, start: StartEventId) => {
     const _schedule = { ...schedule, startEventId: start }
     updateData(_schedule, duration)
-    setIsInitialInfoSet(true)
+   // setIsInitialInfoSet(true)
   }
 
   const scheduleUpdateFn = (action: SessionScheduleAction) => {
@@ -141,7 +141,7 @@ const Scheduler: FunctionComponent<
         )}
       </NavigationPrompt>
 
-      {!schedule.startEventId && (
+      {!schedule.startEventId &&  (
         <IntroInfo onContinue={setInitialInfo}></IntroInfo>
       )}
 
