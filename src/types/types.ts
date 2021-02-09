@@ -90,6 +90,7 @@ export type Assessment = {
   validationStatus: string
   duration?: number
   resources?: any[]
+  originGuid?: string
 }
 
 /* *** Study ********************************/
