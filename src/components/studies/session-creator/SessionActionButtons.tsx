@@ -20,10 +20,54 @@ const useStyles = makeStyles(theme => ({
   },
   selectEmpty: {
     marginTop: 0,
-
-    marginRight: theme.spacing(1),
-    marginLeft: theme.spacing(2),
     padding: 0,
+    width: '175px',
+    height: '40px',
+    boxShadow: `0px 4px 4px rgba(0, 0, 0, 0.25)`,
+    outline: 'none',
+    boxSizing: 'border-box',
+    backgroundColor: '#F2F2F2',
+    borderBottom: '0px',
+    '&:hover:not(.Mui-disabled):not(.Mui-focused):not(.Mui-error):before': {
+      borderBottom: '0px',
+    },
+    '&:active': {
+      borderBottom: '0px',
+    },
+    fontFamily: 'Lato',
+  },
+  createNewSession: {
+    borderRadius: '0px',
+    width: '192px',
+    height: '40px',
+    marginRight: theme.spacing(2),
+    marginBottom: theme.spacing(1),
+    marginLeft: theme.spacing(1),
+    color: 'black',
+    backgroundColor: '#BCD5E4',
+    '&:hover': {
+      backgroundColor: '#BCD5E4',
+    },
+    fontFamily: 'Lato',
+  },
+  duplicateStudyButton: {
+    width: '93px',
+    height: '40px',
+    borderRadius: '0px',
+    marginBottom: theme.spacing(1),
+    color: 'black',
+    backgroundColor: '#BCD5E4',
+    '&:hover': {
+      backgroundColor: '#BCD5E4',
+    },
+    fontFamily: 'Lato',
+    boxShadow: `0px 4px 4px rgba(0, 0, 0, 0.25)`,
+  },
+  menuItem: {
+    root: {
+      backgroundColor: '#F2F2F2',
+    },
+    fontFamily: 'Lato',
   },
 }))
 
@@ -59,37 +103,44 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
       <Button
         key="add_session"
         variant="contained"
-        color="secondary"
-        style={{ marginRight: '16px' }}
+        className={classes.createNewSession}
         onClick={() => onAddSession(sessions, [])}
       >
-        Create new session
+        + Create new session
       </Button>
 
-      {selectedSessionId && <>
-        <Select
-        key='session_select'
-        value={selectedSessionId}
-        onChange={e => setSelectedSessionId(e.target.value as string)}
-        displayEmpty
-        className={classes.selectEmpty}
-        inputProps={{ 'aria-label': 'Without label' }}
-      >
-        {sessions.map((session, index) => (
-          <MenuItem value={session.id} key={`${session.id}menu${index}`}>
-            {session.name}
-          </MenuItem>
-        ))}
-      </Select>,
-        <Button
-          key="duplicate_session"
-          variant="contained"
-          color="secondary"
-          onClick={() => duplicateSession(selectedSessionId)}
-        >
-          Duplicate
-        </Button>,
-     </>}
+      {selectedSessionId && (
+        <>
+          <Select
+            key="session_select"
+            value={selectedSessionId}
+            onChange={e => setSelectedSessionId(e.target.value as string)}
+            displayEmpty
+            className={classes.selectEmpty}
+            inputProps={{ 'aria-label': 'Without label' }}
+            disableUnderline={true}
+          >
+            {sessions.map((session, index) => (
+              <MenuItem
+                value={session.id}
+                key={`${session.id}menu${index}`}
+                className={classes.menuItem}
+              >
+                {session.name}
+              </MenuItem>
+            ))}
+          </Select>
+
+          <Button
+            key="duplicate_session"
+            variant="contained"
+            onClick={() => duplicateSession(selectedSessionId)}
+            className={classes.duplicateStudyButton}
+          >
+            Duplicate
+          </Button>
+        </>
+      )}
     </Box>
   )
 }

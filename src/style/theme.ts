@@ -87,7 +87,7 @@ const theme: Theme = createMuiTheme({
     },
     MuiInputBase: {
       input: {
-        backgroundColor: '#BCD5E4',
+        // backgroundColor: '#BCD5E4',
       },
       colorSecondary: {
         '& input': {
