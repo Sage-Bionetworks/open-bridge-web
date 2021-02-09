@@ -5,14 +5,14 @@ import {
   FormControlLabel,
   IconButton,
   Paper,
-  Theme,
+  Theme
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import DeleteIcon from '@material-ui/icons/Close'
 import React from 'react'
 import {
   AssessmentWindow as AssessmentWindowType,
-  HSsEnum,
+  HSsEnum
 } from '../../../types/scheduling'
 import { StringDictionary } from '../../../types/types'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
@@ -137,11 +137,14 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
           control={
             <Checkbox
               value={window.isAllowAnyFrequency}
-              onChange={e =>
+              checked= {window.isAllowAnyFrequency===true}
+              onChange={e =>{
+         
                 onChange({
                   ...window,
                   isAllowAnyFrequency: e.target.checked,
                 })
+              }
               }
             />
           }
