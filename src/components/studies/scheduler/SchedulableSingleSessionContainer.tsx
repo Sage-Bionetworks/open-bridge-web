@@ -232,12 +232,25 @@ SchedulableSingleSessionContainerProps) => {
                   multiline={false}
                   fullWidth={true}
                   variant="outlined"
-                  onChange={event => {
-                    const { value } = event.target
+                  value={schedulableSession.subjectLine}
+                  id="subject-line"
+                  onBlur={event => {
                     updateSessionSchedule({
                       ...schedulableSession,
-                      subjectLine: value,
+                      subjectLine: event.target.value,
                     })
+                  }}
+                  inputProps={{
+                    style: {
+                      height: '40px',
+                      padding: '4px 8px',
+                      borderRadius: '0px',
+                      boxSizing: 'border-box',
+                      border: '1px solid black',
+                      fontFamily: 'Lato',
+                      fontWeight: 'bold',
+                      fontSize: '15px',
+                    },
                   }}
                 ></TextField>
               </SchedulingFormSection>
@@ -252,12 +265,24 @@ SchedulableSingleSessionContainerProps) => {
                   multiline={true}
                   fullWidth={true}
                   variant="outlined"
-                  onChange={event => {
-                    const { value } = event.target
+                  value={schedulableSession.bodyText}
+                  id="body-text"
+                  onBlur={event => {
                     updateSessionSchedule({
                       ...schedulableSession,
-                      bodyText: value,
+                      bodyText: event.target.value,
                     })
+                  }}
+                  inputProps={{
+                    style: {
+                      height: '75px',
+                      padding: '4px 4px',
+                      borderRadius: '0px',
+                      boxSizing: 'border-box',
+                      fontFamily: 'Lato',
+                      backgroundColor: 'white',
+                      border: "1px solid black"
+                    },
                   }}
                 ></TextField>
               </SchedulingFormSection>

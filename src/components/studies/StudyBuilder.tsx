@@ -115,9 +115,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }
 
   const changeSection = async (next: StudySection) => {
-  if (section === next) {
-    return
-  }
+    if (section === next) {
+      return
+    }
 
     let saveFn: Function | undefined = undefined
     //where we are currently
@@ -125,7 +125,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       case 'scheduler': {
         saveFn = saveSchedulerData
         break
-
       }
       case 'session-creator': {
         saveFn = saveStudySessions
@@ -282,14 +281,18 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
               [classes.mainAreaWide]: !open,
             })}
           >
-               <LoadingComponent
-            reqStatusLoading={saveLoader}
-            variant="small"
-            loaderSize="2rem"
-            style={{ width: '2rem', position: 'absolute', top:'30px', left: '50%' }}
-          ></LoadingComponent>
+            <LoadingComponent
+              reqStatusLoading={saveLoader}
+              variant="small"
+              loaderSize="2rem"
+              style={{
+                width: '2rem',
+                position: 'absolute',
+                top: '30px',
+                left: '50%',
+              }}
+            ></LoadingComponent>
 
-          
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
               onError={ErrorHandler}
