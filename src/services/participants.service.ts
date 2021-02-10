@@ -16,11 +16,11 @@ async function getParticipants(
     {},
     token,
   )
-  const mappedResult = result.data.items.map(item => {
+  /*const mappedResult = result.data.items.map(item => {
     return { ...item, studyExternalId: item.externalIds[studyIdentifier] }
-  })
+  })*/
 
-  return mappedResult
+  return result.data.items
 }
 
 async function addParticipant(

@@ -98,6 +98,7 @@ export type StudyStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'
 export type Study = {
   identifier: string
   status: StudyStatus
+  version: number
   name: string
   subtitle?: string
   description?: string

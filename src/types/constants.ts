@@ -117,9 +117,10 @@ export default {
     synapseGetAlias: '/repo/v1/principal/alias',
     synapseGetUserProfile:'/repo/v1/user/:id/bundle',
 
-    //new made up
-    studies: '/v1/studies',
-    study: '/v1/studies/:id',
+    
+    studies: '/v5/studies',
+    
+    study: '/v5/studies/:id',
 
     schedule: 'v1/schedule/:id',
     scheduleSessions: 'v1/schedule/:id/sessions',
