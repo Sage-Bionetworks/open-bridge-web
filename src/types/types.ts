@@ -94,6 +94,7 @@ export type Assessment = {
 }
 
 /* *** Study ********************************/
+export type EnrollmentType = 'ID' | 'PHONE'
 export type StudyStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'
 export type Study = {
   identifier: string
@@ -103,6 +104,9 @@ export type Study = {
   subtitle?: string
   description?: string
   studyDuration?: StudyDuration
+  options?: {
+    enrollmentType?: EnrollmentType
+  }
   // sessions: StudySession[]
 }
 

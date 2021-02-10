@@ -57,7 +57,7 @@ export const NO_ACCESS: Access = {
 
 export function getRolesFromAccess(access: Access): AdminRoles[] {
   if (access.STUDY_BUILDER === 'EDITOR') {
-    return ['admin']
+    return ['org_admin']
   }
   if (access.ADHERENCE_DATA === 'VIEWER') {
     return ['researcher']
@@ -66,12 +66,12 @@ export function getRolesFromAccess(access: Access): AdminRoles[] {
 }
 
 export function getAccessFromRoles(roles: AdminRoles[]): Access {
-  if (roles.includes('admin')) {
+  if (roles.includes('org_admin')) {
     return {
       STUDY_BUILDER: 'EDITOR',
       PARTICIPANT_MANAGER: 'EDITOR',
       ADHERENCE_DATA: 'EDITOR',
-      STUDY_DATA: 'VIEWER',
+      STUDY_DATA: 'EDITOR',
     }
   }
 
