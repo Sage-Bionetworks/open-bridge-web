@@ -22,10 +22,10 @@ const useStyles = makeStyles<ThemeType, StyleProps>((theme: ThemeType) => ({
   }),
   drawerOpen: props => ({
     width: props.maxWidth,
-    transition: theme.transitions.create('width', {
+    /*transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
-    }),
+    }),*/
   }),
   drawerToolbar: {
     display: 'flex',
@@ -37,10 +37,10 @@ const useStyles = makeStyles<ThemeType, StyleProps>((theme: ThemeType) => ({
 
   },
   drawerClose: props => ({
-    transition: theme.transitions.create('width', {
+   /* transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
-    }),
+    }),*/
     height: props.collapsedHight,
     overflowX: 'hidden',
     width: theme.spacing(6),
@@ -52,6 +52,7 @@ const useStyles = makeStyles<ThemeType, StyleProps>((theme: ThemeType) => ({
     fontSize: '14px',
     position: 'static',
     border: 'none',
+    height: 'auto',
     backgroundColor: '#F2F2F2',
     boxShadow:
       '0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12)',

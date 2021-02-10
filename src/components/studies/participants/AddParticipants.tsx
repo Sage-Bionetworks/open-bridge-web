@@ -120,10 +120,9 @@ function parseCSVToJSON(rows: any[]): Partial<ParticipantAccountSummary>[] {
 }
 
 const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
-  studyId,
-  token,
-  enrollmentType = 'ID'
+
 }) => {
+  console.log('rerender')
   const [tab, setTab] = React.useState(0)
 
   const classes = useStyles()

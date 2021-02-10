@@ -6,12 +6,15 @@ import { useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps, useParams } from 'react-router-dom'
 import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
+import { useStudyBuilderInfo } from '../../../helpers/hooks'
 import ParticipantService from '../../../services/participants.service'
-import { ParticipantAccountSummary } from '../../../types/types'
+import StudyService from '../../../services/study.service'
+import { EnrollmentType, ParticipantAccountSummary } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import HideWhen from '../../widgets/HideWhen'
 import StudyTopNav from '../StudyTopNav'
 import AddParticipants from './AddParticipants'
+import EnrollmentSelector from './EnrollmentSelector'
 import ParticipantTableGrid from './ParticipantTableGrid'
 
 const useStyles = makeStyles(theme => ({
@@ -44,28 +47,44 @@ type ParticipantManagerProps = ParticipantManagerOwnProps & RouteComponentProps
 const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   let { id } = useParams<{ id: string }>()
   const [isEdit, setIsEdit] = React.useState(false)
-  const [isOpen, setIsOpen] = React.useState(false)
-  const [tab, setTab] = React.useState(0)
+
   const handleError = useErrorHandler()
   const classes = useStyles()
   //if you need search params use the following
   //const { param } = useParams<{ param: string}>()
   //<T> is the type of data you are retrieving
   const { token } = useUserSessionDataState()
-
-  const { data, status, error, run, setData } = useAsync<
-    ParticipantAccountSummary[]
-  >({
+  const {
+    data: studyData,
+    status: studyStatus,
+    error: studyError,
+    setData: setStudyData,
+  } = useStudyBuilderInfo(id)
+  const {
+    data: participantData,
+    status,
+    error,
+    run,
+    setData: setParticipantData,
+  } = useAsync<ParticipantAccountSummary[]>({
     status: 'PENDING',
     data: null,
   })
   const [exportData, setExportData] = React.useState<any[] | null>(null)
 
+  const updateEnrollment = async(type: EnrollmentType) => {
+    let study = studyData!.study
+    study.options = {...study.options, enrollmentType: type}
+
+    const updatedStudy = await StudyService.updateStudy(study, token!)
+    setStudyData({...studyData, study})
+  }
+
   React.useEffect(() => {
-    if (!data) {
+    if (!participantData) {
       return
     }
-    const result = data.map(record => {
+    const result = participantData.map(record => {
       return {
         healthCode: record.id,
         clinicVisit: '',
@@ -75,7 +94,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       }
     })
     setExportData(result)
-  }, [data])
+  }, [participantData])
 
   React.useEffect(() => {
     if (!id) {
@@ -95,6 +114,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         <StudyTopNav studyId={id} currentSection={''}></StudyTopNav>{' '}
         <Box px={3} py={2}>
           Study ID: {id}
+        </Box>
+        {!studyData?.study.options?.enrollmentType && <EnrollmentSelector callbackFn={(type: EnrollmentType)=> updateEnrollment(type)}></EnrollmentSelector>}
+        {studyData?.study.options?.enrollmentType &&(<>
+        {studyData.study.options.enrollmentType}
+        <Box px={3} py={2}>
           <Grid component="label" container alignItems="center" spacing={0}>
             <Grid item>View</Grid>
             <Grid item>
@@ -132,11 +156,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             enrollmentType={'ID'}
           ></AddParticipants>
           <Box py={0} pr={3} pl={2}>
-            <ParticipantTableGrid rows={data || []} studyId={'mtb-user-testing'}></ParticipantTableGrid>
+            <ParticipantTableGrid
+              rows={participantData || []}
+              studyId={'mtb-user-testing'}
+            ></ParticipantTableGrid>
           </Box>
 
-          <div style={{ width: '100%' }}>ADD A PARTICIPANT</div>
-        </CollapsibleLayout>
+          <Box textAlign="center" pl={2}>ADD A PARTICIPANT</Box>
+        </CollapsibleLayout></>)}
       </>
     )
   }
