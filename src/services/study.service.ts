@@ -2,12 +2,12 @@ import { callEndpoint } from '../helpers/utility'
 import constants from '../types/constants'
 import { Schedule, StudyDuration, StudySession } from '../types/scheduling'
 import { Study } from '../types/types'
-import { getItem, KEYS, MOCKS, setItem } from './lshelper'
 
 const StudyService = {
   getStudies,
   getStudy,
-  saveStudy,
+  updateStudy,
+  createStudy,
   removeStudy,
   getStudySessions,
   saveStudySessions,
@@ -22,8 +22,9 @@ async function getStudies(token: string): Promise<Study[]> {
     {},
     token,
   )
+ //alina: this is temporary until we get status returned from back end
 
-  return studies.data.items
+  return studies.data.items.map(study=> (study.status? study : {...study, status: 'DRAFT'} ))
 }
 
 async function getStudy(id: string, token: string): Promise<Study | undefined> {
@@ -36,7 +37,7 @@ async function getStudy(id: string, token: string): Promise<Study | undefined> {
   return study.data.data
 }
 
-async function getAllSchedules(): Promise<Schedule[] | null> {
+/*async function getAllSchedules(): Promise<Schedule[] | null> {
   let s = await getItem<Schedule[]>(KEYS.SCHEDULES)
   if (!s) {
     const mocks = MOCKS.SCHEDULE
@@ -45,7 +46,7 @@ async function getAllSchedules(): Promise<Schedule[] | null> {
   }
 
   return s
-}
+}*/
 
 async function getStudySessions(
   studyId: string,
@@ -60,16 +61,28 @@ async function getStudySessions(
   return studySessions.data.items
 }
 
-async function saveStudy(study: Study, token: string): Promise<Study[]> {
+async function createStudy(study: Study, token: string): Promise<Study[]> {
   await callEndpoint<{ items: Study[] }>(
-    constants.endpoints.study.replace(':id', study.identifier),
-    'POST',
-    study,
+    constants.endpoints.study.replace(':id', ''),
+    'POST', // once we add things to the study -- we can change this to actual object
+    { identifier: study.identifier, version: study.version, name: study.name },
     token,
   )
-
+  debugger
   const data = await getStudies(token)
+  return data
+}
 
+async function updateStudy(study: Study, token: string): Promise<Study[]> {
+ const result =  await callEndpoint<{ items: Study[] }>(
+    constants.endpoints.study.replace(':id', study.identifier),
+    'POST',// once we add things to the study -- we can change this to actual object
+    { identifier: study.identifier, version: study.version, name: study.name },
+    //study,
+    token,
+  )
+  debugger
+  const data = await getStudies(token)
   return data
 }
 
@@ -96,7 +109,7 @@ async function saveStudySchedule(
   study.studyDuration = duration
 
   //save study
-  await saveStudy(study, token)
+  await updateStudy(study, token)
 
   //save sessions
   const studySessions = await callEndpoint<any>(
