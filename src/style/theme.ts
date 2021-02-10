@@ -67,6 +67,7 @@ const theme: Theme = createMuiTheme({
       '@global': globals,
     },
     MuiButton: {
+
       containedPrimary: {
         backgroundColor: '#000',
         '&:hover': {
@@ -137,7 +138,7 @@ const theme: Theme = createMuiTheme({
       black: '#2E2E2E',
     },
     background: {
-      default: '#E5E5E5', //'#BCD5E4',
+      default: '#E5E5E5', 
       paper: '#fff',
     },
     text: {
@@ -149,6 +150,7 @@ const theme: Theme = createMuiTheme({
     },
     primary: {
       main: '#2196f3',
+      dark: '#BCD5E4'
     },
     error: {
       main: '#EE6070',
