@@ -1,6 +1,11 @@
-import { Box, Button, makeStyles, MenuItem, Select } from '@material-ui/core'
+import { Box, makeStyles, MenuItem } from '@material-ui/core'
 import React, { FunctionComponent, useEffect } from 'react'
 import { StudySession } from '../../../types/scheduling'
+import {
+  BlueButton,
+  ButtonWithSelectButton,
+  ButtonWithSelectSelect
+} from '../../widgets/StyledComponents'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -17,51 +22,6 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(1),
     minWidth: 120,
     whiteSpace: 'nowrap',
-  },
-  selectEmpty: {
-    marginTop: 0,
-    padding: 0,
-    width: '175px',
-    height: '40px',
-    boxShadow: `0px 4px 4px rgba(0, 0, 0, 0.25)`,
-    outline: 'none',
-    boxSizing: 'border-box',
-    backgroundColor: '#F2F2F2',
-    fontFamily: 'Lato',
-    cursor: 'pointer',
-  },
-  createNewSession: {
-    borderRadius: '0px',
-    width: '192px',
-    height: '40px',
-    marginRight: theme.spacing(2),
-    marginBottom: theme.spacing(1),
-    marginLeft: theme.spacing(1),
-    color: 'black',
-    backgroundColor: '#BCD5E4',
-    '&:hover': {
-      backgroundColor: '#BCD5E4',
-    },
-    fontFamily: 'Lato',
-  },
-  duplicateStudyButton: {
-    width: '93px',
-    height: '40px',
-    borderRadius: '0px',
-    marginBottom: theme.spacing(1),
-    color: 'black',
-    backgroundColor: '#BCD5E4',
-    '&:hover': {
-      backgroundColor: '#BCD5E4',
-    },
-    fontFamily: 'Lato',
-    boxShadow: `1px 4px 4px rgba(0, 0, 0, 0.25)`,
-  },
-  menuItem: {
-    fontFamily: 'Lato',
-  },
-  selectMenu: {
-    backgroundColor: '#F2F2F2',
   },
 }))
 
@@ -94,46 +54,38 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
 
   return (
     <Box className={classes.root}>
-      <Button
+      <BlueButton
         key="add_session"
         variant="contained"
-        className={classes.createNewSession}
         onClick={() => onAddSession(sessions, [])}
       >
         + Create new session
-      </Button>
+      </BlueButton>
 
       {selectedSessionId && (
         <>
-          <Select
+          <ButtonWithSelectSelect
             key="session_select"
             value={selectedSessionId}
             onChange={e => setSelectedSessionId(e.target.value as string)}
             displayEmpty
-            className={classes.selectEmpty}
             inputProps={{ 'aria-label': 'Without label' }}
             disableUnderline={true}
-            classes={{ selectMenu: classes.selectMenu }}
           >
             {sessions.map((session, index) => (
-              <MenuItem
-                value={session.id}
-                key={`${session.id}menu${index}`}
-                className={classes.menuItem}
-              >
+              <MenuItem value={session.id} key={`${session.id}menu${index}`}>
                 {session.name}
               </MenuItem>
             ))}
-          </Select>
+          </ButtonWithSelectSelect>
 
-          <Button
+          <ButtonWithSelectButton
             key="duplicate_session"
             variant="contained"
             onClick={() => duplicateSession(selectedSessionId)}
-            className={classes.duplicateStudyButton}
           >
             Duplicate
-          </Button>
+          </ButtonWithSelectButton>
         </>
       )}
     </Box>

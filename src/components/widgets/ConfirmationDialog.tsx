@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import { IconButton, makeStyles } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -6,8 +6,8 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import CloseIcon from '@material-ui/icons/Close'
+import React, { FunctionComponent } from 'react'
 import { ReactComponent as Delete } from '../../assets/trash.svg'
-import { IconButton, makeStyles } from '@material-ui/core'
 import { latoFont, poppinsFont } from '../../style/theme'
 
 const useStyles = makeStyles(theme => ({
@@ -107,6 +107,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   )
   let body = type === 'NAVIGATE' ? navigateBody : children
 
+
   return (
     <Dialog
       open={isOpen}
@@ -151,7 +152,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
           variant="contained"
           autoFocus
         >
-          {actionText}
+          {type=== 'NAVIGATE'?  'Continue': actionText}
         </Button>
       </DialogActions>
     </Dialog>

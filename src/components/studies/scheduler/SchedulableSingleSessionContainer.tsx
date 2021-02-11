@@ -45,6 +45,12 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     padding: '2px 9px',
     marginTop: '2px',
   },
+  multilineBodyText: {
+    backgroundColor: theme.palette.common.white,
+    '& textarea': {
+      backgroundColor: theme.palette.common.white
+    }
+  }
 }))
 
 export const defaultSchedule: SessionSchedule = {
@@ -284,6 +290,8 @@ SchedulableSingleSessionContainerProps) => {
                       border: "1px solid black"
                     },
                   }}
+                  rows="3"
+                  classes={{root: classes.multilineBodyText}}
                 ></TextField>
               </SchedulingFormSection>
             </Box>

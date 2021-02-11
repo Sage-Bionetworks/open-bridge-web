@@ -90,17 +90,23 @@ export type Assessment = {
   validationStatus: string
   duration?: number
   resources?: any[]
+  originGuid?: string
 }
 
 /* *** Study ********************************/
+export type EnrollmentType = 'ID' | 'PHONE'
 export type StudyStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'
 export type Study = {
   identifier: string
   status: StudyStatus
+  version: number
   name: string
   subtitle?: string
   description?: string
   studyDuration?: StudyDuration
+  options?: {
+    enrollmentType?: EnrollmentType
+  }
   // sessions: StudySession[]
 }
 

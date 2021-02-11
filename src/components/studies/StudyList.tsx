@@ -186,11 +186,12 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const createStudy = async () => {
     const newStudy: Study = {
       identifier: getRandomId(),
+      version: 1,
       status: 'DRAFT' as StudyStatus,
       name: 'Untitled Study',
     }
     setStudies([...studies, newStudy])
-    const x = await StudyService.saveStudy(newStudy, token!)
+    const x = await StudyService.createStudy(newStudy, token!)
     setStudies(x)
   }
 
@@ -206,7 +207,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           studies.map(s => (s.identifier !== study.identifier ? s : study)),
         )
         console.log('studies', studies)
-        result = await StudyService.saveStudy(study, token)
+        result = await StudyService.updateStudy(study, token)
         setStudies(result)
         setRenameStudyId('')
         return
@@ -223,10 +224,11 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         const newStudy = {
           ...study!,
           identifier: getRandomId(),
+          version: 1,
           name: `Copy of ${study!.name}`,
         }
         setStudies([...studies, newStudy])
-        result = await StudyService.saveStudy(newStudy, token)
+        result = await StudyService.createStudy(newStudy, token)
         setStudies(result)
         return
       default: {

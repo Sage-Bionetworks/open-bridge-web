@@ -6,7 +6,28 @@ async function getParticipants(
   studyIdentifier: string,
   token: string,
 ): Promise<ParticipantAccountSummary[]> {
-  const endpoint = constants.endpoints.participants.replace(
+  const endpoint = constants.endpoints.participantsSearch.replace(
+    ':id',
+    studyIdentifier,
+  )
+  const result = await callEndpoint<{ items: ParticipantAccountSummary[] }>(
+    endpoint,
+    'POST',
+    {},
+    token,
+  )
+  /*const mappedResult = result.data.items.map(item => {
+    return { ...item, studyExternalId: item.externalIds[studyIdentifier] }
+  })*/
+
+  return result.data.items
+}
+
+async function addParticipant(
+  studyIdentifier: string,
+  token: string,
+): Promise<ParticipantAccountSummary[]> {
+  const endpoint = constants.endpoints.participant.replace(
     ':id',
     studyIdentifier,
   )
@@ -24,7 +45,7 @@ async function getParticipants(
 }
 
 const ParticipantService = {
-  getParticipants,
+  getParticipants, addParticipant
 }
 
 export default ParticipantService

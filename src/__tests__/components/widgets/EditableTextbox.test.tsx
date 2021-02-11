@@ -1,9 +1,7 @@
-import * as React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
-import EditableTextbox from '../../../components/widgets/EditableTextbox'
-import UserEvent from '@testing-library/user-event'
-import Counter from '../../../components/widgets/Counter'
+import { render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import * as React from 'react'
+import EditableTextbox from '../../../components/widgets/EditableTextbox'
 
 const DISPLAY_ELEMENT = 'h4'
 const DEFAULT_VALUE = 'hello'
