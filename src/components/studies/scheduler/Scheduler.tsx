@@ -70,7 +70,7 @@ type SchedulerProps = {
 const Scheduler: FunctionComponent<
   SchedulerProps & StudyBuilderComponentProps
 > = ({
-  hasObjectChanged: _changed,
+  hasObjectChanged,
   saveLoader,
   onUpdate,
   schedule: _schedule,
@@ -82,7 +82,7 @@ const Scheduler: FunctionComponent<
   // const [isInitialInfoSet, setIsInitialInfoSet] = React.useState(studyDuration && _schedule.startEventId)
   const [schedule, setSchedule] = React.useState({ ..._schedule })
   const [duration, setDuration] = React.useState(studyDuration)
-  const [hasObjectChanged, setHasObjectChanged] = React.useState(_changed)
+ // const [hasObjectChanged, setHasObjectChanged] = React.useState(_changed)
   console.log('rerender', duration)
   /* React.useEffect(() => {
     const timer = setInterval(() => {
@@ -112,7 +112,7 @@ const Scheduler: FunctionComponent<
   const updateData = (schedule: Schedule, duration: string) => {
     setSchedule(schedule)
     setDuration(duration)
-    setHasObjectChanged(true)
+    //setHasObjectChanged(true)
     onUpdate({ schedule, studyDuration: duration })
   }
 

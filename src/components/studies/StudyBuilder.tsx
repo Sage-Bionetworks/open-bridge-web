@@ -157,78 +157,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     ></NavButtons>
   )
 
-  const ChildComponent: FunctionComponent<{}> = (): JSX.Element => {
-    const props = {
-      hasObjectChanged: hasObjectChanged,
-      saveLoader: saveLoader,
-    }
-    switch (section) {
-      case 'scheduler':
-        return <></>
-      case 'session-creator':
-        return (
-          <SessionCreator
-            {...props}
-            id={id}
-            onSave={() => saveStudySessions()}
-            sessions={builderInfo.schedule?.sessions || []}
-            onUpdate={(data: StudySection[]) => {
-              //console.log(_section)
-              setHasObjectChanged(true)
-              setData({
-                ...builderInfo,
-                schedule: { ...builderInfo.schedule, sessions: data },
-              })
-            }}
-          >
-            {navButtons}
-          </SessionCreator>
-        )
-      case 'branding':
-        return (
-          <AppDesign
-            {...props}
-            id={id}
-            onUpdate={(_section: StudySection, data: any) => {
-              console.log(_section)
-              // moveToNextSection(_section)
-            }}
-          >
-            {navButtons}
-          </AppDesign>
-        )
-      case 'launch':
-        return (
-          <Launch
-            {...props}
-            id={id}
-            onUpdate={(_section: StudySection, data: any) => {
-              console.log(_section)
-              // moveToNextSection(_section)
-            }}
-          >
-            {navButtons}
-          </Launch>
-        )
-      case 'passive-features':
-        return (
-          <PassiveFeatures
-            {...props}
-            id={id}
-            onUpdate={(_section: StudySection, data: any) => {
-              console.log(_section)
-              // moveToNextSection(_section)
-            }}
-          >
-            {navButtons}
-          </PassiveFeatures>
-        )
-
-      default:
-        return <></>
-    }
-  }
-
   return (
     <>
       <StudyTopNav studyId={id} currentSection={section}></StudyTopNav>
@@ -302,7 +230,68 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       </Scheduler>
                     )}
 
-                    <ChildComponent></ChildComponent>
+                    {section === 'session-creator' && (
+                      <SessionCreator
+                        hasObjectChanged={hasObjectChanged}
+                        saveLoader={saveLoader}
+                        id={id}
+                        onSave={() => saveStudySessions()}
+                        sessions={builderInfo.schedule?.sessions || []}
+                        onUpdate={(data: StudySection[]) => {
+                          //console.log(_section)
+                          setHasObjectChanged(true)
+                          setData({
+                            ...builderInfo,
+                            schedule: {
+                              ...builderInfo.schedule,
+                              sessions: data,
+                            },
+                          })
+                        }}
+                      >
+                        {navButtons}
+                      </SessionCreator>
+                    )}
+
+                    {section === 'branding' && (
+                      <AppDesign
+                        hasObjectChanged={hasObjectChanged}
+                        saveLoader={saveLoader}
+                        id={id}
+                        onUpdate={(_section: StudySection, data: any) => {
+                          console.log(_section)
+                          // moveToNextSection(_section)
+                        }}
+                      >
+                        {navButtons}
+                      </AppDesign>
+                    )}
+                    {section === 'launch' && (
+                      <Launch
+                        hasObjectChanged={hasObjectChanged}
+                        saveLoader={saveLoader}
+                        id={id}
+                        onUpdate={(_section: StudySection, data: any) => {
+                          console.log(_section)
+                          // moveToNextSection(_section)
+                        }}
+                      >
+                        {navButtons}
+                      </Launch>
+                    )}
+                    {section === 'passive-features' && (
+                      <PassiveFeatures
+                        hasObjectChanged={hasObjectChanged}
+                        saveLoader={saveLoader}
+                        id={id}
+                        onUpdate={(_section: StudySection, data: any) => {
+                          console.log(_section)
+                          // moveToNextSection(_section)
+                        }}
+                      >
+                        {navButtons}
+                      </PassiveFeatures>
+                    )}
                   </>
                 )}
               </LoadingComponent>
