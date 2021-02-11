@@ -94,6 +94,7 @@ type CollapsibleLayoutProps = {
   isFullWidth?: boolean
   isFullHeight?: boolean
   children: React.ReactNode[]
+  isDrawerHidden?: boolean
 }
 
 const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
@@ -103,6 +104,7 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
   isFullHeight = true,
   children,
   isHideContentOnClose,
+  isDrawerHidden
 }) => {
   const styleProps: StyleProps = {
     maxWidth: expandedWidth + 'px',
@@ -128,6 +130,7 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
               [classes.drawerClose]: !isOpen,
             }),
           }}
+          style={isDrawerHidden? {display: 'none'}:{}}
         >
           <Box className={classes.drawerToolbar}>
           {(children.length === 3 && isOpen) && children[2]}
