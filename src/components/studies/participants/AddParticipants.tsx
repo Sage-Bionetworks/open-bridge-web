@@ -4,21 +4,22 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
-  IconButton,
+  FormControlLabel,
   LinearProgress,
   Paper,
+  Radio,
+  RadioGroup,
   Tab,
   Tabs
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import CloseIcon from '@material-ui/icons/Close'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { CSVReader } from 'react-papaparse'
 import { poppinsFont } from '../../../style/theme'
 import { ParticipantAccountSummary } from '../../../types/types'
+import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import TabPanel from '../../widgets/TabPanel'
 
 const useStyles = makeStyles(theme => ({
@@ -82,7 +83,7 @@ const uploadAreaStyle = {
 type AddParticipantsProps = {
   token: string
   studyId: string
-  enrollmentType: 'PHONE'| 'ID'
+  enrollmentType: 'PHONE' | 'ID'
 }
 
 const participantRecordTemplate: ParticipantAccountSummary = {
@@ -120,15 +121,18 @@ function parseCSVToJSON(rows: any[]): Partial<ParticipantAccountSummary>[] {
 }
 
 const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
-
+  enrollmentType,
 }) => {
   console.log('rerender')
   const [tab, setTab] = React.useState(0)
 
   const classes = useStyles()
-
+  const [isOpenIdQuestion, setIsOpenIdQuestion] = React.useState(
+    enrollmentType === 'ID',
+  )
   const [isOpenUpload, setIsOpenUpload] = React.useState(false)
   const [isCsvUploaded, setIsCsvUploaded] = React.useState(false)
+  const [shouldGenerateIds, setShouldGenerateIds] = React.useState(false)
 
   const uploadFromCsv = () => {}
   const handleOnDrop = (data: any) => {
@@ -157,19 +161,14 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
         fullWidth
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle disableTypography className={classes.dialogTitle}>
-          <CloudUploadIcon style={{ width: '25px' }}></CloudUploadIcon>
-          <span style={{ paddingLeft: '8px' }}>Upload file</span>
-          <IconButton
-            aria-label="close"
-            className={classes.iconButton}
-            onClick={() => setIsOpenUpload(false)}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
+        <DialogTitleWithClose onCancel={() => setIsOpenUpload(false)}>
+          <>
+            <CloudUploadIcon style={{ width: '25px' }}></CloudUploadIcon>
+            <span style={{ paddingLeft: '8px' }}>Upload file</span>
+          </>
+        </DialogTitleWithClose>
+
         <DialogContent>
-          {' '}
           <div
             className={clsx(
               classes.dropAreaUploading,
@@ -187,7 +186,6 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             )}
             {isCsvUploaded && (
               <div style={{ height: '100%', padding: '70px 60px' }}>
-                {' '}
                 Uploading
                 <LinearProgress color="secondary" />
               </div>
@@ -214,6 +212,57 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
         </DialogActions>
       </Dialog>
 
+      <Dialog
+        open={isOpenIdQuestion}
+        maxWidth="sm"
+        fullWidth
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogTitleWithClose
+          onCancel={() => setIsOpenIdQuestion(false)}
+        ></DialogTitleWithClose>
+        <DialogContent>
+          <div>
+            How would you like to generate the Participant IDs?
+            <RadioGroup
+              aria-label="gender"
+              name="gender1"
+              value={shouldGenerateIds}
+              onChange={e => setShouldGenerateIds(e.target.value === 'true')}
+            >
+              <FormControlLabel
+                value={false}
+                control={<Radio />}
+                label="Define my own IDs"
+              />
+              <FormControlLabel
+                value={true}
+                control={<Radio />}
+                label="Generate new participant IDs for me"
+              />
+            </RadioGroup>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setIsOpenIdQuestion(false)}
+            color="secondary"
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              alert('import')
+            }}
+            color="primary"
+            variant="contained"
+          >
+            &nbsp;Continue
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Paper square style={{ whiteSpace: 'break-spaces' }}>
         <Tabs
           value={tab}
@@ -231,6 +280,9 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
               information by columns:
             </p>
             <ul>
+              <li>
+                <strong>Phone Number* </strong>
+              </li>
               <li>
                 <strong>Clinic Visit </strong>(can be updated later)
               </li>

@@ -149,6 +149,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           expandedWidth={300}
           isFullWidth={true}
           isHideContentOnClose={true}
+          isDrawerHidden= {!isEdit}
         >
           <AddParticipants
             studyId={id!}

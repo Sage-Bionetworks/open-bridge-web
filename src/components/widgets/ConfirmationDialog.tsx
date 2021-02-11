@@ -112,8 +112,8 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
     <Dialog
       open={isOpen}
       onClose={() => onCancel()}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
+      aria-labelledby={type}
+
       className={classes.dialogTitle}
       classes={{ paper: classes.dialogPaper }}
     >
