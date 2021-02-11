@@ -253,9 +253,7 @@ SchedulableSingleSessionContainerProps) => {
                   }}
                   inputProps={{
                     style: {
-                      height: '40px',
-                      borderRadius: '0px',
-                      boxSizing: 'border-box',
+                      height: '8px',
                       fontFamily: 'Lato',
                       fontWeight: 'bold',
                       fontSize: '15px',
@@ -283,8 +281,6 @@ SchedulableSingleSessionContainerProps) => {
                   inputProps={{
                     style: {
                       height: '75px',
-                      borderRadius: '0px',
-                      boxSizing: 'border-box',
                       fontFamily: 'Lato',
                     },
                   }}
