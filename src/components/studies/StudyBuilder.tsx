@@ -115,9 +115,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }
 
   const changeSection = async (next: StudySection) => {
-  if (section === next) {
-    return
-  }
+    if (section === next) {
+      return
+    }
 
     let saveFn: Function | undefined = undefined
     //where we are currently
@@ -125,7 +125,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       case 'scheduler': {
         saveFn = saveSchedulerData
         break
-
       }
       case 'session-creator': {
         saveFn = saveStudySessions
@@ -150,51 +149,22 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     setSection(next)
   }
 
+  const navButtons = (
+    <NavButtons
+      id={id}
+      currentSection={section}
+      onNavigate={(section: StudySection) => changeSection(section)}
+    ></NavButtons>
+  )
+
   const ChildComponent: FunctionComponent<{}> = (): JSX.Element => {
-    const navButtons = (
-      <NavButtons
-        id={id}
-        currentSection={section}
-        onNavigate={(section: StudySection) => changeSection(section)}
-      ></NavButtons>
-    )
     const props = {
       hasObjectChanged: hasObjectChanged,
       saveLoader: saveLoader,
     }
     switch (section) {
       case 'scheduler':
-        return (
-          <Scheduler
-            {...props}
-            id={id}
-            schedule={builderInfo.schedule}
-            studyDuration={builderInfo.study?.studyDuration}
-            hasObjectChanged={hasObjectChanged}
-            saveLoader={saveLoader}
-            onSave={() => saveSchedulerData()}
-            onUpdate={({
-              schedule,
-              studyDuration,
-            }: {
-              schedule: Schedule
-              studyDuration: StudyDuration
-            }) => {
-              setHasObjectChanged(true)
-              console.log('updating duration', studyDuration)
-              setData({
-                ...builderInfo,
-                schedule: schedule,
-                study: {
-                  ...builderInfo.study,
-                  studyDuration,
-                },
-              })
-            }}
-          >
-            {navButtons}
-          </Scheduler>
-        )
+        return <></>
       case 'session-creator':
         return (
           <SessionCreator
@@ -282,20 +252,59 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
               [classes.mainAreaWide]: !open,
             })}
           >
-               <LoadingComponent
-            reqStatusLoading={saveLoader}
-            variant="small"
-            loaderSize="2rem"
-            style={{ width: '2rem', position: 'absolute', top:'30px', left: '50%' }}
-          ></LoadingComponent>
+            <LoadingComponent
+              reqStatusLoading={saveLoader}
+              variant="small"
+              loaderSize="2rem"
+              style={{
+                width: '2rem',
+                position: 'absolute',
+                top: '30px',
+                left: '50%',
+              }}
+            ></LoadingComponent>
 
-          
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
               onError={ErrorHandler}
             >
               <LoadingComponent reqStatusLoading={status || !builderInfo}>
-                {builderInfo && <ChildComponent></ChildComponent>}
+                {builderInfo && (
+                  <>
+                    {section === 'scheduler' && (
+                      <Scheduler
+                        id={id}
+                        schedule={builderInfo.schedule}
+                        studyDuration={builderInfo.study?.studyDuration}
+                        hasObjectChanged={hasObjectChanged}
+                        saveLoader={saveLoader}
+                        onSave={() => saveSchedulerData()}
+                        onUpdate={({
+                          schedule,
+                          studyDuration,
+                        }: {
+                          schedule: Schedule
+                          studyDuration: StudyDuration
+                        }) => {
+                          setHasObjectChanged(true)
+                          console.log('updating duration', studyDuration)
+                          setData({
+                            ...builderInfo,
+                            schedule: schedule,
+                            study: {
+                              ...builderInfo.study,
+                              studyDuration,
+                            },
+                          })
+                        }}
+                      >
+                        {navButtons}
+                      </Scheduler>
+                    )}
+
+                    <ChildComponent></ChildComponent>
+                  </>
+                )}
               </LoadingComponent>
             </ErrorBoundary>
           </Box>
