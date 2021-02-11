@@ -48,9 +48,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   multilineBodyText: {
     backgroundColor: theme.palette.common.white,
     '& textarea': {
-      backgroundColor: theme.palette.common.white
-    }
-  }
+      backgroundColor: theme.palette.common.white,
+    },
+  },
 }))
 
 export const defaultSchedule: SessionSchedule = {
@@ -94,6 +94,14 @@ SchedulableSingleSessionContainerProps) => {
   const updateSessionSchedule = (newSession: SessionSchedule) => {
     onUpdateSessionSchedule(newSession)
   }
+
+  const [subjectLineText, setSubjectLineText] = React.useState(
+    schedulableSession.subjectLine ? schedulableSession.subjectLine : '',
+  )
+
+  const [bodyText, setBodyText] = React.useState(
+    schedulableSession.bodyText ? schedulableSession.bodyText : '',
+  )
 
   const addNewWindow = () => {
     const newState = { ...schedulableSession }
@@ -238,26 +246,22 @@ SchedulableSingleSessionContainerProps) => {
                   multiline={false}
                   fullWidth={true}
                   variant="outlined"
-                  value={schedulableSession.subjectLine}
+                  value={subjectLineText}
                   id="subject-line"
-                  onBlur={event => {
-                    updateSessionSchedule({
-                      ...schedulableSession,
-                      subjectLine: event.target.value,
-                    })
+                  onChange={event => {
+                    setSubjectLineText(event.target.value)
                   }}
                   inputProps={{
                     style: {
                       height: '40px',
-                      padding: '4px 8px',
                       borderRadius: '0px',
                       boxSizing: 'border-box',
-                      border: '1px solid black',
                       fontFamily: 'Lato',
                       fontWeight: 'bold',
                       fontSize: '15px',
                     },
                   }}
+                  classes={{ root: classes.multilineBodyText }}
                 ></TextField>
               </SchedulingFormSection>
 
@@ -271,27 +275,21 @@ SchedulableSingleSessionContainerProps) => {
                   multiline={true}
                   fullWidth={true}
                   variant="outlined"
-                  value={schedulableSession.bodyText}
+                  value={bodyText}
                   id="body-text"
-                  onBlur={event => {
-                    updateSessionSchedule({
-                      ...schedulableSession,
-                      bodyText: event.target.value,
-                    })
+                  onChange={event => {
+                    setBodyText(event.target.value)
                   }}
                   inputProps={{
                     style: {
                       height: '75px',
-                      padding: '4px 4px',
                       borderRadius: '0px',
                       boxSizing: 'border-box',
                       fontFamily: 'Lato',
-                      backgroundColor: 'white',
-                      border: "1px solid black"
                     },
                   }}
                   rows="3"
-                  classes={{root: classes.multilineBodyText}}
+                  classes={{ root: classes.multilineBodyText }}
                 ></TextField>
               </SchedulingFormSection>
             </Box>
@@ -301,7 +299,14 @@ SchedulableSingleSessionContainerProps) => {
             color="primary"
             size="small"
             style={{ marginBottom: '16px' }}
-            onClick={() => onSaveSessionSchedule()}
+            onClick={async () => {
+              await updateSessionSchedule({
+                ...schedulableSession,
+                subjectLine: subjectLineText,
+                bodyText: bodyText,
+              })
+              onSaveSessionSchedule()
+            }}
             startIcon={<SaveIcon />}
           >
             Save Changes
