@@ -13,7 +13,9 @@ import {
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
 import { Schedule, StudyDuration, StudySession } from '../../types/scheduling'
+import { StringDictionary } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
+import { MTBHeadingH1 } from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
 import AppDesign from './app-design/AppDesign'
 import Launch from './launch/Launch'
@@ -23,6 +25,14 @@ import Scheduler from './scheduler/Scheduler'
 import { StudySection } from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
+
+const subtitles: StringDictionary<string>= {
+  description: 'Description',
+  'team-settings': 'Team Settings',
+
+  scheduler: 'Schedule Sessions',
+  'session-creator': 'Create Sessions',
+}
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   mainAreaWrapper: {
@@ -162,6 +172,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
   return (
     <>
+      <Box bgcolor="white" pt={9} pb={2} pl={open? 29: 15}>
+      <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1></Box>
       <span style={{ fontSize: '9px', position: 'absolute', right: '0' }}>
         {' '}
         {hasObjectChanged ? 'object changed' : 'no change'}

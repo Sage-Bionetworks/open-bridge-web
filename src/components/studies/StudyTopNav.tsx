@@ -2,8 +2,7 @@ import {
   Hidden,
   IconButton,
   LinearProgress,
-  Paper,
-  Typography
+  Paper
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -149,9 +148,6 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               <PeopleIcon></PeopleIcon>&nbsp;&nbsp;Access settings
             </NavLink>
           </Toolbar>
-          {currentSection && (
-            <Typography component="h1">{currentSection}</Typography>
-          )}
         </Paper>
       </Hidden>
     </>
