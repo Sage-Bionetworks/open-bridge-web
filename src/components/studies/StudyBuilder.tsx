@@ -5,10 +5,14 @@ import React, { FunctionComponent } from 'react'
 import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps, useParams } from 'react-router-dom'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
-import { useStudyBuilderInfo } from '../../helpers/hooks'
+import {
+  StudyInfoData,
+  useStudyInfoDataDispatch,
+  useStudyInfoDataState
+} from '../../helpers/StudyInfoContext'
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
-import { Schedule, StudyDuration } from '../../types/scheduling'
+import { Schedule, StudyDuration, StudySession } from '../../types/scheduling'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import LoadingComponent from '../widgets/Loader'
 import AppDesign from './app-design/AppDesign'
@@ -72,15 +76,20 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [saveLoader, setSaveLoader] = React.useState(false)
   const { token } = useUserSessionDataState()
-  const { data: builderInfo, status, error, setData } = useStudyBuilderInfo(id)
+  const builderInfo: StudyInfoData = useStudyInfoDataState()
+  const studyDataUpdateFn = useStudyInfoDataDispatch()
 
   const [open, setOpen] = React.useState(true)
+
+  const setData = (builderInfo: StudyInfoData) => {
+    studyDataUpdateFn({ type: 'SET_ALL', payload: builderInfo })
+  }
 
   const saveStudySessions = async () => {
     setSaveLoader(true)
     await StudyService.saveStudySessions(
       id,
-      builderInfo!.schedule.sessions || [],
+      builderInfo!.schedule?.sessions || [],
       token!,
     )
     setHasObjectChanged(false)
@@ -90,27 +99,21 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
   const saveSchedulerData = async () => {
     setSaveLoader(true)
+    if (!builderInfo.schedule || !builderInfo.study || !token) {
+      return
+    }
     await StudyService.saveStudySchedule(
       id,
-      builderInfo!.schedule,
-      builderInfo!.study.studyDuration!,
-      token!,
+      builderInfo.schedule,
+      builderInfo.study.studyDuration!,
+      token,
     )
     setHasObjectChanged(false)
     setSaveLoader(false)
     return
   }
 
-  if (status === 'IDLE') {
-    return <>'no id'</>
-  } else if (status === 'REJECTED') {
-    handleError(error!)
-  } else if (status === 'RESOLVED' && builderInfo) {
-    if (!builderInfo.study) {
-      throw new Error('This session does not exist')
-    }
-  }
-  if (!builderInfo) {
+  if (!builderInfo || !builderInfo.schedule || !builderInfo.study) {
     return <></>
   }
 
@@ -159,7 +162,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
   return (
     <>
-      <span> {hasObjectChanged ? 'object changed' : 'no change'}</span>
+      <span style={{ fontSize: '9px', position: 'absolute', right: '0' }}>
+        {' '}
+        {hasObjectChanged ? 'object changed' : 'no change'}
+      </span>
       <Box paddingTop={2} display="flex" position="relative">
         <StudyLeftNav
           open={open}
@@ -195,8 +201,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
               FallbackComponent={ErrorFallback}
               onError={ErrorHandler}
             >
-              <LoadingComponent reqStatusLoading={status || !builderInfo}>
-                {builderInfo && (
+              <LoadingComponent reqStatusLoading={!builderInfo}>
+                {builderInfo.schedule && builderInfo.study && (
                   <>
                     {section === 'scheduler' && (
                       <Scheduler
@@ -236,13 +242,13 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         id={id}
                         onSave={() => saveStudySessions()}
                         sessions={builderInfo.schedule?.sessions || []}
-                        onUpdate={(data: StudySection[]) => {
+                        onUpdate={(data: StudySession[]) => {
                           //console.log(_section)
                           setHasObjectChanged(true)
                           setData({
                             ...builderInfo,
                             schedule: {
-                              ...builderInfo.schedule,
+                              ...builderInfo.schedule!,
                               sessions: data,
                             },
                           })

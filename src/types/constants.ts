@@ -110,16 +110,14 @@ export default {
     enrollments: '/v5/studies/{studyId}/enrollments',
     participantsSearch: '/v5/studies/:id/participants/search',
     participant: '/v5/studies/:id/participants',
-    
-    
+
     bridgeAccount: '/v1/accounts/:id',
     getAccountsForOrg: '/v1/organizations/:orgId/members',
     synapseGetAlias: '/repo/v1/principal/alias',
-    synapseGetUserProfile:'/repo/v1/user/:id/bundle',
+    synapseGetUserProfile: '/repo/v1/user/:id/bundle',
 
-    
     studies: '/v5/studies',
-    
+
     study: '/v5/studies/:id',
 
     schedule: 'v1/schedule/:id',

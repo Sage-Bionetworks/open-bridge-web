@@ -14,6 +14,7 @@ import {
   useUserSessionDataDispatch,
   useUserSessionDataState
 } from './helpers/AuthContext'
+import { StudyInfoDataProvider } from './helpers/StudyInfoContext'
 import UserService from './services/user.service'
 import { cssVariables, theme } from './style/theme'
 import { UserSessionData } from './types/types'
@@ -111,7 +112,9 @@ function App() {
               onError={ErrorHandler}
             >
               {sessionData.token ? (
+                <StudyInfoDataProvider>
                 <AuthenticatedApp token={sessionData.token} />
+                </StudyInfoDataProvider>
               ) : (
                 <UnauthenticatedApp />
               )}
