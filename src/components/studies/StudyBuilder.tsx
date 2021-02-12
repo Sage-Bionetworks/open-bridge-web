@@ -19,7 +19,6 @@ import Scheduler from './scheduler/Scheduler'
 import { StudySection } from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
-import StudyTopNav from './StudyTopNav'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   mainAreaWrapper: {
@@ -67,6 +66,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     id: string
     section: StudySection
   }>()
+  console.log('from builder', id, _section)
   const [section, setSection] = React.useState(_section)
   const [nextSection, setNextSection] = React.useState<StudySection>(_section)
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
@@ -159,7 +159,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
   return (
     <>
-      <StudyTopNav studyId={id} currentSection={section}></StudyTopNav>
       <span> {hasObjectChanged ? 'object changed' : 'no change'}</span>
       <Box paddingTop={2} display="flex" position="relative">
         <StudyLeftNav
