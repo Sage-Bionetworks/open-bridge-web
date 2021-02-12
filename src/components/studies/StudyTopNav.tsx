@@ -1,4 +1,9 @@
-import { Hidden, IconButton, Paper, Typography } from '@material-ui/core'
+import {
+  Hidden,
+  IconButton,
+  LinearProgress,
+  Paper
+} from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
@@ -6,10 +11,8 @@ import PeopleIcon from '@material-ui/icons/People'
 import React, { FunctionComponent } from 'react'
 import { NavLink } from 'react-router-dom'
 import Logo from '../../assets/logo_mtb.svg'
+import { useStudyInfoDataState } from '../../helpers/StudyInfoContext'
 import BreadCrumb from '../widgets/BreadCrumb'
-
-
-
 
 const useStyles = makeStyles(theme => ({
   toolbarStudyHeader: {
@@ -57,13 +60,13 @@ const useStyles = makeStyles(theme => ({
 type StudyTopNavProps = {
   //sections:? { name: string; path: string }[]
   studyId: string
-  studyName?: string
+  //studyName?: string
   currentSection?: string
 }
 
 const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   studyId,
-  studyName,
+  //studyName,
   currentSection,
 }: StudyTopNavProps) => {
   const links = [
@@ -75,6 +78,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
   //const sessionData = useUserSessionDataState()
+  const studyData = useStudyInfoDataState()
 
   return (
     <>
@@ -111,10 +115,13 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               <img src={Logo} key="home" />
             </NavLink>
 
-            <BreadCrumb
-              links={[{ url: '/Studies', text: '' }]}
-              currentItem={studyName || 'Utitled Study '}
-            ></BreadCrumb>
+            {studyData.study && (
+              <BreadCrumb
+                links={[{ url: '/Studies', text: '' }]}
+                currentItem={studyData.study?.name}
+              ></BreadCrumb>
+            )}
+            {!studyData.study && <LinearProgress style={{ width: '50px' }} />}
           </Toolbar>
           <Toolbar className={classes.toolbar}>
             {links
@@ -141,9 +148,6 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               <PeopleIcon></PeopleIcon>&nbsp;&nbsp;Access settings
             </NavLink>
           </Toolbar>
-          {currentSection && (
-            <Typography component="h1">{currentSection}</Typography>
-          )}
         </Paper>
       </Hidden>
     </>
