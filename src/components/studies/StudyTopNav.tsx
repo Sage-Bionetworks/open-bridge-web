@@ -67,7 +67,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   currentSection,
 }: StudyTopNavProps) => {
   const links = [
-    { path: '/studies/builder/:id/', name: 'STUDY BUILDER' },
+    { path: '/studies/builder/:id/session-creator', name: 'STUDY BUILDER' },
     { path: '/studies/:id/participant-manager', name: 'PARTICIPANT MANAGER' },
     { path: '/studies/:id/compliance', name: 'ADHERENCE DATA' },
     { path: '/studies/:id/study-data', name: 'STUDY DATA' },

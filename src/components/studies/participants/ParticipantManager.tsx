@@ -12,7 +12,6 @@ import StudyService from '../../../services/study.service'
 import { EnrollmentType, ParticipantAccountSummary } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import HideWhen from '../../widgets/HideWhen'
-import StudyTopNav from '../StudyTopNav'
 import AddParticipants from './AddParticipants'
 import EnrollmentSelector from './EnrollmentSelector'
 import ParticipantTableGrid from './ParticipantTableGrid'
@@ -111,7 +110,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   } else if (status === 'RESOLVED') {
     return (
       <>
-        <StudyTopNav studyId={id} currentSection={''}></StudyTopNav>{' '}
+
         <Box px={3} py={2}>
           Study ID: {id}
         </Box>

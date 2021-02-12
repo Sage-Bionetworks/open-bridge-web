@@ -18,7 +18,6 @@ import { RouteComponentProps, useParams } from 'react-router-dom'
 import { ReactComponent as Delete } from '../../assets/trash.svg'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
 import AccessService from '../../services/access.service'
-import StudyTopNav from '../studies/StudyTopNav'
 import { Access, NO_ACCESS } from './AccessGrid'
 import AccountListing from './AccountListing'
 import MemberInvite, { NewOrgAccount } from './MemberInvite'
@@ -139,10 +138,8 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
   ])
 
   const sessionData = useUserSessionDataState()
-  const { token, orgMembership, roles, id:loggedInId } = sessionData 
+  const { token, orgMembership, roles, id: loggedInId } = sessionData
   const [updateToggle, setUpdateToggle] = React.useState(false)
-
- 
 
   const closeInviteDialog = () => {
     setNewOrgAccounts(_ => [CreateNewOrgAccountTemplate()])
@@ -181,15 +178,14 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
         updateNewOrgAccount({ ...account, error: errorString })
       }
     }
-    setUpdateToggle(prev=>!prev)
+    setUpdateToggle(prev => !prev)
   }
 
   return (
     <>
-      <StudyTopNav studyId={id} currentSection={''}></StudyTopNav>
       <Container maxWidth="md" className={classes.root}>
         <Paper elevation={2} style={{ width: '100%' }}>
-          <AccountListing sessionData={sessionData}  updateToggle={updateToggle}>
+          <AccountListing sessionData={sessionData} updateToggle={updateToggle}>
             <Button
               onClick={() => setIsOpenInvite(true)}
               variant="contained"
@@ -200,135 +196,134 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
           </AccountListing>
         </Paper>
       </Container>
-     <Dialog
-          open={isOpenInvite}
-          maxWidth="md"
-          fullWidth
-          aria-labelledby="form-dialog-title"
-        >
-          <DialogTitle className={classes.addNewDialogHeader} disableTypography>
-            <MailOutlineIcon style={{ width: '25px' }}></MailOutlineIcon>
-            <Typography variant="subtitle2" style={{ fontSize: '25px' }}>
-              Invite Team Members
-            </Typography>
-            <IconButton
-              aria-label="close"
-              className={classes.iconButton}
-              onClick={() => {
-                closeInviteDialog()
+      <Dialog
+        open={isOpenInvite}
+        maxWidth="md"
+        fullWidth
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogTitle className={classes.addNewDialogHeader} disableTypography>
+          <MailOutlineIcon style={{ width: '25px' }}></MailOutlineIcon>
+          <Typography variant="subtitle2" style={{ fontSize: '25px' }}>
+            Invite Team Members
+          </Typography>
+          <IconButton
+            aria-label="close"
+            className={classes.iconButton}
+            onClick={() => {
+              closeInviteDialog()
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent className={classes.addNewDialogBody}>
+          <pre>
+            Enter 'sErr' in email address to simulate synapse error. Enter
+            'bErr' in email address to simulate bridge error.
+          </pre>
+          {filterNewAccountsByAdded(newOrgAccounts).length > 0 && (
+            <>
+              <Paper
+                elevation={2}
+                style={{ margin: '16px 0' }}
+                key={'success'}
+                className={clsx(classes.newOrgAccount)}
+              >
+                <strong>Added Succesfully</strong>
+                <br /> <br />
+                {filterNewAccountsByAdded(newOrgAccounts)
+                  .map(acct => acct.email)
+                  .join(', ')}
+              </Paper>
+            </>
+          )}
+
+          {filterNewAccountsByAdded(newOrgAccounts, false).map(
+            (newOrgAccount, index) => (
+              <Paper
+                elevation={2}
+                className={clsx(
+                  classes.newOrgAccount,
+                  newOrgAccount.error && classes.error,
+                )}
+                key={index + new Date().getTime()}
+              >
+                {newOrgAccounts.length > 1 && (
+                  <IconButton
+                    aria-label="delete"
+                    className={classes.iconButton}
+                    onClick={() => removeNewOrgAccount(newOrgAccount.id)}
+                  >
+                    <Delete></Delete>
+                  </IconButton>
+                )}
+                <MemberInvite
+                  newOrgAccount={newOrgAccount}
+                  index={index}
+                  onUpdate={(newOrgAccount: NewOrgAccount) =>
+                    updateNewOrgAccount(newOrgAccount)
+                  }
+                />
+              </Paper>
+            ),
+          )}
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={() =>
+              setNewOrgAccounts(prev => [
+                ...prev,
+                CreateNewOrgAccountTemplate(),
+              ])
+            }
+          >
+            + Add Another Member
+          </Button>
+          <Box className={classes.buttons}>
+            <Button
+              onClick={() => closeInviteDialog()}
+              color="secondary"
+              variant="outlined"
+              style={{
+                display:
+                  filterNewAccountsByAdded(newOrgAccounts, false).length === 0
+                    ? 'none'
+                    : 'inherit',
               }}
             >
-              <CloseIcon />
-            </IconButton>
-          </DialogTitle>
-          <DialogContent className={classes.addNewDialogBody}>
-            <pre>
-              Enter 'sErr' in email address to simulate synapse error. Enter
-              'bErr' in email address to simulate bridge error.
-            </pre>
-            {filterNewAccountsByAdded(newOrgAccounts).length > 0 && (
-              <>
-                <Paper
-                  elevation={2}
-                  style={{ margin: '16px 0' }}
-                  key={'success'}
-                  className={clsx(classes.newOrgAccount)}
-                >
-                  <strong>Added Succesfully</strong>
-                  <br /> <br />
-                  {filterNewAccountsByAdded(newOrgAccounts)
-                    .map(acct => acct.email)
-                    .join(', ')}
-                </Paper>
-              </>
-            )}
-
-            {filterNewAccountsByAdded(newOrgAccounts, false).map(
-              (newOrgAccount, index) => (
-                <Paper
-                  elevation={2}
-                  className={clsx(
-                    classes.newOrgAccount,
-                    newOrgAccount.error && classes.error,
-                  )}
-                  key={index + new Date().getTime()}
-                >
-                  {newOrgAccounts.length > 1 && (
-                    <IconButton
-                      aria-label="delete"
-                      className={classes.iconButton}
-                      onClick={() => removeNewOrgAccount(newOrgAccount.id)}
-                    >
-                      <Delete></Delete>
-                    </IconButton>
-                  )}
-                  <MemberInvite
-                    newOrgAccount={newOrgAccount}
-                    index={index}
-                    onUpdate={(newOrgAccount: NewOrgAccount) =>
-                      updateNewOrgAccount(newOrgAccount)
-                    }
-                  />
-                </Paper>
-              ),
-            )}
+              Cancel
+            </Button>
             <Button
+              onClick={() => inviteUsers(newOrgAccounts)}
               color="primary"
               variant="contained"
-              onClick={() =>
-                setNewOrgAccounts(prev => [
-                  ...prev,
-                  CreateNewOrgAccountTemplate(),
-                ])
-              }
+              style={{
+                display:
+                  filterNewAccountsByAdded(newOrgAccounts, false).length === 0
+                    ? 'none'
+                    : 'inherit',
+              }}
             >
-              + Add Another Member
+              <MailOutlineIcon />
+              &nbsp;Invite To Study
             </Button>
-            <Box className={classes.buttons}>
-              <Button
-                onClick={() => closeInviteDialog()}
-                color="secondary"
-                variant="outlined"
-                style={{
-                  display:
-                    filterNewAccountsByAdded(newOrgAccounts, false).length === 0
-                      ? 'none'
-                      : 'inherit',
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => inviteUsers(newOrgAccounts)}
-                color="primary"
-                variant="contained"
-                style={{
-                  display:
-                    filterNewAccountsByAdded(newOrgAccounts, false).length === 0
-                      ? 'none'
-                      : 'inherit',
-                }}
-              >
-                <MailOutlineIcon />
-                &nbsp;Invite To Study
-              </Button>
-              <Button
-                onClick={() => closeInviteDialog()}
-                color="primary"
-                variant="contained"
-                style={{
-                  display:
-                    filterNewAccountsByAdded(newOrgAccounts, false).length === 0
-                      ? 'inherit'
-                      : 'none',
-                }}
-              >
-                Done
-              </Button>
-            </Box>
-          </DialogContent>
-        </Dialog>
-   
+            <Button
+              onClick={() => closeInviteDialog()}
+              color="primary"
+              variant="contained"
+              style={{
+                display:
+                  filterNewAccountsByAdded(newOrgAccounts, false).length === 0
+                    ? 'inherit'
+                    : 'none',
+              }}
+            >
+              Done
+            </Button>
+          </Box>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
