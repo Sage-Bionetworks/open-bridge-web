@@ -2,25 +2,19 @@ import { callEndpoint } from '../helpers/utility'
 import constants from '../types/constants'
 import { ParticipantAccountSummary } from '../types/types'
 
-async function getParticipants(
-  studyIdentifier: string,
-  token: string,
-): Promise<ParticipantAccountSummary[]> {
+async function getParticipants(studyIdentifier: string, token: string) {
   const endpoint = constants.endpoints.participantsSearch.replace(
     ':id',
     studyIdentifier,
   )
-  const result = await callEndpoint<{ items: ParticipantAccountSummary[] }>(
-    endpoint,
-    'POST',
-    {},
-    token,
-  )
+  const result = await callEndpoint<{
+    items: ParticipantAccountSummary[]
+    total: number
+  }>(endpoint, 'POST', {}, token)
   /*const mappedResult = result.data.items.map(item => {
     return { ...item, studyExternalId: item.externalIds[studyIdentifier] }
   })*/
-
-  return result.data.items
+  return { items: result.data.items, total: result.data.total }
 }
 
 async function addParticipant(
@@ -45,7 +39,8 @@ async function addParticipant(
 }
 
 const ParticipantService = {
-  getParticipants, addParticipant
+  getParticipants,
+  addParticipant,
 }
 
 export default ParticipantService
