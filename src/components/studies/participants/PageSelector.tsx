@@ -23,10 +23,12 @@ const useStyles = makeStyles(theme => ({
 const PageSelector: React.FC<{
   onPageSelected: Function
   currentPageSelected: number
+  totalParticipants: number
 }> = props => {
   const classes = useStyles()
+  const pageNumber = Math.ceil(props.totalParticipants / 50)
   const pageNumbers = []
-  for (let i = 1; i < 11; i++) {
+  for (let i = 1; i <= pageNumber; i++) {
     pageNumbers.push(i)
   }
   return (

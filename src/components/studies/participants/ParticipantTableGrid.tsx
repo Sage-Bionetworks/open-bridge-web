@@ -50,6 +50,7 @@ const Footer: FunctionComponent<{
       <PageSelector
         onPageSelected={props.onPageSelectedChanged}
         currentPageSelected={props.currentPage}
+        totalParticipants={props.totalParticipants}
       />
       <div className={classes.showEntryText}>{'show entries: '}</div>
     </div>
