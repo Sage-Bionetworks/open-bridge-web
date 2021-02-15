@@ -5,6 +5,7 @@ import BackToBeginningIcon from '../../../assets/ParticipantManagerPageSelector/
 import ForwardToEndIcon from '../../../assets/ParticipantManagerPageSelector/forward_to_end_icon.svg'
 import PageBox from './PageBox'
 import { makeStyles } from '@material-ui/core/styles'
+import { Button } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -14,9 +15,12 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   image: {
-    color: 'black',
-    marginLeft: theme.spacing(0.5),
-    marginRight: theme.spacing(0.5),
+    width: '10px',
+    height: '10px',
+  },
+  button: {
+    width: '10px',
+    minWidth: '5px',
   },
 }))
 
@@ -33,28 +37,37 @@ const PageSelector: React.FC<{
   }
   return (
     <div className={classes.container}>
-      <img
+      <Button
         onClick={() => props.handlePageNavigationArrowPressed('BB')}
-        src={
-          props.currentPageSelected == 1
-            ? BackToBeginningIcon
-            : ForwardToEndIcon
-        }
-        className={classes.image}
-        alt="back_to_beginning_icon"
-        style={{
-          transform: props.currentPageSelected == 1 ? '' : 'rotate(180deg)',
-        }}
-      ></img>
-      <img
+        classes={{ root: classes.button }}
+      >
+        <img
+          src={
+            props.currentPageSelected == 1
+              ? BackToBeginningIcon
+              : ForwardToEndIcon
+          }
+          className={classes.image}
+          alt="back_to_beginning_icon"
+          style={{
+            transform: props.currentPageSelected == 1 ? '' : 'rotate(180deg)',
+          }}
+        ></img>
+      </Button>
+      <Button
         onClick={() => props.handlePageNavigationArrowPressed('B')}
-        src={props.currentPageSelected == 1 ? PreviousPageIcon : NextPageIcon}
-        className={classes.image}
-        alt="back_icon"
-        style={{
-          transform: props.currentPageSelected == 1 ? '' : 'rotate(180deg)',
-        }}
-      ></img>
+        classes={{ root: classes.button }}
+      >
+        <img
+          src={props.currentPageSelected == 1 ? PreviousPageIcon : NextPageIcon}
+          className={classes.image}
+          alt="back_icon"
+          style={{
+            transform: props.currentPageSelected == 1 ? '' : 'rotate(180deg)',
+          }}
+        ></img>
+      </Button>
+
       {pageNumbers.map((element, index) => {
         return (
           <PageBox
@@ -65,37 +78,47 @@ const PageSelector: React.FC<{
           />
         )
       })}
-      <img
+
+      <Button
         onClick={() => props.handlePageNavigationArrowPressed('F')}
-        src={
-          props.currentPageSelected == props.numberOfPages
-            ? PreviousPageIcon
-            : NextPageIcon
-        }
-        className={classes.image}
-        style={{
-          transform:
+        classes={{ root: classes.button }}
+      >
+        <img
+          src={
             props.currentPageSelected == props.numberOfPages
-              ? 'rotate(180deg)'
-              : '',
-        }}
-      ></img>
-      <img
+              ? PreviousPageIcon
+              : NextPageIcon
+          }
+          className={classes.image}
+          alt="previous_page_icon"
+          style={{
+            transform:
+              props.currentPageSelected == props.numberOfPages
+                ? 'rotate(180deg)'
+                : '',
+          }}
+        ></img>
+      </Button>
+      <Button
         onClick={() => props.handlePageNavigationArrowPressed('FF')}
-        src={
-          props.currentPageSelected == props.numberOfPages
-            ? BackToBeginningIcon
-            : ForwardToEndIcon
-        }
-        className={classes.image}
-        alt="forward_to_end_icon"
-        style={{
-          transform:
+        classes={{ root: classes.button }}
+      >
+        <img
+          src={
             props.currentPageSelected == props.numberOfPages
-              ? 'rotate(180deg)'
-              : '',
-        }}
-      ></img>
+              ? BackToBeginningIcon
+              : ForwardToEndIcon
+          }
+          className={classes.image}
+          alt="forward_to_end_icon"
+          style={{
+            transform:
+              props.currentPageSelected == props.numberOfPages
+                ? 'rotate(180deg)'
+                : '',
+          }}
+        ></img>
+      </Button>
     </div>
   )
 }

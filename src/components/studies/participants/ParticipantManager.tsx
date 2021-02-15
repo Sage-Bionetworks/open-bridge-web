@@ -118,7 +118,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     data: null,
   })
   console.log('des data', data)
-  const participantData = data ? data.items : []
+  const participantData = data ? data.items : null
   const totalParticipants = data ? data.total : 0
   const [exportData, setExportData] = React.useState<any[] | null>(null)
 
@@ -126,7 +126,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     let study = studyData!.study
     study.options = { ...study.options, enrollmentType: type }
 
-    const updatedStudy = await StudyService.updateStudy(study, token!)
+    const updatedsStudy = await StudyService.updateStudy(study, token!)
     setStudyData({ ...studyData, study })
   }
 
