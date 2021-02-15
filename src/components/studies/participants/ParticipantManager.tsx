@@ -91,6 +91,8 @@ type ParticipantData = {
 const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   let { id } = useParams<{ id: string }>()
   const [isEdit, setIsEdit] = React.useState(false)
+  const [currentPage, setCurrentPage] = React.useState(1)
+  const [pageSize, setPageSize] = React.useState(50)
 
   const handleError = useErrorHandler()
   const classes = useStyles()
@@ -148,9 +150,17 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     if (!id) {
       return
     }
+    const offset = (currentPage - 1) * pageSize
     ///your async call
-    return run(ParticipantService.getParticipants('mtb-user-testing', token!))
-  }, [id, run])
+    return run(
+      ParticipantService.getParticipants(
+        'mtb-user-testing',
+        token!,
+        pageSize,
+        offset,
+      ),
+    )
+  }, [id, run, currentPage, pageSize])
 
   if (status === 'PENDING') {
     return <>loading component here</>
@@ -246,6 +256,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   rows={participantData || []}
                   studyId={'mtb-user-testing'}
                   totalParticipants={totalParticipants}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                  pageSize={pageSize}
+                  setPageSize={setPageSize}
                 ></ParticipantTableGrid>
               </Box>
 

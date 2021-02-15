@@ -23,18 +23,26 @@ const useStyles = makeStyles(theme => ({
 const PageSelector: React.FC<{
   onPageSelected: Function
   currentPageSelected: number
-  totalParticipants: number
+  numberOfPages: number
+  handlePageNavigationArrowPressed: Function
 }> = props => {
   const classes = useStyles()
-  const pageNumber = Math.ceil(props.totalParticipants / 50)
   const pageNumbers = []
-  for (let i = 1; i <= pageNumber; i++) {
+  for (let i = 1; i <= props.numberOfPages; i++) {
     pageNumbers.push(i)
   }
   return (
     <div className={classes.container}>
-      <img src={BackToBeginningIcon} className={classes.image}></img>
-      <img src={PreviousPageIcon} className={classes.image}></img>
+      <img
+        onClick={() => props.handlePageNavigationArrowPressed('BB')}
+        src={BackToBeginningIcon}
+        className={classes.image}
+      ></img>
+      <img
+        onClick={() => props.handlePageNavigationArrowPressed('B')}
+        src={PreviousPageIcon}
+        className={classes.image}
+      ></img>
       {pageNumbers.map((element, index) => {
         return (
           <PageBox
@@ -45,8 +53,16 @@ const PageSelector: React.FC<{
           />
         )
       })}
-      <img src={NextPageIcon} className={classes.image}></img>
-      <img src={ForwardToEndIcon} className={classes.image}></img>
+      <img
+        onClick={() => props.handlePageNavigationArrowPressed('F')}
+        src={NextPageIcon}
+        className={classes.image}
+      ></img>
+      <img
+        onClick={() => props.handlePageNavigationArrowPressed('FF')}
+        src={ForwardToEndIcon}
+        className={classes.image}
+      ></img>
     </div>
   )
 }
