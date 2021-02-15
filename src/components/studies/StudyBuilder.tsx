@@ -82,7 +82,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }>()
   console.log('from builder', id, _section)
   const [section, setSection] = React.useState(_section)
-  const [nextSection, setNextSection] = React.useState<StudySection>(_section)
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [saveLoader, setSaveLoader] = React.useState(false)
   const { token } = useUserSessionDataState()
