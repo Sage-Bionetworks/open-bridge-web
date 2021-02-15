@@ -15,8 +15,8 @@ const useStyles = makeStyles(theme => ({
   },
   image: {
     color: 'black',
-    marginLeft: '4px',
-    marginRight: '4px',
+    marginLeft: theme.spacing(0.5),
+    marginRight: theme.spacing(0.5),
   },
 }))
 
@@ -35,13 +35,25 @@ const PageSelector: React.FC<{
     <div className={classes.container}>
       <img
         onClick={() => props.handlePageNavigationArrowPressed('BB')}
-        src={BackToBeginningIcon}
+        src={
+          props.currentPageSelected == 1
+            ? BackToBeginningIcon
+            : ForwardToEndIcon
+        }
         className={classes.image}
+        alt="back_to_beginning_icon"
+        style={{
+          transform: props.currentPageSelected == 1 ? '' : 'rotate(180deg)',
+        }}
       ></img>
       <img
         onClick={() => props.handlePageNavigationArrowPressed('B')}
-        src={PreviousPageIcon}
+        src={props.currentPageSelected == 1 ? PreviousPageIcon : NextPageIcon}
         className={classes.image}
+        alt="back_icon"
+        style={{
+          transform: props.currentPageSelected == 1 ? '' : 'rotate(180deg)',
+        }}
       ></img>
       {pageNumbers.map((element, index) => {
         return (
@@ -55,13 +67,34 @@ const PageSelector: React.FC<{
       })}
       <img
         onClick={() => props.handlePageNavigationArrowPressed('F')}
-        src={NextPageIcon}
+        src={
+          props.currentPageSelected == props.numberOfPages
+            ? PreviousPageIcon
+            : NextPageIcon
+        }
         className={classes.image}
+        style={{
+          transform:
+            props.currentPageSelected == props.numberOfPages
+              ? 'rotate(180deg)'
+              : '',
+        }}
       ></img>
       <img
         onClick={() => props.handlePageNavigationArrowPressed('FF')}
-        src={ForwardToEndIcon}
+        src={
+          props.currentPageSelected == props.numberOfPages
+            ? BackToBeginningIcon
+            : ForwardToEndIcon
+        }
         className={classes.image}
+        alt="forward_to_end_icon"
+        style={{
+          transform:
+            props.currentPageSelected == props.numberOfPages
+              ? 'rotate(180deg)'
+              : '',
+        }}
       ></img>
     </div>
   )

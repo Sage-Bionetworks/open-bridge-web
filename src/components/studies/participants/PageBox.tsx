@@ -3,13 +3,14 @@ import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(theme => ({
   pageBoxSurrounding: {
-    padding: '2px 4px',
+    padding: theme.spacing(0.25, 0.5),
     cursor: 'pointer',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
   },
 }))
+
 const PageBox: React.FC<{
   isSelected: boolean
   pageNumber: number
