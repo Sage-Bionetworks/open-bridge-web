@@ -5,8 +5,7 @@ import {
   Divider,
   makeStyles,
   Paper,
-  Typography,
-  useTheme
+  Typography
 } from '@material-ui/core'
 import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
@@ -45,15 +44,14 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = (
 ) => {
   const { token } = useUserSessionDataState()
   const classes = useStyles()
-  const theme = useTheme()
-
+ 
   const links = [{ url: '/assessments', text: 'Assessments' }]
 
   let { id } = useParams<{ id: string }>()
 
   const handleError = useErrorHandler()
 
-  const { data, status, error, run, setData } = useAsync<Assessment>({
+  const { data, status, error, run} = useAsync<Assessment>({
     status: 'PENDING',
     data: null,
   })
@@ -62,13 +60,13 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = (
     ///your async call
 
     return run(
-      (async function (guid, token) {
+      (async function (id, token) {
         const {
           assessments,
-          tags,
+   
         } = await AssessmentService.getAssessmentsWithResources(id, token)
         if (assessments.length === 0) {
-          throw ('no assessment found')
+          throw new Error('no assessment found')
         } else {
           return assessments[0]
         }

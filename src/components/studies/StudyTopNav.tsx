@@ -108,7 +108,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               className={classes.toolbarLink}
               style={{ paddingBottom: '0' }}
             >
-              <img src={Logo} key="home" />
+              <img src={Logo} key="home" alt="home" />
             </NavLink>
             <HideWhen hideWhen={studyData.study === undefined}>
               <BreadCrumb

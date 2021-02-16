@@ -1,17 +1,13 @@
-import React, { FunctionComponent, useState } from 'react'
-
-import UserService from '../../services/user.service'
 import {
   Button,
-  TextField,
-  Grid,
-  Typography,
   Container,
+  Grid,
   makeStyles,
-  Snackbar,
+  TextField,
+  Typography
 } from '@material-ui/core'
-
-import Alert from '@material-ui/lab/Alert'
+import React, { FunctionComponent, useState } from 'react'
+import UserService from '../../services/user.service'
 
 type PasswordResetProps = {
   username: string

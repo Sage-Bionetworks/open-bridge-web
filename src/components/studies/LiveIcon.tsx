@@ -27,7 +27,7 @@ const LiveIcon: React.FC<{}> = props => {
   const classes = useStyles()
   return (
     <div className={classes.liveContainer}>
-      <img src={LiveIconImage} className={classes.icon}></img>
+      <img src={LiveIconImage} className={classes.icon} alt="Live"></img>
       <div>Live</div>
     </div>
   )

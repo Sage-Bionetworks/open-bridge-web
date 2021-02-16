@@ -2,7 +2,7 @@
 // This is very hacky...
 localStorage.removeItem('mtb-page')
 
-export default {
+const actions =  {
   set: function (key: string, value: any) {
     console.debug('[cache] Setting', key)
     localStorage.setItem(key, JSON.stringify(value))
@@ -35,3 +35,5 @@ export default {
     return fn.queryToObject(loc, arrayPropNames, prefix);
   }*/
 }
+
+export default actions

@@ -1,8 +1,7 @@
-import { Response, Assessment } from '../types/types'
-
 import { callEndpoint } from '../helpers/utility'
 import constants from '../types/constants'
-import { KEYS, MOCKS, setItem, getItem } from './lshelper'
+import { Assessment } from '../types/types'
+import { getItem, KEYS } from './lshelper'
 
 const AssessmentService = {
   getAssessments,

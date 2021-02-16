@@ -21,27 +21,6 @@ const useStyles = makeStyles(theme => ({
   root: {},
 }))
 
-const uploadAreaStyle = {
-  dropArea: {
-    borderColor: '#000',
-    borderRadius: 0,
-    height: '200px',
-  },
-  dropAreaActive: {
-    borderColor: '#ddd',
-  },
-  dropFile: {
-    width: '100%',
-    height: 120,
-    background: 'none',
-  },
-
-  progressBar: {
-    backgroundColor: '#3a3a3a',
-    height: '2px',
-  },
-}
-
 type AddByIdDialogProps = {
   token: string
   study: Study
@@ -55,7 +34,6 @@ const AddByIdDialog: FunctionComponent<AddByIdDialogProps> = ({
 }) => {
   console.log('rerender')
 
-  const classes = useStyles()
   const [isOpenIdQuestion, setIsOpenIdQuestion] = React.useState(true)
   const [shouldGenerateIds, setShouldGenerateIds] = React.useState(false)
   const [numOfIds, setNumOfIds] = React.useState(10)

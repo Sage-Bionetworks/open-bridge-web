@@ -96,10 +96,10 @@ function App() {
     return () => {
       isSubscribed = false
     }
-  }, [token])
+  }, [token, sessionUpdateFn ])
   useEffect(() => {
     detectSSOCode(sessionUpdateFn, sessionData)
-  }, [sessionData.token])
+  }, [sessionData.token, sessionUpdateFn, sessionData])
 
   return (
     <ThemeProvider theme={{ ...theme, ...cssVariables }}>

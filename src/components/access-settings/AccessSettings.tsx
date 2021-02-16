@@ -14,7 +14,7 @@ import CloseIcon from '@material-ui/icons/Close'
 import MailOutlineIcon from '@material-ui/icons/MailOutline'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
-import { RouteComponentProps, useParams } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router-dom'
 import { ReactComponent as Delete } from '../../assets/trash.svg'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
 import AccessService from '../../services/access.service'
@@ -107,7 +107,7 @@ async function createNewAccount(
       lastName,
     } = await AccessService.getAliasFromSynapseByEmail(email)
 
-    const isSuccess = await AccessService.createIndividualAccount(
+    await AccessService.createIndividualAccount(
       token!,
       email,
       principalId,
@@ -129,16 +129,16 @@ function filterNewAccountsByAdded(
   return result
 }
 
-const AccessSettings: FunctionComponent<AccessSettingsProps> = ({}) => {
+const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
   const classes = useStyles()
-  let { id } = useParams<{ id: string }>()
+
   const [isOpenInvite, setIsOpenInvite] = React.useState(false)
   const [newOrgAccounts, setNewOrgAccounts] = React.useState<NewOrgAccount[]>([
     CreateNewOrgAccountTemplate(),
   ])
 
   const sessionData = useUserSessionDataState()
-  const { token, orgMembership, roles, id: loggedInId } = sessionData
+  const { token, orgMembership} = sessionData
   const [updateToggle, setUpdateToggle] = React.useState(false)
 
   const closeInviteDialog = () => {

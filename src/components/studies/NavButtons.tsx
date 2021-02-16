@@ -1,13 +1,6 @@
 import { Box, Button } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import { SECTIONS as sectionLinks, StudySection } from './sections'
-
-
-
-const useStyles = makeStyles({
-  root: {},
-})
 
 export interface NavButtonsProps {
   currentSection: StudySection
@@ -20,7 +13,6 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
   id,
   onNavigate,
 }: NavButtonsProps) => {
-  const classes = useStyles()
   const currentIndex = sectionLinks.findIndex(i => i.path === currentSection)
   const prev = currentIndex > 0 ? sectionLinks[currentIndex - 1] : undefined
   const next =
@@ -29,7 +21,7 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
       : undefined
 
   const NavLink = (props: any) => {
-    const { id, section } = props
+    const {section } = props
 
 
     if (!section) {
