@@ -26,22 +26,27 @@ async function getParticipants(
 async function addParticipant(
   studyIdentifier: string,
   token: string,
-): Promise<ParticipantAccountSummary[]> {
+  options: {phone?: string, externalId: string}
+
+): Promise<string> {
   const endpoint = constants.endpoints.participant.replace(
     ':id',
     studyIdentifier,
+
   )
-  const result = await callEndpoint<{ items: ParticipantAccountSummary[] }>(
+  const data= {
+    appId: constants.constants.APP_ID,
+    externalIds: {[studyIdentifier]: options.externalId}
+  }
+
+
+  const result = await callEndpoint<{identifier: string}>(
     endpoint,
     'POST',
-    {},
+    data,
     token,
   )
-  const mappedResult = result.data.items.map(item => {
-    return { ...item, studyExternalId: item.externalIds[studyIdentifier] }
-  })
-
-  return mappedResult
+  return result.data.identifier
 }
 
 const ParticipantService = {

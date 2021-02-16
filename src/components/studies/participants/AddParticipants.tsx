@@ -1,14 +1,15 @@
+// pick a date util library
+
 import {
   Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  FormControlLabel,
+  FormControl,
+  FormGroup,
   LinearProgress,
   Paper,
-  Radio,
-  RadioGroup,
   Tab,
   Tabs
 } from '@material-ui/core'
@@ -17,14 +18,73 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { CSVReader } from 'react-papaparse'
-import { poppinsFont } from '../../../style/theme'
-import { ParticipantAccountSummary } from '../../../types/types'
+import { latoFont, poppinsFont } from '../../../style/theme'
+import {
+  EnrollmentType,
+  ParticipantAccountSummary,
+  Study
+} from '../../../types/types'
+import DatePicker from '../../widgets/DatePicker'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
+import {
+  SimpleTextInput,
+  SimpleTextLabel
+} from '../../widgets/StyledComponents'
 import TabPanel from '../../widgets/TabPanel'
 
 const useStyles = makeStyles(theme => ({
   root: {},
+  addForm: {
+    '& .MuiFormControl-root:not(:last-child)': {
+      marginBottom: theme.spacing(2),
+    },
+  },
+  dateAdornment: {
+    position: 'absolute',
+    right: '0px',
+    top: '20px',
+    zIndex: 10,
+    ' & button': {
+      padding: theme.spacing(1),
+      '&:hover': {
+        backgroundColor: 'transparent',
+        color: theme.palette.primary.light,
+      },
+    },
+  },
+  datePicker: {
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 0,
+      paddingRight: 0,
+      boxShadow: 'none',
+      display: 'block',
+      position: 'relative',
+      border: '1px solid #ced4da',
 
+      '&:hover .MuiOutlinedInput-notchedOutline': {
+        borderStyle: 'none',
+      },
+
+      '& .MuiOutlinedInput-notchedOutline': {
+        borderStyle: 'none',
+      },
+
+      '&.Mui-focused': {
+        borderColor: theme.palette.primary.light,
+      },
+    },
+    '& input': {
+      borderRadius: 0,
+      position: 'relative',
+      backgroundColor: theme.palette.common.white,
+      borderStyle: 'none',
+      fontSize: '14px',
+      width: 'auto',
+      padding: '10px 12px',
+      transition: theme.transitions.create(['border-color', 'box-shadow']),
+      fontFamily: [latoFont, 'Roboto'].join(','),
+    },
+  },
   dialogTitle: {
     display: 'flex',
     fontFamily: poppinsFont,
@@ -82,8 +142,9 @@ const uploadAreaStyle = {
 
 type AddParticipantsProps = {
   token: string
-  studyId: string
+  study: Study
   enrollmentType: 'PHONE' | 'ID'
+  onAdded: Function
 }
 
 const participantRecordTemplate: ParticipantAccountSummary = {
@@ -120,26 +181,157 @@ function parseCSVToJSON(rows: any[]): Partial<ParticipantAccountSummary>[] {
   return objects
 }
 
+// -----------------  Import participants control
+const ImportParticipantTab: FunctionComponent<{
+  enrollmentType: EnrollmentType
+  children: React.ReactNode
+}> = ({ children, enrollmentType }) => {
+  const template =
+    enrollmentType === 'PHONE' ? (
+      <a
+        href="/participantsPhoneTemplate.csv"
+        download="enrollmentTemplatePhone"
+      >
+        <strong>ParticipantPhones_Template.csv</strong>
+      </a>
+    ) : (
+      <a href="/participantsPhoneTemplate.csv" download="enrollmentTemplateId">
+        <strong>ParticipantIds_Template.csv</strong>
+      </a>
+    )
+
+  const recList =
+    enrollmentType === 'PHONE' ? (
+      <ul>
+        <li>
+          <strong>Phone Number* </strong>
+        </li>
+        <li>
+          <strong>Clinic Visit </strong>(can be updated later)
+        </li>
+        <li>
+          <strong>Reference ID</strong> (Alternate ID for your reference)
+        </li>
+        <li>
+          <strong>Notes</strong> (for your reference)
+        </li>
+      </ul>
+    ) : (
+      <ul>
+        <li>
+          <strong>ParticipantID* </strong>
+        </li>
+        <li>
+          <strong>Clinic Visit </strong>(can be updated later)
+        </li>
+        <li>
+          <strong>Notes</strong> (for your reference)
+        </li>
+      </ul>
+    )
+
+  return (
+    <Box>
+      <p>
+        To add <strong>new participants</strong> to your study, we will need the
+        following information by columns:
+      </p>
+      {recList}
+      Please make sure that your .csv matches this template:
+      <br />
+      {template}
+      <Box mx="auto" my={2} textAlign="center">
+        {children}
+      </Box>
+    </Box>
+  )
+}
+
+// -----------------  Add participant control
+const AddParticipantIdTab: FunctionComponent<{ onAdd: Function }> = ({
+  onAdd,
+}) => {
+  const classes = useStyles()
+  const [isDateControlFocused, setIsDateControlFocused] = React.useState(false)
+  const [participantId, setParticipantId] = React.useState('')
+  const [notes, setNotes] = React.useState('')
+  const [clinicVisitDate, setClinicVisitDate] = React.useState<Date | null>(
+    null,
+  )
+
+  const handleDateChange = (date: Date | null) => {
+    setClinicVisitDate(date)
+  }
+
+  return (
+    <>
+      <FormGroup className={classes.addForm}>
+        <FormControl>
+          <SimpleTextLabel htmlFor="participant-id">
+            Participant ID*
+          </SimpleTextLabel>
+          <SimpleTextInput
+            placeholder="xxx-xxx-xxxx"
+            id="participant-id"
+            fullWidth={true}
+            value={participantId}
+            onChange={e => setParticipantId(e.target.value)}
+          />
+        </FormControl>
+        <DatePicker
+          label="Clinic Visit 1"
+          id="clinic-visit"
+          value={clinicVisitDate}
+          onChange={e => handleDateChange(e)}
+        ></DatePicker>
+
+        <FormControl>
+          <SimpleTextLabel htmlFor="notes">Notes</SimpleTextLabel>
+          <SimpleTextInput
+            value={notes}
+            onChange={e => setNotes(e.target.value)}
+            placeholder="comments"
+            id="notes"
+            multiline={true}
+            rows={5}
+          />
+        </FormControl>
+      </FormGroup>
+
+      <Box textAlign="center" my={2}>
+        <Button
+          color="primary"
+          variant="contained"
+          disabled={!participantId}
+          onClick={() => onAdd({ participantId, notes, clinicVisitDate })}
+        >
+          +Add to study
+        </Button>
+      </Box>
+    </>
+  )
+}
+
 const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
   enrollmentType,
+  onAdded,
+  study,
+  token,
 }) => {
-  console.log('rerender')
+  console.log(enrollmentType)
   const [tab, setTab] = React.useState(0)
 
   const classes = useStyles()
-  const [isOpenIdQuestion, setIsOpenIdQuestion] = React.useState(
-    enrollmentType === 'ID',
-  )
+
   const [isOpenUpload, setIsOpenUpload] = React.useState(false)
   const [isCsvUploaded, setIsCsvUploaded] = React.useState(false)
-  const [shouldGenerateIds, setShouldGenerateIds] = React.useState(false)
 
   const uploadFromCsv = () => {}
   const handleOnDrop = (data: any) => {
     console.log('---------------------------')
     //console.log(data)
     const objects = parseCSVToJSON(data)
-    debugger
+
     setIsCsvUploaded(true)
     console.log(objects)
     console.log('---------------------------')
@@ -149,7 +341,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
     console.log(err)
   }
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: any) => {
+  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
   }
 
@@ -212,61 +404,10 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
         </DialogActions>
       </Dialog>
 
-      <Dialog
-        open={isOpenIdQuestion}
-        maxWidth="sm"
-        fullWidth
-        aria-labelledby="form-dialog-title"
-      >
-        <DialogTitleWithClose
-          onCancel={() => setIsOpenIdQuestion(false)}
-        ></DialogTitleWithClose>
-        <DialogContent>
-          <div>
-            How would you like to generate the Participant IDs?
-            <RadioGroup
-              aria-label="gender"
-              name="gender1"
-              value={shouldGenerateIds}
-              onChange={e => setShouldGenerateIds(e.target.value === 'true')}
-            >
-              <FormControlLabel
-                value={false}
-                control={<Radio />}
-                label="Define my own IDs"
-              />
-              <FormControlLabel
-                value={true}
-                control={<Radio />}
-                label="Generate new participant IDs for me"
-              />
-            </RadioGroup>
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setIsOpenIdQuestion(false)}
-            color="secondary"
-            variant="outlined"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              alert('import')
-            }}
-            color="primary"
-            variant="contained"
-          >
-            &nbsp;Continue
-          </Button>
-        </DialogActions>
-      </Dialog>
-
       <Paper square style={{ whiteSpace: 'break-spaces' }}>
         <Tabs
           value={tab}
-          onChange={handleChange}
+          onChange={handleTabChange}
           aria-label="simple tabs example"
         >
           <Tab label="Upload .csv " />
@@ -274,46 +415,25 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
         </Tabs>
 
         <TabPanel value={tab} index={0}>
-          <Box>
-            <p>
-              To add new participants to your study, we will need the following
-              information by columns:
-            </p>
-            <ul>
-              <li>
-                <strong>Phone Number* </strong>
-              </li>
-              <li>
-                <strong>Clinic Visit </strong>(can be updated later)
-              </li>
-              <li>
-                <strong>Reference ID</strong> (Alternate ID for your reference)
-              </li>
-              <li>
-                <strong>Notes</strong> (for your reference)
-              </li>
-            </ul>
-            Please make sure that your .csv matches this template:
-            <br />
-            <a href="/participantsPhoneTemplate.csv" download="template">
-              <strong>ParticipantPhones_Template.csv</strong>
-            </a>
-            <Box mx="auto" my={2} textAlign="center">
-              <Button
-                onClick={() => {
-                  setIsCsvUploaded(false)
-                  setIsOpenUpload(true)
-                }}
-                color="primary"
-                variant="contained"
-              >
-                Upload CSV File
-              </Button>
-            </Box>
-          </Box>
+          <ImportParticipantTab enrollmentType={enrollmentType}>
+            <Button
+              onClick={() => {
+                setIsCsvUploaded(false)
+                setIsOpenUpload(true)
+              }}
+              color="primary"
+              variant="contained"
+            >
+              Upload CSV File
+            </Button>
+          </ImportParticipantTab>{' '}
         </TabPanel>
         <TabPanel value={tab} index={1}>
-          Item Two
+          <AddParticipantIdTab
+            onAdd={(item: any) => {
+              console.log('add', item)
+            }}
+          ></AddParticipantIdTab>
         </TabPanel>
       </Paper>
     </>

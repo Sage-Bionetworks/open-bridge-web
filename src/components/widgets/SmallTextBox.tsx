@@ -1,29 +1,38 @@
 import { TextField, TextFieldProps } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
+import { ThemeType } from '../../style/theme'
 
-const useStyles = makeStyles(theme => ({
+interface StyleProps {
+  width: number
+}
+
+const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
   root: {
     marginBottom: theme.spacing(2),
   },
-  text: {
-    width: '50px',
+  text: props => ({
+    width: theme.spacing(props.width),
 
     '& input': {
       padding: theme.spacing(1),
-      width: theme.spacing(6),
+      width: theme.spacing(props.width),
+
     },
-  },
+  }),
 }))
 
 export interface SmallTextBoxProps {
-  isLessThanOneAllowed?: boolean
+  isLessThanOneAllowed?: boolean,
+  inputWidth?: number
 }
 
 const SmallTextBox: React.FunctionComponent<
   SmallTextBoxProps & TextFieldProps
-> = ({ isLessThanOneAllowed, onChange, ...other }) => {
-  const classes = useStyles()
+> = ({ isLessThanOneAllowed, inputWidth=6, onChange, ...other }) => {
+
+
+  const classes = useStyles({width: inputWidth})
 
   const change = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,

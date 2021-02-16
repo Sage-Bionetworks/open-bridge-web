@@ -1,11 +1,8 @@
 import {
-  createStyles,
   FormControlLabel,
   Radio,
-  RadioGroup,
-  Theme
+  RadioGroup
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import {
   EndDate as EndDateType,
@@ -13,18 +10,6 @@ import {
 } from '../../../types/scheduling'
 import SmallTextBox from '../../widgets/SmallTextBox'
 import SchedulingFormSection from './SchedulingFormSection'
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 120,
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2),
-    },
-  }),
-)
 
 export interface EndDateProps {
   endDate: EndDateType
@@ -35,8 +20,6 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
   endDate,
   onChange,
 }: EndDateProps) => {
-  const classes = useStyles()
-
   const changeEndDate = (type: SessionScheduleEndType) => {
     onChange({ ...endDate, type })
   }
@@ -72,12 +55,11 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
             <>
               <Radio value={'N_OCCURENCES'} />{' '}
               <SmallTextBox
-              color="secondary"
+                color="secondary"
                 id="standard-basic"
                 style={{ marginRight: '10px' }}
                 onChange={e => changeEndDateDays(e.target.value)}
                 value={endDate.days || ''}
-                
               />
             </>
           }

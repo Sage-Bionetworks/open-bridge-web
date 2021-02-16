@@ -1,18 +1,17 @@
 import { Box, Drawer, IconButton, makeStyles } from '@material-ui/core'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import SomeIcon from '@material-ui/icons/SentimentVerySatisfied'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
-import { ThemeType } from '../../style/theme'
-import SideBarListItem from '../widgets/SideBarListItem'
-import { SECTIONS as sectionLinks, StudySection } from './sections'
 import CreateSessionIcon from '../../assets/create_session_icon.svg'
 import CustomizeAppIcon from '../../assets/customize_app_icon.svg'
 import LaunchStudyIcon from '../../assets/launch_study_icon.svg'
 import PassiveFeaturesIcon from '../../assets/passive_features_icon.svg'
 import PreviewStudyIcon from '../../assets/preview_study_icon.svg'
 import ScheduleSesssionsIcon from '../../assets/schedule_sessions_icon.svg'
+import { ThemeType } from '../../style/theme'
+import SideBarListItem from '../widgets/SideBarListItem'
+import { SECTIONS as sectionLinks, StudySection } from './sections'
 
 const drawerWidth = 212
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -139,7 +138,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
             onClick={() => onNavigate(sectionLink.path)}
           >
             <div className={classes.navIconImageContainer}>
-              <img src={navIcons[index]} className={classes.navIcon} />
+              <img src={navIcons[index]} className={classes.navIcon} alt={sectionLink.name} />
               <span>{sectionLink.name}</span>
             </div>
           </SideBarListItem>

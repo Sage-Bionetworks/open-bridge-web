@@ -1,9 +1,4 @@
-import {
-  Hidden,
-  IconButton,
-  LinearProgress,
-  Paper
-} from '@material-ui/core'
+import { Hidden, IconButton, LinearProgress, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
@@ -13,6 +8,7 @@ import { NavLink } from 'react-router-dom'
 import Logo from '../../assets/logo_mtb.svg'
 import { useStudyInfoDataState } from '../../helpers/StudyInfoContext'
 import BreadCrumb from '../widgets/BreadCrumb'
+import HideWhen from '../widgets/HideWhen'
 
 const useStyles = makeStyles(theme => ({
   toolbarStudyHeader: {
@@ -112,16 +108,16 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               className={classes.toolbarLink}
               style={{ paddingBottom: '0' }}
             >
-              <img src={Logo} key="home" />
+              <img src={Logo} key="home" alt="home" />
             </NavLink>
-
-            {studyData.study && (
+            <HideWhen hideWhen={studyData.study === undefined}>
               <BreadCrumb
                 links={[{ url: '/Studies', text: '' }]}
                 currentItem={studyData.study?.name}
               ></BreadCrumb>
-            )}
-            {!studyData.study && <LinearProgress style={{ width: '50px' }} />}
+
+              <LinearProgress style={{ width: '50px' }} />
+            </HideWhen>
           </Toolbar>
           <Toolbar className={classes.toolbar}>
             {links

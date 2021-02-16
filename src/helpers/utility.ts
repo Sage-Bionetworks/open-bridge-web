@@ -5,7 +5,7 @@ import { Response, StringDictionary, UserSessionData } from '../types/types'
 type RestMethod = 'POST' | 'GET' | 'DELETE'
 
 function makeRequest(
-  method: RestMethod  = 'POST',
+  method: RestMethod = 'POST',
   url: string,
   body: any,
   token?: string,
@@ -43,7 +43,7 @@ function makeRequest(
 
 export const callEndpointXHR = async <T>(
   endpoint: string,
-  method: RestMethod  = 'POST',
+  method: RestMethod = 'POST',
   data: StringDictionary<any>,
   token?: string,
 ): Promise<Response<T>> => {
@@ -70,7 +70,7 @@ export const callEndpointXHR = async <T>(
 
 export const callEndpoint = async <T>(
   endpoint: string,
-  method: RestMethod  = 'POST',
+  method: RestMethod = 'POST',
   data: StringDictionary<any>,
   token?: string,
   isSynapseEndpoint?: boolean,
@@ -196,4 +196,23 @@ export const bytesToSize = (bytes: number) => {
   )
   if (i === 0) return `${bytes} ${sizes[i]})`
   return `${(bytes / 1024 ** i).toFixed(1)}${sizes[i]}`
+}
+export const randomInteger = (min: number, max: number): number => {
+  min = Math.ceil(min)
+  max = Math.floor(max)
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+//based on https://gist.github.com/lavoiesl/3223665
+export const generateNonambiguousCode = (length: number): string => {
+  let result = ''
+  const alpha = '23456789abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ'
+  const max_offset = alpha.length - 1
+
+  for (let i = 0; i < length; i++) {
+    const index = randomInteger(0, max_offset)
+    result = result + alpha[index]
+  }
+
+  return result
 }

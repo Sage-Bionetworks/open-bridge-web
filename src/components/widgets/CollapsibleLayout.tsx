@@ -6,13 +6,12 @@ import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { ThemeType } from '../../style/theme'
 
-export interface StyleProps {
+interface StyleProps {
   maxWidth: string
   height: string
   collapsedHight: string
 }
 
-export interface MyComponentProps {}
 
 const useStyles = makeStyles<ThemeType, StyleProps>((theme: ThemeType) => ({
   drawer: props => ({

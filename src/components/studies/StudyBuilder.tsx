@@ -2,7 +2,7 @@ import { Box } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
-import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
+import { ErrorBoundary } from 'react-error-boundary'
 import { RouteComponentProps, useParams } from 'react-router-dom'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
 import {
@@ -74,15 +74,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ...otherProps
 }) => {
   const classes = useStyles()
-  const handleError = useErrorHandler()
-
   let { id, section: _section } = useParams<{
     id: string
     section: StudySection
   }>()
   console.log('from builder', id, _section)
   const [section, setSection] = React.useState(_section)
-  const [nextSection, setNextSection] = React.useState<StudySection>(_section)
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [saveLoader, setSaveLoader] = React.useState(false)
   const { token } = useUserSessionDataState()

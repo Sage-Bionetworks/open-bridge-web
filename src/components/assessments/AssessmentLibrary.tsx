@@ -35,7 +35,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
     Assessment[] | undefined
   >(undefined)
 
-  const { data, status, error, run, setData } = useAsync<{
+  const { data, status, error, run } = useAsync<{
     assessments: Assessment[]
     tags: StringDictionary<number>
   }>({
@@ -46,7 +46,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
   React.useEffect(() => {
     ///your async call
     return run(AssessmentService.getAssessmentsWithResources(undefined, token))
-  }, [run])
+  }, [run, token])
   if (status === 'PENDING') {
     return <>loading component here</>
   }

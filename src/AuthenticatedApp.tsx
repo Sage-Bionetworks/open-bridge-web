@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react'
-import { matchPath, Route, Switch, useLocation } from 'react-router-dom'
+import { matchPath, Route, Switch } from 'react-router-dom'
 import './App.css'
 import StudyTopNav from './components/studies/StudyTopNav'
 import TopNav from './components/widgets/AppTopNav'
@@ -23,11 +23,10 @@ const getParams = (pathname: string): { id?: string; section?: string } => {
 const AuthenticatedApp: FunctionComponent<{ token: string }> = ({
   token
 }) => {
-  const location = useLocation()
   const [studyId, setStudyId] = React.useState<string | undefined>()
   const [studySection, setStudySection] = React.useState<string | undefined>()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
-  const { data: builderInfo, status, error, setData } = useStudyBuilderInfo(
+  const { data: builderInfo} = useStudyBuilderInfo(
     studyId,
   )
 
@@ -36,13 +35,14 @@ const AuthenticatedApp: FunctionComponent<{ token: string }> = ({
     if (builderInfo?.study) {
       studyDataUpdateFn({ type: 'SET_ALL', payload: builderInfo })
     }
-  }, [builderInfo])
+  }, [builderInfo, studyDataUpdateFn])
 
   React.useEffect(() => {
     const { id, section } = getParams(window.location.pathname)
     setStudyId(id)
     setStudySection(section)
-  }, [window.location.pathname])
+  }, [studyDataUpdateFn])
+
   getParams(window.location.pathname)
 
   return (

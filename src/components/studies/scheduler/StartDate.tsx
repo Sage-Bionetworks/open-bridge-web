@@ -1,11 +1,8 @@
 import {
-  createStyles,
   FormControlLabel,
   Radio,
-  RadioGroup,
-  Theme
+  RadioGroup
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import {
   HDWMEnum,
@@ -14,8 +11,6 @@ import {
 } from '../../../types/scheduling'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
-
-const useStyles = makeStyles((theme: Theme) => createStyles({}))
 
 export interface StartDateProps {
   startDate: StartDateType
@@ -26,8 +21,6 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
   startDate,
   onChange,
 }: StartDateProps) => {
-  const classes = useStyles()
-
   const [startDateOffset, setStartDateOffset] = React.useState(startDate.offset)
 
   React.useEffect(() => {
@@ -35,14 +28,13 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
   }, [startDate.offset])
 
   const changeStartDate = (type: SessionScheduleStartType) => {
-   if (type !== startDate.type) {
+    if (type !== startDate.type) {
       onChange({ ...startDate, type })
-  
-   }
-   // } else {
+    }
+    // } else {
     //  if (startDate.type !== 'NDAYS_DAY1') {
-      //  onChange({ ...startDate, type })
-     // }
+    //  onChange({ ...startDate, type })
+    // }
     //}
   }
 

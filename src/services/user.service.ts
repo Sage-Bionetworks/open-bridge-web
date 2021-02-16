@@ -12,7 +12,7 @@ const getOathEnvironment = (): {
   } else if (document.location.origin.indexOf('staging') > -1) {
     return constants.oauth.staging
   }
-  throw 'unknown'
+  throw new Error('unknown')
 }
 
 const requestResetPassword = async (email: string): Promise<Response<{}>> => {

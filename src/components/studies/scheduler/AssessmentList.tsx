@@ -152,7 +152,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
                 <Switch
                   color="primary"
                   disabled={!isGroupAssessments}
-                  checked={assessmentOrder == 'RANDOM'}
+                  checked={assessmentOrder === 'RANDOM'}
                   onChange={e => {
                     onSetRandomized(e.target.checked)
                   }}
