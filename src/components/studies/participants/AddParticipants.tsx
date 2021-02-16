@@ -161,7 +161,7 @@ type keys = keyof ParticipantAccountSummary
 
 function parseCSVToJSON(rows: any[]): Partial<ParticipantAccountSummary>[] {
   const keys = Object.keys(participantRecordTemplate) as keys[]
-  let i = 0
+
   const objects: Partial<ParticipantAccountSummary>[] = []
   for (const row of rows) {
     console.log('row')
@@ -252,7 +252,6 @@ const AddParticipantIdTab: FunctionComponent<{ onAdd: Function }> = ({
   onAdd,
 }) => {
   const classes = useStyles()
-  const [isDateControlFocused, setIsDateControlFocused] = React.useState(false)
   const [participantId, setParticipantId] = React.useState('')
   const [notes, setNotes] = React.useState('')
   const [clinicVisitDate, setClinicVisitDate] = React.useState<Date | null>(

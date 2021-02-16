@@ -107,8 +107,7 @@ const MenuLinks: FunctionComponent<
     className: string
     activeClassName: string
   }
-> = ({ routes, token, className, activeClassName }) => {
-  const classes = useStyles()
+> = ({ routes, className, activeClassName }) => {
 
   let links = routes.map(route => (
     <NavLink
@@ -178,7 +177,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
       </Hidden>
       <Hidden mdDown>
         <Paper className={classes.toolbarWrapper} elevation={0}>
-          <img src={Logo} key="Mobile Toolbox" className={classes.toolbar} />
+          <img src={Logo} key="Mobile Toolbox" className={classes.toolbar} alt="logo" />
           <Toolbar
             component="nav"
             variant="dense"

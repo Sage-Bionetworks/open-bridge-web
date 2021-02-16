@@ -4,10 +4,12 @@ import React from 'react'
 
 const useStyles = makeStyles((theme: Theme) => createStyles({}))
 
-export interface TimelinePlotProps {}
+export interface TimelinePlotProps {
+  something: string
+}
 
-const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({}: TimelinePlotProps) => {
-  const classes = useStyles()
+const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({something}: TimelinePlotProps) => {
+
 
   return (
     <Box border="1px solid black" padding="30px" bgcolor="#ECECEC">

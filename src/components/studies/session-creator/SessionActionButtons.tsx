@@ -41,7 +41,7 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
 
   useEffect(() => {
     setSelectedSessionId(sessions.length > 0 ? sessions[0].id : undefined)
-  }, [sessions.length])
+  }, [sessions.length, sessions])
 
   const duplicateSession = (selectedId?: string) => {
     const session = sessions.find(s => s.id === selectedId)
