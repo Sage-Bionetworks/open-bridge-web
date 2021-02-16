@@ -45,7 +45,6 @@ const participantRecordTemplate: ParticipantAccountSummary = {
   externalIds: {},
 }
 
-
 type ParticipantManagerProps = ParticipantManagerOwnProps & RouteComponentProps
 
 const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
@@ -168,27 +167,29 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               isFullWidth={true}
               isHideContentOnClose={true}
               isDrawerHidden={!isEdit}
-            ><>
-              {!isGenerateIds && (
-                <AddParticipants
-                  study={study}
-                  token={token!}
-                  enrollmentType={'PHONE'/*study.options.enrollmentType*/}
-                  onAdded={(isHideAdd: boolean) => {
-                    setRefreshParticipantsToggle(prev => !prev)
-                  }}
-                ></AddParticipants>
-              )}
-              {study.options.enrollmentType === 'ID' && (
-                <AddByIdDialog
-                  study={study}
-                  token={token!}
-                  onAdded={(isHideAdd: boolean) => {
-                    setRefreshParticipantsToggle(prev => !prev)
-                    setIsGenerateIds(true)
-                  }}
-                ></AddByIdDialog>
-              )}</>
+            >
+              <>
+                {!isGenerateIds && (
+                  <AddParticipants
+                    study={study}
+                    token={token!}
+                    enrollmentType={'PHONE' /*study.options.enrollmentType*/}
+                    onAdded={(isHideAdd: boolean) => {
+                      setRefreshParticipantsToggle(prev => !prev)
+                    }}
+                  ></AddParticipants>
+                )}
+                {study.options.enrollmentType === 'ID' && (
+                  <AddByIdDialog
+                    study={study}
+                    token={token!}
+                    onAdded={(isHideAdd: boolean) => {
+                      setRefreshParticipantsToggle(prev => !prev)
+                      setIsGenerateIds(true)
+                    }}
+                  ></AddByIdDialog>
+                )}
+              </>
               <Box py={0} pr={3} pl={2}>
                 <ParticipantTableGrid
                   rows={participantData || []}
