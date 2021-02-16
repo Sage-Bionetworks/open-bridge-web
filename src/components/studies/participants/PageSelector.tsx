@@ -21,6 +21,8 @@ const useStyles = makeStyles(theme => ({
   button: {
     width: '10px',
     minWidth: '5px',
+    marginLeft: theme.spacing(0.5),
+    marginRight: theme.spacing(0.5),
   },
 }))
 
@@ -40,6 +42,7 @@ const PageSelector: React.FC<{
       <Button
         onClick={() => props.handlePageNavigationArrowPressed('BB')}
         classes={{ root: classes.button }}
+        disabled={props.currentPageSelected == 1}
       >
         <img
           src={
@@ -57,6 +60,7 @@ const PageSelector: React.FC<{
       <Button
         onClick={() => props.handlePageNavigationArrowPressed('B')}
         classes={{ root: classes.button }}
+        disabled={props.currentPageSelected == 1}
       >
         <img
           src={props.currentPageSelected == 1 ? PreviousPageIcon : NextPageIcon}
@@ -67,7 +71,6 @@ const PageSelector: React.FC<{
           }}
         ></img>
       </Button>
-
       {pageNumbers.map((element, index) => {
         return (
           <PageBox
@@ -82,6 +85,7 @@ const PageSelector: React.FC<{
       <Button
         onClick={() => props.handlePageNavigationArrowPressed('F')}
         classes={{ root: classes.button }}
+        disabled={props.currentPageSelected == props.numberOfPages}
       >
         <img
           src={
@@ -102,6 +106,7 @@ const PageSelector: React.FC<{
       <Button
         onClick={() => props.handlePageNavigationArrowPressed('FF')}
         classes={{ root: classes.button }}
+        disabled={props.currentPageSelected == props.numberOfPages}
       >
         <img
           src={

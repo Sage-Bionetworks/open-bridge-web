@@ -1,14 +1,13 @@
 import { Paper, MenuItem, Menu, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { ColDef, DataGrid, ValueGetterParams } from '@material-ui/data-grid'
-import { TheatersOutlined } from '@material-ui/icons'
-import { truncate } from 'lodash'
 import React, { FunctionComponent } from 'react'
 import {
   ParticipantAccountSummary,
   StringDictionary,
 } from '../../../types/types'
 import PageSelector from './PageSelector'
+import SelectWithEnum from '../../widgets/SelectWithEnum'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -28,6 +27,20 @@ const useStyles = makeStyles(theme => ({
   showEntryText: {
     fontFamily: 'Lato',
     fontSize: '15px',
+    marginRight: theme.spacing(1),
+  },
+  numEntriesButton: {
+    width: '10px',
+    height: '25px',
+    border: '1px solid black',
+    borderRadius: '0px',
+    marginLeft: theme.spacing(0.5),
+  },
+  pageSizeSelectorContainer: {
+    display: 'flex',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
 }))
 
@@ -61,6 +74,25 @@ const Footer: FunctionComponent<{
     setAnchorEl(null)
   }
 
+  /*
+        enum PageSizeEnum {
+    'TWENTY_FIVE' = '25',
+    'FIFTY' = '50',
+    'ONE_HUNDRED' = '100',
+  }
+      <SelectWithEnum
+          value={'numberasd sadfsadfdsafs' || 'hello'}
+          style={{ backgroundColor: 'white' }}
+          sourceData={PageSizeEnum}
+          id="pagesize"
+          onChange={e => {
+            const n = e.target.value! as keyof typeof PageSizeEnum
+            console.log('n is', n)
+            props.setPageSize(100)
+          }}
+        ></SelectWithEnum>
+  */
+
   const participantsShown = props.pageSize * props.currentPage
   return (
     <div className={classes.footerWrapper}>
@@ -77,18 +109,13 @@ const Footer: FunctionComponent<{
           props.handlePageNavigationArrowPressed
         }
       />
-      <div className={classes.showEntryText}>
-        {'show entries: '}
+      <div className={classes.pageSizeSelectorContainer}>
+        <div className={classes.showEntryText}>{'show entries: '}</div>
         <Button
           aria-controls="simple-menu"
           aria-haspopup="true"
           onClick={handleClick}
-          style={{
-            width: '10px',
-            height: '20px',
-            border: '1px solid black',
-            borderRadius: '0px',
-          }}
+          className={classes.numEntriesButton}
         >
           {props.pageSize}
         </Button>
