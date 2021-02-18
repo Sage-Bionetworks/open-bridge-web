@@ -2,7 +2,7 @@ import {
   Checkbox,
   FormControlLabel,
   makeStyles,
-  Paper,
+  Paper
 } from '@material-ui/core'
 import React, { FunctionComponent } from 'react'
 import { Assessment, StringDictionary } from '../../types/types'
@@ -32,8 +32,8 @@ AssessmentLibraryFilterProps) => {
   const getTotalCount = (tags: object): number =>
     Object.values(tags).reduce((a, c) => a + c, 0)
 
-  const getAssessmentDurations = (): number[] =>
-    assessments.map(a => a.duration || 0)
+  /*const getAssessmentDurations = (): number[] =>
+    assessments.map(a => a.duration || 0)*/
   const [selectedTags, setSelectedTags] = React.useState<string[]>([])
 
   const hasAnyTags = (assessment: Assessment, tags: string[]) => {

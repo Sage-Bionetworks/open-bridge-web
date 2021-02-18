@@ -1,6 +1,11 @@
 import { useState } from 'react'
 import CONSTANTS from '../types/constants'
-import { Response, StringDictionary, UserSessionData } from '../types/types'
+import {
+  Phone,
+  Response,
+  StringDictionary,
+  UserSessionData
+} from '../types/types'
 
 type RestMethod = 'POST' | 'GET' | 'DELETE'
 
@@ -204,6 +209,7 @@ export const randomInteger = (min: number, max: number): number => {
 }
 
 //based on https://gist.github.com/lavoiesl/3223665
+// generates external id
 export const generateNonambiguousCode = (length: number): string => {
   let result = ''
   const alpha = '23456789abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ'
@@ -215,4 +221,18 @@ export const generateNonambiguousCode = (length: number): string => {
   }
 
   return result
+}
+
+//
+export const makePhone = (phone: string): Phone => {
+  const number = phone?.includes('+1') ? phone : `+1${phone}`
+  return {
+    number: number,
+    regionCode: 'US',
+  }
+}
+
+export const isInvalidPhone = (phone: string): boolean => {
+  const phoneRegEx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
+  return phone.match(phoneRegEx) === null
 }

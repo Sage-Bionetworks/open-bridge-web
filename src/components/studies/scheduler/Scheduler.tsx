@@ -212,7 +212,7 @@ const Scheduler: FunctionComponent<
             )}
           </div>
           <Box bgcolor="#fff" p={2} mt={3}>
-            <TimelinePlot></TimelinePlot>
+            <TimelinePlot something=""></TimelinePlot>
             <StudyStartDate
               style={{ marginTop: '16px' }}
               startEventId={schedule.startEventId as StartEventId}

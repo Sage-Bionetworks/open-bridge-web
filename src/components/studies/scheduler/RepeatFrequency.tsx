@@ -1,11 +1,8 @@
-import { createStyles, FormControlLabel, Theme } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { FormControlLabel } from '@material-ui/core'
 import React from 'react'
 import { DWMYEnum, Reoccurance } from '../../../types/scheduling'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
-
-const useStyles = makeStyles((theme: Theme) => createStyles({}))
 
 export interface RepeatFrequencyProps {
   repeatFrequency: Reoccurance
@@ -16,8 +13,7 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
   repeatFrequency,
   onChange,
 }: RepeatFrequencyProps) => {
-  const classes = useStyles()
-
+ 
   return (
     <SchedulingFormSection label={'Run this session every:'}>
       <FormControlLabel

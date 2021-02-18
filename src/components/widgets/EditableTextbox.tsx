@@ -1,7 +1,5 @@
 import { makeStyles } from '@material-ui/core'
-import React, { useState, useEffect, FunctionComponent, useRef } from 'react'
-import clsx from 'clsx'
-
+import React, { FunctionComponent, useEffect, useRef, useState } from 'react'
 const useStyles = makeStyles(theme => ({
   wrapper: {
     marginRight: theme.spacing(2),

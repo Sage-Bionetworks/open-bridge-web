@@ -112,10 +112,22 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     if (!study?.identifier) {
       return
     }
-    ///your async call
-    console.log('refreshing participant grid')
     return run(ParticipantService.getParticipants(study.identifier, token!))
-  }, [study?.identifier, run, refreshParticipantsToggle])
+  }, [study?.identifier, run])
+
+  React.useEffect(() => {
+    if (!study?.identifier) {
+      return
+    }
+    const fn = async () => {
+      const participants = await ParticipantService.getParticipants(
+        study.identifier,
+        token!,
+      )
+      setParticipantData(participants)
+    }
+    fn()
+  }, [study?.identifier, refreshParticipantsToggle])
 
   if (status === 'PENDING' || !study) {
     return <>loading component here</>
@@ -173,8 +185,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   <AddParticipants
                     study={study}
                     token={token!}
-                    enrollmentType={'PHONE' /*study.options.enrollmentType*/}
-                    onAdded={(isHideAdd: boolean) => {
+                    enrollmentType={study.options.enrollmentType}
+                    onAdded={() => {
                       setRefreshParticipantsToggle(prev => !prev)
                     }}
                   ></AddParticipants>

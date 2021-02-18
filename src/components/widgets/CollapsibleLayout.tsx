@@ -10,8 +10,8 @@ interface StyleProps {
   maxWidth: string
   height: string
   collapsedHight: string
+  overflow: 'auto' | 'visible' | 'hidden'
 }
-
 
 const useStyles = makeStyles<ThemeType, StyleProps>((theme: ThemeType) => ({
   drawer: props => ({
@@ -28,19 +28,19 @@ const useStyles = makeStyles<ThemeType, StyleProps>((theme: ThemeType) => ({
   }),
   drawerToolbar: {
     display: 'flex',
-     height: theme.spacing(6),
-     backgroundColor: "#FAFAFA",
-     justifyContent: 'space-between',
-     alignItems: 'center',
-     textAlign:'center'
-
+    height: theme.spacing(6),
+    backgroundColor: '#FAFAFA',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    textAlign: 'center',
   },
   drawerClose: props => ({
-   /* transition: theme.transitions.create('width', {
+    /* transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),*/
     height: props.collapsedHight,
+    overflowY: props.overflow,
     overflowX: 'hidden',
     width: theme.spacing(6),
     [theme.breakpoints.up('sm')]: {
@@ -103,11 +103,12 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
   isFullHeight = true,
   children,
   isHideContentOnClose,
-  isDrawerHidden
+  isDrawerHidden,
 }) => {
   const styleProps: StyleProps = {
     maxWidth: expandedWidth + 'px',
     collapsedHight: isHideContentOnClose ? '48px' : 'auto',
+    overflow: isHideContentOnClose ? 'hidden' : 'auto',
     height: isFullHeight ? '100%' : 'auto',
   }
   const classes = useStyles(styleProps)
@@ -129,10 +130,10 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
               [classes.drawerClose]: !isOpen,
             }),
           }}
-          style={isDrawerHidden? {display: 'none'}:{}}
+          style={isDrawerHidden ? { display: 'none' } : {}}
         >
           <Box className={classes.drawerToolbar}>
-          {(children.length === 3 && isOpen) && children[2]}
+            {children.length === 3 && isOpen && children[2]}
             <IconButton
               onClick={() => setIsOpen(prev => !prev)}
               style={{ borderRadius: 0, width: '48px', height: '100%' }}
