@@ -3,13 +3,9 @@
 import {
   Box,
   Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
-  FormControl,
-  FormGroup,
-  FormHelperText,
   LinearProgress,
   Paper,
   Tab,
@@ -17,16 +13,9 @@ import {
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
-import Alert from '@material-ui/lab/Alert'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { CSVReader } from 'react-papaparse'
-import {
-  generateNonambiguousCode,
-  isInvalidPhone,
-  makePhone
-} from '../../../helpers/utility'
-import ParticipantService from '../../../services/participants.service'
 import { poppinsFont } from '../../../style/theme'
 import {
   EnrollmentType,
@@ -34,13 +23,9 @@ import {
   Phone,
   Study
 } from '../../../types/types'
-import DatePicker from '../../widgets/DatePicker'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
-import {
-  SimpleTextInput,
-  SimpleTextLabel
-} from '../../widgets/StyledComponents'
 import TabPanel from '../../widgets/TabPanel'
+import AddSingleParticipant from './AddSingleParticipant'
 
 interface AddParticipantType {
   clinicVisitDate?: Date
@@ -51,11 +36,6 @@ interface AddParticipantType {
 
 const useStyles = makeStyles(theme => ({
   root: {},
-  addForm: {
-    '& .MuiFormControl-root:not(:last-child)': {
-      marginBottom: theme.spacing(2),
-    },
-  },
 
   dialogTitle: {
     display: 'flex',
@@ -153,35 +133,6 @@ function parseCSVToJSON(rows: any[]): Partial<ParticipantAccountSummary>[] {
   return objects
 }
 
-async function addParticipantById(
-  studyIdentifier: string,
-  token: string,
-  referenceId: string,
-) {
-  const add = await ParticipantService.addParticipant(studyIdentifier, token, {
-    externalId: referenceId,
-    dataGroups: ['test_user'],
-  })
-}
-
-async function addParticipantByPhone(
-  studyIdentifier: string,
-  token: string,
-  phone: Phone,
-  referenceId?: string,
-) {
-  if (!referenceId) {
-    const studyPrefix = studyIdentifier.substr(0, 3)
-    referenceId = `${generateNonambiguousCode(6)}-${studyPrefix}`
-  }
-
-  const add = await ParticipantService.addParticipant(studyIdentifier, token, {
-    externalId: referenceId,
-    dataGroups: ['test_user'],
-    phone: phone,
-  })
-}
-
 // -----------------  Import participants tab control
 const ImportParticipantTab: FunctionComponent<{
   enrollmentType: EnrollmentType
@@ -248,118 +199,6 @@ const ImportParticipantTab: FunctionComponent<{
   )
 }
 
-// -----------------  Add participant  tab control
-const AddParticipantIdTab: FunctionComponent<{
-  onAdd: Function
-  enrollmentType: EnrollmentType
-  clear: boolean
-}> = ({ onAdd, enrollmentType, clear }) => {
-  const classes = useStyles()
-  const [referenceId, setReferenceId] = React.useState('')
-  const [notes, setNotes] = React.useState('')
-  const [phone, setPhone] = React.useState('')
-  const [clinicVisitDate, setClinicVisitDate] = React.useState<Date | null>(
-    null,
-  )
-  const [errors, setErrors] = React.useState({
-    phone: false,
-    referenceId: false,
-  })
-
-
-  React.useEffect(()=> {
-    setReferenceId('')
-    setNotes('')
-    setPhone('')
-    setClinicVisitDate(null)
-
-  }, [clear])
-  const handleDateChange = (date: Date | null) => {
-    setClinicVisitDate(date)
-  }
-
-  const isAddDisabled = (): boolean => {
-    return (
-      (enrollmentType === 'PHONE' && !phone) ||
-      (enrollmentType === 'ID' && !referenceId)
-    )
-  }
-
-  return (
-    <>
-      <FormGroup className={classes.addForm}>
-        <FormControl>
-          <SimpleTextLabel htmlFor="participant-id">
-            Participant ID*
-          </SimpleTextLabel>
-          <SimpleTextInput
-            placeholder="xxx-xxx-xxxx"
-            id="participant-id"
-            fullWidth={true}
-            value={referenceId}
-            onChange={e => setReferenceId(e.target.value)}
-          />
-        </FormControl>
-
-        <FormControl className={clsx(errors.phone && 'error')}>
-          <SimpleTextLabel htmlFor="phone">Phone*</SimpleTextLabel>
-          <SimpleTextInput
-            placeholder="xxx-xxx-xxxx"
-            id="phone"
-            fullWidth={true}
-            value={phone}
-            onBlur={() =>
-              setErrors(prev => ({ ...prev, phone: isInvalidPhone(phone) }))
-            }
-            onChange={e => setPhone(e.target.value)}
-          />
-          {errors.phone && (
-            <FormHelperText id="phone-text">
-              phone should be in the format: xxx-xxx-xxxx
-            </FormHelperText>
-          )}
-        </FormControl>
-        <DatePicker
-          label="Clinic Visit 1"
-          id="clinic-visit"
-          value={clinicVisitDate}
-          onChange={e => handleDateChange(e)}
-        ></DatePicker>
-
-        <FormControl>
-          <SimpleTextLabel htmlFor="notes">Notes</SimpleTextLabel>
-          <SimpleTextInput
-            value={notes}
-            onChange={e => setNotes(e.target.value)}
-            placeholder="comments"
-            id="notes"
-            multiline={true}
-            rows={5}
-          />
-        </FormControl>
-      </FormGroup>
-
-      <Box textAlign="center" my={2}>
-        <Button
-          color="primary"
-          variant="contained"
-          disabled={isAddDisabled()}
-          onClick={() =>
-            onAdd({
-              referenceId,
-              phone: makePhone(phone),
-              notes,
-              clinicVisitDate,
-            })
-          }
-        >
-          +Add to study
-        </Button>
-      </Box>
-    </>
-  )
-}
-
 const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
   enrollmentType,
   onAdded,
@@ -373,9 +212,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
 
   const [isOpenUpload, setIsOpenUpload] = React.useState(false)
   const [isCsvUploaded, setIsCsvUploaded] = React.useState(false)
-  const [isLoading, setIsLoading] = React.useState(false)
-  const [clearParticipantToggle, setClearParticipantToggle]= React.useState(false)
-  const [error, setError] = React.useState('')
+
 
   const uploadFromCsv = () => {}
   const handleOnDrop = (data: any) => {
@@ -394,34 +231,6 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
-  }
-
-  const addSingleParticipant = async (participant: AddParticipantType) => {
-    setError('')
-    setIsLoading(true)
-    try {
-      if (enrollmentType === 'PHONE') {
-        await addParticipantByPhone(
-          study.identifier,
-          token,
-          participant.phone!,
-          participant.referenceId,
-        )
-      } else {
-        await addParticipantById(
-          study.identifier,
-          token,
-          participant.referenceId,
-        )
-      }
-
-      onAdded()
-      setClearParticipantToggle(prev=> !prev)
-    } catch (e: any) {
-      setError(e?.message.toString() || e.toString())
-    } finally {
-      setIsLoading(false)
-    }
   }
 
   return (
@@ -484,10 +293,6 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       </Dialog>
 
       <Paper square style={{ whiteSpace: 'break-spaces' }}>
-        <Box mx="auto" textAlign="center" mt={1}>
-          {isLoading && <CircularProgress size="2em" />}
-          {error && <Alert color="error">{error}</Alert>}
-        </Box>
         <Tabs
           value={tab}
           onChange={handleTabChange}
@@ -512,13 +317,12 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
           </ImportParticipantTab>{' '}
         </TabPanel>
         <TabPanel value={tab} index={1}>
-          <AddParticipantIdTab
+          <AddSingleParticipant
             enrollmentType={enrollmentType}
-            clear={clearParticipantToggle}
-            onAdd={(participant: AddParticipantType) => {
-              addSingleParticipant(participant)
-            }}
-          ></AddParticipantIdTab>
+            token={token}
+            studyIdentifier={study.identifier}
+            onAdded={()=>onAdded()}
+          ></AddSingleParticipant>
         </TabPanel>
       </Paper>
     </>
