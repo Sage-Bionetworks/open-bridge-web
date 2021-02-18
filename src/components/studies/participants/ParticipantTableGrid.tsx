@@ -91,9 +91,19 @@ const Footer: FunctionComponent<{
             props.setPageSize(100)
           }}
         ></SelectWithEnum>
+          let participantsShown = props.pageSize * props.currentPage
+  let totalParticipants = props.totalParticipants
+  if (props.isUsingSearchData) {
+    participantsShown = props.isSearchedParticipantFound ? 1 : 0
+    totalParticipants = props.isSearchedParticipantFound ? 1 : 0
+  } else {
+    participantsShown =
+      participantsShown > props.totalParticipants
+        ? props.totalParticipants
+        : participantsShown
+  }
   */
-
-  const participantsShown = props.pageSize * props.currentPage
+  let participantsShown = props.pageSize * props.currentPage
   return (
     <div className={classes.footerWrapper}>
       <div className={classes.partitipantNumberText}>{`${

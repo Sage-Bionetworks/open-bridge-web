@@ -31,6 +31,29 @@ async function getParticipants(
   return { items: result.data.items, total: result.data.total }
 }
 
+async function getParticipantWithId(
+  studyIdentifier: string,
+  token: string,
+  partipantID: string,
+) {
+  const endpoint = constants.endpoints.participant.replace(
+    ':id',
+    studyIdentifier,
+  )
+  try {
+    const result = await callEndpoint<ParticipantAccountSummary>(
+      endpoint + '/' + partipantID,
+      'GET',
+      {},
+      token,
+    )
+    return result.data
+  } catch (e) {
+    // If the participant is not found, return null.
+    return null
+  }
+}
+
 async function addParticipant(
   studyIdentifier: string,
   token: string,
@@ -55,6 +78,7 @@ async function addParticipant(
 const ParticipantService = {
   getParticipants,
   addParticipant,
+  getParticipantWithId,
 }
 
 export default ParticipantService

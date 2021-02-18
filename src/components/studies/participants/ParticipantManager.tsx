@@ -23,7 +23,7 @@ import {
   ButtonWithSelectSelect,
   ButtonWithSelectButton,
 } from '../../widgets/StyledComponents'
-import { data } from 'msw/lib/types/context'
+import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -61,6 +61,28 @@ const useStyles = makeStyles(theme => ({
   buttonImage: {
     marginRight: '5px',
   },
+  participantIDSearchBar: {
+    backgroundColor: 'white',
+    outline: 'none',
+    height: '35px',
+    width: '150px',
+    borderTopRightRadius: '0px',
+    borderBottomRightRadius: '0px',
+    padding: '6px',
+    borderTop: '1px solid black',
+    borderBottom: '1px solid black',
+    borderLeft: '1px solid black',
+    borderRight: '0px',
+    fontSize: '12px',
+  },
+  searchIconContainer: {
+    width: '35px',
+    height: '35px',
+    backgroundColor: 'black',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 }))
 
 type ParticipantManagerOwnProps = {
@@ -93,6 +115,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [isEdit, setIsEdit] = React.useState(false)
   const [currentPage, setCurrentPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState(50)
+  const [searchBarText, setSearchBarText] = React.useState('')
+  const [participantData, setParticipantData] = React.useState<
+    ParticipantAccountSummary[] | null
+  >(null)
+  const [totalParticipants, setTotalParticipants] = React.useState(0)
 
   const handleError = useErrorHandler()
   const classes = useStyles()
@@ -107,20 +134,23 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setData: setStudyData,
   } = useStudyBuilderInfo(id)
 
-  const {
-    data,
-    status,
-    error,
-    run,
-    setData: setParticipantData,
-  } = useAsync<ParticipantData>({
+  const { data, status, error, run, setData } = useAsync<ParticipantData>({
     status: 'PENDING',
     data: null,
   })
-  console.log('des data', data)
-  const participantData = data ? data.items : null
-  const totalParticipants = data ? data.total : 0
+
+  React.useEffect(() => {
+    const dataRetrieved = data ? data.items : null
+    const total = data ? data.total : 0
+    setParticipantData(dataRetrieved)
+    setTotalParticipants(total)
+  }, [data])
+
   const [exportData, setExportData] = React.useState<any[] | null>(null)
+  const [
+    isSearchingForParticipant,
+    setIsSearchingForParticipant,
+  ] = React.useState(false)
 
   const updateEnrollment = async (type: EnrollmentType) => {
     let study = studyData!.study
@@ -129,6 +159,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     const updatedsStudy = await StudyService.updateStudy(study, token!)
     setStudyData({ ...studyData, study })
   }
+
+  console.log('rerendering')
 
   React.useEffect(() => {
     if (!participantData) {
@@ -161,6 +193,24 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       ),
     )
   }, [id, run, currentPage, pageSize])
+
+  const handleSearchParticipantRequest = async () => {
+    const result = await ParticipantService.getParticipantWithId(
+      'mtb-user-testing',
+      token!,
+      searchBarText,
+    )
+    const realResult = result ? [result] : null
+    const totalParticipantsFound = result ? 1 : 0
+    setParticipantData(realResult)
+    setTotalParticipants(totalParticipantsFound)
+  }
+
+  const handleSearchParticipantChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setSearchBarText(event.target.value)
+  }
 
   if (status === 'PENDING') {
     return <>loading component here</>
@@ -224,21 +274,51 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               </Grid>
               <Box className={classes.topButtonContainer}>
                 {!isEdit && (
-                  <div style={{ display: 'flex', flexDirection: 'row' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}
+                  >
                     <Button className={classes.topButtons}>
                       <img src={LinkIcon} className={classes.buttonImage}></img>
                       App Download Link
                     </Button>
-                    <Button className={classes.topButtons}>
-                      <img src={FlagIcon} className={classes.buttonImage}></img>
-                      Flag Participant
-                    </Button>
                   </div>
                 )}
-                <Button className={classes.topButtons}>
-                  <img src={SearchIcon} className={classes.buttonImage}></img>
-                  Find Participant
-                </Button>
+                {isSearchingForParticipant ? (
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <input
+                      placeholder="Participant IDs"
+                      className={classes.participantIDSearchBar}
+                      onChange={event => handleSearchParticipantChange(event)}
+                      value={searchBarText}
+                    ></input>
+                    <div
+                      className={classes.searchIconContainer}
+                      onClick={handleSearchParticipantRequest}
+                    >
+                      <img src={WhiteSearchIcon}></img>
+                    </div>
+                  </div>
+                ) : (
+                  <Button
+                    className={classes.topButtons}
+                    onClick={() => {
+                      setIsSearchingForParticipant(true)
+                    }}
+                  >
+                    <img src={SearchIcon} className={classes.buttonImage}></img>
+                    Find Participant
+                  </Button>
+                )}
               </Box>
             </Box>
             <CollapsibleLayout

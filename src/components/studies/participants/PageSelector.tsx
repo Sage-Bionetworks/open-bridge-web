@@ -37,40 +37,43 @@ const PageSelector: React.FC<{
   for (let i = 1; i <= props.numberOfPages; i++) {
     pageNumbers.push(i)
   }
+
+  const rotateAndDisableBackIcons = props.currentPageSelected == 1
+  const rotateAndDisableForwardIcons =
+    props.currentPageSelected == props.numberOfPages || props.numberOfPages == 0
   return (
     <div className={classes.container}>
       <Button
         onClick={() => props.handlePageNavigationArrowPressed('BB')}
         classes={{ root: classes.button }}
-        disabled={props.currentPageSelected == 1}
+        disabled={rotateAndDisableBackIcons}
       >
         <img
           src={
-            props.currentPageSelected == 1
-              ? BackToBeginningIcon
-              : ForwardToEndIcon
+            rotateAndDisableBackIcons ? BackToBeginningIcon : ForwardToEndIcon
           }
           className={classes.image}
           alt="back_to_beginning_icon"
           style={{
-            transform: props.currentPageSelected == 1 ? '' : 'rotate(180deg)',
+            transform: rotateAndDisableBackIcons ? '' : 'rotate(180deg)',
           }}
         ></img>
       </Button>
       <Button
         onClick={() => props.handlePageNavigationArrowPressed('B')}
         classes={{ root: classes.button }}
-        disabled={props.currentPageSelected == 1}
+        disabled={rotateAndDisableBackIcons}
       >
         <img
-          src={props.currentPageSelected == 1 ? PreviousPageIcon : NextPageIcon}
+          src={rotateAndDisableBackIcons ? PreviousPageIcon : NextPageIcon}
           className={classes.image}
           alt="back_icon"
           style={{
-            transform: props.currentPageSelected == 1 ? '' : 'rotate(180deg)',
+            transform: rotateAndDisableBackIcons ? '' : 'rotate(180deg)',
           }}
         ></img>
       </Button>
+
       {pageNumbers.map((element, index) => {
         return (
           <PageBox
@@ -85,42 +88,32 @@ const PageSelector: React.FC<{
       <Button
         onClick={() => props.handlePageNavigationArrowPressed('F')}
         classes={{ root: classes.button }}
-        disabled={props.currentPageSelected == props.numberOfPages}
+        disabled={rotateAndDisableForwardIcons}
       >
         <img
-          src={
-            props.currentPageSelected == props.numberOfPages
-              ? PreviousPageIcon
-              : NextPageIcon
-          }
+          src={rotateAndDisableForwardIcons ? PreviousPageIcon : NextPageIcon}
           className={classes.image}
           alt="previous_page_icon"
           style={{
-            transform:
-              props.currentPageSelected == props.numberOfPages
-                ? 'rotate(180deg)'
-                : '',
+            transform: rotateAndDisableForwardIcons ? 'rotate(180deg)' : '',
           }}
         ></img>
       </Button>
       <Button
         onClick={() => props.handlePageNavigationArrowPressed('FF')}
         classes={{ root: classes.button }}
-        disabled={props.currentPageSelected == props.numberOfPages}
+        disabled={rotateAndDisableForwardIcons}
       >
         <img
           src={
-            props.currentPageSelected == props.numberOfPages
+            rotateAndDisableForwardIcons
               ? BackToBeginningIcon
               : ForwardToEndIcon
           }
           className={classes.image}
           alt="forward_to_end_icon"
           style={{
-            transform:
-              props.currentPageSelected == props.numberOfPages
-                ? 'rotate(180deg)'
-                : '',
+            transform: rotateAndDisableForwardIcons ? 'rotate(180deg)' : '',
           }}
         ></img>
       </Button>
