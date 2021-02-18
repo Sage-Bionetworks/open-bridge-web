@@ -39,6 +39,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    height: '36px',
   },
   topRow: {
     width: '100%',
@@ -82,6 +83,12 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    '&:hover': {
+      backgroundColor: 'black',
+      boxShadow: '1px 1px 1px rgb(0, 0, 0, 0.75)',
+    },
+    borderTopLeftRadius: '0px',
+    borderBottomLeftRadius: '0px',
   },
 }))
 
@@ -115,11 +122,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [isEdit, setIsEdit] = React.useState(false)
   const [currentPage, setCurrentPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState(50)
-  const [searchBarText, setSearchBarText] = React.useState('')
   const [participantData, setParticipantData] = React.useState<
     ParticipantAccountSummary[] | null
   >(null)
   const [totalParticipants, setTotalParticipants] = React.useState(0)
+
+  const inputComponent = React.useRef<HTMLInputElement>(null)
 
   const handleError = useErrorHandler()
   const classes = useStyles()
@@ -160,8 +168,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setStudyData({ ...studyData, study })
   }
 
-  console.log('rerendering')
-
   React.useEffect(() => {
     if (!participantData) {
       return
@@ -195,21 +201,18 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }, [id, run, currentPage, pageSize])
 
   const handleSearchParticipantRequest = async () => {
+    const searchedValue = inputComponent.current?.value
+      ? inputComponent.current?.value
+      : ''
     const result = await ParticipantService.getParticipantWithId(
       'mtb-user-testing',
       token!,
-      searchBarText,
+      searchedValue,
     )
     const realResult = result ? [result] : null
     const totalParticipantsFound = result ? 1 : 0
     setParticipantData(realResult)
     setTotalParticipants(totalParticipantsFound)
-  }
-
-  const handleSearchParticipantChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setSearchBarText(event.target.value)
   }
 
   if (status === 'PENDING') {
@@ -298,15 +301,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     <input
                       placeholder="Participant IDs"
                       className={classes.participantIDSearchBar}
-                      onChange={event => handleSearchParticipantChange(event)}
-                      value={searchBarText}
+                      ref={inputComponent}
                     ></input>
-                    <div
+                    <Button
                       className={classes.searchIconContainer}
                       onClick={handleSearchParticipantRequest}
                     >
                       <img src={WhiteSearchIcon}></img>
-                    </div>
+                    </Button>
                   </div>
                 ) : (
                   <Button
