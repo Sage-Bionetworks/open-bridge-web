@@ -60,6 +60,10 @@ export const SimpleTextLabel = withStyles(theme => ({
     fontWeight: 500,
     fontSize: '14px',
     transform: 'none',
+
+    '.error > &': {
+      color: theme.palette.error.main,
+    },
   },
 }))(InputLabel)
 
@@ -71,6 +75,12 @@ export const SimpleTextInput = withStyles(theme => ({
     },
     '&.Mui-focused': {
       borderColor: theme.palette.primary.light,
+    },
+    '.error > &': {
+      borderColor: theme.palette.error.main,
+    },
+    '&.Mui-error': {
+      borderColor: theme.palette.error.main,
     },
   },
   multiline: {
@@ -85,5 +95,8 @@ export const SimpleTextInput = withStyles(theme => ({
     padding: '10px 12px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     fontFamily: [latoFont, 'Roboto'].join(','),
+    '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active': {
+      ' -webkit-box-shadow': '0 0 0 30px white inset !important',
+    },
   },
 }))(InputBase)
