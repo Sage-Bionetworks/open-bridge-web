@@ -133,6 +133,11 @@ export type ParticipantAccountSummary = {
   status: 'unverified' | 'pending' | 'verified'
 }
 
+export type Phone = {
+  number: string
+  regionCode: string
+}
+
 // POST MVP
 
 export type StudyArm = {
