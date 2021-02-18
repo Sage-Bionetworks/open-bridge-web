@@ -1,5 +1,6 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+import { Button } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   pageBoxSurrounding: {
@@ -9,6 +10,8 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     height: '25px',
     width: '25px',
+    minWidth: '0px',
+    borderRadius: '0px',
   },
 }))
 
@@ -19,7 +22,7 @@ const PageBox: React.FC<{
 }> = props => {
   const classes = useStyles()
   return (
-    <div
+    <Button
       className={classes.pageBoxSurrounding}
       style={{
         border: `1px solid ${props.isSelected ? 'black' : 'white'}`,
@@ -27,7 +30,7 @@ const PageBox: React.FC<{
       onClick={() => props.onPageSelected(props.pageNumber)}
     >
       {props.pageNumber}
-    </div>
+    </Button>
   )
 }
 
