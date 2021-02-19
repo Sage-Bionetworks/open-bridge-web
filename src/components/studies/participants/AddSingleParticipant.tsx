@@ -12,25 +12,16 @@ import { makeStyles } from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
-import {
-  generateNonambiguousCode,
-  isInvalidPhone,
-  makePhone
-} from '../../../helpers/utility'
-import ParticipantService from '../../../services/participants.service'
+import { isInvalidPhone, makePhone } from '../../../helpers/utility'
+import ParticipantService, {
+  AddParticipantType
+} from '../../../services/participants.service'
 import { Phone } from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import {
   SimpleTextInput,
   SimpleTextLabel
 } from '../../widgets/StyledComponents'
-
-interface AddParticipantType {
-  clinicVisitDate?: Date
-  notes?: string
-  referenceId: string
-  phone?: Phone
-}
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -52,29 +43,29 @@ type AddSingleParticipantProps = {
 async function addParticipantById(
   studyIdentifier: string,
   token: string,
-  referenceId: string,
+  options: AddParticipantType,
 ) {
-  const add = await ParticipantService.addParticipant(studyIdentifier, token, {
-    externalId: referenceId,
-    dataGroups: ['test_user'],
-  })
+  const add = await ParticipantService.addParticipant(
+    studyIdentifier,
+    token,
+    options,
+  )
 }
 
 async function addParticipantByPhone(
   studyIdentifier: string,
   token: string,
   phone: Phone,
-  referenceId?: string,
+  options: AddParticipantType,
 ) {
-  if (!referenceId) {
+  /*if (!externalId) {
     const studyPrefix = studyIdentifier.substr(0, 3)
-    referenceId = `${generateNonambiguousCode(6)}-${studyPrefix}`
-  }
+    externalId = `${generateNonambiguousCode(6)}-${studyPrefix}`
+  }*/
 
   const add = await ParticipantService.addParticipant(studyIdentifier, token, {
-    externalId: referenceId,
-    dataGroups: ['test_user'],
-    phone: phone,
+    ...options,
+    phone,
   })
 }
 
@@ -88,13 +79,13 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
 }) => {
   const classes = useStyles()
   const [participant, setParticipant] = React.useState<AddParticipantType>({
-    referenceId: '',
+    externalId: '',
   })
   const [phoneNumber, setPhoneNumber] = React.useState('')
 
   const [validationErrors, setValidationErrors] = React.useState({
     phone: false,
-    referenceId: false,
+    externalId: false,
   })
   const [error, setError] = React.useState('')
   const [isLoading, setIsLoading] = React.useState(false)
@@ -105,6 +96,11 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
   ) => {
     setError('')
     setIsLoading(true)
+    let options: AddParticipantType = {
+      externalId: participant.externalId,
+      clinicVisitDate: participant.clinicVisitDate,
+      notes: participant.notes,
+    }
 
     try {
       if (enrollmentType === 'PHONE') {
@@ -112,18 +108,14 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
           studyIdentifier,
           token,
           makePhone(phoneNumber || ''),
-          participant.referenceId,
+          options,
         )
       } else {
-        await addParticipantById(
-          studyIdentifier,
-          token,
-          participant.referenceId,
-        )
+        await addParticipantById(studyIdentifier, token, options)
       }
 
       onAdded()
-      setParticipant({ referenceId: '' })
+      setParticipant({ externalId: '' })
       setPhoneNumber('')
     } catch (e: any) {
       setError(e?.message.toString() || e.toString())
@@ -140,9 +132,26 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
     return (
       (enrollmentType === 'PHONE' &&
         (!phoneNumber || isInvalidPhone(phoneNumber))) ||
-      (enrollmentType === 'ID' && !participant.referenceId)
+      (enrollmentType === 'ID' && !participant.externalId)
     )
   }
+
+  const extId = (
+    <FormControl>
+      <SimpleTextLabel htmlFor="participant-id">
+        {`Participant ID${enrollmentType === 'ID' ? '*' : ''}`}
+      </SimpleTextLabel>
+      <SimpleTextInput
+        placeholder="xxx-xxx-xxxx"
+        id="participant-id"
+        fullWidth={true}
+        value={participant.externalId}
+        onChange={e =>
+          setParticipant(prev => ({ ...prev, externalId: e.target.value }))
+        }
+      />
+    </FormControl>
+  )
 
   return (
     <>
@@ -151,42 +160,33 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
         {error && <Alert color="error">{error}</Alert>}
       </Box>
       <FormGroup className={classes.addForm}>
-        <FormControl>
-          <SimpleTextLabel htmlFor="participant-id">
-            Participant ID*
-          </SimpleTextLabel>
-          <SimpleTextInput
-            placeholder="xxx-xxx-xxxx"
-            id="participant-id"
-            fullWidth={true}
-            value={participant.referenceId}
-            onChange={e =>
-              setParticipant(prev => ({ ...prev, referenceId: e.target.value }))
-            }
-          />
-        </FormControl>
-
-        <FormControl className={clsx(validationErrors.phone && 'error')}>
-          <SimpleTextLabel htmlFor="phone">Phone*</SimpleTextLabel>
-          <SimpleTextInput
-            placeholder="xxx-xxx-xxxx"
-            id="phone"
-            fullWidth={true}
-            value={phoneNumber}
-            onBlur={() =>
-              setValidationErrors(prev => ({
-                ...prev,
-                phone: isInvalidPhone(phoneNumber),
-              }))
-            }
-            onChange={e => setPhoneNumber(e.target.value)}
-          />
-          {validationErrors.phone && (
-            <FormHelperText id="phone-text">
-              phone should be in the format: xxx-xxx-xxxx
-            </FormHelperText>
-          )}
-        </FormControl>
+        {enrollmentType === 'ID' && extId}
+        {enrollmentType === 'PHONE' && (
+          <>
+            <FormControl className={clsx(validationErrors.phone && 'error')}>
+              <SimpleTextLabel htmlFor="phone">Phone Number*</SimpleTextLabel>
+              <SimpleTextInput
+                placeholder="xxx-xxx-xxxx"
+                id="phone"
+                fullWidth={true}
+                value={phoneNumber}
+                onBlur={() =>
+                  setValidationErrors(prev => ({
+                    ...prev,
+                    phone: isInvalidPhone(phoneNumber),
+                  }))
+                }
+                onChange={e => setPhoneNumber(e.target.value)}
+              />
+              {validationErrors.phone && (
+                <FormHelperText id="phone-text">
+                  phone should be in the format: xxx-xxx-xxxx
+                </FormHelperText>
+              )}
+            </FormControl>
+            {extId}
+          </>
+        )}
         <DatePicker
           label="Clinic Visit 1"
           id="clinic-visit"

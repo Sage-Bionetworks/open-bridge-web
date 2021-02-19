@@ -15,12 +15,12 @@ async function getAssessment(
 ): Promise<Assessment[]> {
   const result = token
     ? await callEndpoint<Assessment>(
-        `${constants.endpoints.assessmentShared}${guid}/`,
+        `${constants.endpoints.assessmentShared.replace(':id', guid)}`,
         'GET',
         {},
       )
     : await callEndpoint<Assessment>(
-        `${constants.endpoints.assessment}${guid}/`,
+        `${constants.endpoints.assessment.replace(':id', guid)}`,
         'GET',
         {},
         token,
@@ -33,7 +33,7 @@ async function getAssessments(token?: string): Promise<Assessment[]> {
   const result = token
     ? await callEndpoint<{ items: Assessment[] }>(
         //constants.endpoints.assessments,
-        constants.endpoints.assessmentShared,
+        constants.endpoints.assessments,
         'GET',
         {},
         token,
@@ -49,7 +49,7 @@ async function getAssessments(token?: string): Promise<Assessment[]> {
 
 const getResource = async (assessment: Assessment): Promise<Assessment> => {
   const endPoint = constants.endpoints.assessmentsSharedResources.replace(
-    '{identifier}',
+    ':identifier',
     assessment.identifier,
   )
   const response = await callEndpoint<{ items: any[] }>(endPoint, 'GET', {})
@@ -100,8 +100,8 @@ async function getAssessmentsForSession(
 ): Promise<Assessment[]> {
   // aling to do when api is ready
   /* const result =await callEndpoint<{ items: Assessment[] }>(
-    constants.endpoints.sessionAssessments.replace(
-      '{sessionGuid}',
+    constants.endpoints.assessmentsForSession.replace(
+      ':sessionId',
       sessionId),
     'GET',
     {},

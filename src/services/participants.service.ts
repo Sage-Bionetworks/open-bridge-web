@@ -2,6 +2,13 @@ import { callEndpoint } from '../helpers/utility'
 import constants from '../types/constants'
 import { ParticipantAccountSummary, Phone, StringDictionary } from '../types/types'
 
+export type AddParticipantType = {
+  clinicVisitDate?: Date
+  notes?: string
+  externalId?: string
+  phone?: Phone
+}
+
 async function getParticipants(
   studyIdentifier: string,
   token: string,
@@ -21,6 +28,34 @@ async function getParticipants(
   })*/
 
   return result.data.items
+}
+
+
+async function deleteParticipant(
+  studyIdentifier: string,
+  token: string,
+  participantId: string,
+  dataGroups: string[]
+
+): Promise<string> {
+  const endpoint = `${constants.endpoints.participant.replace(
+    ':id',
+    studyIdentifier,
+
+  )}/${participantId}`
+  const data= {
+
+    dataGroups:dataGroups 
+  }
+
+
+  const result = await callEndpoint<{identifier: string}>(
+    endpoint,
+    'DELETE',
+    {},
+    token,
+  )
+  return result.data.identifier
 }
 
 
@@ -54,7 +89,7 @@ async function getParticipants(
 async function addParticipant(
   studyIdentifier: string,
   token: string,
-  options: {externalId: string, dataGroups?: string[], phone?: Phone}
+  options: AddParticipantType 
 
 ): Promise<string> {
   const endpoint = constants.endpoints.participant.replace(
@@ -64,11 +99,14 @@ async function addParticipant(
   )
   const data: StringDictionary<any>= {
     appId: constants.constants.APP_ID,
-    externalIds: {[studyIdentifier]: options.externalId},
-    dataGroups: options.dataGroups || []
+
+    dataGroups: ['test_user']
   }
   if (options.phone) {
     data.phone = options.phone
+  }
+  if (options.externalId) {
+    data.externalIds= {[studyIdentifier]: options.externalId}
   }
 
 
@@ -79,11 +117,27 @@ async function addParticipant(
     data,
     token,
   )
-  return result.data.identifier
+
+  const userId = result.data.identifier
+
+  if (options.clinicVisitDate) {
+debugger
+    const endpoint = constants.endpoints.events.replace(':studyId', studyIdentifier).replace(':userId',userId)
+    const data = {eventId: "clinic_visit", timestamp: options.clinicVisitDate.toISOString()}
+    
+    const eventResult = await callEndpoint<{identifier: string}>(
+      endpoint,
+      'POST',
+      data,
+      token,
+    )
+  }
+
+return userId
 }
 
 const ParticipantService = {
-  getParticipants, addParticipant
+  getParticipants, addParticipant, deleteParticipant
 }
 
 export default ParticipantService

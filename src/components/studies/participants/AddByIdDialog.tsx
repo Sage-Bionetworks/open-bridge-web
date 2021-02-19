@@ -48,7 +48,7 @@ const AddByIdDialog: FunctionComponent<AddByIdDialogProps> = ({
       const add = await ParticipantService.addParticipant(
         study.identifier,
         token,
-        { externalId: id, dataGroups: ['test_user'] },
+        { externalId: id},
       )
       console.log('add', add)
       setProgress(_prev => _prev + itemValue)
