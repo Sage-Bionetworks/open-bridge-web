@@ -25,7 +25,7 @@ const PageBox: React.FC<{
     <Button
       className={classes.pageBoxSurrounding}
       style={{
-        border: `1px solid ${props.isSelected ? 'black' : 'white'}`,
+        border: `1px solid ${props.isSelected ? 'black' : '#E5E5E5'}`,
       }}
       onClick={() => props.onPageSelected(props.pageNumber)}
     >

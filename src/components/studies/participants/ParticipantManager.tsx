@@ -24,6 +24,7 @@ import {
   ButtonWithSelectButton,
 } from '../../widgets/StyledComponents'
 import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
+import BlackXIcon from '../../../assets/black_x_icon.svg'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -65,8 +66,8 @@ const useStyles = makeStyles(theme => ({
   participantIDSearchBar: {
     backgroundColor: 'white',
     outline: 'none',
-    height: '35px',
-    width: '150px',
+    height: '38px',
+    width: '220px',
     borderTopRightRadius: '0px',
     borderBottomRightRadius: '0px',
     padding: '6px',
@@ -74,11 +75,11 @@ const useStyles = makeStyles(theme => ({
     borderBottom: '1px solid black',
     borderLeft: '1px solid black',
     borderRight: '0px',
-    fontSize: '12px',
+    fontSize: '13px',
   },
   searchIconContainer: {
-    width: '35px',
-    height: '35px',
+    width: '42px',
+    height: '38px',
     backgroundColor: 'black',
     display: 'flex',
     justifyContent: 'center',
@@ -87,8 +88,23 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: 'black',
       boxShadow: '1px 1px 1px rgb(0, 0, 0, 0.75)',
     },
-    borderTopLeftRadius: '0px',
-    borderBottomLeftRadius: '0px',
+    borderRadius: '0px',
+    minWidth: '0px',
+  },
+  blackXIcon: {
+    marginLeft: '195px',
+    position: 'absolute',
+    minWidth: '0px',
+    width: '18px',
+    height: '18px',
+    minHeight: '8px',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: '15px',
+    '&:hover': {
+      backgroundColor: 'rgb(0, 0, 0, 0.2)',
+    },
+    display: 'flex',
   },
 }))
 
@@ -126,6 +142,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     ParticipantAccountSummary[] | null
   >(null)
   const [totalParticipants, setTotalParticipants] = React.useState(0)
+  const [isSearchingUsingId, setIsSearchingUsingID] = React.useState(false)
 
   const inputComponent = React.useRef<HTMLInputElement>(null)
 
@@ -188,16 +205,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     if (!id) {
       return
     }
-    const offset = (currentPage - 1) * pageSize
-    ///your async call
-    return run(
-      ParticipantService.getParticipants(
-        'mtb-user-testing',
-        token!,
-        pageSize,
-        offset,
-      ),
-    )
+    handleResetSearch(false)
   }, [id, run, currentPage, pageSize])
 
   const handleSearchParticipantRequest = async () => {
@@ -213,6 +221,20 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     const totalParticipantsFound = result ? 1 : 0
     setParticipantData(realResult)
     setTotalParticipants(totalParticipantsFound)
+    setIsSearchingUsingID(true)
+  }
+
+  const handleResetSearch = async (fromXIconPressed: boolean) => {
+    const offset = (currentPage - 1) * pageSize
+    run(
+      ParticipantService.getParticipants(
+        'mtb-user-testing',
+        token!,
+        pageSize,
+        offset,
+      ),
+    )
+    if (fromXIconPressed) setIsSearchingUsingID(false)
   }
 
   if (status === 'PENDING') {
@@ -302,7 +324,22 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       placeholder="Participant IDs"
                       className={classes.participantIDSearchBar}
                       ref={inputComponent}
+                      style={{
+                        paddingRight: isSearchingUsingId ? '28px' : '4px',
+                      }}
                     ></input>
+                    {isSearchingUsingId && (
+                      <Button className={classes.blackXIcon}>
+                        <img
+                          src={BlackXIcon}
+                          style={{
+                            width: '10px',
+                            height: '10px',
+                          }}
+                          onClick={() => handleResetSearch(true)}
+                        ></img>
+                      </Button>
+                    )}
                     <Button
                       className={classes.searchIconContainer}
                       onClick={handleSearchParticipantRequest}
