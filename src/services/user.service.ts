@@ -32,7 +32,7 @@ const loginWithPassword = async (
   password: string,
 ): Promise<Response<LoggedInUserData>> => {
   const postData = {
-    appId: 'sage-assessment-test', //constants.constants.APP_ID,
+    appId: /*'sage-assessment-test', //*/ constants.constants.APP_ID,
     email,
     password,
   }
