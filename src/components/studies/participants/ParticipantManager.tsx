@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 'lighter',
   },
   topButtons: {
-    margin: theme.spacing(0.5, 2),
+    marginRight: theme.spacing(2),
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -48,6 +48,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingLeft: '40px',
   },
   horizontalGroup: {
     display: 'flex',
@@ -59,6 +60,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
+    marginLeft: '40px',
   },
   buttonImage: {
     marginRight: '5px',
@@ -329,14 +331,16 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       }}
                     ></input>
                     {isSearchingUsingId && (
-                      <Button className={classes.blackXIcon}>
+                      <Button
+                        className={classes.blackXIcon}
+                        onClick={() => handleResetSearch(true)}
+                      >
                         <img
                           src={BlackXIcon}
                           style={{
                             width: '10px',
                             height: '10px',
                           }}
-                          onClick={() => handleResetSearch(true)}
                         ></img>
                       </Button>
                     )}

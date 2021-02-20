@@ -9,7 +9,7 @@ import {
   LinearProgress,
   Paper,
   Tab,
-  Tabs
+  Tabs,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import CloseIcon from '@material-ui/icons/Close'
@@ -82,7 +82,7 @@ const uploadAreaStyle = {
 type AddParticipantsProps = {
   token: string
   studyId: string
-  enrollmentType: 'PHONE'| 'ID'
+  enrollmentType: 'PHONE' | 'ID'
 }
 
 const participantRecordTemplate: ParticipantAccountSummary = {
@@ -119,9 +119,7 @@ function parseCSVToJSON(rows: any[]): Partial<ParticipantAccountSummary>[] {
   return objects
 }
 
-const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
-
-}) => {
+const AddParticipants: FunctionComponent<AddParticipantsProps> = ({}) => {
   console.log('rerender')
   const [tab, setTab] = React.useState(0)
 
