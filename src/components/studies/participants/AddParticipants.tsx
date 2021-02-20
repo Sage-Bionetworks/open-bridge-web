@@ -16,23 +16,17 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { CSVReader } from 'react-papaparse'
-import { poppinsFont } from '../../../style/theme'
-import {
-  EnrollmentType,
-  ParticipantAccountSummary,
-  Phone,
-  Study
-} from '../../../types/types'
+import { isInvalidPhone, makePhone } from '../../../helpers/utility'
+import { AddParticipantType } from '../../../services/participants.service'
+import { poppinsFont, theme } from '../../../style/theme'
+import { EnrollmentType, Study } from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import TabPanel from '../../widgets/TabPanel'
-import AddSingleParticipant from './AddSingleParticipant'
-
-interface AddParticipantType {
-  clinicVisitDate?: Date
-  notes?: string
-  referenceId: string
-  phone?: Phone
-}
+import AddSingleParticipant, {
+  addParticipantById,
+  addParticipantByPhone
+} from './AddSingleParticipant'
+import ImportParticipantsInstructions from './ImportParticipantsInstuctions'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -99,104 +93,48 @@ type AddParticipantsProps = {
   onAdded: Function
 }
 
-const participantRecordTemplate: ParticipantAccountSummary = {
-  status: 'unverified',
-  isSelected: false,
-  firstName: '',
-  lastName: '',
-  email: '',
-  phone: '',
-  id: '',
-  externalIds: {},
-}
-type keys = keyof ParticipantAccountSummary
+const CSV_BY_ID_KEY = ['Participant ID', 'Clinic Visit', 'Notes']
 
-function parseCSVToJSON(rows: any[]): Partial<ParticipantAccountSummary>[] {
-  const keys = Object.keys(participantRecordTemplate) as keys[]
+const CSV_BY_PHONE_KEY = [
+  'Phone Number',
+  'Participant ID',
+  'Clinic Visit',
+  'Notes',
+]
 
-  const objects: Partial<ParticipantAccountSummary>[] = []
-  for (const row of rows) {
-    console.log('row')
-    console.log(row.data)
-    console.log(JSON.stringify(row.data))
-    let index = 0
-    let o: Partial<ParticipantAccountSummary> = {}
-    // const newParticipant = {...participantRecordTemplate}
-    for (const key of keys) {
-      o[key] = row.data[index]
-      //@ts-ignore
-      console.log(o[key])
-      index++
-    }
-    objects.push(o)
+async function uploadCsvRow(
+  data: any,
+  enrollmentType: EnrollmentType,
+  studyIdentifier: string,
+  token: string,
+) {
+  const options: AddParticipantType = {
+    externalId: data['Participant ID'],
+    clinicVisitDate: data['Clinic Visit'],
+    notes: data['Notes'],
   }
-  return objects
-}
-
-// -----------------  Import participants tab control
-const ImportParticipantTab: FunctionComponent<{
-  enrollmentType: EnrollmentType
-  children: React.ReactNode
-}> = ({ children, enrollmentType }) => {
-  const template =
-    enrollmentType === 'PHONE' ? (
-      <a
-        href="/participantsPhoneTemplate.csv"
-        download="enrollmentTemplatePhone"
-      >
-        <strong>ParticipantPhones_Template.csv</strong>
-      </a>
-    ) : (
-      <a href="/participantsPhoneTemplate.csv" download="enrollmentTemplateId">
-        <strong>ParticipantIds_Template.csv</strong>
-      </a>
-    )
-
-  const recList =
-    enrollmentType === 'PHONE' ? (
-      <ul>
-        <li>
-          <strong>Phone Number* </strong>
-        </li>
-        <li>
-          <strong>Clinic Visit </strong>(can be updated later)
-        </li>
-        <li>
-          <strong>Reference ID</strong> (Alternate ID for your reference)
-        </li>
-        <li>
-          <strong>Notes</strong> (for your reference)
-        </li>
-      </ul>
-    ) : (
-      <ul>
-        <li>
-          <strong>ParticipantID* </strong>
-        </li>
-        <li>
-          <strong>Clinic Visit </strong>(can be updated later)
-        </li>
-        <li>
-          <strong>Notes</strong> (for your reference)
-        </li>
-      </ul>
-    )
-
-  return (
-    <Box>
-      <p>
-        To add <strong>new participants</strong> to your study, we will need the
-        following information by columns:
-      </p>
-      {recList}
-      Please make sure that your .csv matches this template:
-      <br />
-      {template}
-      <Box mx="auto" my={2} textAlign="center">
-        {children}
-      </Box>
-    </Box>
-  )
+  let result
+  if (enrollmentType === 'ID') {
+    if (!options.externalId) {
+      throw new Error('no id')
+    } else {
+      result = await addParticipantById(studyIdentifier, token, options)
+    }
+  } else {
+    if (!data['Phone Number'] || isInvalidPhone(data['Phone Number'])) {
+      throw new Error('need phone')
+    } else {
+      const phone = makePhone(data['Phone Number'])
+      result = await addParticipantByPhone(
+        studyIdentifier,
+        token,
+        phone,
+        options,
+      )
+    }
+  }
+  return result
+  //return objects
 }
 
 const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
@@ -212,17 +150,57 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
 
   const [isOpenUpload, setIsOpenUpload] = React.useState(false)
   const [isCsvUploaded, setIsCsvUploaded] = React.useState(false)
+  const [isCsvProcessed, setIsCsvProcessed] = React.useState(false)
+  const [importError, setImportError] = React.useState<string[]>([])
+  const [progress, setProgress] = React.useState(0)
 
+  React.useEffect(() => {
+    if (!isOpenUpload) {
+      setIsCsvUploaded(false)
+      setImportError([])
+      setProgress(0)
+      setIsCsvProcessed(false)
+    }
+  }, [isOpenUpload])
 
-  const uploadFromCsv = () => {}
-  const handleOnDrop = (data: any) => {
-    console.log('---------------------------')
-    //console.log(data)
-    const objects = parseCSVToJSON(data)
+  const handleOnDrop = async (rows: any) => {
+    setImportError([])
 
+    const keysString = Object.keys(rows[0]?.data).sort().join(',')
+    const valid =
+      enrollmentType === 'ID'
+        ? CSV_BY_ID_KEY.sort().join(',') === keysString
+        : CSV_BY_PHONE_KEY.sort().join(',') === keysString
+    if (!valid) {
+      setImportError([...importError, 'Please check the format of your file'])
+      return
+    }
+    const progressTick = 100 / rows.length
     setIsCsvUploaded(true)
-    console.log(objects)
-    console.log('---------------------------')
+    setProgress(0)
+    for (const row of rows) {
+      console.log(progress)
+      const data = row.data
+      try {
+        const document = await uploadCsvRow(
+          data,
+          enrollmentType,
+          study.identifier,
+          token,
+        )
+        setProgress(prev => prev + progressTick)
+      } catch (error) {
+        console.log('error', importError.length)
+        console.log(importError)
+        const key =
+          enrollmentType === 'ID'
+            ? data['Participant ID']
+            : data['Phone Number']
+        setImportError(prev => [...prev, `${key}: ${error.message || error}`])
+      }
+    }
+    setIsCsvProcessed(true)
+
   }
 
   const handleOnError = (err: any, file: any, inputElem: any, reason: any) => {
@@ -249,46 +227,71 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
         </DialogTitleWithClose>
 
         <DialogContent>
-          <div
-            className={clsx(
-              classes.dropAreaUploading,
-              isCsvUploaded && classes.dropAreaUploadingWithBorder,
+          <>
+            <div
+              className={clsx(
+                classes.dropAreaUploading,
+                isCsvUploaded && classes.dropAreaUploadingWithBorder,
+              )}
+            >
+              {!isCsvUploaded && (
+                <CSVReader
+                  onDrop={handleOnDrop}
+                  onError={handleOnError}
+                  style={uploadAreaStyle}
+                  config={{
+                    header: true,
+                    dynamicTyping: true,
+                    skipEmptyLines: true,
+                  }}
+                >
+                  <span>Drop CSV file here or click to upload.</span>
+                </CSVReader>
+              )}
+              {isCsvUploaded && (
+                <div style={{ height: '100%', padding: '70px 60px' }}>
+                  {!isCsvProcessed && (
+                    <> Uploading
+                      <LinearProgress variant="determinate" value={progress} />
+                    </>
+                  )}
+                  {isCsvProcessed &&  <span>{importError.length > 0 ? 'Completed with errors below': 'Success'}</span>}
+
+           
+                </div>
+              )}
+            </div>
+            {importError.length > 0 && (
+              <Box my={1} color={theme.palette.error.main}>
+                <ul>
+                  {importError.map(error => (
+                    <li>{error}</li>
+                  ))}
+                </ul>
+              </Box>
             )}
-          >
-            {!isCsvUploaded && (
-              <CSVReader
-                onDrop={handleOnDrop}
-                onError={handleOnError}
-                style={uploadAreaStyle}
-              >
-                <span>Drop CSV file here or click to upload.</span>
-              </CSVReader>
-            )}
-            {isCsvUploaded && (
-              <div style={{ height: '100%', padding: '70px 60px' }}>
-                Uploading
-                <LinearProgress color="secondary" />
-              </div>
-            )}
-          </div>
+          </>
         </DialogContent>
         <DialogActions>
           <Button
+          disabled={isCsvUploaded}
             onClick={() => setIsOpenUpload(false)}
             color="secondary"
             variant="outlined"
           >
             Cancel
           </Button>
-          <Button
+         {isCsvProcessed &&  <Button
             onClick={() => {
-              alert('import')
+              onAdded()
+             setIsOpenUpload(false)
+
             }}
             color="primary"
             variant="contained"
           >
-            &nbsp;Save
-          </Button>
+            &nbsp;Done
+          </Button>}
         </DialogActions>
       </Dialog>
 
@@ -303,7 +306,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
         </Tabs>
 
         <TabPanel value={tab} index={0}>
-          <ImportParticipantTab enrollmentType={enrollmentType}>
+          <ImportParticipantsInstructions enrollmentType={enrollmentType}>
             <Button
               onClick={() => {
                 setIsCsvUploaded(false)
@@ -314,14 +317,14 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             >
               Upload CSV File
             </Button>
-          </ImportParticipantTab>{' '}
+          </ImportParticipantsInstructions>
         </TabPanel>
         <TabPanel value={tab} index={1}>
           <AddSingleParticipant
             enrollmentType={enrollmentType}
             token={token}
             studyIdentifier={study.identifier}
-            onAdded={()=>onAdded()}
+            onAdded={() => onAdded()}
           ></AddSingleParticipant>
         </TabPanel>
       </Paper>
