@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Switch } from '@material-ui/core'
+import { Box, Button, CircularProgress, Grid, Switch } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import DeleteIcon from '@material-ui/icons/Delete'
 import React, { FunctionComponent } from 'react'
@@ -13,7 +13,11 @@ import {
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
 import StudyService from '../../../services/study.service'
-import { EnrollmentType, ParticipantAccountSummary } from '../../../types/types'
+import {
+  EnrollmentType,
+  ParticipantAccountSummary,
+  StringDictionary
+} from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import HideWhen from '../../widgets/HideWhen'
 import AddByIdDialog from './AddByIdDialog'
@@ -63,16 +67,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const { study }: StudyInfoData = useStudyInfoDataState()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
 
-  //if you need search params use the following
-  //const { param } = useParams<{ param: string}>()
-  //<T> is the type of data you are retrieving
   const { token } = useUserSessionDataState()
-  /*const {
-    data: studyData,
-    status: studyStatus,
-    error: studyError,
-    setData: setStudyData,
-  } = useStudyBuilderInfo(id)*/
+
   const {
     data: participantData,
     status,
@@ -89,7 +85,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
     const updatedStudy = await StudyService.updateStudy(study, token!)
     studyDataUpdateFn({ type: 'SET_STUDY', payload: { study: study } })
-    // setStudyData({...studyData, study})
   }
 
   React.useEffect(() => {
@@ -108,32 +103,53 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setExportData(result)
   }, [participantData])
 
+  async function getParticipants(
+    studyId: string,
+    token: string,
+  ): Promise<ParticipantAccountSummary[]> {
+    const participants = await ParticipantService.getParticipants(
+      studyId,
+      token,
+    )
+
+    const clinicVisitMap: StringDictionary<string> = await ParticipantService.getClinicVisitsForParticipants(
+      studyId,
+      token,
+      participants.map(p => p.id),
+    )
+    const result = participants.map(participant => {
+      const id = participant.id as string
+      const visit = clinicVisitMap[id]
+      const y = { ...participant, clinicVisit: visit }
+      return y
+    })
+
+    return result
+  }
+
   React.useEffect(() => {
     if (!study?.identifier) {
       return
     }
-    return run(ParticipantService.getParticipants(study.identifier, token!))
-  }, [study?.identifier, run])
+    return run(getParticipants(study?.identifier, token!))
+  }, [study?.identifier, run, token])
 
   React.useEffect(() => {
     if (!study?.identifier) {
       return
     }
     const fn = async () => {
-      const participants = await ParticipantService.getParticipants(
-        study.identifier,
-        token!,
-      )
+      const participants = await getParticipants(study.identifier, token!)
       setParticipantData(participants)
     }
     fn()
   }, [study?.identifier, refreshParticipantsToggle])
 
-  if (status === 'PENDING' || !study) {
+  if (!study) {
     return <>loading component here</>
   } else if (status === 'REJECTED') {
     handleError(error!)
-  } else if (status === 'RESOLVED') {
+  } /* if (status === 'RESOLVED') */ else {
     return (
       <>
         <Box px={3} py={2}>
@@ -185,13 +201,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   <AddParticipants
                     study={study}
                     token={token!}
-                    enrollmentType={study.options.enrollmentType}
+                    enrollmentType={study.options.enrollmentType /*'PHONE'*/}
                     onAdded={() => {
                       setRefreshParticipantsToggle(prev => !prev)
                     }}
                   ></AddParticipants>
                 )}
-                {study.options.enrollmentType === 'ID' && (
+                {study.options.enrollmentType === 'ID' && false && (
                   <AddByIdDialog
                     study={study}
                     token={token!}
@@ -203,10 +219,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 )}
               </>
               <Box py={0} pr={3} pl={2}>
-                <ParticipantTableGrid
-                  rows={participantData || []}
-                  studyId={study.identifier}
-                ></ParticipantTableGrid>
+                {status === 'PENDING' && <CircularProgress></CircularProgress>}
+                {status === 'RESOLVED' && (
+                  <ParticipantTableGrid
+                    rows={participantData || []}
+                    studyId={study.identifier}
+                  ></ParticipantTableGrid>
+                )}
               </Box>
 
               <Box textAlign="center" pl={2}>

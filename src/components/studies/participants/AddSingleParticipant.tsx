@@ -40,7 +40,7 @@ type AddSingleParticipantProps = {
   studyIdentifier: string
 }
 
-async function addParticipantById(
+export async function addParticipantById(
   studyIdentifier: string,
   token: string,
   options: AddParticipantType,
@@ -52,7 +52,7 @@ async function addParticipantById(
   )
 }
 
-async function addParticipantByPhone(
+export async function addParticipantByPhone(
   studyIdentifier: string,
   token: string,
   phone: Phone,
