@@ -1,5 +1,6 @@
-import { Button, Select } from '@material-ui/core'
+import { Button, InputBase, InputLabel, Select } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
+import { latoFont, poppinsFont } from '../../style/theme'
 
 export const ButtonWithSelectButton = withStyles(theme => ({
   root: {
@@ -10,7 +11,7 @@ export const ButtonWithSelectButton = withStyles(theme => ({
     '&:hover': {
       backgroundColor: theme.palette.primary.dark,
       boxShadow: `1px 2px 2px rgba(0, 0, 0, 0.25)`,
-      fontWeight: 'bolder'
+      fontWeight: 'bolder',
     },
     fontFamily: 'Lato',
     boxShadow: `1px 2px 2px rgba(0, 0, 0, 0.25)`,
@@ -52,3 +53,50 @@ export const BlueButton = withStyles(theme => ({
     fontFamily: 'Lato',
   },
 }))(Button)
+
+export const SimpleTextLabel = withStyles(theme => ({
+  root: {
+    fontFamily: [poppinsFont, 'Roboto'].join(','),
+    fontWeight: 500,
+    fontSize: '14px',
+    transform: 'none',
+
+    '.error > &': {
+      color: theme.palette.error.main,
+    },
+  },
+}))(InputLabel)
+
+export const SimpleTextInput = withStyles(theme => ({
+  root: {
+    border: '1px solid #ced4da',
+    'label + &': {
+      marginTop: theme.spacing(2),
+    },
+    '&.Mui-focused': {
+      borderColor: theme.palette.primary.light,
+    },
+    '.error > &': {
+      borderColor: theme.palette.error.main,
+    },
+    '&.Mui-error': {
+      borderColor: theme.palette.error.main,
+    },
+  },
+  multiline: {
+    padding: 0,
+  },
+  input: {
+    borderRadius: 0,
+    position: 'relative',
+    backgroundColor: theme.palette.common.white,
+    fontSize: '14px',
+    width: 'auto',
+    padding: '10px 12px',
+    transition: theme.transitions.create(['border-color', 'box-shadow']),
+    fontFamily: [latoFont, 'Roboto'].join(','),
+    '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active': {
+      ' -webkit-box-shadow': '0 0 0 30px white inset !important',
+    },
+  },
+}))(InputBase)

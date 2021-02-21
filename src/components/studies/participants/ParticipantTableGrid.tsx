@@ -1,4 +1,4 @@
-import { Paper } from '@material-ui/core'
+import { Button, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { ColDef, DataGrid, ValueGetterParams } from '@material-ui/data-grid'
 import React, { FunctionComponent } from 'react'
@@ -7,6 +7,8 @@ import {
   StringDictionary,
 } from '../../../types/types'
 import ParticipantTablePagination from './ParticipantTablePagination'
+import { useUserSessionDataState } from '../../../helpers/AuthContext'
+import ParticipantService from '../../../services/participants.service'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -78,13 +80,43 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     { field: 'status', headerName: 'Status', flex: 1 },
     { field: 'notes', headerName: 'Notes', flex: 1 },
   ]
+  const [selected, setSelected] = React.useState<string[]>([])
+
+  function getPhone(params: ValueGetterParams) {
+    if (params.value) {
+      return (params.value as { nationalFormat: string }).nationalFormat
+    } else return ''
+  }
+  const { token } = useUserSessionDataState()
 
   const onPageSelectedChanged = (pageSelected: number) => {
     setCurrentPage(pageSelected)
   }
 
+  const makeTestGroup = async () => {
+    /* for (let i = 0; i < selected.length; i++) {
+
+    const result = await ParticipantService.updateParticipantGroup(studyId, token!,selected[i], ['test_user'])
+    }*/
+  }
+
+  const deleteParticipants = async () => {
+    for (let i = 0; i < selected.length; i++) {
+      /*
+      const result = await ParticipantService.deleteParticipant(
+        studyId,
+        token!,
+        selected[i],
+        ['test_user'],
+      )
+      */
+    }
+  }
+
   return (
     <Paper style={{ height: '600px' }}>
+      <Button onClick={() => makeTestGroup()}>Make test group</Button>
+      <Button onClick={() => deleteParticipants()}>Delete</Button>
       <div style={{ display: 'flex', height: '100%' }}>
         <div style={{ flexGrow: 1 }}>
           <DataGrid
@@ -95,6 +127,9 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             components={{
               Footer: () => null,
             }}
+            onSelectionChange={params =>
+              setSelected(params.rowIds.map(id => id.toString()))
+            }
           />
           <ParticipantTablePagination
             totalParticipants={totalParticipants}

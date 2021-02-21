@@ -1,12 +1,11 @@
-import AssessmentLibrary from './components/assessments/AssessmentLibrary'
-
-import StudyBuilder from './components/studies/StudyBuilder'
+import AccountCreate from './components/account/AccountCreate'
 import AssessmentDetail from './components/assessments/AssessmentDetail'
+import AssessmentLibrary from './components/assessments/AssessmentLibrary'
 import SessionsLayout from './components/layouts/sessions'
+import DevelopmentTeam from './components/static/DevelopmentTeam'
 import HowItWorks from './components/static/HowItWorks'
 import Plans from './components/static/Plans'
-import DevelopmentTeam from './components/static/DevelopmentTeam'
-import AccountCreate from './components/account/AccountCreate'
+
 
 export default [
   {

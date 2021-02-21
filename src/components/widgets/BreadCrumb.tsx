@@ -1,14 +1,8 @@
-import React from 'react'
-
-import { makeStyles } from '@material-ui/core/styles'
+import { Typography } from '@material-ui/core'
+import Breadcrumbs from '@material-ui/core/Breadcrumbs/Breadcrumbs'
 import Link from '@material-ui/core/Link'
 import BackIcon from '@material-ui/icons/KeyboardBackspace'
-import Breadcrumbs from '@material-ui/core/Breadcrumbs/Breadcrumbs'
-import { Typography } from '@material-ui/core'
-
-const useStyles = makeStyles({
-  root: {},
-})
+import React from 'react'
 
 export interface BreadCrumbProps {
   links: { url: string; text: string }[]
@@ -19,7 +13,7 @@ const BreadCrumb: React.FunctionComponent<BreadCrumbProps> = ({
   links,
   currentItem = '',
 }: BreadCrumbProps) => {
-  const classes = useStyles()
+
   return (
     <Breadcrumbs aria-label="breadcrumb">
       {links.map((link, index) => (

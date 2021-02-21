@@ -1,4 +1,4 @@
-import { Hidden, IconButton, Paper, Typography } from '@material-ui/core'
+import { Hidden, IconButton, LinearProgress, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
@@ -6,10 +6,9 @@ import PeopleIcon from '@material-ui/icons/People'
 import React, { FunctionComponent } from 'react'
 import { NavLink } from 'react-router-dom'
 import Logo from '../../assets/logo_mtb.svg'
+import { useStudyInfoDataState } from '../../helpers/StudyInfoContext'
 import BreadCrumb from '../widgets/BreadCrumb'
-
-
-
+import HideWhen from '../widgets/HideWhen'
 
 const useStyles = makeStyles(theme => ({
   toolbarStudyHeader: {
@@ -57,17 +56,17 @@ const useStyles = makeStyles(theme => ({
 type StudyTopNavProps = {
   //sections:? { name: string; path: string }[]
   studyId: string
-  studyName?: string
+  //studyName?: string
   currentSection?: string
 }
 
 const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   studyId,
-  studyName,
+  //studyName,
   currentSection,
 }: StudyTopNavProps) => {
   const links = [
-    { path: '/studies/builder/:id/', name: 'STUDY BUILDER' },
+    { path: '/studies/builder/:id/session-creator', name: 'STUDY BUILDER' },
     { path: '/studies/:id/participant-manager', name: 'PARTICIPANT MANAGER' },
     { path: '/studies/:id/compliance', name: 'ADHERENCE DATA' },
     { path: '/studies/:id/study-data', name: 'STUDY DATA' },
@@ -75,6 +74,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
   //const sessionData = useUserSessionDataState()
+  const studyData = useStudyInfoDataState()
 
   return (
     <>
@@ -108,13 +108,16 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               className={classes.toolbarLink}
               style={{ paddingBottom: '0' }}
             >
-              <img src={Logo} key="home" />
+              <img src={Logo} key="home" alt="home" />
             </NavLink>
+            <HideWhen hideWhen={studyData.study === undefined}>
+              <BreadCrumb
+                links={[{ url: '/Studies', text: '' }]}
+                currentItem={studyData.study?.name}
+              ></BreadCrumb>
 
-            <BreadCrumb
-              links={[{ url: '/Studies', text: '' }]}
-              currentItem={studyName || 'Utitled Study '}
-            ></BreadCrumb>
+              <LinearProgress style={{ width: '50px' }} />
+            </HideWhen>
           </Toolbar>
           <Toolbar className={classes.toolbar}>
             {links
@@ -141,9 +144,6 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               <PeopleIcon></PeopleIcon>&nbsp;&nbsp;Access settings
             </NavLink>
           </Toolbar>
-          {currentSection && (
-            <Typography component="h1">{currentSection}</Typography>
-          )}
         </Paper>
       </Hidden>
     </>

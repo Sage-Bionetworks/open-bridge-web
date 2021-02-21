@@ -97,45 +97,42 @@ export default {
   getAppPublicKey: '/v1/apps/self/publicKey',
   masterschedule: '/v3/schedulerconfigs',
   metadata: '/v3/sharedmodules/metadata',*/
-    sessionAssessments: '/v1/sessions/{sessionGuid}/assessments',
+
+    assessment: '/v1/assessments/:id/',
     assessments: '/v1/assessments?includeDeleted=false',
+    assmentsForSessions: '/v1/sessions/:sessionId/assessments',
     assessmentsShared: '/v1/sharedassessments/?includeDeleted=false',
-    assessmentShared: '/v1/sharedassessments/',
-    assessment: '/v1/assessments/',
+    assessmentShared: '/v1/sharedassessments/:id/',
+    assessmentResources: '/v1/assessments/identifier:identifier/resources', //'/v1/sharedassessments',
     assessmentsSharedResources:
-      '/v1/sharedassessments/identifier:{identifier}/resources',
-    assessmentResources: '/v1/assessments/identifier:{identifier}/resources', //'/v1/sharedassessments',
-    oauthSignIn: '/v3/auth/oauth/signIn',
-    selfInfo: '/v3/participants/self',
-    enrollments: '/v5/studies/{studyId}/enrollments',
-    participantsSearch: '/v5/studies/:id/participants/search',
-    participant: '/v5/studies/:id/participants',
-    
-    
+      '/v1/sharedassessments/identifier:identifier/resources',
     bridgeAccount: '/v1/accounts/:id',
+    //  enrollments: '/v5/studies/{studyId}/enrollments',
+    events: '/v5/studies/:studyId/participants/:userId/activityEvents',
     getAccountsForOrg: '/v1/organizations/:orgId/members',
-    synapseGetAlias: '/repo/v1/principal/alias',
-    synapseGetUserProfile:'/repo/v1/user/:id/bundle',
-
-    
-    studies: '/v5/studies',
-    
-    study: '/v5/studies/:id',
-
+    oauthSignIn: '/v3/auth/oauth/signIn',
+    participant: '/v5/studies/:id/participants',
+    participantsSearch: '/v5/studies/:id/participants/search',
+    requestResetPassword: '/v3/auth/requestResetPassword',
     schedule: 'v1/schedule/:id',
     scheduleSessions: 'v1/schedule/:id/sessions',
+    selfInfo: '/v3/participants/self',
+    signIn: '/v3/auth/signIn',
+    signOut: '/v3/auth/signOut',
+    study: '/v5/studies/:id',
+    studies: '/v5/studies',
+    synapseGetAlias: '/repo/v1/principal/alias',
+    synapseGetUserProfile: '/repo/v1/user/:id/bundle',
 
     /*phoneSignIn: '/v3/auth/phone/signIn',
   reauth: '/v3/auth/reauth',
   reports: '/v3/reports',
   requestPhoneSignIn: '/v3/auth/phone',*/
-    requestResetPassword: '/v3/auth/requestResetPassword',
+
     /* schemaPlans: '/v3/scheduleplans',
   schemas: '/v3/uploadschemas',
   schemasV4: '/v4/uploadschemas',
   sharedmodules: '/v3/sharedmodules',*/
-    signIn: '/v3/auth/signIn',
-    signOut: '/v3/auth/signOut',
 
     /* subpopulations: '/v3/subpopulations',
   substudies: '/v3/substudies',

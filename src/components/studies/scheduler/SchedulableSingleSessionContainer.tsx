@@ -217,6 +217,7 @@ SchedulableSingleSessionContainerProps) => {
                   control={
                     <Checkbox
                       value={schedulableSession.isAllowSnooze}
+                      checked = {schedulableSession.isAllowSnooze}
                       onChange={e =>
                         updateSessionSchedule({
                           ...schedulableSession,
@@ -238,6 +239,12 @@ SchedulableSingleSessionContainerProps) => {
                   multiline={false}
                   fullWidth={true}
                   variant="outlined"
+                  defaultValue = {schedulableSession.subjectLine}
+                  onBlur={e =>
+                    updateSessionSchedule({
+                      ...schedulableSession,
+                      subjectLine: e.target.value
+                    })}
                 ></TextField>
               </SchedulingFormSection>
 
@@ -252,7 +259,13 @@ SchedulableSingleSessionContainerProps) => {
                   fullWidth={true}
                   variant="outlined"
                   rows="3"
-                  classes={{ root: classes.multilineBodyText }}
+                  classes={{root: classes.multilineBodyText}}
+                  defaultValue = {schedulableSession.bodyText}
+                  onBlur={e =>
+                    updateSessionSchedule({
+                      ...schedulableSession,
+                      bodyText: e.target.value
+                    })}
                 ></TextField>
               </SchedulingFormSection>
             </Box>

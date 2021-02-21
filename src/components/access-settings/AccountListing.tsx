@@ -106,7 +106,8 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     data: [],
   })
 
-  async function getMembers(orgMembership: string, token: string) {
+
+  const getMembers = React.useCallback(async(orgMembership: string, token: string)=>  {
     const members = await AccessService.getAccountsForOrg(
       token!,
       orgMembership!,
@@ -118,20 +119,22 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
       ...members.slice(meIndex + 1, members.length),
     ]
     return result
-  }
+  }, [id]
+  )
+
+
 
   React.useEffect(() => {
 
 
     return run(
       (async function (orgMembership, token) {
-        console.log(token, orgMembership)
         const result = getMembers(orgMembership!, token!)
 
         return result
       })(orgMembership, token),
     )
-  }, [run, orgMembership!, token!, updateToggle])
+  }, [run, orgMembership, token, updateToggle, getMembers])
 
   const deleteExistingAccount = async (member: OrgUser) => {
     await AccessService.deleteIndividualAccount(token!, member.id)
@@ -148,7 +151,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     access: Access
   }) => {
     const roles = getRolesFromAccess(access)
-    const user = await AccessService.updateIndividualAccountRoles(
+    await AccessService.updateIndividualAccountRoles(
       token!,
       member.id,
       roles,
@@ -158,7 +161,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
 
   }
 
-  const updateAccess = async (memberId: string) => {
+  const updateAccess = React.useCallback(async (memberId: string) => {
     setIsAccessLoading(true)
     const member = await AccessService.getIndividualAccount(token!, memberId)
     console.log(member.roles.join(','))
@@ -166,7 +169,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
 
     setCurrentMemberAccess({ access, member })
     setIsAccessLoading(false)
-  }
+  }, [token])
 
   React.useEffect(() => {
     ;(async function (id) {
@@ -175,7 +178,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
       }
       updateAccess(id)
     })(members ? members[0]?.id : undefined)
-  }, [members])
+  }, [members, updateAccess])
 
   if (status === 'REJECTED') {
     handleError(error!)

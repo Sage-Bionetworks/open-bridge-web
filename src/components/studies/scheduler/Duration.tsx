@@ -1,11 +1,8 @@
-import { createStyles, StandardTextFieldProps, Theme } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { StandardTextFieldProps } from '@material-ui/core'
 import moment from 'moment'
 import React from 'react'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import SmallTextBox from '../../widgets/SmallTextBox'
-
-const useStyles = makeStyles((theme: Theme) => createStyles({}))
 
 export interface DurationProps {
   onChange: Function
@@ -26,8 +23,6 @@ const Duration: React.FunctionComponent<
   numberLabel,
   ...props
 }: DurationProps) => {
-  const classes = useStyles()
-
   /* const units: { [key: string]: moment.unitOfTime.Base } = {
     Y: 'y',
     M: 'M',
@@ -44,33 +39,18 @@ const Duration: React.FunctionComponent<
   React.useEffect(() => {
     try {
       if (!durationString /*|| !durationString.includes('P')*/) {
-        throw durationString + 'no value!'
+        throw new Error(durationString + 'no value!')
       }
-      //console.log('duration', durationString)
-      const hasTime = durationString.includes('T')
-      //console.log(hasTime)
-      let unit = durationString[durationString.length - 1]
-      //unit = unit === 'M' && hasTime ? 'TM' : unit
-      //console.log('unit is', unit)
-      //console.log('unitdata', unitData)
-      //console.log(durationString, ':about to parse')
-      //debugger
 
-      // const parsedDuration = moment.duration(durationString)
-      //console.log('parsedD', parsedDuration)
+      let unit = durationString[durationString.length - 1]
+
       var numberPattern = /\d+/g
       const num = durationString.match(numberPattern)
       const n = num ? Number(num[0]) : 0
 
-      //const n = durationString.//parsedDuration.as(units[unit] as moment.unitOfTime.Base)
-
-      //console.log('unittype:', typeof unit)
-      //console.log('n', n)
-
       setUnit(unit)
       setNum(n)
     } catch (e) {
-      console.log(e + 'caught error')
       setUnit(undefined)
       setNum(undefined)
     }

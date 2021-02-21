@@ -1,23 +1,20 @@
-import React from 'react'
-import {
-  makeStyles,
-  Theme,
-  createStyles,
-  withStyles,
-} from '@material-ui/core/styles'
-import clsx from 'clsx'
-import Stepper from '@material-ui/core/Stepper'
-import Step from '@material-ui/core/Step'
-import StepLabel from '@material-ui/core/StepLabel'
-import Check from '@material-ui/icons/Check'
-import SettingsIcon from '@material-ui/icons/Settings'
-import GroupAddIcon from '@material-ui/icons/GroupAdd'
-import VideoLabelIcon from '@material-ui/icons/VideoLabel'
-import StepConnector from '@material-ui/core/StepConnector'
-import Button from '@material-ui/core/Button'
-import Typography from '@material-ui/core/Typography'
-import { StepIconProps } from '@material-ui/core/StepIcon'
 import { StepButton } from '@material-ui/core'
+import Step from '@material-ui/core/Step'
+import StepConnector from '@material-ui/core/StepConnector'
+import { StepIconProps } from '@material-ui/core/StepIcon'
+import StepLabel from '@material-ui/core/StepLabel'
+import Stepper from '@material-ui/core/Stepper'
+import {
+  createStyles, makeStyles,
+  Theme,
+
+  withStyles
+} from '@material-ui/core/styles'
+import GroupAddIcon from '@material-ui/icons/GroupAdd'
+import SettingsIcon from '@material-ui/icons/Settings'
+import VideoLabelIcon from '@material-ui/icons/VideoLabel'
+import clsx from 'clsx'
+import React from 'react'
 
 const ColorlibConnector = withStyles({
   alternativeLabel: {
@@ -45,7 +42,6 @@ const ColorlibConnector = withStyles({
     borderRadius: 1,
   },
 })(StepConnector)
-
 const useColorlibStepIconStyles = makeStyles({
   root: {
     backgroundColor: '#ccc',

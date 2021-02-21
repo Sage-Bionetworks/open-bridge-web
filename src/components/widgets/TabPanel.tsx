@@ -1,8 +1,5 @@
-import React, { FunctionComponent, useState } from 'react'
-
-import { Box, Typography, makeStyles, Paper } from '@material-ui/core'
-
-import clsx from 'clsx'
+import { Box, makeStyles, Paper } from '@material-ui/core'
+import React, { FunctionComponent } from 'react'
 
 const useStyles = makeStyles(theme => ({
   root: {

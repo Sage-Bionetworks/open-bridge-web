@@ -1,9 +1,7 @@
-import { makeStyles } from '@material-ui/core'
 import React, { useState } from 'react'
 import { Redirect } from 'react-router'
 import { useUserSessionDataDispatch } from '../../helpers/AuthContext'
 
-const useStyles = makeStyles(theme => ({}))
 type LogoutProps = {
   element: JSX.Element
 }

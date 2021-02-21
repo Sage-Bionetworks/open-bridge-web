@@ -1,17 +1,13 @@
 import {
   Box,
-  createStyles,
+
   FormControlLabel,
   Radio,
-  RadioGroup,
-  Theme
+  RadioGroup
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import { StartEventId } from '../../../types/scheduling'
 import SchedulingFormSection from './SchedulingFormSection'
-
-const useStyles = makeStyles((theme: Theme) => createStyles({}))
 
 export interface StudyStartDateProps {
   isIntro?: boolean
@@ -26,7 +22,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
   isIntro,
   style,
 }: StudyStartDateProps) => {
-  const classes = useStyles()
+
   const options: StartEventId[] = ['ONBOARDING', 'START_DATE']
 
   const label = isIntro ? (

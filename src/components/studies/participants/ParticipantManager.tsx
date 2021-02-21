@@ -1,18 +1,33 @@
-import { Box, Button, Grid, Switch, MenuItem } from '@material-ui/core'
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  Switch,
+  MenuItem,
+} from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import DeleteIcon from '@material-ui/icons/Delete'
 import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
-import { RouteComponentProps, useParams } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router-dom'
 import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
-import { useStudyBuilderInfo } from '../../../helpers/hooks'
+import {
+  StudyInfoData,
+  useStudyInfoDataDispatch,
+  useStudyInfoDataState,
+} from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
 import StudyService from '../../../services/study.service'
-import { EnrollmentType, ParticipantAccountSummary } from '../../../types/types'
+import {
+  EnrollmentType,
+  ParticipantAccountSummary,
+  StringDictionary,
+} from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import HideWhen from '../../widgets/HideWhen'
-import StudyTopNav from '../StudyTopNav'
+import AddByIdDialog from './AddByIdDialog'
 import AddParticipants from './AddParticipants'
 import EnrollmentSelector from './EnrollmentSelector'
 import ParticipantTableGrid from './ParticipantTableGrid'
@@ -126,7 +141,6 @@ const participantRecordTemplate: ParticipantAccountSummary = {
   id: '',
   externalIds: {},
 }
-type keys = keyof ParticipantAccountSummary
 
 type ParticipantManagerProps = ParticipantManagerOwnProps & RouteComponentProps
 
@@ -136,8 +150,6 @@ type ParticipantData = {
 }
 
 const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
-  let { id } = useParams<{ id: string }>()
-  const [isEdit, setIsEdit] = React.useState(false)
   const [currentPage, setCurrentPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState(50)
   const [participantData, setParticipantData] = React.useState<
@@ -150,16 +162,19 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const handleError = useErrorHandler()
   const classes = useStyles()
-  //if you need search params use the following
-  //const { param } = useParams<{ param: string}>()
-  //<T> is the type of data you are retrieving
+
+  const [isEdit, setIsEdit] = React.useState(true)
+  const [
+    refreshParticipantsToggle,
+    setRefreshParticipantsToggle,
+  ] = React.useState(false)
+  //used with generate id enrollbyId
+  const [isGenerateIds, setIsGenerateIds] = React.useState(false)
+
+  const { study }: StudyInfoData = useStudyInfoDataState()
+  const studyDataUpdateFn = useStudyInfoDataDispatch()
+
   const { token } = useUserSessionDataState()
-  const {
-    data: studyData,
-    status: studyStatus,
-    error: studyError,
-    setData: setStudyData,
-  } = useStudyBuilderInfo(id)
 
   const { data, status, error, run, setData } = useAsync<ParticipantData>({
     status: 'PENDING',
@@ -180,11 +195,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   ] = React.useState(false)
 
   const updateEnrollment = async (type: EnrollmentType) => {
-    let study = studyData!.study
     study.options = { ...study.options, enrollmentType: type }
 
-    const updatedsStudy = await StudyService.updateStudy(study, token!)
-    setStudyData({ ...studyData, study })
+    const updatedStudy = await StudyService.updateStudy(study, token!)
+    studyDataUpdateFn({ type: 'SET_STUDY', payload: { study: study } })
   }
 
   React.useEffect(() => {
@@ -203,12 +217,31 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setExportData(result)
   }, [participantData])
 
+  async function getParticipants(
+    studyId: string,
+    token: string,
+  ): Promise<ParticipantAccountSummary[]> {
+    const clinicVisitMap: StringDictionary<string> = await ParticipantService.getClinicVisitsForParticipants(
+      studyId,
+      token,
+      participantData!.map(p => p.id),
+    )
+    const result = participantData!.map(participant => {
+      const id = participant.id as string
+      const visit = clinicVisitMap[id]
+      const y = { ...participant, clinicVisit: visit }
+      return y
+    })
+
+    return result
+  }
+
   React.useEffect(() => {
-    if (!id) {
+    if (!study?.identifier) {
       return
     }
     handleResetSearch(false)
-  }, [id, run, currentPage, pageSize])
+  }, [run, currentPage, pageSize])
 
   const handleSearchParticipantRequest = async () => {
     const searchedValue = inputComponent.current?.value
@@ -239,25 +272,24 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     if (fromXIconPressed) setIsSearchingUsingID(false)
   }
 
-  if (status === 'PENDING') {
+  if (!study) {
     return <>loading component here</>
   } else if (status === 'REJECTED') {
     handleError(error!)
-  } else if (status === 'RESOLVED') {
+  } /* if (status === 'RESOLVED') */ else {
     return (
       <>
-        <StudyTopNav studyId={id} currentSection={''}></StudyTopNav>{' '}
-        <Box px={3} py={2} className={classes.studyText}>
-          Study ID: {id}
+        <Box px={3} py={2}>
+          Study ID: {study.identifier}
         </Box>
-        {!studyData?.study.options?.enrollmentType && (
+        {!study.options?.enrollmentType && (
           <EnrollmentSelector
             callbackFn={(type: EnrollmentType) => updateEnrollment(type)}
           ></EnrollmentSelector>
         )}
-        {studyData?.study.options?.enrollmentType && (
+        {study.options?.enrollmentType && (
           <>
-            {studyData.study.options.enrollmentType}
+            {study.options.enrollmentType}
             <Box px={3} py={2}>
               <Grid
                 component="label"
@@ -369,21 +401,41 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               isFullWidth={true}
               isHideContentOnClose={true}
             >
-              <AddParticipants
-                studyId={id!}
-                token={token!}
-                enrollmentType={'ID'}
-              ></AddParticipants>
+              <>
+                {!isGenerateIds && (
+                  <AddParticipants
+                    study={study}
+                    token={token!}
+                    enrollmentType={study.options!.enrollmentType /*'PHONE'*/}
+                    onAdded={() => {
+                      setRefreshParticipantsToggle(prev => !prev)
+                    }}
+                  ></AddParticipants>
+                )}
+                {study.options!.enrollmentType === 'ID' && false && (
+                  <AddByIdDialog
+                    study={study}
+                    token={token!}
+                    onAdded={(isHideAdd: boolean) => {
+                      setRefreshParticipantsToggle(prev => !prev)
+                      setIsGenerateIds(true)
+                    }}
+                  ></AddByIdDialog>
+                )}
+              </>
               <Box py={0} pr={3} pl={2}>
-                <ParticipantTableGrid
-                  rows={participantData || []}
-                  studyId={'mtb-user-testing'}
-                  totalParticipants={totalParticipants}
-                  currentPage={currentPage}
-                  setCurrentPage={setCurrentPage}
-                  pageSize={pageSize}
-                  setPageSize={setPageSize}
-                ></ParticipantTableGrid>
+                {status === 'PENDING' && <CircularProgress></CircularProgress>}
+                {status === 'RESOLVED' && (
+                  <ParticipantTableGrid
+                    rows={participantData || []}
+                    studyId={'mtb-user-testing'}
+                    totalParticipants={totalParticipants}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    pageSize={pageSize}
+                    setPageSize={setPageSize}
+                  ></ParticipantTableGrid>
+                )}
               </Box>
 
               <Box textAlign="center" pl={2}>

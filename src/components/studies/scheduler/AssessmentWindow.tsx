@@ -1,13 +1,11 @@
 import {
   Box,
   Checkbox,
-  createStyles,
+
   FormControlLabel,
   IconButton,
-  Paper,
-  Theme
+  Paper
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
 import DeleteIcon from '@material-ui/icons/Close'
 import React from 'react'
 import {
@@ -18,15 +16,6 @@ import { StringDictionary } from '../../../types/types'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    smallRadio: {
-      padding: '2px 9px',
-      marginTop: '2px',
-    },
-  }),
-)
 
 export interface AssessmentWindowProps {
   //use the following version instead if you need access to router props
@@ -44,7 +33,6 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
   onDelete,
   index,
 }: AssessmentWindowProps) => {
-  const classes = useStyles()
 
   const getDropdownItems = (): StringDictionary<string> => {
     const menuItems: StringDictionary<string> = {}

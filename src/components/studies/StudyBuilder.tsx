@@ -2,14 +2,20 @@ import { Box } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
-import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
+import { ErrorBoundary } from 'react-error-boundary'
 import { RouteComponentProps, useParams } from 'react-router-dom'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
-import { useStudyBuilderInfo } from '../../helpers/hooks'
+import {
+  StudyInfoData,
+  useStudyInfoDataDispatch,
+  useStudyInfoDataState
+} from '../../helpers/StudyInfoContext'
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
-import { Schedule, StudyDuration } from '../../types/scheduling'
+import { Schedule, StudyDuration, StudySession } from '../../types/scheduling'
+import { StringDictionary } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
+import { MTBHeadingH1 } from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
 import AppDesign from './app-design/AppDesign'
 import Launch from './launch/Launch'
@@ -19,7 +25,14 @@ import Scheduler from './scheduler/Scheduler'
 import { StudySection } from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
-import StudyTopNav from './StudyTopNav'
+
+const subtitles: StringDictionary<string>= {
+  description: 'Description',
+  'team-settings': 'Team Settings',
+
+  scheduler: 'Schedule Sessions',
+  'session-creator': 'Create Sessions',
+}
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   mainAreaWrapper: {
@@ -61,26 +74,29 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ...otherProps
 }) => {
   const classes = useStyles()
-  const handleError = useErrorHandler()
-
   let { id, section: _section } = useParams<{
     id: string
     section: StudySection
   }>()
+  console.log('from builder', id, _section)
   const [section, setSection] = React.useState(_section)
-  const [nextSection, setNextSection] = React.useState<StudySection>(_section)
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [saveLoader, setSaveLoader] = React.useState(false)
   const { token } = useUserSessionDataState()
-  const { data: builderInfo, status, error, setData } = useStudyBuilderInfo(id)
+  const builderInfo: StudyInfoData = useStudyInfoDataState()
+  const studyDataUpdateFn = useStudyInfoDataDispatch()
 
   const [open, setOpen] = React.useState(true)
+
+  const setData = (builderInfo: StudyInfoData) => {
+    studyDataUpdateFn({ type: 'SET_ALL', payload: builderInfo })
+  }
 
   const saveStudySessions = async () => {
     setSaveLoader(true)
     await StudyService.saveStudySessions(
       id,
-      builderInfo!.schedule.sessions || [],
+      builderInfo!.schedule?.sessions || [],
       token!,
     )
     setHasObjectChanged(false)
@@ -90,34 +106,28 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
   const saveSchedulerData = async () => {
     setSaveLoader(true)
+    if (!builderInfo.schedule || !builderInfo.study || !token) {
+      return
+    }
     await StudyService.saveStudySchedule(
       id,
-      builderInfo!.schedule,
-      builderInfo!.study.studyDuration!,
-      token!,
+      builderInfo.schedule,
+      builderInfo.study.studyDuration!,
+      token,
     )
     setHasObjectChanged(false)
     setSaveLoader(false)
     return
   }
 
-  if (status === 'IDLE') {
-    return <>'no id'</>
-  } else if (status === 'REJECTED') {
-    handleError(error!)
-  } else if (status === 'RESOLVED' && builderInfo) {
-    if (!builderInfo.study) {
-      throw new Error('This session does not exist')
-    }
-  }
-  if (!builderInfo) {
+  if (!builderInfo || !builderInfo.schedule || !builderInfo.study) {
     return <></>
   }
 
   const changeSection = async (next: StudySection) => {
-  if (section === next) {
-    return
-  }
+    if (section === next) {
+      return
+    }
 
     let saveFn: Function | undefined = undefined
     //where we are currently
@@ -125,7 +135,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       case 'scheduler': {
         saveFn = saveSchedulerData
         break
-
       }
       case 'session-creator': {
         saveFn = saveStudySessions
@@ -150,119 +159,22 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     setSection(next)
   }
 
-  const ChildComponent: FunctionComponent<{}> = (): JSX.Element => {
-    const navButtons = (
-      <NavButtons
-        id={id}
-        currentSection={section}
-        onNavigate={(section: StudySection) => changeSection(section)}
-      ></NavButtons>
-    )
-    const props = {
-      hasObjectChanged: hasObjectChanged,
-      saveLoader: saveLoader,
-    }
-    switch (section) {
-      case 'scheduler':
-        return (
-          <Scheduler
-            {...props}
-            id={id}
-            schedule={builderInfo.schedule}
-            studyDuration={builderInfo.study?.studyDuration}
-            hasObjectChanged={hasObjectChanged}
-            saveLoader={saveLoader}
-            onSave={() => saveSchedulerData()}
-            onUpdate={({
-              schedule,
-              studyDuration,
-            }: {
-              schedule: Schedule
-              studyDuration: StudyDuration
-            }) => {
-              setHasObjectChanged(true)
-              console.log('updating duration', studyDuration)
-              setData({
-                ...builderInfo,
-                schedule: schedule,
-                study: {
-                  ...builderInfo.study,
-                  studyDuration,
-                },
-              })
-            }}
-          >
-            {navButtons}
-          </Scheduler>
-        )
-      case 'session-creator':
-        return (
-          <SessionCreator
-            {...props}
-            id={id}
-            onSave={() => saveStudySessions()}
-            sessions={builderInfo.schedule?.sessions || []}
-            onUpdate={(data: StudySection[]) => {
-              //console.log(_section)
-              setHasObjectChanged(true)
-              setData({
-                ...builderInfo,
-                schedule: { ...builderInfo.schedule, sessions: data },
-              })
-            }}
-          >
-            {navButtons}
-          </SessionCreator>
-        )
-      case 'branding':
-        return (
-          <AppDesign
-            {...props}
-            id={id}
-            onUpdate={(_section: StudySection, data: any) => {
-              console.log(_section)
-              // moveToNextSection(_section)
-            }}
-          >
-            {navButtons}
-          </AppDesign>
-        )
-      case 'launch':
-        return (
-          <Launch
-            {...props}
-            id={id}
-            onUpdate={(_section: StudySection, data: any) => {
-              console.log(_section)
-              // moveToNextSection(_section)
-            }}
-          >
-            {navButtons}
-          </Launch>
-        )
-      case 'passive-features':
-        return (
-          <PassiveFeatures
-            {...props}
-            id={id}
-            onUpdate={(_section: StudySection, data: any) => {
-              console.log(_section)
-              // moveToNextSection(_section)
-            }}
-          >
-            {navButtons}
-          </PassiveFeatures>
-        )
-
-      default:
-        return <></>
-    }
-  }
+  const navButtons = (
+    <NavButtons
+      id={id}
+      currentSection={section}
+      onNavigate={(section: StudySection) => changeSection(section)}
+    ></NavButtons>
+  )
 
   return (
     <>
-      <StudyTopNav studyId={id} currentSection={section}></StudyTopNav>
-      <span> {hasObjectChanged ? 'object changed' : 'no change'}</span>
+      <Box bgcolor="white" pt={9} pb={2} pl={open? 29: 15}>
+      <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1></Box>
+      <span style={{ fontSize: '9px', position: 'absolute', right: '0' }}>
+        {' '}
+        {hasObjectChanged ? 'object changed' : 'no change'}
+      </span>
       <Box paddingTop={2} display="flex" position="relative">
         <StudyLeftNav
           open={open}
@@ -282,20 +194,120 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
               [classes.mainAreaWide]: !open,
             })}
           >
-               <LoadingComponent
-            reqStatusLoading={saveLoader}
-            variant="small"
-            loaderSize="2rem"
-            style={{ width: '2rem', position: 'absolute', top:'30px', left: '50%' }}
-          ></LoadingComponent>
+            <LoadingComponent
+              reqStatusLoading={saveLoader}
+              variant="small"
+              loaderSize="2rem"
+              style={{
+                width: '2rem',
+                position: 'absolute',
+                top: '30px',
+                left: '50%',
+              }}
+            ></LoadingComponent>
 
-          
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
               onError={ErrorHandler}
             >
-              <LoadingComponent reqStatusLoading={status || !builderInfo}>
-                {builderInfo && <ChildComponent></ChildComponent>}
+              <LoadingComponent reqStatusLoading={!builderInfo}>
+                {builderInfo.schedule && builderInfo.study && (
+                  <>
+                    {section === 'scheduler' && (
+                      <Scheduler
+                        id={id}
+                        schedule={builderInfo.schedule}
+                        studyDuration={builderInfo.study?.studyDuration}
+                        hasObjectChanged={hasObjectChanged}
+                        saveLoader={saveLoader}
+                        onSave={() => saveSchedulerData()}
+                        onUpdate={({
+                          schedule,
+                          studyDuration,
+                        }: {
+                          schedule: Schedule
+                          studyDuration: StudyDuration
+                        }) => {
+                          setHasObjectChanged(true)
+                          console.log('updating duration', studyDuration)
+                          setData({
+                            ...builderInfo,
+                            schedule: schedule,
+                            study: {
+                              ...builderInfo.study,
+                              studyDuration,
+                            },
+                          })
+                        }}
+                      >
+                        {navButtons}
+                      </Scheduler>
+                    )}
+
+                    {section === 'session-creator' && (
+                      <SessionCreator
+                        hasObjectChanged={hasObjectChanged}
+                        saveLoader={saveLoader}
+                        id={id}
+                        onSave={() => saveStudySessions()}
+                        sessions={builderInfo.schedule?.sessions || []}
+                        onUpdate={(data: StudySession[]) => {
+                          //console.log(_section)
+                          setHasObjectChanged(true)
+                          setData({
+                            ...builderInfo,
+                            schedule: {
+                              ...builderInfo.schedule!,
+                              sessions: data,
+                            },
+                          })
+                        }}
+                      >
+                        {navButtons}
+                      </SessionCreator>
+                    )}
+
+                    {section === 'branding' && (
+                      <AppDesign
+                        hasObjectChanged={hasObjectChanged}
+                        saveLoader={saveLoader}
+                        id={id}
+                        onUpdate={(_section: StudySection, data: any) => {
+                          console.log(_section)
+                          // moveToNextSection(_section)
+                        }}
+                      >
+                        {navButtons}
+                      </AppDesign>
+                    )}
+                    {section === 'launch' && (
+                      <Launch
+                        hasObjectChanged={hasObjectChanged}
+                        saveLoader={saveLoader}
+                        id={id}
+                        onUpdate={(_section: StudySection, data: any) => {
+                          console.log(_section)
+                          // moveToNextSection(_section)
+                        }}
+                      >
+                        {navButtons}
+                      </Launch>
+                    )}
+                    {section === 'passive-features' && (
+                      <PassiveFeatures
+                        hasObjectChanged={hasObjectChanged}
+                        saveLoader={saveLoader}
+                        id={id}
+                        onUpdate={(_section: StudySection, data: any) => {
+                          console.log(_section)
+                          // moveToNextSection(_section)
+                        }}
+                      >
+                        {navButtons}
+                      </PassiveFeatures>
+                    )}
+                  </>
+                )}
               </LoadingComponent>
             </ErrorBoundary>
           </Box>

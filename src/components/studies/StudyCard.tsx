@@ -5,10 +5,10 @@ import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import React, { FunctionComponent } from 'react'
+import participants_icon from '../../assets/participants_icon.svg'
 import { ThemeType } from '../../style/theme'
 import { Study } from '../../types/types'
 import LiveIcon from './LiveIcon'
-import participants_icon from '../../assets/participants_icon.svg'
 
 const DraftIcon = () => {
   return (
@@ -130,7 +130,11 @@ const CardBottom: FunctionComponent<{
           <div className={classes.lastEditedTest}>Last edited:</div>
         ) : (
           <div className={classes.participantsRow}>
-            <img src={participants_icon} className={classes.participantsIcon} />
+            <img
+              src={participants_icon}
+              className={classes.participantsIcon}
+              alt="participant number"
+            />
             [56]
           </div>
         )}
@@ -220,10 +224,9 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
       return
     }
     const { key } = event
-    const keys = ['Escape', 'Tab']
+
     const enterKey = 'Enter'
-    const allKeys = [...keys, enterKey]
-    console.log(key)
+
     if (key === 'Escape') {
       onRename(study.name)
     }

@@ -264,7 +264,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     return () => {
       isSubscribed = false
     }
-  }, [])
+  }, [token])
 
   return (
     <Container maxWidth="lg" className={classes.studyContainer}>
