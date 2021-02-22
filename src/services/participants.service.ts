@@ -15,40 +15,36 @@ export type AddParticipantType = {
 async function getClinicVisitsForParticipants(
   studyIdentifier: string,
   token: string,
-  ids: string[],
+  participantId: string[],
 ) {
-  const endpoints = ids.map(userId => {
-    const result = {
-      endpoint: constants.endpoints.events
-        .replace(':studyId', studyIdentifier)
-        .replace(':userId', userId),
-      userId,
-    }
-    return result
-  })
+  //transform ids into promises
+  const promises = participantId.map(async pId => {
+    const endpoint = constants.endpoints.events
+      .replace(':studyId', studyIdentifier)
+      .replace(':userId', pId)
 
-  const promises = endpoints.map(async endpoint => {
     const apiCall = await callEndpoint<{ items: any[] }>(
-      endpoint.endpoint,
+      endpoint,
       'GET',
       { type: 'clinic_visit' },
       token,
     )
-    return { userId: endpoint.userId, apiCall: apiCall }
+    return { participantId: pId, apiCall: apiCall }
   })
- 
+
+  //execute promises and reduce array to dictionary object
   return Promise.all(promises).then(result => {
     const items = result.reduce((acc, item) => {
-      const record = {
-        events: item.apiCall.data.items.filter(
-          event => event.eventId === 'custom:clinic_visit',
-        ),
-        clinicVisit: '',
-      }
-      if (record.events?.length) {
-        record.clinicVisit = record.events[0].timestamp
-      }
-      return { ...acc, [item.userId]: record.clinicVisit }
+      //only need clinic visits
+      const clinicVisitEvents = item.apiCall.data.items.filter(
+        event => event.eventId === 'custom:clinic_visit',
+      )
+
+      const clinicVisitDate = clinicVisitEvents?.length
+        ? clinicVisitEvents[0].timestamp
+        : ''
+
+      return { ...acc, [item.participantId]: clinicVisitDate }
     }, {})
     return items
   })
@@ -67,10 +63,6 @@ async function getParticipants(
     { pageSize: 100 },
     token,
   )
-
-  /*const mappedResult = result.data.items.map(item => {
-    return { ...item, studyExternalId: item.externalIds[studyIdentifier] }
-  })*/
 
   return result.data.items
 }
