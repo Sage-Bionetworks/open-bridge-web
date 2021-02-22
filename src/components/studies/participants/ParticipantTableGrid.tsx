@@ -117,7 +117,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     <Paper style={{ height: '600px' }}>
       <Button onClick={() => makeTestGroup()}>Make test group</Button>
       <Button onClick={() => deleteParticipants()}>Delete</Button>
-      <div style={{ display: 'flex', height: '100%' }}>
+      <div style={{ display: 'flex', height: '95%' }}>
         <div style={{ flexGrow: 1 }}>
           <DataGrid
             rows={rows}

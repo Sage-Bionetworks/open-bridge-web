@@ -3,7 +3,7 @@ import constants from '../types/constants'
 import {
   ParticipantAccountSummary,
   Phone,
-  StringDictionary
+  StringDictionary,
 } from '../types/types'
 
 export type AddParticipantType = {
@@ -36,7 +36,7 @@ async function getClinicVisitsForParticipants(
     )
     return { userId: endpoint.userId, apiCall: apiCall }
   })
- 
+
   return Promise.all(promises).then(result => {
     const items = result.reduce((acc, item) => {
       const record = {
@@ -53,6 +53,7 @@ async function getClinicVisitsForParticipants(
     return items
   })
 }
+
 async function getParticipants(
   studyIdentifier: string,
   token: string,

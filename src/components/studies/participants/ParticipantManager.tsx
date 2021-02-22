@@ -108,7 +108,7 @@ const useStyles = makeStyles(theme => ({
     borderRadius: '0px',
     minWidth: '0px',
   },
-  blackXIcon: {
+  blackXIconButton: {
     marginLeft: '195px',
     position: 'absolute',
     minWidth: '0px',
@@ -122,6 +122,15 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: 'rgb(0, 0, 0, 0.2)',
     },
     display: 'flex',
+  },
+  blackXIcon: {
+    width: '10px',
+    height: '10px',
+  },
+  inputRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 }))
 
@@ -150,14 +159,13 @@ type ParticipantData = {
 }
 
 const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
+  // The current page in the particpant grid the user is viewing
   const [currentPage, setCurrentPage] = React.useState(1)
+  // The current page size of the particpant grid
   const [pageSize, setPageSize] = React.useState(50)
-  const [participantData, setParticipantData] = React.useState<
-    ParticipantAccountSummary[] | null
-  >(null)
-  const [totalParticipants, setTotalParticipants] = React.useState(0)
+  // True if the user is currently trying to search for a particular particpant
   const [isSearchingUsingId, setIsSearchingUsingID] = React.useState(false)
-
+  // Reference to the input component for searching for a participant using ID.
   const inputComponent = React.useRef<HTMLInputElement>(null)
 
   const handleError = useErrorHandler()
@@ -176,23 +184,32 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const { token } = useUserSessionDataState()
 
-  const { data, status, error, run, setData } = useAsync<ParticipantData>({
+  const {
+    data,
+    status,
+    error,
+    run,
+    setData: setParticipantData,
+  } = useAsync<ParticipantData>({
     status: 'PENDING',
     data: null,
   })
 
-  React.useEffect(() => {
-    const dataRetrieved = data ? data.items : null
-    const total = data ? data.total : 0
-    setParticipantData(dataRetrieved)
-    setTotalParticipants(total)
-  }, [data])
+  const participantData = data ? data.items : null
+  const totalParticipants = data ? data.total : 0
 
   const [exportData, setExportData] = React.useState<any[] | null>(null)
   const [
     isSearchingForParticipant,
     setIsSearchingForParticipant,
   ] = React.useState(false)
+
+  React.useEffect(() => {
+    if (!study?.identifier) {
+      return
+    }
+    return run(getParticipants(study?.identifier, token!))
+  }, [study?.identifier, run, token])
 
   const updateEnrollment = async (type: EnrollmentType) => {
     study.options = { ...study.options, enrollmentType: type }
@@ -217,31 +234,45 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setExportData(result)
   }, [participantData])
 
+  // need to configure this
+  React.useEffect(() => {
+    if (!study?.identifier) {
+      return
+    }
+    const fn = async () => {
+      const result = await run(getParticipants(study.identifier, token!))
+      setParticipantData({ items: result.items, total: result.total })
+    }
+    fn()
+  }, [study?.identifier, refreshParticipantsToggle, currentPage, pageSize])
+
   async function getParticipants(
     studyId: string,
     token: string,
-  ): Promise<ParticipantAccountSummary[]> {
+  ): Promise<ParticipantData> {
+    const offset = (currentPage - 1) * pageSize
+    const participants = await ParticipantService.getParticipants(
+      studyId,
+      token!,
+      pageSize,
+      offset,
+    )
+    const retrievedParticipants = participants ? participants.items : []
+    const numberOfParticipants = participants ? participants.total : 0
     const clinicVisitMap: StringDictionary<string> = await ParticipantService.getClinicVisitsForParticipants(
       studyId,
       token,
-      participantData!.map(p => p.id),
+      retrievedParticipants.map(p => p.id),
     )
-    const result = participantData!.map(participant => {
+    const result = retrievedParticipants!.map(participant => {
       const id = participant.id as string
       const visit = clinicVisitMap[id]
       const y = { ...participant, clinicVisit: visit }
       return y
     })
 
-    return result
+    return { items: result, total: numberOfParticipants }
   }
-
-  React.useEffect(() => {
-    if (!study?.identifier) {
-      return
-    }
-    handleResetSearch(false)
-  }, [run, currentPage, pageSize])
 
   const handleSearchParticipantRequest = async () => {
     const searchedValue = inputComponent.current?.value
@@ -254,22 +285,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     )
     const realResult = result ? [result] : null
     const totalParticipantsFound = result ? 1 : 0
-    setParticipantData(realResult)
-    setTotalParticipants(totalParticipantsFound)
+    setParticipantData({ items: realResult, total: totalParticipantsFound })
     setIsSearchingUsingID(true)
   }
 
-  const handleResetSearch = async (fromXIconPressed: boolean) => {
-    const offset = (currentPage - 1) * pageSize
-    run(
-      ParticipantService.getParticipants(
-        'mtb-user-testing',
-        token!,
-        pageSize,
-        offset,
-      ),
-    )
-    if (fromXIconPressed) setIsSearchingUsingID(false)
+  const handleResetSearch = async () => {
+    inputComponent.current!.value = ''
+    setIsSearchingUsingID(false)
+    const result = await run(getParticipants(study!.identifier, token!))
+    setParticipantData({ items: result.items, total: result.total })
   }
 
   if (!study) {
@@ -333,13 +357,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               </Grid>
               <Box className={classes.topButtonContainer}>
                 {!isEdit && (
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}
-                  >
+                  <div className={classes.inputRow}>
                     <Button className={classes.topButtons}>
                       <img src={LinkIcon} className={classes.buttonImage}></img>
                       App Download Link
@@ -347,13 +365,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   </div>
                 )}
                 {isSearchingForParticipant ? (
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}
-                  >
+                  <div className={classes.inputRow}>
                     <input
                       placeholder="Participant IDs"
                       className={classes.participantIDSearchBar}
@@ -364,15 +376,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     ></input>
                     {isSearchingUsingId && (
                       <Button
-                        className={classes.blackXIcon}
-                        onClick={() => handleResetSearch(true)}
+                        className={classes.blackXIconButton}
+                        onClick={handleResetSearch}
                       >
                         <img
                           src={BlackXIcon}
-                          style={{
-                            width: '10px',
-                            height: '10px',
-                          }}
+                          className={classes.blackXIcon}
                         ></img>
                       </Button>
                     )}
@@ -400,6 +409,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               expandedWidth={300}
               isFullWidth={true}
               isHideContentOnClose={true}
+              isDrawerHidden={!isEdit}
             >
               <>
                 {!isGenerateIds && (
