@@ -1,6 +1,7 @@
 export type StudySection =
   | 'scheduler'
   | 'session-creator'
+  | 'enrollment-type-selector'
   | 'description'
   | 'team-settings'
   | 'timeline-viewer'
@@ -17,6 +18,7 @@ export const SECTIONS: { name: string; path: StudySection }[] = [
 
   { name: 'Create Sessions', path: 'session-creator' },
   { name: 'Schedule Sessions', path: 'scheduler' },
+  { name: 'Enrollment Type', path: 'enrollment-type-selector' },
   // { name: 'Designate Groups', path: 'team-settings' },
 
   { name: 'Passive Features', path: 'passive-features' },

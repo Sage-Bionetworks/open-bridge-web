@@ -105,6 +105,7 @@ export type Study = {
   studyDuration?: StudyDuration
   options?: {
     enrollmentType?: EnrollmentType
+    generateIds?: boolean
   }
   // sessions: StudySession[]
 }
