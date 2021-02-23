@@ -127,7 +127,7 @@ const CardBottom: FunctionComponent<{
     >
       <div className={classes.cardBottomContainer}>
         {study.status === 'DRAFT' ? (
-          <text className={classes.lastEditedTest}>Last edited:</text>
+          <div className={classes.lastEditedTest}>Last edited:</div>
         ) : (
           <div className={classes.participantsRow}>
             <img
