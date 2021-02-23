@@ -17,8 +17,7 @@ const useStyles = makeStyles(theme => ({
     fontFamily: 'Lato',
     fontSize: '15px',
     fontStyle: 'italic',
-    minWidth: '200px',
-    border: '1px solid black',
+    minWidth: '175px',
   },
   showEntryText: {
     fontFamily: 'Lato',
