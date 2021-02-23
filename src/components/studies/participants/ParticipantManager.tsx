@@ -284,7 +284,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       ? inputComponent.current?.value
       : ''
     const result = await ParticipantService.getParticipantWithId(
-      'mtb-user-testing',
+      study.identifier,
       token!,
       searchedValue,
     )
