@@ -10,12 +10,15 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '0px 10px',
+    padding: theme.spacing(0, 2.25),
+    marginTop: theme.spacing(0.5),
   },
   partitipantNumberText: {
     fontFamily: 'Lato',
     fontSize: '15px',
     fontStyle: 'italic',
+    minWidth: '200px',
+    border: '1px solid black',
   },
   showEntryText: {
     fontFamily: 'Lato',

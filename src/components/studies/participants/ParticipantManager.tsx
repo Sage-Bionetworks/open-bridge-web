@@ -7,7 +7,6 @@ import {
   MenuItem,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import DeleteIcon from '@material-ui/icons/Delete'
 import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps } from 'react-router-dom'
@@ -32,7 +31,6 @@ import AddParticipants from './AddParticipants'
 import EnrollmentSelector from './EnrollmentSelector'
 import ParticipantTableGrid from './ParticipantTableGrid'
 import LinkIcon from '../../../assets/link_icon.svg'
-import FlagIcon from '../../../assets/flag_icon.svg'
 import SearchIcon from '../../../assets/search_icon.svg'
 import {
   ButtonWithSelectSelect,
@@ -63,7 +61,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingLeft: '40px',
+    paddingLeft: theme.spacing(5),
   },
   horizontalGroup: {
     display: 'flex',
@@ -75,10 +73,10 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginLeft: '40px',
+    marginLeft: theme.spacing(5),
   },
   buttonImage: {
-    marginRight: '5px',
+    marginRight: theme.spacing(0.5),
   },
   participantIDSearchBar: {
     backgroundColor: 'white',
@@ -87,7 +85,7 @@ const useStyles = makeStyles(theme => ({
     width: '220px',
     borderTopRightRadius: '0px',
     borderBottomRightRadius: '0px',
-    padding: '6px',
+    padding: theme.spacing(0.7),
     borderTop: '1px solid black',
     borderBottom: '1px solid black',
     borderLeft: '1px solid black',
@@ -132,6 +130,9 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  downloadButton: {
+    marginBottom: theme.spacing(0),
+  },
 }))
 
 type ParticipantManagerOwnProps = {
@@ -168,14 +169,21 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   // Reference to the input component for searching for a participant using ID.
   const inputComponent = React.useRef<HTMLInputElement>(null)
 
+  const [
+    isSearchingForParticipant,
+    setIsSearchingForParticipant,
+  ] = React.useState(false)
+
   const handleError = useErrorHandler()
   const classes = useStyles()
 
   const [isEdit, setIsEdit] = React.useState(true)
+
   const [
     refreshParticipantsToggle,
     setRefreshParticipantsToggle,
   ] = React.useState(false)
+
   //used with generate id enrollbyId
   const [isGenerateIds, setIsGenerateIds] = React.useState(false)
 
@@ -197,12 +205,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const participantData = data ? data.items : null
   const totalParticipants = data ? data.total : 0
+  console.log('particpant data', participantData)
 
   const [exportData, setExportData] = React.useState<any[] | null>(null)
-  const [
-    isSearchingForParticipant,
-    setIsSearchingForParticipant,
-  ] = React.useState(false)
 
   React.useEffect(() => {
     if (!study?.identifier) {
@@ -349,7 +354,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   <ButtonWithSelectButton
                     key="duplicate_session"
                     variant="contained"
-                    style={{ marginBottom: '0px' }}
+                    className={classes.downloadButton}
                   >
                     Download
                   </ButtonWithSelectButton>

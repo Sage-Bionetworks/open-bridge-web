@@ -38,15 +38,9 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   currentPage,
   setCurrentPage,
 }: ParticipantTableGridProps) => {
-  function getExternalId(params: ValueGetterParams) {
-    const extIds = params.getValue('externalIds') as
-      | StringDictionary<string>
-      | undefined
-    if (!extIds) {
-      return
-    }
-    return `${extIds[studyId]}`
-  }
+  const { token } = useUserSessionDataState()
+
+  const [selected, setSelected] = React.useState<string[]>([])
 
   // This is the total number of pages needed to list all participants based on the
   // page size selected
@@ -70,9 +64,8 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
   const columns: ColDef[] = [
     {
-      field: 'studyExternalId',
+      field: 'externalId',
       headerName: 'Participant ID',
-      valueGetter: getExternalId,
       flex: 2,
     },
     { field: 'id', headerName: 'HealthCode', flex: 2 },
@@ -80,14 +73,12 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     { field: 'status', headerName: 'Status', flex: 1 },
     { field: 'notes', headerName: 'Notes', flex: 1 },
   ]
-  const [selected, setSelected] = React.useState<string[]>([])
 
   function getPhone(params: ValueGetterParams) {
     if (params.value) {
       return (params.value as { nationalFormat: string }).nationalFormat
     } else return ''
   }
-  const { token } = useUserSessionDataState()
 
   const onPageSelectedChanged = (pageSelected: number) => {
     setCurrentPage(pageSelected)
@@ -102,14 +93,12 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
   const deleteParticipants = async () => {
     for (let i = 0; i < selected.length; i++) {
-      /*
       const result = await ParticipantService.deleteParticipant(
         studyId,
         token!,
         selected[i],
         ['test_user'],
       )
-      */
     }
   }
 
@@ -117,7 +106,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     <Paper style={{ height: '600px' }}>
       <Button onClick={() => makeTestGroup()}>Make test group</Button>
       <Button onClick={() => deleteParticipants()}>Delete</Button>
-      <div style={{ display: 'flex', height: '95%' }}>
+      <div style={{ display: 'flex', height: '94%' }}>
         <div style={{ flexGrow: 1 }}>
           <DataGrid
             rows={rows}

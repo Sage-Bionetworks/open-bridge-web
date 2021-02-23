@@ -76,7 +76,6 @@ async function getParticipants(
   /*const mappedResult = result.data.items.map(item => {
     return { ...item, studyExternalId: item.externalIds[studyIdentifier] }
   })*/
-  console.log('data retrieved', result)
   return { items: result.data.items, total: result.data.total }
 }
 
