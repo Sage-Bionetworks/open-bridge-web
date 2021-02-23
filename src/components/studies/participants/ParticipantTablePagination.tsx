@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: theme.spacing(0, 2.25),
+    paddingRight: theme.spacing(2.25),
     marginTop: theme.spacing(0.5),
   },
   partitipantNumberText: {
