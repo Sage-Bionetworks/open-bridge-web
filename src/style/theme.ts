@@ -147,6 +147,7 @@ const theme: Theme = createMuiTheme({
     },
     secondary: {
       main: '#6e818a',
+      contrastText: '#E7BDBD' //pale red
     },
     primary: {
       main: '#2196f3',

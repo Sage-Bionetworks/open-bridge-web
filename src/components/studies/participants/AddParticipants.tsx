@@ -22,6 +22,7 @@ import { poppinsFont, theme } from '../../../style/theme'
 import { EnrollmentType, Study } from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import TabPanel from '../../widgets/TabPanel'
+import AddGeneratedParticipant from './AddGeneratedParticipant'
 import AddSingleParticipant, {
   addParticipantById,
   addParticipantByPhone
@@ -30,6 +31,19 @@ import ImportParticipantsInstructions from './ImportParticipantsInstuctions'
 
 const useStyles = makeStyles(theme => ({
   root: {},
+  tab: {
+    borderBottomWidth: theme.spacing(0.5),
+    borderBottomColor: theme.palette.background.default,
+    borderBottomStyle: 'solid',
+    [theme.breakpoints.down('lg')]: {
+      minWidth: `110px`,
+    },
+  },
+
+  tabIndicator: {
+    backgroundColor: theme.palette.secondary.contrastText,
+    height: theme.spacing(0.5),
+  },
 
   dialogTitle: {
     display: 'flex',
@@ -90,6 +104,7 @@ type AddParticipantsProps = {
   token: string
   study: Study
   enrollmentType: 'PHONE' | 'ID'
+  isGenerateIds?: boolean
   onAdded: Function
 }
 
@@ -139,6 +154,7 @@ async function uploadCsvRow(
 
 const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
   enrollmentType,
+  isGenerateIds,
   onAdded,
   study,
   token,
@@ -200,7 +216,6 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       }
     }
     setIsCsvProcessed(true)
-
   }
 
   const handleOnError = (err: any, file: any, inputElem: any, reason: any) => {
@@ -251,13 +266,19 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
               {isCsvUploaded && (
                 <div style={{ height: '100%', padding: '70px 60px' }}>
                   {!isCsvProcessed && (
-                    <> Uploading
+                    <>
+                      {' '}
+                      Uploading
                       <LinearProgress variant="determinate" value={progress} />
                     </>
                   )}
-                  {isCsvProcessed &&  <span>{importError.length > 0 ? 'Completed with errors below': 'Success'}</span>}
-
-           
+                  {isCsvProcessed && (
+                    <span>
+                      {importError.length > 0
+                        ? 'Completed with errors below'
+                        : 'Success'}
+                    </span>
+                  )}
                 </div>
               )}
             </div>
@@ -274,59 +295,89 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
         </DialogContent>
         <DialogActions>
           <Button
-          disabled={isCsvUploaded}
+            disabled={isCsvUploaded}
             onClick={() => setIsOpenUpload(false)}
             color="secondary"
             variant="outlined"
           >
             Cancel
           </Button>
-         {isCsvProcessed &&  <Button
-            onClick={() => {
-              onAdded()
-             setIsOpenUpload(false)
-
-            }}
-            color="primary"
-            variant="contained"
-          >
-            &nbsp;Done
-          </Button>}
-        </DialogActions>
-      </Dialog>
-
-      <Paper square style={{ whiteSpace: 'break-spaces' }}>
-        <Tabs
-          value={tab}
-          onChange={handleTabChange}
-          aria-label="simple tabs example"
-        >
-          <Tab label="Upload .csv " />
-          <Tab label="Enter details" />
-        </Tabs>
-
-        <TabPanel value={tab} index={0}>
-          <ImportParticipantsInstructions enrollmentType={enrollmentType}>
+          {isCsvProcessed && (
             <Button
               onClick={() => {
-                setIsCsvUploaded(false)
-                setIsOpenUpload(true)
+                onAdded()
+                setIsOpenUpload(false)
               }}
               color="primary"
               variant="contained"
             >
-              Upload CSV File
+              &nbsp;Done
             </Button>
-          </ImportParticipantsInstructions>
-        </TabPanel>
-        <TabPanel value={tab} index={1}>
-          <AddSingleParticipant
-            enrollmentType={enrollmentType}
-            token={token}
-            studyIdentifier={study.identifier}
-            onAdded={() => onAdded()}
-          ></AddSingleParticipant>
-        </TabPanel>
+          )}
+        </DialogActions>
+      </Dialog>
+
+      <Paper square style={{ whiteSpace: 'break-spaces' }}>
+        {!isGenerateIds && (
+          <>
+            <Tabs
+              value={tab}
+              variant="fullWidth"
+              onChange={handleTabChange}
+              aria-label="add participant tabs"
+              classes={{
+                indicator: classes.tabIndicator,
+              }}
+            >
+              <Tab label="Upload .csv " className={classes.tab} />
+              <Tab label="Enter details" className={classes.tab} />
+            </Tabs>
+
+            <TabPanel value={tab} index={0}>
+              <ImportParticipantsInstructions enrollmentType={enrollmentType}>
+                <Button
+                  onClick={() => {
+                    setIsCsvUploaded(false)
+                    setIsOpenUpload(true)
+                  }}
+                  color="primary"
+                  variant="contained"
+                >
+                  Upload CSV File
+                </Button>
+              </ImportParticipantsInstructions>
+            </TabPanel>
+            <TabPanel value={tab} index={1}>
+              <AddSingleParticipant
+                enrollmentType={enrollmentType}
+                token={token}
+                studyIdentifier={study.identifier}
+                onAdded={() => onAdded()}
+              ></AddSingleParticipant>
+            </TabPanel>
+          </>
+        )}
+        {isGenerateIds && (
+          <>
+            <Box
+              height="50px"
+              lineHeight="50px"
+              textAlign="center"
+              fontSize="12px"
+              fontWeight="500"
+              borderBottom={`4px solid ${theme.palette.secondary.contrastText}`}
+            >
+              Generate IDs
+            </Box>
+            <Box p={2}>
+              <AddGeneratedParticipant
+                token={token}
+                studyIdentifier={study.identifier}
+                onAdded={() => onAdded()}
+              ></AddGeneratedParticipant>
+            </Box>
+          </>
+        )}
       </Paper>
     </>
   )

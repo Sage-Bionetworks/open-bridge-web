@@ -17,6 +17,16 @@
       "version": 1
     },
     {
+      "identifier": "alina_test_study_2",
+      "name": "Alina Testing Study 2",
+  
+      "description": "Exists for real",
+      "status": "DRAFT",
+      "version": 1
+    },
+
+   
+    {
       "identifier": "5476c92c2",
       "name": "anotherStudy2",
       "description": "loremIpsum dolor",
