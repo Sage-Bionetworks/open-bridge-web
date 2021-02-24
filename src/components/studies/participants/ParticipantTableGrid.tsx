@@ -9,11 +9,12 @@ import {
 import ParticipantTablePagination from './ParticipantTablePagination'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import ParticipantService from '../../../services/participants.service'
+import { latoFont } from '../../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   root: {},
   showEntryText: {
-    fontFamily: 'Lato',
+    fontFamily: latoFont,
     fontSize: '15px',
     marginRight: theme.spacing(1),
   },
@@ -27,6 +28,7 @@ export type ParticipantTableGridProps = {
   setCurrentPage: Function
   pageSize: number
   setPageSize: Function
+  isPhoneEnrollmentType: boolean
 }
 
 const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
@@ -37,6 +39,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   setPageSize,
   currentPage,
   setCurrentPage,
+  isPhoneEnrollmentType,
 }: ParticipantTableGridProps) => {
   const { token } = useUserSessionDataState()
 
@@ -61,7 +64,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
       setCurrentPage(1)
     }
   }
-
   const columns: ColDef[] = [
     {
       field: 'externalId',
@@ -73,6 +75,14 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     { field: 'status', headerName: 'Status', flex: 1 },
     { field: 'notes', headerName: 'Notes', flex: 1 },
   ]
+  if (isPhoneEnrollmentType) {
+    columns.splice(2, 0, {
+      field: 'phone',
+      headerName: 'Phone Number',
+      flex: 1,
+      valueGetter: getPhone,
+    })
+  }
 
   function getPhone(params: ValueGetterParams) {
     if (params.value) {

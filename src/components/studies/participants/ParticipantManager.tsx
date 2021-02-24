@@ -230,7 +230,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     const result = participantData.map(record => {
       return {
         healthCode: record.id,
-        clinicVisit: '2/14/2020',
+        clinicVisit: '',
         status: record.status,
         referenceId: record.studyExternalId,
         notes: '--',
@@ -386,7 +386,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               {!isEdit && (
                 <div className={classes.inputRow}>
                   <Button className={classes.topButtons}>
-                    <img src={LinkIcon} className={classes.buttonImage}></img>
+                    <img
+                      src={LinkIcon}
+                      className={classes.buttonImage}
+                      alt="link-icon"
+                    ></img>
                     App Download Link
                   </Button>
                 </div>
@@ -409,6 +413,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       <img
                         src={BlackXIcon}
                         className={classes.blackXIcon}
+                        alt="black-x-icon"
                       ></img>
                     </Button>
                   )}
@@ -416,7 +421,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     className={classes.searchIconContainer}
                     onClick={handleSearchParticipantRequest}
                   >
-                    <img src={WhiteSearchIcon}></img>
+                    <img src={WhiteSearchIcon} alt="white-search-icon"></img>
                   </Button>
                 </div>
               ) : (
@@ -426,7 +431,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     setIsSearchingForParticipant(true)
                   }}
                 >
-                  <img src={SearchIcon} className={classes.buttonImage}></img>
+                  <img
+                    src={SearchIcon}
+                    className={classes.buttonImage}
+                    alt="seach-icon"
+                  ></img>
                   Find Participant
                 </Button>
               )}
@@ -456,12 +465,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               {status === 'RESOLVED' && (
                 <ParticipantTableGrid
                   rows={participantData || []}
-                  studyId={'mtb-user-testing'}
+                  studyId={study.identifier}
                   totalParticipants={totalParticipants}
                   currentPage={currentPage}
                   setCurrentPage={setCurrentPage}
                   pageSize={pageSize}
                   setPageSize={setPageSize}
+                  isPhoneEnrollmentType={
+                    study.options?.enrollmentType === 'PHONE'
+                  }
                 ></ParticipantTableGrid>
               )}
             </Box>

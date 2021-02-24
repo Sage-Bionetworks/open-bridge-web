@@ -13,23 +13,34 @@ const useStyles = makeStyles(theme => ({
     minWidth: '0px',
     borderRadius: '0px',
   },
+  withBlackBorder: {
+    border: `1px solid black`,
+  },
+  withGrayBorder: {
+    border: `1px solid ${theme.palette.background.default}`,
+  },
 }))
 
-const PageBox: React.FC<{
+type PageBoxProps = {
   isSelected: boolean
   pageNumber: number
   onPageSelected: Function
-}> = props => {
+}
+
+const PageBox: React.FunctionComponent<PageBoxProps> = ({
+  isSelected,
+  pageNumber,
+  onPageSelected,
+}) => {
   const classes = useStyles()
   return (
     <Button
-      className={classes.pageBoxSurrounding}
-      style={{
-        border: `1px solid ${props.isSelected ? 'black' : '#E5E5E5'}`,
-      }}
-      onClick={() => props.onPageSelected(props.pageNumber)}
+      className={`${classes.pageBoxSurrounding} ${
+        isSelected ? classes.withBlackBorder : classes.withGrayBorder
+      }`}
+      onClick={() => onPageSelected(pageNumber)}
     >
-      {props.pageNumber}
+      {pageNumber}
     </Button>
   )
 }

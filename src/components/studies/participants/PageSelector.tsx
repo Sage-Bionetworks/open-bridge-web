@@ -26,25 +26,33 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const PageSelector: React.FC<{
+type PageSelectorProps = {
   onPageSelected: Function
   currentPageSelected: number
   numberOfPages: number
   handlePageNavigationArrowPressed: Function
-}> = props => {
+}
+
+const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
+  onPageSelected,
+  currentPageSelected,
+  numberOfPages,
+  handlePageNavigationArrowPressed,
+}) => {
   const classes = useStyles()
   const pageNumbers = []
-  for (let i = 1; i <= props.numberOfPages; i++) {
+  for (let i = 1; i <= numberOfPages; i++) {
     pageNumbers.push(i)
   }
 
-  const rotateAndDisableBackIcons = props.currentPageSelected == 1
+  const rotateAndDisableBackIcons = currentPageSelected === 1
   const rotateAndDisableForwardIcons =
-    props.currentPageSelected == props.numberOfPages || props.numberOfPages == 0
+    currentPageSelected === numberOfPages || numberOfPages === 0
+
   return (
     <div className={classes.container}>
       <Button
-        onClick={() => props.handlePageNavigationArrowPressed('BB')}
+        onClick={() => handlePageNavigationArrowPressed('BB')}
         classes={{ root: classes.button }}
         disabled={rotateAndDisableBackIcons}
       >
@@ -60,7 +68,7 @@ const PageSelector: React.FC<{
         ></img>
       </Button>
       <Button
-        onClick={() => props.handlePageNavigationArrowPressed('B')}
+        onClick={() => handlePageNavigationArrowPressed('B')}
         classes={{ root: classes.button }}
         disabled={rotateAndDisableBackIcons}
       >
@@ -74,19 +82,17 @@ const PageSelector: React.FC<{
         ></img>
       </Button>
 
-      {pageNumbers.map((element, index) => {
-        return (
-          <PageBox
-            key={index}
-            isSelected={element == props.currentPageSelected}
-            pageNumber={element}
-            onPageSelected={props.onPageSelected}
-          />
-        )
-      })}
+      {pageNumbers.map((element, index) => (
+        <PageBox
+          key={index}
+          isSelected={element == currentPageSelected}
+          pageNumber={element}
+          onPageSelected={onPageSelected}
+        />
+      ))}
 
       <Button
-        onClick={() => props.handlePageNavigationArrowPressed('F')}
+        onClick={() => handlePageNavigationArrowPressed('F')}
         classes={{ root: classes.button }}
         disabled={rotateAndDisableForwardIcons}
       >
@@ -100,7 +106,7 @@ const PageSelector: React.FC<{
         ></img>
       </Button>
       <Button
-        onClick={() => props.handlePageNavigationArrowPressed('FF')}
+        onClick={() => handlePageNavigationArrowPressed('FF')}
         classes={{ root: classes.button }}
         disabled={rotateAndDisableForwardIcons}
       >

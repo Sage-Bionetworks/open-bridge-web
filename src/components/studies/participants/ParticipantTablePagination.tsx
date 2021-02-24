@@ -2,6 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { MenuItem, TextField } from '@material-ui/core'
 import PageSelector from './PageSelector'
+// import lato
 
 const useStyles = makeStyles(theme => ({
   footerWrapper: {
@@ -37,7 +38,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const ParticipantTablePagination: React.FC<{
+type ParticpantTablePaginationProps = {
   totalParticipants: number
   onPageSelectedChanged: Function
   currentPage: number
@@ -45,7 +46,17 @@ const ParticipantTablePagination: React.FC<{
   setPageSize: Function
   numberOfPages: number
   handlePageNavigationArrowPressed: Function
-}> = props => {
+}
+
+const ParticipantTablePagination: React.FC<ParticpantTablePaginationProps> = ({
+  totalParticipants,
+  onPageSelectedChanged,
+  currentPage,
+  pageSize,
+  setPageSize,
+  numberOfPages,
+  handlePageNavigationArrowPressed,
+}) => {
   const classes = useStyles()
 
   const pageSizes = [
@@ -63,31 +74,29 @@ const ParticipantTablePagination: React.FC<{
     },
   ]
 
-  let participantsShown = props.pageSize * props.currentPage
+  let participantsShown = pageSize * currentPage
   return (
     <div className={classes.footerWrapper}>
       <div className={classes.partitipantNumberText}>{`${
-        participantsShown > props.totalParticipants
-          ? props.totalParticipants
+        participantsShown > totalParticipants
+          ? totalParticipants
           : participantsShown
-      }/${props.totalParticipants} participants`}</div>
+      }/${totalParticipants} participants`}</div>
       <PageSelector
-        onPageSelected={props.onPageSelectedChanged}
-        currentPageSelected={props.currentPage}
-        numberOfPages={props.numberOfPages}
-        handlePageNavigationArrowPressed={
-          props.handlePageNavigationArrowPressed
-        }
+        onPageSelected={onPageSelectedChanged}
+        currentPageSelected={currentPage}
+        numberOfPages={numberOfPages}
+        handlePageNavigationArrowPressed={handlePageNavigationArrowPressed}
       />
       <div className={classes.pageSizeSelectorContainer}>
         <div className={classes.showEntryText}>{'show entries: '}</div>
         <TextField
           id="standard-select-currency"
           select
-          value={props.pageSize}
+          value={pageSize}
           onChange={event => {
-            props.onPageSelectedChanged(1)
-            props.setPageSize(event.target.value)
+            onPageSelectedChanged(1)
+            setPageSize(event.target.value)
           }}
           classes={{
             root: classes.rootStyles,

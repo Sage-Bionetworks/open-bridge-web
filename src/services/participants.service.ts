@@ -90,7 +90,7 @@ async function getParticipantWithId(
   )
   try {
     const result = await callEndpoint<ParticipantAccountSummary>(
-      endpoint + '/' + partipantID,
+      `${endpoint}/${partipantID}`,
       'GET',
       {},
       token,
@@ -98,7 +98,10 @@ async function getParticipantWithId(
     return result.data
   } catch (e) {
     // If the participant is not found, return null.
-    return null
+    if (e.statusCode === 404) {
+      return null
+    }
+    throw new Error(e)
   }
 }
 
