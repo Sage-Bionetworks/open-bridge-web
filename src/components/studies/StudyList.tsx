@@ -187,6 +187,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     const newStudy: Study = {
       identifier: getRandomId(),
       version: 1,
+      clientData:{},
       status: 'DRAFT' as StudyStatus,
       name: 'Untitled Study',
     }

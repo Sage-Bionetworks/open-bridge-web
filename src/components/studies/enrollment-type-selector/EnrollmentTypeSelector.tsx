@@ -30,21 +30,21 @@ const EnrollmentTypeSelector: React.FunctionComponent<
 }: EnrollmentTypeSelectorProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
 
-  const updateStudy = (options: {
+  const updateStudy = (clientData: {
     enrollmentType?: EnrollmentType
     isGenerateIds?: boolean
   }) => {
-    let studyOptions = study.options || {}
-    if (options.enrollmentType !== undefined) {
-      studyOptions.enrollmentType = options.enrollmentType
-      if(options.enrollmentType === 'PHONE') {
-        options.isGenerateIds = undefined
+    let studyClientData = study.clientData || {}
+    if (clientData.enrollmentType !== undefined) {
+      studyClientData.enrollmentType = clientData.enrollmentType
+      if(clientData.enrollmentType === 'PHONE') {
+        clientData.isGenerateIds = undefined
       }
     }
-    if (options.isGenerateIds !== undefined) {
-      studyOptions.generateIds = options.isGenerateIds
+    if (clientData.isGenerateIds !== undefined) {
+      studyClientData.generateIds = clientData.isGenerateIds
     }
-    onUpdate({ ...study, options: studyOptions })
+    onUpdate({ ...study, clientData: studyClientData })
   }
 
   return (
@@ -53,7 +53,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<
         <Box px={3} py={2}>
           Enroll By: PHONE
           <Switch
-            checked={study.options?.enrollmentType === 'ID'}
+            checked={study.clientData.enrollmentType === 'ID'}
             classes={{ root: classes.switchRoot }}
             onChange={e =>
               e.target.checked
@@ -63,11 +63,11 @@ const EnrollmentTypeSelector: React.FunctionComponent<
             name="enrolment"
           />
           ID
-          {study.options?.enrollmentType === 'ID' && (
+          {study.clientData.enrollmentType === 'ID' && (
             <>
               &nbsp; &nbsp; &nbsp; Generate Ids:
               <Switch
-                checked={study.options.generateIds || false}
+                checked={study.clientData.generateIds || false}
                 classes={{ root: classes.switchRoot }}
                 onChange={e => updateStudy({ isGenerateIds: e.target.checked })}
                 name="enrolment"

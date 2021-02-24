@@ -153,10 +153,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         saveFn = saveStudySessions
         break
       }
-      case 'enrollment-type-selector': {
-        saveFn = saveStudy
-        break
-      }
+    
 
       default: {
       }
@@ -298,6 +295,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                             ...builderInfo,
                             study,
                           })
+                          saveStudy(study)
                         }}
                       >
                         {navButtons}

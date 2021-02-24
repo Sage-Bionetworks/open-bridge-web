@@ -9,6 +9,7 @@ async function getStudies() {
   if (!studies) {
     const mocks = MOCKS.STUDIES.map(s => ({
       ...s,
+      clientData: s.clientData || {},
       status: s.status as StudyStatus,
     }))
     studies = await setItem<Study[]>(KEYS.STUDIES, mocks)

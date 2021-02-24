@@ -103,7 +103,7 @@ export type Study = {
   subtitle?: string
   description?: string
   studyDuration?: StudyDuration
-  options?: {
+  clientData: {
     enrollmentType?: EnrollmentType
     generateIds?: boolean
   }

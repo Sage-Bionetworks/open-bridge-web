@@ -83,7 +83,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   })
 
   const updateEnrollment = async (type: EnrollmentType) => {
-    study.options = { ...study.options, enrollmentType: type }
+    study.clientData = { ...study.clientData, enrollmentType: type }
 
     const updatedStudy = await StudyService.updateStudy(study, token!)
     studyDataUpdateFn({ type: 'SET_STUDY', payload: { study: study } })
@@ -163,7 +163,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         </Box>
 
         <>
-          {study.options?.enrollmentType}
+          {study.clientData.enrollmentType}
           <Box px={3} py={2}>
             Enroll By: PHONE
             <Switch
@@ -226,7 +226,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 token={token!}
                 isGenerateIds={isGenerateIds}
                 enrollmentType={
-                  /*study.options.enrollmentType*/ temporaryEnrollmentType as EnrollmentType
+                  /*study.clientData.enrollmentType*/ temporaryEnrollmentType as EnrollmentType
                 }
                 onAdded={() => {
                   setRefreshParticipantsToggle(prev => !prev)
