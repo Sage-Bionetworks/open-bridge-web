@@ -48,7 +48,7 @@ type ParticpantTablePaginationProps = {
   handlePageNavigationArrowPressed: Function
 }
 
-const ParticipantTablePagination: React.FC<ParticpantTablePaginationProps> = ({
+const ParticipantTablePagination: React.FunctionComponent<ParticpantTablePaginationProps> = ({
   totalParticipants,
   onPageSelectedChanged,
   currentPage,
