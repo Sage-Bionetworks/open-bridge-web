@@ -4,6 +4,8 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps } from 'react-router-dom'
+import { ReactComponent as ExpandIcon } from '../../../assets/add_participants.svg'
+import { ReactComponent as CollapseIcon } from '../../../assets/collapse.svg'
 import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
@@ -13,6 +15,7 @@ import {
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
 import StudyService from '../../../services/study.service'
+import { theme } from '../../../style/theme'
 import {
   EnrollmentType,
   ParticipantAccountSummary,
@@ -219,6 +222,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             isFullWidth={true}
             isHideContentOnClose={true}
             isDrawerHidden={!isEdit}
+            collapseButton={<CollapseIcon/>}
+            expandButton = {<ExpandIcon style={{marginLeft: '-3px', marginTop: '8px'}}/>}
+            toggleButtonStyle={{display: 'block', padding: '0', backgroundColor: theme.palette.primary.dark}}
+          
           >
             <>
               <AddParticipants
