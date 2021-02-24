@@ -13,11 +13,12 @@ import {
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
 import { Schedule, StudyDuration, StudySession } from '../../types/scheduling'
-import { StringDictionary } from '../../types/types'
+import { StringDictionary, Study } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
 import AppDesign from './app-design/AppDesign'
+import EnrollmentTypeSelector from './enrollment-type-selector/EnrollmentTypeSelector'
 import Launch from './launch/Launch'
 import NavButtons from './NavButtons'
 import PassiveFeatures from './passive-features/PassiveFeatures'
@@ -26,7 +27,7 @@ import { StudySection } from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
 
-const subtitles: StringDictionary<string>= {
+const subtitles: StringDictionary<string> = {
   description: 'Description',
   'team-settings': 'Team Settings',
 
@@ -104,6 +105,18 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     return
   }
 
+  const saveStudy = async (study?: Study) => {
+    setSaveLoader(true)
+    let _study = study || builderInfo.study
+    await StudyService.updateStudy(
+      _study,
+      token!,
+    )
+    setHasObjectChanged(false)
+    setSaveLoader(false)
+    return
+  }
+
   const saveSchedulerData = async () => {
     setSaveLoader(true)
     if (!builderInfo.schedule || !builderInfo.study || !token) {
@@ -140,6 +153,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         saveFn = saveStudySessions
         break
       }
+    
+
       default: {
       }
     }
@@ -169,8 +184,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
   return (
     <>
-      <Box bgcolor="white" pt={9} pb={2} pl={open? 29: 15}>
-      <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1></Box>
+      <Box bgcolor="white" pt={9} pb={2} pl={open ? 29 : 15}>
+        <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>
+      </Box>
       <span style={{ fontSize: '9px', position: 'absolute', right: '0' }}>
         {' '}
         {hasObjectChanged ? 'object changed' : 'no change'}
@@ -265,6 +281,25 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       >
                         {navButtons}
                       </SessionCreator>
+                    )}
+
+                    {section === 'enrollment-type-selector' && (
+                      <EnrollmentTypeSelector
+                        hasObjectChanged={hasObjectChanged}
+                        saveLoader={saveLoader}
+                        study={builderInfo.study}
+                        onUpdate={(study: Study) => {
+                          //console.log(_section)
+                          setHasObjectChanged(true)
+                          setData({
+                            ...builderInfo,
+                            study,
+                          })
+                          saveStudy(study)
+                        }}
+                      >
+                        {navButtons}
+                      </EnrollmentTypeSelector>
                     )}
 
                     {section === 'branding' && (

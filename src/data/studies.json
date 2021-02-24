@@ -6,7 +6,8 @@
       "description": "loremIpsum",
       "status": "DRAFT",
       "version": 1,
-      "studyDuration": "P3M"
+      "studyDuration": "P3M",
+      "clientData": {}
     },
     {
       "identifier": "kkynty35udejidtdp8h",
@@ -14,7 +15,8 @@
   
       "description": "Exists for real",
       "status": "DRAFT",
-      "version": 1
+      "version": 1,
+      "clientData": {}
     },
     {
       "identifier": "alina_test_study_2",
@@ -22,7 +24,8 @@
   
       "description": "Exists for real",
       "status": "DRAFT",
-      "version": 1
+      "version": 1,
+      "clientData": {}
     },
 
    
@@ -31,21 +34,24 @@
       "name": "anotherStudy2",
       "description": "loremIpsum dolor",
       "version": 1,
-      "status": "ACTIVE"
+      "status": "ACTIVE",
+      "clientData": {}
     },
     {
       "identifier": "5476c92c3",
       "name": "anotherStudy3",
       "description": "loremIpsum dolor",
       "status": "ACTIVE",
-      "version": 1
+      "version": 1,
+      "clientData": {}
     },
     {
       "identifier": "5476c92c4",
       "name": "anotherStudy4",
       "description": "loremIpsum dolor",
       "version": 1,
-      "status": "COMPLETED"
+      "status": "COMPLETED",
+      "clientData": {}
     }
   ]
 }

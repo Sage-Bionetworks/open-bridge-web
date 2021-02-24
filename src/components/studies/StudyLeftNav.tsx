@@ -97,6 +97,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
     CustomizeAppIcon,
     CreateSessionIcon,
     ScheduleSesssionsIcon,
+    CreateSessionIcon,
     PassiveFeaturesIcon,
     PreviewStudyIcon,
     LaunchStudyIcon,
