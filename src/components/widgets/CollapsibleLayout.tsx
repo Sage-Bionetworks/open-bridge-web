@@ -94,6 +94,9 @@ type CollapsibleLayoutProps = {
   isFullHeight?: boolean
   children: React.ReactNode[]
   isDrawerHidden?: boolean
+  collapseButton?: JSX.Element
+  expandButton?: JSX.Element
+  toggleButtonStyle?: React.CSSProperties
 }
 
 const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
@@ -104,6 +107,9 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
   children,
   isHideContentOnClose,
   isDrawerHidden,
+  collapseButton, 
+  expandButton,
+  toggleButtonStyle
 }) => {
   const styleProps: StyleProps = {
     maxWidth: expandedWidth + 'px',
@@ -113,6 +119,9 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
   }
   const classes = useStyles(styleProps)
   const [isOpen, setIsOpen] = React.useState(false)
+  const closeIcon = collapseButton|| <ChevronLeftIcon />
+  const openIcon = expandButton|| <ChevronRightIcon />
+  const toggleStyle: React.CSSProperties = toggleButtonStyle || { borderRadius: 0, width: '48px', height: '100%' }
 
   return (
     <>
@@ -136,10 +145,11 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
             {children.length === 3 && isOpen && children[2]}
             <IconButton
               onClick={() => setIsOpen(prev => !prev)}
-              style={{ borderRadius: 0, width: '48px', height: '100%' }}
+              style={toggleStyle}
             >
-              {isOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+              {isOpen ? closeIcon : openIcon}
             </IconButton>
+
           </Box>
           {children[0]}
         </Drawer>

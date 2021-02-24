@@ -2,7 +2,6 @@
 
 import {
   Box,
-  Button,
   CircularProgress,
   FormControl,
   FormGroup,
@@ -19,6 +18,7 @@ import ParticipantService, {
 import { Phone } from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import {
+  BlueButton,
   SimpleTextInput,
   SimpleTextLabel
 } from '../../widgets/StyledComponents'
@@ -210,14 +210,14 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
       </FormGroup>
 
       <Box textAlign="center" my={2}>
-        <Button
+        <BlueButton
           color="primary"
           variant="contained"
           disabled={isAddDisabled()}
           onClick={() => addSingleParticipant(participant, phoneNumber)}
         >
           +Add to study
-        </Button>
+        </BlueButton>
       </Box>
     </>
   )
