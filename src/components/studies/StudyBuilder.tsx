@@ -33,6 +33,7 @@ const subtitles: StringDictionary<string> = {
 
   scheduler: 'Schedule Sessions',
   'session-creator': 'Create Sessions',
+  'enrollment-type-selector ': 'Participant Study Enrollment'
 }
 
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -153,6 +154,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         saveFn = saveStudySessions
         break
       }
+      /*case 'enrollment-type-selector': {
+        saveFn = saveStudy
+        break
+      }*/
+
+     
     
 
       default: {
@@ -206,7 +213,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           <Box
             className={clsx(classes.mainArea, {
               [classes.mainAreaNormal]: open,
-              [classes.mainAreaWider]: open && section === 'scheduler',
+              [classes.mainAreaWider]: open && (['scheduler', 'enrollment-type-selector'].includes(section)),
               [classes.mainAreaWide]: !open,
             })}
           >
@@ -296,6 +303,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                             study,
                           })
                           saveStudy(study)
+
+                        
                         }}
                       >
                         {navButtons}
