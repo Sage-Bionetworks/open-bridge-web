@@ -46,7 +46,7 @@ const AddGeneratedParticipant: FunctionComponent<AddGeneratedParticipantProps> =
     for (let i = 0; i < numberToEnroll; i++) {
       const id = `${generateNonambiguousCode(6)}-${studyPrefix}`
       try {
-        const add = await ParticipantService.addParticipant(
+        await ParticipantService.addParticipant(
           studyIdentifier,
           token,
           { externalId: id },

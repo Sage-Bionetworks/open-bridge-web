@@ -4,14 +4,14 @@ import {
   FormControlLabel,
   Paper,
   Radio,
-  RadioGroup,
-  Switch
+  RadioGroup
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import CheckIcon from '@material-ui/icons/Check'
 import clsx from 'clsx'
 import React from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { ThemeType } from '../../../style/theme'
+import { latoFont, poppinsFont, ThemeType } from '../../../style/theme'
 import {
   EnrollmentType,
   Study,
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   additionalInfo: {
     borderTop: '1px solid rgb(0, 0, 0)',
-    marginTop: '32px',
+    marginTop: theme.spacing(2),
     marginLeft: '-10px',
     marginRight: '-10px',
     padding: '0 10px',
@@ -54,31 +54,43 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     },
     '& tr:last-child td': {
       borderBottom: 'none',
-      padding: '20px',
     },
   },
   column: {
     marginTop: '-185px',
     marginRight: '10px',
-    paddingBottom: '8px',
+
     width: theme.spacing(32),
     '&$firstColumn': {
       background: 'none',
       boxShadow: 'none',
       textAlign: 'left',
       paddingLeft: '10px',
-      '& table td': { textAlign: 'left' },
+      '& table th': {
+        fontFamily: latoFont,
+        fontSize: '16px',
+        fontWeight: 700,
+      },
+      '& table td': {
+        textAlign: 'left',
+        fontFamily: poppinsFont,
+        fontSize: '12px',
+        lineHeight: '18px',
+      },
     },
-  },
-
-  header1: {
-    backgroundColor: 'white',
-    verticalAlign: 'top',
-    padding: 0,
   },
 
   firstColumn: {},
   notFirstColumn: {
+    '& table th > span ': {
+      padding: theme.spacing(0, 6),
+      textAlign: 'center',
+      display: 'block',
+      fontFamily: poppinsFont,
+      fontSize: '14px',
+      fontWeight: 700,
+      lineHeight: '21px',
+    },
     '&:hover ': {
       border: '10px solid #CBDEE9',
       cursor: 'pointer',
@@ -86,6 +98,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       '& > div': {
         marginTop: '-10px',
       },
+    
     },
   },
   selectedColumn: {
@@ -98,6 +111,18 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     },
   },
 }))
+
+const ROW_HEADINGS = [
+  'Anonymous enrollment',
+  'Participant receives SMS with link to download app',
+  'Allows participant to enroll in multiple studies',
+  'More secure method of verification',
+  'Does not require PHI IRB approval',
+]
+
+const PHONE_SELECTIONS = [false, true, true, true, false]
+
+const ID_SELECTIONS = [true, false, false, false, true]
 
 export interface EnrollmentTypeSelectorProps {
   study: Study
@@ -131,214 +156,179 @@ const EnrollmentTypeSelector: React.FunctionComponent<
     onUpdate({ ...study, clientData: studyClientData })
   }
 
-  return (<>
-       <NavigationPrompt when={hasObjectChanged}>
-          {({ onConfirm, onCancel }) => (
-            <ConfirmationDialog
-              isOpen={hasObjectChanged}
-              type={'NAVIGATE'}
-              onCancel={onCancel}
-              onConfirm={onConfirm}
-            />
-          )}
-        </NavigationPrompt>
-        
-    <Box pt={9} pr={11} pb={11} pl={14} bgcolor="#FAFAFA">
-      <MTBHeadingH1>
-        {' '}
-        How will you enroll your participants into this study?{' '}
-      </MTBHeadingH1>
+  return (
+    <>
+      <NavigationPrompt when={hasObjectChanged}>
+        {({ onConfirm, onCancel }) => (
+          <ConfirmationDialog
+            isOpen={hasObjectChanged}
+            type={'NAVIGATE'}
+            onCancel={onCancel}
+            onConfirm={onConfirm}
+          />
+        )}
+      </NavigationPrompt>
 
-      <Box display="flex" mt={4} className={classes.container}>
-        <Paper
-          className={clsx(classes.column, classes.firstColumn)}
-          elevation={2}
-        >
-          <div>
-            <table width="100%" className={classes.table}>
-              <thead>
-                <tr>
-                  <th>Select enrollment type:</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Anonymous enrollment</td>
-                </tr>
-                <tr>
-                  <td>Participant receives SMS with link to download app</td>
-                </tr>
-                <tr>
-                  <td>Allows participant to enroll in multiple studies</td>
-                </tr>
-                <tr>
-                  <td>More secure method of verification</td>
-                </tr>
-                <tr>
-                  <td>Does not require PHI IRB approval</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </Paper>
-        <Paper
-          className={clsx(
-            classes.column,
-            classes.notFirstColumn,
-            study.clientData.enrollmentType === 'PHONE' &&
-              classes.selectedColumn,
-          )}
-          elevation={2}
-          onClick={() => updateStudy({ enrollmentType: 'PHONE' })}
-        >
-          <div>
-            <table width="100%" className={classes.table}>
-              <thead>
-                <tr>
-                  <th>
-                    {' '}
-                    <span>ENROLL WITH PHONE NUMBERS</span>
-                    <Box
-                      className={classes.additionalInfo}
-                      style={{ textAlign: 'left' }}
-                      hidden={study.clientData.enrollmentType !== 'PHONE'}
-                    >
-                      <FormControlLabel
-                      style={{marginTop: "16px", alignItems: "start"}}
-                      labelPlacement="end"
-                      
-                        control={
-                          <Checkbox
-                          style={{paddingTop: "3px"}}
-                            checked={study.clientData.enrollmentType === 'ID'}
-                            onChange={e =>
-                              e.target.checked
-                                ? updateStudy({ enrollmentType: 'ID' })
-                                : updateStudy({ enrollmentType: 'PHONE' })
-                            }
-                          />
-                        }
-                        label=" I confirm that I have participant consent to add their
-            numbers."
-                      />
-                    </Box>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td>x</td>
-                </tr>
-                <tr>
-                  <td>x</td>
-                </tr>
-                <tr>
-                  <td>x</td>
-                </tr>
-                <tr>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>{' '}
-        </Paper>
+      <Box pt={9} pr={11} pb={11} pl={14} bgcolor="#FAFAFA">
+        <MTBHeadingH1>
+          {' '}
+          How will you enroll your participants into this study?{' '}
+        </MTBHeadingH1>
 
-        <Paper
-          className={clsx(
-            classes.column,
-            classes.notFirstColumn,
-            study.clientData.enrollmentType === 'ID' && classes.selectedColumn,
-          )}
-          onClick={() => updateStudy({ enrollmentType: 'ID' })}
-        >
-          <div>
-            <table width="100%" className={classes.table}>
-              <thead>
-                <tr>
-                  <th style={{ height: '186px' }}>
-                    {' '}
-                    <span>ENROLL WITH PARTICIPANT CODE</span>
-                    <Box
-                      className={classes.additionalInfo}
-                      style={{ textAlign: 'left' }}
-                      hidden={study.clientData.enrollmentType !== 'ID'}
-                    >
-                      <RadioGroup
-                        aria-label="How to generate Id"
-                        name="generateIds"
-                        style={{ marginTop: '5px' }}
-                        value={study.clientData.generateIds}
-                        onChange={e =>
-                          updateStudy({
-                            isGenerateIds: Boolean(e.target.value),
-                          })
-                        }
+        <Box display="flex" mt={4} className={classes.container}>
+          <Paper
+            className={clsx(classes.column, classes.firstColumn)}
+            elevation={2}
+          >
+            <div>
+              <table width="100%" className={classes.table}>
+                <thead>
+                  <tr>
+                    <th>Select enrollment type:</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ROW_HEADINGS.map(item => (
+                    <tr key={item}>
+                      <td>{item}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Paper>
+          <Paper
+            className={clsx(
+              classes.column,
+              classes.notFirstColumn,
+              study.clientData.enrollmentType === 'PHONE' &&
+                classes.selectedColumn,
+            )}
+            elevation={2}
+            onClick={() => updateStudy({ enrollmentType: 'PHONE' })}
+          >
+            <div>
+              <table width="100%" className={classes.table}>
+                <thead>
+                  <tr>
+                    <th>
+                      {' '}
+                      <span>ENROLL WITH<br/> PHONE NUMBERS</span>
+                      <Box
+                        className={classes.additionalInfo}
+                        style={{ textAlign: 'left' }}
+                        hidden={study.clientData.enrollmentType !== 'PHONE'}
                       >
                         <FormControlLabel
-                          value={false}
-                          control={<Radio size="small" />}
-                          label="Define my own IDs"
+                          style={{ marginTop: '16px', alignItems: 'start' }}
+                          labelPlacement="end"
+                          control={
+                            <Checkbox
+                              style={{ paddingTop: '3px' }}
+                              checked={study.clientData.enrollmentType === 'ID'}
+                              onChange={e =>
+                                e.target.checked
+                                  ? updateStudy({ enrollmentType: 'ID' })
+                                  : updateStudy({ enrollmentType: 'PHONE' })
+                              }
+                            />
+                          }
+                          label=" I confirm that I have participant consent to add their
+            numbers."
                         />
+                      </Box>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {PHONE_SELECTIONS.map((item, index) => (
+                    <tr key={index}>
+                      <td>
+                        {item ? (
+                          <CheckIcon titleAccess={ROW_HEADINGS[index]} />
+                        ) : (
+                          ' '
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Paper>
 
-                        <FormControlLabel
-                          value={true}
-                          control={<Radio size="small" />}
-                          label="Generate IDs for me"
-                        />
-                      </RadioGroup>
-                    </Box>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>hi</td>
-                </tr>
-                <tr>
-                  <td>hi</td>
-                </tr>
-                <tr>
-                  <td>hi</td>
-                </tr>
-                <tr>
-                  <td>hi</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </Paper>
-      </Box>
-      <Box px={3} py={2}>
-        Enroll By: PHONE
-        <Switch
-          checked={study.clientData.enrollmentType === 'ID'}
-          onChange={e =>
-            e.target.checked
-              ? updateStudy({ enrollmentType: 'ID' })
-              : updateStudy({ enrollmentType: 'PHONE' })
-          }
-          name="enrolment"
-        />
-        ID
-        {study.clientData.enrollmentType === 'ID' && (
-          <>
-            &nbsp; &nbsp; &nbsp; Generate Ids:
-            <Switch
-              checked={study.clientData.generateIds || false}
-              onChange={e => updateStudy({ isGenerateIds: e.target.checked })}
-              name="enrolment"
-            />
-          </>
-        )}
-      </Box>
+          <Paper
+            className={clsx(
+              classes.column,
+              classes.notFirstColumn,
+              study.clientData.enrollmentType === 'ID' &&
+                classes.selectedColumn,
+            )}
+            onClick={() => updateStudy({ enrollmentType: 'ID' })}
+          >
+            <div>
+              <table width="100%" className={classes.table}>
+                <thead>
+                  <tr>
+                    <th style={{ height: '186px' }}>
+                      <span>ENROLL WITH <br/>PARTICIPANT CODE</span>
+                      <Box
+                        className={classes.additionalInfo}
+                        style={{ textAlign: 'left' }}
+                        hidden={study.clientData.enrollmentType !== 'ID'}
+                      >
+                        <RadioGroup
+                          aria-label="How to generate Id"
+                          name="generateIds"
+                          style={{ marginTop: '5px' }}
+                          value={study.clientData.generateIds}
+                          onClick={e => e.stopPropagation()}
+                          onChange={e => {
+                            e.preventDefault()
+                            e.stopPropagation()
 
+                            updateStudy({
+                              isGenerateIds: e.target.value === 'true',
+                            })
+                          }}
+                        >
+                          <FormControlLabel
+                            value={false}
+                            control={<Radio size="small" />}
+                            label="Define my own IDs"
+                          />
+
+                          <FormControlLabel
+                            value={true}
+                            control={<Radio size="small" />}
+                            label="Generate IDs for me"
+                          />
+                        </RadioGroup>
+                      </Box>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ID_SELECTIONS.map((item, index) => (
+                    <tr key={index}>
+                      <td>
+                        {item ? (
+                          <CheckIcon titleAccess={ROW_HEADINGS[index]} />
+                        ) : (
+                          ' '
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Paper>
+        </Box>
+      </Box>
       {children}
-    </Box>
-  
-  </>)
+    </>
+  )
 }
 
 export default EnrollmentTypeSelector

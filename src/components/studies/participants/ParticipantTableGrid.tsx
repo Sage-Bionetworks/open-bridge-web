@@ -5,9 +5,7 @@ import React, { FunctionComponent } from 'react'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import ParticipantService from '../../../services/participants.service'
 import { latoFont } from '../../../style/theme'
-import {
-  ParticipantAccountSummary
-} from '../../../types/types'
+import { ParticipantAccountSummary } from '../../../types/types'
 import ParticipantTablePagination from './ParticipantTablePagination'
 
 const useStyles = makeStyles(theme => ({
@@ -42,7 +40,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 }: ParticipantTableGridProps) => {
   const { token } = useUserSessionDataState()
 
-  const [isDone, setIsDone]= React.useState(true)
+  const [isDone, setIsDone] = React.useState(true)
   const [selected, setSelected] = React.useState<string[]>([])
 
   // This is the total number of pages needed to list all participants based on the
@@ -104,12 +102,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   const deleteParticipants = async () => {
     setIsDone(false)
     for (let i = 0; i < selected.length; i++) {
-      const result = await ParticipantService.deleteParticipant(
-        studyId,
-        token!,
-        selected[i],
-        ['test_user'],
-      )
+      await ParticipantService.deleteParticipant(studyId, token!, selected[i])
     }
     setIsDone(true)
   }
@@ -117,7 +110,9 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   return (
     <Paper style={{ height: '600px' }}>
       <Button onClick={() => makeTestGroup()}>Make test group</Button>
-      <Button onClick={() => deleteParticipants()} disabled = {!isDone}>Delete</Button>
+      <Button onClick={() => deleteParticipants()} disabled={!isDone}>
+        Delete
+      </Button>
       <div style={{ display: 'flex', height: '94%' }}>
         <div style={{ flexGrow: 1 }}>
           <DataGrid
