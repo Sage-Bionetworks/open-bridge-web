@@ -9,7 +9,7 @@ import {
   LinearProgress,
   Paper,
   Tab,
-  Tabs,
+  Tabs
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
@@ -201,12 +201,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       console.log(progress)
       const data = row.data
       try {
-        const document = await uploadCsvRow(
-          data,
-          enrollmentType,
-          study.identifier,
-          token,
-        )
+        await uploadCsvRow(data, enrollmentType, study.identifier, token)
         setProgress(prev => prev + progressTick)
       } catch (error) {
         console.log('error', importError.length)

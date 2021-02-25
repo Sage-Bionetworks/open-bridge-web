@@ -45,11 +45,7 @@ export async function addParticipantById(
   token: string,
   options: AddParticipantType,
 ) {
-  const add = await ParticipantService.addParticipant(
-    studyIdentifier,
-    token,
-    options,
-  )
+  await ParticipantService.addParticipant(studyIdentifier, token, options)
 }
 
 export async function addParticipantByPhone(
@@ -63,7 +59,7 @@ export async function addParticipantByPhone(
     externalId = `${generateNonambiguousCode(6)}-${studyPrefix}`
   }*/
 
-  const add = await ParticipantService.addParticipant(studyIdentifier, token, {
+  await ParticipantService.addParticipant(studyIdentifier, token, {
     ...options,
     phone,
   })

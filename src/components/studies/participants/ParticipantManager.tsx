@@ -3,21 +3,25 @@ import {
   Button,
   CircularProgress,
   Grid,
-  Switch,
-  MenuItem,
+
+  MenuItem, Switch
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps } from 'react-router-dom'
 import { ReactComponent as ExpandIcon } from '../../../assets/add_participants.svg'
+import BlackXIcon from '../../../assets/black_x_icon.svg'
 import { ReactComponent as CollapseIcon } from '../../../assets/collapse.svg'
+import LinkIcon from '../../../assets/link_icon.svg'
+import SearchIcon from '../../../assets/search_icon.svg'
+import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
 import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
   useStudyInfoDataDispatch,
-  useStudyInfoDataState,
+  useStudyInfoDataState
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
 import StudyService from '../../../services/study.service'
@@ -25,20 +29,14 @@ import { theme } from '../../../style/theme'
 import {
   EnrollmentType,
   ParticipantAccountSummary,
-  StringDictionary,
+  StringDictionary
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
-import HideWhen from '../../widgets/HideWhen'
+import {
+  ButtonWithSelectButton, ButtonWithSelectSelect
+} from '../../widgets/StyledComponents'
 import AddParticipants from './AddParticipants'
 import ParticipantTableGrid from './ParticipantTableGrid'
-import LinkIcon from '../../../assets/link_icon.svg'
-import SearchIcon from '../../../assets/search_icon.svg'
-import {
-  ButtonWithSelectSelect,
-  ButtonWithSelectButton,
-} from '../../widgets/StyledComponents'
-import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
-import BlackXIcon from '../../../assets/black_x_icon.svg'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -479,7 +477,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   pageSize={pageSize}
                   setPageSize={setPageSize}
                   isPhoneEnrollmentType={
-                    study.options?.enrollmentType === 'PHONE'
+                    study.clientData.enrollmentType === 'PHONE'
                   }
                 ></ParticipantTableGrid>
               )}
