@@ -4,7 +4,7 @@ import {
   Checkbox,
   FormControlLabel,
   makeStyles,
-  TextField
+  TextField,
 } from '@material-ui/core'
 import SaveIcon from '@material-ui/icons/Save'
 import React, { FunctionComponent } from 'react'
@@ -17,7 +17,7 @@ import {
   Reoccurance as ReoccuranceType,
   SessionSchedule,
   StartDate as StartDateType,
-  StudySession
+  StudySession,
 } from '../../../types/scheduling'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import AssessmentWindow from './AssessmentWindow'
@@ -48,9 +48,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   multilineBodyText: {
     backgroundColor: theme.palette.common.white,
     '& textarea': {
-      backgroundColor: theme.palette.common.white
-    }
-  }
+      backgroundColor: theme.palette.common.white,
+    },
+  },
 }))
 
 export const defaultSchedule: SessionSchedule = {
@@ -135,7 +135,6 @@ SchedulableSingleSessionContainerProps) => {
             startDate={schedulableSession.startDate}
             onChange={(startDate: StartDateType) => {
               updateSessionSchedule({ ...schedulableSession, startDate })
-
             }}
           ></StartDate>
         </Box>

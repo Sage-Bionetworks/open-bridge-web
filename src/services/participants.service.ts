@@ -3,7 +3,7 @@ import constants from '../types/constants'
 import {
   ParticipantAccountSummary,
   Phone,
-  StringDictionary
+  StringDictionary,
 } from '../types/types'
 
 export type AddParticipantType = {
@@ -49,22 +49,60 @@ async function getClinicVisitsForParticipants(
     return items
   })
 }
+
 async function getParticipants(
   studyIdentifier: string,
   token: string,
-): Promise<ParticipantAccountSummary[]> {
+  pageSize: number,
+  offsetBy: number,
+) {
   const endpoint = constants.endpoints.participantsSearch.replace(
     ':id',
     studyIdentifier,
   )
-  const result = await callEndpoint<{ items: ParticipantAccountSummary[] }>(
+  const result = await callEndpoint<{
+    items: ParticipantAccountSummary[]
+    total: number
+  }>(
     endpoint,
     'POST',
-    { pageSize: 100 },
+    {
+      pageSize: pageSize,
+      offsetBy: offsetBy,
+    },
     token,
   )
 
-  return result.data.items
+  /*const mappedResult = result.data.items.map(item => {
+    return { ...item, studyExternalId: item.externalIds[studyIdentifier] }
+  })*/
+  return { items: result.data.items, total: result.data.total }
+}
+
+async function getParticipantWithId(
+  studyIdentifier: string,
+  token: string,
+  partipantID: string,
+) {
+  const endpoint = constants.endpoints.participant.replace(
+    ':id',
+    studyIdentifier,
+  )
+  try {
+    const result = await callEndpoint<ParticipantAccountSummary>(
+      `${endpoint}/${partipantID}`,
+      'GET',
+      {},
+      token,
+    )
+    return result.data
+  } catch (e) {
+    // If the participant is not found, return null.
+    if (e.statusCode === 404) {
+      return null
+    }
+    throw new Error(e)
+  }
 }
 
 async function deleteParticipant(
@@ -170,6 +208,7 @@ async function addParticipant(
 const ParticipantService = {
   getParticipants,
   addParticipant,
+  getParticipantWithId,
   deleteParticipant,
   getClinicVisitsForParticipants,
 }
