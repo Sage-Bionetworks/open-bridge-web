@@ -4,7 +4,7 @@ import {
   CircularProgress,
   Grid,
 
-  MenuItem, Switch
+  MenuItem, Paper, Switch
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { FunctionComponent } from 'react'
@@ -178,9 +178,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const [isEdit, setIsEdit] = React.useState(true)
 
-  const [temporaryEnrollmentType, setTemporaryEnrollmentType] = React.useState(
-    'PHONE',
-  )
+
 
   const [exportData, setExportData] = React.useState<any[] | null>(null)
   const [
@@ -188,8 +186,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setRefreshParticipantsToggle,
   ] = React.useState(false)
 
-  //used with generate id enrollbyId
-  const [isGenerateIds, setIsGenerateIds] = React.useState(false)
 
   const { study }: StudyInfoData = useStudyInfoDataState()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
@@ -207,8 +203,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     data: null,
   })
 
-  const participantData = data ? data.items : null
-  const totalParticipants = data ? data.total : 0
+  //const participantData = data ? data.items : null
+  //const totalParticipants = data ? data.total : 0
 
   React.useEffect(() => {
     if (!study?.identifier) {
@@ -225,10 +221,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }
 
   React.useEffect(() => {
-    if (!participantData) {
+    if (!data?.items) {
       return
     }
-    const result = participantData.map(record => {
+    const result = data.items.map(record => {
       return {
         healthCode: record.id,
         clinicVisit: '',
@@ -238,7 +234,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       }
     })
     setExportData(result)
-  }, [participantData])
+  }, [data?.items])
 
   // need to configure this
   React.useEffect(() => {
@@ -312,37 +308,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     handleError(error!)
   } else {
     return (
-      <>
+      <Box  >
         <Box px={3} py={2}>
           Study ID: {study.identifier}
         </Box>
-        <>
-          {study.clientData.enrollmentType}
+
           <Box px={3} py={2}>
-            Enroll By: PHONE
-            <Switch
-              checked={temporaryEnrollmentType === 'ID'}
-              classes={{ root: classes.switchRoot }}
-              onChange={e =>
-                e.target.checked
-                  ? setTemporaryEnrollmentType('ID')
-                  : setTemporaryEnrollmentType('PHONE')
-              }
-              name="enrolment"
-            />
-            ID
-            {temporaryEnrollmentType === 'ID' && (
-              <>
-                {' '}
-                &nbsp; &nbsp; &nbsp; Generate Ids:
-                <Switch
-                  checked={isGenerateIds}
-                  classes={{ root: classes.switchRoot }}
-                  onChange={e => setIsGenerateIds(e.target.checked)}
-                  name="enrolment"
-                />
-              </>
-            )}
             <Grid
               component="label"
               container
@@ -459,19 +430,19 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 onAdded={() => {
                   setRefreshParticipantsToggle(prev => !prev)
                 }}
-                isGenerateIds={isGenerateIds}
+                isGenerateIds={study.clientData.generateIds}
                 enrollmentType={
-                  /*study.clientData.enrollmentType*/ temporaryEnrollmentType as EnrollmentType
+                  study.clientData.enrollmentType || 'ID'
                 }
               ></AddParticipants>
             </>
             <Box py={0} pr={3} pl={2}>
-              {status === 'PENDING' && <CircularProgress></CircularProgress>}
-              {status === 'RESOLVED' && (
+            <Paper style={{ height: "90vh" }}>
                 <ParticipantTableGrid
-                  rows={participantData || []}
+                  rows={data?.items || []}
+                  status={status}
                   studyId={study.identifier}
-                  totalParticipants={totalParticipants}
+                  totalParticipants={data?.total || 0}
                   currentPage={currentPage}
                   setCurrentPage={setCurrentPage}
                   pageSize={pageSize}
@@ -480,15 +451,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     study.clientData.enrollmentType === 'PHONE'
                   }
                 ></ParticipantTableGrid>
-              )}
+              </Paper>
             </Box>
 
             <Box textAlign="center" pl={2}>
               ADD A PARTICIPANT
             </Box>
           </CollapsibleLayout>
-        </>
-      </>
+        
+      </Box>
     )
   }
   return <>bye</>
