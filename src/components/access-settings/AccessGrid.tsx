@@ -57,7 +57,7 @@ export const NO_ACCESS: Access = {
 
 export function getRolesFromAccess(access: Access): AdminRoles[] {
   if (access.STUDY_BUILDER === 'EDITOR') {
-    return ['org_admin']
+    return ['org_admin', "admin","researcher","developer"]
   }
   if (access.ADHERENCE_DATA === 'VIEWER') {
     return ['researcher']
