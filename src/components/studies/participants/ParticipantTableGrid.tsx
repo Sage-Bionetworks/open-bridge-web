@@ -1,4 +1,4 @@
-import { Button, CircularProgress } from '@material-ui/core'
+import { Button, CircularProgress, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import {
   ColDef,
@@ -115,12 +115,12 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   }
 
   return (
-    <>
+    <Paper >
       <Button onClick={() => makeTestGroup()}>Make test group</Button>
       <Button onClick={() => deleteParticipants()} disabled={!isDone}>
         Delete
       </Button>
-      <div style={{ display: 'flex', height: '94%' }}>
+      <div style={{ display: 'flex', height: '90vh' }}>
         <div style={{ flexGrow: 1 }}>
           <DataGrid
             rows={rows}
@@ -128,8 +128,18 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             columns={columns}
             pageSize={pageSize}
             checkboxSelection
+        
             components={{
-              Footer: () => null,
+              Footer: () =>  (<ParticipantTablePagination
+              totalParticipants={totalParticipants}
+              onPageSelectedChanged={onPageSelectedChanged}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              numberOfPages={numberOfPages}
+              handlePageNavigationArrowPressed={handlePageNavigationArrowPressed}
+            />),
+     
               NoRowsOverlay: () => (
                 <GridOverlay>
                   {status === 'PENDING' ? (
@@ -144,18 +154,10 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               setSelected(params.rowIds.map(id => id.toString()))
             }
           />
-          <ParticipantTablePagination
-            totalParticipants={totalParticipants}
-            onPageSelectedChanged={onPageSelectedChanged}
-            currentPage={currentPage}
-            pageSize={pageSize}
-            setPageSize={setPageSize}
-            numberOfPages={numberOfPages}
-            handlePageNavigationArrowPressed={handlePageNavigationArrowPressed}
-          />
+       
         </div>
       </div>
-    </>
+      </Paper>
   )
 }
 
