@@ -9,18 +9,21 @@ import {
   LinearProgress,
   Paper,
   Tab,
-  Tabs,
+  Tabs
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { CSVReader } from 'react-papaparse'
+import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
+import { ReactComponent as UploadIcon } from '../../../assets/upload.svg'
 import { isInvalidPhone, makePhone } from '../../../helpers/utility'
 import { AddParticipantType } from '../../../services/participants.service'
 import { poppinsFont, theme } from '../../../style/theme'
 import { EnrollmentType, Study } from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
+import { BlueButton } from '../../widgets/StyledComponents'
 import TabPanel from '../../widgets/TabPanel'
 import AddGeneratedParticipant from './AddGeneratedParticipant'
 import AddSingleParticipant, {
@@ -35,16 +38,22 @@ const useStyles = makeStyles(theme => ({
     borderBottomWidth: theme.spacing(0.5),
     borderBottomColor: theme.palette.background.default,
     borderBottomStyle: 'solid',
+    minHeight: '50px',
+    '& span.MuiTab-wrapper': {
+      flexDirection: 'row',
+      '& > *:first-child': {
+        marginBottom: 0,
+        marginRight: '6px',
+      },
+    },
     [theme.breakpoints.down('lg')]: {
       minWidth: `110px`,
     },
   },
-
   tabIndicator: {
     backgroundColor: theme.palette.secondary.contrastText,
     height: theme.spacing(0.5),
   },
-
   dialogTitle: {
     display: 'flex',
     fontFamily: poppinsFont,
@@ -57,20 +66,14 @@ const useStyles = makeStyles(theme => ({
     right: theme.spacing(3),
     top: theme.spacing(3),
     padding: 0,
-    // color: theme.palette.common.white,
   },
   dropAreaUploading: {
     border: 'none',
-    // borderColor: '#000',
     borderRadius: 0,
     height: '200px',
     alignItems: 'center',
     textAlign: 'center',
-    // borderStyle: 'dashed',
-    // borderWidth: '2px',
-
     flexDirection: 'column',
-
     justifyContent: 'center',
     '&$dropAreaUploadingWithBorder': {
       border: '2px dashed #000',
@@ -198,12 +201,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       console.log(progress)
       const data = row.data
       try {
-        const document = await uploadCsvRow(
-          data,
-          enrollmentType,
-          study.identifier,
-          token,
-        )
+        await uploadCsvRow(data, enrollmentType, study.identifier, token)
         setProgress(prev => prev + progressTick)
       } catch (error) {
         console.log('error', importError.length)
@@ -329,13 +327,21 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
                 indicator: classes.tabIndicator,
               }}
             >
-              <Tab label="Upload .csv " className={classes.tab} />
-              <Tab label="Enter details" className={classes.tab} />
+              <Tab
+                label="Upload .csv "
+                icon={<UploadIcon />}
+                className={classes.tab}
+              />
+              <Tab
+                label="Enter details"
+                icon={<PencilIcon />}
+                className={classes.tab}
+              />
             </Tabs>
 
             <TabPanel value={tab} index={0}>
               <ImportParticipantsInstructions enrollmentType={enrollmentType}>
-                <Button
+                <BlueButton
                   onClick={() => {
                     setIsCsvUploaded(false)
                     setIsOpenUpload(true)
@@ -343,8 +349,11 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
                   color="primary"
                   variant="contained"
                 >
+                  <UploadIcon
+                    style={{ marginRight: '3px', marginTop: '3px' }}
+                  />{' '}
                   Upload CSV File
-                </Button>
+                </BlueButton>
               </ImportParticipantsInstructions>
             </TabPanel>
             <TabPanel value={tab} index={1}>

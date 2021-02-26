@@ -75,6 +75,12 @@ const theme: Theme = createMuiTheme({
         },
       },
     },
+    MuiPaper: {
+      root: {
+        color: '#1c1c1c'
+      }
+
+    },
     MuiSwitch: {
       colorPrimary: {
         '&.Mui-checked': {

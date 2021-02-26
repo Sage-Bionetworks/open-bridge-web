@@ -74,11 +74,19 @@ async function createStudy(study: Study, token: string): Promise<Study[]> {
 }
 
 async function updateStudy(study: Study, token: string): Promise<Study[]> {
+
+
+const payload = {
+  clientData: study.clientData,
+  name: study.name,
+  identifier: study.identifier, 
+}
+  
  await callEndpoint<{ items: Study[] }>(
     constants.endpoints.study.replace(':id', study.identifier),
     'POST',// once we add things to the study -- we can change this to actual object
   //  { identifier: study.identifier, version: study.version, name: study.name },
-    study,
+  payload,
     token,
   )
   const data = await getStudies(token)

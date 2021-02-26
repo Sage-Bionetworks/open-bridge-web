@@ -2,7 +2,6 @@
 
 import {
   Box,
-  Button,
   CircularProgress,
   FormControl,
   FormGroup,
@@ -19,6 +18,7 @@ import ParticipantService, {
 import { Phone } from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import {
+  BlueButton,
   SimpleTextInput,
   SimpleTextLabel
 } from '../../widgets/StyledComponents'
@@ -45,11 +45,7 @@ export async function addParticipantById(
   token: string,
   options: AddParticipantType,
 ) {
-  const add = await ParticipantService.addParticipant(
-    studyIdentifier,
-    token,
-    options,
-  )
+  await ParticipantService.addParticipant(studyIdentifier, token, options)
 }
 
 export async function addParticipantByPhone(
@@ -63,7 +59,7 @@ export async function addParticipantByPhone(
     externalId = `${generateNonambiguousCode(6)}-${studyPrefix}`
   }*/
 
-  const add = await ParticipantService.addParticipant(studyIdentifier, token, {
+  await ParticipantService.addParticipant(studyIdentifier, token, {
     ...options,
     phone,
   })
@@ -210,14 +206,14 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
       </FormGroup>
 
       <Box textAlign="center" my={2}>
-        <Button
+        <BlueButton
           color="primary"
           variant="contained"
           disabled={isAddDisabled()}
           onClick={() => addSingleParticipant(participant, phoneNumber)}
         >
           +Add to study
-        </Button>
+        </BlueButton>
       </Box>
     </>
   )

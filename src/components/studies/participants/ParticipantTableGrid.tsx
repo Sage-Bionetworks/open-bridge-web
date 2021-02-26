@@ -1,15 +1,17 @@
-import { Button, Paper } from '@material-ui/core'
+import { Button, CircularProgress } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { ColDef, DataGrid, ValueGetterParams } from '@material-ui/data-grid'
-import React, { FunctionComponent } from 'react'
 import {
-  ParticipantAccountSummary,
-  StringDictionary,
-} from '../../../types/types'
-import ParticipantTablePagination from './ParticipantTablePagination'
+  ColDef,
+  DataGrid,
+  GridOverlay,
+  ValueGetterParams
+} from '@material-ui/data-grid'
+import React, { FunctionComponent } from 'react'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import ParticipantService from '../../../services/participants.service'
 import { latoFont } from '../../../style/theme'
+import { ParticipantAccountSummary } from '../../../types/types'
+import ParticipantTablePagination from './ParticipantTablePagination'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -29,6 +31,7 @@ export type ParticipantTableGridProps = {
   pageSize: number
   setPageSize: Function
   isPhoneEnrollmentType: boolean
+  status: 'PENDING' | 'RESOLVED' | 'IDLE'
 }
 
 const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
@@ -40,9 +43,11 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   currentPage,
   setCurrentPage,
   isPhoneEnrollmentType,
+  status,
 }: ParticipantTableGridProps) => {
   const { token } = useUserSessionDataState()
 
+  const [isDone, setIsDone] = React.useState(true)
   const [selected, setSelected] = React.useState<string[]>([])
 
   // This is the total number of pages needed to list all participants based on the
@@ -102,29 +107,38 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   }
 
   const deleteParticipants = async () => {
+    setIsDone(false)
     for (let i = 0; i < selected.length; i++) {
-      const result = await ParticipantService.deleteParticipant(
-        studyId,
-        token!,
-        selected[i],
-        ['test_user'],
-      )
+      await ParticipantService.deleteParticipant(studyId, token!, selected[i])
     }
+    setIsDone(true)
   }
 
   return (
-    <Paper style={{ height: '600px' }}>
+    <>
       <Button onClick={() => makeTestGroup()}>Make test group</Button>
-      <Button onClick={() => deleteParticipants()}>Delete</Button>
+      <Button onClick={() => deleteParticipants()} disabled={!isDone}>
+        Delete
+      </Button>
       <div style={{ display: 'flex', height: '94%' }}>
         <div style={{ flexGrow: 1 }}>
           <DataGrid
             rows={rows}
+            density="standard"
             columns={columns}
             pageSize={pageSize}
             checkboxSelection
             components={{
               Footer: () => null,
+              NoRowsOverlay: () => (
+                <GridOverlay>
+                  {status === 'PENDING' ? (
+                    <CircularProgress></CircularProgress>
+                  ) : (
+                    'No Participants'
+                  )}
+                </GridOverlay>
+              ),
             }}
             onSelectionChange={params =>
               setSelected(params.rowIds.map(id => id.toString()))
@@ -141,7 +155,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
           />
         </div>
       </div>
-    </Paper>
+    </>
   )
 }
 

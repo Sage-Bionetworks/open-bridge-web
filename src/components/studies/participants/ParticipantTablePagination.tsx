@@ -1,6 +1,6 @@
-import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
 import { MenuItem, TextField } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+import React from 'react'
 import PageSelector from './PageSelector'
 
 const useStyles = makeStyles(theme => ({
@@ -74,6 +74,9 @@ const ParticipantTablePagination: React.FunctionComponent<ParticpantTablePaginat
   ]
 
   let participantsShown = pageSize * currentPage
+  if(totalParticipants === 0) {
+    return <></>
+  }
   return (
     <div className={classes.footerWrapper}>
       <div className={classes.partitipantNumberText}>{`${

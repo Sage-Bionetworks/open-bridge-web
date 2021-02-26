@@ -3,7 +3,7 @@ import constants from '../types/constants'
 import {
   ParticipantAccountSummary,
   Phone,
-  StringDictionary,
+  StringDictionary
 } from '../types/types'
 
 export type AddParticipantType = {
@@ -109,15 +109,11 @@ async function deleteParticipant(
   studyIdentifier: string,
   token: string,
   participantId: string,
-  dataGroups: string[],
 ): Promise<string> {
   const endpoint = `${constants.endpoints.participant.replace(
     ':id',
     studyIdentifier,
   )}/${participantId}`
-  const data = {
-    dataGroups: dataGroups,
-  }
 
   const result = await callEndpoint<{ identifier: string }>(
     endpoint,
@@ -194,12 +190,7 @@ async function addParticipant(
       timestamp: new Date(options.clinicVisitDate).toISOString(),
     }
 
-    const eventResult = await callEndpoint<{ identifier: string }>(
-      endpoint,
-      'POST',
-      data,
-      token,
-    )
+    await callEndpoint<{ identifier: string }>(endpoint, 'POST', data, token)
   }
 
   return userId

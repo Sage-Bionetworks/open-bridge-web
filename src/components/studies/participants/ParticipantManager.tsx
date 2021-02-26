@@ -3,39 +3,42 @@ import {
   Button,
   CircularProgress,
   Grid,
-  Switch,
   MenuItem,
+  Paper,
+  Switch
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps } from 'react-router-dom'
+import { ReactComponent as ExpandIcon } from '../../../assets/add_participants.svg'
+import BlackXIcon from '../../../assets/black_x_icon.svg'
+import { ReactComponent as CollapseIcon } from '../../../assets/collapse.svg'
+import LinkIcon from '../../../assets/link_icon.svg'
+import SearchIcon from '../../../assets/search_icon.svg'
+import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
 import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
   useStudyInfoDataDispatch,
-  useStudyInfoDataState,
+  useStudyInfoDataState
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
 import StudyService from '../../../services/study.service'
+import { theme } from '../../../style/theme'
 import {
   EnrollmentType,
   ParticipantAccountSummary,
-  StringDictionary,
+  StringDictionary
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
-import HideWhen from '../../widgets/HideWhen'
+import {
+  ButtonWithSelectButton,
+  ButtonWithSelectSelect
+} from '../../widgets/StyledComponents'
 import AddParticipants from './AddParticipants'
 import ParticipantTableGrid from './ParticipantTableGrid'
-import LinkIcon from '../../../assets/link_icon.svg'
-import SearchIcon from '../../../assets/search_icon.svg'
-import {
-  ButtonWithSelectSelect,
-  ButtonWithSelectButton,
-} from '../../widgets/StyledComponents'
-import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
-import BlackXIcon from '../../../assets/black_x_icon.svg'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -177,18 +180,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const [isEdit, setIsEdit] = React.useState(true)
 
-  const [temporaryEnrollmentType, setTemporaryEnrollmentType] = React.useState(
-    'PHONE',
-  )
-
   const [exportData, setExportData] = React.useState<any[] | null>(null)
   const [
     refreshParticipantsToggle,
     setRefreshParticipantsToggle,
   ] = React.useState(false)
-
-  //used with generate id enrollbyId
-  const [isGenerateIds, setIsGenerateIds] = React.useState(false)
 
   const { study }: StudyInfoData = useStudyInfoDataState()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
@@ -206,8 +202,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     data: null,
   })
 
-  const participantData = data ? data.items : null
-  const totalParticipants = data ? data.total : 0
+  //const participantData = data ? data.items : null
+  //const totalParticipants = data ? data.total : 0
 
   React.useEffect(() => {
     if (!study?.identifier) {
@@ -217,17 +213,17 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }, [study?.identifier, run, token])
 
   const updateEnrollment = async (type: EnrollmentType) => {
-    study.options = { ...study.options, enrollmentType: type }
+    study.clientData = { ...study.clientData, enrollmentType: type }
 
     const updatedStudy = await StudyService.updateStudy(study, token!)
     studyDataUpdateFn({ type: 'SET_STUDY', payload: { study: study } })
   }
 
   React.useEffect(() => {
-    if (!participantData) {
+    if (!data?.items) {
       return
     }
-    const result = participantData.map(record => {
+    const result = data.items.map(record => {
       return {
         healthCode: record.id,
         clinicVisit: '',
@@ -237,7 +233,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       }
     })
     setExportData(result)
-  }, [participantData])
+  }, [data?.items])
 
   // need to configure this
   React.useEffect(() => {
@@ -246,10 +242,18 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     }
     const fn = async () => {
       const result = await run(getParticipants(study.identifier, token!))
-      setParticipantData({ items: result.items, total: result.total })
+      if (result) {
+        setParticipantData({ items: result.items, total: result.total })
+      }
     }
     fn()
-  }, [study?.identifier, refreshParticipantsToggle, currentPage, pageSize])
+  }, [
+    study?.identifier,
+    refreshParticipantsToggle,
+    currentPage,
+    pageSize,
+    token,
+  ])
 
   async function getParticipants(
     studyId: string,
@@ -311,179 +315,160 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     handleError(error!)
   } else {
     return (
-      <>
+      <Box>
         <Box px={3} py={2}>
           Study ID: {study.identifier}
         </Box>
-        <>
-          {study.options?.enrollmentType}
-          <Box px={3} py={2}>
-            Enroll By: PHONE
-            <Switch
-              checked={temporaryEnrollmentType === 'ID'}
-              classes={{ root: classes.switchRoot }}
-              onChange={e =>
-                e.target.checked
-                  ? setTemporaryEnrollmentType('ID')
-                  : setTemporaryEnrollmentType('PHONE')
-              }
-              name="enrolment"
-            />
-            ID
-            {temporaryEnrollmentType === 'ID' && (
-              <>
-                {' '}
-                &nbsp; &nbsp; &nbsp; Generate Ids:
-                <Switch
-                  checked={isGenerateIds}
-                  classes={{ root: classes.switchRoot }}
-                  onChange={e => setIsGenerateIds(e.target.checked)}
-                  name="enrolment"
-                />
-              </>
-            )}
-            <Grid
-              component="label"
-              container
-              alignItems="center"
-              spacing={0}
-              className={classes.topRow}
-            >
-              <div className={classes.horizontalGroup}>
-                <Grid item>View</Grid>
-                <Grid item>
-                  <Switch
-                    checked={isEdit}
-                    classes={{ root: classes.switchRoot }}
-                    onChange={e => setIsEdit(e.target.checked)}
-                    name="viewEdit"
-                  />
-                </Grid>
-                <Grid item>Edit</Grid>
-              </div>
-              <div className={classes.horizontalGroup}>
-                <ButtonWithSelectSelect
-                  key="session_select"
-                  value="selectedSessionId"
-                  displayEmpty
-                  inputProps={{ 'aria-label': 'Without label' }}
-                  disableUnderline={true}
-                >
-                  <MenuItem value={'placeholder'} key={'hello'}>
-                    {'placeholder'}
-                  </MenuItem>
-                </ButtonWithSelectSelect>
-                <ButtonWithSelectButton
-                  key="duplicate_session"
-                  variant="contained"
-                  className={classes.downloadButton}
-                >
-                  Download
-                </ButtonWithSelectButton>
-              </div>
-            </Grid>
-            <Box className={classes.topButtonContainer}>
-              {!isEdit && (
-                <div className={classes.inputRow}>
-                  <Button className={classes.topButtons}>
-                    <img
-                      src={LinkIcon}
-                      className={classes.buttonImage}
-                      alt="link-icon"
-                    ></img>
-                    App Download Link
-                  </Button>
-                </div>
-              )}
-              {isSearchingForParticipant ? (
-                <div className={classes.inputRow}>
-                  <input
-                    placeholder="Participant IDs"
-                    className={classes.participantIDSearchBar}
-                    ref={inputComponent}
-                    style={{
-                      paddingRight: isSearchingUsingId ? '28px' : '4px',
-                    }}
-                  ></input>
-                  {isSearchingUsingId && (
-                    <Button
-                      className={classes.blackXIconButton}
-                      onClick={handleResetSearch}
-                    >
-                      <img
-                        src={BlackXIcon}
-                        className={classes.blackXIcon}
-                        alt="black-x-icon"
-                      ></img>
-                    </Button>
-                  )}
-                  <Button
-                    className={classes.searchIconContainer}
-                    onClick={handleSearchParticipantRequest}
-                  >
-                    <img src={WhiteSearchIcon} alt="white-search-icon"></img>
-                  </Button>
-                </div>
-              ) : (
-                <Button
-                  className={classes.topButtons}
-                  onClick={() => {
-                    setIsSearchingForParticipant(true)
-                  }}
-                >
-                  <img
-                    src={SearchIcon}
-                    className={classes.buttonImage}
-                    alt="seach-icon"
-                  ></img>
-                  Find Participant
-                </Button>
-              )}
-            </Box>
-          </Box>
-          <CollapsibleLayout
-            expandedWidth={300}
-            isFullWidth={true}
-            isHideContentOnClose={true}
-            isDrawerHidden={!isEdit}
-          >
-            <>
-              <AddParticipants
-                study={study}
-                token={token!}
-                onAdded={() => {
-                  setRefreshParticipantsToggle(prev => !prev)
-                }}
-                isGenerateIds={isGenerateIds}
-                enrollmentType={
-                  /*study.options.enrollmentType*/ temporaryEnrollmentType as EnrollmentType
-                }
-              ></AddParticipants>
-            </>
-            <Box py={0} pr={3} pl={2}>
-              {status === 'PENDING' && <CircularProgress></CircularProgress>}
-              {status === 'RESOLVED' && (
-                <ParticipantTableGrid
-                  rows={participantData || []}
-                  studyId={study.identifier}
-                  totalParticipants={totalParticipants}
-                  currentPage={currentPage}
-                  setCurrentPage={setCurrentPage}
-                  pageSize={pageSize}
-                  setPageSize={setPageSize}
-                  isPhoneEnrollmentType={
-                    study.options?.enrollmentType === 'PHONE'
-                  }
-                ></ParticipantTableGrid>
-              )}
-            </Box>
 
-            <Box textAlign="center" pl={2}>
-              ADD A PARTICIPANT
-            </Box>
-          </CollapsibleLayout>
-        </>
-      </>
+        <Box px={3} py={2}>
+          <Grid
+            component="label"
+            container
+            alignItems="center"
+            spacing={0}
+            className={classes.topRow}
+          >
+            <div className={classes.horizontalGroup}>
+              <Grid item>View</Grid>
+              <Grid item>
+                <Switch
+                  checked={isEdit}
+                  classes={{ root: classes.switchRoot }}
+                  onChange={e => setIsEdit(e.target.checked)}
+                  name="viewEdit"
+                />
+              </Grid>
+              <Grid item>Edit</Grid>
+            </div>
+            <div className={classes.horizontalGroup}>
+              <ButtonWithSelectSelect
+                key="session_select"
+                value="selectedSessionId"
+                displayEmpty
+                inputProps={{ 'aria-label': 'Without label' }}
+                disableUnderline={true}
+              >
+                <MenuItem value={'placeholder'} key={'hello'}>
+                  {'placeholder'}
+                </MenuItem>
+              </ButtonWithSelectSelect>
+              <ButtonWithSelectButton
+                key="duplicate_session"
+                variant="contained"
+                className={classes.downloadButton}
+              >
+                Download
+              </ButtonWithSelectButton>
+            </div>
+          </Grid>
+          <Box className={classes.topButtonContainer}>
+            {!isEdit && (
+              <div className={classes.inputRow}>
+                <Button className={classes.topButtons}>
+                  <img
+                    src={LinkIcon}
+                    className={classes.buttonImage}
+                    alt="link-icon"
+                  ></img>
+                  App Download Link
+                </Button>
+              </div>
+            )}
+            {isSearchingForParticipant ? (
+              <div className={classes.inputRow}>
+                <input
+                  placeholder="Participant IDs"
+                  className={classes.participantIDSearchBar}
+                  ref={inputComponent}
+                  style={{
+                    paddingRight: isSearchingUsingId ? '28px' : '4px',
+                  }}
+                ></input>
+                {isSearchingUsingId && (
+                  <Button
+                    className={classes.blackXIconButton}
+                    onClick={handleResetSearch}
+                  >
+                    <img
+                      src={BlackXIcon}
+                      className={classes.blackXIcon}
+                      alt="black-x-icon"
+                    ></img>
+                  </Button>
+                )}
+                <Button
+                  className={classes.searchIconContainer}
+                  onClick={handleSearchParticipantRequest}
+                >
+                  <img src={WhiteSearchIcon} alt="white-search-icon"></img>
+                </Button>
+              </div>
+            ) : (
+              <Button
+                className={classes.topButtons}
+                onClick={() => {
+                  setIsSearchingForParticipant(true)
+                }}
+              >
+                <img
+                  src={SearchIcon}
+                  className={classes.buttonImage}
+                  alt="seach-icon"
+                ></img>
+                Find Participant
+              </Button>
+            )}
+          </Box>
+        </Box>
+        <CollapsibleLayout
+          expandedWidth={300}
+          isFullWidth={true}
+          isHideContentOnClose={true}
+          isDrawerHidden={!isEdit}
+          collapseButton={<CollapseIcon />}
+          expandButton={
+            <ExpandIcon style={{ marginLeft: '-3px', marginTop: '8px' }} />
+          }
+          toggleButtonStyle={{
+            display: 'block',
+            padding: '0',
+            backgroundColor: theme.palette.primary.dark,
+          }}
+        >
+          <>
+            <AddParticipants
+              study={study}
+              token={token!}
+              onAdded={() => {
+                setRefreshParticipantsToggle(prev => !prev)
+              }}
+              isGenerateIds={study.clientData.generateIds}
+              enrollmentType={study.clientData.enrollmentType || 'ID'}
+            ></AddParticipants>
+          </>
+          <Box py={0} pr={3} pl={2}>
+            <Paper style={{ height: '90vh' }}>
+              <ParticipantTableGrid
+                rows={data?.items || []}
+                status={status}
+                studyId={study.identifier}
+                totalParticipants={data?.total || 0}
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                pageSize={pageSize}
+                setPageSize={setPageSize}
+                isPhoneEnrollmentType={
+                  study.clientData.enrollmentType === 'PHONE'
+                }
+              ></ParticipantTableGrid>
+            </Paper>
+          </Box>
+
+          <Box textAlign="center" pl={2}>
+            ADD A PARTICIPANT
+          </Box>
+        </CollapsibleLayout>
+      </Box>
     )
   }
   return <>bye</>
