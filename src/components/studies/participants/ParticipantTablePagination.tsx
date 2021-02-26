@@ -74,7 +74,7 @@ const ParticipantTablePagination: React.FunctionComponent<ParticpantTablePaginat
   ]
 
   let participantsShown = pageSize * currentPage
-  if(totalParticipants === 0) {
+  if (totalParticipants === 0) {
     return <></>
   }
   return (
