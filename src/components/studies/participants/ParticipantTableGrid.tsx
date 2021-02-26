@@ -1,6 +1,11 @@
-import { Button, Paper } from '@material-ui/core'
+import { Button, CircularProgress } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { ColDef, DataGrid, ValueGetterParams } from '@material-ui/data-grid'
+import {
+  ColDef,
+  DataGrid,
+  GridOverlay,
+  ValueGetterParams
+} from '@material-ui/data-grid'
 import React, { FunctionComponent } from 'react'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import ParticipantService from '../../../services/participants.service'
@@ -26,6 +31,7 @@ export type ParticipantTableGridProps = {
   pageSize: number
   setPageSize: Function
   isPhoneEnrollmentType: boolean
+  status: 'PENDING' | 'RESOLVED' | 'IDLE'
 }
 
 const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
@@ -37,6 +43,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   currentPage,
   setCurrentPage,
   isPhoneEnrollmentType,
+  status,
 }: ParticipantTableGridProps) => {
   const { token } = useUserSessionDataState()
 
@@ -108,7 +115,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   }
 
   return (
-    <Paper style={{ height: '600px' }}>
+    <>
       <Button onClick={() => makeTestGroup()}>Make test group</Button>
       <Button onClick={() => deleteParticipants()} disabled={!isDone}>
         Delete
@@ -117,11 +124,21 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
         <div style={{ flexGrow: 1 }}>
           <DataGrid
             rows={rows}
+            density="standard"
             columns={columns}
             pageSize={pageSize}
             checkboxSelection
             components={{
               Footer: () => null,
+              NoRowsOverlay: () => (
+                <GridOverlay>
+                  {status === 'PENDING' ? (
+                    <CircularProgress></CircularProgress>
+                  ) : (
+                    'No Participants'
+                  )}
+                </GridOverlay>
+              ),
             }}
             onSelectionChange={params =>
               setSelected(params.rowIds.map(id => id.toString()))
@@ -138,7 +155,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
           />
         </div>
       </div>
-    </Paper>
+    </>
   )
 }
 
