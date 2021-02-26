@@ -4,31 +4,26 @@ import {
   CircularProgress,
   Grid,
   MenuItem,
-  Paper,
-  Switch
+  Switch,
+  Tab,
+  Tabs
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps } from 'react-router-dom'
 import { ReactComponent as ExpandIcon } from '../../../assets/add_participants.svg'
-import BlackXIcon from '../../../assets/black_x_icon.svg'
 import { ReactComponent as CollapseIcon } from '../../../assets/collapse.svg'
 import LinkIcon from '../../../assets/link_icon.svg'
-import SearchIcon from '../../../assets/search_icon.svg'
-import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
 import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
-  useStudyInfoDataDispatch,
   useStudyInfoDataState
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
-import StudyService from '../../../services/study.service'
 import { theme } from '../../../style/theme'
 import {
-  EnrollmentType,
   ParticipantAccountSummary,
   StringDictionary
 } from '../../../types/types'
@@ -37,7 +32,9 @@ import {
   ButtonWithSelectButton,
   ButtonWithSelectSelect
 } from '../../widgets/StyledComponents'
+import TabPanel from '../../widgets/TabPanel'
 import AddParticipants from './AddParticipants'
+import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
 
 const useStyles = makeStyles(theme => ({
@@ -79,53 +76,7 @@ const useStyles = makeStyles(theme => ({
   buttonImage: {
     marginRight: theme.spacing(0.5),
   },
-  participantIDSearchBar: {
-    backgroundColor: 'white',
-    outline: 'none',
-    height: '38px',
-    width: '220px',
-    borderTopRightRadius: '0px',
-    borderBottomRightRadius: '0px',
-    padding: theme.spacing(0.7),
-    borderTop: '1px solid black',
-    borderBottom: '1px solid black',
-    borderLeft: '1px solid black',
-    borderRight: '0px',
-    fontSize: '13px',
-  },
-  searchIconContainer: {
-    width: '42px',
-    height: '38px',
-    backgroundColor: 'black',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    '&:hover': {
-      backgroundColor: 'black',
-      boxShadow: '1px 1px 1px rgb(0, 0, 0, 0.75)',
-    },
-    borderRadius: '0px',
-    minWidth: '0px',
-  },
-  blackXIconButton: {
-    marginLeft: '195px',
-    position: 'absolute',
-    minWidth: '0px',
-    width: '18px',
-    height: '18px',
-    minHeight: '8px',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: '15px',
-    '&:hover': {
-      backgroundColor: 'rgb(0, 0, 0, 0.2)',
-    },
-    display: 'flex',
-  },
-  blackXIcon: {
-    width: '10px',
-    height: '10px',
-  },
+
   inputRow: {
     display: 'flex',
     flexDirection: 'row',
@@ -165,15 +116,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [currentPage, setCurrentPage] = React.useState(1)
   // The current page size of the particpant grid
   const [pageSize, setPageSize] = React.useState(50)
-  // True if the user is currently trying to search for a particular particpant
-  const [isSearchingUsingId, setIsSearchingUsingID] = React.useState(false)
-  // Reference to the input component for searching for a participant using ID.
-  const inputComponent = React.useRef<HTMLInputElement>(null)
 
-  const [
-    isSearchingForParticipant,
-    setIsSearchingForParticipant,
-  ] = React.useState(false)
+  const [tab, setTab] = React.useState(0)
+
+  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
+    setTab(newValue)
+  }
 
   const handleError = useErrorHandler()
   const classes = useStyles()
@@ -187,7 +135,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   ] = React.useState(false)
 
   const { study }: StudyInfoData = useStudyInfoDataState()
-  const studyDataUpdateFn = useStudyInfoDataDispatch()
 
   const { token } = useUserSessionDataState()
 
@@ -211,13 +158,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     }
     return run(getParticipants(study?.identifier, token!))
   }, [study?.identifier, run, token])
-
-  const updateEnrollment = async (type: EnrollmentType) => {
-    study.clientData = { ...study.clientData, enrollmentType: type }
-
-    const updatedStudy = await StudyService.updateStudy(study, token!)
-    studyDataUpdateFn({ type: 'SET_STUDY', payload: { study: study } })
-  }
 
   React.useEffect(() => {
     if (!data?.items) {
@@ -283,10 +223,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     return { items: result, total: numberOfParticipants }
   }
 
-  const handleSearchParticipantRequest = async () => {
-    const searchedValue = inputComponent.current?.value
-      ? inputComponent.current?.value
-      : ''
+  const handleSearchParticipantRequest = async (searchedValue: string) => {
     const result = await ParticipantService.getParticipantWithId(
       study.identifier,
       token!,
@@ -295,12 +232,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     const realResult = result ? [result] : null
     const totalParticipantsFound = result ? 1 : 0
     setParticipantData({ items: realResult, total: totalParticipantsFound })
-    setIsSearchingUsingID(true)
   }
 
   const handleResetSearch = async () => {
-    inputComponent.current!.value = ''
-    setIsSearchingUsingID(false)
     const result = await run(getParticipants(study!.identifier, token!))
     setParticipantData({ items: result.items, total: result.total })
   }
@@ -374,50 +308,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 </Button>
               </div>
             )}
-            {isSearchingForParticipant ? (
-              <div className={classes.inputRow}>
-                <input
-                  placeholder="Participant IDs"
-                  className={classes.participantIDSearchBar}
-                  ref={inputComponent}
-                  style={{
-                    paddingRight: isSearchingUsingId ? '28px' : '4px',
-                  }}
-                ></input>
-                {isSearchingUsingId && (
-                  <Button
-                    className={classes.blackXIconButton}
-                    onClick={handleResetSearch}
-                  >
-                    <img
-                      src={BlackXIcon}
-                      className={classes.blackXIcon}
-                      alt="black-x-icon"
-                    ></img>
-                  </Button>
-                )}
-                <Button
-                  className={classes.searchIconContainer}
-                  onClick={handleSearchParticipantRequest}
-                >
-                  <img src={WhiteSearchIcon} alt="white-search-icon"></img>
-                </Button>
-              </div>
-            ) : (
-              <Button
-                className={classes.topButtons}
-                onClick={() => {
-                  setIsSearchingForParticipant(true)
-                }}
-              >
-                <img
-                  src={SearchIcon}
-                  className={classes.buttonImage}
-                  alt="seach-icon"
-                ></img>
-                Find Participant
-              </Button>
-            )}
           </Box>
         </Box>
         <CollapsibleLayout
@@ -447,7 +337,20 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             ></AddParticipants>
           </>
           <Box py={0} pr={3} pl={2}>
-            <Paper style={{ height: '90vh' }}>
+            <Tabs value={tab} variant="fullWidth" onChange={handleTabChange}>
+              <Tab label="Item One" />
+              <Tab label="Item Two" />
+            </Tabs>
+
+            <TabPanel value={tab} index={0}>
+              <ParticipantSearch
+                study={study}
+                token={token!}
+                onReset={() => handleResetSearch()}
+                onSearch={(searchedValue: string) =>
+                  handleSearchParticipantRequest(searchedValue)
+                }
+              />
               <ParticipantTableGrid
                 rows={data?.items || []}
                 status={status}
@@ -461,7 +364,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   study.clientData.enrollmentType === 'PHONE'
                 }
               ></ParticipantTableGrid>
-            </Paper>
+            </TabPanel>
+            <TabPanel value={tab} index={1}>
+              hello
+            </TabPanel>
           </Box>
 
           <Box textAlign="center" pl={2}>
