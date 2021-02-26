@@ -2,7 +2,6 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { MenuItem, TextField } from '@material-ui/core'
 import PageSelector from './PageSelector'
-// import lato
 
 const useStyles = makeStyles(theme => ({
   footerWrapper: {
