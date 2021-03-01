@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Paper } from '@material-ui/core'
+import { CircularProgress, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import {
   ColDef,
@@ -69,6 +69,22 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
       setCurrentPage(1)
     }
   }
+
+  function getPhone(params: ValueGetterParams) {
+    if (params.value) {
+      return (params.value as { nationalFormat: string }).nationalFormat
+    } else return ''
+  }
+
+  function getClinicVisit(params: ValueGetterParams) {
+    if (params.value) {
+      return (new Date(params.value as string)).toLocaleDateString()
+    } else return ''
+  }
+
+
+
+
   const columns: ColDef[] = [
     {
       field: 'externalId',
@@ -76,7 +92,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
       flex: 2,
     },
     { field: 'id', headerName: 'HealthCode', flex: 2 },
-    { field: 'clinicVisit', headerName: 'Clinic Visit', flex: 1 },
+    { field: 'clinicVisit', headerName: 'Clinic Visit', valueGetter: getClinicVisit,  flex: 1},
     { field: 'status', headerName: 'Status', flex: 1 },
     { field: 'notes', headerName: 'Notes', flex: 1 },
   ]
@@ -89,11 +105,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     })
   }
 
-  function getPhone(params: ValueGetterParams) {
-    if (params.value) {
-      return (params.value as { nationalFormat: string }).nationalFormat
-    } else return ''
-  }
+
 
   const onPageSelectedChanged = (pageSelected: number) => {
     setCurrentPage(pageSelected)
@@ -115,11 +127,11 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   }
 
   return (
-    <Paper >
-      <Button onClick={() => makeTestGroup()}>Make test group</Button>
+    <Paper elevation={0}>
+      {/*<Button onClick={() => makeTestGroup()}>Make test group</Button>
       <Button onClick={() => deleteParticipants()} disabled={!isDone}>
         Delete
-      </Button>
+  </Button>*/}
       <div style={{ display: 'flex', height: '90vh' }}>
         <div style={{ flexGrow: 1 }}>
           <DataGrid
@@ -128,18 +140,21 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             columns={columns}
             pageSize={pageSize}
             checkboxSelection
-        
             components={{
-              Footer: () =>  (<ParticipantTablePagination
-              totalParticipants={totalParticipants}
-              onPageSelectedChanged={onPageSelectedChanged}
-              currentPage={currentPage}
-              pageSize={pageSize}
-              setPageSize={setPageSize}
-              numberOfPages={numberOfPages}
-              handlePageNavigationArrowPressed={handlePageNavigationArrowPressed}
-            />),
-     
+              Footer: () => (
+                <ParticipantTablePagination
+                  totalParticipants={totalParticipants}
+                  onPageSelectedChanged={onPageSelectedChanged}
+                  currentPage={currentPage}
+                  pageSize={pageSize}
+                  setPageSize={setPageSize}
+                  numberOfPages={numberOfPages}
+                  handlePageNavigationArrowPressed={
+                    handlePageNavigationArrowPressed
+                  }
+                />
+              ),
+
               NoRowsOverlay: () => (
                 <GridOverlay>
                   {status === 'PENDING' ? (
@@ -154,10 +169,9 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               setSelected(params.rowIds.map(id => id.toString()))
             }
           />
-       
         </div>
       </div>
-      </Paper>
+    </Paper>
   )
 }
 
