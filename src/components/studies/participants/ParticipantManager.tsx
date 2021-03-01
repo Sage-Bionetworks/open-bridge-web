@@ -6,7 +6,7 @@ import {
   MenuItem,
   Switch,
   Tab,
-  Tabs
+  Tabs,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { FunctionComponent } from 'react'
@@ -19,18 +19,18 @@ import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
 import { theme } from '../../../style/theme'
 import {
   ParticipantAccountSummary,
-  StringDictionary
+  StringDictionary,
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import {
   ButtonWithSelectButton,
-  ButtonWithSelectSelect
+  ButtonWithSelectSelect,
 } from '../../widgets/StyledComponents'
 import TabPanel from '../../widgets/TabPanel'
 import AddParticipants from './AddParticipants'

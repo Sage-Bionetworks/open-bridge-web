@@ -93,7 +93,7 @@ const ParticipantTablePagination: React.FunctionComponent<ParticpantTablePaginat
       <div className={classes.pageSizeSelectorContainer}>
         <div className={classes.showEntryText}>{'show entries: '}</div>
         <TextField
-          id="standard-select-currency"
+          id="page-selector"
           select
           value={pageSize}
           onChange={event => {
@@ -104,6 +104,7 @@ const ParticipantTablePagination: React.FunctionComponent<ParticpantTablePaginat
             root: classes.rootStyles,
           }}
           InputProps={{ disableUnderline: true }}
+          data-testid="button-select"
         >
           {pageSizes.map(pagesize => (
             <MenuItem key={pagesize.value} value={pagesize.value}>

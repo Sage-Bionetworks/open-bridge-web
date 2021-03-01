@@ -4,7 +4,7 @@ import {
   ColDef,
   DataGrid,
   GridOverlay,
-  ValueGetterParams
+  ValueGetterParams,
 } from '@material-ui/data-grid'
 import React, { FunctionComponent } from 'react'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
@@ -115,7 +115,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   }
 
   return (
-    <Paper >
+    <Paper>
       <Button onClick={() => makeTestGroup()}>Make test group</Button>
       <Button onClick={() => deleteParticipants()} disabled={!isDone}>
         Delete
@@ -128,18 +128,21 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             columns={columns}
             pageSize={pageSize}
             checkboxSelection
-        
             components={{
-              Footer: () =>  (<ParticipantTablePagination
-              totalParticipants={totalParticipants}
-              onPageSelectedChanged={onPageSelectedChanged}
-              currentPage={currentPage}
-              pageSize={pageSize}
-              setPageSize={setPageSize}
-              numberOfPages={numberOfPages}
-              handlePageNavigationArrowPressed={handlePageNavigationArrowPressed}
-            />),
-     
+              Footer: () => (
+                <ParticipantTablePagination
+                  totalParticipants={totalParticipants}
+                  onPageSelectedChanged={onPageSelectedChanged}
+                  currentPage={currentPage}
+                  pageSize={pageSize}
+                  setPageSize={setPageSize}
+                  numberOfPages={numberOfPages}
+                  handlePageNavigationArrowPressed={
+                    handlePageNavigationArrowPressed
+                  }
+                />
+              ),
+
               NoRowsOverlay: () => (
                 <GridOverlay>
                   {status === 'PENDING' ? (
@@ -154,10 +157,9 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               setSelected(params.rowIds.map(id => id.toString()))
             }
           />
-       
         </div>
       </div>
-      </Paper>
+    </Paper>
   )
 }
 

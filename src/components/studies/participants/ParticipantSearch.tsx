@@ -72,7 +72,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type ParticipantSearchProps = {
-  study: Study,
+  study: Study
   token: string
   onReset: Function
   onSearch: Function
@@ -82,7 +82,7 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
   study,
   token,
   onReset,
-  onSearch
+  onSearch,
 }) => {
   const classes = useStyles()
   const [
@@ -90,17 +90,16 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
     setIsSearchingForParticipant,
   ] = React.useState(false)
 
-    // True if the user is currently trying to search for a particular particpant
-    const [isSearchingUsingId, setIsSearchingUsingID] = React.useState(false)
-    // Reference to the input component for searching for a participant using ID.
-    const inputComponent = React.useRef<HTMLInputElement>(null)
+  // True if the user is currently trying to search for a particular particpant
+  const [isSearchingUsingId, setIsSearchingUsingID] = React.useState(false)
+  // Reference to the input component for searching for a participant using ID.
+  const inputComponent = React.useRef<HTMLInputElement>(null)
 
-
-    const handleSearchParticipantRequest = async () => {
-      const searchedValue = inputComponent.current?.value
-        ? inputComponent.current?.value
-        : ''
-     /* const result = await ParticipantService.getParticipantWithId(
+  const handleSearchParticipantRequest = async () => {
+    const searchedValue = inputComponent.current?.value
+      ? inputComponent.current?.value
+      : ''
+    /* const result = await ParticipantService.getParticipantWithId(
         study.identifier,
         token!,
         searchedValue,
@@ -108,63 +107,62 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
       const realResult = result ? [result] : null
       const totalParticipantsFound = result ? 1 : 0
       setParticipantData({ items: realResult, total: totalParticipantsFound })*/
-      setIsSearchingUsingID(true)
-      onSearch(searchedValue)
-    }
-  
-    const handleResetSearch = async () => {
-      inputComponent.current!.value = ''
-      setIsSearchingUsingID(false)
-     /* const result = await run(getParticipants(study!.identifier, token!))
+    setIsSearchingUsingID(true)
+    onSearch(searchedValue)
+  }
+
+  const handleResetSearch = async () => {
+    inputComponent.current!.value = ''
+    setIsSearchingUsingID(false)
+    /* const result = await run(getParticipants(study!.identifier, token!))
       setParticipantData({ items: result.items, total: result.total })*/
-      onReset()
-    }
+    onReset()
+  }
 
- return isSearchingForParticipant ?  (
-      <div className={classes.inputRow}>
-        <input
-          placeholder="Participant IDs"
-          className={classes.participantIDSearchBar}
-          ref={inputComponent}
-          style={{
-            paddingRight: isSearchingUsingId ? '28px' : '4px',
-          }}
-        ></input>
-        {isSearchingUsingId && (
-          <Button
-            className={classes.blackXIconButton}
-            onClick={handleResetSearch}
-          >
-            <img
-              src={BlackXIcon}
-              className={classes.blackXIcon}
-              alt="black-x-icon"
-            ></img>
-          </Button>
-        )}
-        <Button
-          className={classes.searchIconContainer}
-          onClick={handleSearchParticipantRequest}
-        >
-          <img src={WhiteSearchIcon} alt="white-search-icon"></img>
-        </Button>
-      </div>
-    ) : (
-      <Button
-        className={classes.topButtons}
-        onClick={() => {
-          setIsSearchingForParticipant(true)
+  return isSearchingForParticipant ? (
+    <div className={classes.inputRow}>
+      <input
+        placeholder="Participant IDs"
+        className={classes.participantIDSearchBar}
+        ref={inputComponent}
+        style={{
+          paddingRight: isSearchingUsingId ? '28px' : '4px',
         }}
+      ></input>
+      {isSearchingUsingId && (
+        <Button
+          className={classes.blackXIconButton}
+          onClick={handleResetSearch}
+        >
+          <img
+            src={BlackXIcon}
+            className={classes.blackXIcon}
+            alt="black-x-icon"
+          ></img>
+        </Button>
+      )}
+      <Button
+        className={classes.searchIconContainer}
+        onClick={handleSearchParticipantRequest}
       >
-        <img
-          src={SearchIcon}
-          className={classes.buttonImage}
-          alt="seach-icon"
-        ></img>
-        Find Participant
+        <img src={WhiteSearchIcon} alt="white-search-icon"></img>
       </Button>
-    )
-
+    </div>
+  ) : (
+    <Button
+      className={classes.topButtons}
+      onClick={() => {
+        setIsSearchingForParticipant(true)
+      }}
+    >
+      <img
+        src={SearchIcon}
+        className={classes.buttonImage}
+        alt="seach-icon"
+      ></img>
+      Find Participant
+    </Button>
+  )
 }
 
 export default ParticipantSearch

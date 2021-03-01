@@ -55,6 +55,7 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
         onClick={() => handlePageNavigationArrowPressed('BB')}
         classes={{ root: classes.button }}
         disabled={rotateAndDisableBackIcons}
+        id="back-to-beginning-button"
       >
         <img
           src={
@@ -71,6 +72,7 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
         onClick={() => handlePageNavigationArrowPressed('B')}
         classes={{ root: classes.button }}
         disabled={rotateAndDisableBackIcons}
+        id="back-one-page-button"
       >
         <img
           src={rotateAndDisableBackIcons ? PreviousPageIcon : NextPageIcon}
@@ -84,10 +86,11 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
 
       {pageNumbers.map((element, index) => (
         <PageBox
-          key={index}
+          key={`page-box-${index}`}
           isSelected={element == currentPageSelected}
           pageNumber={element}
           onPageSelected={onPageSelected}
+          index={index}
         />
       ))}
 
@@ -95,6 +98,7 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
         onClick={() => handlePageNavigationArrowPressed('F')}
         classes={{ root: classes.button }}
         disabled={rotateAndDisableForwardIcons}
+        id="forward-one-page-button"
       >
         <img
           src={rotateAndDisableForwardIcons ? PreviousPageIcon : NextPageIcon}
@@ -109,6 +113,7 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
         onClick={() => handlePageNavigationArrowPressed('FF')}
         classes={{ root: classes.button }}
         disabled={rotateAndDisableForwardIcons}
+        id="forward-to-end-button"
       >
         <img
           src={
