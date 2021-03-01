@@ -50,6 +50,30 @@ async function getClinicVisitsForParticipants(
   })
 }
 
+async function getAllParticipants(studyIdentifier: string, token: string) {
+  const pageSize = 50
+  const result = await getParticipants(studyIdentifier, token, pageSize, 0)
+  const pages = Math.ceil(result.total / pageSize)
+  if (pages < 2) {
+    return result
+  }
+
+  const queries: Promise<any>[] = []
+  for (let i = 0; i < pages; i++) {
+    queries.push(
+      getParticipants(studyIdentifier, token, pageSize, i * pageSize),
+    )
+  }
+  return Promise.all(queries).then(result => {
+    console.log(result)
+    const allItems = [].concat.apply(
+      [],
+      result.map(i => i.items),
+    )
+    debugger
+    return { items: allItems, total: result[0].total }
+  })
+}
 async function getParticipants(
   studyIdentifier: string,
   token: string,
@@ -202,6 +226,7 @@ const ParticipantService = {
   getParticipantWithId,
   deleteParticipant,
   getClinicVisitsForParticipants,
+  getAllParticipants,
 }
 
 export default ParticipantService

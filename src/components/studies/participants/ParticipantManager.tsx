@@ -3,7 +3,6 @@ import {
   Button,
   CircularProgress,
   Grid,
-  MenuItem,
   Switch,
   Tab,
   Tabs,
@@ -28,12 +27,10 @@ import {
   StringDictionary,
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
-import {
-  ButtonWithSelectButton,
-  ButtonWithSelectSelect,
-} from '../../widgets/StyledComponents'
-import TabPanel from '../../widgets/TabPanel'
 import AddParticipants from './AddParticipants'
+import ParticipantDownload, {
+  ParticipantActivityType
+} from './ParticipantDownload'
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
 
@@ -41,6 +38,19 @@ const useStyles = makeStyles(theme => ({
   root: {},
   switchRoot: {
     //padding: '8px'
+  },
+  tab: {
+    backgroundColor: theme.palette.common.white,
+
+    '&:first-child': {
+      marginRight: theme.spacing(2),
+    },
+  },
+
+  tabPanel: {
+    backgroundColor: theme.palette.common.white,
+    boxShadow: 'none',
+    padding: theme.spacing(0, 5, 2, 5),
   },
   studyText: {
     fontFamily: 'Lato',
@@ -82,9 +92,6 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  downloadButton: {
-    marginBottom: theme.spacing(0),
-  },
 }))
 
 type ParticipantManagerOwnProps = {
@@ -104,6 +111,36 @@ const participantRecordTemplate: ParticipantAccountSummary = {
   externalIds: {},
 }
 
+async function getParticipants(
+  studyId: string,
+  token: string,
+  currentPage: number,
+  pageSize: number,
+): Promise<ParticipantData> {
+  const offset = (currentPage - 1) * pageSize
+  const participants = await ParticipantService.getParticipants(
+    studyId,
+    token!,
+    pageSize,
+    offset,
+  )
+  const retrievedParticipants = participants ? participants.items : []
+  const numberOfParticipants = participants ? participants.total : 0
+  const clinicVisitMap: StringDictionary<string> = await ParticipantService.getClinicVisitsForParticipants(
+    studyId,
+    token,
+    retrievedParticipants.map(p => p.id),
+  )
+  const result = retrievedParticipants!.map(participant => {
+    const id = participant.id as string
+    const visit = clinicVisitMap[id]
+    const y = { ...participant, clinicVisit: visit }
+    return y
+  })
+
+  return { items: result, total: numberOfParticipants }
+}
+
 type ParticipantManagerProps = ParticipantManagerOwnProps & RouteComponentProps
 
 type ParticipantData = {
@@ -112,12 +149,15 @@ type ParticipantData = {
 }
 
 const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
+  const { study }: StudyInfoData = useStudyInfoDataState()
+  const { token } = useUserSessionDataState()
+
   // The current page in the particpant grid the user is viewing
   const [currentPage, setCurrentPage] = React.useState(1)
   // The current page size of the particpant grid
   const [pageSize, setPageSize] = React.useState(50)
-
-  const [tab, setTab] = React.useState(0)
+  // Withdrawn or active participants
+  const [tab, setTab] = React.useState<ParticipantActivityType>('ACTIVE')
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
@@ -127,16 +167,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const classes = useStyles()
 
   const [isEdit, setIsEdit] = React.useState(true)
-
-  const [exportData, setExportData] = React.useState<any[] | null>(null)
+  //trigger data refresh on updates
   const [
     refreshParticipantsToggle,
     setRefreshParticipantsToggle,
   ] = React.useState(false)
-
-  const { study }: StudyInfoData = useStudyInfoDataState()
-
-  const { token } = useUserSessionDataState()
 
   const {
     data,
@@ -149,39 +184,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     data: null,
   })
 
-  //const participantData = data ? data.items : null
-  //const totalParticipants = data ? data.total : 0
-
-  React.useEffect(() => {
-    if (!study?.identifier) {
-      return
-    }
-    return run(getParticipants(study?.identifier, token!))
-  }, [study?.identifier, run, token])
-
-  React.useEffect(() => {
-    if (!data?.items) {
-      return
-    }
-    const result = data.items.map(record => {
-      return {
-        healthCode: record.id,
-        clinicVisit: '',
-        status: record.status,
-        referenceId: record.studyExternalId,
-        notes: '--',
-      }
-    })
-    setExportData(result)
-  }, [data?.items])
-
   // need to configure this
   React.useEffect(() => {
     if (!study?.identifier) {
       return
     }
     const fn = async () => {
-      const result = await run(getParticipants(study.identifier, token!))
+      const result = await run(
+        getParticipants(study.identifier, token!, currentPage, pageSize),
+      )
       if (result) {
         setParticipantData({ items: result.items, total: result.total })
       }
@@ -195,34 +206,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     token,
   ])
 
-  async function getParticipants(
-    studyId: string,
-    token: string,
-  ): Promise<ParticipantData> {
-    const offset = (currentPage - 1) * pageSize
-    const participants = await ParticipantService.getParticipants(
-      studyId,
-      token!,
-      pageSize,
-      offset,
-    )
-    const retrievedParticipants = participants ? participants.items : []
-    const numberOfParticipants = participants ? participants.total : 0
-    const clinicVisitMap: StringDictionary<string> = await ParticipantService.getClinicVisitsForParticipants(
-      studyId,
-      token,
-      retrievedParticipants.map(p => p.id),
-    )
-    const result = retrievedParticipants!.map(participant => {
-      const id = participant.id as string
-      const visit = clinicVisitMap[id]
-      const y = { ...participant, clinicVisit: visit }
-      return y
-    })
-
-    return { items: result, total: numberOfParticipants }
-  }
-
   const handleSearchParticipantRequest = async (searchedValue: string) => {
     const result = await ParticipantService.getParticipantWithId(
       study.identifier,
@@ -235,7 +218,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }
 
   const handleResetSearch = async () => {
-    const result = await run(getParticipants(study!.identifier, token!))
+    const result = await run(
+      getParticipants(study!.identifier, token!, currentPage, pageSize),
+    )
     setParticipantData({ items: result.items, total: result.total })
   }
 
@@ -273,26 +258,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 />
               </Grid>
               <Grid item>Edit</Grid>
-            </div>
-            <div className={classes.horizontalGroup}>
-              <ButtonWithSelectSelect
-                key="session_select"
-                value="selectedSessionId"
-                displayEmpty
-                inputProps={{ 'aria-label': 'Without label' }}
-                disableUnderline={true}
-              >
-                <MenuItem value={'placeholder'} key={'hello'}>
-                  {'placeholder'}
-                </MenuItem>
-              </ButtonWithSelectSelect>
-              <ButtonWithSelectButton
-                key="duplicate_session"
-                variant="contained"
-                className={classes.downloadButton}
-              >
-                Download
-              </ButtonWithSelectButton>
             </div>
           </Grid>
           <Box className={classes.topButtonContainer}>
@@ -337,12 +302,32 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             ></AddParticipants>
           </>
           <Box py={0} pr={3} pl={2}>
-            <Tabs value={tab} variant="fullWidth" onChange={handleTabChange}>
-              <Tab label="Item One" />
-              <Tab label="Item Two" />
+            <Tabs
+              value={tab}
+              variant="standard"
+              onChange={handleTabChange}
+              TabIndicatorProps={{ hidden: true }}
+            >
+              <Tab
+                label="Item One"
+                value={'ACTIVE'}
+                classes={{ root: classes.tab }}
+              />
+              <Tab
+                label="Item Two"
+                value={'WITHDRAWN'}
+                classes={{ root: classes.tab }}
+              />
             </Tabs>
-
-            <TabPanel value={tab} index={0}>
+            <Box
+              bgcolor={theme.palette.common.white}
+              pt={3}
+              px={5}
+              pb={6}
+              display="flex"
+              flexDirection="row"
+              justifyContent="space-between"
+            >
               <ParticipantSearch
                 study={study}
                 token={token!}
@@ -351,6 +336,24 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   handleSearchParticipantRequest(searchedValue)
                 }
               />
+
+              <ParticipantDownload
+                type={tab}
+                onDownload={() =>
+                  ParticipantService.getAllParticipants(
+                    study.identifier,
+                    token!,
+                  )
+                }
+              />
+            </Box>
+
+            <div
+              role="tabpanel"
+              hidden={tab !== 'ACTIVE'}
+              id={`active-participants`}
+              className={classes.tabPanel}
+            >
               <ParticipantTableGrid
                 rows={data?.items || []}
                 status={status}
@@ -364,10 +367,16 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   study.clientData.enrollmentType === 'PHONE'
                 }
               ></ParticipantTableGrid>
-            </TabPanel>
-            <TabPanel value={tab} index={1}>
-              hello
-            </TabPanel>
+            </div>
+
+            <div
+              role="tabpanel"
+              hidden={tab !== 'WITHDRAWN'}
+              id={`withdrawn-participants`}
+              className={classes.tabPanel}
+            >
+              <span>Withdrawn participants will go here</span>
+            </div>
           </Box>
 
           <Box textAlign="center" pl={2}>
