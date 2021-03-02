@@ -29,7 +29,8 @@ import {
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import AddParticipants from './AddParticipants'
 import ParticipantDownload, {
-  ParticipantActivityType
+  ParticipantActivityType,
+  ParticipantDownloadType
 } from './ParticipantDownload'
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
@@ -158,7 +159,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [pageSize, setPageSize] = React.useState(50)
   // Withdrawn or active participants
   const [tab, setTab] = React.useState<ParticipantActivityType>('ACTIVE')
-
+  const [
+    selectedActiveParticipants,
+    setSelectedActiveParticipants,
+  ] = React.useState<string[]>([])
+  const [
+    selectedWithdrawnParticipants,
+    setSelectedWithdrawnParticipants,
+  ] = React.useState<string[]>([])
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
   }
@@ -222,6 +230,25 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       getParticipants(study!.identifier, token!, currentPage, pageSize),
     )
     setParticipantData({ items: result.items, total: result.total })
+  }
+
+  const downloadParticipants = async (selection: ParticipantDownloadType) => {
+    let x: ParticipantActivityType = tab
+    ParticipantService.getAllParticipants(study.identifier, token!)
+  }
+
+  const selectParticipants = (
+    participantIds: string[],
+    id: string,
+    isSelected: boolean,
+  ): string[] => {
+    if (!participantIds.includes(id) && isSelected) {
+      return [...participantIds, id]
+    }
+    if (!isSelected) {
+      return participantIds.filter(_id => _id !== id) || []
+    }
+    return participantIds
   }
 
   if (!study) {
@@ -339,12 +366,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
               <ParticipantDownload
                 type={tab}
-                onDownload={() =>
-                  ParticipantService.getAllParticipants(
-                    study.identifier,
-                    token!,
-                  )
-                }
+                onDownload={downloadParticipants}
               />
             </Box>
 
@@ -359,8 +381,18 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 status={status}
                 studyId={study.identifier}
                 totalParticipants={data?.total || 0}
+                isEdit = {isEdit}
+                onEdit={()=> {}}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
+            enrollmentType={study.clientData.enrollmentType!}
+                onRowSelected={(/*id: string, isSelected: boolean*/selection) => {
+                  if (tab === 'ACTIVE') {
+                    setSelectedActiveParticipants(selection)
+                  } else {
+                    setSelectedWithdrawnParticipants(selection)
+                  }
+                }}
                 pageSize={pageSize}
                 setPageSize={setPageSize}
                 isPhoneEnrollmentType={

@@ -27,7 +27,7 @@ const ParticipantDownload: React.FunctionComponent<ParticipantDownloadProps> = (
   onDownload,
 }) => {
   const classes = useStyles()
-  const [selection, setSelection] = React.useState('SELECTED')
+  const [selection, setSelection] = React.useState<ParticipantDownloadType>('SELECTED')
   const items =
     type === 'ACTIVE'
       ? [

@@ -12,10 +12,8 @@ import Alert from '@material-ui/lab/Alert'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { isInvalidPhone, makePhone } from '../../../helpers/utility'
-import ParticipantService, {
-  AddParticipantType
-} from '../../../services/participants.service'
-import { Phone } from '../../../types/types'
+import ParticipantService from '../../../services/participants.service'
+import { EditableParticipantData, EnrollmentType, Phone } from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import {
   BlueButton,
@@ -43,7 +41,7 @@ type AddSingleParticipantProps = {
 export async function addParticipantById(
   studyIdentifier: string,
   token: string,
-  options: AddParticipantType,
+  options: EditableParticipantData,
 ) {
   await ParticipantService.addParticipant(studyIdentifier, token, options)
 }
@@ -52,7 +50,7 @@ export async function addParticipantByPhone(
   studyIdentifier: string,
   token: string,
   phone: Phone,
-  options: AddParticipantType,
+  options: EditableParticipantData,
 ) {
   /*if (!externalId) {
     const studyPrefix = studyIdentifier.substr(0, 3)
@@ -65,71 +63,28 @@ export async function addParticipantByPhone(
   })
 }
 
-// -----------------  Add participant  tab control
-const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
-  onAdded,
-  enrollmentType,
+type AddEditParticipantFormProps = {
+  participant: EditableParticipantData
+  enrollmentType: EnrollmentType
 
-  token,
-  studyIdentifier,
+  onChange: (p: EditableParticipantData) => void
+}
+
+// -----------------  Add/ edit participant form
+export const AddEditParticipantForm: FunctionComponent<AddEditParticipantFormProps> = ({
+  participant,
+
+  enrollmentType,
+  onChange,
 }) => {
   const classes = useStyles()
-  const [participant, setParticipant] = React.useState<AddParticipantType>({
-    externalId: '',
-  })
-  const [phoneNumber, setPhoneNumber] = React.useState('')
-
   const [validationErrors, setValidationErrors] = React.useState({
     phone: false,
     externalId: false,
   })
-  const [error, setError] = React.useState('')
-  const [isLoading, setIsLoading] = React.useState(false)
-
-  const addSingleParticipant = async (
-    participant: AddParticipantType,
-    phoneNumber?: string,
-  ) => {
-    setError('')
-    setIsLoading(true)
-    let options: AddParticipantType = {
-      externalId: participant.externalId,
-      clinicVisitDate: participant.clinicVisitDate,
-      notes: participant.notes,
-    }
-
-    try {
-      if (enrollmentType === 'PHONE') {
-        await addParticipantByPhone(
-          studyIdentifier,
-          token,
-          makePhone(phoneNumber || ''),
-          options,
-        )
-      } else {
-        await addParticipantById(studyIdentifier, token, options)
-      }
-
-      onAdded()
-      setParticipant({ externalId: '' })
-      setPhoneNumber('')
-    } catch (e: any) {
-      setError(e?.message.toString() || e.toString())
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   const handleDateChange = (date: Date | null) => {
-    setParticipant(prev => ({ ...prev, clinicVisitDate: date || undefined }))
-  }
-
-  const isAddDisabled = (): boolean => {
-    return (
-      (enrollmentType === 'PHONE' &&
-        (!phoneNumber || isInvalidPhone(phoneNumber))) ||
-      (enrollmentType === 'ID' && !participant.externalId)
-    )
+    onChange({ ...participant, clinicVisitDate: date || undefined })
   }
 
   const extId = (
@@ -142,19 +97,13 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
         id="participant-id"
         fullWidth={true}
         value={participant.externalId}
-        onChange={e =>
-          setParticipant(prev => ({ ...prev, externalId: e.target.value }))
-        }
+        onChange={e => onChange({ ...participant, externalId: e.target.value })}
       />
     </FormControl>
   )
 
   return (
     <>
-      <Box mx="auto" textAlign="center" mb={2}>
-        {isLoading && <CircularProgress size="2em" />}
-        {error && <Alert color="error">{error}</Alert>}
-      </Box>
       <FormGroup className={classes.addForm}>
         {enrollmentType === 'ID' && extId}
         {enrollmentType === 'PHONE' && (
@@ -165,14 +114,16 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
                 placeholder="xxx-xxx-xxxx"
                 id="phone"
                 fullWidth={true}
-                value={phoneNumber}
+                value={participant.phoneNumber || ''}
                 onBlur={() =>
                   setValidationErrors(prev => ({
                     ...prev,
-                    phone: isInvalidPhone(phoneNumber),
+                    phone: isInvalidPhone(participant.phoneNumber || ''),
                   }))
                 }
-                onChange={e => setPhoneNumber(e.target.value)}
+                onChange={e =>
+                  onChange({ ...participant, phoneNumber: e.target.value })
+                }
               />
               {validationErrors.phone && (
                 <FormHelperText id="phone-text">
@@ -194,9 +145,7 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
           <SimpleTextLabel htmlFor="notes">Notes</SimpleTextLabel>
           <SimpleTextInput
             value={participant.notes}
-            onChange={e =>
-              setParticipant(prev => ({ ...prev, notes: e.target.value }))
-            }
+            onChange={e => onChange({ ...participant, notes: e.target.value })}
             placeholder="comments"
             id="notes"
             multiline={true}
@@ -204,13 +153,100 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
           />
         </FormControl>
       </FormGroup>
+    </>
+  )
+}
+
+// -----------------  Add participant  tab control
+const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
+  onAdded,
+  enrollmentType,
+
+  token,
+  studyIdentifier,
+}) => {
+  const classes = useStyles()
+  const [participant, setParticipant] = React.useState<EditableParticipantData>({
+    externalId: '',
+  })
+ // const [phoneNumber, setPhoneNumber] = React.useState('')
+
+  /* const [validationErrors, setValidationErrors] = React.useState({
+    phone: false,
+    externalId: false,
+  })*/
+  const [error, setError] = React.useState('')
+  const [isLoading, setIsLoading] = React.useState(false)
+
+  const addSingleParticipant = async (
+    participant: EditableParticipantData,
+ 
+  ) => {
+    setError('')
+    setIsLoading(true)
+    let options: EditableParticipantData = {
+      externalId: participant.externalId,
+      clinicVisitDate: participant.clinicVisitDate,
+      notes: participant.notes,
+    }
+
+    try {
+      if (enrollmentType === 'PHONE') {
+        await addParticipantByPhone(
+          studyIdentifier,
+          token,
+          makePhone(participant.phoneNumber || ''),
+          options,
+        )
+      } else {
+        await addParticipantById(studyIdentifier, token, options)
+      }
+
+      onAdded()
+      setParticipant({ externalId: '' })
+      //setPhoneNumber('')
+    } catch (e: any) {
+      setError(e?.message.toString() || e.toString())
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+
+
+  const isAddDisabled = (): boolean => {
+    return (
+      (enrollmentType === 'PHONE' &&
+        (!participant.phoneNumber ||
+          isInvalidPhone(participant.phoneNumber))) ||
+      (enrollmentType === 'ID' && !participant.externalId)
+    )
+  }
+
+  return (
+    <>
+      <Box mx="auto" textAlign="center" mb={2}>
+        {isLoading && <CircularProgress size="2em" />}
+        {error && <Alert color="error">{error}</Alert>}
+      </Box>
+      <AddEditParticipantForm
+        enrollmentType={enrollmentType}
+        participant={participant}
+   
+        onChange={(participant) => {
+          if (participant) {
+            setParticipant(_prev => participant)
+          }
+         
+        }}
+      />
 
       <Box textAlign="center" my={2}>
         <BlueButton
           color="primary"
           variant="contained"
           disabled={isAddDisabled()}
-          onClick={() => addSingleParticipant(participant, phoneNumber)}
+          onClick={() => addSingleParticipant(participant)}
         >
           +Add to study
         </BlueButton>

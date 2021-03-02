@@ -1,17 +1,13 @@
 import { callEndpoint } from '../helpers/utility'
 import constants from '../types/constants'
 import {
+  EditableParticipantData,
   ParticipantAccountSummary,
-  Phone,
+
   StringDictionary
 } from '../types/types'
 
-export type AddParticipantType = {
-  clinicVisitDate?: Date
-  notes?: string
-  externalId?: string
-  phone?: Phone
-}
+
 async function getClinicVisitsForParticipants(
   studyIdentifier: string,
   token: string,
@@ -178,7 +174,7 @@ async function deleteParticipant(
 async function addParticipant(
   studyIdentifier: string,
   token: string,
-  options: AddParticipantType,
+  options: EditableParticipantData,
 ): Promise<string> {
   const endpoint = constants.endpoints.participant.replace(
     ':id',
