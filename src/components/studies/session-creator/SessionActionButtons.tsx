@@ -69,7 +69,7 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
             value={selectedSessionId}
             onChange={e => setSelectedSessionId(e.target.value as string)}
             displayEmpty
-            inputProps={{ 'aria-label': 'Without label' }}
+            inputProps={{ 'aria-label': 'Select Sessions' }}
             disableUnderline={true}
           >
             {sessions.map((session, index) => (
