@@ -5,7 +5,7 @@ import {
   Grid,
   Switch,
   Tab,
-  Tabs
+  Tabs,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { FunctionComponent } from 'react'
@@ -19,13 +19,13 @@ import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
 import { theme } from '../../../style/theme'
 import {
   ParticipantAccountSummary,
-  StringDictionary
+  StringDictionary,
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import AddParticipants from './AddParticipants'
@@ -380,7 +380,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 </Button>
               )}
             </Box>
-
             <div
               role="tabpanel"
               hidden={tab !== 'ACTIVE'}

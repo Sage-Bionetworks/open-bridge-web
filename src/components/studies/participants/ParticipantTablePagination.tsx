@@ -2,7 +2,6 @@ import { MenuItem, TextField } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import PageSelector from './PageSelector'
-// import lato
 
 const useStyles = makeStyles(theme => ({
   footerWrapper: {
@@ -75,7 +74,7 @@ const ParticipantTablePagination: React.FunctionComponent<ParticpantTablePaginat
   ]
 
   let participantsShown = pageSize * currentPage
-  if(totalParticipants === 0) {
+  if (totalParticipants === 0) {
     return <></>
   }
   return (
@@ -94,7 +93,7 @@ const ParticipantTablePagination: React.FunctionComponent<ParticpantTablePaginat
       <div className={classes.pageSizeSelectorContainer}>
         <div className={classes.showEntryText}>{'show entries: '}</div>
         <TextField
-          id="standard-select-currency"
+          id="page-selector"
           select
           value={pageSize}
           onChange={event => {
@@ -105,6 +104,7 @@ const ParticipantTablePagination: React.FunctionComponent<ParticpantTablePaginat
             root: classes.rootStyles,
           }}
           InputProps={{ disableUnderline: true }}
+          data-testid="button-select"
         >
           {pageSizes.map(pagesize => (
             <MenuItem key={pagesize.value} value={pagesize.value}>
