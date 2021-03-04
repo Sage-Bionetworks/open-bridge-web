@@ -78,7 +78,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
   function getClinicVisit(params: ValueGetterParams) {
     if (params.value) {
-      return (new Date(params.value as string)).toLocaleDateString()
+      return new Date(params.value as string).toLocaleDateString()
     } else return ''
   }
 
@@ -92,7 +92,12 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
       flex: 2,
     },
     { field: 'id', headerName: 'HealthCode', flex: 2 },
-    { field: 'clinicVisit', headerName: 'Clinic Visit', valueGetter: getClinicVisit,  flex: 1},
+    {
+      field: 'clinicVisit',
+      headerName: 'Clinic Visit',
+      valueGetter: getClinicVisit,
+      flex: 1,
+    },
     { field: 'status', headerName: 'Status', flex: 1 },
     { field: 'notes', headerName: 'Notes', flex: 1 },
   ]
@@ -104,8 +109,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
       valueGetter: getPhone,
     })
   }
-
-
 
   const onPageSelectedChanged = (pageSelected: number) => {
     setCurrentPage(pageSelected)

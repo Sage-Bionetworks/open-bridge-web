@@ -133,6 +133,9 @@ export type ParticipantAccountSummary = {
   externalIds: StringDictionary<string>
   studyExternalId?: string
   status: 'unverified' | 'pending' | 'verified'
+  externalId?: string
+  createdOn?: string
+  notes?: string
 }
 
 export type Phone = {

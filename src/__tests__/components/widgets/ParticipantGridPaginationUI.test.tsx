@@ -4,14 +4,13 @@ import {
   cleanup,
   queryByAttribute,
   RenderResult,
-  fireEvent,
+  within,
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import ReactDOM from 'react-dom'
 import ParticipantTablePagination from '../../../components/studies/participants/ParticipantTablePagination'
 import PageSelector from '../../../components/studies/participants/PageSelector'
 import PageBox from '../../../components/studies/participants/PageBox'
-import { shallow, ShallowWrapper, configure } from 'enzyme'
 
 const getById = queryByAttribute.bind(null, 'id')
 
@@ -26,8 +25,11 @@ let backward_one_page_button: HTMLElement
 let currentPage = 1
 let pageSize = 25
 let numberOfPages = 4
-const totalParticipants = 100
+let totalParticipants = 100
 
+/*
+    Simulated functions that are usually in parent components:
+*/
 const onPageSelectedChanged = (page: number) => {
   currentPage = page
 }
@@ -44,10 +46,16 @@ const handlePageNavigationArrowPressed = (type: string) => {
   }
 }
 
-const updatePageSize = (pagesize: number) => {
-  pageSize = pagesize
+const updatePageSize = (newPageSize: number) => {
+  pageSize = newPageSize
+  numberOfPages = Math.ceil(totalParticipants / newPageSize)
 }
 
+/*
+    Render Functions:
+*/
+
+// rerender the page selector and the forward/backward buttons inside of it
 const renderPageSelector = () => {
   pageSelector = render(
     <PageSelector
@@ -75,6 +83,7 @@ const renderPageSelector = () => {
   )!
 }
 
+// rerender the table pagination component
 const renderParticipantTableGrid = () => {
   participantTablePagination = render(
     <ParticipantTablePagination
@@ -89,15 +98,28 @@ const renderParticipantTableGrid = () => {
   )
 }
 
+// reset the variables
+const resetVariables = () => {
+  currentPage = 1
+  pageSize = 25
+  numberOfPages = 4
+  totalParticipants = 100
+}
+
 beforeEach(() => {
+  resetVariables()
   renderParticipantTableGrid()
   renderPageSelector()
 })
 
-afterAll(cleanup)
+afterEach(cleanup)
+
+/*
+    Tests:
+*/
 
 // tests to see if the components are rendering without crashing
-test('should be rendering withour crashing', () => {
+test('should be rendering without crashing', () => {
   const div = document.createElement('div')
   ReactDOM.render(
     <ParticipantTablePagination
@@ -113,21 +135,19 @@ test('should be rendering withour crashing', () => {
   )
   const div2 = document.createElement('div')
   ReactDOM.render(
-    <ParticipantTablePagination
-      setPageSize={updatePageSize}
-      totalParticipants={totalParticipants}
-      currentPage={currentPage}
-      pageSize={pageSize}
+    <PageSelector
+      onPageSelected={onPageSelectedChanged}
       numberOfPages={numberOfPages}
-      onPageSelectedChanged={onPageSelectedChanged}
+      currentPageSelected={currentPage}
       handlePageNavigationArrowPressed={handlePageNavigationArrowPressed}
-    ></ParticipantTablePagination>,
+    ></PageSelector>,
+
     div2,
   )
 })
 
 // test the functionality of the forward and back buttons for pagination
-test('should page forward and backward buttons work', () => {
+test('should page forward and backward buttons function correctly', () => {
   // go forward one page
   userEvent.click(forward_one_page_button as HTMLElement)
   expect(currentPage).toBe(2)
@@ -164,21 +184,22 @@ test('should page change when page number is clicked', () => {
     ></PageBox>,
   )).container
   const pageButton3 = getById(pb as HTMLElement, 'pagebox-button-3')
-  userEvent.click(pageButton3 as HTMLElement)
+  userEvent.click(pageButton3!)
   expect(currentPage).toBe(3)
 })
 
-/*
-// I am having trouble resetting the value of the text field
+// test to see if changing the page size results in correct behavior
 test('should changing page size result in correct behavior', () => {
   const textField = getById(
     participantTablePagination.container as HTMLElement,
     'page-selector',
   )
-  // console.log(textField)
-  fireEvent.change(textField!, { target: { value: '25' } })
+  const selectNode = textField?.parentNode?.querySelector('[role=button]')
+  userEvent.click(selectNode!)
+  const listbox = document.body.querySelector('ul[role=listbox]')
+  const selectedItem = within(listbox as HTMLElement).getByText('50')
+  userEvent.click(selectedItem)
   expect(currentPage).toBe(1)
-  expect(pageSize).toBe(25)
-  expect(numberOfPages).toBe(4)
+  expect(pageSize).toBe(50)
+  expect(numberOfPages).toBe(2)
 })
-*/

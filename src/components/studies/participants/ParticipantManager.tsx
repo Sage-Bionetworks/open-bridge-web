@@ -29,7 +29,7 @@ import {
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import AddParticipants from './AddParticipants'
 import ParticipantDownload, {
-  ParticipantActivityType
+  ParticipantActivityType,
 } from './ParticipantDownload'
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
@@ -336,7 +336,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   handleSearchParticipantRequest(searchedValue)
                 }
               />
-
               <ParticipantDownload
                 type={tab}
                 onDownload={() =>
@@ -347,7 +346,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 }
               />
             </Box>
-
             <div
               role="tabpanel"
               hidden={tab !== 'ACTIVE'}
