@@ -104,7 +104,7 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
 
   React.useEffect(() => {
     ///your async call
-    return run(AssessmentService.getAssessmentsWithResources(undefined, token))
+    return run(AssessmentService.getAssessmentsWithResources(undefined, /*token*/undefined))
   }, [run])
   if (status === 'PENDING') {
     return <>loading component here</>
