@@ -141,7 +141,6 @@ test('should be rendering without crashing', () => {
       currentPageSelected={currentPage}
       handlePageNavigationArrowPressed={handlePageNavigationArrowPressed}
     ></PageSelector>,
-
     div2,
   )
 })
