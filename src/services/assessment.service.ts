@@ -15,7 +15,7 @@ async function getAssessment(
   guid: string,
   token?: string,
 ): Promise<Assessment[]> {
-  const result = token
+  const result = !token
     ? await callEndpoint<Assessment>(
         `${constants.endpoints.assessmentShared.replace(':id', guid)}`,
         'GET',
@@ -37,7 +37,7 @@ async function importAssessmentIntoLocalContext(
   token: string,
 ) {
   const assessment = await callEndpoint<Assessment>(
-    `${constants.endpoints.assessmentShared}${guid}/import`,
+    `${constants.endpoints.assessmentShared.replace(':id', guid)}/import`,
     `POST`,
     {
       ownerId: ownerId,
@@ -93,7 +93,19 @@ async function getAssessmentsWithResources(
     ? await getAssessment(guid, token)
     : await getAssessments(token)
   const resourcePromises = assessments.map(async asmnt => getResource(asmnt))
-  return Promise.all(resourcePromises).then(items => {
+  return Promise.allSettled(resourcePromises).then(items1 => {
+   
+    const items = items1
+      .filter(i => i.status === 'fulfilled')
+       //@ts-ignore
+      .map(i => i.value) as Assessment[]
+
+      const itemsFailed = items1
+      .filter(i => i.status === 'rejected')
+       //@ts-ignore
+      .map(i => i.reason) 
+      console.log(itemsFailed)
+
     const allTags = items.map(item => item.tags).flat()
     const tags = allTags.reduce((acc, curr) => {
       if (!acc[curr]) {

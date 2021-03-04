@@ -1,19 +1,21 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   IconButton,
   makeStyles,
-  Paper,
-  CircularProgress,
+  Paper
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import SaveIcon from '@material-ui/icons/Save'
 import React, { FunctionComponent, useState } from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
+import { useUserSessionDataState } from '../../../helpers/AuthContext'
+import AssessmentService from '../../../services/assessment.service'
 import { StudySession } from '../../../types/scheduling'
 import { Assessment, StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
@@ -21,8 +23,6 @@ import AssessmentSelector from './AssessmentSelector'
 import SessionActionButtons from './SessionActionButtons'
 import actionsReducer, { SessionAction, Types } from './sessionActions'
 import SingleSessionContainer from './SingleSessionContainer'
-import AssessmentService from '../../../services/assessment.service'
-import { useUserSessionDataState } from '../../../helpers/AuthContext'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -127,16 +127,20 @@ const SessionCreator: FunctionComponent<
     console.log('updating')
     const assessments: Assessment[] = [...previousAssessments]
     for (let i = 0; i < newAssessments.length; i++) {
-      const assessment = newAssessments[i]
-      const newAssessment = await AssessmentService.importAssessmentIntoLocalContext(
-        assessment.guid,
-        assessment.ownerId,
-        token!,
-      )
-      const assessmentWithResources = await AssessmentService.getResource(
-        newAssessment,
-      )
-      assessments.push(assessmentWithResources)
+      try {
+        const assessment = newAssessments[i]
+        const newAssessment = await AssessmentService.importAssessmentIntoLocalContext(
+          assessment.guid,
+          assessment.ownerId,
+          token!,
+        )
+        const assessmentWithResources = await AssessmentService.getResource(
+          newAssessment,
+        )
+        assessments.push(assessmentWithResources)
+      } catch (error) {
+        console.log('error', error.message)
+      }
     }
     sessionsUpdateFn({
       type: Types.UpdateAssessments,
@@ -262,6 +266,7 @@ const SessionCreator: FunctionComponent<
                 variant="contained"
                 onClick={async () => {
                   setIsAddingAssessmentToSession(true)
+
                   await updateAssessments(
                     getActiveSession(sessions)!.id,
                     getActiveSession(sessions)!.assessments,
