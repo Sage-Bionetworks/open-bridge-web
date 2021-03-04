@@ -3,10 +3,11 @@ import constants from '../types/constants'
 import {
   EditableParticipantData,
   ParticipantAccountSummary,
-
   StringDictionary
 } from '../types/types'
 
+export const CLINIC_EVENT_ID = 'clinic_visit'
+const IS_TEST: boolean = true
 
 async function getClinicVisitsForParticipants(
   studyIdentifier: string,
@@ -46,6 +47,14 @@ async function getClinicVisitsForParticipants(
   })
 }
 
+
+
+
+
+
+
+
+//gets all pages for participants
 async function getAllParticipants(studyIdentifier: string, token: string) {
   const pageSize = 50
   const result = await getParticipants(studyIdentifier, token, pageSize, 0)
@@ -66,10 +75,11 @@ async function getAllParticipants(studyIdentifier: string, token: string) {
       [],
       result.map(i => i.items),
     )
-    debugger
+
     return { items: allItems, total: result[0].total }
   })
 }
+
 async function getParticipants(
   studyIdentifier: string,
   token: string,
@@ -80,22 +90,17 @@ async function getParticipants(
     ':id',
     studyIdentifier,
   )
+
+  const data = {
+    pageSize: pageSize,
+    offsetBy: offsetBy,
+    noneOfGroups: IS_TEST ? undefined : ['test_user'],
+  }
+
   const result = await callEndpoint<{
     items: ParticipantAccountSummary[]
     total: number
-  }>(
-    endpoint,
-    'POST',
-    {
-      pageSize: pageSize,
-      offsetBy: offsetBy,
-    },
-    token,
-  )
-
-  /*const mappedResult = result.data.items.map(item => {
-    return { ...item, studyExternalId: item.externalIds[studyIdentifier] }
-  })*/
+  }>(endpoint, 'POST', data, token)
   return { items: result.data.items, total: result.data.total }
 }
 
@@ -144,6 +149,40 @@ async function deleteParticipant(
   return result.data.identifier
 }
 
+async function getEnrollments(studyIdentifier: string, token: string) {
+  const endpoint = `${constants.endpoints.enrollments.replace(
+    ':studyId',
+    studyIdentifier,
+  )}?enrollmentFilter=all`
+
+  const result = await callEndpoint<{ items: any }>(endpoint, 'GET', {}, token)
+  debugger
+  return result.data.items
+}
+
+async function withdrawParticipant(
+  studyIdentifier: string,
+  token: string,
+  participantId: string,
+  note?: string,
+): Promise<string> {
+  const endpoint = `${constants.endpoints.enrollments.replace(
+    ':studyId',
+    studyIdentifier,
+  )}/${participantId}${
+    note ? 'withdrawalNote=' + encodeURIComponent(note) + '' : ''
+  }`
+
+  const result = await callEndpoint<{ identifier: string }>(
+    endpoint,
+    'DELETE',
+    {},
+    token,
+  )
+
+  return result.data.identifier
+}
+
 /*async function updateParticipantGroup(
   studyIdentifier: string,
   token: string,
@@ -183,7 +222,7 @@ async function addParticipant(
   const data: StringDictionary<any> = {
     appId: constants.constants.APP_ID,
 
-    dataGroups: ['test_user'],
+    dataGroups: IS_TEST ? ['test_user'] : undefined,
   }
   if (options.phone) {
     data.phone = options.phone
@@ -206,7 +245,7 @@ async function addParticipant(
       .replace(':studyId', studyIdentifier)
       .replace(':userId', userId)
     const data = {
-      eventId: 'clinic_visit',
+      eventId: CLINIC_EVENT_ID,
       timestamp: new Date(options.clinicVisitDate).toISOString(),
     }
 
@@ -215,14 +254,79 @@ async function addParticipant(
 
   return userId
 }
+async function updateParticipant(
+  studyIdentifier: string,
+  token: string,
+  participantId: string,
+  options: EditableParticipantData,
+): Promise<string> {
+  // update notes
+  const endpoint = `${constants.endpoints.participant.replace(
+    ':id',
+    studyIdentifier,
+  )}/${participantId}`
+
+  const data = {
+    notes: options.notes,
+  }
+
+  await callEndpoint<ParticipantAccountSummary>(endpoint, 'POST', data, token)
+
+  // update events
+  let eventEndpoint = constants.endpoints.events
+    .replace(':studyId', studyIdentifier)
+    .replace(':userId', participantId)
+
+  if (options.clinicVisitDate) {
+    const endpoint = constants.endpoints.events
+      .replace(':studyId', studyIdentifier)
+      .replace(':userId', participantId)
+    const data = {
+      eventId: CLINIC_EVENT_ID,
+      timestamp: new Date(options.clinicVisitDate).toISOString(),
+    }
+
+    await callEndpoint<{ identifier: string }>(endpoint, 'POST', data, token)
+  } else {
+    console.log('deleting')
+    eventEndpoint = eventEndpoint + CLINIC_EVENT_ID
+    await callEndpoint<{ identifier: string }>(endpoint, 'DELETE', {}, token)
+  }
+
+  return participantId
+}
+
+async function getRequestInfoForParticipant(
+  studyIdentifier: string,
+  token: string,
+  participantId: string,
+) {
+  //transform ids into promises
+
+  const endpoint = constants.endpoints.requestInfo
+    .replace(':studyId', studyIdentifier)
+    .replace(':userId', participantId)
+
+  const info = await callEndpoint<{ signedInOn: any }>(
+    endpoint,
+    'GET',
+    {},
+    token,
+  )
+  return info.data
+}
 
 const ParticipantService = {
-  getParticipants,
   addParticipant,
-  getParticipantWithId,
   deleteParticipant,
-  getClinicVisitsForParticipants,
   getAllParticipants,
+  getClinicVisitsForParticipants,
+  getEnrollments,
+  getParticipantWithId,
+  getParticipants,
+  getRequestInfoForParticipant,
+  updateParticipant,
+  withdrawParticipant,
 }
 
 export default ParticipantService

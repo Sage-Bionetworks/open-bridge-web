@@ -14,6 +14,7 @@ import { RouteComponentProps } from 'react-router-dom'
 import { ReactComponent as ExpandIcon } from '../../../assets/add_participants.svg'
 import { ReactComponent as CollapseIcon } from '../../../assets/collapse.svg'
 import LinkIcon from '../../../assets/link_icon.svg'
+import { ReactComponent as Delete } from '../../../assets/trash.svg'
 import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
@@ -107,7 +108,7 @@ const participantRecordTemplate: ParticipantAccountSummary = {
   firstName: '',
   lastName: '',
   email: '',
-  phone: '',
+
   id: '',
   externalIds: {},
 }
@@ -119,6 +120,8 @@ async function getParticipants(
   pageSize: number,
 ): Promise<ParticipantData> {
   const offset = (currentPage - 1) * pageSize
+// ALINA TODO: enrollments
+  const enr = await ParticipantService.getEnrollments(studyId, token!)
   const participants = await ParticipantService.getParticipants(
     studyId,
     token!,
@@ -336,12 +339,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               TabIndicatorProps={{ hidden: true }}
             >
               <Tab
-                label="Item One"
+                label={`Participant List (${data ? data.total : '...'})`}
                 value={'ACTIVE'}
                 classes={{ root: classes.tab }}
               />
               <Tab
-                label="Item Two"
+                label="Withdrawn Participants"
                 value={'WITHDRAWN'}
                 classes={{ root: classes.tab }}
               />
@@ -364,10 +367,18 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 }
               />
 
-              <ParticipantDownload
-                type={tab}
-                onDownload={downloadParticipants}
-              />
+              {!isEdit && (
+                <ParticipantDownload
+                  type={tab}
+                  onDownload={downloadParticipants}
+                />
+              )}
+              {isEdit && (
+                <Button aria-label="delete" onClick={() => {}}>
+                  <Delete style={{ marginRight: '8px' }}></Delete>Remove from
+                  Study
+                </Button>
+              )}
             </Box>
 
             <div
@@ -381,12 +392,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 status={status}
                 studyId={study.identifier}
                 totalParticipants={data?.total || 0}
-                isEdit = {isEdit}
-                onEdit={()=> {}}
+                isEdit={isEdit}
+                onUpdate={() => setRefreshParticipantsToggle(prev => !prev)}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
-            enrollmentType={study.clientData.enrollmentType!}
-                onRowSelected={(/*id: string, isSelected: boolean*/selection) => {
+                enrollmentType={study.clientData.enrollmentType!}
+                onRowSelected={(
+                  /*id: string, isSelected: boolean*/ selection,
+                ) => {
                   if (tab === 'ACTIVE') {
                     setSelectedActiveParticipants(selection)
                   } else {

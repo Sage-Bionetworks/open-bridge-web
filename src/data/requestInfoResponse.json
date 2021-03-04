@@ -1,0 +1,16 @@
+{
+  "data": {
+    "userId": "8SM69vOWWTdXXowM1GZgmqwJ",
+    "clientInfo": {
+      "type": "ClientInfo"
+    },
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36",
+    "languages": ["en"],
+    "userDataGroups": ["test_user", "tests_available", "tests_scheduled"],
+    "userStudyIds": ["columbia"],
+    "signedInOn": "2021-01-05T21:45:12.263Z",
+    "uploadedOn": "2020-11-13T15:57:04.210Z",
+    "timeZone": "UTC",
+    "type": "RequestInfo"
+  }
+}

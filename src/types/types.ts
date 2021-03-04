@@ -136,7 +136,7 @@ export type ParticipantAccountSummary = {
   firstName: string
   lastName: string
   email: string
-  phone: string
+  phone?: Phone
   id: string
   externalIds: StringDictionary<string>
   studyExternalId?: string
