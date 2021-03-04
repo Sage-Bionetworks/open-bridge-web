@@ -19,9 +19,8 @@ import { CSVReader } from 'react-papaparse'
 import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
 import { ReactComponent as UploadIcon } from '../../../assets/upload.svg'
 import { isInvalidPhone, makePhone } from '../../../helpers/utility'
-import { AddParticipantType } from '../../../services/participants.service'
 import { poppinsFont, theme } from '../../../style/theme'
-import { EnrollmentType, Study } from '../../../types/types'
+import { EditableParticipantData, EnrollmentType, Study } from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import { BlueButton } from '../../widgets/StyledComponents'
 import TabPanel from '../../widgets/TabPanel'
@@ -31,6 +30,7 @@ import AddSingleParticipant, {
   addParticipantByPhone
 } from './AddSingleParticipant'
 import ImportParticipantsInstructions from './ImportParticipantsInstuctions'
+
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -126,7 +126,7 @@ async function uploadCsvRow(
   studyIdentifier: string,
   token: string,
 ) {
-  const options: AddParticipantType = {
+  const options: EditableParticipantData = {
     externalId: data['Participant ID'],
     clinicVisitDate: data['Clinic Visit'],
     notes: data['Notes'],

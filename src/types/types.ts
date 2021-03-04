@@ -123,12 +123,20 @@ export type StudyBuilderComponentProps = {
   saveLoader: boolean
 }
 
+export type EditableParticipantData = {
+  clinicVisitDate?: Date
+  notes?: string
+  externalId?: string
+  phone?: Phone
+  phoneNumber?: string
+}
+
 export type ParticipantAccountSummary = {
   isSelected?: boolean
   firstName: string
   lastName: string
   email: string
-  phone: string
+  phone?: Phone
   id: string
   externalIds: StringDictionary<string>
   studyExternalId?: string
