@@ -11,7 +11,7 @@ import {
   ColDef,
   DataGrid,
   GridOverlay,
-  ValueGetterParams,
+  ValueGetterParams
 } from '@material-ui/data-grid'
 import React, { FunctionComponent } from 'react'
 import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
@@ -67,6 +67,14 @@ const activeParticipantsColumns: ColDef[] = [
   { field: 'status', headerName: 'Status', flex: 1 },
   { field: 'notes', headerName: 'Notes', flex: 1 },
 ]
+const phoneColumn = {
+    
+  field: 'phone',
+  headerName: 'Phone Number',
+  flex: 1,
+  valueGetter: getPhone,
+
+}
 
 export type ParticipantTableGridProps = {
   rows: ParticipantAccountSummary[]
@@ -191,16 +199,16 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     },
   }
 
+
+
   if (isPhoneEnrollmentType) {
-    activeParticipantsColumns.splice(2, 0, {
-      field: 'phone',
-      headerName: 'Phone Number',
-      flex: 1,
-      valueGetter: getPhone,
-    })
+    if (!activeParticipantsColumns.find(col=> col.field === 'phone')) 
+    activeParticipantsColumns.splice(2, 0, phoneColumn)
   }
   if (isEdit) {
+    if (!activeParticipantsColumns.find(col=> col.field === 'edit')) {
     activeParticipantsColumns.push(editColumn)
+    }
   }
 
   const onPageSelectedChanged = (pageSelected: number) => {
