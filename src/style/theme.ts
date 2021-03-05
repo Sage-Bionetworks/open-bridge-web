@@ -1,5 +1,8 @@
-import { createMuiTheme, Theme } from '@material-ui/core'
+/*import { createMuiTheme, Theme } from '@material-ui/core'
+/*ag*/
+import { Theme, unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core'
 import { CSSProperties } from '@material-ui/core/styles/withStyles'
+
 
 type cssGlobalClasses = {
   [key: string]: CSSProperties
