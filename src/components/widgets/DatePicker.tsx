@@ -121,7 +121,6 @@ const DatePicker: FunctionComponent<DatePickerProps> = ({
                 className: classes.dateAdornment,
               }}
               clearable={true}
-              variant="inline"
               format="MM/DD/yyyy"
               autoOk={true}
               disableToolbar={true}
