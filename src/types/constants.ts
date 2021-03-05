@@ -108,7 +108,7 @@ export default {
       '/v1/sharedassessments/identifier::identifier/resources',
     bridgeAccount: '/v1/accounts/:id',
     //  enrollments: '/v5/studies/{studyId}/enrollments',
-    enrollments: '/v5/studies/:studyId/enrollments/',
+    enrollments: '/v5/studies/:studyId/enrollments',
     events: '/v5/studies/:studyId/participants/:userId/activityEvents',
     getAccountsForOrg: '/v1/organizations/:orgId/members',
     oauthSignIn: '/v3/auth/oauth/signIn',

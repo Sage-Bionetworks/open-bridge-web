@@ -5,7 +5,7 @@ import {
   Grid,
   Switch,
   Tab,
-  Tabs,
+  Tabs
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { FunctionComponent } from 'react'
@@ -19,13 +19,13 @@ import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
-  useStudyInfoDataState,
+  useStudyInfoDataState
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
 import { theme } from '../../../style/theme'
 import {
   ParticipantAccountSummary,
-  StringDictionary,
+  StringDictionary
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import AddParticipants from './AddParticipants'
@@ -130,16 +130,16 @@ async function getParticipants(
   )
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
-  const clinicVisitMap: StringDictionary<string> = await ParticipantService.getClinicVisitsForParticipants(
+  const eventsMap: StringDictionary<{clinicVisitDate: string, joinedDate: string}> = await ParticipantService.getClinicVisitsForParticipants(
     studyId,
     token,
     retrievedParticipants.map(p => p.id),
   )
   const result = retrievedParticipants!.map(participant => {
     const id = participant.id as string
-    const visit = clinicVisitMap[id]
-    const y = { ...participant, clinicVisit: visit }
-    return y
+    const event = eventsMap[id]
+    const updatedParticipant = { ...participant, clinicVisit: event.clinicVisitDate, dateJoined: event.joinedDate}
+    return updatedParticipant
   })
 
   return { items: result, total: numberOfParticipants }
@@ -407,9 +407,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 }}
                 pageSize={pageSize}
                 setPageSize={setPageSize}
-                isPhoneEnrollmentType={
-                  study.clientData.enrollmentType === 'PHONE'
-                }
+              
               ></ParticipantTableGrid>
             </div>
 
