@@ -121,7 +121,7 @@ async function getParticipants(
 ): Promise<ParticipantData> {
   const offset = (currentPage - 1) * pageSize
 // ALINA TODO: enrollments
-  const enr = await ParticipantService.getEnrollments(studyId, token!)
+  const enr = await ParticipantService.getEnrollmentsWithdrawn(studyId, token!)
   const participants = await ParticipantService.getParticipants(
     studyId,
     token!,
@@ -130,7 +130,7 @@ async function getParticipants(
   )
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
-  const eventsMap: StringDictionary<{clinicVisitDate: string, joinedDate: string}> = await ParticipantService.getClinicVisitsForParticipants(
+  const eventsMap: StringDictionary<{clinicVisitDate: string, joinedDate: string}> = await ParticipantService.getRelevantEventsForParticipans(
     studyId,
     token,
     retrievedParticipants.map(p => p.id),
@@ -216,6 +216,32 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     pageSize,
     token,
   ])
+
+  const withdrawParticipant = async (participantId: string, note: string) => {
+   
+    await ParticipantService.withdrawParticipant(
+      study!.identifier,
+      token!,
+      participantId,
+      note,
+    )
+    setRefreshParticipantsToggle(prev => !prev)
+  }
+
+  const updateParticipant = async (
+    participantId: string,
+    notes: string,
+    clinicVisitDate?: Date,
+  ) => {
+ 
+    await ParticipantService.updateNotesAndClinicVisitForParticipant(study!.identifier, token!, participantId, {
+      notes,
+      clinicVisitDate: clinicVisitDate,
+    })
+    setRefreshParticipantsToggle(prev => !prev)
+
+
+  }
 
   const handleSearchParticipantRequest = async (searchedValue: string) => {
     const result = await ParticipantService.getParticipantWithId(
@@ -392,7 +418,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 studyId={study.identifier}
                 totalParticipants={data?.total || 0}
                 isEdit={isEdit}
-                onUpdate={() => setRefreshParticipantsToggle(prev => !prev)}
+                onWithdrawParticipant = {(participantId: string, note: string) => withdrawParticipant(participantId, note)}
+                onUpdateParticipant={(  participantId: string,
+                  notes: string,
+                  clinicVisitDate?: Date)=>updateParticipant(participantId,notes,clinicVisitDate)}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
                 enrollmentType={study.clientData.enrollmentType!}
