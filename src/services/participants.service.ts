@@ -11,7 +11,10 @@ export const JOINED_EVENT_ID = 'created_on'
 
 const IS_TEST: boolean = true
 
-async function getClinicVisitsForParticipants(
+
+
+// gets clinic visits and join events for participants with the specified ids
+async function getRelevantEventsForParticipans(
   studyIdentifier: string,
   token: string,
   participantId: string[],
@@ -34,11 +37,11 @@ async function getClinicVisitsForParticipants(
   //execute promises and reduce array to dictionary object
   return Promise.all(promises).then(result => {
     const items = result.reduce((acc, item) => {
-      //only need clinic visits
+      //clinic visits
       const clinicVisitDate = item.apiCall.data.items.find(
         event => event.eventId === `custom:${CLINIC_EVENT_ID}`,
       )
-
+      //joinedDate eventIds will change
       let joinedDate = item.apiCall.data.items.find(
         event => event.eventId === JOINED_EVENT_ID,
       )
@@ -58,7 +61,7 @@ async function getClinicVisitsForParticipants(
   })
 }
 
-//gets all pages for participants
+//gets all pages for participants. Used with the 'all' functionality
 async function getAllParticipants(studyIdentifier: string, token: string) {
   const pageSize = 50
   const result = await getParticipants(studyIdentifier, token, pageSize, 0)
@@ -84,6 +87,7 @@ async function getAllParticipants(studyIdentifier: string, token: string) {
   })
 }
 
+// get a page of participants
 async function getParticipants(
   studyIdentifier: string,
   token: string,
@@ -139,6 +143,7 @@ async function getParticipantWithId(
   }
 }
 
+//deletes single participant. NOTE: this is delete and NOT withdraw. Currently only works on test users
 async function deleteParticipant(
   studyIdentifier: string,
   token: string,
@@ -158,7 +163,8 @@ async function deleteParticipant(
   return result.data.identifier
 }
 
-async function getEnrollments(studyIdentifier: string, token: string) {
+//gets a list of withdrawn participants
+async function getEnrollmentsWithdrawn(studyIdentifier: string, token: string) {
   const endpoint = `${constants.endpoints.enrollments.replace(
     ':studyId',
     studyIdentifier,
@@ -173,6 +179,7 @@ async function getEnrollments(studyIdentifier: string, token: string) {
   return result.data.items
 }
 
+//withdraws participant
 async function withdrawParticipant(
   studyIdentifier: string,
   token: string,
@@ -223,6 +230,8 @@ async function withdrawParticipant(
   return result.data.identifier
 }*/
 
+//adds a participant
+
 async function addParticipant(
   studyIdentifier: string,
   token: string,
@@ -267,7 +276,9 @@ async function addParticipant(
 
   return userId
 }
-async function updateParticipant(
+
+//used when editing a participant
+async function updateNotesAndClinicVisitForParticipant(
   studyIdentifier: string,
   token: string,
   participantId: string,
@@ -333,12 +344,12 @@ const ParticipantService = {
   addParticipant,
   deleteParticipant,
   getAllParticipants,
-  getClinicVisitsForParticipants,
-  getEnrollments,
+  getRelevantEventsForParticipans,
+  getEnrollmentsWithdrawn,
   getParticipantWithId,
   getParticipants,
   getRequestInfoForParticipant,
-  updateParticipant,
+  updateNotesAndClinicVisitForParticipant,
   withdrawParticipant,
 }
 

@@ -95,7 +95,12 @@ export type ParticipantTableGridProps = {
   currentPage: number
   setCurrentPage: Function
   onRowSelected: (ids: string[]) => void
-  onUpdate: Function
+  onUpdateParticipant: (
+    pId: string,
+    notes: string,
+    clinicVisitDate?: Date,
+  ) => void,
+  onWithdrawParticipant: (participantId: string, note: string) => void,
   pageSize: number
   setPageSize: Function
   isEdit?: boolean
@@ -113,7 +118,8 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   status,
   isEdit,
   enrollmentType,
-  onUpdate,
+  onUpdateParticipant,
+  onWithdrawParticipant,
   onRowSelected,
 }: ParticipantTableGridProps) => {
   const { token } = useUserSessionDataState()
@@ -232,33 +238,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
   const handleClose = () => {}
 
-  const saveChangesToParticipant = async (
-    participantId: string,
-    notes: string,
-    clinicVisitDate?: Date,
-  ) => {
-    await ParticipantService.updateParticipant(studyId, token!, participantId, {
-      notes,
-      clinicVisitDate: clinicVisitDate,
-    })
-
-    onUpdate()
-
-    setParticipantToEdit(undefined)
-  }
-
-  const withdrawParticipant = async (participantId: string, note: string) => {
-    await ParticipantService.withdrawParticipant(
-      studyId,
-      token!,
-      participantId,
-      note,
-    )
-
-    onUpdate()
-
-    setParticipantToEdit(undefined)
-  }
 
   const makeTestGroup = async () => {
     /* for (let i = 0; i < selected.length; i++) {
@@ -352,9 +331,10 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
           <EditParticipantForm
             enrollmentType={enrollmentType}
             onCancel={() => setParticipantToEdit(undefined)}
-            onOK={(notes: string, cvd?: Date) =>
-              saveChangesToParticipant(participantToEdit?.id!, notes, cvd)
-            }
+            onOK={(notes: string, cvd?: Date) => {
+              onUpdateParticipant(participantToEdit?.id!, notes, cvd)
+              setParticipantToEdit(undefined)
+            }}
             participant={participantToEdit?.participant || {}}
           >
             <Button
@@ -373,7 +353,8 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             enrollmentType={enrollmentType}
             onCancel={() => setParticipantToEdit(undefined)}
             onOK={(note: string) => {
-              withdrawParticipant(participantToEdit?.id!, note)
+              onWithdrawParticipant(participantToEdit?.id!, note)
+              setParticipantToEdit(undefined)
             }}
             participant={participantToEdit?.participant || {}}
           ></WithdrawParticipantForm>
