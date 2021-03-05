@@ -138,6 +138,7 @@ export type ParticipantAccountSummary = {
   email: string
   phone?: Phone
   id: string
+  studyIds?:string[]
   externalIds: StringDictionary<string>
   studyExternalId?: string
   status: 'unverified' | 'pending' | 'verified'

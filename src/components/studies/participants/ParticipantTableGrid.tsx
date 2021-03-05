@@ -11,7 +11,7 @@ import {
   ColDef,
   DataGrid,
   GridOverlay,
-  ValueGetterParams,
+  ValueGetterParams
 } from '@material-ui/data-grid'
 import React, { FunctionComponent } from 'react'
 import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
@@ -24,6 +24,7 @@ import {
   ParticipantAccountSummary
 } from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
+import HideWhen from '../../widgets/HideWhen'
 import {
   EditParticipantForm,
   WithdrawParticipantForm
@@ -51,22 +52,40 @@ function getClinicVisit(params: ValueGetterParams) {
   } else return ''
 }
 
-const activeParticipantsColumns: ColDef[] = [
+function getDateJoined(params: ValueGetterParams) {
+  if (params.value) {
+    return new Date(params.value as string).toLocaleDateString()
+  } else return '-'
+}
+
+const ACTIVE_PARTICIPANT_COLUMNS: ColDef[] = [
   {
     field: 'externalId',
     headerName: 'Participant ID',
     flex: 2,
   },
-  // { field: 'id', headerName: 'HealthCode', flex: 2 },
+  { field: 'id', headerName: 'HealthCode', flex: 2 },
   {
     field: 'clinicVisit',
     headerName: 'Clinic Visit',
     valueGetter: getClinicVisit,
     flex: 1,
   },
+  {
+    field: 'dateJoined',
+    headerName: 'Joined',
+    valueGetter: getDateJoined,
+    flex: 1,
+  },
   { field: 'status', headerName: 'Status', flex: 1 },
   { field: 'notes', headerName: 'Notes', flex: 1 },
 ]
+const phoneColumn = {
+  field: 'phone',
+  headerName: 'Phone Number',
+  flex: 1,
+  valueGetter: getPhone,
+}
 
 export type ParticipantTableGridProps = {
   rows: ParticipantAccountSummary[]
@@ -79,7 +98,6 @@ export type ParticipantTableGridProps = {
   onUpdate: Function
   pageSize: number
   setPageSize: Function
-  isPhoneEnrollmentType: boolean
   isEdit?: boolean
   status: 'PENDING' | 'RESOLVED' | 'IDLE'
 }
@@ -92,7 +110,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   setPageSize,
   currentPage,
   setCurrentPage,
-  isPhoneEnrollmentType,
   status,
   isEdit,
   enrollmentType,
@@ -110,7 +127,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
         id: string
         participant: EditableParticipantData
         hasSignedIn: boolean
-        shouldWithdraw?: boolean
+        shouldWithdraw: boolean
       }
     | undefined
   >(undefined)
@@ -141,42 +158,48 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     disableClickEventBubbling: true,
     renderCell: (params: CellParams) => {
       const onClick = async () => {
-        const getValString = (column: string): string | undefined => {
-          const result = params.getValue(column)?.toString()
+        try {
+          const getValString = (column: string): string | undefined => {
+            const result = params.getValue(column)?.toString()
 
-          return result
+            return result
+          }
+
+          const getValDate = (column: string): Date | undefined => {
+            const result = params.getValue(column)?.toString()
+            const d = result ? new Date(result) : undefined
+            return d
+          }
+
+          const getValPhone = (column: string): string | undefined => {
+            const result = params.getValue(column)?.toString()
+            return result?.replace('+1', '') || ''
+          }
+
+          const participant: EditableParticipantData = {
+            clinicVisitDate: getValDate('clinicVisit'),
+            notes: getValString('notes'),
+            externalId: getValString('externalId'),
+            phoneNumber: getValPhone('phone'),
+          }
+
+          const event = await ParticipantService.getRequestInfoForParticipant(
+            studyId,
+            token!,
+            getValString('id')!,
+          )
+
+          const hasSignedIn = event.signedInOn !== undefined
+
+          setParticipantToEdit({
+            id: getValString('id')!,
+            participant,
+            hasSignedIn,
+            shouldWithdraw: false,
+          })
+        } catch (e) {
+          console.log('Error in  onClick', e.message)
         }
-
-        const getValDate = (column: string): Date | undefined => {
-          const result = params.getValue(column)?.toString()
-          const d = result ? new Date(result) : undefined
-          return d
-        }
-
-        const getValPhone = (column: string): string | undefined => {
-          const result = params.getValue(column)?.toString()
-          return result?.replace('+1', '') || ''
-        }
-
-        const participant: EditableParticipantData = {
-          clinicVisitDate: getValDate('clinicVisit'),
-          notes: getValString('notes'),
-          externalId: getValString('externalId'),
-          phoneNumber: getValPhone('phone'),
-        }
-
-        const event = await ParticipantService.getRequestInfoForParticipant(
-          studyId,
-          token!,
-          getValString('id')!,
-        )
-
-        const hasSignedIn = event.signedInOn !== undefined
-        setParticipantToEdit({
-          id: getValString('id')!,
-          participant,
-          hasSignedIn,
-        })
       }
 
       return (
@@ -191,16 +214,16 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     },
   }
 
-  if (isPhoneEnrollmentType) {
-    activeParticipantsColumns.splice(2, 0, {
-      field: 'phone',
-      headerName: 'Phone Number',
-      flex: 1,
-      valueGetter: getPhone,
-    })
+  const activeParticipantsColumns = [...ACTIVE_PARTICIPANT_COLUMNS]
+
+  if (enrollmentType === 'PHONE') {
+    if (!activeParticipantsColumns.find(col => col.field === 'phone'))
+      activeParticipantsColumns.splice(2, 0, phoneColumn)
   }
   if (isEdit) {
-    activeParticipantsColumns.push(editColumn)
+    if (!activeParticipantsColumns.find(col => col.field === 'edit')) {
+      activeParticipantsColumns.push(editColumn)
+    }
   }
 
   const onPageSelectedChanged = (pageSelected: number) => {
@@ -220,6 +243,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     })
 
     onUpdate()
+
     setParticipantToEdit(undefined)
   }
 
@@ -232,6 +256,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     )
 
     onUpdate()
+
     setParticipantToEdit(undefined)
   }
 
@@ -300,61 +325,59 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
         </div>
       </Paper>
       <Dialog
-        open={
-          participantToEdit !== undefined && !participantToEdit?.shouldWithdraw
-        }
+        open={participantToEdit !== undefined}
         maxWidth="sm"
         fullWidth
         aria-labelledby="edit participant"
       >
-        <DialogTitleWithClose onCancel={() => setParticipantToEdit(undefined)}>
-          <>
-            <PencilIcon style={{ width: '25px' }}></PencilIcon>
-            <span style={{ paddingLeft: '8px' }}>Edit Participant Detail</span>
-          </>
-        </DialogTitleWithClose>
-        <EditParticipantForm
-          enrollmentType={enrollmentType}
-          onCancel={() => setParticipantToEdit(undefined)}
-          onOK={(notes: string, cvd?: Date) =>
-            saveChangesToParticipant(participantToEdit?.id!, notes, cvd)
-          }
-          participant={participantToEdit?.participant || {}}
+        <DialogTitleWithClose
+          onCancel={() => {
+            setParticipantToEdit(undefined)
+          }}
         >
-          <Button
-            onClick={() =>
-              setParticipantToEdit(prev => ({ ...prev!, shouldWithdraw: true }))
-            }
-            color="primary"
-          >
-            Withdraw from study
-          </Button>
-        </EditParticipantForm>
-      </Dialog>
-
-      <Dialog
-        open={
-          participantToEdit !== undefined && !!participantToEdit.shouldWithdraw
-        }
-        maxWidth="sm"
-        fullWidth
-        aria-labelledby="edit participant"
-      >
-        <DialogTitleWithClose onCancel={() => setParticipantToEdit(undefined)}>
-          <>
-            <PencilIcon style={{ width: '25px' }}></PencilIcon>
-            <span style={{ paddingLeft: '8px' }}>Withdraw</span>
-          </>
+          <HideWhen hideWhen={participantToEdit?.shouldWithdraw || false}>
+            <>
+              <PencilIcon style={{ width: '25px' }}></PencilIcon>
+              <span style={{ paddingLeft: '8px' }}>
+                Edit Participant Detail
+              </span>
+            </>
+            <>
+              <PencilIcon style={{ width: '25px' }}></PencilIcon>
+              <span style={{ paddingLeft: '8px' }}>Withdraw</span>
+            </>
+          </HideWhen>
         </DialogTitleWithClose>
-
-        <WithdrawParticipantForm
-          enrollmentType={enrollmentType}
-          onCancel={() => setParticipantToEdit(undefined)}
-          onOK={(note: string) =>
-            withdrawParticipant(participantToEdit?.id!, note)
-          }
-          participant={participantToEdit?.participant || {}}
-        ></WithdrawParticipantForm>
+        <HideWhen hideWhen={participantToEdit?.shouldWithdraw || false}>
+          <EditParticipantForm
+            enrollmentType={enrollmentType}
+            onCancel={() => setParticipantToEdit(undefined)}
+            onOK={(notes: string, cvd?: Date) =>
+              saveChangesToParticipant(participantToEdit?.id!, notes, cvd)
+            }
+            participant={participantToEdit?.participant || {}}
+          >
+            <Button
+              onClick={() =>
+                setParticipantToEdit(prev => ({
+                  ...prev!,
+                  shouldWithdraw: true,
+                }))
+              }
+              color="primary"
+            >
+              Withdraw from study
+            </Button>
+          </EditParticipantForm>
+          <WithdrawParticipantForm
+            enrollmentType={enrollmentType}
+            onCancel={() => setParticipantToEdit(undefined)}
+            onOK={(note: string) => {
+              withdrawParticipant(participantToEdit?.id!, note)
+            }}
+            participant={participantToEdit?.participant || {}}
+          ></WithdrawParticipantForm>
+        </HideWhen>
       </Dialog>
     </>
   )

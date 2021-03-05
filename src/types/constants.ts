@@ -98,17 +98,17 @@ export default {
   masterschedule: '/v3/schedulerconfigs',
   metadata: '/v3/sharedmodules/metadata',*/
 
-    assessment: '/v1/assessments/:id',
-    assessments: '/v1/assessments?includeDeleted=false',
+   // assessment: '/v1/assessments/:id',
+    //assessments: '/v1/assessments?includeDeleted=false',
     assmentsForSessions: '/v1/sessions/:sessionId/assessments',
     assessmentsShared: '/v1/sharedassessments/?includeDeleted=false',
     assessmentShared: '/v1/sharedassessments/:id',
-    assessmentResources: '/v1/assessments/identifier::identifier/resources', //'/v1/sharedassessments',
+    //assessmentResources: '/v1/assessments/identifier::identifier/resources', //'/v1/sharedassessments',
     assessmentsSharedResources:
       '/v1/sharedassessments/identifier::identifier/resources',
     bridgeAccount: '/v1/accounts/:id',
     //  enrollments: '/v5/studies/{studyId}/enrollments',
-    enrollments: '/v5/studies/:studyId/enrollments/',
+    enrollments: '/v5/studies/:studyId/enrollments',
     events: '/v5/studies/:studyId/participants/:userId/activityEvents',
     getAccountsForOrg: '/v1/organizations/:orgId/members',
     oauthSignIn: '/v3/auth/oauth/signIn',

@@ -162,7 +162,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
   study,
   token,
 }) => {
-  console.log(enrollmentType)
+
   const [tab, setTab] = React.useState(0)
 
   const classes = useStyles()

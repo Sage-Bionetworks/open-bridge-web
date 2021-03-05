@@ -128,14 +128,8 @@ const SessionCreator: FunctionComponent<
     const assessments: Assessment[] = [...previousAssessments]
     for (let i = 0; i < newAssessments.length; i++) {
       try {
-        const assessment = newAssessments[i]
-        const newAssessment = await AssessmentService.importAssessmentIntoLocalContext(
-          assessment.guid,
-          assessment.ownerId,
-          token!,
-        )
         const assessmentWithResources = await AssessmentService.getResource(
-          newAssessment,
+          newAssessments[i]
         )
         assessments.push(assessmentWithResources)
       } catch (error) {
