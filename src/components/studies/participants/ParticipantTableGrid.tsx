@@ -77,7 +77,6 @@ const ACTIVE_PARTICIPANT_COLUMNS: ColDef[] = [
     valueGetter: getDateJoined,
     flex: 1,
   },
-  { field: 'status', headerName: 'Status', flex: 1 },
   { field: 'notes', headerName: 'Notes', flex: 1 },
 ]
 const phoneColumn = {
@@ -94,7 +93,7 @@ export type ParticipantTableGridProps = {
   totalParticipants: number
   currentPage: number
   setCurrentPage: Function
-  onRowSelected: (ids: string[]) => void
+  onRowSelected: (participants: ParticipantAccountSummary[]) => void
   onUpdateParticipant: (
     pId: string,
     notes: string,
@@ -271,6 +270,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               checkboxSelection
               onSelectionChange={selectedRows => {
                 console.log(selectedRows.rowIds)
+                onRowSelected(rows.filter(row=> selectedRows.rowIds.includes(row.id)) || [])
               }}
               // onRowSelected={(params)=> {console.log(params); onRowSelected(params.data.id.toString(), params.isSelected)}}
 

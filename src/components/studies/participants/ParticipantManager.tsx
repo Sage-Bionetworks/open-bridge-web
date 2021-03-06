@@ -2,6 +2,9 @@ import {
   Box,
   Button,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
   Grid,
   Switch,
   Tab,
@@ -14,7 +17,7 @@ import { RouteComponentProps } from 'react-router-dom'
 import { ReactComponent as ExpandIcon } from '../../../assets/add_participants.svg'
 import { ReactComponent as CollapseIcon } from '../../../assets/collapse.svg'
 import LinkIcon from '../../../assets/link_icon.svg'
-import { ReactComponent as Delete } from '../../../assets/trash.svg'
+import { ReactComponent as DeleteIcon } from '../../../assets/trash.svg'
 import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
@@ -28,7 +31,9 @@ import {
   StringDictionary
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
+import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import AddParticipants from './AddParticipants'
+import DeleteDialog from './DeleteDialogContents'
 import ParticipantDownload, {
   ParticipantActivityType,
   ParticipantDownloadType
@@ -120,7 +125,7 @@ async function getParticipants(
   pageSize: number,
 ): Promise<ParticipantData> {
   const offset = (currentPage - 1) * pageSize
-// ALINA TODO: enrollments
+  // ALINA TODO: enrollments
   const enr = await ParticipantService.getEnrollmentsWithdrawn(studyId, token!)
   const participants = await ParticipantService.getParticipants(
     studyId,
@@ -130,7 +135,10 @@ async function getParticipants(
   )
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
-  const eventsMap: StringDictionary<{clinicVisitDate: string, joinedDate: string}> = await ParticipantService.getRelevantEventsForParticipans(
+  const eventsMap: StringDictionary<{
+    clinicVisitDate: string
+    joinedDate: string
+  }> = await ParticipantService.getRelevantEventsForParticipans(
     studyId,
     token,
     retrievedParticipants.map(p => p.id),
@@ -138,12 +146,30 @@ async function getParticipants(
   const result = retrievedParticipants!.map(participant => {
     const id = participant.id as string
     const event = eventsMap[id]
-    const updatedParticipant = { ...participant, clinicVisit: event.clinicVisitDate, dateJoined: event.joinedDate}
+    const updatedParticipant = {
+      ...participant,
+      clinicVisit: event.clinicVisitDate,
+      dateJoined: event.joinedDate,
+    }
     return updatedParticipant
   })
 
   return { items: result, total: numberOfParticipants }
 }
+
+/*function formatIds(
+  studyId: string,
+  enrollmentType: EnrollmentType,
+  participants: ParticipantAccountSummary[],
+): string[] {
+  return participants.map(participant =>
+    enrollmentType === 'PHONE'
+      ? participant.phone?.nationalFormat ||
+        participant.externalIds[studyId] ||
+        'unknown'
+      : participant.externalIds[studyId] || 'unknown',
+  )
+}*/
 
 type ParticipantManagerProps = ParticipantManagerOwnProps & RouteComponentProps
 
@@ -162,17 +188,23 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [pageSize, setPageSize] = React.useState(50)
   // Withdrawn or active participants
   const [tab, setTab] = React.useState<ParticipantActivityType>('ACTIVE')
+  const [isProcessing, setIsProcessing] = React.useState(false)
+  const [isOpenDeleteDialog, setIsOpenDeleteDialog] = React.useState(false)
   const [
     selectedActiveParticipants,
     setSelectedActiveParticipants,
-  ] = React.useState<string[]>([])
+  ] = React.useState<ParticipantAccountSummary[]>([])
   const [
     selectedWithdrawnParticipants,
     setSelectedWithdrawnParticipants,
-  ] = React.useState<string[]>([])
+  ] = React.useState<ParticipantAccountSummary[]>([])
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
   }
+
+  const [participantsWithError, setParticipantsWithError] = React.useState<
+    ParticipantAccountSummary[]
+  >([])
 
   const handleError = useErrorHandler()
   const classes = useStyles()
@@ -217,8 +249,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     token,
   ])
 
+  //callbacks from the participant grid
   const withdrawParticipant = async (participantId: string, note: string) => {
-   
     await ParticipantService.withdrawParticipant(
       study!.identifier,
       token!,
@@ -233,14 +265,45 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     notes: string,
     clinicVisitDate?: Date,
   ) => {
- 
-    await ParticipantService.updateNotesAndClinicVisitForParticipant(study!.identifier, token!, participantId, {
-      notes,
-      clinicVisitDate: clinicVisitDate,
-    })
+    await ParticipantService.updateNotesAndClinicVisitForParticipant(
+      study!.identifier,
+      token!,
+      participantId,
+      {
+        notes,
+        clinicVisitDate: clinicVisitDate,
+      },
+    )
     setRefreshParticipantsToggle(prev => !prev)
+  }
 
-
+  const deleteSelectedParticipants = async () => {
+    setIsProcessing(true)
+    setParticipantsWithError([])
+    let isError = false
+    for (let i = 0; i < selectedActiveParticipants.length; i++) {
+      console.log('iteration' + i)
+      try {
+        const x = await ParticipantService.deleteParticipant(
+          study!.identifier,
+          token!,
+          selectedActiveParticipants[0].id,
+        )
+        console.log('success', selectedActiveParticipants[i])
+      } catch (e) {
+        isError = true
+        console.log('error', e, selectedActiveParticipants[i])
+        setParticipantsWithError(prev => [
+          ...prev,
+          selectedActiveParticipants[i],
+        ])
+      }
+    }
+    setIsProcessing(false)
+    if (!isError) {
+      setIsOpenDeleteDialog(false)
+      setRefreshParticipantsToggle(prev => !prev)
+    }
   }
 
   const handleSearchParticipantRequest = async (searchedValue: string) => {
@@ -265,7 +328,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     let x: ParticipantActivityType = tab
     ParticipantService.getAllParticipants(study.identifier, token!)
   }
-
+  /*
   const selectParticipants = (
     participantIds: string[],
     id: string,
@@ -278,7 +341,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       return participantIds.filter(_id => _id !== id) || []
     }
     return participantIds
-  }
+  }*/
 
   if (!study) {
     return (
@@ -400,9 +463,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 />
               )}
               {isEdit && (
-                <Button aria-label="delete" onClick={() => {}}>
-                  <Delete style={{ marginRight: '8px' }}></Delete>Remove from
-                  Study
+                <Button
+                  aria-label="delete"
+                  onClick={() => {
+                    setParticipantsWithError([])
+                    setIsOpenDeleteDialog(true)
+                  }}
+                >
+                  <DeleteIcon style={{ marginRight: '8px' }}></DeleteIcon>Remove
+                  from Study
                 </Button>
               )}
             </Box>
@@ -418,10 +487,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 studyId={study.identifier}
                 totalParticipants={data?.total || 0}
                 isEdit={isEdit}
-                onWithdrawParticipant = {(participantId: string, note: string) => withdrawParticipant(participantId, note)}
-                onUpdateParticipant={(  participantId: string,
+                onWithdrawParticipant={(participantId: string, note: string) =>
+                  withdrawParticipant(participantId, note)
+                }
+                onUpdateParticipant={(
+                  participantId: string,
                   notes: string,
-                  clinicVisitDate?: Date)=>updateParticipant(participantId,notes,clinicVisitDate)}
+                  clinicVisitDate?: Date,
+                ) => updateParticipant(participantId, notes, clinicVisitDate)}
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
                 enrollmentType={study.clientData.enrollmentType!}
@@ -436,7 +509,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 }}
                 pageSize={pageSize}
                 setPageSize={setPageSize}
-              
               ></ParticipantTableGrid>
             </div>
 
@@ -454,6 +526,49 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             ADD A PARTICIPANT
           </Box>
         </CollapsibleLayout>
+        <Dialog
+          open={isOpenDeleteDialog}
+          maxWidth="sm"
+          fullWidth
+          aria-labelledby="edit participant"
+        >
+          <DialogTitleWithClose
+            onCancel={() => {
+              setIsOpenDeleteDialog(false)
+            }}
+          >
+            <>
+              <DeleteIcon style={{ width: '25px' }}></DeleteIcon>
+              <span style={{ paddingLeft: '8px' }}>Remove From Study</span>
+            </>
+          </DialogTitleWithClose>
+          <DialogContent>
+           {isOpenDeleteDialog &&<DeleteDialog
+             
+              participantsWithError={participantsWithError}
+              study={study}
+              selectedParticipants={selectedActiveParticipants}
+              isProcessing={isProcessing}
+            />}
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setIsOpenDeleteDialog(false)}
+              color="primary"
+            >
+              Cancel
+            </Button>
+            {participantsWithError.length === 0 && (
+              <Button
+                onClick={() => deleteSelectedParticipants()}
+                color="primary"
+                autoFocus
+              >
+                Permanently Remove
+              </Button>
+            )}
+          </DialogActions>
+        </Dialog>
       </Box>
     )
   }

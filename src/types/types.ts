@@ -140,6 +140,7 @@ export type ParticipantAccountSummary = {
   id: string
   studyIds?:string[]
   externalIds: StringDictionary<string>
+  externalId?: string,
   studyExternalId?: string
   status: 'unverified' | 'pending' | 'verified'
   createdOn?: string
@@ -149,6 +150,7 @@ export type ParticipantAccountSummary = {
 export type Phone = {
   number: string
   regionCode: string
+  nationalFormat?: string
 }
 
 // POST MVP
