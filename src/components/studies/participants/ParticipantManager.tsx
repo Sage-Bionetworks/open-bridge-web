@@ -27,13 +27,13 @@ import {
 import ParticipantService from '../../../services/participants.service'
 import { theme } from '../../../style/theme'
 import {
-  EnrollmentType,
   ParticipantAccountSummary,
   StringDictionary
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import AddParticipants from './AddParticipants'
+import DeleteDialog from './DeleteDialogContents'
 import ParticipantDownload, {
   ParticipantActivityType,
   ParticipantDownloadType
@@ -157,10 +157,19 @@ async function getParticipants(
   return { items: result, total: numberOfParticipants }
 }
 
-function formatIds (studyId: string, enrollmentType: EnrollmentType, participants: ParticipantAccountSummary[]):string[] {
-
-  return   participants.map(participant => enrollmentType === 'PHONE'? participant.phone?.nationalFormat || '' : participant.externalIds.studyId)
-}
+/*function formatIds(
+  studyId: string,
+  enrollmentType: EnrollmentType,
+  participants: ParticipantAccountSummary[],
+): string[] {
+  return participants.map(participant =>
+    enrollmentType === 'PHONE'
+      ? participant.phone?.nationalFormat ||
+        participant.externalIds[studyId] ||
+        'unknown'
+      : participant.externalIds[studyId] || 'unknown',
+  )
+}*/
 
 type ParticipantManagerProps = ParticipantManagerOwnProps & RouteComponentProps
 
@@ -179,6 +188,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [pageSize, setPageSize] = React.useState(50)
   // Withdrawn or active participants
   const [tab, setTab] = React.useState<ParticipantActivityType>('ACTIVE')
+  const [isProcessing, setIsProcessing] = React.useState(false)
   const [isOpenDeleteDialog, setIsOpenDeleteDialog] = React.useState(false)
   const [
     selectedActiveParticipants,
@@ -191,6 +201,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
   }
+
+  const [participantsWithError, setParticipantsWithError] = React.useState<
+    ParticipantAccountSummary[]
+  >([])
 
   const handleError = useErrorHandler()
   const classes = useStyles()
@@ -264,12 +278,31 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }
 
   const deleteSelectedParticipants = async () => {
+    setIsProcessing(true)
+    setParticipantsWithError([])
+    let isError = false
     for (let i = 0; i < selectedActiveParticipants.length; i++) {
-      const x = await ParticipantService.deleteParticipant(
-        study!.identifier,
-        token!,
-        selectedActiveParticipants[0].id,
-      )
+      console.log('iteration' + i)
+      try {
+        const x = await ParticipantService.deleteParticipant(
+          study!.identifier,
+          token!,
+          selectedActiveParticipants[0].id,
+        )
+        console.log('success', selectedActiveParticipants[i])
+      } catch (e) {
+        isError = true
+        console.log('error', e, selectedActiveParticipants[i])
+        setParticipantsWithError(prev => [
+          ...prev,
+          selectedActiveParticipants[i],
+        ])
+      }
+    }
+    setIsProcessing(false)
+    if (!isError) {
+      setIsOpenDeleteDialog(false)
+      setRefreshParticipantsToggle(prev => !prev)
     }
   }
 
@@ -432,7 +465,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               {isEdit && (
                 <Button
                   aria-label="delete"
-                  onClick={() => setIsOpenDeleteDialog(true)}
+                  onClick={() => {
+                    setParticipantsWithError([])
+                    setIsOpenDeleteDialog(true)
+                  }}
                 >
                   <DeleteIcon style={{ marginRight: '8px' }}></DeleteIcon>Remove
                   from Study
@@ -490,7 +526,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             ADD A PARTICIPANT
           </Box>
         </CollapsibleLayout>
-
         <Dialog
           open={isOpenDeleteDialog}
           maxWidth="sm"
@@ -508,15 +543,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             </>
           </DialogTitleWithClose>
           <DialogContent>
-            <p>
-              Are you sure you would like to permanently remove the following
-              participant(s):
-            </p>
-            <p>
-            {isOpenDeleteDialog && formatIds(study!.identifier, study!.clientData.enrollmentType!, selectedActiveParticipants).map(id =>(<span>{id}<br/></span>)
-              )}
-              </p>
-            <p>This action cannot be undone.</p>
+           {isOpenDeleteDialog &&<DeleteDialog
+             
+              participantsWithError={participantsWithError}
+              study={study}
+              selectedParticipants={selectedActiveParticipants}
+              isProcessing={isProcessing}
+            />}
           </DialogContent>
           <DialogActions>
             <Button
@@ -525,13 +558,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             >
               Cancel
             </Button>
-            <Button
-              onClick={() => deleteSelectedParticipants()}
-              color="primary"
-              autoFocus
-            >
-              Permanently Remove
-            </Button>
+            {participantsWithError.length === 0 && (
+              <Button
+                onClick={() => deleteSelectedParticipants()}
+                color="primary"
+                autoFocus
+              >
+                Permanently Remove
+              </Button>
+            )}
           </DialogActions>
         </Dialog>
       </Box>
