@@ -111,7 +111,7 @@ async function getParticipants(
   }>(endpoint, 'POST', data, token)
 
   //ALINA TODO: once there is a filter we can use that
-  const filteredData = result.data.items.filter(item =>
+  const filteredData = result.data.items.map(p => ({...p, externalId: p.externalIds[studyIdentifier]})).filter(item =>
     item.studyIds?.includes(studyIdentifier),
   )
   return { items: filteredData, total: result.data.total }
@@ -133,7 +133,7 @@ async function getParticipantWithId(
       {},
       token,
     )
-    return result.data
+    return {...result.data, externalId: result.data.externalIds[studyIdentifier]}
   } catch (e) {
     // If the participant is not found, return null.
     if (e.statusCode === 404) {
