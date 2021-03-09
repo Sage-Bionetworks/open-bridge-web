@@ -68,7 +68,7 @@ async function createStudy(study: Study, token: string): Promise<Study[]> {
     { identifier: study.identifier, version: study.version, name: study.name },
     token,
   )
-  debugger
+
   const data = await getStudies(token)
   return data
 }

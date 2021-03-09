@@ -45,7 +45,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
 
   React.useEffect(() => {
     ///your async call
-    return run(AssessmentService.getAssessmentsWithResources(undefined, token))
+    return run(AssessmentService.getAssessmentsWithResources())
   }, [run, token])
   if (status === 'PENDING') {
     return <>loading component here</>

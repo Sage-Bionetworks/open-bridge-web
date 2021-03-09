@@ -64,7 +64,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = (
         const {
           assessments,
    
-        } = await AssessmentService.getAssessmentsWithResources(id, token)
+        } = await AssessmentService.getAssessmentsWithResources(id)
         if (assessments.length === 0) {
           throw new Error('no assessment found')
         } else {

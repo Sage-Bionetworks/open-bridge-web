@@ -7,13 +7,18 @@ import {
 } from '../types/types'
 
 export const CLINIC_EVENT_ID = 'clinic_visit'
+export const JOINED_EVENT_ID = 'created_on'
+
 const IS_TEST: boolean = true
 
-async function getClinicVisitsForParticipants(
+
+
+// gets clinic visits and join events for participants with the specified ids
+async function getRelevantEventsForParticipans(
   studyIdentifier: string,
   token: string,
   participantId: string[],
-) {
+): Promise<StringDictionary<{ clinicVisitDate: string; joinedDate: string }>> {
   //transform ids into promises
   const promises = participantId.map(async pId => {
     const endpoint = constants.endpoints.events
@@ -23,7 +28,7 @@ async function getClinicVisitsForParticipants(
     const apiCall = await callEndpoint<{ items: any[] }>(
       endpoint,
       'GET',
-      { type: 'clinic_visit' },
+      {},
       token,
     )
     return { participantId: pId, apiCall: apiCall }
@@ -32,22 +37,31 @@ async function getClinicVisitsForParticipants(
   //execute promises and reduce array to dictionary object
   return Promise.all(promises).then(result => {
     const items = result.reduce((acc, item) => {
-      //only need clinic visits
-      const clinicVisitEvents = item.apiCall.data.items.filter(
-        event => event.eventId === 'custom:clinic_visit',
+      //clinic visits
+      const clinicVisitDate = item.apiCall.data.items.find(
+        event => event.eventId === `custom:${CLINIC_EVENT_ID}`,
+      )
+      //joinedDate eventIds will change
+      let joinedDate = item.apiCall.data.items.find(
+        event => event.eventId === JOINED_EVENT_ID,
       )
 
-      const clinicVisitDate = clinicVisitEvents?.length
-        ? clinicVisitEvents[0].timestamp
-        : ''
+      //ALINA: remove when real event. Just introducing randomness
+      if (Math.random() > 0.5) joinedDate = undefined
 
-      return { ...acc, [item.participantId]: clinicVisitDate }
+      return {
+        ...acc,
+        [item.participantId]: {
+          clinicVisitDate: clinicVisitDate?.timestamp || '',
+          joinedDate: joinedDate?.timestamp || '',
+        },
+      }
     }, {})
     return items
   })
 }
 
-//gets all pages for participants
+//gets all pages for participants. Used with the 'all' functionality
 async function getAllParticipants(studyIdentifier: string, token: string) {
   const pageSize = 50
   const result = await getParticipants(studyIdentifier, token, pageSize, 0)
@@ -73,6 +87,7 @@ async function getAllParticipants(studyIdentifier: string, token: string) {
   })
 }
 
+// get a page of participants
 async function getParticipants(
   studyIdentifier: string,
   token: string,
@@ -94,7 +109,12 @@ async function getParticipants(
     items: ParticipantAccountSummary[]
     total: number
   }>(endpoint, 'POST', data, token)
-  return { items: result.data.items, total: result.data.total }
+
+  //ALINA TODO: once there is a filter we can use that
+  const filteredData = result.data.items.map(p => ({...p, externalId: p.externalIds[studyIdentifier]})).filter(item =>
+    item.studyIds?.includes(studyIdentifier),
+  )
+  return { items: filteredData, total: result.data.total }
 }
 
 async function getParticipantWithId(
@@ -113,7 +133,7 @@ async function getParticipantWithId(
       {},
       token,
     )
-    return result.data
+    return {...result.data, externalId: result.data.externalIds[studyIdentifier]}
   } catch (e) {
     // If the participant is not found, return null.
     if (e.statusCode === 404) {
@@ -123,6 +143,7 @@ async function getParticipantWithId(
   }
 }
 
+//deletes single participant. NOTE: this is delete and NOT withdraw. Currently only works on test users
 async function deleteParticipant(
   studyIdentifier: string,
   token: string,
@@ -142,17 +163,23 @@ async function deleteParticipant(
   return result.data.identifier
 }
 
-async function getEnrollments(studyIdentifier: string, token: string) {
+//gets a list of withdrawn participants
+async function getEnrollmentsWithdrawn(studyIdentifier: string, token: string) {
   const endpoint = `${constants.endpoints.enrollments.replace(
     ':studyId',
     studyIdentifier,
-  )}?enrollmentFilter=all`
+  )}`
 
-  const result = await callEndpoint<{ items: any }>(endpoint, 'GET', {}, token)
-  debugger
+  const result = await callEndpoint<{ items: any }>(
+    endpoint,
+    'GET',
+    { enrollmentFilter: 'withdrawn', includeTesters: IS_TEST },
+    token,
+  )
   return result.data.items
 }
 
+//withdraws participant
 async function withdrawParticipant(
   studyIdentifier: string,
   token: string,
@@ -163,7 +190,7 @@ async function withdrawParticipant(
     ':studyId',
     studyIdentifier,
   )}/${participantId}${
-    note ? 'withdrawalNote=' + encodeURIComponent(note) + '' : ''
+    note ? '?withdrawalNote=' + encodeURIComponent(note) + '' : ''
   }`
 
   const result = await callEndpoint<{ identifier: string }>(
@@ -202,6 +229,8 @@ async function withdrawParticipant(
   )
   return result.data.identifier
 }*/
+
+//adds a participant
 
 async function addParticipant(
   studyIdentifier: string,
@@ -247,7 +276,9 @@ async function addParticipant(
 
   return userId
 }
-async function updateParticipant(
+
+//used when editing a participant
+async function updateNotesAndClinicVisitForParticipant(
   studyIdentifier: string,
   token: string,
   participantId: string,
@@ -313,12 +344,12 @@ const ParticipantService = {
   addParticipant,
   deleteParticipant,
   getAllParticipants,
-  getClinicVisitsForParticipants,
-  getEnrollments,
+  getRelevantEventsForParticipans,
+  getEnrollmentsWithdrawn,
   getParticipantWithId,
   getParticipants,
   getRequestInfoForParticipant,
-  updateParticipant,
+  updateNotesAndClinicVisitForParticipant,
   withdrawParticipant,
 }
 

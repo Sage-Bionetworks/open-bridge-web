@@ -1,5 +1,8 @@
-import { createMuiTheme, Theme } from '@material-ui/core'
+/*import { createMuiTheme, Theme } from '@material-ui/core'
+/*ag*/
+import { Theme, unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core'
 import { CSSProperties } from '@material-ui/core/styles/withStyles'
+
 
 type cssGlobalClasses = {
   [key: string]: CSSProperties
@@ -22,6 +25,8 @@ export const playfairDisplayFont = [
   'Helvetica',
   'Arial',
 ].join(',')
+
+const SPACE_UNIT = 8
 
 export const latoFont = ['Lato', 'Roboto', 'Helvetica', 'Arial'].join(',')
 
@@ -102,6 +107,11 @@ const theme: Theme = createMuiTheme({
         },
       },
     },
+    MuiDialogActions: {
+      root: {
+        padding: SPACE_UNIT * 3
+      }
+    }
   },
   props: {
     // Name of the component ⚛️
@@ -110,7 +120,7 @@ const theme: Theme = createMuiTheme({
       disableRipple: true, // No more ripple, on the whole application 💣!
     },
   },
-  spacing: 8,
+  spacing: SPACE_UNIT,
 
   typography: {
     fontSize: 12,

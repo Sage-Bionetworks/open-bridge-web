@@ -1,28 +1,41 @@
 import {
-    Box,
-    Button,
-    DialogActions,
-    DialogContent,
-    FormControl,
-    FormGroup,
-    FormHelperText,
-    makeStyles
+  Box,
+
+  DialogActions,
+  DialogContent,
+  FormControl,
+  FormGroup,
+  FormHelperText,
+  makeStyles
 } from '@material-ui/core'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { isInvalidPhone } from '../../../helpers/utility'
+import { latoFont } from '../../../style/theme'
 import { EditableParticipantData, EnrollmentType } from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import { MTBHeadingH3 } from '../../widgets/Headings'
 import {
-    SimpleTextInput,
-    SimpleTextLabel
+  DialogButtonPrimary,
+  DialogButtonSecondary,
+  SimpleTextInput,
+  SimpleTextLabel
 } from '../../widgets/StyledComponents'
+
 
 const useStyles = makeStyles(theme => ({
   addForm: {
     '& .MuiFormControl-root:not(:last-child)': {
       marginBottom: theme.spacing(2),
+    },
+  },
+  withdrawalNotice: {
+    fontSize: '16px',
+    fontFamily: latoFont,
+
+    '& p': {
+      marginBottom: '16px',
+      marginTop: '0',
     },
   },
 }))
@@ -41,7 +54,6 @@ export type EditParticipantFormProps = {
   onCancel: Function
   children?: React.ReactNode
 }
-
 
 export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
   participant,
@@ -63,17 +75,18 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
   return (
     <>
       <DialogContent>
-        <Box my={2}>
+        <Box mt={0} mb={3}>
           <MTBHeadingH3>
-            {`Edit Information for participant ${
-              enrollmentType === 'ID'
-                ? participant.externalId
-                : participant.phoneNumber
-            }`}
+            {enrollmentType === 'ID' && (
+              <span>Reference ID: {participant.externalId}</span>
+            )}
+            {enrollmentType === 'PHONE' && (
+              <span>Phone number: {participant.phoneNumber}</span>
+            )}
           </MTBHeadingH3>
         </Box>
 
-        <FormGroup>
+        <FormGroup className={classes.addForm}>
           <DatePicker
             label="Clinic Visit 1"
             id="clinic-visit"
@@ -97,16 +110,17 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
       <DialogActions style={{ justifyContent: 'space-between' }}>
         {children && children}
         <div>
-          <Button onClick={() => onCancel()} color="primary">
+          <DialogButtonSecondary onClick={() => onCancel()} color="primary">
             Cancel
-          </Button>
-          <Button
+          </DialogButtonSecondary>
+          <DialogButtonPrimary
+         
             onClick={() => onOK(notes, clinicVisitDate)}
             color="primary"
             autoFocus
           >
-            Save
-          </Button>
+            Save Changes
+          </DialogButtonPrimary>
         </div>
       </DialogActions>
     </>
@@ -119,24 +133,37 @@ export const WithdrawParticipantForm: FunctionComponent<{
   onOK: Function
   onCancel: Function
 }> = ({ enrollmentType, participant, onOK, onCancel }) => {
+  const classes = useStyles()
+  const [note, setNote] = React.useState('')
   return (
     <>
       <DialogContent>
-        <Box>
-          Withdrawing means you will no longer collect data on this participant
-          and will not be able to contact them through the app.Are you sure you
-          would like to withdraw the following participant:{' '}
-          {enrollmentType === 'PHONE'
-            ? participant.phoneNumber
-            : participant.externalId}{' '}
-          This action cannot be undone.
+        <Box className={classes.withdrawalNotice}>
+          <p>
+            Withdrawing means you will no longer collect data on this
+            participant and will not be able to contact them through the app.
+          </p>
+          <p>
+            Are you sure you would like to withdraw the following participant:
+          </p>
+          <p>
+            {enrollmentType === 'PHONE'
+              ? participant.phoneNumber
+              : participant.externalId}{' '}
+          </p>
+          <p>
+            <strong>This action cannot be undone.</strong>
+          </p>
         </Box>
         <FormGroup>
           <FormControl>
             <SimpleTextLabel htmlFor="notes">Notes</SimpleTextLabel>
             <SimpleTextInput
               fullWidth
+              rowsMax={5}
+              inputProps={{ maxLength: 256 }}
               placeholder="notes"
+              onChange={e => setNote(e.target.value)}
               id="notes"
               multiline={true}
               rows={5}
@@ -145,12 +172,12 @@ export const WithdrawParticipantForm: FunctionComponent<{
         </FormGroup>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => onCancel()} color="primary">
+        <DialogButtonSecondary onClick={() => onCancel()} color="primary">
           Cancel
-        </Button>
-        <Button onClick={() => onOK()} color="primary" autoFocus>
-          Yes, withdraw from study
-        </Button>
+        </DialogButtonSecondary >
+        <DialogButtonPrimary onClick={() => onOK(note)} color="primary" autoFocus>
+          Yes, withdraw participant
+        </DialogButtonPrimary>
       </DialogActions>
     </>
   )
