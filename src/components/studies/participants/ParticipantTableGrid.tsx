@@ -15,6 +15,7 @@ import {
 } from '@material-ui/data-grid'
 import React, { FunctionComponent } from 'react'
 import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
+import { ReactComponent as WithdrawIcon } from '../../../assets/withdraw.svg'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import ParticipantService from '../../../services/participants.service'
 import { latoFont } from '../../../style/theme'
@@ -78,6 +79,7 @@ const ACTIVE_PARTICIPANT_COLUMNS: ColDef[] = [
     flex: 1,
   },
   { field: 'notes', headerName: 'Notes', flex: 1 },
+  { field: 'real', headerName: 'Real', flex: 1 },
 ]
 const phoneColumn = {
   field: 'phone',
@@ -98,8 +100,8 @@ export type ParticipantTableGridProps = {
     pId: string,
     notes: string,
     clinicVisitDate?: Date,
-  ) => void,
-  onWithdrawParticipant: (participantId: string, note: string) => void,
+  ) => void
+  onWithdrawParticipant: (participantId: string, note: string) => void
   pageSize: number
   setPageSize: Function
   isEdit?: boolean
@@ -122,9 +124,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   onRowSelected,
 }: ParticipantTableGridProps) => {
   const { token } = useUserSessionDataState()
-
-  // const [isDone, setIsDone] = React.useState(true)
-  //const [selected, setSelected] = React.useState<string[]>([])
 
   //when we are editing the record this is where the info is stored
   const [participantToEdit, setParticipantToEdit] = React.useState<
@@ -237,29 +236,9 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
   const handleClose = () => {}
 
-
-  const makeTestGroup = async () => {
-    /* for (let i = 0; i < selected.length; i++) {
-
-    const result = await ParticipantService.updateParticipantGroup(studyId, token!,selected[i], ['test_user'])
-    }*/
-  }
-
-  /* TMP not used const deleteParticipants = async () => {
-    setIsDone(false)
-    for (let i = 0; i < selected.length; i++) {
-      await ParticipantService.deleteParticipant(studyId, token!, selected[i])
-    }
-    setIsDone(true)
-  }*/
-
   return (
     <>
       <Paper elevation={0}>
-        {/*<Button onClick={() => makeTestGroup()}>Make test group</Button>
-      <Button onClick={() => deleteParticipants()} disabled={!isDone}>
-        Delete
-  </Button>*/}
         <div style={{ display: 'flex', height: '90vh' }}>
           <div style={{ flexGrow: 1 }}>
             <DataGrid
@@ -270,10 +249,11 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               checkboxSelection
               onSelectionChange={selectedRows => {
                 console.log(selectedRows.rowIds)
-                onRowSelected(rows.filter(row=> selectedRows.rowIds.includes(row.id)) || [])
+                onRowSelected(
+                  rows.filter(row => selectedRows.rowIds.includes(row.id)) ||
+                    [],
+                )
               }}
-              // onRowSelected={(params)=> {console.log(params); onRowSelected(params.data.id.toString(), params.isSelected)}}
-
               components={{
                 Footer: () => (
                   <ParticipantTablePagination
@@ -322,7 +302,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               </span>
             </>
             <>
-              <PencilIcon style={{ width: '25px' }}></PencilIcon>
+              <WithdrawIcon > style={{ width: '25px' }}></WithdrawIcon>
               <span style={{ paddingLeft: '8px' }}>Withdraw</span>
             </>
           </HideWhen>
@@ -344,9 +324,10 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                   shouldWithdraw: true,
                 }))
               }
-              color="primary"
+              color="secondary"
             >
-              Withdraw from study
+              <WithdrawIcon />
+              &nbsp; Withdraw from study
             </Button>
           </EditParticipantForm>
           <WithdrawParticipantForm

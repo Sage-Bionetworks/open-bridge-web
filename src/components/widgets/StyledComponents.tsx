@@ -54,6 +54,44 @@ export const BlueButton = withStyles(theme => ({
   },
 }))(Button)
 
+export const DialogButtonSecondary = withStyles(theme => ({
+  root: {
+    border: '1px solid black',
+    background: '#FCFCFC',
+    color: 'black',
+    borderRadius: '0',
+    fontFamily: latoFont,
+    fontSize: '14px',
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+    '&:hover': {
+      fontWeight: 'bolder',
+      boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.25)',
+    },
+  },
+}))(Button)
+
+export const DialogButtonPrimary = withStyles(theme => ({
+  root: {
+    border: '1px solid black',
+    background: theme.palette.error.light,
+    color: 'black',
+    borderRadius: '0',
+    fontFamily: latoFont,
+    fontSize: '14px',
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+
+'&:not(:first-child)': {
+    marginLeft: theme.spacing(1)
+},
+
+    '&:hover': {
+      fontWeight: 'bolder',
+      background: theme.palette.error.light,
+      boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.25)',
+    },
+  },
+}))(Button)
+
 export const SimpleTextLabel = withStyles(theme => ({
   root: {
     fontFamily: [poppinsFont, 'Roboto'].join(','),
