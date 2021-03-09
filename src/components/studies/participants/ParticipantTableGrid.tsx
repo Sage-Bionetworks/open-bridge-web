@@ -302,7 +302,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               </span>
             </>
             <>
-              <WithdrawIcon > style={{ width: '25px' }}></WithdrawIcon>
+              <WithdrawIcon  style={{ width: '25px' }}></WithdrawIcon>
               <span style={{ paddingLeft: '8px' }}>Withdraw</span>
             </>
           </HideWhen>
