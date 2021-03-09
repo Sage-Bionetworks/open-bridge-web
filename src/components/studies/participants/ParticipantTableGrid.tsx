@@ -3,7 +3,7 @@ import {
   CircularProgress,
   Dialog,
   IconButton,
-  Paper
+  Paper,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import {
@@ -21,12 +21,12 @@ import { latoFont } from '../../../style/theme'
 import {
   EditableParticipantData,
   EnrollmentType,
-  ParticipantAccountSummary
+  ParticipantAccountSummary,
 } from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import {
   EditParticipantForm,
-  WithdrawParticipantForm
+  WithdrawParticipantForm,
 } from './ParticipantForms'
 import ParticipantTablePagination from './ParticipantTablePagination'
 
@@ -121,9 +121,10 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
   const handlePageNavigationArrowPressed = (type: string) => {
     // "FF" = forward to last page
-    // "F" = forward to next page
+    // "F" = forward to next pages
     // "B" = back to previous page
     // "BB" = back to beginning
+    console.log('inside the page navigation arrow pressed function')
     if (type === 'F' && currentPage !== numberOfPages) {
       setCurrentPage(currentPage + 1)
     } else if (type === 'FF' && currentPage !== numberOfPages) {

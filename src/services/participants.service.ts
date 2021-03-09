@@ -3,7 +3,7 @@ import constants from '../types/constants'
 import {
   EditableParticipantData,
   ParticipantAccountSummary,
-  StringDictionary
+  StringDictionary,
 } from '../types/types'
 
 export const CLINIC_EVENT_ID = 'clinic_visit'
@@ -46,13 +46,6 @@ async function getClinicVisitsForParticipants(
     return items
   })
 }
-
-
-
-
-
-
-
 
 //gets all pages for participants
 async function getAllParticipants(studyIdentifier: string, token: string) {

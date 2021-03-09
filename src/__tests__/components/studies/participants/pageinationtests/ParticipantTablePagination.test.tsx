@@ -8,9 +8,9 @@ import {
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import ReactDOM from 'react-dom'
-import ParticipantTablePagination from '../../../components/studies/participants/ParticipantTablePagination'
-import PageSelector from '../../../components/studies/participants/PageSelector'
-import PageBox from '../../../components/studies/participants/PageBox'
+import ParticipantTablePagination from '../../../../../components/studies/participants/ParticipantTablePagination'
+import PageSelector from '../../../../../components/studies/participants/PageSelector'
+import PageBox from '../../../../../components/studies/participants/PageBox'
 
 const getById = queryByAttribute.bind(null, 'id')
 
@@ -112,7 +112,13 @@ beforeEach(() => {
   renderPageSelector()
 })
 
-afterEach(cleanup)
+afterEach(() => cleanup())
+
+afterAll(() => {
+  participantTablePagination.unmount()
+  pageSelector.unmount()
+  cleanup()
+})
 
 /*
     Tests:
@@ -174,14 +180,14 @@ test('should page forward and backward buttons function correctly', () => {
 
 // test to see if the page changes as expected when page number is clicked
 test('should page change when page number is clicked', () => {
-  const pb = (participantTablePagination = render(
+  const pb = render(
     <PageBox
       isSelected={false}
       pageNumber={3}
       index={3}
       onPageSelected={onPageSelectedChanged}
     ></PageBox>,
-  )).container
+  ).container
   const pageButton3 = getById(pb as HTMLElement, 'pagebox-button-3')
   userEvent.click(pageButton3!)
   expect(currentPage).toBe(3)

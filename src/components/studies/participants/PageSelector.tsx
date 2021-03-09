@@ -110,7 +110,12 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
         ></img>
       </Button>
       <Button
-        onClick={() => handlePageNavigationArrowPressed('FF')}
+        onClick={() => {
+          console.log('inside the method')
+          console.log(handlePageNavigationArrowPressed.toString())
+          handlePageNavigationArrowPressed('FF')
+          console.log('after')
+        }}
         classes={{ root: classes.button }}
         disabled={rotateAndDisableForwardIcons}
         id="forward-to-end-button"

@@ -31,7 +31,7 @@ import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import AddParticipants from './AddParticipants'
 import ParticipantDownload, {
   ParticipantActivityType,
-  ParticipantDownloadType
+  ParticipantDownloadType,
 } from './ParticipantDownload'
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
@@ -108,7 +108,6 @@ const participantRecordTemplate: ParticipantAccountSummary = {
   firstName: '',
   lastName: '',
   email: '',
-
   id: '',
   externalIds: {},
 }
@@ -120,7 +119,7 @@ async function getParticipants(
   pageSize: number,
 ): Promise<ParticipantData> {
   const offset = (currentPage - 1) * pageSize
-// ALINA TODO: enrollments
+  // ALINA TODO: enrollments
   const enr = await ParticipantService.getEnrollments(studyId, token!)
   const participants = await ParticipantService.getParticipants(
     studyId,

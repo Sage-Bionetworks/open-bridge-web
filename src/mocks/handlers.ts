@@ -214,46 +214,6 @@ export const handlers = [
    * THOSE ENDPOINTS EXIST. THEY ARE REPLACED FOR TESTING. COMMENT THEM OUT TO GET THE REAL RESPONSE
    *************************  */
 
-  // These two endpoints below simulate fake data used to test the functionality of the 
-  // ParticpantManager component. Uncomment them when running tests
-  /*
-  rest.post(
-    `*${constants.endpoints.participantsSearch}`,
-    async (req, res, ctx) => {
-      const items = []
-      for (let i = 1; i <= 100; i++) {
-        let obj = {
-          appId: 'mtb-user-testing',
-          attributes: {},
-          createdOn: '2021-02-22T20:45:38.375Z',
-          externalId: `test-id-${i}`,
-          externalIds: { kkynty35udejidtdp8h: '342067' },
-          id: 'dRNO0ydUO3hAGD5rHOXx1Gmb' + i,
-          status: 'unverified',
-          studyIds: ['kkynty35udejidtdp8h'],
-          type: 'AccountSummary',
-        }
-        items.push(obj)
-      }
-      return res(
-        ctx.status(200),
-        ctx.json({
-          items: items,
-          total: items.length,
-        }),
-      )
-    },
-  ),
-
-  rest.get(`*${constants.endpoints.events}`, async (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
-        items: [],
-      }),
-    )
-  }),
-  */
 
   //to get the error from synapse pass email w/ synapseErr to get error from bridge pass email w/ bridgeErr
 
