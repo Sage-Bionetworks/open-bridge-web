@@ -32,6 +32,10 @@ import {
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
+import {
+  DialogButtonPrimary,
+  DialogButtonSecondary
+} from '../../widgets/StyledComponents'
 import AddParticipants from './AddParticipants'
 import DeleteDialog from './DeleteDialogContents'
 import ParticipantDownload, {
@@ -277,6 +281,17 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setRefreshParticipantsToggle(prev => !prev)
   }
 
+  const makeTestGroup = async () => {
+    for (let i = 0; i < selectedActiveParticipants.length; i++) {
+      const result = await ParticipantService.updateParticipantGroup(
+        study!.identifier,
+        token!,
+        selectedActiveParticipants[i].id,
+        ['test_user'],
+      )
+    }
+  }
+
   const deleteSelectedParticipants = async () => {
     setIsProcessing(true)
     setParticipantsWithError([])
@@ -287,12 +302,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         const x = await ParticipantService.deleteParticipant(
           study!.identifier,
           token!,
-          selectedActiveParticipants[0].id,
+          selectedActiveParticipants[i].id,
         )
-        console.log('success', selectedActiveParticipants[i])
+        console.log('success', selectedActiveParticipants[i].id)
       } catch (e) {
         isError = true
-        console.log('error', e, selectedActiveParticipants[i])
+        console.log('error', e, selectedActiveParticipants[i].id)
         setParticipantsWithError(prev => [
           ...prev,
           selectedActiveParticipants[i],
@@ -357,6 +372,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         <Box px={3} py={2}>
           Study ID: {study.identifier}
         </Box>
+        <Button onClick={() => makeTestGroup()}>Make test group [test]</Button>
 
         <Box px={3} py={2}>
           <Grid
@@ -528,8 +544,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         </CollapsibleLayout>
         <Dialog
           open={isOpenDeleteDialog}
-          maxWidth="sm"
-          fullWidth
+          maxWidth="xs"
+          scroll="body"
+
           aria-labelledby="edit participant"
         >
           <DialogTitleWithClose
@@ -543,31 +560,46 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             </>
           </DialogTitleWithClose>
           <DialogContent>
-           {isOpenDeleteDialog &&<DeleteDialog
-             
-              participantsWithError={participantsWithError}
-              study={study}
-              selectedParticipants={selectedActiveParticipants}
-              isProcessing={isProcessing}
-            />}
+            {isOpenDeleteDialog && (
+              <DeleteDialog
+                participantsWithError={participantsWithError}
+                study={study}
+                selectedParticipants={selectedActiveParticipants}
+                isProcessing={isProcessing}
+              />
+            )}
           </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => setIsOpenDeleteDialog(false)}
-              color="primary"
-            >
-              Cancel
-            </Button>
-            {participantsWithError.length === 0 && (
-              <Button
+
+          {participantsWithError.length === 0 && (
+            <DialogActions>
+              <DialogButtonSecondary
+                onClick={() => setIsOpenDeleteDialog(false)}
+              >
+                Cancel
+              </DialogButtonSecondary>
+
+              <DialogButtonPrimary
                 onClick={() => deleteSelectedParticipants()}
-                color="primary"
                 autoFocus
               >
                 Permanently Remove
-              </Button>
-            )}
-          </DialogActions>
+              </DialogButtonPrimary>
+            </DialogActions>
+          )}
+
+          {participantsWithError.length > 0 && (
+            <DialogActions>
+              <DialogButtonPrimary
+                onClick={() => {
+                  setRefreshParticipantsToggle(prev => !prev)
+                  setIsOpenDeleteDialog(false)
+                }}
+                color="primary"
+              >
+                Done
+              </DialogButtonPrimary>
+            </DialogActions>
+          )}
         </Dialog>
       </Box>
     )

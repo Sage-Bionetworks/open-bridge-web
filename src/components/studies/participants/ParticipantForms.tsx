@@ -1,12 +1,12 @@
 import {
-    Box,
-    Button,
-    DialogActions,
-    DialogContent,
-    FormControl,
-    FormGroup,
-    FormHelperText,
-    makeStyles
+  Box,
+
+  DialogActions,
+  DialogContent,
+  FormControl,
+  FormGroup,
+  FormHelperText,
+  makeStyles
 } from '@material-ui/core'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
@@ -16,9 +16,12 @@ import { EditableParticipantData, EnrollmentType } from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import { MTBHeadingH3 } from '../../widgets/Headings'
 import {
-    SimpleTextInput,
-    SimpleTextLabel
+  DialogButtonPrimary,
+  DialogButtonSecondary,
+  SimpleTextInput,
+  SimpleTextLabel
 } from '../../widgets/StyledComponents'
+
 
 const useStyles = makeStyles(theme => ({
   addForm: {
@@ -107,16 +110,17 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
       <DialogActions style={{ justifyContent: 'space-between' }}>
         {children && children}
         <div>
-          <Button onClick={() => onCancel()} color="primary">
+          <DialogButtonSecondary onClick={() => onCancel()} color="primary">
             Cancel
-          </Button>
-          <Button
+          </DialogButtonSecondary>
+          <DialogButtonPrimary
+         
             onClick={() => onOK(notes, clinicVisitDate)}
             color="primary"
             autoFocus
           >
-            Save
-          </Button>
+            Save Changes
+          </DialogButtonPrimary>
         </div>
       </DialogActions>
     </>
@@ -168,12 +172,12 @@ export const WithdrawParticipantForm: FunctionComponent<{
         </FormGroup>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => onCancel()} color="primary">
+        <DialogButtonSecondary onClick={() => onCancel()} color="primary">
           Cancel
-        </Button>
-        <Button onClick={() => onOK(note)} color="primary" autoFocus>
-          Yes, withdraw from study
-        </Button>
+        </DialogButtonSecondary >
+        <DialogButtonPrimary onClick={() => onOK(note)} color="primary" autoFocus>
+          Yes, withdraw participant
+        </DialogButtonPrimary>
       </DialogActions>
     </>
   )
