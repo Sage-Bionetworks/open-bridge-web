@@ -1,9 +1,9 @@
-import { Box, MenuItem } from '@material-ui/core'
+import { Box, CircularProgress, MenuItem } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import {
-    ButtonWithSelectButton,
-    ButtonWithSelectSelect
+  ButtonWithSelectButton,
+  ButtonWithSelectSelect
 } from '../../widgets/StyledComponents'
 
 const useStyles = makeStyles(theme => ({
@@ -19,15 +19,46 @@ type ParticipantDownloadProps = {
   type: ParticipantActivityType
   selection?: ParticipantDownloadType
   onDownload: Function
+  onDone: Function
+  isProcessing?: boolean
+  fileDownloadUrl?: string
 }
 
 const ParticipantDownload: React.FunctionComponent<ParticipantDownloadProps> = ({
   type,
   selection: _selection,
   onDownload,
+  isProcessing,
+  fileDownloadUrl,
+  onDone,
 }) => {
   const classes = useStyles()
-  const [selection, setSelection] = React.useState<ParticipantDownloadType>('SELECTED')
+  const [selection, setSelection] = React.useState<ParticipantDownloadType>(
+    'SELECTED',
+  )
+
+  function magicDownload() {
+    // create hidden link
+    const element = document.createElement('a')
+    document.body.appendChild(element)
+    element.setAttribute('href', fileDownloadUrl!)
+    element.setAttribute('download', 'StudyParticipants.csv')
+    element.style.display = ''
+
+    element.click()
+
+    document.body.removeChild(element)
+    //event.stopPropagation();
+  }
+
+  React.useEffect(() => {
+    if (fileDownloadUrl) {
+      console.log('download')
+      magicDownload()
+      setTimeout(() => onDone(), 1000)
+    }
+  }, [fileDownloadUrl])
+
   const items =
     type === 'ACTIVE'
       ? [
@@ -44,7 +75,6 @@ const ParticipantDownload: React.FunctionComponent<ParticipantDownloadProps> = (
         key="session_select"
         value={selection}
         onChange={e => setSelection(e.target.value as ParticipantDownloadType)}
-
         inputProps={{ 'aria-label': 'download participants' }}
         disableUnderline={true}
       >
@@ -60,7 +90,7 @@ const ParticipantDownload: React.FunctionComponent<ParticipantDownloadProps> = (
         onClick={() => onDownload(selection)}
         className={classes.downloadButton}
       >
-        Download
+        {!isProcessing ? 'Download' : <CircularProgress size={24} />}
       </ButtonWithSelectButton>
     </Box>
   )

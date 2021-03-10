@@ -79,7 +79,7 @@ const ACTIVE_PARTICIPANT_COLUMNS: ColDef[] = [
     flex: 1,
   },
   { field: 'notes', headerName: 'Notes', flex: 1 },
-  { field: 'real', headerName: 'Real', flex: 1 },
+
 ]
 const phoneColumn = {
   field: 'phone',
