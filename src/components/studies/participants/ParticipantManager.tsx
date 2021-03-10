@@ -13,6 +13,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles'
 import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
+import { jsonToCSV } from 'react-papaparse'
 import { RouteComponentProps } from 'react-router-dom'
 import { ReactComponent as ExpandIcon } from '../../../assets/add_participants.svg'
 import { ReactComponent as CollapseIcon } from '../../../assets/collapse.svg'
@@ -126,17 +127,20 @@ async function getParticipants(
   studyId: string,
   token: string,
   currentPage: number,
-  pageSize: number,
+  pageSize: number, // set to 0 to get all the participants
 ): Promise<ParticipantData> {
   const offset = (currentPage - 1) * pageSize
   // ALINA TODO: enrollments
   const enr = await ParticipantService.getEnrollmentsWithdrawn(studyId, token!)
-  const participants = await ParticipantService.getParticipants(
-    studyId,
-    token!,
-    pageSize,
-    offset,
-  )
+  const participants =
+    pageSize > 0
+      ? await ParticipantService.getParticipants(
+          studyId,
+          token!,
+          pageSize,
+          offset,
+        )
+      : await ParticipantService.getAllParticipants(studyId, token!)
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
   const eventsMap: StringDictionary<{
@@ -161,39 +165,45 @@ async function getParticipants(
   return { items: result, total: numberOfParticipants }
 }
 
-/*function formatIds(
-  studyId: string,
-  enrollmentType: EnrollmentType,
-  participants: ParticipantAccountSummary[],
-): string[] {
-  return participants.map(participant =>
-    enrollmentType === 'PHONE'
-      ? participant.phone?.nationalFormat ||
-        participant.externalIds[studyId] ||
-        'unknown'
-      : participant.externalIds[studyId] || 'unknown',
-  )
-}*/
-
 type ParticipantManagerProps = ParticipantManagerOwnProps & RouteComponentProps
 
+type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {
+  clinicVisit?: Date | string
+  dateJoined?: Date | string
+}
+
 type ParticipantData = {
-  items: ParticipantAccountSummary[]
+  items: ExtendedParticipantAccountSummary[]
   total: number
 }
 
 const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
+  const handleError = useErrorHandler()
+  const classes = useStyles()
+
   const { study }: StudyInfoData = useStudyInfoDataState()
   const { token } = useUserSessionDataState()
 
+  // If we are in editing mode
+  const [isEdit, setIsEdit] = React.useState(true)
   // The current page in the particpant grid the user is viewing
   const [currentPage, setCurrentPage] = React.useState(1)
   // The current page size of the particpant grid
   const [pageSize, setPageSize] = React.useState(50)
   // Withdrawn or active participants
   const [tab, setTab] = React.useState<ParticipantActivityType>('ACTIVE')
-  const [isProcessing, setIsProcessing] = React.useState(false)
+  const [loadingIndicators, setLoadingIndicators] = React.useState<{
+    isDeleting?: boolean
+    isDownloading?: boolean
+  }>({})
+  // Should delete dialog be open
   const [isOpenDeleteDialog, setIsOpenDeleteDialog] = React.useState(false)
+
+  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
+    string | undefined
+  >(undefined)
+
+  // Selected users
   const [
     selectedActiveParticipants,
     setSelectedActiveParticipants,
@@ -206,14 +216,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setTab(newValue)
   }
 
+  //List of participants errored out during operation - used for deltee
   const [participantsWithError, setParticipantsWithError] = React.useState<
     ParticipantAccountSummary[]
   >([])
 
-  const handleError = useErrorHandler()
-  const classes = useStyles()
-
-  const [isEdit, setIsEdit] = React.useState(true)
   //trigger data refresh on updates
   const [
     refreshParticipantsToggle,
@@ -281,6 +288,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setRefreshParticipantsToggle(prev => !prev)
   }
 
+  /* THIS IS UTILITY FUNCTION JUST FOR TESTING! */
   const makeTestGroup = async () => {
     for (let i = 0; i < selectedActiveParticipants.length; i++) {
       const result = await ParticipantService.updateParticipantGroup(
@@ -293,28 +301,25 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }
 
   const deleteSelectedParticipants = async () => {
-    setIsProcessing(true)
+    setLoadingIndicators(_ => ({ isDeleting: true }))
     setParticipantsWithError([])
     let isError = false
     for (let i = 0; i < selectedActiveParticipants.length; i++) {
-      console.log('iteration' + i)
       try {
         const x = await ParticipantService.deleteParticipant(
           study!.identifier,
           token!,
           selectedActiveParticipants[i].id,
         )
-        console.log('success', selectedActiveParticipants[i].id)
       } catch (e) {
         isError = true
-        console.log('error', e, selectedActiveParticipants[i].id)
         setParticipantsWithError(prev => [
           ...prev,
           selectedActiveParticipants[i],
         ])
       }
     }
-    setIsProcessing(false)
+    setLoadingIndicators(_ => ({ isDeleting: false }))
     if (!isError) {
       setIsOpenDeleteDialog(false)
       setRefreshParticipantsToggle(prev => !prev)
@@ -340,23 +345,40 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }
 
   const downloadParticipants = async (selection: ParticipantDownloadType) => {
-    let x: ParticipantActivityType = tab
-    ParticipantService.getAllParticipants(study.identifier, token!)
+    //  let x: ParticipantActivityType = tab
+    setLoadingIndicators({ isDownloading: true })
+    //if getting all participants
+    const participantsData: ParticipantData =
+      selection === 'ALL'
+        ? await getParticipants(study.identifier, token!, 0, 0)
+        : { items: selectedActiveParticipants, total: selectedActiveParticipants.length }
+    // TODO selected
+    //massage data
+    const transformedParticipantsData = participantsData.items.map(
+      (p: ExtendedParticipantAccountSummary) => ({
+        participantId: p.externalIds[study.identifier],
+        healthCode: p.id,
+        phoneNumber: p.phone?.nationalFormat,
+        clinicVisit: p.clinicVisit
+          ? new Date(p.clinicVisit).toLocaleDateString()
+          : '-',
+        dateJoined: p.dateJoined
+          ? new Date(p.dateJoined).toLocaleDateString()
+          : '',
+        notes: '',
+      }),
+    )
+
+    //csv  and blob it
+    const csvData = jsonToCSV(transformedParticipantsData)
+    const blob = new Blob([csvData], {
+      type: 'text/csv;charset=utf8;',
+    })
+    // get the fake link
+    const fileObjUrl = URL.createObjectURL(blob)
+    setFileDownloadUrl(fileObjUrl)
+    setLoadingIndicators({ isDownloading: false })
   }
-  /*
-  const selectParticipants = (
-    participantIds: string[],
-    id: string,
-    isSelected: boolean,
-  ): string[] => {
-    if (!participantIds.includes(id) && isSelected) {
-      return [...participantIds, id]
-    }
-    if (!isSelected) {
-      return participantIds.filter(_id => _id !== id) || []
-    }
-    return participantIds
-  }*/
 
   if (!study) {
     return (
@@ -473,10 +495,18 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               />
 
               {!isEdit && (
-                <ParticipantDownload
-                  type={tab}
-                  onDownload={downloadParticipants}
-                />
+                <>
+                  <ParticipantDownload
+                    type={tab}
+                    isProcessing={loadingIndicators.isDownloading}
+                    onDownload={downloadParticipants}
+                    fileDownloadUrl={fileDownloadUrl}
+                    onDone={() => {
+                      URL.revokeObjectURL(fileDownloadUrl!)
+                      setFileDownloadUrl(undefined)
+                    }}
+                  />
+                </>
               )}
               {isEdit && (
                 <Button
@@ -546,7 +576,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           open={isOpenDeleteDialog}
           maxWidth="xs"
           scroll="body"
-
           aria-labelledby="edit participant"
         >
           <DialogTitleWithClose
@@ -565,7 +594,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 participantsWithError={participantsWithError}
                 study={study}
                 selectedParticipants={selectedActiveParticipants}
-                isProcessing={isProcessing}
+                isProcessing={!!loadingIndicators.isDeleting}
               />
             )}
           </DialogContent>

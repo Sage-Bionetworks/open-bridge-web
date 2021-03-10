@@ -11,8 +11,6 @@ export const JOINED_EVENT_ID = 'created_on'
 
 const IS_TEST: boolean = true
 
-
-
 // gets clinic visits and join events for participants with the specified ids
 async function getRelevantEventsForParticipans(
   studyIdentifier: string,
@@ -110,11 +108,52 @@ async function getParticipants(
     total: number
   }>(endpoint, 'POST', data, token)
 
+  const mappedData = result.data.items.map(p => ({
+    ...p,
+    externalId: p.externalIds[studyIdentifier],
+  }))
+
   //ALINA TODO: once there is a filter we can use that
-  const filteredData = result.data.items.map(p => ({...p, externalId: p.externalIds[studyIdentifier]})).filter(item =>
+  /*.filter(item =>
+    item.studyIds?.includes(studyIdentifier),
+  )*/
+  return { items: mappedData, total: result.data.total }
+
+  /* ALINA: 3/9 -- uncomment this for testing delete failures */
+  /*
+  const data = {
+    pageSize: pageSize,
+    offsetBy: offsetBy,
+    noneOfGroups: ['test_user'],
+  }
+
+  const result = await callEndpoint<{
+    items: ParticipantAccountSummary[]
+    total: number
+  }>(endpoint, 'POST', data, token)
+
+  //ALINA TODO: once there is a filter we can use that
+  const filteredDataReal = result.data.items.map(p => ({...p, externalId: p.externalIds[studyIdentifier], real: 'REAL'})).filter(item =>
     item.studyIds?.includes(studyIdentifier),
   )
-  return { items: filteredData, total: result.data.total }
+  const totalReal =  result.data.total
+
+//@ts-ignore
+data.allOfGroups =  ['test_user']
+data.noneOfGroups =  []
+
+  const resultTest = await callEndpoint<{
+    items: ParticipantAccountSummary[]
+    total: number
+  }>(endpoint, 'POST', data, token)
+
+  //ALINA TODO: once there is a filter we can use that
+  const filteredDataTest = resultTest.data.items.map(p => ({...p, externalId: p.externalIds[studyIdentifier],  real: 'TEST'})).filter(item =>
+    item.studyIds?.includes(studyIdentifier),
+  )
+
+  const totalTest =  resultTest.data.total
+  return { items: [...filteredDataTest, ...filteredDataReal], total: totalTest*1+ totalReal }*/
 }
 
 async function getParticipantWithId(
@@ -133,7 +172,10 @@ async function getParticipantWithId(
       {},
       token,
     )
-    return {...result.data, externalId: result.data.externalIds[studyIdentifier]}
+    return {
+      ...result.data,
+      externalId: result.data.externalIds[studyIdentifier],
+    }
   } catch (e) {
     // If the participant is not found, return null.
     if (e.statusCode === 404) {
@@ -203,32 +245,28 @@ async function withdrawParticipant(
   return result.data.identifier
 }
 
-/*async function updateParticipantGroup(
+async function updateParticipantGroup(
   studyIdentifier: string,
   token: string,
   participantId: string,
-  dataGroups: string[]
-
+  dataGroups: string[],
 ): Promise<string> {
   const endpoint = `${constants.endpoints.participant.replace(
     ':id',
     studyIdentifier,
-
   )}/${participantId}`
-  const data= {
-
-    dataGroups:dataGroups 
+  const data = {
+    dataGroups: dataGroups,
   }
 
-
-  const result = await callEndpoint<{identifier: string}>(
+  const result = await callEndpoint<{ identifier: string }>(
     endpoint,
-    'DELETE',
-    {},
+    'POST',
+    data,
     token,
   )
   return result.data.identifier
-}*/
+}
 
 //adds a participant
 
@@ -284,6 +322,9 @@ async function updateNotesAndClinicVisitForParticipant(
   participantId: string,
   options: EditableParticipantData,
 ): Promise<string> {
+
+
+
   // update notes
   const endpoint = `${constants.endpoints.participant.replace(
     ':id',
@@ -302,21 +343,18 @@ async function updateNotesAndClinicVisitForParticipant(
     .replace(':userId', participantId)
 
   if (options.clinicVisitDate) {
-    const endpoint = constants.endpoints.events
-      .replace(':studyId', studyIdentifier)
-      .replace(':userId', participantId)
+    // if we have clinicVisitDate - update it
     const data = {
       eventId: CLINIC_EVENT_ID,
       timestamp: new Date(options.clinicVisitDate).toISOString(),
     }
 
-    await callEndpoint<{ identifier: string }>(endpoint, 'POST', data, token)
+    await callEndpoint<{ identifier: string }>(eventEndpoint, 'POST', data, token)
   } else {
-    console.log('deleting')
+    // if it is empty - delete it
     eventEndpoint = eventEndpoint + CLINIC_EVENT_ID
-    await callEndpoint<{ identifier: string }>(endpoint, 'DELETE', {}, token)
+    await callEndpoint<{ identifier: string }>(eventEndpoint, 'DELETE', {}, token)
   }
-
   return participantId
 }
 
@@ -350,6 +388,7 @@ const ParticipantService = {
   getParticipants,
   getRequestInfoForParticipant,
   updateNotesAndClinicVisitForParticipant,
+  updateParticipantGroup,
   withdrawParticipant,
 }
 
