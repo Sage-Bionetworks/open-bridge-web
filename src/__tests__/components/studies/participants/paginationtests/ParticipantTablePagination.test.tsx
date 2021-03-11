@@ -1,16 +1,15 @@
-import React from 'react'
 import {
-  render,
   cleanup,
   queryByAttribute,
+  render,
   RenderResult,
-  within,
+  within
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
 import ReactDOM from 'react-dom'
-import ParticipantTablePagination from '../../../../../components/studies/participants/ParticipantTablePagination'
 import PageSelector from '../../../../../components/studies/participants/PageSelector'
-import PageBox from '../../../../../components/studies/participants/PageBox'
+import ParticipantTablePagination from '../../../../../components/studies/participants/ParticipantTablePagination'
 
 const getById = queryByAttribute.bind(null, 'id')
 
@@ -30,11 +29,13 @@ let totalParticipants = 100
 /*
     Simulated functions that are usually in parent components:
 */
+
+/*
 const onPageSelectedChanged = (page: number) => {
   currentPage = page
-}
+}*/
 
-const handlePageNavigationArrowPressed = (type: string) => {
+/*const handlePageNavigationArrowPressed = (type: string) => {
   if (type === 'F' && currentPage !== numberOfPages) {
     currentPage++
   } else if (type === 'FF' && currentPage !== numberOfPages) {
@@ -44,12 +45,15 @@ const handlePageNavigationArrowPressed = (type: string) => {
   } else if (type === 'BB' && currentPage !== 1) {
     currentPage = 1
   }
-}
+}*/
 
-const updatePageSize = (newPageSize: number) => {
+/*const updatePageSize = (newPageSize: number) => {
   pageSize = newPageSize
   numberOfPages = Math.ceil(totalParticipants / newPageSize)
-}
+}*/
+const updatePageSize = jest.fn()
+const onPageSelectedChanged = jest.fn()
+const handlePageNavigationArrowPressed = jest.fn()
 
 /*
     Render Functions:
@@ -99,15 +103,22 @@ const renderParticipantTableGrid = () => {
 }
 
 // reset the variables
-const resetVariables = () => {
-  currentPage = 1
-  pageSize = 25
-  numberOfPages = 4
-  totalParticipants = 100
+const resetVariables = (options: {
+  currentPage?: number
+  pageSize?: number
+  numberOfPages?: number
+  totalParticipants?: number
+}) => {
+  ;({
+    currentPage = 1,
+    pageSize = 25,
+    numberOfPages = 4,
+    totalParticipants = 100,
+  } = options)
 }
 
 beforeEach(() => {
-  resetVariables()
+  resetVariables({})
   renderParticipantTableGrid()
   renderPageSelector()
 })
@@ -139,7 +150,7 @@ test('should be rendering without crashing', () => {
     ></ParticipantTablePagination>,
     div,
   )
-  const div2 = document.createElement('div')
+  /* const div2 = document.createElement('div')
   ReactDOM.render(
     <PageSelector
       onPageSelected={onPageSelectedChanged}
@@ -148,38 +159,54 @@ test('should be rendering without crashing', () => {
       handlePageNavigationArrowPressed={handlePageNavigationArrowPressed}
     ></PageSelector>,
     div2,
-  )
+  )*/
 })
 
 // test the functionality of the forward and back buttons for pagination
 test('should page forward and backward buttons function correctly', () => {
+  //we are on page 1
+  // try to go back one page. nothing should happen
+  userEvent.click(backward_one_page_button as HTMLElement)
+  //expect(currentPage).toBe(1)
+  expect(handlePageNavigationArrowPressed).not.toHaveBeenCalled()
   // go forward one page
   userEvent.click(forward_one_page_button as HTMLElement)
-  expect(currentPage).toBe(2)
+  expect(handlePageNavigationArrowPressed).toHaveBeenLastCalledWith('F')
+  //expect(currentPage).toBe(2)
+  handlePageNavigationArrowPressed.mockReset()
+  userEvent.click(backward_to_beginning_button as HTMLElement)
+  expect(handlePageNavigationArrowPressed).not.toHaveBeenCalled()
+  handlePageNavigationArrowPressed.mockReset()
+  resetVariables({ currentPage: 2 })
   renderPageSelector()
   // go back one page
   userEvent.click(backward_one_page_button as HTMLElement)
-  expect(currentPage).toBe(1)
-  renderPageSelector()
+  expect(handlePageNavigationArrowPressed).toHaveBeenLastCalledWith('B')
+  //expect(currentPage).toBe(1)
+  //renderPageSelector()
   // go to the last page
   userEvent.click(forward_to_end_button as HTMLElement)
-  expect(currentPage).toBe(numberOfPages)
+  expect(handlePageNavigationArrowPressed).toHaveBeenLastCalledWith('FF')
+  //expect(currentPage).toBe(numberOfPages)
+  // renderPageSelector()
+  //when you are on the last page  try to go to next page. nothing should happen
+  resetVariables({ currentPage: 4 })
   renderPageSelector()
-  // try to go to next page. nothing should happen
+  handlePageNavigationArrowPressed.mockReset()
   userEvent.click(forward_one_page_button as HTMLElement)
-  expect(currentPage).toBe(numberOfPages)
-  renderPageSelector()
+  expect(handlePageNavigationArrowPressed).not.toHaveBeenCalled()
+  //expect(currentPage).toBe(numberOfPages)
+  //renderPageSelector()
   // go back to the beginning page
   userEvent.click(backward_to_beginning_button as HTMLElement)
-  expect(currentPage).toBe(1)
-  renderPageSelector()
-  // try to go back one page. nothing should happen
-  userEvent.click(backward_one_page_button as HTMLElement)
-  expect(currentPage).toBe(1)
+  expect(handlePageNavigationArrowPressed).toHaveBeenLastCalledWith('BB')
+  // expect(currentPage).toBe(1)
+  //renderPageSelector()
 })
 
 // test to see if the page changes as expected when page number is clicked
 test('should page change when page number is clicked', () => {
+  /*const x = pageSelector
   const pb = render(
     <PageBox
       isSelected={false}
@@ -189,8 +216,12 @@ test('should page change when page number is clicked', () => {
     ></PageBox>,
   ).container
   const pageButton3 = getById(pb as HTMLElement, 'pagebox-button-3')
-  userEvent.click(pageButton3!)
-  expect(currentPage).toBe(3)
+  */
+  const btn = pageSelector.container.querySelector('#pagebox-button-3')
+  expect(btn!.textContent).toBe("4")
+
+  userEvent.click(btn!)
+  expect(onPageSelectedChanged).toHaveBeenLastCalledWith(4)
 })
 
 // test to see if changing the page size results in correct behavior
@@ -204,7 +235,11 @@ test('should changing page size result in correct behavior', () => {
   const listbox = document.body.querySelector('ul[role=listbox]')
   const selectedItem = within(listbox as HTMLElement).getByText('50')
   userEvent.click(selectedItem)
-  expect(currentPage).toBe(1)
-  expect(pageSize).toBe(50)
-  expect(numberOfPages).toBe(2)
+  //This is what you care about. You don't test the parent function.
+  //The parent function needs to be tested but it needs to be tested in the component it is in
+  expect(updatePageSize).toHaveBeenCalledWith(50)
+  //expect(pageSize).toBe(50)
+  //expect(currentPage).toBe(1)
+
+  //expect(numberOfPages).toBe(2)
 })
