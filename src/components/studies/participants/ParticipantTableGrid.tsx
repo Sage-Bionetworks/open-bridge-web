@@ -79,13 +79,30 @@ const ACTIVE_PARTICIPANT_COLUMNS: ColDef[] = [
     flex: 1,
   },
   { field: 'notes', headerName: 'Notes', flex: 1 },
-  { field: 'real', headerName: 'Real', flex: 1 },
+
 ]
 const phoneColumn = {
   field: 'phone',
   headerName: 'Phone Number',
   flex: 1,
   valueGetter: getPhone,
+}
+
+const EditDialogTitle: FunctionComponent<{
+  onCancel: Function
+  shouldWithdraw?: boolean
+}> = ({ onCancel, shouldWithdraw }) => {
+  const title = shouldWithdraw ? 'Withdraw' : 'Edit Participant Detail'
+  const Icon = shouldWithdraw ? WithdrawIcon : PencilIcon
+
+  return (
+    <DialogTitleWithClose onCancel={onCancel}>
+      <>
+        <Icon style={{ width: '25px' }}></Icon>
+        <span style={{ paddingLeft: '8px' }}>{title}</span>
+      </>
+    </DialogTitleWithClose>
+  )
 }
 
 export type ParticipantTableGridProps = {
@@ -289,24 +306,11 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
         fullWidth
         aria-labelledby="edit participant"
       >
-        <DialogTitleWithClose
-          onCancel={() => {
-            setParticipantToEdit(undefined)
-          }}
-        >
-          <HideWhen hideWhen={participantToEdit?.shouldWithdraw || false}>
-            <>
-              <PencilIcon style={{ width: '25px' }}></PencilIcon>
-              <span style={{ paddingLeft: '8px' }}>
-                Edit Participant Detail
-              </span>
-            </>
-            <>
-              <WithdrawIcon style={{ width: '25px' }}></WithdrawIcon>
-              <span style={{ paddingLeft: '8px' }}>Withdraw</span>
-            </>
-          </HideWhen>
-        </DialogTitleWithClose>
+        <EditDialogTitle
+          onCancel={() => setParticipantToEdit(undefined)}
+          shouldWithdraw={participantToEdit?.shouldWithdraw}
+        />
+
         <HideWhen hideWhen={participantToEdit?.shouldWithdraw || false}>
           <EditParticipantForm
             enrollmentType={enrollmentType}
