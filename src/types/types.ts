@@ -123,6 +123,8 @@ export type StudyBuilderComponentProps = {
   saveLoader: boolean
 }
 
+
+export type ParticipantActivityType = 'ACTIVE' | 'WITHDRAWN'
 export type EditableParticipantData = {
   clinicVisitDate?: Date
   notes?: string
@@ -132,19 +134,40 @@ export type EditableParticipantData = {
 }
 
 export type ParticipantAccountSummary = {
-  isSelected?: boolean
-  firstName: string
-  lastName: string
-  email: string
+ // isSelected?: boolean
+  firstName?: string
+  lastName?: string
+  email?: string
   phone?: Phone
   id: string
-  studyIds?:string[]
+  studyIds?: string[]
   externalIds: StringDictionary<string>
-  externalId?: string,
+  externalId?: string
   studyExternalId?: string
-  status: 'unverified' | 'pending' | 'verified'
+  status?: 'unverified' | 'pending' | 'verified'
   createdOn?: string
   notes?: string
+}
+
+export type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {
+  clinicVisit?: Date | string
+  dateJoined?: Date | string
+  dateWithdrawn?: Date | string
+  withdrawalNote?: string
+}
+
+export type EnrolledAccountRecord = {
+  enrolledBy: OrgUser
+  enrolledOn: Date
+  externalId: string
+  participant: {
+    identifier: string
+    phone: Phone
+  }
+  studyId: string
+  withdrawalNote?: string
+  withdrawnBy: OrgUser
+  withdrawnOn: Date
 }
 
 export type Phone = {

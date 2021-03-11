@@ -28,7 +28,9 @@ import {
 import ParticipantService from '../../../services/participants.service'
 import { theme } from '../../../style/theme'
 import {
+  ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
+  ParticipantActivityType,
   StringDictionary
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
@@ -40,7 +42,6 @@ import {
 import AddParticipants from './AddParticipants'
 import DeleteDialog from './DeleteDialogContents'
 import ParticipantDownload, {
-  ParticipantActivityType,
   ParticipantDownloadType
 } from './ParticipantDownload'
 import ParticipantSearch from './ParticipantSearch'
@@ -114,7 +115,7 @@ type ParticipantManagerOwnProps = {
 
 const participantRecordTemplate: ParticipantAccountSummary = {
   status: 'unverified',
-  isSelected: false,
+
   firstName: '',
   lastName: '',
   email: '',
@@ -123,16 +124,22 @@ const participantRecordTemplate: ParticipantAccountSummary = {
   externalIds: {},
 }
 
+
 async function getParticipants(
   studyId: string,
   token: string,
   currentPage: number,
   pageSize: number, // set to 0 to get all the participants
+  tab: ParticipantActivityType = 'ACTIVE'
 ): Promise<ParticipantData> {
   const offset = (currentPage - 1) * pageSize
-  // ALINA TODO: enrollments
-  const enr = await ParticipantService.getEnrollmentsWithdrawn(studyId, token!)
-  const participants =
+
+  let participants: ParticipantData
+
+  if(tab === 'WITHDRAWN') {
+    participants =   pageSize > 0 ? await ParticipantService.getEnrollmentsWithdrawn(studyId, token!, pageSize, offset): await ParticipantService.getEnrollmentsWithdrawn(studyId, token!, pageSize, offset)
+  } else {
+ participants =
     pageSize > 0
       ? await ParticipantService.getParticipants(
           studyId,
@@ -141,6 +148,8 @@ async function getParticipants(
           offset,
         )
       : await ParticipantService.getAllParticipants(studyId, token!)
+
+      }
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
   const eventsMap: StringDictionary<{
@@ -167,10 +176,7 @@ async function getParticipants(
 
 type ParticipantManagerProps = ParticipantManagerOwnProps & RouteComponentProps
 
-type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {
-  clinicVisit?: Date | string
-  dateJoined?: Date | string
-}
+
 
 type ParticipantData = {
   items: ExtendedParticipantAccountSummary[]
@@ -245,7 +251,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     }
     const fn = async () => {
       const result = await run(
-        getParticipants(study.identifier, token!, currentPage, pageSize),
+        getParticipants(study.identifier, token!, currentPage, pageSize, tab),
       )
       if (result) {
         setParticipantData({ items: result.items, total: result.total })
@@ -258,6 +264,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     currentPage,
     pageSize,
     token,
+    tab
   ])
 
   //callbacks from the participant grid
@@ -330,7 +337,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     const result = await ParticipantService.getParticipantWithId(
       study.identifier,
       token!,
-      searchedValue,
+      searchedValue
     )
     const realResult = result ? [result] : null
     const totalParticipantsFound = result ? 1 : 0
@@ -350,7 +357,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     //if getting all participants
     const participantsData: ParticipantData =
       selection === 'ALL'
-        ? await getParticipants(study.identifier, token!, 0, 0)
+        ? await getParticipants(study.identifier, token!, 0, 0, tab)
         : { items: selectedActiveParticipants, total: selectedActiveParticipants.length }
     // TODO selected
     //massage data
@@ -523,7 +530,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             </Box>
             <div
               role="tabpanel"
-              hidden={tab !== 'ACTIVE'}
+              hidden={false  /* tab !== 'ACTIVE'*/}
               id={`active-participants`}
               className={classes.tabPanel}
             >
@@ -533,6 +540,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 studyId={study.identifier}
                 totalParticipants={data?.total || 0}
                 isEdit={isEdit}
+                gridType={tab}
                 onWithdrawParticipant={(participantId: string, note: string) =>
                   withdrawParticipant(participantId, note)
                 }

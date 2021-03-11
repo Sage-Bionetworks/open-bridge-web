@@ -2,8 +2,9 @@ import { callEndpoint } from '../helpers/utility'
 import constants from '../types/constants'
 import {
   EditableParticipantData,
-  ParticipantAccountSummary,
-  StringDictionary
+  EnrolledAccountRecord,
+  ExtendedParticipantAccountSummary,
+  ParticipantAccountSummary, StringDictionary
 } from '../types/types'
 
 export const CLINIC_EVENT_ID = 'clinic_visit'
@@ -206,19 +207,33 @@ async function deleteParticipant(
 }
 
 //gets a list of withdrawn participants
-async function getEnrollmentsWithdrawn(studyIdentifier: string, token: string) {
+async function getEnrollmentsWithdrawn(studyIdentifier: string, token: string, pageSize: number, offsetBy: number): Promise<{items: ExtendedParticipantAccountSummary[], total: number}> {
   const endpoint = `${constants.endpoints.enrollments.replace(
     ':studyId',
     studyIdentifier,
   )}`
+  const data = {
+    enrollmentFilter: 'withdrawn', 
+    pageSize: pageSize,
+    offsetBy: offsetBy,
 
-  const result = await callEndpoint<{ items: any }>(
+  }
+
+  const result = await callEndpoint<{ items: EnrolledAccountRecord[],     total: number }>(
     endpoint,
     'GET',
-    { enrollmentFilter: 'withdrawn', includeTesters: IS_TEST },
+   data,
     token,
   )
-  return result.data.items
+  const resultItems = result.data.items.map(p=> (
+    {...p.participant, externalId: p.externalId, id: p.participant.identifier, dateWithdrawn: p.withdrawnOn, withdrawalNote: p.withdrawalNote, externalIds: {[studyIdentifier]: p.externalId}}
+  )
+
+  )
+
+
+
+  return {items: resultItems, total: result.data.total}
 }
 
 //withdraws participant

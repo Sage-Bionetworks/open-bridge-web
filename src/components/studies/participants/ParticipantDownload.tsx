@@ -1,6 +1,7 @@
 import { Box, CircularProgress, MenuItem } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
+import { ParticipantActivityType } from '../../../types/types'
 import {
   ButtonWithSelectButton,
   ButtonWithSelectSelect
@@ -12,7 +13,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export type ParticipantActivityType = 'ACTIVE' | 'WITHDRAWN'
+
 export type ParticipantDownloadType = 'ALL' | 'SELECTED'
 
 type ParticipantDownloadProps = {
