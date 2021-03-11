@@ -111,10 +111,7 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
       </Button>
       <Button
         onClick={() => {
-          console.log('inside the method')
-          console.log(handlePageNavigationArrowPressed.toString())
           handlePageNavigationArrowPressed('FF')
-          console.log('after')
         }}
         classes={{ root: classes.button }}
         disabled={rotateAndDisableForwardIcons}

@@ -1,8 +1,9 @@
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import constants from '../../types/constants'
+import { generateSampleParticipantGridData } from '../../types/functions'
 
-type search = {
+type Search = {
   pageSize: number
   offsetBy: number
 }
@@ -11,26 +12,16 @@ const server = setupServer(
   rest.post(
     `*${constants.endpoints.participantsSearch}`,
     async (req, res, ctx) => {
-      const data = req.body as search
-      const items = []
-      // console.log('offset by', data.offsetBy)
-      for (let i = data.offsetBy + 1; i <= data.pageSize + data.offsetBy; i++) {
-        let obj = {
-          createdOn: '2021-02-22T20:45:38.375Z',
-          externalIds: { kkynty35udejidtdp8h: `test-id-${i}` },
-          id: 'dRNO0ydUO3hAGD5rHOXx1Gmb' + i,
-          status: 'unverified',
-          firstName: '',
-          lastName: '',
-          email: '',
-        }
-        items.push(obj)
-      }
+      const data = req.body as Search
+      const items = generateSampleParticipantGridData(
+        data.pageSize,
+        data.offsetBy,
+      )
       return res(
         ctx.status(200),
         ctx.json({
           items: items,
-          total: items.length,
+          total: 100,
         }),
       )
     },

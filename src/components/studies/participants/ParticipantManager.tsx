@@ -8,7 +8,7 @@ import {
   Grid,
   Switch,
   Tab,
-  Tabs
+  Tabs,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { FunctionComponent } from 'react'
@@ -22,19 +22,19 @@ import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
 import { theme } from '../../../style/theme'
 import {
   ParticipantAccountSummary,
-  StringDictionary
+  StringDictionary,
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import {
   DialogButtonPrimary,
-  DialogButtonSecondary
+  DialogButtonSecondary,
 } from '../../widgets/StyledComponents'
 import AddParticipants from './AddParticipants'
 import DeleteDialog from './DeleteDialogContents'
@@ -184,6 +184,8 @@ type ParticipantData = {
 const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const { study }: StudyInfoData = useStudyInfoDataState()
   const { token } = useUserSessionDataState()
+
+  console.log('token', token)
 
   // The current page in the particpant grid the user is viewing
   const [currentPage, setCurrentPage] = React.useState(1)
@@ -545,7 +547,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           open={isOpenDeleteDialog}
           maxWidth="xs"
           scroll="body"
-
           aria-labelledby="edit participant"
         >
           <DialogTitleWithClose

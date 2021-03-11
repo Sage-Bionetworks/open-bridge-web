@@ -11,7 +11,7 @@ import {
   ColDef,
   DataGrid,
   GridOverlay,
-  ValueGetterParams
+  ValueGetterParams,
 } from '@material-ui/data-grid'
 import React, { FunctionComponent } from 'react'
 import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
@@ -145,7 +145,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     // "F" = forward to next pages
     // "B" = back to previous page
     // "BB" = back to beginning
-    console.log('inside the page navigation arrow pressed function')
     if (type === 'F' && currentPage !== numberOfPages) {
       setCurrentPage(currentPage + 1)
     } else if (type === 'FF' && currentPage !== numberOfPages) {
@@ -303,7 +302,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               </span>
             </>
             <>
-              <WithdrawIcon  style={{ width: '25px' }}></WithdrawIcon>
+              <WithdrawIcon style={{ width: '25px' }}></WithdrawIcon>
               <span style={{ paddingLeft: '8px' }}>Withdraw</span>
             </>
           </HideWhen>

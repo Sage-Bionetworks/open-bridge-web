@@ -11,8 +11,6 @@ export const JOINED_EVENT_ID = 'created_on'
 
 const IS_TEST: boolean = true
 
-
-
 // gets clinic visits and join events for participants with the specified ids
 async function getRelevantEventsForParticipans(
   studyIdentifier: string,
@@ -111,9 +109,10 @@ async function getParticipants(
   }>(endpoint, 'POST', data, token)
 
   //ALINA TODO: once there is a filter we can use that
-  const filteredData = result.data.items.map(p => ({...p, externalId: p.externalIds[studyIdentifier]})).filter(item =>
-    item.studyIds?.includes(studyIdentifier),
-  )
+  const filteredData = result.data.items.map(p => ({
+    ...p,
+    externalId: p.externalIds[studyIdentifier],
+  }))
   return { items: filteredData, total: result.data.total }
 }
 
@@ -133,7 +132,10 @@ async function getParticipantWithId(
       {},
       token,
     )
-    return {...result.data, externalId: result.data.externalIds[studyIdentifier]}
+    return {
+      ...result.data,
+      externalId: result.data.externalIds[studyIdentifier],
+    }
   } catch (e) {
     // If the participant is not found, return null.
     if (e.statusCode === 404) {
@@ -203,32 +205,28 @@ async function withdrawParticipant(
   return result.data.identifier
 }
 
-/*async function updateParticipantGroup(
+async function updateParticipantGroup(
   studyIdentifier: string,
   token: string,
   participantId: string,
-  dataGroups: string[]
-
+  dataGroups: string[],
 ): Promise<string> {
   const endpoint = `${constants.endpoints.participant.replace(
     ':id',
     studyIdentifier,
-
   )}/${participantId}`
-  const data= {
-
-    dataGroups:dataGroups 
+  const data = {
+    dataGroups: dataGroups,
   }
 
-
-  const result = await callEndpoint<{identifier: string}>(
+  const result = await callEndpoint<{ identifier: string }>(
     endpoint,
     'DELETE',
     {},
     token,
   )
   return result.data.identifier
-}*/
+}
 
 //adds a participant
 
@@ -351,6 +349,7 @@ const ParticipantService = {
   getRequestInfoForParticipant,
   updateNotesAndClinicVisitForParticipant,
   withdrawParticipant,
+  updateParticipantGroup,
 }
 
 export default ParticipantService
