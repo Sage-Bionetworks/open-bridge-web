@@ -47,11 +47,8 @@ beforeEach(async () => {
 })
 
 afterEach(() => {
-  server.resetHandlers()
   cleanup()
 })
-
-afterAll(() => server.close())
 
 const getById = queryByAttribute.bind(null, 'id')
 
