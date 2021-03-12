@@ -10,7 +10,6 @@ import { ParticipantAccountSummary } from '../../../../types/types'
 import { UserSessionDataProvider } from '../../../../helpers/AuthContext'
 import server from '../../../../_tests_server/handlers/server'
 import userEvent from '@testing-library/user-event'
-import { text } from 'msw/lib/types/context'
 
 let currentPage = 1
 let pageSize = 25
