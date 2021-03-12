@@ -8,7 +8,6 @@ import {
 import ParticipantTableGrid from '../../../../components/studies/participants/ParticipantTableGrid'
 import { ParticipantAccountSummary } from '../../../../types/types'
 import { UserSessionDataProvider } from '../../../../helpers/AuthContext'
-import server from '../../../../_tests_server/handlers/server'
 import userEvent from '@testing-library/user-event'
 
 let currentPage = 1
