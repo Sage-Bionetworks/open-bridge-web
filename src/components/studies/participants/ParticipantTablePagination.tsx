@@ -79,7 +79,10 @@ const ParticipantTablePagination: React.FunctionComponent<ParticpantTablePaginat
   }
   return (
     <div className={classes.footerWrapper}>
-      <div className={classes.partitipantNumberText}>{`${
+      <div
+        id="participant_page_data"
+        className={classes.partitipantNumberText}
+      >{`${
         participantsShown > totalParticipants
           ? totalParticipants
           : participantsShown

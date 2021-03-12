@@ -79,7 +79,6 @@ const ACTIVE_PARTICIPANT_COLUMNS: ColDef[] = [
     flex: 1,
   },
   { field: 'notes', headerName: 'Notes', flex: 1 },
-
 ]
 const phoneColumn = {
   field: 'phone',
@@ -285,11 +284,10 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                     }
                   />
                 ),
-
                 NoRowsOverlay: () => (
                   <GridOverlay>
                     {status === 'PENDING' ? (
-                      <CircularProgress></CircularProgress>
+                      <CircularProgress id="circular_progress"></CircularProgress>
                     ) : (
                       'No Participants'
                     )}

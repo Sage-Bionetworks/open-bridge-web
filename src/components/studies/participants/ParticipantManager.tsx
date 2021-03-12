@@ -350,7 +350,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     const participantsData: ParticipantData =
       selection === 'ALL'
         ? await getParticipants(study.identifier, token!, 0, 0)
-        : { items: selectedActiveParticipants, total: selectedActiveParticipants.length }
+        : {
+            items: selectedActiveParticipants,
+            total: selectedActiveParticipants.length,
+          }
     // TODO selected
     //massage data
     const transformedParticipantsData = participantsData.items.map(
