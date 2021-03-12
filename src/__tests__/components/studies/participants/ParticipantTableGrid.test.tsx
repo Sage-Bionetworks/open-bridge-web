@@ -141,7 +141,7 @@ test('should render correctly', () => {
   expect(participantCountData?.textContent).toBe('25/100 participants')
 })
 
-// check to see if changing the pages results in correct participants being fetched
+// check to see if changing the pages results in correct data being passed
 test('data passed appropriately to onPageSelectedChanged method', async () => {
   userEvent.click(forward_to_end_button)
   expect(onPageSelectedChanged).toHaveBeenLastCalledWith(numberOfPages)
