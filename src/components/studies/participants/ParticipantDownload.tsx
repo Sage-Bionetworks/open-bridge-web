@@ -21,6 +21,8 @@ type ParticipantDownloadProps = {
   selection?: ParticipantDownloadType
   onDownload: Function
   onDone: Function
+  hasItems: boolean
+  selectedLength: number
   isProcessing?: boolean
   fileDownloadUrl?: string
 }
@@ -31,6 +33,7 @@ const ParticipantDownload: React.FunctionComponent<ParticipantDownloadProps> = (
   onDownload,
   isProcessing,
   fileDownloadUrl,
+  hasItems, selectedLength,
   onDone,
 }) => {
   const classes = useStyles()
@@ -75,6 +78,7 @@ const ParticipantDownload: React.FunctionComponent<ParticipantDownloadProps> = (
       <ButtonWithSelectSelect
         key="session_select"
         value={selection}
+        disabled= {!hasItems}
         onChange={e => setSelection(e.target.value as ParticipantDownloadType)}
         inputProps={{ 'aria-label': 'download participants' }}
         disableUnderline={true}
@@ -90,6 +94,7 @@ const ParticipantDownload: React.FunctionComponent<ParticipantDownloadProps> = (
         variant="contained"
         onClick={() => onDownload(selection)}
         className={classes.downloadButton}
+        disabled= {!hasItems || (selection === 'SELECTED' && selectedLength===0)}
       >
         {!isProcessing ? 'Download' : <CircularProgress size={24} />}
       </ButtonWithSelectButton>

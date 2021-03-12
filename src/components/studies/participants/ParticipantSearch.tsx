@@ -101,14 +101,6 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
     const searchedValue = inputComponent.current?.value
       ? inputComponent.current?.value
       : ''
-    /* const result = await ParticipantService.getParticipantWithId(
-        study.identifier,
-        token!,
-        searchedValue,
-      )
-      const realResult = result ? [result] : null
-      const totalParticipantsFound = result ? 1 : 0
-      setParticipantData({ items: realResult, total: totalParticipantsFound })*/
     setIsSearchingUsingID(true)
     onSearch(searchedValue)
   }
@@ -116,8 +108,6 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
   const handleResetSearch = async () => {
     inputComponent.current!.value = ''
     setIsSearchingUsingID(false)
-    /* const result = await run(getParticipants(study!.identifier, token!))
-      setParticipantData({ items: result.items, total: result.total })*/
     onReset()
   }
 
