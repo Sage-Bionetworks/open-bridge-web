@@ -6,6 +6,8 @@ import SearchIcon from '../../../assets/search_icon.svg'
 import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
 import { Study } from '../../../types/types'
 
+const ENTER_KEY = 'Enter'
+
 const useStyles = makeStyles(theme => ({
   participantIDSearchBar: {
     backgroundColor: 'white',
@@ -123,6 +125,11 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
     <div className={classes.inputRow}>
       <input
         placeholder="Participant IDs"
+        onKeyDown={e => {
+          if (e.key === ENTER_KEY) {
+            handleSearchParticipantRequest()
+          }
+        }}
         className={classes.participantIDSearchBar}
         ref={inputComponent}
         style={{
