@@ -135,11 +135,13 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
         style={{
           paddingRight: isSearchingUsingId ? '28px' : '4px',
         }}
-      ></input>
+        id="participant-search-bar"
+      />
       {isSearchingUsingId && (
         <Button
           className={classes.blackXIconButton}
           onClick={handleResetSearch}
+          id="clear-participant-search-text-button"
         >
           <img
             src={BlackXIcon}
@@ -151,6 +153,7 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
       <Button
         className={classes.searchIconContainer}
         onClick={handleSearchParticipantRequest}
+        id="search-participants-button"
       >
         <img src={WhiteSearchIcon} alt="white-search-icon"></img>
       </Button>
@@ -161,6 +164,7 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
       onClick={() => {
         setIsSearchingForParticipant(true)
       }}
+      id="start-searching-for-participant-button"
     >
       <img
         src={SearchIcon}
