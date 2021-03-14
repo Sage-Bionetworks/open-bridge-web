@@ -33,6 +33,11 @@ afterEach(() => {
 })
 
 test('renders correctly', () => {
+  const startSearchButton = getById(
+    participantSearch as HTMLElement,
+    'start-searching-for-participant-button',
+  )
+  expect(startSearchButton).not.toEqual(null)
   const inputElement = getById(
     participantSearch as HTMLElement,
     'participant-search-bar',
