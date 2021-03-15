@@ -511,8 +511,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               justifyContent="space-between"
             >
               <ParticipantSearch
-                study={study}
-                token={token!}
                 onReset={() => handleResetSearch()}
                 onSearch={(searchedValue: string) =>
                   handleSearchParticipantRequest(searchedValue)

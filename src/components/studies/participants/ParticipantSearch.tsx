@@ -4,7 +4,6 @@ import React from 'react'
 import BlackXIcon from '../../../assets/black_x_icon.svg'
 import SearchIcon from '../../../assets/search_icon.svg'
 import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
-import { Study } from '../../../types/types'
 
 const ENTER_KEY = 'Enter'
 
@@ -74,15 +73,11 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type ParticipantSearchProps = {
-  study: Study
-  token: string
   onReset: Function
   onSearch: Function
 }
 
 const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
-  study,
-  token,
   onReset,
   onSearch,
 }) => {

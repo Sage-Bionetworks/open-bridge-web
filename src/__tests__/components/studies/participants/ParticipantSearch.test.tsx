@@ -1,8 +1,7 @@
-import React from 'react'
-import { render, cleanup, queryByAttribute } from '@testing-library/react'
-import ParticipantSearch from '../../../../components/studies/participants/ParticipantSearch'
+import { cleanup, queryByAttribute, render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Study } from '../../../../types/types'
+import React from 'react'
+import ParticipantSearch from '../../../../components/studies/participants/ParticipantSearch'
 
 let participantSearch: Element
 
@@ -18,8 +17,6 @@ const renderParticipantSearchComponent = () => {
     <ParticipantSearch
       onReset={onReset}
       onSearch={onSearch}
-      study={{} as Study}
-      token=""
     ></ParticipantSearch>,
   ).container
 }
