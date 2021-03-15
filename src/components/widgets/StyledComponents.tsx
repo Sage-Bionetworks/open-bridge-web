@@ -8,6 +8,9 @@ export const ButtonWithSelectButton = withStyles(theme => ({
     marginBottom: theme.spacing(1),
     color: 'black',
     backgroundColor: theme.palette.primary.dark,
+    '&:disabled': {
+      boxShadow: '1px 2px 2px rgb(0 0 0 / 25%)',
+    },
     '&:hover': {
       backgroundColor: theme.palette.primary.dark,
       boxShadow: `1px 2px 2px rgba(0, 0, 0, 0.25)`,
@@ -80,9 +83,9 @@ export const DialogButtonPrimary = withStyles(theme => ({
     fontSize: '14px',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
 
-'&:not(:first-child)': {
-    marginLeft: theme.spacing(1)
-},
+    '&:not(:first-child)': {
+      marginLeft: theme.spacing(1),
+    },
 
     '&:hover': {
       fontWeight: 'bolder',
