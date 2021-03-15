@@ -4,7 +4,8 @@ import React from 'react'
 import BlackXIcon from '../../../assets/black_x_icon.svg'
 import SearchIcon from '../../../assets/search_icon.svg'
 import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
-import { Study } from '../../../types/types'
+
+const ENTER_KEY = 'Enter'
 
 const useStyles = makeStyles(theme => ({
   participantIDSearchBar: {
@@ -72,15 +73,11 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type ParticipantSearchProps = {
-  study: Study
-  token: string
   onReset: Function
   onSearch: Function
 }
 
 const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
-  study,
-  token,
   onReset,
   onSearch,
 }) => {
@@ -99,14 +96,6 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
     const searchedValue = inputComponent.current?.value
       ? inputComponent.current?.value
       : ''
-    /* const result = await ParticipantService.getParticipantWithId(
-        study.identifier,
-        token!,
-        searchedValue,
-      )
-      const realResult = result ? [result] : null
-      const totalParticipantsFound = result ? 1 : 0
-      setParticipantData({ items: realResult, total: totalParticipantsFound })*/
     setIsSearchingUsingID(true)
     onSearch(searchedValue)
   }
@@ -114,8 +103,6 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
   const handleResetSearch = async () => {
     inputComponent.current!.value = ''
     setIsSearchingUsingID(false)
-    /* const result = await run(getParticipants(study!.identifier, token!))
-      setParticipantData({ items: result.items, total: result.total })*/
     onReset()
   }
 
@@ -123,16 +110,23 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
     <div className={classes.inputRow}>
       <input
         placeholder="Participant IDs"
+        onKeyDown={e => {
+          if (e.key === ENTER_KEY) {
+            handleSearchParticipantRequest()
+          }
+        }}
         className={classes.participantIDSearchBar}
         ref={inputComponent}
         style={{
           paddingRight: isSearchingUsingId ? '28px' : '4px',
         }}
-      ></input>
+        id="participant-search-bar"
+      />
       {isSearchingUsingId && (
         <Button
           className={classes.blackXIconButton}
           onClick={handleResetSearch}
+          id="clear-participant-search-text-button"
         >
           <img
             src={BlackXIcon}
@@ -144,6 +138,7 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
       <Button
         className={classes.searchIconContainer}
         onClick={handleSearchParticipantRequest}
+        id="search-participants-button"
       >
         <img src={WhiteSearchIcon} alt="white-search-icon"></img>
       </Button>
@@ -154,6 +149,7 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
       onClick={() => {
         setIsSearchingForParticipant(true)
       }}
+      id="start-searching-for-participant-button"
     >
       <img
         src={SearchIcon}

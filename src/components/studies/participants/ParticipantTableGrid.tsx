@@ -23,6 +23,7 @@ import {
   EditableParticipantData,
   EnrollmentType,
   ParticipantAccountSummary,
+  ParticipantActivityType
 } from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import HideWhen from '../../widgets/HideWhen'
@@ -80,6 +81,36 @@ const ACTIVE_PARTICIPANT_COLUMNS: ColDef[] = [
   },
   { field: 'notes', headerName: 'Notes', flex: 1 },
 ]
+
+const WITHDRAWN_PARTICIPANT_COLUMNS: ColDef[] = [
+  {
+    field: 'externalId',
+    headerName: 'Participant ID',
+    flex: 2,
+  },
+  { field: 'id', headerName: 'HealthCode', flex: 2 },
+  {
+    field: 'clinicVisit',
+    headerName: 'Clinic Visit',
+    valueGetter: getClinicVisit,
+    flex: 1,
+  },
+  {
+    field: 'dateJoined',
+    headerName: 'Joined',
+    valueGetter: getDateJoined,
+    flex: 1,
+  },
+  {
+    field: 'dateWithdrawn',
+    headerName: 'Withdrawn',
+    valueGetter: getDateJoined,
+    flex: 1,
+  },
+  { field: 'withdrawalNote', headerName: 'Withdrawal notes', flex: 1 },
+
+]
+
 const phoneColumn = {
   field: 'phone',
   headerName: 'Phone Number',
@@ -107,6 +138,7 @@ const EditDialogTitle: FunctionComponent<{
 export type ParticipantTableGridProps = {
   rows: ParticipantAccountSummary[]
   enrollmentType: EnrollmentType
+  gridType: ParticipantActivityType
   studyId: string
   totalParticipants: number
   currentPage: number
@@ -128,6 +160,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   rows,
   studyId,
   totalParticipants,
+  gridType,
   pageSize,
   setPageSize,
   currentPage,
@@ -155,6 +188,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   // This is the total number of pages needed to list all participants based on the
   // page size selected
   const numberOfPages = Math.ceil(totalParticipants / pageSize)
+  console.log(rows)
 
   const handlePageNavigationArrowPressed = (type: string) => {
     // "FF" = forward to last page
@@ -234,23 +268,21 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     },
   }
 
-  const activeParticipantsColumns = [...ACTIVE_PARTICIPANT_COLUMNS]
+  const participantColumns = (gridType==='ACTIVE')? [...ACTIVE_PARTICIPANT_COLUMNS]: [...WITHDRAWN_PARTICIPANT_COLUMNS]
 
   if (enrollmentType === 'PHONE') {
-    if (!activeParticipantsColumns.find(col => col.field === 'phone'))
-      activeParticipantsColumns.splice(2, 0, phoneColumn)
+    if (!participantColumns.find(col => col.field === 'phone'))
+      participantColumns.splice(2, 0, phoneColumn)
   }
-  if (isEdit) {
-    if (!activeParticipantsColumns.find(col => col.field === 'edit')) {
-      activeParticipantsColumns.push(editColumn)
+  if (isEdit && gridType!== 'WITHDRAWN') {
+    if (!participantColumns.find(col => col.field === 'edit')) {
+      participantColumns.push(editColumn)
     }
   }
 
   const onPageSelectedChanged = (pageSelected: number) => {
     setCurrentPage(pageSelected)
   }
-
-  const handleClose = () => {}
 
   return (
     <>
@@ -260,7 +292,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             <DataGrid
               rows={rows}
               density="standard"
-              columns={activeParticipantsColumns}
+              columns={participantColumns}
               pageSize={pageSize}
               checkboxSelection
               onSelectionChange={selectedRows => {
