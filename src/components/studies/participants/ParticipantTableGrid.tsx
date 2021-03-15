@@ -188,7 +188,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   // This is the total number of pages needed to list all participants based on the
   // page size selected
   const numberOfPages = Math.ceil(totalParticipants / pageSize)
-  console.log(rows)
 
   const handlePageNavigationArrowPressed = (type: string) => {
     // "FF" = forward to last page

@@ -6,7 +6,10 @@ import {
   within,
 } from '@testing-library/react'
 import ParticipantTableGrid from '../../../../components/studies/participants/ParticipantTableGrid'
-import { ParticipantAccountSummary } from '../../../../types/types'
+import {
+  ParticipantAccountSummary,
+  ParticipantActivityType,
+} from '../../../../types/types'
 import { UserSessionDataProvider } from '../../../../helpers/AuthContext'
 import userEvent from '@testing-library/user-event'
 
@@ -93,6 +96,7 @@ const renderParticipantTableGrid = async () => {
           notes: string,
           clinicVisitDate?: Date,
         ) => {}}
+        gridType={{} as ParticipantActivityType}
       ></ParticipantTableGrid>
       ,
     </UserSessionDataProvider>,
