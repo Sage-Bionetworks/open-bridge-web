@@ -6,6 +6,8 @@ import SearchIcon from '../../../assets/search_icon.svg'
 import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
 import { Study } from '../../../types/types'
 
+const ENTER_KEY = 'Enter'
+
 const useStyles = makeStyles(theme => ({
   participantIDSearchBar: {
     backgroundColor: 'white',
@@ -123,16 +125,23 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
     <div className={classes.inputRow}>
       <input
         placeholder="Participant IDs"
+        onKeyDown={e => {
+          if (e.key === ENTER_KEY) {
+            handleSearchParticipantRequest()
+          }
+        }}
         className={classes.participantIDSearchBar}
         ref={inputComponent}
         style={{
           paddingRight: isSearchingUsingId ? '28px' : '4px',
         }}
-      ></input>
+        id="participant-search-bar"
+      />
       {isSearchingUsingId && (
         <Button
           className={classes.blackXIconButton}
           onClick={handleResetSearch}
+          id="clear-participant-search-text-button"
         >
           <img
             src={BlackXIcon}
@@ -144,6 +153,7 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
       <Button
         className={classes.searchIconContainer}
         onClick={handleSearchParticipantRequest}
+        id="search-participants-button"
       >
         <img src={WhiteSearchIcon} alt="white-search-icon"></img>
       </Button>
@@ -154,6 +164,7 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
       onClick={() => {
         setIsSearchingForParticipant(true)
       }}
+      id="start-searching-for-participant-button"
     >
       <img
         src={SearchIcon}
