@@ -8,7 +8,7 @@ import {
   Grid,
   Switch,
   Tab,
-  Tabs
+  Tabs,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { FunctionComponent } from 'react'
@@ -23,7 +23,7 @@ import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
 import { theme } from '../../../style/theme'
@@ -37,7 +37,7 @@ import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import {
   DialogButtonPrimary,
-  DialogButtonSecondary
+  DialogButtonSecondary,
 } from '../../widgets/StyledComponents'
 import AddParticipants from './AddParticipants'
 import DeleteDialog from './DeleteDialogContents'
@@ -119,7 +119,6 @@ const participantRecordTemplate: ParticipantAccountSummary = {
   firstName: '',
   lastName: '',
   email: '',
-
   id: '',
   externalIds: {},
 }
@@ -373,7 +372,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             items: selectedActiveParticipants,
             total: selectedActiveParticipants.length,
           }
-
     //massage data
     const transformedParticipantsData = participantsData.items.map(
       (p: ExtendedParticipantAccountSummary) => ({

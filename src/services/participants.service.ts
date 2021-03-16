@@ -5,7 +5,7 @@ import {
   EnrolledAccountRecord,
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
-  StringDictionary
+  StringDictionary,
 } from '../types/types'
 
 export const CLINIC_EVENT_ID = 'clinic_visit'

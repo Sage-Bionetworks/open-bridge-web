@@ -23,6 +23,8 @@ const renderParticipantSearchComponent = () => {
 
 beforeEach(() => {
   renderParticipantSearchComponent()
+  onReset.mockReset()
+  onSearch.mockReset()
 })
 
 afterEach(() => {

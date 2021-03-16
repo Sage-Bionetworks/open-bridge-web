@@ -3,7 +3,7 @@ import {
   CircularProgress,
   Dialog,
   IconButton,
-  Paper
+  Paper,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import {
@@ -11,7 +11,7 @@ import {
   ColDef,
   DataGrid,
   GridOverlay,
-  ValueGetterParams
+  ValueGetterParams,
 } from '@material-ui/data-grid'
 import React, { FunctionComponent } from 'react'
 import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
@@ -29,7 +29,7 @@ import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import HideWhen from '../../widgets/HideWhen'
 import {
   EditParticipantForm,
-  WithdrawParticipantForm
+  WithdrawParticipantForm,
 } from './ParticipantForms'
 import ParticipantTablePagination from './ParticipantTablePagination'
 
@@ -80,7 +80,6 @@ const ACTIVE_PARTICIPANT_COLUMNS: ColDef[] = [
     flex: 1,
   },
   { field: 'notes', headerName: 'Notes', flex: 1 },
-
 ]
 
 const WITHDRAWN_PARTICIPANT_COLUMNS: ColDef[] = [
@@ -189,11 +188,10 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   // This is the total number of pages needed to list all participants based on the
   // page size selected
   const numberOfPages = Math.ceil(totalParticipants / pageSize)
-  console.log(rows)
 
   const handlePageNavigationArrowPressed = (type: string) => {
     // "FF" = forward to last page
-    // "F" = forward to next page
+    // "F" = forward to next pages
     // "B" = back to previous page
     // "BB" = back to beginning
     if (type === 'F' && currentPage !== numberOfPages) {
@@ -317,11 +315,10 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                     }
                   />
                 ),
-
                 NoRowsOverlay: () => (
                   <GridOverlay>
                     {status === 'PENDING' ? (
-                      <CircularProgress></CircularProgress>
+                      <CircularProgress id="circular_progress"></CircularProgress>
                     ) : (
                       'No Participants'
                     )}
