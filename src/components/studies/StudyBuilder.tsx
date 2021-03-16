@@ -213,7 +213,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           <Box
             className={clsx(classes.mainArea, {
               [classes.mainAreaNormal]: open,
-              [classes.mainAreaWider]: open && (['scheduler', 'enrollment-type-selector'].includes(section)),
+              [classes.mainAreaWider]: open && (['branding','scheduler', 'enrollment-type-selector', ].includes(section)),
               [classes.mainAreaWide]: !open,
             })}
           >
