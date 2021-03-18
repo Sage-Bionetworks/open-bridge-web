@@ -1,13 +1,11 @@
-import { Assessment } from "./types"
+import { Assessment, StringDictionary } from './types'
 
-export type SessionScheduleStartType = 'DAY1' | 'NDAYS_DAY1'
+
 
 export enum HSsEnum {
   H = 'Hours',
   D = 'Days',
 }
-
-export type SessionScheduleEndType = 'END_STUDY' | 'N_OCCURENCES'
 
 export enum DWMYEnum {
   D = 'Day',
@@ -30,109 +28,66 @@ export enum HDWMEnum {
   M = 'Month',
 }
 
-/*export enum WeekdaysEnum {
-  'Su' = '0',
-  'M' = '1',
-  'T' = '2',
-  'W' = '3',
-  'TH' = '4',
-  'F' = '5',
-  'S' = '6',
-}*/
-
 export enum NotificationFreqEnum {
-  'START_OF_WINDOW' = 'Start of window',
-  'RANDOM' = 'Random within window',
+  'start_of_window' = 'Start of window',
+  'participant_choice' = 'Participant Choice',
+  'random' = 'Random within window',
 }
 
-export enum ReminderIntervalEnum {
-  NONE = 'none',
-  MIN_5 = '5 min',
-  MIN_10 = '10 min',
-  MIN_15 = '15 min',
-  MIN_30 = '30 min',
-  HR_1 = '1hr. ',
-}
+export type ReminderIntervalType = 'before_window_end' | 'after_window_start'
 
-export type ReminderIntervalType = 'BEFORE' | 'AFTER'
+export type PerformanceOrder =
+  | 'sequential'
+  | 'randomized'
+  | 'participant_choice' //done
 
-export type AssessmentOrder = 'SEQUENTIAL' | 'RANDOM'
+export type StartEventId = 'activities_retrieved' | 'study_start_date'
 
-export type StartEventId = 'ONBOARDING' | 'START_DATE'
-
-export type WindowEndType = string /*{
-    //endQuantity: number,
-    //endUnit:  keyof typeof  HSsEnum
-}*/
-
-export type NotificationReminder = {
-  interval: keyof typeof ReminderIntervalEnum
-  type?: ReminderIntervalType
+export type NotificationMessage = {
+  lang?: string
+  subject: string
+  message: string
 }
 
 export type AssessmentWindow = {
-  startHour: number
-  end: WindowEndType
-
-  isAllowAnyFrequency?: boolean
+  guid?: string
+  startTime: string //(HH:MM)
+  expiration: string //"P7D"
+  persistent?: boolean
 }
 
-export type Reoccurance = string /*{
-  unit: keyof typeof DWMYEnum
-  frequency: number
- // days?: WeekdaysEnum[]
-}*/
-
-export type StartDate = {
-  type: SessionScheduleStartType
-  // offsetNumber?: number
-  // offsetUnit?: HDWMEnum
-  offset?: string
-}
-
-export type EndDate = {
-  type: SessionScheduleEndType
-  days?: number
-}
-
-export type StudyDuration = string /*{
-  unit:  keyof typeof DWMYsEnum
-  quantity: number
-}*/
+export type ScheduleDuration = string //"P4W"
 
 export type SessionSchedule = {
-  startDate: StartDate
-  reoccurance: Reoccurance
-  notification?: keyof typeof NotificationFreqEnum
-  isAllowSnooze?: boolean
-
-  reminder?: NotificationReminder
-  windows: AssessmentWindow[]
-  endDate: EndDate
-  isGroupAssessments?: boolean
-  order: AssessmentOrder
-  subjectLine?: string
-  bodyText?: string
+  delay?: string //PD
+  interval?: string //PD
+  occurances?: number
+  performanceOrder: PerformanceOrder
+  timeWindows?: AssessmentWindow[]
+  assessments?: Assessment[]
+  notifyAt?: keyof typeof NotificationFreqEnum
+  remindAt?: ReminderIntervalType
+  reminderPeriod?: string //PT10M
+  allowSnooze?: boolean
+  messages?: NotificationMessage[]
 }
 
-
-
-export type StudySession = {
-  id: string
-  studyId: string
-
+export type StudySessionGeneral = {
   name: string
-  assessments: Assessment[]
-  order?: number
-  sessionSchedule?: SessionSchedule
- 
+  labels?: StringDictionary<string>[]
+  guid: string
+  startEventId: StartEventId
 }
+
+
+export type StudySession = StudySessionGeneral & SessionSchedule
 
 export type Schedule = {
-  studyId?: string, 
   name: string
-  startEventId?: StartEventId
   ownerId?: string //todo
+  guid: string
   sessions: StudySession[]
+  duration: ScheduleDuration
+  version?: number
+  clientData?: any
 }
-

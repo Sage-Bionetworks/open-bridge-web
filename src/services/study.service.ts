@@ -1,16 +1,15 @@
 import { callEndpoint } from '../helpers/utility'
 import constants from '../types/constants'
-import { Schedule, StudyDuration, StudySession } from '../types/scheduling'
+import { Schedule } from '../types/scheduling'
 import { Study } from '../types/types'
 
 const StudyService = {
   getStudies,
   getStudy,
-  updateStudy,
   createStudy,
   removeStudy,
-  getStudySessions,
-  saveStudySessions,
+  updateStudy,
+  createStudySchedule,
   getStudySchedule,
   saveStudySchedule,
 }
@@ -30,41 +29,13 @@ async function getStudies(token: string): Promise<Study[]> {
 }
 
 async function getStudy(id: string, token: string): Promise<Study | undefined> {
-  try {
-    const study = await callEndpoint<{ data: Study }>(
-      constants.endpoints.study.replace(':id', id),
-      'GET',
-      {},
-      token,
-    )
-    return study.data.data
-  } catch (e) {
-    return undefined
-  }
-}
-
-/*async function getAllSchedules(): Promise<Schedule[] | null> {
-  let s = await getItem<Schedule[]>(KEYS.SCHEDULES)
-  if (!s) {
-    const mocks = MOCKS.SCHEDULE
-    //@ts-ignore
-    s = await setItem(KEYS.SCHEDULES, [mocks])
-  }
-
-  return s
-}*/
-
-async function getStudySessions(
-  studyId: string,
-  token: string,
-): Promise<StudySession[] | undefined> {
-  const studySessions = await callEndpoint<{ items: StudySession[] }>(
-    constants.endpoints.scheduleSessions.replace(':id', studyId),
+  const study = await callEndpoint<Study>(
+    constants.endpoints.study.replace(':id', id),
     'GET',
     {},
     token,
   )
-  return studySessions.data.items
+  return study.data
 }
 
 async function createStudy(study: Study, token: string): Promise<Study[]> {
@@ -79,11 +50,27 @@ async function createStudy(study: Study, token: string): Promise<Study[]> {
   return data
 }
 
+async function createStudySchedule(
+  name: string,
+  duration: string,
+  token: string,
+): Promise<string> {
+  const result = await callEndpoint<string>(
+    constants.endpoints.schedule.replace('/:id', ''),
+    'POST', // once we add things to the study -- we can change this to actual object
+    { name, duration },
+    token,
+  )
+
+  return result.data
+}
 async function updateStudy(study: Study, token: string): Promise<Study[]> {
   const payload = {
     clientData: study.clientData,
     name: study.name,
     identifier: study.identifier,
+    version: study.version,
+    scheduleGuid: study.scheduleGuid,
   }
 
   await callEndpoint<{ items: Study[] }>(
@@ -98,70 +85,28 @@ async function updateStudy(study: Study, token: string): Promise<Study[]> {
 }
 
 async function removeStudy(studyId: string, token: string): Promise<Study[]> {
-  const { data } = await callEndpoint<{ items: Study[] }>(
+  await callEndpoint<{ items: Study[] }>(
     constants.endpoints.study.replace(':id', studyId),
     'DELETE',
     {},
     token,
   )
-  return data.items
+  const data = await getStudies(token)
+  return data
 }
 
 async function saveStudySchedule(
-  studyId: string,
   schedule: Schedule,
-  duration: StudyDuration,
   token: string,
 ): Promise<void> {
-  const study = await getStudy(studyId, token)
-  if (!study) {
-    return Promise.reject('no study')
-  }
-  study.studyDuration = duration
-
-  //save study
-  await updateStudy(study, token)
-
-  //save sessions
-  const studySessions = await callEndpoint<any>(
-    constants.endpoints.scheduleSessions.replace(':id', studyId),
-    'POST',
-    schedule.sessions,
-    token,
-  )
-
-  //save schedule
-  const sched = await callEndpoint<any>(
-    constants.endpoints.schedule.replace(':id', studyId),
+  await callEndpoint<any>(
+    constants.endpoints.schedule.replace(':id', schedule.guid),
     'POST',
     schedule,
     token,
   )
-  console.log(studySessions, sched)
 
   return
-}
-
-async function saveStudySessions(
-  studyId: string,
-  sessions: StudySession[],
-  token: string,
-): Promise<StudySession[]> {
-  const { data } = await callEndpoint<{ items: StudySession[] }>(
-    constants.endpoints.scheduleSessions.replace(':id', studyId),
-    'POST',
-    sessions,
-    token,
-  )
-  var promise = new Promise(function (resolve, reject) {
-    console.log('waiting')
-    window.setTimeout(function () {
-      resolve(data)
-    }, 2000)
-  })
-  await promise
-
-  return data.items
 }
 
 //returns scehdule and sessions
@@ -169,7 +114,6 @@ async function getStudySchedule(
   studyId: string,
   token: string,
 ): Promise<Schedule> {
-  let sessions = await getStudySessions(studyId, token)
   const { data } = await callEndpoint<{ data: Schedule }>(
     constants.endpoints.schedule.replace(':id', studyId),
     'GET',
@@ -177,7 +121,7 @@ async function getStudySchedule(
     token,
   )
 
-  return { ...data.data, sessions: sessions || [] }
+  return data.data
 }
 
 export default StudyService

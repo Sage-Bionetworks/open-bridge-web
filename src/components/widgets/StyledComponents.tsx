@@ -101,6 +101,7 @@ export const SimpleTextLabel = withStyles(theme => ({
     fontWeight: 500,
     fontSize: '14px',
     transform: 'none',
+    paddingLeft: theme.spacing(1),
 
     '.error > &': {
       color: theme.palette.error.main,
@@ -110,7 +111,9 @@ export const SimpleTextLabel = withStyles(theme => ({
 
 export const SimpleTextInput = withStyles(theme => ({
   root: {
-    border: '1px solid #ced4da',
+    border: `1px solid ${theme.palette.text.secondary}`,
+    borderRadius: '1px',
+
     'label + &': {
       marginTop: theme.spacing(2),
     },
@@ -123,6 +126,10 @@ export const SimpleTextInput = withStyles(theme => ({
     '&.Mui-error': {
       borderColor: theme.palette.error.main,
     },
+
+    '&:not(:last-child)': {
+      marginBottom: theme.spacing(2)
+    }
   },
   multiline: {
     padding: 0,

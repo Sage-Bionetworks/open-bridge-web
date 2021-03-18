@@ -1,39 +1,29 @@
-import {
-  FormControlLabel,
-  Radio,
-  RadioGroup
-} from '@material-ui/core'
+import { FormControlLabel, Radio, RadioGroup } from '@material-ui/core'
 import React from 'react'
-import {
-  EndDate as EndDateType,
-  SessionScheduleEndType
-} from '../../../types/scheduling'
 import SmallTextBox from '../../widgets/SmallTextBox'
 import SchedulingFormSection from './SchedulingFormSection'
 
 export interface EndDateProps {
-  endDate: EndDateType
+  occurances?: number
   onChange: Function
 }
+export type SessionScheduleEndType = 'END_STUDY' | 'N_OCCURENCES'
 
 const EndDate: React.FunctionComponent<EndDateProps> = ({
-  endDate,
+  occurances,
   onChange,
 }: EndDateProps) => {
+  const [endType, setEndType] = React.useState<SessionScheduleEndType>(
+    occurances ? 'N_OCCURENCES' : 'END_STUDY',
+  )
+
   const changeEndDate = (type: SessionScheduleEndType) => {
-    onChange({ ...endDate, type })
-  }
-
-  const changeEndDateDays = (days: string) => {
-    /* if (isNaN(Number.parseInt(days))) {
-      throw new Error('Number!')
-    }*/
-
-    const endDate: EndDateType = {
-      type: 'N_OCCURENCES',
-      days: Number(days),
+    setEndType(type)
+    if (type === 'END_STUDY') {
+      onChange(undefined)
+    } else {
+      setEndType(type)
     }
-    onChange(endDate)
   }
 
   return (
@@ -41,7 +31,7 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
       <RadioGroup
         aria-label="End Date"
         name="endDate"
-        value={endDate.type}
+        value={endType}
         onChange={e => changeEndDate(e.target.value as SessionScheduleEndType)}
       >
         <FormControlLabel
@@ -55,11 +45,12 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
             <>
               <Radio value={'N_OCCURENCES'} />{' '}
               <SmallTextBox
+                onFocus={() => changeEndDate('N_OCCURENCES')}
                 color="secondary"
                 id="standard-basic"
                 style={{ marginRight: '10px' }}
-                onChange={e => changeEndDateDays(e.target.value)}
-                value={endDate.days || ''}
+                onChange={e => onChange(e.target.value)}
+                value={occurances || ''}
               />
             </>
           }

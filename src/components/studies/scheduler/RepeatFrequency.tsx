@@ -1,19 +1,18 @@
 import { FormControlLabel } from '@material-ui/core'
 import React from 'react'
-import { DWMYEnum, Reoccurance } from '../../../types/scheduling'
+import { DWMYEnum } from '../../../types/scheduling'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
 
 export interface RepeatFrequencyProps {
-  repeatFrequency: Reoccurance
+  interval: string | undefined //string($ISO 8601
   onChange: Function
 }
 
 const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
-  repeatFrequency,
+  interval,
   onChange,
 }: RepeatFrequencyProps) => {
- 
   return (
     <SchedulingFormSection label={'Run this session every:'}>
       <FormControlLabel
@@ -24,7 +23,7 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
               console.log(e)
               onChange(e)
             }}
-            durationString={repeatFrequency || '    '}
+            durationString={interval || ''}
             unitLabel="Repeat Every"
             numberLabel="frequency number"
             unitData={DWMYEnum}

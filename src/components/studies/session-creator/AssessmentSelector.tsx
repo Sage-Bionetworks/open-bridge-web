@@ -121,7 +121,7 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
     session: StudySession,
     assessmentId: string,
   ): boolean =>
-    session.assessments.find(item => item.originGuid === assessmentId) !==
+    session.assessments?.find(item => item.originGuid === assessmentId) !==
     undefined
 
   const toggleAssessment = (

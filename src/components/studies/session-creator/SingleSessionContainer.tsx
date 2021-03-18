@@ -103,6 +103,7 @@ const rearrangeList = (
 }
 
 type SingleSessionContainerProps = {
+  sessionIndex: number
   studySession: StudySession
   onShowAssessments: Function
   onSetActiveSession: Function
@@ -112,6 +113,7 @@ type SingleSessionContainerProps = {
 }
 
 const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = ({
+  sessionIndex,
   studySession,
   onShowAssessments,
   onRemoveSession,
@@ -122,12 +124,13 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
   const classes = useStyles()
   const [isEditable, setIsEditable] = React.useState(false)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
+  console.log(studySession, 'session')
 
   const rearrangeAssessments = (
-    assessments: Assessment[],
+    assessments: Assessment[] | undefined,
     dropResult: DropResult,
   ) => {
-    if (!dropResult.destination) {
+    if (!dropResult.destination || !assessments) {
       return
     }
     const newAssessmentList = rearrangeList(
@@ -135,35 +138,39 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
       dropResult.source,
       dropResult.destination,
     )
-    onUpdateAssessmentList(studySession.id, newAssessmentList)
+    onUpdateAssessmentList(studySession.guid, newAssessmentList)
   }
 
   const removeAssessment = (assessmentId: string) => {
+    if (!studySession.assessments) {return}
 
     onUpdateAssessmentList(
-      studySession.id,
+      studySession.guid,
       studySession.assessments.filter(a => a.guid !== assessmentId),
     )
   }
 
-  const getTotalSessionTime = (assessments: Assessment[]): number => {
+  const getTotalSessionTime = (assessments?: Assessment[]): number => {
+    if (! assessments) {
+      return 0
+    }
     const result = assessments.reduce((prev, curr, ndx) => {
       return prev + Number(curr.duration)
     }, 0)
     return result
   }
 
-  const getInner = (studySession: StudySession): JSX.Element => {
+  const getInner = (studySession: StudySession, sessionIndex: number): JSX.Element => {
     return (
       <>
         <Box className={classes.inner}>
           <Box marginRight={2}>
-            <SessionIcon index={studySession.order}>
+            <SessionIcon index={sessionIndex}>
               <EditableTextbox
                 component="h4"
                 initValue={studySession.name}
                 onTriggerUpdate={(newValue: string) =>
-                  onUpdateSessionName(studySession.id, newValue)
+                  onUpdateSessionName(studySession.guid, newValue)
                 }
               ></EditableTextbox>
             </SessionIcon>
@@ -174,7 +181,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
             className={classes.btnDeleteSession}
             onClick={e => {
               e.stopPropagation()
-              //onRemoveSession(studySession.id)
+              //onRemoveSession(studySession.guid)
               setIsConfirmDeleteOpen(true)
             }}
           >
@@ -194,7 +201,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
           }
         >
           <div className={classes.droppable}>
-            <Droppable droppableId={studySession.id} type="ASSESSMENT">
+            <Droppable droppableId={studySession.guid} type="ASSESSMENT">
               {(provided, snapshot) => (
                 <div
                   className={clsx({
@@ -203,15 +210,15 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                 >
-                  {studySession.assessments.length === 0 && (
+                  {!studySession.assessments ||studySession.assessments.length === 0 && (
                     <Box marginTop={7} padding={2}>
                       Add assessments to this session by clicking on the "+"
                       below.{' '}
                     </Box>
                   )}
-                  {studySession.assessments.map((assessment, index) => (
+                  {studySession.assessments?.map((assessment, index) => (
                     <Draggable
-                      draggableId={assessment.guid}
+                      draggableId={assessment.guid+index}
                       index={index}
                       key={assessment.guid}
                     >
@@ -255,9 +262,9 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
     <>
       <Box
         className={clsx(classes.root /*, studySession?.active && 'active')*/)}
-        onClick={() => onSetActiveSession(studySession.id)}
+        onClick={() => onSetActiveSession(studySession.guid)}
       >
-        {getInner(studySession)}
+        {getInner(studySession, sessionIndex)}
 
         <Box className={classes.actions}>
           <FormControlLabel
@@ -286,7 +293,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
         onCancel={() => setIsConfirmDeleteOpen(false)}
         onConfirm={() => {
           setIsConfirmDeleteOpen(false)
-          onRemoveSession(studySession.id)
+          onRemoveSession(studySession.guid)
         }}
       >
         <div>

@@ -1,7 +1,8 @@
 import { rest } from 'msw'
+import { getRandomId } from '../helpers/utility'
 import { getItem, KEYS, MOCKS, setItem } from '../services/lshelper'
 import constants from '../types/constants'
-import { Schedule, StudySession } from '../types/scheduling'
+import { Schedule } from '../types/scheduling'
 import { Study, StudyStatus } from '../types/types'
 
 async function getStudies() {
@@ -19,24 +20,9 @@ async function getStudies() {
   return studies
 }
 
-async function getAllStudySessions(): Promise<StudySession[] | null> {
-  let sessions = await getItem<StudySession[]>(KEYS.STUDY_SESSIONS)
-  if (!sessions) {
-    const mocks = MOCKS.SESSIONS
-    sessions = await setItem(KEYS.STUDY_SESSIONS, mocks)
-  }
-
-  return sessions
-}
-
-async function getAllSchedules(): Promise<Schedule[] | null> {
+async function getAllSchedules(): Promise<Schedule[]> {
   let s = await getItem<Schedule[]>(KEYS.SCHEDULES)
-  if (!s) {
-    const mocks = MOCKS.SCHEDULE
-    s = await setItem(KEYS.SCHEDULES, [mocks])
-  }
-
-  return s
+  return s || []
 }
 
 export const handlers = [
@@ -44,7 +30,7 @@ export const handlers = [
   rest.get(`*${constants.endpoints.studies}`, async (req, res, ctx) => {
     // Check if the user is authenticated in this session
     //const isAuthenticated = sessionStorage.getItem('is-authenticated')
-
+    console.log('get studies handler')
     const studies = await getStudies()
     if (studies === null) {
       return res(
@@ -72,12 +58,7 @@ export const handlers = [
         ..._study!,
         status: _study.status as StudyStatus,
       }
-      return res(
-        ctx.status(200),
-        ctx.json({
-          data: study,
-        }),
-      )
+      return res(ctx.status(200), ctx.json(study))
     } else {
       return res(
         ctx.status(404),
@@ -112,7 +93,9 @@ export const handlers = [
     let newStudies: Study[]
     if (studies.find(s => s.identifier === id)) {
       //if study exist
-      newStudies = studies.map(s => (s.identifier === id ? study : s))
+      newStudies = studies.map(s =>
+        s.identifier === id ? { ...s, ...study } : s,
+      )
     } else {
       newStudies = [...studies, study]
     }
@@ -129,15 +112,11 @@ export const handlers = [
   //get schedule
   rest.get(`*${constants.endpoints.schedule}`, async (req, res, ctx) => {
     const { id } = req.params
+    console.log('getting schedule' + id)
 
     let schedules = await getItem<Schedule[]>(KEYS.SCHEDULES)
-    let schedule = schedules?.filter(sa => sa.studyId === id)?.[0]
-    if (!schedule) {
-      const mocks = MOCKS.SCHEDULE
-      schedule = mocks
-      schedule.studyId = id
-      await setItem(KEYS.SCHEDULES, [mocks])
-    }
+    let schedule = schedules?.filter(s => s.guid === id)?.[0]
+
     return res(
       ctx.status(200),
       ctx.json({
@@ -146,75 +125,92 @@ export const handlers = [
     )
   }),
 
-  //update schedule
-  rest.post(`*${constants.endpoints.schedule}`, async (req, res, ctx) => {
-    const { id } = req.params
-    const sched: Schedule = req.body as Schedule
+  //create schedule
+  rest.post(
+    `*${constants.endpoints.schedule.replace('/:id', '')}`,
+    async (req, res, ctx) => {
+      console.log('creating schedule')
+      const { name, duration } = req.body as { name: string; duration: string }
+      let guid = getRandomId()
+      let newSchedule: Schedule = {
+        name,
+        duration,
+        guid,
+        sessions: [],
+      }
 
-    const allSchedules = await getAllSchedules()
-    const otherSched = allSchedules?.filter(s => s.studyId !== id) || []
-    const allSchedsUpdated = [
-      ...otherSched,
-      {
-        ...sched,
-        studyId: id,
-      },
-    ]
-    const schedules = await setItem(KEYS.SCHEDULES, allSchedsUpdated)
+      const allSchedules = await getAllSchedules()
+      await setItem(KEYS.SCHEDULES, [...allSchedules, newSchedule])
+
+      return res(ctx.status(200), ctx.json(guid))
+    },
+  ),
+
+  //update  schedule
+  rest.post(`*${constants.endpoints.schedule}`, async (req, res, ctx) => {
+    console.log('updating schedule from handler')
+    const { id } = req.params
+    console.log('updaging schedule' + id)
+    const newSchedule = req.body
+
+    let schedules = await getItem<Schedule[]>(KEYS.SCHEDULES)
+    let updatedSchedules = schedules?.map(s =>
+      s.guid === id ? newSchedule : s,
+    )
+    await setItem(KEYS.SCHEDULES, updatedSchedules)
 
     return res(
       ctx.status(200),
       ctx.json({
-        items: schedules,
+        data: newSchedule,
       }),
     )
   }),
 
-  //get schedule/study sessions
-  rest.get(
-    `*${constants.endpoints.scheduleSessions}`,
-    async (req, res, ctx) => {
-      const { id } = req.params
-      let sessions = await getAllStudySessions()
-      const result = sessions
-        ?.filter(s => s.studyId === id)
-        .map((s, index) => ({ ...s, order: index }))
-      return res(
-        ctx.status(200),
-        ctx.json({
-          items: result,
-        }),
-      )
-    },
-  ),
-
-  //update schedule/study sessions
-  rest.post(
-    `*${constants.endpoints.scheduleSessions}`,
-    async (req, res, ctx) => {
-      const { id } = req.params
-
-      const sessions = req.body as StudySession[]
-
-      const allSessions = await getAllStudySessions()
-      const others = allSessions?.filter(s => s.studyId !== id) || []
-
-      const allSessionsUpdated = [...others, ...sessions]
-
-      await setItem(KEYS.STUDY_SESSIONS, allSessionsUpdated)
-
-      return res(
-        ctx.status(200),
-        ctx.json({
-          items: {},
-        }),
-      )
-    },
-  ),
-
   /* ****************************
    * THOSE ENDPOINTS EXIST. THEY ARE REPLACED FOR TESTING. COMMENT THEM OUT TO GET THE REAL RESPONSE
    *************************  */
+
+  // These two endpoints below simulate fake data used to test the functionality of the
+  // ParticpantManager component. Uncomment them when running tests
+  /*
+  rest.post(
+    `*${constants.endpoints.participantsSearch}`,
+    async (req, res, ctx) => {
+      const items = []
+      for (let i = 1; i <= 100; i++) {
+        let obj = {
+          appId: 'mtb-user-testing',
+          attributes: {},
+          createdOn: '2021-02-22T20:45:38.375Z',
+          externalId: `test-id-${i}`,
+          externalIds: { kkynty35udejidtdp8h: '342067' },
+          id: 'dRNO0ydUO3hAGD5rHOXx1Gmb' + i,
+          status: 'unverified',
+          studyIds: ['kkynty35udejidtdp8h'],
+          type: 'AccountSummary',
+        }
+        items.push(obj)
+      }
+      return res(
+        ctx.status(200),
+        ctx.json({
+          items: items,
+          total: items.length,
+        }),
+      )
+    },
+  ),
+
+  rest.get(`*${constants.endpoints.events}`, async (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
+        items: [],
+      }),
+    )
+  }),
+  */
 
   //to get the error from synapse pass email w/ synapseErr to get error from bridge pass email w/ bridgeErr
 

@@ -4,25 +4,27 @@ import {
   Checkbox,
   FormControlLabel,
   makeStyles,
-  TextField,
+  TextField
 } from '@material-ui/core'
 import SaveIcon from '@material-ui/icons/Save'
+import _ from 'lodash'
 import React, { FunctionComponent } from 'react'
 import { ThemeType } from '../../../style/theme'
 import {
   AssessmentWindow as AssessmentWindowType,
-  EndDate as EndDateType,
   NotificationFreqEnum,
-  NotificationReminder,
-  Reoccurance as ReoccuranceType,
+
+  //NotificationReminder,
+  //Reoccurance as ReoccuranceType,
   SessionSchedule,
-  StartDate as StartDateType,
-  StudySession,
+  StudySession
 } from '../../../types/scheduling'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import AssessmentWindow from './AssessmentWindow'
 import EndDate from './EndDate'
-import ReminderNotification from './ReminderNotification'
+import ReminderNotification, {
+  NotificationReminder
+} from './ReminderNotification'
 import RepeatFrequency from './RepeatFrequency'
 import SchedulingFormSection from './SchedulingFormSection'
 import StartDate from './StartDate'
@@ -54,16 +56,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 }))
 
 export const defaultSchedule: SessionSchedule = {
-  startDate: {
-    type: 'DAY1',
-  },
-  reoccurance: '', //'P1D', //{ unit: 'd', frequency: 1 },
-  windows: [],
-  endDate: {
-    type: 'END_STUDY',
-  },
-  isGroupAssessments: false,
-  order: 'SEQUENTIAL',
+  performanceOrder: 'participant_choice',
 }
 
 type SchedulableSingleSessionContainerProps = {
@@ -76,20 +69,18 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   studySession,
   onUpdateSessionSchedule,
   onSaveSessionSchedule,
-}: // onSetActiveSession,
+}: 
 SchedulableSingleSessionContainerProps) => {
   const classes = useStyles()
 
   const [
     schedulableSession,
     setSchedulableSession,
-  ] = React.useState<SessionSchedule>(
-    studySession.sessionSchedule || defaultSchedule,
-  )
+  ] = React.useState<SessionSchedule>(studySession || defaultSchedule)
 
   React.useEffect(() => {
-    setSchedulableSession(studySession.sessionSchedule || defaultSchedule)
-  }, [studySession.sessionSchedule])
+    setSchedulableSession(studySession || defaultSchedule)
+  }, [studySession])
 
   const updateSessionSchedule = (newSession: SessionSchedule) => {
     onUpdateSessionSchedule(newSession)
@@ -97,34 +88,49 @@ SchedulableSingleSessionContainerProps) => {
 
   const addNewWindow = () => {
     const newState = { ...schedulableSession }
-    newState.windows.push({
-      startHour: 5,
-      end: 'P17D',
-    })
-
-    console.log(newState, 'adding window')
+    let aWindow = {
+      startTime: '5',
+      expiration: 'P17D',
+    }
+    newState.timeWindows
+      ? newState.timeWindows.push(aWindow)
+      : (newState.timeWindows = [aWindow])
 
     updateSessionSchedule(newState)
   }
 
   const deleteWindow = (index: number) => {
-    const windows = [...schedulableSession.windows]
-    windows.splice(index, 1)
+    const timeWindows = [...(schedulableSession.timeWindows || [])]
+    timeWindows.splice(index, 1)
     const newState = {
       ...schedulableSession,
-      windows: [...windows],
+      timeWindows: [...timeWindows],
     }
     updateSessionSchedule(newState)
   }
 
   const updateWindow = (window: AssessmentWindowType, index: number) => {
+    if (!schedulableSession.timeWindows) {
+      return
+    }
     const newState = {
       ...schedulableSession,
-      windows: schedulableSession.windows.map((item, i) =>
+      timeWindows: schedulableSession.timeWindows.map((item, i) =>
         i === index ? window : item,
       ),
     }
     updateSessionSchedule(newState)
+  }
+
+  const updateMessage = (options: { subject?: string; message?: string }) => {
+    const messages = schedulableSession.messages || []
+    // ALINA we only have one message right now
+    let message = messages[0] || { lang: 'en', subject: '', message: '' }
+    message = { ...message, ...options }
+    updateSessionSchedule({
+      ...schedulableSession,
+      messages: [message],
+    })
   }
 
   return (
@@ -132,39 +138,39 @@ SchedulableSingleSessionContainerProps) => {
       <Box bgcolor="#F8F8F8" flexGrow="1">
         <Box className={classes.formSection}>
           <StartDate
-            startDate={schedulableSession.startDate}
-            onChange={(startDate: StartDateType) => {
-              updateSessionSchedule({ ...schedulableSession, startDate })
+            delay={schedulableSession.delay}
+            onChange={(delay: string | undefined) => {
+              updateSessionSchedule({ ...schedulableSession, delay })
             }}
           ></StartDate>
         </Box>
         <Box className={classes.formSection}>
           <EndDate
-            endDate={schedulableSession.endDate}
-            onChange={(endDate: EndDateType) =>
-              updateSessionSchedule({ ...schedulableSession, endDate })
+            occurances={schedulableSession.occurances}
+            onChange={(occurances: number | undefined) =>
+              updateSessionSchedule({ ...schedulableSession, occurances })
             }
           ></EndDate>
         </Box>
         <Box className={classes.formSection}>
           <RepeatFrequency
-            onChange={(repeatFrequency: ReoccuranceType) => {
+            onChange={(interval: string | undefined) => {
               updateSessionSchedule({
                 ...schedulableSession,
-                reoccurance: repeatFrequency,
+                interval,
               })
             }}
-            repeatFrequency={schedulableSession.reoccurance}
+            interval={schedulableSession.interval}
           ></RepeatFrequency>
         </Box>
 
         <Box className={classes.formSection}>
           <SchedulingFormSection label={'Session Window:'}>
             <Box>
-              {schedulableSession.windows.map((window, index) => (
+              {schedulableSession.timeWindows?.map((window, index) => (
                 <AssessmentWindow
                   index={index}
-                  key={`${index}${window.startHour}${window.end}`}
+                  key={`${index}${window.startTime}${window.expiration}`}
                   onDelete={() => {
                     console.log('deleting1', index)
                     deleteWindow(index)
@@ -188,7 +194,7 @@ SchedulableSingleSessionContainerProps) => {
                 border={false}
               >
                 <SelectWithEnum
-                  value={schedulableSession.notification || 'RANDOM'}
+                  value={schedulableSession.notifyAt || 'random'}
                   style={{ marginLeft: 0 }}
                   sourceData={NotificationFreqEnum}
                   id="notificationfreq"
@@ -197,17 +203,21 @@ SchedulableSingleSessionContainerProps) => {
                       .value! as keyof typeof NotificationFreqEnum
                     updateSessionSchedule({
                       ...schedulableSession,
-                      notification: n,
+                      notifyAt: n,
                     })
                   }}
                 ></SelectWithEnum>
               </SchedulingFormSection>
               <ReminderNotification
-                reminder={schedulableSession.reminder}
-                onChange={(reminder: NotificationReminder) =>
+                reminder={{
+                  interval: schedulableSession.reminderPeriod,
+                  type: schedulableSession.remindAt,
+                }}
+                onChange={(remind: NotificationReminder) =>
                   updateSessionSchedule({
                     ...schedulableSession,
-                    reminder,
+                    reminderPeriod: remind.interval,
+                    remindAt: remind.type,
                   })
                 }
               ></ReminderNotification>
@@ -216,12 +226,12 @@ SchedulableSingleSessionContainerProps) => {
                   style={{ display: 'block' }}
                   control={
                     <Checkbox
-                      value={schedulableSession.isAllowSnooze}
-                      checked = {schedulableSession.isAllowSnooze}
+                      value={schedulableSession.allowSnooze}
+                      checked={schedulableSession.allowSnooze}
                       onChange={e =>
                         updateSessionSchedule({
                           ...schedulableSession,
-                          isAllowSnooze: e.target.checked,
+                          allowSnooze: e.target.checked,
                         })
                       }
                     />
@@ -239,12 +249,10 @@ SchedulableSingleSessionContainerProps) => {
                   multiline={false}
                   fullWidth={true}
                   variant="outlined"
-                  defaultValue = {schedulableSession.subjectLine}
-                  onBlur={e =>
-                    updateSessionSchedule({
-                      ...schedulableSession,
-                      subjectLine: e.target.value
-                    })}
+                  defaultValue={
+                    _.first(schedulableSession.messages)?.subject || ''
+                  }
+                  onBlur={e => updateMessage({ subject: e.target.value })}
                 ></TextField>
               </SchedulingFormSection>
 
@@ -259,13 +267,11 @@ SchedulableSingleSessionContainerProps) => {
                   fullWidth={true}
                   variant="outlined"
                   rows="3"
-                  classes={{root: classes.multilineBodyText}}
-                  defaultValue = {schedulableSession.bodyText}
-                  onBlur={e =>
-                    updateSessionSchedule({
-                      ...schedulableSession,
-                      bodyText: e.target.value
-                    })}
+                  classes={{ root: classes.multilineBodyText }}
+                  defaultValue={
+                    _.first(schedulableSession.messages)?.message || ''
+                  }
+                  onBlur={e => updateMessage({ message: e.target.value })}
                 ></TextField>
               </SchedulingFormSection>
             </Box>

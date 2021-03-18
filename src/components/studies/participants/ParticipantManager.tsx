@@ -363,7 +363,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const downloadParticipants = async (selection: ParticipantDownloadType) => {
     setLoadingIndicators({ isDownloading: true })
-    debugger
+
     //if getting all participants
     const participantsData: ParticipantData =
       selection === 'ALL'
