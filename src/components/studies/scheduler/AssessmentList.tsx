@@ -12,7 +12,7 @@ import ClockIcon from '@material-ui/icons/AccessTime'
 import clsx from 'clsx'
 import React from 'react'
 import { ThemeType } from '../../../style/theme'
-import { StudySession } from '../../../types/scheduling'
+import { PerformanceOrder, StudySession } from '../../../types/scheduling'
 import { Assessment } from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
 import SessionIcon from '../../widgets/SessionIcon'
@@ -39,9 +39,10 @@ export interface AssessmentListProps {
   //use the following version instead if you need access to router props
   //export interface EndDateProps  extends  RouteComponentProps {
   //Enter your props here
+  studySessionIndex: number
   studySession: StudySession
   isGroupAssessments: boolean
-  assessmentOrder: 'SEQUENTIAL' | 'RANDOM'
+  performanceOrder:  PerformanceOrder
   onChangeGrouping: Function
   onSetRandomized: Function
 }
@@ -78,10 +79,11 @@ const SessionHeader: React.FunctionComponent<SessionHeaderProps> = ({
 
 const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   studySession,
-  assessmentOrder,
+  performanceOrder,
   isGroupAssessments,
   onChangeGrouping,
   onSetRandomized,
+  studySessionIndex,
 }: AssessmentListProps): JSX.Element => {
   const classes = useStyles()
 
@@ -99,9 +101,9 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   return (
     <>
       <SessionHeader
-        order={studySession.order!}
+        order={studySessionIndex}
         name={studySession.name}
-        assessments={studySession.assessments}
+        assessments={studySession.assessments|| []}
       ></SessionHeader>
 
       <div
@@ -109,17 +111,17 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
           [classes.inner]: true,
         })}
       >
-        {studySession.assessments.map((assessment, index) => (
+        {studySession.assessments && studySession.assessments.map((assessment, index) => (
           <Box
             key={assessment.guid}
             style={
-              assessmentOrder === 'RANDOM'
-                ? getMargins(index, studySession.assessments.length)
+              performanceOrder === 'randomized'
+                ? getMargins(index, studySession.assessments?.length || 0)
                 : {}
             }
           >
             <AssessmentSmall
-              isHideDuration={assessmentOrder === 'RANDOM'}
+              isHideDuration={performanceOrder === 'randomized'}
               assessment={assessment}
               hasHover={false}
               isDragging={false}
@@ -127,7 +129,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
           </Box>
         ))}
       </div>
-      {studySession.assessments.length > 1 && (
+      {studySession.assessments && studySession.assessments.length > 1 && (
         <FormGroup aria-label="assessments" row style={{ marginLeft: '16px' }}>
           <FormControlLabel
             control={
@@ -152,7 +154,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
                 <Switch
                   color="primary"
                   disabled={!isGroupAssessments}
-                  checked={assessmentOrder === 'RANDOM'}
+                  checked={performanceOrder === 'randomized'}
                   onChange={e => {
                     onSetRandomized(e.target.checked)
                   }}

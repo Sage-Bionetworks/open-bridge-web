@@ -11,8 +11,7 @@
     },
     {
       "identifier": "kkynty35udejidtdp8h",
-      "name": "Alina Testing Study",
-  
+      "name": "Alina Testing Study USE for Scheduling",
       "description": "Exists for real",
       "status": "DRAFT",
       "version": 1,
@@ -21,14 +20,13 @@
     {
       "identifier": "alina_test_study_2",
       "name": "Alina Testing Study 2",
-  
+
       "description": "Exists for real",
       "status": "DRAFT",
       "version": 1,
       "clientData": {}
     },
 
-   
     {
       "identifier": "5476c92c2",
       "name": "anotherStudy2",

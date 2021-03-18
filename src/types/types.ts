@@ -1,4 +1,4 @@
-import { Schedule, StartEventId, StudyDuration } from './scheduling'
+import { Schedule, StartEventId } from './scheduling'
 
 /* *** General Types ********************************/
 export interface StringDictionary<T> {
@@ -103,12 +103,11 @@ export type Study = {
   name: string
   subtitle?: string
   description?: string
-  studyDuration?: StudyDuration
+  scheduleGuid?: string
   clientData: {
     enrollmentType?: EnrollmentType
     generateIds?: boolean
   }
-  // sessions: StudySession[]
 }
 
 export type StudyBuilderInfo = {
@@ -123,7 +122,6 @@ export type StudyBuilderComponentProps = {
   saveLoader: boolean
 }
 
-
 export type ParticipantActivityType = 'ACTIVE' | 'WITHDRAWN'
 export type EditableParticipantData = {
   clinicVisitDate?: Date
@@ -134,7 +132,7 @@ export type EditableParticipantData = {
 }
 
 export type ParticipantAccountSummary = {
- // isSelected?: boolean
+  // isSelected?: boolean
   firstName?: string
   lastName?: string
   email?: string

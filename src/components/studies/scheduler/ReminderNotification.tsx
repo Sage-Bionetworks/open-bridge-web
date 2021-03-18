@@ -7,12 +7,22 @@ import {
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
-import {
-  NotificationReminder, ReminderIntervalEnum,
-  ReminderIntervalType
-} from '../../../types/scheduling'
+import { ReminderIntervalType } from '../../../types/scheduling'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import SchedulingFormSection from './SchedulingFormSection'
+
+export enum ReminderIntervalEnum {
+  NONE = 'none',
+  MIN_5 = '5 min',
+  MIN_10 = '10 min',
+  MIN_15 = '15 min',
+  MIN_30 = '30 min',
+  HR_1 = '1hr. ',
+}
+export type NotificationReminder = {
+  interval?: string
+  type?: ReminderIntervalType
+}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -24,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 export interface ReminderNotificationProps {
-  reminder?: NotificationReminder
+  reminder: NotificationReminder
   onChange: Function
 }
 
@@ -43,7 +53,7 @@ const ReminderNotification: React.FunctionComponent<ReminderNotificationProps> =
       <SelectWithEnum
         value={reminder?.interval}
         sourceData={ReminderIntervalEnum}
-        id="reminder"
+        id="remindAt"
         onChange={e => {
           const interval = e.target.value! as keyof typeof ReminderIntervalEnum
 
@@ -55,7 +65,7 @@ const ReminderNotification: React.FunctionComponent<ReminderNotificationProps> =
       ></SelectWithEnum>
       <RadioGroup
         aria-label="Notification Reminder"
-        name="reminderType"
+        name="remindAtType"
         style={{ marginTop: '5px' }}
         value={reminder?.type}
         onChange={e => {

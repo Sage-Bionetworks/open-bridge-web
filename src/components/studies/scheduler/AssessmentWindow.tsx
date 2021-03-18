@@ -82,13 +82,13 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
         style={{ padding: '0 16px' }}
       >
         <SelectWithEnum
-          value={window.startHour}
+          value={window.startTime}
           sourceData={getDropdownItems()}
           id="from"
           onChange={e =>
             onChange({
               ...window,
-              startHour: e.target.value,
+              startTime: e.target.value,
             })
           }
         ></SelectWithEnum>
@@ -108,7 +108,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
                 end: e,
               })
             }}
-            durationString={window.end || '    '}
+            durationString={window.expiration || '    '}
             unitLabel="Repeat Every"
             numberLabel="frequency number"
             unitData={HSsEnum}
@@ -124,13 +124,13 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
         <FormControlLabel
           control={
             <Checkbox
-              value={window.isAllowAnyFrequency}
-              checked= {window.isAllowAnyFrequency===true}
+              value={window.persistent}
+              checked= {window.persistent===true}
               onChange={e =>{
          
                 onChange({
                   ...window,
-                  isAllowAnyFrequency: e.target.checked,
+                  persistent: e.target.checked,
                 })
               }
               }

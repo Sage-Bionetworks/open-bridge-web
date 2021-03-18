@@ -5,7 +5,7 @@ import {
   Divider,
   makeStyles,
   Menu,
-  MenuItem,
+  MenuItem
 } from '@material-ui/core'
 import Link from '@material-ui/core/Link'
 import React, { FunctionComponent, useEffect } from 'react'
@@ -187,13 +187,13 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     const newStudy: Study = {
       identifier: getRandomId(),
       version: 1,
-      clientData:{},
+      clientData: {},
       status: 'DRAFT' as StudyStatus,
       name: 'Untitled Study',
     }
-    setStudies([...studies, newStudy])
-    const x = await StudyService.createStudy(newStudy, token!)
-    setStudies(x)
+    //setStudies([...studies, newStudy])
+    const result = await StudyService.createStudy(newStudy, token!)
+    setStudies(result)
   }
 
   const onAction = async (study: Study, type: StudyAction) => {
@@ -211,26 +211,24 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         result = await StudyService.updateStudy(study, token)
         setStudies(result)
         setRenameStudyId('')
+
         return
 
       case 'DELETE':
-        const s = await StudyService.removeStudy(study.identifier, token)
-        console.log(studies.length)
-        console.log(s.length)
-        setStudies(s)
+        result = await StudyService.removeStudy(study.identifier, token)
+        setStudies(result)
         return
 
       case 'DUPLICATE':
-        //const study = studies.find(s => s.identifier === tudy.identifier)
         const newStudy = {
           ...study!,
           identifier: getRandomId(),
           version: 1,
           name: `Copy of ${study!.name}`,
         }
-        setStudies([...studies, newStudy])
         result = await StudyService.createStudy(newStudy, token)
         setStudies(result)
+
         return
       default: {
       }
@@ -329,7 +327,6 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                   : onAction(s, action)
               }}
             />
-            {/*index < 2 && <Divider className={classes.divider}></Divider>*/}
           </Box>
         ))}
 
