@@ -12,11 +12,7 @@ import {
 } from '../../helpers/StudyInfoContext'
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
-import {
-  Schedule,
-  ScheduleDuration,
-  StudySession
-} from '../../types/scheduling'
+import { Schedule, StudySession } from '../../types/scheduling'
 import { StringDictionary, Study } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
@@ -232,15 +228,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
                         onSave={() => saveStudySchedule()}
-                        onUpdate={({
-                          schedule,
-                          studyDuration,
-                        }: {
-                          schedule: Schedule
-                          studyDuration: ScheduleDuration
-                        }) => {
+                        onUpdate={(schedule: Schedule) => {
                           setHasObjectChanged(true)
-                          console.log('updating duration', studyDuration)
                           setData({
                             ...builderInfo,
                             schedule: schedule,
