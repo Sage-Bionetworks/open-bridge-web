@@ -12,7 +12,7 @@ import React, { FunctionComponent } from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import { poppinsFont } from '../../../style/theme'
 import {
-  HDWMEnum,
+  DWMYEnum,
   PerformanceOrder,
   Schedule,
   SessionSchedule,
@@ -191,7 +191,7 @@ const Scheduler: FunctionComponent<
                   durationString={schedule.duration || ''}
                   unitLabel="study duration unit"
                   numberLabel="study duration number"
-                  unitData={HDWMEnum}
+                  unitData={DWMYEnum}
                 ></Duration>
               }
             />
