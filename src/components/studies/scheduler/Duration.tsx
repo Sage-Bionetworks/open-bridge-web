@@ -23,15 +23,6 @@ const Duration: React.FunctionComponent<
   numberLabel,
   ...props
 }: DurationProps) => {
-  /* const units: { [key: string]: moment.unitOfTime.Base } = {
-    Y: 'y',
-    M: 'M',
-    W: 'w',
-    D: 'd',
-    H: 'h',
-    TM: 'm',
-    S: 's',
-  }*/
 
   const [unt, setUnit] = React.useState<string | undefined>(undefined)
   const [num, setNum] = React.useState<number | undefined>(undefined)
@@ -77,7 +68,7 @@ const Duration: React.FunctionComponent<
     const p = `P${time}${value}${unit}`
     //console.log(p, 'set p')
 
-    onChange(p)
+    onChange({target: {value:p}})
   }
 
   return (
