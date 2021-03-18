@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from 'react'
+import { Box, createStyles, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
+import React, { FunctionComponent } from 'react'
 import { Assessment } from '../../types/types'
-import { Box, createStyles, Paper } from '@material-ui/core'
 import AssessmentImage from './AssessmentImage'
 
 const useStyles = makeStyles(theme =>
@@ -32,6 +32,9 @@ const useStyles = makeStyles(theme =>
       },
       '&.no-hover:hover': {
         border: 'none',
+        '& $text $hoverImage': {
+          display: 'none',
+        }
       },
     },
 
@@ -104,7 +107,7 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
 
           {!isHideDuration && (
             <div className={classes.duration}>
-              {/*assessment.duration*/} 0 min
+              {assessment.duration} min
             </div>
           )}
         </span>
