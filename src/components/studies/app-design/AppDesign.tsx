@@ -32,7 +32,7 @@ import {
   SimpleTextLabel
 } from '../../widgets/StyledComponents'
 
-const topBarHeight = '80px'
+const imgHeight = 70
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: { counterReset: 'orderedlist' },
@@ -131,16 +131,16 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
     width: '320px',
     marginLeft: '5px',
-    borderLeft: '4px solid black',
-    borderRight: '4px solid black',
-    borderBottom: '4px solid black',
+    border: '4px solid black',
+    borderTop: '0px none transparent',
     borderRadius: '0 0px 24px 24px',
   },
   phoneTopBar: {
     width: '320px',
     marginLeft: '5px',
-    height: topBarHeight,
+    height: `${imgHeight + 16}px`,
     borderRadius: '25px 25px 0 0',
+    paddingTop: '10px',
 
     borderStyle: 'solid',
     borderWidth: '3px 3px 1px 3px',
@@ -215,6 +215,20 @@ const Subsection: React.FunctionComponent<{ heading: string }> = ({
   )
 }
 
+const PhoneTopBar: React.FunctionComponent<{
+  color?: string
+  previewFile?: PreviewFile
+}> = ({ color = 'transparent', previewFile }) => {
+  const classes = useStyles()
+  return (
+    <div className={classes.phoneTopBar} style={{ backgroundColor: color }}>
+      {previewFile && (
+        <img src={previewFile.body} style={{ height: `${imgHeight}px` }} />
+      )}
+    </div>
+  )
+}
+
 const AppDesign: React.FunctionComponent<
   AppDesignProps & StudyBuilderComponentProps
 > = ({
@@ -263,17 +277,17 @@ const AppDesign: React.FunctionComponent<
                 }`}
                 <div
                   style={{
-                    padding: '16px',
+                    padding: '8px 1px',
                     border: '1px solid black',
                     textAlign: 'center',
                     width: '320px',
-                    height: '80px',
+                    height: `${imgHeight + 16}px`,
                   }}
                 >
                   {previewFile && (
                     <img
                       src={previewFile.body}
-                      style={{ height: topBarHeight }}
+                      style={{ height: `${imgHeight}px`, width: '310px' }}
                     />
                   )}
                 </div>
@@ -378,14 +392,8 @@ const AppDesign: React.FunctionComponent<
         <Box className={classes.phoneArea}>
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
           <Box className={classes.phone}>
-            <div
-              className={classes.phoneTopBar}
-              style={{ backgroundColor: color || 'transparent' }}
-            >
-              {previewFile && (
-                <img src={previewFile.body} style={{ height: topBarHeight }} />
-              )}
-            </div>
+            <PhoneTopBar color={color} previewFile={previewFile} />
+
             <div className={classes.phoneInner}>
               <div className={classes.headlineStyle}>{header}</div>
               <p>{bodyCopy}</p>
@@ -406,14 +414,7 @@ const AppDesign: React.FunctionComponent<
         <Box className={classes.phoneArea}>
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
           <Box className={classes.phone}>
-            <div
-              className={classes.phoneTopBar}
-              style={{ backgroundColor: color || 'transparent' }}
-            >
-              {previewFile && (
-                <img src={previewFile.body} style={{ height: topBarHeight }} />
-              )}
-            </div>
+            <PhoneTopBar color={color} previewFile={previewFile} />
             <Box
               bgcolor="#FDFDFD"
               marginLeft="9px"
@@ -436,7 +437,7 @@ const AppDesign: React.FunctionComponent<
               fgdgdg
             </Box>
             <div className={classes.phoneBottom}>
-              <PhoneBottomImg alt="phone buttons" />
+              <PhoneBottomImg title="phone bottom image" />
             </div>
           </Box>
         </Box>
