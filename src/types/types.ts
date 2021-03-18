@@ -108,6 +108,8 @@ export type Study = {
     enrollmentType?: EnrollmentType
     generateIds?: boolean
   }
+  createdOn?: Date,
+  modifiedOn?:Date
   // sessions: StudySession[]
 }
 

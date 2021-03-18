@@ -125,13 +125,24 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   if (!displayStudies.length) {
     return <></>
   }
+
+  const sortStudies = (a: Study, b: Study, sortBy: String): number => {
+    const dateA = sortBy === 'CREATION' ? a.createdOn! : a.modifiedOn!
+    const dateB = sortBy === 'CREATION' ? b.createdOn! : b.modifiedOn!
+    return dateA >= dateB ? -1 : 1
+  }
+
+  if (status === 'DRAFT') {
+    displayStudies.sort((a, b) => sortStudies(a, b, 'LAST_EDIT'))
+  } else {
+    displayStudies.sort((a, b) => sortStudies(a, b, 'CREATION'))
+  }
   return (
     <>
       <MTBHeading variant={'h2'} align={'left'}>
         {' '}
         {item.title}
       </MTBHeading>
-
       <Box className={classes.cardGrid}>
         {displayStudies.map(study => (
           <Link
@@ -187,7 +198,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     const newStudy: Study = {
       identifier: getRandomId(),
       version: 1,
-      clientData:{},
+      clientData: {},
       status: 'DRAFT' as StudyStatus,
       name: 'Untitled Study',
     }
@@ -207,7 +218,6 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         setStudies(
           studies.map(s => (s.identifier !== study.identifier ? s : study)),
         )
-        console.log('studies', studies)
         result = await StudyService.updateStudy(study, token)
         setStudies(result)
         setRenameStudyId('')
@@ -246,9 +256,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       if (isSubscribed) {
         try {
           //setIsLoading(true)
-
           const studies = await StudyService.getStudies(token!)
-
           if (isSubscribed) {
             setStudies(studies)
           }

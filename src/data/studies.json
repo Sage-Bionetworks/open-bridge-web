@@ -7,35 +7,39 @@
       "status": "DRAFT",
       "version": 1,
       "studyDuration": "P3M",
-      "clientData": {}
+      "clientData": {},
+      "createdOn": "2021-04-22T21:02:54.229Z",
+      "modifiedOn": "2021-04-23T19:13:51.280Z"
     },
     {
       "identifier": "kkynty35udejidtdp8h",
       "name": "Alina Testing Study",
-  
       "description": "Exists for real",
       "status": "DRAFT",
       "version": 1,
-      "clientData": {}
+      "clientData": {},
+      "createdOn": "2021-07-22T21:02:54.229Z",
+      "modifiedOn": "2021-07-23T19:13:51.280Z"
     },
     {
       "identifier": "alina_test_study_2",
       "name": "Alina Testing Study 2",
-  
       "description": "Exists for real",
       "status": "DRAFT",
       "version": 1,
-      "clientData": {}
+      "clientData": {},
+      "createdOn": "2021-11-22T21:02:54.229Z",
+      "modifiedOn": "2021-11-23T19:13:51.280Z"
     },
-
-   
     {
       "identifier": "5476c92c2",
       "name": "anotherStudy2",
       "description": "loremIpsum dolor",
       "version": 1,
       "status": "ACTIVE",
-      "clientData": {}
+      "clientData": {},
+      "createdOn": "2021-03-22T21:02:54.229Z",
+      "modifiedOn": "2021-03-23T19:13:51.280Z"
     },
     {
       "identifier": "5476c92c3",
@@ -43,7 +47,9 @@
       "description": "loremIpsum dolor",
       "status": "ACTIVE",
       "version": 1,
-      "clientData": {}
+      "clientData": {},
+      "createdOn": "2021-04-22T21:02:54.229Z",
+      "modifiedOn": "2021-04-23T19:13:51.280Z"
     },
     {
       "identifier": "5476c92c4",
@@ -51,7 +57,9 @@
       "description": "loremIpsum dolor",
       "version": 1,
       "status": "COMPLETED",
-      "clientData": {}
+      "clientData": {},
+      "createdOn": "2020-02-22T21:02:54.229Z",
+      "modifiedOn": "2020-02-23T19:13:51.280Z"
     }
   ]
 }

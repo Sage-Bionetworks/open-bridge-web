@@ -34,11 +34,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
     width: '290px',
     height: '184px',
-    border: '1px solid gray',
     position: 'relative',
     backgroundColor: '#FFFFFF',
     borderRadius: '0px',
-    borderWidth: '0px',
     boxShadow: '0 4px 4px 0 rgb(0 0 0 / 35%)',
   },
   title: {
@@ -104,6 +102,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   studyCardTextField: {
     marginBottom: theme.spacing(2),
   },
+  isJustAdded: {
+    border: `3px solid ${theme.palette.primary.dark}`,
+  },
 }))
 
 const cancelPropagation = (e: React.MouseEvent) => {
@@ -115,6 +116,11 @@ const CardBottom: FunctionComponent<{
   study: Study
 }> = ({ study }: { study: Study }) => {
   const classes = useStyles()
+  // console.log('bottom card', study)
+  const date = study.createdOn
+  // console.log('date', date)
+  // console.log(study.createdOn?.toDateString())
+
   return (
     <Box
       display="flex"

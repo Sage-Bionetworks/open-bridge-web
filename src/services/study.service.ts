@@ -22,19 +22,25 @@ async function getStudies(token: string): Promise<Study[]> {
     {},
     token,
   )
- //alina: this is temporary until we get status returned from back end
+  //alina: this is temporary until we get status returned from back end
 
-  return studies.data.items.map(study=> (study.status? study : {...study, status: 'DRAFT'} ))
+  return studies.data.items.map(study =>
+    study.status ? study : { ...study, status: 'DRAFT' },
+  )
 }
 
 async function getStudy(id: string, token: string): Promise<Study | undefined> {
-  const study = await callEndpoint<{ data: Study }>(
-    constants.endpoints.study.replace(':id', id),
-    'GET',
-    {},
-    token,
-  )
-  return study.data.data
+  try {
+    const study = await callEndpoint<{ data: Study }>(
+      constants.endpoints.study.replace(':id', id),
+      'GET',
+      {},
+      token,
+    )
+    return study.data.data
+  } catch (e) {
+    return undefined
+  }
 }
 
 /*async function getAllSchedules(): Promise<Schedule[] | null> {
@@ -74,19 +80,17 @@ async function createStudy(study: Study, token: string): Promise<Study[]> {
 }
 
 async function updateStudy(study: Study, token: string): Promise<Study[]> {
+  const payload = {
+    clientData: study.clientData,
+    name: study.name,
+    identifier: study.identifier,
+  }
 
-
-const payload = {
-  clientData: study.clientData,
-  name: study.name,
-  identifier: study.identifier, 
-}
-  
- await callEndpoint<{ items: Study[] }>(
+  await callEndpoint<{ items: Study[] }>(
     constants.endpoints.study.replace(':id', study.identifier),
-    'POST',// once we add things to the study -- we can change this to actual object
-  //  { identifier: study.identifier, version: study.version, name: study.name },
-  payload,
+    'POST', // once we add things to the study -- we can change this to actual object
+    //  { identifier: study.identifier, version: study.version, name: study.name },
+    payload,
     token,
   )
   const data = await getStudies(token)

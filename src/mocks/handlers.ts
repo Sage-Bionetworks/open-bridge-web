@@ -11,6 +11,8 @@ async function getStudies() {
       ...s,
       clientData: s.clientData || {},
       status: s.status as StudyStatus,
+      createdOn: new Date(s.createdOn),
+      modifiedOn: new Date(s.modifiedOn),
     }))
     studies = await setItem<Study[]>(KEYS.STUDIES, mocks)
   }
@@ -213,7 +215,6 @@ export const handlers = [
   /* ****************************
    * THOSE ENDPOINTS EXIST. THEY ARE REPLACED FOR TESTING. COMMENT THEM OUT TO GET THE REAL RESPONSE
    *************************  */
-
 
   //to get the error from synapse pass email w/ synapseErr to get error from bridge pass email w/ bridgeErr
 
