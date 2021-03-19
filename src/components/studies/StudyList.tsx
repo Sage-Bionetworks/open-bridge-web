@@ -286,7 +286,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   return (
     <Loader
       reqStatusLoading={status === 'PENDING' || !studies}
-      style={{ width: 'auto', margin: '0 auto' }}
+      variant="full"
     >
       <Container maxWidth="lg" className={classes.studyContainer}>
         <Box display="flex" justifyContent="space-between">
