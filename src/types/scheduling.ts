@@ -1,7 +1,5 @@
 import { Assessment, StringDictionary } from './types'
 
-
-
 export enum HSsEnum {
   H = 'Hours',
   D = 'Days',
@@ -78,7 +76,6 @@ export type StudySessionGeneral = {
   guid: string
   startEventId: StartEventId
 }
-
 
 export type StudySession = StudySessionGeneral & SessionSchedule
 

@@ -5,7 +5,7 @@ import {
   Divider,
   makeStyles,
   Menu,
-  MenuItem
+  MenuItem,
 } from '@material-ui/core'
 import Link from '@material-ui/core/Link'
 import React, { FunctionComponent, useEffect } from 'react'
@@ -25,6 +25,7 @@ type StudySublistProps = {
   studies: Study[]
   onAction: Function
   renameStudyId: string
+  newStudyID: String | null
 }
 
 type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME'
@@ -113,6 +114,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   //onSetAnchor,
   renameStudyId,
   onAction,
+  newStudyID,
 }: StudySublistProps) => {
   const classes = useStyles()
   const item = sections.find(section => section.status === status)!
@@ -160,6 +162,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
               onSetAnchor={(e: HTMLElement) => {
                 onAction(study, 'ANCHOR', e)
               }}
+              isNewlyAddedStudy={newStudyID === study.identifier}
             ></StudyCard>
           </Link>
         ))}
@@ -190,18 +193,23 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const [statusFilters, setStatusFilters] = React.useState<StudyStatus[]>(
     sections.map(section => section.status),
   )
+  const [newStudyID, setNewStudyID] = React.useState<String | null>(null)
 
   const resetStatusFilters = () =>
     setStatusFilters(sections.map(section => section.status))
 
   const createStudy = async () => {
+    const ID = getRandomId()
     const newStudy: Study = {
-      identifier: getRandomId(),
+      identifier: ID,
       version: 1,
       clientData: {},
       status: 'DRAFT' as StudyStatus,
       name: 'Untitled Study',
+      createdOn: new Date(),
+      modifiedOn: new Date(),
     }
+    setNewStudyID(ID)
     //setStudies([...studies, newStudy])
     const result = await StudyService.createStudy(newStudy, token!)
     setStudies(result)
@@ -334,6 +342,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                   ? setMenuAnchor({ study: s, anchorEl: e })
                   : onAction(s, action)
               }}
+              newStudyID={newStudyID}
             />
           </Box>
         ))}

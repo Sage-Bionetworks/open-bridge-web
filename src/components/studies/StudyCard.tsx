@@ -104,6 +104,15 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   isJustAdded: {
     border: `3px solid ${theme.palette.primary.dark}`,
+    animation: '$pop-out 0.5s ease',
+  },
+  '@keyframes pop-out': {
+    '0%': {
+      transform: 'scale(0)',
+    },
+    '100%': {
+      transform: 'scale(1)',
+    },
   },
 }))
 
@@ -112,14 +121,46 @@ const cancelPropagation = (e: React.MouseEvent) => {
   e.preventDefault()
 }
 
+const getFormattedDate = (date: Date) => {
+  const months = [
+    'Jan.',
+    'Feb.',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'Aug.',
+    'Sept.',
+    'Oct.',
+    'Nov.',
+    'Dec.',
+  ]
+  const year = date.getFullYear()
+  let month = months[date.getMonth()]
+  let day = date.getDate().toString()
+  day = day.length > 1 ? day : '0' + day
+
+  return `${month} ${day}, ${year} @ ${getFormattedTime(date)}`
+}
+
+const getFormattedTime = (date: Date) => {
+  let hours = date.getHours()
+  let minutes = date.getMinutes()
+  const timeOfDay = hours >= 12 ? 'pm' : 'am'
+  hours = hours % 12
+  hours = hours ? hours : 12
+  const minutesToString = minutes < 10 ? '0' + minutes : minutes
+  return `${hours}:${minutesToString}${timeOfDay}`
+}
+
 const CardBottom: FunctionComponent<{
   study: Study
 }> = ({ study }: { study: Study }) => {
   const classes = useStyles()
-  // console.log('bottom card', study)
-  const date = study.createdOn
-  // console.log('date', date)
-  // console.log(study.createdOn?.toDateString())
+  const date = new Date(
+    study.status === 'DRAFT' ? study.createdOn! : study.modifiedOn!,
+  )
 
   return (
     <Box
@@ -148,8 +189,8 @@ const CardBottom: FunctionComponent<{
         <div className={classes.studyStatusRow}>
           <div>
             {study.status === 'DRAFT'
-              ? '[Dec. 2nd, 2018 @ 4:45pm]'
-              : '[Launched: Nov. 1, 2019 @ 4:45 pm]'}
+              ? `[${getFormattedDate(date)}]`
+              : `[Launched: ${getFormattedDate(date)}]`}
           </div>
           <div>[Lynn B.]</div>
         </div>
@@ -213,11 +254,16 @@ type StudyCardProps = {
   onRename?: Function
 }
 
-const StudyCard: FunctionComponent<StudyCardProps> = ({
+type NewlyAddedProp = {
+  isNewlyAddedStudy?: boolean
+}
+
+const StudyCard: FunctionComponent<StudyCardProps & NewlyAddedProp> = ({
   study,
   onSetAnchor,
   isRename,
   onRename,
+  isNewlyAddedStudy,
 }) => {
   const classes = useStyles()
   const input = React.createRef<HTMLInputElement>()
@@ -243,7 +289,9 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
   return (
     <>
       <Card
-        className={classes.root}
+        className={`${classes.root} ${
+          isNewlyAddedStudy ? classes.isJustAdded : ''
+        }`}
         onClick={e => {
           if (isRename) {
             cancelPropagation(e)
