@@ -28,7 +28,6 @@ export const useStudyBuilderInfo = (id: string | undefined) => {
       //create new schedule for new study
       const scheduleGuid = await StudyService.createStudySchedule(
         `${study.name} schedule`,
-        'P2W',
         token!,
       )
       await StudyService.updateStudy(

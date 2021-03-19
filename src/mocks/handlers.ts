@@ -128,11 +128,11 @@ export const handlers = [
     `*${constants.endpoints.schedule.replace('/:id', '')}`,
     async (req, res, ctx) => {
       console.log('creating schedule')
-      const { name, duration } = req.body as { name: string; duration: string }
+      const { name } = req.body as { name: string }
       let guid = getRandomId()
       let newSchedule: Schedule = {
         name,
-        duration,
+
         guid,
         sessions: [],
       }

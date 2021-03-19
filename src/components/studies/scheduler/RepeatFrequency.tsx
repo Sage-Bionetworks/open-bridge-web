@@ -20,8 +20,8 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
         control={
           <Duration
             onChange={e => {
-              console.log(e)
-              onChange(e)
+     
+              onChange(e.target.value)
             }}
             durationString={interval || ''}
             unitLabel="Repeat Every"
