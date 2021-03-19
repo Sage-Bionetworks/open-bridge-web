@@ -13,11 +13,10 @@ import SchedulingFormSection from './SchedulingFormSection'
 
 export enum ReminderIntervalEnum {
   NONE = 'none',
-  MIN_5 = '5 min',
-  MIN_10 = '10 min',
-  MIN_15 = '15 min',
-  MIN_30 = '30 min',
-  HR_1 = '1hr. ',
+  PT5M = '5 min',
+  PT15M = '15 min',
+  PT30M = '30 min',
+  PT1H = '1 hr',
 }
 export type NotificationReminder = {
   interval?: string
@@ -44,6 +43,11 @@ const ReminderNotification: React.FunctionComponent<ReminderNotificationProps> =
 }: ReminderNotificationProps) => {
   const classes = useStyles()
 
+  const selections: ReminderIntervalType[] = [
+    'after_window_start',
+    'before_window_end',
+  ]
+
   return (
     <SchedulingFormSection
       label={'Reminder notification:'}
@@ -51,12 +55,16 @@ const ReminderNotification: React.FunctionComponent<ReminderNotificationProps> =
       border={false}
     >
       <SelectWithEnum
-        value={reminder?.interval}
+        value={reminder?.interval || 'NONE'}
         sourceData={ReminderIntervalEnum}
         id="remindAt"
         onChange={e => {
-          const interval = e.target.value! as keyof typeof ReminderIntervalEnum
-
+          let interval = e.target.value! as
+            | keyof typeof ReminderIntervalEnum
+            | undefined
+          if (interval === 'NONE') {
+            interval = undefined
+          }
           onChange({
             interval,
             type: reminder?.type,
@@ -71,19 +79,19 @@ const ReminderNotification: React.FunctionComponent<ReminderNotificationProps> =
         onChange={e => {
           onChange({
             interval: reminder?.interval,
-            type: e.target.value as ReminderIntervalType,
+            type: e.target.value,
           })
         }}
       >
         <FormControlLabel
-          value={'AFTER'}
+          value={selections[0]}
           control={<Radio size="small" className={classes.smallRadio} />}
           label="after start of window"
           disabled={!reminder?.interval || reminder?.interval === 'NONE'}
         />
 
         <FormControlLabel
-          value={'BEFORE'}
+          value={selections[1]}
           control={<Radio size="small" className={classes.smallRadio} />}
           disabled={!reminder?.interval || reminder?.interval === 'NONE'}
           label="before window expires "

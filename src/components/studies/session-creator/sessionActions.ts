@@ -57,7 +57,6 @@ function addSession(
   const session: StudySession = {
     guid: getRandomId(),
     assessments,
-    startEventId: 'study_start_date',
     performanceOrder: 'participant_choice',
     name,
   }
