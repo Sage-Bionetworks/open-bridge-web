@@ -139,7 +139,7 @@ export const SimpleTextInput = withStyles(theme => ({
     position: 'relative',
     backgroundColor: theme.palette.common.white,
     fontSize: '14px',
-    width: 'auto',
+    width: '100%',
     padding: '10px 12px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     fontFamily: [latoFont, 'Roboto'].join(','),

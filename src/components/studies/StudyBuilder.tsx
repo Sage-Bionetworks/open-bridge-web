@@ -8,7 +8,7 @@ import { useUserSessionDataState } from '../../helpers/AuthContext'
 import {
   StudyInfoData,
   useStudyInfoDataDispatch,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
@@ -117,8 +117,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       setSaveLoader(false)
     }
   }
-
-
 
   const changeSection = async (next: StudySection) => {
     if (section === next) {

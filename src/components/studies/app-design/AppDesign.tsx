@@ -5,7 +5,7 @@ import {
   Divider,
   FormControl,
   FormGroup,
-  Paper
+  Paper,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import ReactColorPicker from '@super-effective/react-color-picker'
@@ -18,18 +18,18 @@ import {
   latoFont,
   playfairDisplayFont,
   poppinsFont,
-  ThemeType
+  ThemeType,
 } from '../../../style/theme'
 import { StudyBuilderComponentProps } from '../../../types/types'
 import {
   MTBHeadingH1,
   MTBHeadingH2,
-  MTBHeadingH4
+  MTBHeadingH4,
 } from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
 import {
   SimpleTextInput,
-  SimpleTextLabel
+  SimpleTextLabel,
 } from '../../widgets/StyledComponents'
 
 const imgHeight = 70
@@ -94,13 +94,11 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
 
   headlineStyle: {
-    '& textarea': {
-      fontFamily: playfairDisplayFont,
-      fontStyle: 'italic',
-      fontWeight: 'normal',
-      fontSize: '21px',
-      lineHeight: '28px',
-    },
+    fontFamily: playfairDisplayFont,
+    fontStyle: 'italic',
+    fontWeight: 'normal',
+    fontSize: '21px',
+    lineHeight: '28px',
   },
 
   phoneArea: {
@@ -117,12 +115,15 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginTop: theme.spacing(4),
     backgroundRepeat: 'no-repeat',
     justifyContent: 'space-between',
+    wordWrap: 'break-word',
   },
   phoneInner: {
     marginLeft: '9px',
     marginRight: theme.spacing(1),
     padding: theme.spacing(4),
     textAlign: 'left',
+    border: '1px solid purple',
+    height: `350px`,
   },
   phoneBottom: {
     height: '70px',
@@ -131,7 +132,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
     width: '320px',
     marginLeft: '5px',
-    border: '4px solid black',
+    border: '4px solid orange',
     borderTop: '0px none transparent',
     borderRadius: '0 0px 24px 24px',
   },
@@ -221,7 +222,10 @@ const PhoneTopBar: React.FunctionComponent<{
 }> = ({ color = 'transparent', previewFile }) => {
   const classes = useStyles()
   return (
-    <div className={classes.phoneTopBar} style={{ backgroundColor: color }}>
+    <div
+      className={classes.phoneTopBar}
+      style={{ backgroundColor: color, border: '1px solid blue' }}
+    >
       {previewFile && (
         <img src={previewFile.body} style={{ height: `${imgHeight}px` }} />
       )}
@@ -396,7 +400,17 @@ const AppDesign: React.FunctionComponent<
 
             <div className={classes.phoneInner}>
               <div className={classes.headlineStyle}>{header}</div>
-              <p>{bodyCopy}</p>
+              <p
+                style={{
+                  fontFamily: 'Lato',
+                  fontWeight: 'normal',
+                  fontSize: '15px',
+                  lineHeight: '18px',
+                  marginTop: '25px',
+                }}
+              >
+                {bodyCopy}
+              </p>
             </div>
             <div className={classes.phoneBottom}></div>
           </Box>
