@@ -140,7 +140,6 @@ const getFormattedDate = (date: Date) => {
   let month = months[date.getMonth()]
   let day = date.getDate().toString()
   day = day.length > 1 ? day : '0' + day
-
   return `${month} ${day}, ${year} @ ${getFormattedTime(date)}`
 }
 
@@ -159,7 +158,7 @@ const CardBottom: FunctionComponent<{
 }> = ({ study }: { study: Study }) => {
   const classes = useStyles()
   const date = new Date(
-    study.status === 'DRAFT' ? study.createdOn! : study.modifiedOn!,
+    study.status === 'DRAFT' ? study.modifiedOn! : study.createdOn!,
   )
 
   return (
@@ -189,8 +188,8 @@ const CardBottom: FunctionComponent<{
         <div className={classes.studyStatusRow}>
           <div>
             {study.status === 'DRAFT'
-              ? `[${getFormattedDate(date)}]`
-              : `[Launched: ${getFormattedDate(date)}]`}
+              ? `${getFormattedDate(date)}`
+              : `Launched: ${getFormattedDate(date)}`}
           </div>
           <div>[Lynn B.]</div>
         </div>
