@@ -54,8 +54,6 @@ export type AssessmentWindow = {
   persistent?: boolean
 }
 
-export type ScheduleDuration = string //"P4W"
-
 export type SessionSchedule = {
   delay?: string //PD
   interval?: string //PD
@@ -74,7 +72,7 @@ export type StudySessionGeneral = {
   name: string
   labels?: StringDictionary<string>[]
   guid: string
-  startEventId: StartEventId
+  startEventId?: StartEventId
 }
 
 export type StudySession = StudySessionGeneral & SessionSchedule
@@ -84,7 +82,7 @@ export type Schedule = {
   ownerId?: string //todo
   guid: string
   sessions: StudySession[]
-  duration: ScheduleDuration
+  duration?: string //iso
   version?: number
   clientData?: any
 }

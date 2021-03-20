@@ -1,12 +1,12 @@
 import {
   Box,
   Checkbox,
-
   FormControlLabel,
   IconButton,
   Paper
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Close'
+import moment from 'moment'
 import React from 'react'
 import {
   AssessmentWindow as AssessmentWindowType,
@@ -18,13 +18,22 @@ import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
 
 export interface AssessmentWindowProps {
-  //use the following version instead if you need access to router props
-  //export interface AssessmentWindowProps  extends  RouteComponentProps {
-  //Enter your props here
   window: AssessmentWindowType
   index: number
-  onChange: Function
+  onChange: (w: AssessmentWindowType) =>void
   onDelete: Function
+}
+
+function getDropdownItems(): StringDictionary<string> {
+  const menuItems: StringDictionary<string> = {}
+  const date = moment([2021, 1, 1, 8])
+  menuItems[date.format('HH:mm')] = date.format('LT')
+
+  for (let i = 0; i < 95; i++) {
+    date.add(15, 'm')
+    menuItems[date.format('HH:mm')] = date.format('LT')
+  }
+  return menuItems
 }
 
 const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
@@ -33,20 +42,6 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
   onDelete,
   index,
 }: AssessmentWindowProps) => {
-
-  const getDropdownItems = (): StringDictionary<string> => {
-    const menuItems: StringDictionary<string> = {}
-
-    const formatTime = (hours: number) => {
-      var time = new Date(2000, 1, 1, hours)
-      return time.toLocaleString('en-US', { hour: 'numeric', hour12: true })
-    }
-    for (let i = 0; i < 24; i++) {
-      menuItems[i] = formatTime(i)
-    }
-    return menuItems
-  }
-
   return (
     <Paper
       style={{
@@ -88,7 +83,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
           onChange={e =>
             onChange({
               ...window,
-              startTime: e.target.value,
+              startTime: e.target.value as string,
             })
           }
         ></SelectWithEnum>
@@ -102,12 +97,12 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
       >
         <Box display="inline-flex" alignItems="center">
           <Duration
-            onChange={e => {
+            onChange={e => 
               onChange({
                 ...window,
-                end: e,
+               expiration: e.target.value as string,
               })
-            }}
+            }
             durationString={window.expiration || '    '}
             unitLabel="Repeat Every"
             numberLabel="frequency number"
@@ -125,15 +120,13 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
           control={
             <Checkbox
               value={window.persistent}
-              checked= {window.persistent===true}
-              onChange={e =>{
-         
+              checked={window.persistent === true}
+              onChange={e => {
                 onChange({
                   ...window,
                   persistent: e.target.checked,
                 })
-              }
-              }
+              }}
             />
           }
           label="Allow participant to complete this session as often as they like within the window"

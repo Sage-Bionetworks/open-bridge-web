@@ -47,7 +47,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
         labelPlacement="start"
         control={
           <Duration
-            onChange={e => setDuration(e)}
+            onChange={e => setDuration(e.target.value)}
             durationString={duration || ''}
             unitLabel="study duration unit"
             numberLabel="study duration number"

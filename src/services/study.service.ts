@@ -52,13 +52,13 @@ async function createStudy(study: Study, token: string): Promise<Study[]> {
 
 async function createStudySchedule(
   name: string,
-  duration: string,
+
   token: string,
 ): Promise<string> {
   const result = await callEndpoint<string>(
     constants.endpoints.schedule.replace('/:id', ''),
     'POST', // once we add things to the study -- we can change this to actual object
-    { name, duration },
+    { name},
     token,
   )
 

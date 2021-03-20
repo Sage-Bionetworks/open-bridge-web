@@ -12,7 +12,7 @@ import React, { FunctionComponent } from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import { poppinsFont } from '../../../style/theme'
 import {
-  HDWMEnum,
+  DWMYEnum,
   PerformanceOrder,
   Schedule,
   SessionSchedule,
@@ -21,6 +21,7 @@ import {
 } from '../../../types/scheduling'
 import { StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
+import ErrorDisplay from '../../widgets/ErrorDisplay'
 import AssessmentList from './AssessmentList'
 import Duration from './Duration'
 import IntroInfo from './IntroInfo'
@@ -79,6 +80,7 @@ const Scheduler: FunctionComponent<
   const classes = useStyles()
 
   const [schedule, setSchedule] = React.useState({ ..._schedule })
+  console.log('scheduler:',_schedule)
 
   const getStartEventIdFromSchedule = (
     schedule: Schedule,
@@ -157,6 +159,10 @@ const Scheduler: FunctionComponent<
     })
   }
 
+  if (_.isEmpty(schedule.sessions)) {
+    return <Box textAlign="center" mx="auto"><ErrorDisplay>You need to create sessions before creating the schedule</ErrorDisplay></Box>
+  }
+
   return (
     <>
       <NavigationPrompt when={hasObjectChanged}>
@@ -186,12 +192,12 @@ const Scheduler: FunctionComponent<
               control={
                 <Duration
                   onChange={e =>
-                    updateData({ ...schedule, duration: e.toString() })
+                    updateData({ ...schedule, duration: e.target.value})
                   }
                   durationString={schedule.duration || ''}
                   unitLabel="study duration unit"
                   numberLabel="study duration number"
-                  unitData={HDWMEnum}
+                  unitData={DWMYEnum}
                 ></Duration>
               }
             />
@@ -228,15 +234,18 @@ const Scheduler: FunctionComponent<
                   <AssessmentList
                     studySessionIndex={index}
                     studySession={session}
-                    onSetRandomized={(isRandomized: boolean) =>
-                      updateAssessments(session, { isRandomized })
-                    }
-                    onChangeGrouping={(isGroupAssessments: boolean) =>
-                      updateAssessments(session, { isGroupAssessments })
-                    }
-                    isGroupAssessments={
-                      session.performanceOrder !== 'participant_choice'
-                    }
+                    onChangePerformanceOrder={(performanceOrder: PerformanceOrder) => {
+                      const schedule = {...session, performanceOrder}
+
+                      scheduleUpdateFn({
+                        type: ActionTypes.UpdateSessionSchedule,
+                        payload: { sessionId: session.guid, schedule },
+                      })
+                    }}
+
+
+                  
+                   
                     performanceOrder={session.performanceOrder || 'sequential'}
                   />
                 </Box>

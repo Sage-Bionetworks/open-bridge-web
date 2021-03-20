@@ -22,12 +22,10 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
 }: StartDateProps) => {
   const [startType, setStartType] = React.useState<SessionScheduleStartType>(delay? 'NDAYS_DAY1': 'DAY1')
   const changeStartDate = (type: SessionScheduleStartType) => {
-  
+    setStartType(type)
     if(type === 'DAY1') {
       onChange(undefined)
-    } else {
-      setStartType(type)
-    }
+    } 
   }
 
   return (
@@ -48,7 +46,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
               <Duration
                 onFocus={() => changeStartDate('NDAYS_DAY1')}
                 onChange={e => {
-                  onChange( e)
+                  onChange( e.target.value)
                 }}
                 durationString={delay}
                 unitLabel="Repeat Every"

@@ -36,15 +36,10 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 }))
 
 export interface AssessmentListProps {
-  //use the following version instead if you need access to router props
-  //export interface EndDateProps  extends  RouteComponentProps {
-  //Enter your props here
   studySessionIndex: number
   studySession: StudySession
-  isGroupAssessments: boolean
-  performanceOrder:  PerformanceOrder
-  onChangeGrouping: Function
-  onSetRandomized: Function
+  performanceOrder: PerformanceOrder
+  onChangePerformanceOrder: (p: PerformanceOrder) => void
 }
 
 export interface SessionHeaderProps {
@@ -80,12 +75,14 @@ const SessionHeader: React.FunctionComponent<SessionHeaderProps> = ({
 const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   studySession,
   performanceOrder,
-  isGroupAssessments,
-  onChangeGrouping,
-  onSetRandomized,
+  onChangePerformanceOrder,
   studySessionIndex,
 }: AssessmentListProps): JSX.Element => {
   const classes = useStyles()
+
+  const [isGroupAssessments, setIsGroupAssessments] = React.useState(
+    performanceOrder !== 'participant_choice',
+  )
 
   const getMargins = (
     index: number,
@@ -103,7 +100,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
       <SessionHeader
         order={studySessionIndex}
         name={studySession.name}
-        assessments={studySession.assessments|| []}
+        assessments={studySession.assessments || []}
       ></SessionHeader>
 
       <div
@@ -111,23 +108,24 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
           [classes.inner]: true,
         })}
       >
-        {studySession.assessments && studySession.assessments.map((assessment, index) => (
-          <Box
-            key={assessment.guid}
-            style={
-              performanceOrder === 'randomized'
-                ? getMargins(index, studySession.assessments?.length || 0)
-                : {}
-            }
-          >
-            <AssessmentSmall
-              isHideDuration={performanceOrder === 'randomized'}
-              assessment={assessment}
-              hasHover={false}
-              isDragging={false}
-            ></AssessmentSmall>
-          </Box>
-        ))}
+        {studySession.assessments &&
+          studySession.assessments.map((assessment, index) => (
+            <Box
+              key={assessment.guid}
+              style={
+                performanceOrder === 'randomized'
+                  ? getMargins(index, studySession.assessments?.length || 0)
+                  : {}
+              }
+            >
+              <AssessmentSmall
+                isHideDuration={performanceOrder === 'randomized'}
+                assessment={assessment}
+                hasHover={false}
+                isDragging={false}
+              ></AssessmentSmall>
+            </Box>
+          ))}
       </div>
       {studySession.assessments && studySession.assessments.length > 1 && (
         <FormGroup aria-label="assessments" row style={{ marginLeft: '16px' }}>
@@ -135,7 +133,13 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
             control={
               <Checkbox
                 checked={isGroupAssessments}
-                onChange={e => onChangeGrouping(e.target.checked)}
+                onChange={e => {
+                  if (!e.target.checked) {
+                    onChangePerformanceOrder('participant_choice')
+                  } else {
+                    setIsGroupAssessments(true)
+                  }
+                }}
               />
             }
             label="Bundle assessments"
@@ -156,7 +160,9 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
                   disabled={!isGroupAssessments}
                   checked={performanceOrder === 'randomized'}
                   onChange={e => {
-                    onSetRandomized(e.target.checked)
+                    e.target.checked
+                      ? onChangePerformanceOrder('randomized')
+                      : onChangePerformanceOrder('sequential')
                   }}
                   name="checkedC"
                 />

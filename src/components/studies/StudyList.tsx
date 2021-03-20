@@ -10,12 +10,14 @@ import {
 import Link from '@material-ui/core/Link'
 import React, { FunctionComponent, useEffect } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
+import { useAsync } from '../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
 import { getRandomId } from '../../helpers/utility'
 import StudyService from '../../services/study.service'
 import { Study, StudyStatus } from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import { MTBHeading } from '../widgets/Headings'
+import Loader from '../widgets/Loader'
 import StudyCard from './StudyCard'
 
 type StudyListOwnProps = {}
@@ -146,10 +148,10 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
         {item.title}
       </MTBHeading>
       <Box className={classes.cardGrid}>
-        {displayStudies.map(study => (
+        {displayStudies.map((study, index) => (
           <Link
             style={{ textDecoration: 'none' }}
-            key={study.identifier}
+            key={study.identifier || index}
             variant="body2"
             href={studyLink.replace(':id', study.identifier)}
           >
@@ -173,14 +175,12 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
 
 const StudyList: FunctionComponent<StudyListProps> = () => {
   const { token } = useUserSessionDataState()
-  const [studies, setStudies] = React.useState<Study[]>([])
   const [menuAnchor, setMenuAnchor] = React.useState<null | {
     study: Study
     anchorEl: HTMLElement
   }>(null)
   const [renameStudyId, setRenameStudyId] = React.useState('')
   const classes = useStyles()
-  // const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const handleMenuClose = () => {
     setMenuAnchor(null)
   }
@@ -194,6 +194,13 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     sections.map(section => section.status),
   )
   const [newStudyID, setNewStudyID] = React.useState<String | null>(null)
+
+  const { data: studies, status, error, run, setData: setStudies } = useAsync<
+    Study[]
+  >({
+    status: 'PENDING',
+    data: [],
+  })
 
   const resetStatusFilters = () =>
     setStatusFilters(sections.map(section => section.status))
@@ -224,7 +231,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     switch (type) {
       case 'RENAME':
         setStudies(
-          studies.map(s => (s.identifier !== study.identifier ? s : study)),
+          studies!.map(s => (s.identifier !== study.identifier ? s : study)),
         )
         result = await StudyService.updateStudy(study, token)
         setStudies(result)
@@ -281,114 +288,127 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     }
   }, [token])
 
+  if (!studies && status === 'RESOLVED') {
+    return (
+      <div>
+        {' '}
+        {status}
+        You currently have no studies created. To begin, please click on Create
+        New Study.
+      </div>
+    )
+  }
+
   return (
-    <Container maxWidth="lg" className={classes.studyContainer}>
-      <Box display="flex" justifyContent="space-between">
-        <ul className={classes.filters} aria-label="filters">
-          <li className={classes.filterItem}>View by:</li>
-          <li className={classes.filterItem}>
-            <Button
-              onClick={resetStatusFilters}
-              style={{
-                color: 'inherit',
-                fontWeight: statusFilters.length > 1 ? 'bolder' : 'normal',
-                fontFamily: 'Poppins',
-              }}
-            >
-              All
-            </Button>
-          </li>
-          {sections.map(section => (
-            <li className={classes.filterItem} key={section.status}>
+    <Loader reqStatusLoading={status === 'PENDING' || !studies} variant="full">
+      <Container maxWidth="lg" className={classes.studyContainer}>
+        <Box display="flex" justifyContent="space-between">
+          <ul className={classes.filters} aria-label="filters">
+            <li className={classes.filterItem}>View by:</li>
+            <li className={classes.filterItem}>
               <Button
-                onClick={() => setStatusFilters([section.status])}
+                onClick={resetStatusFilters}
                 style={{
                   color: 'inherit',
-                  fontWeight: isSelectedFilter(section.status)
-                    ? 'bolder'
-                    : 'normal',
+                  fontWeight: statusFilters.length > 1 ? 'bolder' : 'normal',
                   fontFamily: 'Poppins',
                 }}
               >
-                {section.filterTitle}
+                All
               </Button>
             </li>
-          ))}
-        </ul>
-        <Button
-          variant="contained"
-          onClick={() => createStudy()}
-          className={classes.createStudyButton}
-        >
-          + Create New Study
-        </Button>
-      </Box>
-      <Divider className={classes.divider}></Divider>
-      {studies?.length === 0 && (
-        <div>
-          You currently have no studies created. To begin, please click on
-          Create New Study.
-        </div>
-      )}
-      {studies.length > 0 &&
-        statusFilters.map((status, index) => (
-          <Box style={{ paddingBottom: index < 2 ? '24px' : '0' }} key={status}>
-            <StudySublist
-              studies={studies}
-              renameStudyId={renameStudyId}
-              status={status}
-              onAction={(s: Study, action: StudyAction, e: any) => {
-                action === 'ANCHOR'
-                  ? setMenuAnchor({ study: s, anchorEl: e })
-                  : onAction(s, action)
-              }}
-              newStudyID={newStudyID}
-            />
-          </Box>
-        ))}
-
-      <Menu
-        id="simple-menu"
-        anchorEl={menuAnchor?.anchorEl}
-        keepMounted
-        open={Boolean(menuAnchor?.anchorEl)}
-        onClose={handleMenuClose}
-      >
-        <MenuItem onClick={handleMenuClose}>View</MenuItem>
-        {menuAnchor?.study.status === 'DRAFT' && (
-          <MenuItem
-            onClick={() => {
-              setRenameStudyId(menuAnchor?.study.identifier)
-              handleMenuClose()
-            }}
+            {sections.map(section => (
+              <li className={classes.filterItem} key={section.status}>
+                <Button
+                  onClick={() => setStatusFilters([section.status])}
+                  style={{
+                    color: 'inherit',
+                    fontWeight: isSelectedFilter(section.status)
+                      ? 'bolder'
+                      : 'normal',
+                    fontFamily: 'Poppins',
+                  }}
+                >
+                  {section.filterTitle}
+                </Button>
+              </li>
+            ))}
+          </ul>
+          <Button
+            variant="contained"
+            onClick={() => createStudy()}
+            className={classes.createStudyButton}
           >
-            Rename
+            + Create New Study
+          </Button>
+        </Box>
+        <Divider className={classes.divider}></Divider>
+
+        {studies!.length > 0 &&
+          statusFilters.map((status, index) => (
+            <Box
+              style={{ paddingBottom: index < 2 ? '24px' : '0' }}
+              key={status}
+            >
+              <StudySublist
+                studies={studies!}
+                renameStudyId={renameStudyId}
+                status={status}
+                onAction={(s: Study, action: StudyAction, e: any) => {
+                  action === 'ANCHOR'
+                    ? setMenuAnchor({ study: s, anchorEl: e })
+                    : onAction(s, action)
+                }}
+                newStudyID={newStudyID}
+              />
+            </Box>
+          ))}
+
+        <Menu
+          id="simple-menu"
+          anchorEl={menuAnchor?.anchorEl}
+          keepMounted
+          open={Boolean(menuAnchor?.anchorEl)}
+          onClose={handleMenuClose}
+        >
+          <MenuItem onClick={handleMenuClose}>View</MenuItem>
+          {menuAnchor?.study.status === 'DRAFT' && (
+            <MenuItem
+              onClick={() => {
+                setRenameStudyId(menuAnchor?.study.identifier)
+                handleMenuClose()
+              }}
+            >
+              Rename
+            </MenuItem>
+          )}
+
+          <MenuItem onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>
+            Duplicate
           </MenuItem>
-        )}
 
-        <MenuItem onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>
-          Duplicate
-        </MenuItem>
+          <MenuItem onClick={() => setIsConfirmDeleteOpen(true)}>
+            Delete
+          </MenuItem>
+        </Menu>
 
-        <MenuItem onClick={() => setIsConfirmDeleteOpen(true)}>Delete</MenuItem>
-      </Menu>
-
-      <ConfirmationDialog
-        isOpen={isConfirmDeleteOpen}
-        title={'Delete Study'}
-        type={'DELETE'}
-        onCancel={closeConfirmationDialog}
-        onConfirm={() => {
-          closeConfirmationDialog()
-          onAction(menuAnchor!.study, 'DELETE')
-        }}
-      >
-        <div>
-          Are you sure you would like to permanently delete:{' '}
-          <p>{menuAnchor?.study.name}</p>
-        </div>
-      </ConfirmationDialog>
-    </Container>
+        <ConfirmationDialog
+          isOpen={isConfirmDeleteOpen}
+          title={'Delete Study'}
+          type={'DELETE'}
+          onCancel={closeConfirmationDialog}
+          onConfirm={() => {
+            closeConfirmationDialog()
+            onAction(menuAnchor!.study, 'DELETE')
+          }}
+        >
+          <div>
+            Are you sure you would like to permanently delete:{' '}
+            <p>{menuAnchor?.study.name}</p>
+          </div>
+        </ConfirmationDialog>
+      </Container>
+    </Loader>
   )
 }
 

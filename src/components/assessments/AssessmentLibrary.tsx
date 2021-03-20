@@ -6,6 +6,7 @@ import { useAsync } from '../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
 import AssessmentService from '../../services/assessment.service'
 import { Assessment, StringDictionary } from '../../types/types'
+import Loader from '../widgets/Loader'
 import AssessmentCard from './AssessmentCard'
 import AssessmentLibraryWrapper from './AssessmentLibraryWrapper'
 
@@ -47,40 +48,42 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
     ///your async call
     return run(AssessmentService.getAssessmentsWithResources())
   }, [run, token])
-  if (status === 'PENDING') {
-    return <>loading component here</>
-  }
+
   if (status === 'REJECTED') {
     handleError(error!)
   }
 
-  if (!data?.assessments || (!data?.tags && status === 'RESOLVED')) {
+  if (status === 'RESOLVED' && (!data?.assessments || !data?.tags)) {
     return <>No Data </>
   }
 
   return (
-    <AssessmentLibraryWrapper
-      tags={data.tags}
-      assessments={data.assessments}
-      onChangeTags={
-        (assessments: Assessment[]) =>
-          setFilteredAssessments(assessments) /*setFilterTags(tags)*/
-      }
-    >
-      {(filteredAssessments || data.assessments).map((a, index) => (
-        <Link
-          to={`${match.url}/${a.guid}`}
-          className={classes.cardLink}
-          key={a.guid}
+    <Loader reqStatusLoading={status} variant="full">
+      {data && (
+        <AssessmentLibraryWrapper
+          tags={data.tags}
+          assessments={data.assessments}
+          onChangeTags={
+            (assessments: Assessment[]) =>
+              setFilteredAssessments(assessments) /*setFilterTags(tags)*/
+          }
         >
-          <AssessmentCard
-            index={index}
-            assessment={a}
-            key={a.guid}
-          ></AssessmentCard>
-        </Link>
-      ))}
-    </AssessmentLibraryWrapper>
+          {(filteredAssessments || data.assessments).map((a, index) => (
+            <Link
+              to={`${match.url}/${a.guid}`}
+              className={classes.cardLink}
+              key={a.guid}
+            >
+              <AssessmentCard
+                index={index}
+                assessment={a}
+                key={a.guid}
+              ></AssessmentCard>
+            </Link>
+          ))}
+        </AssessmentLibraryWrapper>
+      )}
+    </Loader>
   )
 }
 

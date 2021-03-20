@@ -118,9 +118,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     }
   }
 
-  if (!builderInfo || !builderInfo.schedule || !builderInfo.study) {
-    return <>NO INFO</>
-  }
+
 
   const changeSection = async (next: StudySection) => {
     if (section === next) {
