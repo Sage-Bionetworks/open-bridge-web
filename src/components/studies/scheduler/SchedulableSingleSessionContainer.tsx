@@ -15,7 +15,7 @@ import {
   NotificationFreqEnum,
 
   //NotificationReminder,
-  //Reoccurance as ReoccuranceType,
+  //Reoccurence as ReoccurenceType,
   SessionSchedule,
   StudySession
 } from '../../../types/scheduling'
@@ -146,9 +146,9 @@ SchedulableSingleSessionContainerProps) => {
         </Box>
         <Box className={classes.formSection}>
           <EndDate
-            occurances={schedulableSession.occurances}
-            onChange={(occurances: number | undefined) =>
-              updateSessionSchedule({ ...schedulableSession, occurances })
+            occurrences={schedulableSession.occurrences}
+            onChange={(occurrences: number | undefined) =>
+              updateSessionSchedule({ ...schedulableSession, occurrences })
             }
           ></EndDate>
         </Box>
@@ -165,7 +165,7 @@ SchedulableSingleSessionContainerProps) => {
         </Box>
 
         <Box className={classes.formSection}>
-          <SchedulingFormSection label={'Session Window:'}>
+          <SchedulingFormSection label='Session Window:'>
             <Box>
               {schedulableSession.timeWindows?.map((window, index) => (
                 <AssessmentWindow
@@ -186,7 +186,7 @@ SchedulableSingleSessionContainerProps) => {
               </Button>
             </Box>
           </SchedulingFormSection>
-          <SchedulingFormSection label={'Session Notifications'}>
+          <SchedulingFormSection label='Session Notifications'>
             <Box>
               <SchedulingFormSection
                 label={'Notify Participant'}
@@ -221,7 +221,7 @@ SchedulableSingleSessionContainerProps) => {
                   })
                 }
               ></ReminderNotification>
-              <SchedulingFormSection label={''} variant="small" border={false}>
+              <SchedulingFormSection label="Allow to snooze" isHideLabel={true} variant="small" border={false}>
                 <FormControlLabel
                   style={{ display: 'block' }}
                   control={

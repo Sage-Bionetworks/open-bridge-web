@@ -22,6 +22,7 @@ import {
 import { StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
+import Loader from '../../widgets/Loader'
 import AssessmentList from './AssessmentList'
 import Duration from './Duration'
 import IntroInfo from './IntroInfo'
@@ -80,7 +81,7 @@ const Scheduler: FunctionComponent<
   const classes = useStyles()
 
   const [schedule, setSchedule] = React.useState({ ..._schedule })
-  console.log('scheduler:',_schedule)
+  //console.log('scheduler:',_schedule)
 
   const getStartEventIdFromSchedule = (
     schedule: Schedule,
@@ -165,7 +166,8 @@ const Scheduler: FunctionComponent<
 
   return (
     <>
-      <NavigationPrompt when={hasObjectChanged}>
+    <Loader reqStatusLoading={saveLoader} key="loader"></Loader>
+      <NavigationPrompt when={hasObjectChanged} key="prompt">
         {({ onConfirm, onCancel }) => (
           <ConfirmationDialog
             isOpen={hasObjectChanged}
@@ -182,8 +184,8 @@ const Scheduler: FunctionComponent<
 
       {/**/}
       {getStartEventIdFromSchedule(schedule) && (
-        <Box textAlign="left">
-          <div className={classes.scheduleHeader}>
+        <Box textAlign="left" key="content">
+          <div className={classes.scheduleHeader} key="intro">
             <FormControlLabel
               classes={{ label: classes.labelDuration }}
               label="Study duration:"
@@ -212,7 +214,7 @@ const Scheduler: FunctionComponent<
               </Button>
             )}
           </div>
-          <Box bgcolor="#fff" p={2} mt={3}>
+          <Box bgcolor="#fff" p={2} mt={3} key="scheduler">
             <TimelinePlot something=""></TimelinePlot>
             <StudyStartDate
               style={{ marginTop: '16px' }}
@@ -229,7 +231,7 @@ const Scheduler: FunctionComponent<
             />
 
             {schedule.sessions.map((session, index) => (
-              <Box mb={2} display="flex">
+              <Box mb={2} display="flex" key={session.guid}>
                 <Box className={classes.assessments}>
                   <AssessmentList
                     studySessionIndex={index}
