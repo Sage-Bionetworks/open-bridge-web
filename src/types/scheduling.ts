@@ -57,7 +57,7 @@ export type AssessmentWindow = {
 export type SessionSchedule = {
   delay?: string //PD
   interval?: string //PD
-  occurances?: number
+  occurrences?: number
   performanceOrder: PerformanceOrder
   timeWindows?: AssessmentWindow[]
   assessments?: Assessment[]
