@@ -51,10 +51,7 @@ beforeEach(() => {
   saveStudyScheduleMock.mockReset()
   onUpdateMock.mockReset()
 })
-/*
-afterEach(() => {
-  cleanup()
-})*/
+
 test('when there is no study duration or no start event id  - only show top section with continue button', async () => {
   let { container, debug, rerender } = renderScheduler({
     duration: undefined,
