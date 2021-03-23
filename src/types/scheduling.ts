@@ -1,33 +1,33 @@
 import { Assessment, StringDictionary } from './types'
 
 export enum HSsEnum {
-  H = 'Hours',
-  D = 'Days',
+  H = 'hours',
+  D = 'days',
 }
 
 export enum DWMYEnum {
-  D = 'Day',
-  W = 'Week',
-  M = 'Month',
-  Y = 'Year',
+  D = 'day',
+  W = 'week',
+  M = 'month',
+  Y = 'year',
 }
 
 export enum DWMYsEnum {
-  D = 'Days',
-  W = 'Weeks',
-  M = 'Months',
-  Y = 'Years',
+  D = 'days',
+  W = 'weeks',
+  M = 'months',
+  Y = 'years',
 }
 
 export enum HDWMEnum {
-  H = 'Hour',
-  D = 'Day',
-  W = 'Week',
-  M = 'Month',
+  H = 'hour',
+  D = 'day',
+  W = 'week',
+  M = 'month',
 }
 
 export enum NotificationFreqEnum {
-  'start_of_window' = 'Start of window',
+  'start_of_window' = 'At start of window',
   'participant_choice' = 'Participant Choice',
   'random' = 'Random within window',
 }
