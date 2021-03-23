@@ -111,7 +111,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
         {studySession.assessments &&
           studySession.assessments.map((assessment, index) => (
             <Box
-              key={assessment.guid}
+              key={studySession.guid+assessment.guid+index}
               style={
                 performanceOrder === 'randomized'
                   ? getMargins(index, studySession.assessments?.length || 0)

@@ -2,7 +2,7 @@ import { FormControl, FormLabel } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React, { ReactNode } from 'react'
-import { poppinsFont } from '../../../style/theme'
+import { latoFont, poppinsFont } from '../../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,6 +30,7 @@ const useStyles = makeStyles(theme => ({
   label: {
     paddingTop: theme.spacing(1),
     paddingRight: theme.spacing(4),
+    lineHeight: '27px',
     width: theme.spacing(28),
     [theme.breakpoints.down('md')]: {
       width: theme.spacing(12.5),
@@ -48,6 +49,7 @@ const useStyles = makeStyles(theme => ({
       lineHeight: 1.4,
       fontWeight: 400,
       fontSize: '14px',
+      fontFamily: latoFont
 
     },
   },
