@@ -1,4 +1,4 @@
-import { Hidden, IconButton, LinearProgress, Paper } from '@material-ui/core'
+import { Box, Hidden, IconButton, LinearProgress } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
@@ -7,6 +7,7 @@ import React, { FunctionComponent } from 'react'
 import { NavLink } from 'react-router-dom'
 import Logo from '../../assets/logo_mtb.svg'
 import { useStudyInfoDataState } from '../../helpers/StudyInfoContext'
+import { latoFont } from '../../style/theme'
 import BreadCrumb from '../widgets/BreadCrumb'
 import HideWhen from '../widgets/HideWhen'
 
@@ -14,6 +15,7 @@ const useStyles = makeStyles(theme => ({
   toolbarStudyHeader: {
     height: '104px',
     display: 'flex',
+    backgroundColor: '#fff',
 
     alignItems: 'center',
     flexDirection: 'row',
@@ -28,14 +30,27 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'space-between',
     paddingTop: theme.spacing(8),
+    '&:last-child': {
+      paddingRight: 0
+    }
   },
   toolbarLink: {
     padding: theme.spacing(0, 2, 2, 2),
     flexGrow: 1,
+    fontFamily: latoFont,
+    fontSize: '15px',
+    
 
     textDecoration: 'none',
     color: 'inherit',
     flexShrink: 0,
+
+    '&:first-child': {
+      paddingLeft: theme.spacing(.5)
+    },
+    '&:last-child': {
+      paddingRight: theme.spacing(.5)
+    }
   },
   selectedLink: {
     borderBottom: '2px solid black',
@@ -77,7 +92,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   const studyData = useStudyInfoDataState()
 
   return (
-    <>
+    <Box bgcolor="#fff" px={2}>
       <Hidden lgUp>
         <IconButton
           color="inherit"
@@ -90,11 +105,11 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
         </IconButton>
       </Hidden>
       <Hidden mdDown>
-        <Paper className={classes.toolbarStudyHeader} elevation={0}>
+        <Box className={classes.toolbarStudyHeader}>
           <Toolbar
             component="nav"
             variant="dense"
-            disableGutters
+            disableGutters={true}
             className={classes.toolbar}
             style={{
               marginTop: '48px',
@@ -144,9 +159,9 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               <PeopleIcon></PeopleIcon>&nbsp;&nbsp;Access settings
             </NavLink>
           </Toolbar>
-        </Paper>
+        </Box>
       </Hidden>
-    </>
+    </Box>
   )
 }
 
