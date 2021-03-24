@@ -60,6 +60,9 @@ const globals: cssGlobalClasses = {
     flexWrap: 'wrap',
     overflowWrap: 'normal',
   },*/
+  '.home': {
+    backgroundColor: '#fff',
+  },
   listReset: {
     margin: '0',
     padding: '0',

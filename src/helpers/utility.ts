@@ -236,3 +236,12 @@ export const isInvalidPhone = (phone: string): boolean => {
   const phoneRegEx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
   return phone.match(phoneRegEx) === null
 }
+
+export const setBodyClass = (next?: string) => {
+  console.log('next', next)
+  if (next === 'launch') {
+    window.document.body.classList.add("home");
+    } else {
+      window.document.body.classList.remove("home");
+    }
+}
