@@ -10,6 +10,7 @@ import {
   useStudyInfoDataDispatch,
   useStudyInfoDataState
 } from '../../helpers/StudyInfoContext'
+import { setBodyClass } from '../../helpers/utility'
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
 import { Schedule, StudySession } from '../../types/scheduling'
@@ -48,7 +49,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     //backgroundColor: theme.palette.background.default,
   },
   mainAreaNormal: {
-    width: `${280 * 3 + 16 * 3}px`,
+    width: `${280 * 3 + 16 * 4}px`,
     [theme.breakpoints.down('md')]: {
       width: `${280 * 2 + 16 * 2}px`,
     },
@@ -157,6 +158,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       await saveFn()
     }
     window.history.pushState(null, '', next)
+    setBodyClass(next)
     setSection(next)
   }
 
@@ -194,7 +196,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
               [classes.mainAreaNormal]: open,
               [classes.mainAreaWider]:
                 open &&
-                ['branding', 'scheduler', 'enrollment-type-selector'].includes(
+                ['branding', 'scheduler'].includes(
                   section,
                 ),
               [classes.mainAreaWide]: !open,

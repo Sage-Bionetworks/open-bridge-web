@@ -31,12 +31,14 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   additionalInfo: {
     fontFamily: latoFont,
+    textAlign: 'left',
+    fontWeight: 'normal',
     fontSize: '14px',
     borderTop: '1px solid rgb(0, 0, 0)',
     marginTop: theme.spacing(2),
     marginLeft: '-10px',
     marginRight: '-10px',
-    padding: theme.spacing(0, 2),
+    padding: theme.spacing(0, 3),
   },
   table: {
     width: '100%',
@@ -59,7 +61,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginTop: '-185px',
     marginRight: '10px',
 
-    width: theme.spacing(32),
+    width: theme.spacing(32.5),
     '&$firstColumn': {
       background: 'none',
       boxShadow: 'none',
@@ -80,12 +82,25 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     },
   },
 
-  firstColumn: {},
+  firstColumn: {
+    width: theme.spacing(21)
+  },
+  heading: {
+    padding: theme.spacing(0, 6),
+    textAlign: 'center',
+    //display: 'block',
+    display: 'flex',
+  justifyContent: 'center',
+  flexDirection: 'column',
+
+  },
   notFirstColumn: {
+    width: theme.spacing(32),
     '& table th > span ': {
-      padding: theme.spacing(0, 6),
+
       textAlign: 'center',
       display: 'block',
+     
       fontFamily: poppinsFont,
       fontSize: '14px',
       fontWeight: 700,
@@ -104,6 +119,10 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     border: '10px solid #CBDEE9',
     '& th': {
       backgroundColor: '#CBDEE9',
+    },
+
+    '& $heading': {
+      paddingTop: theme.spacing(3)
     },
     '& > div': {
       marginTop: '-10px',
@@ -146,7 +165,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<
     if (clientData.enrollmentType !== undefined) {
       studyClientData.enrollmentType = clientData.enrollmentType
       if (clientData.enrollmentType === 'PHONE') {
-        clientData.isGenerateIds = undefined
+        studyClientData.generateIds = undefined
       }
     }
     if (clientData.isGenerateIds !== undefined) {
@@ -168,13 +187,13 @@ const EnrollmentTypeSelector: React.FunctionComponent<
         )}
       </NavigationPrompt>
 
-      <Box pt={9} pr={11} pb={11} pl={14} bgcolor="#FAFAFA">
+      <Box pt={9} pr={12} pb={11} pl={6} bgcolor="#FAFAFA">
         <MTBHeadingH1>
           {' '}
           How will you enroll your participants into this study?{' '}
         </MTBHeadingH1>
 
-        <Box display="flex" mt={4} className={classes.container}>
+        <Box display="flex" mt={9} className={classes.container}>
           <Paper
             className={clsx(classes.column, classes.firstColumn)}
             elevation={2}
@@ -212,7 +231,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<
                   <tr>
                     <th>
                       {' '}
-                      <span>
+                      <span className={classes.heading}>
                         ENROLL WITH
                         <br /> PHONE NUMBERS
                       </span>
@@ -220,7 +239,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<
                         className={classes.additionalInfo}
                         hidden={study.clientData.enrollmentType !== 'PHONE'}
                       >
-                        <Box px={1} py={2}>
+                        <Box px={0} py={2}>
                           In using phone numbers, I confirm that I have
                           participant consent to add their numbers.
                         </Box>
@@ -259,7 +278,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<
                 <thead>
                   <tr>
                     <th style={{ height: '186px' }}>
-                      <span>
+                      <span className={classes.heading}>
                         ENROLL WITH <br />
                         PARTICIPANT CODE
                       </span>
@@ -271,7 +290,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<
                         <RadioGroup
                           aria-label="How to generate Id"
                           name="generateIds"
-                          style={{ marginTop: '5px' }}
+                          style={{ marginTop: '8px' }}
                           value={study.clientData.generateIds}
                           onClick={e => e.stopPropagation()}
                           onChange={e => {

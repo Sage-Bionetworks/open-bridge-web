@@ -26,7 +26,7 @@ import SingleSessionContainer from './SingleSessionContainer'
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'grid',
-    padding: theme.spacing(1),
+    padding: theme.spacing(2),
     gridTemplateColumns: 'repeat(auto-fill,280px)',
     gridColumnGap: theme.spacing(2),
     gridRowGap: theme.spacing(2),
