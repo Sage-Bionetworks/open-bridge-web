@@ -128,8 +128,8 @@ export const SimpleTextInput = withStyles(theme => ({
     },
 
     '&:not(:last-child)': {
-      marginBottom: theme.spacing(2)
-    }
+      marginBottom: theme.spacing(2),
+    },
   },
   multiline: {
     padding: 0,

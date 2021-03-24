@@ -4,7 +4,7 @@ import {
   Checkbox,
   FormControlLabel,
   makeStyles,
-  TextField
+  TextField,
 } from '@material-ui/core'
 import SaveIcon from '@material-ui/icons/Save'
 import _ from 'lodash'
@@ -17,13 +17,13 @@ import {
   //NotificationReminder,
   //Reoccurance as ReoccuranceType,
   SessionSchedule,
-  StudySession
+  StudySession,
 } from '../../../types/scheduling'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import AssessmentWindow from './AssessmentWindow'
 import EndDate from './EndDate'
 import ReminderNotification, {
-  NotificationReminder
+  NotificationReminder,
 } from './ReminderNotification'
 import RepeatFrequency from './RepeatFrequency'
 import SchedulingFormSection from './SchedulingFormSection'
@@ -69,8 +69,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   studySession,
   onUpdateSessionSchedule,
   onSaveSessionSchedule,
-}: 
-SchedulableSingleSessionContainerProps) => {
+}: SchedulableSingleSessionContainerProps) => {
   const classes = useStyles()
 
   const [

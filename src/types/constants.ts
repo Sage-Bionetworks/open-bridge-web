@@ -98,7 +98,7 @@ export default {
   masterschedule: '/v3/schedulerconfigs',
   metadata: '/v3/sharedmodules/metadata',*/
 
-   // assessment: '/v1/assessments/:id',
+    // assessment: '/v1/assessments/:id',
     //assessments: '/v1/assessments?includeDeleted=false',
     assmentsForSessions: '/v1/sessions/:sessionId/assessments',
     assessmentsShared: '/v1/sharedassessments/?includeDeleted=false',

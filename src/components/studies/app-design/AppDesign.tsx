@@ -20,7 +20,10 @@ import {
   poppinsFont,
   ThemeType,
 } from '../../../style/theme'
-import { StudyBuilderComponentProps } from '../../../types/types'
+import {
+  StudyBuilderComponentProps,
+  StudyAppDesign,
+} from '../../../types/types'
 import {
   MTBHeadingH1,
   MTBHeadingH2,
@@ -31,11 +34,28 @@ import {
   SimpleTextInput,
   SimpleTextLabel,
 } from '../../widgets/StyledComponents'
+import StudySummaryRoles from './StudySummaryRoles'
+import ContactInformation from './ContactInformation'
+import { ColorLensTwoTone } from '@material-ui/icons'
 
 const imgHeight = 70
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: { counterReset: 'orderedlist' },
+  bodyText: {
+    fontFamily: 'Lato',
+    fontWeight: 'normal',
+    fontSize: '15px',
+    lineHeight: '18px',
+    marginTop: '25px',
+  },
+  bodyPhoneText: {
+    fontFamily: 'Lato',
+    fontWeight: 'normal',
+    fontSize: '12px',
+    lineHeight: '15px',
+    marginTop: '25px',
+  },
   section: {
     padding: theme.spacing(9, 9, 5, 17),
     display: 'flex',
@@ -92,13 +112,26 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       marginBottom: '16px',
     },
   },
-
   headlineStyle: {
     fontFamily: playfairDisplayFont,
     fontStyle: 'italic',
     fontWeight: 'normal',
     fontSize: '21px',
     lineHeight: '28px',
+  },
+  informationRowStyle: {
+    fontFamily: playfairDisplayFont,
+    fontWeight: 'normal',
+    fontSize: '15px',
+    lineHeight: '18px',
+  },
+
+  contactAndSupportText: {
+    fontFamily: playfairDisplayFont,
+    fontStyle: 'italic',
+    fontWeight: 'normal',
+    fontSize: '18px',
+    lineHeight: '24px',
   },
 
   phoneArea: {
@@ -122,8 +155,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginRight: theme.spacing(1),
     padding: theme.spacing(4),
     textAlign: 'left',
-    border: '1px solid purple',
-    height: `350px`,
+    height: `521px`,
   },
   phoneBottom: {
     height: '70px',
@@ -132,7 +164,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
     width: '320px',
     marginLeft: '5px',
-    border: '4px solid orange',
+    border: '4px solid black',
     borderTop: '0px none transparent',
     borderRadius: '0 0px 24px 24px',
   },
@@ -141,11 +173,13 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginLeft: '5px',
     height: `${imgHeight + 16}px`,
     borderRadius: '25px 25px 0 0',
-    paddingTop: '10px',
-
     borderStyle: 'solid',
-    borderWidth: '3px 3px 1px 3px',
+    borderWidth: '3px 3px 0px 3px',
     borderColor: 'black',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   preview: {
     backgroundColor: '#EBEBEB',
@@ -173,6 +207,24 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       width: '100%',
     },
   },
+  firstFormElement: {
+    marginTop: '20px',
+  },
+  summaryRoles: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    marginBottom: '10px',
+  },
+  divider: {
+    width: '256px',
+    marginTop: '30px',
+  },
+  phoneGrayBackground: {
+    backgroundColor: '#F7F7F7',
+  },
 }))
 
 type PreviewFile = {
@@ -190,6 +242,7 @@ type UploadedFile = {
 
 export interface AppDesignProps {
   id: string
+  currentAppDesign: StudyAppDesign
 }
 
 function getPreviewForImage(file: File): PreviewFile {
@@ -208,7 +261,7 @@ const Subsection: React.FunctionComponent<{ heading: string }> = ({
 }) => {
   return (
     <li>
-      <div>
+      <div style={{ width: '100%' }}>
         <MTBHeadingH2>{heading}</MTBHeadingH2>
         {children}
       </div>
@@ -222,10 +275,7 @@ const PhoneTopBar: React.FunctionComponent<{
 }> = ({ color = 'transparent', previewFile }) => {
   const classes = useStyles()
   return (
-    <div
-      className={classes.phoneTopBar}
-      style={{ backgroundColor: color, border: '1px solid blue' }}
-    >
+    <div className={classes.phoneTopBar} style={{ backgroundColor: color }}>
       {previewFile && (
         <img src={previewFile.body} style={{ height: `${imgHeight}px` }} />
       )}
@@ -240,19 +290,67 @@ const AppDesign: React.FunctionComponent<
   hasObjectChanged,
   saveLoader,
   children,
+  onUpdate,
+  currentAppDesign,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
   const classes = useStyles()
 
-  const [color, setColor] = useState<string | undefined>()
+  // color is not changing for some reason even tough setcolor is being callsed
+  const [color, setColor] = useState<string | undefined>(
+    currentAppDesign.backgroundColor || '#6040FF',
+  )
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-
   const [logo, setLogo] = useState()
-  const [header, setHeader] = useState('')
-  const [bodyCopy, setBodyCopy] = useState('')
-  const [signature, setSignature] = useState('')
+  const [header, setHeader] = useState(
+    currentAppDesign.welcomeScreenHeader || '',
+  )
+  const [bodyCopy, setBodyCopy] = useState(
+    currentAppDesign.welcomeScreenBody || '',
+  )
+  const [signature, setSignature] = useState(
+    currentAppDesign.welcomeScreenSignature || '',
+  )
+  const [titleOfStudy, setTitleOfStudy] = useState<string>(
+    currentAppDesign.studyTitle || '',
+  )
+  const [studySummaryBodyText, setStudySummaryBodyText] = useState<string>(
+    currentAppDesign.studySummaryBody || '',
+  )
+  const [
+    leadPrincipleInvestigator,
+    setLeadPrincipleInvestigator,
+  ] = useState<String>(currentAppDesign.leadPrincicpleInvestigator || '')
+  const [institution, setInstitution] = useState<String>(
+    currentAppDesign.institution || '',
+  )
+  const [funder, setFunder] = useState<string>(currentAppDesign.funder || '')
+  const [IRBApprovalNumber, setIRBApprovalNumber] = useState<string>(
+    currentAppDesign.IRBApprovalNumber || '',
+  )
+  const [contactLead, setContactLead] = useState<string>(
+    currentAppDesign.contactLead || '',
+  )
+  const [roleInStudy, setRoleInStudy] = useState<string>(
+    currentAppDesign.contactLeadRoleInStudy || '',
+  )
+  const [contactPhoneNumber, setContactPhoneNumber] = useState<string>(
+    currentAppDesign.contactLeadPhoneNumber || '',
+  )
+  const [contactEmail, setContactEmail] = useState<string>(
+    currentAppDesign.contactLeadEmail || '',
+  )
+  const [nameOfEthicsBoard, setNameOfEthicsBoard] = useState<string>(
+    currentAppDesign.nameOfEthicsBoard || '',
+  )
+  const [ethicsBoardPhoneNumber, setEthicsBoardPhoneNumber] = useState<string>(
+    currentAppDesign.ethicsBoardPhoneNumber || '',
+  )
+  const [ethicsBoardEmail, setEthicsBoardEmail] = useState<string>(
+    currentAppDesign.ethicsBoardEmail || '',
+  )
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     event.persist()
@@ -263,11 +361,40 @@ const AppDesign: React.FunctionComponent<
     setPreviewFile(getPreviewForImage(file))
   }
 
+  const updateAppDesignInfo = () => {
+    const info = {
+      logo: '',
+      backgroundColor: color,
+      welcomeScreenHeader: header,
+      welcomeScreenBody: bodyCopy,
+      welcomeScreenSignature: signature,
+      studyTitle: titleOfStudy,
+      studySummaryBody: studySummaryBodyText,
+      leadPrincicpleInvestigator: leadPrincipleInvestigator,
+      institution: institution,
+      funder: funder,
+      IRBApprovalNumber: IRBApprovalNumber,
+      contactLead: contactLead,
+      contactLeadRoleInStudy: roleInStudy,
+      contactLeadPhoneNumber: contactPhoneNumber,
+      contactLeadEmail: contactEmail,
+      nameOfEthicsBoard: nameOfEthicsBoard,
+      ethicsBoardPhoneNumber: ethicsBoardPhoneNumber,
+      ethicsBoardEmail: ethicsBoardEmail,
+    } as StudyAppDesign
+    onUpdate(info)
+  }
+
   return (
     <Box className={classes.root}>
       <Paper className={classes.section} elevation={2}>
         <Box className={classes.fields}>
           <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
+          <p style={{ fontSize: '15px', marginTop: '30px' }}>
+            When a participant first downloads the app, they will see a Welcome
+            screen. You can customize this screen by adding your own logo,
+            background color and Welcome message.
+          </p>
           <ol className={classes.steps}>
             <Subsection heading="Upload Study Logo">
               <p className={classes.intro}>
@@ -282,10 +409,10 @@ const AppDesign: React.FunctionComponent<
                 <div
                   style={{
                     padding: '8px 1px',
-                    border: '1px solid black',
                     textAlign: 'center',
                     width: '320px',
                     height: `${imgHeight + 16}px`,
+                    border: '1px solid black',
                   }}
                 >
                   {previewFile && (
@@ -316,6 +443,7 @@ const AppDesign: React.FunctionComponent<
                   multiple={false}
                   type="file"
                   onChange={e => handleFileChange(e)}
+                  onBlur={() => updateAppDesignInfo()}
                   style={{ display: 'none' }}
                 />
               </Button>
@@ -333,20 +461,21 @@ const AppDesign: React.FunctionComponent<
               >
                 <ReactColorPicker
                   color={color}
-                  onChange={(color: string) => setColor(color)}
+                  onChange={(currentColor: string) => {
+                    console.log('the current color is changed to', currentColor)
+                    console.log('the set color is', color)
+                    setColor(currentColor)
+                  }}
+                  onInteractionEnd={() => {
+                    updateAppDesignInfo()
+                  }}
                 />
               </Box>
             </Subsection>
 
             <Subsection heading="Welcome screen messaging">
-              <p>
-                When a participant first downloads the app and enters the study,
-                they will see a Welcome screen as the first step in the
-                onboarding experience.
-              </p>
-              <p>What information would you like to display here?</p>
               <FormGroup className={classes.formFields}>
-                <FormControl>
+                <FormControl className={classes.firstFormElement}>
                   <SimpleTextLabel htmlFor="headline-input">
                     Main Header
                   </SimpleTextLabel>
@@ -355,7 +484,10 @@ const AppDesign: React.FunctionComponent<
                     id="headline-input"
                     placeholder="Welcome Headline"
                     value={header}
-                    onChange={e => setHeader(e.target.value)}
+                    onChange={e => {
+                      setHeader(e.target.value)
+                    }}
+                    onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={2}
                     rowsMax={4}
@@ -368,6 +500,7 @@ const AppDesign: React.FunctionComponent<
                     id="outlined-textarea"
                     value={bodyCopy}
                     onChange={e => setBodyCopy(e.target.value)}
+                    onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={4}
                     rowsMax={6}
@@ -377,9 +510,10 @@ const AppDesign: React.FunctionComponent<
                 <FormControl>
                   <SimpleTextLabel>Signature</SimpleTextLabel>
                   <SimpleTextInput
-                    id="outlined-textarea"
+                    id="signature-textarea"
                     value={signature}
                     onChange={e => setSignature(e.target.value)}
+                    onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={2}
                     rowsMax={4}
@@ -397,20 +531,11 @@ const AppDesign: React.FunctionComponent<
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
           <Box className={classes.phone}>
             <PhoneTopBar color={color} previewFile={previewFile} />
-
             <div className={classes.phoneInner}>
-              <div className={classes.headlineStyle}>{header}</div>
-              <p
-                style={{
-                  fontFamily: 'Lato',
-                  fontWeight: 'normal',
-                  fontSize: '15px',
-                  lineHeight: '18px',
-                  marginTop: '25px',
-                }}
-              >
-                {bodyCopy}
-              </p>
+              <div className={classes.headlineStyle}>
+                {header || 'Welcome Headline'}
+              </div>
+              <p className={classes.bodyText}>{bodyCopy || 'Body copy'}</p>
             </div>
             <div className={classes.phoneBottom}></div>
           </Box>
@@ -418,10 +543,251 @@ const AppDesign: React.FunctionComponent<
       </Paper>
       <Paper className={classes.section} elevation={2}>
         <Box className={classes.fields}>
-          <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
+          <MTBHeadingH2>Study Page</MTBHeadingH2>
+          <p style={{ fontSize: '15px', marginTop: '30px' }}>
+            Within the app, there will be a dedicated page where you can
+            describe your study further and list who to contact for participant
+            support.
+          </p>
           <ol className={classes.steps}>
-            <li>another</li>
-            <li>another</li>
+            <Subsection heading="Study Summary">
+              <FormGroup className={classes.formFields}>
+                <FormControl className={classes.firstFormElement}>
+                  <SimpleTextLabel htmlFor="study-name-input">
+                    Title of Study
+                  </SimpleTextLabel>
+                  <SimpleTextInput
+                    className={classes.headlineStyle}
+                    id="study-name-input"
+                    placeholder="Headline"
+                    value={titleOfStudy}
+                    onChange={e => {
+                      setTitleOfStudy(e.target.value)
+                    }}
+                    onBlur={() => updateAppDesignInfo()}
+                    multiline
+                    rows={2}
+                    rowsMax={4}
+                    inputProps={{ style: { fontSize: '24px' } }}
+                  />
+                </FormControl>
+                <FormControl>
+                  <SimpleTextLabel>Body Copy</SimpleTextLabel>
+                  <SimpleTextInput
+                    id="study-body-text"
+                    value={studySummaryBodyText}
+                    onChange={e => setStudySummaryBodyText(e.target.value)}
+                    onBlur={() => updateAppDesignInfo()}
+                    multiline
+                    rows={8}
+                    rowsMax={10}
+                    placeholder="Lorem ipsum"
+                  />
+                </FormControl>
+              </FormGroup>
+            </Subsection>
+            <Subsection heading="Information about the Study Leads">
+              <FormGroup className={classes.formFields}>
+                <FormControl className={classes.firstFormElement}>
+                  <SimpleTextLabel htmlFor="lead-investigator-input">
+                    Lead pricinple investigator
+                  </SimpleTextLabel>
+                  <SimpleTextInput
+                    className={classes.informationRowStyle}
+                    id="lead-investigator-input"
+                    placeholder="First and Last name"
+                    value={leadPrincipleInvestigator}
+                    onChange={e => setLeadPrincipleInvestigator(e.target.value)}
+                    onBlur={() => updateAppDesignInfo()}
+                    multiline
+                    rows={1}
+                    rowsMax={1}
+                    inputProps={{ style: { fontSize: '15px' } }}
+                  />
+                </FormControl>
+                <FormControl>
+                  <SimpleTextLabel htmlFor="institution-input">
+                    Institution
+                  </SimpleTextLabel>
+                  <SimpleTextInput
+                    className={classes.informationRowStyle}
+                    id="institution-input"
+                    placeholder="Name of Institution"
+                    value={institution}
+                    onChange={e => setInstitution(e.target.value)}
+                    onBlur={() => updateAppDesignInfo()}
+                    multiline
+                    rows={1}
+                    rowsMax={1}
+                    inputProps={{ style: { fontSize: '15px' } }}
+                  />
+                </FormControl>
+                <FormControl>
+                  <SimpleTextLabel htmlFor="funder-input">
+                    Funder
+                  </SimpleTextLabel>
+                  <SimpleTextInput
+                    className={classes.informationRowStyle}
+                    id="funder-input"
+                    placeholder="Name of Funder(s)"
+                    value={funder}
+                    onChange={e => setFunder(e.target.value)}
+                    onBlur={() => updateAppDesignInfo()}
+                    multiline
+                    rows={1}
+                    rowsMax={1}
+                    inputProps={{ style: { fontSize: '15px' } }}
+                  />
+                </FormControl>
+                <FormControl>
+                  <SimpleTextLabel htmlFor="IRB-approval-input">
+                    IRB Approval Number
+                  </SimpleTextLabel>
+                  <SimpleTextInput
+                    className={classes.informationRowStyle}
+                    id="IRB-approval-input"
+                    placeholder="XXXXXXXXXX"
+                    value={IRBApprovalNumber}
+                    onChange={e => setIRBApprovalNumber(e.target.value)}
+                    onBlur={() => updateAppDesignInfo()}
+                    multiline
+                    rows={1}
+                    rowsMax={1}
+                    inputProps={{ style: { fontSize: '15px' } }}
+                  />
+                </FormControl>
+              </FormGroup>
+            </Subsection>
+            <Subsection heading="General Contact and Support">
+              <FormGroup className={classes.formFields}>
+                <FormControl className={classes.firstFormElement}>
+                  <SimpleTextLabel htmlFor="contact-lead-input">
+                    Contact Lead
+                  </SimpleTextLabel>
+                  <SimpleTextInput
+                    className={classes.informationRowStyle}
+                    id="contact-lead-input"
+                    placeholder="First and Last name"
+                    value={contactLead}
+                    onChange={e => setContactLead(e.target.value)}
+                    onBlur={() => updateAppDesignInfo()}
+                    multiline
+                    rows={1}
+                    rowsMax={1}
+                    inputProps={{ style: { fontSize: '15px' } }}
+                  />
+                </FormControl>
+                <FormControl>
+                  <SimpleTextLabel htmlFor="role-in-study-input">
+                    Role in the Study
+                  </SimpleTextLabel>
+                  <SimpleTextInput
+                    className={classes.informationRowStyle}
+                    id="role-in-study-input"
+                    placeholder="Title of Position"
+                    value={roleInStudy}
+                    onChange={e => setRoleInStudy(e.target.value)}
+                    onBlur={() => updateAppDesignInfo()}
+                    multiline
+                    rows={1}
+                    rowsMax={1}
+                    inputProps={{ style: { fontSize: '15px' } }}
+                  />
+                </FormControl>
+                <FormControl>
+                  <SimpleTextLabel htmlFor="phone-number-contact-input">
+                    Phone Number
+                  </SimpleTextLabel>
+                  <SimpleTextInput
+                    className={classes.informationRowStyle}
+                    id="phone-number-contact-input"
+                    placeholder="xxx-xxx-xxxx"
+                    value={contactPhoneNumber}
+                    onChange={e => setContactPhoneNumber(e.target.value)}
+                    onBlur={() => updateAppDesignInfo()}
+                    multiline
+                    rows={1}
+                    rowsMax={1}
+                    inputProps={{ style: { fontSize: '15px' } }}
+                  />
+                </FormControl>
+                <FormControl>
+                  <SimpleTextLabel htmlFor="contact-email-input">
+                    Email
+                  </SimpleTextLabel>
+                  <SimpleTextInput
+                    className={classes.informationRowStyle}
+                    id="contact-email-input"
+                    placeholder="Institutional Email"
+                    value={contactEmail}
+                    onChange={e => setContactEmail(e.target.value)}
+                    onBlur={() => updateAppDesignInfo()}
+                    multiline
+                    rows={1}
+                    rowsMax={1}
+                    inputProps={{ style: { fontSize: '15px' } }}
+                  />
+                </FormControl>
+              </FormGroup>
+            </Subsection>
+            <Subsection heading="IRB or Ethics Board Contact">
+              <FormGroup className={classes.formFields}>
+                <FormControl className={classes.firstFormElement}>
+                  <SimpleTextLabel htmlFor="ethics-board-input">
+                    Name of IRB/Ethics Board
+                  </SimpleTextLabel>
+                  <SimpleTextInput
+                    className={classes.informationRowStyle}
+                    id="ethics-board-input"
+                    placeholder="First and Last name"
+                    value={nameOfEthicsBoard}
+                    onChange={e => setNameOfEthicsBoard(e.target.value)}
+                    onBlur={() => updateAppDesignInfo()}
+                    multiline
+                    rows={1}
+                    rowsMax={1}
+                    inputProps={{ style: { fontSize: '15px' } }}
+                  />
+                </FormControl>
+                <FormControl>
+                  <SimpleTextLabel htmlFor="ethics-phone-number-input">
+                    Phone Number
+                  </SimpleTextLabel>
+                  <SimpleTextInput
+                    className={classes.informationRowStyle}
+                    id="ethics-phone-number-input"
+                    placeholder="xxx-xxx-xxxx"
+                    value={ethicsBoardPhoneNumber}
+                    onChange={e => setEthicsBoardPhoneNumber(e.target.value)}
+                    onBlur={() => updateAppDesignInfo()}
+                    multiline
+                    rows={1}
+                    rowsMax={1}
+                    inputProps={{ style: { fontSize: '15px' } }}
+                  />
+                </FormControl>
+                <FormControl>
+                  <SimpleTextLabel htmlFor="ethics-email-input">
+                    Email
+                  </SimpleTextLabel>
+                  <SimpleTextInput
+                    className={classes.informationRowStyle}
+                    id="ethics-email-input"
+                    placeholder="Institutional Email"
+                    value={ethicsBoardEmail}
+                    onChange={e => setEthicsBoardEmail(e.target.value)}
+                    onBlur={() => updateAppDesignInfo()}
+                    multiline
+                    rows={1}
+                    rowsMax={1}
+                    inputProps={{ style: { fontSize: '15px' } }}
+                  />
+                </FormControl>
+              </FormGroup>
+              <Box textAlign="right">
+                <SaveButton onClick={() => alert('save')} />
+              </Box>
+            </Subsection>
           </ol>
         </Box>
 
@@ -429,27 +795,64 @@ const AppDesign: React.FunctionComponent<
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
           <Box className={classes.phone}>
             <PhoneTopBar color={color} previewFile={previewFile} />
-            <Box
-              bgcolor="#FDFDFD"
-              marginLeft="9px"
-              marginRight="8px"
-              px={4}
-              textAlign="left"
+            <div className={classes.phoneInner}>
+              <div className={classes.headlineStyle}>
+                {titleOfStudy || 'Title of study...'}
+              </div>
+              <p className={classes.bodyText}>
+                {studySummaryBodyText || 'Body...'}
+              </p>
+              <Divider className={classes.divider} />
+              <StudySummaryRoles
+                type="Lead Principal Investigator"
+                name={leadPrincipleInvestigator || 'placeholder'}
+              />
+              <StudySummaryRoles
+                type="Institution"
+                name={institution || 'placeholder'}
+              />
+              <StudySummaryRoles type="Funder" name={funder || 'placeholder'} />
+              <StudySummaryRoles
+                type="IRB Approval Number"
+                name={IRBApprovalNumber || 'placeholder'}
+              />
+            </div>
+            <div
+              className={`${classes.phoneInner} ${classes.phoneGrayBackground}`}
             >
-              Description about the study.Lorem ipsum about the study written by
-              the research team that they want to share to participants. Lorem
-              ipsum about the study written by the research team that they want
-              to share to participants. Lorem ipsum about the study written by
-              the research team that they want to share to participants.
-              <Divider />
-              <MTBHeadingH4>Name one</MTBHeadingH4>
-              lorem inpsum
-              <Box bgcolor="#F7F7F7">
-                For general questions
-                <Divider />
-              </Box>
-              fgdgdg
-            </Box>
+              <div className={classes.contactAndSupportText}>
+                Contact & support
+              </div>
+              <p className={classes.bodyPhoneText}>
+                For general questions about the study or to{' '}
+                <strong>withdraw</strong> from the study, please contact:
+              </p>
+              <div className={classes.summaryRoles}>
+                <StudySummaryRoles
+                  type={roleInStudy || 'Role in study'}
+                  name={contactLead || 'Contact lead'}
+                />
+              </div>
+              <ContactInformation
+                phoneNumber={contactPhoneNumber}
+                email={contactEmail}
+              />
+              <Divider className={classes.divider} />
+              <p className={classes.bodyPhoneText}>
+                For questions about your rights as a research participant,
+                please contact :
+              </p>
+              <div className={classes.summaryRoles}>
+                <StudySummaryRoles
+                  type=""
+                  name={nameOfEthicsBoard || 'IRB/Ethics Board'}
+                />
+              </div>
+              <ContactInformation
+                phoneNumber={ethicsBoardPhoneNumber}
+                email={ethicsBoardEmail}
+              />
+            </div>
             <div className={classes.phoneBottom}>
               <PhoneBottomImg title="phone bottom image" />
             </div>

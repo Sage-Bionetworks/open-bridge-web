@@ -4,7 +4,7 @@ import {
   createStyles,
   FormControlLabel,
   makeStyles,
-  Theme
+  Theme,
 } from '@material-ui/core'
 import SaveIcon from '@material-ui/icons/Save'
 import _ from 'lodash'
@@ -17,7 +17,7 @@ import {
   Schedule,
   SessionSchedule,
   StartEventId,
-  StudySession
+  StudySession,
 } from '../../../types/scheduling'
 import { StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
@@ -26,11 +26,11 @@ import AssessmentList from './AssessmentList'
 import Duration from './Duration'
 import IntroInfo from './IntroInfo'
 import SchedulableSingleSessionContainer, {
-  defaultSchedule
+  defaultSchedule,
 } from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
-  SessionScheduleAction
+  SessionScheduleAction,
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import TimelinePlot from './TimelinePlot'
@@ -80,7 +80,7 @@ const Scheduler: FunctionComponent<
   const classes = useStyles()
 
   const [schedule, setSchedule] = React.useState({ ..._schedule })
-  console.log('scheduler:',_schedule)
+  console.log('scheduler:', _schedule)
 
   const getStartEventIdFromSchedule = (
     schedule: Schedule,
@@ -160,7 +160,13 @@ const Scheduler: FunctionComponent<
   }
 
   if (_.isEmpty(schedule.sessions)) {
-    return <Box textAlign="center" mx="auto"><ErrorDisplay>You need to create sessions before creating the schedule</ErrorDisplay></Box>
+    return (
+      <Box textAlign="center" mx="auto">
+        <ErrorDisplay>
+          You need to create sessions before creating the schedule
+        </ErrorDisplay>
+      </Box>
+    )
   }
 
   return (
@@ -192,7 +198,7 @@ const Scheduler: FunctionComponent<
               control={
                 <Duration
                   onChange={e =>
-                    updateData({ ...schedule, duration: e.target.value})
+                    updateData({ ...schedule, duration: e.target.value })
                   }
                   durationString={schedule.duration || ''}
                   unitLabel="study duration unit"
@@ -234,18 +240,16 @@ const Scheduler: FunctionComponent<
                   <AssessmentList
                     studySessionIndex={index}
                     studySession={session}
-                    onChangePerformanceOrder={(performanceOrder: PerformanceOrder) => {
-                      const schedule = {...session, performanceOrder}
+                    onChangePerformanceOrder={(
+                      performanceOrder: PerformanceOrder,
+                    ) => {
+                      const schedule = { ...session, performanceOrder }
 
                       scheduleUpdateFn({
                         type: ActionTypes.UpdateSessionSchedule,
                         payload: { sessionId: session.guid, schedule },
                       })
                     }}
-
-
-                  
-                   
                     performanceOrder={session.performanceOrder || 'sequential'}
                   />
                 </Box>

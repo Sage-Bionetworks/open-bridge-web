@@ -13,7 +13,7 @@ import {
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
 import { Schedule, StudySession } from '../../types/scheduling'
-import { StringDictionary, Study } from '../../types/types'
+import { StringDictionary, Study, StudyAppDesign } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
@@ -116,6 +116,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     } finally {
       setSaveLoader(false)
     }
+  }
+
+  const saveStudyAppDesign = async () => {
+    setSaveLoader(true)
+    // await StudyService.update
   }
 
   const changeSection = async (next: StudySection) => {
@@ -226,6 +231,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         onSave={() => saveStudySchedule()}
                         onUpdate={(schedule: Schedule) => {
                           setHasObjectChanged(true)
+                          console.log('the new schedule is', schedule)
                           setData({
                             ...builderInfo,
                             schedule: schedule,
@@ -289,9 +295,17 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
                         id={id}
-                        onUpdate={(_section: StudySection, data: any) => {
-                          console.log(_section)
+                        currentAppDesign={
+                          builderInfo.study.clientData.appDesign ||
+                          ({} as StudyAppDesign)
+                        }
+                        onUpdate={(data: StudyAppDesign) => {
                           // moveToNextSection(_section)
+                          builderInfo.study.clientData.appDesign = data
+                          setData({
+                            ...builderInfo,
+                            study: builderInfo.study,
+                          })
                         }}
                       >
                         {navButtons}
