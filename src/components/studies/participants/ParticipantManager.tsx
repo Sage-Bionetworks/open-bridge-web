@@ -8,7 +8,7 @@ import {
   Grid,
   Switch,
   Tab,
-  Tabs,
+  Tabs
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { FunctionComponent } from 'react'
@@ -23,7 +23,7 @@ import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
-  useStudyInfoDataState,
+  useStudyInfoDataState
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
 import { theme } from '../../../style/theme'
@@ -37,7 +37,7 @@ import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import {
   DialogButtonPrimary,
-  DialogButtonSecondary,
+  DialogButtonSecondary
 } from '../../widgets/StyledComponents'
 import AddParticipants from './AddParticipants'
 import DeleteDialog from './DeleteDialogContents'
@@ -473,8 +473,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               onAdded={() => {
                 setRefreshParticipantsToggle(prev => !prev)
               }}
-              isGenerateIds={study.clientData.generateIds}
-              enrollmentType={study.clientData.enrollmentType || 'ID'}
             ></AddParticipants>
           </>
           <Box py={0} pr={3} pl={2}>

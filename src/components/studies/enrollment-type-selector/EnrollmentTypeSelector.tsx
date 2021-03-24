@@ -82,7 +82,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     },
   },
 
-  firstColumn: {},
+  firstColumn: {
+    width: theme.spacing(21)
+  },
   heading: {
     padding: theme.spacing(0, 6),
     textAlign: 'center',
@@ -93,6 +95,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
   },
   notFirstColumn: {
+    width: theme.spacing(32),
     '& table th > span ': {
 
       textAlign: 'center',
@@ -162,7 +165,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<
     if (clientData.enrollmentType !== undefined) {
       studyClientData.enrollmentType = clientData.enrollmentType
       if (clientData.enrollmentType === 'PHONE') {
-        clientData.isGenerateIds = undefined
+        studyClientData.generateIds = undefined
       }
     }
     if (clientData.isGenerateIds !== undefined) {
@@ -184,13 +187,13 @@ const EnrollmentTypeSelector: React.FunctionComponent<
         )}
       </NavigationPrompt>
 
-      <Box pt={9} pr={11} pb={11} pl={14} bgcolor="#FAFAFA">
+      <Box pt={9} pr={12} pb={11} pl={6} bgcolor="#FAFAFA">
         <MTBHeadingH1>
           {' '}
           How will you enroll your participants into this study?{' '}
         </MTBHeadingH1>
 
-        <Box display="flex" mt={4} className={classes.container}>
+        <Box display="flex" mt={9} className={classes.container}>
           <Paper
             className={clsx(classes.column, classes.firstColumn)}
             elevation={2}
