@@ -299,6 +299,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           builderInfo.study.clientData.appDesign ||
                           ({} as StudyAppDesign)
                         }
+                        onSave={() => saveStudy(builderInfo.study)}
                         onUpdate={(data: StudyAppDesign) => {
                           // moveToNextSection(_section)
                           builderInfo.study.clientData.appDesign = data

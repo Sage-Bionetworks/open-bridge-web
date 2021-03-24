@@ -243,6 +243,7 @@ type UploadedFile = {
 export interface AppDesignProps {
   id: string
   currentAppDesign: StudyAppDesign
+  onSave: Function
 }
 
 function getPreviewForImage(file: File): PreviewFile {
@@ -292,6 +293,7 @@ const AppDesign: React.FunctionComponent<
   children,
   onUpdate,
   currentAppDesign,
+  onSave,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
@@ -522,7 +524,7 @@ const AppDesign: React.FunctionComponent<
                 </FormControl>
               </FormGroup>
               <Box textAlign="right">
-                <SaveButton onClick={() => alert('save')} />
+                <SaveButton onClick={() => onSave()} />
               </Box>
             </Subsection>
           </ol>
@@ -785,7 +787,7 @@ const AppDesign: React.FunctionComponent<
                 </FormControl>
               </FormGroup>
               <Box textAlign="right">
-                <SaveButton onClick={() => alert('save')} />
+                <SaveButton onClick={() => onSave()} />
               </Box>
             </Subsection>
           </ol>
