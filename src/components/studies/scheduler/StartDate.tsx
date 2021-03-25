@@ -13,12 +13,14 @@ import SchedulingFormSection from './SchedulingFormSection'
 export type SessionScheduleStartType = 'DAY1' | 'NDAYS_DAY1'
 export interface StartDateProps {
   delay?: string //ISO6801
+  sessionName: string,
   onChange: Function
 }
 
 const StartDate: React.FunctionComponent<StartDateProps> = ({
   delay,
   onChange,
+  sessionName,
 }: StartDateProps) => {
   const [startType, setStartType] = React.useState<SessionScheduleStartType>(delay? 'NDAYS_DAY1': 'DAY1')
   const changeStartDate = (type: SessionScheduleStartType) => {
@@ -29,9 +31,9 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
   }
 
   return (
-    <SchedulingFormSection label={'Session Starts On:'}>
+    <SchedulingFormSection label={`${sessionName} starts on:`} >
       <RadioGroup
-        aria-label="Start Date"
+        aria-label="Session Starts On"
         name="startDate"
         value={startType}
         onChange={e =>

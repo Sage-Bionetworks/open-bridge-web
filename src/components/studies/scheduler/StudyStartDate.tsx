@@ -39,6 +39,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
   return (
     <SchedulingFormSection
       label={label}
+      altLabel={'Study Start Date'}
       border={false}
       style={{ ...style, marginLeft: '324px' }}
     >

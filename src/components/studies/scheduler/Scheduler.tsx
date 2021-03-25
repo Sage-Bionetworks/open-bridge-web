@@ -4,7 +4,7 @@ import {
   createStyles,
   FormControlLabel,
   makeStyles,
-  Theme
+  Theme,
 } from '@material-ui/core'
 import SaveIcon from '@material-ui/icons/Save'
 import _ from 'lodash'
@@ -17,20 +17,21 @@ import {
   Schedule,
   SessionSchedule,
   StartEventId,
-  StudySession
+  StudySession,
 } from '../../../types/scheduling'
 import { StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
+import Loader from '../../widgets/Loader'
 import AssessmentList from './AssessmentList'
 import Duration from './Duration'
 import IntroInfo from './IntroInfo'
 import SchedulableSingleSessionContainer, {
-  defaultSchedule
+  defaultSchedule,
 } from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
-  SessionScheduleAction
+  SessionScheduleAction,
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import TimelinePlot from './TimelinePlot'
@@ -80,7 +81,7 @@ const Scheduler: FunctionComponent<
   const classes = useStyles()
 
   const [schedule, setSchedule] = React.useState({ ..._schedule })
-  console.log('scheduler:',_schedule)
+  //console.log('scheduler:',_schedule)
 
   const getStartEventIdFromSchedule = (
     schedule: Schedule,
@@ -160,12 +161,19 @@ const Scheduler: FunctionComponent<
   }
 
   if (_.isEmpty(schedule.sessions)) {
-    return <Box textAlign="center" mx="auto"><ErrorDisplay>You need to create sessions before creating the schedule</ErrorDisplay></Box>
+    return (
+      <Box textAlign="center" mx="auto">
+        <ErrorDisplay>
+          You need to create sessions before creating the schedule
+        </ErrorDisplay>
+      </Box>
+    )
   }
 
   return (
     <>
-      <NavigationPrompt when={hasObjectChanged}>
+    <Loader reqStatusLoading={saveLoader} key="loader"></Loader>
+      <NavigationPrompt when={hasObjectChanged} key="prompt">
         {({ onConfirm, onCancel }) => (
           <ConfirmationDialog
             isOpen={hasObjectChanged}
@@ -182,8 +190,8 @@ const Scheduler: FunctionComponent<
 
       {/**/}
       {getStartEventIdFromSchedule(schedule) && (
-        <Box textAlign="left">
-          <div className={classes.scheduleHeader}>
+        <Box textAlign="left" key="content">
+          <div className={classes.scheduleHeader} key="intro">
             <FormControlLabel
               classes={{ label: classes.labelDuration }}
               label="Study duration:"
@@ -192,7 +200,7 @@ const Scheduler: FunctionComponent<
               control={
                 <Duration
                   onChange={e =>
-                    updateData({ ...schedule, duration: e.target.value})
+                    updateData({ ...schedule, duration: e.target.value })
                   }
                   durationString={schedule.duration || ''}
                   unitLabel="study duration unit"
@@ -212,7 +220,7 @@ const Scheduler: FunctionComponent<
               </Button>
             )}
           </div>
-          <Box bgcolor="#fff" p={2} mt={3}>
+          <Box bgcolor="#fff" p={2} mt={3} key="scheduler">
             <TimelinePlot something=""></TimelinePlot>
             <StudyStartDate
               style={{ marginTop: '16px' }}
@@ -229,23 +237,21 @@ const Scheduler: FunctionComponent<
             />
 
             {schedule.sessions.map((session, index) => (
-              <Box mb={2} display="flex">
+              <Box mb={2} display="flex" key={session.guid}>
                 <Box className={classes.assessments}>
                   <AssessmentList
                     studySessionIndex={index}
                     studySession={session}
-                    onChangePerformanceOrder={(performanceOrder: PerformanceOrder) => {
-                      const schedule = {...session, performanceOrder}
+                    onChangePerformanceOrder={(
+                      performanceOrder: PerformanceOrder,
+                    ) => {
+                      const schedule = { ...session, performanceOrder }
 
                       scheduleUpdateFn({
                         type: ActionTypes.UpdateSessionSchedule,
                         payload: { sessionId: session.guid, schedule },
                       })
                     }}
-
-
-                  
-                   
                     performanceOrder={session.performanceOrder || 'sequential'}
                   />
                 </Box>

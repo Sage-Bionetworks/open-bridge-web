@@ -1,0 +1,76 @@
+{
+    "ownerId": "string",
+    "name": "string",
+    "guid": "string",
+    "duration": "P52W",
+    "published": true,
+    "deleted": true,
+    "clientData": {
+      "additionalProp1": {}
+    },
+    "sessions": [
+      {
+        "guid": "string",
+        "name": "string",
+        "labels": [
+          {
+            "lang": "string",
+            "value": "string",
+            "type": "string"
+          }
+        ],
+        "delay": "P2D",
+        "interval": "P3D",
+        "startEventId": "clinic_visit",
+        
+        "occurrences": "55",
+        "performanceOrder": "participant_choice",
+        "timeWindows": [
+          {
+            "guid": "string",
+            "startTime": "string",
+            "expiration": "P7D",
+            "persistent": true,
+            "type": "string"
+          }
+        ],
+        "assessments": [
+          {
+            "appId": "string",
+            "guid": "string",
+            "title": "string",
+            "identifier": "string",
+            "minutesToComplete": 0,
+            "labels": [
+              {
+                "lang": "string",
+                "value": "string",
+                "type": "string"
+              }
+            ],
+            "type": "string"
+          }
+        ],
+        "notifyAt": "participant_choice",
+        "remindAt": "after_window_start",
+        "reminderPeriod": "PT10M",
+        "allowSnooze": false,
+        "messages": [
+          {
+            "lang": "string",
+            "subject": "string",
+            "message": "string",
+            "type": "string"
+          }
+        ],
+        "type": "string"
+      }
+    ],
+    "createdOn": "2021-03-18T17:14:40.907Z",
+    "modifiedOn": "2021-03-18T17:14:40.907Z",
+    "version": 0,
+    "type": "string"
+  }
+
+  
+  

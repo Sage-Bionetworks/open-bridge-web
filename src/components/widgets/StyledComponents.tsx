@@ -1,4 +1,10 @@
-import { Button, InputBase, InputLabel, Select } from '@material-ui/core'
+import {
+  Button,
+  FormControlLabel,
+  InputBase,
+  InputLabel,
+  Select
+} from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import { latoFont, poppinsFont } from '../../style/theme'
 
@@ -128,8 +134,8 @@ export const SimpleTextInput = withStyles(theme => ({
     },
 
     '&:not(:last-child)': {
-      marginBottom: theme.spacing(2)
-    }
+      marginBottom: theme.spacing(2),
+    },
   },
   multiline: {
     padding: 0,
@@ -139,7 +145,7 @@ export const SimpleTextInput = withStyles(theme => ({
     position: 'relative',
     backgroundColor: theme.palette.common.white,
     fontSize: '14px',
-    width: 'auto',
+    width: '100%',
     padding: '10px 12px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     fontFamily: [latoFont, 'Roboto'].join(','),
@@ -148,3 +154,12 @@ export const SimpleTextInput = withStyles(theme => ({
     },
   },
 }))(InputBase)
+
+export const FormControlLabelHidden = withStyles(theme => ({
+  root: {
+    margin: 0,
+    '& > span[class*=MuiFormControlLabel-]': {
+      display: 'none',
+    },
+  },
+}))(FormControlLabel)

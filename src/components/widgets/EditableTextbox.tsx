@@ -64,7 +64,7 @@ export const Editable: FunctionComponent<EditableProps> = ({
   }
 
   return (
-    <section {...props}>
+    <div {...props}>
       {isEditing ? (
         <div
           onBlur={() => setEditing(false)}
@@ -79,7 +79,7 @@ export const Editable: FunctionComponent<EditableProps> = ({
           </WrapperElement>
         </div>
       )}
-    </section>
+    </div>
   )
 }
 

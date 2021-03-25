@@ -9,6 +9,8 @@ import participants_icon from '../../assets/participants_icon.svg'
 import { ThemeType } from '../../style/theme'
 import { Study } from '../../types/types'
 import LiveIcon from './LiveIcon'
+import clsx from 'clsx'
+import moment from 'moment'
 
 const DraftIcon = () => {
   return (
@@ -122,35 +124,7 @@ const cancelPropagation = (e: React.MouseEvent) => {
 }
 
 const getFormattedDate = (date: Date) => {
-  const months = [
-    'Jan.',
-    'Feb.',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'Aug.',
-    'Sept.',
-    'Oct.',
-    'Nov.',
-    'Dec.',
-  ]
-  const year = date.getFullYear()
-  let month = months[date.getMonth()]
-  let day = date.getDate().toString()
-  day = day.length > 1 ? day : '0' + day
-  return `${month} ${day}, ${year} @ ${getFormattedTime(date)}`
-}
-
-const getFormattedTime = (date: Date) => {
-  let hours = date.getHours()
-  let minutes = date.getMinutes()
-  const timeOfDay = hours >= 12 ? 'pm' : 'am'
-  hours = hours % 12
-  hours = hours ? hours : 12
-  const minutesToString = minutes < 10 ? '0' + minutes : minutes
-  return `${hours}:${minutesToString}${timeOfDay}`
+  return moment(date).format('MMM D, YYYY @ h:mma')
 }
 
 const CardBottom: FunctionComponent<{
@@ -288,9 +262,7 @@ const StudyCard: FunctionComponent<StudyCardProps & NewlyAddedProp> = ({
   return (
     <>
       <Card
-        className={`${classes.root} ${
-          isNewlyAddedStudy ? classes.isJustAdded : ''
-        }`}
+        className={clsx(classes.root, isNewlyAddedStudy && classes.isJustAdded)}
         onClick={e => {
           if (isRename) {
             cancelPropagation(e)

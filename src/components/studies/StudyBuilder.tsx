@@ -8,12 +8,13 @@ import { useUserSessionDataState } from '../../helpers/AuthContext'
 import {
   StudyInfoData,
   useStudyInfoDataDispatch,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
+import { setBodyClass } from '../../helpers/utility'
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
 import { Schedule, StudySession } from '../../types/scheduling'
-import { StringDictionary, Study } from '../../types/types'
+import { StringDictionary, Study, StudyAppDesign } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
@@ -48,7 +49,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     //backgroundColor: theme.palette.background.default,
   },
   mainAreaNormal: {
-    width: `${280 * 3 + 16 * 3}px`,
+    width: `${280 * 3 + 16 * 4}px`,
     [theme.breakpoints.down('md')]: {
       width: `${280 * 2 + 16 * 2}px`,
     },
@@ -118,8 +119,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     }
   }
 
-
-
   const changeSection = async (next: StudySection) => {
     if (section === next) {
       return
@@ -157,6 +156,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       await saveFn()
     }
     window.history.pushState(null, '', next)
+    setBodyClass(next)
     setSection(next)
   }
 
@@ -167,7 +167,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       onNavigate={(section: StudySection) => changeSection(section)}
     ></NavButtons>
   )
-
   return (
     <>
       <Box bgcolor="white" pt={9} pb={2} pl={open ? 29 : 15}>
@@ -194,7 +193,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
               [classes.mainAreaNormal]: open,
               [classes.mainAreaWider]:
                 open &&
-                ['branding', 'scheduler', 'enrollment-type-selector'].includes(
+                ['branding', 'scheduler'].includes(
                   section,
                 ),
               [classes.mainAreaWide]: !open,
@@ -228,6 +227,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         onSave={() => saveStudySchedule()}
                         onUpdate={(schedule: Schedule) => {
                           setHasObjectChanged(true)
+                          console.log('the new schedule is', schedule)
                           setData({
                             ...builderInfo,
                             schedule: schedule,
@@ -291,9 +291,25 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
                         id={id}
-                        onUpdate={(_section: StudySection, data: any) => {
-                          console.log(_section)
+                        currentAppDesign={
+                          builderInfo.study.clientData.appDesign ||
+                          ({} as StudyAppDesign)
+                        }
+                        onSave={() => {
+                          saveStudy(builderInfo.study)
+                          console.log(
+                            'saving logo as',
+                            builderInfo.study.clientData.appDesign?.logo,
+                          )
+                        }}
+                        onUpdate={(data: StudyAppDesign) => {
                           // moveToNextSection(_section)
+                          setHasObjectChanged(true)
+                          builderInfo.study.clientData.appDesign = data
+                          setData({
+                            ...builderInfo,
+                            study: builderInfo.study,
+                          })
                         }}
                       >
                         {navButtons}

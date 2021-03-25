@@ -1,7 +1,7 @@
 import { Button, ButtonProps } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import SaveIcon from '@material-ui/icons/Save'
 import React from 'react'
+import { ReactComponent as SaveIcon } from '../../assets/save_icon.svg'
 import { latoFont, ThemeType } from '../../style/theme'
 
 interface StyleProps {
@@ -16,7 +16,7 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
     fontFamily: latoFont,
     fontSize: '14px',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-    padding: theme.spacing(2),
+    padding: theme.spacing(.625, 2),
 
     '&:hover': {
       fontWeight: 'bolder',
