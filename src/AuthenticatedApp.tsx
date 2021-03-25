@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react'
-import { matchPath, Route, RouteComponentProps, Switch } from 'react-router-dom'
+import { matchPath, Route, Switch } from 'react-router-dom'
 import './App.css'
 import StudyTopNav from './components/studies/StudyTopNav'
 import TopNav from './components/widgets/AppTopNav'
@@ -22,7 +22,7 @@ const getParams = (pathname: string): { id?: string; section?: string } => {
 }
 
 const AuthenticatedApp: FunctionComponent<
-  { token: string } & RouteComponentProps
+  { token: string }
 > = ({ token }) => {
   const [studyId, setStudyId] = React.useState<string | undefined>()
   const [studySection, setStudySection] = React.useState<string | undefined>()
