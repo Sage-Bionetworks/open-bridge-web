@@ -240,8 +240,8 @@ export const isInvalidPhone = (phone: string): boolean => {
 export const setBodyClass = (next?: string) => {
   console.log('next', next)
   if (next === 'launch') {
-    window.document.body.classList.add('home')
-  } else {
-    window.document.body.classList.remove('home')
-  }
+    window.document.body.classList.add("home");
+    } else {
+      window.document.body.classList.remove("home");
+    }
 }

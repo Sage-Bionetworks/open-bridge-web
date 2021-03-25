@@ -291,7 +291,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<
                           aria-label="How to generate Id"
                           name="generateIds"
                           style={{ marginTop: '8px' }}
-                          value={study.clientData.generateIds}
+                          value={study.clientData.generateIds || false}
                           onClick={e => e.stopPropagation()}
                           onChange={e => {
                             e.preventDefault()
