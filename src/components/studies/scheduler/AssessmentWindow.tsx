@@ -3,6 +3,7 @@ import {
   Checkbox,
   FormControlLabel,
   IconButton,
+  makeStyles,
   Paper
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Close'
@@ -16,6 +17,34 @@ import { StringDictionary } from '../../../types/types'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
+
+
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    backgroundColor: '#ECF1F4',
+    paddingBottom: theme.spacing(2),
+    marginBottom: theme.spacing(2)
+  },
+  windowNumber: {
+    backgroundColor: theme.palette.primary.dark,
+    height:theme.spacing(6),
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: theme.spacing(6),
+    color: '#000',
+  },
+  smallLabel: {
+    minWidth: '200px',
+    maxWidth: '300px',
+    '& span': {
+      display: 'block',
+      fontSize: '12px'
+    }
+  }
+}))
+
 
 export interface AssessmentWindowProps {
   window: AssessmentWindowType
@@ -42,22 +71,15 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
   onDelete,
   index,
 }: AssessmentWindowProps) => {
+
+  const classes = useStyles()
   return (
     <Paper
-      style={{
-        backgroundColor: '#bfd9e833',
-        paddingBottom: '16px',
-        marginBottom: '16px',
-      }}
+     className={classes.root}
       elevation={2}
     >
       <Box position="relative">
-        <Box
-          bgcolor="#BCD5E4"
-          height="48px"
-          textAlign="center"
-          lineHeight="48px"
-          width="48px"
+        <Box className={classes.windowNumber}
         >
           {index + 1}.
         </Box>
@@ -70,6 +92,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
           <DeleteIcon></DeleteIcon>
         </IconButton>
       </Box>
+      <Box mx="auto" width="auto">
       <SchedulingFormSection
         label={'Start'}
         variant="small"
@@ -117,6 +140,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
         style={{ padding: '0 16px' }}
       >
         <FormControlLabel
+        style={{alignItems: 'flex-start'}}
           control={
             <Checkbox
               value={window.persistent}
@@ -129,9 +153,10 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
               }}
             />
           }
-          label="Allow participant to complete this session as often as they like within the window"
+          label={<div className={classes.smallLabel}><strong>Persistent Mode</strong><br/><span>Allow participant to complete this session as often as they like within the window of time</span></div>}
         />
       </SchedulingFormSection>
+      </Box>
     </Paper>
   )
 }

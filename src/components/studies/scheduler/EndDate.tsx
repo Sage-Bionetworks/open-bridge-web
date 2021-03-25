@@ -1,20 +1,21 @@
 import { FormControlLabel, Radio, RadioGroup } from '@material-ui/core'
 import React from 'react'
 import SmallTextBox from '../../widgets/SmallTextBox'
+import { FormControlLabelHidden } from '../../widgets/StyledComponents'
 import SchedulingFormSection from './SchedulingFormSection'
 
 export interface EndDateProps {
-  occurances?: number
+  occurrences?: number
   onChange: Function
 }
-export type SessionScheduleEndType = 'END_STUDY' | 'N_OCCURENCES'
+export type SessionScheduleEndType = 'END_STUDY' | 'N_OCCURRENCES'
 
 const EndDate: React.FunctionComponent<EndDateProps> = ({
-  occurances,
+  occurrences,
   onChange,
 }: EndDateProps) => {
   const [endType, setEndType] = React.useState<SessionScheduleEndType>(
-    occurances ? 'N_OCCURENCES' : 'END_STUDY',
+    occurrences ? 'N_OCCURRENCES' : 'END_STUDY',
   )
 
   const changeEndDate = (type: SessionScheduleEndType) => {
@@ -29,8 +30,8 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
   return (
     <SchedulingFormSection label={'End after:'}>
       <RadioGroup
-        aria-label="End Date"
-        name="endDate"
+        aria-label="End after"
+        name="endAfter"
         value={endType}
         onChange={e => changeEndDate(e.target.value as SessionScheduleEndType)}
       >
@@ -43,15 +44,18 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
         <FormControlLabel
           control={
             <>
-              <Radio value={'N_OCCURENCES'} />{' '}
+             <Radio value={'N_OCCURRENCES'} />{' '}
+             <FormControlLabelHidden  label="number of occurrences" control={
               <SmallTextBox
-                onFocus={() => changeEndDate('N_OCCURENCES')}
+                onFocus={() => changeEndDate('N_OCCURRENCES')}
                 color="secondary"
-                id="standard-basic"
+                id="occurrences"
+                isLessThanOneAllowed={false}
+                
                 style={{ marginRight: '10px' }}
                 onChange={e => onChange(e.target.value)}
-                value={occurances || ''}
-              />
+                value={occurrences || ''}
+              />}/>
             </>
           }
           label="times"

@@ -2,9 +2,11 @@ import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import './App.css'
 import TopNav from './components/widgets/AppTopNav'
+import { setBodyClass } from './helpers/utility'
 import PublicRoutes from './routes_public'
 
 function UnauthenticatedApp() {
+  setBodyClass()
   return (
     <>
       <TopNav routes={PublicRoutes} />

@@ -6,7 +6,6 @@ import {
   makeStyles,
   TextField,
 } from '@material-ui/core'
-import SaveIcon from '@material-ui/icons/Save'
 import _ from 'lodash'
 import React, { FunctionComponent } from 'react'
 import { ThemeType } from '../../../style/theme'
@@ -15,10 +14,11 @@ import {
   NotificationFreqEnum,
 
   //NotificationReminder,
-  //Reoccurance as ReoccuranceType,
+  //Reoccurence as ReoccurenceType,
   SessionSchedule,
   StudySession,
 } from '../../../types/scheduling'
+import SaveButton from '../../widgets/SaveButton'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import AssessmentWindow from './AssessmentWindow'
 import EndDate from './EndDate'
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   formSection: {
     // backgroundColor: '#acacac',
     padding: `${theme.spacing(3)}px  ${theme.spacing(4)}px 0px ${theme.spacing(
-      4,
+      0/*4,*/
     )}px`,
     textAlign: 'left',
     // marginBottom: theme.spacing(1),
@@ -133,11 +133,12 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   }
 
   return (
-    <form noValidate autoComplete="off">
-      <Box bgcolor="#F8F8F8" flexGrow="1">
+    <Box bgcolor="#F8F8F8" flexGrow="1" pb={2.5} pl={4}>
+      <form noValidate autoComplete="off">
         <Box className={classes.formSection}>
           <StartDate
             delay={schedulableSession.delay}
+            sessionName={studySession.name}
             onChange={(delay: string | undefined) => {
               updateSessionSchedule({ ...schedulableSession, delay })
             }}
@@ -145,9 +146,9 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         </Box>
         <Box className={classes.formSection}>
           <EndDate
-            occurances={schedulableSession.occurances}
-            onChange={(occurances: number | undefined) =>
-              updateSessionSchedule({ ...schedulableSession, occurances })
+            occurrences={schedulableSession.occurrences}
+            onChange={(occurrences: number | undefined) =>
+              updateSessionSchedule({ ...schedulableSession, occurrences })
             }
           ></EndDate>
         </Box>
@@ -164,8 +165,8 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         </Box>
 
         <Box className={classes.formSection}>
-          <SchedulingFormSection label={'Session Window:'}>
-            <Box>
+          <SchedulingFormSection label="Session Window:">
+            <Box flexGrow={1}>
               {schedulableSession.timeWindows?.map((window, index) => (
                 <AssessmentWindow
                   index={index}
@@ -185,10 +186,10 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               </Button>
             </Box>
           </SchedulingFormSection>
-          <SchedulingFormSection label={'Session Notifications'}>
+          <SchedulingFormSection label="Session Notifications:">
             <Box>
               <SchedulingFormSection
-                label={'Notify Participant'}
+                label={'Notify participant:'}
                 variant="small"
                 border={false}
               >
@@ -220,7 +221,12 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   })
                 }
               ></ReminderNotification>
-              <SchedulingFormSection label={''} variant="small" border={false}>
+              <SchedulingFormSection
+                label="Allow to snooze"
+                isHideLabel={true}
+                variant="small"
+                border={false}
+              >
                 <FormControlLabel
                   style={{ display: 'block' }}
                   control={
@@ -256,7 +262,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               </SchedulingFormSection>
 
               <SchedulingFormSection
-                label={'Body text(40 character limit)'}
+                label={'Body text (40 character limit)'}
                 variant="small"
                 border={false}
               >
@@ -275,19 +281,11 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               </SchedulingFormSection>
             </Box>
           </SchedulingFormSection>
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            style={{ marginBottom: '16px' }}
-            onClick={() => onSaveSessionSchedule()}
-            startIcon={<SaveIcon />}
-          >
-            Save Changes
-          </Button>
+     
         </Box>
-      </Box>
-    </form>
+        <SaveButton   onClick={() => onSaveSessionSchedule()}></SaveButton>
+      </form>
+    </Box>
   )
 }
 

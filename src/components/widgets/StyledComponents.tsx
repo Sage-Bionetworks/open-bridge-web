@@ -1,4 +1,10 @@
-import { Button, InputBase, InputLabel, Select } from '@material-ui/core'
+import {
+  Button,
+  FormControlLabel,
+  InputBase,
+  InputLabel,
+  Select
+} from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import { latoFont, poppinsFont } from '../../style/theme'
 
@@ -148,3 +154,12 @@ export const SimpleTextInput = withStyles(theme => ({
     },
   },
 }))(InputBase)
+
+export const FormControlLabelHidden = withStyles(theme => ({
+  root: {
+    margin: 0,
+    '& > span[class*=MuiFormControlLabel-]': {
+      display: 'none',
+    },
+  },
+}))(FormControlLabel)

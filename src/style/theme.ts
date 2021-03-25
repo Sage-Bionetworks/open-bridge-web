@@ -1,8 +1,10 @@
 /*import { createMuiTheme, Theme } from '@material-ui/core'
 /*ag*/
-import { Theme, unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core'
+import {
+  Theme,
+  unstable_createMuiStrictModeTheme as createMuiTheme
+} from '@material-ui/core'
 import { CSSProperties } from '@material-ui/core/styles/withStyles'
-
 
 type cssGlobalClasses = {
   [key: string]: CSSProperties
@@ -58,6 +60,9 @@ const globals: cssGlobalClasses = {
     flexWrap: 'wrap',
     overflowWrap: 'normal',
   },*/
+  '.home': {
+    backgroundColor: '#fff',
+  },
   listReset: {
     margin: '0',
     padding: '0',
@@ -72,19 +77,45 @@ const theme: Theme = createMuiTheme({
       '@global': globals,
     },
     MuiButton: {
-
       containedPrimary: {
-        backgroundColor: '#000',
+        backgroundColor: '#3a3a3a',
+        borderRadius: '0px',
+        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+        fontFamily: latoFont,
+
+        fontWeight: 600,
+        fontSize: '14px',
+        lineHeight: '17px',
+        padding: '16px',
+
+        color: '#FCFCFC',
         '&:hover': {
           backgroundColor: '#634848',
+        },
+      },
+      outlinedPrimary: {
+        backgroundColor: '#fff',
+        borderRadius: '0px',
+        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+        border: '1px solid black',
+        fontFamily: latoFont,
+
+        fontWeight: 600,
+        fontSize: '14px',
+        lineHeight: '17px',
+        padding: '16px',
+
+        color: '#3a3a3a',
+        '&:hover': {
+          backgroundColor: '#fafaf1',
+          borderColor: '#000',
         },
       },
     },
     MuiPaper: {
       root: {
-        color: '#1c1c1c'
-      }
-
+        color: '#1c1c1c',
+      },
     },
     MuiSwitch: {
       colorPrimary: {
@@ -109,9 +140,9 @@ const theme: Theme = createMuiTheme({
     },
     MuiDialogActions: {
       root: {
-        padding: SPACE_UNIT * 3
-      }
-    }
+        padding: SPACE_UNIT * 3,
+      },
+    },
   },
   props: {
     // Name of the component ⚛️
@@ -154,7 +185,7 @@ const theme: Theme = createMuiTheme({
       black: '#2E2E2E',
     },
     background: {
-      default: '#E5E5E5', 
+      default: '#E5E5E5',
       paper: '#fff',
     },
     text: {
@@ -163,11 +194,11 @@ const theme: Theme = createMuiTheme({
     },
     secondary: {
       main: '#6e818a',
-      contrastText: '#E7BDBD' //pale red
+      contrastText: '#E7BDBD', //pale red
     },
     primary: {
       main: '#2196f3',
-      dark: '#BCD5E4'
+      dark: '#BCD5E4',
     },
     error: {
       main: '#EE6070',
