@@ -19,6 +19,7 @@ import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import { MTBHeading } from '../widgets/Headings'
 import Loader from '../widgets/Loader'
 import StudyCard from './StudyCard'
+import _ from 'lodash'
 
 type StudyListOwnProps = {}
 
@@ -137,8 +138,10 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   }
 
   if (status === 'DRAFT') {
+    // _.orderBy(displayStudies, ['modifiedOn'], 'desc')
     displayStudies.sort((a, b) => sortStudies(a, b, 'LAST_EDIT'))
   } else {
+    // _.orderBy(displayStudies, ['createdOn'], 'desc')
     displayStudies.sort((a, b) => sortStudies(a, b, 'CREATION'))
   }
   return (
