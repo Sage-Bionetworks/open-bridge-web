@@ -170,7 +170,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       onNavigate={(section: StudySection) => changeSection(section)}
     ></NavButtons>
   )
-
   return (
     <>
       <Box bgcolor="white" pt={9} pb={2} pl={open ? 29 : 15}>
@@ -299,9 +298,16 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           builderInfo.study.clientData.appDesign ||
                           ({} as StudyAppDesign)
                         }
-                        onSave={() => saveStudy(builderInfo.study)}
+                        onSave={() => {
+                          saveStudy(builderInfo.study)
+                          console.log(
+                            'saving logo as',
+                            builderInfo.study.clientData.appDesign?.logo,
+                          )
+                        }}
                         onUpdate={(data: StudyAppDesign) => {
                           // moveToNextSection(_section)
+                          setHasObjectChanged(true)
                           builderInfo.study.clientData.appDesign = data
                           setData({
                             ...builderInfo,

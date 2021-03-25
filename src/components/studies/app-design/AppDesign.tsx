@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import ReactColorPicker from '@super-effective/react-color-picker'
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
 import { ReactComponent as PhoneBottomImg } from '../../../assets/appdesign/phone_buttons.svg'
@@ -23,6 +23,7 @@ import {
 import {
   StudyBuilderComponentProps,
   StudyAppDesign,
+  PreviewFile,
 } from '../../../types/types'
 import {
   MTBHeadingH1,
@@ -36,7 +37,6 @@ import {
 } from '../../widgets/StyledComponents'
 import StudySummaryRoles from './StudySummaryRoles'
 import ContactInformation from './ContactInformation'
-import { ColorLensTwoTone } from '@material-ui/icons'
 
 const imgHeight = 70
 
@@ -150,12 +150,28 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     justifyContent: 'space-between',
     wordWrap: 'break-word',
   },
+  phoneOutline: {
+    borderRight: '2px solid black',
+    borderLeft: '2px solid black',
+    minHeight: '521px',
+  },
   phoneInner: {
-    marginLeft: '9px',
-    marginRight: theme.spacing(1),
+    marginLeft: '6px',
+    marginRight: theme.spacing(0.5),
     padding: theme.spacing(4),
     textAlign: 'left',
-    height: `521px`,
+    minHeight: `521px`,
+    borderRight: '3px solid black',
+    borderLeft: '3px solid black',
+  },
+  phoneInnterBottom: {
+    marginLeft: '5px',
+    marginRight: theme.spacing(0.26),
+    padding: theme.spacing(4),
+    textAlign: 'left',
+    minHeight: `521px`,
+    borderRight: '4px solid black',
+    borderLeft: '4px solid black',
   },
   phoneBottom: {
     height: '70px',
@@ -227,13 +243,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
 }))
 
-type PreviewFile = {
-  file: File
-  name: string
-  size: number
-  body?: string
-}
-
 type UploadedFile = {
   success: boolean
   fileName: string
@@ -275,10 +284,15 @@ const PhoneTopBar: React.FunctionComponent<{
   previewFile?: PreviewFile
 }> = ({ color = 'transparent', previewFile }) => {
   const classes = useStyles()
+  // console.log('the body of the current file image is', previewFile?.body)
   return (
     <div className={classes.phoneTopBar} style={{ backgroundColor: color }}>
       {previewFile && (
-        <img src={previewFile.body} style={{ height: `${imgHeight}px` }} />
+        <img
+          src={previewFile.body}
+          style={{ height: `${imgHeight}px` }}
+          alt="study-logo"
+        />
       )}
     </div>
   )
@@ -299,60 +313,34 @@ const AppDesign: React.FunctionComponent<
 
   const classes = useStyles()
 
-  // color is not changing for some reason even tough setcolor is being callsed
-  const [color, setColor] = useState<string | undefined>(
-    currentAppDesign.backgroundColor || '#6040FF',
+  const [previewFile, setPreviewFile] = useState<PreviewFile>(
+    currentAppDesign.logo || undefined,
   )
-  const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [logo, setLogo] = useState()
-  const [header, setHeader] = useState(
-    currentAppDesign.welcomeScreenHeader || '',
-  )
-  const [bodyCopy, setBodyCopy] = useState(
-    currentAppDesign.welcomeScreenBody || '',
-  )
-  const [signature, setSignature] = useState(
-    currentAppDesign.welcomeScreenSignature || '',
-  )
-  const [titleOfStudy, setTitleOfStudy] = useState<string>(
-    currentAppDesign.studyTitle || '',
-  )
-  const [studySummaryBodyText, setStudySummaryBodyText] = useState<string>(
-    currentAppDesign.studySummaryBody || '',
-  )
+
   const [
-    leadPrincipleInvestigator,
-    setLeadPrincipleInvestigator,
-  ] = useState<String>(currentAppDesign.leadPrincicpleInvestigator || '')
-  const [institution, setInstitution] = useState<String>(
-    currentAppDesign.institution || '',
-  )
-  const [funder, setFunder] = useState<string>(currentAppDesign.funder || '')
-  const [IRBApprovalNumber, setIRBApprovalNumber] = useState<string>(
-    currentAppDesign.IRBApprovalNumber || '',
-  )
-  const [contactLead, setContactLead] = useState<string>(
-    currentAppDesign.contactLead || '',
-  )
-  const [roleInStudy, setRoleInStudy] = useState<string>(
-    currentAppDesign.contactLeadRoleInStudy || '',
-  )
-  const [contactPhoneNumber, setContactPhoneNumber] = useState<string>(
-    currentAppDesign.contactLeadPhoneNumber || '',
-  )
-  const [contactEmail, setContactEmail] = useState<string>(
-    currentAppDesign.contactLeadEmail || '',
-  )
-  const [nameOfEthicsBoard, setNameOfEthicsBoard] = useState<string>(
-    currentAppDesign.nameOfEthicsBoard || '',
-  )
-  const [ethicsBoardPhoneNumber, setEthicsBoardPhoneNumber] = useState<string>(
-    currentAppDesign.ethicsBoardPhoneNumber || '',
-  )
-  const [ethicsBoardEmail, setEthicsBoardEmail] = useState<string>(
-    currentAppDesign.ethicsBoardEmail || '',
-  )
+    appDesignProperties,
+    setAppDesignProperties,
+  ] = useState<StudyAppDesign>({
+    logo: previewFile,
+    backgroundColor: currentAppDesign.backgroundColor || '#6040FF',
+    welcomeScreenHeader: currentAppDesign.welcomeScreenHeader || '',
+    welcomeScreenBody: currentAppDesign.welcomeScreenBody || '',
+    welcomeScreenSignature: currentAppDesign.welcomeScreenSignature || '',
+    studyTitle: currentAppDesign.studyTitle || '',
+    studySummaryBody: currentAppDesign.studySummaryBody || '',
+    leadPrincipleInvestigator: currentAppDesign.leadPrincipleInvestigator || '',
+    institution: currentAppDesign.institution || '',
+    funder: currentAppDesign.funder || '',
+    IRBApprovalNumber: currentAppDesign.IRBApprovalNumber || '',
+    contactLead: currentAppDesign.contactLead || '',
+    contactLeadRoleInStudy: currentAppDesign.contactLeadRoleInStudy || '',
+    contactLeadPhoneNumber: currentAppDesign.contactLeadPhoneNumber || '',
+    contactLeadEmail: currentAppDesign.contactLeadEmail || '',
+    nameOfEthicsBoard: currentAppDesign.nameOfEthicsBoard || '',
+    ethicsBoardPhoneNumber: currentAppDesign.ethicsBoardPhoneNumber || '',
+    ethicsBoardEmail: currentAppDesign.ethicsBoardEmail || '',
+  })
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     event.persist()
@@ -360,32 +348,18 @@ const AppDesign: React.FunctionComponent<
       return
     }
     const file = event.target.files[0]
-    setPreviewFile(getPreviewForImage(file))
+    const previewForImage = getPreviewForImage(file)
+    setPreviewFile(previewForImage)
   }
 
   const updateAppDesignInfo = () => {
-    const info = {
-      logo: '',
-      backgroundColor: color,
-      welcomeScreenHeader: header,
-      welcomeScreenBody: bodyCopy,
-      welcomeScreenSignature: signature,
-      studyTitle: titleOfStudy,
-      studySummaryBody: studySummaryBodyText,
-      leadPrincicpleInvestigator: leadPrincipleInvestigator,
-      institution: institution,
-      funder: funder,
-      IRBApprovalNumber: IRBApprovalNumber,
-      contactLead: contactLead,
-      contactLeadRoleInStudy: roleInStudy,
-      contactLeadPhoneNumber: contactPhoneNumber,
-      contactLeadEmail: contactEmail,
-      nameOfEthicsBoard: nameOfEthicsBoard,
-      ethicsBoardPhoneNumber: ethicsBoardPhoneNumber,
-      ethicsBoardEmail: ethicsBoardEmail,
-    } as StudyAppDesign
-    onUpdate(info)
+    onUpdate(appDesignProperties)
   }
+
+  useEffect(() => {
+    updateAppDesignInfo()
+    onSave()
+  }, [previewFile])
 
   return (
     <Box className={classes.root}>
@@ -445,7 +419,6 @@ const AppDesign: React.FunctionComponent<
                   multiple={false}
                   type="file"
                   onChange={e => handleFileChange(e)}
-                  onBlur={() => updateAppDesignInfo()}
                   style={{ display: 'none' }}
                 />
               </Button>
@@ -462,11 +435,12 @@ const AppDesign: React.FunctionComponent<
                 marginLeft="-10px"
               >
                 <ReactColorPicker
-                  color={color}
+                  color={appDesignProperties.backgroundColor}
                   onChange={(currentColor: string) => {
-                    console.log('the current color is changed to', currentColor)
-                    console.log('the set color is', color)
-                    setColor(currentColor)
+                    setAppDesignProperties({
+                      ...appDesignProperties,
+                      backgroundColor: currentColor,
+                    })
                   }}
                   onInteractionEnd={() => {
                     updateAppDesignInfo()
@@ -485,9 +459,13 @@ const AppDesign: React.FunctionComponent<
                     className={classes.headlineStyle}
                     id="headline-input"
                     placeholder="Welcome Headline"
-                    value={header}
+                    value={appDesignProperties.welcomeScreenHeader}
                     onChange={e => {
-                      setHeader(e.target.value)
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        welcomeScreenHeader: e.target.value,
+                      })
+                      // setHeader(e.target.value)
                     }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
@@ -500,8 +478,13 @@ const AppDesign: React.FunctionComponent<
                   <SimpleTextLabel>Body Copy</SimpleTextLabel>
                   <SimpleTextInput
                     id="outlined-textarea"
-                    value={bodyCopy}
-                    onChange={e => setBodyCopy(e.target.value)}
+                    value={appDesignProperties.welcomeScreenBody}
+                    onChange={e => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        welcomeScreenBody: e.target.value,
+                      })
+                    }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={4}
@@ -513,8 +496,14 @@ const AppDesign: React.FunctionComponent<
                   <SimpleTextLabel>Signature</SimpleTextLabel>
                   <SimpleTextInput
                     id="signature-textarea"
-                    value={signature}
-                    onChange={e => setSignature(e.target.value)}
+                    value={appDesignProperties.welcomeScreenSignature}
+                    onChange={e => {
+                      // setSignature(e.target.value)
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        welcomeScreenSignature: e.target.value,
+                      })
+                    }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={2}
@@ -531,13 +520,18 @@ const AppDesign: React.FunctionComponent<
         </Box>
         <Box className={classes.phoneArea}>
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
-          <Box className={classes.phone}>
-            <PhoneTopBar color={color} previewFile={previewFile} />
-            <div className={classes.phoneInner}>
+          <Box className={`${classes.phone}`}>
+            <PhoneTopBar
+              color={appDesignProperties.backgroundColor}
+              previewFile={previewFile}
+            />
+            <div className={`${classes.phoneInner}`}>
               <div className={classes.headlineStyle}>
-                {header || 'Welcome Headline'}
+                {appDesignProperties.welcomeScreenHeader || 'Welcome Headline'}
               </div>
-              <p className={classes.bodyText}>{bodyCopy || 'Body copy'}</p>
+              <p className={classes.bodyText}>
+                {appDesignProperties.welcomeScreenBody || 'Body copy'}
+              </p>
             </div>
             <div className={classes.phoneBottom}></div>
           </Box>
@@ -562,9 +556,12 @@ const AppDesign: React.FunctionComponent<
                     className={classes.headlineStyle}
                     id="study-name-input"
                     placeholder="Headline"
-                    value={titleOfStudy}
+                    value={appDesignProperties.studyTitle}
                     onChange={e => {
-                      setTitleOfStudy(e.target.value)
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        studyTitle: e.target.value,
+                      })
                     }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
@@ -577,8 +574,13 @@ const AppDesign: React.FunctionComponent<
                   <SimpleTextLabel>Body Copy</SimpleTextLabel>
                   <SimpleTextInput
                     id="study-body-text"
-                    value={studySummaryBodyText}
-                    onChange={e => setStudySummaryBodyText(e.target.value)}
+                    value={appDesignProperties.studySummaryBody}
+                    onChange={e => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        studySummaryBody: e.target.value,
+                      })
+                    }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={8}
@@ -598,8 +600,13 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="lead-investigator-input"
                     placeholder="First and Last name"
-                    value={leadPrincipleInvestigator}
-                    onChange={e => setLeadPrincipleInvestigator(e.target.value)}
+                    value={appDesignProperties.leadPrincipleInvestigator}
+                    onChange={e => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        leadPrincipleInvestigator: e.target.value,
+                      })
+                    }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={1}
@@ -615,8 +622,13 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="institution-input"
                     placeholder="Name of Institution"
-                    value={institution}
-                    onChange={e => setInstitution(e.target.value)}
+                    value={appDesignProperties.institution}
+                    onChange={e => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        institution: e.target.value,
+                      })
+                    }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={1}
@@ -632,8 +644,13 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="funder-input"
                     placeholder="Name of Funder(s)"
-                    value={funder}
-                    onChange={e => setFunder(e.target.value)}
+                    value={appDesignProperties.funder}
+                    onChange={e => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        funder: e.target.value,
+                      })
+                    }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={1}
@@ -649,8 +666,13 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="IRB-approval-input"
                     placeholder="XXXXXXXXXX"
-                    value={IRBApprovalNumber}
-                    onChange={e => setIRBApprovalNumber(e.target.value)}
+                    value={appDesignProperties.IRBApprovalNumber}
+                    onChange={e => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        IRBApprovalNumber: e.target.value,
+                      })
+                    }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={1}
@@ -670,8 +692,13 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="contact-lead-input"
                     placeholder="First and Last name"
-                    value={contactLead}
-                    onChange={e => setContactLead(e.target.value)}
+                    value={appDesignProperties.contactLead}
+                    onChange={e => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        contactLead: e.target.value,
+                      })
+                    }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={1}
@@ -687,8 +714,13 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="role-in-study-input"
                     placeholder="Title of Position"
-                    value={roleInStudy}
-                    onChange={e => setRoleInStudy(e.target.value)}
+                    value={appDesignProperties.contactLeadRoleInStudy}
+                    onChange={e => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        contactLeadRoleInStudy: e.target.value,
+                      })
+                    }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={1}
@@ -704,8 +736,13 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="phone-number-contact-input"
                     placeholder="xxx-xxx-xxxx"
-                    value={contactPhoneNumber}
-                    onChange={e => setContactPhoneNumber(e.target.value)}
+                    value={appDesignProperties.contactLeadPhoneNumber}
+                    onChange={e => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        contactLeadPhoneNumber: e.target.value,
+                      })
+                    }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={1}
@@ -721,8 +758,13 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="contact-email-input"
                     placeholder="Institutional Email"
-                    value={contactEmail}
-                    onChange={e => setContactEmail(e.target.value)}
+                    value={appDesignProperties.contactLeadEmail}
+                    onChange={e => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        contactLeadEmail: e.target.value,
+                      })
+                    }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={1}
@@ -742,8 +784,13 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="ethics-board-input"
                     placeholder="First and Last name"
-                    value={nameOfEthicsBoard}
-                    onChange={e => setNameOfEthicsBoard(e.target.value)}
+                    value={appDesignProperties.nameOfEthicsBoard}
+                    onChange={e => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        nameOfEthicsBoard: e.target.value,
+                      })
+                    }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={1}
@@ -759,8 +806,13 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="ethics-phone-number-input"
                     placeholder="xxx-xxx-xxxx"
-                    value={ethicsBoardPhoneNumber}
-                    onChange={e => setEthicsBoardPhoneNumber(e.target.value)}
+                    value={appDesignProperties.ethicsBoardPhoneNumber}
+                    onChange={e => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        ethicsBoardPhoneNumber: e.target.value,
+                      })
+                    }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={1}
@@ -776,8 +828,13 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="ethics-email-input"
                     placeholder="Institutional Email"
-                    value={ethicsBoardEmail}
-                    onChange={e => setEthicsBoardEmail(e.target.value)}
+                    value={appDesignProperties.ethicsBoardEmail}
+                    onChange={e => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        ethicsBoardEmail: e.target.value,
+                      })
+                    }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={1}
@@ -796,31 +853,39 @@ const AppDesign: React.FunctionComponent<
         <Box className={classes.phoneArea}>
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
           <Box className={classes.phone}>
-            <PhoneTopBar color={color} previewFile={previewFile} />
-            <div className={classes.phoneInner}>
+            <PhoneTopBar
+              color={appDesignProperties.backgroundColor}
+              previewFile={previewFile}
+            />
+            <div className={classes.phoneInnterBottom}>
               <div className={classes.headlineStyle}>
-                {titleOfStudy || 'Title of study...'}
+                {appDesignProperties.studyTitle || 'Title of study...'}
               </div>
               <p className={classes.bodyText}>
-                {studySummaryBodyText || 'Body...'}
+                {appDesignProperties.studySummaryBody || 'Body...'}
               </p>
               <Divider className={classes.divider} />
               <StudySummaryRoles
                 type="Lead Principal Investigator"
-                name={leadPrincipleInvestigator || 'placeholder'}
+                name={
+                  appDesignProperties.leadPrincipleInvestigator || 'placeholder'
+                }
               />
               <StudySummaryRoles
                 type="Institution"
-                name={institution || 'placeholder'}
+                name={appDesignProperties.institution || 'placeholder'}
               />
-              <StudySummaryRoles type="Funder" name={funder || 'placeholder'} />
+              <StudySummaryRoles
+                type="Funder"
+                name={appDesignProperties.funder || 'placeholder'}
+              />
               <StudySummaryRoles
                 type="IRB Approval Number"
-                name={IRBApprovalNumber || 'placeholder'}
+                name={appDesignProperties.IRBApprovalNumber || 'placeholder'}
               />
             </div>
             <div
-              className={`${classes.phoneInner} ${classes.phoneGrayBackground}`}
+              className={`${classes.phoneInnterBottom} ${classes.phoneGrayBackground}`}
             >
               <div className={classes.contactAndSupportText}>
                 Contact & support
@@ -831,13 +896,16 @@ const AppDesign: React.FunctionComponent<
               </p>
               <div className={classes.summaryRoles}>
                 <StudySummaryRoles
-                  type={roleInStudy || 'Role in study'}
-                  name={contactLead || 'Contact lead'}
+                  type={
+                    appDesignProperties.contactLeadRoleInStudy ||
+                    'Role in study'
+                  }
+                  name={appDesignProperties.contactLead || 'Contact lead'}
                 />
               </div>
               <ContactInformation
-                phoneNumber={contactPhoneNumber}
-                email={contactEmail}
+                phoneNumber={appDesignProperties.contactLeadPhoneNumber}
+                email={appDesignProperties.contactLeadEmail}
               />
               <Divider className={classes.divider} />
               <p className={classes.bodyPhoneText}>
@@ -847,12 +915,14 @@ const AppDesign: React.FunctionComponent<
               <div className={classes.summaryRoles}>
                 <StudySummaryRoles
                   type=""
-                  name={nameOfEthicsBoard || 'IRB/Ethics Board'}
+                  name={
+                    appDesignProperties.nameOfEthicsBoard || 'IRB/Ethics Board'
+                  }
                 />
               </div>
               <ContactInformation
-                phoneNumber={ethicsBoardPhoneNumber}
-                email={ethicsBoardEmail}
+                phoneNumber={appDesignProperties.ethicsBoardPhoneNumber}
+                email={appDesignProperties.ethicsBoardEmail}
               />
             </div>
             <div className={classes.phoneBottom}>
