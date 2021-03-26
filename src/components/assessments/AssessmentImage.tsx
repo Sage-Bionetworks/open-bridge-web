@@ -1,8 +1,8 @@
-import React, { FunctionComponent, ReactNode } from 'react'
-import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { AssessmentResource } from '../../types/types'
 import { CardMedia } from '@material-ui/core'
+import { createStyles, makeStyles } from '@material-ui/core/styles'
+import React, { FunctionComponent, ReactNode } from 'react'
 import DefaultImg from '../../assets/sage.svg'
+import { AssessmentResource } from '../../types/types'
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -13,6 +13,7 @@ const useStyles = makeStyles(theme =>
       )}px`,
       backgroundPositionY: 'top',
       display: 'flex',
+      flexShrink: 0,
       flexDirection: 'row',
     },
   }),

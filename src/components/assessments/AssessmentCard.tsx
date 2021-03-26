@@ -6,14 +6,16 @@ import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import React, { FunctionComponent } from 'react'
 import validated from '../../assets/validated.svg'
+import { playfairDisplayFont, poppinsFont } from '../../style/theme'
 import { Assessment } from '../../types/types'
 import AssessmentImage from './AssessmentImage'
 
 const useStyles = makeStyles(theme =>
   createStyles({
     root: {
-      width: '300px',
-      height: '512px',
+      width: theme.spacing(28),
+      height: theme.spacing(47),
+      textAlign: 'left',
       border: '1px solid gray',
       padding: 0,
 
@@ -25,22 +27,38 @@ const useStyles = makeStyles(theme =>
       height: '250px !important',
     },
 
-    title: {
-      fontSize: 14,
-    },
     content: {
-      flexGrow: 1,
+      padding: theme.spacing(1, 2, 0, 2),
+      height: theme.spacing(19),
+      overflow: 'scroll',
+    },
+
+    title: {
+      fontFamily: poppinsFont,
+      fontSize: 14,
+      fontWeight: 'bold',
+    },
+    summary: {
+      flexGrow: 0,
+      fontSize: 12,
+
+      paddingBottom: 0,
     },
 
     tags: {
       alignSelf: 'flex-end',
-      backgroundColor: '#ccc',
-      padding: '5px',
+      fontFamily: playfairDisplayFont,
+      fontStyle: 'italic',
+      fontSize: '12px',
+      paddingBottom: '8px',
     },
     bottom: {
-      marginTop: 'auto',
+      marginTop: 0,
       display: 'flex',
-
+      fontFamily: playfairDisplayFont,
+      fontStyle: 'italic',
+      fontSize: '12px',
+      padding: theme.spacing(1, 2),
       alignItems: 'center',
       justifyContent: 'space-between',
     },
@@ -69,16 +87,16 @@ const AssessmentCard: FunctionComponent<AssessmentCardProps> = ({
         </Typography>
       </AssessmentImage>
       <CardContent className={classes.content}>
-        <Typography color="textSecondary" gutterBottom>
+        <Typography gutterBottom className={classes.title}>
           {assessment.title}
         </Typography>
 
-        <Typography className={classes.title} color="textSecondary">
+        <Typography className={classes.summary}>
           {assessment.summary}
         </Typography>
       </CardContent>
       <CardActions className={classes.bottom}>
-        <div>{assessment.duration} </div>
+        <div>{`${assessment.duration} min.`} </div>
         <img src={validated} alt="validated" />
       </CardActions>
     </Card>
