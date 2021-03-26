@@ -9,6 +9,8 @@ import participants_icon from '../../assets/participants_icon.svg'
 import { ThemeType } from '../../style/theme'
 import { Study } from '../../types/types'
 import LiveIcon from './LiveIcon'
+import clsx from 'clsx'
+import moment from 'moment'
 
 const DraftIcon = () => {
   return (
@@ -104,6 +106,15 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   isJustAdded: {
     border: `3px solid ${theme.palette.primary.dark}`,
+    animation: '$pop-out 0.5s ease',
+  },
+  '@keyframes pop-out': {
+    '0%': {
+      transform: 'scale(0)',
+    },
+    '100%': {
+      transform: 'scale(1)',
+    },
   },
 }))
 
@@ -112,14 +123,17 @@ const cancelPropagation = (e: React.MouseEvent) => {
   e.preventDefault()
 }
 
+const getFormattedDate = (date: Date) => {
+  return moment(date).format('MMM D, YYYY @ h:mma')
+}
+
 const CardBottom: FunctionComponent<{
   study: Study
 }> = ({ study }: { study: Study }) => {
   const classes = useStyles()
-  // console.log('bottom card', study)
-  const date = study.createdOn
-  // console.log('date', date)
-  // console.log(study.createdOn?.toDateString())
+  const date = new Date(
+    study.status === 'DRAFT' ? study.modifiedOn! : study.createdOn!,
+  )
 
   return (
     <Box
@@ -148,8 +162,8 @@ const CardBottom: FunctionComponent<{
         <div className={classes.studyStatusRow}>
           <div>
             {study.status === 'DRAFT'
-              ? '[Dec. 2nd, 2018 @ 4:45pm]'
-              : '[Launched: Nov. 1, 2019 @ 4:45 pm]'}
+              ? `${getFormattedDate(date)}`
+              : `Launched: ${getFormattedDate(date)}`}
           </div>
           <div>[Lynn B.]</div>
         </div>
@@ -213,11 +227,16 @@ type StudyCardProps = {
   onRename?: Function
 }
 
-const StudyCard: FunctionComponent<StudyCardProps> = ({
+type NewlyAddedProp = {
+  isNewlyAddedStudy?: boolean
+}
+
+const StudyCard: FunctionComponent<StudyCardProps & NewlyAddedProp> = ({
   study,
   onSetAnchor,
   isRename,
   onRename,
+  isNewlyAddedStudy,
 }) => {
   const classes = useStyles()
   const input = React.createRef<HTMLInputElement>()
@@ -243,7 +262,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
   return (
     <>
       <Card
-        className={classes.root}
+        className={clsx(classes.root, isNewlyAddedStudy && classes.isJustAdded)}
         onClick={e => {
           if (isRename) {
             cancelPropagation(e)
