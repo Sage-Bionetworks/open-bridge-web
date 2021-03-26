@@ -107,11 +107,33 @@ export type Study = {
   clientData: {
     enrollmentType?: EnrollmentType
     generateIds?: boolean
+    appDesign?: StudyAppDesign
   }
 
   createdOn?: Date,
   modifiedOn?:Date
 
+}
+
+export type StudyAppDesign = {
+  logo: string
+  backgroundColor: string
+  welcomeScreenHeader: string
+  welcomeScreenBody: string
+  welcomeScreenSignature: string
+  studyTitle: string
+  studySummaryBody: string
+  leadPrincipleInvestigator: string
+  institution: string
+  funder: string
+  IRBApprovalNumber: string
+  contactLead: string
+  contactLeadRoleInStudy: string
+  contactLeadPhoneNumber: string
+  contactLeadEmail: string
+  nameOfEthicsBoard: string
+  ethicsBoardPhoneNumber: string
+  ethicsBoardEmail: string
 }
 
 export type StudyBuilderInfo = {
