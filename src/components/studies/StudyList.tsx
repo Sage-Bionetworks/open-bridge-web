@@ -19,7 +19,6 @@ import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import { MTBHeading } from '../widgets/Headings'
 import Loader from '../widgets/Loader'
 import StudyCard from './StudyCard'
-import _ from 'lodash'
 
 type StudyListOwnProps = {}
 
@@ -205,12 +204,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     data: [],
   })
 
-  const { data: studies, status, error, run, setData: setStudies } = useAsync<
-    Study[]
-  >({
-    status: 'PENDING',
-    data: [],
-  })
+
 
   const resetStatusFilters = () =>
     setStatusFilters(sections.map(section => section.status))
