@@ -21,9 +21,7 @@ const getParams = (pathname: string): { id?: string; section?: string } => {
   return (matchProfile && matchProfile.params) || {}
 }
 
-const AuthenticatedApp: FunctionComponent<
-  { token: string }
-> = ({ token }) => {
+const AuthenticatedApp: FunctionComponent<{ token: string }> = ({ token }) => {
   const [studyId, setStudyId] = React.useState<string | undefined>()
   const [studySection, setStudySection] = React.useState<string | undefined>()
   const studyDataUpdateFn = useStudyInfoDataDispatch()

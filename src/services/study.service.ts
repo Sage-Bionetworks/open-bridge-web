@@ -1,7 +1,7 @@
 import { callEndpoint } from '../helpers/utility'
 import constants from '../types/constants'
 import { Schedule } from '../types/scheduling'
-import { Study } from '../types/types'
+import { Study, StudyAppDesign } from '../types/types'
 
 const StudyService = {
   getStudies,
@@ -58,7 +58,7 @@ async function createStudySchedule(
   const result = await callEndpoint<string>(
     constants.endpoints.schedule.replace('/:id', ''),
     'POST', // once we add things to the study -- we can change this to actual object
-    { name},
+    { name },
     token,
   )
 

@@ -119,6 +119,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     }
   }
 
+  const saveStudyAppDesign = async () => {
+    setSaveLoader(true)
+    // await StudyService.update
+  }
+
   const changeSection = async (next: StudySection) => {
     if (section === next) {
       return
