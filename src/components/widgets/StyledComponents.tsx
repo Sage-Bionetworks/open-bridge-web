@@ -3,7 +3,7 @@ import {
   FormControlLabel,
   InputBase,
   InputLabel,
-  Select
+  Select,
 } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import { latoFont, poppinsFont } from '../../style/theme'
@@ -145,7 +145,7 @@ export const SimpleTextInput = withStyles(theme => ({
     position: 'relative',
     backgroundColor: theme.palette.common.white,
     fontSize: '14px',
-    width: '100%',
+    width: 'auto',
     padding: '10px 12px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     fontFamily: [latoFont, 'Roboto'].join(','),

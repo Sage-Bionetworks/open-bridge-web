@@ -460,7 +460,7 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={2}
                     rowsMax={4}
-                    inputProps={{ style: { fontSize: '24px' } }}
+                    inputProps={{ style: { fontSize: '24px', width: '100%' } }}
                   />
                 </FormControl>
                 <FormControl>
@@ -479,6 +479,7 @@ const AppDesign: React.FunctionComponent<
                     rows={4}
                     rowsMax={6}
                     placeholder="What are the first things you want participants to know about the study."
+                    inputProps={{ style: { width: '100%' } }}
                   />
                 </FormControl>
                 <FormControl>
@@ -497,6 +498,7 @@ const AppDesign: React.FunctionComponent<
                     rows={2}
                     rowsMax={4}
                     placeholder=""
+                    inputProps={{ style: { width: '100%' } }}
                   />
                 </FormControl>
               </FormGroup>
@@ -555,7 +557,7 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={2}
                     rowsMax={4}
-                    inputProps={{ style: { fontSize: '24px' } }}
+                    inputProps={{ style: { fontSize: '24px', width: '100%' } }}
                   />
                 </FormControl>
                 <FormControl>
@@ -574,6 +576,7 @@ const AppDesign: React.FunctionComponent<
                     rows={8}
                     rowsMax={10}
                     placeholder="Lorem ipsum"
+                    inputProps={{ style: { width: '100%' } }}
                   />
                 </FormControl>
               </FormGroup>
@@ -599,7 +602,7 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px' } }}
+                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
                   />
                 </FormControl>
                 <FormControl>
@@ -621,7 +624,7 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px' } }}
+                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
                   />
                 </FormControl>
                 <FormControl>
@@ -643,7 +646,7 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px' } }}
+                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
                   />
                 </FormControl>
                 <FormControl>
@@ -665,7 +668,7 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px' } }}
+                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
                   />
                 </FormControl>
               </FormGroup>
@@ -691,7 +694,7 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px' } }}
+                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
                   />
                 </FormControl>
                 <FormControl>
@@ -713,7 +716,7 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px' } }}
+                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
                   />
                 </FormControl>
                 <FormControl>
@@ -735,7 +738,7 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px' } }}
+                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
                   />
                 </FormControl>
                 <FormControl>
@@ -757,7 +760,7 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px' } }}
+                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
                   />
                 </FormControl>
               </FormGroup>
@@ -783,7 +786,7 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px' } }}
+                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
                   />
                 </FormControl>
                 <FormControl>
@@ -805,7 +808,7 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px' } }}
+                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
                   />
                 </FormControl>
                 <FormControl>
@@ -827,7 +830,7 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px' } }}
+                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
                   />
                 </FormControl>
               </FormGroup>
