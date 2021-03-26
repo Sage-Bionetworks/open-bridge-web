@@ -11,7 +11,7 @@ const StudySummaryRoles: React.FunctionComponent<StudySummaryRoleProps> = ({
   name,
 }) => {
   return (
-    <div style={{ marginTop: '20px' }}>
+    <div style={{ marginTop: '20px', wordWrap: 'break-word' }}>
       <MTBHeadingH4>{name}</MTBHeadingH4>
       {type}
     </div>
