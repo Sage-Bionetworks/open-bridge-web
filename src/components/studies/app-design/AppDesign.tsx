@@ -503,7 +503,13 @@ const AppDesign: React.FunctionComponent<
                 </FormControl>
               </FormGroup>
               <Box textAlign="right">
-                <SaveButton onClick={() => onSave()} />
+                {saveLoader ? (
+                  <div className="text-center">
+                    <CircularProgress color="primary" size={25} />
+                  </div>
+                ) : (
+                  <SaveButton onClick={() => onSave()} />
+                )}
               </Box>
             </Subsection>
           </ol>
@@ -835,7 +841,13 @@ const AppDesign: React.FunctionComponent<
                 </FormControl>
               </FormGroup>
               <Box textAlign="right">
-                <SaveButton onClick={() => onSave()} />
+                {saveLoader ? (
+                  <div className="text-center">
+                    <CircularProgress color="primary" size={25} />
+                  </div>
+                ) : (
+                  <SaveButton onClick={() => onSave()} />
+                )}
               </Box>
             </Subsection>
           </ol>
