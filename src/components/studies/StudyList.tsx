@@ -5,7 +5,7 @@ import {
   Divider,
   makeStyles,
   Menu,
-  MenuItem,
+  MenuItem
 } from '@material-ui/core'
 import Link from '@material-ui/core/Link'
 import React, { FunctionComponent, useEffect } from 'react'
@@ -205,6 +205,13 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     data: [],
   })
 
+  const { data: studies, status, error, run, setData: setStudies } = useAsync<
+    Study[]
+  >({
+    status: 'PENDING',
+    data: [],
+  })
+
   const resetStatusFilters = () =>
     setStatusFilters(sections.map(section => section.status))
 
@@ -219,8 +226,10 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       createdOn: new Date(),
       modifiedOn: new Date(),
     }
+
     setNewStudyID(ID)
     //setStudies([...studies, newStudy])
+
     const result = await StudyService.createStudy(newStudy, token!)
     setStudies(result)
   }
@@ -303,7 +312,9 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   }
 
   return (
+
     <Loader reqStatusLoading={status === 'PENDING' || !studies} variant="full">
+
       <Container maxWidth="lg" className={classes.studyContainer}>
         <Box display="flex" justifyContent="space-between">
           <ul className={classes.filters} aria-label="filters">
@@ -362,7 +373,9 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                     ? setMenuAnchor({ study: s, anchorEl: e })
                     : onAction(s, action)
                 }}
+
                 newStudyID={newStudyID}
+
               />
             </Box>
           ))}

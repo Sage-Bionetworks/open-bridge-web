@@ -14,7 +14,6 @@ import CloseIcon from '@material-ui/icons/Close'
 import SaveIcon from '@material-ui/icons/Save'
 import React, { FunctionComponent, useState } from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import AssessmentService from '../../../services/assessment.service'
 import { StudySession } from '../../../types/scheduling'
 import { Assessment, StudyBuilderComponentProps } from '../../../types/types'
@@ -27,7 +26,7 @@ import SingleSessionContainer from './SingleSessionContainer'
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'grid',
-    padding: theme.spacing(1),
+    padding: theme.spacing(2),
     gridTemplateColumns: 'repeat(auto-fill,280px)',
     gridColumnGap: theme.spacing(2),
     gridRowGap: theme.spacing(2),
@@ -89,13 +88,13 @@ const SessionCreator: FunctionComponent<
     [],
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
-  const { token } = useUserSessionDataState()
+
   const [
     isAddingAssessmentToSession,
     setIsAddingAssessmentToSession,
   ] = useState(false)
   const [activeSession, setActiveSession] = React.useState(
-    sessions.length > 0 ? sessions[0].id : undefined,
+    sessions.length > 0 ? sessions[0].guid : undefined,
   )
 
   const sessionsUpdateFn = (action: SessionAction) => {
@@ -121,7 +120,7 @@ const SessionCreator: FunctionComponent<
 
   const updateAssessments = async (
     sessionId: string,
-    previousAssessments: Assessment[],
+    previousAssessments: Assessment[] | undefined = [],
     newAssessments: Assessment[],
   ) => {
     console.log('updating')
@@ -129,7 +128,7 @@ const SessionCreator: FunctionComponent<
     for (let i = 0; i < newAssessments.length; i++) {
       try {
         const assessmentWithResources = await AssessmentService.getResource(
-          newAssessments[i]
+          newAssessments[i],
         )
         assessments.push(assessmentWithResources)
       } catch (error) {
@@ -149,14 +148,14 @@ const SessionCreator: FunctionComponent<
   const getActiveSession = (
     sessions: StudySession[],
   ): StudySession | undefined => {
-    const session = sessions.find(session => session.id === activeSession)
+    const session = sessions.find(session => session.guid === activeSession)
     return session
   }
 
   if (sessions) {
     return (
       <>
-        <NavigationPrompt when={hasObjectChanged}>
+        <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
           {({ onConfirm, onCancel }) => (
             <ConfirmationDialog
               isOpen={hasObjectChanged}
@@ -170,6 +169,7 @@ const SessionCreator: FunctionComponent<
           <Button
             variant="contained"
             color="primary"
+            key="saveButton"
             style={{ marginBottom: '32px' }}
             onClick={() => onSave()}
             startIcon={<SaveIcon />}
@@ -177,11 +177,15 @@ const SessionCreator: FunctionComponent<
             Save changes
           </Button>
         )}
-        <Box className={classes.root}>
-          {sessions.map(session => (
-            <Paper className={classes.sessionContainer} key={session.id}>
+        <Box className={classes.root} key="sessions">
+          {sessions.map((session, index) => (
+            <Paper
+              className={classes.sessionContainer}
+              key={session.guid + index}
+            >
               <SingleSessionContainer
-                key={session.id}
+                key={session.guid}
+                sessionIndex={index}
                 studySession={session}
                 onShowAssessments={() => setIsAssessmentDialogOpen(true)}
                 onSetActiveSession={(sessionId: string) =>
@@ -217,7 +221,6 @@ const SessionCreator: FunctionComponent<
                 payload: {
                   name: 'Session' + sessions.length.toString(),
                   assessments,
-                  studyId: id,
                 },
               })
             }
@@ -262,7 +265,7 @@ const SessionCreator: FunctionComponent<
                   setIsAddingAssessmentToSession(true)
 
                   await updateAssessments(
-                    getActiveSession(sessions)!.id,
+                    getActiveSession(sessions)!.guid,
                     getActiveSession(sessions)!.assessments,
                     selectedAssessments,
                   )

@@ -27,13 +27,13 @@ export type SessionScheduleAction = ActionMap<ActionPayload>[keyof ActionMap<Act
 function updateSessionSchedule(
   sessions: StudySession[],
   sessionId: string,
-  sessionSchedule: SessionSchedule,
+  updatedSession: SessionSchedule,
 ): StudySession[] {
   const result = sessions.map(session => {
-    if (session.id !== sessionId) {
+    if (session.guid !== sessionId) {
       return session
     } else {
-      return { ...session, sessionSchedule }
+      return { ...session, ...updatedSession }
     }
   })
   return result

@@ -5,45 +5,37 @@ import {
 } from '@material-ui/core'
 import React from 'react'
 import {
-  HDWMEnum,
-  SessionScheduleStartType,
-  StartDate as StartDateType
+  HDWMEnum
 } from '../../../types/scheduling'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
 
+export type SessionScheduleStartType = 'DAY1' | 'NDAYS_DAY1'
 export interface StartDateProps {
-  startDate: StartDateType
+  delay?: string //ISO6801
+  sessionName: string,
   onChange: Function
 }
 
 const StartDate: React.FunctionComponent<StartDateProps> = ({
-  startDate,
+  delay,
   onChange,
+  sessionName,
 }: StartDateProps) => {
-  const [startDateOffset, setStartDateOffset] = React.useState(startDate.offset)
-
-  React.useEffect(() => {
-    setStartDateOffset(startDate.offset)
-  }, [startDate.offset])
-
+  const [startType, setStartType] = React.useState<SessionScheduleStartType>(delay? 'NDAYS_DAY1': 'DAY1')
   const changeStartDate = (type: SessionScheduleStartType) => {
-    if (type !== startDate.type) {
-      onChange({ ...startDate, type })
-    }
-    // } else {
-    //  if (startDate.type !== 'NDAYS_DAY1') {
-    //  onChange({ ...startDate, type })
-    // }
-    //}
+    setStartType(type)
+    if(type === 'DAY1') {
+      onChange(undefined)
+    } 
   }
 
   return (
-    <SchedulingFormSection label={'Session Starts On:'}>
+    <SchedulingFormSection label={`${sessionName} starts on:`} >
       <RadioGroup
-        aria-label="Start Date"
+        aria-label="Session Starts On"
         name="startDate"
-        value={startDate.type}
+        value={startType}
         onChange={e =>
           changeStartDate(e.target.value as SessionScheduleStartType)
         }
@@ -56,13 +48,9 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
               <Duration
                 onFocus={() => changeStartDate('NDAYS_DAY1')}
                 onChange={e => {
-                  setStartDateOffset(e.toString())
-                  onChange({
-                    ...startDate,
-                    offset: e,
-                  })
+                  onChange( e.target.value)
                 }}
-                durationString={startDateOffset}
+                durationString={delay}
                 unitLabel="Repeat Every"
                 numberLabel="frequency number"
                 unitData={HDWMEnum}

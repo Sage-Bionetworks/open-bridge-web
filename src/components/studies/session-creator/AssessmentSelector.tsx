@@ -10,6 +10,7 @@ import { StudySession } from '../../../types/scheduling'
 import { Assessment, StringDictionary } from '../../../types/types'
 import AssessmentCard from '../../assessments/AssessmentCard'
 import AssessmentLibraryWrapper from '../../assessments/AssessmentLibraryWrapper'
+import Loader from '../../widgets/Loader'
 
 const useStyles = makeStyles({
   toggleA: {
@@ -103,11 +104,10 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
   })
 
   React.useEffect(() => {
-    ///your async call
     return run(AssessmentService.getAssessmentsWithResources())
   }, [run])
   if (status === 'PENDING') {
-    return <>loading component here</>
+    return <Loader reqStatusLoading={'PENDING'}></Loader>
   }
   if (status === 'REJECTED') {
     handleError(error!)
@@ -121,7 +121,7 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
     session: StudySession,
     assessmentId: string,
   ): boolean =>
-    session.assessments.find(item => item.originGuid === assessmentId) !==
+    session.assessments?.find(item => item.originGuid === assessmentId) !==
     undefined
 
   const toggleAssessment = (

@@ -58,7 +58,9 @@ async function createStudySchedule(
   const result = await callEndpoint<string>(
     constants.endpoints.schedule.replace('/:id', ''),
     'POST', // once we add things to the study -- we can change this to actual object
+
     { name },
+
     token,
   )
 

@@ -23,7 +23,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
   style,
 }: StudyStartDateProps) => {
 
-  const options: StartEventId[] = ['ONBOARDING', 'START_DATE']
+  const options: StartEventId[] = ['activities_retrieved', 'study_start_date']
 
   const label = isIntro ? (
     <Box marginTop="20px">
@@ -39,6 +39,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
   return (
     <SchedulingFormSection
       label={label}
+      altLabel={'Study Start Date'}
       border={false}
       style={{ ...style, marginLeft: '324px' }}
     >

@@ -5,6 +5,7 @@ import StudyTopNav from './components/studies/StudyTopNav'
 import TopNav from './components/widgets/AppTopNav'
 import { useStudyBuilderInfo } from './helpers/hooks'
 import { useStudyInfoDataDispatch } from './helpers/StudyInfoContext'
+import { setBodyClass } from './helpers/utility'
 import PrivateRoutes from './routes_private'
 
 const getParams = (pathname: string): { id?: string; section?: string } => {
@@ -20,15 +21,13 @@ const getParams = (pathname: string): { id?: string; section?: string } => {
   return (matchProfile && matchProfile.params) || {}
 }
 
-const AuthenticatedApp: FunctionComponent<{ token: string }> = ({
-  token
-}) => {
+const AuthenticatedApp: FunctionComponent<
+  { token: string }
+> = ({ token }) => {
   const [studyId, setStudyId] = React.useState<string | undefined>()
   const [studySection, setStudySection] = React.useState<string | undefined>()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
-  const { data: builderInfo} = useStudyBuilderInfo(
-    studyId,
-  )
+  const { data: builderInfo } = useStudyBuilderInfo(studyId)
 
   React.useEffect(() => {
     console.log('datachange', builderInfo?.study)
@@ -39,11 +38,14 @@ const AuthenticatedApp: FunctionComponent<{ token: string }> = ({
 
   React.useEffect(() => {
     const { id, section } = getParams(window.location.pathname)
+
+    setBodyClass(section)
     setStudyId(id)
     setStudySection(section)
   }, [studyDataUpdateFn])
 
-  getParams(window.location.pathname)
+  const { id, section } = getParams(window.location.pathname)
+  setBodyClass(section)
 
   return (
     <>

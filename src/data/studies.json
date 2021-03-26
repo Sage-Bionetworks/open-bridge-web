@@ -24,6 +24,7 @@
     {
       "identifier": "alina_test_study_2",
       "name": "Alina Testing Study 2",
+
       "description": "Exists for real",
       "status": "DRAFT",
       "version": 1,
@@ -31,6 +32,7 @@
       "createdOn": "2020-11-22T21:02:54.229Z",
       "modifiedOn": "2020-11-23T19:13:51.280Z"
     },
+
     {
       "identifier": "5476c92c2",
       "name": "anotherStudy2",

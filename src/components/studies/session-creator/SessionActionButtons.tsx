@@ -37,15 +37,15 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
   const classes = useStyles()
   const [selectedSessionId, setSelectedSessionId] = React.useState<
     string | undefined
-  >(sessions.length > 0 ? sessions[0].id : undefined)
+  >(sessions.length > 0 ? sessions[0].guid : undefined)
 
   useEffect(() => {
-    setSelectedSessionId(sessions.length > 0 ? sessions[0].id : undefined)
+    setSelectedSessionId(sessions.length > 0 ? sessions[0].guid : undefined)
   }, [sessions.length, sessions])
 
   const duplicateSession = (selectedId?: string) => {
-    const session = sessions.find(s => s.id === selectedId)
-    if (!selectedId || !session || session.assessments.length === 0) {
+    const session = sessions.find(s => s.guid === selectedId)
+    if (!selectedId || !session?.assessments || session.assessments.length === 0) {
       onAddSession(sessions, [])
     } else {
       onAddSession(sessions, [...session.assessments])
@@ -73,7 +73,7 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
             disableUnderline={true}
           >
             {sessions.map((session, index) => (
-              <MenuItem value={session.id} key={`${session.id}menu${index}`}>
+              <MenuItem value={session.guid} key={`${session.guid}menu${index}`}>
                 {session.name}
               </MenuItem>
             ))}

@@ -4,21 +4,43 @@ import { StudyBuilderInfo } from '../types/types'
 import { useAsync } from './AsyncHook'
 import { useUserSessionDataState } from './AuthContext'
 
-
 export const useStudyBuilderInfo = (id: string | undefined) => {
   const { token } = useUserSessionDataState()
 
-  const { data, status, error, run, setData } = useAsync<StudyBuilderInfo | undefined>({
+  const { data, status, error, run, setData } = useAsync<
+    StudyBuilderInfo | undefined
+  >({
     status: id ? 'PENDING' : 'IDLE',
     data: undefined,
   })
 
   const getData = async (id: string) => {
-    const schedule = await StudyService.getStudySchedule(id, token!)
     const study = await StudyService.getStudy(id, token!)
+    if (!study) {
+      throw Error(`Study with an identifier ${id} can not be found`)
+    }
+    let schedule
+    if (study.scheduleGuid) {
+      schedule = await StudyService.getStudySchedule(study.scheduleGuid, token!)
+    }
+    //after we are using a real back end if there is a guid there will be a schedule
+    if (!study.scheduleGuid || !schedule) {
+      //create new schedule for new study
+      const scheduleGuid = await StudyService.createStudySchedule(
+        `${study.name} schedule`,
+        token!,
+      )
+      await StudyService.updateStudy(
+        { ...study, scheduleGuid },
+        token!,
+      )
+      study.scheduleGuid = scheduleGuid
+      schedule = await StudyService.getStudySchedule(study.scheduleGuid, token!)
+    }
 
     return { schedule, study }
   }
+  
 
   React.useEffect(() => {
     if (!id || !token) {
@@ -36,4 +58,3 @@ export const useStudyBuilderInfo = (id: string | undefined) => {
     run,
   }
 }
-

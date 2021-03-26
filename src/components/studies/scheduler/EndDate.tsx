@@ -1,47 +1,38 @@
-import {
-  FormControlLabel,
-  Radio,
-  RadioGroup
-} from '@material-ui/core'
+import { FormControlLabel, Radio, RadioGroup } from '@material-ui/core'
 import React from 'react'
-import {
-  EndDate as EndDateType,
-  SessionScheduleEndType
-} from '../../../types/scheduling'
 import SmallTextBox from '../../widgets/SmallTextBox'
+import { FormControlLabelHidden } from '../../widgets/StyledComponents'
 import SchedulingFormSection from './SchedulingFormSection'
 
 export interface EndDateProps {
-  endDate: EndDateType
+  occurrences?: number
   onChange: Function
 }
+export type SessionScheduleEndType = 'END_STUDY' | 'N_OCCURRENCES'
 
 const EndDate: React.FunctionComponent<EndDateProps> = ({
-  endDate,
+  occurrences,
   onChange,
 }: EndDateProps) => {
+  const [endType, setEndType] = React.useState<SessionScheduleEndType>(
+    occurrences ? 'N_OCCURRENCES' : 'END_STUDY',
+  )
+
   const changeEndDate = (type: SessionScheduleEndType) => {
-    onChange({ ...endDate, type })
-  }
-
-  const changeEndDateDays = (days: string) => {
-    /* if (isNaN(Number.parseInt(days))) {
-      throw new Error('Number!')
-    }*/
-
-    const endDate: EndDateType = {
-      type: 'N_OCCURENCES',
-      days: Number(days),
+    setEndType(type)
+    if (type === 'END_STUDY') {
+      onChange(undefined)
+    } else {
+      setEndType(type)
     }
-    onChange(endDate)
   }
 
   return (
     <SchedulingFormSection label={'End after:'}>
       <RadioGroup
-        aria-label="End Date"
-        name="endDate"
-        value={endDate.type}
+        aria-label="End after"
+        name="endAfter"
+        value={endType}
         onChange={e => changeEndDate(e.target.value as SessionScheduleEndType)}
       >
         <FormControlLabel
@@ -53,14 +44,18 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
         <FormControlLabel
           control={
             <>
-              <Radio value={'N_OCCURENCES'} />{' '}
+             <Radio value={'N_OCCURRENCES'} />{' '}
+             <FormControlLabelHidden  label="number of occurrences" control={
               <SmallTextBox
+                onFocus={() => changeEndDate('N_OCCURRENCES')}
                 color="secondary"
-                id="standard-basic"
+                id="occurrences"
+                isLessThanOneAllowed={false}
+                
                 style={{ marginRight: '10px' }}
-                onChange={e => changeEndDateDays(e.target.value)}
-                value={endDate.days || ''}
-              />
+                onChange={e => onChange(e.target.value)}
+                value={occurrences || ''}
+              />}/>
             </>
           }
           label="times"

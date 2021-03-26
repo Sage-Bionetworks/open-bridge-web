@@ -106,8 +106,7 @@ const uploadAreaStyle = {
 type AddParticipantsProps = {
   token: string
   study: Study
-  enrollmentType: 'PHONE' | 'ID'
-  isGenerateIds?: boolean
+
   onAdded: Function
 }
 
@@ -156,16 +155,17 @@ async function uploadCsvRow(
 }
 
 const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
-  enrollmentType,
-  isGenerateIds,
+
   onAdded,
   study,
   token,
 }) => {
 
+
   const [tab, setTab] = React.useState(0)
 
   const classes = useStyles()
+  const {enrollmentType='ID', generateIds} = study.clientData
 
   const [isOpenUpload, setIsOpenUpload] = React.useState(false)
   const [isCsvUploaded, setIsCsvUploaded] = React.useState(false)
@@ -316,7 +316,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       </Dialog>
 
       <Paper square style={{ whiteSpace: 'break-spaces' }}>
-        {!isGenerateIds && (
+        {!generateIds && (
           <>
             <Tabs
               value={tab}
@@ -366,7 +366,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             </TabPanel>
           </>
         )}
-        {isGenerateIds && (
+        {generateIds && (
           <>
             <Box
               height="50px"

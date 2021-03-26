@@ -18,7 +18,6 @@ export enum Types {
 
   AddSession = 'ADD_SESSION',
   RemoveSession = 'REMOVE_SESSION',
- // SetActiveSession = 'SET_ACTIVE_SESSION',
   UpdateSessionName = 'UPDATE_SESSION_NAME',
   UpdateAssessments = 'UPDATE_ASSESSMENTS',
 }
@@ -29,17 +28,13 @@ export type ActionPayload = {
   }
 
   [Types.AddSession]: {
-    studyId: string
     name: string
     assessments: Assessment[]
-   // active?: boolean
   }
   [Types.RemoveSession]: {
     sessionId: string
   }
- /* [Types.SetActiveSession]: {
-    sessionId: string
-  }*/
+
   [Types.UpdateSessionName]: {
     sessionId: string
     sessionName: string
@@ -56,23 +51,20 @@ function addSession(
   sessions: StudySession[],
   name: string,
   assessments: Assessment[],
-  studyId: string,
+
   isActive: boolean = false,
 ): StudySession[] {
   const session: StudySession = {
-    id: getRandomId(),
+    guid: getRandomId(),
     assessments,
-   // active: isActive,
-    studyId,
-    order: sessions.length,
-    //duration: 0,
+    performanceOrder: 'participant_choice',
     name,
   }
 
   const result = [
     ...sessions.map((session, index) => ({
       ...session,
-     // active: false,
+      // active: false,
       order: index,
     })),
     {
@@ -84,25 +76,13 @@ function addSession(
   return result
 }
 
-/*function setActiveSession(
-  sessions: StudySession[],
-  sessionId: string,
-): StudySession[] {
-  const result = sessions.map(session => ({
-    ...session,
-    active: session.id === sessionId,
-  }))
-
-  return result
-}*/
-
 function updateSessionName(
   sessions: StudySession[],
   sessionId: string,
   sessionName: string,
 ): StudySession[] {
   const result = sessions.map(session => {
-    if (session.id !== sessionId) {
+    if (session.guid !== sessionId) {
       return session
     } else {
       return { ...session, name: sessionName }
@@ -117,7 +97,7 @@ function removeSession(
   sessionId: string,
 ): StudySession[] {
   return sessions
-    .filter(session => session.id !== sessionId)
+    .filter(session => session.guid !== sessionId)
     .map((s, index) => ({ ...s, order: index }))
 }
 
@@ -127,7 +107,7 @@ function updateAssessments(
   assessments: Assessment[],
 ): StudySession[] {
   const result = sessions.map(session => {
-    if (session.id !== sessionId) {
+    if (session.guid !== sessionId) {
       return session
     } else {
       return { ...session, assessments: assessments }
@@ -148,16 +128,10 @@ function actionsReducer(
     case Types.AddSession: {
       return addSession(
         sessions,
-
         action.payload.name,
         action.payload.assessments,
-        action.payload.studyId,
-       // action.payload.active,
       )
     }
-    /*case Types.SetActiveSession: {
-      return setActiveSession(sessions, action.payload.sessionId)
-    }*/
 
     case Types.UpdateSessionName: {
       return updateSessionName(

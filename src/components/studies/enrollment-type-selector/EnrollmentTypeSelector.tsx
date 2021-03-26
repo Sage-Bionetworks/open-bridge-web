@@ -1,6 +1,5 @@
 import {
   Box,
-  Checkbox,
   FormControlLabel,
   Paper,
   Radio,
@@ -25,19 +24,21 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     padding: theme.spacing(3),
   },
   container: {
-    /* backgroundImage: 'linear-gradient(0deg, #b6b6b6 0.94%, #ffffff 0.94%, #ffffff 50%, #b6b6b6 50%, #b6b6b6 50.94%, #ffffff 50.94%, #ffffff 100%)',
-     backgroundSize: '106.00px 106.00px'*/
     backgroundImage: 'linear-gradient(#b6b6b6 1px, transparent 1px)',
     backgroundSize: '20px 60px',
     paddingTop: '180px',
     backgroundClip: 'content-box',
   },
   additionalInfo: {
+    fontFamily: latoFont,
+    textAlign: 'left',
+    fontWeight: 'normal',
+    fontSize: '14px',
     borderTop: '1px solid rgb(0, 0, 0)',
     marginTop: theme.spacing(2),
     marginLeft: '-10px',
     marginRight: '-10px',
-    padding: '0 10px',
+    padding: theme.spacing(0, 3),
   },
   table: {
     width: '100%',
@@ -60,12 +61,13 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginTop: '-185px',
     marginRight: '10px',
 
-    width: theme.spacing(32),
+    width: theme.spacing(32.5),
     '&$firstColumn': {
       background: 'none',
       boxShadow: 'none',
       textAlign: 'left',
-      paddingLeft: '10px',
+      marginLeft: theme.spacing(3),
+      paddingRight: theme.spacing(3),
       '& table th': {
         fontFamily: latoFont,
         fontSize: '16px',
@@ -80,12 +82,25 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     },
   },
 
-  firstColumn: {},
+  firstColumn: {
+    width: theme.spacing(21)
+  },
+  heading: {
+    padding: theme.spacing(0, 6),
+    textAlign: 'center',
+    //display: 'block',
+    display: 'flex',
+  justifyContent: 'center',
+  flexDirection: 'column',
+
+  },
   notFirstColumn: {
+    width: theme.spacing(32),
     '& table th > span ': {
-      padding: theme.spacing(0, 6),
+
       textAlign: 'center',
       display: 'block',
+     
       fontFamily: poppinsFont,
       fontSize: '14px',
       fontWeight: 700,
@@ -98,13 +113,16 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       '& > div': {
         marginTop: '-10px',
       },
-    
     },
   },
   selectedColumn: {
     border: '10px solid #CBDEE9',
     '& th': {
       backgroundColor: '#CBDEE9',
+    },
+
+    '& $heading': {
+      paddingTop: theme.spacing(3)
     },
     '& > div': {
       marginTop: '-10px',
@@ -147,7 +165,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<
     if (clientData.enrollmentType !== undefined) {
       studyClientData.enrollmentType = clientData.enrollmentType
       if (clientData.enrollmentType === 'PHONE') {
-        clientData.isGenerateIds = undefined
+        studyClientData.generateIds = undefined
       }
     }
     if (clientData.isGenerateIds !== undefined) {
@@ -169,13 +187,13 @@ const EnrollmentTypeSelector: React.FunctionComponent<
         )}
       </NavigationPrompt>
 
-      <Box pt={9} pr={11} pb={11} pl={14} bgcolor="#FAFAFA">
+      <Box pt={9} pr={12} pb={11} pl={6} bgcolor="#FAFAFA">
         <MTBHeadingH1>
           {' '}
           How will you enroll your participants into this study?{' '}
         </MTBHeadingH1>
 
-        <Box display="flex" mt={4} className={classes.container}>
+        <Box display="flex" mt={9} className={classes.container}>
           <Paper
             className={clsx(classes.column, classes.firstColumn)}
             elevation={2}
@@ -213,29 +231,18 @@ const EnrollmentTypeSelector: React.FunctionComponent<
                   <tr>
                     <th>
                       {' '}
-                      <span>ENROLL WITH<br/> PHONE NUMBERS</span>
+                      <span className={classes.heading}>
+                        ENROLL WITH
+                        <br /> PHONE NUMBERS
+                      </span>
                       <Box
                         className={classes.additionalInfo}
-                        style={{ textAlign: 'left' }}
                         hidden={study.clientData.enrollmentType !== 'PHONE'}
                       >
-                        <FormControlLabel
-                          style={{ marginTop: '16px', alignItems: 'start' }}
-                          labelPlacement="end"
-                          control={
-                            <Checkbox
-                              style={{ paddingTop: '3px' }}
-                              checked={study.clientData.enrollmentType === 'ID'}
-                              onChange={e =>
-                                e.target.checked
-                                  ? updateStudy({ enrollmentType: 'ID' })
-                                  : updateStudy({ enrollmentType: 'PHONE' })
-                              }
-                            />
-                          }
-                          label=" I confirm that I have participant consent to add their
-            numbers."
-                        />
+                        <Box px={0} py={2}>
+                          In using phone numbers, I confirm that I have
+                          participant consent to add their numbers.
+                        </Box>
                       </Box>
                     </th>
                   </tr>
@@ -271,7 +278,10 @@ const EnrollmentTypeSelector: React.FunctionComponent<
                 <thead>
                   <tr>
                     <th style={{ height: '186px' }}>
-                      <span>ENROLL WITH <br/>PARTICIPANT CODE</span>
+                      <span className={classes.heading}>
+                        ENROLL WITH <br />
+                        PARTICIPANT CODE
+                      </span>
                       <Box
                         className={classes.additionalInfo}
                         style={{ textAlign: 'left' }}
@@ -280,8 +290,8 @@ const EnrollmentTypeSelector: React.FunctionComponent<
                         <RadioGroup
                           aria-label="How to generate Id"
                           name="generateIds"
-                          style={{ marginTop: '5px' }}
-                          value={study.clientData.generateIds}
+                          style={{ marginTop: '8px' }}
+                          value={study.clientData.generateIds || false}
                           onClick={e => e.stopPropagation()}
                           onChange={e => {
                             e.preventDefault()
