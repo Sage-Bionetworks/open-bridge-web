@@ -18,6 +18,7 @@ import AssessmentService from '../../../services/assessment.service'
 import { StudySession } from '../../../types/scheduling'
 import { Assessment, StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
+import { MTBHeadingH1 } from '../../widgets/Headings'
 import AssessmentSelector from './AssessmentSelector'
 import SessionActionButtons from './SessionActionButtons'
 import actionsReducer, { SessionAction, Types } from './sessionActions'
@@ -239,7 +240,7 @@ const SessionCreator: FunctionComponent<
             </div>
           )}
           <DialogTitle>
-            Select assessment(s) to add to session.
+            <MTBHeadingH1 style={{marginTop: '32px', textAlign: 'center'}}>Select assessment(s) to add to session.</MTBHeadingH1>
             <IconButton
               aria-label="close"
               className={classes.closeButton}
@@ -257,10 +258,11 @@ const SessionCreator: FunctionComponent<
           </DialogContent>
           {!isAddingAssessmentToSession && (
             <DialogActions>
-              <Button onClick={cancelAssessmentSelector}>Cancel</Button>
+              <Button onClick={cancelAssessmentSelector} color="secondary"  variant="outlined">Cancel</Button>
 
               <Button
                 variant="contained"
+                color = "primary"
                 onClick={async () => {
                   setIsAddingAssessmentToSession(true)
 
@@ -275,7 +277,7 @@ const SessionCreator: FunctionComponent<
               >
                 {!getActiveSession(sessions)
                   ? 'Please select group and session'
-                  : `Add  to ${getActiveSession(sessions)?.name} `}
+                  : `Add  to Session`}
               </Button>
             </DialogActions>
           )}

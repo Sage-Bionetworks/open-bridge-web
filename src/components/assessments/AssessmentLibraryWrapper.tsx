@@ -26,10 +26,10 @@ const useStyles = makeStyles(theme => ({
     },
   },
   cardGrid: {
-    //const cardWidth = 300
+    //const cardWidth = 224
     display: 'grid',
     padding: theme.spacing(0),
-    gridTemplateColumns: `repeat(auto-fill,300px)`,
+    gridTemplateColumns: `repeat(auto-fill,224px)`,
     gridColumnGap: theme.spacing(2),
     justifyContent: 'center',
     gridRowGap: theme.spacing(2),
