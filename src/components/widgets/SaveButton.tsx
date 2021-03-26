@@ -16,7 +16,7 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
     fontFamily: latoFont,
     fontSize: '14px',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-    padding: theme.spacing(.625, 2),
+    padding: theme.spacing(2),
 
     '&:hover': {
       fontWeight: 'bolder',

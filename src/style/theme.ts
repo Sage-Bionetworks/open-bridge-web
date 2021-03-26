@@ -100,7 +100,7 @@ const theme: Theme = createMuiTheme({
         border: '1px solid black',
         fontFamily: latoFont,
 
-        fontWeight: 600,
+        fontWeight: 'normal',
         fontSize: '14px',
         lineHeight: '17px',
         padding: '16px',
