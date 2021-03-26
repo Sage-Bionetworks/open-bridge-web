@@ -19,6 +19,7 @@ import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import { MTBHeading } from '../widgets/Headings'
 import Loader from '../widgets/Loader'
 import StudyCard from './StudyCard'
+import _ from 'lodash'
 
 type StudyListOwnProps = {}
 
@@ -27,6 +28,7 @@ type StudySublistProps = {
   studies: Study[]
   onAction: Function
   renameStudyId: string
+  newStudyID: String | null
 }
 
 type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME'
@@ -115,6 +117,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   //onSetAnchor,
   renameStudyId,
   onAction,
+  newStudyID,
 }: StudySublistProps) => {
   const classes = useStyles()
   const item = sections.find(section => section.status === status)!
@@ -127,13 +130,26 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   if (!displayStudies.length) {
     return <></>
   }
+
+  const sortStudies = (a: Study, b: Study, sortBy: String): number => {
+    const dateA = sortBy === 'CREATION' ? a.createdOn! : a.modifiedOn!
+    const dateB = sortBy === 'CREATION' ? b.createdOn! : b.modifiedOn!
+    return dateA >= dateB ? -1 : 1
+  }
+
+  if (status === 'DRAFT') {
+    // _.orderBy(displayStudies, ['modifiedOn'], 'desc')
+    displayStudies.sort((a, b) => sortStudies(a, b, 'LAST_EDIT'))
+  } else {
+    // _.orderBy(displayStudies, ['createdOn'], 'desc')
+    displayStudies.sort((a, b) => sortStudies(a, b, 'CREATION'))
+  }
   return (
     <>
       <MTBHeading variant={'h2'} align={'left'}>
         {' '}
         {item.title}
       </MTBHeading>
-
       <Box className={classes.cardGrid}>
         {displayStudies.map((study, index) => (
           <Link
@@ -151,6 +167,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
               onSetAnchor={(e: HTMLElement) => {
                 onAction(study, 'ANCHOR', e)
               }}
+              isNewlyAddedStudy={newStudyID === study.identifier}
             ></StudyCard>
           </Link>
         ))}
@@ -179,6 +196,14 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const [statusFilters, setStatusFilters] = React.useState<StudyStatus[]>(
     sections.map(section => section.status),
   )
+  const [newStudyID, setNewStudyID] = React.useState<String | null>(null)
+
+  const { data: studies, status, error, run, setData: setStudies } = useAsync<
+    Study[]
+  >({
+    status: 'PENDING',
+    data: [],
+  })
 
   const { data: studies, status, error, run, setData: setStudies } = useAsync<
     Study[]
@@ -191,13 +216,19 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     setStatusFilters(sections.map(section => section.status))
 
   const createStudy = async () => {
+    const ID = getRandomId()
     const newStudy: Study = {
-      identifier: getRandomId(),
+      identifier: ID,
       version: 1,
       clientData: {},
       status: 'DRAFT' as StudyStatus,
       name: 'Untitled Study',
+      createdOn: new Date(),
+      modifiedOn: new Date(),
     }
+
+    setNewStudyID(ID)
+    //setStudies([...studies, newStudy])
 
     const result = await StudyService.createStudy(newStudy, token!)
     setStudies(result)
@@ -214,7 +245,6 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         setStudies(
           studies!.map(s => (s.identifier !== study.identifier ? s : study)),
         )
-        console.log('studies', studies)
         result = await StudyService.updateStudy(study, token)
         setStudies(result)
         setRenameStudyId('')
@@ -251,9 +281,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       if (isSubscribed) {
         try {
           //setIsLoading(true)
-
           const studies = await StudyService.getStudies(token!)
-
           if (isSubscribed) {
             setStudies(studies)
           }
@@ -284,10 +312,9 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   }
 
   return (
-    <Loader
-      reqStatusLoading={status === 'PENDING' || !studies}
-      variant="full"
-    >
+
+    <Loader reqStatusLoading={status === 'PENDING' || !studies} variant="full">
+
       <Container maxWidth="lg" className={classes.studyContainer}>
         <Box display="flex" justifyContent="space-between">
           <ul className={classes.filters} aria-label="filters">
@@ -346,6 +373,9 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                     ? setMenuAnchor({ study: s, anchorEl: e })
                     : onAction(s, action)
                 }}
+
+                newStudyID={newStudyID}
+
               />
             </Box>
           ))}

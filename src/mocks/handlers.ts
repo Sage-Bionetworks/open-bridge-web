@@ -12,6 +12,8 @@ async function getStudies() {
       ...s,
       clientData: s.clientData || {},
       status: s.status as StudyStatus,
+      createdOn: new Date(s.createdOn),
+      modifiedOn: new Date(s.modifiedOn),
     }))
     studies = await setItem<Study[]>(KEYS.STUDIES, mocks)
   }
@@ -106,6 +108,24 @@ export const handlers = [
       }),
     )
   }),
+
+  // create a study
+  rest.post(
+    `*${constants.endpoints.study.replace('/:id', '')}`,
+    async (req, res, ctx) => {
+      const study = req.body as Study
+      const studies = (await getStudies()) || []
+      const newStudies = [...studies, study]
+      await setItem(KEYS.STUDIES, newStudies)
+      return res(
+        ctx.status(201),
+        ctx.json({
+          version: study.version,
+          type: study.status,
+        }),
+      )
+    },
+  ),
 
   //get schedule
   rest.get(`*${constants.endpoints.schedule}`, async (req, res, ctx) => {
