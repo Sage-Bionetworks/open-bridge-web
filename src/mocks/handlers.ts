@@ -114,7 +114,6 @@ export const handlers = [
     `*${constants.endpoints.study.replace('/:id', '')}`,
     async (req, res, ctx) => {
       const study = req.body as Study
-      console.log('inside of handler', req)
       const studies = (await getStudies()) || []
       const newStudies = [...studies, study]
       await setItem(KEYS.STUDIES, newStudies)

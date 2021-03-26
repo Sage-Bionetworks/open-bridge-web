@@ -1,7 +1,7 @@
 import { callEndpoint } from '../helpers/utility'
 import constants from '../types/constants'
 import { Schedule } from '../types/scheduling'
-import { Study, StudyAppDesign } from '../types/types'
+import { Study } from '../types/types'
 
 const StudyService = {
   getStudies,

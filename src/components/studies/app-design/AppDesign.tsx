@@ -23,13 +23,8 @@ import {
 import {
   StudyBuilderComponentProps,
   StudyAppDesign,
-  PreviewFile,
 } from '../../../types/types'
-import {
-  MTBHeadingH1,
-  MTBHeadingH2,
-  MTBHeadingH4,
-} from '../../widgets/Headings'
+import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
 import {
   SimpleTextInput,
@@ -125,7 +120,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontSize: '15px',
     lineHeight: '18px',
   },
-
   contactAndSupportText: {
     fontFamily: playfairDisplayFont,
     fontStyle: 'italic',
@@ -133,7 +127,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontSize: '18px',
     lineHeight: '24px',
   },
-
   phoneArea: {
     marginLeft: theme.spacing(2),
     marginTop: theme.spacing(3),
@@ -150,11 +143,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     justifyContent: 'space-between',
     wordWrap: 'break-word',
   },
-  phoneOutline: {
-    borderRight: '2px solid black',
-    borderLeft: '2px solid black',
-    minHeight: '521px',
-  },
   phoneInner: {
     marginLeft: '6px',
     marginRight: theme.spacing(0.5),
@@ -164,7 +152,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     borderRight: '3px solid black',
     borderLeft: '3px solid black',
   },
-  phoneInnterBottom: {
+  phoneInnerBottom: {
     marginLeft: '5px',
     marginRight: theme.spacing(0.26),
     padding: theme.spacing(4),
@@ -177,7 +165,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     height: '70px',
     overflow: 'hidden',
     marginBottom: theme.spacing(-3),
-
     width: '320px',
     marginLeft: '5px',
     border: '4px solid black',
@@ -241,12 +228,23 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   phoneGrayBackground: {
     backgroundColor: '#F7F7F7',
   },
+  smallScreenText: {
+    fontSize: '15px',
+    marginTop: '30px',
+  },
 }))
 
 type UploadedFile = {
   success: boolean
   fileName: string
   message: string
+}
+
+type PreviewFile = {
+  file: File
+  name: string
+  size: number
+  body?: string
 }
 
 export interface AppDesignProps {
@@ -284,7 +282,6 @@ const PhoneTopBar: React.FunctionComponent<{
   previewFile?: PreviewFile
 }> = ({ color = 'transparent', previewFile }) => {
   const classes = useStyles()
-  // console.log('the body of the current file image is', previewFile?.body)
   return (
     <div className={classes.phoneTopBar} style={{ backgroundColor: color }}>
       {previewFile && (
@@ -313,16 +310,14 @@ const AppDesign: React.FunctionComponent<
 
   const classes = useStyles()
 
-  const [previewFile, setPreviewFile] = useState<PreviewFile>(
-    currentAppDesign.logo || undefined,
-  )
+  const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
 
   const [
     appDesignProperties,
     setAppDesignProperties,
   ] = useState<StudyAppDesign>({
-    logo: previewFile,
+    logo: '',
     backgroundColor: currentAppDesign.backgroundColor || '#6040FF',
     welcomeScreenHeader: currentAppDesign.welcomeScreenHeader || '',
     welcomeScreenBody: currentAppDesign.welcomeScreenBody || '',
@@ -356,17 +351,12 @@ const AppDesign: React.FunctionComponent<
     onUpdate(appDesignProperties)
   }
 
-  useEffect(() => {
-    updateAppDesignInfo()
-    onSave()
-  }, [previewFile])
-
   return (
     <Box className={classes.root}>
       <Paper className={classes.section} elevation={2}>
         <Box className={classes.fields}>
           <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
-          <p style={{ fontSize: '15px', marginTop: '30px' }}>
+          <p className={classes.smallScreenText}>
             When a participant first downloads the app, they will see a Welcome
             screen. You can customize this screen by adding your own logo,
             background color and Welcome message.
@@ -465,7 +455,6 @@ const AppDesign: React.FunctionComponent<
                         ...appDesignProperties,
                         welcomeScreenHeader: e.target.value,
                       })
-                      // setHeader(e.target.value)
                     }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
@@ -498,7 +487,6 @@ const AppDesign: React.FunctionComponent<
                     id="signature-textarea"
                     value={appDesignProperties.welcomeScreenSignature}
                     onChange={e => {
-                      // setSignature(e.target.value)
                       setAppDesignProperties({
                         ...appDesignProperties,
                         welcomeScreenSignature: e.target.value,
@@ -540,7 +528,7 @@ const AppDesign: React.FunctionComponent<
       <Paper className={classes.section} elevation={2}>
         <Box className={classes.fields}>
           <MTBHeadingH2>Study Page</MTBHeadingH2>
-          <p style={{ fontSize: '15px', marginTop: '30px' }}>
+          <p className={classes.smallScreenText}>
             Within the app, there will be a dedicated page where you can
             describe your study further and list who to contact for participant
             support.
@@ -857,7 +845,7 @@ const AppDesign: React.FunctionComponent<
               color={appDesignProperties.backgroundColor}
               previewFile={previewFile}
             />
-            <div className={classes.phoneInnterBottom}>
+            <div className={classes.phoneInnerBottom}>
               <div className={classes.headlineStyle}>
                 {appDesignProperties.studyTitle || 'Title of study...'}
               </div>
@@ -885,7 +873,7 @@ const AppDesign: React.FunctionComponent<
               />
             </div>
             <div
-              className={`${classes.phoneInnterBottom} ${classes.phoneGrayBackground}`}
+              className={`${classes.phoneInnerBottom} ${classes.phoneGrayBackground}`}
             >
               <div className={classes.contactAndSupportText}>
                 Contact & support

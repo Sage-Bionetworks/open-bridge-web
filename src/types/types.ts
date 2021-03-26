@@ -115,7 +115,7 @@ export type Study = {
 }
 
 export type StudyAppDesign = {
-  logo: PreviewFile
+  logo: string
   backgroundColor: string
   welcomeScreenHeader: string
   welcomeScreenBody: string
@@ -198,13 +198,6 @@ export type Phone = {
   number: string
   regionCode: string
   nationalFormat?: string
-}
-
-export type PreviewFile = {
-  file: File
-  name: string
-  size: number
-  body?: string
 }
 
 // POST MVP
