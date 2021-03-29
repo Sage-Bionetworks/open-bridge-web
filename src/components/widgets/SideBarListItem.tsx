@@ -37,9 +37,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     '&$listItemCollapsed': {
       paddingLeft: theme.spacing(0),
     },
-    '&$listItemActive&$listItemCollapsed': {
-      paddingLeft: theme.spacing(0),
-    },
     '&:hover': {
       backgroundColor: '#f7f7f7',
     },
