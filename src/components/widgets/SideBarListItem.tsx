@@ -35,10 +35,10 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       paddingLeft: theme.spacing(0.5),
     },
     '&$listItemCollapsed': {
-      paddingLeft: theme.spacing(1),
+      paddingLeft: theme.spacing(0),
     },
     '&$listItemActive&$listItemCollapsed': {
-      paddingLeft: theme.spacing(0.5),
+      paddingLeft: theme.spacing(0),
     },
     '&:hover': {
       backgroundColor: '#f7f7f7',

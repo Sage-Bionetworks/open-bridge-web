@@ -89,6 +89,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   listItems: {
     padding: theme.spacing(0),
   },
+  listItemCollapsed: {
+    marginLeft: theme.spacing(-0.5),
+  },
 }))
 
 type StudyLeftNavOwnProps = {
@@ -180,7 +183,14 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
               styleProps={classes.listItems}
               inStudyBuilder={true}
             >
-              <div className={classes.navIconImageContainer}>
+              <div
+                className={clsx(
+                  classes.navIconImageContainer,
+                  sectionLink.path === currentSection &&
+                    !open &&
+                    classes.listItemCollapsed,
+                )}
+              >
                 <img
                   src={typeOfIcon(index, sectionLink.path)[index]}
                   className={classes.navIcon}
