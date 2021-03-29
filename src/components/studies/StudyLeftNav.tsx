@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     flexDirection: 'row',
   },
   listItems: {
-    padding: '0px',
+    padding: theme.spacing(0),
   },
 }))
 
