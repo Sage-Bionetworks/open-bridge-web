@@ -70,14 +70,14 @@ const useStyles = makeStyles(theme =>
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
-      marginLeft: '-26px',
+      marginLeft: '-28px',
       marginTop: '20px',
       marginBottom: '20px',
     },
     icon: {
       marginRight: '8px',
-      width: '18px',
-      height: '18px',
+      width: '20px',
+      height: '20px',
     },
     divider: {
       marginTop: '16px',
@@ -92,6 +92,14 @@ const useStyles = makeStyles(theme =>
     overallBackground: {
       textAlign: 'center',
       backgroundColor: '#F8F8F8',
+    },
+    validatedIcon: {
+      marginRight: '8px',
+      width: '24px',
+      height: '24px',
+    },
+    imageTextRowValidatedIcon: {
+      marginLeft: '-31px',
     },
   }),
 )
@@ -163,9 +171,14 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                 <div className={classes.titleText}>{data.title}</div>
                 <Box>{data.summary}</Box>
                 <Divider className={classes.divider} />
-                <div className={classes.imageTextRow}>
+                <div
+                  className={clsx(
+                    classes.imageTextRow,
+                    classes.imageTextRowValidatedIcon,
+                  )}
+                >
                   <img
-                    className={classes.icon}
+                    className={classes.validatedIcon}
                     src={ScientificallyValidatedIcon}
                     alt="scientifically_validated_icon"
                   ></img>
