@@ -11,9 +11,15 @@ import {
   useStudyInfoDataState
 } from '../../helpers/StudyInfoContext'
 import { setBodyClass } from '../../helpers/utility'
+import AssessmentService from '../../services/assessment.service'
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
-import { Schedule, StudySession } from '../../types/scheduling'
+import {
+  AssessmentWindow,
+  Schedule,
+  StartEventId,
+  StudySession
+} from '../../types/scheduling'
 import { StringDictionary, Study, StudyAppDesign } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
@@ -23,6 +29,7 @@ import EnrollmentTypeSelector from './enrollment-type-selector/EnrollmentTypeSel
 import Launch from './launch/Launch'
 import NavButtons from './NavButtons'
 import PassiveFeatures from './passive-features/PassiveFeatures'
+import IntroInfo from './scheduler/IntroInfo'
 import Scheduler from './scheduler/Scheduler'
 import { StudySection } from './sections'
 import SessionCreator from './session-creator/SessionCreator'
@@ -92,6 +99,46 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
   const setData = (builderInfo: StudyInfoData) => {
     studyDataUpdateFn({ type: 'SET_ALL', payload: builderInfo })
+
+    //updating on the intro screen
+   
+  }
+
+  const createSchedule = async (
+    studyId: string,
+    duration: string,
+    start: StartEventId,
+  ) => {
+    const defaultAssessment = await (
+      await AssessmentService.getAssessmentsWithResources()
+    ).assessments[0]
+    const defaultTimeWindow: AssessmentWindow = {
+      startTime: '08:00',
+    }
+    let studySession: StudySession = {
+      name: 'Session1',
+      startEventId: start,
+      timeWindows: [defaultTimeWindow],
+      performanceOrder: 'participant_choice',
+      assessments: [defaultAssessment],
+    }
+    let schedule: Schedule = {
+      guid: '',
+      name: studyId,
+      duration,
+      sessions: [studySession],
+    }
+    const newSchedule = await StudyService.createNewStudySchedule(
+      schedule,
+      token!,
+    )
+    alert(newSchedule.guid)
+    let updatedStudy = {
+      ...builderInfo.study,
+      scheduleGuid: newSchedule.guid,
+    }
+    const result = await saveStudy(updatedStudy)
+    setData({ schedule: newSchedule, study: updatedStudy })
   }
 
   const saveStudy = async (study?: Study) => {
@@ -110,7 +157,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       if (!schedule || !token) {
         return
       }
-      await StudyService.saveStudySchedule(schedule, token)
+      const sched = await StudyService.saveStudySchedule(schedule, token)
+      setData({
+        ...builderInfo,
+        schedule: sched,
+      })
+      
       setHasObjectChanged(false)
     } catch (e) {
       throw new Error(e)
@@ -167,6 +219,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       onNavigate={(section: StudySection) => changeSection(section)}
     ></NavButtons>
   )
+  if (builderInfo.study && !builderInfo.schedule) {
+    return (
+      <Box>
+        {' '}
+        <IntroInfo onContinue={(duration: string, startEventId: StartEventId)=>createSchedule(builderInfo.study.identifier, duration, startEventId)}></IntroInfo>
+      </Box>
+    )
+  }
   return (
     <>
       <Box bgcolor="white" pt={9} pb={2} pl={open ? 29 : 15}>
@@ -293,11 +353,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         }}
                         onUpdate={(data: StudyAppDesign) => {
                           setHasObjectChanged(true)
-                          const updatedStudy = {...builderInfo.study}
+                          const updatedStudy = { ...builderInfo.study }
                           updatedStudy.clientData.appDesign = data
-              
+
                           setData({
-                            ...builderInfo, study:  updatedStudy
+                            ...builderInfo,
+                            study: updatedStudy,
                           })
                         }}
                       >

@@ -1,7 +1,4 @@
-import { rest } from 'msw'
-import { getRandomId } from '../helpers/utility'
 import { getItem, KEYS, MOCKS, setItem } from '../services/lshelper'
-import constants from '../types/constants'
 import { Schedule } from '../types/scheduling'
 import { Study, StudyStatus } from '../types/types'
 
@@ -27,6 +24,7 @@ async function getAllSchedules(): Promise<Schedule[]> {
 
 export const handlers = [
   // get all studies
+  /*
   rest.get(`*${constants.endpoints.studies}`, async (req, res, ctx) => {
     // Check if the user is authenticated in this session
     //const isAuthenticated = sessionStorage.getItem('is-authenticated')
@@ -183,7 +181,7 @@ export const handlers = [
         data: newSchedule,
       }),
     )
-  }),
+  }),*/
 
   /* ****************************
    * THOSE ENDPOINTS EXIST. THEY ARE REPLACED FOR TESTING. COMMENT THEM OUT TO GET THE REAL RESPONSE

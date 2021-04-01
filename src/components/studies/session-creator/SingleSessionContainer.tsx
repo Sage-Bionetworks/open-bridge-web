@@ -138,14 +138,14 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
       dropResult.source,
       dropResult.destination,
     )
-    onUpdateAssessmentList(studySession.guid, newAssessmentList)
+    onUpdateAssessmentList(studySession.guid!, newAssessmentList)
   }
 
   const removeAssessment = (assessmentId: string) => {
     if (!studySession.assessments) {return}
 
     onUpdateAssessmentList(
-      studySession.guid,
+      studySession.guid!,
       studySession.assessments.filter(a => a.guid !== assessmentId),
     )
   }
@@ -170,7 +170,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                 component="h4"
                 initValue={studySession.name}
                 onTriggerUpdate={(newValue: string) =>
-                  onUpdateSessionName(studySession.guid, newValue)
+                  onUpdateSessionName(studySession.guid!, newValue)
                 }
               ></EditableTextbox>
             </SessionIcon>
@@ -181,7 +181,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
             className={classes.btnDeleteSession}
             onClick={e => {
               e.stopPropagation()
-              //onRemoveSession(studySession.guid)
+              //onRemoveSession(studySession.guid!)
               setIsConfirmDeleteOpen(true)
             }}
           >
@@ -201,7 +201,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
           }
         >
           <div className={classes.droppable}>
-            <Droppable droppableId={studySession.guid} type="ASSESSMENT">
+            <Droppable droppableId={studySession.guid!} type="ASSESSMENT">
               {(provided, snapshot) => (
                 <div
                   className={clsx({
@@ -262,7 +262,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
     <>
       <Box
         className={clsx(classes.root /*, studySession?.active && 'active')*/)}
-        onClick={() => onSetActiveSession(studySession.guid)}
+        onClick={() => onSetActiveSession(studySession.guid!)}
       >
         {getInner(studySession, sessionIndex)}
 
@@ -293,7 +293,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
         onCancel={() => setIsConfirmDeleteOpen(false)}
         onConfirm={() => {
           setIsConfirmDeleteOpen(false)
-          onRemoveSession(studySession.guid)
+          onRemoveSession(studySession.guid!)
         }}
       >
         <div>

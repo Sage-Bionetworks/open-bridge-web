@@ -154,7 +154,7 @@ const Scheduler: FunctionComponent<
     scheduleUpdateFn({
       type: ActionTypes.UpdateSessionSchedule,
       payload: {
-        sessionId: session.guid,
+        sessionId: session.guid!,
         schedule: updatedSchedule,
       },
     })
@@ -241,7 +241,7 @@ const Scheduler: FunctionComponent<
 
                       scheduleUpdateFn({
                         type: ActionTypes.UpdateSessionSchedule,
-                        payload: { sessionId: session.guid, schedule },
+                        payload: { sessionId: session.guid!, schedule },
                       })
                     }}
 
@@ -255,11 +255,11 @@ const Scheduler: FunctionComponent<
                 <SchedulableSingleSessionContainer
                   key={session.guid}
                   studySession={session}
-                  onSaveSessionSchedule={() => saveSession(session.guid)}
+                  onSaveSessionSchedule={() => saveSession(session.guid!)}
                   onUpdateSessionSchedule={(schedule: SessionSchedule) => {
                     scheduleUpdateFn({
                       type: ActionTypes.UpdateSessionSchedule,
-                      payload: { sessionId: session.guid, schedule },
+                      payload: { sessionId: session.guid!, schedule },
                     })
                   }}
                 ></SchedulableSingleSessionContainer>

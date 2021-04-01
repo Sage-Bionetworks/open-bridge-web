@@ -182,7 +182,7 @@ const SessionCreator: FunctionComponent<
           {sessions.map((session, index) => (
             <Paper
               className={classes.sessionContainer}
-              key={session.guid + index}
+              key={session.guid! + index}
             >
               <SingleSessionContainer
                 key={session.guid}
@@ -267,7 +267,7 @@ const SessionCreator: FunctionComponent<
                   setIsAddingAssessmentToSession(true)
 
                   await updateAssessments(
-                    getActiveSession(sessions)!.guid,
+                    getActiveSession(sessions)!.guid!,
                     getActiveSession(sessions)!.assessments,
                     selectedAssessments,
                   )

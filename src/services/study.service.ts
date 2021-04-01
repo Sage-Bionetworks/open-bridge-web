@@ -10,6 +10,7 @@ const StudyService = {
   removeStudy,
   updateStudy,
   createStudySchedule,
+  createNewStudySchedule,
   getStudySchedule,
   saveStudySchedule,
 }
@@ -58,14 +59,27 @@ async function createStudySchedule(
   const result = await callEndpoint<string>(
     constants.endpoints.schedule.replace('/:id', ''),
     'POST', // once we add things to the study -- we can change this to actual object
-
     { name },
+    token,
+  )
+  return result.data
+}
 
+async function createNewStudySchedule(
+  schedule: Schedule,
+
+  token: string,
+): Promise<Schedule> {
+  const result = await callEndpoint<Schedule>(
+    constants.endpoints.schedule.replace('/:id', ''),
+    'POST', // once we add things to the study -- we can change this to actual object
+    { ...schedule, guid: undefined },
     token,
   )
 
   return result.data
 }
+
 async function updateStudy(study: Study, token: string): Promise<Study[]> {
   const payload = {
     clientData: study.clientData,
@@ -100,30 +114,37 @@ async function removeStudy(studyId: string, token: string): Promise<Study[]> {
 async function saveStudySchedule(
   schedule: Schedule,
   token: string,
-): Promise<void> {
-  await callEndpoint<any>(
+): Promise<Schedule> {
+  const response = await callEndpoint<Schedule>(
     constants.endpoints.schedule.replace(':id', schedule.guid),
     'POST',
     schedule,
     token,
   )
 
-  return
+  return response.data
 }
 
 //returns scehdule and sessions
 async function getStudySchedule(
   studyId: string,
   token: string,
-): Promise<Schedule> {
-  const { data } = await callEndpoint<{ data: Schedule }>(
+): Promise<Schedule | undefined> {
+  //this will change. Now we just do by name
+  /*const { data } = await callEndpoint<{ data: Schedule }>(
     constants.endpoints.schedule.replace(':id', studyId),
+    'GET',
+    {},
+    token,*/
+  const schedules = await callEndpoint<{ items: Schedule[] }>(
+    constants.endpoints.schedule.replace(':id', ''),
     'GET',
     {},
     token,
   )
 
-  return data.data
+  const result = schedules.data.items.find(s => s.name.includes(studyId))
+  return result
 }
 
 export default StudyService

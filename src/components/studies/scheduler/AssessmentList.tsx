@@ -1,12 +1,12 @@
 import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  Grid,
-  makeStyles,
-  Switch,
-  Typography
+    Box,
+    Checkbox,
+    FormControlLabel,
+    FormGroup,
+    Grid,
+    makeStyles,
+    Switch,
+    Typography
 } from '@material-ui/core'
 import ClockIcon from '@material-ui/icons/AccessTime'
 import clsx from 'clsx'
@@ -111,7 +111,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
         {studySession.assessments &&
           studySession.assessments.map((assessment, index) => (
             <Box
-              key={studySession.guid+assessment.guid+index}
+              key={studySession.guid!+assessment.guid+index}
               style={
                 performanceOrder === 'randomized'
                   ? getMargins(index, studySession.assessments?.length || 0)
