@@ -15,9 +15,11 @@ import { useUserSessionDataState } from '../../helpers/AuthContext'
 import AssessmentService from '../../services/assessment.service'
 import { Assessment } from '../../types/types'
 import BreadCrumb from '../widgets/BreadCrumb'
-import ObjectDebug from '../widgets/ObjectDebug'
 import AssessmentImage from './AssessmentImage'
 import { playfairDisplayFont, poppinsFont } from '../../style/theme'
+import ClockIcon from '../../assets/clock.svg'
+import ScientificallyValidatedIcon from '../../assets/scientifically_validated_icon.svg'
+import OfficialMobileToolboxVersion from '../../assets/official_mobile_toolbox_icon.svg'
 import clsx from 'clsx'
 
 const useStyles = makeStyles(theme =>
@@ -54,7 +56,28 @@ const useStyles = makeStyles(theme =>
     row: {
       display: 'flex',
       flexDirection: 'row',
+    },
+    overallContainer: {
+      backgroundColor: '#F8F8F8',
+      minHeight: '100vh',
+    },
+    informationTextInContainer: {
+      fontSize: '14px',
+      lineHeight: '18px',
+      fontFamily: poppinsFont,
+    },
+    imageTextRow: {
+      display: 'flex',
+      flexDirection: 'row',
       alignItems: 'center',
+      marginLeft: '-26px',
+      marginTop: '20px',
+      marginBottom: '20px',
+    },
+    icon: {
+      marginRight: '8px',
+      width: '18px',
+      height: '18px',
     },
   }),
 )
@@ -83,8 +106,6 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
   const correctResource = data?.resources?.find(
     resource => resource.category === 'website',
   )
-  console.log(correctResource, 'this is the correct resource!')
-
   React.useEffect(() => {
     ///your async call
     return run(
@@ -106,7 +127,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
     handleError(error!)
   } else {
     return (
-      <div style={{ backgroundColor: '#F8F8F8', minHeight: '100vh' }}>
+      <div className={classes.overallContainer}>
         <Paper className={classes.breadCrumbs}>
           <BreadCrumb links={links} currentItem={data.title}></BreadCrumb>
         </Paper>
@@ -144,10 +165,38 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                     width: '100%',
                   }}
                 />
-                <div className={classes.informationText}>
-                  {data.duration} min
+                <div className={classes.imageTextRow}>
+                  <img
+                    className={classes.icon}
+                    src={ScientificallyValidatedIcon}
+                    alt="scientifically_validated_icon"
+                  ></img>
+                  <div className={classes.informationTextInContainer}>
+                    Scientifically Validated
+                  </div>
                 </div>
-                <div className={classes.informationText}>[Age: 18+]</div>
+                <div className={classes.imageTextRow}>
+                  <img
+                    className={classes.icon}
+                    src={OfficialMobileToolboxVersion}
+                    alt="official_mobile_toolbox_icon"
+                  ></img>
+                  <div className={classes.informationTextInContainer}>
+                    Official Mobile Toolbox version
+                  </div>
+                </div>
+                <div className={classes.imageTextRow}>
+                  <img
+                    className={classes.icon}
+                    src={ClockIcon}
+                    alt="clock_icon"
+                  ></img>
+                  <div className={classes.informationTextInContainer}>
+                    {data.duration} min
+                  </div>
+                </div>
+
+                <div className={classes.informationText}>[Age: 18 +]</div>
                 <div className={clsx(classes.informationText, classes.row)}>
                   <div style={{ width: '100px' }}>Designed By:</div>
                   <div>
