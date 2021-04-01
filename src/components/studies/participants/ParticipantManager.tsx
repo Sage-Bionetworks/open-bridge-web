@@ -35,6 +35,7 @@ import {
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
+import HelpBox from '../../widgets/HelpBox'
 import {
   DialogButtonPrimary,
   DialogButtonSecondary
@@ -415,7 +416,41 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         </Box>
         <Button onClick={() => makeTestGroup()}>Make test group [test]</Button>
 
-        <Box px={3} py={2}>
+        <Box px={3} py={2} position="relative">
+          {!data?.items.length && !isEdit && (
+            <HelpBox
+              topOffset={40}
+              leftOffset={160}
+              arrowTailLength={150}
+              helpTextTopOffset={40}
+              helpTextLeftOffset={100}
+              arrowRotate={45}
+            >
+              <div>
+                Currently there are no participants enrolled in this study. To
+                add participants, switch to Edit mode.
+              </div>
+            </HelpBox>
+          )}
+
+          {!data?.items.length && isEdit && (
+            <HelpBox
+              topOffset={340}
+              leftOffset={250}
+              arrowTailLength={150}
+              helpTextTopOffset={-70}
+              helpTextLeftOffset={140}
+              helpTextWidth={250}
+              arrowRotate={0}
+            >
+              <div>
+                You can upload a .csv or enter each participant credentials one
+                by one. When you are done, return to “View” mode to send them an
+                SMS link to download the app.
+              </div>
+            </HelpBox>
+          )}
+
           <Grid
             component="label"
             container
