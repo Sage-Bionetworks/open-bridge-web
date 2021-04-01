@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     lineHeight: '20px',
   },
   addMargin: {
-    marginLeft: '10px',
+    marginLeft: theme.spacing(1.25),
   },
   backIcon: {
     width: '18px',
