@@ -98,15 +98,13 @@ const SideBarListItem: React.FunctionComponent<SideBarListItemProps> = ({
   const classes = useStyles()
   return (
     <li
-      className={clsx(
-        !inStudyBuilder && classes.listItem,
-        inStudyBuilder && classes.studyBuilderListItem,
-        {
-          [classes.listItemDark]: variant === 'dark',
-          [classes.listItemActive]: isActive,
-          [classes.listItemCollapsed]: !isOpen,
-        },
-      )}
+      className={clsx({
+        [classes.listItem]: !inStudyBuilder,
+        [classes.studyBuilderListItem]: inStudyBuilder,
+        [classes.listItemDark]: variant === 'dark',
+        [classes.listItemActive]: isActive,
+        [classes.listItemCollapsed]: !isOpen,
+      })}
     >
       <Button
         onClick={() => onClick()}
