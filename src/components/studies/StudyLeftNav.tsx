@@ -3,12 +3,22 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
-import CreateSessionIcon from '../../assets/create_session_icon.svg'
-import CustomizeAppIcon from '../../assets/customize_app_icon.svg'
-import LaunchStudyIcon from '../../assets/launch_study_icon.svg'
-import PassiveFeaturesIcon from '../../assets/passive_features_icon.svg'
-import PreviewStudyIcon from '../../assets/preview_study_icon.svg'
-import ScheduleSesssionsIcon from '../../assets/schedule_sessions_icon.svg'
+import CreateSessionRegularIcon from '../../assets/study-builder-icons/normal/create_sessions_normal_icon.svg'
+import CustomizeAppRegularIcon from '../../assets/study-builder-icons/normal/customize_app_normal_icon.svg'
+import LaunchStudyRegularIcon from '../../assets/study-builder-icons/normal/launch_study_normal_icon.svg'
+import RecordersRegularIcon from '../../assets/study-builder-icons/normal/recorders_normal_icon.svg'
+import PreviewStudyRegaularIcon from '../../assets/study-builder-icons/normal/preview_study_normal_icon.svg'
+import ScheduleSessionsRegularIcon from '../../assets/study-builder-icons/normal/schedule_sessions_normal_icon.svg'
+import EnrollmentTypeRegularIcon from '../../assets/study-builder-icons/normal/enrollment_type_normal_icon.svg'
+
+import CreateSessionHoveredIcon from '../../assets/study-builder-icons/hovered/create_sessions_hover_icon.svg'
+import CustomizeAppHoveredIcon from '../../assets/study-builder-icons/hovered/customize_app_hover_icon.svg'
+import LaunchStudyHoveredIcon from '../../assets/study-builder-icons/hovered/launch_study_hover_icon.svg'
+import RecordersHoveredIcon from '../../assets/study-builder-icons/hovered/recorders_hover_icon.svg'
+import PreviewStudyHoveredIcon from '../../assets/study-builder-icons/hovered/preview_study_hover_icon.svg'
+import ScheduleSessionsHoveredIcon from '../../assets/study-builder-icons/hovered/schedule_sessions_hover_icon.svg'
+import EnrollmentTypeHoveredIcon from '../../assets/study-builder-icons/hovered/enrollment_type_hover_icon.svg'
+
 import { ThemeType } from '../../style/theme'
 import SideBarListItem from '../widgets/SideBarListItem'
 import { SECTIONS as sectionLinks, StudySection } from './sections'
@@ -65,13 +75,22 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   navIcon: {
     marginRight: theme.spacing(2),
-    width: '18px',
-    height: '18px',
+    width: '48px',
+    height: '48px',
     alignSelf: 'center',
     justifyContent: 'center',
   },
   navIconImageContainer: {
     display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  listItems: {
+    padding: theme.spacing(0),
+  },
+  listItemCollapsed: {
+    marginLeft: theme.spacing(-0.5),
   },
 }))
 
@@ -94,15 +113,34 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
 }) => {
   const classes = useStyles()
 
-  const navIcons = [
-    CustomizeAppIcon,
-    CreateSessionIcon,
-    ScheduleSesssionsIcon,
-    CreateSessionIcon,
-    PassiveFeaturesIcon,
-    PreviewStudyIcon,
-    LaunchStudyIcon,
+  const [currentHoveredElement, setCurrentHoveredElement] = React.useState(-1)
+
+  const normalNavIcons = [
+    CustomizeAppRegularIcon,
+    CreateSessionRegularIcon,
+    ScheduleSessionsRegularIcon,
+    EnrollmentTypeRegularIcon,
+    RecordersRegularIcon,
+    PreviewStudyRegaularIcon,
+    LaunchStudyRegularIcon,
   ]
+  const hoverNavIcons = [
+    CustomizeAppHoveredIcon,
+    CreateSessionHoveredIcon,
+    ScheduleSessionsHoveredIcon,
+    EnrollmentTypeHoveredIcon,
+    RecordersHoveredIcon,
+    PreviewStudyHoveredIcon,
+    LaunchStudyHoveredIcon,
+  ]
+
+  function typeOfIcon(index: number, sectionPath: string) {
+    if (index === currentHoveredElement || sectionPath === currentSection) {
+      return hoverNavIcons
+    } else {
+      return normalNavIcons
+    }
+  }
 
   const toggleDrawer = () => {
     onToggle()
@@ -133,17 +171,35 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
       </Box>
       <ul className={classes.list}>
         {sectionLinks.map((sectionLink, index) => (
-          <SideBarListItem
-            key={sectionLink.path}
-            isOpen={open}
-            isActive={sectionLink.path === currentSection}
-            onClick={() => onNavigate(sectionLink.path)}
+          <div
+            onMouseOver={() => setCurrentHoveredElement(index)}
+            onMouseOut={() => setCurrentHoveredElement(-1)}
           >
-            <div className={classes.navIconImageContainer}>
-              <img src={navIcons[index]} className={classes.navIcon} alt={sectionLink.name} />
-              <span>{sectionLink.name}</span>
-            </div>
-          </SideBarListItem>
+            <SideBarListItem
+              key={sectionLink.path}
+              isOpen={open}
+              isActive={sectionLink.path === currentSection}
+              onClick={() => onNavigate(sectionLink.path)}
+              styleProps={classes.listItems}
+              inStudyBuilder={true}
+            >
+              <div
+                className={clsx(
+                  classes.navIconImageContainer,
+                  sectionLink.path === currentSection &&
+                    !open &&
+                    classes.listItemCollapsed,
+                )}
+              >
+                <img
+                  src={typeOfIcon(index, sectionLink.path)[index]}
+                  className={classes.navIcon}
+                  alt={sectionLink.name}
+                />
+                <span>{sectionLink.name}</span>
+              </div>
+            </SideBarListItem>
+          </div>
         ))}
       </ul>
     </Drawer>

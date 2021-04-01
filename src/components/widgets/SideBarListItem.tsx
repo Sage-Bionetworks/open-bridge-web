@@ -26,7 +26,21 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       backgroundColor: '#f7f7f7',
     },
   },
-
+  studyBuilderListItem: {
+    color: theme.palette.action.active,
+    paddingLeft: theme.spacing(1),
+    '&$listItemActive': {
+      borderLeft: '4px solid #BCD5E4',
+      backgroundColor: '#FAFAFA',
+      paddingLeft: theme.spacing(0.5),
+    },
+    '&$listItemCollapsed': {
+      paddingLeft: theme.spacing(0),
+    },
+    '&:hover': {
+      backgroundColor: '#f7f7f7',
+    },
+  },
   listItemDark: {
     color: theme.palette.common.white,
     '& $linkLabel': {
@@ -63,36 +77,38 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 }))
 
 export interface SideBarListItemProps {
-
   isOpen: boolean
   isActive: boolean
   onClick: Function
   children: React.ReactNode
   variant?: 'light' | 'dark'
+  styleProps?: string
+  inStudyBuilder?: boolean
 }
 
 const SideBarListItem: React.FunctionComponent<SideBarListItemProps> = ({
-
   isOpen,
   isActive,
   onClick,
   children,
-  variant='light'
+  variant = 'light',
+  styleProps,
+  inStudyBuilder,
 }: SideBarListItemProps) => {
   const classes = useStyles()
   return (
     <li
-  
-      className={clsx(classes.listItem, {
-        [classes.listItemDark]: variant === 'dark', 
+      className={clsx({
+        [classes.listItem]: !inStudyBuilder,
+        [classes.studyBuilderListItem]: inStudyBuilder,
+        [classes.listItemDark]: variant === 'dark',
         [classes.listItemActive]: isActive,
         [classes.listItemCollapsed]: !isOpen,
       })}
     >
       <Button
-   
         onClick={() => onClick()}
-        className={classes.link}
+        className={clsx(classes.link, styleProps && styleProps)}
         classes={{ label: classes.linkLabel }}
       >
         {children}
