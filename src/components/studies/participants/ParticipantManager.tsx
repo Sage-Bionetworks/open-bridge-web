@@ -417,36 +417,39 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         <Button onClick={() => makeTestGroup()}>Make test group [test]</Button>
 
         <Box px={3} py={2} position="relative">
-       { (!data?.items.length && !isEdit) && <HelpBox
-            topOffset={40}
-            leftOffset={160}
-            arrowTailLength={150}
-            helpTextTopOffset={40}
-            helpTextLeftOffset={100}
-            arrowRotate={45}
-          >
-            <div>
-              Currently there are no participants enrolled in this study. To add
-              participants, switch to Edit mode.
-            </div>
-          </HelpBox> }
-          
-          { (!data?.items.length && isEdit) &&  <HelpBox
-          topOffset={340}
-          leftOffset={250}
-          arrowTailLength={150}
-          helpTextTopOffset={-70}
-          helpTextLeftOffset={140}
-          helpTextWidth={250}
-          arrowRotate={0}
-        >
-          <div>
-          You can upload a .csv or enter each participant credentials one by one. When you are done, return to “View” mode to send them an SMS link to download the app.
+          {!data?.items.length && !isEdit && (
+            <HelpBox
+              topOffset={40}
+              leftOffset={160}
+              arrowTailLength={150}
+              helpTextTopOffset={40}
+              helpTextLeftOffset={100}
+              arrowRotate={45}
+            >
+              <div>
+                Currently there are no participants enrolled in this study. To
+                add participants, switch to Edit mode.
+              </div>
+            </HelpBox>
+          )}
 
-          </div>
-        </HelpBox>}
-
-
+          {!data?.items.length && isEdit && (
+            <HelpBox
+              topOffset={340}
+              leftOffset={250}
+              arrowTailLength={150}
+              helpTextTopOffset={-70}
+              helpTextLeftOffset={140}
+              helpTextWidth={250}
+              arrowRotate={0}
+            >
+              <div>
+                You can upload a .csv or enter each participant credentials one
+                by one. When you are done, return to “View” mode to send them an
+                SMS link to download the app.
+              </div>
+            </HelpBox>
+          )}
 
           <Grid
             component="label"
@@ -507,7 +510,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               }}
             ></AddParticipants>
           </>
-        <Box py={0} pr={3} pl={2}>
+          <Box py={0} pr={3} pl={2}>
             <Tabs
               value={tab}
               variant="standard"
@@ -624,8 +627,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             >
               <span>Withdrawn participants will go here</span>
             </div>
-          </Box> 
-
+          </Box>
 
           <Box textAlign="center" pl={2}>
             ADD A PARTICIPANT

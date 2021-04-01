@@ -74,7 +74,6 @@ export interface ButtonStyleProps {
   leftOffset?: number
   topOffset?: number
   arrowTailLength?: number
-  //children: ReactNode
 }
 
 const HelpBox: React.FunctionComponent<ButtonStyleProps> = ({
@@ -94,7 +93,6 @@ const HelpBox: React.FunctionComponent<ButtonStyleProps> = ({
     arrowTailLength,
     helpTextTopOffset,
   })
-
 
   return (
     <Box zIndex="100" position="absolute" left={leftOffset} top={topOffset}>
