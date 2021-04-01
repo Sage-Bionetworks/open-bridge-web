@@ -18,7 +18,7 @@ import BreadCrumb from '../widgets/BreadCrumb'
 import AssessmentImage from './AssessmentImage'
 import { playfairDisplayFont, poppinsFont } from '../../style/theme'
 import ClockIcon from '../../assets/clock.svg'
-import ScientificallyValidatedIcon from '../../assets/scientifically_validated_icon.svg'
+import ScientificallyValidatedIcon from '../../assets/validated.svg'
 import OfficialMobileToolboxVersion from '../../assets/official_mobile_toolbox_icon.svg'
 import clsx from 'clsx'
 
@@ -79,6 +79,20 @@ const useStyles = makeStyles(theme =>
       width: '18px',
       height: '18px',
     },
+    divider: {
+      marginTop: '16px',
+      marginBottom: '20px',
+      width: '100%',
+    },
+    informationBox: {
+      padding: '12px',
+      paddingTop: '40px',
+      borderRadius: '0px',
+    },
+    overallBackground: {
+      textAlign: 'center',
+      backgroundColor: '#F8F8F8',
+    },
   }),
 )
 
@@ -131,19 +145,9 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
         <Paper className={classes.breadCrumbs}>
           <BreadCrumb links={links} currentItem={data.title}></BreadCrumb>
         </Paper>
-        <Container
-          maxWidth="lg"
-          style={{ textAlign: 'center', backgroundColor: '#F8F8F8' }}
-        >
+        <Container maxWidth="lg" className={classes.overallBackground}>
           <Paper className="classes.container">
-            <Box
-              display="flex"
-              style={{
-                padding: '12px',
-                paddingTop: '40px',
-                borderRadius: '0px',
-              }}
-            >
+            <Box display="flex" className={classes.informationBox}>
               <Box width="530px" marginRight="32px">
                 <AssessmentImage
                   name="X"
@@ -158,13 +162,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                 </Typography>
                 <div className={classes.titleText}>{data.title}</div>
                 <Box>{data.summary}</Box>
-                <Divider
-                  style={{
-                    marginTop: '16px',
-                    marginBottom: '20px',
-                    width: '100%',
-                  }}
-                />
+                <Divider className={classes.divider} />
                 <div className={classes.imageTextRow}>
                   <img
                     className={classes.icon}
