@@ -37,13 +37,13 @@ const useStyles = makeStyles(theme =>
       fontStyle: 'italic',
       fontSize: '20px',
       lineHeight: '20px',
-      marginBottom: '15px',
+      marginBottom: theme.spacing(2),
     },
     informationText: {
       fontSize: '14px',
       lineHeight: '18px',
-      marginTop: '20px',
-      marginBottom: '20px',
+      marginTop: theme.spacing(2.5),
+      marginBottom: theme.spacing(2.5),
       fontFamily: poppinsFont,
     },
     titleText: {
@@ -51,7 +51,7 @@ const useStyles = makeStyles(theme =>
       fontSize: '32px',
       fontWeight: 'bold',
       lineHeight: '27px',
-      marginBottom: '32px',
+      marginBottom: theme.spacing(4),
     },
     row: {
       display: 'flex',
@@ -70,23 +70,23 @@ const useStyles = makeStyles(theme =>
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
-      marginLeft: '-28px',
-      marginTop: '20px',
-      marginBottom: '20px',
+      marginLeft: theme.spacing(-3.5),
+      marginTop: theme.spacing(2.5),
+      marginBottom: theme.spacing(2.5),
     },
     icon: {
-      marginRight: '8px',
+      marginRight: theme.spacing(1),
       width: '20px',
       height: '20px',
     },
     divider: {
-      marginTop: '16px',
-      marginBottom: '20px',
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2.5),
       width: '100%',
     },
     informationBox: {
-      padding: '12px',
-      paddingTop: '40px',
+      padding: theme.spacing(1.5),
+      paddingTop: theme.spacing(5),
       borderRadius: '0px',
     },
     overallBackground: {
@@ -95,11 +95,11 @@ const useStyles = makeStyles(theme =>
     },
     validatedIcon: {
       marginRight: '8px',
-      width: '24px',
-      height: '24px',
+      width: theme.spacing(3),
+      height: theme.spacing(3),
     },
     imageTextRowValidatedIcon: {
-      marginLeft: '-31px',
+      marginLeft: theme.spacing(-3.9),
     },
   }),
 )
@@ -123,11 +123,10 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
     data: null,
   })
 
-  console.log('data', data)
-
   const correctResource = data?.resources?.find(
     resource => resource.category === 'website',
   )
+
   React.useEffect(() => {
     ///your async call
     return run(
@@ -206,7 +205,6 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                     {data.duration} min
                   </div>
                 </div>
-
                 <div className={classes.informationText}>[Age: 18 +]</div>
                 <div className={clsx(classes.informationText, classes.row)}>
                   <div style={{ width: '100px' }}>Designed By:</div>
