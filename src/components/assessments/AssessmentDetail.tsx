@@ -85,8 +85,7 @@ const useStyles = makeStyles(theme =>
       width: '100%',
     },
     informationBox: {
-      padding: theme.spacing(1.5),
-      paddingTop: theme.spacing(5),
+      padding: theme.spacing(7.5),
       borderRadius: '0px',
     },
     overallBackground: {
@@ -94,9 +93,9 @@ const useStyles = makeStyles(theme =>
       backgroundColor: '#F8F8F8',
     },
     validatedIcon: {
-      marginRight: '8px',
-      width: theme.spacing(3),
-      height: theme.spacing(3),
+      marginRight: theme.spacing(1),
+      width: '24px',
+      height: '24px',
     },
     imageTextRowValidatedIcon: {
       marginLeft: theme.spacing(-3.9),
@@ -155,7 +154,11 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
         <Container maxWidth="lg" className={classes.overallBackground}>
           <Paper className="classes.container">
             <Box display="flex" className={classes.informationBox}>
-              <Box width="530px" marginRight="32px">
+              <Box
+                width="530px"
+                marginRight="32px"
+                style={{ textAlign: 'left' }}
+              >
                 <AssessmentImage
                   name="X"
                   resources={data.resources}
