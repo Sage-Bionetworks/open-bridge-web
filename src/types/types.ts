@@ -69,7 +69,7 @@ export type AssessmentResource = {
   upToDate: boolean
   url: string
   version: number
-  duration?: number
+
 }
 export type Assessment = {
   createdOn: string
@@ -88,7 +88,7 @@ export type Assessment = {
   type: string
   version: number
   validationStatus: string
-  duration?: number
+  minutesToComplete: number
   resources?: any[]
   originGuid?: string
 }

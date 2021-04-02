@@ -5,22 +5,22 @@ import {
   Divider,
   makeStyles,
   Paper,
-  Typography,
+  Typography
 } from '@material-ui/core'
+import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps, useParams } from 'react-router-dom'
+import ClockIcon from '../../assets/clock.svg'
+import OfficialMobileToolboxVersion from '../../assets/official_mobile_toolbox_icon.svg'
+import ScientificallyValidatedIcon from '../../assets/validated.svg'
 import { useAsync } from '../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
 import AssessmentService from '../../services/assessment.service'
+import { playfairDisplayFont, poppinsFont } from '../../style/theme'
 import { Assessment } from '../../types/types'
 import BreadCrumb from '../widgets/BreadCrumb'
 import AssessmentImage from './AssessmentImage'
-import { playfairDisplayFont, poppinsFont } from '../../style/theme'
-import ClockIcon from '../../assets/clock.svg'
-import ScientificallyValidatedIcon from '../../assets/validated.svg'
-import OfficialMobileToolboxVersion from '../../assets/official_mobile_toolbox_icon.svg'
-import clsx from 'clsx'
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -202,7 +202,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                     alt="clock_icon"
                   ></img>
                   <div className={classes.informationTextInContainer}>
-                    {data.duration} min
+                    {data.minutesToComplete} min
                   </div>
                 </div>
                 <div className={classes.informationText}>[Age: 18 +]</div>

@@ -1,12 +1,12 @@
 import {
-    Box,
-    Checkbox,
-    FormControlLabel,
-    FormGroup,
-    Grid,
-    makeStyles,
-    Switch,
-    Typography
+  Box,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  Grid,
+  makeStyles,
+  Switch,
+  Typography
 } from '@material-ui/core'
 import ClockIcon from '@material-ui/icons/AccessTime'
 import clsx from 'clsx'
@@ -53,7 +53,7 @@ const SessionHeader: React.FunctionComponent<SessionHeaderProps> = ({
   assessments,
 }: SessionHeaderProps) => {
   const totalTime = assessments.reduce(
-    (prev, curr) => prev + Number(curr.duration),
+    (prev, curr) => prev + Number(curr.minutesToComplete),
     0,
   )
   const result = (
