@@ -5,7 +5,9 @@ import {
   Divider,
   FormControl,
   FormGroup,
-  Paper
+  Paper,
+  Switch,
+  Checkbox,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import ReactColorPicker from '@super-effective/react-color-picker'
@@ -19,20 +21,22 @@ import {
   latoFont,
   playfairDisplayFont,
   poppinsFont,
-  ThemeType
+  ThemeType,
 } from '../../../style/theme'
 import {
   StudyAppDesign,
-  StudyBuilderComponentProps
+  StudyBuilderComponentProps,
 } from '../../../types/types'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
 import {
   SimpleTextInput,
-  SimpleTextLabel
+  SimpleTextLabel,
+  AntSwitch,
 } from '../../widgets/StyledComponents'
 import ContactInformation from './ContactInformation'
 import StudySummaryRoles from './StudySummaryRoles'
+import clsx from 'clsx'
 
 const imgHeight = 70
 
@@ -45,6 +49,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     lineHeight: '18px',
     marginTop: '25px',
   },
+  firstPhoneScreenBodyText: {
+    height: '325px',
+  },
   bodyPhoneText: {
     fontFamily: 'Lato',
     fontWeight: 'normal',
@@ -53,7 +60,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginTop: '25px',
   },
   section: {
-    padding: theme.spacing(9, 9, 5, 17),
+    padding: theme.spacing(9, 9, 10, 17),
     display: 'flex',
     justifyContent: 'space-between',
     marginBottom: theme.spacing(2),
@@ -232,6 +239,21 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   smallScreenText: {
     fontSize: '15px',
     marginTop: '30px',
+    whiteSpace: 'pre-wrap',
+  },
+  switchContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    fontSize: '16px',
+    lineHeight: '19px',
+    fontFamily: 'Lato',
+    alignItems: 'center',
+    fontWeight: 'bold',
+    marginTop: '10px',
+    marginBottom: '32px',
+  },
+  hideSection: {
+    display: 'none',
   },
 }))
 
@@ -314,6 +336,16 @@ const AppDesign: React.FunctionComponent<
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
 
+  const [isUsingDefaultMessage, setIsUsingDefaultMessage] = useState(false)
+
+  const [useOptionalDisclaimer, setUseOptionalDisclaimer] = useState(false)
+
+  const defaultHeader = 'Thanks for joining us!'
+  const defaultStudyBody =
+    'We’re excited to have you help us blah blah blah. This is a research study and does not provide medical advice, diagnosis, or treatment.'
+  const defaultSalutations = 'Thank you for your contributions,'
+  const defaultFrom = 'Research Team X'
+
   const [
     appDesignProperties,
     setAppDesignProperties,
@@ -322,7 +354,8 @@ const AppDesign: React.FunctionComponent<
     backgroundColor: currentAppDesign.backgroundColor || '#6040FF',
     welcomeScreenHeader: currentAppDesign.welcomeScreenHeader || '',
     welcomeScreenBody: currentAppDesign.welcomeScreenBody || '',
-    welcomeScreenSignature: currentAppDesign.welcomeScreenSignature || '',
+    welcomeScreenFromText: currentAppDesign.welcomeScreenFromText || '',
+    welcomeScreenSalutation: currentAppDesign.welcomeScreenSalutation || '',
     studyTitle: currentAppDesign.studyTitle || '',
     studySummaryBody: currentAppDesign.studySummaryBody || '',
     leadPrincipleInvestigator: currentAppDesign.leadPrincipleInvestigator || '',
@@ -368,159 +401,239 @@ const AppDesign: React.FunctionComponent<
           <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
           <p className={classes.smallScreenText}>
             When a participant first downloads the app, they will see a Welcome
-            screen. You can customize this screen by adding your own logo,
-            background color and Welcome message.
+            screen.
+            <br></br>
+            <br></br>
+            You can customize this screen by adding your own logo, background
+            color, and message, or select a default message to be shown.
           </p>
-          <ol className={classes.steps}>
-            <Subsection heading="Upload Study Logo">
-              <p className={classes.intro}>
-                Customize your study by uploading a logo framed into a 320px x
-                80px size.
-              </p>
+          <div className={classes.switchContainer}>
+            <div style={{ marginRight: '12px' }}>Use default message</div>
+            <div style={{ marginTop: '4px' }}>
+              <AntSwitch
+                checked={!isUsingDefaultMessage}
+                onChange={() =>
+                  setIsUsingDefaultMessage(prevState => {
+                    return !prevState
+                  })
+                }
+              ></AntSwitch>
+            </div>
 
-              <div>
-                {`Study Logo: 320px x 80px ${
-                  previewFile ? bytesToSize(previewFile.size) : ''
-                }`}
-                <div
-                  style={{
-                    padding: '8px 1px',
-                    textAlign: 'center',
-                    width: '320px',
-                    height: `${imgHeight + 16}px`,
-                    border: '1px solid black',
-                  }}
-                >
-                  {previewFile && (
-                    <img
-                      src={previewFile.body}
-                      style={{ height: `${imgHeight}px`, width: '310px' }}
-                    />
-                  )}
-                </div>
-              </div>
+            <div style={{ marginLeft: '12px' }}>Customize</div>
+          </div>
+          <div className={clsx(isUsingDefaultMessage && classes.hideSection)}>
+            <ol className={classes.steps}>
+              <Subsection heading="Upload Study Logo">
+                <p className={classes.intro}>
+                  Customize your study by uploading a logo framed into a 320px x
+                  80px size.
+                </p>
 
-              {saveLoader && (
-                <div className="text-center">
-                  <CircularProgress color="primary" />
-                </div>
-              )}
-
-              <Button
-                variant="contained"
-                component="label"
-                color="primary"
-                style={{ marginTop: '20px' }}
-              >
-                Upload
-                <input
-                  accept="image/*,.pdf,.doc,.docx,.jpg,.png, .txt"
-                  id="file"
-                  multiple={false}
-                  type="file"
-                  onChange={e => handleFileChange(e)}
-                  style={{ display: 'none' }}
-                />
-              </Button>
-            </Subsection>
-            <Subsection heading="Select background color">
-              <p>
-                Select a background color that matches your institution or study
-                to be seen beneath your logo.
-              </p>
-              <Box
-                border="1px colid black"
-                width="250px"
-                height="230px"
-                marginLeft="-10px"
-              >
-                <ReactColorPicker
-                  color={appDesignProperties.backgroundColor}
-                  onChange={(currentColor: string) => {
-                    setAppDesignProperties({
-                      ...appDesignProperties,
-                      backgroundColor: currentColor,
-                    })
-                    debouncedUpdateColor(currentColor)
-                  }}
-                />
-              </Box>
-            </Subsection>
-
-            <Subsection heading="Welcome screen messaging">
-              <FormGroup className={classes.formFields}>
-                <FormControl className={classes.firstFormElement}>
-                  <SimpleTextLabel htmlFor="headline-input">
-                    Main Header
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.headlineStyle}
-                    id="headline-input"
-                    placeholder="Welcome Headline"
-                    value={appDesignProperties.welcomeScreenHeader}
-                    onChange={e => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        welcomeScreenHeader: e.target.value,
-                      })
+                <div>
+                  {`Study Logo: 320px x 80px ${
+                    previewFile ? bytesToSize(previewFile.size) : ''
+                  }`}
+                  <div
+                    style={{
+                      padding: '8px 1px',
+                      textAlign: 'center',
+                      width: '320px',
+                      height: `${imgHeight + 16}px`,
+                      border: '1px solid black',
                     }}
-                    onBlur={() => updateAppDesignInfo()}
-                    multiline
-                    rows={2}
-                    rowsMax={4}
-                    inputProps={{ style: { fontSize: '24px', width: '100%' } }}
-                  />
-                </FormControl>
-                <FormControl>
-                  <SimpleTextLabel>Body Copy</SimpleTextLabel>
-                  <SimpleTextInput
-                    id="outlined-textarea"
-                    value={appDesignProperties.welcomeScreenBody}
-                    onChange={e => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        welcomeScreenBody: e.target.value,
-                      })
-                    }}
-                    onBlur={() => updateAppDesignInfo()}
-                    multiline
-                    rows={4}
-                    rowsMax={6}
-                    placeholder="What are the first things you want participants to know about the study."
-                    inputProps={{ style: { width: '100%' } }}
-                  />
-                </FormControl>
-                <FormControl>
-                  <SimpleTextLabel>Signature</SimpleTextLabel>
-                  <SimpleTextInput
-                    id="signature-textarea"
-                    value={appDesignProperties.welcomeScreenSignature}
-                    onChange={e => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        welcomeScreenSignature: e.target.value,
-                      })
-                    }}
-                    onBlur={() => updateAppDesignInfo()}
-                    multiline
-                    rows={2}
-                    rowsMax={4}
-                    placeholder=""
-                    inputProps={{ style: { width: '100%' } }}
-                  />
-                </FormControl>
-              </FormGroup>
-              <Box textAlign="right">
-                {saveLoader ? (
-                  <div className="text-center">
-                    <CircularProgress color="primary" size={25} />
+                  >
+                    {previewFile && (
+                      <img
+                        src={previewFile.body}
+                        style={{ height: `${imgHeight}px`, width: '310px' }}
+                      />
+                    )}
                   </div>
-                ) : (
-                  <SaveButton onClick={() => onSave()} />
+                </div>
+
+                {saveLoader && (
+                  <div className="text-center">
+                    <CircularProgress color="primary" />
+                  </div>
                 )}
-              </Box>
-            </Subsection>
-          </ol>
+
+                <Button
+                  variant="contained"
+                  component="label"
+                  color="primary"
+                  style={{ marginTop: '20px' }}
+                >
+                  Upload
+                  <input
+                    accept="image/*,.pdf,.doc,.docx,.jpg,.png, .txt"
+                    id="file"
+                    multiple={false}
+                    type="file"
+                    onChange={e => handleFileChange(e)}
+                    style={{ display: 'none' }}
+                  />
+                </Button>
+              </Subsection>
+              <Subsection heading="Select background color">
+                <p>
+                  Select a background color that matches your institution or
+                  study to be seen beneath your logo.
+                </p>
+                <Box
+                  border="1px colid black"
+                  width="250px"
+                  height="230px"
+                  marginLeft="-10px"
+                >
+                  <ReactColorPicker
+                    color={appDesignProperties.backgroundColor}
+                    onChange={(currentColor: string) => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        backgroundColor: currentColor,
+                      })
+                      debouncedUpdateColor(currentColor)
+                    }}
+                  />
+                </Box>
+              </Subsection>
+
+              <Subsection heading="Welcome screen messaging">
+                <FormGroup className={classes.formFields}>
+                  <FormControl className={classes.firstFormElement}>
+                    <SimpleTextLabel htmlFor="headline-input">
+                      Main Header
+                    </SimpleTextLabel>
+                    <SimpleTextInput
+                      className={classes.headlineStyle}
+                      id="headline-input"
+                      placeholder="Welcome Headline"
+                      value={appDesignProperties.welcomeScreenHeader}
+                      onChange={e => {
+                        setAppDesignProperties({
+                          ...appDesignProperties,
+                          welcomeScreenHeader: e.target.value,
+                        })
+                      }}
+                      onBlur={() => updateAppDesignInfo()}
+                      multiline
+                      rows={2}
+                      rowsMax={4}
+                      inputProps={{
+                        style: { fontSize: '24px', width: '100%' },
+                      }}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <SimpleTextLabel>
+                      Body Copy (maximum 250 characters)
+                    </SimpleTextLabel>
+                    <SimpleTextInput
+                      id="outlined-textarea"
+                      value={appDesignProperties.welcomeScreenBody}
+                      onChange={e => {
+                        setAppDesignProperties({
+                          ...appDesignProperties,
+                          welcomeScreenBody: e.target.value,
+                        })
+                      }}
+                      onBlur={() => updateAppDesignInfo()}
+                      multiline
+                      rows={4}
+                      rowsMax={6}
+                      placeholder="What are the first things you want participants to know about the study."
+                      inputProps={{ style: { width: '100%' } }}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <SimpleTextLabel>Salutations</SimpleTextLabel>
+                    <SimpleTextInput
+                      id="salutations"
+                      value={appDesignProperties.welcomeScreenSalutation}
+                      onChange={e => {
+                        setAppDesignProperties({
+                          ...appDesignProperties,
+                          welcomeScreenSalutation: e.target.value,
+                        })
+                      }}
+                      onBlur={() => updateAppDesignInfo()}
+                      multiline
+                      rows={2}
+                      rowsMax={4}
+                      placeholder="Thank you for your contribution"
+                      inputProps={{ style: { width: '100%' } }}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <SimpleTextLabel>From</SimpleTextLabel>
+                    <SimpleTextInput
+                      id="signature-textarea"
+                      value={appDesignProperties.welcomeScreenFromText}
+                      onChange={e => {
+                        setAppDesignProperties({
+                          ...appDesignProperties,
+                          welcomeScreenFromText: e.target.value,
+                        })
+                      }}
+                      onBlur={() => updateAppDesignInfo()}
+                      multiline
+                      rows={2}
+                      rowsMax={4}
+                      placeholder="Study team name"
+                      inputProps={{ style: { width: '100%' } }}
+                    />
+                  </FormControl>
+                  <div>Add optional disclaimer:</div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      marginTop: '15px',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Checkbox
+                      checked={useOptionalDisclaimer}
+                      inputProps={{ 'aria-label': 'primary checkbox' }}
+                      style={{
+                        width: '20px',
+                        height: '20px',
+                      }}
+                      onChange={() => {
+                        setUseOptionalDisclaimer(prevState => {
+                          return !prevState
+                        })
+                      }}
+                    ></Checkbox>
+                    <div
+                      style={{
+                        marginLeft: '15px',
+                        fontSize: '14px',
+                        lineHeight: '20px',
+                        fontFamily: 'Lato',
+                      }}
+                    >
+                      This is a research study and does not provide medical
+                      advice, diagnosis, or treatment.
+                    </div>
+                  </div>
+                </FormGroup>
+                <Box textAlign="right">
+                  {saveLoader ? (
+                    <div className="text-center">
+                      <CircularProgress
+                        color="primary"
+                        size={25}
+                      ></CircularProgress>
+                    </div>
+                  ) : (
+                    <SaveButton onClick={() => onSave()} />
+                  )}
+                </Box>
+              </Subsection>
+            </ol>
+          </div>
         </Box>
         <Box className={classes.phoneArea}>
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
@@ -531,11 +644,33 @@ const AppDesign: React.FunctionComponent<
             />
             <div className={`${classes.phoneInner}`}>
               <div className={classes.headlineStyle}>
-                {appDesignProperties.welcomeScreenHeader || 'Welcome Headline'}
+                {isUsingDefaultMessage
+                  ? defaultHeader
+                  : appDesignProperties.welcomeScreenHeader ||
+                    'Welcome Headline'}
               </div>
-              <p className={classes.bodyText}>
-                {appDesignProperties.welcomeScreenBody || 'Body copy'}
+              <p
+                className={clsx(
+                  classes.bodyText,
+                  classes.firstPhoneScreenBodyText,
+                )}
+              >
+                {isUsingDefaultMessage
+                  ? defaultStudyBody
+                  : appDesignProperties.welcomeScreenBody || 'Body copy'}
               </p>
+              <div style={{ marginTop: '20px' }} className={classes.bodyText}>
+                {isUsingDefaultMessage
+                  ? defaultSalutations
+                  : appDesignProperties.welcomeScreenSalutation ||
+                    'Placeholder salutation,'}
+              </div>
+              <div style={{ marginTop: '10px' }} className={classes.bodyText}>
+                {isUsingDefaultMessage
+                  ? defaultFrom
+                  : appDesignProperties.welcomeScreenFromText ||
+                    'from placeholder'}
+              </div>
             </div>
             <div className={classes.phoneBottom}></div>
           </Box>

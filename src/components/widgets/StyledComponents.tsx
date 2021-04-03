@@ -3,9 +3,10 @@ import {
   FormControlLabel,
   InputBase,
   InputLabel,
-  Select
+  Select,
+  Switch,
 } from '@material-ui/core'
-import { withStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles } from '@material-ui/core/styles'
 import { latoFont, poppinsFont } from '../../style/theme'
 
 export const ButtonWithSelectButton = withStyles(theme => ({
@@ -163,3 +164,39 @@ export const FormControlLabelHidden = withStyles(theme => ({
     },
   },
 }))(FormControlLabel)
+
+export const AntSwitch = withStyles(theme =>
+  createStyles({
+    root: {
+      width: 32,
+      height: 18,
+      padding: 0,
+      display: 'flex',
+    },
+    switchBase: {
+      padding: 2,
+      color: theme.palette.grey[500],
+      '&$checked': {
+        transform: 'translateX(14px)',
+        color: theme.palette.common.white,
+        '& + $track': {
+          opacity: 1,
+          backgroundColor: '#7FC7F0',
+          borderColor: '#7FC7F0',
+        },
+      },
+    },
+    thumb: {
+      width: 14,
+      height: 14,
+      boxShadow: 'none',
+    },
+    track: {
+      border: `1px solid ${theme.palette.grey[500]}`,
+      borderRadius: 16 / 2,
+      opacity: 1,
+      backgroundColor: theme.palette.common.white,
+    },
+    checked: {},
+  }),
+)(Switch)

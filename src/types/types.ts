@@ -110,9 +110,8 @@ export type Study = {
     appDesign?: StudyAppDesign
   }
 
-  createdOn?: Date,
-  modifiedOn?:Date
-
+  createdOn?: Date
+  modifiedOn?: Date
 }
 
 export type StudyAppDesign = {
@@ -120,7 +119,8 @@ export type StudyAppDesign = {
   backgroundColor: string
   welcomeScreenHeader: string
   welcomeScreenBody: string
-  welcomeScreenSignature: string
+  welcomeScreenFromText: string
+  welcomeScreenSalutation: string
   studyTitle: string
   studySummaryBody: string
   leadPrincipleInvestigator: string
