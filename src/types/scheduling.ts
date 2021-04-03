@@ -1,6 +1,17 @@
 import { Assessment, StringDictionary } from './types'
 
-export enum HSsEnum {
+
+
+
+
+export enum DWsEnum {
+
+  D = 'days',
+  W = 'weeks',
+}
+
+
+export enum HDsEnum {
   H = 'hours',
   D = 'days',
 }

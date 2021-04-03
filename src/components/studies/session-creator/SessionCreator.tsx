@@ -125,7 +125,9 @@ const SessionCreator: FunctionComponent<
     newAssessments: Assessment[],
   ) => {
     console.log('updating')
+
     const assessments: Assessment[] = [...previousAssessments]
+
     for (let i = 0; i < newAssessments.length; i++) {
       try {
         const assessmentWithResources = await AssessmentService.getResource(
@@ -144,6 +146,7 @@ const SessionCreator: FunctionComponent<
       },
     })
     setIsAssessmentDialogOpen(false)
+  
   }
 
   const getActiveSession = (

@@ -3,25 +3,25 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
-import CreateSessionRegularIcon from '../../assets/study-builder-icons/normal/create_sessions_normal_icon.svg'
-import CustomizeAppRegularIcon from '../../assets/study-builder-icons/normal/customize_app_normal_icon.svg'
-import LaunchStudyRegularIcon from '../../assets/study-builder-icons/normal/launch_study_normal_icon.svg'
-import RecordersRegularIcon from '../../assets/study-builder-icons/normal/recorders_normal_icon.svg'
-import PreviewStudyRegaularIcon from '../../assets/study-builder-icons/normal/preview_study_normal_icon.svg'
-import ScheduleSessionsRegularIcon from '../../assets/study-builder-icons/normal/schedule_sessions_normal_icon.svg'
-import EnrollmentTypeRegularIcon from '../../assets/study-builder-icons/normal/enrollment_type_normal_icon.svg'
-
 import CreateSessionHoveredIcon from '../../assets/study-builder-icons/hovered/create_sessions_hover_icon.svg'
 import CustomizeAppHoveredIcon from '../../assets/study-builder-icons/hovered/customize_app_hover_icon.svg'
-import LaunchStudyHoveredIcon from '../../assets/study-builder-icons/hovered/launch_study_hover_icon.svg'
-import RecordersHoveredIcon from '../../assets/study-builder-icons/hovered/recorders_hover_icon.svg'
-import PreviewStudyHoveredIcon from '../../assets/study-builder-icons/hovered/preview_study_hover_icon.svg'
-import ScheduleSessionsHoveredIcon from '../../assets/study-builder-icons/hovered/schedule_sessions_hover_icon.svg'
 import EnrollmentTypeHoveredIcon from '../../assets/study-builder-icons/hovered/enrollment_type_hover_icon.svg'
-
+import LaunchStudyHoveredIcon from '../../assets/study-builder-icons/hovered/launch_study_hover_icon.svg'
+import PreviewStudyHoveredIcon from '../../assets/study-builder-icons/hovered/preview_study_hover_icon.svg'
+import RecordersHoveredIcon from '../../assets/study-builder-icons/hovered/recorders_hover_icon.svg'
+import ScheduleSessionsHoveredIcon from '../../assets/study-builder-icons/hovered/schedule_sessions_hover_icon.svg'
+import CreateSessionRegularIcon from '../../assets/study-builder-icons/normal/create_sessions_normal_icon.svg'
+import CustomizeAppRegularIcon from '../../assets/study-builder-icons/normal/customize_app_normal_icon.svg'
+import EnrollmentTypeRegularIcon from '../../assets/study-builder-icons/normal/enrollment_type_normal_icon.svg'
+import LaunchStudyRegularIcon from '../../assets/study-builder-icons/normal/launch_study_normal_icon.svg'
+import PreviewStudyRegaularIcon from '../../assets/study-builder-icons/normal/preview_study_normal_icon.svg'
+import RecordersRegularIcon from '../../assets/study-builder-icons/normal/recorders_normal_icon.svg'
+import ScheduleSessionsRegularIcon from '../../assets/study-builder-icons/normal/schedule_sessions_normal_icon.svg'
 import { ThemeType } from '../../style/theme'
 import SideBarListItem from '../widgets/SideBarListItem'
 import { SECTIONS as sectionLinks, StudySection } from './sections'
+
+
 
 const drawerWidth = 212
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -174,6 +174,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
           <div
             onMouseOver={() => setCurrentHoveredElement(index)}
             onMouseOut={() => setCurrentHoveredElement(-1)}
+            key={sectionLink.path}
           >
             <SideBarListItem
               key={sectionLink.path}

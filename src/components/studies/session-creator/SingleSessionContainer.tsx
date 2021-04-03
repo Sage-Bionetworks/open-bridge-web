@@ -143,10 +143,13 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
 
   const removeAssessment = (assessmentId: string) => {
     if (!studySession.assessments) {return}
+    const removeIndex = studySession.assessments.findIndex(a=>a.guid)
+    const result = [...studySession.assessments]
+    result.splice(removeIndex,1)
 
     onUpdateAssessmentList(
       studySession.guid!,
-      studySession.assessments.filter(a => a.guid !== assessmentId),
+      result,
     )
   }
 
@@ -155,7 +158,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
       return 0
     }
     const result = assessments.reduce((prev, curr, ndx) => {
-      return prev + Number(curr.duration)
+      return prev + Number(curr.minutesToComplete)
     }, 0)
     return result
   }
@@ -201,7 +204,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
           }
         >
           <div className={classes.droppable}>
-            <Droppable droppableId={studySession.guid!} type="ASSESSMENT">
+            <Droppable droppableId={studySession.guid+studySession.name} type="ASSESSMENT">
               {(provided, snapshot) => (
                 <div
                   className={clsx({
@@ -220,7 +223,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                     <Draggable
                       draggableId={assessment.guid+index}
                       index={index}
-                      key={assessment.guid}
+                      key={assessment.guid+index}
                     >
                       {(provided, snapshot) => (
                         <div
@@ -232,7 +235,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                             assessment={assessment}
                             isDragging={snapshot.isDragging}
                           >
-                            {isEditable && (
+                            {(isEditable && (studySession.assessments!.length> 1))&& (
                               <Button
                                 variant="text"
                                 className={classes.btnDeleteAssessment}

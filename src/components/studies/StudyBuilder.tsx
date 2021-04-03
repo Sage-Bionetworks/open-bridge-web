@@ -15,7 +15,6 @@ import AssessmentService from '../../services/assessment.service'
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
 import {
-  AssessmentWindow,
   Schedule,
   StartEventId,
   StudySession
@@ -94,7 +93,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   const { token } = useUserSessionDataState()
   const builderInfo: StudyInfoData = useStudyInfoDataState()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
-
+const [error, setError]=React.useState('')
   const [open, setOpen] = React.useState(true)
 
   const setData = (builderInfo: StudyInfoData) => {
@@ -112,16 +111,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     const defaultAssessment = await (
       await AssessmentService.getAssessmentsWithResources()
     ).assessments[0]
-    const defaultTimeWindow: AssessmentWindow = {
-      startTime: '08:00',
-    }
-    let studySession: StudySession = {
-      name: 'Session1',
-      startEventId: start,
-      timeWindows: [defaultTimeWindow],
-      performanceOrder: 'participant_choice',
-      assessments: [defaultAssessment],
-    }
+  
+    const studySession = StudyService.createEmptyStudySession(start)
+    studySession.assessments=[defaultAssessment]
+
     let schedule: Schedule = {
       guid: '',
       name: studyId,
@@ -132,7 +125,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       schedule,
       token!,
     )
-    alert(newSchedule.guid)
+
     let updatedStudy = {
       ...builderInfo.study,
       scheduleGuid: newSchedule.guid,
@@ -151,7 +144,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }
 
   const saveStudySchedule = async (updatedSchedule?: Schedule) => {
-    try {
+ try {
       setSaveLoader(true)
       const schedule = updatedSchedule || builderInfo.schedule
       if (!schedule || !token) {
@@ -164,11 +157,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       })
       
       setHasObjectChanged(false)
-    } catch (e) {
-      throw new Error(e)
-    } finally {
-      setSaveLoader(false)
-    }
+   } catch (e) {
+      throw e
+   } finally {
+    setSaveLoader(false)
+   }
   }
 
   const changeSection = async (next: StudySection) => {

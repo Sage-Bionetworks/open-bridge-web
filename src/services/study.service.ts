@@ -1,6 +1,6 @@
 import { callEndpoint } from '../helpers/utility'
 import constants from '../types/constants'
-import { Schedule } from '../types/scheduling'
+import { AssessmentWindow, Schedule, StartEventId, StudySession } from '../types/scheduling'
 import { Study } from '../types/types'
 
 const StudyService = {
@@ -13,6 +13,24 @@ const StudyService = {
   createNewStudySchedule,
   getStudySchedule,
   saveStudySchedule,
+  createEmptyStudySession,
+}
+
+function createEmptyStudySession(startEventId: StartEventId, name='Session1' ) {
+  /*const defaultAssessment = await (
+    await AssessmentService.getAssessmentsWithResources()
+  ).assessments[0]*/
+  const defaultTimeWindow: AssessmentWindow = {
+    startTime: '08:00',
+  }
+ const studySession: StudySession = {
+    name: name,
+    startEventId,
+    timeWindows: [defaultTimeWindow],
+    performanceOrder: 'participant_choice',
+    assessments: [],
+  }
+  return studySession
 }
 
 async function getStudies(token: string): Promise<Study[]> {
