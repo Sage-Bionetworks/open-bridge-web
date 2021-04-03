@@ -48,6 +48,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontSize: '15px',
     lineHeight: '18px',
     marginTop: '25px',
+    whiteSpace: 'pre-line',
   },
   firstPhoneScreenBodyText: {
     height: '325px',
