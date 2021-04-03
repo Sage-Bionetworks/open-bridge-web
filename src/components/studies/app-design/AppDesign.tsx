@@ -634,6 +634,15 @@ const AppDesign: React.FunctionComponent<
               </Subsection>
             </ol>
           </div>
+          {isUsingDefaultMessage && (
+            <div style={{ visibility: 'hidden' }}>
+              <ol className={classes.steps}>
+                <li></li>
+                <li></li>
+                <li></li>
+              </ol>
+            </div>
+          )}
         </Box>
         <Box className={classes.phoneArea}>
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
