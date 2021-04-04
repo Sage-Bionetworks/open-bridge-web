@@ -229,18 +229,18 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
-    marginBottom: '10px',
+    marginBottom: theme.spacing(1.25),
   },
   divider: {
     width: '256px',
-    marginTop: '30px',
+    marginTop: theme.spacing(3.75),
   },
   phoneGrayBackground: {
     backgroundColor: '#F7F7F7',
   },
   smallScreenText: {
     fontSize: '15px',
-    marginTop: '30px',
+    marginTop: theme.spacing(3.75),
     whiteSpace: 'pre-wrap',
   },
   switchContainer: {
@@ -251,8 +251,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontFamily: 'Lato',
     alignItems: 'center',
     fontWeight: 'bold',
-    marginTop: '10px',
-    marginBottom: '32px',
+    marginTop: theme.spacing(1.25),
+    marginBottom: theme.spacing(4),
   },
   hideSection: {
     display: 'none',
