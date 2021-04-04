@@ -134,6 +134,8 @@ export type StudyAppDesign = {
   nameOfEthicsBoard: string
   ethicsBoardPhoneNumber: string
   ethicsBoardEmail: string
+  useOptionalDisclaimer: boolean
+  isUsingDefaultMessage: boolean
 }
 
 export type StudyBuilderInfo = {

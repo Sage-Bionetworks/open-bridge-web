@@ -12,7 +12,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles'
 import ReactColorPicker from '@super-effective/react-color-picker'
 import _ from 'lodash'
-import React, { ChangeEvent, useCallback, useState } from 'react'
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
 import { ReactComponent as PhoneBottomImg } from '../../../assets/appdesign/phone_buttons.svg'
@@ -36,6 +36,7 @@ import {
 } from '../../widgets/StyledComponents'
 import ContactInformation from './ContactInformation'
 import StudySummaryRoles from './StudySummaryRoles'
+import DefaultLogo from '../../../assets/logo_mtb.svg'
 import clsx from 'clsx'
 
 const imgHeight = 70
@@ -304,14 +305,26 @@ const Subsection: React.FunctionComponent<{ heading: string }> = ({
 const PhoneTopBar: React.FunctionComponent<{
   color?: string
   previewFile?: PreviewFile
-}> = ({ color = 'transparent', previewFile }) => {
+  isUsingDefaultMessage?: boolean
+}> = ({ color = 'transparent', previewFile, isUsingDefaultMessage }) => {
   const classes = useStyles()
   return (
-    <div className={classes.phoneTopBar} style={{ backgroundColor: color }}>
-      {previewFile && (
+    <div
+      className={classes.phoneTopBar}
+      style={{ backgroundColor: isUsingDefaultMessage ? '#BCD5E4' : color }}
+    >
+      {!isUsingDefaultMessage ? (
+        previewFile && (
+          <img
+            src={previewFile.body}
+            style={{ height: `${imgHeight}px` }}
+            alt="study-logo"
+          />
+        )
+      ) : (
         <img
-          src={previewFile.body}
-          style={{ height: `${imgHeight}px` }}
+          src={DefaultLogo}
+          style={{ height: `${imgHeight - 16}px` }}
           alt="study-logo"
         />
       )}
@@ -337,13 +350,9 @@ const AppDesign: React.FunctionComponent<
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
 
-  const [isUsingDefaultMessage, setIsUsingDefaultMessage] = useState(false)
-
-  const [useOptionalDisclaimer, setUseOptionalDisclaimer] = useState(false)
-
   const defaultHeader = 'Thanks for joining us!'
   const defaultStudyBody =
-    'We’re excited to have you help us blah blah blah. This is a research study and does not provide medical advice, diagnosis, or treatment.'
+    'We’re excited to have you help us blah blah blah. \n \n This is a research study and does not provide medical advice, diagnosis, or treatment.'
   const defaultSalutations = 'Thank you for your contributions,'
   const defaultFrom = 'Research Team X'
 
@@ -370,6 +379,8 @@ const AppDesign: React.FunctionComponent<
     nameOfEthicsBoard: currentAppDesign.nameOfEthicsBoard || '',
     ethicsBoardPhoneNumber: currentAppDesign.ethicsBoardPhoneNumber || '',
     ethicsBoardEmail: currentAppDesign.ethicsBoardEmail || '',
+    useOptionalDisclaimer: currentAppDesign.useOptionalDisclaimer || false,
+    isUsingDefaultMessage: currentAppDesign.isUsingDefaultMessage || false,
   })
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -395,6 +406,13 @@ const AppDesign: React.FunctionComponent<
     [],
   )
 
+  useEffect(() => {
+    updateAppDesignInfo()
+  }, [
+    appDesignProperties.useOptionalDisclaimer,
+    appDesignProperties.isUsingDefaultMessage,
+  ])
+
   return (
     <Box className={classes.root}>
       <Paper className={classes.section} elevation={2}>
@@ -412,10 +430,13 @@ const AppDesign: React.FunctionComponent<
             <div style={{ marginRight: '12px' }}>Use default message</div>
             <div style={{ marginTop: '4px' }}>
               <AntSwitch
-                checked={!isUsingDefaultMessage}
+                checked={!currentAppDesign.isUsingDefaultMessage}
                 onChange={() =>
-                  setIsUsingDefaultMessage(prevState => {
-                    return !prevState
+                  setAppDesignProperties(prevState => {
+                    return {
+                      ...appDesignProperties,
+                      isUsingDefaultMessage: !prevState.isUsingDefaultMessage,
+                    }
                   })
                 }
               ></AntSwitch>
@@ -423,7 +444,11 @@ const AppDesign: React.FunctionComponent<
 
             <div style={{ marginLeft: '12px' }}>Customize</div>
           </div>
-          <div className={clsx(isUsingDefaultMessage && classes.hideSection)}>
+          <div
+            className={clsx(
+              appDesignProperties.isUsingDefaultMessage && classes.hideSection,
+            )}
+          >
             <ol className={classes.steps}>
               <Subsection heading="Upload Study Logo">
                 <p className={classes.intro}>
@@ -585,25 +610,31 @@ const AppDesign: React.FunctionComponent<
                       inputProps={{ style: { width: '100%' } }}
                     />
                   </FormControl>
-                  <div>Add optional disclaimer:</div>
+                  <div style={{ marginTop: '20px' }}>
+                    Add optional disclaimer:
+                  </div>
                   <div
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
-                      marginTop: '15px',
+                      marginTop: '10px',
                       alignItems: 'center',
+                      marginBottom: '12px',
                     }}
                   >
                     <Checkbox
-                      checked={useOptionalDisclaimer}
+                      checked={appDesignProperties.useOptionalDisclaimer}
                       inputProps={{ 'aria-label': 'primary checkbox' }}
                       style={{
                         width: '20px',
                         height: '20px',
                       }}
                       onChange={() => {
-                        setUseOptionalDisclaimer(prevState => {
-                          return !prevState
+                        setAppDesignProperties(prevState => {
+                          return {
+                            ...appDesignProperties,
+                            useOptionalDisclaimer: !prevState.useOptionalDisclaimer,
+                          }
                         })
                       }}
                     ></Checkbox>
@@ -620,7 +651,7 @@ const AppDesign: React.FunctionComponent<
                     </div>
                   </div>
                 </FormGroup>
-                <Box textAlign="right">
+                <Box textAlign="left">
                   {saveLoader ? (
                     <div className="text-center">
                       <CircularProgress
@@ -635,7 +666,7 @@ const AppDesign: React.FunctionComponent<
               </Subsection>
             </ol>
           </div>
-          {isUsingDefaultMessage && (
+          {appDesignProperties.isUsingDefaultMessage && (
             <div style={{ visibility: 'hidden' }}>
               <ol className={classes.steps}>
                 <li></li>
@@ -651,10 +682,11 @@ const AppDesign: React.FunctionComponent<
             <PhoneTopBar
               color={appDesignProperties.backgroundColor}
               previewFile={previewFile}
+              isUsingDefaultMessage={appDesignProperties.isUsingDefaultMessage}
             />
             <div className={`${classes.phoneInner}`}>
               <div className={classes.headlineStyle}>
-                {isUsingDefaultMessage
+                {appDesignProperties.isUsingDefaultMessage
                   ? defaultHeader
                   : appDesignProperties.welcomeScreenHeader ||
                     'Welcome Headline'}
@@ -665,18 +697,18 @@ const AppDesign: React.FunctionComponent<
                   classes.firstPhoneScreenBodyText,
                 )}
               >
-                {isUsingDefaultMessage
+                {appDesignProperties.isUsingDefaultMessage
                   ? defaultStudyBody
                   : appDesignProperties.welcomeScreenBody || 'Body copy'}
               </p>
               <div style={{ marginTop: '20px' }} className={classes.bodyText}>
-                {isUsingDefaultMessage
+                {appDesignProperties.isUsingDefaultMessage
                   ? defaultSalutations
                   : appDesignProperties.welcomeScreenSalutation ||
                     'Placeholder salutation,'}
               </div>
               <div style={{ marginTop: '10px' }} className={classes.bodyText}>
-                {isUsingDefaultMessage
+                {appDesignProperties.isUsingDefaultMessage
                   ? defaultFrom
                   : appDesignProperties.welcomeScreenFromText ||
                     'from placeholder'}
@@ -997,7 +1029,7 @@ const AppDesign: React.FunctionComponent<
                   />
                 </FormControl>
               </FormGroup>
-              <Box textAlign="right">
+              <Box textAlign="left">
                 {saveLoader ? (
                   <div className="text-center">
                     <CircularProgress color="primary" size={25} />
@@ -1016,6 +1048,7 @@ const AppDesign: React.FunctionComponent<
             <PhoneTopBar
               color={appDesignProperties.backgroundColor}
               previewFile={previewFile}
+              isUsingDefaultMessage={appDesignProperties.isUsingDefaultMessage}
             />
             <div className={classes.phoneInnerBottom}>
               <div className={classes.headlineStyle}>
