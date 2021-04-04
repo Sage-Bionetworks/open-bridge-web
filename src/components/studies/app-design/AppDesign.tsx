@@ -257,6 +257,23 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   hideSection: {
     display: 'none',
   },
+  optionalDisclaimerText: {
+    marginLeft: theme.spacing(2),
+    fontSize: '14px',
+    lineHeight: '20px',
+    fontFamily: 'Lato',
+  },
+  optionalDisclaimerRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginTop: theme.spacing(1.25),
+    alignItems: 'center',
+    marginBottom: theme.spacing(1.5),
+  },
+  checkBox: {
+    width: '20px',
+    height: '20px',
+  },
 }))
 
 type UploadedFile = {
@@ -506,12 +523,7 @@ const AppDesign: React.FunctionComponent<
                   Select a background color that matches your institution or
                   study to be seen beneath your logo.
                 </p>
-                <Box
-                  border="1px colid black"
-                  width="250px"
-                  height="230px"
-                  marginLeft="-10px"
-                >
+                <Box width="250px" height="230px" marginLeft="-10px">
                   <ReactColorPicker
                     color={appDesignProperties.backgroundColor}
                     onChange={(currentColor: string) => {
@@ -613,22 +625,11 @@ const AppDesign: React.FunctionComponent<
                   <div style={{ marginTop: '20px' }}>
                     Add optional disclaimer:
                   </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      marginTop: '10px',
-                      alignItems: 'center',
-                      marginBottom: '12px',
-                    }}
-                  >
+                  <div className={classes.optionalDisclaimerRow}>
                     <Checkbox
                       checked={appDesignProperties.useOptionalDisclaimer}
                       inputProps={{ 'aria-label': 'primary checkbox' }}
-                      style={{
-                        width: '20px',
-                        height: '20px',
-                      }}
+                      className={classes.checkBox}
                       onChange={() => {
                         setAppDesignProperties(prevState => {
                           return {
@@ -638,14 +639,7 @@ const AppDesign: React.FunctionComponent<
                         })
                       }}
                     ></Checkbox>
-                    <div
-                      style={{
-                        marginLeft: '15px',
-                        fontSize: '14px',
-                        lineHeight: '20px',
-                        fontFamily: 'Lato',
-                      }}
-                    >
+                    <div className={classes.optionalDisclaimerText}>
                       This is a research study and does not provide medical
                       advice, diagnosis, or treatment.
                     </div>
