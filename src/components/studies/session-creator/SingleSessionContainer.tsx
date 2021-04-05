@@ -1,12 +1,8 @@
 import {
   Box,
   Button,
-
-
-  FormControlLabel, makeStyles,
-
-
-
+  FormControlLabel,
+  makeStyles,
   Switch
 } from '@material-ui/core'
 import ClockIcon from '@material-ui/icons/AccessTime'
@@ -16,12 +12,10 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import {
-  DragDropContext, Draggable,
-
-  DraggableLocation, Droppable,
-
-
-
+  DragDropContext,
+  Draggable,
+  DraggableLocation,
+  Droppable,
   DropResult
 } from 'react-beautiful-dnd'
 import { ThemeType } from '../../../style/theme'
@@ -31,8 +25,6 @@ import AssessmentSmall from '../../assessments/AssessmentSmall'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import EditableTextbox from '../../widgets/EditableTextbox'
 import SessionIcon from '../../widgets/SessionIcon'
-
-
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -124,7 +116,6 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
   const classes = useStyles()
   const [isEditable, setIsEditable] = React.useState(false)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
-  console.log(studySession, 'session')
 
   const rearrangeAssessments = (
     assessments: Assessment[] | undefined,
@@ -142,19 +133,18 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
   }
 
   const removeAssessment = (assessmentId: string) => {
-    if (!studySession.assessments) {return}
-    const removeIndex = studySession.assessments.findIndex(a=>a.guid)
+    if (!studySession.assessments) {
+      return
+    }
+    const removeIndex = studySession.assessments.findIndex(a => a.guid)
     const result = [...studySession.assessments]
-    result.splice(removeIndex,1)
+    result.splice(removeIndex, 1)
 
-    onUpdateAssessmentList(
-      studySession.guid!,
-      result,
-    )
+    onUpdateAssessmentList(studySession.guid!, result)
   }
 
   const getTotalSessionTime = (assessments?: Assessment[]): number => {
-    if (! assessments) {
+    if (!assessments) {
       return 0
     }
     const result = assessments.reduce((prev, curr, ndx) => {
@@ -163,7 +153,10 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
     return result
   }
 
-  const getInner = (studySession: StudySession, sessionIndex: number): JSX.Element => {
+  const getInner = (
+    studySession: StudySession,
+    sessionIndex: number,
+  ): JSX.Element => {
     return (
       <>
         <Box className={classes.inner}>
@@ -204,7 +197,10 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
           }
         >
           <div className={classes.droppable}>
-            <Droppable droppableId={studySession.guid+studySession.name} type="ASSESSMENT">
+            <Droppable
+              droppableId={studySession.guid + studySession.name}
+              type="ASSESSMENT"
+            >
               {(provided, snapshot) => (
                 <div
                   className={clsx({
@@ -213,17 +209,18 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                 >
-                  {!studySession.assessments ||studySession.assessments.length === 0 && (
-                    <Box marginTop={7} padding={2}>
-                      Add assessments to this session by clicking on the "+"
-                      below.{' '}
-                    </Box>
-                  )}
+                  {!studySession.assessments ||
+                    (studySession.assessments.length === 0 && (
+                      <Box marginTop={7} padding={2}>
+                        Add assessments to this session by clicking on the "+"
+                        below.{' '}
+                      </Box>
+                    ))}
                   {studySession.assessments?.map((assessment, index) => (
                     <Draggable
-                      draggableId={assessment.guid+index}
+                      draggableId={assessment.guid + index}
                       index={index}
-                      key={assessment.guid+index}
+                      key={assessment.guid + index}
                     >
                       {(provided, snapshot) => (
                         <div
@@ -235,18 +232,19 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                             assessment={assessment}
                             isDragging={snapshot.isDragging}
                           >
-                            {(isEditable && (studySession.assessments!.length> 1))&& (
-                              <Button
-                                variant="text"
-                                className={classes.btnDeleteAssessment}
-                                onClick={e => {
-                                  e.stopPropagation()
-                                  removeAssessment(assessment.guid)
-                                }}
-                              >
-                                <DeleteIcon></DeleteIcon>
-                              </Button>
-                            )}
+                            {isEditable &&
+                              studySession.assessments!.length > 1 && (
+                                <Button
+                                  variant="text"
+                                  className={classes.btnDeleteAssessment}
+                                  onClick={e => {
+                                    e.stopPropagation()
+                                    removeAssessment(assessment.guid)
+                                  }}
+                                >
+                                  <DeleteIcon></DeleteIcon>
+                                </Button>
+                              )}
                           </AssessmentSmall>
                         </div>
                       )}

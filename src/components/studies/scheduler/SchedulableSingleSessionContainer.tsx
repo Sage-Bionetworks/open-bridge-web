@@ -82,14 +82,15 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   }, [studySession])
 
   const updateSessionSchedule = (newSession: SessionSchedule) => {
+    console.log(newSession)
     onUpdateSessionSchedule(newSession)
   }
 
   const addNewWindow = () => {
     const newState = { ...schedulableSession }
     let aWindow = {
-      startTime: '5',
-      expiration: 'P17D',
+      startTime: '08:00',
+ 
     }
     newState.timeWindows
       ? newState.timeWindows.push(aWindow)
@@ -201,10 +202,13 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   onChange={e => {
                     const n = e.target
                       .value! as keyof typeof NotificationFreqEnum
-                    updateSessionSchedule({
-                      ...schedulableSession,
-                      notifyAt: n,
-                    })
+                      alert(n)
+                      const newS = {
+                        ...schedulableSession,
+                        notifyAt: n,
+                      }
+                      console.log(newS.notifyAt)
+                    updateSessionSchedule(newS)
                   }}
                 ></SelectWithEnum>
               </SchedulingFormSection>

@@ -1,6 +1,11 @@
 import { callEndpoint } from '../helpers/utility'
 import constants from '../types/constants'
-import { AssessmentWindow, Schedule, StartEventId, StudySession } from '../types/scheduling'
+import {
+  AssessmentWindow,
+  Schedule,
+  StartEventId,
+  StudySession
+} from '../types/scheduling'
 import { Study } from '../types/types'
 
 const StudyService = {
@@ -16,14 +21,17 @@ const StudyService = {
   createEmptyStudySession,
 }
 
-function createEmptyStudySession(startEventId: StartEventId, name='Session1' ) {
+function createEmptyStudySession(
+  startEventId: StartEventId,
+  name = 'Session1',
+) {
   /*const defaultAssessment = await (
     await AssessmentService.getAssessmentsWithResources()
   ).assessments[0]*/
   const defaultTimeWindow: AssessmentWindow = {
     startTime: '08:00',
   }
- const studySession: StudySession = {
+  const studySession: StudySession = {
     name: name,
     startEventId,
     timeWindows: [defaultTimeWindow],
@@ -133,14 +141,32 @@ async function saveStudySchedule(
   schedule: Schedule,
   token: string,
 ): Promise<Schedule> {
-  const response = await callEndpoint<Schedule>(
-    constants.endpoints.schedule.replace(':id', schedule.guid),
-    'POST',
-    schedule,
-    token,
-  )
-
-  return response.data
+  const scheduleEndpoint = constants.endpoints.schedule
+  try {
+    const response = await callEndpoint<Schedule>(
+      scheduleEndpoint.replace(':id', schedule.guid),
+      'POST',
+      schedule,
+      token,
+    )
+    return response.data
+  } catch (error) {
+    //we might need to retry if there is a verison mismatch
+    if (error.statusCode == 409) {
+      const endPoint = scheduleEndpoint.replace(':id', schedule.guid)
+      const sched = await callEndpoint<Schedule>(endPoint, 'GET', {}, token)
+      schedule.version = sched.data.version
+      const response = await callEndpoint<Schedule>(
+        scheduleEndpoint.replace(':id', schedule.guid),
+        'POST',
+        schedule,
+        token,
+      )
+      return response.data
+    } else {
+      throw error
+    }
+  }
 }
 
 //returns scehdule and sessions

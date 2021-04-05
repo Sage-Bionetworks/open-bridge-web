@@ -1,5 +1,6 @@
 import { Box } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import { Alert } from '@material-ui/lab'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -14,11 +15,7 @@ import { setBodyClass } from '../../helpers/utility'
 import AssessmentService from '../../services/assessment.service'
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
-import {
-  Schedule,
-  StartEventId,
-  StudySession
-} from '../../types/scheduling'
+import { Schedule, StartEventId, StudySession } from '../../types/scheduling'
 import { StringDictionary, Study, StudyAppDesign } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
@@ -88,19 +85,19 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     section: StudySection
   }>()
   const [section, setSection] = React.useState(_section)
+  const [error, setError] = React.useState('')
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [saveLoader, setSaveLoader] = React.useState(false)
   const { token } = useUserSessionDataState()
   const builderInfo: StudyInfoData = useStudyInfoDataState()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
-const [error, setError]=React.useState('')
+
   const [open, setOpen] = React.useState(true)
 
   const setData = (builderInfo: StudyInfoData) => {
     studyDataUpdateFn({ type: 'SET_ALL', payload: builderInfo })
 
     //updating on the intro screen
-   
   }
 
   const createSchedule = async (
@@ -111,9 +108,9 @@ const [error, setError]=React.useState('')
     const defaultAssessment = await (
       await AssessmentService.getAssessmentsWithResources()
     ).assessments[0]
-  
+
     const studySession = StudyService.createEmptyStudySession(start)
-    studySession.assessments=[defaultAssessment]
+    studySession.assessments = [defaultAssessment]
 
     let schedule: Schedule = {
       guid: '',
@@ -144,7 +141,8 @@ const [error, setError]=React.useState('')
   }
 
   const saveStudySchedule = async (updatedSchedule?: Schedule) => {
- try {
+    setError('')
+    try {
       setSaveLoader(true)
       const schedule = updatedSchedule || builderInfo.schedule
       if (!schedule || !token) {
@@ -155,13 +153,13 @@ const [error, setError]=React.useState('')
         ...builderInfo,
         schedule: sched,
       })
-      
+
       setHasObjectChanged(false)
-   } catch (e) {
-      throw e
-   } finally {
-    setSaveLoader(false)
-   }
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setSaveLoader(false)
+    }
   }
 
   const changeSection = async (next: StudySection) => {
@@ -216,7 +214,11 @@ const [error, setError]=React.useState('')
     return (
       <Box>
         {' '}
-        <IntroInfo onContinue={(duration: string, startEventId: StartEventId)=>createSchedule(builderInfo.study.identifier, duration, startEventId)}></IntroInfo>
+        <IntroInfo
+          onContinue={(duration: string, startEventId: StartEventId) =>
+            createSchedule(builderInfo.study.identifier, duration, startEventId)
+          }
+        ></IntroInfo>
       </Box>
     )
   }
@@ -260,6 +262,11 @@ const [error, setError]=React.useState('')
                 left: '50%',
               }}
             ></LoadingComponent>
+            {error && (
+              <Alert variant="outlined" color="error">
+                {error}
+              </Alert>
+            )}
 
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
