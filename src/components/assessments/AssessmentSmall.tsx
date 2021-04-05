@@ -107,7 +107,7 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
 
           {!isHideDuration && (
             <div className={classes.duration}>
-              {assessment.duration} min
+              {assessment.minutesToComplete} min
             </div>
           )}
         </span>

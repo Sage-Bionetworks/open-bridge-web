@@ -13,6 +13,7 @@ import {
 import CloseIcon from '@material-ui/icons/Close'
 import SaveIcon from '@material-ui/icons/Save'
 import React, { FunctionComponent, useState } from 'react'
+import { useErrorHandler } from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import AssessmentService from '../../../services/assessment.service'
 import { StudySession } from '../../../types/scheduling'
@@ -97,6 +98,7 @@ const SessionCreator: FunctionComponent<
   const [activeSession, setActiveSession] = React.useState(
     sessions.length > 0 ? sessions[0].guid : undefined,
   )
+  const handleError = useErrorHandler()
 
   const sessionsUpdateFn = (action: SessionAction) => {
     const newState = actionsReducer(sessions, action)
@@ -112,7 +114,6 @@ const SessionCreator: FunctionComponent<
     sessionId: string,
     assessments: Assessment[],
   ) => {
-    console.log(assessments)
     sessionsUpdateFn({
       type: Types.UpdateAssessments,
       payload: { sessionId, assessments },
@@ -124,8 +125,8 @@ const SessionCreator: FunctionComponent<
     previousAssessments: Assessment[] | undefined = [],
     newAssessments: Assessment[],
   ) => {
-    console.log('updating')
     const assessments: Assessment[] = [...previousAssessments]
+
     for (let i = 0; i < newAssessments.length; i++) {
       try {
         const assessmentWithResources = await AssessmentService.getResource(
@@ -133,7 +134,7 @@ const SessionCreator: FunctionComponent<
         )
         assessments.push(assessmentWithResources)
       } catch (error) {
-        console.log('error', error.message)
+        handleError(error)
       }
     }
     sessionsUpdateFn({
@@ -182,7 +183,7 @@ const SessionCreator: FunctionComponent<
           {sessions.map((session, index) => (
             <Paper
               className={classes.sessionContainer}
-              key={session.guid + index}
+              key={session.guid! + index}
             >
               <SingleSessionContainer
                 key={session.guid}
@@ -240,7 +241,9 @@ const SessionCreator: FunctionComponent<
             </div>
           )}
           <DialogTitle>
-            <MTBHeadingH1 style={{marginTop: '32px', textAlign: 'center'}}>Select assessment(s) to add to session.</MTBHeadingH1>
+            <MTBHeadingH1 style={{ marginTop: '32px', textAlign: 'center' }}>
+              Select assessment(s) to add to session.
+            </MTBHeadingH1>
             <IconButton
               aria-label="close"
               className={classes.closeButton}
@@ -258,16 +261,22 @@ const SessionCreator: FunctionComponent<
           </DialogContent>
           {!isAddingAssessmentToSession && (
             <DialogActions>
-              <Button onClick={cancelAssessmentSelector} color="secondary"  variant="outlined">Cancel</Button>
+              <Button
+                onClick={cancelAssessmentSelector}
+                color="secondary"
+                variant="outlined"
+              >
+                Cancel
+              </Button>
 
               <Button
                 variant="contained"
-                color = "primary"
+                color="primary"
                 onClick={async () => {
                   setIsAddingAssessmentToSession(true)
 
                   await updateAssessments(
-                    getActiveSession(sessions)!.guid,
+                    getActiveSession(sessions)!.guid!,
                     getActiveSession(sessions)!.assessments,
                     selectedAssessments,
                   )

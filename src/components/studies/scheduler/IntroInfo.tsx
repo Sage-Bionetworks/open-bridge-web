@@ -7,7 +7,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import { poppinsFont } from '../../../style/theme'
-import { HDWMEnum, StartEventId } from '../../../types/scheduling'
+import { DWsEnum, StartEventId } from '../../../types/scheduling'
 import Duration from './Duration'
 import StudyStartDate from './StudyStartDate'
 
@@ -51,7 +51,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
             durationString={duration || ''}
             unitLabel="study duration unit"
             numberLabel="study duration number"
-            unitData={HDWMEnum}
+            unitData={DWsEnum}
           ></Duration>
         }
       />

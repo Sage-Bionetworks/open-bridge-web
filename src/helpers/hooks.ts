@@ -19,12 +19,12 @@ export const useStudyBuilderInfo = (id: string | undefined) => {
     if (!study) {
       throw Error(`Study with an identifier ${id} can not be found`)
     }
-    let schedule
-    if (study.scheduleGuid) {
-      schedule = await StudyService.getStudySchedule(study.scheduleGuid, token!)
-    }
+   // let schedule
+   // if (study.scheduleGuid) {
+      let schedule = await StudyService.getStudySchedule(study.identifier, token!)
+   // }
     //after we are using a real back end if there is a guid there will be a schedule
-    if (!study.scheduleGuid || !schedule) {
+  /*  if (!study.scheduleGuid || !schedule) {
       //create new schedule for new study
       const scheduleGuid = await StudyService.createStudySchedule(
         `${study.name} schedule`,
@@ -36,7 +36,7 @@ export const useStudyBuilderInfo = (id: string | undefined) => {
       )
       study.scheduleGuid = scheduleGuid
       schedule = await StudyService.getStudySchedule(study.scheduleGuid, token!)
-    }
+    }*/
 
     return { schedule, study }
   }

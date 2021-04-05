@@ -1,4 +1,4 @@
-import { getRandomId } from '../../../helpers/utility'
+import StudyService from '../../../services/study.service'
 import { StudySession } from '../../../types/scheduling'
 import { Assessment } from '../../../types/types'
 
@@ -54,12 +54,18 @@ function addSession(
 
   isActive: boolean = false,
 ): StudySession[] {
-  const session: StudySession = {
+  /*const session: StudySession = {
     guid: getRandomId(),
     assessments,
     performanceOrder: 'participant_choice',
     name,
-  }
+  }*/
+  const session = StudyService.createEmptyStudySession(
+    sessions[0].startEventId!,
+    name,
+  )
+
+  session.assessments = assessments
 
   const result = [
     ...sessions.map((session, index) => ({

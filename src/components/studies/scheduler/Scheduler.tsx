@@ -12,7 +12,7 @@ import React, { FunctionComponent } from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import { poppinsFont } from '../../../style/theme'
 import {
-  DWMYEnum,
+  DWsEnum,
   PerformanceOrder,
   Schedule,
   SessionSchedule,
@@ -25,10 +25,7 @@ import ErrorDisplay from '../../widgets/ErrorDisplay'
 import Loader from '../../widgets/Loader'
 import AssessmentList from './AssessmentList'
 import Duration from './Duration'
-import IntroInfo from './IntroInfo'
-import SchedulableSingleSessionContainer, {
-  defaultSchedule
-} from './SchedulableSingleSessionContainer'
+import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
   SessionScheduleAction
@@ -119,15 +116,7 @@ const Scheduler: FunctionComponent<
     return sessions.map(s => ({ ...s, startEventId }))
   }
 
-  //updating on the intro screen
-  const setInitialInfo = async (duration: string, start: StartEventId) => {
-    const _schedule = {
-      ...schedule,
-      duration,
-      sessions: updateSessionsWithStartEventId(schedule.sessions, start),
-    }
-    updateData(_schedule)
-  }
+
 
   const scheduleUpdateFn = (action: SessionScheduleAction) => {
     const sessions = actionsReducer(schedule.sessions, action)
@@ -135,30 +124,7 @@ const Scheduler: FunctionComponent<
     updateData(newSchedule)
   }
 
-  const updateAssessments = (
-    session: StudySession,
-    {
-      isRandomized,
-      isGroupAssessments,
-    }: { isRandomized?: boolean; isGroupAssessments?: boolean },
-  ) => {
-    const updatedSchedule = session || defaultSchedule
-    if (isRandomized !== undefined) {
-      const order: PerformanceOrder = isRandomized ? 'randomized' : 'sequential'
-      updatedSchedule.performanceOrder = order
-    }
-    if (!isGroupAssessments) {
-      updatedSchedule.performanceOrder = 'participant_choice'
-    }
 
-    scheduleUpdateFn({
-      type: ActionTypes.UpdateSessionSchedule,
-      payload: {
-        sessionId: session.guid,
-        schedule: updatedSchedule,
-      },
-    })
-  }
 
   if (_.isEmpty(schedule.sessions)) {
     return <Box textAlign="center" mx="auto"><ErrorDisplay>You need to create sessions before creating the schedule</ErrorDisplay></Box>
@@ -178,12 +144,6 @@ const Scheduler: FunctionComponent<
         )}
       </NavigationPrompt>
 
-      {!getStartEventIdFromSchedule(schedule) && (
-        <IntroInfo onContinue={setInitialInfo}></IntroInfo>
-      )}
-
-      {/**/}
-      {getStartEventIdFromSchedule(schedule) && (
         <Box textAlign="left" key="content">
           <div className={classes.scheduleHeader} key="intro">
             <FormControlLabel
@@ -199,7 +159,7 @@ const Scheduler: FunctionComponent<
                   durationString={schedule.duration || ''}
                   unitLabel="study duration unit"
                   numberLabel="study duration number"
-                  unitData={DWMYEnum}
+                  unitData={DWsEnum}
                 ></Duration>
               }
             />
@@ -241,7 +201,7 @@ const Scheduler: FunctionComponent<
 
                       scheduleUpdateFn({
                         type: ActionTypes.UpdateSessionSchedule,
-                        payload: { sessionId: session.guid, schedule },
+                        payload: { sessionId: session.guid!, schedule },
                       })
                     }}
 
@@ -255,11 +215,11 @@ const Scheduler: FunctionComponent<
                 <SchedulableSingleSessionContainer
                   key={session.guid}
                   studySession={session}
-                  onSaveSessionSchedule={() => saveSession(session.guid)}
+                  onSaveSessionSchedule={() => saveSession(session.guid!)}
                   onUpdateSessionSchedule={(schedule: SessionSchedule) => {
                     scheduleUpdateFn({
                       type: ActionTypes.UpdateSessionSchedule,
-                      payload: { sessionId: session.guid, schedule },
+                      payload: { sessionId: session.guid!, schedule },
                     })
                   }}
                 ></SchedulableSingleSessionContainer>
@@ -269,7 +229,7 @@ const Scheduler: FunctionComponent<
 
           {children}
         </Box>
-      )}
+   
     </>
   )
 }

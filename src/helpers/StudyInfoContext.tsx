@@ -26,13 +26,13 @@ const StudyInfoDispatchContext = React.createContext<Dispatch | undefined>(
 function studyInfoReducer(state: StudyInfoData, action: Action): StudyInfoData {
   switch (action.type) {
     case 'SET_ALL': {
-      console.log('setting all')
+     // console.log('setting all')
       const newState = {
         ...state,
         schedule: action.payload.schedule,
         study: action.payload.study,
       }
-      console.log(JSON.stringify(newState))
+     // console.log(JSON.stringify(newState))
       return newState
     }
     case 'SET_STUDY': {

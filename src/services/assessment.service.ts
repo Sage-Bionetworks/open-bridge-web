@@ -60,8 +60,7 @@ async function getResource(assessment: Assessment): Promise<Assessment> {
   const response = await callEndpoint<{ items: any[] }>(endPoint, 'GET', {})
   return {
     ...assessment,
-    resources: response.data.items,
-    duration: Math.ceil(Math.random() * 30),
+    resources: response.data.items
   }
 }
 
@@ -70,10 +69,10 @@ async function getAssessmentsWithResources(
 
 ): Promise<{ assessments: Assessment[]; tags: string[] }> {
 
-  const storedAssessments = await getItem<{ assessments: Assessment[]; tags: string[] }> (KEYS.ASSESSMENTS)
+ /* const storedAssessments = await getItem<{ assessments: Assessment[]; tags: string[] }> (KEYS.ASSESSMENTS)
   if (storedAssessments) {
     return Promise.resolve(storedAssessments)
-  }
+  }*/
 
   const assessments = guid
     ? await getAssessment(guid)

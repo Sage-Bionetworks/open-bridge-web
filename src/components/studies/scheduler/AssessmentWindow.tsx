@@ -10,8 +10,7 @@ import DeleteIcon from '@material-ui/icons/Close'
 import moment from 'moment'
 import React from 'react'
 import {
-  AssessmentWindow as AssessmentWindowType,
-  HSsEnum
+  AssessmentWindow as AssessmentWindowType, HDsEnum
 } from '../../../types/scheduling'
 import { StringDictionary } from '../../../types/types'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
@@ -129,7 +128,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
             durationString={window.expiration || '    '}
             unitLabel="Repeat Every"
             numberLabel="frequency number"
-            unitData={HSsEnum}
+            unitData={HDsEnum}
           ></Duration>
         </Box>
       </SchedulingFormSection>

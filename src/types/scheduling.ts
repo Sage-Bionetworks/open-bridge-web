@@ -1,6 +1,17 @@
 import { Assessment, StringDictionary } from './types'
 
-export enum HSsEnum {
+
+
+
+
+export enum DWsEnum {
+
+  D = 'days',
+  W = 'weeks',
+}
+
+
+export enum HDsEnum {
   H = 'hours',
   D = 'days',
 }
@@ -50,7 +61,7 @@ export type NotificationMessage = {
 export type AssessmentWindow = {
   guid?: string
   startTime: string //(HH:MM)
-  expiration: string //"P7D"
+  expiration?: string //"P7D"
   persistent?: boolean
 }
 
@@ -71,7 +82,7 @@ export type SessionSchedule = {
 export type StudySessionGeneral = {
   name: string
   labels?: StringDictionary<string>[]
-  guid: string
+  guid?: string
   startEventId?: StartEventId
 }
 

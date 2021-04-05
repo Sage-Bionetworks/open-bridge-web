@@ -45,6 +45,7 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
 
   const duplicateSession = (selectedId?: string) => {
     const session = sessions.find(s => s.guid === selectedId)
+
     if (!selectedId || !session?.assessments || session.assessments.length === 0) {
       onAddSession(sessions, [])
     } else {
@@ -57,7 +58,7 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
       <BlueButton
         key="add_session"
         variant="contained"
-        onClick={() => onAddSession(sessions, [])}
+        onClick={() => onAddSession(sessions, [sessions[0].assessments![0]!])}
       >
         + Create new session
       </BlueButton>

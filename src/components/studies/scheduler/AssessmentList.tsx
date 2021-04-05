@@ -53,7 +53,7 @@ const SessionHeader: React.FunctionComponent<SessionHeaderProps> = ({
   assessments,
 }: SessionHeaderProps) => {
   const totalTime = assessments.reduce(
-    (prev, curr) => prev + Number(curr.duration),
+    (prev, curr) => prev + Number(curr.minutesToComplete),
     0,
   )
   const result = (
@@ -111,7 +111,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
         {studySession.assessments &&
           studySession.assessments.map((assessment, index) => (
             <Box
-              key={studySession.guid+assessment.guid+index}
+              key={studySession.guid!+assessment.guid+index}
               style={
                 performanceOrder === 'randomized'
                   ? getMargins(index, studySession.assessments?.length || 0)

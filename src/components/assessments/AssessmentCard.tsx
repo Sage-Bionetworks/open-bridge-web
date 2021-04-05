@@ -96,7 +96,7 @@ const AssessmentCard: FunctionComponent<AssessmentCardProps> = ({
         </Typography>
       </CardContent>
       <CardActions className={classes.bottom}>
-        <div>{`${assessment.duration} min.`} </div>
+        <div>{`${assessment.minutesToComplete} min.`} </div>
         <img src={validated} alt="validated" />
       </CardActions>
     </Card>
