@@ -37,6 +37,7 @@ import {
 import ContactInformation from './ContactInformation'
 import StudySummaryRoles from './StudySummaryRoles'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
+import ChevronDownIcon from '../../../assets/chevron_down_icon.svg'
 import clsx from 'clsx'
 
 const imgHeight = 70
@@ -274,6 +275,49 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     width: '20px',
     height: '20px',
   },
+  hideSectionVisibility: {
+    visibility: 'hidden',
+  },
+  selectPrincipleInvestigatorButton: {
+    width: '410px',
+    height: '48px',
+    border: '1px solid black',
+    backgroundColor: 'white',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingLeft: '15px',
+    outline: 'none',
+    transition: '0.25s ease',
+    fontSize: '14px',
+  },
+  selectPrincipleInvestigatorButtonClosed: {
+    '&:hover': {
+      backgroundColor: theme.palette.primary.dark,
+    },
+  },
+  principleInvestigatorOption: {
+    backgroundColor: 'white',
+    height: '48px',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: theme.spacing(2),
+    borderBottom: '1px solid black',
+    borderLeft: '1px solid black',
+    borderRight: '1px solid black',
+    transition: '0.25s ease',
+    '&:hover': {
+      backgroundColor: theme.palette.primary.dark,
+    },
+  },
+  principleInvestigatorDropdown: {
+    paddingLeft: theme.spacing(0),
+    zIndex: 500,
+    position: 'absolute',
+    width: '410px',
+  },
 }))
 
 type UploadedFile = {
@@ -366,12 +410,23 @@ const AppDesign: React.FunctionComponent<
 
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
+  const [
+    isLeadInvestigatorDropdownOpen,
+    setIsLeadInvestigatorDropdownOpen,
+  ] = useState<boolean>(false)
 
   const defaultHeader = 'Thanks for joining us!'
   const defaultStudyBody =
     'We’re excited to have you help us blah blah blah. \n \n This is a research study and does not provide medical advice, diagnosis, or treatment.'
   const defaultSalutations = 'Thank you for your contributions,'
   const defaultFrom = 'Research Team X'
+  const SimpleTextInputStlyes = {
+    fontSize: '15px',
+    width: '100%',
+    height: '46px',
+    paddingTop: '14px',
+    boxSizing: 'border-box',
+  } as React.CSSProperties
 
   const [
     appDesignProperties,
@@ -428,7 +483,23 @@ const AppDesign: React.FunctionComponent<
   }, [
     appDesignProperties.useOptionalDisclaimer,
     appDesignProperties.isUsingDefaultMessage,
+    appDesignProperties.leadPrincipleInvestigator,
   ])
+
+  const vals = [
+    {
+      name: 'Cathy Wood',
+      value: 1,
+    },
+    {
+      name: 'George Washington',
+      value: 2,
+    },
+    {
+      name: 'Abraham Lincoln',
+      value: 3,
+    },
+  ]
 
   return (
     <Box className={classes.root}>
@@ -600,7 +671,7 @@ const AppDesign: React.FunctionComponent<
                       rows={2}
                       rowsMax={4}
                       placeholder="Thank you for your contribution"
-                      inputProps={{ style: { width: '100%' } }}
+                      inputProps={{ style: SimpleTextInputStlyes }}
                     />
                   </FormControl>
                   <FormControl>
@@ -619,7 +690,7 @@ const AppDesign: React.FunctionComponent<
                       rows={2}
                       rowsMax={4}
                       placeholder="Study team name"
-                      inputProps={{ style: { width: '100%' } }}
+                      inputProps={{ style: SimpleTextInputStlyes }}
                     />
                   </FormControl>
                   <div style={{ marginTop: '20px' }}>
@@ -661,7 +732,7 @@ const AppDesign: React.FunctionComponent<
             </ol>
           </div>
           {appDesignProperties.isUsingDefaultMessage && (
-            <div style={{ visibility: 'hidden' }}>
+            <div className={classes.hideSectionVisibility}>
               <ol className={classes.steps}>
                 <li></li>
                 <li></li>
@@ -712,7 +783,15 @@ const AppDesign: React.FunctionComponent<
           </Box>
         </Box>
       </Paper>
-      <Paper className={classes.section} elevation={2}>
+      <Paper
+        className={classes.section}
+        elevation={2}
+        onClick={() => {
+          if (isLeadInvestigatorDropdownOpen) {
+            setIsLeadInvestigatorDropdownOpen(false)
+          }
+        }}
+      >
         <Box className={classes.fields}>
           <MTBHeadingH2>Study Page</MTBHeadingH2>
           <p className={classes.smallScreenText}>
@@ -725,10 +804,10 @@ const AppDesign: React.FunctionComponent<
               <FormGroup className={classes.formFields}>
                 <FormControl className={classes.firstFormElement}>
                   <SimpleTextLabel htmlFor="study-name-input">
-                    Title of Study
+                    Official Study Name*
                   </SimpleTextLabel>
                   <SimpleTextInput
-                    className={classes.headlineStyle}
+                    className={classes.informationRowStyle}
                     id="study-name-input"
                     placeholder="Headline"
                     value={appDesignProperties.studyTitle}
@@ -740,16 +819,16 @@ const AppDesign: React.FunctionComponent<
                     }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
-                    rows={2}
-                    rowsMax={4}
+                    rows={1}
+                    rowsMax={1}
                     inputProps={{
-                      style: { fontSize: '24px', width: '100%' },
+                      style: SimpleTextInputStlyes,
                     }}
                   />
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel>
-                    Body Copy (maximum 250 characters)
+                    Body Copy (maximum 500 characters)
                   </SimpleTextLabel>
                   <SimpleTextInput
                     id="study-body-text"
@@ -765,7 +844,7 @@ const AppDesign: React.FunctionComponent<
                     rows={8}
                     rowsMax={10}
                     placeholder="Lorem ipsum"
-                    inputProps={{ style: { width: '100%' }, maxLength: 250 }}
+                    inputProps={{ style: { width: '100%' }, maxLength: 500 }}
                   />
                 </FormControl>
               </FormGroup>
@@ -773,10 +852,48 @@ const AppDesign: React.FunctionComponent<
             <Subsection heading="Information about the Study Leads">
               <FormGroup className={classes.formFields}>
                 <FormControl className={classes.firstFormElement}>
-                  <SimpleTextLabel htmlFor="lead-investigator-input">
-                    Lead pricinple investigator
-                  </SimpleTextLabel>
-                  <SimpleTextInput
+                  {/* <SimpleTextLabel htmlFor="lead-investigator-input">Lead pricinple investigator</SimpleTextLabel> */}
+                  <div>
+                    <button
+                      className={clsx(
+                        classes.selectPrincipleInvestigatorButton,
+                        !isLeadInvestigatorDropdownOpen &&
+                          classes.selectPrincipleInvestigatorButtonClosed,
+                      )}
+                      onClick={() => {
+                        setIsLeadInvestigatorDropdownOpen(
+                          !isLeadInvestigatorDropdownOpen,
+                        )
+                      }}
+                    >
+                      {appDesignProperties.leadPrincipleInvestigator ||
+                        'Select pricinple investigator'}
+                      <img src={ChevronDownIcon} alt="chevron-down-logo"></img>
+                    </button>
+                    {isLeadInvestigatorDropdownOpen && (
+                      <ul className={classes.principleInvestigatorDropdown}>
+                        {vals.map(el => (
+                          <option
+                            className={clsx(
+                              classes.principleInvestigatorOption,
+                            )}
+                            key={el.name}
+                            value={el.value}
+                            onClick={() => {
+                              setIsLeadInvestigatorDropdownOpen(false)
+                              setAppDesignProperties({
+                                ...appDesignProperties,
+                                leadPrincipleInvestigator: el.name,
+                              })
+                            }}
+                          >
+                            {el.name}
+                          </option>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                  {/* <SimpleTextInput
                     className={classes.informationRowStyle}
                     id="lead-investigator-input"
                     placeholder="First and Last name"
@@ -792,11 +909,11 @@ const AppDesign: React.FunctionComponent<
                     rows={1}
                     rowsMax={1}
                     inputProps={{ style: { fontSize: '15px', width: '100%' } }}
-                  />
+                  /> */}
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="institution-input">
-                    Institution
+                    Institution Affiliation*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -813,12 +930,14 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStlyes,
+                    }}
                   />
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="funder-input">
-                    Funder
+                    Funder*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -835,12 +954,14 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStlyes,
+                    }}
                   />
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="IRB-approval-input">
-                    IRB Approval Number
+                    IRB Approval Number*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -857,7 +978,9 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStlyes,
+                    }}
                   />
                 </FormControl>
               </FormGroup>
@@ -866,7 +989,7 @@ const AppDesign: React.FunctionComponent<
               <FormGroup className={classes.formFields}>
                 <FormControl className={classes.firstFormElement}>
                   <SimpleTextLabel htmlFor="contact-lead-input">
-                    Contact Lead
+                    Contact Lead*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -883,12 +1006,14 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStlyes,
+                    }}
                   />
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="role-in-study-input">
-                    Role in the Study
+                    Role in the Study*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -905,12 +1030,14 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStlyes,
+                    }}
                   />
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="phone-number-contact-input">
-                    Phone Number
+                    Phone Number*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -927,12 +1054,14 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStlyes,
+                    }}
                   />
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="contact-email-input">
-                    Email
+                    Email*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -949,7 +1078,9 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStlyes,
+                    }}
                   />
                 </FormControl>
               </FormGroup>
@@ -958,7 +1089,7 @@ const AppDesign: React.FunctionComponent<
               <FormGroup className={classes.formFields}>
                 <FormControl className={classes.firstFormElement}>
                   <SimpleTextLabel htmlFor="ethics-board-input">
-                    Name of IRB/Ethics Board
+                    Name of IRB/Ethics Board*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -975,12 +1106,14 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStlyes,
+                    }}
                   />
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="ethics-phone-number-input">
-                    Phone Number
+                    Phone Number*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -997,12 +1130,14 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStlyes,
+                    }}
                   />
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="ethics-email-input">
-                    Email
+                    Email*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -1019,7 +1154,9 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStlyes,
+                    }}
                   />
                 </FormControl>
               </FormGroup>
