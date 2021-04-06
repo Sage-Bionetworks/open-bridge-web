@@ -24,6 +24,7 @@ import {
   ThemeType,
 } from '../../../style/theme'
 import {
+  OrgUser,
   StudyAppDesign,
   StudyBuilderComponentProps,
 } from '../../../types/types'
@@ -353,7 +354,6 @@ type PreviewFile = {
 
 type leadInvestigatorOption = {
   name: string
-  index: number
 }
 
 export interface AppDesignProps {
@@ -429,7 +429,7 @@ const AppDesign: React.FunctionComponent<
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
-  const { token, orgMembership } = useUserSessionDataState()
+  const { token, orgMembership, roles } = useUserSessionDataState()
 
   const classes = useStyles()
 
@@ -515,20 +515,30 @@ const AppDesign: React.FunctionComponent<
     appDesignProperties.leadPrincipleInvestigator,
   ])
 
+  const formatName = (currentAccount: OrgUser) => {
+    const { firstName, lastName, synapseUserId } = currentAccount
+    const name =
+      firstName || lastName ? [firstName, lastName].join(' ') : synapseUserId
+    return name
+  }
+
   useEffect(() => {
     const getLeadResearchAccount = async () => {
       const accounts = await AccessService.getAccountsForOrg(
         token!,
         orgMembership!,
       )
-      // need to change this to filer for admins
-      const adminAccounts = accounts.filter(el => el.id != '')
+      const promises = accounts.map(async account => {
+        return await AccessService.getIndividualAccount(token!, account.id)
+      })
+      const admins = await Promise.all(promises).then(values => {
+        return values.filter(account => account.roles.includes('org_admin'))
+      })
       const leadInvestigatorArray = []
-      for (let i = 0; i < adminAccounts.length; i++) {
-        const currentAccount = adminAccounts[i]
+      for (let i = 0; i < admins.length; i++) {
+        const currentAccount = admins[i]
         let currentObj = {
-          name: `${currentAccount.firstName} ${currentAccount.lastName}`,
-          index: i,
+          name: formatName(currentAccount),
         }
         leadInvestigatorArray.push(currentObj)
       }
@@ -906,12 +916,12 @@ const AppDesign: React.FunctionComponent<
                     {isLeadInvestigatorDropdownOpen &&
                       leadInvestigatorOptions.length > 0 && (
                         <ul className={classes.principleInvestigatorDropdown}>
-                          {leadInvestigatorOptions.map(el => (
+                          {leadInvestigatorOptions.map((el, index) => (
                             <option
                               className={clsx(
                                 classes.principleInvestigatorOption,
                               )}
-                              key={el.index}
+                              key={index}
                               value={el.name}
                               onClick={() => {
                                 setIsLeadInvestigatorDropdownOpen(false)
