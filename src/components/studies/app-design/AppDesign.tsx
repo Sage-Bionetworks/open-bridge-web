@@ -321,6 +321,12 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     position: 'absolute',
     width: '410px',
   },
+  principleInvestigatorsParagraph: {
+    fontSize: '12px',
+    marginLeft: theme.spacing(2),
+    lineHeight: '14px',
+    marginTop: theme.spacing(2),
+  },
 }))
 
 type UploadedFile = {
@@ -872,7 +878,9 @@ const AppDesign: React.FunctionComponent<
             <Subsection heading="Information about the Study Leads">
               <FormGroup className={classes.formFields}>
                 <FormControl className={classes.firstFormElement}>
-                  {/* <SimpleTextLabel htmlFor="lead-investigator-input">Lead pricinple investigator</SimpleTextLabel> */}
+                  <div style={{ marginLeft: '8px' }}>
+                    Lead Principle Investigator*
+                  </div>
                   <div>
                     <button
                       className={clsx(
@@ -914,23 +922,19 @@ const AppDesign: React.FunctionComponent<
                         </ul>
                       )}
                   </div>
-                  {/* <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="lead-investigator-input"
-                    placeholder="First and Last name"
-                    value={appDesignProperties.leadPrincipleInvestigator}
-                    onChange={e => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        leadPrincipleInvestigator: e.target.value,
-                      })
-                    }}
-                    onBlur={() => updateAppDesignInfo()}
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
-                  /> */}
+                  <p className={classes.principleInvestigatorsParagraph}>
+                    Principle Investigators are required to be part of the study
+                    as a “Study Administrator”.
+                    <br></br>
+                    <br></br>
+                    If your PI is not listed in the dropdown, please add them to
+                    the study and/or make them a{' '}
+                    <strong>Co-Study Administrator</strong> via the{' '}
+                    <strong>
+                      <u>Access Settings</u>
+                    </strong>{' '}
+                    tab on the top right hand side.{' '}
+                  </p>
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="institution-input">
