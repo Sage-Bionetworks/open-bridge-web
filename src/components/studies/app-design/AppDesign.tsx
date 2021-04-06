@@ -429,7 +429,7 @@ const AppDesign: React.FunctionComponent<
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
-  const { token, orgMembership, roles } = useUserSessionDataState()
+  const { token, orgMembership } = useUserSessionDataState()
 
   const classes = useStyles()
 
