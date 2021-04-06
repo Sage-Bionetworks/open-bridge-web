@@ -39,6 +39,8 @@ import StudySummaryRoles from './StudySummaryRoles'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
 import ChevronDownIcon from '../../../assets/chevron_down_icon.svg'
 import clsx from 'clsx'
+import AccessService from '../../../services/access.service'
+import { useUserSessionDataState } from '../../../helpers/AuthContext'
 
 const imgHeight = 70
 
@@ -311,6 +313,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     '&:hover': {
       backgroundColor: theme.palette.primary.dark,
     },
+    cursor: 'pointer',
   },
   principleInvestigatorDropdown: {
     paddingLeft: theme.spacing(0),
@@ -331,6 +334,11 @@ type PreviewFile = {
   name: string
   size: number
   body?: string
+}
+
+type leadInvestigatorOption = {
+  name: string
+  index: number
 }
 
 export interface AppDesignProps {
@@ -406,6 +414,8 @@ const AppDesign: React.FunctionComponent<
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
+  const { token, orgMembership } = useUserSessionDataState()
+
   const classes = useStyles()
 
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
@@ -414,17 +424,20 @@ const AppDesign: React.FunctionComponent<
     isLeadInvestigatorDropdownOpen,
     setIsLeadInvestigatorDropdownOpen,
   ] = useState<boolean>(false)
+  const [leadInvestigatorOptions, setLeadInvestigatorOptions] = useState<
+    leadInvestigatorOption[]
+  >([])
 
   const defaultHeader = 'Thanks for joining us!'
   const defaultStudyBody =
-    'We’re excited to have you help us blah blah blah. \n \n This is a research study and does not provide medical advice, diagnosis, or treatment.'
+    'We’re excited to have you help us in conduting this study! \n \n This is a research study and does not provide medical advice, diagnosis, or treatment.'
   const defaultSalutations = 'Thank you for your contributions,'
   const defaultFrom = 'Research Team X'
-  const SimpleTextInputStlyes = {
+  const SimpleTextInputStyles = {
     fontSize: '15px',
     width: '100%',
-    height: '46px',
-    paddingTop: '14px',
+    height: '44px',
+    paddingTop: '12px',
     boxSizing: 'border-box',
   } as React.CSSProperties
 
@@ -486,20 +499,27 @@ const AppDesign: React.FunctionComponent<
     appDesignProperties.leadPrincipleInvestigator,
   ])
 
-  const vals = [
-    {
-      name: 'Cathy Wood',
-      value: 1,
-    },
-    {
-      name: 'George Washington',
-      value: 2,
-    },
-    {
-      name: 'Abraham Lincoln',
-      value: 3,
-    },
-  ]
+  useEffect(() => {
+    const getLeadResearchAccount = async () => {
+      const accounts = await AccessService.getAccountsForOrg(
+        token!,
+        orgMembership!,
+      )
+      // need to change this to filer for admins
+      const adminAccounts = accounts.filter(el => el.id != '')
+      const leadInvestigatorArray = []
+      for (let i = 0; i < adminAccounts.length; i++) {
+        const currentAccount = adminAccounts[i]
+        let currentObj = {
+          name: `${currentAccount.firstName} ${currentAccount.lastName}`,
+          index: i,
+        }
+        leadInvestigatorArray.push(currentObj)
+      }
+      setLeadInvestigatorOptions(leadInvestigatorArray)
+    }
+    getLeadResearchAccount()
+  }, [])
 
   return (
     <Box className={classes.root}>
@@ -671,7 +691,7 @@ const AppDesign: React.FunctionComponent<
                       rows={2}
                       rowsMax={4}
                       placeholder="Thank you for your contribution"
-                      inputProps={{ style: SimpleTextInputStlyes }}
+                      inputProps={{ style: SimpleTextInputStyles }}
                     />
                   </FormControl>
                   <FormControl>
@@ -690,7 +710,7 @@ const AppDesign: React.FunctionComponent<
                       rows={2}
                       rowsMax={4}
                       placeholder="Study team name"
-                      inputProps={{ style: SimpleTextInputStlyes }}
+                      inputProps={{ style: SimpleTextInputStyles }}
                     />
                   </FormControl>
                   <div style={{ marginTop: '20px' }}>
@@ -822,7 +842,7 @@ const AppDesign: React.FunctionComponent<
                     rows={1}
                     rowsMax={1}
                     inputProps={{
-                      style: SimpleTextInputStlyes,
+                      style: SimpleTextInputStyles,
                     }}
                   />
                 </FormControl>
@@ -870,28 +890,29 @@ const AppDesign: React.FunctionComponent<
                         'Select pricinple investigator'}
                       <img src={ChevronDownIcon} alt="chevron-down-logo"></img>
                     </button>
-                    {isLeadInvestigatorDropdownOpen && (
-                      <ul className={classes.principleInvestigatorDropdown}>
-                        {vals.map(el => (
-                          <option
-                            className={clsx(
-                              classes.principleInvestigatorOption,
-                            )}
-                            key={el.name}
-                            value={el.value}
-                            onClick={() => {
-                              setIsLeadInvestigatorDropdownOpen(false)
-                              setAppDesignProperties({
-                                ...appDesignProperties,
-                                leadPrincipleInvestigator: el.name,
-                              })
-                            }}
-                          >
-                            {el.name}
-                          </option>
-                        ))}
-                      </ul>
-                    )}
+                    {isLeadInvestigatorDropdownOpen &&
+                      leadInvestigatorOptions.length > 0 && (
+                        <ul className={classes.principleInvestigatorDropdown}>
+                          {leadInvestigatorOptions.map(el => (
+                            <option
+                              className={clsx(
+                                classes.principleInvestigatorOption,
+                              )}
+                              key={el.index}
+                              value={el.name}
+                              onClick={() => {
+                                setIsLeadInvestigatorDropdownOpen(false)
+                                setAppDesignProperties({
+                                  ...appDesignProperties,
+                                  leadPrincipleInvestigator: el.name,
+                                })
+                              }}
+                            >
+                              {el.name}
+                            </option>
+                          ))}
+                        </ul>
+                      )}
                   </div>
                   {/* <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -931,7 +952,7 @@ const AppDesign: React.FunctionComponent<
                     rows={1}
                     rowsMax={1}
                     inputProps={{
-                      style: SimpleTextInputStlyes,
+                      style: SimpleTextInputStyles,
                     }}
                   />
                 </FormControl>
@@ -955,7 +976,7 @@ const AppDesign: React.FunctionComponent<
                     rows={1}
                     rowsMax={1}
                     inputProps={{
-                      style: SimpleTextInputStlyes,
+                      style: SimpleTextInputStyles,
                     }}
                   />
                 </FormControl>
@@ -979,7 +1000,7 @@ const AppDesign: React.FunctionComponent<
                     rows={1}
                     rowsMax={1}
                     inputProps={{
-                      style: SimpleTextInputStlyes,
+                      style: SimpleTextInputStyles,
                     }}
                   />
                 </FormControl>
@@ -1007,7 +1028,7 @@ const AppDesign: React.FunctionComponent<
                     rows={1}
                     rowsMax={1}
                     inputProps={{
-                      style: SimpleTextInputStlyes,
+                      style: SimpleTextInputStyles,
                     }}
                   />
                 </FormControl>
@@ -1031,7 +1052,7 @@ const AppDesign: React.FunctionComponent<
                     rows={1}
                     rowsMax={1}
                     inputProps={{
-                      style: SimpleTextInputStlyes,
+                      style: SimpleTextInputStyles,
                     }}
                   />
                 </FormControl>
@@ -1055,7 +1076,7 @@ const AppDesign: React.FunctionComponent<
                     rows={1}
                     rowsMax={1}
                     inputProps={{
-                      style: SimpleTextInputStlyes,
+                      style: SimpleTextInputStyles,
                     }}
                   />
                 </FormControl>
@@ -1079,7 +1100,7 @@ const AppDesign: React.FunctionComponent<
                     rows={1}
                     rowsMax={1}
                     inputProps={{
-                      style: SimpleTextInputStlyes,
+                      style: SimpleTextInputStyles,
                     }}
                   />
                 </FormControl>
@@ -1107,7 +1128,7 @@ const AppDesign: React.FunctionComponent<
                     rows={1}
                     rowsMax={1}
                     inputProps={{
-                      style: SimpleTextInputStlyes,
+                      style: SimpleTextInputStyles,
                     }}
                   />
                 </FormControl>
@@ -1131,7 +1152,7 @@ const AppDesign: React.FunctionComponent<
                     rows={1}
                     rowsMax={1}
                     inputProps={{
-                      style: SimpleTextInputStlyes,
+                      style: SimpleTextInputStyles,
                     }}
                   />
                 </FormControl>
@@ -1155,7 +1176,7 @@ const AppDesign: React.FunctionComponent<
                     rows={1}
                     rowsMax={1}
                     inputProps={{
-                      style: SimpleTextInputStlyes,
+                      style: SimpleTextInputStyles,
                     }}
                   />
                 </FormControl>
