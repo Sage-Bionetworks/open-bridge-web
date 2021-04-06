@@ -289,7 +289,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingLeft: '15px',
+    paddingLeft: theme.spacing(2),
     outline: 'none',
     transition: '0.25s ease',
     fontSize: '14px',
