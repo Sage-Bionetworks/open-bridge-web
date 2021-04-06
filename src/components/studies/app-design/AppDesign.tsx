@@ -516,9 +516,8 @@ const AppDesign: React.FunctionComponent<
   ])
 
   const formatName = (currentAccount: OrgUser) => {
-    const { firstName, lastName, synapseUserId } = currentAccount
-    const name =
-      firstName || lastName ? [firstName, lastName].join(' ') : synapseUserId
+    const { firstName, lastName, email } = currentAccount
+    const name = firstName || lastName ? [firstName, lastName].join(' ') : email
     return name
   }
 
