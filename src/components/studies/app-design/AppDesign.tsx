@@ -327,6 +327,15 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     lineHeight: '14px',
     marginTop: theme.spacing(2),
   },
+  uploadButton: {
+    marginTop: theme.spacing(2.5),
+  },
+  fromText: {
+    marginTop: theme.spacing(1.5),
+  },
+  salutationText: {
+    marginTop: theme.spacing(2.5),
+  },
 }))
 
 type UploadedFile = {
@@ -439,11 +448,12 @@ const AppDesign: React.FunctionComponent<
     'We’re excited to have you help us in conduting this study! \n \n This is a research study and does not provide medical advice, diagnosis, or treatment.'
   const defaultSalutations = 'Thank you for your contributions,'
   const defaultFrom = 'Research Team X'
+
   const SimpleTextInputStyles = {
     fontSize: '15px',
     width: '100%',
     height: '44px',
-    paddingTop: '12px',
+    paddingTop: '13px',
     boxSizing: 'border-box',
   } as React.CSSProperties
 
@@ -541,8 +551,8 @@ const AppDesign: React.FunctionComponent<
             color, and message, or select a default message to be shown.
           </p>
           <div className={classes.switchContainer}>
-            <div style={{ marginRight: '12px' }}>Use default message</div>
-            <div style={{ marginTop: '4px' }}>
+            <Box marginRight="12px">Use default message</Box>
+            <Box marginTop="4px">
               <AntSwitch
                 checked={!currentAppDesign.isUsingDefaultMessage}
                 onChange={() =>
@@ -554,9 +564,8 @@ const AppDesign: React.FunctionComponent<
                   })
                 }
               ></AntSwitch>
-            </div>
-
-            <div style={{ marginLeft: '12px' }}>Customize</div>
+            </Box>
+            <Box marginLeft="12px">Customize</Box>
           </div>
           <div
             className={clsx(
@@ -602,7 +611,7 @@ const AppDesign: React.FunctionComponent<
                   variant="contained"
                   component="label"
                   color="primary"
-                  style={{ marginTop: '20px' }}
+                  className={classes.uploadButton}
                 >
                   Upload
                   <input
@@ -719,9 +728,7 @@ const AppDesign: React.FunctionComponent<
                       inputProps={{ style: SimpleTextInputStyles }}
                     />
                   </FormControl>
-                  <div style={{ marginTop: '20px' }}>
-                    Add optional disclaimer:
-                  </div>
+                  <Box marginTop="20px">Add optional disclaimer:</Box>
                   <div className={classes.optionalDisclaimerRow}>
                     <Checkbox
                       checked={appDesignProperties.useOptionalDisclaimer}
@@ -792,13 +799,13 @@ const AppDesign: React.FunctionComponent<
                   ? defaultStudyBody
                   : appDesignProperties.welcomeScreenBody || 'Body copy'}
               </p>
-              <div style={{ marginTop: '20px' }} className={classes.bodyText}>
+              <div className={clsx(classes.bodyText, classes.salutationText)}>
                 {appDesignProperties.isUsingDefaultMessage
                   ? defaultSalutations
                   : appDesignProperties.welcomeScreenSalutation ||
                     'Placeholder salutation,'}
               </div>
-              <div style={{ marginTop: '10px' }} className={classes.bodyText}>
+              <div className={clsx(classes.bodyText, classes.fromText)}>
                 {appDesignProperties.isUsingDefaultMessage
                   ? defaultFrom
                   : appDesignProperties.welcomeScreenFromText ||
@@ -878,9 +885,7 @@ const AppDesign: React.FunctionComponent<
             <Subsection heading="Information about the Study Leads">
               <FormGroup className={classes.formFields}>
                 <FormControl className={classes.firstFormElement}>
-                  <div style={{ marginLeft: '8px' }}>
-                    Lead Principle Investigator*
-                  </div>
+                  <Box marginLeft="8px">Lead Principle Investigator*</Box>
                   <div>
                     <button
                       className={clsx(
