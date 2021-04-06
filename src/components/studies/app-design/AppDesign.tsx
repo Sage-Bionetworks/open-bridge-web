@@ -537,7 +537,7 @@ const AppDesign: React.FunctionComponent<
       for (let i = 0; i < admins.length; i++) {
         const currentAccount = admins[i]
         let currentObj = {
-          name: formatName(currentAccount),
+          name: formatName(currentAccount)!,
         }
         leadInvestigatorArray.push(currentObj)
       }
