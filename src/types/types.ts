@@ -108,10 +108,20 @@ export type Study = {
     enrollmentType?: EnrollmentType
     generateIds?: boolean
     appDesign?: StudyAppDesign
+    backgroundRecorders?: BackgroundRecorders
   }
 
   createdOn?: Date
   modifiedOn?: Date
+}
+
+export type BackgroundRecorders ={
+  accelGyro: boolean,
+  backgroundNoise: boolean,
+  weatherPolution: boolean,
+  passiveGaitDisplacement: boolean
+
+
 }
 
 export type StudyAppDesign = {

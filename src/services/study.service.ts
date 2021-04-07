@@ -106,7 +106,7 @@ async function createNewStudySchedule(
   return result.data
 }
 
-async function updateStudy(study: Study, token: string): Promise<Study[]> {
+async function updateStudy(study: Study, token: string): Promise<number> {
   const payload = {
     clientData: study.clientData,
     name: study.name,
@@ -115,15 +115,14 @@ async function updateStudy(study: Study, token: string): Promise<Study[]> {
     scheduleGuid: study.scheduleGuid,
   }
 
-  await callEndpoint<{ items: Study[] }>(
+ const result = await callEndpoint<{version: number}>(
     constants.endpoints.study.replace(':id', study.identifier),
     'POST', // once we add things to the study -- we can change this to actual object
     //  { identifier: study.identifier, version: study.version, name: study.name },
     payload,
     token,
   )
-  const data = await getStudies(token)
-  return data
+ return result.data.version
 }
 
 async function removeStudy(studyId: string, token: string): Promise<Study[]> {
