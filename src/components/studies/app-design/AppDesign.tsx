@@ -5,12 +5,14 @@ import {
   Divider,
   FormControl,
   FormGroup,
-  Paper
+  Paper,
+  Switch,
+  Checkbox,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import ReactColorPicker from '@super-effective/react-color-picker'
 import _ from 'lodash'
-import React, { ChangeEvent, useCallback, useState } from 'react'
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
 import { ReactComponent as PhoneBottomImg } from '../../../assets/appdesign/phone_buttons.svg'
@@ -19,20 +21,24 @@ import {
   latoFont,
   playfairDisplayFont,
   poppinsFont,
-  ThemeType
+  ThemeType,
 } from '../../../style/theme'
 import {
   StudyAppDesign,
-  StudyBuilderComponentProps
+  StudyBuilderComponentProps,
 } from '../../../types/types'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
 import {
   SimpleTextInput,
-  SimpleTextLabel
+  SimpleTextLabel,
 } from '../../widgets/StyledComponents'
 import ContactInformation from './ContactInformation'
 import StudySummaryRoles from './StudySummaryRoles'
+import DefaultLogo from '../../../assets/logo_mtb.svg'
+import clsx from 'clsx'
+import { useUserSessionDataState } from '../../../helpers/AuthContext'
+import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
 
 const imgHeight = 70
 
@@ -44,6 +50,10 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontSize: '15px',
     lineHeight: '18px',
     marginTop: '25px',
+    whiteSpace: 'pre-line',
+  },
+  firstPhoneScreenBodyText: {
+    height: '325px',
   },
   bodyPhoneText: {
     fontFamily: 'Lato',
@@ -53,7 +63,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginTop: '25px',
   },
   section: {
-    padding: theme.spacing(9, 9, 5, 17),
+    padding: theme.spacing(9, 9, 10, 17),
     display: 'flex',
     justifyContent: 'space-between',
     marginBottom: theme.spacing(2),
@@ -220,18 +230,68 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
-    marginBottom: '10px',
+    marginBottom: theme.spacing(1.25),
   },
   divider: {
     width: '256px',
-    marginTop: '30px',
+    marginTop: theme.spacing(3.75),
   },
   phoneGrayBackground: {
     backgroundColor: '#F7F7F7',
   },
   smallScreenText: {
     fontSize: '15px',
-    marginTop: '30px',
+    marginTop: theme.spacing(3.75),
+    whiteSpace: 'pre-wrap',
+  },
+  switchContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    fontSize: '16px',
+    lineHeight: '19px',
+    fontFamily: 'Lato',
+    alignItems: 'center',
+    fontWeight: 'bold',
+    marginTop: theme.spacing(1.25),
+    marginBottom: theme.spacing(4),
+  },
+  hideSection: {
+    display: 'none',
+  },
+  optionalDisclaimerText: {
+    marginLeft: theme.spacing(2),
+    fontSize: '14px',
+    lineHeight: '20px',
+    fontFamily: 'Lato',
+  },
+  optionalDisclaimerRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginTop: theme.spacing(1.25),
+    alignItems: 'center',
+    marginBottom: theme.spacing(1.5),
+  },
+  checkBox: {
+    width: '20px',
+    height: '20px',
+  },
+  hideSectionVisibility: {
+    visibility: 'hidden',
+  },
+  principleInvestigatorsParagraph: {
+    fontSize: '12px',
+    marginLeft: theme.spacing(2),
+    lineHeight: '14px',
+    marginTop: theme.spacing(2),
+  },
+  uploadButton: {
+    marginTop: theme.spacing(2.5),
+  },
+  fromText: {
+    marginTop: theme.spacing(1.5),
+  },
+  salutationText: {
+    marginTop: theme.spacing(2.5),
   },
 }))
 
@@ -281,14 +341,26 @@ const Subsection: React.FunctionComponent<{ heading: string }> = ({
 const PhoneTopBar: React.FunctionComponent<{
   color?: string
   previewFile?: PreviewFile
-}> = ({ color = 'transparent', previewFile }) => {
+  isUsingDefaultMessage?: boolean
+}> = ({ color = 'transparent', previewFile, isUsingDefaultMessage }) => {
   const classes = useStyles()
   return (
-    <div className={classes.phoneTopBar} style={{ backgroundColor: color }}>
-      {previewFile && (
+    <div
+      className={classes.phoneTopBar}
+      style={{ backgroundColor: isUsingDefaultMessage ? '#BCD5E4' : color }}
+    >
+      {!isUsingDefaultMessage ? (
+        previewFile && (
+          <img
+            src={previewFile.body}
+            style={{ height: `${imgHeight}px` }}
+            alt="study-logo"
+          />
+        )
+      ) : (
         <img
-          src={previewFile.body}
-          style={{ height: `${imgHeight}px` }}
+          src={DefaultLogo}
+          style={{ height: `${imgHeight - 16}px` }}
           alt="study-logo"
         />
       )}
@@ -309,10 +381,26 @@ const AppDesign: React.FunctionComponent<
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
+  const { token, orgMembership } = useUserSessionDataState()
+
   const classes = useStyles()
 
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
+
+  const defaultHeader = 'Thanks for joining us!'
+  const defaultStudyBody =
+    'We’re excited to have you help us in conduting this study! \n \n This is a research study and does not provide medical advice, diagnosis, or treatment.'
+  const defaultSalutations = 'Thank you for your contributions,'
+  const defaultFrom = 'Research Team X'
+
+  const SimpleTextInputStyles = {
+    fontSize: '15px',
+    width: '100%',
+    height: '44px',
+    paddingTop: '13px',
+    boxSizing: 'border-box',
+  } as React.CSSProperties
 
   const [
     appDesignProperties,
@@ -322,7 +410,8 @@ const AppDesign: React.FunctionComponent<
     backgroundColor: currentAppDesign.backgroundColor || '#6040FF',
     welcomeScreenHeader: currentAppDesign.welcomeScreenHeader || '',
     welcomeScreenBody: currentAppDesign.welcomeScreenBody || '',
-    welcomeScreenSignature: currentAppDesign.welcomeScreenSignature || '',
+    welcomeScreenFromText: currentAppDesign.welcomeScreenFromText || '',
+    welcomeScreenSalutation: currentAppDesign.welcomeScreenSalutation || '',
     studyTitle: currentAppDesign.studyTitle || '',
     studySummaryBody: currentAppDesign.studySummaryBody || '',
     leadPrincipleInvestigator: currentAppDesign.leadPrincipleInvestigator || '',
@@ -336,6 +425,8 @@ const AppDesign: React.FunctionComponent<
     nameOfEthicsBoard: currentAppDesign.nameOfEthicsBoard || '',
     ethicsBoardPhoneNumber: currentAppDesign.ethicsBoardPhoneNumber || '',
     ethicsBoardEmail: currentAppDesign.ethicsBoardEmail || '',
+    useOptionalDisclaimer: currentAppDesign.useOptionalDisclaimer || false,
+    isUsingDefaultMessage: currentAppDesign.isUsingDefaultMessage || false,
   })
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -361,6 +452,14 @@ const AppDesign: React.FunctionComponent<
     [],
   )
 
+  useEffect(() => {
+    updateAppDesignInfo()
+  }, [
+    appDesignProperties.useOptionalDisclaimer,
+    appDesignProperties.isUsingDefaultMessage,
+    appDesignProperties.leadPrincipleInvestigator,
+  ])
+
   return (
     <Box className={classes.root}>
       <Paper className={classes.section} elevation={2}>
@@ -368,159 +467,236 @@ const AppDesign: React.FunctionComponent<
           <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
           <p className={classes.smallScreenText}>
             When a participant first downloads the app, they will see a Welcome
-            screen. You can customize this screen by adding your own logo,
-            background color and Welcome message.
+            screen.
+            <br></br>
+            <br></br>
+            You can customize this screen by adding your own logo, background
+            color, and message, or select a default message to be shown.
           </p>
-          <ol className={classes.steps}>
-            <Subsection heading="Upload Study Logo">
-              <p className={classes.intro}>
-                Customize your study by uploading a logo framed into a 320px x
-                80px size.
-              </p>
-
-              <div>
-                {`Study Logo: 320px x 80px ${
-                  previewFile ? bytesToSize(previewFile.size) : ''
-                }`}
-                <div
-                  style={{
-                    padding: '8px 1px',
-                    textAlign: 'center',
-                    width: '320px',
-                    height: `${imgHeight + 16}px`,
-                    border: '1px solid black',
-                  }}
-                >
-                  {previewFile && (
-                    <img
-                      src={previewFile.body}
-                      style={{ height: `${imgHeight}px`, width: '310px' }}
-                    />
-                  )}
-                </div>
-              </div>
-
-              {saveLoader && (
-                <div className="text-center">
-                  <CircularProgress color="primary" />
-                </div>
-              )}
-
-              <Button
-                variant="contained"
-                component="label"
+          <div className={classes.switchContainer}>
+            <Box marginRight="12px">Use default message</Box>
+            <Box marginTop="4px">
+              <Switch
                 color="primary"
-                style={{ marginTop: '20px' }}
-              >
-                Upload
-                <input
-                  accept="image/*,.pdf,.doc,.docx,.jpg,.png, .txt"
-                  id="file"
-                  multiple={false}
-                  type="file"
-                  onChange={e => handleFileChange(e)}
-                  style={{ display: 'none' }}
-                />
-              </Button>
-            </Subsection>
-            <Subsection heading="Select background color">
-              <p>
-                Select a background color that matches your institution or study
-                to be seen beneath your logo.
-              </p>
-              <Box
-                border="1px colid black"
-                width="250px"
-                height="230px"
-                marginLeft="-10px"
-              >
-                <ReactColorPicker
-                  color={appDesignProperties.backgroundColor}
-                  onChange={(currentColor: string) => {
-                    setAppDesignProperties({
+                checked={!currentAppDesign.isUsingDefaultMessage}
+                onChange={() =>
+                  setAppDesignProperties(prevState => {
+                    return {
                       ...appDesignProperties,
-                      backgroundColor: currentColor,
-                    })
-                    debouncedUpdateColor(currentColor)
-                  }}
-                />
-              </Box>
-            </Subsection>
+                      isUsingDefaultMessage: !prevState.isUsingDefaultMessage,
+                    }
+                  })
+                }
+              ></Switch>
+            </Box>
+            <Box marginLeft="12px">Customize</Box>
+          </div>
+          <div
+            className={clsx(
+              appDesignProperties.isUsingDefaultMessage && classes.hideSection,
+            )}
+          >
+            <ol className={classes.steps}>
+              <Subsection heading="Upload Study Logo">
+                <p className={classes.intro}>
+                  Customize your study by uploading a logo framed into a 320px x
+                  80px size.
+                </p>
 
-            <Subsection heading="Welcome screen messaging">
-              <FormGroup className={classes.formFields}>
-                <FormControl className={classes.firstFormElement}>
-                  <SimpleTextLabel htmlFor="headline-input">
-                    Main Header
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.headlineStyle}
-                    id="headline-input"
-                    placeholder="Welcome Headline"
-                    value={appDesignProperties.welcomeScreenHeader}
-                    onChange={e => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        welcomeScreenHeader: e.target.value,
-                      })
+                <div>
+                  {`Study Logo: 320px x 80px ${
+                    previewFile ? bytesToSize(previewFile.size) : ''
+                  }`}
+                  <div
+                    style={{
+                      padding: '8px 1px',
+                      textAlign: 'center',
+                      width: '320px',
+                      height: `${imgHeight + 16}px`,
+                      border: '1px solid black',
                     }}
-                    onBlur={() => updateAppDesignInfo()}
-                    multiline
-                    rows={2}
-                    rowsMax={4}
-                    inputProps={{ style: { fontSize: '24px', width: '100%' } }}
-                  />
-                </FormControl>
-                <FormControl>
-                  <SimpleTextLabel>Body Copy</SimpleTextLabel>
-                  <SimpleTextInput
-                    id="outlined-textarea"
-                    value={appDesignProperties.welcomeScreenBody}
-                    onChange={e => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        welcomeScreenBody: e.target.value,
-                      })
-                    }}
-                    onBlur={() => updateAppDesignInfo()}
-                    multiline
-                    rows={4}
-                    rowsMax={6}
-                    placeholder="What are the first things you want participants to know about the study."
-                    inputProps={{ style: { width: '100%' } }}
-                  />
-                </FormControl>
-                <FormControl>
-                  <SimpleTextLabel>Signature</SimpleTextLabel>
-                  <SimpleTextInput
-                    id="signature-textarea"
-                    value={appDesignProperties.welcomeScreenSignature}
-                    onChange={e => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        welcomeScreenSignature: e.target.value,
-                      })
-                    }}
-                    onBlur={() => updateAppDesignInfo()}
-                    multiline
-                    rows={2}
-                    rowsMax={4}
-                    placeholder=""
-                    inputProps={{ style: { width: '100%' } }}
-                  />
-                </FormControl>
-              </FormGroup>
-              <Box textAlign="right">
-                {saveLoader ? (
-                  <div className="text-center">
-                    <CircularProgress color="primary" size={25} />
+                  >
+                    {previewFile && (
+                      <img
+                        src={previewFile.body}
+                        style={{ height: `${imgHeight}px`, width: '310px' }}
+                      />
+                    )}
                   </div>
-                ) : (
-                  <SaveButton onClick={() => onSave()} />
+                </div>
+
+                {saveLoader && (
+                  <div className="text-center">
+                    <CircularProgress color="primary" />
+                  </div>
                 )}
-              </Box>
-            </Subsection>
-          </ol>
+
+                <Button
+                  variant="contained"
+                  component="label"
+                  color="primary"
+                  className={classes.uploadButton}
+                >
+                  Upload
+                  <input
+                    accept="image/*,.pdf,.doc,.docx,.jpg,.png, .txt"
+                    id="file"
+                    multiple={false}
+                    type="file"
+                    onChange={e => handleFileChange(e)}
+                    style={{ display: 'none' }}
+                  />
+                </Button>
+              </Subsection>
+              <Subsection heading="Select background color">
+                <p>
+                  Select a background color that matches your institution or
+                  study to be seen beneath your logo.
+                </p>
+                <Box width="250px" height="230px" marginLeft="-10px">
+                  <ReactColorPicker
+                    color={appDesignProperties.backgroundColor}
+                    onChange={(currentColor: string) => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        backgroundColor: currentColor,
+                      })
+                      debouncedUpdateColor(currentColor)
+                    }}
+                  />
+                </Box>
+              </Subsection>
+
+              <Subsection heading="Welcome screen messaging">
+                <FormGroup className={classes.formFields}>
+                  <FormControl className={classes.firstFormElement}>
+                    <SimpleTextLabel htmlFor="headline-input">
+                      Main Header
+                    </SimpleTextLabel>
+                    <SimpleTextInput
+                      className={classes.headlineStyle}
+                      id="headline-input"
+                      placeholder="Welcome Headline"
+                      value={appDesignProperties.welcomeScreenHeader}
+                      onChange={e => {
+                        setAppDesignProperties({
+                          ...appDesignProperties,
+                          welcomeScreenHeader: e.target.value,
+                        })
+                      }}
+                      onBlur={() => updateAppDesignInfo()}
+                      multiline
+                      rows={2}
+                      rowsMax={4}
+                      inputProps={{
+                        style: { fontSize: '24px', width: '100%' },
+                      }}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <SimpleTextLabel>
+                      Body Copy (maximum 250 characters)
+                    </SimpleTextLabel>
+                    <SimpleTextInput
+                      id="outlined-textarea"
+                      value={appDesignProperties.welcomeScreenBody}
+                      onChange={e => {
+                        setAppDesignProperties({
+                          ...appDesignProperties,
+                          welcomeScreenBody: e.target.value,
+                        })
+                      }}
+                      onBlur={() => updateAppDesignInfo()}
+                      multiline
+                      rows={4}
+                      rowsMax={6}
+                      placeholder="What are the first things you want participants to know about the study."
+                      inputProps={{ style: { width: '100%' }, maxLength: 250 }}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <SimpleTextLabel>Salutations</SimpleTextLabel>
+                    <SimpleTextInput
+                      id="salutations"
+                      value={appDesignProperties.welcomeScreenSalutation}
+                      onChange={e => {
+                        setAppDesignProperties({
+                          ...appDesignProperties,
+                          welcomeScreenSalutation: e.target.value,
+                        })
+                      }}
+                      onBlur={() => updateAppDesignInfo()}
+                      multiline
+                      rows={2}
+                      rowsMax={4}
+                      placeholder="Thank you for your contribution"
+                      inputProps={{ style: SimpleTextInputStyles }}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <SimpleTextLabel>From</SimpleTextLabel>
+                    <SimpleTextInput
+                      id="signature-textarea"
+                      value={appDesignProperties.welcomeScreenFromText}
+                      onChange={e => {
+                        setAppDesignProperties({
+                          ...appDesignProperties,
+                          welcomeScreenFromText: e.target.value,
+                        })
+                      }}
+                      onBlur={() => updateAppDesignInfo()}
+                      multiline
+                      rows={2}
+                      rowsMax={4}
+                      placeholder="Study team name"
+                      inputProps={{ style: SimpleTextInputStyles }}
+                    />
+                  </FormControl>
+                  <Box marginTop="20px">Add optional disclaimer:</Box>
+                  <div className={classes.optionalDisclaimerRow}>
+                    <Checkbox
+                      checked={appDesignProperties.useOptionalDisclaimer}
+                      inputProps={{ 'aria-label': 'primary checkbox' }}
+                      className={classes.checkBox}
+                      onChange={() => {
+                        setAppDesignProperties(prevState => {
+                          return {
+                            ...appDesignProperties,
+                            useOptionalDisclaimer: !prevState.useOptionalDisclaimer,
+                          }
+                        })
+                      }}
+                    ></Checkbox>
+                    <div className={classes.optionalDisclaimerText}>
+                      This is a research study and does not provide medical
+                      advice, diagnosis, or treatment.
+                    </div>
+                  </div>
+                </FormGroup>
+                <Box textAlign="left">
+                  {saveLoader ? (
+                    <div className="text-center">
+                      <CircularProgress
+                        color="primary"
+                        size={25}
+                      ></CircularProgress>
+                    </div>
+                  ) : (
+                    <SaveButton onClick={() => onSave()} />
+                  )}
+                </Box>
+              </Subsection>
+            </ol>
+          </div>
+          {appDesignProperties.isUsingDefaultMessage && (
+            <div className={classes.hideSectionVisibility}>
+              <ol className={classes.steps}>
+                <li></li>
+                <li></li>
+                <li></li>
+              </ol>
+            </div>
+          )}
         </Box>
         <Box className={classes.phoneArea}>
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
@@ -528,14 +704,37 @@ const AppDesign: React.FunctionComponent<
             <PhoneTopBar
               color={appDesignProperties.backgroundColor}
               previewFile={previewFile}
+              isUsingDefaultMessage={appDesignProperties.isUsingDefaultMessage}
             />
             <div className={`${classes.phoneInner}`}>
               <div className={classes.headlineStyle}>
-                {appDesignProperties.welcomeScreenHeader || 'Welcome Headline'}
+                {appDesignProperties.isUsingDefaultMessage
+                  ? defaultHeader
+                  : appDesignProperties.welcomeScreenHeader ||
+                    'Welcome Headline'}
               </div>
-              <p className={classes.bodyText}>
-                {appDesignProperties.welcomeScreenBody || 'Body copy'}
+              <p
+                className={clsx(
+                  classes.bodyText,
+                  classes.firstPhoneScreenBodyText,
+                )}
+              >
+                {appDesignProperties.isUsingDefaultMessage
+                  ? defaultStudyBody
+                  : appDesignProperties.welcomeScreenBody || 'Body copy'}
               </p>
+              <div className={clsx(classes.bodyText, classes.salutationText)}>
+                {appDesignProperties.isUsingDefaultMessage
+                  ? defaultSalutations
+                  : appDesignProperties.welcomeScreenSalutation ||
+                    'Placeholder salutation,'}
+              </div>
+              <div className={clsx(classes.bodyText, classes.fromText)}>
+                {appDesignProperties.isUsingDefaultMessage
+                  ? defaultFrom
+                  : appDesignProperties.welcomeScreenFromText ||
+                    'from placeholder'}
+              </div>
             </div>
             <div className={classes.phoneBottom}></div>
           </Box>
@@ -554,10 +753,10 @@ const AppDesign: React.FunctionComponent<
               <FormGroup className={classes.formFields}>
                 <FormControl className={classes.firstFormElement}>
                   <SimpleTextLabel htmlFor="study-name-input">
-                    Title of Study
+                    Official Study Name*
                   </SimpleTextLabel>
                   <SimpleTextInput
-                    className={classes.headlineStyle}
+                    className={classes.informationRowStyle}
                     id="study-name-input"
                     placeholder="Headline"
                     value={appDesignProperties.studyTitle}
@@ -569,13 +768,17 @@ const AppDesign: React.FunctionComponent<
                     }}
                     onBlur={() => updateAppDesignInfo()}
                     multiline
-                    rows={2}
-                    rowsMax={4}
-                    inputProps={{ style: { fontSize: '24px', width: '100%' } }}
+                    rows={1}
+                    rowsMax={1}
+                    inputProps={{
+                      style: SimpleTextInputStyles,
+                    }}
                   />
                 </FormControl>
                 <FormControl>
-                  <SimpleTextLabel>Body Copy</SimpleTextLabel>
+                  <SimpleTextLabel>
+                    Body Copy (maximum 500 characters)
+                  </SimpleTextLabel>
                   <SimpleTextInput
                     id="study-body-text"
                     value={appDesignProperties.studySummaryBody}
@@ -590,7 +793,7 @@ const AppDesign: React.FunctionComponent<
                     rows={8}
                     rowsMax={10}
                     placeholder="Lorem ipsum"
-                    inputProps={{ style: { width: '100%' } }}
+                    inputProps={{ style: { width: '100%' }, maxLength: 500 }}
                   />
                 </FormControl>
               </FormGroup>
@@ -598,30 +801,36 @@ const AppDesign: React.FunctionComponent<
             <Subsection heading="Information about the Study Leads">
               <FormGroup className={classes.formFields}>
                 <FormControl className={classes.firstFormElement}>
-                  <SimpleTextLabel htmlFor="lead-investigator-input">
-                    Lead pricinple investigator
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="lead-investigator-input"
-                    placeholder="First and Last name"
-                    value={appDesignProperties.leadPrincipleInvestigator}
-                    onChange={e => {
+                  <LeadInvestigatorDropdown
+                    orgMembership={orgMembership!}
+                    token={token!}
+                    onChange={(investigatorSelected: string) => {
                       setAppDesignProperties({
                         ...appDesignProperties,
-                        leadPrincipleInvestigator: e.target.value,
+                        leadPrincipleInvestigator: investigatorSelected,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo()}
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
-                  />
+                    currentInvestigatorSelected={
+                      appDesignProperties.leadPrincipleInvestigator
+                    }
+                  ></LeadInvestigatorDropdown>
+                  <p className={classes.principleInvestigatorsParagraph}>
+                    Principle Investigators are required to be part of the study
+                    as a “Study Administrator”.
+                    <br></br>
+                    <br></br>
+                    If your PI is not listed in the dropdown, please add them to
+                    the study and/or make them a{' '}
+                    <strong>Co-Study Administrator</strong> via the{' '}
+                    <strong>
+                      <u>Access Settings</u>
+                    </strong>{' '}
+                    tab on the top right hand side.{' '}
+                  </p>
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="institution-input">
-                    Institution
+                    Institution Affiliation*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -638,12 +847,14 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStyles,
+                    }}
                   />
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="funder-input">
-                    Funder
+                    Funder*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -660,12 +871,14 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStyles,
+                    }}
                   />
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="IRB-approval-input">
-                    IRB Approval Number
+                    IRB Approval Number*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -682,7 +895,9 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStyles,
+                    }}
                   />
                 </FormControl>
               </FormGroup>
@@ -691,7 +906,7 @@ const AppDesign: React.FunctionComponent<
               <FormGroup className={classes.formFields}>
                 <FormControl className={classes.firstFormElement}>
                   <SimpleTextLabel htmlFor="contact-lead-input">
-                    Contact Lead
+                    Contact Lead*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -708,12 +923,14 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStyles,
+                    }}
                   />
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="role-in-study-input">
-                    Role in the Study
+                    Role in the Study*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -730,12 +947,14 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStyles,
+                    }}
                   />
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="phone-number-contact-input">
-                    Phone Number
+                    Phone Number*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -752,12 +971,14 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStyles,
+                    }}
                   />
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="contact-email-input">
-                    Email
+                    Email*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -774,7 +995,9 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStyles,
+                    }}
                   />
                 </FormControl>
               </FormGroup>
@@ -783,7 +1006,7 @@ const AppDesign: React.FunctionComponent<
               <FormGroup className={classes.formFields}>
                 <FormControl className={classes.firstFormElement}>
                   <SimpleTextLabel htmlFor="ethics-board-input">
-                    Name of IRB/Ethics Board
+                    Name of IRB/Ethics Board*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -800,12 +1023,14 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStyles,
+                    }}
                   />
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="ethics-phone-number-input">
-                    Phone Number
+                    Phone Number*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -822,12 +1047,14 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStyles,
+                    }}
                   />
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="ethics-email-input">
-                    Email
+                    Email*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -844,11 +1071,13 @@ const AppDesign: React.FunctionComponent<
                     multiline
                     rows={1}
                     rowsMax={1}
-                    inputProps={{ style: { fontSize: '15px', width: '100%' } }}
+                    inputProps={{
+                      style: SimpleTextInputStyles,
+                    }}
                   />
                 </FormControl>
               </FormGroup>
-              <Box textAlign="right">
+              <Box textAlign="left">
                 {saveLoader ? (
                   <div className="text-center">
                     <CircularProgress color="primary" size={25} />
@@ -867,6 +1096,7 @@ const AppDesign: React.FunctionComponent<
             <PhoneTopBar
               color={appDesignProperties.backgroundColor}
               previewFile={previewFile}
+              isUsingDefaultMessage={appDesignProperties.isUsingDefaultMessage}
             />
             <div className={classes.phoneInnerBottom}>
               <div className={classes.headlineStyle}>
