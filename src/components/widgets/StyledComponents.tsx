@@ -3,10 +3,9 @@ import {
   FormControlLabel,
   InputBase,
   InputLabel,
-  Select,
-  Switch,
+  Select
 } from '@material-ui/core'
-import { withStyles, createStyles } from '@material-ui/core/styles'
+import { withStyles } from '@material-ui/core/styles'
 import { latoFont, poppinsFont } from '../../style/theme'
 
 export const ButtonWithSelectButton = withStyles(theme => ({
