@@ -2,7 +2,7 @@
 /*ag*/
 import {
   Theme,
-  unstable_createMuiStrictModeTheme as createMuiTheme
+  unstable_createMuiStrictModeTheme as createMuiTheme,
 } from '@material-ui/core'
 import { CSSProperties } from '@material-ui/core/styles/withStyles'
 
@@ -118,12 +118,54 @@ const theme: Theme = createMuiTheme({
       },
     },
     MuiSwitch: {
+      root: {
+        width: 32,
+        height: 18,
+        padding: 0,
+        display: 'flex',
+      },
+      switchBase: {
+        padding: 2,
+        color: '#fff',
+        '& + $track': {
+          opacity: 1,
+          backgroundColor: '#ddd',
+        },
+        '&$checked': {
+          transform: 'translateX(14px)',
+          color: '#fff',
+          '& + $track': {
+            opacity: 1,
+            backgroundColor: '#7FC7F0',
+            borderColor: '#7FC7F0',
+          },
+        },
+      },
+      thumb: {
+        width: 14,
+        height: 14,
+      },
+      track: {
+        border: `1px solid #ccc`,
+        borderRadius: 16 / 2,
+        opacity: 1,
+        backgroundColor: '#fff',
+      },
       colorPrimary: {
         '&.Mui-checked': {
           color: '#fff',
 
           '& + .MuiSwitch-track': {
             backgroundColor: '#7FC7F0',
+          },
+        },
+      },
+      colorSecondary: {
+        '&.Mui-checked': {
+          color: '#fff',
+
+          '& + .MuiSwitch-track': {
+            backgroundColor: '#E7BDBD',
           },
         },
       },

@@ -24,7 +24,6 @@ import {
   ThemeType,
 } from '../../../style/theme'
 import {
-  OrgUser,
   StudyAppDesign,
   StudyBuilderComponentProps,
 } from '../../../types/types'
@@ -33,7 +32,6 @@ import SaveButton from '../../widgets/SaveButton'
 import {
   SimpleTextInput,
   SimpleTextLabel,
-  AntSwitch,
 } from '../../widgets/StyledComponents'
 import ContactInformation from './ContactInformation'
 import StudySummaryRoles from './StudySummaryRoles'
@@ -478,7 +476,8 @@ const AppDesign: React.FunctionComponent<
           <div className={classes.switchContainer}>
             <Box marginRight="12px">Use default message</Box>
             <Box marginTop="4px">
-              <AntSwitch
+              <Switch
+                color="primary"
                 checked={!currentAppDesign.isUsingDefaultMessage}
                 onChange={() =>
                   setAppDesignProperties(prevState => {
@@ -488,7 +487,7 @@ const AppDesign: React.FunctionComponent<
                     }
                   })
                 }
-              ></AntSwitch>
+              ></Switch>
             </Box>
             <Box marginLeft="12px">Customize</Box>
           </div>
