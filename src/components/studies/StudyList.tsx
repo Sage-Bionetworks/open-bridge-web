@@ -239,8 +239,8 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         setStudies(
           studies!.map(s => (s.identifier !== study.identifier ? s : study)),
         )
-        result = await StudyService.updateStudy(study, token)
-        setStudies(result)
+        await StudyService.updateStudy(study, token)
+        //setStudies(result)
         setRenameStudyId('')
 
         return

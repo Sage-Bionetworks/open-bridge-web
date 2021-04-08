@@ -16,7 +16,12 @@ import AssessmentService from '../../services/assessment.service'
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
 import { Schedule, StartEventId, StudySession } from '../../types/scheduling'
-import { StringDictionary, Study, StudyAppDesign } from '../../types/types'
+import {
+  BackgroundRecorders,
+  StringDictionary,
+  Study,
+  StudyAppDesign
+} from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
@@ -38,6 +43,7 @@ const subtitles: StringDictionary<string> = {
   scheduler: 'Schedule Sessions',
   'session-creator': 'Create Sessions',
   'enrollment-type-selector ': 'Participant Study Enrollment',
+  'passive-features': 'App Background Recorders ',
 }
 
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -131,13 +137,38 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     setData({ schedule: newSchedule, study: updatedStudy })
   }
 
-  const saveStudy = async (study?: Study) => {
+  const saveStudy = async (study: Study) => {
+    setHasObjectChanged(true)
     setSaveLoader(true)
-    let _study = study || builderInfo.study
-    await StudyService.updateStudy(_study, token!)
-    setHasObjectChanged(false)
-    setSaveLoader(false)
-    return
+
+    /* saveStudy(updatedStudy).then(
+      () => {
+        setData({
+          ...builderInfo,
+          study: updatedStudy,
+        })
+        setHasObjectChanged(false)
+      },
+      e => {
+        setError(e.message)
+        setHasObjectChanged(false)
+      },
+    )*/
+    try {
+      const newVersion = await StudyService.updateStudy(study, token!)
+      const updatedStudy = {...study, version: newVersion}
+      setData({
+        ...builderInfo,
+        study: updatedStudy,
+      })
+
+      setHasObjectChanged(false)
+      return updatedStudy
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setSaveLoader(false)
+    }
   }
 
   const saveStudySchedule = async (updatedSchedule?: Schedule) => {
@@ -326,12 +357,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         saveLoader={saveLoader}
                         study={builderInfo.study}
                         onUpdate={(study: Study) => {
-                          //console.log(_section)
                           setHasObjectChanged(true)
-                          setData({
-                            ...builderInfo,
-                            study,
-                          })
                           saveStudy(study)
                         }}
                       >
@@ -345,7 +371,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         saveLoader={saveLoader}
                         id={id}
                         currentAppDesign={
-                          builderInfo.study.clientData.appDesign ||
+                          builderInfo.study.clientData?.appDesign ||
                           ({} as StudyAppDesign)
                         }
                         onSave={() => {
@@ -354,7 +380,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         onUpdate={(data: StudyAppDesign) => {
                           setHasObjectChanged(true)
                           const updatedStudy = { ...builderInfo.study }
-                          updatedStudy.clientData.appDesign = data
+                          updatedStudy.clientData = {...updatedStudy.clientData || {}, appDesign:data}
 
                           setData({
                             ...builderInfo,
@@ -382,10 +408,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       <PassiveFeatures
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
-                        id={id}
-                        onUpdate={(_section: StudySection, data: any) => {
-                          console.log(_section)
-                          // moveToNextSection(_section)
+                        study={builderInfo.study}
+                        onUpdate={(data: BackgroundRecorders) => {
+                          setHasObjectChanged(true)
+                          const updatedStudy = { ...builderInfo.study }
+                          updatedStudy.clientData.backgroundRecorders = data
+                          saveStudy(updatedStudy)
                         }}
                       >
                         {navButtons}
