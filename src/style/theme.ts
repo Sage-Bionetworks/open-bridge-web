@@ -2,7 +2,7 @@
 /*ag*/
 import {
   Theme,
-  unstable_createMuiStrictModeTheme as createMuiTheme,
+  unstable_createMuiStrictModeTheme as createMuiTheme
 } from '@material-ui/core'
 import { CSSProperties } from '@material-ui/core/styles/withStyles'
 
@@ -122,6 +122,7 @@ const theme: Theme = createMuiTheme({
         width: 32,
         height: 18,
         padding: 0,
+        margin: '0 8px 0 8px',
         display: 'flex',
       },
       switchBase: {
@@ -137,7 +138,7 @@ const theme: Theme = createMuiTheme({
           '& + $track': {
             opacity: 1,
             backgroundColor: '#7FC7F0',
-            borderColor: '#7FC7F0',
+      
           },
         },
       },
@@ -157,6 +158,7 @@ const theme: Theme = createMuiTheme({
 
           '& + .MuiSwitch-track': {
             backgroundColor: '#7FC7F0',
+            borderColor: '#7FC7F0',
           },
         },
       },

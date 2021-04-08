@@ -371,7 +371,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         saveLoader={saveLoader}
                         id={id}
                         currentAppDesign={
-                          builderInfo.study.clientData.appDesign ||
+                          builderInfo.study.clientData?.appDesign ||
                           ({} as StudyAppDesign)
                         }
                         onSave={() => {
@@ -380,7 +380,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         onUpdate={(data: StudyAppDesign) => {
                           setHasObjectChanged(true)
                           const updatedStudy = { ...builderInfo.study }
-                          updatedStudy.clientData.appDesign = data
+                          updatedStudy.clientData = {...updatedStudy.clientData || {}, appDesign:data}
 
                           setData({
                             ...builderInfo,

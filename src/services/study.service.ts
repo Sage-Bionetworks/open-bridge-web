@@ -56,13 +56,17 @@ async function getStudies(token: string): Promise<Study[]> {
 }
 
 async function getStudy(id: string, token: string): Promise<Study | undefined> {
-  const study = await callEndpoint<Study>(
+  const response = await callEndpoint<Study>(
     constants.endpoints.study.replace(':id', id),
     'GET',
     {},
     token,
   )
-  return study.data
+  const study = response.data
+  if (! study.clientData) {
+    study.clientData = {}
+  }
+  return study
 }
 
 async function createStudy(study: Study, token: string): Promise<Study[]> {
