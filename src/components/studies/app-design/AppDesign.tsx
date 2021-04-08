@@ -38,10 +38,9 @@ import {
 import ContactInformation from './ContactInformation'
 import StudySummaryRoles from './StudySummaryRoles'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
-import ChevronDownIcon from '../../../assets/chevron_down_icon.svg'
 import clsx from 'clsx'
-import AccessService from '../../../services/access.service'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
+import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
 
 const imgHeight = 70
 
@@ -281,47 +280,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   hideSectionVisibility: {
     visibility: 'hidden',
   },
-  selectPrincipleInvestigatorButton: {
-    width: '410px',
-    height: '48px',
-    border: '1px solid black',
-    backgroundColor: 'white',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingLeft: theme.spacing(2),
-    outline: 'none',
-    transition: '0.25s ease',
-    fontSize: '14px',
-  },
-  selectPrincipleInvestigatorButtonClosed: {
-    '&:hover': {
-      backgroundColor: theme.palette.primary.dark,
-    },
-  },
-  principleInvestigatorOption: {
-    backgroundColor: 'white',
-    height: '48px',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: theme.spacing(2),
-    borderBottom: '1px solid black',
-    borderLeft: '1px solid black',
-    borderRight: '1px solid black',
-    transition: '0.25s ease',
-    '&:hover': {
-      backgroundColor: theme.palette.primary.dark,
-    },
-    cursor: 'pointer',
-  },
-  principleInvestigatorDropdown: {
-    paddingLeft: theme.spacing(0),
-    zIndex: 500,
-    position: 'absolute',
-    width: '410px',
-  },
   principleInvestigatorsParagraph: {
     fontSize: '12px',
     marginLeft: theme.spacing(2),
@@ -350,10 +308,6 @@ type PreviewFile = {
   name: string
   size: number
   body?: string
-}
-
-type leadInvestigatorOption = {
-  name: string
 }
 
 export interface AppDesignProps {
@@ -435,13 +389,6 @@ const AppDesign: React.FunctionComponent<
 
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [
-    isLeadInvestigatorDropdownOpen,
-    setIsLeadInvestigatorDropdownOpen,
-  ] = useState<boolean>(false)
-  const [leadInvestigatorOptions, setLeadInvestigatorOptions] = useState<
-    leadInvestigatorOption[]
-  >([])
 
   const defaultHeader = 'Thanks for joining us!'
   const defaultStudyBody =
@@ -514,37 +461,6 @@ const AppDesign: React.FunctionComponent<
     appDesignProperties.isUsingDefaultMessage,
     appDesignProperties.leadPrincipleInvestigator,
   ])
-
-  const formatName = (currentAccount: OrgUser) => {
-    const { firstName, lastName, email } = currentAccount
-    const name = firstName || lastName ? [firstName, lastName].join(' ') : email
-    return name
-  }
-
-  useEffect(() => {
-    const getLeadResearchAccount = async () => {
-      const accounts = await AccessService.getAccountsForOrg(
-        token!,
-        orgMembership!,
-      )
-      const promises = accounts.map(async account => {
-        return await AccessService.getIndividualAccount(token!, account.id)
-      })
-      const admins = await Promise.all(promises).then(values => {
-        return values.filter(account => account.roles.includes('org_admin'))
-      })
-      const leadInvestigatorArray = []
-      for (let i = 0; i < admins.length; i++) {
-        const currentAccount = admins[i]
-        let currentObj = {
-          name: formatName(currentAccount)!,
-        }
-        leadInvestigatorArray.push(currentObj)
-      }
-      setLeadInvestigatorOptions(leadInvestigatorArray)
-    }
-    getLeadResearchAccount()
-  }, [])
 
   return (
     <Box className={classes.root}>
@@ -825,15 +741,7 @@ const AppDesign: React.FunctionComponent<
           </Box>
         </Box>
       </Paper>
-      <Paper
-        className={classes.section}
-        elevation={2}
-        onClick={() => {
-          if (isLeadInvestigatorDropdownOpen) {
-            setIsLeadInvestigatorDropdownOpen(false)
-          }
-        }}
-      >
+      <Paper className={classes.section} elevation={2}>
         <Box className={classes.fields}>
           <MTBHeadingH2>Study Page</MTBHeadingH2>
           <p className={classes.smallScreenText}>
@@ -894,48 +802,19 @@ const AppDesign: React.FunctionComponent<
             <Subsection heading="Information about the Study Leads">
               <FormGroup className={classes.formFields}>
                 <FormControl className={classes.firstFormElement}>
-                  <Box marginLeft="8px">Lead Principle Investigator*</Box>
-                  <div>
-                    <button
-                      className={clsx(
-                        classes.selectPrincipleInvestigatorButton,
-                        !isLeadInvestigatorDropdownOpen &&
-                          classes.selectPrincipleInvestigatorButtonClosed,
-                      )}
-                      onClick={() => {
-                        setIsLeadInvestigatorDropdownOpen(
-                          !isLeadInvestigatorDropdownOpen,
-                        )
-                      }}
-                    >
-                      {appDesignProperties.leadPrincipleInvestigator ||
-                        'Select pricinple investigator'}
-                      <img src={ChevronDownIcon} alt="chevron-down-logo"></img>
-                    </button>
-                    {isLeadInvestigatorDropdownOpen &&
-                      leadInvestigatorOptions.length > 0 && (
-                        <ul className={classes.principleInvestigatorDropdown}>
-                          {leadInvestigatorOptions.map((el, index) => (
-                            <option
-                              className={clsx(
-                                classes.principleInvestigatorOption,
-                              )}
-                              key={index}
-                              value={el.name}
-                              onClick={() => {
-                                setIsLeadInvestigatorDropdownOpen(false)
-                                setAppDesignProperties({
-                                  ...appDesignProperties,
-                                  leadPrincipleInvestigator: el.name,
-                                })
-                              }}
-                            >
-                              {el.name}
-                            </option>
-                          ))}
-                        </ul>
-                      )}
-                  </div>
+                  <LeadInvestigatorDropdown
+                    orgMembership={orgMembership!}
+                    token={token!}
+                    onChange={(investigatorSelected: string) => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        leadPrincipleInvestigator: investigatorSelected,
+                      })
+                    }}
+                    currentInvestigatorSelected={
+                      appDesignProperties.leadPrincipleInvestigator
+                    }
+                  ></LeadInvestigatorDropdown>
                   <p className={classes.principleInvestigatorsParagraph}>
                     Principle Investigators are required to be part of the study
                     as a “Study Administrator”.
