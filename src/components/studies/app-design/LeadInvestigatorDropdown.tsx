@@ -49,7 +49,6 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: theme.palette.primary.dark,
     },
     cursor: 'pointer',
-    borderRadius: '0px',
   },
   selectMenu: {
     backgroundColor: 'white',
