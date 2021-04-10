@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Select, MenuItem, Menu } from '@material-ui/core'
+import { Box, Select, MenuItem } from '@material-ui/core'
 import AccessService from '../../../services/access.service'
 import { OrgUser } from '../../../types/types'
 import { makeStyles } from '@material-ui/core/styles'
