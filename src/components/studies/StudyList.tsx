@@ -240,9 +240,8 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     setHighlightedStudy({ studyID: ID, isNewlyAddedStudy: true })
     resetNewlyAddedStudyID = setTimeout(() => {
       setHighlightedStudy({ studyID: null, isNewlyAddedStudy: false })
-    }, 4000)
-    //setStudies([...studies, newStudy])
-
+    }, 1100)
+    // setStudies([...studies, newStudy])
     const result = await StudyService.createStudy(newStudy, token!)
     setStudies(result)
   }
@@ -338,7 +337,6 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       </div>
     )
   }
-
   return (
     <Loader reqStatusLoading={status === 'PENDING' || !studies} variant="full">
       <Container maxWidth="lg" className={classes.studyContainer}>
