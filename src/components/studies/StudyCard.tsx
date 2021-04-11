@@ -7,7 +7,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert'
 import React, { FunctionComponent } from 'react'
 import participants_icon from '../../assets/participants_icon.svg'
 import { ThemeType } from '../../style/theme'
-import { Study } from '../../types/types'
+import { Study, HighlightStudyCardWithBlueBorder } from '../../types/types'
 import LiveIcon from './LiveIcon'
 import clsx from 'clsx'
 import moment from 'moment'
@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     backgroundColor: '#FFFFFF',
     borderRadius: '0px',
     boxShadow: '0 4px 4px 0 rgb(0 0 0 / 35%)',
+    boxSizing: 'border-box',
   },
   title: {
     fontSize: 14,
@@ -105,7 +106,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginBottom: theme.spacing(2),
   },
   isJustAdded: {
-    border: `3px solid ${theme.palette.primary.dark}`,
     animation: '$pop-out 0.5s ease',
   },
   '@keyframes pop-out': {
@@ -115,6 +115,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     '100%': {
       transform: 'scale(1)',
     },
+  },
+  addBlueBorder: {
+    outline: `4px solid ${theme.palette.primary.dark}`,
   },
 }))
 
@@ -227,16 +230,20 @@ type StudyCardProps = {
   onRename?: Function
 }
 
-type NewlyAddedProp = {
-  isNewlyAddedStudy?: boolean
+type HighlightedStudyProps = {
+  highlightedStudy: HighlightStudyCardWithBlueBorder
+  onStudyHovered: Function
+  onStudyUnhovered: Function
 }
 
-const StudyCard: FunctionComponent<StudyCardProps & NewlyAddedProp> = ({
+const StudyCard: FunctionComponent<StudyCardProps & HighlightedStudyProps> = ({
   study,
   onSetAnchor,
   isRename,
   onRename,
-  isNewlyAddedStudy,
+  highlightedStudy,
+  onStudyHovered,
+  onStudyUnhovered,
 }) => {
   const classes = useStyles()
   const input = React.createRef<HTMLInputElement>()
@@ -259,15 +266,25 @@ const StudyCard: FunctionComponent<StudyCardProps & NewlyAddedProp> = ({
       onRename(name)
     }
   }
+  const isCurrentStudyHighlighted =
+    study.identifier === highlightedStudy?.studyID
   return (
     <>
       <Card
-        className={clsx(classes.root, isNewlyAddedStudy && classes.isJustAdded)}
+        className={clsx(
+          classes.root,
+          highlightedStudy.isNewlyAddedStudy &&
+            isCurrentStudyHighlighted &&
+            classes.isJustAdded,
+          isCurrentStudyHighlighted && classes.addBlueBorder,
+        )}
         onClick={e => {
           if (isRename) {
             cancelPropagation(e)
           }
         }}
+        onMouseEnter={() => onStudyHovered(study)}
+        onMouseLeave={() => onStudyUnhovered()}
       >
         <>
           <CardTop study={study} onSetAnchor={onSetAnchor}></CardTop>

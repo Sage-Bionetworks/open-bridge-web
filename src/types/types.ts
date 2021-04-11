@@ -69,7 +69,6 @@ export type AssessmentResource = {
   upToDate: boolean
   url: string
   version: number
-
 }
 export type Assessment = {
   createdOn: string
@@ -115,13 +114,11 @@ export type Study = {
   modifiedOn?: Date
 }
 
-export type BackgroundRecorders ={
-  accelGyro: boolean,
-  backgroundNoise: boolean,
-  weatherPolution: boolean,
+export type BackgroundRecorders = {
+  accelGyro: boolean
+  backgroundNoise: boolean
+  weatherPolution: boolean
   passiveGaitDisplacement: boolean
-
-
 }
 
 export type StudyAppDesign = {
@@ -211,6 +208,11 @@ export type Phone = {
   number: string
   regionCode: string
   nationalFormat?: string
+}
+
+export type HighlightStudyCardWithBlueBorder = {
+  isNewlyAddedStudy: boolean
+  studyID: String | null
 }
 
 // POST MVP

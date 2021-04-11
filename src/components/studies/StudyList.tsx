@@ -5,7 +5,7 @@ import {
   Divider,
   makeStyles,
   Menu,
-  MenuItem
+  MenuItem,
 } from '@material-ui/core'
 import Link from '@material-ui/core/Link'
 import React, { FunctionComponent, useEffect } from 'react'
@@ -14,7 +14,11 @@ import { useAsync } from '../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
 import { getRandomId } from '../../helpers/utility'
 import StudyService from '../../services/study.service'
-import { Study, StudyStatus } from '../../types/types'
+import {
+  Study,
+  StudyStatus,
+  HighlightStudyCardWithBlueBorder,
+} from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import { MTBHeading } from '../widgets/Headings'
 import Loader from '../widgets/Loader'
@@ -27,7 +31,9 @@ type StudySublistProps = {
   studies: Study[]
   onAction: Function
   renameStudyId: string
-  newStudyID: String | null
+  highlightedStudy: HighlightStudyCardWithBlueBorder
+  onStudyHovered: Function
+  onStudyUnhovered: Function
 }
 
 type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME'
@@ -116,7 +122,9 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   //onSetAnchor,
   renameStudyId,
   onAction,
-  newStudyID,
+  highlightedStudy,
+  onStudyHovered,
+  onStudyUnhovered,
 }: StudySublistProps) => {
   const classes = useStyles()
   const item = sections.find(section => section.status === status)!
@@ -166,7 +174,9 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
               onSetAnchor={(e: HTMLElement) => {
                 onAction(study, 'ANCHOR', e)
               }}
-              isNewlyAddedStudy={newStudyID === study.identifier}
+              highlightedStudy={highlightedStudy}
+              onStudyHovered={onStudyHovered}
+              onStudyUnhovered={onStudyUnhovered}
             ></StudyCard>
           </Link>
         ))}
@@ -195,7 +205,15 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const [statusFilters, setStatusFilters] = React.useState<StudyStatus[]>(
     sections.map(section => section.status),
   )
-  const [newStudyID, setNewStudyID] = React.useState<String | null>(null)
+  const [
+    highlightedStudy,
+    setHighlightedStudy,
+  ] = React.useState<HighlightStudyCardWithBlueBorder>({
+    studyID: null,
+    isNewlyAddedStudy: false,
+  })
+
+  let resetNewlyAddedStudyID: NodeJS.Timeout
 
   const { data: studies, status, error, run, setData: setStudies } = useAsync<
     Study[]
@@ -203,8 +221,6 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     status: 'PENDING',
     data: [],
   })
-
-
 
   const resetStatusFilters = () =>
     setStatusFilters(sections.map(section => section.status))
@@ -221,11 +237,29 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       modifiedOn: new Date(),
     }
 
-    setNewStudyID(ID)
+    setHighlightedStudy({ studyID: ID, isNewlyAddedStudy: true })
+    resetNewlyAddedStudyID = setTimeout(() => {
+      setHighlightedStudy({ studyID: null, isNewlyAddedStudy: false })
+    }, 4000)
     //setStudies([...studies, newStudy])
 
     const result = await StudyService.createStudy(newStudy, token!)
     setStudies(result)
+  }
+
+  const onStudyHovered = (studyInfo: Study) => {
+    setHighlightedStudy({
+      studyID: studyInfo.identifier,
+      isNewlyAddedStudy: false,
+    })
+    if (resetNewlyAddedStudyID) clearTimeout(resetNewlyAddedStudyID)
+  }
+
+  const onStudyUnhovered = () => {
+    setHighlightedStudy({
+      studyID: '',
+      isNewlyAddedStudy: false,
+    })
   }
 
   const onAction = async (study: Study, type: StudyAction) => {
@@ -306,9 +340,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   }
 
   return (
-
     <Loader reqStatusLoading={status === 'PENDING' || !studies} variant="full">
-
       <Container maxWidth="lg" className={classes.studyContainer}>
         <Box display="flex" justifyContent="space-between">
           <ul className={classes.filters} aria-label="filters">
@@ -367,9 +399,9 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                     ? setMenuAnchor({ study: s, anchorEl: e })
                     : onAction(s, action)
                 }}
-
-                newStudyID={newStudyID}
-
+                highlightedStudy={highlightedStudy}
+                onStudyHovered={onStudyHovered}
+                onStudyUnhovered={onStudyUnhovered}
               />
             </Box>
           ))}
