@@ -98,7 +98,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       justifyContent: 'center',
       marginRight: theme.spacing(3),
       marginLeft: theme.spacing(-8),
-
       height: theme.spacing(5),
     },
   },
@@ -673,7 +672,7 @@ const AppDesign: React.FunctionComponent<
                     </div>
                   </div>
                 </FormGroup>
-                <Box textAlign="left">
+                <Box textAlign="left" id="test-box">
                   {saveLoader ? (
                     <div className="text-center">
                       <CircularProgress
@@ -682,7 +681,7 @@ const AppDesign: React.FunctionComponent<
                       ></CircularProgress>
                     </div>
                   ) : (
-                    <SaveButton onClick={() => onSave()} />
+                    <SaveButton onClick={() => onSave()} id="save-button" />
                   )}
                 </Box>
               </Subsection>
