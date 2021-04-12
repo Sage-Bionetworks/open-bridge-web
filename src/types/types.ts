@@ -114,11 +114,13 @@ export type Study = {
   modifiedOn?: Date
 }
 
-export type BackgroundRecorders = {
+export type BackgroundRecorders ={
   accelGyro: boolean
   backgroundNoise: boolean
   weatherPolution: boolean
   passiveGaitDisplacement: boolean
+
+
 }
 
 export type StudyAppDesign = {
