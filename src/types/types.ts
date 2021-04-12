@@ -70,6 +70,7 @@ export type AssessmentResource = {
   url: string
   version: number
 }
+
 export type Assessment = {
   createdOn: string
   customizationFields: object
