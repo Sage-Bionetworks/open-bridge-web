@@ -69,8 +69,8 @@ export type AssessmentResource = {
   upToDate: boolean
   url: string
   version: number
-}
 
+}
 export type Assessment = {
   createdOn: string
   customizationFields: object
