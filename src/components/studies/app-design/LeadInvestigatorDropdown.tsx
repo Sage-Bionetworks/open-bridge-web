@@ -117,7 +117,7 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
       <Select
         labelId="lead-investigator-drop-down"
         id="lead-investigator-drop-down"
-        value={currentInvestigatorSelected || 'Select pricinple investigator'}
+        value={currentInvestigatorSelected}
         onChange={e => {
           onChange(e.target.value)
         }}
@@ -141,7 +141,7 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
         }}
       >
         <MenuItem
-          value="Select pricinple investigator"
+          value="Select principle investigator"
           disabled
           style={{ display: 'none' }}
         >
