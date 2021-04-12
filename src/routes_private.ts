@@ -48,7 +48,15 @@ export default [
   },
   {
     path: '/my-account',
-    name: 'ACCOUNT',
+    name: 'Edit Profile',
+    Component: AccountSetup,
+    isRhs: true,
+    exact: true,
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    isRhs: true,
     Component: AccountSetup,
     exact: true,
   },

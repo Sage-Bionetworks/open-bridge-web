@@ -20,7 +20,9 @@ export type UserSessionData = {
   orgMembership: string | undefined
   dataGroups?: string[]
   roles: AdminRoles[]
-  name?: string
+  firstName?: string
+  lastName?: string
+  userName?: string
   alert?: string
   id: string
 }
