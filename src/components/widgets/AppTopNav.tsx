@@ -5,20 +5,22 @@ import {
   Drawer,
   Hidden,
   IconButton,
+  Menu,
+  MenuItem,
   Paper
 } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
+import clsx from 'clsx'
 import React, { FunctionComponent, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import Logo from '../../assets/logo_mtb.svg'
 import { latoFont } from '../../style/theme'
+import { UserSessionData } from '../../types/types'
 import AccountLogin from '../account/AccountLogin'
 import Logout from '../account/Logout'
-
-
 
 const drawerWidth = '285px'
 
@@ -66,8 +68,8 @@ const useStyles = makeStyles(theme => ({
   },
   login: {
     borderLeft: '1px solid #EAEAEA',
-    padding: theme.spacing(4,2 ),
-    margin: theme.spacing(-4, 0, -4, 2)
+    padding: theme.spacing(4, 2),
+    margin: theme.spacing(-4, 0, -4, 2),
   },
   drawer: {
     width: drawerWidth,
@@ -77,14 +79,13 @@ const useStyles = makeStyles(theme => ({
     textDecoration: 'none',
 
     flexShrink: 0,
-    //agendel todo Lato
     fontFamily: latoFont,
     fontStyle: 'normal',
     fontWeight: 'normal',
     fontSize: '15px',
     lineHeight: '18px',
     color: '#393434',
-    padding: theme.spacing(1.5, 0, 1.5, 5)
+    padding: theme.spacing(1.5, 0, 1.5, 5),
   },
   drawerMenuSeparator: {
     height: '2px',
@@ -95,11 +96,46 @@ const useStyles = makeStyles(theme => ({
   drawerPaper: {
     width: drawerWidth,
   },
+
+  l: {
+    backgroundColor: '#F3F3EC',
+    padding: 0,
+
+    '& li': {
+      padding: theme.spacing(2),
+    },
+    '& a, & a:hover,  & a:visited, & a:active': {
+      textDecoration: 'none',
+      color: '#000',
+    },
+
+    '& li:hover': {
+      backgroundColor: '#fff',
+    },
+  },
+  userCircle: {
+    width: '40px',
+    height: '40px',
+    borderRadius: '50%',
+    fontFamily: latoFont,
+    cursor: 'pointer',
+    backgroundColor: '#F3F3EC',
+    alignItems: 'center',
+    justifyContent: 'center',
+    display: 'flex',
+    '&:hover, &:active': {
+      border: '1px solid black',
+    },
+    '&$userCircleActive': {
+      border: '1px solid black',
+    },
+  },
+  userCircleActive: {},
 }))
 
 type AppTopNavProps = {
   routes: { name: string; path: string; isRhs?: boolean }[]
-  token?: string
+  sessionData?: UserSessionData
 }
 
 const MenuLinks: FunctionComponent<
@@ -108,7 +144,6 @@ const MenuLinks: FunctionComponent<
     activeClassName: string
   }
 > = ({ routes, className, activeClassName }) => {
-
   let links = routes.map(route => (
     <NavLink
       to={route.path}
@@ -128,25 +163,25 @@ const MenuLinksRhs: FunctionComponent<
     className: string
     activeClassName: string
   }
-> = ({ routes, token, className, activeClassName, children }) => {
+> = ({ routes, sessionData, className, activeClassName, children }) => {
   const classes = useStyles()
-  let links
-  if (token) {
-    links = Array.isArray(children) ? children[0] : <></>
-  } else {
-    links = [
-      routes.map(route => (
-        <NavLink
-          to={route.path}
-          key={route.name}
-          className={className}
-          activeClassName={activeClassName}
-        >
-          {route.name}
-        </NavLink>
-      )),
-      Array.isArray(children) ? children[1] : <></>,
-    ]
+
+  let links: React.ReactNode[] = routes.map(route => (
+    <NavLink
+      to={route.path}
+      key={route.name}
+      className={className}
+      activeClassName={activeClassName}
+    >
+      {route.name}
+    </NavLink>
+  ))
+  if (Array.isArray(children)) {
+    if (sessionData?.token) {
+      links.push(children[0])
+    } else {
+      links.push(children[1])
+    }
   }
 
   return <>{links}</>
@@ -155,15 +190,36 @@ const MenuLinksRhs: FunctionComponent<
 const AppTopNav: FunctionComponent<AppTopNavProps> = ({
   routes,
 
-  token,
+  sessionData,
   ...props
 }: AppTopNavProps) => {
   const classes = useStyles()
+
   const [isSignInOpen, setIsSignInOpen] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
+  const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null)
+
+  const handleMenuClose = () => {
+    setMenuAnchor(null)
+  }
+
+  const getInitials = () => {
+    if (!sessionData) {
+      return '?'
+    }
+    let initial = sessionData.userName?.substr(0, 1)
+    if (sessionData.firstName) {
+      initial = `${sessionData.firstName.substr(
+        0,
+        1,
+      )}${sessionData.lastName?.substr(0, 1)}`
+    }
+    return initial?.toUpperCase() || '?'
+  }
 
   return (
     <>
+      {' '}
       <Hidden lgUp>
         <IconButton
           color="inherit"
@@ -177,7 +233,12 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
       </Hidden>
       <Hidden mdDown>
         <Paper className={classes.toolbarWrapper} elevation={0}>
-          <img src={Logo} key="Mobile Toolbox" className={classes.toolbar} alt="logo" />
+          <img
+            src={Logo}
+            key="Mobile Toolbox"
+            className={classes.toolbar}
+            alt="logo"
+          />
           <Toolbar
             component="nav"
             variant="dense"
@@ -196,31 +257,40 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             disableGutters
             className={classes.toolbar}
           >
-            <MenuLinksRhs
-              className={classes.toolbarLink}
-              activeClassName={classes.selectedLink}
-              routes={routes.filter(route => route.name && route.isRhs)}
-              token={token}
-            >
-              <div className={classes.login}>
-                <Logout
-                  element={
-                    <Button variant="text" className={classes.drawerMenuItem}>
-                      Log out
-                    </Button>
-                  }
-                ></Logout>
-              </div>
-              <div className={classes.login}>
-                <Button
-                  variant="text"
-                  className={classes.toolbarLink}
-                  onClick={() => setIsSignInOpen(true)}
+            {!sessionData && (
+              <MenuLinksRhs
+                className={classes.toolbarLink}
+                activeClassName={classes.selectedLink}
+                routes={routes.filter(route => route.name && route.isRhs)}
+                sessionData={sessionData}
+              >
+                <></>
+                <div className={classes.login}>
+                  <Button
+                    variant="text"
+                    className={classes.toolbarLink}
+                    onClick={() => setIsSignInOpen(true)}
+                  >
+                    Sign in
+                  </Button>
+                </div>
+              </MenuLinksRhs>
+            )}
+            {sessionData && (
+              <div
+                onClick={event => setMenuAnchor(event.currentTarget)}
+                style={{ paddingLeft: '8px' }}
+              >
+                <div
+                  className={clsx(
+                    classes.userCircle,
+                    !!menuAnchor && classes.userCircleActive,
+                  )}
                 >
-                  Sign in
-                </Button>
+                  {getInitials()}
+                </div>
               </div>
-            </MenuLinksRhs>
+            )}
           </Toolbar>
         </Paper>
       </Hidden>
@@ -244,11 +314,12 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
           />
 
           <Divider className={classes.drawerMenuSeparator} />
+
           <MenuLinksRhs
             className={classes.drawerMenuItem}
             activeClassName={classes.selectedLink}
             routes={routes.filter(route => route.name && route.isRhs)}
-            token={token}
+            sessionData={sessionData}
           >
             <div className={classes.drawerMenuItem}>
               <Logout
@@ -294,6 +365,37 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
           ></AccountLogin>
         </DialogContent>
       </Dialog>
+      <Menu
+        classes={{ list: classes.l }}
+        id="simple-menu"
+        anchorEl={menuAnchor}
+        keepMounted
+        getContentAnchorEl={null}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        open={Boolean(menuAnchor)}
+        onClose={handleMenuClose}
+      >
+        {routes
+          .filter(r => r.isRhs)
+          .map(route => (
+            <MenuItem>
+              <NavLink to={route.path} key={route.name}>
+                {route.name}
+              </NavLink>
+            </MenuItem>
+          ))}
+
+        <MenuItem>
+          <Logout element={<div>Log out</div>}></Logout>
+        </MenuItem>
+      </Menu>
     </>
   )
 }

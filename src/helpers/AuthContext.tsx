@@ -13,16 +13,16 @@ const initialState = {
   token: undefined,
   orgMembership: undefined,
   dataGroups: [],
-  roles:[],
-  id:''
+  roles: [],
+  id: '',
 }
 
-const UserSessionDataStateContext = React.createContext<UserSessionData | undefined>(
-  undefined,
-)
-const UserSessionDataDispatchContext = React.createContext<Dispatch | undefined>(
-  undefined,
-)
+const UserSessionDataStateContext = React.createContext<
+  UserSessionData | undefined
+>(undefined)
+const UserSessionDataDispatchContext = React.createContext<
+  Dispatch | undefined
+>(undefined)
 
 function countReducer(state: UserSessionData, action: Action): UserSessionData {
   switch (action.type) {
@@ -64,12 +64,14 @@ function countReducer(state: UserSessionData, action: Action): UserSessionData {
       const newState = {
         ...state,
         token: action.payload!.token,
-        orgMembership:action.payload!.orgMembership,
+        orgMembership: action.payload!.orgMembership,
         //consented: action.payload!.consented,
-        name: action.payload!.name,
-       dataGroups: action.payload!.dataGroups,
-       roles: action.payload!.roles,
-       id: action.payload!.id
+        firstName: action.payload!.firstName,
+        lastName: action.payload!.lastName,
+        userName: action.payload!.userName,
+        dataGroups: action.payload!.dataGroups,
+        roles: action.payload!.roles,
+        id: action.payload!.id,
       }
 
       setSession(newState)
@@ -78,12 +80,11 @@ function countReducer(state: UserSessionData, action: Action): UserSessionData {
     case 'LOGOUT':
       clearSession()
       return {
-        ...state,
         token: undefined,
         orgMembership: undefined,
-        //consented: undefined,
-        // alert: undefined,
-        dataGroups: []
+        roles: [],
+        id: '',
+        dataGroups: [],
       }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`)
@@ -116,9 +117,15 @@ function useUserSessionDataState() {
 function useUserSessionDataDispatch() {
   const context = React.useContext(UserSessionDataDispatchContext)
   if (context === undefined) {
-    throw new Error('useUserSessionDataDispatch must be used within a AuthContext')
+    throw new Error(
+      'useUserSessionDataDispatch must be used within a AuthContext',
+    )
   }
   return context
 }
 
-export { UserSessionDataProvider, useUserSessionDataState, useUserSessionDataDispatch }
+export {
+  UserSessionDataProvider,
+  useUserSessionDataState,
+  useUserSessionDataDispatch,
+}

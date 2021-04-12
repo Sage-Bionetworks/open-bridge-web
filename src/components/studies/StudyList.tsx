@@ -375,7 +375,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           ))}
 
         <Menu
-          id="simple-menu"
+          id="study-menu"
           anchorEl={menuAnchor?.anchorEl}
           keepMounted
           open={Boolean(menuAnchor?.anchorEl)}

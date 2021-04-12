@@ -234,7 +234,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
         style={{ width: 'auto', margin: '0 auto' }}
       >
         {currentMemberAccess && (
-          <Box pl={15} position="relative">
+          <Box pl={15} position="relative" pb={10}>
             <h3 style={{ marginBottom: '80px', marginTop: '100px' }}>
               {' '}
               <NameDisplay

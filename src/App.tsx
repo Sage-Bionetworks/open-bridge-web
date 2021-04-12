@@ -55,7 +55,9 @@ export const detectSSOCode = async (
         payload: {
           ...sessionData,
           token: loggedIn.data.sessionToken,
-          name: loggedIn.data.firstName,
+          firstName: loggedIn.data.firstName,
+          lastName: loggedIn.data.lastName,
+          userName: loggedIn.data.username,
           orgMembership: loggedIn.data.orgMembership,
           dataGroups: loggedIn.data.dataGroups,
           roles: loggedIn.data.roles,
@@ -113,7 +115,7 @@ function App() {
             >
               {sessionData.token ? (
                 <StudyInfoDataProvider>
-                <AuthenticatedApp token={sessionData.token} />
+                <AuthenticatedApp sessionData={sessionData} />
                 </StudyInfoDataProvider>
               ) : (
                 <UnauthenticatedApp />
