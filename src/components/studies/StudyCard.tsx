@@ -7,7 +7,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert'
 import React, { FunctionComponent } from 'react'
 import participants_icon from '../../assets/participants_icon.svg'
 import { ThemeType } from '../../style/theme'
-import { Study, HighlightStudyCardWithBlueBorder } from '../../types/types'
+import { Study } from '../../types/types'
 import LiveIcon from './LiveIcon'
 import clsx from 'clsx'
 import moment from 'moment'
@@ -228,6 +228,11 @@ type StudyCardProps = {
   onSetAnchor: Function
   isRename?: boolean
   onRename?: Function
+}
+
+type HighlightStudyCardWithBlueBorder = {
+  isNewlyAddedStudy: boolean
+  studyID: String | null
 }
 
 type HighlightedStudyProps = {

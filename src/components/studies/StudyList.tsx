@@ -14,17 +14,18 @@ import { useAsync } from '../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
 import { getRandomId } from '../../helpers/utility'
 import StudyService from '../../services/study.service'
-import {
-  Study,
-  StudyStatus,
-  HighlightStudyCardWithBlueBorder,
-} from '../../types/types'
+import { Study, StudyStatus } from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import { MTBHeading } from '../widgets/Headings'
 import Loader from '../widgets/Loader'
 import StudyCard from './StudyCard'
 
 type StudyListOwnProps = {}
+
+type HighlightStudyCardWithBlueBorder = {
+  isNewlyAddedStudy: boolean
+  studyID: String | null
+}
 
 type StudySublistProps = {
   status: StudyStatus

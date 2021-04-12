@@ -210,11 +210,6 @@ export type Phone = {
   nationalFormat?: string
 }
 
-export type HighlightStudyCardWithBlueBorder = {
-  isNewlyAddedStudy: boolean
-  studyID: String | null
-}
-
 // POST MVP
 
 export type StudyArm = {
