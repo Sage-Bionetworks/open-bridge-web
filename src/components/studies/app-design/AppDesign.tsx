@@ -461,7 +461,7 @@ const AppDesign: React.FunctionComponent<
 
   return (
     <Box className={classes.root}>
-      <Paper className={classes.section} elevation={2}>
+      <Paper className={classes.section} elevation={2} id="container">
         <Box className={classes.fields}>
           <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
           <p className={classes.smallScreenText}>
@@ -657,6 +657,7 @@ const AppDesign: React.FunctionComponent<
                       checked={appDesignProperties.useOptionalDisclaimer}
                       inputProps={{ 'aria-label': 'primary checkbox' }}
                       className={classes.checkBox}
+                      id="disclaimer-check-box"
                       onChange={() => {
                         setAppDesignProperties(prevState => {
                           return {
@@ -672,7 +673,7 @@ const AppDesign: React.FunctionComponent<
                     </div>
                   </div>
                 </FormGroup>
-                <Box textAlign="left" id="test-box">
+                <Box textAlign="left">
                   {saveLoader ? (
                     <div className="text-center">
                       <CircularProgress
