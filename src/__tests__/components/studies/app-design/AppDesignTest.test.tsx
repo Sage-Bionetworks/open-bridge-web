@@ -66,6 +66,15 @@ afterEach(() => {
   cleanup()
 })
 
+test('save button is called correctly', () => {
+  const saveButton = getById(
+    appDesign as HTMLElement,
+    'save-button-study-builder-1',
+  )
+  userEvent.click(saveButton!)
+  expect(onSave).toHaveBeenCalledTimes(1)
+})
+
 test('welcome screen messaging section is behaving correctly', () => {
   const mainHeaderTextBox = getById(appDesign as HTMLElement, 'headline-input')!
   userEvent.type(mainHeaderTextBox, TESTING_TEXT)
@@ -119,7 +128,7 @@ test('study summary section is behaving correctly', () => {
   expect(onUpdate).toHaveBeenCalledTimes(2)
 })
 
-test('Study Lead information section is behaving correctly', () => {
+test('study Lead information section is behaving correctly', () => {
   const institution = getById(appDesign as HTMLElement, 'institution-input')
   userEvent.type(institution!, TESTING_TEXT)
   userEvent.click(container)
@@ -146,7 +155,7 @@ test('Study Lead information section is behaving correctly', () => {
   // const leadPrincipleInvestigatorDropDown = getById(appDesign as HTMLElement, "")
 })
 
-test('General contact and support section is behaving correctly', () => {
+test('general contact and support section is behaving correctly', () => {
   const contactLead = getById(appDesign as HTMLElement, 'contact-lead-input')
   userEvent.type(contactLead!, TESTING_TEXT)
   userEvent.click(container)
@@ -180,7 +189,7 @@ test('General contact and support section is behaving correctly', () => {
   expect(onUpdate).toHaveBeenCalledTimes(4)
 })
 
-test('Ethics board contact section is behaving correctly', () => {
+test('ethics board contact section is behaving correctly', () => {
   const ethicsBoardName = getById(
     appDesign as HTMLElement,
     'ethics-board-input',

@@ -682,7 +682,10 @@ const AppDesign: React.FunctionComponent<
                       ></CircularProgress>
                     </div>
                   ) : (
-                    <SaveButton onClick={() => onSave()} id="save-button" />
+                    <SaveButton
+                      onClick={() => onSave()}
+                      id="save-button-study-builder-1"
+                    />
                   )}
                 </Box>
               </Subsection>
@@ -1083,7 +1086,10 @@ const AppDesign: React.FunctionComponent<
                     <CircularProgress color="primary" size={25} />
                   </div>
                 ) : (
-                  <SaveButton onClick={() => onSave()} />
+                  <SaveButton
+                    onClick={() => onSave()}
+                    id="save-button-study-builder-2"
+                  />
                 )}
               </Box>
             </Subsection>

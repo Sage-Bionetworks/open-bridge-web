@@ -24,27 +24,29 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
       boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.25)',
     },
   },
-
 }))
 
 export interface ButtonStyleProps {
   inputWidth?: number
+  id?: string
 }
 
 const SaveButton: React.FunctionComponent<ButtonProps & ButtonStyleProps> = ({
   inputWidth = 6,
   onClick,
+  id,
   ...other
 }) => {
   const classes = useStyles({ width: inputWidth })
 
   return (
     <Button
-    className={classes.root}
+      className={classes.root}
       variant="contained"
       color="primary"
       onClick={onClick}
       startIcon={<SaveIcon />}
+      id={id}
     >
       Save changes
     </Button>
