@@ -4,13 +4,13 @@ import CardContent from '@material-ui/core/CardContent'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
+import clsx from 'clsx'
+import moment from 'moment'
 import React, { FunctionComponent } from 'react'
 import participants_icon from '../../assets/participants_icon.svg'
 import { ThemeType } from '../../style/theme'
 import { Study } from '../../types/types'
 import LiveIcon from './LiveIcon'
-import clsx from 'clsx'
-import moment from 'moment'
 
 const DraftIcon = () => {
   return (
@@ -41,6 +41,10 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     borderRadius: '0px',
     boxShadow: '0 4px 4px 0 rgb(0 0 0 / 35%)',
     boxSizing: 'border-box',
+
+    '&:hover': {
+      outline: `4px solid ${theme.palette.primary.dark}`,
+    },
   },
   title: {
     fontSize: 14,
@@ -107,6 +111,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   isJustAdded: {
     animation: '$pop-out 0.5s ease',
+    outline: `4px solid ${theme.palette.primary.dark}`,
   },
   '@keyframes pop-out': {
     '0%': {
@@ -116,9 +121,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       transform: 'scale(1)',
     },
   },
-  addBlueBorder: {
-    outline: `4px solid ${theme.palette.primary.dark}`,
-  },
+ 
 }))
 
 const cancelPropagation = (e: React.MouseEvent) => {
@@ -228,27 +231,15 @@ type StudyCardProps = {
   onSetAnchor: Function
   isRename?: boolean
   onRename?: Function
+  isNewlyAddedStudy?: boolean
 }
 
-type HighlightStudyCardWithBlueBorder = {
-  isNewlyAddedStudy: boolean
-  studyID: String | null
-}
-
-type HighlightedStudyProps = {
-  highlightedStudy: HighlightStudyCardWithBlueBorder
-  onStudyHovered: Function
-  onStudyUnhovered: Function
-}
-
-const StudyCard: FunctionComponent<StudyCardProps & HighlightedStudyProps> = ({
+const StudyCard: FunctionComponent<StudyCardProps> = ({
   study,
   onSetAnchor,
   isRename,
   onRename,
-  highlightedStudy,
-  onStudyHovered,
-  onStudyUnhovered,
+  isNewlyAddedStudy,
 }) => {
   const classes = useStyles()
   const input = React.createRef<HTMLInputElement>()
@@ -271,25 +262,19 @@ const StudyCard: FunctionComponent<StudyCardProps & HighlightedStudyProps> = ({
       onRename(name)
     }
   }
-  const isCurrentStudyHighlighted =
-    study.identifier === highlightedStudy?.studyID
+
   return (
     <>
       <Card
         className={clsx(
           classes.root,
-          highlightedStudy.isNewlyAddedStudy &&
-            isCurrentStudyHighlighted &&
-            classes.isJustAdded,
-          isCurrentStudyHighlighted && classes.addBlueBorder,
+          isNewlyAddedStudy && classes.isJustAdded
         )}
         onClick={e => {
           if (isRename) {
             cancelPropagation(e)
           }
         }}
-        onMouseEnter={() => onStudyHovered(study)}
-        onMouseLeave={() => onStudyUnhovered()}
       >
         <>
           <CardTop study={study} onSetAnchor={onSetAnchor}></CardTop>
