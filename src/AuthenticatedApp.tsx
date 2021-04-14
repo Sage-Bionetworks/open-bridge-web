@@ -7,6 +7,7 @@ import { useStudyBuilderInfo } from './helpers/hooks'
 import { useStudyInfoDataDispatch } from './helpers/StudyInfoContext'
 import { setBodyClass } from './helpers/utility'
 import PrivateRoutes from './routes_private'
+import { UserSessionData } from './types/types'
 
 const getParams = (pathname: string): { id?: string; section?: string } => {
   const path = `/studies/${
@@ -22,8 +23,8 @@ const getParams = (pathname: string): { id?: string; section?: string } => {
 }
 
 const AuthenticatedApp: FunctionComponent<
-  { token: string }
-> = ({ token }) => {
+  { sessionData: UserSessionData}
+> = ({ sessionData }) => {
   const [studyId, setStudyId] = React.useState<string | undefined>()
   const [studySection, setStudySection] = React.useState<string | undefined>()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
@@ -49,7 +50,7 @@ const AuthenticatedApp: FunctionComponent<
 
   return (
     <>
-      {!studyId && <TopNav routes={PrivateRoutes} token={token} />}
+      {!studyId && <TopNav routes={PrivateRoutes} sessionData={sessionData} />}
       {studyId && (
         <StudyTopNav
           studyId={studyId!}

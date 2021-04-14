@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { Box } from '@material-ui/core'
+import { Box, Select, MenuItem } from '@material-ui/core'
 import AccessService from '../../../services/access.service'
 import { OrgUser } from '../../../types/types'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
-import ChevronDownIcon from '../../../assets/chevron_down_icon.svg'
 
 type LeadInvestigatorDropdownProps = {
   onChange: Function
@@ -19,7 +18,6 @@ type leadInvestigatorOption = {
 
 const useStyles = makeStyles(theme => ({
   selectPrincipleInvestigatorButton: {
-    width: '410px',
     height: '48px',
     border: '1px solid black',
     backgroundColor: 'white',
@@ -27,15 +25,15 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingLeft: theme.spacing(2),
     outline: 'none',
     transition: '0.25s ease',
     fontSize: '14px',
-  },
-  selectPrincipleInvestigatorButtonClosed: {
+    width: '100%',
+    boxSizing: 'border-box',
     '&:hover': {
       backgroundColor: theme.palette.primary.dark,
     },
+    paddingLeft: theme.spacing(2),
   },
   principleInvestigatorOption: {
     backgroundColor: 'white',
@@ -43,7 +41,6 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: theme.spacing(2),
     borderBottom: '1px solid black',
     borderLeft: '1px solid black',
     borderRight: '1px solid black',
@@ -53,25 +50,30 @@ const useStyles = makeStyles(theme => ({
     },
     cursor: 'pointer',
   },
-  principleInvestigatorDropdown: {
-    paddingLeft: theme.spacing(0),
-    zIndex: 500,
-    position: 'absolute',
-    width: '410px',
+  selectMenu: {
+    backgroundColor: 'white',
+    '&:focus': {
+      backgroundColor: 'white',
+    },
+  },
+  container: {
+    width: '100%',
+    height: '48px',
+  },
+  listPadding: {
+    padding: theme.spacing(0),
+  },
+  listBorder: {
+    borderRadius: '0px',
   },
 }))
 
 const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdownProps> = ({
   onChange,
-  currentInvestigatorSelected = 'Select pricinple investigator',
+  currentInvestigatorSelected,
   token,
   orgMembership,
 }) => {
-  const [
-    isLeadInvestigatorDropdownOpen,
-    setIsLeadInvestigatorDropdownOpen,
-  ] = useState<boolean>(false)
-
   const [leadInvestigatorOptions, setLeadInvestigatorOptions] = useState<
     leadInvestigatorOption[]
   >([])
@@ -107,43 +109,54 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
       setLeadInvestigatorOptions(leadInvestigatorArray)
     }
     getLeadResearchAccount()
-  }, [])
+  }, [token, orgMembership])
 
   return (
     <div>
       <Box marginLeft="8px">Lead Principle Investigator*</Box>
-      <div>
-        <button
-          className={clsx(
-            classes.selectPrincipleInvestigatorButton,
-            !isLeadInvestigatorDropdownOpen &&
-              classes.selectPrincipleInvestigatorButtonClosed,
-          )}
-          onClick={() => {
-            setIsLeadInvestigatorDropdownOpen(!isLeadInvestigatorDropdownOpen)
-          }}
+      <Select
+        labelId="lead-investigator-drop-down"
+        id="lead-investigator-drop-down"
+        value={currentInvestigatorSelected}
+        onChange={e => {
+          onChange(e.target.value)
+        }}
+        className={classes.container}
+        disableUnderline
+        classes={{
+          selectMenu: classes.selectMenu,
+          root: classes.selectPrincipleInvestigatorButton,
+        }}
+        MenuProps={{
+          classes: { list: classes.listPadding, paper: classes.listBorder },
+          getContentAnchorEl: null,
+          anchorOrigin: {
+            vertical: 'bottom',
+            horizontal: 'center',
+          },
+          transformOrigin: {
+            vertical: 'top',
+            horizontal: 'center',
+          },
+        }}
+      >
+        <MenuItem
+          value="Select principle investigator"
+          disabled
+          style={{ display: 'none' }}
         >
-          {currentInvestigatorSelected || 'Select pricinple investigator'}
-          <img src={ChevronDownIcon} alt="chevron-down-logo"></img>
-        </button>
-        {isLeadInvestigatorDropdownOpen && leadInvestigatorOptions.length > 0 && (
-          <ul className={classes.principleInvestigatorDropdown}>
-            {leadInvestigatorOptions.map((el, index) => (
-              <option
-                className={clsx(classes.principleInvestigatorOption)}
-                key={index}
-                value={el.name}
-                onClick={() => {
-                  setIsLeadInvestigatorDropdownOpen(false)
-                  onChange(el.name)
-                }}
-              >
-                {el.name}
-              </option>
-            ))}
-          </ul>
-        )}
-      </div>
+          Select pricinple investigator
+        </MenuItem>
+        {leadInvestigatorOptions.map((el, index) => (
+          <MenuItem
+            className={clsx(classes.principleInvestigatorOption)}
+            key={index}
+            value={el.name}
+          >
+            {el.name}
+          </MenuItem>
+        ))}
+      </Select>
     </div>
   )
 }

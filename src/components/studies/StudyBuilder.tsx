@@ -156,7 +156,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     )*/
     try {
       const newVersion = await StudyService.updateStudy(study, token!)
-      const updatedStudy = {...study, version: newVersion}
+      const updatedStudy = { ...study, version: newVersion }
       setData({
         ...builderInfo,
         study: updatedStudy,
@@ -182,7 +182,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       const sched = await StudyService.saveStudySchedule(schedule, token)
       setData({
         ...builderInfo,
-        schedule: sched,
+        schedule: { ...schedule, version: sched.version },
       })
 
       setHasObjectChanged(false)
@@ -380,7 +380,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         onUpdate={(data: StudyAppDesign) => {
                           setHasObjectChanged(true)
                           const updatedStudy = { ...builderInfo.study }
-                          updatedStudy.clientData = {...updatedStudy.clientData || {}, appDesign:data}
+                          updatedStudy.clientData = {
+                            ...(updatedStudy.clientData || {}),
+                            appDesign: data,
+                          }
 
                           setData({
                             ...builderInfo,

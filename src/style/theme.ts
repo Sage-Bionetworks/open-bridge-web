@@ -122,7 +122,7 @@ const theme: Theme = createMuiTheme({
         width: 32,
         height: 18,
         padding: 0,
-        margin: '0 8px 0 8px',
+        margin: '8px',
         display: 'flex',
       },
       switchBase: {

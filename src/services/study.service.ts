@@ -7,6 +7,7 @@ import {
   StudySession
 } from '../types/scheduling'
 import { Study } from '../types/types'
+import AssessmentService from './assessment.service'
 
 const StudyService = {
   getStudies,
@@ -63,7 +64,7 @@ async function getStudy(id: string, token: string): Promise<Study | undefined> {
     token,
   )
   const study = response.data
-  if (! study.clientData) {
+  if (!study.clientData) {
     study.clientData = {}
   }
   return study
@@ -119,14 +120,14 @@ async function updateStudy(study: Study, token: string): Promise<number> {
     scheduleGuid: study.scheduleGuid,
   }
 
- const result = await callEndpoint<{version: number}>(
+  const result = await callEndpoint<{ version: number }>(
     constants.endpoints.study.replace(':id', study.identifier),
     'POST', // once we add things to the study -- we can change this to actual object
     //  { identifier: study.identifier, version: study.version, name: study.name },
     payload,
     token,
   )
- return result.data.version
+  return result.data.version
 }
 
 async function removeStudy(studyId: string, token: string): Promise<Study[]> {
@@ -172,6 +173,23 @@ async function saveStudySchedule(
   }
 }
 
+async function addAssessmentResourcesToSchedule(
+  schedule: Schedule,
+): Promise<Schedule> {
+  const assessmentData = await AssessmentService.getAssessmentsWithResources()
+  schedule.sessions.forEach(session => {
+    const assmntWithResources = session.assessments?.map(assmnt => {
+      assmnt.resources = assessmentData.assessments.find(
+        a => a.guid === assmnt.guid,
+      )?.resources
+      return assmnt
+    })
+    session.assessments = assmntWithResources ? [...assmntWithResources] : []
+  })
+
+  return schedule
+}
+
 //returns scehdule and sessions
 async function getStudySchedule(
   studyId: string,
@@ -191,7 +209,8 @@ async function getStudySchedule(
   )
 
   const result = schedules.data.items.find(s => s.name.includes(studyId))
-  return result
+
+  return result ? addAssessmentResourcesToSchedule(result) : undefined
 }
 
 export default StudyService

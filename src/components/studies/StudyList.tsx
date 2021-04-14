@@ -27,7 +27,7 @@ type StudySublistProps = {
   studies: Study[]
   onAction: Function
   renameStudyId: string
-  newStudyID: String | null
+  highlightedStudyId: string | null
 }
 
 type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME'
@@ -113,10 +113,10 @@ type StudyListProps = StudyListOwnProps & RouteComponentProps
 const StudySublist: FunctionComponent<StudySublistProps> = ({
   studies,
   status,
-  //onSetAnchor,
+
   renameStudyId,
   onAction,
-  newStudyID,
+  highlightedStudyId,
 }: StudySublistProps) => {
   const classes = useStyles()
   const item = sections.find(section => section.status === status)!
@@ -166,7 +166,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
               onSetAnchor={(e: HTMLElement) => {
                 onAction(study, 'ANCHOR', e)
               }}
-              isNewlyAddedStudy={newStudyID === study.identifier}
+              isNewlyAddedStudy={highlightedStudyId === study.identifier}
             ></StudyCard>
           </Link>
         ))}
@@ -195,7 +195,11 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const [statusFilters, setStatusFilters] = React.useState<StudyStatus[]>(
     sections.map(section => section.status),
   )
-  const [newStudyID, setNewStudyID] = React.useState<String | null>(null)
+  const [highlightedStudyId, setHighlightedStudyId] = React.useState<
+    string | null
+  >(null)
+
+  let resetNewlyAddedStudyID: NodeJS.Timeout
 
   const { data: studies, status, error, run, setData: setStudies } = useAsync<
     Study[]
@@ -204,25 +208,37 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     data: [],
   })
 
-
-
   const resetStatusFilters = () =>
     setStatusFilters(sections.map(section => section.status))
 
-  const createStudy = async () => {
-    const ID = getRandomId()
-    const newStudy: Study = {
-      identifier: ID,
-      version: 1,
-      clientData: {},
-      status: 'DRAFT' as StudyStatus,
-      name: 'Untitled Study',
-      createdOn: new Date(),
-      modifiedOn: new Date(),
-    }
+  const createStudy = async (study?: Study) => {
+    //if study is provided -- we are duplicating
+    const id = getRandomId()
 
-    setNewStudyID(ID)
-    //setStudies([...studies, newStudy])
+    const newStudy = study
+      ? {
+          ...study!,
+          identifier: id,
+          version: 1,
+          name: `Copy of ${study!.name}`,
+          status: 'DRAFT' as StudyStatus,
+          createdOn: new Date(),
+          modifiedOn: new Date(),
+        }
+      : {
+          identifier: id,
+          version: 1,
+          clientData: {},
+          status: 'DRAFT' as StudyStatus,
+          name: 'Untitled Study',
+          createdOn: new Date(),
+          modifiedOn: new Date(),
+        }
+
+    setHighlightedStudyId(id)
+    resetNewlyAddedStudyID = setTimeout(() => {
+      setHighlightedStudyId(null)
+    }, 2000)
 
     const result = await StudyService.createStudy(newStudy, token!)
     setStudies(result)
@@ -240,7 +256,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           studies!.map(s => (s.identifier !== study.identifier ? s : study)),
         )
         await StudyService.updateStudy(study, token)
-        //setStudies(result)
+
         setRenameStudyId('')
 
         return
@@ -251,15 +267,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         return
 
       case 'DUPLICATE':
-        const newStudy = {
-          ...study!,
-          identifier: getRandomId(),
-          version: 1,
-          name: `Copy of ${study!.name}`,
-        }
-        result = await StudyService.createStudy(newStudy, token)
-        setStudies(result)
-
+        createStudy(study)
         return
       default: {
       }
@@ -304,11 +312,8 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       </div>
     )
   }
-
   return (
-
     <Loader reqStatusLoading={status === 'PENDING' || !studies} variant="full">
-
       <Container maxWidth="lg" className={classes.studyContainer}>
         <Box display="flex" justifyContent="space-between">
           <ul className={classes.filters} aria-label="filters">
@@ -367,15 +372,13 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                     ? setMenuAnchor({ study: s, anchorEl: e })
                     : onAction(s, action)
                 }}
-
-                newStudyID={newStudyID}
-
+                highlightedStudyId={highlightedStudyId}
               />
             </Box>
           ))}
 
         <Menu
-          id="simple-menu"
+          id="study-menu"
           anchorEl={menuAnchor?.anchorEl}
           keepMounted
           open={Boolean(menuAnchor?.anchorEl)}

@@ -413,7 +413,9 @@ const AppDesign: React.FunctionComponent<
     welcomeScreenSalutation: currentAppDesign.welcomeScreenSalutation || '',
     studyTitle: currentAppDesign.studyTitle || '',
     studySummaryBody: currentAppDesign.studySummaryBody || '',
-    leadPrincipleInvestigator: currentAppDesign.leadPrincipleInvestigator || '',
+    leadPrincipleInvestigator:
+      currentAppDesign.leadPrincipleInvestigator ||
+      'Select principle investigator',
     institution: currentAppDesign.institution || '',
     funder: currentAppDesign.funder || '',
     IRBApprovalNumber: currentAppDesign.IRBApprovalNumber || '',

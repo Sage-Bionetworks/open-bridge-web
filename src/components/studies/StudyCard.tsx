@@ -4,13 +4,13 @@ import CardContent from '@material-ui/core/CardContent'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
+import clsx from 'clsx'
+import moment from 'moment'
 import React, { FunctionComponent } from 'react'
 import participants_icon from '../../assets/participants_icon.svg'
 import { ThemeType } from '../../style/theme'
 import { Study } from '../../types/types'
 import LiveIcon from './LiveIcon'
-import clsx from 'clsx'
-import moment from 'moment'
 
 const DraftIcon = () => {
   return (
@@ -40,6 +40,11 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     backgroundColor: '#FFFFFF',
     borderRadius: '0px',
     boxShadow: '0 4px 4px 0 rgb(0 0 0 / 35%)',
+    boxSizing: 'border-box',
+
+    '&:hover': {
+      outline: `4px solid ${theme.palette.primary.dark}`,
+    },
   },
   title: {
     fontSize: 14,
@@ -105,8 +110,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginBottom: theme.spacing(2),
   },
   isJustAdded: {
-    border: `3px solid ${theme.palette.primary.dark}`,
     animation: '$pop-out 0.5s ease',
+    outline: `4px solid ${theme.palette.primary.dark}`,
   },
   '@keyframes pop-out': {
     '0%': {
@@ -116,6 +121,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       transform: 'scale(1)',
     },
   },
+ 
 }))
 
 const cancelPropagation = (e: React.MouseEvent) => {
@@ -225,13 +231,10 @@ type StudyCardProps = {
   onSetAnchor: Function
   isRename?: boolean
   onRename?: Function
-}
-
-type NewlyAddedProp = {
   isNewlyAddedStudy?: boolean
 }
 
-const StudyCard: FunctionComponent<StudyCardProps & NewlyAddedProp> = ({
+const StudyCard: FunctionComponent<StudyCardProps> = ({
   study,
   onSetAnchor,
   isRename,
@@ -259,10 +262,14 @@ const StudyCard: FunctionComponent<StudyCardProps & NewlyAddedProp> = ({
       onRename(name)
     }
   }
+
   return (
     <>
       <Card
-        className={clsx(classes.root, isNewlyAddedStudy && classes.isJustAdded)}
+        className={clsx(
+          classes.root,
+          isNewlyAddedStudy && classes.isJustAdded
+        )}
         onClick={e => {
           if (isRename) {
             cancelPropagation(e)
