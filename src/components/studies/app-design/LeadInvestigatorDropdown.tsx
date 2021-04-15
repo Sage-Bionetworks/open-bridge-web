@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Select, MenuItem } from '@material-ui/core'
+import { Box, Select, MenuItem, FormControl } from '@material-ui/core'
 import AccessService from '../../../services/access.service'
 import { OrgUser } from '../../../types/types'
 import { makeStyles } from '@material-ui/core/styles'
@@ -139,19 +139,17 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
             horizontal: 'center',
           },
         }}
+        displayEmpty
       >
-        <MenuItem
-          value="Select principle investigator"
-          disabled
-          style={{ display: 'none' }}
-        >
-          Select pricinple investigator
+        <MenuItem value="" disabled style={{ display: 'none' }}>
+          Select Principle Investigator
         </MenuItem>
         {leadInvestigatorOptions.map((el, index) => (
           <MenuItem
             className={clsx(classes.principleInvestigatorOption)}
             key={index}
             value={el.name}
+            id={`${el.name}-${index}`}
           >
             {el.name}
           </MenuItem>

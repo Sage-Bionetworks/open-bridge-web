@@ -7,8 +7,46 @@ type Search = {
   pageSize: number
   offsetBy: number
 }
-
+const getAllAccountsEndpoint = constants.endpoints.getAccountsForOrg.replace(
+  ':orgId',
+  'test',
+)
+const getIndividualAccountEndpoint = constants.endpoints.bridgeAccount.replace(
+  ':id',
+  'test',
+)
 const server = setupServer(
+  rest.post(`*${getAllAccountsEndpoint}`, async (req, res, ctx) => {
+    console.log("entered mock function")
+    const data = [
+      {
+        firstName: 'John',
+        lastName: 'Roberts',
+      },
+    ]
+    return res(
+      ctx.status(200),
+      ctx.json({
+        items: data,
+      }),
+    )
+  }),
+
+  rest.get(`*${getIndividualAccountEndpoint}`, async (req, res, ctx) => {
+    console.log('inside the get individual account worker')
+    const data = {
+      status: 'org_admin',
+      email: 'test@testing@synapse.org',
+      synapseUserId: '12345678',
+    }
+    return res(
+      ctx.status(200),
+      ctx.json({
+        data: data,
+      }),
+    )
+  }),
+
   rest.post(
     `*${constants.endpoints.participantsSearch}`,
     async (req, res, ctx) => {
