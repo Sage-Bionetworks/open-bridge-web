@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) =>
       fontStyle: 'normal',
       fontWeight: 600,
       maxWidth: '200px',
-      marginRight: '25%',
+      marginRight: '15%',
       marginLeft: theme.spacing(-1.5),
     },
     container: {
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'space-evenly',
       alignItems: 'center',
       padding: theme.spacing(3.75),
-      minWidth: '500px',
+      minWidth: '400px',
     },
     formControl: {
       fontSize: '18px',
