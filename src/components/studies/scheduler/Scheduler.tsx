@@ -4,7 +4,7 @@ import {
   createStyles,
   FormControlLabel,
   makeStyles,
-  Theme
+  Theme,
 } from '@material-ui/core'
 import SaveIcon from '@material-ui/icons/Save'
 import _ from 'lodash'
@@ -17,7 +17,7 @@ import {
   Schedule,
   SessionSchedule,
   StartEventId,
-  StudySession
+  StudySession,
 } from '../../../types/scheduling'
 import { StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
@@ -28,7 +28,7 @@ import Duration from './Duration'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
-  SessionScheduleAction
+  SessionScheduleAction,
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import TimelinePlot from './TimelinePlot'
@@ -55,6 +55,13 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'space-between',
       paddingRight: theme.spacing(2),
+    },
+    studyStartDateContainer: {
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
   }),
 )
@@ -116,23 +123,25 @@ const Scheduler: FunctionComponent<
     return sessions.map(s => ({ ...s, startEventId }))
   }
 
-
-
   const scheduleUpdateFn = (action: SessionScheduleAction) => {
     const sessions = actionsReducer(schedule.sessions, action)
     const newSchedule = { ...schedule, sessions }
     updateData(newSchedule)
   }
 
-
-
   if (_.isEmpty(schedule.sessions)) {
-    return <Box textAlign="center" mx="auto"><ErrorDisplay>You need to create sessions before creating the schedule</ErrorDisplay></Box>
+    return (
+      <Box textAlign="center" mx="auto">
+        <ErrorDisplay>
+          You need to create sessions before creating the schedule
+        </ErrorDisplay>
+      </Box>
+    )
   }
 
   return (
     <>
-    <Loader reqStatusLoading={saveLoader} key="loader"></Loader>
+      <Loader reqStatusLoading={saveLoader} key="loader"></Loader>
       <NavigationPrompt when={hasObjectChanged} key="prompt">
         {({ onConfirm, onCancel }) => (
           <ConfirmationDialog
@@ -144,40 +153,43 @@ const Scheduler: FunctionComponent<
         )}
       </NavigationPrompt>
 
-        <Box textAlign="left" key="content">
-          <div className={classes.scheduleHeader} key="intro">
-            <FormControlLabel
-              classes={{ label: classes.labelDuration }}
-              label="Study duration:"
-              style={{ fontSize: '14px' }}
-              labelPlacement="start"
-              control={
-                <Duration
-                  onChange={e =>
-                    updateData({ ...schedule, duration: e.target.value})
-                  }
-                  durationString={schedule.duration || ''}
-                  unitLabel="study duration unit"
-                  numberLabel="study duration number"
-                  unitData={DWsEnum}
-                ></Duration>
-              }
-            />
-            {hasObjectChanged && (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => onSave()}
-                startIcon={<SaveIcon />}
-              >
-                Save changes
-              </Button>
-            )}
-          </div>
-          <Box bgcolor="#fff" p={2} mt={3} key="scheduler">
-            <TimelinePlot something=""></TimelinePlot>
+      <Box textAlign="left" key="content">
+        <div className={classes.scheduleHeader} key="intro">
+          <FormControlLabel
+            classes={{ label: classes.labelDuration }}
+            label="Study duration:"
+            style={{ fontSize: '14px' }}
+            labelPlacement="start"
+            control={
+              <Duration
+                onChange={e =>
+                  updateData({ ...schedule, duration: e.target.value })
+                }
+                durationString={schedule.duration || ''}
+                unitLabel="study duration unit"
+                numberLabel="study duration number"
+                unitData={DWsEnum}
+              ></Duration>
+            }
+          />
+          {hasObjectChanged && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => onSave()}
+              startIcon={<SaveIcon />}
+            >
+              Save changes
+            </Button>
+          )}
+        </div>
+        <Box bgcolor="#fff" p={2} mt={3} key="scheduler">
+          <TimelinePlot something=""></TimelinePlot>
+          <div className={classes.studyStartDateContainer}>
             <StudyStartDate
-              style={{ marginTop: '16px' }}
+              style={{
+                marginTop: '16px',
+              }}
               startEventId={
                 getStartEventIdFromSchedule(schedule) as StartEventId
               }
@@ -189,47 +201,45 @@ const Scheduler: FunctionComponent<
                 updateData({ ...schedule, sessions })
               }}
             />
+          </div>
 
-            {schedule.sessions.map((session, index) => (
-              <Box mb={2} display="flex" key={session.guid}>
-                <Box className={classes.assessments}>
-                  <AssessmentList
-                    studySessionIndex={index}
-                    studySession={session}
-                    onChangePerformanceOrder={(performanceOrder: PerformanceOrder) => {
-                      const schedule = {...session, performanceOrder}
-
-                      scheduleUpdateFn({
-                        type: ActionTypes.UpdateSessionSchedule,
-                        payload: { sessionId: session.guid!, schedule },
-                      })
-                    }}
-
-
-                  
-                   
-                    performanceOrder={session.performanceOrder || 'sequential'}
-                  />
-                </Box>
-
-                <SchedulableSingleSessionContainer
-                  key={session.guid}
+          {schedule.sessions.map((session, index) => (
+            <Box mb={2} display="flex" key={session.guid}>
+              <Box className={classes.assessments}>
+                <AssessmentList
+                  studySessionIndex={index}
                   studySession={session}
-                  onSaveSessionSchedule={() => saveSession(session.guid!)}
-                  onUpdateSessionSchedule={(schedule: SessionSchedule) => {
+                  onChangePerformanceOrder={(
+                    performanceOrder: PerformanceOrder,
+                  ) => {
+                    const schedule = { ...session, performanceOrder }
+
                     scheduleUpdateFn({
                       type: ActionTypes.UpdateSessionSchedule,
                       payload: { sessionId: session.guid!, schedule },
                     })
                   }}
-                ></SchedulableSingleSessionContainer>
+                  performanceOrder={session.performanceOrder || 'sequential'}
+                />
               </Box>
-            ))}
-          </Box>
 
-          {children}
+              <SchedulableSingleSessionContainer
+                key={session.guid}
+                studySession={session}
+                onSaveSessionSchedule={() => saveSession(session.guid!)}
+                onUpdateSessionSchedule={(schedule: SessionSchedule) => {
+                  scheduleUpdateFn({
+                    type: ActionTypes.UpdateSessionSchedule,
+                    payload: { sessionId: session.guid!, schedule },
+                  })
+                }}
+              ></SchedulableSingleSessionContainer>
+            </Box>
+          ))}
         </Box>
-   
+
+        {children}
+      </Box>
     </>
   )
 }

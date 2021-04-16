@@ -2,7 +2,8 @@ import {
   Button,
   createStyles,
   FormControlLabel,
-  Theme
+  Theme,
+  Divider,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
@@ -21,6 +22,32 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: '18px',
       fontStyle: 'normal',
       fontWeight: 600,
+      maxWidth: '200px',
+      marginRight: '25%',
+      marginLeft: theme.spacing(-1.5),
+    },
+    container: {
+      width: '40%',
+      backgroundColor: '#FAFAFA',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-evenly',
+      alignItems: 'center',
+      padding: theme.spacing(3.75),
+      minWidth: '500px',
+    },
+    formControl: {
+      fontSize: '18px',
+      width: '90%',
+      display: 'flex',
+      flexDirection: 'row-reverse',
+      justifyContent: 'flex-end',
+      alignItems: 'flex-end',
+    },
+    divider: {
+      width: '90%',
+      marginTop: theme.spacing(5),
+      marginBottom: theme.spacing(3.75),
     },
   }),
 )
@@ -39,11 +66,11 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
   >(undefined)
 
   return (
-    <>
+    <div className={classes.container}>
       <FormControlLabel
         classes={{ label: classes.labelDuration }}
-        label="Study Duration"
-        style={{ fontSize: '16px' }}
+        label="How long will the study run for?"
+        className={classes.formControl}
         labelPlacement="start"
         control={
           <Duration
@@ -52,25 +79,34 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
             unitLabel="study duration unit"
             numberLabel="study duration number"
             unitData={DWsEnum}
+            isIntro={true}
           ></Duration>
         }
       />
+      <Divider className={classes.divider}></Divider>
 
       <StudyStartDate
         isIntro={true}
-        onChange={(pseudonym: StartEventId) =>
-          setstartEventId(pseudonym)
-        }
+        onChange={(pseudonym: StartEventId) => setstartEventId(pseudonym)}
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-evenly',
+          alignItems: 'center',
+          width: '90%',
+        }}
       />
-
       <Button
         variant="contained"
+        color="primary"
+        key="saveButton"
         onClick={e => onContinue(duration, startEventId)}
         disabled={!(duration && startEventId)}
+        style={{ marginTop: '50px' }}
       >
         Continue
       </Button>
-    </>
+    </div>
   )
 }
 
