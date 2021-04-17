@@ -37,6 +37,11 @@ const useStyles = makeStyles(theme =>
       lineHeight: '18px',
       fontSize: '14px',
     },
+    radioButtonAlignment: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+    },
   }),
 )
 
@@ -90,6 +95,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
         <FormControlLabel
           value={options[1]}
           control={<Radio />}
+          className={classes.radioButtonAlignment}
           label={
             isIntro ? (
               <Box marginTop="10px">
