@@ -90,11 +90,6 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
         <FormControlLabel
           value={options[1]}
           control={<Radio />}
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-          }}
           label={
             isIntro ? (
               <Box marginTop="10px">
