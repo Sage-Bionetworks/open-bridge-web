@@ -88,12 +88,14 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
 
   useEffect(() => {
     const getLeadResearchAccount = async () => {
-      const accounts = await AccessService.getAccountsForOrg(
-        token!,
-        orgMembership!,
-      )
+      // const accounts = await AccessService.getAccountsForOrg(
+      //   token!,
+      //   orgMembership!,
+      // )
+      const accounts = await AccessService.getAccountsForOrg('test', 'test')
       const promises = accounts.map(async account => {
-        return await AccessService.getIndividualAccount(token!, account.id)
+        // return await AccessService.getIndividualAccount(token!, account.id)
+        return await AccessService.getIndividualAccount('test', 'test')
       })
       const admins = await Promise.all(promises).then(values => {
         return values.filter(account => account.roles.includes('org_admin'))
@@ -115,7 +117,7 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
     <div>
       <Box marginLeft="8px">Lead Principle Investigator*</Box>
       <Select
-        labelId="lead-investigator-drop-down"
+        labelId="lead-investi gator-drop-down"
         id="lead-investigator-drop-down"
         value={currentInvestigatorSelected}
         onChange={e => {
@@ -141,7 +143,7 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
         }}
         displayEmpty
       >
-        <MenuItem value="" disabled style={{ display: 'none' }}>
+        <MenuItem value="" disabled style={{ display: 'none' }} id="testing">
           Select Principle Investigator
         </MenuItem>
         {leadInvestigatorOptions.map((el, index) => (
@@ -149,7 +151,7 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
             className={clsx(classes.principleInvestigatorOption)}
             key={index}
             value={el.name}
-            id={`${el.name}-${index}`}
+            id="hello"
           >
             {el.name}
           </MenuItem>

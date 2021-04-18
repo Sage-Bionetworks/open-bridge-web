@@ -67,7 +67,6 @@ async function getAccountsForOrg(
     {},
     token,
   )
-  console.log('the ret data are',  result.data.items)
   return result.data.items
 }
 
