@@ -9,7 +9,9 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 import AppDesign from '../../../../components/studies/app-design/AppDesign'
 import { StudyAppDesign } from '../../../../types/types'
-import { UserSessionDataProvider } from '../../../../helpers/AuthContext'
+import {
+  UserSessionDataStateContext,
+} from '../../../../helpers/AuthContext'
 import Server from '../../../../_tests_server/handlers/server'
 
 const getById = queryByAttribute.bind(null, 'id')
@@ -25,7 +27,15 @@ const onSave = jest.fn()
 
 const renderAppDesignComponent = async (renderWithAsync?: boolean) => {
   appDesign = render(
-    <UserSessionDataProvider>
+    <UserSessionDataStateContext.Provider
+      value={{
+        token: 'testing-token',
+        orgMembership: 'testMembership',
+        id: 'testID',
+        roles: ['org_admin'],
+        dataGroups: [],
+      }}
+    >
       <AppDesign
         hasObjectChanged={false}
         saveLoader={false}
@@ -35,7 +45,7 @@ const renderAppDesignComponent = async (renderWithAsync?: boolean) => {
         onUpdate={onUpdate}
       ></AppDesign>
       ,
-    </UserSessionDataProvider>,
+    </UserSessionDataStateContext.Provider>,
   ).container
   container = getById(appDesign as HTMLElement, 'container')!
   const leadPrincipleInvestigatorDropDown = getById(

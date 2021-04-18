@@ -88,14 +88,12 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
 
   useEffect(() => {
     const getLeadResearchAccount = async () => {
-      // const accounts = await AccessService.getAccountsForOrg(
-      //   token!,
-      //   orgMembership!,
-      // )
-      const accounts = await AccessService.getAccountsForOrg('test', 'test')
+      const accounts = await AccessService.getAccountsForOrg(
+        token!,
+        orgMembership!,
+      )
       const promises = accounts.map(async account => {
-        // return await AccessService.getIndividualAccount(token!, account.id)
-        return await AccessService.getIndividualAccount('test', 'test')
+        return await AccessService.getIndividualAccount(token!, account.id)
       })
       const admins = await Promise.all(promises).then(values => {
         return values.filter(account => account.roles.includes('org_admin'))
@@ -117,7 +115,7 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
     <div>
       <Box marginLeft="8px">Lead Principle Investigator*</Box>
       <Select
-        labelId="lead-investi gator-drop-down"
+        labelId="lead-investigator-drop-down"
         id="lead-investigator-drop-down"
         value={currentInvestigatorSelected}
         onChange={e => {

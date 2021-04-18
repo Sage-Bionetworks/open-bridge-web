@@ -9,11 +9,11 @@ type Search = {
 }
 const getAllAccountsEndpoint = constants.endpoints.getAccountsForOrg.replace(
   ':orgId',
-  'test',
+  'testMembership',
 )
 const getIndividualAccountEndpoint = constants.endpoints.bridgeAccount.replace(
   ':id',
-  'test',
+  'testID',
 )
 const server = setupServer(
   rest.post(`*${getAllAccountsEndpoint}`, async (req, res, ctx) => {
@@ -21,6 +21,7 @@ const server = setupServer(
       {
         firstName: 'John',
         lastName: 'Roberts',
+        id: 'testID',
       },
     ]
     return res(
