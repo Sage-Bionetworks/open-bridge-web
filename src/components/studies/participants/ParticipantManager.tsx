@@ -209,6 +209,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   // Should delete dialog be open
   const [isOpenDeleteDialog, setIsOpenDeleteDialog] = React.useState(false)
 
+  // True if the user is currently searching for a particpant using id
+  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] = React.useState(false)
+
   const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
     string | undefined
   >(undefined)
@@ -433,7 +436,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             </HelpBox>
           )}
 
-          {!data?.items.length && isEdit && (
+          {!data?.items.length && !isUserSearchingForParticipant && isEdit && (
             <HelpBox
               topOffset={340}
               leftOffset={250}
@@ -542,10 +545,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               justifyContent="space-between"
             >
               <ParticipantSearch
-                onReset={() => handleResetSearch()}
-                onSearch={(searchedValue: string) =>
+                onReset={() => {
+                  setIsUserSearchingForParticipant(false)
+                  handleResetSearch()
+                }}
+                onSearch={(searchedValue: string) => {
+                  setIsUserSearchingForParticipant(true)
                   handleSearchParticipantRequest(searchedValue)
-                }
+                }}
               />
 
               {!isEdit && (
