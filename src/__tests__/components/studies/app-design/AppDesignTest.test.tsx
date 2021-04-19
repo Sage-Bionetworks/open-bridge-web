@@ -46,7 +46,7 @@ let studyAppDesign: StudyAppDesign
 const onUpdate = jest.fn()
 const onSave = jest.fn()
 
-const renderAppDesignComponent = async () => {
+const renderAppDesignComponent = () => {
   appDesign = render(
     <UserSessionDataStateContext.Provider
       value={{
@@ -75,7 +75,7 @@ beforeAll(() => {
   Server.listen()
 })
 
-beforeEach(async () => {
+beforeEach(() => {
   Server.resetHandlers()
   studyAppDesign = {
     ...studyAppDesignTemplate,
