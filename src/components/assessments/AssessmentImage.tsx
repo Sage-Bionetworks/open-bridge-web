@@ -24,26 +24,25 @@ type AssessmentImageProps = {
   name: string
   isSmall?: boolean
   children?: ReactNode
-  variant?: 'PORTRAIT' | 'LANDSCAPE'
 }
 
 const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
   resources,
   name,
   isSmall = false,
-  variant = 'PORTRAIT',
   children = <></>,
 }: AssessmentImageProps) => {
   const classes = useStyles()
-  const screens = resources?.filter(
+  const screen = resources?.find(
     resource =>
-      resource.category === 'screenshot' &&
+      resource.category === 'icon' &&
       !resource.deleted &&
       resource.upToDate &&
+      resource.title.includes('_square') &&
       resource.url,
   )
-  let url = ''
-  if (screens && screens.length) {
+  // let url = ''
+  /* if (screens && screens.length) {
     const prefferred = screens.find(
       screen =>
         screen.title ===
@@ -56,12 +55,16 @@ const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
     } else {
       url = screens[0].url
     }
-  }
+  }*/
 
   return isSmall ? (
-    <img src={url || DefaultImg} alt={name} width="90%" />
+    <img src={screen?.url || DefaultImg} alt={name} width="90%" />
   ) : (
-    <CardMedia className={classes.media} image={url || DefaultImg} title={name}>
+    <CardMedia
+      className={classes.media}
+      image={screen?.url || DefaultImg}
+      title={name}
+    >
       {children}
     </CardMedia>
   )

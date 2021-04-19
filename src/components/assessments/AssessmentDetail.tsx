@@ -163,7 +163,6 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                   name="X"
                   resources={data.resources}
                   isSmall={true}
-                  variant={'LANDSCAPE'}
                 ></AssessmentImage>
               </Box>
               <Box textAlign="left">
