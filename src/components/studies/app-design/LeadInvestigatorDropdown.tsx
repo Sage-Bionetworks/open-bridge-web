@@ -141,7 +141,7 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
         }}
         displayEmpty
       >
-        <MenuItem value="" disabled style={{ display: 'none' }} id="testing">
+        <MenuItem value="" disabled style={{ display: 'none' }}>
           Select Principle Investigator
         </MenuItem>
         {leadInvestigatorOptions.map((el, index) => (
