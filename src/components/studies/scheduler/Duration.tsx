@@ -6,11 +6,11 @@ import SmallTextBox from '../../widgets/SmallTextBox'
 
 export interface DurationProps {
   onChange: Function
-
   durationString: string | undefined
   unitData: any
   unitLabel: string
   numberLabel: string
+  isIntro?: boolean
 }
 
 const Duration: React.FunctionComponent<
@@ -21,9 +21,9 @@ const Duration: React.FunctionComponent<
   onChange,
   unitLabel,
   numberLabel,
+  isIntro,
   ...props
 }: DurationProps) => {
-
   const [unt, setUnit] = React.useState<string | undefined>(undefined)
   const [num, setNum] = React.useState<number | undefined>(undefined)
 
@@ -68,7 +68,7 @@ const Duration: React.FunctionComponent<
     const p = `P${time}${value}${unit}`
     //console.log(p, 'set p')
 
-    onChange({target: {value:p}})
+    onChange({ target: { value: p } })
   }
 
   return (
@@ -82,6 +82,7 @@ const Duration: React.FunctionComponent<
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           changeValue(Number(e.target.value as string), unt)
         }}
+        inputWidth={isIntro ? 10 : undefined}
       ></SmallTextBox>
 
       <SelectWithEnum
@@ -93,6 +94,7 @@ const Duration: React.FunctionComponent<
         onChange={e =>
           changeValue(num, e.target.value as moment.unitOfTime.Base)
         }
+        style={isIntro ? { width: '100px' } : undefined}
       ></SelectWithEnum>
     </div>
   )
