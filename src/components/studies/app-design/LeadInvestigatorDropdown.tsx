@@ -149,7 +149,7 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
             className={clsx(classes.principleInvestigatorOption)}
             key={index}
             value={el.name}
-            id="hello"
+            id={`investigator-${index}`}
           >
             {el.name}
           </MenuItem>
