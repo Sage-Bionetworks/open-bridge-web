@@ -67,6 +67,7 @@ async function getAccountsForOrg(
     {},
     token,
   )
+
   return result.data.items
 }
 
