@@ -11,6 +11,7 @@ const useStyles = makeStyles(theme =>
       display: 'flex',
       padding: 0,
       marginBottom: theme.spacing(1),
+      boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
 
       '&.dragging': {
         border: '1px dashed #000',
@@ -39,12 +40,13 @@ const useStyles = makeStyles(theme =>
     },
 
     card: {
-      width: '96px',
+      width: '104px',
       height: '96px',
       flexShrink: 0,
       display: 'flex',
       alignContent: 'space-around',
       justifyContent: 'space-around',
+      overflow:'hidden'
     },
     title: {
       fontSize: '12px',

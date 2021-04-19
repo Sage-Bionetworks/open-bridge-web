@@ -41,24 +41,10 @@ const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
       resource.title.includes('_square') &&
       resource.url,
   )
-  // let url = ''
-  /* if (screens && screens.length) {
-    const prefferred = screens.find(
-      screen =>
-        screen.title ===
-        (variant === 'PORTRAIT'
-          ? 'Portrait screenshot'
-          : 'Landscape screenshot'),
-    )
-    if (prefferred) {
-      url = prefferred.url
-    } else {
-      url = screens[0].url
-    }
-  }*/
+ 
 
   return isSmall ? (
-    <img src={screen?.url || DefaultImg} alt={name} width="90%" />
+    <img src={screen?.url || DefaultImg} alt={name} height="100%" />
   ) : (
     <CardMedia
       className={classes.media}
