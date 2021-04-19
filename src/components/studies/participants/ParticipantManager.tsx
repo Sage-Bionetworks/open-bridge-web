@@ -8,7 +8,7 @@ import {
   Grid,
   Switch,
   Tab,
-  Tabs
+  Tabs,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { FunctionComponent } from 'react'
@@ -23,7 +23,7 @@ import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
 import { theme } from '../../../style/theme'
@@ -31,19 +31,19 @@ import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
-  StringDictionary
+  StringDictionary,
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import HelpBox from '../../widgets/HelpBox'
 import {
   DialogButtonPrimary,
-  DialogButtonSecondary
+  DialogButtonSecondary,
 } from '../../widgets/StyledComponents'
 import AddParticipants from './AddParticipants'
 import DeleteDialog from './DeleteDialogContents'
 import ParticipantDownload, {
-  ParticipantDownloadType
+  ParticipantDownloadType,
 } from './ParticipantDownload'
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
@@ -209,6 +209,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   // Should delete dialog be open
   const [isOpenDeleteDialog, setIsOpenDeleteDialog] = React.useState(false)
 
+  // True if the user is currently searching for a particpant using id
+  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] = React.useState(false)
+
   const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
     string | undefined
   >(undefined)
@@ -350,7 +353,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             token!,
             searchedValue,
           )
-    const realResult = result ? [result] : null
+    const realResult = result ? [result] : []
     const totalParticipantsFound = result ? 1 : 0
     setParticipantData({ items: realResult, total: totalParticipantsFound })
   }
@@ -433,7 +436,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             </HelpBox>
           )}
 
-          {!data?.items.length && isEdit && (
+          {!data?.items.length && !isUserSearchingForParticipant && isEdit && (
             <HelpBox
               topOffset={340}
               leftOffset={250}
@@ -542,10 +545,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               justifyContent="space-between"
             >
               <ParticipantSearch
-                onReset={() => handleResetSearch()}
-                onSearch={(searchedValue: string) =>
+                onReset={() => {
+                  setIsUserSearchingForParticipant(false)
+                  handleResetSearch()
+                }}
+                onSearch={(searchedValue: string) => {
+                  setIsUserSearchingForParticipant(true)
                   handleSearchParticipantRequest(searchedValue)
-                }
+                }}
               />
 
               {!isEdit && (
