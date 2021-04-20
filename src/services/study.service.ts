@@ -26,9 +26,6 @@ function createEmptyStudySession(
   startEventId: StartEventId,
   name = 'Session1',
 ) {
-  /*const defaultAssessment = await (
-    await AssessmentService.getAssessmentsWithResources()
-  ).assessments[0]*/
   const defaultTimeWindow: AssessmentWindow = {
     startTime: '08:00',
   }
@@ -192,25 +189,17 @@ async function addAssessmentResourcesToSchedule(
 
 //returns scehdule and sessions
 async function getStudySchedule(
-  studyId: string,
+  scheduleId: string,
   token: string,
 ): Promise<Schedule | undefined> {
-  //this will change. Now we just do by name
-  /*const { data } = await callEndpoint<{ data: Schedule }>(
-    constants.endpoints.schedule.replace(':id', studyId),
-    'GET',
-    {},
-    token,*/
-  const schedules = await callEndpoint<{ items: Schedule[] }>(
-    constants.endpoints.schedule.replace(':id', ''),
+  const schedule = await callEndpoint<Schedule>(
+    constants.endpoints.schedule.replace(':id', scheduleId),
     'GET',
     {},
     token,
   )
 
-  const result = schedules.data.items.find(s => s.name.includes(studyId))
-
-  return result ? addAssessmentResourcesToSchedule(result) : undefined
+  return schedule ? addAssessmentResourcesToSchedule(schedule.data) : undefined
 }
 
 export default StudyService
