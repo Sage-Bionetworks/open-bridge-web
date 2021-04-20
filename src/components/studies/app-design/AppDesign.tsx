@@ -98,7 +98,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       justifyContent: 'center',
       marginRight: theme.spacing(3),
       marginLeft: theme.spacing(-8),
-
       height: theme.spacing(5),
     },
   },
@@ -414,9 +413,7 @@ const AppDesign: React.FunctionComponent<
     welcomeScreenSalutation: currentAppDesign.welcomeScreenSalutation || '',
     studyTitle: currentAppDesign.studyTitle || '',
     studySummaryBody: currentAppDesign.studySummaryBody || '',
-    leadPrincipleInvestigator:
-      currentAppDesign.leadPrincipleInvestigator ||
-      'Select principle investigator',
+    leadPrincipleInvestigator: currentAppDesign.leadPrincipleInvestigator || '',
     institution: currentAppDesign.institution || '',
     funder: currentAppDesign.funder || '',
     IRBApprovalNumber: currentAppDesign.IRBApprovalNumber || '',
@@ -464,7 +461,7 @@ const AppDesign: React.FunctionComponent<
 
   return (
     <Box className={classes.root}>
-      <Paper className={classes.section} elevation={2}>
+      <Paper className={classes.section} elevation={2} id="container">
         <Box className={classes.fields}>
           <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
           <p className={classes.smallScreenText}>
@@ -660,6 +657,7 @@ const AppDesign: React.FunctionComponent<
                       checked={appDesignProperties.useOptionalDisclaimer}
                       inputProps={{ 'aria-label': 'primary checkbox' }}
                       className={classes.checkBox}
+                      id="disclaimer-check-box"
                       onChange={() => {
                         setAppDesignProperties(prevState => {
                           return {
@@ -684,7 +682,10 @@ const AppDesign: React.FunctionComponent<
                       ></CircularProgress>
                     </div>
                   ) : (
-                    <SaveButton onClick={() => onSave()} />
+                    <SaveButton
+                      onClick={() => onSave()}
+                      id="save-button-study-builder-1"
+                    />
                   )}
                 </Box>
               </Subsection>
@@ -1085,7 +1086,10 @@ const AppDesign: React.FunctionComponent<
                     <CircularProgress color="primary" size={25} />
                   </div>
                 ) : (
-                  <SaveButton onClick={() => onSave()} />
+                  <SaveButton
+                    onClick={() => onSave()}
+                    id="save-button-study-builder-2"
+                  />
                 )}
               </Box>
             </Subsection>

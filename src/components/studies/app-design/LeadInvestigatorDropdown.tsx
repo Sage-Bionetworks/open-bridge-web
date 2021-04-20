@@ -139,19 +139,17 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
             horizontal: 'center',
           },
         }}
+        displayEmpty
       >
-        <MenuItem
-          value="Select principle investigator"
-          disabled
-          style={{ display: 'none' }}
-        >
-          Select pricinple investigator
+        <MenuItem value="" disabled style={{ display: 'none' }}>
+          Select Principle Investigator
         </MenuItem>
         {leadInvestigatorOptions.map((el, index) => (
           <MenuItem
             className={clsx(classes.principleInvestigatorOption)}
             key={index}
             value={el.name}
+            id={`investigator-${index}`}
           >
             {el.name}
           </MenuItem>

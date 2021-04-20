@@ -128,4 +128,5 @@ export {
   UserSessionDataProvider,
   useUserSessionDataState,
   useUserSessionDataDispatch,
+  UserSessionDataStateContext,
 }
