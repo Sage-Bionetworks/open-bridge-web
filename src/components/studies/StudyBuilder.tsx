@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   mainAreaWider: {
     width: `${280 * 4 + 16 * 3}px`,
     [theme.breakpoints.down('md')]: {
-      width: `760px`,
+      width: `768px`,
     },
   },
   mainAreaWide: {
