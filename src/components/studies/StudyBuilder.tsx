@@ -9,7 +9,7 @@ import { useUserSessionDataState } from '../../helpers/AuthContext'
 import {
   StudyInfoData,
   useStudyInfoDataDispatch,
-  useStudyInfoDataState,
+  useStudyInfoDataState
 } from '../../helpers/StudyInfoContext'
 import { setBodyClass } from '../../helpers/utility'
 import AssessmentService from '../../services/assessment.service'
@@ -20,7 +20,7 @@ import {
   BackgroundRecorders,
   StringDictionary,
   Study,
-  StudyAppDesign,
+  StudyAppDesign
 } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
