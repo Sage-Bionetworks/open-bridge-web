@@ -83,6 +83,10 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     alignItems: 'center',
     backgroundColor: '#FAFAFA',
     height: '90vh',
+    minHeight: '700px',
+    [theme.breakpoints.down('md')]: {
+      height: '100vh',
+    },
   },
 }))
 

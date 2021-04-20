@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
       maxWidth: '200px',
       marginRight: '15%',
       marginLeft: theme.spacing(-1.5),
+      minWidth: '100px',
     },
     container: {
       width: '40%',
