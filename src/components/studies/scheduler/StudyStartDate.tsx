@@ -42,6 +42,10 @@ const useStyles = makeStyles(theme =>
       flexDirection: 'row',
       alignItems: 'flex-start',
     },
+    radioGroup: {
+      maxWidth: '60%',
+      marginLeft: '10%',
+    },
   }),
 )
 
@@ -54,7 +58,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
   const options: StartEventId[] = ['activities_retrieved', 'study_start_date']
   const classes = useStyles()
   const label = isIntro ? (
-    <Box marginRight="24px" maxWidth="225px">
+    <Box width="190px">
       <strong className={classes.headerText}>
         How would you define Day 1 of your study ?
       </strong>
@@ -80,7 +84,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
         name="day1"
         value={startEventId}
         onChange={e => onChange(e.target.value as StartEventId)}
-        style={{ maxWidth: '60%' }}
+        className={classes.radioGroup}
       >
         <FormControlLabel
           value={options[0]}

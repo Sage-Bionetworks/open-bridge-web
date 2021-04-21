@@ -4,6 +4,7 @@ import {
   FormControlLabel,
   Theme,
   Divider,
+  Container,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
@@ -22,13 +23,12 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: '18px',
       fontStyle: 'normal',
       fontWeight: 600,
-      maxWidth: '200px',
-      marginRight: '15%',
-      marginLeft: theme.spacing(-1.5),
-      minWidth: '110px',
+      marginRight: '10%',
+      marginLeft: theme.spacing(-2),
+      textAlign: 'left',
+      width: '190px',
     },
     container: {
-      width: '40%',
       backgroundColor: '#FAFAFA',
       display: 'flex',
       flexDirection: 'column',
@@ -67,7 +67,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
   >(undefined)
 
   return (
-    <div className={classes.container}>
+    <Container maxWidth="sm" className={classes.container}>
       <FormControlLabel
         classes={{ label: classes.labelDuration }}
         label="How long will the study run for?"
@@ -107,7 +107,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
       >
         Continue
       </Button>
-    </div>
+    </Container>
   )
 }
 
