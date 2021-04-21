@@ -83,7 +83,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
 
   firstColumn: {
-    width: theme.spacing(21)
+    width: theme.spacing(21),
+    flexShrink: 0
   },
   heading: {
     padding: theme.spacing(0, 6),
