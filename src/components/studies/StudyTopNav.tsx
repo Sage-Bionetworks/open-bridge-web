@@ -1,4 +1,10 @@
-import { Box, Hidden, IconButton, LinearProgress } from '@material-ui/core'
+import {
+  Box,
+  Drawer,
+  Hidden,
+  IconButton,
+  LinearProgress
+} from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
@@ -31,27 +37,10 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'space-between',
     paddingTop: theme.spacing(8),
     '&:last-child': {
-      paddingRight: 0
-    }
-  },
-  toolbarLink: {
-    padding: theme.spacing(0, 2, 2, 2),
-    flexGrow: 1,
-    fontFamily: latoFont,
-    fontSize: '15px',
-    
-
-    textDecoration: 'none',
-    color: 'inherit',
-    flexShrink: 0,
-
-    '&:first-child': {
-      paddingLeft: theme.spacing(.5)
+      paddingRight: 0,
     },
-    '&:last-child': {
-      paddingRight: theme.spacing(.5)
-    }
   },
+
   selectedLink: {
     borderBottom: '2px solid black',
     paddingBottom: theme.spacing(2),
@@ -64,6 +53,46 @@ const useStyles = makeStyles(theme => ({
       content: '',
       display: 'table',
       clear: 'both',
+    },
+  },
+  drawer: {
+    width: '250px',
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    width: '251px',
+
+    '& $toolbarLink': {
+      flextGroup: 0,
+      padding: theme.spacing(1, 2),
+      fontStyle: 'normal',
+      textTransform: 'uppercase',
+    },
+
+    '& $toolbarLink:first-child': {
+      paddingLeft: '8px',
+    },
+
+    '& $selectedLink': {
+      border: 'none',
+      fontWeight: 'bolder',
+    },
+  },
+  toolbarLink: {
+    padding: theme.spacing(0, 2, 2, 2),
+    flexGrow: 1,
+    fontFamily: latoFont,
+    fontSize: '15px',
+
+    textDecoration: 'none',
+    color: 'inherit',
+    flexShrink: 0,
+
+    '&:first-child': {
+      paddingLeft: theme.spacing(0.5),
+    },
+    '&:last-child': {
+      paddingRight: theme.spacing(0.5),
     },
   },
 }))
@@ -161,6 +190,59 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
           </Toolbar>
         </Box>
       </Hidden>
+      <nav className={classes.drawer}>
+        <Drawer
+          variant="temporary"
+          anchor="right"
+          open={isMobileOpen}
+          onClose={() => setIsMobileOpen(false)}
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
+        >
+          <HideWhen hideWhen={studyData.study === undefined}>
+            <span className={classes.toolbarLink}>{studyData.study?.name}</span>
+
+            <LinearProgress style={{ width: '50px' }} />
+          </HideWhen>
+          <NavLink to={'/'} key="home" className={classes.toolbarLink}>
+            Home
+          </NavLink>
+          <NavLink
+            to={'/studies'}
+            key="home"
+            className={classes.toolbarLink}
+            style={{ paddingBottom: '0' }}
+          >
+            Studies
+          </NavLink>
+
+          {links
+            .filter(section => section.name)
+            .map(section => (
+              <NavLink
+                to={section.path.replace(':id', studyId)}
+                key={section.path}
+                className={classes.toolbarLink}
+                activeClassName={classes.selectedLink}
+              >
+                {section.name}
+              </NavLink>
+            ))}
+          <NavLink
+            to={'/studies/:id/access-settings'.replace(':id', studyId)}
+            key={'path-to-access-settings'}
+            className={classes.toolbarLink}
+            activeClassName={classes.selectedLink}
+            style={{ display: 'flex' }}
+          >
+            Access settings
+          </NavLink>
+        </Drawer>
+      </nav>
     </Box>
   )
 }
