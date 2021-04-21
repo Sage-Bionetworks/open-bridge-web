@@ -315,6 +315,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                     {section === 'scheduler' && (
                       <Scheduler
                         id={id}
+                        token={token!}
                         schedule={builderInfo.schedule}
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
