@@ -77,12 +77,10 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     },
   },
   introInfoContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    textAlign: 'center',
     backgroundColor: '#FAFAFA',
-    height: '90vh',
+    height: '100vh',
+    paddingTop: theme.spacing(18.5),
   },
 }))
 
