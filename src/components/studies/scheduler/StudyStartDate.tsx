@@ -42,10 +42,6 @@ const useStyles = makeStyles(theme =>
       flexDirection: 'row',
       alignItems: 'flex-start',
     },
-    radioGroup: {
-      maxWidth: '60%',
-      marginLeft: '10%',
-    },
   }),
 )
 
@@ -84,7 +80,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
         name="day1"
         value={startEventId}
         onChange={e => onChange(e.target.value as StartEventId)}
-        className={classes.radioGroup}
+        style={{ maxWidth: '60%', marginLeft: isIntro ? '10%' : '' }}
       >
         <FormControlLabel
           value={options[0]}
