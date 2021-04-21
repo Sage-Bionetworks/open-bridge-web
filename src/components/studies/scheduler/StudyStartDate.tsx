@@ -9,6 +9,7 @@ import {
 import React from 'react'
 import { StartEventId } from '../../../types/scheduling'
 import SchedulingFormSection from './SchedulingFormSection'
+import clsx from 'clsx'
 
 export interface StudyStartDateProps {
   isIntro?: boolean
@@ -41,6 +42,14 @@ const useStyles = makeStyles(theme =>
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'flex-start',
+    },
+    notInIntroRadioGroup: {
+      maxWidth: '60%',
+    },
+    inIntroRadioGroup: {
+      width: '190px',
+      minWidth: '190px',
+      marginLeft: '74px',
     },
   }),
 )
@@ -80,11 +89,10 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
         name="day1"
         value={startEventId}
         onChange={e => onChange(e.target.value as StartEventId)}
-        style={{
-          width: '190px',
-          minWidth: '190px',
-          marginLeft: isIntro ? '74px' : '',
-        }}
+        className={clsx(
+          isIntro && classes.inIntroRadioGroup,
+          !isIntro && classes.notInIntroRadioGroup,
+        )}
       >
         <FormControlLabel
           value={options[0]}
