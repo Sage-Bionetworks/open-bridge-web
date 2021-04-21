@@ -54,7 +54,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
   const options: StartEventId[] = ['activities_retrieved', 'study_start_date']
   const classes = useStyles()
   const label = isIntro ? (
-    <Box width="190px">
+    <Box maxWidth="190px">
       <strong className={classes.headerText}>
         How would you define Day 1 of your study ?
       </strong>
@@ -80,7 +80,11 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
         name="day1"
         value={startEventId}
         onChange={e => onChange(e.target.value as StartEventId)}
-        style={{ maxWidth: '60%', marginLeft: isIntro ? '10%' : '' }}
+        style={{
+          width: '190px',
+          minWidth: '190px',
+          marginLeft: isIntro ? '74px' : '',
+        }}
       >
         <FormControlLabel
           value={options[0]}

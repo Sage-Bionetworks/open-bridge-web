@@ -21,9 +21,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
       fontFamily: poppinsFont,
       fontSize: '18px',
-      fontStyle: 'normal',
       fontWeight: 600,
-      marginRight: '10%',
+      marginRight: theme.spacing(9.25),
       marginLeft: theme.spacing(-2),
       textAlign: 'left',
       width: '190px',
@@ -90,10 +89,6 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
         isIntro={true}
         onChange={(pseudonym: StartEventId) => setstartEventId(pseudonym)}
         style={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-evenly',
-          alignItems: 'center',
           width: '90%',
         }}
       />

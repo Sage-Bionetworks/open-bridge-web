@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     textAlign: 'center',
     backgroundColor: '#FAFAFA',
     height: '100vh',
-    paddingTop: '12vh',
+    paddingTop: theme.spacing(18.5),
   },
 }))
 
