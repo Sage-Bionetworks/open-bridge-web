@@ -32,16 +32,17 @@ const useStyles = makeStyles(theme => ({
     paddingRight: theme.spacing(4),
     lineHeight: '27px',
     width: theme.spacing(28),
-    [theme.breakpoints.down('md')]: {
-      width: theme.spacing(12.5),
-    },
+ 
     fontFamily: poppinsFont,
     fontSize: '18px',
     fontStyle: 'normal',
     fontWeight: 600,
     flexShrink: 0,
-
     textAlign: 'left',
+    [theme.breakpoints.down('md')]: {
+      fontSize: '16px',
+      width: theme.spacing(10),
+    },
 
     '&.small': {
       paddingRight: theme.spacing(2),
@@ -49,7 +50,12 @@ const useStyles = makeStyles(theme => ({
       lineHeight: 1.4,
       fontWeight: 400,
       fontSize: '14px',
-      fontFamily: latoFont
+      fontFamily: latoFont,
+      [theme.breakpoints.down('md')]: {
+      '&.collapseLabelSmall': {
+        width: 0
+      }
+    }
 
     },
   },
@@ -62,7 +68,8 @@ export interface SchedulingFormSectionProps {
   style?: React.CSSProperties
   variant?: 'small'
   border?: boolean
-  isHideLabel?: boolean
+  isHideLabel?: boolean,
+  isCollapseLabelSmall?: boolean
 }
 
 const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps> = ({
@@ -72,6 +79,7 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
   children,
   isHideLabel,
   altLabel,
+  isCollapseLabelSmall,
   border = true,
 }: SchedulingFormSectionProps) => {
   const classes = useStyles()
@@ -97,6 +105,7 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
             className={clsx(
               typeof label === 'string' && classes.label,
               variant === 'small' && 'small',
+              isCollapseLabelSmall && 'collapseLabelSmall'
             )}
           >
             {!isHideLabel? label: ''}

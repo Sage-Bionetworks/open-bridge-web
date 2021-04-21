@@ -135,8 +135,10 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
       <SchedulingFormSection
         label={''}
         variant="small"
+        isCollapseLabelSmall={true}
         border={false}
         style={{ padding: '0 16px' }}
+
       >
         <FormControlLabel
         style={{alignItems: 'flex-start'}}
