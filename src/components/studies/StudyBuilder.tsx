@@ -79,7 +79,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   introInfoContainer: {
     textAlign: 'center',
     backgroundColor: '#FAFAFA',
-    height: '100vh',
+    height: 'calc(100vh-110px)',
     paddingTop: theme.spacing(18.5),
   },
 }))
