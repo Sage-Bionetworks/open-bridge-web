@@ -58,7 +58,7 @@ export interface OrgUser extends LoggedInUserData {
 
 /* *** Assessment ********************************/
 export type ResourceFormat = 'image/png'
-export type AssessmentCategory = 'screenshot'|'icon'
+export type AssessmentCategory = 'screenshot' | 'icon'
 export type AssessmentResource = {
   category: AssessmentCategory
   deleted: boolean
@@ -71,7 +71,6 @@ export type AssessmentResource = {
   upToDate: boolean
   url: string
   version: number
-
 }
 export type Assessment = {
   createdOn: string
@@ -103,6 +102,8 @@ export type Study = {
   status: StudyStatus
   version: number
   name: string
+  // this is the body text
+  details?: string
   subtitle?: string
   description?: string
   scheduleGuid?: string
@@ -111,19 +112,25 @@ export type Study = {
     generateIds?: boolean
     appDesign?: StudyAppDesign
     backgroundRecorders?: BackgroundRecorders
+    welcomeScreenData?: string
   }
-
   createdOn?: Date
   modifiedOn?: Date
+  studyLogoUrl?: string
+  colorScheme?: string
+  contact?: {
+    name: string
+    position: string
+    phone: string
+    email: string
+  }
 }
 
-export type BackgroundRecorders ={
-  accelGyro: boolean,
-  backgroundNoise: boolean,
-  weatherPolution: boolean,
+export type BackgroundRecorders = {
+  accelGyro: boolean
+  backgroundNoise: boolean
+  weatherPolution: boolean
   passiveGaitDisplacement: boolean
-
-
 }
 
 export type StudyAppDesign = {
