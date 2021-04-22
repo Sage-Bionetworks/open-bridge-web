@@ -33,6 +33,7 @@ const renderScheduler = (
       <Scheduler
         id="123"
         schedule={sched}
+        token={'123'}
         hasObjectChanged={false}
         saveLoader={false}
         onSave={() => saveStudyScheduleMock}
