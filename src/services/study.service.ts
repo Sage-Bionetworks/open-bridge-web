@@ -18,6 +18,7 @@ const StudyService = {
   createStudySchedule,
   createNewStudySchedule,
   getStudySchedule,
+  getStudyScheduleTimeline,
   saveStudySchedule,
   createEmptyStudySession,
 }
@@ -198,8 +199,20 @@ async function getStudySchedule(
     {},
     token,
   )
-
   return schedule ? addAssessmentResourcesToSchedule(schedule.data) : undefined
+}
+
+async function getStudyScheduleTimeline(
+  scheduleId: string,
+  token: string,
+): Promise<any | undefined> {
+  const result = await callEndpoint<any>(
+    constants.endpoints.scheduleTimeline.replace(':id', scheduleId),
+    'GET',
+    {},
+    token,
+  )
+  return result
 }
 
 export default StudyService

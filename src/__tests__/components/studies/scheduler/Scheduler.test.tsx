@@ -1,6 +1,5 @@
 import { Button } from '@material-ui/core'
-import { fireEvent, render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, screen } from '@testing-library/react'
 import { createMemoryHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router-dom'
@@ -34,6 +33,7 @@ const renderScheduler = (
       <Scheduler
         id="123"
         schedule={sched}
+        token={'123'}
         hasObjectChanged={false}
         saveLoader={false}
         onSave={() => saveStudyScheduleMock}
@@ -52,6 +52,7 @@ beforeEach(() => {
   onUpdateMock.mockReset()
 })
 
+/* AG this functionality has been moved out of this control
 test('when there is no study duration or no start event id  - only show top section with continue button', async () => {
   let { container, debug, rerender } = renderScheduler({
     duration: undefined,
@@ -79,6 +80,7 @@ test('when there is no study duration or no start event id  - only show top sect
     expect.objectContaining({ duration: 'P2D' }),
   )
 })
+*/
 
 test('when there is initial data it should work', async () => {
   const sched = {

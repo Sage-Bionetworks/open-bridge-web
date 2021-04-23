@@ -8,7 +8,7 @@ import {
   Grid,
   Switch,
   Tab,
-  Tabs,
+  Tabs
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { FunctionComponent } from 'react'
@@ -23,7 +23,7 @@ import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
-  useStudyInfoDataState,
+  useStudyInfoDataState
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
 import { theme } from '../../../style/theme'
@@ -31,19 +31,19 @@ import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
-  StringDictionary,
+  StringDictionary
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import HelpBox from '../../widgets/HelpBox'
 import {
   DialogButtonPrimary,
-  DialogButtonSecondary,
+  DialogButtonSecondary
 } from '../../widgets/StyledComponents'
 import AddParticipants from './AddParticipants'
 import DeleteDialog from './DeleteDialogContents'
 import ParticipantDownload, {
-  ParticipantDownloadType,
+  ParticipantDownloadType
 } from './ParticipantDownload'
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
@@ -436,7 +436,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             </HelpBox>
           )}
 
-          {!data?.items.length && !isUserSearchingForParticipant && isEdit && (
+
+          {(!data?.items.length && !isUserSearchingForParticipant && isEdit && (status === 'RESOLVED')) && (
+
             <HelpBox
               topOffset={340}
               leftOffset={250}

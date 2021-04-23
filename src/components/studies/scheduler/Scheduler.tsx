@@ -4,12 +4,14 @@ import {
   createStyles,
   FormControlLabel,
   makeStyles,
-  Theme,
+  Theme
 } from '@material-ui/core'
 import SaveIcon from '@material-ui/icons/Save'
 import _ from 'lodash'
 import React, { FunctionComponent } from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
+import { useAsync } from '../../../helpers/AsyncHook'
+import StudyService from '../../../services/study.service'
 import { poppinsFont } from '../../../style/theme'
 import {
   DWsEnum,
@@ -17,7 +19,7 @@ import {
   Schedule,
   SessionSchedule,
   StartEventId,
-  StudySession,
+  StudySession
 } from '../../../types/scheduling'
 import { StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
@@ -28,7 +30,7 @@ import Duration from './Duration'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
-  SessionScheduleAction,
+  SessionScheduleAction
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import TimelinePlot from './TimelinePlot'
@@ -69,6 +71,7 @@ const useStyles = makeStyles((theme: Theme) =>
 type SchedulerProps = {
   id: string
   schedule: Schedule
+  token: string
   onSave: Function
 }
 
@@ -81,11 +84,20 @@ const Scheduler: FunctionComponent<
   schedule: _schedule,
   onSave,
   children,
+  token,
 }: SchedulerProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
 
   const [schedule, setSchedule] = React.useState({ ..._schedule })
-  //console.log('scheduler:',_schedule)
+
+  const { data: timeline, status, error, run, setData } = useAsync<any>({
+    status: 'PENDING',
+    data: [],
+  })
+
+  React.useEffect(() => {
+    return run(StudyService.getStudyScheduleTimeline(schedule.guid, token!))
+  }, [run, schedule, token])
 
   const getStartEventIdFromSchedule = (
     schedule: Schedule,
@@ -154,6 +166,7 @@ const Scheduler: FunctionComponent<
       </NavigationPrompt>
 
       <Box textAlign="left" key="content">
+        {/*<ObjectDebug data={timeline} label=""></ObjectDebug>*/}
         <div className={classes.scheduleHeader} key="intro">
           <FormControlLabel
             classes={{ label: classes.labelDuration }}

@@ -118,6 +118,7 @@ export default {
     requestResetPassword: '/v3/auth/requestResetPassword',
     requestInfo: '/v5/studies/:studyId/participants/:userId/requestInfo',
     schedule: '/v5/schedules/:id',
+    scheduleTimeline: '/v5/schedules/:id/timeline',
     selfInfo: '/v3/participants/self',
     signIn: '/v3/auth/signIn',
     signOut: '/v3/auth/signOut',

@@ -9,6 +9,7 @@ import {
 import React from 'react'
 import { StartEventId } from '../../../types/scheduling'
 import SchedulingFormSection from './SchedulingFormSection'
+import clsx from 'clsx'
 
 export interface StudyStartDateProps {
   isIntro?: boolean
@@ -42,6 +43,14 @@ const useStyles = makeStyles(theme =>
       flexDirection: 'row',
       alignItems: 'flex-start',
     },
+    notInIntroRadioGroup: {
+      maxWidth: '60%',
+    },
+    inIntroRadioGroup: {
+      width: '190px',
+      minWidth: '190px',
+      marginLeft: '74px',
+    },
   }),
 )
 
@@ -54,7 +63,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
   const options: StartEventId[] = ['activities_retrieved', 'study_start_date']
   const classes = useStyles()
   const label = isIntro ? (
-    <Box marginRight="24px" maxWidth="225px">
+    <Box maxWidth="190px">
       <strong className={classes.headerText}>
         How would you define Day 1 of your study ?
       </strong>
@@ -80,7 +89,10 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
         name="day1"
         value={startEventId}
         onChange={e => onChange(e.target.value as StartEventId)}
-        style={{ maxWidth: '60%' }}
+        className={clsx(
+          isIntro && classes.inIntroRadioGroup,
+          !isIntro && classes.notInIntroRadioGroup,
+        )}
       >
         <FormControlLabel
           value={options[0]}

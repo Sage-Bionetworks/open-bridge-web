@@ -45,7 +45,8 @@ const subtitles: StringDictionary<string> = {
 
   scheduler: 'Schedule Sessions',
   'session-creator': 'Create Sessions',
-  'enrollment-type-selector ': 'Participant Study Enrollment',
+  branding: 'Customize your App',
+  'enrollment-type-selector': 'Participant Study Enrollment',
   'passive-features': 'App Background Recorders ',
 }
 
@@ -58,6 +59,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   mainArea: {
     margin: '0 auto',
     minHeight: '100px',
+
     //backgroundColor: theme.palette.background.default,
   },
   mainAreaNormal: {
@@ -70,7 +72,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   mainAreaWider: {
     width: `${280 * 4 + 16 * 3}px`,
     [theme.breakpoints.down('md')]: {
-      width: `760px`,
+      width: `768px`,
     },
   },
   mainAreaWide: {
@@ -80,12 +82,10 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     },
   },
   introInfoContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    textAlign: 'center',
     backgroundColor: '#FAFAFA',
-    height: '90vh',
+    height: 'calc(100vh-110px)',
+    paddingTop: theme.spacing(18.5),
   },
 }))
 
@@ -283,8 +283,20 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
   return (
     <>
-      <Box bgcolor="white" pt={9} pb={2} pl={open ? 29 : 15}>
-        <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>
+      <Box display="flex" bgcolor="white">
+        <Box width={open ? 210 : 56} flexShrink={0}></Box>
+        <Box
+          className={clsx(classes.mainArea, {
+            [classes.mainAreaNormal]: open,
+            [classes.mainAreaWider]:
+              open && ['branding', 'scheduler'].includes(section),
+            [classes.mainAreaWide]: !open,
+          })}
+          pt={8}
+          pl={2}
+        >
+          <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>
+        </Box>
       </Box>
       <span style={{ fontSize: '9px', position: 'absolute', right: '0' }}>
         {' '}
@@ -337,6 +349,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                     {section === 'scheduler' && (
                       <Scheduler
                         id={id}
+                        token={token!}
                         schedule={builderInfo.schedule}
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
