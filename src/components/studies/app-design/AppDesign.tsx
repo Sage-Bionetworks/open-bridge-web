@@ -8,6 +8,7 @@ import {
   Paper,
   Switch,
   Checkbox,
+  FormHelperText,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import ReactColorPicker from '@super-effective/react-color-picker'
@@ -41,7 +42,7 @@ import DefaultLogo from '../../../assets/logo_mtb.svg'
 import clsx from 'clsx'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
-import { isInvalidPhone, makePhone } from '../../../helpers/utility'
+import { isInvalidPhone } from '../../../helpers/utility'
 
 const imgHeight = 70
 
@@ -443,6 +444,11 @@ const AppDesign: React.FunctionComponent<
     funder: undefined,
   })
 
+  const [phoneNumberErrorState, setPhoneNumberErrorState] = React.useState({
+    generalContactPhoneNumber: false,
+    irbPhoneNumber: false,
+  })
+
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     event.persist()
     if (!event.target.files) {
@@ -451,6 +457,19 @@ const AppDesign: React.FunctionComponent<
     const file = event.target.files[0]
     const previewForImage = getPreviewForImage(file)
     setPreviewFile(previewForImage)
+  }
+
+  const saveInfo = () => {
+    if (
+      phoneNumberErrorState.generalContactPhoneNumber ||
+      phoneNumberErrorState.irbPhoneNumber
+    ) {
+      alert(
+        'Please make sure that phone numbers are submitted correctly before saving',
+      )
+      return
+    }
+    onSave()
   }
 
   const updateAppDesignInfo = (
@@ -471,7 +490,6 @@ const AppDesign: React.FunctionComponent<
   )
 
   useEffect(() => {
-    console.log('the contacts array is', contacts)
     const leadPrincipleInvestigatorContact = contacts.find(
       el => el.role === 'principal_investigator',
     )
@@ -801,7 +819,7 @@ const AppDesign: React.FunctionComponent<
                     </div>
                   ) : (
                     <SaveButton
-                      onClick={() => onSave()}
+                      onClick={() => saveInfo()}
                       id="save-button-study-builder-1"
                     />
                   )}
@@ -1094,7 +1112,11 @@ const AppDesign: React.FunctionComponent<
                     }}
                   />
                 </FormControl>
-                <FormControl>
+                <FormControl
+                  className={clsx(
+                    phoneNumberErrorState.generalContactPhoneNumber && 'error',
+                  )}
+                >
                   <SimpleTextLabel htmlFor="phone-number-contact-input">
                     Phone Number*
                   </SimpleTextLabel>
@@ -1117,7 +1139,19 @@ const AppDesign: React.FunctionComponent<
                         contactLeadInfo: newContactLead,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo('UPDATE_STUDY_CONTACTS')}
+                    onBlur={() => {
+                      const isInvalidPhoneNumber = isInvalidPhone(
+                        appDesignProperties.contactLeadInfo?.phone?.number ||
+                          '',
+                      )
+                      setPhoneNumberErrorState(prevState => {
+                        return {
+                          ...prevState,
+                          generalContactPhoneNumber: isInvalidPhoneNumber,
+                        }
+                      })
+                      updateAppDesignInfo('UPDATE_STUDY_CONTACTS')
+                    }}
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -1125,6 +1159,11 @@ const AppDesign: React.FunctionComponent<
                       style: SimpleTextInputStyles,
                     }}
                   />
+                  {phoneNumberErrorState.generalContactPhoneNumber && (
+                    <FormHelperText id="general-contact-phone-text">
+                      phone should be in the format: xxx-xxx-xxxx
+                    </FormHelperText>
+                  )}
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="contact-email-input">
@@ -1182,12 +1221,16 @@ const AppDesign: React.FunctionComponent<
                     }}
                   />
                 </FormControl>
-                <FormControl>
+                <FormControl
+                  className={clsx(
+                    phoneNumberErrorState.irbPhoneNumber && 'error',
+                  )}
+                >
                   <SimpleTextLabel htmlFor="ethics-phone-number-input">
                     Phone Number*
                   </SimpleTextLabel>
                   <SimpleTextInput
-                    className={classes.informationRowStyle}
+                    className={clsx(classes.informationRowStyle, 'error')}
                     id="ethics-phone-number-input"
                     placeholder="xxx-xxx-xxxx"
                     value={
@@ -1205,7 +1248,19 @@ const AppDesign: React.FunctionComponent<
                         ethicsBoardInfo: newEthicsBoard,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo('UPDATE_STUDY_CONTACTS')}
+                    onBlur={() => {
+                      const isInvalidPhoneNumber = isInvalidPhone(
+                        appDesignProperties.ethicsBoardInfo?.phone?.number ||
+                          '',
+                      )
+                      setPhoneNumberErrorState(prevState => {
+                        return {
+                          ...prevState,
+                          irbPhoneNumber: isInvalidPhoneNumber,
+                        }
+                      })
+                      updateAppDesignInfo('UPDATE_STUDY_CONTACTS')
+                    }}
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -1213,6 +1268,11 @@ const AppDesign: React.FunctionComponent<
                       style: SimpleTextInputStyles,
                     }}
                   />
+                  {phoneNumberErrorState.irbPhoneNumber && (
+                    <FormHelperText id="ethics-phone-text">
+                      phone should be in the format: xxx-xxx-xxxx
+                    </FormHelperText>
+                  )}
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="ethics-email-input">
@@ -1248,7 +1308,7 @@ const AppDesign: React.FunctionComponent<
                   </div>
                 ) : (
                   <SaveButton
-                    onClick={() => onSave()}
+                    onClick={() => saveInfo()}
                     id="save-button-study-builder-2"
                   />
                 )}
@@ -1311,7 +1371,8 @@ const AppDesign: React.FunctionComponent<
               <div className={classes.summaryRoles}>
                 <StudySummaryRoles
                   type={
-                    appDesignProperties.contactLeadInfo?.role || 'Role in study'
+                    appDesignProperties.contactLeadInfo?.position ||
+                    'Role in study'
                   }
                   name={
                     appDesignProperties.contactLeadInfo?.name || 'Contact lead'

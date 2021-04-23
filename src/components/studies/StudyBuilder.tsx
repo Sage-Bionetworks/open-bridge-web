@@ -37,6 +37,7 @@ import Scheduler from './scheduler/Scheduler'
 import { StudySection } from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
+import { makePhone } from '../../helpers/utility'
 
 const subtitles: StringDictionary<string> = {
   description: 'Description',
@@ -164,6 +165,23 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         setHasObjectChanged(false)
       },
     )*/
+
+    // const study = { ...builderInfo.study }
+    // const irbContact = study.contacts?.find(
+    //   el => el.role === 'irb',
+    // )
+    // // const newIRBContact = { ...irbContact }
+    // irbContact!.phone = makePhone(
+    //   irbContact?.phone?.number || '',
+    // )
+    // const generalContact = study.contacts?.find(
+    //   el => el.role === 'study_support',
+    // )
+    // // const newGeneralContact = { ...generalContact }
+    // generalContact!.phone = makePhone(
+    //   generalContact?.phone?.number || '',
+    // )
+
     try {
       const newVersion = await StudyService.updateStudy(study, token!)
       const updatedStudy = { ...study, version: newVersion }
