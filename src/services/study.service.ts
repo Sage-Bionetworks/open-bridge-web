@@ -4,7 +4,7 @@ import {
   AssessmentWindow,
   Schedule,
   StartEventId,
-  StudySession
+  StudySession,
 } from '../types/scheduling'
 import { Study } from '../types/types'
 import AssessmentService from './assessment.service'
@@ -109,19 +109,11 @@ async function createNewStudySchedule(
 }
 
 async function updateStudy(study: Study, token: string): Promise<number> {
-  const payload = {
-    clientData: study.clientData,
-    name: study.name,
-    identifier: study.identifier,
-    version: study.version,
-    scheduleGuid: study.scheduleGuid,
-  }
-
   const result = await callEndpoint<{ version: number }>(
     constants.endpoints.study.replace(':id', study.identifier),
     'POST', // once we add things to the study -- we can change this to actual object
     //  { identifier: study.identifier, version: study.version, name: study.name },
-    payload,
+    study,
     token,
   )
   return result.data.version

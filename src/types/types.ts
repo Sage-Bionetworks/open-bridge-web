@@ -101,29 +101,60 @@ export type Study = {
   identifier: string
   status: StudyStatus
   version: number
+  // name of the study
   name: string
   // this is the body text
   details?: string
+
   subtitle?: string
   description?: string
   scheduleGuid?: string
+
+  studyLogoUrl?: string
+  colorScheme?: string
+  irbProtocolId?: string
+  contacts?: Contact[]
   clientData: {
     enrollmentType?: EnrollmentType
     generateIds?: boolean
-    appDesign?: StudyAppDesign
     backgroundRecorders?: BackgroundRecorders
-    welcomeScreenData?: string
+    welcomeScreenData?: WelcomeScreenData
   }
   createdOn?: Date
   modifiedOn?: Date
-  studyLogoUrl?: string
-  colorScheme?: string
-  contact?: {
-    name: string
-    position: string
-    phone: string
-    email: string
-  }
+}
+
+export type WelcomeScreenData = {
+  welcomeScreenHeader: string
+  welcomeScreenBody: string
+  welcomeScreenFromText: string
+  welcomeScreenSalutation: string
+  useOptionalDisclaimer: boolean
+  isUsingDefaultMessage: boolean
+}
+
+export type Contact = {
+  name: string
+  role: string
+  position?: string
+  affiliation?: string
+  address?: string
+  email?: string
+  phone?: Phone
+  jurisdiction?: string
+}
+
+export type StudyAppDesign = {
+  logo: string
+  backgroundColor: string
+  welcomeScreenInfo: WelcomeScreenData
+  studyTitle: string
+  studySummaryBody: string
+  irbProtocolId: string
+  leadPrincipleInvestigatorInfo: Contact | undefined
+  contactLeadInfo: Contact | undefined
+  ethicsBoardInfo: Contact | undefined
+  funder: Contact | undefined
 }
 
 export type BackgroundRecorders = {
@@ -131,30 +162,6 @@ export type BackgroundRecorders = {
   backgroundNoise: boolean
   weatherPolution: boolean
   passiveGaitDisplacement: boolean
-}
-
-export type StudyAppDesign = {
-  logo: string
-  backgroundColor: string
-  welcomeScreenHeader: string
-  welcomeScreenBody: string
-  welcomeScreenFromText: string
-  welcomeScreenSalutation: string
-  studyTitle: string
-  studySummaryBody: string
-  leadPrincipleInvestigator: string
-  institution: string
-  funder: string
-  IRBApprovalNumber: string
-  contactLead: string
-  contactLeadRoleInStudy: string
-  contactLeadPhoneNumber: string
-  contactLeadEmail: string
-  nameOfEthicsBoard: string
-  ethicsBoardPhoneNumber: string
-  ethicsBoardEmail: string
-  useOptionalDisclaimer: boolean
-  isUsingDefaultMessage: boolean
 }
 
 export type StudyBuilderInfo = {

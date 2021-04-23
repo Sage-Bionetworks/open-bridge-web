@@ -9,7 +9,7 @@ import { useUserSessionDataState } from '../../helpers/AuthContext'
 import {
   StudyInfoData,
   useStudyInfoDataDispatch,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
 import { setBodyClass } from '../../helpers/utility'
 import AssessmentService from '../../services/assessment.service'
@@ -20,12 +20,14 @@ import {
   BackgroundRecorders,
   StringDictionary,
   Study,
-  StudyAppDesign
+  StudyAppDesign,
+  WelcomeScreenData,
+  Contact,
 } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
-import AppDesign from './app-design/AppDesign'
+import AppDesign, { PossibleStudyUpdates } from './app-design/AppDesign'
 import EnrollmentTypeSelector from './enrollment-type-selector/EnrollmentTypeSelector'
 import Launch from './launch/Launch'
 import NavButtons from './NavButtons'
@@ -169,7 +171,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         ...builderInfo,
         study: updatedStudy,
       })
-
       setHasObjectChanged(false)
       return updatedStudy
     } catch (e) {
@@ -261,6 +262,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       </Box>
     )
   }
+
   return (
     <>
       <Box bgcolor="white" pt={9} pb={2} pl={open ? 29 : 15}>
@@ -378,21 +380,74 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
                         id={id}
-                        currentAppDesign={
-                          builderInfo.study.clientData?.appDesign ||
-                          ({} as StudyAppDesign)
+                        irbProtocolId={builderInfo.study.irbProtocolId || ''}
+                        contacts={
+                          builderInfo.study.contacts || ([] as Contact[])
                         }
+                        welcomeScreenInfo={
+                          builderInfo.study.clientData.welcomeScreenData ||
+                          ({
+                            welcomeScreenBody: '',
+                            welcomeScreenFromText: '',
+                            welcomeScreenSalutation: '',
+                            welcomeScreenHeader: '',
+                            isUsingDefaultMessage: false,
+                            useOptionalDisclaimer: false,
+                          } as WelcomeScreenData)
+                        }
+                        studyName={builderInfo.study.name}
+                        studyDetails={builderInfo.study.details || ''}
+                        studyLogoUrl={builderInfo.study.studyLogoUrl || ''}
+                        colorScheme={builderInfo.study.colorScheme || ''}
                         onSave={() => {
                           saveStudy(builderInfo.study)
                         }}
-                        onUpdate={(data: StudyAppDesign) => {
+                        onUpdate={(
+                          data: StudyAppDesign,
+                          updateType: PossibleStudyUpdates,
+                        ) => {
                           setHasObjectChanged(true)
                           const updatedStudy = { ...builderInfo.study }
-                          updatedStudy.clientData = {
-                            ...(updatedStudy.clientData || {}),
-                            appDesign: data,
+                          switch (updateType) {
+                            case 'UPDATE_STUDY_NAME':
+                              updatedStudy.name = data.studyTitle
+                              break
+                            case 'UPDATE_STUDY_COLOR':
+                              updatedStudy.colorScheme = data.backgroundColor
+                              break
+                            case 'UPDATE_STUDY_CONTACTS':
+                              const contacts: Contact[] = []
+                              if (data.ethicsBoardInfo) {
+                                contacts.push(data.ethicsBoardInfo)
+                              }
+                              if (data.funder) {
+                                contacts.push(data.funder)
+                              }
+                              if (data.contactLeadInfo) {
+                                contacts.push(data.contactLeadInfo)
+                              }
+                              if (data.leadPrincipleInvestigatorInfo) {
+                                contacts.push(
+                                  data.leadPrincipleInvestigatorInfo,
+                                )
+                              }
+                              updatedStudy.contacts = contacts
+                              break
+                            case 'UPDATE_STUDY_DESCRIPTION':
+                              updatedStudy.details = data.studySummaryBody
+                              break
+                            case 'UPDATE_STUDY_IRB_NUMBER':
+                              updatedStudy.irbProtocolId = data.irbProtocolId
+                              break
+                            case 'UPDATE_STUDY_LOGO':
+                              updatedStudy.studyLogoUrl = data.logo
+                              break
+                            case 'UPDATE_WELCOME_SCREEN_INFO':
+                              updatedStudy.clientData.welcomeScreenData = {
+                                ...data.welcomeScreenInfo,
+                              }
+                              break
                           }
-
                           setData({
                             ...builderInfo,
                             study: updatedStudy,
