@@ -252,10 +252,21 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     let result
     switch (type) {
       case 'RENAME':
-        setStudies(
-          studies!.map(s => (s.identifier !== study.identifier ? s : study)),
+        const singleStudy = await StudyService.getStudy(
+          study?.identifier,
+          token,
         )
-        await StudyService.updateStudy(study, token)
+        const newVersion = await StudyService.updateStudy(
+          { ...singleStudy!, name: study.name },
+          token,
+        )
+        setStudies(
+          studies!.map(s =>
+            s.identifier !== study.identifier
+              ? s
+              : { ...study, version: newVersion },
+          ),
+        )
 
         setRenameStudyId('')
 
