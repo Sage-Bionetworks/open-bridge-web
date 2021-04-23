@@ -58,7 +58,7 @@ export interface OrgUser extends LoggedInUserData {
 
 /* *** Assessment ********************************/
 export type ResourceFormat = 'image/png'
-export type AssessmentCategory = 'screenshot'|'icon'
+export type AssessmentCategory = 'screenshot' | 'icon'
 export type AssessmentResource = {
   category: AssessmentCategory
   deleted: boolean
@@ -71,7 +71,6 @@ export type AssessmentResource = {
   upToDate: boolean
   url: string
   version: number
-
 }
 export type Assessment = {
   createdOn: string
@@ -117,13 +116,12 @@ export type Study = {
   modifiedOn?: Date
 }
 
-export type BackgroundRecorders ={
-  accelGyro: boolean,
-  backgroundNoise: boolean,
-  weatherPolution: boolean,
-  passiveGaitDisplacement: boolean
-
-
+export type BackgroundRecorders = {
+  accelGyro?: boolean
+  backgroundNoise?: boolean
+  weatherPollution?: boolean
+  passiveGaitDisplacement?: boolean
+  motion: boolean
 }
 
 export type StudyAppDesign = {
