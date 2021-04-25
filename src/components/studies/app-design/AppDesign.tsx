@@ -489,6 +489,19 @@ const AppDesign: React.FunctionComponent<
     [],
   )
 
+  const formatPhoneNumber = (phoneNumber: string) => {
+    if (phoneNumber.length != 10) {
+      return phoneNumber
+    }
+    return (
+      phoneNumber.slice(0, 3) +
+      '-' +
+      phoneNumber.slice(3, 6) +
+      '-' +
+      phoneNumber.slice(6)
+    )
+  }
+
   useEffect(() => {
     const leadPrincipleInvestigatorContact = contacts.find(
       el => el.role === 'principal_investigator',
@@ -496,6 +509,14 @@ const AppDesign: React.FunctionComponent<
     const funder = contacts.find(el => el.role === 'sponsor')
     const irbInfo = contacts.find(el => el.role === 'irb')
     const studySupport = contacts.find(el => el.role === 'study_support')
+    if (studySupport && studySupport.phone) {
+      studySupport.phone.number = studySupport.phone.number?.replace('+1', '')
+      studySupport.phone.number = formatPhoneNumber(studySupport.phone.number)
+    }
+    if (irbInfo && irbInfo.phone) {
+      irbInfo.phone.number = irbInfo.phone.number?.replace('+1', '')
+      irbInfo.phone.number = formatPhoneNumber(irbInfo.phone.number)
+    }
     setAppDesignProperties(prevState => {
       return {
         ...prevState,

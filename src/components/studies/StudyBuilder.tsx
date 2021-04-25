@@ -166,29 +166,36 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       },
     )*/
 
-    // const study = { ...builderInfo.study }
-    // const irbContact = study.contacts?.find(
-    //   el => el.role === 'irb',
-    // )
-    // // const newIRBContact = { ...irbContact }
-    // irbContact!.phone = makePhone(
-    //   irbContact?.phone?.number || '',
-    // )
-    // const generalContact = study.contacts?.find(
-    //   el => el.role === 'study_support',
-    // )
-    // // const newGeneralContact = { ...generalContact }
-    // generalContact!.phone = makePhone(
-    //   generalContact?.phone?.number || '',
-    // )
+    const copyOfStudy = { ...builderInfo.study }
+    if (study.contacts) {
+      const irbContactIndex = study.contacts.findIndex(el => el.role === 'irb')
+      if (irbContactIndex > -1) {
+        const newIRBContact = { ...copyOfStudy.contacts![irbContactIndex] }
+        newIRBContact.phone = makePhone(newIRBContact?.phone?.number || '')
+        copyOfStudy.contacts![irbContactIndex] = newIRBContact
+      }
+      const generalContactIndex = study.contacts.findIndex(
+        el => el.role === 'study_support',
+      )
+      if (generalContactIndex > 1) {
+        const newGeneralContact = { ...study.contacts![generalContactIndex] }
+        newGeneralContact.phone = makePhone(
+          newGeneralContact?.phone?.number || '',
+        )
+        copyOfStudy.contacts![generalContactIndex] = newGeneralContact
+      }
+    }
 
     try {
-      const newVersion = await StudyService.updateStudy(study, token!)
+      const newVersion = await StudyService.updateStudy(copyOfStudy, token!)
       const updatedStudy = { ...study, version: newVersion }
       setData({
         ...builderInfo,
         study: updatedStudy,
       })
+      if (error !== '') {
+        setError('')
+      }
       setHasObjectChanged(false)
       return updatedStudy
     } catch (e) {
