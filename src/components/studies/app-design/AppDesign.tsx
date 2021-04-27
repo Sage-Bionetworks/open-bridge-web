@@ -42,7 +42,7 @@ import DefaultLogo from '../../../assets/logo_mtb.svg'
 import clsx from 'clsx'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
-import { isInvalidPhone } from '../../../helpers/utility'
+import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
 
 const imgHeight = 70
 
@@ -296,6 +296,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   salutationText: {
     marginTop: theme.spacing(2.5),
   },
+  errorText: {
+    marginTop: theme.spacing(-0.5),
+  },
 }))
 
 type UploadedFile = {
@@ -449,6 +452,11 @@ const AppDesign: React.FunctionComponent<
     irbPhoneNumber: false,
   })
 
+  const [emailErrorState, setEmailErrorState] = React.useState({
+    isGeneralContactEmailValid: true,
+    isIrbEmailValid: true,
+  })
+
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     event.persist()
     if (!event.target.files) {
@@ -466,6 +474,15 @@ const AppDesign: React.FunctionComponent<
     ) {
       alert(
         'Please make sure that phone numbers are submitted correctly before saving',
+      )
+      return
+    }
+    if (
+      !emailErrorState.isGeneralContactEmailValid ||
+      !emailErrorState.isIrbEmailValid
+    ) {
+      alert(
+        'Please make sure that the emails are entered in the correct format.',
       )
       return
     }
@@ -1181,12 +1198,19 @@ const AppDesign: React.FunctionComponent<
                     }}
                   />
                   {phoneNumberErrorState.generalContactPhoneNumber && (
-                    <FormHelperText id="general-contact-phone-text">
+                    <FormHelperText
+                      id="general-contact-phone-text"
+                      className={classes.errorText}
+                    >
                       phone should be in the format: xxx-xxx-xxxx
                     </FormHelperText>
                   )}
                 </FormControl>
-                <FormControl>
+                <FormControl
+                  className={clsx(
+                    !emailErrorState.isGeneralContactEmailValid && 'error',
+                  )}
+                >
                   <SimpleTextLabel htmlFor="contact-email-input">
                     Email*
                   </SimpleTextLabel>
@@ -1203,7 +1227,19 @@ const AppDesign: React.FunctionComponent<
                         contactLeadInfo: newContactLead,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo('UPDATE_STUDY_CONTACTS')}
+                    onBlur={() => {
+                      const validEmail =
+                        isValidEmail(
+                          appDesignProperties.contactLeadInfo?.email || '',
+                        ) || appDesignProperties.contactLeadInfo?.email === ''
+                      setEmailErrorState(prevState => {
+                        return {
+                          ...prevState,
+                          isGeneralContactEmailValid: validEmail,
+                        }
+                      })
+                      updateAppDesignInfo('UPDATE_STUDY_CONTACTS')
+                    }}
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -1211,6 +1247,15 @@ const AppDesign: React.FunctionComponent<
                       style: SimpleTextInputStyles,
                     }}
                   />
+                  {!emailErrorState.isGeneralContactEmailValid && (
+                    <FormHelperText
+                      id="general-contact-email-text"
+                      className={classes.errorText}
+                    >
+                      email should be in a valid format such as:
+                      example@placeholder.com
+                    </FormHelperText>
+                  )}
                 </FormControl>
               </FormGroup>
             </Subsection>
@@ -1290,12 +1335,17 @@ const AppDesign: React.FunctionComponent<
                     }}
                   />
                   {phoneNumberErrorState.irbPhoneNumber && (
-                    <FormHelperText id="ethics-phone-text">
+                    <FormHelperText
+                      id="ethics-phone-text"
+                      className={classes.errorText}
+                    >
                       phone should be in the format: xxx-xxx-xxxx
                     </FormHelperText>
                   )}
                 </FormControl>
-                <FormControl>
+                <FormControl
+                  className={clsx(!emailErrorState.isIrbEmailValid && 'error')}
+                >
                   <SimpleTextLabel htmlFor="ethics-email-input">
                     Email*
                   </SimpleTextLabel>
@@ -1312,7 +1362,19 @@ const AppDesign: React.FunctionComponent<
                         ethicsBoardInfo: newEthicsBoard,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo('UPDATE_STUDY_CONTACTS')}
+                    onBlur={() => {
+                      const validEmail =
+                        isValidEmail(
+                          appDesignProperties.ethicsBoardInfo?.email || '',
+                        ) || appDesignProperties.ethicsBoardInfo?.email === ''
+                      setEmailErrorState(prevState => {
+                        return {
+                          ...prevState,
+                          isIrbEmailValid: validEmail,
+                        }
+                      })
+                      updateAppDesignInfo('UPDATE_STUDY_CONTACTS')
+                    }}
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -1320,6 +1382,15 @@ const AppDesign: React.FunctionComponent<
                       style: SimpleTextInputStyles,
                     }}
                   />
+                  {!emailErrorState.isIrbEmailValid && (
+                    <FormHelperText
+                      id="ethics-email-text"
+                      className={classes.errorText}
+                    >
+                      email should be in a valid format such as:
+                      example@placeholder.com
+                    </FormHelperText>
+                  )}
                 </FormControl>
               </FormGroup>
               <Box textAlign="left">

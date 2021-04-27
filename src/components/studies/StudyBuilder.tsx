@@ -177,7 +177,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       const generalContactIndex = study.contacts.findIndex(
         el => el.role === 'study_support',
       )
-      if (generalContactIndex > 1) {
+      if (generalContactIndex > -1) {
         const newGeneralContact = { ...study.contacts![generalContactIndex] }
         newGeneralContact.phone = makePhone(
           newGeneralContact?.phone?.number || '',
