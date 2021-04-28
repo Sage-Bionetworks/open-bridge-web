@@ -349,7 +349,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       irbContact?.phone?.number === '' ||
       irbContact?.phone?.number === '+1'
     ) {
-      console.log('inside')
       delete irbContact.phone
     }
     const generalContact = updatedStudy.contacts?.find(

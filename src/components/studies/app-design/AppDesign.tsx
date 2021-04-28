@@ -525,6 +525,8 @@ const AppDesign: React.FunctionComponent<
   }
 
   useEffect(() => {
+    // When the component mounts, pull out the individual contacts from
+    // the contact array.
     const leadPrincipleInvestigatorContact = contacts.find(
       el => el.role === 'principal_investigator',
     )
