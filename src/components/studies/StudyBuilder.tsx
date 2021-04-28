@@ -166,22 +166,33 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       },
     )*/
 
+    // We need to make a deep copy of the study since we are going to be changing the
+    // phone number format in the study we sent to the backend. This format is different than the
+    // one we are using on the front end.
     const copyOfStudy = { ...builderInfo.study }
     if (study.contacts) {
       const irbContactIndex = study.contacts.findIndex(el => el.role === 'irb')
-      if (irbContactIndex > -1) {
+      // If the irbContact and its phone exists, then update the phone number by converting
+      // it to the right format
+      if (
+        irbContactIndex > -1 &&
+        copyOfStudy.contacts![irbContactIndex].phone
+      ) {
         const newIRBContact = { ...copyOfStudy.contacts![irbContactIndex] }
-        newIRBContact.phone = makePhone(newIRBContact?.phone?.number || '')
+        newIRBContact.phone = makePhone(newIRBContact.phone!.number || '')
         copyOfStudy.contacts![irbContactIndex] = newIRBContact
       }
       const generalContactIndex = study.contacts.findIndex(
         el => el.role === 'study_support',
       )
-      if (generalContactIndex > -1) {
+      // If the generalContact and its phone exists, then update the phone number by converting
+      // it to the right format
+      if (
+        generalContactIndex > -1 &&
+        study.contacts![generalContactIndex].phone
+      ) {
         const newGeneralContact = { ...study.contacts![generalContactIndex] }
-        newGeneralContact.phone = makePhone(
-          newGeneralContact?.phone?.number || '',
-        )
+        newGeneralContact.phone = makePhone(newGeneralContact.phone!.number)
         copyOfStudy.contacts![generalContactIndex] = newGeneralContact
       }
     }
@@ -438,6 +449,36 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         studyLogoUrl={builderInfo.study.studyLogoUrl || ''}
                         colorScheme={builderInfo.study.colorScheme || ''}
                         onSave={() => {
+                          const updatedStudy = { ...builderInfo.study }
+                          const irbContact = updatedStudy.contacts?.find(
+                            el => el.role === 'irb',
+                          )
+                          if (irbContact?.email === '') {
+                            delete irbContact.email
+                          }
+                          if (
+                            irbContact?.phone?.number === '' ||
+                            irbContact?.phone?.number === '+1'
+                          ) {
+                            console.log('inside')
+                            delete irbContact.phone
+                          }
+                          const generalContact = updatedStudy.contacts?.find(
+                            el => el.role === 'study_support',
+                          )
+                          if (generalContact?.email === '') {
+                            delete generalContact.email
+                          }
+                          if (
+                            generalContact?.phone?.number === '' ||
+                            generalContact?.phone?.number === '+1'
+                          ) {
+                            delete generalContact.phone
+                          }
+                          setData({
+                            ...builderInfo,
+                            study: updatedStudy,
+                          })
                           saveStudy(builderInfo.study)
                         }}
                         onUpdate={(

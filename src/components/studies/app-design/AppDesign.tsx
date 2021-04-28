@@ -448,8 +448,8 @@ const AppDesign: React.FunctionComponent<
   })
 
   const [phoneNumberErrorState, setPhoneNumberErrorState] = React.useState({
-    generalContactPhoneNumber: false,
-    irbPhoneNumber: false,
+    isGeneralContactPhoneNumberValid: true,
+    isIrbPhoneNumberValid: true,
   })
 
   const [emailErrorState, setEmailErrorState] = React.useState({
@@ -469,8 +469,8 @@ const AppDesign: React.FunctionComponent<
 
   const saveInfo = () => {
     if (
-      phoneNumberErrorState.generalContactPhoneNumber ||
-      phoneNumberErrorState.irbPhoneNumber
+      !phoneNumberErrorState.isGeneralContactPhoneNumberValid ||
+      !phoneNumberErrorState.isIrbPhoneNumberValid
     ) {
       alert(
         'Please make sure that phone numbers are submitted correctly before saving',
@@ -1152,7 +1152,8 @@ const AppDesign: React.FunctionComponent<
                 </FormControl>
                 <FormControl
                   className={clsx(
-                    phoneNumberErrorState.generalContactPhoneNumber && 'error',
+                    !phoneNumberErrorState.isGeneralContactPhoneNumberValid &&
+                      'error',
                   )}
                 >
                   <SimpleTextLabel htmlFor="phone-number-contact-input">
@@ -1178,14 +1179,17 @@ const AppDesign: React.FunctionComponent<
                       })
                     }}
                     onBlur={() => {
-                      const isInvalidPhoneNumber = isInvalidPhone(
-                        appDesignProperties.contactLeadInfo?.phone?.number ||
-                          '',
-                      )
+                      const isInvalidPhoneNumber =
+                        isInvalidPhone(
+                          appDesignProperties.contactLeadInfo?.phone?.number ||
+                            '',
+                        ) ||
+                        appDesignProperties.contactLeadInfo?.phone?.number !==
+                          ''
                       setPhoneNumberErrorState(prevState => {
                         return {
                           ...prevState,
-                          generalContactPhoneNumber: isInvalidPhoneNumber,
+                          isGeneralContactPhoneNumberValid: !isInvalidPhoneNumber,
                         }
                       })
                       updateAppDesignInfo('UPDATE_STUDY_CONTACTS')
@@ -1197,7 +1201,7 @@ const AppDesign: React.FunctionComponent<
                       style: SimpleTextInputStyles,
                     }}
                   />
-                  {phoneNumberErrorState.generalContactPhoneNumber && (
+                  {!phoneNumberErrorState.isGeneralContactPhoneNumberValid && (
                     <FormHelperText
                       id="general-contact-phone-text"
                       className={classes.errorText}
@@ -1289,7 +1293,7 @@ const AppDesign: React.FunctionComponent<
                 </FormControl>
                 <FormControl
                   className={clsx(
-                    phoneNumberErrorState.irbPhoneNumber && 'error',
+                    !phoneNumberErrorState.isIrbPhoneNumberValid && 'error',
                   )}
                 >
                   <SimpleTextLabel htmlFor="ethics-phone-number-input">
@@ -1315,14 +1319,17 @@ const AppDesign: React.FunctionComponent<
                       })
                     }}
                     onBlur={() => {
-                      const isInvalidPhoneNumber = isInvalidPhone(
-                        appDesignProperties.ethicsBoardInfo?.phone?.number ||
-                          '',
-                      )
+                      const isInvalidPhoneNumber =
+                        isInvalidPhone(
+                          appDesignProperties.ethicsBoardInfo?.phone?.number ||
+                            '',
+                        ) &&
+                        appDesignProperties.ethicsBoardInfo?.phone?.number !==
+                          ''
                       setPhoneNumberErrorState(prevState => {
                         return {
                           ...prevState,
-                          irbPhoneNumber: isInvalidPhoneNumber,
+                          isIrbPhoneNumberValid: !isInvalidPhoneNumber,
                         }
                       })
                       updateAppDesignInfo('UPDATE_STUDY_CONTACTS')
@@ -1334,7 +1341,7 @@ const AppDesign: React.FunctionComponent<
                       style: SimpleTextInputStyles,
                     }}
                   />
-                  {phoneNumberErrorState.irbPhoneNumber && (
+                  {!phoneNumberErrorState.isIrbPhoneNumberValid && (
                     <FormHelperText
                       id="ethics-phone-text"
                       className={classes.errorText}
