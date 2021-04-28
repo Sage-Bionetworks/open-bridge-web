@@ -43,6 +43,7 @@ import clsx from 'clsx'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
 import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
+import { AppDesignUpdateTypes } from '../StudyBuilder'
 
 const imgHeight = 70
 
@@ -315,13 +316,13 @@ type PreviewFile = {
 }
 
 export type PossibleStudyUpdates =
-  | 'UPDATE_STUDY_NAME'
-  | 'UPDATE_STUDY_COLOR'
-  | 'UPDATE_STUDY_CONTACTS'
-  | 'UPDATE_STUDY_LOGO'
-  | 'UPDATE_STUDY_IRB_NUMBER'
-  | 'UPDATE_WELCOME_SCREEN_INFO'
-  | 'UPDATE_STUDY_DESCRIPTION'
+  | AppDesignUpdateTypes.UPDATE_STUDY_NAME
+  | AppDesignUpdateTypes.UPDATE_STUDY_COLOR
+  | AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS
+  | AppDesignUpdateTypes.UPDATE_STUDY_LOGO
+  | AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER
+  | AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO
+  | AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION
 
 export interface AppDesignProps {
   id: string
@@ -502,7 +503,11 @@ const AppDesign: React.FunctionComponent<
   }
 
   const debouncedUpdateColor = useCallback(
-    _.debounce(color => updateAppDesignInfo('UPDATE_STUDY_COLOR', color), 1000),
+    _.debounce(
+      color =>
+        updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_COLOR, color),
+      1000,
+    ),
     [],
   )
 
@@ -546,14 +551,14 @@ const AppDesign: React.FunctionComponent<
   }, [])
 
   useEffect(() => {
-    updateAppDesignInfo('UPDATE_WELCOME_SCREEN_INFO')
+    updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO)
   }, [
     appDesignProperties.welcomeScreenInfo.useOptionalDisclaimer,
     appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage,
   ])
 
   useEffect(() => {
-    updateAppDesignInfo('UPDATE_STUDY_CONTACTS')
+    updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
   }, [appDesignProperties.leadPrincipleInvestigatorInfo?.name])
 
   const getContact = (
@@ -721,7 +726,9 @@ const AppDesign: React.FunctionComponent<
                         })
                       }}
                       onBlur={() =>
-                        updateAppDesignInfo('UPDATE_WELCOME_SCREEN_INFO')
+                        updateAppDesignInfo(
+                          AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
+                        )
                       }
                       multiline
                       rows={2}
@@ -751,7 +758,9 @@ const AppDesign: React.FunctionComponent<
                         })
                       }}
                       onBlur={() =>
-                        updateAppDesignInfo('UPDATE_WELCOME_SCREEN_INFO')
+                        updateAppDesignInfo(
+                          AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
+                        )
                       }
                       multiline
                       rows={4}
@@ -780,7 +789,9 @@ const AppDesign: React.FunctionComponent<
                         })
                       }}
                       onBlur={() =>
-                        updateAppDesignInfo('UPDATE_WELCOME_SCREEN_INFO')
+                        updateAppDesignInfo(
+                          AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
+                        )
                       }
                       multiline
                       rows={2}
@@ -809,7 +820,9 @@ const AppDesign: React.FunctionComponent<
                         })
                       }}
                       onBlur={() =>
-                        updateAppDesignInfo('UPDATE_WELCOME_SCREEN_INFO')
+                        updateAppDesignInfo(
+                          AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
+                        )
                       }
                       multiline
                       rows={2}
@@ -946,7 +959,11 @@ const AppDesign: React.FunctionComponent<
                         studyTitle: e.target.value,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo('UPDATE_STUDY_NAME')}
+                    onBlur={() =>
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_NAME,
+                      )
+                    }
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -969,7 +986,9 @@ const AppDesign: React.FunctionComponent<
                       })
                     }}
                     onBlur={() =>
-                      updateAppDesignInfo('UPDATE_STUDY_DESCRIPTION')
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION,
+                      )
                     }
                     multiline
                     rows={8}
@@ -1033,7 +1052,11 @@ const AppDesign: React.FunctionComponent<
                         leadPrincipleInvestigatorInfo: newStudyLead,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo('UPDATE_STUDY_CONTACTS')}
+                    onBlur={() =>
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
+                    }
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -1059,7 +1082,11 @@ const AppDesign: React.FunctionComponent<
                         funder: newFunder,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo('UPDATE_STUDY_CONTACTS')}
+                    onBlur={() =>
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
+                    }
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -1084,7 +1111,9 @@ const AppDesign: React.FunctionComponent<
                       })
                     }}
                     onBlur={() =>
-                      updateAppDesignInfo('UPDATE_STUDY_IRB_NUMBER')
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER,
+                      )
                     }
                     multiline
                     rows={1}
@@ -1115,7 +1144,11 @@ const AppDesign: React.FunctionComponent<
                         contactLeadInfo: newContactLead,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo('UPDATE_STUDY_CONTACTS')}
+                    onBlur={() =>
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
+                    }
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -1141,7 +1174,11 @@ const AppDesign: React.FunctionComponent<
                         contactLeadInfo: newContactLead,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo('UPDATE_STUDY_CONTACTS')}
+                    onBlur={() =>
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
+                    }
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -1192,7 +1229,9 @@ const AppDesign: React.FunctionComponent<
                           isGeneralContactPhoneNumberValid: !isInvalidPhoneNumber,
                         }
                       })
-                      updateAppDesignInfo('UPDATE_STUDY_CONTACTS')
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
                     }}
                     multiline
                     rows={1}
@@ -1242,7 +1281,9 @@ const AppDesign: React.FunctionComponent<
                           isGeneralContactEmailValid: validEmail,
                         }
                       })
-                      updateAppDesignInfo('UPDATE_STUDY_CONTACTS')
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
                     }}
                     multiline
                     rows={1}
@@ -1282,7 +1323,11 @@ const AppDesign: React.FunctionComponent<
                         ethicsBoardInfo: newEthicsBoard,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo('UPDATE_STUDY_CONTACTS')}
+                    onBlur={() =>
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
+                    }
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -1332,7 +1377,9 @@ const AppDesign: React.FunctionComponent<
                           isIrbPhoneNumberValid: !isInvalidPhoneNumber,
                         }
                       })
-                      updateAppDesignInfo('UPDATE_STUDY_CONTACTS')
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
                     }}
                     multiline
                     rows={1}
@@ -1380,7 +1427,9 @@ const AppDesign: React.FunctionComponent<
                           isIrbEmailValid: validEmail,
                         }
                       })
-                      updateAppDesignInfo('UPDATE_STUDY_CONTACTS')
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
                     }}
                     multiline
                     rows={1}

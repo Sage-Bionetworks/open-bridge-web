@@ -93,6 +93,16 @@ type StudyBuilderOwnProps = {}
 
 type StudyBuilderProps = StudyBuilderOwnProps & RouteComponentProps
 
+export enum AppDesignUpdateTypes {
+  UPDATE_STUDY_NAME = 'UPDATE_STUDY_NAME',
+  UPDATE_STUDY_COLOR = 'UPDATE_STUDY_COLOR',
+  UPDATE_STUDY_CONTACTS = 'UPDATE_STUDY_CONTACTS',
+  UPDATE_STUDY_DESCRIPTION = 'UPDATE_STUDY_DESCRIPTION',
+  UPDATE_STUDY_IRB_NUMBER = 'UPDATE_STUDY_IRB_NUMBER',
+  UPDATE_STUDY_LOGO = 'UPDATE_STUDY_LOGO',
+  UPDATE_WELCOME_SCREEN_INFO = 'UPDATE_WELCOME_SCREEN_INFO',
+}
+
 const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ...otherProps
 }) => {
@@ -279,20 +289,20 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     setSection(next)
   }
 
-  const hangleAppDesignSave = (
+  const handleAppDesignUpdate = (
     data: StudyAppDesign,
     updateType: PossibleStudyUpdates,
   ) => {
     setHasObjectChanged(true)
     const updatedStudy = { ...builderInfo.study }
     switch (updateType) {
-      case 'UPDATE_STUDY_NAME':
+      case AppDesignUpdateTypes.UPDATE_STUDY_NAME:
         updatedStudy.name = data.studyTitle
         break
-      case 'UPDATE_STUDY_COLOR':
+      case AppDesignUpdateTypes.UPDATE_STUDY_COLOR:
         updatedStudy.colorScheme = data.backgroundColor
         break
-      case 'UPDATE_STUDY_CONTACTS':
+      case AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS:
         const contacts: Contact[] = []
         if (data.ethicsBoardInfo) {
           contacts.push(data.ethicsBoardInfo)
@@ -308,16 +318,16 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         }
         updatedStudy.contacts = contacts
         break
-      case 'UPDATE_STUDY_DESCRIPTION':
+      case AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION:
         updatedStudy.details = data.studySummaryBody
         break
-      case 'UPDATE_STUDY_IRB_NUMBER':
+      case AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER:
         updatedStudy.irbProtocolId = data.irbProtocolId
         break
-      case 'UPDATE_STUDY_LOGO':
+      case AppDesignUpdateTypes.UPDATE_STUDY_LOGO:
         updatedStudy.studyLogoUrl = data.logo
         break
-      case 'UPDATE_WELCOME_SCREEN_INFO':
+      case AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO:
         updatedStudy.clientData.welcomeScreenData = {
           ...data.welcomeScreenInfo,
         }
@@ -329,55 +339,36 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     })
   }
 
-  const handleAppDesignUpdate = (
-    data: StudyAppDesign,
-    updateType: PossibleStudyUpdates,
-  ) => {
-    setHasObjectChanged(true)
+  const handleAppDesignSave = () => {
     const updatedStudy = { ...builderInfo.study }
-    // Based on the update type, update the study appropriately
-    switch (updateType) {
-      case 'UPDATE_STUDY_NAME':
-        updatedStudy.name = data.studyTitle
-        break
-      case 'UPDATE_STUDY_COLOR':
-        updatedStudy.colorScheme = data.backgroundColor
-        break
-      case 'UPDATE_STUDY_CONTACTS':
-        const contacts: Contact[] = []
-        if (data.ethicsBoardInfo) {
-          contacts.push(data.ethicsBoardInfo)
-        }
-        if (data.funder) {
-          contacts.push(data.funder)
-        }
-        if (data.contactLeadInfo) {
-          contacts.push(data.contactLeadInfo)
-        }
-        if (data.leadPrincipleInvestigatorInfo) {
-          contacts.push(data.leadPrincipleInvestigatorInfo)
-        }
-        updatedStudy.contacts = contacts
-        break
-      case 'UPDATE_STUDY_DESCRIPTION':
-        updatedStudy.details = data.studySummaryBody
-        break
-      case 'UPDATE_STUDY_IRB_NUMBER':
-        updatedStudy.irbProtocolId = data.irbProtocolId
-        break
-      case 'UPDATE_STUDY_LOGO':
-        updatedStudy.studyLogoUrl = data.logo
-        break
-      case 'UPDATE_WELCOME_SCREEN_INFO':
-        updatedStudy.clientData.welcomeScreenData = {
-          ...data.welcomeScreenInfo,
-        }
-        break
+    const irbContact = updatedStudy.contacts?.find(el => el.role === 'irb')
+    if (irbContact?.email === '') {
+      delete irbContact.email
+    }
+    if (
+      irbContact?.phone?.number === '' ||
+      irbContact?.phone?.number === '+1'
+    ) {
+      console.log('inside')
+      delete irbContact.phone
+    }
+    const generalContact = updatedStudy.contacts?.find(
+      el => el.role === 'study_support',
+    )
+    if (generalContact?.email === '') {
+      delete generalContact.email
+    }
+    if (
+      generalContact?.phone?.number === '' ||
+      generalContact?.phone?.number === '+1'
+    ) {
+      delete generalContact.phone
     }
     setData({
       ...builderInfo,
       study: updatedStudy,
     })
+    saveStudy(builderInfo.study)
   }
 
   const navButtons = (
@@ -549,7 +540,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         studyDetails={builderInfo.study.details || ''}
                         studyLogoUrl={builderInfo.study.studyLogoUrl || ''}
                         colorScheme={builderInfo.study.colorScheme || ''}
-                        onSave={hangleAppDesignSave}
+                        onSave={handleAppDesignSave}
                         onUpdate={handleAppDesignUpdate}
                       >
                         {navButtons}
