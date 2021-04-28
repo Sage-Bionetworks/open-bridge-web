@@ -177,7 +177,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     )*/
 
     // We need to make a deep copy of the study since we are going to be changing the
-    // phone number format in the study we sent to the backend. This format is different than the
+    // phone number format in the study we send to the backend. This format is different than the
     // one we are using on the front end.
     const copyOfStudy = { ...builderInfo.study }
     if (study.contacts) {
@@ -295,6 +295,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ) => {
     setHasObjectChanged(true)
     const updatedStudy = { ...builderInfo.study }
+    // update the study based on the update type specified
     switch (updateType) {
       case AppDesignUpdateTypes.UPDATE_STUDY_NAME:
         updatedStudy.name = data.studyTitle
@@ -342,14 +343,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   const handleAppDesignSave = () => {
     const updatedStudy = { ...builderInfo.study }
     const irbContact = updatedStudy.contacts?.find(el => el.role === 'irb')
+    // If a contact's email or phone is an empty string, then delete the field
+    // from the contact object.
     if (irbContact?.email === '') {
       delete irbContact.email
     }
-    if (
-      irbContact?.phone?.number === '' ||
-      irbContact?.phone?.number === '+1'
-    ) {
-      delete irbContact.phone
+    const irbPhoneNumber = irbContact?.phone?.number
+    if (irbPhoneNumber === '' || irbPhoneNumber === '+1') {
+      delete irbContact!.phone
     }
     const generalContact = updatedStudy.contacts?.find(
       el => el.role === 'study_support',
@@ -357,11 +358,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     if (generalContact?.email === '') {
       delete generalContact.email
     }
-    if (
-      generalContact?.phone?.number === '' ||
-      generalContact?.phone?.number === '+1'
-    ) {
-      delete generalContact.phone
+    const generalContactPhone = generalContact?.phone?.number
+    if (generalContactPhone === '' || generalContactPhone === '+1') {
+      delete generalContact!.phone
     }
     setData({
       ...builderInfo,
