@@ -1183,7 +1183,7 @@ const AppDesign: React.FunctionComponent<
                         isInvalidPhone(
                           appDesignProperties.contactLeadInfo?.phone?.number ||
                             '',
-                        ) ||
+                        ) &&
                         appDesignProperties.contactLeadInfo?.phone?.number !==
                           ''
                       setPhoneNumberErrorState(prevState => {
