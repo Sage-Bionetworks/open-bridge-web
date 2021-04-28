@@ -158,10 +158,11 @@ export type StudyAppDesign = {
 }
 
 export type BackgroundRecorders = {
-  accelGyro: boolean
-  backgroundNoise: boolean
-  weatherPolution: boolean
-  passiveGaitDisplacement: boolean
+  accelGyro?: boolean
+  backgroundNoise?: boolean
+  weatherPollution?: boolean
+  passiveGaitDisplacement?: boolean
+  motion: boolean
 }
 
 export type StudyBuilderInfo = {

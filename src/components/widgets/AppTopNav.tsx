@@ -169,7 +169,7 @@ const MenuLinksRhs: FunctionComponent<
   let links: React.ReactNode[] = routes.map(route => (
     <NavLink
       to={route.path}
-      key={route.name}
+      key={`rhs_${route.name}`}
       className={className}
       activeClassName={activeClassName}
     >
@@ -385,14 +385,14 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
         {routes
           .filter(r => r.isRhs)
           .map(route => (
-            <MenuItem>
-              <NavLink to={route.path} key={route.name}>
+            <MenuItem key={route.name}>
+              <NavLink to={route.path} >
                 {route.name}
               </NavLink>
             </MenuItem>
           ))}
 
-        <MenuItem>
+        <MenuItem key={'logout'}>
           <Logout element={<div>Log out</div>}></Logout>
         </MenuItem>
       </Menu>
