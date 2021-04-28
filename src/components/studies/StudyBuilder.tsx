@@ -279,6 +279,107 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     setSection(next)
   }
 
+  const hangleAppDesignSave = (
+    data: StudyAppDesign,
+    updateType: PossibleStudyUpdates,
+  ) => {
+    setHasObjectChanged(true)
+    const updatedStudy = { ...builderInfo.study }
+    switch (updateType) {
+      case 'UPDATE_STUDY_NAME':
+        updatedStudy.name = data.studyTitle
+        break
+      case 'UPDATE_STUDY_COLOR':
+        updatedStudy.colorScheme = data.backgroundColor
+        break
+      case 'UPDATE_STUDY_CONTACTS':
+        const contacts: Contact[] = []
+        if (data.ethicsBoardInfo) {
+          contacts.push(data.ethicsBoardInfo)
+        }
+        if (data.funder) {
+          contacts.push(data.funder)
+        }
+        if (data.contactLeadInfo) {
+          contacts.push(data.contactLeadInfo)
+        }
+        if (data.leadPrincipleInvestigatorInfo) {
+          contacts.push(data.leadPrincipleInvestigatorInfo)
+        }
+        updatedStudy.contacts = contacts
+        break
+      case 'UPDATE_STUDY_DESCRIPTION':
+        updatedStudy.details = data.studySummaryBody
+        break
+      case 'UPDATE_STUDY_IRB_NUMBER':
+        updatedStudy.irbProtocolId = data.irbProtocolId
+        break
+      case 'UPDATE_STUDY_LOGO':
+        updatedStudy.studyLogoUrl = data.logo
+        break
+      case 'UPDATE_WELCOME_SCREEN_INFO':
+        updatedStudy.clientData.welcomeScreenData = {
+          ...data.welcomeScreenInfo,
+        }
+        break
+    }
+    setData({
+      ...builderInfo,
+      study: updatedStudy,
+    })
+  }
+
+  const handleAppDesignUpdate = (
+    data: StudyAppDesign,
+    updateType: PossibleStudyUpdates,
+  ) => {
+    setHasObjectChanged(true)
+    const updatedStudy = { ...builderInfo.study }
+    // Based on the update type, update the study appropriately
+    switch (updateType) {
+      case 'UPDATE_STUDY_NAME':
+        updatedStudy.name = data.studyTitle
+        break
+      case 'UPDATE_STUDY_COLOR':
+        updatedStudy.colorScheme = data.backgroundColor
+        break
+      case 'UPDATE_STUDY_CONTACTS':
+        const contacts: Contact[] = []
+        if (data.ethicsBoardInfo) {
+          contacts.push(data.ethicsBoardInfo)
+        }
+        if (data.funder) {
+          contacts.push(data.funder)
+        }
+        if (data.contactLeadInfo) {
+          contacts.push(data.contactLeadInfo)
+        }
+        if (data.leadPrincipleInvestigatorInfo) {
+          contacts.push(data.leadPrincipleInvestigatorInfo)
+        }
+        updatedStudy.contacts = contacts
+        break
+      case 'UPDATE_STUDY_DESCRIPTION':
+        updatedStudy.details = data.studySummaryBody
+        break
+      case 'UPDATE_STUDY_IRB_NUMBER':
+        updatedStudy.irbProtocolId = data.irbProtocolId
+        break
+      case 'UPDATE_STUDY_LOGO':
+        updatedStudy.studyLogoUrl = data.logo
+        break
+      case 'UPDATE_WELCOME_SCREEN_INFO':
+        updatedStudy.clientData.welcomeScreenData = {
+          ...data.welcomeScreenInfo,
+        }
+        break
+    }
+    setData({
+      ...builderInfo,
+      study: updatedStudy,
+    })
+  }
+
   const navButtons = (
     <NavButtons
       id={id}
@@ -448,90 +549,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         studyDetails={builderInfo.study.details || ''}
                         studyLogoUrl={builderInfo.study.studyLogoUrl || ''}
                         colorScheme={builderInfo.study.colorScheme || ''}
-                        onSave={() => {
-                          const updatedStudy = { ...builderInfo.study }
-                          const irbContact = updatedStudy.contacts?.find(
-                            el => el.role === 'irb',
-                          )
-                          if (irbContact?.email === '') {
-                            delete irbContact.email
-                          }
-                          if (
-                            irbContact?.phone?.number === '' ||
-                            irbContact?.phone?.number === '+1'
-                          ) {
-                            console.log('inside')
-                            delete irbContact.phone
-                          }
-                          const generalContact = updatedStudy.contacts?.find(
-                            el => el.role === 'study_support',
-                          )
-                          if (generalContact?.email === '') {
-                            delete generalContact.email
-                          }
-                          if (
-                            generalContact?.phone?.number === '' ||
-                            generalContact?.phone?.number === '+1'
-                          ) {
-                            delete generalContact.phone
-                          }
-                          setData({
-                            ...builderInfo,
-                            study: updatedStudy,
-                          })
-                          saveStudy(builderInfo.study)
-                        }}
-                        onUpdate={(
-                          data: StudyAppDesign,
-                          updateType: PossibleStudyUpdates,
-                        ) => {
-                          setHasObjectChanged(true)
-                          const updatedStudy = { ...builderInfo.study }
-                          switch (updateType) {
-                            case 'UPDATE_STUDY_NAME':
-                              updatedStudy.name = data.studyTitle
-                              break
-                            case 'UPDATE_STUDY_COLOR':
-                              updatedStudy.colorScheme = data.backgroundColor
-                              break
-                            case 'UPDATE_STUDY_CONTACTS':
-                              const contacts: Contact[] = []
-                              if (data.ethicsBoardInfo) {
-                                contacts.push(data.ethicsBoardInfo)
-                              }
-                              if (data.funder) {
-                                contacts.push(data.funder)
-                              }
-                              if (data.contactLeadInfo) {
-                                contacts.push(data.contactLeadInfo)
-                              }
-                              if (data.leadPrincipleInvestigatorInfo) {
-                                contacts.push(
-                                  data.leadPrincipleInvestigatorInfo,
-                                )
-                              }
-                              updatedStudy.contacts = contacts
-                              break
-                            case 'UPDATE_STUDY_DESCRIPTION':
-                              updatedStudy.details = data.studySummaryBody
-                              break
-                            case 'UPDATE_STUDY_IRB_NUMBER':
-                              updatedStudy.irbProtocolId = data.irbProtocolId
-                              break
-                            case 'UPDATE_STUDY_LOGO':
-                              updatedStudy.studyLogoUrl = data.logo
-                              break
-                            case 'UPDATE_WELCOME_SCREEN_INFO':
-                              updatedStudy.clientData.welcomeScreenData = {
-                                ...data.welcomeScreenInfo,
-                              }
-                              break
-                          }
-                          setData({
-                            ...builderInfo,
-                            study: updatedStudy,
-                          })
-                        }}
+                        onSave={hangleAppDesignSave}
+                        onUpdate={handleAppDesignUpdate}
                       >
                         {navButtons}
                       </AppDesign>
