@@ -3,7 +3,7 @@ import {
   Drawer,
   Hidden,
   IconButton,
-  LinearProgress
+  LinearProgress,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -16,12 +16,15 @@ import { useStudyInfoDataState } from '../../helpers/StudyInfoContext'
 import { latoFont } from '../../style/theme'
 import BreadCrumb from '../widgets/BreadCrumb'
 import HideWhen from '../widgets/HideWhen'
+import MTB_LOGO from '../../assets/logo_mtb.svg'
+import BLACK_X_ICON from '../../assets/black_x_icon.svg'
+import PARTICIPANTS_ICON from '../../assets/group_participants_icon.svg'
 
 const useStyles = makeStyles(theme => ({
   toolbarStudyHeader: {
     height: '104px',
     display: 'flex',
-    backgroundColor: '#fff',
+    backgroundColor: '#F8F8F8',
 
     alignItems: 'center',
     flexDirection: 'row',
@@ -56,11 +59,11 @@ const useStyles = makeStyles(theme => ({
     },
   },
   drawer: {
-    width: '250px',
+    width: '320px',
     flexShrink: 0,
   },
   drawerPaper: {
-    width: '251px',
+    width: '320px',
 
     '& $toolbarLink': {
       flextGroup: 0,
@@ -77,6 +80,7 @@ const useStyles = makeStyles(theme => ({
       border: 'none',
       fontWeight: 'bolder',
     },
+    backgroundColor: '#F8F8F8',
   },
   toolbarLink: {
     padding: theme.spacing(0, 2, 2, 2),
@@ -94,6 +98,41 @@ const useStyles = makeStyles(theme => ({
     '&:last-child': {
       paddingRight: theme.spacing(0.5),
     },
+  },
+  mobileHomeOptionContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'center',
+    paddingRight: '24px',
+    height: '100px',
+    justifyContent: 'space-between',
+  },
+  mobileToolBarLink: {
+    fontFamily: latoFont,
+    fontSize: '15px',
+    textDecoration: 'none',
+    color: 'inherit',
+    flexShrink: 0,
+    height: '64px',
+    boxSizing: 'border-box',
+    paddingLeft: theme.spacing(3),
+    '&:hover': {
+      backgroundColor: '#fff',
+    },
+    display: 'flex',
+    alignItems: 'center',
+  },
+  mobileSelectedLink: {
+    borderLeft: '4px solid #353535',
+    fontWeight: 'bolder',
+  },
+  drawerBackground: {
+    backgroundColor: 'red',
+  },
+  blackXIcon: {
+    width: '16px',
+    height: '16px',
   },
 }))
 
@@ -203,22 +242,22 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
             keepMounted: true, // Better open performance on mobile.
           }}
         >
-          <HideWhen hideWhen={studyData.study === undefined}>
-            <span className={classes.toolbarLink}>{studyData.study?.name}</span>
-
-            <LinearProgress style={{ width: '50px' }} />
-          </HideWhen>
-          <NavLink to={'/'} key="home" className={classes.toolbarLink}>
-            Home
-          </NavLink>
-          <NavLink
-            to={'/studies'}
-            key="studies"
-            className={classes.toolbarLink}
-            style={{ paddingBottom: '0' }}
-          >
-            Studies
-          </NavLink>
+          <div className={classes.mobileHomeOptionContainer}>
+            <NavLink
+              to={'/'}
+              key="home"
+              className={classes.mobileToolBarLink}
+              style={{ backgroundColor: '#f5f5f5' }}
+            >
+              <img src={MTB_LOGO} style={{ marginRight: '12px' }}></img>
+              Home
+            </NavLink>
+            <img
+              src={BLACK_X_ICON}
+              onClick={() => setIsMobileOpen(false)}
+              className={classes.blackXIcon}
+            ></img>
+          </div>
 
           {links
             .filter(section => section.name)
@@ -226,8 +265,8 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               <NavLink
                 to={section.path.replace(':id', studyId)}
                 key={section.path}
-                className={classes.toolbarLink}
-                activeClassName={classes.selectedLink}
+                className={classes.mobileToolBarLink}
+                activeClassName={classes.mobileSelectedLink}
               >
                 {section.name}
               </NavLink>
@@ -235,10 +274,11 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
           <NavLink
             to={'/studies/:id/access-settings'.replace(':id', studyId)}
             key={'path-to-access-settings'}
-            className={classes.toolbarLink}
-            activeClassName={classes.selectedLink}
-            style={{ display: 'flex' }}
+            className={classes.mobileToolBarLink}
+            activeClassName={classes.mobileSelectedLink}
+            style={{ display: 'flex', marginTop: '32px' }}
           >
+            <img src={PARTICIPANTS_ICON} style={{ marginRight: '20px' }}></img>
             Access settings
           </NavLink>
         </Drawer>
