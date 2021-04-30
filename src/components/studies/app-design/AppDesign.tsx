@@ -17,7 +17,7 @@ import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
 import { ReactComponent as PhoneBottomImg } from '../../../assets/appdesign/phone_buttons.svg'
-import { bytesToSize } from '../../../helpers/utility'
+import { bytesToSize, makePhone } from '../../../helpers/utility'
 import {
   latoFont,
   playfairDisplayFont,
@@ -29,6 +29,7 @@ import {
   Contact,
   WelcomeScreenData,
   StudyAppDesign,
+  Study,
 } from '../../../types/types'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
@@ -326,15 +327,8 @@ export type PossibleStudyUpdates =
 
 export interface AppDesignProps {
   id: string
-  // currentAppDesign: StudyAppDesign
   onSave: Function
-  irbProtocolId: string
-  contacts: Contact[]
-  welcomeScreenInfo: WelcomeScreenData
-  studyName: string
-  studyDetails: string
-  studyLogoUrl: string
-  colorScheme: string
+  study: Study
 }
 
 function getPreviewForImage(file: File): PreviewFile {
@@ -399,15 +393,8 @@ const AppDesign: React.FunctionComponent<
   saveLoader,
   children,
   onUpdate,
-  // currentAppDesign,
   onSave,
-  contacts,
-  welcomeScreenInfo,
-  irbProtocolId,
-  studyName,
-  studyDetails,
-  studyLogoUrl,
-  colorScheme,
+  study,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
@@ -436,17 +423,32 @@ const AppDesign: React.FunctionComponent<
     appDesignProperties,
     setAppDesignProperties,
   ] = useState<StudyAppDesign>({
-    logo: studyLogoUrl || '',
-    backgroundColor: colorScheme || '#6040FF',
-    welcomeScreenInfo: welcomeScreenInfo,
-    studyTitle: studyName || '',
-    studySummaryBody: studyDetails,
-    irbProtocolId: irbProtocolId,
+    logo: '',
+    backgroundColor: {
+      foreground: '#6040FF',
+    },
+    welcomeScreenInfo: {
+      welcomeScreenBody: '',
+      welcomeScreenFromText: '',
+      welcomeScreenSalutation: '',
+      welcomeScreenHeader: '',
+      isUsingDefaultMessage: false,
+      useOptionalDisclaimer: false,
+    } as WelcomeScreenData,
+    studyTitle: '',
+    studySummaryBody: '',
+    irbProtocolId: '',
     leadPrincipleInvestigatorInfo: undefined,
     contactLeadInfo: undefined,
     ethicsBoardInfo: undefined,
     funder: undefined,
   })
+
+  const [
+    generalContactPhoneNumber,
+    setGeneralContactPhoneNumber,
+  ] = React.useState('')
+  const [irbPhoneNumber, setIrbPhoneNumber] = React.useState('')
 
   const [phoneNumberErrorState, setPhoneNumberErrorState] = React.useState({
     isGeneralContactPhoneNumberValid: true,
@@ -469,37 +471,93 @@ const AppDesign: React.FunctionComponent<
   }
 
   const saveInfo = () => {
-    if (
+    const phoneNumberHasError =
       !phoneNumberErrorState.isGeneralContactPhoneNumberValid ||
       !phoneNumberErrorState.isIrbPhoneNumberValid
-    ) {
-      alert(
-        'Please make sure that phone numbers are submitted correctly before saving',
-      )
-      return
-    }
-    if (
+    const emailHasError =
       !emailErrorState.isGeneralContactEmailValid ||
       !emailErrorState.isIrbEmailValid
-    ) {
+    // This is a placeholder until Lynn finalizes what the error state will look like
+    if (phoneNumberHasError || emailHasError) {
       alert(
-        'Please make sure that the emails are entered in the correct format.',
+        'Please make sure that all fields are entered in the correct format.',
       )
       return
     }
-    onSave()
+    const updatedStudy = { ...study }
+    const irbContact = updatedStudy.contacts?.find(el => el.role === 'irb')
+    // If a contact's email or phone is an empty string, then delete the field
+    // from the contact object.
+    if (irbContact?.email === '') {
+      delete irbContact.email
+    }
+    const irbPhoneNumber = irbContact?.phone?.number
+    if (irbPhoneNumber === '' || irbPhoneNumber === '+1') {
+      delete irbContact!.phone
+    }
+    const generalContact = updatedStudy.contacts?.find(
+      el => el.role === 'study_support',
+    )
+    if (generalContact?.email === '') {
+      delete generalContact.email
+    }
+    const generalContactPhone = generalContact?.phone?.number
+    if (generalContactPhone === '' || generalContactPhone === '+1') {
+      delete generalContact!.phone
+    }
+    onSave(updatedStudy)
   }
 
   const updateAppDesignInfo = (
     updateType: PossibleStudyUpdates,
     color?: string,
   ) => {
-    const props = { ...appDesignProperties }
+    const appDesignProps = { ...appDesignProperties }
     if (color) {
-      props.backgroundColor = color
+      appDesignProps.backgroundColor.foreground = color
     }
-
-    onUpdate(props, updateType)
+    const updatedStudy = { ...study }
+    // update the study based on the update type specified
+    switch (updateType) {
+      case AppDesignUpdateTypes.UPDATE_STUDY_NAME:
+        updatedStudy.name = appDesignProps.studyTitle
+        break
+      case AppDesignUpdateTypes.UPDATE_STUDY_COLOR:
+        updatedStudy.colorScheme!.foreground =
+          appDesignProps.backgroundColor.foreground
+        break
+      case AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS:
+        const contacts: Contact[] = []
+        if (appDesignProps.ethicsBoardInfo) {
+          contacts.push(appDesignProps.ethicsBoardInfo)
+        }
+        if (appDesignProps.funder) {
+          contacts.push(appDesignProps.funder)
+        }
+        if (appDesignProps.contactLeadInfo) {
+          contacts.push(appDesignProps.contactLeadInfo)
+        }
+        if (appDesignProps.leadPrincipleInvestigatorInfo) {
+          contacts.push(appDesignProps.leadPrincipleInvestigatorInfo)
+        }
+        updatedStudy.contacts = contacts
+        break
+      case AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION:
+        updatedStudy.details = appDesignProps.studySummaryBody
+        break
+      case AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER:
+        updatedStudy.irbProtocolId = appDesignProps.irbProtocolId
+        break
+      case AppDesignUpdateTypes.UPDATE_STUDY_LOGO:
+        updatedStudy.studyLogoUrl = appDesignProps.logo
+        break
+      case AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO:
+        updatedStudy.clientData.welcomeScreenData = {
+          ...appDesignProps.welcomeScreenInfo,
+        }
+        break
+    }
+    onUpdate(updatedStudy)
   }
 
   const debouncedUpdateColor = useCallback(
@@ -525,8 +583,8 @@ const AppDesign: React.FunctionComponent<
   }
 
   useEffect(() => {
-    // When the component mounts, pull out the individual contacts from
-    // the contact array.
+    // When the component mounts, pull out the informaton from the study object
+    const contacts = study.contacts || ([] as Contact[])
     const leadPrincipleInvestigatorContact = contacts.find(
       el => el.role === 'principal_investigator',
     )
@@ -534,13 +592,20 @@ const AppDesign: React.FunctionComponent<
     const irbInfo = contacts.find(el => el.role === 'irb')
     const studySupport = contacts.find(el => el.role === 'study_support')
     if (studySupport && studySupport.phone) {
-      studySupport.phone.number = studySupport.phone.number?.replace('+1', '')
-      studySupport.phone.number = formatPhoneNumber(studySupport.phone.number)
+      const phoneWithoutZipcode = studySupport.phone.number?.replace('+1', '')
+      const formattedPhone = formatPhoneNumber(phoneWithoutZipcode)
+      setGeneralContactPhoneNumber(formattedPhone)
     }
     if (irbInfo && irbInfo.phone) {
-      irbInfo.phone.number = irbInfo.phone.number?.replace('+1', '')
-      irbInfo.phone.number = formatPhoneNumber(irbInfo.phone.number)
+      const phoneWithoutZipcode = irbInfo.phone.number?.replace('+1', '')
+      const formattedPhone = formatPhoneNumber(phoneWithoutZipcode)
+      setIrbPhoneNumber(formattedPhone)
     }
+    const isWelcomeScreenDataIsEmpty =
+      Object.keys(study.clientData.welcomeScreenData || {}).length == 0
+    const welcomeScreenData = isWelcomeScreenDataIsEmpty
+      ? { ...appDesignProperties.welcomeScreenInfo }
+      : { ...study.clientData.welcomeScreenData! }
     setAppDesignProperties(prevState => {
       return {
         ...prevState,
@@ -548,6 +613,14 @@ const AppDesign: React.FunctionComponent<
         funder: funder,
         ethicsBoardInfo: irbInfo,
         contactLeadInfo: studySupport,
+        logo: study.studyLogoUrl || '',
+        backgroundColor: study.colorScheme || {
+          ...appDesignProperties.backgroundColor,
+        },
+        welcomeScreenInfo: welcomeScreenData,
+        studyTitle: study.name || '',
+        studySummaryBody: study.details || '',
+        irbProtocolId: study.irbProtocolId || '',
       }
     })
   }, [])
@@ -561,7 +634,11 @@ const AppDesign: React.FunctionComponent<
 
   useEffect(() => {
     updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
-  }, [appDesignProperties.leadPrincipleInvestigatorInfo?.name])
+  }, [
+    appDesignProperties.leadPrincipleInvestigatorInfo?.name,
+    appDesignProperties.contactLeadInfo?.phone,
+    appDesignProperties.ethicsBoardInfo?.phone,
+  ])
 
   const getContact = (
     type: 'FUNDER' | 'ETHICS_BOARD' | 'LEAD_INVESTIGATOR' | 'CONTACT',
@@ -614,7 +691,8 @@ const AppDesign: React.FunctionComponent<
                     const newWelcomeScreenData = {
                       ...prevState.welcomeScreenInfo,
                     }
-                    newWelcomeScreenData.isUsingDefaultMessage = !newWelcomeScreenData.isUsingDefaultMessage
+                    newWelcomeScreenData.isUsingDefaultMessage = !prevState
+                      .welcomeScreenInfo.isUsingDefaultMessage
                     return {
                       ...appDesignProperties,
                       welcomeScreenInfo: newWelcomeScreenData,
@@ -690,12 +768,15 @@ const AppDesign: React.FunctionComponent<
                 </p>
                 <Box width="250px" height="230px" marginLeft="-10px">
                   <ReactColorPicker
-                    color={appDesignProperties.backgroundColor}
+                    color={appDesignProperties.backgroundColor.foreground}
                     onChange={(currentColor: string) => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        backgroundColor: currentColor,
-                      })
+                      setAppDesignProperties(prevState => ({
+                        ...prevState,
+                        backgroundColor: {
+                          ...appDesignProperties.backgroundColor,
+                          foreground: currentColor,
+                        },
+                      }))
                       debouncedUpdateColor(currentColor)
                     }}
                   />
@@ -848,7 +929,8 @@ const AppDesign: React.FunctionComponent<
                           const newWelcomeScreenData = {
                             ...prevState.welcomeScreenInfo,
                           }
-                          newWelcomeScreenData.useOptionalDisclaimer = !welcomeScreenInfo.useOptionalDisclaimer
+                          newWelcomeScreenData.useOptionalDisclaimer = !prevState
+                            .welcomeScreenInfo.useOptionalDisclaimer
                           return {
                             ...appDesignProperties,
                             welcomeScreenInfo: newWelcomeScreenData,
@@ -894,7 +976,7 @@ const AppDesign: React.FunctionComponent<
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
           <Box className={`${classes.phone}`}>
             <PhoneTopBar
-              color={appDesignProperties.backgroundColor}
+              color={appDesignProperties.backgroundColor.foreground}
               previewFile={previewFile}
               isUsingDefaultMessage={
                 appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
@@ -1202,38 +1284,28 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="phone-number-contact-input"
                     placeholder="xxx-xxx-xxxx"
-                    value={
-                      appDesignProperties.contactLeadInfo?.phone?.number || ''
-                    }
+                    value={generalContactPhoneNumber}
                     onChange={e => {
-                      const newContactLead = getContact('CONTACT')
-                      const phoneValue = newContactLead.phone
-                        ? { ...newContactLead.phone }
-                        : { number: '', regionCode: '1' }
-                      phoneValue.number = e.target.value
-                      newContactLead.phone = phoneValue
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        contactLeadInfo: newContactLead,
-                      })
+                      setGeneralContactPhoneNumber(e.target.value)
                     }}
                     onBlur={() => {
                       const isInvalidPhoneNumber =
-                        isInvalidPhone(
-                          appDesignProperties.contactLeadInfo?.phone?.number ||
-                            '',
-                        ) &&
-                        appDesignProperties.contactLeadInfo?.phone?.number !==
-                          ''
+                        isInvalidPhone(generalContactPhoneNumber) &&
+                        generalContactPhoneNumber !== ''
                       setPhoneNumberErrorState(prevState => {
                         return {
                           ...prevState,
                           isGeneralContactPhoneNumberValid: !isInvalidPhoneNumber,
                         }
                       })
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      const newContactLead = getContact('CONTACT')
+                      newContactLead.phone = makePhone(
+                        generalContactPhoneNumber,
                       )
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        contactLeadInfo: newContactLead,
+                      })
                     }}
                     multiline
                     rows={1}
@@ -1273,10 +1345,11 @@ const AppDesign: React.FunctionComponent<
                       })
                     }}
                     onBlur={() => {
+                      console.log(appDesignProperties.contactLeadInfo?.email)
                       const validEmail =
                         isValidEmail(
                           appDesignProperties.contactLeadInfo?.email || '',
-                        ) || appDesignProperties.contactLeadInfo?.email === ''
+                        ) || !appDesignProperties.contactLeadInfo?.email
                       setEmailErrorState(prevState => {
                         return {
                           ...prevState,
@@ -1350,38 +1423,25 @@ const AppDesign: React.FunctionComponent<
                     className={clsx(classes.informationRowStyle, 'error')}
                     id="ethics-phone-number-input"
                     placeholder="xxx-xxx-xxxx"
-                    value={
-                      appDesignProperties.ethicsBoardInfo?.phone?.number || ''
-                    }
+                    value={irbPhoneNumber}
                     onChange={e => {
-                      const newEthicsBoard = getContact('ETHICS_BOARD')
-                      const phoneValue = newEthicsBoard.phone
-                        ? { ...newEthicsBoard.phone }
-                        : { number: '', regionCode: '1' }
-                      phoneValue.number = e.target.value
-                      newEthicsBoard.phone = phoneValue
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        ethicsBoardInfo: newEthicsBoard,
-                      })
+                      setIrbPhoneNumber(e.target.value)
                     }}
                     onBlur={() => {
                       const isInvalidPhoneNumber =
-                        isInvalidPhone(
-                          appDesignProperties.ethicsBoardInfo?.phone?.number ||
-                            '',
-                        ) &&
-                        appDesignProperties.ethicsBoardInfo?.phone?.number !==
-                          ''
+                        isInvalidPhone(irbPhoneNumber) && irbPhoneNumber !== ''
                       setPhoneNumberErrorState(prevState => {
                         return {
                           ...prevState,
                           isIrbPhoneNumberValid: !isInvalidPhoneNumber,
                         }
                       })
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
-                      )
+                      const newEthicsBoard = getContact('ETHICS_BOARD')
+                      newEthicsBoard.phone = makePhone(irbPhoneNumber)
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        ethicsBoardInfo: newEthicsBoard,
+                      })
                     }}
                     multiline
                     rows={1}
@@ -1422,7 +1482,7 @@ const AppDesign: React.FunctionComponent<
                       const validEmail =
                         isValidEmail(
                           appDesignProperties.ethicsBoardInfo?.email || '',
-                        ) || appDesignProperties.ethicsBoardInfo?.email === ''
+                        ) || !appDesignProperties.ethicsBoardInfo?.email
                       setEmailErrorState(prevState => {
                         return {
                           ...prevState,
@@ -1471,7 +1531,7 @@ const AppDesign: React.FunctionComponent<
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
           <Box className={classes.phone}>
             <PhoneTopBar
-              color={appDesignProperties.backgroundColor}
+              color={appDesignProperties.backgroundColor.foreground}
               previewFile={previewFile}
               isUsingDefaultMessage={
                 appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage

@@ -111,7 +111,7 @@ export type Study = {
   scheduleGuid?: string
 
   studyLogoUrl?: string
-  colorScheme?: string
+  colorScheme?: ColorScheme
   irbProtocolId?: string
   contacts?: Contact[]
   clientData: {
@@ -146,7 +146,7 @@ export type Contact = {
 
 export type StudyAppDesign = {
   logo: string
-  backgroundColor: string
+  backgroundColor: ColorScheme
   welcomeScreenInfo: WelcomeScreenData
   studyTitle: string
   studySummaryBody: string
@@ -155,6 +155,14 @@ export type StudyAppDesign = {
   contactLeadInfo: Contact | undefined
   ethicsBoardInfo: Contact | undefined
   funder: Contact | undefined
+}
+
+export type ColorScheme = {
+  foreground?: string
+  background?: string
+  activated?: string
+  inactivated?: string
+  type?: string
 }
 
 export type BackgroundRecorders = {

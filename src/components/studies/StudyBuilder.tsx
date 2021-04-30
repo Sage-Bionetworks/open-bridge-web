@@ -176,39 +176,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       },
     )*/
 
-    // We need to make a deep copy of the study since we are going to be changing the
-    // phone number format in the study we send to the backend. This format is different than the
-    // one we are using on the front end.
-    const copyOfStudy = { ...builderInfo.study }
-    if (study.contacts) {
-      const irbContactIndex = study.contacts.findIndex(el => el.role === 'irb')
-      // If the irbContact and its phone exists, then update the phone number by converting
-      // it to the right format
-      if (
-        irbContactIndex > -1 &&
-        copyOfStudy.contacts![irbContactIndex].phone
-      ) {
-        const newIRBContact = { ...copyOfStudy.contacts![irbContactIndex] }
-        newIRBContact.phone = makePhone(newIRBContact.phone!.number || '')
-        copyOfStudy.contacts![irbContactIndex] = newIRBContact
-      }
-      const generalContactIndex = study.contacts.findIndex(
-        el => el.role === 'study_support',
-      )
-      // If the generalContact and its phone exists, then update the phone number by converting
-      // it to the right format
-      if (
-        generalContactIndex > -1 &&
-        study.contacts![generalContactIndex].phone
-      ) {
-        const newGeneralContact = { ...study.contacts![generalContactIndex] }
-        newGeneralContact.phone = makePhone(newGeneralContact.phone!.number)
-        copyOfStudy.contacts![generalContactIndex] = newGeneralContact
-      }
-    }
-
     try {
-      const newVersion = await StudyService.updateStudy(copyOfStudy, token!)
+      const newVersion = await StudyService.updateStudy(study, token!)
       const updatedStudy = { ...study, version: newVersion }
       setData({
         ...builderInfo,
@@ -287,86 +256,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     window.history.pushState(null, '', next)
     setBodyClass(next)
     setSection(next)
-  }
-
-  const handleAppDesignUpdate = (
-    data: StudyAppDesign,
-    updateType: PossibleStudyUpdates,
-  ) => {
-    setHasObjectChanged(true)
-    const updatedStudy = { ...builderInfo.study }
-    // update the study based on the update type specified
-    switch (updateType) {
-      case AppDesignUpdateTypes.UPDATE_STUDY_NAME:
-        updatedStudy.name = data.studyTitle
-        break
-      case AppDesignUpdateTypes.UPDATE_STUDY_COLOR:
-        updatedStudy.colorScheme = data.backgroundColor
-        break
-      case AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS:
-        const contacts: Contact[] = []
-        if (data.ethicsBoardInfo) {
-          contacts.push(data.ethicsBoardInfo)
-        }
-        if (data.funder) {
-          contacts.push(data.funder)
-        }
-        if (data.contactLeadInfo) {
-          contacts.push(data.contactLeadInfo)
-        }
-        if (data.leadPrincipleInvestigatorInfo) {
-          contacts.push(data.leadPrincipleInvestigatorInfo)
-        }
-        updatedStudy.contacts = contacts
-        break
-      case AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION:
-        updatedStudy.details = data.studySummaryBody
-        break
-      case AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER:
-        updatedStudy.irbProtocolId = data.irbProtocolId
-        break
-      case AppDesignUpdateTypes.UPDATE_STUDY_LOGO:
-        updatedStudy.studyLogoUrl = data.logo
-        break
-      case AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO:
-        updatedStudy.clientData.welcomeScreenData = {
-          ...data.welcomeScreenInfo,
-        }
-        break
-    }
-    setData({
-      ...builderInfo,
-      study: updatedStudy,
-    })
-  }
-
-  const handleAppDesignSave = () => {
-    const updatedStudy = { ...builderInfo.study }
-    const irbContact = updatedStudy.contacts?.find(el => el.role === 'irb')
-    // If a contact's email or phone is an empty string, then delete the field
-    // from the contact object.
-    if (irbContact?.email === '') {
-      delete irbContact.email
-    }
-    const irbPhoneNumber = irbContact?.phone?.number
-    if (irbPhoneNumber === '' || irbPhoneNumber === '+1') {
-      delete irbContact!.phone
-    }
-    const generalContact = updatedStudy.contacts?.find(
-      el => el.role === 'study_support',
-    )
-    if (generalContact?.email === '') {
-      delete generalContact.email
-    }
-    const generalContactPhone = generalContact?.phone?.number
-    if (generalContactPhone === '' || generalContactPhone === '+1') {
-      delete generalContact!.phone
-    }
-    setData({
-      ...builderInfo,
-      study: updatedStudy,
-    })
-    saveStudy(builderInfo.study)
   }
 
   const navButtons = (
@@ -519,27 +408,21 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
                         id={id}
-                        irbProtocolId={builderInfo.study.irbProtocolId || ''}
-                        contacts={
-                          builderInfo.study.contacts || ([] as Contact[])
-                        }
-                        welcomeScreenInfo={
-                          builderInfo.study.clientData.welcomeScreenData ||
-                          ({
-                            welcomeScreenBody: '',
-                            welcomeScreenFromText: '',
-                            welcomeScreenSalutation: '',
-                            welcomeScreenHeader: '',
-                            isUsingDefaultMessage: false,
-                            useOptionalDisclaimer: false,
-                          } as WelcomeScreenData)
-                        }
-                        studyName={builderInfo.study.name}
-                        studyDetails={builderInfo.study.details || ''}
-                        studyLogoUrl={builderInfo.study.studyLogoUrl || ''}
-                        colorScheme={builderInfo.study.colorScheme || ''}
-                        onSave={handleAppDesignSave}
-                        onUpdate={handleAppDesignUpdate}
+                        study={builderInfo.study}
+                        onSave={(updatedStudy: Study) => {
+                          setData({
+                            ...builderInfo,
+                            study: updatedStudy,
+                          })
+                          saveStudy(builderInfo.study)
+                        }}
+                        onUpdate={(study: Study) => {
+                          setHasObjectChanged(true)
+                          setData({
+                            ...builderInfo,
+                            study: study,
+                          })
+                        }}
                       >
                         {navButtons}
                       </AppDesign>
