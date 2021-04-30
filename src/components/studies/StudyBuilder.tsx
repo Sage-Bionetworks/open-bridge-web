@@ -16,14 +16,7 @@ import AssessmentService from '../../services/assessment.service'
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
 import { Schedule, StartEventId, StudySession } from '../../types/scheduling'
-import {
-  BackgroundRecorders,
-  StringDictionary,
-  Study,
-  StudyAppDesign,
-  WelcomeScreenData,
-  Contact,
-} from '../../types/types'
+import { BackgroundRecorders, StringDictionary, Study } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
@@ -37,7 +30,6 @@ import Scheduler from './scheduler/Scheduler'
 import { StudySection } from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
-import { makePhone } from '../../helpers/utility'
 
 const subtitles: StringDictionary<string> = {
   description: 'Description',
