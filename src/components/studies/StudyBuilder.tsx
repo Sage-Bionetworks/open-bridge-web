@@ -85,16 +85,6 @@ type StudyBuilderOwnProps = {}
 
 type StudyBuilderProps = StudyBuilderOwnProps & RouteComponentProps
 
-export enum AppDesignUpdateTypes {
-  UPDATE_STUDY_NAME = 'UPDATE_STUDY_NAME',
-  UPDATE_STUDY_COLOR = 'UPDATE_STUDY_COLOR',
-  UPDATE_STUDY_CONTACTS = 'UPDATE_STUDY_CONTACTS',
-  UPDATE_STUDY_DESCRIPTION = 'UPDATE_STUDY_DESCRIPTION',
-  UPDATE_STUDY_IRB_NUMBER = 'UPDATE_STUDY_IRB_NUMBER',
-  UPDATE_STUDY_LOGO = 'UPDATE_STUDY_LOGO',
-  UPDATE_WELCOME_SCREEN_INFO = 'UPDATE_WELCOME_SCREEN_INFO',
-}
-
 const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ...otherProps
 }) => {

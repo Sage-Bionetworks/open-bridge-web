@@ -44,7 +44,6 @@ import clsx from 'clsx'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
 import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
-import { AppDesignUpdateTypes } from '../StudyBuilder'
 
 const imgHeight = 70
 
@@ -314,6 +313,16 @@ type PreviewFile = {
   name: string
   size: number
   body?: string
+}
+
+enum AppDesignUpdateTypes {
+  UPDATE_STUDY_NAME = 'UPDATE_STUDY_NAME',
+  UPDATE_STUDY_COLOR = 'UPDATE_STUDY_COLOR',
+  UPDATE_STUDY_CONTACTS = 'UPDATE_STUDY_CONTACTS',
+  UPDATE_STUDY_DESCRIPTION = 'UPDATE_STUDY_DESCRIPTION',
+  UPDATE_STUDY_IRB_NUMBER = 'UPDATE_STUDY_IRB_NUMBER',
+  UPDATE_STUDY_LOGO = 'UPDATE_STUDY_LOGO',
+  UPDATE_WELCOME_SCREEN_INFO = 'UPDATE_WELCOME_SCREEN_INFO',
 }
 
 export type PossibleStudyUpdates =
