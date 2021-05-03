@@ -21,6 +21,7 @@ import { latoFont } from '../../style/theme'
 import { UserSessionData } from '../../types/types'
 import AccountLogin from '../account/AccountLogin'
 import Logout from '../account/Logout'
+import MobileDrawerMenuHeader from './MobileDrawerMenuHeader'
 
 const drawerWidth = '320px'
 
@@ -352,6 +353,9 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             keepMounted: true, // Better open performance on mobile.
           }}
         >
+          <MobileDrawerMenuHeader
+            setIsMobileOpen={setIsMobileOpen}
+          ></MobileDrawerMenuHeader>
           <MenuLinks
             className={classes.drawerMenuItem}
             activeClassName={classes.drawerMenuSelectedLink}

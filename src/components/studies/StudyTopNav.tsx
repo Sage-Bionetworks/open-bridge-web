@@ -16,9 +16,9 @@ import { useStudyInfoDataState } from '../../helpers/StudyInfoContext'
 import { latoFont } from '../../style/theme'
 import BreadCrumb from '../widgets/BreadCrumb'
 import HideWhen from '../widgets/HideWhen'
-import MTB_LOGO from '../../assets/logo_mtb.svg'
 import BLACK_X_ICON from '../../assets/black_x_icon.svg'
 import PARTICIPANTS_ICON from '../../assets/group_participants_icon.svg'
+import MobileDrawerMenuHeader from '../widgets/MobileDrawerMenuHeader'
 
 const useStyles = makeStyles(theme => ({
   toolbarStudyHeader: {
@@ -99,15 +99,6 @@ const useStyles = makeStyles(theme => ({
       paddingRight: theme.spacing(0.5),
     },
   },
-  mobileHomeOptionContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    width: '100%',
-    alignItems: 'center',
-    paddingRight: '24px',
-    height: '100px',
-    justifyContent: 'space-between',
-  },
   mobileToolBarLink: {
     fontFamily: latoFont,
     fontSize: '15px',
@@ -122,14 +113,11 @@ const useStyles = makeStyles(theme => ({
     },
     display: 'flex',
     alignItems: 'center',
-    borderLeft: "4px solid transparent"
+    borderLeft: '4px solid transparent',
   },
   mobileSelectedLink: {
     borderLeft: '4px solid #353535',
     fontWeight: 'bolder',
-  },
-  drawerBackground: {
-    backgroundColor: 'red',
   },
   blackXIcon: {
     width: '16px',
@@ -243,22 +231,9 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
             keepMounted: true, // Better open performance on mobile.
           }}
         >
-          <div className={classes.mobileHomeOptionContainer}>
-            <NavLink
-              to={'/'}
-              key="home"
-              className={classes.mobileToolBarLink}
-              style={{ backgroundColor: '#f5f5f5' }}
-            >
-              <img src={MTB_LOGO} style={{ marginRight: '12px' }}></img>
-            </NavLink>
-            <img
-              src={BLACK_X_ICON}
-              onClick={() => setIsMobileOpen(false)}
-              className={classes.blackXIcon}
-            ></img>
-          </div>
-
+          <MobileDrawerMenuHeader
+            setIsMobileOpen={setIsMobileOpen}
+          ></MobileDrawerMenuHeader>
           {links
             .filter(section => section.name)
             .map(section => (
