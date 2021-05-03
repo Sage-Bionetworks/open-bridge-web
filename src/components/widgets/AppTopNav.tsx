@@ -161,6 +161,10 @@ const useStyles = makeStyles(theme => ({
     height: '56px',
     textTransform: 'uppercase',
   },
+  drawerProfileOptions: {
+    justifyContent: 'flex-start',
+    height: '56px',
+  },
 }))
 
 type AppTopNavProps = {
@@ -192,7 +196,7 @@ const MenuLinksRhs: FunctionComponent<
   AppTopNavProps & {
     className: string
     activeClassName: string
-    isMobile?: boolean
+    isRightHandSide?: boolean
   }
 > = ({
   routes,
@@ -200,23 +204,30 @@ const MenuLinksRhs: FunctionComponent<
   className,
   activeClassName,
   children,
-  isMobile,
+  isRightHandSide,
 }) => {
   const classes = useStyles()
+
+  function getClassName(routeName: String, isRightHandSide: boolean) {
+    if (!isRightHandSide) return className
+    if (routeName === 'CREATE ACCOUNT') {
+      return clsx(
+        className,
+        classes.drawerAuthOptions,
+        classes.createAccountLink,
+      )
+    }
+    if (routeName === 'Edit Profile' || routeName === 'Settings') {
+      return clsx(className, classes.drawerProfileOptions)
+    }
+    return className
+  }
 
   let links: React.ReactNode[] = routes.map(route => (
     <NavLink
       to={route.path}
       key={`rhs_${route.name}`}
-      className={
-        route.name === 'CREATE ACCOUNT' && isMobile
-          ? clsx(
-              className,
-              classes.drawerAuthOptions,
-              classes.createAccountLink,
-            )
-          : className
-      }
+      className={getClassName(route.name, isRightHandSide || false)}
       activeClassName={activeClassName}
     >
       {route.name}
@@ -361,29 +372,41 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             activeClassName={classes.drawerMenuSelectedLink}
             routes={routes.filter(route => route.name && !route.isRhs)}
           />
+          <Divider
+            style={{
+              border: '1px solid #EAEAEA',
+              width: '100%',
+              marginTop: '28px',
+              marginBottom: '28px',
+            }}
+          ></Divider>
           <MenuLinksRhs
             className={classes.drawerMenuItem}
             activeClassName={classes.drawerMenuSelectedLink}
             routes={routes.filter(route => route.name && route.isRhs)}
             sessionData={sessionData}
-            isMobile={true}
+            isRightHandSide={true}
           >
-            <div className={classes.drawerMenuItem}>
-              <Logout
-                element={
-                  <Button
-                    variant="text"
-                    className={classes.drawerMenuItem}
-                    style={{
-                      paddingLeft: '0',
-                      backgroundColor: 'transparent',
-                    }}
-                  >
-                    Log out
-                  </Button>
-                }
-              ></Logout>
-            </div>
+            {/* <div
+              className={clsx(
+                classes.drawerMenuItem,
+                classes.drawerProfileOptions,
+              )}
+            > */}
+            <Logout
+              element={
+                <Button
+                  variant="text"
+                  className={clsx(
+                    classes.drawerMenuItem,
+                    classes.drawerProfileOptions,
+                  )}
+                >
+                  Sign out
+                </Button>
+              }
+            ></Logout>
+            {/* </div> */}
             <Button
               variant="text"
               className={clsx(
