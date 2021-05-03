@@ -7,7 +7,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Paper
+  Paper,
 } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import { makeStyles } from '@material-ui/core/styles'
@@ -22,7 +22,7 @@ import { UserSessionData } from '../../types/types'
 import AccountLogin from '../account/AccountLogin'
 import Logout from '../account/Logout'
 
-const drawerWidth = '285px'
+const drawerWidth = '320px'
 
 const useStyles = makeStyles(theme => ({
   toolbarWrapper: {
@@ -76,16 +76,35 @@ const useStyles = makeStyles(theme => ({
     flexShrink: 0,
   },
   drawerMenuItem: {
-    textDecoration: 'none',
+    // textDecoration: 'none',
 
-    flexShrink: 0,
+    // flexShrink: 0,
+    // fontFamily: latoFont,
+    // fontStyle: 'normal',
+    // fontWeight: 'normal',
+    // fontSize: '15px',
+    // lineHeight: '18px',
+    // color: '#393434',
+    // padding: theme.spacing(1.5, 0, 1.5, 5),
+    // border: "1px solid red"
     fontFamily: latoFont,
-    fontStyle: 'normal',
-    fontWeight: 'normal',
     fontSize: '15px',
-    lineHeight: '18px',
-    color: '#393434',
-    padding: theme.spacing(1.5, 0, 1.5, 5),
+    textDecoration: 'none',
+    color: 'inherit',
+    flexShrink: 0,
+    height: '64px',
+    boxSizing: 'border-box',
+    paddingLeft: theme.spacing(3),
+    '&:hover': {
+      backgroundColor: '#fff',
+    },
+    display: 'flex',
+    alignItems: 'center',
+    borderLeft: '4px solid transparent',
+  },
+  drawerMenuSelectedLink: {
+    borderLeft: '4px solid #353535',
+    fontWeight: 'bold',
   },
   drawerMenuSeparator: {
     height: '2px',
@@ -95,6 +114,7 @@ const useStyles = makeStyles(theme => ({
 
   drawerPaper: {
     width: drawerWidth,
+    backgroundColor: '#F8F8F8',
   },
 
   l: {
@@ -131,6 +151,15 @@ const useStyles = makeStyles(theme => ({
     },
   },
   userCircleActive: {},
+  createAccountLink: {
+    marginTop: theme.spacing(7),
+    borderBottom: '1px solid #EAEAEA',
+  },
+  drawerAuthOptions: {
+    justifyContent: 'flex-start',
+    height: '56px',
+    textTransform: 'uppercase',
+  },
 }))
 
 type AppTopNavProps = {
@@ -162,15 +191,31 @@ const MenuLinksRhs: FunctionComponent<
   AppTopNavProps & {
     className: string
     activeClassName: string
+    isMobile?: boolean
   }
-> = ({ routes, sessionData, className, activeClassName, children }) => {
+> = ({
+  routes,
+  sessionData,
+  className,
+  activeClassName,
+  children,
+  isMobile,
+}) => {
   const classes = useStyles()
 
   let links: React.ReactNode[] = routes.map(route => (
     <NavLink
       to={route.path}
       key={`rhs_${route.name}`}
-      className={className}
+      className={
+        route.name === 'CREATE ACCOUNT' && isMobile
+          ? clsx(
+              className,
+              classes.drawerAuthOptions,
+              classes.createAccountLink,
+            )
+          : className
+      }
       activeClassName={activeClassName}
     >
       {route.name}
@@ -309,17 +354,15 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
         >
           <MenuLinks
             className={classes.drawerMenuItem}
-            activeClassName={classes.selectedLink}
+            activeClassName={classes.drawerMenuSelectedLink}
             routes={routes.filter(route => route.name && !route.isRhs)}
           />
-
-          <Divider className={classes.drawerMenuSeparator} />
-
           <MenuLinksRhs
             className={classes.drawerMenuItem}
-            activeClassName={classes.selectedLink}
+            activeClassName={classes.drawerMenuSelectedLink}
             routes={routes.filter(route => route.name && route.isRhs)}
             sessionData={sessionData}
+            isMobile={true}
           >
             <div className={classes.drawerMenuItem}>
               <Logout
@@ -337,19 +380,16 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                 }
               ></Logout>
             </div>
-            <div className={classes.drawerMenuItem}>
-              <Button
-                variant="text"
-                className={classes.drawerMenuItem}
-                onClick={() => setIsSignInOpen(true)}
-                style={{
-                  paddingLeft: '0',
-                  backgroundColor: 'transparent',
-                }}
-              >
-                Sign in
-              </Button>
-            </div>
+            <Button
+              variant="text"
+              className={clsx(
+                classes.drawerAuthOptions,
+                classes.drawerMenuItem,
+              )}
+              onClick={() => setIsSignInOpen(true)}
+            >
+              Sign in
+            </Button>
           </MenuLinksRhs>
         </Drawer>
       </nav>
@@ -386,9 +426,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
           .filter(r => r.isRhs)
           .map(route => (
             <MenuItem key={route.name}>
-              <NavLink to={route.path} >
-                {route.name}
-              </NavLink>
+              <NavLink to={route.path}>{route.name}</NavLink>
             </MenuItem>
           ))}
 

@@ -251,7 +251,6 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               style={{ backgroundColor: '#f5f5f5' }}
             >
               <img src={MTB_LOGO} style={{ marginRight: '12px' }}></img>
-              Home
             </NavLink>
             <img
               src={BLACK_X_ICON}
