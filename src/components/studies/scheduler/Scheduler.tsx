@@ -97,7 +97,7 @@ const Scheduler: FunctionComponent<
 
   React.useEffect(() => {
     return run(StudyService.getStudyScheduleTimeline(schedule.guid, token!))
-  }, [run, schedule, token])
+  }, [run, schedule.version, token])
 
   const getStartEventIdFromSchedule = (
     schedule: Schedule,
@@ -197,7 +197,7 @@ const Scheduler: FunctionComponent<
           )}
         </div>
         <Box bgcolor="#fff" p={2} mt={3} key="scheduler">
-          <TimelinePlot something=""></TimelinePlot>
+          <TimelinePlot timeline={timeline} schedule={schedule}></TimelinePlot>
           <div className={classes.studyStartDateContainer}>
             <StudyStartDate
               style={{

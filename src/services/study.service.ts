@@ -203,7 +203,7 @@ async function getStudyScheduleTimeline(
     {},
     token,
   )
-  return result
+  return result.data
 }
 
 export default StudyService
