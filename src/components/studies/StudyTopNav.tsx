@@ -233,6 +233,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
         >
           <MobileDrawerMenuHeader
             setIsMobileOpen={setIsMobileOpen}
+            type="IN_STUDY"
           ></MobileDrawerMenuHeader>
           {links
             .filter(section => section.name)

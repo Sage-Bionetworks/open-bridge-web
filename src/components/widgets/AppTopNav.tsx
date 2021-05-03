@@ -366,6 +366,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
         >
           <MobileDrawerMenuHeader
             setIsMobileOpen={setIsMobileOpen}
+            type={sessionData ? 'LOGGED_IN' : 'NOT_LOGGED_IN'}
           ></MobileDrawerMenuHeader>
           <MenuLinks
             className={classes.drawerMenuItem}

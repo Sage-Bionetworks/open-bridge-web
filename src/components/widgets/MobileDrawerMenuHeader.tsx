@@ -12,19 +12,13 @@ const userStyles = makeStyles(theme => ({
   },
   mobileToolBarLink: {
     fontFamily: latoFont,
-    fontSize: '15px',
     textDecoration: 'none',
     color: 'inherit',
     flexShrink: 0,
-    height: '64px',
     boxSizing: 'border-box',
     paddingLeft: theme.spacing(3),
-    '&:hover': {
-      backgroundColor: '#fff',
-    },
     display: 'flex',
     alignItems: 'center',
-    borderLeft: '4px solid transparent',
   },
   mobileHomeOptionContainer: {
     display: 'flex',
@@ -39,22 +33,37 @@ const userStyles = makeStyles(theme => ({
 
 type MobileDrawHeaderProps = {
   setIsMobileOpen: Function
+  type: 'IN_STUDY' | 'LOGGED_IN' | 'NOT_LOGGED_IN'
 }
 
 const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> = ({
   setIsMobileOpen,
+  type,
 }) => {
   const classes = userStyles()
+  const logo = <img src={Logo} style={{ marginRight: '12px' }}></img>
+  const logoElement =
+    type === 'IN_STUDY' || type === 'LOGGED_IN' ? (
+      <NavLink
+        to={'/studies'}
+        key="studies"
+        className={classes.mobileToolBarLink}
+      >
+        {logo}
+      </NavLink>
+    ) : (
+      <a
+        target="_blank"
+        href="https://www.mobiletoolbox.org"
+        className={classes.mobileToolBarLink}
+      >
+        {logo}
+      </a>
+    )
+
   return (
     <div className={classes.mobileHomeOptionContainer}>
-      <NavLink
-        to={'/'}
-        key="home"
-        className={classes.mobileToolBarLink}
-        style={{ backgroundColor: '#f5f5f5' }}
-      >
-        <img src={Logo} style={{ marginRight: '12px' }}></img>
-      </NavLink>
+      {logoElement}
       <img
         src={BLACK_X_ICON}
         onClick={() => setIsMobileOpen(false)}
