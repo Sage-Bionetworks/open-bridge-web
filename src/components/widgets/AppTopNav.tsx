@@ -372,14 +372,17 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             activeClassName={classes.drawerMenuSelectedLink}
             routes={routes.filter(route => route.name && !route.isRhs)}
           />
-          <Divider
-            style={{
-              border: '1px solid #EAEAEA',
-              width: '100%',
-              marginTop: '28px',
-              marginBottom: '28px',
-            }}
-          ></Divider>
+          {sessionData && (
+            <Divider
+              style={{
+                border: '1px solid #EAEAEA',
+                width: '100%',
+                marginTop: '28px',
+                marginBottom: '28px',
+              }}
+            ></Divider>
+          )}
+
           <MenuLinksRhs
             className={classes.drawerMenuItem}
             activeClassName={classes.drawerMenuSelectedLink}
@@ -387,12 +390,6 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             sessionData={sessionData}
             isRightHandSide={true}
           >
-            {/* <div
-              className={clsx(
-                classes.drawerMenuItem,
-                classes.drawerProfileOptions,
-              )}
-            > */}
             <Logout
               element={
                 <Button
@@ -406,7 +403,6 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                 </Button>
               }
             ></Logout>
-            {/* </div> */}
             <Button
               variant="text"
               className={clsx(
