@@ -122,6 +122,7 @@ const useStyles = makeStyles(theme => ({
     },
     display: 'flex',
     alignItems: 'center',
+    borderLeft: "4px solid transparent"
   },
   mobileSelectedLink: {
     borderLeft: '4px solid #353535',
