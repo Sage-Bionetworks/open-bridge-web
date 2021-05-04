@@ -406,7 +406,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
               )}
               onClick={() => setIsSignInOpen(true)}
             >
-              Sign in
+              Login
             </Button>
           </MenuLinksRhs>
         </Drawer>
