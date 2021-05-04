@@ -26,9 +26,12 @@ const userStyles = makeStyles(theme => ({
     flexDirection: 'row',
     width: '100%',
     alignItems: 'center',
-    paddingRight: '24px',
+    paddingRight: theme.spacing(3),
     height: '100px',
     justifyContent: 'space-between',
+  },
+  logoImage: {
+    marginRight: theme.spacing(1.5),
   },
 }))
 
@@ -48,7 +51,7 @@ const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> = (
       onMouseEnter={() => setIsLogoHovered(true)}
       onMouseLeave={() => setIsLogoHovered(false)}
       src={isLogoHovered ? white_mtb_logo : Logo}
-      style={{ marginRight: '12px' }}
+      className={classes.logoImage}
     ></img>
   )
   const logoElement =

@@ -22,7 +22,6 @@ import { UserSessionData } from '../../types/types'
 import AccountLogin from '../account/AccountLogin'
 import Logout from '../account/Logout'
 import MobileDrawerMenuHeader from './MobileDrawerMenuHeader'
-import Link from '@material-ui/core/Link'
 
 const drawerWidth = '320px'
 
@@ -154,6 +153,12 @@ const useStyles = makeStyles(theme => ({
   drawerProfileOptions: {
     justifyContent: 'flex-start',
     height: '56px',
+  },
+  divider: {
+    border: '1px solid #EAEAEA',
+    width: '100%',
+    marginTop: theme.spacing(3.5),
+    marginBottom: theme.spacing(3.5),
   },
 }))
 
@@ -371,17 +376,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             routes={routes.filter(route => route.name && !route.isRhs)}
             setIsMobileOpen={setIsMobileOpen}
           />
-          {sessionData && (
-            <Divider
-              style={{
-                border: '1px solid #EAEAEA',
-                width: '100%',
-                marginTop: '28px',
-                marginBottom: '28px',
-              }}
-            ></Divider>
-          )}
-
+          {sessionData && <Divider className={classes.divider}></Divider>}
           <MenuLinksRhs
             className={classes.drawerMenuItem}
             activeClassName={classes.drawerMenuSelectedLink}
