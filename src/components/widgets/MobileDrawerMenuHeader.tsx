@@ -2,7 +2,8 @@ import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import Logo from '../../assets/logo_mtb.svg'
-import BLACK_X_ICON from '../../assets/black_x_icon.svg'
+import black_x_icon from '../../assets/black_x_icon.svg'
+import white_mtb_logo from '../../assets/white_logo_mtb.svg'
 import { latoFont } from '../../style/theme'
 
 const userStyles = makeStyles(theme => ({
@@ -41,7 +42,15 @@ const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> = (
   type,
 }) => {
   const classes = userStyles()
-  const logo = <img src={Logo} style={{ marginRight: '12px' }}></img>
+  const [isLogoHovered, setIsLogoHovered] = React.useState(false)
+  const logo = (
+    <img
+      onMouseEnter={() => setIsLogoHovered(true)}
+      onMouseLeave={() => setIsLogoHovered(false)}
+      src={isLogoHovered ? white_mtb_logo : Logo}
+      style={{ marginRight: '12px' }}
+    ></img>
+  )
   const logoElement =
     type === 'IN_STUDY' || type === 'LOGGED_IN' ? (
       <NavLink
@@ -65,7 +74,7 @@ const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> = (
     <div className={classes.mobileHomeOptionContainer}>
       {logoElement}
       <img
-        src={BLACK_X_ICON}
+        src={black_x_icon}
         onClick={() => setIsMobileOpen(false)}
         className={classes.blackXIcon}
       ></img>

@@ -16,7 +16,6 @@ import { useStudyInfoDataState } from '../../helpers/StudyInfoContext'
 import { latoFont } from '../../style/theme'
 import BreadCrumb from '../widgets/BreadCrumb'
 import HideWhen from '../widgets/HideWhen'
-import BLACK_X_ICON from '../../assets/black_x_icon.svg'
 import PARTICIPANTS_ICON from '../../assets/group_participants_icon.svg'
 import MobileDrawerMenuHeader from '../widgets/MobileDrawerMenuHeader'
 
