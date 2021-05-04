@@ -10,8 +10,6 @@ import SaveIcon from '@material-ui/icons/Save'
 import _ from 'lodash'
 import React, { FunctionComponent } from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { useAsync } from '../../../helpers/AsyncHook'
-import StudyService from '../../../services/study.service'
 import { poppinsFont } from '../../../style/theme'
 import {
   DWsEnum,
@@ -90,14 +88,7 @@ const Scheduler: FunctionComponent<
 
   const [schedule, setSchedule] = React.useState({ ..._schedule })
 
-  const { data: timeline, status, error, run, setData } = useAsync<any>({
-    status: 'PENDING',
-    data: [],
-  })
 
-  React.useEffect(() => {
-    return run(StudyService.getStudyScheduleTimeline(schedule.guid, token!))
-  }, [run, schedule.version, token])
 
   const getStartEventIdFromSchedule = (
     schedule: Schedule,
@@ -197,7 +188,7 @@ const Scheduler: FunctionComponent<
           )}
         </div>
         <Box bgcolor="#fff" p={2} mt={3} key="scheduler">
-          <TimelinePlot timeline={timeline} schedule={schedule}></TimelinePlot>
+          <TimelinePlot token={token} schedule={schedule}></TimelinePlot>
           <div className={classes.studyStartDateContainer}>
             <StudyStartDate
               style={{
