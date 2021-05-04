@@ -592,7 +592,7 @@ const AppDesign: React.FunctionComponent<
   }
 
   useEffect(() => {
-    // When the component mounts, pull out the informaton from the study object
+    // When the component mounts, pull out the information from the study object
     const contacts = study.contacts || ([] as Contact[])
     const leadPrincipleInvestigatorContact = contacts.find(
       el => el.role === 'principal_investigator',
@@ -610,9 +610,9 @@ const AppDesign: React.FunctionComponent<
       const formattedPhone = formatPhoneNumber(phoneWithoutZipcode)
       setIrbPhoneNumber(formattedPhone)
     }
-    const isWelcomeScreenDataIsEmpty =
+    const isWelcomeScreenDataEmpty =
       Object.keys(study.clientData.welcomeScreenData || {}).length == 0
-    const welcomeScreenData = isWelcomeScreenDataIsEmpty
+    const welcomeScreenData = isWelcomeScreenDataEmpty
       ? { ...appDesignProperties.welcomeScreenInfo }
       : { ...study.clientData.welcomeScreenData! }
     setAppDesignProperties(prevState => {

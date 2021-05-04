@@ -392,10 +392,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         id={id}
                         study={builderInfo.study}
                         onSave={(updatedStudy: Study) => {
-                          setData({
-                            ...builderInfo,
-                            study: updatedStudy,
-                          })
                           saveStudy(builderInfo.study)
                         }}
                         onUpdate={(study: Study) => {
