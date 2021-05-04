@@ -18,6 +18,7 @@ import BreadCrumb from '../widgets/BreadCrumb'
 import HideWhen from '../widgets/HideWhen'
 import PARTICIPANTS_ICON from '../../assets/group_participants_icon.svg'
 import MobileDrawerMenuHeader from '../widgets/MobileDrawerMenuHeader'
+import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
   toolbarStudyHeader: {
@@ -121,6 +122,10 @@ const useStyles = makeStyles(theme => ({
   blackXIcon: {
     width: '16px',
     height: '16px',
+  },
+  accessSettingsDrawerOption: {
+    display: 'flex',
+    marginTop: theme.spacing(4),
   },
 }))
 
@@ -250,9 +255,11 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
           <NavLink
             to={'/studies/:id/access-settings'.replace(':id', studyId)}
             key={'path-to-access-settings'}
-            className={classes.mobileToolBarLink}
+            className={clsx(
+              classes.mobileToolBarLink,
+              classes.accessSettingsDrawerOption,
+            )}
             activeClassName={classes.mobileSelectedLink}
-            style={{ display: 'flex', marginTop: '32px' }}
             onClick={() => setIsMobileOpen(false)}
           >
             <img src={PARTICIPANTS_ICON} style={{ marginRight: '20px' }}></img>
