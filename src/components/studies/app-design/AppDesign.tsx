@@ -8,6 +8,7 @@ import {
   Paper,
   Switch,
   Checkbox,
+  FormHelperText,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import ReactColorPicker from '@super-effective/react-color-picker'
@@ -16,7 +17,7 @@ import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
 import { ReactComponent as PhoneBottomImg } from '../../../assets/appdesign/phone_buttons.svg'
-import { bytesToSize } from '../../../helpers/utility'
+import { bytesToSize, makePhone } from '../../../helpers/utility'
 import {
   latoFont,
   playfairDisplayFont,
@@ -24,8 +25,11 @@ import {
   ThemeType,
 } from '../../../style/theme'
 import {
-  StudyAppDesign,
   StudyBuilderComponentProps,
+  Contact,
+  WelcomeScreenData,
+  StudyAppDesign,
+  Study,
 } from '../../../types/types'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
@@ -39,6 +43,7 @@ import DefaultLogo from '../../../assets/logo_mtb.svg'
 import clsx from 'clsx'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
+import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
 
 const imgHeight = 70
 
@@ -292,6 +297,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   salutationText: {
     marginTop: theme.spacing(2.5),
   },
+  errorText: {
+    marginTop: theme.spacing(-0.5),
+  },
 }))
 
 type UploadedFile = {
@@ -307,10 +315,29 @@ type PreviewFile = {
   body?: string
 }
 
+enum AppDesignUpdateTypes {
+  UPDATE_STUDY_NAME = 'UPDATE_STUDY_NAME',
+  UPDATE_STUDY_COLOR = 'UPDATE_STUDY_COLOR',
+  UPDATE_STUDY_CONTACTS = 'UPDATE_STUDY_CONTACTS',
+  UPDATE_STUDY_DESCRIPTION = 'UPDATE_STUDY_DESCRIPTION',
+  UPDATE_STUDY_IRB_NUMBER = 'UPDATE_STUDY_IRB_NUMBER',
+  UPDATE_STUDY_LOGO = 'UPDATE_STUDY_LOGO',
+  UPDATE_WELCOME_SCREEN_INFO = 'UPDATE_WELCOME_SCREEN_INFO',
+}
+
+export type PossibleStudyUpdates =
+  | AppDesignUpdateTypes.UPDATE_STUDY_NAME
+  | AppDesignUpdateTypes.UPDATE_STUDY_COLOR
+  | AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS
+  | AppDesignUpdateTypes.UPDATE_STUDY_LOGO
+  | AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER
+  | AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO
+  | AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION
+
 export interface AppDesignProps {
   id: string
-  currentAppDesign: StudyAppDesign
   onSave: Function
+  study: Study
 }
 
 function getPreviewForImage(file: File): PreviewFile {
@@ -375,8 +402,8 @@ const AppDesign: React.FunctionComponent<
   saveLoader,
   children,
   onUpdate,
-  currentAppDesign,
   onSave,
+  study,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
@@ -406,26 +433,40 @@ const AppDesign: React.FunctionComponent<
     setAppDesignProperties,
   ] = useState<StudyAppDesign>({
     logo: '',
-    backgroundColor: currentAppDesign.backgroundColor || '#6040FF',
-    welcomeScreenHeader: currentAppDesign.welcomeScreenHeader || '',
-    welcomeScreenBody: currentAppDesign.welcomeScreenBody || '',
-    welcomeScreenFromText: currentAppDesign.welcomeScreenFromText || '',
-    welcomeScreenSalutation: currentAppDesign.welcomeScreenSalutation || '',
-    studyTitle: currentAppDesign.studyTitle || '',
-    studySummaryBody: currentAppDesign.studySummaryBody || '',
-    leadPrincipleInvestigator: currentAppDesign.leadPrincipleInvestigator || '',
-    institution: currentAppDesign.institution || '',
-    funder: currentAppDesign.funder || '',
-    IRBApprovalNumber: currentAppDesign.IRBApprovalNumber || '',
-    contactLead: currentAppDesign.contactLead || '',
-    contactLeadRoleInStudy: currentAppDesign.contactLeadRoleInStudy || '',
-    contactLeadPhoneNumber: currentAppDesign.contactLeadPhoneNumber || '',
-    contactLeadEmail: currentAppDesign.contactLeadEmail || '',
-    nameOfEthicsBoard: currentAppDesign.nameOfEthicsBoard || '',
-    ethicsBoardPhoneNumber: currentAppDesign.ethicsBoardPhoneNumber || '',
-    ethicsBoardEmail: currentAppDesign.ethicsBoardEmail || '',
-    useOptionalDisclaimer: currentAppDesign.useOptionalDisclaimer || false,
-    isUsingDefaultMessage: currentAppDesign.isUsingDefaultMessage || false,
+    backgroundColor: {
+      foreground: '#6040FF',
+    },
+    welcomeScreenInfo: {
+      welcomeScreenBody: '',
+      welcomeScreenFromText: '',
+      welcomeScreenSalutation: '',
+      welcomeScreenHeader: '',
+      isUsingDefaultMessage: false,
+      useOptionalDisclaimer: false,
+    } as WelcomeScreenData,
+    studyTitle: '',
+    studySummaryBody: '',
+    irbProtocolId: '',
+    leadPrincipleInvestigatorInfo: undefined,
+    contactLeadInfo: undefined,
+    ethicsBoardInfo: undefined,
+    funder: undefined,
+  })
+
+  const [
+    generalContactPhoneNumber,
+    setGeneralContactPhoneNumber,
+  ] = React.useState('')
+  const [irbPhoneNumber, setIrbPhoneNumber] = React.useState('')
+
+  const [phoneNumberErrorState, setPhoneNumberErrorState] = React.useState({
+    isGeneralContactPhoneNumberValid: true,
+    isIrbPhoneNumberValid: true,
+  })
+
+  const [emailErrorState, setEmailErrorState] = React.useState({
+    isGeneralContactEmailValid: true,
+    isIrbEmailValid: true,
   })
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -438,26 +479,200 @@ const AppDesign: React.FunctionComponent<
     setPreviewFile(previewForImage)
   }
 
-  const updateAppDesignInfo = (color?: string) => {
-    const props = { ...appDesignProperties }
-    if (color) {
-      props.backgroundColor = color
+  const saveInfo = () => {
+    const phoneNumberHasError =
+      !phoneNumberErrorState.isGeneralContactPhoneNumberValid ||
+      !phoneNumberErrorState.isIrbPhoneNumberValid
+    const emailHasError =
+      !emailErrorState.isGeneralContactEmailValid ||
+      !emailErrorState.isIrbEmailValid
+    // This is a placeholder until Lynn finalizes what the error state will look like
+    if (phoneNumberHasError || emailHasError) {
+      alert(
+        'Please make sure that all fields are entered in the correct format.',
+      )
+      return
     }
-    onUpdate(props)
+    const updatedStudy = { ...study }
+    const irbContact = updatedStudy.contacts?.find(el => el.role === 'irb')
+    // If a contact's email or phone is an empty string, then delete the field
+    // from the contact object.
+    if (irbContact?.email === '') {
+      delete irbContact.email
+    }
+    const irbPhoneNumber = irbContact?.phone?.number
+    if (irbPhoneNumber === '' || irbPhoneNumber === '+1') {
+      delete irbContact!.phone
+    }
+    const generalContact = updatedStudy.contacts?.find(
+      el => el.role === 'study_support',
+    )
+    if (generalContact?.email === '') {
+      delete generalContact.email
+    }
+    const generalContactPhone = generalContact?.phone?.number
+    if (generalContactPhone === '' || generalContactPhone === '+1') {
+      delete generalContact!.phone
+    }
+    onSave(updatedStudy)
+  }
+
+  const updateAppDesignInfo = (
+    updateType: PossibleStudyUpdates,
+    color?: string,
+  ) => {
+    const appDesignProps = { ...appDesignProperties }
+    if (color) {
+      appDesignProps.backgroundColor.foreground = color
+    }
+    const updatedStudy = { ...study }
+    // update the study based on the update type specified
+    switch (updateType) {
+      case AppDesignUpdateTypes.UPDATE_STUDY_NAME:
+        updatedStudy.name = appDesignProps.studyTitle
+        break
+      case AppDesignUpdateTypes.UPDATE_STUDY_COLOR:
+        updatedStudy.colorScheme!.foreground =
+          appDesignProps.backgroundColor.foreground
+        break
+      case AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS:
+        const contacts: Contact[] = []
+        if (appDesignProps.ethicsBoardInfo) {
+          contacts.push(appDesignProps.ethicsBoardInfo)
+        }
+        if (appDesignProps.funder) {
+          contacts.push(appDesignProps.funder)
+        }
+        if (appDesignProps.contactLeadInfo) {
+          contacts.push(appDesignProps.contactLeadInfo)
+        }
+        if (appDesignProps.leadPrincipleInvestigatorInfo) {
+          contacts.push(appDesignProps.leadPrincipleInvestigatorInfo)
+        }
+        updatedStudy.contacts = contacts
+        break
+      case AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION:
+        updatedStudy.details = appDesignProps.studySummaryBody
+        break
+      case AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER:
+        updatedStudy.irbProtocolId = appDesignProps.irbProtocolId
+        break
+      case AppDesignUpdateTypes.UPDATE_STUDY_LOGO:
+        updatedStudy.studyLogoUrl = appDesignProps.logo
+        break
+      case AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO:
+        updatedStudy.clientData.welcomeScreenData = {
+          ...appDesignProps.welcomeScreenInfo,
+        }
+        break
+    }
+    onUpdate(updatedStudy)
   }
 
   const debouncedUpdateColor = useCallback(
-    _.debounce(color => updateAppDesignInfo(color), 1000),
+    _.debounce(
+      color =>
+        updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_COLOR, color),
+      1000,
+    ),
     [],
   )
 
+  const formatPhoneNumber = (phoneNumber: string) => {
+    if (phoneNumber.length != 10) {
+      return phoneNumber
+    }
+    return (
+      phoneNumber.slice(0, 3) +
+      '-' +
+      phoneNumber.slice(3, 6) +
+      '-' +
+      phoneNumber.slice(6)
+    )
+  }
+
   useEffect(() => {
-    updateAppDesignInfo()
+    // When the component mounts, pull out the information from the study object
+    const contacts = study.contacts || ([] as Contact[])
+    const leadPrincipleInvestigatorContact = contacts.find(
+      el => el.role === 'principal_investigator',
+    )
+    const funder = contacts.find(el => el.role === 'sponsor')
+    const irbInfo = contacts.find(el => el.role === 'irb')
+    const studySupport = contacts.find(el => el.role === 'study_support')
+    if (studySupport && studySupport.phone) {
+      const phoneWithoutZipcode = studySupport.phone.number?.replace('+1', '')
+      const formattedPhone = formatPhoneNumber(phoneWithoutZipcode)
+      setGeneralContactPhoneNumber(formattedPhone)
+    }
+    if (irbInfo && irbInfo.phone) {
+      const phoneWithoutZipcode = irbInfo.phone.number?.replace('+1', '')
+      const formattedPhone = formatPhoneNumber(phoneWithoutZipcode)
+      setIrbPhoneNumber(formattedPhone)
+    }
+    const isWelcomeScreenDataEmpty =
+      Object.keys(study.clientData.welcomeScreenData || {}).length == 0
+    const welcomeScreenData = isWelcomeScreenDataEmpty
+      ? { ...appDesignProperties.welcomeScreenInfo }
+      : { ...study.clientData.welcomeScreenData! }
+    setAppDesignProperties(prevState => {
+      return {
+        ...prevState,
+        leadPrincipleInvestigatorInfo: leadPrincipleInvestigatorContact,
+        funder: funder,
+        ethicsBoardInfo: irbInfo,
+        contactLeadInfo: studySupport,
+        logo: study.studyLogoUrl || '',
+        backgroundColor: study.colorScheme || {
+          ...appDesignProperties.backgroundColor,
+        },
+        welcomeScreenInfo: welcomeScreenData,
+        studyTitle: study.name || '',
+        studySummaryBody: study.details || '',
+        irbProtocolId: study.irbProtocolId || '',
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO)
   }, [
-    appDesignProperties.useOptionalDisclaimer,
-    appDesignProperties.isUsingDefaultMessage,
-    appDesignProperties.leadPrincipleInvestigator,
+    appDesignProperties.welcomeScreenInfo.useOptionalDisclaimer,
+    appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage,
   ])
+
+  useEffect(() => {
+    updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
+  }, [
+    appDesignProperties.leadPrincipleInvestigatorInfo?.name,
+    appDesignProperties.contactLeadInfo?.phone,
+    appDesignProperties.ethicsBoardInfo?.phone,
+  ])
+
+  const getContact = (
+    type: 'FUNDER' | 'ETHICS_BOARD' | 'LEAD_INVESTIGATOR' | 'CONTACT',
+  ) => {
+    if (type === 'FUNDER') {
+      return appDesignProperties.funder
+        ? { ...appDesignProperties.funder }
+        : ({ role: 'sponsor', name: '' } as Contact)
+    } else if (type === 'ETHICS_BOARD') {
+      return appDesignProperties.ethicsBoardInfo
+        ? { ...appDesignProperties.ethicsBoardInfo }
+        : ({ role: 'irb', name: '' } as Contact)
+    } else if (type === 'LEAD_INVESTIGATOR') {
+      return appDesignProperties.leadPrincipleInvestigatorInfo
+        ? { ...appDesignProperties.leadPrincipleInvestigatorInfo }
+        : ({ role: 'principal_investigator', name: '' } as Contact)
+    } else {
+      return appDesignProperties.contactLeadInfo
+        ? { ...appDesignProperties.contactLeadInfo }
+        : ({
+            role: 'study_support',
+            name: '',
+          } as Contact)
+    }
+  }
 
   return (
     <Box className={classes.root}>
@@ -477,12 +692,19 @@ const AppDesign: React.FunctionComponent<
             <Box marginTop="4px">
               <Switch
                 color="primary"
-                checked={!currentAppDesign.isUsingDefaultMessage}
+                checked={
+                  !appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
+                }
                 onChange={() =>
                   setAppDesignProperties(prevState => {
+                    const newWelcomeScreenData = {
+                      ...prevState.welcomeScreenInfo,
+                    }
+                    newWelcomeScreenData.isUsingDefaultMessage = !prevState
+                      .welcomeScreenInfo.isUsingDefaultMessage
                     return {
                       ...appDesignProperties,
-                      isUsingDefaultMessage: !prevState.isUsingDefaultMessage,
+                      welcomeScreenInfo: newWelcomeScreenData,
                     }
                   })
                 }
@@ -492,7 +714,8 @@ const AppDesign: React.FunctionComponent<
           </div>
           <div
             className={clsx(
-              appDesignProperties.isUsingDefaultMessage && classes.hideSection,
+              appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage &&
+                classes.hideSection,
             )}
           >
             <ol className={classes.steps}>
@@ -554,12 +777,15 @@ const AppDesign: React.FunctionComponent<
                 </p>
                 <Box width="250px" height="230px" marginLeft="-10px">
                   <ReactColorPicker
-                    color={appDesignProperties.backgroundColor}
+                    color={appDesignProperties.backgroundColor.foreground}
                     onChange={(currentColor: string) => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        backgroundColor: currentColor,
-                      })
+                      setAppDesignProperties(prevState => ({
+                        ...prevState,
+                        backgroundColor: {
+                          ...appDesignProperties.backgroundColor,
+                          foreground: currentColor,
+                        },
+                      }))
                       debouncedUpdateColor(currentColor)
                     }}
                   />
@@ -576,14 +802,26 @@ const AppDesign: React.FunctionComponent<
                       className={classes.headlineStyle}
                       id="headline-input"
                       placeholder="Welcome Headline"
-                      value={appDesignProperties.welcomeScreenHeader}
+                      value={
+                        appDesignProperties.welcomeScreenInfo
+                          .welcomeScreenHeader
+                      }
                       onChange={e => {
+                        const newWelcomeScreenData = {
+                          ...appDesignProperties.welcomeScreenInfo,
+                        }
+                        newWelcomeScreenData.welcomeScreenHeader =
+                          e.target.value
                         setAppDesignProperties({
                           ...appDesignProperties,
-                          welcomeScreenHeader: e.target.value,
+                          welcomeScreenInfo: newWelcomeScreenData,
                         })
                       }}
-                      onBlur={() => updateAppDesignInfo()}
+                      onBlur={() =>
+                        updateAppDesignInfo(
+                          AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
+                        )
+                      }
                       multiline
                       rows={2}
                       rowsMax={4}
@@ -598,14 +836,24 @@ const AppDesign: React.FunctionComponent<
                     </SimpleTextLabel>
                     <SimpleTextInput
                       id="outlined-textarea"
-                      value={appDesignProperties.welcomeScreenBody}
+                      value={
+                        appDesignProperties.welcomeScreenInfo.welcomeScreenBody
+                      }
                       onChange={e => {
+                        const newWelcomeScreenData = {
+                          ...appDesignProperties.welcomeScreenInfo,
+                        }
+                        newWelcomeScreenData.welcomeScreenBody = e.target.value
                         setAppDesignProperties({
                           ...appDesignProperties,
-                          welcomeScreenBody: e.target.value,
+                          welcomeScreenInfo: newWelcomeScreenData,
                         })
                       }}
-                      onBlur={() => updateAppDesignInfo()}
+                      onBlur={() =>
+                        updateAppDesignInfo(
+                          AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
+                        )
+                      }
                       multiline
                       rows={4}
                       rowsMax={6}
@@ -617,14 +865,26 @@ const AppDesign: React.FunctionComponent<
                     <SimpleTextLabel>Salutations</SimpleTextLabel>
                     <SimpleTextInput
                       id="salutations"
-                      value={appDesignProperties.welcomeScreenSalutation}
+                      value={
+                        appDesignProperties.welcomeScreenInfo
+                          .welcomeScreenSalutation
+                      }
                       onChange={e => {
+                        const newWelcomeScreenData = {
+                          ...appDesignProperties.welcomeScreenInfo,
+                        }
+                        newWelcomeScreenData.welcomeScreenSalutation =
+                          e.target.value
                         setAppDesignProperties({
                           ...appDesignProperties,
-                          welcomeScreenSalutation: e.target.value,
+                          welcomeScreenInfo: newWelcomeScreenData,
                         })
                       }}
-                      onBlur={() => updateAppDesignInfo()}
+                      onBlur={() =>
+                        updateAppDesignInfo(
+                          AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
+                        )
+                      }
                       multiline
                       rows={2}
                       rowsMax={4}
@@ -636,14 +896,26 @@ const AppDesign: React.FunctionComponent<
                     <SimpleTextLabel>From</SimpleTextLabel>
                     <SimpleTextInput
                       id="signature-textarea"
-                      value={appDesignProperties.welcomeScreenFromText}
+                      value={
+                        appDesignProperties.welcomeScreenInfo
+                          .welcomeScreenFromText
+                      }
                       onChange={e => {
+                        const newWelcomeScreenData = {
+                          ...appDesignProperties.welcomeScreenInfo,
+                        }
+                        newWelcomeScreenData.welcomeScreenFromText =
+                          e.target.value
                         setAppDesignProperties({
                           ...appDesignProperties,
-                          welcomeScreenFromText: e.target.value,
+                          welcomeScreenInfo: newWelcomeScreenData,
                         })
                       }}
-                      onBlur={() => updateAppDesignInfo()}
+                      onBlur={() =>
+                        updateAppDesignInfo(
+                          AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
+                        )
+                      }
                       multiline
                       rows={2}
                       rowsMax={4}
@@ -654,15 +926,23 @@ const AppDesign: React.FunctionComponent<
                   <Box marginTop="20px">Add optional disclaimer:</Box>
                   <div className={classes.optionalDisclaimerRow}>
                     <Checkbox
-                      checked={appDesignProperties.useOptionalDisclaimer}
+                      checked={
+                        appDesignProperties.welcomeScreenInfo
+                          .useOptionalDisclaimer
+                      }
                       inputProps={{ 'aria-label': 'primary checkbox' }}
                       className={classes.checkBox}
                       id="disclaimer-check-box"
                       onChange={() => {
                         setAppDesignProperties(prevState => {
+                          const newWelcomeScreenData = {
+                            ...prevState.welcomeScreenInfo,
+                          }
+                          newWelcomeScreenData.useOptionalDisclaimer = !prevState
+                            .welcomeScreenInfo.useOptionalDisclaimer
                           return {
                             ...appDesignProperties,
-                            useOptionalDisclaimer: !prevState.useOptionalDisclaimer,
+                            welcomeScreenInfo: newWelcomeScreenData,
                           }
                         })
                       }}
@@ -683,7 +963,7 @@ const AppDesign: React.FunctionComponent<
                     </div>
                   ) : (
                     <SaveButton
-                      onClick={() => onSave()}
+                      onClick={() => saveInfo()}
                       id="save-button-study-builder-1"
                     />
                   )}
@@ -691,7 +971,7 @@ const AppDesign: React.FunctionComponent<
               </Subsection>
             </ol>
           </div>
-          {appDesignProperties.isUsingDefaultMessage && (
+          {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage && (
             <div className={classes.hideSectionVisibility}>
               <ol className={classes.steps}>
                 <li></li>
@@ -705,15 +985,17 @@ const AppDesign: React.FunctionComponent<
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
           <Box className={`${classes.phone}`}>
             <PhoneTopBar
-              color={appDesignProperties.backgroundColor}
+              color={appDesignProperties.backgroundColor.foreground}
               previewFile={previewFile}
-              isUsingDefaultMessage={appDesignProperties.isUsingDefaultMessage}
+              isUsingDefaultMessage={
+                appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
+              }
             />
             <div className={`${classes.phoneInner}`}>
               <div className={classes.headlineStyle}>
-                {appDesignProperties.isUsingDefaultMessage
+                {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
                   ? defaultHeader
-                  : appDesignProperties.welcomeScreenHeader ||
+                  : appDesignProperties.welcomeScreenInfo.welcomeScreenHeader ||
                     'Welcome Headline'}
               </div>
               <p
@@ -722,21 +1004,22 @@ const AppDesign: React.FunctionComponent<
                   classes.firstPhoneScreenBodyText,
                 )}
               >
-                {appDesignProperties.isUsingDefaultMessage
+                {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
                   ? defaultStudyBody
-                  : appDesignProperties.welcomeScreenBody || 'Body copy'}
+                  : appDesignProperties.welcomeScreenInfo.welcomeScreenBody ||
+                    'Body copy'}
               </p>
               <div className={clsx(classes.bodyText, classes.salutationText)}>
-                {appDesignProperties.isUsingDefaultMessage
+                {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
                   ? defaultSalutations
-                  : appDesignProperties.welcomeScreenSalutation ||
-                    'Placeholder salutation,'}
+                  : appDesignProperties.welcomeScreenInfo
+                      .welcomeScreenSalutation || 'Placeholder salutation,'}
               </div>
               <div className={clsx(classes.bodyText, classes.fromText)}>
-                {appDesignProperties.isUsingDefaultMessage
+                {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
                   ? defaultFrom
-                  : appDesignProperties.welcomeScreenFromText ||
-                    'from placeholder'}
+                  : appDesignProperties.welcomeScreenInfo
+                      .welcomeScreenFromText || 'from placeholder'}
               </div>
             </div>
             <div className={classes.phoneBottom}></div>
@@ -769,7 +1052,11 @@ const AppDesign: React.FunctionComponent<
                         studyTitle: e.target.value,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo()}
+                    onBlur={() =>
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_NAME,
+                      )
+                    }
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -791,7 +1078,11 @@ const AppDesign: React.FunctionComponent<
                         studySummaryBody: e.target.value,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo()}
+                    onBlur={() =>
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION,
+                      )
+                    }
                     multiline
                     rows={8}
                     rowsMax={10}
@@ -808,13 +1099,16 @@ const AppDesign: React.FunctionComponent<
                     orgMembership={orgMembership!}
                     token={token!}
                     onChange={(investigatorSelected: string) => {
+                      const newStudyLead = getContact('LEAD_INVESTIGATOR')
+                      newStudyLead.name = investigatorSelected
                       setAppDesignProperties({
                         ...appDesignProperties,
-                        leadPrincipleInvestigator: investigatorSelected,
+                        leadPrincipleInvestigatorInfo: newStudyLead,
                       })
                     }}
                     currentInvestigatorSelected={
-                      appDesignProperties.leadPrincipleInvestigator
+                      appDesignProperties.leadPrincipleInvestigatorInfo?.name ||
+                      ''
                     }
                   ></LeadInvestigatorDropdown>
                   <p className={classes.principleInvestigatorsParagraph}>
@@ -839,14 +1133,23 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="institution-input"
                     placeholder="Name of Institution"
-                    value={appDesignProperties.institution}
+                    value={
+                      appDesignProperties.leadPrincipleInvestigatorInfo
+                        ?.affiliation || ''
+                    }
                     onChange={e => {
+                      const newStudyLead = getContact('LEAD_INVESTIGATOR')
+                      newStudyLead.affiliation = e.target.value
                       setAppDesignProperties({
                         ...appDesignProperties,
-                        institution: e.target.value,
+                        leadPrincipleInvestigatorInfo: newStudyLead,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo()}
+                    onBlur={() =>
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
+                    }
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -863,14 +1166,20 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="funder-input"
                     placeholder="Name of Funder(s)"
-                    value={appDesignProperties.funder}
+                    value={appDesignProperties.funder?.name || ''}
                     onChange={e => {
+                      const newFunder = getContact('FUNDER')
+                      newFunder.name = e.target.value
                       setAppDesignProperties({
                         ...appDesignProperties,
-                        funder: e.target.value,
+                        funder: newFunder,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo()}
+                    onBlur={() =>
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
+                    }
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -887,14 +1196,18 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="IRB-approval-input"
                     placeholder="XXXXXXXXXX"
-                    value={appDesignProperties.IRBApprovalNumber}
+                    value={appDesignProperties.irbProtocolId}
                     onChange={e => {
                       setAppDesignProperties({
                         ...appDesignProperties,
-                        IRBApprovalNumber: e.target.value,
+                        irbProtocolId: e.target.value,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo()}
+                    onBlur={() =>
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER,
+                      )
+                    }
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -915,14 +1228,20 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="contact-lead-input"
                     placeholder="First and Last name"
-                    value={appDesignProperties.contactLead}
+                    value={appDesignProperties.contactLeadInfo?.name || ''}
                     onChange={e => {
+                      const newContactLead = getContact('CONTACT')
+                      newContactLead.name = e.target.value
                       setAppDesignProperties({
                         ...appDesignProperties,
-                        contactLead: e.target.value,
+                        contactLeadInfo: newContactLead,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo()}
+                    onBlur={() =>
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
+                    }
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -939,14 +1258,20 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="role-in-study-input"
                     placeholder="Title of Position"
-                    value={appDesignProperties.contactLeadRoleInStudy}
+                    value={appDesignProperties.contactLeadInfo?.position || ''}
                     onChange={e => {
+                      const newContactLead = getContact('CONTACT')
+                      newContactLead.position = e.target.value
                       setAppDesignProperties({
                         ...appDesignProperties,
-                        contactLeadRoleInStudy: e.target.value,
+                        contactLeadInfo: newContactLead,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo()}
+                    onBlur={() =>
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
+                    }
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -955,7 +1280,12 @@ const AppDesign: React.FunctionComponent<
                     }}
                   />
                 </FormControl>
-                <FormControl>
+                <FormControl
+                  className={clsx(
+                    !phoneNumberErrorState.isGeneralContactPhoneNumberValid &&
+                      'error',
+                  )}
+                >
                   <SimpleTextLabel htmlFor="phone-number-contact-input">
                     Phone Number*
                   </SimpleTextLabel>
@@ -963,14 +1293,29 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="phone-number-contact-input"
                     placeholder="xxx-xxx-xxxx"
-                    value={appDesignProperties.contactLeadPhoneNumber}
+                    value={generalContactPhoneNumber}
                     onChange={e => {
+                      setGeneralContactPhoneNumber(e.target.value)
+                    }}
+                    onBlur={() => {
+                      const isInvalidPhoneNumber =
+                        isInvalidPhone(generalContactPhoneNumber) &&
+                        generalContactPhoneNumber !== ''
+                      setPhoneNumberErrorState(prevState => {
+                        return {
+                          ...prevState,
+                          isGeneralContactPhoneNumberValid: !isInvalidPhoneNumber,
+                        }
+                      })
+                      const newContactLead = getContact('CONTACT')
+                      newContactLead.phone = makePhone(
+                        generalContactPhoneNumber,
+                      )
                       setAppDesignProperties({
                         ...appDesignProperties,
-                        contactLeadPhoneNumber: e.target.value,
+                        contactLeadInfo: newContactLead,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -978,8 +1323,20 @@ const AppDesign: React.FunctionComponent<
                       style: SimpleTextInputStyles,
                     }}
                   />
+                  {!phoneNumberErrorState.isGeneralContactPhoneNumberValid && (
+                    <FormHelperText
+                      id="general-contact-phone-text"
+                      className={classes.errorText}
+                    >
+                      phone should be in the format: xxx-xxx-xxxx
+                    </FormHelperText>
+                  )}
                 </FormControl>
-                <FormControl>
+                <FormControl
+                  className={clsx(
+                    !emailErrorState.isGeneralContactEmailValid && 'error',
+                  )}
+                >
                   <SimpleTextLabel htmlFor="contact-email-input">
                     Email*
                   </SimpleTextLabel>
@@ -987,14 +1344,31 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="contact-email-input"
                     placeholder="Institutional Email"
-                    value={appDesignProperties.contactLeadEmail}
+                    value={appDesignProperties.contactLeadInfo?.email || ''}
                     onChange={e => {
+                      const newContactLead = getContact('CONTACT')
+                      newContactLead.email = e.target.value
                       setAppDesignProperties({
                         ...appDesignProperties,
-                        contactLeadEmail: e.target.value,
+                        contactLeadInfo: newContactLead,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo()}
+                    onBlur={() => {
+                      console.log(appDesignProperties.contactLeadInfo?.email)
+                      const validEmail =
+                        isValidEmail(
+                          appDesignProperties.contactLeadInfo?.email || '',
+                        ) || !appDesignProperties.contactLeadInfo?.email
+                      setEmailErrorState(prevState => {
+                        return {
+                          ...prevState,
+                          isGeneralContactEmailValid: validEmail,
+                        }
+                      })
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
+                    }}
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -1002,6 +1376,15 @@ const AppDesign: React.FunctionComponent<
                       style: SimpleTextInputStyles,
                     }}
                   />
+                  {!emailErrorState.isGeneralContactEmailValid && (
+                    <FormHelperText
+                      id="general-contact-email-text"
+                      className={classes.errorText}
+                    >
+                      email should be in a valid format such as:
+                      example@placeholder.com
+                    </FormHelperText>
+                  )}
                 </FormControl>
               </FormGroup>
             </Subsection>
@@ -1015,14 +1398,20 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="ethics-board-input"
                     placeholder="First and Last name"
-                    value={appDesignProperties.nameOfEthicsBoard}
+                    value={appDesignProperties.ethicsBoardInfo?.name || ''}
                     onChange={e => {
+                      const newEthicsBoard = getContact('ETHICS_BOARD')
+                      newEthicsBoard.name = e.target.value
                       setAppDesignProperties({
                         ...appDesignProperties,
-                        nameOfEthicsBoard: e.target.value,
+                        ethicsBoardInfo: newEthicsBoard,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo()}
+                    onBlur={() =>
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
+                    }
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -1031,22 +1420,38 @@ const AppDesign: React.FunctionComponent<
                     }}
                   />
                 </FormControl>
-                <FormControl>
+                <FormControl
+                  className={clsx(
+                    !phoneNumberErrorState.isIrbPhoneNumberValid && 'error',
+                  )}
+                >
                   <SimpleTextLabel htmlFor="ethics-phone-number-input">
                     Phone Number*
                   </SimpleTextLabel>
                   <SimpleTextInput
-                    className={classes.informationRowStyle}
+                    className={clsx(classes.informationRowStyle, 'error')}
                     id="ethics-phone-number-input"
                     placeholder="xxx-xxx-xxxx"
-                    value={appDesignProperties.ethicsBoardPhoneNumber}
+                    value={irbPhoneNumber}
                     onChange={e => {
+                      setIrbPhoneNumber(e.target.value)
+                    }}
+                    onBlur={() => {
+                      const isInvalidPhoneNumber =
+                        isInvalidPhone(irbPhoneNumber) && irbPhoneNumber !== ''
+                      setPhoneNumberErrorState(prevState => {
+                        return {
+                          ...prevState,
+                          isIrbPhoneNumberValid: !isInvalidPhoneNumber,
+                        }
+                      })
+                      const newEthicsBoard = getContact('ETHICS_BOARD')
+                      newEthicsBoard.phone = makePhone(irbPhoneNumber)
                       setAppDesignProperties({
                         ...appDesignProperties,
-                        ethicsBoardPhoneNumber: e.target.value,
+                        ethicsBoardInfo: newEthicsBoard,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo()}
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -1054,8 +1459,18 @@ const AppDesign: React.FunctionComponent<
                       style: SimpleTextInputStyles,
                     }}
                   />
+                  {!phoneNumberErrorState.isIrbPhoneNumberValid && (
+                    <FormHelperText
+                      id="ethics-phone-text"
+                      className={classes.errorText}
+                    >
+                      phone should be in the format: xxx-xxx-xxxx
+                    </FormHelperText>
+                  )}
                 </FormControl>
-                <FormControl>
+                <FormControl
+                  className={clsx(!emailErrorState.isIrbEmailValid && 'error')}
+                >
                   <SimpleTextLabel htmlFor="ethics-email-input">
                     Email*
                   </SimpleTextLabel>
@@ -1063,14 +1478,30 @@ const AppDesign: React.FunctionComponent<
                     className={classes.informationRowStyle}
                     id="ethics-email-input"
                     placeholder="Institutional Email"
-                    value={appDesignProperties.ethicsBoardEmail}
+                    value={appDesignProperties.ethicsBoardInfo?.email || ''}
                     onChange={e => {
+                      const newEthicsBoard = getContact('ETHICS_BOARD')
+                      newEthicsBoard.email = e.target.value
                       setAppDesignProperties({
                         ...appDesignProperties,
-                        ethicsBoardEmail: e.target.value,
+                        ethicsBoardInfo: newEthicsBoard,
                       })
                     }}
-                    onBlur={() => updateAppDesignInfo()}
+                    onBlur={() => {
+                      const validEmail =
+                        isValidEmail(
+                          appDesignProperties.ethicsBoardInfo?.email || '',
+                        ) || !appDesignProperties.ethicsBoardInfo?.email
+                      setEmailErrorState(prevState => {
+                        return {
+                          ...prevState,
+                          isIrbEmailValid: validEmail,
+                        }
+                      })
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                      )
+                    }}
                     multiline
                     rows={1}
                     rowsMax={1}
@@ -1078,6 +1509,15 @@ const AppDesign: React.FunctionComponent<
                       style: SimpleTextInputStyles,
                     }}
                   />
+                  {!emailErrorState.isIrbEmailValid && (
+                    <FormHelperText
+                      id="ethics-email-text"
+                      className={classes.errorText}
+                    >
+                      email should be in a valid format such as:
+                      example@placeholder.com
+                    </FormHelperText>
+                  )}
                 </FormControl>
               </FormGroup>
               <Box textAlign="left">
@@ -1087,7 +1527,7 @@ const AppDesign: React.FunctionComponent<
                   </div>
                 ) : (
                   <SaveButton
-                    onClick={() => onSave()}
+                    onClick={() => saveInfo()}
                     id="save-button-study-builder-2"
                   />
                 )}
@@ -1100,9 +1540,11 @@ const AppDesign: React.FunctionComponent<
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
           <Box className={classes.phone}>
             <PhoneTopBar
-              color={appDesignProperties.backgroundColor}
+              color={appDesignProperties.backgroundColor.foreground}
               previewFile={previewFile}
-              isUsingDefaultMessage={appDesignProperties.isUsingDefaultMessage}
+              isUsingDefaultMessage={
+                appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
+              }
             />
             <div className={classes.phoneInnerBottom}>
               <div className={classes.headlineStyle}>
@@ -1115,20 +1557,24 @@ const AppDesign: React.FunctionComponent<
               <StudySummaryRoles
                 type="Lead Principal Investigator"
                 name={
-                  appDesignProperties.leadPrincipleInvestigator || 'placeholder'
+                  appDesignProperties.leadPrincipleInvestigatorInfo?.name ||
+                  'placeholder'
                 }
               />
               <StudySummaryRoles
                 type="Institution"
-                name={appDesignProperties.institution || 'placeholder'}
+                name={
+                  appDesignProperties.leadPrincipleInvestigatorInfo
+                    ?.affiliation || 'placeholder'
+                }
               />
               <StudySummaryRoles
                 type="Funder"
-                name={appDesignProperties.funder || 'placeholder'}
+                name={appDesignProperties.funder?.name || 'placeholder'}
               />
               <StudySummaryRoles
                 type="IRB Approval Number"
-                name={appDesignProperties.IRBApprovalNumber || 'placeholder'}
+                name={appDesignProperties.irbProtocolId || 'placeholder'}
               />
             </div>
             <div
@@ -1144,15 +1590,19 @@ const AppDesign: React.FunctionComponent<
               <div className={classes.summaryRoles}>
                 <StudySummaryRoles
                   type={
-                    appDesignProperties.contactLeadRoleInStudy ||
+                    appDesignProperties.contactLeadInfo?.position ||
                     'Role in study'
                   }
-                  name={appDesignProperties.contactLead || 'Contact lead'}
+                  name={
+                    appDesignProperties.contactLeadInfo?.name || 'Contact lead'
+                  }
                 />
               </div>
               <ContactInformation
-                phoneNumber={appDesignProperties.contactLeadPhoneNumber}
-                email={appDesignProperties.contactLeadEmail}
+                phoneNumber={
+                  appDesignProperties.contactLeadInfo?.phone?.number || ''
+                }
+                email={appDesignProperties.contactLeadInfo?.email || ''}
               />
               <Divider className={classes.divider} />
               <p className={classes.bodyPhoneText}>
@@ -1163,13 +1613,16 @@ const AppDesign: React.FunctionComponent<
                 <StudySummaryRoles
                   type=""
                   name={
-                    appDesignProperties.nameOfEthicsBoard || 'IRB/Ethics Board'
+                    appDesignProperties.ethicsBoardInfo?.name ||
+                    'IRB/Ethics Board'
                   }
                 />
               </div>
               <ContactInformation
-                phoneNumber={appDesignProperties.ethicsBoardPhoneNumber}
-                email={appDesignProperties.ethicsBoardEmail}
+                phoneNumber={
+                  appDesignProperties.ethicsBoardInfo?.phone?.number || ''
+                }
+                email={appDesignProperties.ethicsBoardInfo?.email || ''}
               />
             </div>
             <div className={classes.phoneBottom}>

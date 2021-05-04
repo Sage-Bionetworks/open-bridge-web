@@ -9,23 +9,18 @@ import { useUserSessionDataState } from '../../helpers/AuthContext'
 import {
   StudyInfoData,
   useStudyInfoDataDispatch,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
 import { setBodyClass } from '../../helpers/utility'
 import AssessmentService from '../../services/assessment.service'
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
 import { Schedule, StartEventId, StudySession } from '../../types/scheduling'
-import {
-  BackgroundRecorders,
-  StringDictionary,
-  Study,
-  StudyAppDesign
-} from '../../types/types'
+import { BackgroundRecorders, StringDictionary, Study } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
-import AppDesign from './app-design/AppDesign'
+import AppDesign, { PossibleStudyUpdates } from './app-design/AppDesign'
 import EnrollmentTypeSelector from './enrollment-type-selector/EnrollmentTypeSelector'
 import Launch from './launch/Launch'
 import NavButtons from './NavButtons'
@@ -162,6 +157,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         setHasObjectChanged(false)
       },
     )*/
+
     try {
       const newVersion = await StudyService.updateStudy(study, token!)
       const updatedStudy = { ...study, version: newVersion }
@@ -169,7 +165,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         ...builderInfo,
         study: updatedStudy,
       })
-
+      if (error !== '') {
+        setError('')
+      }
       setHasObjectChanged(false)
       return updatedStudy
     } catch (e) {
@@ -261,6 +259,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       </Box>
     )
   }
+
   return (
     <>
       <Box display="flex" bgcolor="white">
@@ -391,24 +390,15 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
                         id={id}
-                        currentAppDesign={
-                          builderInfo.study.clientData?.appDesign ||
-                          ({} as StudyAppDesign)
-                        }
-                        onSave={() => {
+                        study={builderInfo.study}
+                        onSave={(updatedStudy: Study) => {
                           saveStudy(builderInfo.study)
                         }}
-                        onUpdate={(data: StudyAppDesign) => {
+                        onUpdate={(study: Study) => {
                           setHasObjectChanged(true)
-                          const updatedStudy = { ...builderInfo.study }
-                          updatedStudy.clientData = {
-                            ...(updatedStudy.clientData || {}),
-                            appDesign: data,
-                          }
-
                           setData({
                             ...builderInfo,
-                            study: updatedStudy,
+                            study: study,
                           })
                         }}
                       >

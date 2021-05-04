@@ -4,7 +4,7 @@ import {
   AssessmentWindow,
   Schedule,
   StartEventId,
-  StudySession
+  StudySession,
 } from '../types/scheduling'
 import { Study } from '../types/types'
 import AssessmentService from './assessment.service'

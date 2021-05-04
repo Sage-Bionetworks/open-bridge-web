@@ -4,7 +4,7 @@ import {
   Phone,
   Response,
   StringDictionary,
-  UserSessionData
+  UserSessionData,
 } from '../types/types'
 
 type RestMethod = 'POST' | 'GET' | 'DELETE'
@@ -223,7 +223,6 @@ export const generateNonambiguousCode = (length: number): string => {
   return result
 }
 
-//
 export const makePhone = (phone: string): Phone => {
   const number = phone?.includes('+1') ? phone : `+1${phone}`
   return {
@@ -237,11 +236,19 @@ export const isInvalidPhone = (phone: string): boolean => {
   return phone.match(phoneRegEx) === null
 }
 
+/*
+  This function is taken from: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
+*/
+export const isValidEmail = (email: string) => {
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  return re.test(String(email).toLowerCase())
+}
+
 export const setBodyClass = (next?: string) => {
   console.log('next', next)
   if (next === 'launch') {
-    window.document.body.classList.add("home");
-    } else {
-      window.document.body.classList.remove("home");
-    }
+    window.document.body.classList.add('home')
+  } else {
+    window.document.body.classList.remove('home')
+  }
 }
