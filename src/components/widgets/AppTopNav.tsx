@@ -22,6 +22,7 @@ import { UserSessionData } from '../../types/types'
 import AccountLogin from '../account/AccountLogin'
 import Logout from '../account/Logout'
 import MobileDrawerMenuHeader from './MobileDrawerMenuHeader'
+import Link from '@material-ui/core/Link'
 
 const drawerWidth = '320px'
 
@@ -165,14 +166,16 @@ const MenuLinks: FunctionComponent<
   AppTopNavProps & {
     className: string
     activeClassName: string
+    setIsMobileOpen: Function
   }
-> = ({ routes, className, activeClassName }) => {
+> = ({ routes, className, activeClassName, setIsMobileOpen }) => {
   let links = routes.map(route => (
     <NavLink
       to={route.path}
       key={route.name}
       className={className}
       activeClassName={activeClassName}
+      onClick={() => setIsMobileOpen(false)}
     >
       {route.name}
     </NavLink>
@@ -186,6 +189,7 @@ const MenuLinksRhs: FunctionComponent<
     className: string
     activeClassName: string
     isRightHandSide?: boolean
+    setIsMobileOpen: Function
   }
 > = ({
   routes,
@@ -194,6 +198,7 @@ const MenuLinksRhs: FunctionComponent<
   activeClassName,
   children,
   isRightHandSide,
+  setIsMobileOpen,
 }) => {
   const classes = useStyles()
 
@@ -218,6 +223,7 @@ const MenuLinksRhs: FunctionComponent<
       key={`rhs_${route.name}`}
       className={getClassName(route.name, isRightHandSide || false)}
       activeClassName={activeClassName}
+      onClick={() => setIsMobileOpen(false)}
     >
       {route.name}
     </NavLink>
@@ -295,6 +301,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
               className={classes.toolbarLink}
               activeClassName={classes.selectedLink}
               routes={routes.filter(route => route.name && !route.isRhs)}
+              setIsMobileOpen={setIsMobileOpen}
             />
           </Toolbar>
           <Toolbar
@@ -309,6 +316,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                 activeClassName={classes.selectedLink}
                 routes={routes.filter(route => route.name && route.isRhs)}
                 sessionData={sessionData}
+                setIsMobileOpen={setIsMobileOpen}
               >
                 <></>
                 <div className={classes.login}>
@@ -361,6 +369,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             className={classes.drawerMenuItem}
             activeClassName={classes.drawerMenuSelectedLink}
             routes={routes.filter(route => route.name && !route.isRhs)}
+            setIsMobileOpen={setIsMobileOpen}
           />
           {sessionData && (
             <Divider
@@ -379,6 +388,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             routes={routes.filter(route => route.name && route.isRhs)}
             sessionData={sessionData}
             isRightHandSide={true}
+            setIsMobileOpen={setIsMobileOpen}
           >
             <Logout
               element={

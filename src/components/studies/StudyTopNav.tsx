@@ -242,6 +242,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
                 key={section.path}
                 className={classes.mobileToolBarLink}
                 activeClassName={classes.mobileSelectedLink}
+                onClick={() => setIsMobileOpen(false)}
               >
                 {section.name}
               </NavLink>
@@ -252,6 +253,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
             className={classes.mobileToolBarLink}
             activeClassName={classes.mobileSelectedLink}
             style={{ display: 'flex', marginTop: '32px' }}
+            onClick={() => setIsMobileOpen(false)}
           >
             <img src={PARTICIPANTS_ICON} style={{ marginRight: '20px' }}></img>
             Access settings

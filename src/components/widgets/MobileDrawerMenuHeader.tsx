@@ -1,6 +1,5 @@
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
-import { NavLink } from 'react-router-dom'
 import Logo from '../../assets/logo_mtb.svg'
 import black_x_icon from '../../assets/black_x_icon.svg'
 import white_mtb_logo from '../../assets/white_logo_mtb.svg'
