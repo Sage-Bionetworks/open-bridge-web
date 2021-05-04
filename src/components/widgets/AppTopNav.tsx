@@ -77,23 +77,12 @@ const useStyles = makeStyles(theme => ({
     flexShrink: 0,
   },
   drawerMenuItem: {
-    // textDecoration: 'none',
-
-    // flexShrink: 0,
-    // fontFamily: latoFont,
-    // fontStyle: 'normal',
-    // fontWeight: 'normal',
-    // fontSize: '15px',
-    // lineHeight: '18px',
-    // color: '#393434',
-    // padding: theme.spacing(1.5, 0, 1.5, 5),
-    // border: "1px solid red"
     fontFamily: latoFont,
     fontSize: '15px',
     textDecoration: 'none',
     color: 'inherit',
     flexShrink: 0,
-    height: '64px',
+    height: '56px',
     boxSizing: 'border-box',
     paddingLeft: theme.spacing(3),
     '&:hover': {

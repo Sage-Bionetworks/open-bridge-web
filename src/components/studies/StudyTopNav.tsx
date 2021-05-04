@@ -104,7 +104,7 @@ const useStyles = makeStyles(theme => ({
     textDecoration: 'none',
     color: 'inherit',
     flexShrink: 0,
-    height: '64px',
+    height: '56px',
     boxSizing: 'border-box',
     paddingLeft: theme.spacing(3),
     '&:hover': {

@@ -5,6 +5,7 @@ import Logo from '../../assets/logo_mtb.svg'
 import black_x_icon from '../../assets/black_x_icon.svg'
 import white_mtb_logo from '../../assets/white_logo_mtb.svg'
 import { latoFont } from '../../style/theme'
+import Link from '@material-ui/core/Link'
 
 const userStyles = makeStyles(theme => ({
   blackXIcon: {
@@ -53,13 +54,14 @@ const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> = (
   )
   const logoElement =
     type === 'IN_STUDY' || type === 'LOGGED_IN' ? (
-      <NavLink
-        to={'/studies'}
-        key="studies"
+      <Link
+        color="inherit"
+        href={'/Studies'}
+        key="MY STUDIES"
         className={classes.mobileToolBarLink}
       >
         {logo}
-      </NavLink>
+      </Link>
     ) : (
       <a
         target="_blank"
