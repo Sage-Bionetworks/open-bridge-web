@@ -680,12 +680,13 @@ const AppDesign: React.FunctionComponent<
         <Box className={classes.fields}>
           <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
           <p className={classes.smallScreenText}>
-            When a participant first downloads the app, they will see a Welcome
-            screen.
+            When a participant downloads the app, they will be presented a
+            welcome screen after signing into the study.
             <br></br>
             <br></br>
-            You can customize this screen by adding your own logo, background
-            color, and message, or select a default message to be shown.
+            You can choose a default message or customize this screen below by
+            adding your logo, background color, and message. View how it would
+            be displayed to the right.
           </p>
           <div className={classes.switchContainer}>
             <Box marginRight="12px">Use default message</Box>
@@ -720,15 +721,13 @@ const AppDesign: React.FunctionComponent<
           >
             <ol className={classes.steps}>
               <Subsection heading="Upload Study Logo">
-                <p className={classes.intro}>
-                  Customize your study by uploading a logo framed into a 320px x
-                  80px size.
-                </p>
-
                 <div>
-                  {`Study Logo: 320px x 80px ${
-                    previewFile ? bytesToSize(previewFile.size) : ''
-                  }`}
+                  <div style={{ marginTop: '12px' }}>
+                    {`Study Logo: 320px x 80px ${
+                      previewFile ? bytesToSize(previewFile.size) : ''
+                    }`}
+                  </div>
+
                   <div
                     style={{
                       padding: '8px 1px',
