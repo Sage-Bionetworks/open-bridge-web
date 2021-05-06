@@ -174,7 +174,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginRight: theme.spacing(0.26),
     padding: theme.spacing(4),
     textAlign: 'left',
-    minHeight: `521px`,
+    minHeight: `500px`,
     borderRight: '4px solid black',
     borderLeft: '4px solid black',
   },
@@ -302,28 +302,35 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   errorText: {
     marginTop: theme.spacing(-0.5),
   },
-  welcomeScreenIndicatorPositionSideDrawerOpen: {
-    position: 'absolute',
-    marginLeft: theme.spacing(77.5),
-    [theme.breakpoints.down('md')]: {
-      marginLeft: theme.spacing(42.75),
-    },
-  },
-  welcomeScreenIndicatorPositionSideDrawerClosed: {
-    position: 'absolute',
-    marginLeft: theme.spacing(79.5),
-    [theme.breakpoints.down('md')]: {
-      marginLeft: theme.spacing(57.5),
-    },
-  },
   sectionOneIndicatorPosition: {
-    marginTop: theme.spacing(11),
+    position: 'absolute',
+    marginTop: theme.spacing(0.5),
+    marginLeft: theme.spacing(-1.5),
   },
   sectionTwoIndicatorPosition: {
-    marginTop: theme.spacing(16.5),
+    position: 'absolute',
+    marginTop: theme.spacing(6),
+    marginLeft: theme.spacing(-1.5),
   },
   sectionThreeIndicatorPosition: {
-    marginTop: theme.spacing(26.25),
+    position: 'absolute',
+    marginLeft: theme.spacing(-6.5),
+    marginTop: theme.spacing(-0.25),
+  },
+  sectionFourIndicatorPosition: {
+    marginTop: theme.spacing(-0.5),
+    position: 'absolute',
+    marginLeft: theme.spacing(-6.5),
+  },
+  sectionFiveIndicatorPosition: {
+    marginTop: theme.spacing(2.5),
+    position: 'absolute',
+    marginLeft: theme.spacing(-6.5),
+  },
+  sectionSixAndSevenIndicatorPosition: {
+    marginTop: theme.spacing(2.5),
+    position: 'absolute',
+    marginLeft: theme.spacing(-39.5),
   },
 }))
 
@@ -701,46 +708,11 @@ const AppDesign: React.FunctionComponent<
     }
   }
 
-  const firstPageSectionIndicators = [
-    <SectionIndicator
-      index={1}
-      className={clsx(
-        classes.sectionOneIndicatorPosition,
-        sideDrawerIsOpen &&
-          classes.welcomeScreenIndicatorPositionSideDrawerOpen,
-        !sideDrawerIsOpen &&
-          classes.welcomeScreenIndicatorPositionSideDrawerClosed,
-      )}
-    />,
-    <SectionIndicator
-      index={2}
-      className={clsx(
-        classes.sectionTwoIndicatorPosition,
-        sideDrawerIsOpen &&
-          classes.welcomeScreenIndicatorPositionSideDrawerOpen,
-        !sideDrawerIsOpen &&
-          classes.welcomeScreenIndicatorPositionSideDrawerClosed,
-      )}
-    />,
-    <SectionIndicator
-      index={3}
-      className={clsx(
-        classes.sectionThreeIndicatorPosition,
-        sideDrawerIsOpen &&
-          classes.welcomeScreenIndicatorPositionSideDrawerOpen,
-        !sideDrawerIsOpen &&
-          classes.welcomeScreenIndicatorPositionSideDrawerClosed,
-      )}
-    />,
-  ]
-
-  const secondPageSectionIndicators = []
-
   return (
     <Box className={classes.root}>
       <Paper className={classes.section} elevation={2} id="container">
         <Box className={classes.fields}>
-          {firstPageSectionIndicators}
+          {/* {firstPageSectionIndicators} */}
           <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
           <p className={classes.smallScreenText}>
             When a participant downloads the app, they will be presented a
@@ -1046,6 +1018,14 @@ const AppDesign: React.FunctionComponent<
         <Box className={classes.phoneArea}>
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
           <Box className={`${classes.phone}`}>
+            <SectionIndicator
+              index={1}
+              className={clsx(classes.sectionOneIndicatorPosition)}
+            />
+            <SectionIndicator
+              index={2}
+              className={clsx(classes.sectionTwoIndicatorPosition)}
+            />
             <PhoneTopBar
               color={appDesignProperties.backgroundColor.foreground}
               previewFile={previewFile}
@@ -1054,6 +1034,10 @@ const AppDesign: React.FunctionComponent<
               }
             />
             <div className={`${classes.phoneInner}`}>
+              <SectionIndicator
+                index={3}
+                className={clsx(classes.sectionThreeIndicatorPosition)}
+              />
               <div className={classes.headlineStyle}>
                 {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
                   ? defaultHeader
@@ -1240,34 +1224,6 @@ const AppDesign: React.FunctionComponent<
                     onBlur={() =>
                       updateAppDesignInfo(
                         AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
-                      )
-                    }
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                </FormControl>
-                <FormControl>
-                  <SimpleTextLabel htmlFor="IRB-approval-input">
-                    IRB Approval Number*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="IRB-approval-input"
-                    placeholder="XXXXXXXXXX"
-                    value={appDesignProperties.irbProtocolId}
-                    onChange={e => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        irbProtocolId: e.target.value,
-                      })
-                    }}
-                    onBlur={() =>
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER,
                       )
                     }
                     multiline
@@ -1581,6 +1537,34 @@ const AppDesign: React.FunctionComponent<
                     </FormHelperText>
                   )}
                 </FormControl>
+                <FormControl>
+                  <SimpleTextLabel htmlFor="IRB-approval-input">
+                    IRB Protocol ID*
+                  </SimpleTextLabel>
+                  <SimpleTextInput
+                    className={classes.informationRowStyle}
+                    id="IRB-approval-input"
+                    placeholder="XXXXXXXXXX"
+                    value={appDesignProperties.irbProtocolId}
+                    onChange={e => {
+                      setAppDesignProperties({
+                        ...appDesignProperties,
+                        irbProtocolId: e.target.value,
+                      })
+                    }}
+                    onBlur={() =>
+                      updateAppDesignInfo(
+                        AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER,
+                      )
+                    }
+                    multiline
+                    rows={1}
+                    rowsMax={1}
+                    inputProps={{
+                      style: SimpleTextInputStyles,
+                    }}
+                  />
+                </FormControl>
               </FormGroup>
               <Box textAlign="left">
                 {saveLoader ? (
@@ -1609,6 +1593,16 @@ const AppDesign: React.FunctionComponent<
               }
             />
             <div className={classes.phoneInnerBottom}>
+              <SectionIndicator
+                index={4}
+                className={clsx(
+                  classes.sectionFourIndicatorPosition,
+                  // sideDrawerIsOpen &&
+                  //   classes.welcomeScreenIndicatorPositionSideDrawerOpen,
+                  // !sideDrawerIsOpen &&
+                  //   classes.welcomeScreenIndicatorPositionSideDrawerClosed,
+                )}
+              />
               <div className={classes.headlineStyle}>
                 {appDesignProperties.studyTitle || 'Title of study...'}
               </div>
@@ -1616,6 +1610,10 @@ const AppDesign: React.FunctionComponent<
                 {appDesignProperties.studySummaryBody || 'Body...'}
               </p>
               <Divider className={classes.divider} />
+              <SectionIndicator
+                index={5}
+                className={clsx(classes.sectionFiveIndicatorPosition)}
+              />
               <StudySummaryRoles
                 type="Lead Principal Investigator"
                 name={
@@ -1634,10 +1632,6 @@ const AppDesign: React.FunctionComponent<
                 type="Funder"
                 name={appDesignProperties.funder?.name || 'placeholder'}
               />
-              <StudySummaryRoles
-                type="IRB Approval Number"
-                name={appDesignProperties.irbProtocolId || 'placeholder'}
-              />
             </div>
             <div
               className={`${classes.phoneInnerBottom} ${classes.phoneGrayBackground}`}
@@ -1650,6 +1644,10 @@ const AppDesign: React.FunctionComponent<
                 <strong>withdraw</strong> from the study, please contact:
               </p>
               <div className={classes.summaryRoles}>
+                <SectionIndicator
+                  index={6}
+                  className={clsx(classes.sectionSixAndSevenIndicatorPosition)}
+                />
                 <StudySummaryRoles
                   type={
                     appDesignProperties.contactLeadInfo?.position ||
@@ -1672,8 +1670,12 @@ const AppDesign: React.FunctionComponent<
                 please contact :
               </p>
               <div className={classes.summaryRoles}>
+                <SectionIndicator
+                  index={7}
+                  className={clsx(classes.sectionSixAndSevenIndicatorPosition)}
+                />
                 <StudySummaryRoles
-                  type=""
+                  type="IRB/Ethics Board of Record"
                   name={
                     appDesignProperties.ethicsBoardInfo?.name ||
                     'IRB/Ethics Board'
@@ -1686,6 +1688,17 @@ const AppDesign: React.FunctionComponent<
                 }
                 email={appDesignProperties.ethicsBoardInfo?.email || ''}
               />
+              <div
+                style={{
+                  marginLeft: '52px',
+                  marginTop: '10px',
+                  marginBottom: '20px',
+                }}
+              >
+                {appDesignProperties.irbProtocolId || 'placeholder'}
+                <br />
+                IRB Protocol ID
+              </div>
             </div>
             <div className={classes.phoneBottom}>
               <PhoneBottomImg title="phone bottom image" />
