@@ -31,7 +31,7 @@ import actionsReducer, {
   SessionScheduleAction
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
-import TimelinePlot from './TimelinePlot'
+import Timeline from './Timeline'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -188,7 +188,7 @@ const Scheduler: FunctionComponent<
           )}
         </div>
         <Box bgcolor="#fff" p={2} mt={3} key="scheduler">
-          <TimelinePlot token={token} schedule={schedule}></TimelinePlot>
+          <Timeline token={token} schedule={schedule}></Timeline>
           <div className={classes.studyStartDateContainer}>
             <StudyStartDate
               style={{
