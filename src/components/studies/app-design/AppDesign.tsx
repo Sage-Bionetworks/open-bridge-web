@@ -43,6 +43,7 @@ import DefaultLogo from '../../../assets/logo_mtb.svg'
 import clsx from 'clsx'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
+import SectionIndicator from './SectionIndicator'
 import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
 
 const imgHeight = 70
@@ -166,6 +167,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     minHeight: `521px`,
     borderRight: '3px solid black',
     borderLeft: '3px solid black',
+    paddingTop: theme.spacing(5.5),
   },
   phoneInnerBottom: {
     marginLeft: '5px',
@@ -300,6 +302,29 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   errorText: {
     marginTop: theme.spacing(-0.5),
   },
+  welcomeScreenIndicatorPositionSideDrawerOpen: {
+    position: 'absolute',
+    marginLeft: theme.spacing(77.5),
+    [theme.breakpoints.down('md')]: {
+      marginLeft: theme.spacing(42.75),
+    },
+  },
+  welcomeScreenIndicatorPositionSideDrawerClosed: {
+    position: 'absolute',
+    marginLeft: theme.spacing(79.5),
+    [theme.breakpoints.down('md')]: {
+      marginLeft: theme.spacing(57.5),
+    },
+  },
+  sectionOneIndicatorPosition: {
+    marginTop: theme.spacing(11),
+  },
+  sectionTwoIndicatorPosition: {
+    marginTop: theme.spacing(16.5),
+  },
+  sectionThreeIndicatorPosition: {
+    marginTop: theme.spacing(26.25),
+  },
 }))
 
 type UploadedFile = {
@@ -338,6 +363,7 @@ export interface AppDesignProps {
   id: string
   onSave: Function
   study: Study
+  sideDrawerIsOpen: boolean
 }
 
 function getPreviewForImage(file: File): PreviewFile {
@@ -404,6 +430,7 @@ const AppDesign: React.FunctionComponent<
   onUpdate,
   onSave,
   study,
+  sideDrawerIsOpen,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
@@ -674,10 +701,46 @@ const AppDesign: React.FunctionComponent<
     }
   }
 
+  const firstPageSectionIndicators = [
+    <SectionIndicator
+      index={1}
+      className={clsx(
+        classes.sectionOneIndicatorPosition,
+        sideDrawerIsOpen &&
+          classes.welcomeScreenIndicatorPositionSideDrawerOpen,
+        !sideDrawerIsOpen &&
+          classes.welcomeScreenIndicatorPositionSideDrawerClosed,
+      )}
+    />,
+    <SectionIndicator
+      index={2}
+      className={clsx(
+        classes.sectionTwoIndicatorPosition,
+        sideDrawerIsOpen &&
+          classes.welcomeScreenIndicatorPositionSideDrawerOpen,
+        !sideDrawerIsOpen &&
+          classes.welcomeScreenIndicatorPositionSideDrawerClosed,
+      )}
+    />,
+    <SectionIndicator
+      index={3}
+      className={clsx(
+        classes.sectionThreeIndicatorPosition,
+        sideDrawerIsOpen &&
+          classes.welcomeScreenIndicatorPositionSideDrawerOpen,
+        !sideDrawerIsOpen &&
+          classes.welcomeScreenIndicatorPositionSideDrawerClosed,
+      )}
+    />,
+  ]
+
+  const secondPageSectionIndicators = []
+
   return (
     <Box className={classes.root}>
       <Paper className={classes.section} elevation={2} id="container">
         <Box className={classes.fields}>
+          {firstPageSectionIndicators}
           <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
           <p className={classes.smallScreenText}>
             When a participant downloads the app, they will be presented a
