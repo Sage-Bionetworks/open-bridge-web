@@ -1477,6 +1477,22 @@ const AppDesign: React.FunctionComponent<
                     aria-label="gender"
                     value={irbRecordOption}
                     onChange={e => {
+                      if (e.target.value === 'Same Institutional Affiliation') {
+                        const studyLead = getContact('LEAD_INVESTIGATOR')
+                        const newEthicsBoard = getContact('ETHICS_BOARD')
+                        newEthicsBoard.name = studyLead.affiliation || ''
+                        setAppDesignProperties({
+                          ...appDesignProperties,
+                          ethicsBoardInfo: newEthicsBoard,
+                        })
+                      } else {
+                        const newEthicsBoard = getContact('ETHICS_BOARD')
+                        newEthicsBoard.name = ''
+                        setAppDesignProperties({
+                          ...appDesignProperties,
+                          ethicsBoardInfo: newEthicsBoard,
+                        })
+                      }
                       setIrbRecordOption(e.target.value)
                     }}
                     style={{ marginBottom: '8px' }}
@@ -1499,31 +1515,15 @@ const AppDesign: React.FunctionComponent<
                         classes.irbInput,
                       )}
                       id="ethics-board-input"
-                      placeholder="Name of IRB record"
-                      value={
-                        irbRecordOption === 'Same Institutional Affiliation'
-                          ? appDesignProperties.leadPrincipleInvestigatorInfo
-                              ?.affiliation || ''
-                          : appDesignProperties.ethicsBoardInfo?.name || ''
-                      }
+                      placeholder="Name IRB of record"
+                      value={appDesignProperties.ethicsBoardInfo?.name || ''}
                       onChange={e => {
-                        const isUsingInstitutionalAffiliation =
-                          irbRecordOption === 'Same Institutional Affiliation'
-                        if (isUsingInstitutionalAffiliation) {
-                          const newStudyLead = getContact('LEAD_INVESTIGATOR')
-                          newStudyLead.affiliation = e.target.value
-                          setAppDesignProperties({
-                            ...appDesignProperties,
-                            leadPrincipleInvestigatorInfo: newStudyLead,
-                          })
-                        } else {
-                          const newEthicsBoard = getContact('ETHICS_BOARD')
-                          newEthicsBoard.name = e.target.value
-                          setAppDesignProperties({
-                            ...appDesignProperties,
-                            ethicsBoardInfo: newEthicsBoard,
-                          })
-                        }
+                        const newEthicsBoard = getContact('ETHICS_BOARD')
+                        newEthicsBoard.name = e.target.value
+                        setAppDesignProperties({
+                          ...appDesignProperties,
+                          ethicsBoardInfo: newEthicsBoard,
+                        })
                       }}
                       onBlur={() =>
                         updateAppDesignInfo(
@@ -1540,6 +1540,9 @@ const AppDesign: React.FunctionComponent<
                           boxSizing: 'border-box',
                         },
                       }}
+                      disabled={
+                        irbRecordOption === 'Same Institutional Affiliation'
+                      }
                     />
                   </FormControl>
                 </Box>
@@ -1776,8 +1779,11 @@ const AppDesign: React.FunctionComponent<
                 <StudySummaryRoles
                   type="IRB/Ethics Board of Record"
                   name={
-                    appDesignProperties.ethicsBoardInfo?.name ||
-                    'IRB/Ethics Board'
+                    irbRecordOption === 'Same Institutional Affiliation'
+                      ? appDesignProperties.leadPrincipleInvestigatorInfo
+                          ?.affiliation || 'IRB/Ethics Board'
+                      : appDesignProperties.ethicsBoardInfo?.name ||
+                        'IRB/Ethics Board'
                   }
                 />
               </div>
