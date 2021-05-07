@@ -341,6 +341,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     width: '100%',
     marginBottom: theme.spacing(2),
   },
+  studyNameInput: {
+    width: '70%',
+  },
 }))
 
 type UploadedFile = {
@@ -769,7 +772,7 @@ const AppDesign: React.FunctionComponent<
             <ol className={classes.steps}>
               <Subsection heading="Upload Study Logo">
                 <div>
-                  <div style={{ marginTop: '12px' }}>
+                  <div style={{ marginTop: '12px', marginBottom: '8px' }}>
                     {`Study Logo: 320px x 80px ${
                       previewFile ? bytesToSize(previewFile.size) : ''
                     }`}
@@ -1097,10 +1100,13 @@ const AppDesign: React.FunctionComponent<
               <FormGroup className={classes.formFields}>
                 <FormControl className={classes.firstFormElement}>
                   <SimpleTextLabel htmlFor="study-name-input">
-                    Official Study Name*
+                    Study Name*
                   </SimpleTextLabel>
                   <SimpleTextInput
-                    className={classes.informationRowStyle}
+                    className={clsx(
+                      classes.informationRowStyle,
+                      classes.studyNameInput,
+                    )}
                     id="study-name-input"
                     placeholder="Headline"
                     value={appDesignProperties.studyTitle}
