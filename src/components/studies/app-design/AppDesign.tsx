@@ -1249,6 +1249,17 @@ const AppDesign: React.FunctionComponent<
               </FormGroup>
             </Subsection>
             <Subsection heading="General Contact and Support">
+              <Box
+                width="80%"
+                marginTop="12px"
+                fontSize="15px"
+                lineHeight="18px"
+                fontFamily="Lato"
+              >
+                For general questions about the study or to{' '}
+                <strong>withdraw</strong> from the study, who should the
+                participant contact?{' '}
+              </Box>
               <FormGroup className={classes.formFields}>
                 <FormControl className={classes.firstFormElement}>
                   <SimpleTextLabel htmlFor="contact-lead-input">
@@ -1419,6 +1430,17 @@ const AppDesign: React.FunctionComponent<
               </FormGroup>
             </Subsection>
             <Subsection heading="IRB or Ethics Board Contact">
+              <Box
+                width="80%"
+                marginTop="12px"
+                fontSize="15px"
+                lineHeight="18px"
+                fontFamily="Lato"
+                marginBottom="16px"
+              >
+                For questions about your rights as a research participant in
+                this study, please contact :
+              </Box>
               <FormGroup className={classes.formFields}>
                 <Box paddingLeft="2px" marginTop="8px">
                   What is your IRB of record?*
