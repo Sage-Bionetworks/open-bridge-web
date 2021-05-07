@@ -165,8 +165,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     padding: theme.spacing(4),
     textAlign: 'left',
     minHeight: `521px`,
-    borderRight: '3px solid black',
-    borderLeft: '3px solid black',
     paddingTop: theme.spacing(5.5),
   },
   phoneInnerBottom: {
@@ -314,7 +312,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   sectionThreeIndicatorPosition: {
     position: 'absolute',
-    marginLeft: theme.spacing(-6.5),
+    marginLeft: theme.spacing(-6),
     marginTop: theme.spacing(-0.25),
   },
   sectionFourIndicatorPosition: {
