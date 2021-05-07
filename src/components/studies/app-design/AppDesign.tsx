@@ -163,7 +163,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     wordWrap: 'break-word',
   },
   phoneInner: {
-    marginLeft: '6px',
+    marginLeft: theme.spacing(0.75),
     marginRight: theme.spacing(0.5),
     padding: theme.spacing(4),
     textAlign: 'left',
@@ -343,6 +343,12 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   studyNameInput: {
     width: '70%',
+  },
+  optionalDisclaimerTextOnPhone: {
+    fontSize: '12px',
+    fontStyle: 'italic',
+    paddingLeft: theme.spacing(4),
+    textAlign: 'left',
   },
 }))
 
@@ -1048,17 +1054,17 @@ const AppDesign: React.FunctionComponent<
                 appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
               }
             />
-            <div className={`${classes.phoneInner}`}>
+            <Box className={`${classes.phoneInner}`}>
               <SectionIndicator
                 index={3}
                 className={clsx(classes.sectionThreeIndicatorPosition)}
               />
-              <div className={classes.headlineStyle}>
+              <Box className={classes.headlineStyle}>
                 {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
                   ? defaultHeader
                   : appDesignProperties.welcomeScreenInfo.welcomeScreenHeader ||
                     'Welcome Headline'}
-              </div>
+              </Box>
               <p
                 className={clsx(
                   classes.bodyText,
@@ -1070,20 +1076,29 @@ const AppDesign: React.FunctionComponent<
                   : appDesignProperties.welcomeScreenInfo.welcomeScreenBody ||
                     'Body copy'}
               </p>
-              <div className={clsx(classes.bodyText, classes.salutationText)}>
+              <Box className={clsx(classes.bodyText, classes.salutationText)}>
                 {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
                   ? defaultSalutations
                   : appDesignProperties.welcomeScreenInfo
                       .welcomeScreenSalutation || 'Placeholder salutation,'}
-              </div>
-              <div className={clsx(classes.bodyText, classes.fromText)}>
+              </Box>
+              <Box className={clsx(classes.bodyText, classes.fromText)}>
                 {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
                   ? defaultFrom
                   : appDesignProperties.welcomeScreenInfo
                       .welcomeScreenFromText || 'from placeholder'}
-              </div>
+              </Box>
+            </Box>
+            <div
+              className={clsx(
+                classes.phoneBottom,
+                classes.optionalDisclaimerTextOnPhone,
+              )}
+            >
+              {appDesignProperties.welcomeScreenInfo.useOptionalDisclaimer
+                ? 'This is a research study and does not provide medical advice,diagnosis, or treatment'
+                : ''}
             </div>
-            <div className={classes.phoneBottom}></div>
           </Box>
         </Box>
       </Paper>
