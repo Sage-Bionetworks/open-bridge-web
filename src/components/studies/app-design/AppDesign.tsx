@@ -1185,7 +1185,7 @@ const AppDesign: React.FunctionComponent<
                 </FormControl>
                 <FormControl>
                   <SimpleTextLabel htmlFor="institution-input">
-                    Institution Affiliation*
+                    Institutional Affiliation*
                   </SimpleTextLabel>
                   <SimpleTextInput
                     className={classes.informationRowStyle}
@@ -1464,12 +1464,23 @@ const AppDesign: React.FunctionComponent<
                           : appDesignProperties.ethicsBoardInfo?.name || ''
                       }
                       onChange={e => {
-                        const newEthicsBoard = getContact('ETHICS_BOARD')
-                        newEthicsBoard.name = e.target.value
-                        setAppDesignProperties({
-                          ...appDesignProperties,
-                          ethicsBoardInfo: newEthicsBoard,
-                        })
+                        const isUsingInstitutionalAffiliation =
+                          irbRecordOption === 'Same Institutional Affiliation'
+                        if (isUsingInstitutionalAffiliation) {
+                          const newStudyLead = getContact('LEAD_INVESTIGATOR')
+                          newStudyLead.affiliation = e.target.value
+                          setAppDesignProperties({
+                            ...appDesignProperties,
+                            leadPrincipleInvestigatorInfo: newStudyLead,
+                          })
+                        } else {
+                          const newEthicsBoard = getContact('ETHICS_BOARD')
+                          newEthicsBoard.name = e.target.value
+                          setAppDesignProperties({
+                            ...appDesignProperties,
+                            ethicsBoardInfo: newEthicsBoard,
+                          })
+                        }
                       }}
                       onBlur={() =>
                         updateAppDesignInfo(
