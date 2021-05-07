@@ -9,6 +9,9 @@ import {
   Switch,
   Checkbox,
   FormHelperText,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import ReactColorPicker from '@super-effective/react-color-picker'
@@ -330,6 +333,14 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     position: 'absolute',
     marginLeft: theme.spacing(-39.5),
   },
+  irbInputFormControl: {
+    width: '100%',
+    marginBottom: theme.spacing(1),
+  },
+  irbInput: {
+    width: '100%',
+    marginBottom: theme.spacing(2),
+  },
 }))
 
 type UploadedFile = {
@@ -445,6 +456,9 @@ const AppDesign: React.FunctionComponent<
 
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
+  const [irbRecordOption, setIrbRecordOption] = useState<String>(
+    'Same Institutional Affiliation',
+  )
 
   const defaultHeader = 'Thanks for joining us!'
   const defaultStudyBody =
@@ -1406,36 +1420,75 @@ const AppDesign: React.FunctionComponent<
             </Subsection>
             <Subsection heading="IRB or Ethics Board Contact">
               <FormGroup className={classes.formFields}>
-                <FormControl className={classes.firstFormElement}>
-                  <SimpleTextLabel htmlFor="ethics-board-input">
-                    Name of IRB/Ethics Board*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="ethics-board-input"
-                    placeholder="First and Last name"
-                    value={appDesignProperties.ethicsBoardInfo?.name || ''}
+                <Box paddingLeft="2px" marginTop="8px">
+                  What is your IRB of record?*
+                </Box>
+                <Box
+                  width="100%"
+                  boxSizing="border-box"
+                  marginTop="8px"
+                  paddingLeft="48px"
+                  paddingRight="8px"
+                >
+                  <RadioGroup
+                    aria-label="gender"
+                    value={irbRecordOption}
                     onChange={e => {
-                      const newEthicsBoard = getContact('ETHICS_BOARD')
-                      newEthicsBoard.name = e.target.value
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        ethicsBoardInfo: newEthicsBoard,
-                      })
+                      setIrbRecordOption(e.target.value)
                     }}
-                    onBlur={() =>
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
-                      )
-                    }
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                </FormControl>
+                    style={{ marginBottom: '8px' }}
+                  >
+                    <FormControlLabel
+                      value="Same Institutional Affiliation"
+                      control={<Radio />}
+                      label="Same Institutional Affiliation"
+                    />
+                    <FormControlLabel
+                      value="Other"
+                      control={<Radio />}
+                      label="Other"
+                    />
+                  </RadioGroup>
+                  <FormControl className={classes.irbInputFormControl}>
+                    <SimpleTextInput
+                      className={clsx(
+                        classes.informationRowStyle,
+                        classes.irbInput,
+                      )}
+                      id="ethics-board-input"
+                      placeholder="Name of IRB record"
+                      value={
+                        irbRecordOption === 'Same Institutional Affiliation'
+                          ? appDesignProperties.leadPrincipleInvestigatorInfo
+                              ?.affiliation || ''
+                          : appDesignProperties.ethicsBoardInfo?.name || ''
+                      }
+                      onChange={e => {
+                        const newEthicsBoard = getContact('ETHICS_BOARD')
+                        newEthicsBoard.name = e.target.value
+                        setAppDesignProperties({
+                          ...appDesignProperties,
+                          ethicsBoardInfo: newEthicsBoard,
+                        })
+                      }}
+                      onBlur={() =>
+                        updateAppDesignInfo(
+                          AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
+                        )
+                      }
+                      rows={1}
+                      rowsMax={1}
+                      inputProps={{
+                        style: {
+                          fontSize: '15px',
+                          width: '100%',
+                          height: '44px',
+                          boxSizing: 'border-box',
+                        },
+                      }}
+                    />
+                  </FormControl>
+                </Box>
                 <FormControl
                   className={clsx(
                     !phoneNumberErrorState.isIrbPhoneNumberValid && 'error',
@@ -1593,13 +1646,7 @@ const AppDesign: React.FunctionComponent<
             <div className={classes.phoneInnerBottom}>
               <SectionIndicator
                 index={4}
-                className={clsx(
-                  classes.sectionFourIndicatorPosition,
-                  // sideDrawerIsOpen &&
-                  //   classes.welcomeScreenIndicatorPositionSideDrawerOpen,
-                  // !sideDrawerIsOpen &&
-                  //   classes.welcomeScreenIndicatorPositionSideDrawerClosed,
-                )}
+                className={clsx(classes.sectionFourIndicatorPosition)}
               />
               <div className={classes.headlineStyle}>
                 {appDesignProperties.studyTitle || 'Title of study...'}
