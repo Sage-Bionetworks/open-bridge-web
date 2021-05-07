@@ -6,26 +6,28 @@ import PlotlyChart from 'react-plotlyjs-ts'
 import { StudySession } from '../../../types/scheduling'
 
 const useStyles = makeStyles(theme => ({
-
   scroll: {
     '&::-webkit-scrollbar': {
+      height: '8px',
       '-webkit-appearance': 'none',
-      width: '4px',
+    },
+
+    /* Track */
+    '&::-webkit-scrollbar-track': {
+      //bgColor: '#000';
     },
 
     '&::-webkit-scrollbar-thumb': {
       borderRadius: '2px',
-      backgroundColor: 'rgba(0, 0, 0, .5)',
+      //color: 'blue',
+      background: '#C4C4C4',
       boxShadow: '0 0 1px rgba(255, 255, 255, .5)',
+      '&:hover': {
+        background: '#b4b4b4',
+      },
     },
   },
 }))
-
-type TimelineSession = {
-  guid: string
-  label: string
-  minutesToComplete: number
-}
 
 type TimelineScheduleItem = {
   instanceGuid: 'JYvaSpcTPot8TwZnFFFcLQ'
@@ -38,55 +40,40 @@ type TimelineScheduleItem = {
   assessments?: any[]
 }
 
+export type TimelineZoomLevel = 'Daily'| 'Weekly'| 'Monthly' |'Quarterly'
+
 export interface TimelinePlotProps {
   schedulingItems: TimelineScheduleItem[]
   scheduleLength: number
   sortedSessions: StudySession[]
+  zoomLevel: TimelineZoomLevel
 }
 
 const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   schedulingItems,
   scheduleLength,
   sortedSessions,
+  zoomLevel
 }: TimelinePlotProps) => {
- 
   const classes = useStyles()
 
-
-
-
-
-
-
-  const getTimesForSession = (sessionGuid: string): TimelineScheduleItem[] => {
-    return (
-      schedulingItems
-        ?.filter(i => i.refGuid === sessionGuid)
-        ?.map(i => {
-          delete i.assessments
-          return i
-        }) || []
-    )
+  const getTimesForSession = (sessionGuid: string): number[] => {
+    return schedulingItems
+      .filter(i => i.refGuid === sessionGuid)
+      .map(i => i.startDay + 1)
   }
 
-  function getXY(studySessionGuid: string, sessionIndex: number) {
+  function getXY(
+    studySessionGuid: string,
+    sessionIndex: number,
+    sessionsNumber: number,
+  ) {
     const times = getTimesForSession(studySessionGuid)
 
     let result: number[] = []
-    /* time dependent
-    const x = times.map(i => {
-      const startTimeAsTime = moment(i.startTime, ['h:m a', 'H:m'])
-      var stHrAsMin = startTimeAsTime.get('hours') * 60
-      var stMin = startTimeAsTime.get('minutes')
-      var fractionOfDay = (stHrAsMin + stMin) / (24 * 60)
-      //round to 2 decs
-      fractionOfDay = Math.round(fractionOfDay * 100) / 100
-      return i.startDay + 1+ fractionOfDay //add 1 since it's zeo based
-    })
 
-    result = x*/
     const grouppedStartDays = _.groupBy(
-      times.map(i => i.startDay + 1),
+      getTimesForSession(studySessionGuid),
       Math.floor,
     )
     Object.values(grouppedStartDays).forEach(groupArray => {
@@ -96,23 +83,43 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
       })
     })
 
-    const y = new Array(result.length).fill(sessionIndex)
+    const y = new Array(result.length).fill(sessionsNumber - sessionIndex + 1)
 
     return { x: result, y: y }
   }
-
+  const markers = [
+    0,
+    5,
+    1,
+    2,
+    13,
+    14,
+    19,
+    21,
+    22,
+    8,
+    15,
+    20,
+    23,
+    12,
+    16,
+    24,
+    9,
+    7,
+    6,
+    10,
+  ]
   const data = sortedSessions.map((session, index) => {
-    const { x, y } = getXY(session.guid!, index + 1)
+    const { x, y } = getXY(session.guid!, index + 1, sortedSessions.length)
 
     const m = {
       hoverinfo: 'skip',
       name: session.name,
       marker: {
         color: 'rgb(16, 32, 77)',
-        symbol: index,
+        symbol: markers[index],
         size: 10,
         line: {
-          //color: 'white',
           width: 2,
         },
       },
@@ -124,203 +131,85 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
     return m
   })
 
-  const arr = []
-  for (var i = 0; i < 48; i++) {
-    arr.push(i)
-   arr.push(i)
-    arr.push(i)
- //   arr.push(i+100)
-//arr.push(i+200)
-    //arr.push(i+300)
+  const getWidth = (lengthInDays: number, zoomLevel: TimelineZoomLevel)=> {
+    switch (zoomLevel) {
+      case "Monthly": 
+      return lengthInDays * 35
+      break
+      case "Weekly": 
+      return  lengthInDays * 162
+      break
+      case "Quarterly": 
+      return  lengthInDays * 11
+      break
+
+    }
   }
 
-  /*const data2 = arr.map((i, index) => {
-    const mod = index % 3
-    let clr = '#000'
-    switch (mod) {
-      case 0: 
-        clr = '#000'
-        break;
-      
-
-      case 1: 
-        clr = '#ddd'
-       break
-      
-
-      case 2: 
-        clr = '#fff'
-        break
-      
-    }
-
-    const m = {
-      hoverinfo: 'skip',
-
-      marker: {
-        color: clr,
-        // opacity:
-        symbol: i,
-        size: 15,
-        line: {
-          color:'Black',
-          width: 1,
-        },
-      },
-      type: 'scatter',
-      mode: 'markers', //'lines+markers',
-      x: [1, 2, 3, 4, 5, 6, 7],
-      y: [
-        -index * 2,
-        -index * 2,
-        -index * 2,
-        -index * 2,
-        -index * 2,
-        -index * 2,
-        -index * 2,
-      ],
-    }
-    return m
-  })*/
-
   const layout: Partial<Layout> = {
-    /* annotations: [
-        {
-            text: 'simple annotation',
-            x: 0,
-            xref: 'paper',
-            y: 0,
-            yref: 'paper'
-        }
-    ],*/
+    showlegend: false,
     paper_bgcolor: '#ECECEC',
     plot_bgcolor: '#ECECEC',
     hovermode: false, // no hover
     title: '', // no title
     autosize: false,
     //32px each tick
-    width: scheduleLength * 32,
+    width: getWidth(scheduleLength, zoomLevel),
     height: sortedSessions.length * 48,
 
     margin: {
-      l: 0,
+      l: 30,
       r: 0,
       b: 0,
-      t: 40,
-      pad: 10,
+      t: 20,
+      pad: 5,
     },
     xaxis: {
       zeroline: false,
 
       side: 'top',
-      title: 'time',
+      
+  
+    
       rangemode: 'tozero',
-      range: [0.1, scheduleLength + 1], //add 1 because it's 0-based originally
+      range: [0.9, scheduleLength + 1], //add 1 because it's 0-based originally
       constrain: 'range',
       fixedrange: true,
 
       ticklen: 0, //vertical height
-      dtick: 1, //how many is the tick
+      dtick: zoomLevel === 'Quarterly'? 10 : 1, //how many is the tick
     },
     yaxis: {
       zeroline: false,
       visible: true,
       rangemode: 'tozero',
+      showticklabels: false,
       title: '',
       fixedrange: true,
-      range: [0, sortedSessions.length + 1],
+      range: [0, sortedSessions.length + .5],
       dtick: 1,
 
-      gridwidth: 1, 
+      gridwidth: 1,
       gridcolor: 'Black',
- 
-
-      //   dtick = 0.75
-      /*     tickmode = 'array',
-        tickvals = [1, 3, 5, 7, 9, 11],
-        ticktext = ['One', 'Three', 'Five', 'Seven', 'Nine', 'Eleven']*/
     },
-    legend: {
-      orientation: 'h',
-      yanchor: 'bottom',
-      y: 1.2,
-      xanchor: 'left',
-      x: 0,
-    },
+  
   }
-/*
-  const layout2: Partial<Layout> = {
-    // autosize: true,
-    height: 4000,
 
-    margin: {
-      l: 0,
-      r: 0,
-      b: 0,
-      t: 0,
-      pad: 10,
-    },
-
-    yaxis: {
-    
-      visible: true,
-      dtick: 2,
-      zeroline: false,
-   
-     // rangemode: 'tozero',
-      title: '',
-     //fixedrange: true,
-     // range: [0, sessions.length + 1],
-   
-
-      gridwidth: 1, 
-      gridcolor: 'Black',
-    }
-    /*xaxis: {
-      zeroline: false,
-
-      side: 'top',
-      title: 'time',
-      rangemode: 'tozero',
-      range: [.1, scheduleLength + 1], //add 1 because it's 0-based originally
-      constrain: 'range',
-      fixedrange: true,
- 
-      ticklen: 0, //vertical height
-      dtick: 1, //how many is the tick
-    },
-    yaxis: {
-      zeroline: false,
-      visible: false,
-      rangemode: 'tozero',
-      title: 'sessions',
-      fixedrange: true,
-      range: [0, sessions.length + 1],
-      //   dtick = 0.75
-      /*     tickmode = 'array',
-        tickvals = [1, 3, 5, 7, 9, 11],
-        ticktext = ['One', 'Three', 'Five', 'Seven', 'Nine', 'Eleven']*/
-    // },
-  /*} */
-
-  const config = { scrollZoom: false }
+  const config = { scrollZoom: false, displayModeBar: false }
 
   return (
-
-<>
-     { /*<div style={{ width: '100%' }}>
-        <PlotlyChart data={data2} layout={layout2} config={config} />
-  </div>*/}
-
+    <>
       <div
-        style={{ overflow: 'scroll', width: '100%' }}
+        style={{ overflow: 'scroll', width: '100%', position: 'relative' }}
         className={classes.scroll}
+
       >
-        <div style={{ width: '3000px' }}>
+        <div style={{position: 'absolute',top: '-4px', left: '3px', zIndex: 1000 }}>Day</div>
+        <div style={{ width: `${getWidth(scheduleLength, zoomLevel)}px` }}>
           <PlotlyChart data={data} layout={layout} config={config} />
         </div>
       </div>
-   </>
+    </>
   )
 }
 
