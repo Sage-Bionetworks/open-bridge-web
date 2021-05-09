@@ -31,7 +31,12 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'space-between',
   },
   logoImage: {
-    marginRight: theme.spacing(1.5),
+    backgroundImage: 'url(' + RegularMTBLogo + ')',
+    width: '40px',
+    height: '40px',
+    '&:hover': {
+      backgroundImage: 'url(' + WhiteMTBLogo + ')',
+    },
   },
 }))
 
@@ -45,16 +50,7 @@ const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> = (
   type,
 }) => {
   const classes = useStyles()
-  const [isLogoHovered, setIsLogoHovered] = React.useState(false)
-
-  const logo = (
-    <img
-      onMouseEnter={() => setIsLogoHovered(true)}
-      onMouseLeave={() => setIsLogoHovered(false)}
-      src={isLogoHovered ? WhiteMTBLogo : RegularMTBLogo}
-      className={classes.logoImage}
-    ></img>
-  )
+  const logo = <div className={classes.logoImage}></div>
   const logoElement =
     type === 'IN_STUDY' || type === 'LOGGED_IN' ? (
       <Link
