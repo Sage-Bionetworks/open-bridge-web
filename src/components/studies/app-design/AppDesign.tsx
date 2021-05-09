@@ -648,19 +648,19 @@ const AppDesign: React.FunctionComponent<
 
   useEffect(() => {
     // When the component mounts, pull out the information from the study object
-    const contacts = study.contacts || ([] as Contact[])
+    const contacts = study.contacts || []
     const leadPrincipleInvestigatorContact = contacts.find(
       el => el.role === 'principal_investigator',
     )
     const funder = contacts.find(el => el.role === 'sponsor')
     const irbInfo = contacts.find(el => el.role === 'irb')
     const studySupport = contacts.find(el => el.role === 'study_support')
-    if (studySupport && studySupport.phone) {
+    if (studySupport?.phone) {
       const phoneWithoutZipcode = studySupport.phone.number?.replace('+1', '')
       const formattedPhone = formatPhoneNumber(phoneWithoutZipcode)
       setGeneralContactPhoneNumber(formattedPhone)
     }
-    if (irbInfo && irbInfo.phone) {
+    if (irbInfo?.phone) {
       const phoneWithoutZipcode = irbInfo.phone.number?.replace('+1', '')
       const formattedPhone = formatPhoneNumber(phoneWithoutZipcode)
       setIrbPhoneNumber(formattedPhone)
@@ -702,6 +702,7 @@ const AppDesign: React.FunctionComponent<
     appDesignProperties.leadPrincipleInvestigatorInfo?.name,
     appDesignProperties.contactLeadInfo?.phone,
     appDesignProperties.ethicsBoardInfo?.phone,
+    appDesignProperties.ethicsBoardInfo?.name,
   ])
 
   const getContact = (
@@ -1481,6 +1482,7 @@ const AppDesign: React.FunctionComponent<
                         const studyLead = getContact('LEAD_INVESTIGATOR')
                         const newEthicsBoard = getContact('ETHICS_BOARD')
                         newEthicsBoard.name = studyLead.affiliation || ''
+                        console.log('new ethics board info', newEthicsBoard)
                         setAppDesignProperties({
                           ...appDesignProperties,
                           ethicsBoardInfo: newEthicsBoard,
