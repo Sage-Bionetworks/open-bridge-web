@@ -1,12 +1,12 @@
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
-import Logo from '../../assets/logo_mtb.svg'
-import black_x_icon from '../../assets/black_x_icon.svg'
-import white_mtb_logo from '../../assets/white_logo_mtb.svg'
+import RegularMTBLogo from '../../assets/logo_mtb.svg'
+import BlackXIcon from '../../assets/black_x_icon.svg'
+import WhiteMTBLogo from '../../assets/white_logo_mtb.svg'
 import { latoFont } from '../../style/theme'
 import Link from '@material-ui/core/Link'
 
-const userStyles = makeStyles(theme => ({
+const useStyles = makeStyles(theme => ({
   blackXIcon: {
     width: '16px',
     height: '16px',
@@ -44,13 +44,14 @@ const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> = (
   setIsMobileOpen,
   type,
 }) => {
-  const classes = userStyles()
+  const classes = useStyles()
   const [isLogoHovered, setIsLogoHovered] = React.useState(false)
+
   const logo = (
     <img
       onMouseEnter={() => setIsLogoHovered(true)}
       onMouseLeave={() => setIsLogoHovered(false)}
-      src={isLogoHovered ? white_mtb_logo : Logo}
+      src={isLogoHovered ? WhiteMTBLogo : RegularMTBLogo}
       className={classes.logoImage}
     ></img>
   )
@@ -78,7 +79,7 @@ const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> = (
     <div className={classes.mobileHomeOptionContainer}>
       {logoElement}
       <img
-        src={black_x_icon}
+        src={BlackXIcon}
         onClick={() => setIsMobileOpen(false)}
         className={classes.blackXIcon}
       ></img>
