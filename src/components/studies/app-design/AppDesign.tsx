@@ -465,9 +465,10 @@ const AppDesign: React.FunctionComponent<
 
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [irbRecordOption, setIrbRecordOption] = useState<String>(
-    'Same Institutional Affiliation',
-  )
+  const [
+    irbNameSameAsInstitution,
+    setIrbNameSameAsInstitution,
+  ] = useState<boolean>(true)
 
   const defaultHeader = 'Thanks for joining us!'
   const defaultStudyBody =
@@ -670,6 +671,9 @@ const AppDesign: React.FunctionComponent<
     const welcomeScreenData = isWelcomeScreenDataEmpty
       ? { ...appDesignProperties.welcomeScreenInfo }
       : { ...study.clientData.welcomeScreenData! }
+    setIrbNameSameAsInstitution(
+      irbInfo?.name === leadPrincipleInvestigatorContact?.affiliation,
+    )
     setAppDesignProperties(prevState => {
       return {
         ...prevState,
@@ -1476,26 +1480,24 @@ const AppDesign: React.FunctionComponent<
                 >
                   <RadioGroup
                     aria-label="gender"
-                    value={irbRecordOption}
+                    value={
+                      irbNameSameAsInstitution
+                        ? 'Same Institutional Affiliation'
+                        : 'Other'
+                    }
                     onChange={e => {
                       if (e.target.value === 'Same Institutional Affiliation') {
                         const studyLead = getContact('LEAD_INVESTIGATOR')
                         const newEthicsBoard = getContact('ETHICS_BOARD')
                         newEthicsBoard.name = studyLead.affiliation || ''
-                        console.log('new ethics board info', newEthicsBoard)
-                        setAppDesignProperties({
-                          ...appDesignProperties,
-                          ethicsBoardInfo: newEthicsBoard,
-                        })
-                      } else {
-                        const newEthicsBoard = getContact('ETHICS_BOARD')
-                        newEthicsBoard.name = ''
                         setAppDesignProperties({
                           ...appDesignProperties,
                           ethicsBoardInfo: newEthicsBoard,
                         })
                       }
-                      setIrbRecordOption(e.target.value)
+                      setIrbNameSameAsInstitution(
+                        e.target.value === 'Same Institutional Affiliation',
+                      )
                     }}
                     style={{ marginBottom: '8px' }}
                   >
@@ -1542,9 +1544,7 @@ const AppDesign: React.FunctionComponent<
                           boxSizing: 'border-box',
                         },
                       }}
-                      disabled={
-                        irbRecordOption === 'Same Institutional Affiliation'
-                      }
+                      readOnly={irbNameSameAsInstitution}
                     />
                   </FormControl>
                 </Box>
@@ -1781,11 +1781,8 @@ const AppDesign: React.FunctionComponent<
                 <StudySummaryRoles
                   type="IRB/Ethics Board of Record"
                   name={
-                    irbRecordOption === 'Same Institutional Affiliation'
-                      ? appDesignProperties.leadPrincipleInvestigatorInfo
-                          ?.affiliation || 'IRB/Ethics Board'
-                      : appDesignProperties.ethicsBoardInfo?.name ||
-                        'IRB/Ethics Board'
+                    appDesignProperties.ethicsBoardInfo?.name ||
+                    'IRB/Ethics Board'
                   }
                 />
               </div>
