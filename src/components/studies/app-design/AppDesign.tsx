@@ -1224,9 +1224,14 @@ const AppDesign: React.FunctionComponent<
                     onChange={e => {
                       const newStudyLead = getContact('LEAD_INVESTIGATOR')
                       newStudyLead.affiliation = e.target.value
+                      const newEthicsBoard = getContact('ETHICS_BOARD')
+                      newEthicsBoard.name = irbNameSameAsInstitution
+                        ? e.target.value
+                        : newEthicsBoard.name
                       setAppDesignProperties({
                         ...appDesignProperties,
                         leadPrincipleInvestigatorInfo: newStudyLead,
+                        ethicsBoardInfo: newEthicsBoard,
                       })
                     }}
                     onBlur={() =>
