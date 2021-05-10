@@ -69,6 +69,7 @@ const useStyles = makeStyles((theme: Theme) =>
 type SchedulerProps = {
   id: string
   schedule: Schedule
+  version?: number
   token: string
   onSave: Function
 }
@@ -83,10 +84,12 @@ const Scheduler: FunctionComponent<
   onSave,
   children,
   token,
+  version
 }: SchedulerProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
 
   const [schedule, setSchedule] = React.useState({ ..._schedule })
+console.log('%c ---scheduler update--'+version, 'color: red' )
 
 
 
@@ -188,7 +191,7 @@ const Scheduler: FunctionComponent<
           )}
         </div>
         <Box bgcolor="#fff" p={2} mt={3} key="scheduler">
-          <Timeline token={token} schedule={schedule}></Timeline>
+          <Timeline token={token} version = {version!} schedule={schedule}></Timeline>
           <div className={classes.studyStartDateContainer}>
             <StudyStartDate
               style={{

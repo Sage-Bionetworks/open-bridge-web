@@ -1,9 +1,8 @@
 import { makeStyles } from '@material-ui/core/styles'
 import _ from 'lodash'
-import { Layout } from 'plotly.js'
 import React from 'react'
-import ClockIcon from '../../../assets/email_icon.svg'
 import { StudySession } from '../../../types/scheduling'
+import SessionIcon from '../../widgets/SessionIcon'
 
 const useStyles = makeStyles(theme => ({
   scroll: {
@@ -39,8 +38,21 @@ type TimelineScheduleItem = {
   refGuid: string
   assessments?: any[]
 }
+/*interface CatInfo {
+  numb: number;
+
+}*/
 
 export type TimelineZoomLevel = 'Daily' | 'Weekly' | 'Monthly' | 'Quarterly'
+
+const graphSessionHeight = 50
+
+const unitPixelWidth: Record<TimelineZoomLevel, number> = {
+  Daily: 1000,
+  Monthly: 35,
+  Weekly: 162,
+  Quarterly: 11,
+}
 
 export interface TimelineCustomPlotProps {
   schedulingItems: TimelineScheduleItem[]
@@ -49,23 +61,26 @@ export interface TimelineCustomPlotProps {
   zoomLevel: TimelineZoomLevel
 }
 
+export interface GridPlotProps {
+  numberSessions: number
+  zoomLevel: TimelineZoomLevel
+  index: number
+}
+
 function getTimesForSession(
   sessionGuid: string,
   schedulingItems: TimelineScheduleItem[],
 ): number[] {
   return schedulingItems
     .filter(i => i.refGuid === sessionGuid)
-    .map(i => i.startDay + 1)
+    .map(i => i.startDay /* + 1*/)
 }
 
 function getSingleSessionX(
   studySessionGuid: string,
-  sessionIndex: number,
-  sessionsNumber: number,
-  schedulingItems: TimelineScheduleItem[],
-) {
-  //const times = getTimesForSession(studySessionGuid, schedulingItems)
 
+  schedulingItems: TimelineScheduleItem[],
+): number[] {
   let result: number[] = []
 
   const grouppedStartDays = _.groupBy(
@@ -79,9 +94,48 @@ function getSingleSessionX(
     })
   })
 
-  const y = new Array(result.length).fill(sessionsNumber - sessionIndex + 1)
+  return result
+}
 
-  return { x: result, y: y }
+function getWidth(lengthInDays: number, zoomLevel: TimelineZoomLevel) {
+  return unitPixelWidth[zoomLevel] * lengthInDays
+}
+
+const GridPlot: React.FunctionComponent<GridPlotProps> = ({
+  numberSessions,
+  zoomLevel,
+  index,
+}) => {
+  if (zoomLevel === 'Quarterly' && index % 30 > 0) {
+    return <></>
+  }
+  const result = (
+    <>
+      <div
+        style={{
+          position: 'absolute',
+          top: '10px',
+          height: `${numberSessions * graphSessionHeight}px`,
+          borderLeft: '1px solid #D6D6D6',
+          left: `${index * unitPixelWidth[zoomLevel]}px`,
+          width: `${unitPixelWidth[zoomLevel]}px`,
+        }}
+      >
+        <div
+          style={{
+            marginLeft: `${-1 * unitPixelWidth[zoomLevel]}px`,
+            marginTop: '-20px',
+            fontSize: '10px',
+            textAlign: 'center',
+          }}
+        >
+          {zoomLevel === 'Quarterly' ? Math.round(index / 30) + 1 : index + 1}
+        </div>
+      </div>
+    </>
+  )
+
+  return result
 }
 
 const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
@@ -92,135 +146,16 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
 }: TimelineCustomPlotProps) => {
   const classes = useStyles()
 
-  const [xVals, getXVals] = React.useState<number[]>([])
-
-  const markers = [
-    0,
-    5,
-    1,
-    2,
-    13,
-    14,
-    19,
-    21,
-    22,
-    8,
-    15,
-    20,
-    23,
-    12,
-    16,
-    24,
-    9,
-    7,
-    6,
-    10,
-  ]
   const data = sortedSessions.map((session, index) => {
-    const { x, y } = getSingleSessionX(
-      session.guid!,
-      index + 1,
-      sortedSessions.length,
-      schedulingItems,
-    )
+    const x = getSingleSessionX(session.guid!, schedulingItems)
 
     return x
   })
 
-  const getWidth = (lengthInDays: number, zoomLevel: TimelineZoomLevel) => {
-    switch (zoomLevel) {
-      case 'Monthly':
-        return lengthInDays * 35
-        break
-      case 'Weekly':
-        return lengthInDays * 162
-        break
-      case 'Quarterly':
-        return lengthInDays * 11
-        break
-    }
-  }
-
-  const layout: Partial<Layout> = {
-    showlegend: false,
-    paper_bgcolor: '#ECECEC',
-    plot_bgcolor: '#ECECEC',
-    hovermode: false, // no hover
-    title: '', // no title
-    autosize: false,
-    //32px each tick
-    width: getWidth(scheduleLength, zoomLevel),
-    height: sortedSessions.length * 48,
-
-    margin: {
-      l: 30,
-      r: 0,
-      b: 0,
-      t: 20,
-      pad: 5,
-    },
-    xaxis: {
-      zeroline: false,
-
-      side: 'top',
-
-      rangemode: 'tozero',
-      range: [0.7, scheduleLength + 1], //add 1 because it's 0-based originally
-      constrain: 'range',
-      fixedrange: true,
-
-      ticklen: 0, //vertical height
-      dtick: zoomLevel === 'Quarterly' ? 10 : 1, //how many is the tick
-    },
-    yaxis: {
-      zeroline: false,
-      visible: true,
-      rangemode: 'tozero',
-      showticklabels: false,
-      title: '',
-      fixedrange: true,
-      range: [0, sortedSessions.length + 0.5],
-      dtick: 1,
-
-      gridwidth: 1,
-      gridcolor: 'Black',
-    },
-    /* images: [
-      {
-        x: 1.5,
-        y: 2,
-        sizex: 0.6,
-        sizey: 0.6,
-        //layer: 'above',
-        source: ClockIcon,
-        opacity: 1,
-        xanchor: 'center',
-        xref: 'x',
-        yanchor: 'middle',
-        yref: 'y',
-      },
-      {
-        x: 2.5,
-        y: 2,
-        sizex: 0.6,
-        sizey: 0.6,
-        layer: 'below',
-        source: ClockIcon,
-        opacity: 1,
-        xanchor: 'center',
-        xref: 'x',
-        yanchor: 'middle',
-        yref: 'y',
-      },
-    ],*/
-  }
-
-  const config = { scrollZoom: false, displayModeBar: false }
-
   return (
     <>
       <div
-        style={{ overflow: 'scroll', width: '100%', position: 'relative' }}
+        style={{ overflowX: 'scroll', width: '100%', position: 'relative' }}
         className={classes.scroll}
       >
         <div
@@ -243,69 +178,58 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
         >
           <div
             style={{
-              height: '400px',
+              height: `${sortedSessions.length * graphSessionHeight}px`,
               position: 'relative',
             }}
           >
             {[...Array(scheduleLength)].map((i, index) => (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '10px',
-                  height: '400px',
-                  borderLeft: '1px solid #D6D6D6',
-                  left: `${index * 35}px`,
-                  width: '35px',
-                }}
-              >
-                <div
-                  style={{
-                    marginLeft: `${-35}px`,
-                    marginTop: '-20px',
-                    fontSize: '10px',
-                    textAlign: 'center',
-                  }}
-                >
-                  {index}
-                </div>
-              </div>
+              <GridPlot
+                index={index}
+                zoomLevel={zoomLevel}
+                numberSessions={sortedSessions.length}
+                key={i}
+              />
             ))}
+            <div style={{ position: 'absolute', top: '30px' }}>
+              {sortedSessions.map((session, sIndex) => (
+                <>
+                  <div
+                    style={{
+                      backgroundColor: 'black',
+                      height: '1px',
+                      position: 'absolute',
 
-            {sortedSessions.map((session, sIndex) => (
-              <>
-                <div
-                  style={{
-                    backgroundColor: 'black',
-                    height: '1px',
-                    position: 'absolute',
+                      top: `${graphSessionHeight * sIndex}px`,
+                      width: `${
+                        data[sIndex][data[sIndex].length - 1] *
+                          unitPixelWidth[zoomLevel] -
+                        data[sIndex][0] * unitPixelWidth[zoomLevel]
+                      }px`,
+                      zIndex: 100,
+                      left: `${data[sIndex][0] * unitPixelWidth[zoomLevel]}px`,
+                    }}
+                  ></div>
 
-                    top: `${50 * sIndex + 50}px`,
-                    width: `${
-                      data[sIndex][data[sIndex].length - 1] * 35 -
-                      data[sIndex][0] * 35
-                    }px`,
-                    zIndex: 100,
-                    left: `${data[sIndex][0] * 35}px`,
-                  }}
-                ></div>
+                  {getSingleSessionX(session.guid!, schedulingItems).map(
+                    (i, index) => (
+                      <>
+                        <SessionIcon
+                          index={sIndex}
+                          style={{
+                            width: '20px',
+                            position: 'absolute',
+                            top: `${graphSessionHeight * sIndex - 5}px`,
 
-                {data[sIndex].map((i, index) => (
-                  <>
-                    <img
-                      src={ClockIcon}
-                      style={{
-                        width: '20px',
-                        position: 'absolute',
-                        top: `${50 * sIndex - 5 + 50}px`,
-
-                        zIndex: 100,
-                        left: `${i * 35 - 10}px`,
-                      }}
-                    ></img>
-                  </>
-                ))}
-              </>
-            ))}
+                            zIndex: 100,
+                            left: `${i * unitPixelWidth[zoomLevel] - 10}px`,
+                          }}
+                        ></SessionIcon>
+                      </>
+                    ),
+                  )}
+                </>
+              ))}
+            </div>
           </div>
         </div>
       </div>

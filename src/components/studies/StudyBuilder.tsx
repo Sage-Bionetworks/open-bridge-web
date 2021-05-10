@@ -216,7 +216,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           )?.resources
         })
       })
-
+      console.log('studyVersion in SB', sched.version)
       setData({
         ...builderInfo,
         schedule: sched,
@@ -401,6 +401,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         id={id}
                         token={token!}
                         schedule={builderInfo.schedule}
+                      version = {builderInfo.schedule?.version}
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
                         onSave={() => saveStudySchedule()}

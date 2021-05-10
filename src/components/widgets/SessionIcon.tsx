@@ -41,42 +41,53 @@ const useStyles = makeStyles({
   iconEmpty: {},
 })
 
+const elements = [
+  <Session1></Session1>,
+  <Session2></Session2>,
+  <Session3></Session3>,
+  <Session4></Session4>,
+  <Session5></Session5>,
+  <Session6></Session6>,
+  <Session7></Session7>,
+  <Session8></Session8>,
+  <Session9></Session9>,
+  <Session10></Session10>,
+  <Session11></Session11>,
+  <Session12></Session12>,
+  <Session13></Session13>,
+  <Session14></Session14>,
+  <Session15></Session15>,
+  <Session16></Session16>,
+  <Session17></Session17>,
+  <Session18></Session18>,
+  <Session19></Session19>,
+  <Session20></Session20>,
+]
+
 export interface SessionIconProps {
   index?: number
-  children: JSX.Element | string
+  children?: JSX.Element | string
 }
 
-const SessionIcon: React.FunctionComponent<SessionIconProps> = ({
-  index = 0,
-  children,
-}: SessionIconProps) => {
+export interface SessionImageProps {
+  index?: number
+}
+
+const SessionIcon: React.FunctionComponent<
+  SessionIconProps & React.HTMLAttributes<HTMLElement>
+> = props => {
+  const { index = 0, children, ...rest } = props
+
   const classes = useStyles()
-  const elements = [
-    <Session1 className={classes.icon}></Session1>,
-    <Session2 className={classes.icon}></Session2>,
-    <Session3 className={classes.icon}></Session3>,
-    <Session4 className={classes.icon}></Session4>,
-    <Session5 className={classes.icon}></Session5>,
-    <Session6 className={classes.icon}></Session6>,
-    <Session7 className={classes.icon}></Session7>,
-    <Session8 className={classes.icon}></Session8>,
-    <Session9 className={classes.icon}></Session9>,
-    <Session10 className={classes.icon}></Session10>,
-    <Session11 className={classes.icon}></Session11>,
-    <Session12 className={classes.icon}></Session12>,
-    <Session13 className={classes.icon}></Session13>,
-    <Session14 className={classes.icon}></Session14>,
-    <Session15 className={classes.icon}></Session15>,
-    <Session16 className={classes.icon}></Session16>,
-    <Session17 className={classes.icon}></Session17>,
-    <Session18 className={classes.icon}></Session18>,
-    <Session19 className={classes.icon}></Session19>,
-    <Session20 className={classes.icon}></Session20>,
-  ]
+  const imageProps = rest.style
+    ? { style: rest.style }
+    : { className: classes.icon }
+
+  const el = React.cloneElement(elements[index], imageProps)
 
   return (
     <div className={classes.root}>
-      {elements[index]} {children}
+      {el} {children}
     </div>
   )
 }

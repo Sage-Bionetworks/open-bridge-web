@@ -88,10 +88,12 @@ type TimelineScheduleItem = {
 export interface TimelineProps {
   token: string
   schedule: Schedule
+  version: number
 }
 
 const Timeline: React.FunctionComponent<TimelineProps> = ({
   token,
+  version,
   schedule: schedFromDisplay,
 }: TimelineProps) => {
   const [sessions, setSessions] = React.useState<TimelineSession[]>([])
@@ -108,11 +110,11 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   console.log('rerender')
 
   React.useEffect(() => {
-    console.log('getting timeline ')
+    console.log('%c ---timeline getting--'+version, 'color: blue' )
     return run(
       StudyService.getStudyScheduleTimeline(schedFromDisplay.guid, token!),
     )
-  }, [run, schedFromDisplay?.version, token])
+  }, [run, version, token])
 
   const setZoomLevel = (scheduleDuration: string) => {
     const periods: TimelineZoomLevel[] = ['Daily', 'Weekly', 'Monthly', 'Quarterly']
