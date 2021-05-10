@@ -2,7 +2,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import _ from 'lodash'
 import { Layout } from 'plotly.js'
 import React from 'react'
-import PlotlyChart from 'react-plotlyjs-ts'
 import ClockIcon from '../../../assets/email_icon.svg'
 import { StudySession } from '../../../types/scheduling'
 
@@ -43,51 +42,58 @@ type TimelineScheduleItem = {
 
 export type TimelineZoomLevel = 'Daily' | 'Weekly' | 'Monthly' | 'Quarterly'
 
-export interface TimelinePlotProps {
+export interface TimelineCustomPlotProps {
   schedulingItems: TimelineScheduleItem[]
   scheduleLength: number
   sortedSessions: StudySession[]
   zoomLevel: TimelineZoomLevel
 }
 
-const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
+function getTimesForSession(
+  sessionGuid: string,
+  schedulingItems: TimelineScheduleItem[],
+): number[] {
+  return schedulingItems
+    .filter(i => i.refGuid === sessionGuid)
+    .map(i => i.startDay + 1)
+}
+
+function getSingleSessionX(
+  studySessionGuid: string,
+  sessionIndex: number,
+  sessionsNumber: number,
+  schedulingItems: TimelineScheduleItem[],
+) {
+  //const times = getTimesForSession(studySessionGuid, schedulingItems)
+
+  let result: number[] = []
+
+  const grouppedStartDays = _.groupBy(
+    getTimesForSession(studySessionGuid, schedulingItems),
+    Math.floor,
+  )
+  Object.values(grouppedStartDays).forEach(groupArray => {
+    const fraction = 1 / groupArray.length
+    groupArray.forEach((item, index) => {
+      result.push(item + fraction * index)
+    })
+  })
+
+  const y = new Array(result.length).fill(sessionsNumber - sessionIndex + 1)
+
+  return { x: result, y: y }
+}
+
+const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
   schedulingItems,
   scheduleLength,
   sortedSessions,
   zoomLevel,
-}: TimelinePlotProps) => {
+}: TimelineCustomPlotProps) => {
   const classes = useStyles()
 
-  const getTimesForSession = (sessionGuid: string): number[] => {
-    return schedulingItems
-      .filter(i => i.refGuid === sessionGuid)
-      .map(i => i.startDay + 1)
-  }
+  const [xVals, getXVals] = React.useState<number[]>([])
 
-  function getXY(
-    studySessionGuid: string,
-    sessionIndex: number,
-    sessionsNumber: number,
-  ) {
-    const times = getTimesForSession(studySessionGuid)
-
-    let result: number[] = []
-
-    const grouppedStartDays = _.groupBy(
-      getTimesForSession(studySessionGuid),
-      Math.floor,
-    )
-    Object.values(grouppedStartDays).forEach(groupArray => {
-      const fraction = 1 / groupArray.length
-      groupArray.forEach((item, index) => {
-        result.push(item + fraction * index)
-      })
-    })
-
-    const y = new Array(result.length).fill(sessionsNumber - sessionIndex + 1)
-
-    return { x: result, y: y }
-  }
   const markers = [
     0,
     5,
@@ -111,25 +117,14 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
     10,
   ]
   const data = sortedSessions.map((session, index) => {
-    const { x, y } = getXY(session.guid!, index + 1, sortedSessions.length)
+    const { x, y } = getSingleSessionX(
+      session.guid!,
+      index + 1,
+      sortedSessions.length,
+      schedulingItems,
+    )
 
-    const m = {
-      hoverinfo: 'skip',
-      name: session.name,
-      marker: {
-        color: 'rgb(16, 32, 77)',
-        symbol: markers[index],
-        size: 10,
-        line: {
-          width: 2,
-        },
-      },
-      type: 'scatter',
-      mode: 'markers',
-      x: x,
-      y: y,
-    }
-    return m
+    return x
   })
 
   const getWidth = (lengthInDays: number, zoomLevel: TimelineZoomLevel) => {
@@ -238,9 +233,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
         >
           Day
         </div>
-        <div style={{ width: `${getWidth(scheduleLength, zoomLevel)}px` }}>
-          <PlotlyChart data={data} layout={layout} config={config} />
-        </div>
+
         <div
           style={{
             backgroundColor: '#ccc',
@@ -286,24 +279,24 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                     height: '1px',
                     position: 'absolute',
 
-                    top: `${50 * sIndex+50}px`,
+                    top: `${50 * sIndex + 50}px`,
                     width: `${
-                      data[sIndex].x[data[sIndex].x.length - 1] * 35 -
-                      data[sIndex].x[0] * 35
+                      data[sIndex][data[sIndex].length - 1] * 35 -
+                      data[sIndex][0] * 35
                     }px`,
                     zIndex: 100,
-                    left: `${data[sIndex].x[0] * 35}px`,
+                    left: `${data[sIndex][0] * 35}px`,
                   }}
                 ></div>
 
-                {data[sIndex].x.map((i, index) => (
+                {data[sIndex].map((i, index) => (
                   <>
                     <img
                       src={ClockIcon}
                       style={{
                         width: '20px',
                         position: 'absolute',
-                        top: `${50 * sIndex - 5+50}px`,
+                        top: `${50 * sIndex - 5 + 50}px`,
 
                         zIndex: 100,
                         left: `${i * 35 - 10}px`,
@@ -320,4 +313,4 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   )
 }
 
-export default TimelinePlot
+export default TimelineCustomPlot

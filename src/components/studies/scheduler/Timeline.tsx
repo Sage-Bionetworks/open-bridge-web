@@ -6,7 +6,7 @@ import { useAsync } from '../../../helpers/AsyncHook'
 import StudyService from '../../../services/study.service'
 import { Schedule } from '../../../types/scheduling'
 import SessionIcon from '../../widgets/SessionIcon'
-import TimelinePlot, { TimelineZoomLevel } from './TimelinePlot'
+import TimelineCustomPlot, { TimelineZoomLevel } from './TimelineCustomPlot'
 
 const useStyles = makeStyles(theme => ({
   selectPrincipleInvestigatorButton: {
@@ -218,12 +218,12 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
         </Select>
       </Box>
       {schedule && (
-        <TimelinePlot
+        <TimelineCustomPlot
           schedulingItems={schedule}
           scheduleLength={scheduleLength}
           sortedSessions={schedFromDisplay.sessions}
           zoomLevel={currentZoomLevel}
-        ></TimelinePlot>
+        ></TimelineCustomPlot>
       )}
     </Box>
   )
