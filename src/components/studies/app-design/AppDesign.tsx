@@ -132,6 +132,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontWeight: 'normal',
     fontSize: '21px',
     lineHeight: '28px',
+    whiteSpace: 'pre-line',
   },
   informationRowStyle: {
     fontFamily: playfairDisplayFont,
@@ -470,7 +471,6 @@ const AppDesign: React.FunctionComponent<
     setIrbNameSameAsInstitution,
   ] = useState<boolean>(true)
 
-  const defaultHeader = 'Thanks for joining us!'
   const defaultStudyBody =
     'We’re excited to have you help us in conduting this study! \n \n This is a research study and does not provide medical advice, diagnosis, or treatment.'
   const defaultSalutations = 'Thank you for your contributions,'
@@ -1066,7 +1066,7 @@ const AppDesign: React.FunctionComponent<
               />
               <Box className={classes.headlineStyle}>
                 {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
-                  ? defaultHeader
+                  ? 'Thanks for joining \n' + appDesignProperties.studyTitle
                   : appDesignProperties.welcomeScreenInfo.welcomeScreenHeader ||
                     'Welcome Headline'}
               </Box>
