@@ -10,8 +10,6 @@ import SaveIcon from '@material-ui/icons/Save'
 import _ from 'lodash'
 import React, { FunctionComponent } from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { useAsync } from '../../../helpers/AsyncHook'
-import StudyService from '../../../services/study.service'
 import { poppinsFont } from '../../../style/theme'
 import {
   DWsEnum,
@@ -33,7 +31,7 @@ import actionsReducer, {
   SessionScheduleAction
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
-import TimelinePlot from './TimelinePlot'
+import Timeline from './Timeline'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -71,6 +69,7 @@ const useStyles = makeStyles((theme: Theme) =>
 type SchedulerProps = {
   id: string
   schedule: Schedule
+  version?: number
   token: string
   onSave: Function
 }
@@ -85,19 +84,14 @@ const Scheduler: FunctionComponent<
   onSave,
   children,
   token,
+  version
 }: SchedulerProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
 
   const [schedule, setSchedule] = React.useState({ ..._schedule })
+console.log('%c ---scheduler update--'+version, 'color: red' )
 
-  const { data: timeline, status, error, run, setData } = useAsync<any>({
-    status: 'PENDING',
-    data: [],
-  })
 
-  React.useEffect(() => {
-    return run(StudyService.getStudyScheduleTimeline(schedule.guid, token!))
-  }, [run, schedule, token])
 
   const getStartEventIdFromSchedule = (
     schedule: Schedule,
@@ -197,7 +191,7 @@ const Scheduler: FunctionComponent<
           )}
         </div>
         <Box bgcolor="#fff" p={2} mt={3} key="scheduler">
-          <TimelinePlot something=""></TimelinePlot>
+          <Timeline token={token} version = {version!} schedule={schedule}></Timeline>
           <div className={classes.studyStartDateContainer}>
             <StudyStartDate
               style={{

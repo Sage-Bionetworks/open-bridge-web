@@ -1,4 +1,4 @@
-import { StandardTextFieldProps } from '@material-ui/core'
+import { Button, StandardTextFieldProps } from '@material-ui/core'
 import moment from 'moment'
 import React from 'react'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
@@ -96,6 +96,9 @@ const Duration: React.FunctionComponent<
         }
         style={isIntro ? { width: '100px' } : undefined}
       ></SelectWithEnum>
+      <Button onClick={_e => onChange({ target: { value: undefined } })}>
+        Clear
+      </Button>
     </div>
   )
 }
