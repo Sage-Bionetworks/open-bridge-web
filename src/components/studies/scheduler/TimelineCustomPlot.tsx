@@ -114,19 +114,23 @@ const GridPlot: React.FunctionComponent<GridPlotProps> = ({
       <div
         style={{
           position: 'absolute',
-          top: '10px',
+          top: '0px',
           height: `${numberSessions * graphSessionHeight}px`,
           borderLeft: '1px solid #D6D6D6',
           left: `${index * unitPixelWidth[zoomLevel]}px`,
           width: `${unitPixelWidth[zoomLevel]}px`,
+          boxSizing: 'content-box',
         }}
       >
         <div
           style={{
-            marginLeft: `${-1 * unitPixelWidth[zoomLevel]}px`,
+            left: `${unitPixelWidth[zoomLevel] / -2}px`,
+            width: `${unitPixelWidth[zoomLevel]}px`,
             marginTop: '-20px',
             fontSize: '10px',
             textAlign: 'center',
+            position: 'absolute',
+ 
           }}
         >
           {zoomLevel === 'Quarterly' ? Math.round(index / 30) + 1 : index + 1}
@@ -160,20 +164,9 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
       >
         <div
           style={{
-            position: 'absolute',
-            top: '-4px',
-            left: '3px',
-            zIndex: 1000,
-          }}
-        >
-          Day
-        </div>
-
-        <div
-          style={{
-            backgroundColor: '#ccc',
-            padding: '20px',
-            width: `${getWidth(scheduleLength, zoomLevel)}px`,
+            backgroundColor: '#ECECEC',
+            padding: '20px 0 20px 40px',
+            width: `${getWidth(scheduleLength, zoomLevel) + 20}px`,
           }}
         >
           <div
@@ -182,6 +175,27 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
               position: 'relative',
             }}
           >
+            <div
+              style={{
+                height: `20px`,
+                position: 'relative',
+                top: '-20px',
+                left: '-40px',
+                backgroundColor: '#FFF',
+                width: `${getWidth(scheduleLength, zoomLevel) + 20}px`,
+              }}
+            >
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '-4px',
+                  left: '3px',
+                  zIndex: 1000,
+                }}
+              >
+                Day
+              </div>
+            </div>
             {[...Array(scheduleLength)].map((i, index) => (
               <GridPlot
                 index={index}

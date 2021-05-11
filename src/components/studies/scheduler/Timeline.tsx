@@ -158,7 +158,7 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   }
 
   return (
-    <Box padding="30px" bgcolor="#ECECEC">
+    <Box padding="30px">
       This timeline viewer will update to provide a visual summary of the
       schedules you’ve defined below for each session.{timeline?.duration}{' '}
       {schedFromDisplay?.duration}
