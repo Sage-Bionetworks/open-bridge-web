@@ -9,11 +9,14 @@ import {
 } from '@material-ui/core'
 import Link from '@material-ui/core/Link'
 import React, { FunctionComponent, useEffect } from 'react'
+import { useErrorHandler } from 'react-error-boundary'
 import { RouteComponentProps } from 'react-router-dom'
 import { useAsync } from '../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
+import { useStudyInfoDataDispatch } from '../../helpers/StudyInfoContext'
 import { getRandomId } from '../../helpers/utility'
 import StudyService from '../../services/study.service'
+import constants from '../../types/constants'
 import { Study, StudyStatus } from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import { MTBHeading } from '../widgets/Headings'
@@ -176,6 +179,9 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
 }
 
 const StudyList: FunctionComponent<StudyListProps> = () => {
+  const studyDataUpdateFn = useStudyInfoDataDispatch()
+  const handleError = useErrorHandler()
+
   const { token } = useUserSessionDataState()
   const [menuAnchor, setMenuAnchor] = React.useState<null | {
     study: Study
@@ -230,18 +236,63 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           version: 1,
           clientData: {},
           status: 'DRAFT' as StudyStatus,
-          name: 'Untitled Study',
+          name: constants.constants.NEW_STUDY_NAME,
           createdOn: new Date(),
           modifiedOn: new Date(),
         }
 
-    setHighlightedStudyId(id)
-    resetNewlyAddedStudyID = setTimeout(() => {
-      setHighlightedStudyId(null)
-    }, 2000)
+    if (study) {
+      //if we are duplicating
+      const studyFromServer = await StudyService.getStudy(
+        study.identifier,
+        token!,
+      )
+      if (studyFromServer?.scheduleGuid) {
+        // need to duplicate the schedule
+        const schedule = await StudyService.getStudySchedule(
+          studyFromServer?.scheduleGuid,
+          token!,
+        )
+        //@ts-ignore
+        schedule!.guid = undefined
+        const sched = await StudyService.createNewStudySchedule(
+          schedule!,
+          token!,
+        )
+        newStudy.scheduleGuid = sched.guid
+        studyDataUpdateFn({
+          type: 'SET_SCHEDULE',
+          payload: { study: newStudy, schedule: sched },
+        })
+      }
+    }
 
-    const result = await StudyService.createStudy(newStudy, token!)
-    setStudies(result)
+    const version = await StudyService.createStudy(newStudy, token!)
+    newStudy.version = version
+    studyDataUpdateFn({
+      type: 'SET_STUDY',
+      payload: { study: newStudy },
+    })
+
+    //setStudies([...studies|| [], newStudy])
+    if (study) {
+      setHighlightedStudyId(id)
+      resetNewlyAddedStudyID = setTimeout(() => {
+        setHighlightedStudyId(null)
+      }, 2000)
+    } else {
+      if (newStudy) {
+        studyDataUpdateFn({
+          type: 'SET_STUDY',
+          payload: { study: newStudy },
+        })
+        window.location.replace(
+          `${window.location.origin}/studies/builder/${id}/session-creator`,
+        )
+      } else {
+        handleError(new Error('Study was not created'))
+      }
+    }
   }
 
   const onAction = async (study: Study, type: StudyAction) => {
@@ -311,7 +362,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     return () => {
       isSubscribed = false
     }
-  }, [token])
+  }, [token, highlightedStudyId])
 
   if (!studies && status === 'RESOLVED') {
     return (

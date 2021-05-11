@@ -96,7 +96,7 @@ const Duration: React.FunctionComponent<
         }
         style={isIntro ? { width: '100px' } : undefined}
       ></SelectWithEnum>
-      <Button onClick={_e => onChange({ target: { value: undefined } })}>
+      <Button onClick={_e => onChange({ target: { value: undefined } })} style={{ minWidth: 'auto'}}>
         Clear
       </Button>
     </div>

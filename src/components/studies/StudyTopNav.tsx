@@ -14,6 +14,7 @@ import { NavLink } from 'react-router-dom'
 import Logo from '../../assets/logo_mtb.svg'
 import { useStudyInfoDataState } from '../../helpers/StudyInfoContext'
 import { latoFont } from '../../style/theme'
+import constants from '../../types/constants'
 import BreadCrumb from '../widgets/BreadCrumb'
 import HideWhen from '../widgets/HideWhen'
 
@@ -155,9 +156,9 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               <img src={Logo} key="img_home" alt="home" />
             </NavLink>
             <HideWhen hideWhen={studyData.study === undefined}>
-              <BreadCrumb
+            <BreadCrumb
                 links={[{ url: '/Studies', text: '' }]}
-                currentItem={studyData.study?.name}
+                currentItem={studyData.study?.name  && (studyData.study?.name !== constants.constants.NEW_STUDY_NAME)? studyData.study?.name : ''}
               ></BreadCrumb>
 
               <LinearProgress style={{ width: '50px' }} />
