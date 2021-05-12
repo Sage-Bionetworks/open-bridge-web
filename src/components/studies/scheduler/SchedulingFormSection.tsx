@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'left',
 
     display: 'flex',
-    justifyContent: 'flex-start',
+
     alignContent: 'center',
     alignItems: 'flex-start',
 
@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     paddingRight: theme.spacing(4),
     lineHeight: '27px',
     width: theme.spacing(28),
- 
+
     fontFamily: poppinsFont,
     fontSize: '18px',
     fontStyle: 'normal',
@@ -52,11 +52,10 @@ const useStyles = makeStyles(theme => ({
       fontSize: '14px',
       fontFamily: latoFont,
       [theme.breakpoints.down('md')]: {
-      '&.collapseLabelSmall': {
-        width: 0
-      }
-    }
-
+        '&.collapseLabelSmall': {
+          width: 0,
+        },
+      },
     },
   },
 }))
@@ -68,8 +67,9 @@ export interface SchedulingFormSectionProps {
   style?: React.CSSProperties
   variant?: 'small'
   border?: boolean
-  isHideLabel?: boolean,
+  isHideLabel?: boolean
   isCollapseLabelSmall?: boolean
+  justifyContent?: 'flex-start' | 'space-between'
 }
 
 const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps> = ({
@@ -81,6 +81,7 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
   altLabel,
   isCollapseLabelSmall,
   border = true,
+  justifyContent = 'flex-start',
 }: SchedulingFormSectionProps) => {
   const classes = useStyles()
 
@@ -93,11 +94,11 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
           border === false && 'no-border',
         )}
         style={style}
-        title ={`section ${ typeof label === 'string'? label: altLabel}`}
-     
+        title={`section ${typeof label === 'string' ? label : altLabel}`}
       >
         <FormControl
           component="div"
+          style={{ justifyContent: justifyContent }}
           className={clsx(classes.formControl, variant === 'small' && 'small')}
         >
           <FormLabel
@@ -105,10 +106,10 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
             className={clsx(
               typeof label === 'string' && classes.label,
               variant === 'small' && 'small',
-              isCollapseLabelSmall && 'collapseLabelSmall'
+              isCollapseLabelSmall && 'collapseLabelSmall',
             )}
           >
-            {!isHideLabel? label: ''}
+            {!isHideLabel ? label : ''}
           </FormLabel>
           {children}
         </FormControl>
