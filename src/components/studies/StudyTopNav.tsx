@@ -156,9 +156,14 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               <img src={Logo} key="img_home" alt="home" />
             </NavLink>
             <HideWhen hideWhen={studyData.study === undefined}>
-            <BreadCrumb
+              <BreadCrumb
                 links={[{ url: '/Studies', text: '' }]}
-                currentItem={studyData.study?.name  && (studyData.study?.name !== constants.constants.NEW_STUDY_NAME)? studyData.study?.name : ''}
+                currentItem={
+                  studyData.study?.name &&
+                  studyData.study?.name !== constants.constants.NEW_STUDY_NAME
+                    ? studyData.study?.name
+                    : ''
+                }
               ></BreadCrumb>
 
               <LinearProgress style={{ width: '50px' }} />
