@@ -3,7 +3,7 @@ import {
   Drawer,
   Hidden,
   IconButton,
-  LinearProgress
+  LinearProgress,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -17,12 +17,15 @@ import { latoFont } from '../../style/theme'
 import constants from '../../types/constants'
 import BreadCrumb from '../widgets/BreadCrumb'
 import HideWhen from '../widgets/HideWhen'
+import PARTICIPANTS_ICON from '../../assets/group_participants_icon.svg'
+import MobileDrawerMenuHeader from '../widgets/MobileDrawerMenuHeader'
+import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
   toolbarStudyHeader: {
     height: '104px',
     display: 'flex',
-    backgroundColor: '#fff',
+    backgroundColor: '#F8F8F8',
 
     alignItems: 'center',
     flexDirection: 'row',
@@ -57,11 +60,11 @@ const useStyles = makeStyles(theme => ({
     },
   },
   drawer: {
-    width: '250px',
+    width: '320px',
     flexShrink: 0,
   },
   drawerPaper: {
-    width: '251px',
+    width: '320px',
 
     '& $toolbarLink': {
       flextGroup: 0,
@@ -78,6 +81,7 @@ const useStyles = makeStyles(theme => ({
       border: 'none',
       fontWeight: 'bolder',
     },
+    backgroundColor: '#F8F8F8',
   },
   toolbarLink: {
     padding: theme.spacing(0, 2, 2, 2),
@@ -95,6 +99,34 @@ const useStyles = makeStyles(theme => ({
     '&:last-child': {
       paddingRight: theme.spacing(0.5),
     },
+  },
+  mobileToolBarLink: {
+    fontFamily: latoFont,
+    fontSize: '15px',
+    textDecoration: 'none',
+    color: 'inherit',
+    flexShrink: 0,
+    height: '56px',
+    boxSizing: 'border-box',
+    paddingLeft: theme.spacing(3),
+    '&:hover': {
+      backgroundColor: '#fff',
+    },
+    display: 'flex',
+    alignItems: 'center',
+    borderLeft: '4px solid transparent',
+  },
+  mobileSelectedLink: {
+    borderLeft: '4px solid #353535',
+    fontWeight: 'bolder',
+  },
+  blackXIcon: {
+    width: '16px',
+    height: '16px',
+  },
+  accessSettingsDrawerOption: {
+    display: 'flex',
+    marginTop: theme.spacing(4),
   },
 }))
 
@@ -209,31 +241,19 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
             keepMounted: true, // Better open performance on mobile.
           }}
         >
-          <HideWhen hideWhen={studyData.study === undefined}>
-            <span className={classes.toolbarLink}>{studyData.study?.name}</span>
-
-            <LinearProgress style={{ width: '50px' }} />
-          </HideWhen>
-          <NavLink to={'/'} key="home" className={classes.toolbarLink}>
-            Home
-          </NavLink>
-          <NavLink
-            to={'/studies'}
-            key="studies"
-            className={classes.toolbarLink}
-            style={{ paddingBottom: '0' }}
-          >
-            Studies
-          </NavLink>
-
+          <MobileDrawerMenuHeader
+            setIsMobileOpen={setIsMobileOpen}
+            type="IN_STUDY"
+          ></MobileDrawerMenuHeader>
           {links
             .filter(section => section.name)
             .map(section => (
               <NavLink
                 to={section.path.replace(':id', studyId)}
                 key={section.path}
-                className={classes.toolbarLink}
-                activeClassName={classes.selectedLink}
+                className={classes.mobileToolBarLink}
+                activeClassName={classes.mobileSelectedLink}
+                onClick={() => setIsMobileOpen(false)}
               >
                 {section.name}
               </NavLink>
@@ -241,10 +261,14 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
           <NavLink
             to={'/studies/:id/access-settings'.replace(':id', studyId)}
             key={'path-to-access-settings'}
-            className={classes.toolbarLink}
-            activeClassName={classes.selectedLink}
-            style={{ display: 'flex' }}
+            className={clsx(
+              classes.mobileToolBarLink,
+              classes.accessSettingsDrawerOption,
+            )}
+            activeClassName={classes.mobileSelectedLink}
+            onClick={() => setIsMobileOpen(false)}
           >
+            <img src={PARTICIPANTS_ICON} style={{ marginRight: '20px' }}></img>
             Access settings
           </NavLink>
         </Drawer>
