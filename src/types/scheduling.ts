@@ -16,25 +16,13 @@ export enum HDsEnum {
   D = 'days',
 }
 
-export enum DWMYEnum {
-  D = 'day',
-  W = 'week',
-  M = 'month',
-  Y = 'year',
-}
-
-export enum DWMYsEnum {
-  D = 'days',
-  W = 'weeks',
-  M = 'months',
-  Y = 'years',
-}
 
 export enum HDWMEnum {
-  H = 'hour',
-  D = 'day',
-  W = 'week',
-  M = 'month',
+  M = 'minutes',
+  H = 'hours',
+  D = 'days',
+  W = 'weeks',
+
 }
 
 export enum NotificationFreqEnum {

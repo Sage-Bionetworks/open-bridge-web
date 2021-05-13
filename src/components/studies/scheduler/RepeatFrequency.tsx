@@ -1,6 +1,6 @@
 import { FormControlLabel } from '@material-ui/core'
 import React from 'react'
-import { DWMYEnum } from '../../../types/scheduling'
+import { DWsEnum } from '../../../types/scheduling'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
 
@@ -26,7 +26,7 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
             durationString={interval || ''}
             unitLabel="Repeat Every"
             numberLabel="frequency number"
-            unitData={DWMYEnum}
+            unitData={DWsEnum }
           ></Duration>
         }
         label=""

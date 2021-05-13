@@ -36,7 +36,7 @@ export default [
 
   {
     path: '/assessments',
-    name: 'ASSESSMENTS LIBRARY',
+    name: 'ASSESSMENT LIBRARY',
     Component: AssessmentLibrary,
     exact: false,
   },

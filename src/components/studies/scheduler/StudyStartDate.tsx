@@ -1,30 +1,26 @@
 import {
   Box,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  makeStyles,
   createStyles,
+  FormControlLabel,
+  makeStyles,
+  Radio,
+  RadioGroup
 } from '@material-ui/core'
-import React from 'react'
+import clsx from 'clsx'
+import React, { ReactNode } from 'react'
 import { StartEventId } from '../../../types/scheduling'
 import SchedulingFormSection from './SchedulingFormSection'
-import clsx from 'clsx'
 
 export interface StudyStartDateProps {
   isIntro?: boolean
   startEventId?: StartEventId
   onChange: (n: StartEventId) => void
   style?: React.CSSProperties
+  children?: ReactNode
 }
 
 const useStyles = makeStyles(theme =>
   createStyles({
-    headerText: {
-      fontSize: '18px',
-      fontFamily: 'Poppins',
-      lineHeight: '27px',
-    },
     description: {
       fontFamily: 'Lato',
       fontStyle: 'italic',
@@ -42,14 +38,13 @@ const useStyles = makeStyles(theme =>
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'flex-start',
+      marginRight: '0'
     },
     notInIntroRadioGroup: {
       maxWidth: '60%',
     },
     inIntroRadioGroup: {
-      width: '190px',
-      minWidth: '190px',
-      marginLeft: '74px',
+      width: '280px',
     },
   }),
 )
@@ -59,29 +54,18 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
   onChange,
   isIntro,
   style,
+  children,
 }: StudyStartDateProps) => {
   const options: StartEventId[] = ['activities_retrieved', 'study_start_date']
   const classes = useStyles()
-  const label = isIntro ? (
-    <Box maxWidth="190px">
-      <strong className={classes.headerText}>
-        How would you define Day 1 of your study ?
-      </strong>
-      <br /> <br />
-      <div className={classes.description}>
-        Day 1 is when you want your participants to start taking the remote
-        assessments.
-      </div>{' '}
-    </Box>
-  ) : (
-    'Define Day 1 of the study'
-  )
+  const label = isIntro && children ? children : 'Define Day 1 of the study'
 
   return (
     <SchedulingFormSection
       label={label}
       altLabel={'Study Start Date'}
       border={false}
+      justifyContent={isIntro ? 'space-between' : 'flex-start'}
       style={{ ...style }}
     >
       <RadioGroup
@@ -108,6 +92,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
           value={options[1]}
           control={<Radio />}
           className={classes.radioButtonAlignment}
+        
           label={
             isIntro ? (
               <Box marginTop="10px">

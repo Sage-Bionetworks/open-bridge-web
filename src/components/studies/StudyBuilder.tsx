@@ -2,6 +2,7 @@ import { Box } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { Alert } from '@material-ui/lab'
 import clsx from 'clsx'
+import _ from 'lodash'
 import React, { FunctionComponent } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { RouteComponentProps, useParams } from 'react-router-dom'
@@ -9,18 +10,23 @@ import { useUserSessionDataState } from '../../helpers/AuthContext'
 import {
   StudyInfoData,
   useStudyInfoDataDispatch,
-  useStudyInfoDataState,
+  useStudyInfoDataState
 } from '../../helpers/StudyInfoContext'
 import { setBodyClass } from '../../helpers/utility'
 import AssessmentService from '../../services/assessment.service'
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
 import { Schedule, StartEventId, StudySession } from '../../types/scheduling'
-import { BackgroundRecorders, StringDictionary, Study } from '../../types/types'
+import {
+  Assessment,
+  BackgroundRecorders,
+  StringDictionary,
+  Study
+} from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
-import AppDesign, { PossibleStudyUpdates } from './app-design/AppDesign'
+import AppDesign from './app-design/AppDesign'
 import EnrollmentTypeSelector from './enrollment-type-selector/EnrollmentTypeSelector'
 import Launch from './launch/Launch'
 import NavButtons from './NavButtons'
@@ -34,7 +40,6 @@ import StudyLeftNav from './StudyLeftNav'
 const subtitles: StringDictionary<string> = {
   description: 'Description',
   'team-settings': 'Team Settings',
-
   scheduler: 'Schedule Sessions',
   'session-creator': 'Create Sessions',
   branding: 'Customize your App',
@@ -76,8 +81,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   introInfoContainer: {
     textAlign: 'center',
     backgroundColor: '#FAFAFA',
-    height: 'calc(100vh-110px)',
-    paddingTop: theme.spacing(18.5),
+    minHeight: '100vh' ,
+    paddingTop: theme.spacing(5),
   },
 }))
 
@@ -94,7 +99,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     section: StudySection
   }>()
   const [section, setSection] = React.useState(_section)
-  const [error, setError] = React.useState('')
+  const [error, setError] = React.useState<string[]>([])
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [saveLoader, setSaveLoader] = React.useState(false)
   const { token } = useUserSessionDataState()
@@ -105,12 +110,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
   const setData = (builderInfo: StudyInfoData) => {
     studyDataUpdateFn({ type: 'SET_ALL', payload: builderInfo })
-
-    //updating on the intro screen
   }
-
-  const createSchedule = async (
+  //Sets up the data from the intro page
+  const createScheduleAndNameStudy = async (
     studyId: string,
+    studyName: string,
     duration: string,
     start: StartEventId,
   ) => {
@@ -135,28 +139,16 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     let updatedStudy = {
       ...builderInfo.study,
       scheduleGuid: newSchedule.guid,
+      name: studyName,
     }
-    const result = await saveStudy(updatedStudy)
+    const newVersion = await StudyService.updateStudy(updatedStudy, token!)
+    updatedStudy.version = newVersion
     setData({ schedule: newSchedule, study: updatedStudy })
   }
 
   const saveStudy = async (study: Study) => {
     setHasObjectChanged(true)
     setSaveLoader(true)
-
-    /* saveStudy(updatedStudy).then(
-      () => {
-        setData({
-          ...builderInfo,
-          study: updatedStudy,
-        })
-        setHasObjectChanged(false)
-      },
-      e => {
-        setError(e.message)
-        setHasObjectChanged(false)
-      },
-    )*/
 
     try {
       const newVersion = await StudyService.updateStudy(study, token!)
@@ -165,9 +157,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         ...builderInfo,
         study: updatedStudy,
       })
-      if (error !== '') {
-        setError('')
-      }
+      setError([])
+
       setHasObjectChanged(false)
       return updatedStudy
     } catch (e) {
@@ -178,25 +169,89 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }
 
   const saveStudySchedule = async (updatedSchedule?: Schedule) => {
-    setError('')
+    setError([])
+
     try {
       setSaveLoader(true)
       const schedule = updatedSchedule || builderInfo.schedule
       if (!schedule || !token) {
         return
       }
-      const sched = await StudyService.saveStudySchedule(schedule, token)
+      const savedUpdatedSchedule = await StudyService.saveStudySchedule(schedule, token)
+      //we have the issue that scheduler comes back from the server without assessment resources
+      //so we need to copy the resources back to the new schedule object before updating.
+      //the reason why we want the updated object is that sessions ids get assigned by the server.
+      //potentially we might just want to do it in that case, but this seems to be performane
+
+      const oldSessionAssessments = schedule.sessions.reduce(function (
+        prev,
+        curr,
+      ) {
+        if (curr.assessments) {
+          return [...prev, ...curr.assessments]
+        } else {
+          return prev
+        }
+      },
+      [] as Assessment[])
+
+      savedUpdatedSchedule.sessions.forEach(session => {
+        session.assessments?.forEach(assessment => {
+          assessment.resources = oldSessionAssessments.find(
+            oa => oa.guid === assessment.guid,
+          )?.resources
+        })
+      })
+      console.log('studyVersion in SB', savedUpdatedSchedule.version)
       setData({
         ...builderInfo,
-        schedule: { ...schedule, version: sched.version },
-      })
+        schedule: savedUpdatedSchedule,
 
+      })
       setHasObjectChanged(false)
     } catch (e) {
-      setError(e.message)
+      console.log(e)
+      const entity = e.entity
+      const errors = e.errors
+      const ks = Object.keys(errors)
+      ks.forEach((key, index) => {
+        const keyArr = key.split('.')
+        //first session, timewindow, message
+        var numberPattern = /\d+/g
+
+        let windowIndex
+        const sessionIndex = _.first(keyArr[0]?.match(numberPattern))
+        // if 3 levels - assume window
+        if (keyArr.length > 2) {
+          windowIndex = _.first(keyArr[1]?.match(numberPattern))
+        }
+        const errorType = keyArr[keyArr.length - 1]
+
+        const errorMessage = errors[key]
+          .map((error: string) => error.replace(key, ''))
+          .join(',')
+
+        const sessionName = sessionIndex
+          ? entity.sessions[sessionIndex[0]].name
+          : ''
+        const finalError = `${sessionName}${
+          windowIndex ? ' Window' + (parseInt(windowIndex) + 1) : ''
+        }: ${errorType} ${errorMessage}`
+        console.log(finalError)
+        setError(prev => [...prev, finalError])
+      })
+      // displayError(e.errors)
     } finally {
       setSaveLoader(false)
     }
+  }
+
+  const displayError = (errors: StringDictionary<string>) => {
+    try {
+      const errorKeys = Object.keys(errors)
+      console.log(errorKeys)
+    } catch (e) {}
+    return errors
   }
 
   const changeSection = async (next: StudySection) => {
@@ -249,12 +304,19 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   )
   if (builderInfo.study && !builderInfo.schedule) {
     return (
-      <Box className={classes.introInfoContainer}>
-        {' '}
-        <IntroInfo
-          onContinue={(duration: string, startEventId: StartEventId) =>
-            createSchedule(builderInfo.study.identifier, duration, startEventId)
-          }
+      <Box className={classes.introInfoContainer}><IntroInfo
+          onContinue={(
+            studyName: string,
+            duration: string,
+            startEventId: StartEventId,
+          ) => {
+            createScheduleAndNameStudy(
+              builderInfo.study.identifier,
+              studyName,
+              duration,
+              startEventId,
+            )
+          }}
         ></IntroInfo>
       </Box>
     )
@@ -312,9 +374,13 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                 left: '50%',
               }}
             ></LoadingComponent>
-            {error && (
+            {error?.length && (
               <Alert variant="outlined" color="error">
-                {error}
+                {Array.isArray(error) ? (
+                  error.map(e => <div style={{ textAlign: 'left' }}>{e}</div>)
+                ) : (
+                  <div style={{ textAlign: 'left' }}>{error}</div>
+                )}
               </Alert>
             )}
 
@@ -330,6 +396,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         id={id}
                         token={token!}
                         schedule={builderInfo.schedule}
+                        version={builderInfo.schedule?.version}
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
                         onSave={() => saveStudySchedule()}
@@ -354,13 +421,13 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         sessions={builderInfo.schedule?.sessions || []}
                         onUpdate={(data: StudySession[]) => {
                           setHasObjectChanged(true)
-                          setData({
+                          /* setData({
                             ...builderInfo,
                             schedule: {
                               ...builderInfo.schedule!,
                               sessions: data,
                             },
-                          })
+                          })*/
                           saveStudySchedule({
                             ...builderInfo.schedule!,
                             sessions: data,
