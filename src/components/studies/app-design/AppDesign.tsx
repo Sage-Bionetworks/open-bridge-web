@@ -1,31 +1,11 @@
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Divider,
-  FormControl,
-  FormGroup,
-  Paper,
-  Switch,
-  Checkbox,
-  FormHelperText,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-} from '@material-ui/core'
+import { Box, Paper, Switch } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import _ from 'lodash'
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
 import { ReactComponent as PhoneBottomImg } from '../../../assets/appdesign/phone_buttons.svg'
-import { makePhone } from '../../../helpers/utility'
-import {
-  latoFont,
-  playfairDisplayFont,
-  poppinsFont,
-  ThemeType,
-} from '../../../style/theme'
+import { latoFont, ThemeType } from '../../../style/theme'
 import {
   StudyBuilderComponentProps,
   Contact,
@@ -34,25 +14,19 @@ import {
   Study,
 } from '../../../types/types'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
-import SaveButton from '../../widgets/SaveButton'
-import {
-  SimpleTextInput,
-  SimpleTextLabel,
-} from '../../widgets/StyledComponents'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
 import clsx from 'clsx'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import SectionIndicator from './SectionIndicator'
-import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
 import StudyPagePhoneContent from './StudyPagePhoneContent'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
-import Subsection from './Subsection'
 import UploadStudyLogoSection from './UploadStudyLogoSection'
 import ColorPickerSection from './ColorPickerSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import StudySummarySection from './StudySummarySection'
 import StudyLeadInformationSection from './StudyLeadInformationSection'
 import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
+import IrbBoardContactSection from './IrbBoardContactSection'
 
 const imgHeight = 70
 
@@ -97,27 +71,11 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       height: theme.spacing(5),
     },
   },
-
   intro: {
     fontFamily: latoFont,
     fontSize: '15px',
     lineHeight: '18px',
     marginTop: theme.spacing(2),
-  },
-  formFields: {
-    fontFamily: poppinsFont,
-    fontSize: '14px',
-    marginBottom: '24px',
-
-    '& .MuiFormControl-root:not(:last-child)': {
-      marginBottom: '16px',
-    },
-  },
-  informationRowStyle: {
-    fontFamily: playfairDisplayFont,
-    fontWeight: 'normal',
-    fontSize: '15px',
-    lineHeight: '18px',
   },
   phoneArea: {
     marginLeft: theme.spacing(2),
@@ -135,7 +93,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     justifyContent: 'space-between',
     wordWrap: 'break-word',
   },
-
   phoneBottom: {
     height: '70px',
     overflow: 'hidden',
@@ -210,9 +167,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   hideSectionVisibility: {
     visibility: 'hidden',
   },
-  errorText: {
-    marginTop: theme.spacing(-0.5),
-  },
   sectionOneIndicatorPosition: {
     position: 'absolute',
     marginTop: theme.spacing(0.5),
@@ -222,14 +176,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     position: 'absolute',
     marginTop: theme.spacing(6),
     marginLeft: theme.spacing(-1.5),
-  },
-  irbInputFormControl: {
-    width: '100%',
-    marginBottom: theme.spacing(1),
-  },
-  irbInput: {
-    width: '100%',
-    marginBottom: theme.spacing(2),
   },
 
   optionalDisclaimerTextOnPhone: {
@@ -750,240 +696,23 @@ const AppDesign: React.FunctionComponent<
               generalContactPhoneNumber={generalContactPhoneNumber}
               setGeneralContactPhoneNumber={setGeneralContactPhoneNumber}
             />
-            <Subsection heading="IRB or Ethics Board Contact">
-              <Box
-                width="80%"
-                marginTop="12px"
-                fontSize="15px"
-                lineHeight="18px"
-                fontFamily="Lato"
-                marginBottom="16px"
-              >
-                For questions about your rights as a research participant in
-                this study, please contact :
-              </Box>
-              <FormGroup className={classes.formFields}>
-                <Box paddingLeft="2px" marginTop="8px">
-                  What is your IRB of record?*
-                </Box>
-                <Box
-                  width="100%"
-                  boxSizing="border-box"
-                  marginTop="8px"
-                  paddingLeft="48px"
-                  paddingRight="8px"
-                >
-                  <RadioGroup
-                    aria-label="gender"
-                    value={
-                      irbNameSameAsInstitution
-                        ? 'Same Institutional Affiliation'
-                        : 'Other'
-                    }
-                    onChange={e => {
-                      if (e.target.value === 'Same Institutional Affiliation') {
-                        const studyLead = getContact('LEAD_INVESTIGATOR')
-                        const newEthicsBoard = getContact('ETHICS_BOARD')
-                        newEthicsBoard.name = studyLead.affiliation || ''
-                        setAppDesignProperties({
-                          ...appDesignProperties,
-                          ethicsBoardInfo: newEthicsBoard,
-                        })
-                      }
-                      setIrbNameSameAsInstitution(
-                        e.target.value === 'Same Institutional Affiliation',
-                      )
-                    }}
-                    style={{ marginBottom: '8px' }}
-                  >
-                    <FormControlLabel
-                      value="Same Institutional Affiliation"
-                      control={<Radio />}
-                      label="Same Institutional Affiliation"
-                    />
-                    <FormControlLabel
-                      value="Other"
-                      control={<Radio />}
-                      label="Other"
-                    />
-                  </RadioGroup>
-                  <FormControl className={classes.irbInputFormControl}>
-                    <SimpleTextInput
-                      className={clsx(
-                        classes.informationRowStyle,
-                        classes.irbInput,
-                      )}
-                      id="ethics-board-input"
-                      placeholder="Name IRB of record"
-                      value={appDesignProperties.ethicsBoardInfo?.name || ''}
-                      onChange={e => {
-                        const newEthicsBoard = getContact('ETHICS_BOARD')
-                        newEthicsBoard.name = e.target.value
-                        setAppDesignProperties({
-                          ...appDesignProperties,
-                          ethicsBoardInfo: newEthicsBoard,
-                        })
-                      }}
-                      onBlur={() =>
-                        updateAppDesignInfo(
-                          AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
-                        )
-                      }
-                      rows={1}
-                      rowsMax={1}
-                      inputProps={{
-                        style: {
-                          fontSize: '15px',
-                          width: '100%',
-                          height: '44px',
-                          boxSizing: 'border-box',
-                        },
-                      }}
-                      readOnly={irbNameSameAsInstitution}
-                    />
-                  </FormControl>
-                </Box>
-                <FormControl
-                  className={clsx(
-                    !phoneNumberErrorState.isIrbPhoneNumberValid && 'error',
-                  )}
-                >
-                  <SimpleTextLabel htmlFor="ethics-phone-number-input">
-                    Phone Number*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={clsx(classes.informationRowStyle, 'error')}
-                    id="ethics-phone-number-input"
-                    placeholder="xxx-xxx-xxxx"
-                    value={irbPhoneNumber}
-                    onChange={e => {
-                      setIrbPhoneNumber(e.target.value)
-                    }}
-                    onBlur={() => {
-                      const isInvalidPhoneNumber =
-                        isInvalidPhone(irbPhoneNumber) && irbPhoneNumber !== ''
-                      setPhoneNumberErrorState(prevState => {
-                        return {
-                          ...prevState,
-                          isIrbPhoneNumberValid: !isInvalidPhoneNumber,
-                        }
-                      })
-                      const newEthicsBoard = getContact('ETHICS_BOARD')
-                      newEthicsBoard.phone = makePhone(irbPhoneNumber)
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        ethicsBoardInfo: newEthicsBoard,
-                      })
-                    }}
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                  {!phoneNumberErrorState.isIrbPhoneNumberValid && (
-                    <FormHelperText
-                      id="ethics-phone-text"
-                      className={classes.errorText}
-                    >
-                      phone should be in the format: xxx-xxx-xxxx
-                    </FormHelperText>
-                  )}
-                </FormControl>
-                <FormControl
-                  className={clsx(!emailErrorState.isIrbEmailValid && 'error')}
-                >
-                  <SimpleTextLabel htmlFor="ethics-email-input">
-                    Email*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="ethics-email-input"
-                    placeholder="Institutional Email"
-                    value={appDesignProperties.ethicsBoardInfo?.email || ''}
-                    onChange={e => {
-                      const newEthicsBoard = getContact('ETHICS_BOARD')
-                      newEthicsBoard.email = e.target.value
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        ethicsBoardInfo: newEthicsBoard,
-                      })
-                    }}
-                    onBlur={() => {
-                      const validEmail =
-                        isValidEmail(
-                          appDesignProperties.ethicsBoardInfo?.email || '',
-                        ) || !appDesignProperties.ethicsBoardInfo?.email
-                      setEmailErrorState(prevState => {
-                        return {
-                          ...prevState,
-                          isIrbEmailValid: validEmail,
-                        }
-                      })
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
-                      )
-                    }}
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                  {!emailErrorState.isIrbEmailValid && (
-                    <FormHelperText
-                      id="ethics-email-text"
-                      className={classes.errorText}
-                    >
-                      email should be in a valid format such as:
-                      example@placeholder.com
-                    </FormHelperText>
-                  )}
-                </FormControl>
-                <FormControl>
-                  <SimpleTextLabel htmlFor="IRB-approval-input">
-                    IRB Protocol ID*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="IRB-approval-input"
-                    placeholder="XXXXXXXXXX"
-                    value={appDesignProperties.irbProtocolId}
-                    onChange={e => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        irbProtocolId: e.target.value,
-                      })
-                    }}
-                    onBlur={() =>
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER,
-                      )
-                    }
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                </FormControl>
-              </FormGroup>
-              <Box textAlign="left">
-                {saveLoader ? (
-                  <div className="text-center">
-                    <CircularProgress color="primary" size={25} />
-                  </div>
-                ) : (
-                  <SaveButton
-                    onClick={() => saveInfo()}
-                    id="save-button-study-builder-2"
-                  />
-                )}
-              </Box>
-            </Subsection>
+            <IrbBoardContactSection
+              appDesignProperties={appDesignProperties}
+              setAppDesignProperties={setAppDesignProperties}
+              updateAppDesignInfo={updateAppDesignInfo}
+              SimpleTextInputStyles={SimpleTextInputStyles}
+              phoneNumberErrorState={phoneNumberErrorState}
+              setPhoneNumberErrorState={setPhoneNumberErrorState}
+              emailErrorState={emailErrorState}
+              setEmailErrorState={setEmailErrorState}
+              getContact={getContact}
+              irbPhoneNumber={irbPhoneNumber}
+              setIrbPhoneNumber={setIrbPhoneNumber}
+              saveInfo={saveInfo}
+              saveLoader={saveLoader}
+              irbNameSameAsInstitution={irbNameSameAsInstitution}
+              setIrbNameSameAsInstitution={setIrbNameSameAsInstitution}
+            />
           </ol>
         </Box>
 
