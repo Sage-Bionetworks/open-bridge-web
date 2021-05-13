@@ -59,14 +59,20 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
   return (
     <div>
       <Box marginLeft="8px">Lead Principle Investigator*</Box>
-      <BlackBorderDropdown id = "lead-investigator-drop-down" 
-      dropdown = {leadInvestigatorOptions.map(item=> ({value: item.name, label: item.name}))}
-      
-      emptyValueLabel = "Select Principle Investigator" width='100%' itemHeight="48px"
-      value={currentInvestigatorSelected}
+      <BlackBorderDropdown
+        id="lead-investigator-drop-down"
+        dropdown={leadInvestigatorOptions.map(item => ({
+          value: item.name,
+          label: item.name,
+        }))}
+        emptyValueLabel="Select Principle Investigator"
+        width="100%"
+        itemHeight="48px"
+        value={currentInvestigatorSelected}
         onChange={e => {
           onChange(e.target.value)
-        }}/>
+        }}
+      />
     </div>
   )
 }
