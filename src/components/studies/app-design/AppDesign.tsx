@@ -39,12 +39,9 @@ import {
   SimpleTextInput,
   SimpleTextLabel,
 } from '../../widgets/StyledComponents'
-import ContactInformation from './ContactInformation'
-import StudySummaryRoles from './StudySummaryRoles'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
 import clsx from 'clsx'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
-import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
 import SectionIndicator from './SectionIndicator'
 import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
 import StudyPagePhoneContent from './StudyPagePhoneContent'
@@ -54,6 +51,7 @@ import UploadStudyLogoSection from './UploadStudyLogoSection'
 import ColorPickerSection from './ColorPickerSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import StudySummarySection from './StudySummarySection'
+import StudyLeadInformationSection from './StudyLeadInformationSection'
 
 const imgHeight = 70
 
@@ -210,12 +208,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   hideSectionVisibility: {
     visibility: 'hidden',
-  },
-  principleInvestigatorsParagraph: {
-    fontSize: '12px',
-    marginLeft: theme.spacing(2),
-    lineHeight: '14px',
-    marginTop: theme.spacing(2),
   },
   errorText: {
     marginTop: theme.spacing(-0.5),
@@ -734,7 +726,17 @@ const AppDesign: React.FunctionComponent<
               updateAppDesignInfo={updateAppDesignInfo}
               SimpleTextInputStyles={SimpleTextInputStyles}
             />
-            <Subsection heading="Information about the Study Leads">
+            <StudyLeadInformationSection
+              appDesignProperties={appDesignProperties}
+              setAppDesignProperties={setAppDesignProperties}
+              updateAppDesignInfo={updateAppDesignInfo}
+              SimpleTextInputStyles={SimpleTextInputStyles}
+              orgMembership={orgMembership}
+              token={token}
+              getContact={getContact}
+              irbNameSameAsInstitution={irbNameSameAsInstitution}
+            />
+            {/* <Subsection heading="Information about the Study Leads">
               <FormGroup className={classes.formFields}>
                 <FormControl className={classes.firstFormElement}>
                   <LeadInvestigatorDropdown
@@ -836,7 +838,7 @@ const AppDesign: React.FunctionComponent<
                   />
                 </FormControl>
               </FormGroup>
-            </Subsection>
+            </Subsection> */}
             <Subsection heading="General Contact and Support">
               <Box
                 width="80%"
