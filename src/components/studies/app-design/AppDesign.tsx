@@ -53,6 +53,7 @@ import Subsection from './Subsection'
 import UploadStudyLogoSection from './UploadStudyLogoSection'
 import ColorPickerSection from './ColorPickerSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
+import StudySummarySection from './StudySummarySection'
 
 const imgHeight = 70
 
@@ -237,9 +238,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     width: '100%',
     marginBottom: theme.spacing(2),
   },
-  studyNameInput: {
-    width: '70%',
-  },
+
   optionalDisclaimerTextOnPhone: {
     fontSize: '12px',
     fontStyle: 'italic',
@@ -729,66 +728,12 @@ const AppDesign: React.FunctionComponent<
             support.
           </p>
           <ol className={classes.steps}>
-            <Subsection heading="Study Summary">
-              <FormGroup className={classes.formFields}>
-                <FormControl className={classes.firstFormElement}>
-                  <SimpleTextLabel htmlFor="study-name-input">
-                    Study Name*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={clsx(
-                      classes.informationRowStyle,
-                      classes.studyNameInput,
-                    )}
-                    id="study-name-input"
-                    placeholder="Headline"
-                    value={appDesignProperties.studyTitle}
-                    onChange={e => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        studyTitle: e.target.value,
-                      })
-                    }}
-                    onBlur={() =>
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_NAME,
-                      )
-                    }
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                </FormControl>
-                <FormControl>
-                  <SimpleTextLabel>
-                    Body Copy (maximum 500 characters)
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    id="study-body-text"
-                    value={appDesignProperties.studySummaryBody}
-                    onChange={e => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        studySummaryBody: e.target.value,
-                      })
-                    }}
-                    onBlur={() =>
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION,
-                      )
-                    }
-                    multiline
-                    rows={8}
-                    rowsMax={10}
-                    placeholder="Lorem ipsum"
-                    inputProps={{ style: { width: '100%' }, maxLength: 500 }}
-                  />
-                </FormControl>
-              </FormGroup>
-            </Subsection>
+            <StudySummarySection
+              appDesignProperties={appDesignProperties}
+              setAppDesignProperties={setAppDesignProperties}
+              updateAppDesignInfo={updateAppDesignInfo}
+              SimpleTextInputStyles={SimpleTextInputStyles}
+            />
             <Subsection heading="Information about the Study Leads">
               <FormGroup className={classes.formFields}>
                 <FormControl className={classes.firstFormElement}>
