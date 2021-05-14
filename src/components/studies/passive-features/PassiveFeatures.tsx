@@ -7,7 +7,6 @@ import weather from '../../../assets/passive-features/recorders_weather.svg'
 import { latoFont, ThemeType } from '../../../style/theme'
 import {
   BackgroundRecorders,
-  Study,
   StudyBuilderComponentProps
 } from '../../../types/types'
 import { MTBHeadingH3 } from '../../widgets/Headings'
@@ -78,7 +77,7 @@ const sensors: Partial<RecorderInfo> = {
       'Lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor',
     value: false,
   },
-  backgroundNoise: {
+  microphone: {
     description:
       'Background Noise Description about this background recorder and its use of accelerameter and gyro',
     frequency:
@@ -91,7 +90,7 @@ const sensors: Partial<RecorderInfo> = {
 
     value: false,
   },
-  weatherPollution: {
+  weather: {
     description:
       'Weather and Air Pollution Description about this background recorder and its use of accelerameter and gyro',
     frequency:
@@ -107,21 +106,18 @@ const sensors: Partial<RecorderInfo> = {
 }
 
 export interface PassiveFeaturesProps {
-  study: Study
+  features?: BackgroundRecorders
 }
 
 const PassiveFeatures: React.FunctionComponent<
   PassiveFeaturesProps & StudyBuilderComponentProps
 > = ({
-  study,
+  features,
   onUpdate,
 
   children,
 }: PassiveFeaturesProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
-  const [features, setFeatures] = React.useState<
-    BackgroundRecorders | undefined
-  >(study.clientData.backgroundRecorders)
 
   const PFSection = ({
     recorderType,
@@ -151,15 +147,8 @@ const PassiveFeatures: React.FunctionComponent<
           <div className={classes.toggle}>
             <Switch
               color="primary"
-              value={value == false /*features?[recorderType] == false*/}
-              onChange={
-                e =>
-                  callbackFn(
-                    e.target.checked,
-                  ) /*{
-            onUpdate({ ...features, motion: e.target.checked })
-          }*/
-              }
+              checked={value}
+              onChange={e => callbackFn(e.target.checked)}
             ></Switch>
           </div>
         </Box>
@@ -201,21 +190,22 @@ const PassiveFeatures: React.FunctionComponent<
           recorderType={'motion'}
           value={features?.motion}
           callbackFn={(e: boolean) => {
+            const result = { ...features, motion: e }
             onUpdate({ ...features, motion: e })
           }}
         ></PFSection>
         <PFSection
-          recorderType={'backgroundNoise'}
-          value={features?.backgroundNoise}
+          recorderType={'microphone'}
+          value={features?.microphone}
           callbackFn={(e: boolean) => {
-            onUpdate({ ...features, backgroundNoise: e })
+            onUpdate({ ...features, microphone: e })
           }}
         ></PFSection>
         <PFSection
-          recorderType={'weatherPollution'}
-          value={features?.weatherPollution}
+          recorderType={'weather'}
+          value={features?.weather}
           callbackFn={(e: boolean) => {
-            onUpdate({ ...features, weatherPollution: e })
+            onUpdate({ ...features, weather: e })
           }}
         ></PFSection>
       </div>
