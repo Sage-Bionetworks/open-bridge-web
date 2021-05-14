@@ -1,11 +1,13 @@
-import { Box, Paper, Switch } from '@material-ui/core'
+import { Box, Paper, Switch, Divider } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import _ from 'lodash'
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
 import { ReactComponent as PhoneBottomImg } from '../../../assets/appdesign/phone_buttons.svg'
-import { latoFont, ThemeType } from '../../../style/theme'
+import { ReactComponent as PhoneTopImgLeftHighlighted } from '../../../assets/appdesign/CustomizeAppTopbarLeft.svg'
+import { ReactComponent as PhoneTopImgRightHighlighted } from '../../../assets/appdesign/CustomizeAppTopbarRight.svg'
+import { latoFont, ThemeType, playfairDisplayFont } from '../../../style/theme'
 import {
   StudyBuilderComponentProps,
   Contact,
@@ -27,6 +29,9 @@ import StudySummarySection from './StudySummarySection'
 import StudyLeadInformationSection from './StudyLeadInformationSection'
 import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
 import IrbBoardContactSection from './IrbBoardContactSection'
+import StudySummaryRoles from './StudySummaryRoles'
+import ContactInformation from './ContactInformation'
+import StudyPageBottomPhoneContent from './StudyPageBottomPhoneContent'
 
 const imgHeight = 70
 
@@ -46,13 +51,11 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     listStyleType: 'none',
     margin: theme.spacing(5, 0, 0, 0),
     padding: 0,
-
     '& li': {
       display: 'flex',
       marginBottom: theme.spacing(6),
       textAlign: 'left',
     },
-
     '& li::before': {
       counterIncrement: 'orderedlist',
       content: 'counter(orderedlist)',
@@ -71,12 +74,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       height: theme.spacing(5),
     },
   },
-  intro: {
-    fontFamily: latoFont,
-    fontSize: '15px',
-    lineHeight: '18px',
-    marginTop: theme.spacing(2),
-  },
   phoneArea: {
     marginLeft: theme.spacing(2),
     marginTop: theme.spacing(3),
@@ -87,7 +84,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     flexDirection: 'column',
     backgroundImage: 'url(' + PhoneBg + ')',
     width: '100%',
-    minHeight: '600px',
     marginTop: theme.spacing(4),
     backgroundRepeat: 'no-repeat',
     justifyContent: 'space-between',
@@ -109,7 +105,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     height: `${imgHeight + 16}px`,
     borderRadius: '25px 25px 0 0',
     borderStyle: 'solid',
-    borderWidth: '3px 3px 0px 3px',
+    borderWidth: '4px 4px 0px 4px',
     borderColor: 'black',
     display: 'flex',
     flexDirection: 'column',
@@ -121,7 +117,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     padding: '0 .8rem',
     fontSize: '1.6rem',
     //margin: '0 -50px 30px -50px',
-
     '& > div': {
       padding: '15px 13px',
     },
@@ -132,18 +127,13 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   fields: {
     display: 'flex',
     textAlign: 'left',
-
     flexGrow: 1,
     flexDirection: 'column',
     maxWidth: theme.spacing(51),
-    //marginRight: theme.spacing(10),
     '& .MuiTextField-root': {
       margin: theme.spacing(1),
       width: '100%',
     },
-  },
-  firstFormElement: {
-    marginTop: theme.spacing(2.5),
   },
   smallScreenText: {
     fontSize: '15px',
@@ -177,12 +167,86 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginTop: theme.spacing(6),
     marginLeft: theme.spacing(-1.5),
   },
-
   optionalDisclaimerTextOnPhone: {
     fontSize: '12px',
     fontStyle: 'italic',
     paddingLeft: theme.spacing(4),
     textAlign: 'left',
+  },
+  //here
+  sectionFourIndicatorPosition: {
+    marginTop: theme.spacing(-0.5),
+    position: 'absolute',
+    marginLeft: theme.spacing(-6.5),
+  },
+  headlineStyle: {
+    fontFamily: playfairDisplayFont,
+    fontStyle: 'italic',
+    fontWeight: 'normal',
+    fontSize: '21px',
+    lineHeight: '28px',
+    whiteSpace: 'pre-line',
+  },
+  phoneInnerBottom: {
+    marginLeft: '5px',
+    marginRight: theme.spacing(0.26),
+    padding: theme.spacing(4),
+    textAlign: 'left',
+    minHeight: `500px`,
+    borderRight: '4px solid black',
+    borderLeft: '4px solid black',
+  },
+  bodyText: {
+    fontFamily: latoFont,
+    fontWeight: 'normal',
+    fontSize: '15px',
+    lineHeight: '18px',
+    marginTop: theme.spacing(3),
+    whiteSpace: 'pre-line',
+  },
+  bodyPhoneText: {
+    fontFamily: latoFont,
+    fontWeight: 'normal',
+    fontSize: '12px',
+    lineHeight: '15px',
+    marginTop: theme.spacing(1),
+    textAlign: 'left',
+  },
+  divider: {
+    width: '256px',
+    marginTop: theme.spacing(3.75),
+  },
+  sectionFiveIndicatorPosition: {
+    marginTop: theme.spacing(2.5),
+    position: 'absolute',
+    marginLeft: theme.spacing(-6.5),
+  },
+  phoneGrayBackground: {
+    backgroundColor: '#F7F7F7',
+  },
+  contactAndSupportText: {
+    fontFamily: 'Poppins',
+    fontWeight: 'normal',
+    fontSize: '18px',
+    lineHeight: '24px',
+    textAlign: 'left',
+  },
+  summaryRoles: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    marginBottom: theme.spacing(1.25),
+    marginTop: theme.spacing(1),
+  },
+  sectionSixAndSevenIndicatorPosition: {
+    marginTop: theme.spacing(2.5),
+    position: 'absolute',
+    marginLeft: theme.spacing(-39.5),
+  },
+  studyPageTopBar: {
+    backgroundColor: '#F6F6F6',
   },
 }))
 
@@ -239,6 +303,7 @@ const PhoneTopBar: React.FunctionComponent<{
   color?: string
   previewFile?: PreviewFile
   isUsingDefaultMessage?: boolean
+  studyPagePhoneIndex?: number
 }> = ({ color = 'transparent', previewFile, isUsingDefaultMessage }) => {
   const classes = useStyles()
   return (
@@ -626,7 +691,7 @@ const AppDesign: React.FunctionComponent<
         </Box>
         <Box className={classes.phoneArea}>
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
-          <Box className={`${classes.phone}`}>
+          <Box className={classes.phone}>
             <SectionIndicator
               index={1}
               className={clsx(classes.sectionOneIndicatorPosition)}
@@ -645,7 +710,7 @@ const AppDesign: React.FunctionComponent<
             <WelcomeScreenPhoneContent
               appDesignProperties={appDesignProperties}
             />
-            <div
+            <Box
               className={clsx(
                 classes.phoneBottom,
                 classes.optionalDisclaimerTextOnPhone,
@@ -654,7 +719,7 @@ const AppDesign: React.FunctionComponent<
               {appDesignProperties.welcomeScreenInfo.useOptionalDisclaimer
                 ? 'This is a research study and does not provide medical advice,diagnosis, or treatment'
                 : ''}
-            </div>
+            </Box>
           </Box>
         </Box>
       </Paper>
@@ -719,17 +784,28 @@ const AppDesign: React.FunctionComponent<
         <Box className={classes.phoneArea}>
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
           <Box className={classes.phone}>
-            <PhoneTopBar
-              color={appDesignProperties.backgroundColor.foreground}
-              previewFile={previewFile}
-              isUsingDefaultMessage={
-                appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
-              }
-            />
-            <StudyPagePhoneContent
+            <Box className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
+              <PhoneTopImgLeftHighlighted
+                title="phone top image"
+                width="312px"
+              />
+            </Box>
+            <Box className={classes.phoneBottom}>
+              <PhoneBottomImg title="phone bottom image" />
+            </Box>
+          </Box>
+          <Box className={classes.phone} marginTop="134px">
+            <Box className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
+              <PhoneTopImgRightHighlighted
+                title="phone top image"
+                width="312px"
+              />
+            </Box>
+            <StudyPageBottomPhoneContent
               appDesignProperties={appDesignProperties}
-              irbPhoneNumber={irbPhoneNumber}
               generalContactPhoneNumber={generalContactPhoneNumber}
+              irbPhoneNumber={irbPhoneNumber}
+              studyID={id}
             />
             <div className={classes.phoneBottom}>
               <PhoneBottomImg title="phone bottom image" />
