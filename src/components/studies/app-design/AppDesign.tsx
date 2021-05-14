@@ -1,4 +1,4 @@
-import { Box, Paper, Switch, Divider } from '@material-ui/core'
+import { Box, Paper, Switch } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import _ from 'lodash'
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
@@ -20,7 +20,6 @@ import DefaultLogo from '../../../assets/logo_mtb.svg'
 import clsx from 'clsx'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import SectionIndicator from './SectionIndicator'
-import StudyPagePhoneContent from './StudyPagePhoneContent'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
 import UploadStudyLogoSection from './UploadStudyLogoSection'
 import ColorPickerSection from './ColorPickerSection'
@@ -29,9 +28,8 @@ import StudySummarySection from './StudySummarySection'
 import StudyLeadInformationSection from './StudyLeadInformationSection'
 import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
 import IrbBoardContactSection from './IrbBoardContactSection'
-import StudySummaryRoles from './StudySummaryRoles'
-import ContactInformation from './ContactInformation'
 import StudyPageBottomPhoneContent from './StudyPageBottomPhoneContent'
+import StudyPageTopPhoneContent from './StudyPageTopPhoneContent'
 
 const imgHeight = 70
 
@@ -172,78 +170,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontStyle: 'italic',
     paddingLeft: theme.spacing(4),
     textAlign: 'left',
-  },
-  //here
-  sectionFourIndicatorPosition: {
-    marginTop: theme.spacing(-0.5),
-    position: 'absolute',
-    marginLeft: theme.spacing(-6.5),
-  },
-  headlineStyle: {
-    fontFamily: playfairDisplayFont,
-    fontStyle: 'italic',
-    fontWeight: 'normal',
-    fontSize: '21px',
-    lineHeight: '28px',
-    whiteSpace: 'pre-line',
-  },
-  phoneInnerBottom: {
-    marginLeft: '5px',
-    marginRight: theme.spacing(0.26),
-    padding: theme.spacing(4),
-    textAlign: 'left',
-    minHeight: `500px`,
-    borderRight: '4px solid black',
-    borderLeft: '4px solid black',
-  },
-  bodyText: {
-    fontFamily: latoFont,
-    fontWeight: 'normal',
-    fontSize: '15px',
-    lineHeight: '18px',
-    marginTop: theme.spacing(3),
-    whiteSpace: 'pre-line',
-  },
-  bodyPhoneText: {
-    fontFamily: latoFont,
-    fontWeight: 'normal',
-    fontSize: '12px',
-    lineHeight: '15px',
-    marginTop: theme.spacing(1),
-    textAlign: 'left',
-  },
-  divider: {
-    width: '256px',
-    marginTop: theme.spacing(3.75),
-  },
-  sectionFiveIndicatorPosition: {
-    marginTop: theme.spacing(2.5),
-    position: 'absolute',
-    marginLeft: theme.spacing(-6.5),
-  },
-  phoneGrayBackground: {
-    backgroundColor: '#F7F7F7',
-  },
-  contactAndSupportText: {
-    fontFamily: 'Poppins',
-    fontWeight: 'normal',
-    fontSize: '18px',
-    lineHeight: '24px',
-    textAlign: 'left',
-  },
-  summaryRoles: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    marginBottom: theme.spacing(1.25),
-    marginTop: theme.spacing(1),
-  },
-  sectionSixAndSevenIndicatorPosition: {
-    marginTop: theme.spacing(2.5),
-    position: 'absolute',
-    marginLeft: theme.spacing(-39.5),
   },
   studyPageTopBar: {
     backgroundColor: '#F6F6F6',
@@ -790,11 +716,22 @@ const AppDesign: React.FunctionComponent<
                 width="312px"
               />
             </Box>
+            <StudyPageTopPhoneContent
+              appDesignProperties={appDesignProperties}
+              previewFile={previewFile}
+              isUsingDefaultMessage={
+                appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
+              }
+              imgHeight={imgHeight}
+              appColor={
+                appDesignProperties.backgroundColor.foreground || '#6040FF'
+              }
+            />
             <Box className={classes.phoneBottom}>
               <PhoneBottomImg title="phone bottom image" />
             </Box>
           </Box>
-          <Box className={classes.phone} marginTop="134px">
+          <Box className={classes.phone} style={{ marginTop: '134px' }}>
             <Box className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
               <PhoneTopImgRightHighlighted
                 title="phone top image"

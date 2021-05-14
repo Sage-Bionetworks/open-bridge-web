@@ -1,20 +1,26 @@
 import React from 'react'
 import { MTBHeadingH4 } from '../../widgets/Headings'
+import { Box } from '@material-ui/core'
 
 type StudySummaryRoleProps = {
   type: String
   name: String
+  className?: string
 }
 
 const StudySummaryRoles: React.FunctionComponent<StudySummaryRoleProps> = ({
   type,
   name,
+  className,
 }) => {
   return (
-    <div style={{ wordWrap: 'break-word', textAlign: 'left' }}>
+    <Box
+      className={className}
+      style={{ wordWrap: 'break-word', textAlign: 'left' }}
+    >
       <MTBHeadingH4>{name}</MTBHeadingH4>
       {type}
-    </div>
+    </Box>
   )
 }
 export default StudySummaryRoles

@@ -1,5 +1,8 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core'
+import { latoFont } from '../../../style/theme'
+import { Box } from '@material-ui/core'
+
 import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
@@ -14,6 +17,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: 'black',
     fontWeight: 'bold',
     fontSize: '16px',
+    fontStyle: latoFont,
   },
 }))
 
@@ -28,9 +32,9 @@ const SectionIndicator: React.FunctionComponent<SectionIndicatorProps> = ({
 }) => {
   const classes = useStyles()
   return (
-    <div className={clsx(classes.container, className && className)}>
+    <Box className={clsx(classes.container, className && className)}>
       {index}
-    </div>
+    </Box>
   )
 }
 

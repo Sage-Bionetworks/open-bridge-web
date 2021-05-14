@@ -83,14 +83,14 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-type StudyPagePhoneContentProps = {
+type StudyPageBottomPhoneContentProps = {
   appDesignProperties: StudyAppDesign
   generalContactPhoneNumber: string
   irbPhoneNumber: string
   studyID: string
 }
 
-const StudyPagePhoneContent: React.FunctionComponent<StudyPagePhoneContentProps> = ({
+const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneContentProps> = ({
   appDesignProperties,
   generalContactPhoneNumber,
   irbPhoneNumber,
@@ -167,4 +167,4 @@ const StudyPagePhoneContent: React.FunctionComponent<StudyPagePhoneContentProps>
   )
 }
 
-export default StudyPagePhoneContent
+export default StudyPageBottomPhoneContent
