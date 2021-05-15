@@ -706,7 +706,6 @@ const AppDesign: React.FunctionComponent<
             />
           </ol>
         </Box>
-
         <Box className={classes.phoneArea}>
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
           <Box className={classes.phone}>

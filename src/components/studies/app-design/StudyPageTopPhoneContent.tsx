@@ -57,6 +57,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
+    position: 'relative',
   },
   studySummaryRoles: {
     marginBottom: theme.spacing(3),
@@ -115,12 +116,15 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
           index={4}
           className={classes.sectionFourIndicatorPosition}
         />
-        <Box className={classes.headlineStyle}>
-          {appDesignProperties.studyTitle || 'Title of study...'}
+        <Box height="420px">
+          <Box className={classes.headlineStyle}>
+            {appDesignProperties.studyTitle || 'Title of study...'}
+          </Box>
+          <p className={classes.bodyText}>
+            {appDesignProperties.studySummaryBody || 'Body...'}
+          </p>
         </Box>
-        <p className={classes.bodyText}>
-          {appDesignProperties.studySummaryBody || 'Body...'}
-        </p>
+
         <Divider className={classes.divider} />
         <StudySummaryRoles
           type="Lead Principal Investigator"
@@ -134,6 +138,7 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
           index={5}
           className={classes.sectionFiveIndicatorPosition}
         />
+
         <StudySummaryRoles
           type="Institution"
           name={
