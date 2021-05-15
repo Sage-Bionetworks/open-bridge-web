@@ -38,7 +38,6 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(1),
   },
   sectionSixAndSevenIndicatorPosition: {
-    marginTop: theme.spacing(-0.5),
     position: 'absolute',
     marginLeft: theme.spacing(-39.5),
   },
@@ -108,7 +107,7 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
         <Box className={classes.summaryRoles}>
           <SectionIndicator
             index={6}
-            className={clsx(classes.sectionSixAndSevenIndicatorPosition)}
+            className={classes.sectionSixAndSevenIndicatorPosition}
           />
           <StudySummaryRoles
             type={
@@ -146,7 +145,7 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
         <Box className={classes.summaryRoles}>
           <SectionIndicator
             index={7}
-            className={clsx(classes.sectionSixAndSevenIndicatorPosition)}
+            className={classes.sectionSixAndSevenIndicatorPosition}
           />
           <StudySummaryRoles
             type="IRB/Ethics Board of Record"
