@@ -618,14 +618,17 @@ const AppDesign: React.FunctionComponent<
         <Box className={classes.phoneArea}>
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
           <Box className={classes.phone}>
-            <SectionIndicator
-              index={1}
-              className={clsx(classes.sectionOneIndicatorPosition)}
-            />
-            <SectionIndicator
-              index={2}
-              className={clsx(classes.sectionTwoIndicatorPosition)}
-            />
+            {!appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage && [
+              <SectionIndicator
+                index={1}
+                className={clsx(classes.sectionOneIndicatorPosition)}
+              />,
+              <SectionIndicator
+                index={2}
+                className={clsx(classes.sectionTwoIndicatorPosition)}
+              />,
+            ]}
+
             <PhoneTopBar
               color={appDesignProperties.backgroundColor.foreground}
               previewFile={previewFile}

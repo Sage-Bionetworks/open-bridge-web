@@ -62,10 +62,12 @@ const WelcomeScreenPhoneContent: React.FunctionComponent<WelcomeScreenPhoneConte
 
   return (
     <Box className={classes.phoneInner}>
-      <SectionIndicator
-        index={3}
-        className={clsx(classes.sectionThreeIndicatorPosition)}
-      />
+      {!appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage && (
+        <SectionIndicator
+          index={3}
+          className={classes.sectionThreeIndicatorPosition}
+        />
+      )}
       <Box className={classes.headlineStyle}>
         {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
           ? 'Thanks for joining \n' + appDesignProperties.studyTitle
