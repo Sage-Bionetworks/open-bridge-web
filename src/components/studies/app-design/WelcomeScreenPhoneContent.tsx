@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
     whiteSpace: 'pre-line',
   },
   fromText: {
-    marginTop: theme.spacing(1.5),
+    marginTop: theme.spacing(1),
   },
   bodyText: {
     fontFamily: latoFont,

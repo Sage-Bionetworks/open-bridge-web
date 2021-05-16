@@ -744,7 +744,7 @@ const AppDesign: React.FunctionComponent<
               appDesignProperties={appDesignProperties}
               generalContactPhoneNumber={generalContactPhoneNumber}
               irbPhoneNumber={irbPhoneNumber}
-              studyID={id}
+              studyID={study.identifier}
             />
             <div className={classes.phoneBottom}>
               <PhoneBottomImg title="phone bottom image" />
