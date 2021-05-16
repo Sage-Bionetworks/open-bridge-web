@@ -7,7 +7,7 @@ import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
 import { ReactComponent as PhoneBottomImg } from '../../../assets/appdesign/phone_buttons.svg'
 import { ReactComponent as PhoneTopImgLeftHighlighted } from '../../../assets/appdesign/CustomizeAppTopbarLeft.svg'
 import { ReactComponent as PhoneTopImgRightHighlighted } from '../../../assets/appdesign/CustomizeAppTopbarRight.svg'
-import { latoFont, ThemeType, playfairDisplayFont } from '../../../style/theme'
+import { ThemeType } from '../../../style/theme'
 import {
   StudyBuilderComponentProps,
   Contact,
@@ -393,8 +393,7 @@ const AppDesign: React.FunctionComponent<
         updatedStudy.name = appDesignProps.studyTitle
         break
       case AppDesignUpdateTypes.UPDATE_STUDY_COLOR:
-        updatedStudy.colorScheme!.foreground =
-          appDesignProps.backgroundColor.foreground
+        updatedStudy.colorScheme = { ...appDesignProps.backgroundColor }
         break
       case AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS:
         const contacts: Contact[] = []
@@ -538,6 +537,7 @@ const AppDesign: React.FunctionComponent<
           } as Contact)
     }
   }
+
   return (
     <Box className={classes.root}>
       <Paper className={classes.section} elevation={2} id="container">
@@ -622,10 +622,12 @@ const AppDesign: React.FunctionComponent<
               <SectionIndicator
                 index={1}
                 className={clsx(classes.sectionOneIndicatorPosition)}
+                key={1}
               />,
               <SectionIndicator
                 index={2}
                 className={clsx(classes.sectionTwoIndicatorPosition)}
+                key={2}
               />,
             ]}
 
