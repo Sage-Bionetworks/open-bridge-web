@@ -14,7 +14,7 @@ import { RouteComponentProps } from 'react-router-dom'
 import { useAsync } from '../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
 import { useStudyInfoDataDispatch } from '../../helpers/StudyInfoContext'
-import { getRandomId } from '../../helpers/utility'
+import { generateNonambiguousCode } from '../../helpers/utility'
 import StudyService from '../../services/study.service'
 import constants from '../../types/constants'
 import { Study, StudyStatus } from '../../types/types'
@@ -219,7 +219,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   const createStudy = async (study?: Study) => {
     //if study is provided -- we are duplicating
-    const id = getRandomId()
+    const id = generateNonambiguousCode(6)
 
     const newStudy = study
       ? {
