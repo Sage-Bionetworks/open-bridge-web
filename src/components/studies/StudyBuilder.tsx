@@ -31,12 +31,12 @@ import EnrollmentTypeSelector from './enrollment-type-selector/EnrollmentTypeSel
 import Launch from './launch/Launch'
 import NavButtons from './NavButtons'
 import PassiveFeatures from './passive-features/PassiveFeatures'
+import Preview from './preview/Preview'
 import IntroInfo from './scheduler/IntroInfo'
 import Scheduler from './scheduler/Scheduler'
 import { StudySection } from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
-
 const subtitles: StringDictionary<string> = {
   description: 'Description',
   'team-settings': 'Team Settings',
@@ -378,16 +378,15 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                 left: '50%',
               }}
             ></LoadingComponent>
-            {error?.length && (
+            {!_.isEmpty(error) && (
               <Alert variant="outlined" color="error">
                 {Array.isArray(error) ? (
-                  error.map(e => <div style={{ textAlign: 'left' }}>{e}</div>)
+                  error.map(e => <div style={{ textAlign: 'left' }}>1{e}</div>)
                 ) : (
-                  <div style={{ textAlign: 'left' }}>{error}</div>
+                  <div style={{ textAlign: 'left' }}>{error}2</div>
                 )}
               </Alert>
             )}
-
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
               onError={ErrorHandler}
@@ -475,6 +474,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       >
                         {navButtons}
                       </AppDesign>
+                    )}
+                    {section === 'preview' && (
+                      <Preview
+                        studyId={builderInfo.study.identifier}
+                        token={token!}
+                      ></Preview>
                     )}
                     {section === 'launch' && (
                       <Launch

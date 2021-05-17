@@ -60,7 +60,7 @@ const globals: cssGlobalClasses = {
     flexWrap: 'wrap',
     overflowWrap: 'normal',
   },*/
-  '.home': {
+  '.whiteBg': {
     backgroundColor: '#fff',
   },
   listReset: {

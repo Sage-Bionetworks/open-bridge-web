@@ -1,11 +1,11 @@
-import { callEndpoint } from '../helpers/utility'
+import { callEndpoint, generateNonambiguousCode } from '../helpers/utility'
 import constants from '../types/constants'
 import {
   EditableParticipantData,
   EnrolledAccountRecord,
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
-  StringDictionary,
+  StringDictionary
 } from '../types/types'
 
 export const CLINIC_EVENT_ID = 'clinic_visit'
@@ -349,6 +349,31 @@ async function updateParticipantGroup(
   return result.data.identifier
 }
 
+
+async function addTestParticipantForPreview(
+  studyIdentifier: string,
+  token: string,
+): Promise<string> {
+  const endpoint = constants.endpoints.participant.replace(
+    ':id',
+    studyIdentifier,
+  )
+  const data: StringDictionary<any> = {
+    appId: constants.constants.APP_ID,
+    dataGroups: ['test_user'],
+    externalIds: { [studyIdentifier]: generateNonambiguousCode(6) },
+  }
+
+  const result = await callEndpoint<{ identifier: string }>(
+    endpoint,
+    'POST',
+    data,
+    token,
+  )
+
+  return result.data.identifier
+}
+
 //adds a participant
 
 async function addParticipant(
@@ -468,6 +493,7 @@ async function getRequestInfoForParticipant(
 
 const ParticipantService = {
   addParticipant,
+  addTestParticipantForPreview,
   deleteParticipant,
   getAllParticipants,
   getRelevantEventsForParticipans,
