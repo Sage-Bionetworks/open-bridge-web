@@ -8,7 +8,13 @@ import {
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import AppDesign from '../../../../components/studies/app-design/AppDesign'
-import { StudyAppDesign } from '../../../../types/types'
+import {
+  StudyBuilderComponentProps,
+  Contact,
+  WelcomeScreenData,
+  StudyAppDesign,
+  Study,
+} from '../../../../types/types'
 import { UserSessionDataStateContext } from '../../../../helpers/AuthContext'
 import Server from '../../../../_tests_server/handlers/server'
 
@@ -20,26 +26,26 @@ let appDesign: Element
 let container: Element
 const studyAppDesignTemplate = {
   logo: '',
-  backgroundColor: '#6040FF',
-  welcomeScreenHeader: '',
-  welcomeScreenBody: '',
-  welcomeScreenFromText: '',
-  welcomeScreenSalutation: '',
+  backgroundColor: {
+    foreground: '#6040FF',
+  },
+  welcomeScreenInfo: {
+    welcomeScreenBody: '',
+    welcomeScreenFromText: '',
+    welcomeScreenSalutation: '',
+    welcomeScreenHeader: '',
+    isUsingDefaultMessage: false,
+    useOptionalDisclaimer: false,
+  } as WelcomeScreenData,
   studyTitle: '',
   studySummaryBody: '',
-  leadPrincipleInvestigator: '',
-  institution: '',
-  funder: '',
-  IRBApprovalNumber: '',
-  contactLead: '',
-  contactLeadRoleInStudy: '',
-  contactLeadPhoneNumber: '',
-  contactLeadEmail: '',
-  nameOfEthicsBoard: '',
-  ethicsBoardPhoneNumber: '',
-  ethicsBoardEmail: '',
-  useOptionalDisclaimer: false,
-  isUsingDefaultMessage: false,
+  irbProtocolId: '',
+  leadPrincipleInvestigatorInfo: {
+    name: '',
+  },
+  contactLeadInfo: undefined,
+  ethicsBoardInfo: undefined,
+  funder: undefined,
 } as StudyAppDesign
 let studyAppDesign: StudyAppDesign
 
@@ -61,7 +67,7 @@ const renderAppDesignComponent = () => {
         hasObjectChanged={false}
         saveLoader={false}
         id={'test'}
-        currentAppDesign={{ ...studyAppDesignTemplate }}
+        study={{} as Study}
         onSave={onSave}
         onUpdate={onUpdate}
       ></AppDesign>

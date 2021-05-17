@@ -461,7 +461,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         onSave={(updatedStudy: Study) => {
                           saveStudy(builderInfo.study)
                         }}
-                        sideDrawerIsOpen={open}
                         onUpdate={(study: Study) => {
                           setHasObjectChanged(true)
                           setData({

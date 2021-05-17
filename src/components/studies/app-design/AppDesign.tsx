@@ -214,7 +214,6 @@ export interface AppDesignProps {
   id: string
   onSave: Function
   study: Study
-  sideDrawerIsOpen: boolean
 }
 
 function getPreviewForImage(file: File): PreviewFile {
@@ -231,7 +230,6 @@ const PhoneTopBar: React.FunctionComponent<{
   color?: string
   previewFile?: PreviewFile
   isUsingDefaultMessage?: boolean
-  studyPagePhoneIndex?: number
 }> = ({ color = 'transparent', previewFile, isUsingDefaultMessage }) => {
   const classes = useStyles()
   return (
@@ -268,7 +266,6 @@ const AppDesign: React.FunctionComponent<
   onUpdate,
   onSave,
   study,
-  sideDrawerIsOpen,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
