@@ -214,7 +214,6 @@ export interface AppDesignProps {
   id: string
   onSave: Function
   study: Study
-  sideDrawerIsOpen: boolean
 }
 
 function getPreviewForImage(file: File): PreviewFile {
@@ -268,7 +267,6 @@ const AppDesign: React.FunctionComponent<
   onUpdate,
   onSave,
   study,
-  sideDrawerIsOpen,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
