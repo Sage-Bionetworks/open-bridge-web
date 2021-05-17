@@ -633,12 +633,12 @@ const AppDesign: React.FunctionComponent<
             {!appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage && [
               <SectionIndicator
                 index={1}
-                className={clsx(classes.sectionOneIndicatorPosition)}
+                className={classes.sectionOneIndicatorPosition}
                 key={1}
               />,
               <SectionIndicator
                 index={2}
-                className={clsx(classes.sectionTwoIndicatorPosition)}
+                className={classes.sectionTwoIndicatorPosition}
                 key={2}
               />,
             ]}
