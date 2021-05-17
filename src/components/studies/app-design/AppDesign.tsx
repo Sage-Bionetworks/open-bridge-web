@@ -230,7 +230,6 @@ const PhoneTopBar: React.FunctionComponent<{
   color?: string
   previewFile?: PreviewFile
   isUsingDefaultMessage?: boolean
-  studyPagePhoneIndex?: number
 }> = ({ color = 'transparent', previewFile, isUsingDefaultMessage }) => {
   const classes = useStyles()
   return (
