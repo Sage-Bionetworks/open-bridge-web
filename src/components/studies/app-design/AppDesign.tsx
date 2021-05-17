@@ -30,6 +30,8 @@ import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
 import IrbBoardContactSection from './IrbBoardContactSection'
 import StudyPageBottomPhoneContent from './StudyPageBottomPhoneContent'
 import StudyPageTopPhoneContent from './StudyPageTopPhoneContent'
+import NavigationPrompt from 'react-router-navigation-prompt'
+import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 
 const imgHeight = 70
 
@@ -439,7 +441,7 @@ const AppDesign: React.FunctionComponent<
   )
 
   const formatPhoneNumber = (phoneNumber: string) => {
-    if (phoneNumber.length != 10) {
+    if (phoneNumber.length !== 10) {
       return phoneNumber
     }
     return (
@@ -471,7 +473,7 @@ const AppDesign: React.FunctionComponent<
       setIrbPhoneNumber(formattedPhone)
     }
     const isWelcomeScreenDataEmpty =
-      Object.keys(study.clientData.welcomeScreenData || {}).length == 0
+      Object.keys(study.clientData.welcomeScreenData || {}).length === 0
     const welcomeScreenData = isWelcomeScreenDataEmpty
       ? { ...appDesignProperties.welcomeScreenInfo }
       : { ...study.clientData.welcomeScreenData! }
@@ -540,6 +542,16 @@ const AppDesign: React.FunctionComponent<
 
   return (
     <Box className={classes.root}>
+      <NavigationPrompt when={hasObjectChanged} key="prompt">
+        {({ onConfirm, onCancel }) => (
+          <ConfirmationDialog
+            isOpen={hasObjectChanged}
+            type={'NAVIGATE'}
+            onCancel={onCancel}
+            onConfirm={onConfirm}
+          />
+        )}
+      </NavigationPrompt>
       <Paper className={classes.section} elevation={2} id="container">
         <Box className={classes.fields}>
           <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
