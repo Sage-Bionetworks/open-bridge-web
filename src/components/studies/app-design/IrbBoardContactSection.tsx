@@ -122,11 +122,11 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             aria-label="gender"
             value={
               irbNameSameAsInstitution
-                ? 'Same Institutional Affiliation'
-                : 'Other'
+                ? 'affiliation_same'
+                : 'affiliation_other'
             }
             onChange={e => {
-              if (e.target.value === 'Same Institutional Affiliation') {
+              if (e.target.value === 'affiliation_same') {
                 const studyLead = getContact('LEAD_INVESTIGATOR')
                 const newEthicsBoard = getContact('ETHICS_BOARD')
                 newEthicsBoard.name = studyLead.affiliation || ''
@@ -135,18 +135,20 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
                   ethicsBoardInfo: newEthicsBoard,
                 })
               }
-              setIrbNameSameAsInstitution(
-                e.target.value === 'Same Institutional Affiliation',
-              )
+              setIrbNameSameAsInstitution(e.target.value === 'affiliation_same')
             }}
             style={{ marginBottom: '8px' }}
           >
             <FormControlLabel
-              value="Same Institutional Affiliation"
+              value="affiliation_same"
               control={<Radio />}
               label="Same Institutional Affiliation"
             />
-            <FormControlLabel value="Other" control={<Radio />} label="Other" />
+            <FormControlLabel
+              value="affiliation_other"
+              control={<Radio />}
+              label="Other"
+            />
           </RadioGroup>
           <FormControl className={classes.irbInputFormControl}>
             <SimpleTextInput

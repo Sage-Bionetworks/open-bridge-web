@@ -31,12 +31,6 @@ const useStyles = makeStyles(theme => ({
     fontSize: '15px',
     lineHeight: '18px',
   },
-  principleInvestigatorsParagraph: {
-    fontSize: '12px',
-    marginLeft: theme.spacing(2),
-    lineHeight: '14px',
-    marginTop: theme.spacing(2),
-  },
   errorText: {
     marginTop: theme.spacing(-0.5),
   },
