@@ -22,17 +22,9 @@ import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
 import clsx from 'clsx'
 import SaveButton from '../../widgets/SaveButton'
 import { makePhone } from '../../../helpers/utility'
+import FormGroupWrapper from './FormGroupWrapper'
 
 const useStyles = makeStyles(theme => ({
-  formFields: {
-    fontFamily: poppinsFont,
-    fontSize: '14px',
-    marginBottom: '24px',
-
-    '& .MuiFormControl-root:not(:last-child)': {
-      marginBottom: '16px',
-    },
-  },
   irbInputFormControl: {
     width: '100%',
     marginBottom: theme.spacing(1),
@@ -107,7 +99,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
         For questions about your rights as a research participant in this study,
         please contact :
       </Box>
-      <FormGroup className={classes.formFields}>
+      <FormGroupWrapper>
         <Box paddingLeft="2px" marginTop="8px">
           What is your IRB of record?*
         </Box>
@@ -303,7 +295,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             }}
           />
         </FormControl>
-      </FormGroup>
+      </FormGroupWrapper>
       <Box textAlign="left">
         {saveLoader ? (
           <div className="text-center">

@@ -12,16 +12,9 @@ import { AppDesignUpdateTypes } from './AppDesign'
 import clsx from 'clsx'
 import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
 import { makePhone } from '../../../helpers/utility'
+import FormGroupWrapper from './FormGroupWrapper'
 
 const useStyles = makeStyles(theme => ({
-  formFields: {
-    fontFamily: poppinsFont,
-    fontSize: '14px',
-    marginBottom: '24px',
-    '& .MuiFormControl-root:not(:last-child)': {
-      marginBottom: '16px',
-    },
-  },
   firstFormElement: {
     marginTop: theme.spacing(2.5),
   },
@@ -82,7 +75,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
         For general questions about the study or to <strong>withdraw</strong>{' '}
         from the study, who should the participant contact?{' '}
       </Box>
-      <FormGroup className={classes.formFields}>
+      <FormGroupWrapper>
         <FormControl className={classes.firstFormElement}>
           <SimpleTextLabel htmlFor="contact-lead-input">
             Contact Lead*
@@ -240,7 +233,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             </FormHelperText>
           )}
         </FormControl>
-      </FormGroup>
+      </FormGroupWrapper>
     </Subsection>
   )
 }

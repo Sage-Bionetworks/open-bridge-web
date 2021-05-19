@@ -1,13 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Subsection from './Subsection'
-import {
-  Box,
-  CircularProgress,
-  FormControl,
-  FormGroup,
-  Checkbox,
-} from '@material-ui/core'
+import { FormControl, FormGroup, Checkbox } from '@material-ui/core'
 import { StudyAppDesign } from '../../../types/types'
 import { playfairDisplayFont, poppinsFont } from '../../../style/theme'
 import {
@@ -16,17 +10,9 @@ import {
 } from '../../widgets/StyledComponents'
 import { AppDesignUpdateTypes } from './AppDesign'
 import clsx from 'clsx'
+import FormGroupWrapper from './FormGroupWrapper'
 
 const useStyles = makeStyles(theme => ({
-  formFields: {
-    fontFamily: poppinsFont,
-    fontSize: '14px',
-    marginBottom: '24px',
-
-    '& .MuiFormControl-root:not(:last-child)': {
-      marginBottom: '16px',
-    },
-  },
   firstFormElement: {
     marginTop: theme.spacing(2.5),
   },
@@ -57,7 +43,7 @@ const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = (
   const classes = useStyles()
   return (
     <Subsection heading="Study Summary">
-      <FormGroup className={classes.formFields}>
+      <FormGroupWrapper>
         <FormControl className={classes.firstFormElement}>
           <SimpleTextLabel htmlFor="study-name-input">
             Study Name*
@@ -108,7 +94,7 @@ const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = (
             inputProps={{ style: { width: '100%' }, maxLength: 500 }}
           />
         </FormControl>
-      </FormGroup>
+      </FormGroupWrapper>
     </Subsection>
   )
 }

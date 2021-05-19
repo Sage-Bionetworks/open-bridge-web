@@ -16,16 +16,9 @@ import {
 } from '../../widgets/StyledComponents'
 import SaveButton from '../../widgets/SaveButton'
 import { AppDesignUpdateTypes } from './AppDesign'
+import FormGroupWrapper from './FormGroupWrapper'
 
 const useStyles = makeStyles(theme => ({
-  formFields: {
-    fontFamily: poppinsFont,
-    fontSize: '14px',
-    marginBottom: '24px',
-    '& .MuiFormControl-root:not(:last-child)': {
-      marginBottom: '16px',
-    },
-  },
   firstFormElement: {
     marginTop: theme.spacing(2.5),
   },
@@ -76,7 +69,7 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
   const classes = useStyles()
   return (
     <Subsection heading="Welcome screen messaging">
-      <FormGroup className={classes.formFields}>
+      <FormGroupWrapper>
         <FormControl className={classes.firstFormElement}>
           <SimpleTextLabel htmlFor="headline-input">
             Main Header
@@ -220,7 +213,7 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
             diagnosis, or treatment.
           </div>
         </div>
-      </FormGroup>
+      </FormGroupWrapper>
       <Box textAlign="left">
         {saveLoader ? (
           <div className="text-center">

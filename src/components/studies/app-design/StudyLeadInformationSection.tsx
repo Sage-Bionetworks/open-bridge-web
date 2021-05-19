@@ -1,25 +1,18 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Subsection from './Subsection'
-import { FormControl, FormGroup } from '@material-ui/core'
+import { FormControl } from '@material-ui/core'
 import { StudyAppDesign } from '../../../types/types'
-import { playfairDisplayFont, poppinsFont } from '../../../style/theme'
+import { playfairDisplayFont } from '../../../style/theme'
 import {
   SimpleTextInput,
   SimpleTextLabel,
 } from '../../widgets/StyledComponents'
 import { AppDesignUpdateTypes } from './AppDesign'
 import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
+import FormGroupWrapper from './FormGroupWrapper'
 
 const useStyles = makeStyles(theme => ({
-  formFields: {
-    fontFamily: poppinsFont,
-    fontSize: '14px',
-    marginBottom: '24px',
-    '& .MuiFormControl-root:not(:last-child)': {
-      marginBottom: '16px',
-    },
-  },
   firstFormElement: {
     marginTop: theme.spacing(2.5),
   },
@@ -61,7 +54,7 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
   const classes = useStyles()
   return (
     <Subsection heading="Information about the Study Leads">
-      <FormGroup className={classes.formFields}>
+      <FormGroupWrapper>
         <FormControl className={classes.firstFormElement}>
           <LeadInvestigatorDropdown
             orgMembership={orgMembership!}
@@ -154,7 +147,7 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             }}
           />
         </FormControl>
-      </FormGroup>
+      </FormGroupWrapper>
     </Subsection>
   )
 }
