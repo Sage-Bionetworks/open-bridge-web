@@ -136,7 +136,7 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
         </Box>
         <Divider className={classes.divider} />
         <Box className={classes.contactAndSupportText} marginTop="24px">
-          Research Rights
+          Your Participant Rights
         </Box>
         <p className={classes.bodyPhoneText}>
           For questions about your rights as a research participant, please
