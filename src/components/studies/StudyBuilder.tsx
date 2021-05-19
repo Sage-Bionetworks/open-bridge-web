@@ -485,7 +485,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       <Launch
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
-                        id={id}
+                        study={builderInfo.study}
                         onUpdate={(_section: StudySection, data: any) => {
                           console.log(_section)
                           // moveToNextSection(_section)
