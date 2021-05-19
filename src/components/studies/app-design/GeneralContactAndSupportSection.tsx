@@ -57,7 +57,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
     <Subsection heading="General Contact and Support">
       <Box
         width="80%"
-        marginTop="12px"
+        mt={1.5}
         fontSize="15px"
         lineHeight="18px"
         fontFamily="Lato"

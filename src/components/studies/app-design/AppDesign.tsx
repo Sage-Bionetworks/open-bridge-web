@@ -562,8 +562,8 @@ const AppDesign: React.FunctionComponent<
             be displayed to the right.
           </p>
           <div className={classes.switchContainer}>
-            <Box marginRight="12px">Use default message</Box>
-            <Box marginTop="4px">
+            <Box mr={1.5}>Use default message</Box>
+            <Box mt={0.5}>
               <Switch
                 color="primary"
                 checked={
@@ -584,7 +584,7 @@ const AppDesign: React.FunctionComponent<
                 }
               ></Switch>
             </Box>
-            <Box marginLeft="12px">Customize</Box>
+            <Box ml={1.5}>Customize</Box>
           </div>
           <div
             className={clsx(

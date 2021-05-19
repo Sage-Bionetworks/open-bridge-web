@@ -79,26 +79,20 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
     <Subsection heading="IRB or Ethics Board Contact">
       <Box
         width="80%"
-        marginTop="12px"
+        mt={1.5}
         fontSize="15px"
         lineHeight="18px"
         fontFamily="Lato"
-        marginBottom="16px"
+        mb={2}
       >
         For questions about your rights as a research participant in this study,
         please contact :
       </Box>
       <FormGroupWrapper>
-        <Box paddingLeft="2px" marginTop="8px">
+        <Box pl={0.25} mt={1}>
           What is your IRB of record?*
         </Box>
-        <Box
-          width="100%"
-          boxSizing="border-box"
-          marginTop="8px"
-          paddingLeft="48px"
-          paddingRight="8px"
-        >
+        <Box width="100%" boxSizing="border-box" mt={1} pl={6} pr={1}>
           <RadioGroup
             aria-label="gender"
             value={

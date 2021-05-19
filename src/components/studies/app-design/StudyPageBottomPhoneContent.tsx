@@ -134,7 +134,7 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
           </Box>
         </Box>
         <Divider className={classes.divider} />
-        <Box className={classes.contactAndSupportText} marginTop="24px">
+        <Box className={classes.contactAndSupportText} mt={3}>
           Your Participant Rights
         </Box>
         <p className={classes.bodyPhoneText}>
@@ -157,7 +157,7 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
           phoneNumber={irbPhoneNumber}
           email={appDesignProperties.ethicsBoardInfo?.email || ''}
         />
-        <Box marginTop="12px" width="100%">
+        <Box mt={1.5} width="100%">
           IRB Protocol ID: {appDesignProperties.irbProtocolId || 'placeholder'}
         </Box>
       </Box>

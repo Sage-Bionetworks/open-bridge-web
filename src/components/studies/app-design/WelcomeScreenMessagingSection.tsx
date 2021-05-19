@@ -184,7 +184,7 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
             titleText="From"
           />
         </FormControl>
-        <Box marginTop="20px">Add optional disclaimer:</Box>
+        <Box mt={2.5}>Add optional disclaimer:</Box>
         <div className={classes.optionalDisclaimerRow}>
           <Checkbox
             checked={
