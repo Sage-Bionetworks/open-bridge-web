@@ -184,6 +184,12 @@ type UploadedFile = {
   message: string
 }
 
+export type ContactType =
+  | 'FUNDER'
+  | 'ETHICS_BOARD'
+  | 'LEAD_INVESTIGATOR'
+  | 'CONTACT_LEAD'
+
 export type PreviewFile = {
   file: File
   name: string
@@ -512,9 +518,7 @@ const AppDesign: React.FunctionComponent<
     appDesignProperties.ethicsBoardInfo?.name,
   ])
 
-  const getContact = (
-    type: 'FUNDER' | 'ETHICS_BOARD' | 'LEAD_INVESTIGATOR' | 'CONTACT',
-  ) => {
+  const getContactPersonObject = (type: ContactType) => {
     if (type === 'FUNDER') {
       return appDesignProperties.funder
         ? { ...appDesignProperties.funder }
@@ -685,7 +689,7 @@ const AppDesign: React.FunctionComponent<
               SimpleTextInputStyles={SimpleTextInputStyles}
               orgMembership={orgMembership}
               token={token}
-              getContact={getContact}
+              getContactPersonObject={getContactPersonObject}
               irbNameSameAsInstitution={irbNameSameAsInstitution}
             />
             <GeneralContactAndSupportSection
@@ -697,7 +701,7 @@ const AppDesign: React.FunctionComponent<
               setPhoneNumberErrorState={setPhoneNumberErrorState}
               emailErrorState={emailErrorState}
               setEmailErrorState={setEmailErrorState}
-              getContact={getContact}
+              getContactPersonObject={getContactPersonObject}
               generalContactPhoneNumber={generalContactPhoneNumber}
               setGeneralContactPhoneNumber={setGeneralContactPhoneNumber}
             />
@@ -710,7 +714,7 @@ const AppDesign: React.FunctionComponent<
               setPhoneNumberErrorState={setPhoneNumberErrorState}
               emailErrorState={emailErrorState}
               setEmailErrorState={setEmailErrorState}
-              getContact={getContact}
+              getContactPersonObject={getContactPersonObject}
               irbPhoneNumber={irbPhoneNumber}
               setIrbPhoneNumber={setIrbPhoneNumber}
               saveInfo={saveInfo}

@@ -10,7 +10,7 @@ import {
   FormControlLabel,
   FormHelperText,
 } from '@material-ui/core'
-import { StudyAppDesign } from '../../../types/types'
+import { StudyAppDesign, Contact } from '../../../types/types'
 import { AppDesignUpdateTypes } from './AppDesign'
 import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
 import clsx from 'clsx'
@@ -18,6 +18,7 @@ import SaveButton from '../../widgets/SaveButton'
 import { makePhone } from '../../../helpers/utility'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
+import { ContactType } from './AppDesign'
 
 const useStyles = makeStyles(theme => ({
   irbInputFormControl: {
@@ -39,7 +40,7 @@ type IrbBoardContactSectionProps = {
   updateAppDesignInfo: Function
   SimpleTextInputStyles: React.CSSProperties
   irbNameSameAsInstitution: boolean
-  getContact: Function
+  getContactPersonObject: (type: ContactType) => Contact
   setIrbNameSameAsInstitution: Function
   phoneNumberErrorState: {
     isGeneralContactPhoneNumberValid: boolean
@@ -63,7 +64,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
   updateAppDesignInfo,
   SimpleTextInputStyles,
   irbNameSameAsInstitution,
-  getContact,
+  getContactPersonObject,
   setIrbNameSameAsInstitution,
   phoneNumberErrorState,
   setPhoneNumberErrorState,
@@ -102,12 +103,16 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             }
             onChange={e => {
               if (e.target.value === 'affiliation_same') {
-                const studyLead = getContact('LEAD_INVESTIGATOR')
-                const newEthicsBoard = getContact('ETHICS_BOARD')
-                newEthicsBoard.name = studyLead.affiliation || ''
+                const studyLeadObject = getContactPersonObject(
+                  'LEAD_INVESTIGATOR',
+                )
+                const newEthicsBoardObject = getContactPersonObject(
+                  'ETHICS_BOARD',
+                )
+                newEthicsBoardObject.name = studyLeadObject.affiliation || ''
                 setAppDesignProperties({
                   ...appDesignProperties,
-                  ethicsBoardInfo: newEthicsBoard,
+                  ethicsBoardInfo: newEthicsBoardObject,
                 })
               }
               setIrbNameSameAsInstitution(e.target.value === 'affiliation_same')
@@ -141,11 +146,13 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
               onChange={(
                 e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
               ) => {
-                const newEthicsBoard = getContact('ETHICS_BOARD')
-                newEthicsBoard.name = e.target.value
+                const newEthicsBoardBoard = getContactPersonObject(
+                  'ETHICS_BOARD',
+                )
+                newEthicsBoardBoard.name = e.target.value
                 setAppDesignProperties({
                   ...appDesignProperties,
-                  ethicsBoardInfo: newEthicsBoard,
+                  ethicsBoardInfo: newEthicsBoardBoard,
                 })
               }}
               onBlur={() =>
@@ -185,11 +192,13 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
                   }
                 },
               )
-              const newEthicsBoard = getContact('ETHICS_BOARD')
-              newEthicsBoard.phone = makePhone(irbPhoneNumber)
+              const newEthicsBoardObject = getContactPersonObject(
+                'ETHICS_BOARD',
+              )
+              newEthicsBoardObject.phone = makePhone(irbPhoneNumber)
               setAppDesignProperties({
                 ...appDesignProperties,
-                ethicsBoardInfo: newEthicsBoard,
+                ethicsBoardInfo: newEthicsBoardObject,
               })
             }}
             multiline
@@ -217,11 +226,13 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
-              const newEthicsBoard = getContact('ETHICS_BOARD')
-              newEthicsBoard.email = e.target.value
+              const newEthicsBoardObject = getContactPersonObject(
+                'ETHICS_BOARD',
+              )
+              newEthicsBoardObject.email = e.target.value
               setAppDesignProperties({
                 ...appDesignProperties,
-                ethicsBoardInfo: newEthicsBoard,
+                ethicsBoardInfo: newEthicsBoardObject,
               })
             }}
             onBlur={() => {

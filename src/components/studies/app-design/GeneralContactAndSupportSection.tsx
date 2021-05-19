@@ -2,13 +2,14 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Subsection from './Subsection'
 import { FormControl, Box, FormHelperText } from '@material-ui/core'
-import { StudyAppDesign } from '../../../types/types'
+import { StudyAppDesign, Contact } from '../../../types/types'
 import { AppDesignUpdateTypes } from './AppDesign'
 import clsx from 'clsx'
 import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
 import { makePhone } from '../../../helpers/utility'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
+import { ContactType } from './AppDesign'
 
 const useStyles = makeStyles(theme => ({
   firstFormElement: {
@@ -24,7 +25,7 @@ type GeneralContactAndSupportSectionProps = {
   setAppDesignProperties: Function
   updateAppDesignInfo: Function
   SimpleTextInputStyles: React.CSSProperties
-  getContact: Function
+  getContactPersonObject: (type: ContactType) => Contact
   phoneNumberErrorState: {
     isGeneralContactPhoneNumberValid: boolean
     isIrbPhoneNumberValid: boolean
@@ -44,7 +45,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
   setAppDesignProperties,
   updateAppDesignInfo,
   SimpleTextInputStyles,
-  getContact,
+  getContactPersonObject,
   phoneNumberErrorState,
   generalContactPhoneNumber,
   setGeneralContactPhoneNumber,
@@ -75,11 +76,13 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
-              const newContactLead = getContact('CONTACT')
-              newContactLead.name = e.target.value
+              const newContactLeadObject = getContactPersonObject(
+                'CONTACT_LEAD',
+              )
+              newContactLeadObject.name = e.target.value
               setAppDesignProperties({
                 ...appDesignProperties,
-                contactLeadInfo: newContactLead,
+                contactLeadInfo: newContactLeadObject,
               })
             }}
             onBlur={() =>
@@ -100,11 +103,13 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
-              const newContactLead = getContact('CONTACT')
-              newContactLead.position = e.target.value
+              const newContactLeadObject = getContactPersonObject(
+                'CONTACT_LEAD',
+              )
+              newContactLeadObject.position = e.target.value
               setAppDesignProperties({
                 ...appDesignProperties,
-                contactLeadInfo: newContactLead,
+                contactLeadInfo: newContactLeadObject,
               })
             }}
             onBlur={() =>
@@ -143,11 +148,13 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
                   }
                 },
               )
-              const newContactLead = getContact('CONTACT')
-              newContactLead.phone = makePhone(generalContactPhoneNumber)
+              const newContactLeadObject = getContactPersonObject(
+                'CONTACT_LEAD',
+              )
+              newContactLeadObject.phone = makePhone(generalContactPhoneNumber)
               setAppDesignProperties({
                 ...appDesignProperties,
-                contactLeadInfo: newContactLead,
+                contactLeadInfo: newContactLeadObject,
               })
             }}
             multiline
@@ -177,11 +184,13 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
-              const newContactLead = getContact('CONTACT')
-              newContactLead.email = e.target.value
+              const newContactLeadObject = getContactPersonObject(
+                'CONTACT_LEAD',
+              )
+              newContactLeadObject.email = e.target.value
               setAppDesignProperties({
                 ...appDesignProperties,
-                contactLeadInfo: newContactLead,
+                contactLeadInfo: newContactLeadObject,
               })
             }}
             onBlur={() => {

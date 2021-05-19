@@ -2,11 +2,12 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Subsection from './Subsection'
 import { FormControl } from '@material-ui/core'
-import { StudyAppDesign } from '../../../types/types'
+import { Contact, StudyAppDesign } from '../../../types/types'
 import { AppDesignUpdateTypes } from './AppDesign'
 import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
+import { ContactType } from './AppDesign'
 
 const useStyles = makeStyles(theme => ({
   firstFormElement: {
@@ -25,7 +26,7 @@ type StudyLeadInformationSectionProps = {
   setAppDesignProperties: Function
   updateAppDesignInfo: Function
   SimpleTextInputStyles: React.CSSProperties
-  getContact: Function
+  getContactPersonObject: (type: ContactType) => Contact
   orgMembership: string | undefined
   token: string | undefined
   irbNameSameAsInstitution: boolean
@@ -36,7 +37,7 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
   setAppDesignProperties,
   updateAppDesignInfo,
   SimpleTextInputStyles,
-  getContact,
+  getContactPersonObject,
   orgMembership,
   token,
   irbNameSameAsInstitution,
@@ -50,11 +51,13 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             orgMembership={orgMembership!}
             token={token!}
             onChange={(investigatorSelected: string) => {
-              const newStudyLead = getContact('LEAD_INVESTIGATOR')
-              newStudyLead.name = investigatorSelected
+              const newStudyLeadObject = getContactPersonObject(
+                'LEAD_INVESTIGATOR',
+              )
+              newStudyLeadObject.name = investigatorSelected
               setAppDesignProperties({
                 ...appDesignProperties,
-                leadPrincipleInvestigatorInfo: newStudyLead,
+                leadPrincipleInvestigatorInfo: newStudyLeadObject,
               })
             }}
             currentInvestigatorSelected={
@@ -87,16 +90,20 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
-              const newStudyLead = getContact('LEAD_INVESTIGATOR')
-              newStudyLead.affiliation = e.target.value
-              const newEthicsBoard = getContact('ETHICS_BOARD')
-              newEthicsBoard.name = irbNameSameAsInstitution
+              const newStudyLeadObject = getContactPersonObject(
+                'LEAD_INVESTIGATOR',
+              )
+              newStudyLeadObject.affiliation = e.target.value
+              const newEthicsBoardObject = getContactPersonObject(
+                'ETHICS_BOARD',
+              )
+              newEthicsBoardObject.name = irbNameSameAsInstitution
                 ? e.target.value
-                : newEthicsBoard.name
+                : newEthicsBoardObject.name
               setAppDesignProperties({
                 ...appDesignProperties,
-                leadPrincipleInvestigatorInfo: newStudyLead,
-                ethicsBoardInfo: newEthicsBoard,
+                leadPrincipleInvestigatorInfo: newStudyLeadObject,
+                ethicsBoardInfo: newEthicsBoardObject,
               })
             }}
             onBlur={() =>
@@ -117,11 +124,11 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
-              const newFunder = getContact('FUNDER')
-              newFunder.name = e.target.value
+              const newFunderObject = getContactPersonObject('FUNDER')
+              newFunderObject.name = e.target.value
               setAppDesignProperties({
                 ...appDesignProperties,
-                funder: newFunder,
+                funder: newFunderObject,
               })
             }}
             onBlur={() =>
