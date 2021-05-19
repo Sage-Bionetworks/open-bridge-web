@@ -7,9 +7,9 @@ const useStyles = makeStyles(theme => ({
   formFields: {
     fontFamily: poppinsFont,
     fontSize: '14px',
-    marginBottom: '24px',
+    marginBottom: theme.spacing(3),
     '& .MuiFormControl-root:not(:last-child)': {
-      marginBottom: '16px',
+      marginBottom: theme.spacing(2),
     },
   },
 }))
