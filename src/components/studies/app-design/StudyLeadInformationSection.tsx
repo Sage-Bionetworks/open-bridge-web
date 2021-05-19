@@ -3,24 +3,14 @@ import { makeStyles } from '@material-ui/core'
 import Subsection from './Subsection'
 import { FormControl } from '@material-ui/core'
 import { StudyAppDesign } from '../../../types/types'
-import { playfairDisplayFont } from '../../../style/theme'
-import {
-  SimpleTextInput,
-  SimpleTextLabel,
-} from '../../widgets/StyledComponents'
 import { AppDesignUpdateTypes } from './AppDesign'
 import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
 import FormGroupWrapper from './FormGroupWrapper'
+import TextInputWrapper from './TextInputWrapper'
 
 const useStyles = makeStyles(theme => ({
   firstFormElement: {
     marginTop: theme.spacing(2.5),
-  },
-  informationRowStyle: {
-    fontFamily: playfairDisplayFont,
-    fontWeight: 'normal',
-    fontSize: '15px',
-    lineHeight: '18px',
   },
   principleInvestigatorsParagraph: {
     fontSize: '12px',
@@ -86,18 +76,17 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
           </p>
         </FormControl>
         <FormControl>
-          <SimpleTextLabel htmlFor="institution-input">
-            Institutional Affiliation*
-          </SimpleTextLabel>
-          <SimpleTextInput
-            className={classes.informationRowStyle}
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="institution-input"
             placeholder="Name of Institution"
             value={
               appDesignProperties.leadPrincipleInvestigatorInfo?.affiliation ||
               ''
             }
-            onChange={e => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
               const newStudyLead = getContact('LEAD_INVESTIGATOR')
               newStudyLead.affiliation = e.target.value
               const newEthicsBoard = getContact('ETHICS_BOARD')
@@ -116,19 +105,18 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             multiline
             rows={1}
             rowsMax={1}
-            inputProps={{
-              style: SimpleTextInputStyles,
-            }}
+            titleText="Institutional Affiliation*"
           />
         </FormControl>
         <FormControl>
-          <SimpleTextLabel htmlFor="funder-input">Funder*</SimpleTextLabel>
-          <SimpleTextInput
-            className={classes.informationRowStyle}
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="funder-input"
             placeholder="Name of Funder(s)"
             value={appDesignProperties.funder?.name || ''}
-            onChange={e => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
               const newFunder = getContact('FUNDER')
               newFunder.name = e.target.value
               setAppDesignProperties({
@@ -142,9 +130,7 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             multiline
             rows={1}
             rowsMax={1}
-            inputProps={{
-              style: SimpleTextInputStyles,
-            }}
+            titleText="Funder*"
           />
         </FormControl>
       </FormGroupWrapper>

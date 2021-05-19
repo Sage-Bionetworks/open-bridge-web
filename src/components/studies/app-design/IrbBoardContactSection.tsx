@@ -5,18 +5,12 @@ import {
   Box,
   CircularProgress,
   FormControl,
-  FormGroup,
   Radio,
   RadioGroup,
   FormControlLabel,
   FormHelperText,
 } from '@material-ui/core'
 import { StudyAppDesign } from '../../../types/types'
-import { playfairDisplayFont } from '../../../style/theme'
-import {
-  SimpleTextInput,
-  SimpleTextLabel,
-} from '../../widgets/StyledComponents'
 import { AppDesignUpdateTypes } from './AppDesign'
 import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
 import clsx from 'clsx'
@@ -29,12 +23,6 @@ const useStyles = makeStyles(theme => ({
   irbInputFormControl: {
     width: '100%',
     marginBottom: theme.spacing(1.5),
-  },
-  informationRowStyle: {
-    fontFamily: playfairDisplayFont,
-    fontWeight: 'normal',
-    fontSize: '15px',
-    lineHeight: '18px',
   },
   irbInput: {
     width: '100%',
