@@ -12,7 +12,7 @@ import {
   FormHelperText,
 } from '@material-ui/core'
 import { StudyAppDesign } from '../../../types/types'
-import { playfairDisplayFont, poppinsFont } from '../../../style/theme'
+import { playfairDisplayFont } from '../../../style/theme'
 import {
   SimpleTextInput,
   SimpleTextLabel,
@@ -23,11 +23,12 @@ import clsx from 'clsx'
 import SaveButton from '../../widgets/SaveButton'
 import { makePhone } from '../../../helpers/utility'
 import FormGroupWrapper from './FormGroupWrapper'
+import TextInputWrapper from './TextInputWrapper'
 
 const useStyles = makeStyles(theme => ({
   irbInputFormControl: {
     width: '100%',
-    marginBottom: theme.spacing(1),
+    marginBottom: theme.spacing(1.5),
   },
   informationRowStyle: {
     fontFamily: playfairDisplayFont,
@@ -143,12 +144,21 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             />
           </RadioGroup>
           <FormControl className={classes.irbInputFormControl}>
-            <SimpleTextInput
-              className={clsx(classes.informationRowStyle, classes.irbInput)}
+            <TextInputWrapper
+              SimpleTextInputStyles={
+                {
+                  fontSize: '15px',
+                  width: '100%',
+                  height: '44px',
+                  boxSizing: 'border-box',
+                } as React.CSSProperties
+              }
               id="ethics-board-input"
               placeholder="Name IRB of record"
               value={appDesignProperties.ethicsBoardInfo?.name || ''}
-              onChange={e => {
+              onChange={(
+                e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+              ) => {
                 const newEthicsBoard = getContact('ETHICS_BOARD')
                 newEthicsBoard.name = e.target.value
                 setAppDesignProperties({
@@ -161,14 +171,8 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
               }
               rows={1}
               rowsMax={1}
-              inputProps={{
-                style: {
-                  fontSize: '15px',
-                  width: '100%',
-                  height: '44px',
-                  boxSizing: 'border-box',
-                },
-              }}
+              multiline={false}
+              titleText=""
               readOnly={irbNameSameAsInstitution}
             />
           </FormControl>
@@ -178,15 +182,14 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             !phoneNumberErrorState.isIrbPhoneNumberValid && 'error',
           )}
         >
-          <SimpleTextLabel htmlFor="ethics-phone-number-input">
-            Phone Number*
-          </SimpleTextLabel>
-          <SimpleTextInput
-            className={clsx(classes.informationRowStyle, 'error')}
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="ethics-phone-number-input"
             placeholder="xxx-xxx-xxxx"
             value={irbPhoneNumber}
-            onChange={e => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
               setIrbPhoneNumber(e.target.value)
             }}
             onBlur={() => {
@@ -210,9 +213,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             multiline
             rows={1}
             rowsMax={1}
-            inputProps={{
-              style: SimpleTextInputStyles,
-            }}
+            titleText="Phone Number*"
           />
           {!phoneNumberErrorState.isIrbPhoneNumberValid && (
             <FormHelperText
@@ -226,13 +227,14 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
         <FormControl
           className={clsx(!emailErrorState.isIrbEmailValid && 'error')}
         >
-          <SimpleTextLabel htmlFor="ethics-email-input">Email*</SimpleTextLabel>
-          <SimpleTextInput
-            className={classes.informationRowStyle}
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="ethics-email-input"
             placeholder="Institutional Email"
             value={appDesignProperties.ethicsBoardInfo?.email || ''}
-            onChange={e => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
               const newEthicsBoard = getContact('ETHICS_BOARD')
               newEthicsBoard.email = e.target.value
               setAppDesignProperties({
@@ -256,9 +258,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             multiline
             rows={1}
             rowsMax={1}
-            inputProps={{
-              style: SimpleTextInputStyles,
-            }}
+            titleText="Email*"
           />
           {!emailErrorState.isIrbEmailValid && (
             <FormHelperText
@@ -270,15 +270,14 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
           )}
         </FormControl>
         <FormControl>
-          <SimpleTextLabel htmlFor="IRB-approval-input">
-            IRB Protocol ID*
-          </SimpleTextLabel>
-          <SimpleTextInput
-            className={classes.informationRowStyle}
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="IRB-approval-input"
             placeholder="XXXXXXXXXX"
             value={appDesignProperties.irbProtocolId}
-            onChange={e => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
               setAppDesignProperties({
                 ...appDesignProperties,
                 irbProtocolId: e.target.value,
@@ -290,9 +289,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             multiline
             rows={1}
             rowsMax={1}
-            inputProps={{
-              style: SimpleTextInputStyles,
-            }}
+            titleText="IRB Protocol ID*"
           />
         </FormControl>
       </FormGroupWrapper>

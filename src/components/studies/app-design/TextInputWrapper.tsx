@@ -5,6 +5,7 @@ import {
   SimpleTextLabel,
 } from '../../widgets/StyledComponents'
 import { playfairDisplayFont } from '../../../style/theme'
+import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
   informationRowStyle: {
@@ -26,6 +27,8 @@ type TextInputWrapperProps = {
   rowsMax: number
   SimpleTextInputStyles: React.CSSProperties
   titleText: string
+  extraClassname?: string
+  readOnly?: boolean
 }
 
 const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
@@ -39,13 +42,18 @@ const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
   rowsMax,
   SimpleTextInputStyles,
   titleText,
+  extraClassname,
+  readOnly,
 }) => {
   const classes = useStyles()
   return (
     <>
-      <SimpleTextLabel htmlFor={id}>{titleText}</SimpleTextLabel>
+      {titleText && <SimpleTextLabel htmlFor={id}>{titleText}</SimpleTextLabel>}
       <SimpleTextInput
-        className={classes.informationRowStyle}
+        className={clsx(
+          classes.informationRowStyle,
+          extraClassname && extraClassname,
+        )}
         id={id}
         placeholder={placeholder}
         value={value}
@@ -57,6 +65,7 @@ const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
         inputProps={{
           style: SimpleTextInputStyles,
         }}
+        readOnly={readOnly}
       />
     </>
   )
