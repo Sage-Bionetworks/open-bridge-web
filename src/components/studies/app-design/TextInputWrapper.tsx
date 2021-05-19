@@ -29,6 +29,7 @@ type TextInputWrapperProps = {
   titleText: string
   extraClassname?: string
   readOnly?: boolean
+  maxWordCount?: number
 }
 
 const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
@@ -44,6 +45,7 @@ const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
   titleText,
   extraClassname,
   readOnly,
+  maxWordCount,
 }) => {
   const classes = useStyles()
   return (
@@ -64,6 +66,7 @@ const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
         rowsMax={rowsMax}
         inputProps={{
           style: SimpleTextInputStyles,
+          maxLength: maxWordCount,
         }}
         readOnly={readOnly}
       />

@@ -5,7 +5,6 @@ import ContactInformation from './ContactInformation'
 import StudySummaryRoles from './StudySummaryRoles'
 import SectionIndicator from './SectionIndicator'
 import { StudyAppDesign } from '../../../types/types'
-import clsx from 'clsx'
 import { latoFont, poppinsFont } from '../../../style/theme'
 
 const useStyles = makeStyles(theme => ({
