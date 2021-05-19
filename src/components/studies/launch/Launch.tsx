@@ -27,7 +27,6 @@ export interface LaunchProps {
 
 function getSteps() {
   return [
-
     { label: 'Review Alerts' },
     { label: 'About Study' },
     { label: 'IRB Details' },
@@ -35,14 +34,20 @@ function getSteps() {
   ]
 }
 
-const  StepContent: React.FunctionComponent<{step: number, study: Study}>=({step,study}: {step: number, study: Study}) => {
+const StepContent: React.FunctionComponent<{ step: number; study: Study }> = ({
+  step,
+  study,
+}: {
+  step: number
+  study: Study
+}) => {
   switch (step) {
     case 0:
-      return <LaunchAlerts study={study}/>
+      return <LaunchAlerts study={study} />
     case 1:
-      return <AboutStudy study={study}/>
+      return <AboutStudy study={study} />
     case 2:
-      return <IrbDetails study={study}/>
+      return <IrbDetails study={study} />
     case 3:
       return <>'Study is live...'</>
 
@@ -60,12 +65,10 @@ const Launch: React.FunctionComponent<
   saveLoader,
   children,
 }: LaunchProps & StudyBuilderComponentProps) => {
-
   const classes = useStyles()
 
   const [steps, setSteps] = useState(getSteps())
   const [activeStep, setActiveStep] = React.useState(0)
-
 
   const handleNext = () => {
     const newSteps = steps.map((s, i) =>
@@ -109,7 +112,7 @@ const Launch: React.FunctionComponent<
         ) : (
           <div>
             <Typography className={classes.instructions}>
-             <StepContent study={study} step={activeStep}/>
+              <StepContent study={study} step={activeStep} />
             </Typography>
             <div>
               <Button
