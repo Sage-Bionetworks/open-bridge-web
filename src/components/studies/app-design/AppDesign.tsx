@@ -1,29 +1,13 @@
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Divider,
-  FormControl,
-  FormGroup,
-  Paper,
-  Switch,
-  Checkbox,
-  FormHelperText,
-} from '@material-ui/core'
+import { Box, Paper, Switch } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import ReactColorPicker from '@super-effective/react-color-picker'
 import _ from 'lodash'
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
 import { ReactComponent as PhoneBottomImg } from '../../../assets/appdesign/phone_buttons.svg'
-import { bytesToSize, makePhone } from '../../../helpers/utility'
-import {
-  latoFont,
-  playfairDisplayFont,
-  poppinsFont,
-  ThemeType,
-} from '../../../style/theme'
+import { ReactComponent as PhoneTopImgLeftHighlighted } from '../../../assets/appdesign/CustomizeAppTopbarLeft.svg'
+import { ReactComponent as PhoneTopImgRightHighlighted } from '../../../assets/appdesign/CustomizeAppTopbarRight.svg'
+import { ThemeType } from '../../../style/theme'
 import {
   StudyBuilderComponentProps,
   Contact,
@@ -32,41 +16,27 @@ import {
   Study,
 } from '../../../types/types'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
-import SaveButton from '../../widgets/SaveButton'
-import {
-  SimpleTextInput,
-  SimpleTextLabel,
-} from '../../widgets/StyledComponents'
-import ContactInformation from './ContactInformation'
-import StudySummaryRoles from './StudySummaryRoles'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
 import clsx from 'clsx'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
-import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
-import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
+import SectionIndicator from './SectionIndicator'
+import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
+import UploadStudyLogoSection from './UploadStudyLogoSection'
+import ColorPickerSection from './ColorPickerSection'
+import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
+import StudySummarySection from './StudySummarySection'
+import StudyLeadInformationSection from './StudyLeadInformationSection'
+import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
+import IrbBoardContactSection from './IrbBoardContactSection'
+import StudyPageBottomPhoneContent from './StudyPageBottomPhoneContent'
+import StudyPageTopPhoneContent from './StudyPageTopPhoneContent'
+import NavigationPrompt from 'react-router-navigation-prompt'
+import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 
 const imgHeight = 70
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: { counterReset: 'orderedlist' },
-  bodyText: {
-    fontFamily: 'Lato',
-    fontWeight: 'normal',
-    fontSize: '15px',
-    lineHeight: '18px',
-    marginTop: '25px',
-    whiteSpace: 'pre-line',
-  },
-  firstPhoneScreenBodyText: {
-    height: '325px',
-  },
-  bodyPhoneText: {
-    fontFamily: 'Lato',
-    fontWeight: 'normal',
-    fontSize: '12px',
-    lineHeight: '15px',
-    marginTop: '25px',
-  },
   section: {
     padding: theme.spacing(9, 9, 10, 17),
     display: 'flex',
@@ -81,13 +51,11 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     listStyleType: 'none',
     margin: theme.spacing(5, 0, 0, 0),
     padding: 0,
-
     '& li': {
       display: 'flex',
       marginBottom: theme.spacing(6),
       textAlign: 'left',
     },
-
     '& li::before': {
       counterIncrement: 'orderedlist',
       content: 'counter(orderedlist)',
@@ -106,42 +74,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       height: theme.spacing(5),
     },
   },
-
-  intro: {
-    fontFamily: latoFont,
-    fontSize: '15px',
-    lineHeight: '18px',
-    marginTop: theme.spacing(2),
-  },
-  formFields: {
-    fontFamily: poppinsFont,
-    fontSize: '14px',
-    marginBottom: '24px',
-
-    '& .MuiFormControl-root:not(:last-child)': {
-      marginBottom: '16px',
-    },
-  },
-  headlineStyle: {
-    fontFamily: playfairDisplayFont,
-    fontStyle: 'italic',
-    fontWeight: 'normal',
-    fontSize: '21px',
-    lineHeight: '28px',
-  },
-  informationRowStyle: {
-    fontFamily: playfairDisplayFont,
-    fontWeight: 'normal',
-    fontSize: '15px',
-    lineHeight: '18px',
-  },
-  contactAndSupportText: {
-    fontFamily: playfairDisplayFont,
-    fontStyle: 'italic',
-    fontWeight: 'normal',
-    fontSize: '18px',
-    lineHeight: '24px',
-  },
   phoneArea: {
     marginLeft: theme.spacing(2),
     marginTop: theme.spacing(3),
@@ -152,29 +84,10 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     flexDirection: 'column',
     backgroundImage: 'url(' + PhoneBg + ')',
     width: '100%',
-    minHeight: '600px',
     marginTop: theme.spacing(4),
     backgroundRepeat: 'no-repeat',
     justifyContent: 'space-between',
     wordWrap: 'break-word',
-  },
-  phoneInner: {
-    marginLeft: '6px',
-    marginRight: theme.spacing(0.5),
-    padding: theme.spacing(4),
-    textAlign: 'left',
-    minHeight: `521px`,
-    borderRight: '3px solid black',
-    borderLeft: '3px solid black',
-  },
-  phoneInnerBottom: {
-    marginLeft: '5px',
-    marginRight: theme.spacing(0.26),
-    padding: theme.spacing(4),
-    textAlign: 'left',
-    minHeight: `521px`,
-    borderRight: '4px solid black',
-    borderLeft: '4px solid black',
   },
   phoneBottom: {
     height: '70px',
@@ -192,7 +105,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     height: `${imgHeight + 16}px`,
     borderRadius: '25px 25px 0 0',
     borderStyle: 'solid',
-    borderWidth: '3px 3px 0px 3px',
+    borderWidth: '4px 4px 0px 4px',
     borderColor: 'black',
     display: 'flex',
     flexDirection: 'column',
@@ -204,7 +117,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     padding: '0 .8rem',
     fontSize: '1.6rem',
     //margin: '0 -50px 30px -50px',
-
     '& > div': {
       padding: '15px 13px',
     },
@@ -215,33 +127,13 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   fields: {
     display: 'flex',
     textAlign: 'left',
-
     flexGrow: 1,
     flexDirection: 'column',
     maxWidth: theme.spacing(51),
-    //marginRight: theme.spacing(10),
     '& .MuiTextField-root': {
       margin: theme.spacing(1),
       width: '100%',
     },
-  },
-  firstFormElement: {
-    marginTop: '20px',
-  },
-  summaryRoles: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    marginBottom: theme.spacing(1.25),
-  },
-  divider: {
-    width: '256px',
-    marginTop: theme.spacing(3.75),
-  },
-  phoneGrayBackground: {
-    backgroundColor: '#F7F7F7',
   },
   smallScreenText: {
     fontSize: '15px',
@@ -262,43 +154,27 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   hideSection: {
     display: 'none',
   },
-  optionalDisclaimerText: {
-    marginLeft: theme.spacing(2),
-    fontSize: '14px',
-    lineHeight: '20px',
-    fontFamily: 'Lato',
-  },
-  optionalDisclaimerRow: {
-    display: 'flex',
-    flexDirection: 'row',
-    marginTop: theme.spacing(1.25),
-    alignItems: 'center',
-    marginBottom: theme.spacing(1.5),
-  },
-  checkBox: {
-    width: '20px',
-    height: '20px',
-  },
   hideSectionVisibility: {
     visibility: 'hidden',
   },
-  principleInvestigatorsParagraph: {
+  sectionOneIndicatorPosition: {
+    position: 'absolute',
+    marginTop: theme.spacing(0.5),
+    marginLeft: theme.spacing(-1.5),
+  },
+  sectionTwoIndicatorPosition: {
+    position: 'absolute',
+    marginTop: theme.spacing(6),
+    marginLeft: theme.spacing(-1.5),
+  },
+  optionalDisclaimerTextOnPhone: {
     fontSize: '12px',
-    marginLeft: theme.spacing(2),
-    lineHeight: '14px',
-    marginTop: theme.spacing(2),
+    fontStyle: 'italic',
+    paddingLeft: theme.spacing(4),
+    textAlign: 'left',
   },
-  uploadButton: {
-    marginTop: theme.spacing(2.5),
-  },
-  fromText: {
-    marginTop: theme.spacing(1.5),
-  },
-  salutationText: {
-    marginTop: theme.spacing(2.5),
-  },
-  errorText: {
-    marginTop: theme.spacing(-0.5),
+  studyPageTopBar: {
+    backgroundColor: '#F6F6F6',
   },
 }))
 
@@ -308,14 +184,20 @@ type UploadedFile = {
   message: string
 }
 
-type PreviewFile = {
+export type ContactType =
+  | 'FUNDER'
+  | 'ETHICS_BOARD'
+  | 'LEAD_INVESTIGATOR'
+  | 'CONTACT_LEAD'
+
+export type PreviewFile = {
   file: File
   name: string
   size: number
   body?: string
 }
 
-enum AppDesignUpdateTypes {
+export enum AppDesignUpdateTypes {
   UPDATE_STUDY_NAME = 'UPDATE_STUDY_NAME',
   UPDATE_STUDY_COLOR = 'UPDATE_STUDY_COLOR',
   UPDATE_STUDY_CONTACTS = 'UPDATE_STUDY_CONTACTS',
@@ -348,20 +230,6 @@ function getPreviewForImage(file: File): PreviewFile {
     name: file.name,
     size: file.size,
   }
-}
-
-const Subsection: React.FunctionComponent<{ heading: string }> = ({
-  heading,
-  children,
-}) => {
-  return (
-    <li>
-      <div style={{ width: '100%' }}>
-        <MTBHeadingH2>{heading}</MTBHeadingH2>
-        {children}
-      </div>
-    </li>
-  )
 }
 
 const PhoneTopBar: React.FunctionComponent<{
@@ -413,12 +281,10 @@ const AppDesign: React.FunctionComponent<
 
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-
-  const defaultHeader = 'Thanks for joining us!'
-  const defaultStudyBody =
-    'We’re excited to have you help us in conduting this study! \n \n This is a research study and does not provide medical advice, diagnosis, or treatment.'
-  const defaultSalutations = 'Thank you for your contributions,'
-  const defaultFrom = 'Research Team X'
+  const [
+    irbNameSameAsInstitution,
+    setIrbNameSameAsInstitution,
+  ] = useState<boolean>(true)
 
   const SimpleTextInputStyles = {
     fontSize: '15px',
@@ -532,8 +398,7 @@ const AppDesign: React.FunctionComponent<
         updatedStudy.name = appDesignProps.studyTitle
         break
       case AppDesignUpdateTypes.UPDATE_STUDY_COLOR:
-        updatedStudy.colorScheme!.foreground =
-          appDesignProps.backgroundColor.foreground
+        updatedStudy.colorScheme = { ...appDesignProps.backgroundColor }
         break
       case AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS:
         const contacts: Contact[] = []
@@ -579,7 +444,7 @@ const AppDesign: React.FunctionComponent<
   )
 
   const formatPhoneNumber = (phoneNumber: string) => {
-    if (phoneNumber.length != 10) {
+    if (phoneNumber.length !== 10) {
       return phoneNumber
     }
     return (
@@ -593,28 +458,31 @@ const AppDesign: React.FunctionComponent<
 
   useEffect(() => {
     // When the component mounts, pull out the information from the study object
-    const contacts = study.contacts || ([] as Contact[])
+    const contacts = study.contacts || []
     const leadPrincipleInvestigatorContact = contacts.find(
       el => el.role === 'principal_investigator',
     )
     const funder = contacts.find(el => el.role === 'sponsor')
     const irbInfo = contacts.find(el => el.role === 'irb')
     const studySupport = contacts.find(el => el.role === 'study_support')
-    if (studySupport && studySupport.phone) {
+    if (studySupport?.phone) {
       const phoneWithoutZipcode = studySupport.phone.number?.replace('+1', '')
       const formattedPhone = formatPhoneNumber(phoneWithoutZipcode)
       setGeneralContactPhoneNumber(formattedPhone)
     }
-    if (irbInfo && irbInfo.phone) {
+    if (irbInfo?.phone) {
       const phoneWithoutZipcode = irbInfo.phone.number?.replace('+1', '')
       const formattedPhone = formatPhoneNumber(phoneWithoutZipcode)
       setIrbPhoneNumber(formattedPhone)
     }
     const isWelcomeScreenDataEmpty =
-      Object.keys(study.clientData.welcomeScreenData || {}).length == 0
+      Object.keys(study.clientData.welcomeScreenData || {}).length === 0
     const welcomeScreenData = isWelcomeScreenDataEmpty
       ? { ...appDesignProperties.welcomeScreenInfo }
       : { ...study.clientData.welcomeScreenData! }
+    setIrbNameSameAsInstitution(
+      irbInfo?.name === leadPrincipleInvestigatorContact?.affiliation,
+    )
     setAppDesignProperties(prevState => {
       return {
         ...prevState,
@@ -647,11 +515,10 @@ const AppDesign: React.FunctionComponent<
     appDesignProperties.leadPrincipleInvestigatorInfo?.name,
     appDesignProperties.contactLeadInfo?.phone,
     appDesignProperties.ethicsBoardInfo?.phone,
+    appDesignProperties.ethicsBoardInfo?.name,
   ])
 
-  const getContact = (
-    type: 'FUNDER' | 'ETHICS_BOARD' | 'LEAD_INVESTIGATOR' | 'CONTACT',
-  ) => {
+  const getContactPersonObject = (type: ContactType) => {
     if (type === 'FUNDER') {
       return appDesignProperties.funder
         ? { ...appDesignProperties.funder }
@@ -676,20 +543,31 @@ const AppDesign: React.FunctionComponent<
 
   return (
     <Box className={classes.root}>
+      <NavigationPrompt when={hasObjectChanged} key="prompt">
+        {({ onConfirm, onCancel }) => (
+          <ConfirmationDialog
+            isOpen={hasObjectChanged}
+            type={'NAVIGATE'}
+            onCancel={onCancel}
+            onConfirm={onConfirm}
+          />
+        )}
+      </NavigationPrompt>
       <Paper className={classes.section} elevation={2} id="container">
         <Box className={classes.fields}>
           <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
           <p className={classes.smallScreenText}>
-            When a participant first downloads the app, they will see a Welcome
-            screen.
+            When a participant downloads the app, they will be presented a
+            welcome screen after signing into the study.
             <br></br>
             <br></br>
-            You can customize this screen by adding your own logo, background
-            color, and message, or select a default message to be shown.
+            You can choose a default message or customize this screen below by
+            adding your logo, background color, and message. View how it would
+            be displayed to the right.
           </p>
           <div className={classes.switchContainer}>
-            <Box marginRight="12px">Use default message</Box>
-            <Box marginTop="4px">
+            <Box mr={1.5}>Use default message</Box>
+            <Box mt={0.5}>
               <Switch
                 color="primary"
                 checked={
@@ -710,7 +588,7 @@ const AppDesign: React.FunctionComponent<
                 }
               ></Switch>
             </Box>
-            <Box marginLeft="12px">Customize</Box>
+            <Box ml={1.5}>Customize</Box>
           </div>
           <div
             className={clsx(
@@ -719,271 +597,53 @@ const AppDesign: React.FunctionComponent<
             )}
           >
             <ol className={classes.steps}>
-              <Subsection heading="Upload Study Logo">
-                <p className={classes.intro}>
-                  Customize your study by uploading a logo framed into a 320px x
-                  80px size.
-                </p>
-
-                <div>
-                  {`Study Logo: 320px x 80px ${
-                    previewFile ? bytesToSize(previewFile.size) : ''
-                  }`}
-                  <div
-                    style={{
-                      padding: '8px 1px',
-                      textAlign: 'center',
-                      width: '320px',
-                      height: `${imgHeight + 16}px`,
-                      border: '1px solid black',
-                    }}
-                  >
-                    {previewFile && (
-                      <img
-                        src={previewFile.body}
-                        style={{ height: `${imgHeight}px`, width: '310px' }}
-                      />
-                    )}
-                  </div>
-                </div>
-
-                {saveLoader && (
-                  <div className="text-center">
-                    <CircularProgress color="primary" />
-                  </div>
-                )}
-
-                <Button
-                  variant="contained"
-                  component="label"
-                  color="primary"
-                  className={classes.uploadButton}
-                >
-                  Upload
-                  <input
-                    accept="image/*,.pdf,.doc,.docx,.jpg,.png, .txt"
-                    id="file"
-                    multiple={false}
-                    type="file"
-                    onChange={e => handleFileChange(e)}
-                    style={{ display: 'none' }}
-                  />
-                </Button>
-              </Subsection>
-              <Subsection heading="Select background color">
-                <p>
-                  Select a background color that matches your institution or
-                  study to be seen beneath your logo.
-                </p>
-                <Box width="250px" height="230px" marginLeft="-10px">
-                  <ReactColorPicker
-                    color={appDesignProperties.backgroundColor.foreground}
-                    onChange={(currentColor: string) => {
-                      setAppDesignProperties(prevState => ({
-                        ...prevState,
-                        backgroundColor: {
-                          ...appDesignProperties.backgroundColor,
-                          foreground: currentColor,
-                        },
-                      }))
-                      debouncedUpdateColor(currentColor)
-                    }}
-                  />
-                </Box>
-              </Subsection>
-
-              <Subsection heading="Welcome screen messaging">
-                <FormGroup className={classes.formFields}>
-                  <FormControl className={classes.firstFormElement}>
-                    <SimpleTextLabel htmlFor="headline-input">
-                      Main Header
-                    </SimpleTextLabel>
-                    <SimpleTextInput
-                      className={classes.headlineStyle}
-                      id="headline-input"
-                      placeholder="Welcome Headline"
-                      value={
-                        appDesignProperties.welcomeScreenInfo
-                          .welcomeScreenHeader
-                      }
-                      onChange={e => {
-                        const newWelcomeScreenData = {
-                          ...appDesignProperties.welcomeScreenInfo,
-                        }
-                        newWelcomeScreenData.welcomeScreenHeader =
-                          e.target.value
-                        setAppDesignProperties({
-                          ...appDesignProperties,
-                          welcomeScreenInfo: newWelcomeScreenData,
-                        })
-                      }}
-                      onBlur={() =>
-                        updateAppDesignInfo(
-                          AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
-                        )
-                      }
-                      multiline
-                      rows={2}
-                      rowsMax={4}
-                      inputProps={{
-                        style: { fontSize: '24px', width: '100%' },
-                      }}
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <SimpleTextLabel>
-                      Body Copy (maximum 250 characters)
-                    </SimpleTextLabel>
-                    <SimpleTextInput
-                      id="outlined-textarea"
-                      value={
-                        appDesignProperties.welcomeScreenInfo.welcomeScreenBody
-                      }
-                      onChange={e => {
-                        const newWelcomeScreenData = {
-                          ...appDesignProperties.welcomeScreenInfo,
-                        }
-                        newWelcomeScreenData.welcomeScreenBody = e.target.value
-                        setAppDesignProperties({
-                          ...appDesignProperties,
-                          welcomeScreenInfo: newWelcomeScreenData,
-                        })
-                      }}
-                      onBlur={() =>
-                        updateAppDesignInfo(
-                          AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
-                        )
-                      }
-                      multiline
-                      rows={4}
-                      rowsMax={6}
-                      placeholder="What are the first things you want participants to know about the study."
-                      inputProps={{ style: { width: '100%' }, maxLength: 250 }}
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <SimpleTextLabel>Salutations</SimpleTextLabel>
-                    <SimpleTextInput
-                      id="salutations"
-                      value={
-                        appDesignProperties.welcomeScreenInfo
-                          .welcomeScreenSalutation
-                      }
-                      onChange={e => {
-                        const newWelcomeScreenData = {
-                          ...appDesignProperties.welcomeScreenInfo,
-                        }
-                        newWelcomeScreenData.welcomeScreenSalutation =
-                          e.target.value
-                        setAppDesignProperties({
-                          ...appDesignProperties,
-                          welcomeScreenInfo: newWelcomeScreenData,
-                        })
-                      }}
-                      onBlur={() =>
-                        updateAppDesignInfo(
-                          AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
-                        )
-                      }
-                      multiline
-                      rows={2}
-                      rowsMax={4}
-                      placeholder="Thank you for your contribution"
-                      inputProps={{ style: SimpleTextInputStyles }}
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <SimpleTextLabel>From</SimpleTextLabel>
-                    <SimpleTextInput
-                      id="signature-textarea"
-                      value={
-                        appDesignProperties.welcomeScreenInfo
-                          .welcomeScreenFromText
-                      }
-                      onChange={e => {
-                        const newWelcomeScreenData = {
-                          ...appDesignProperties.welcomeScreenInfo,
-                        }
-                        newWelcomeScreenData.welcomeScreenFromText =
-                          e.target.value
-                        setAppDesignProperties({
-                          ...appDesignProperties,
-                          welcomeScreenInfo: newWelcomeScreenData,
-                        })
-                      }}
-                      onBlur={() =>
-                        updateAppDesignInfo(
-                          AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
-                        )
-                      }
-                      multiline
-                      rows={2}
-                      rowsMax={4}
-                      placeholder="Study team name"
-                      inputProps={{ style: SimpleTextInputStyles }}
-                    />
-                  </FormControl>
-                  <Box marginTop="20px">Add optional disclaimer:</Box>
-                  <div className={classes.optionalDisclaimerRow}>
-                    <Checkbox
-                      checked={
-                        appDesignProperties.welcomeScreenInfo
-                          .useOptionalDisclaimer
-                      }
-                      inputProps={{ 'aria-label': 'primary checkbox' }}
-                      className={classes.checkBox}
-                      id="disclaimer-check-box"
-                      onChange={() => {
-                        setAppDesignProperties(prevState => {
-                          const newWelcomeScreenData = {
-                            ...prevState.welcomeScreenInfo,
-                          }
-                          newWelcomeScreenData.useOptionalDisclaimer = !prevState
-                            .welcomeScreenInfo.useOptionalDisclaimer
-                          return {
-                            ...appDesignProperties,
-                            welcomeScreenInfo: newWelcomeScreenData,
-                          }
-                        })
-                      }}
-                    ></Checkbox>
-                    <div className={classes.optionalDisclaimerText}>
-                      This is a research study and does not provide medical
-                      advice, diagnosis, or treatment.
-                    </div>
-                  </div>
-                </FormGroup>
-                <Box textAlign="left">
-                  {saveLoader ? (
-                    <div className="text-center">
-                      <CircularProgress
-                        color="primary"
-                        size={25}
-                      ></CircularProgress>
-                    </div>
-                  ) : (
-                    <SaveButton
-                      onClick={() => saveInfo()}
-                      id="save-button-study-builder-1"
-                    />
-                  )}
-                </Box>
-              </Subsection>
+              <UploadStudyLogoSection
+                handleFileChange={handleFileChange}
+                previewFile={previewFile}
+                imgHeight={imgHeight}
+                saveLoader={saveLoader}
+              />
+              <ColorPickerSection
+                appDesignProperties={appDesignProperties}
+                setAppDesignProperties={setAppDesignProperties}
+                debouncedUpdateColor={debouncedUpdateColor}
+              />
+              <WelcomeScreenMessagingSection
+                appDesignProperties={appDesignProperties}
+                setAppDesignProperties={setAppDesignProperties}
+                updateAppDesignInfo={updateAppDesignInfo}
+                saveLoader={saveLoader}
+                saveInfo={saveInfo}
+                SimpleTextInputStyles={SimpleTextInputStyles}
+              />
             </ol>
           </div>
           {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage && (
-            <div className={classes.hideSectionVisibility}>
+            <Box className={classes.hideSectionVisibility}>
               <ol className={classes.steps}>
                 <li></li>
                 <li></li>
                 <li></li>
               </ol>
-            </div>
+            </Box>
           )}
         </Box>
         <Box className={classes.phoneArea}>
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
-          <Box className={`${classes.phone}`}>
+          <Box className={classes.phone}>
+            {!appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage && [
+              <SectionIndicator
+                index={1}
+                className={classes.sectionOneIndicatorPosition}
+                key={1}
+              />,
+              <SectionIndicator
+                index={2}
+                className={classes.sectionTwoIndicatorPosition}
+                key={2}
+              />,
+            ]}
+
             <PhoneTopBar
               color={appDesignProperties.backgroundColor.foreground}
               previewFile={previewFile}
@@ -991,38 +651,19 @@ const AppDesign: React.FunctionComponent<
                 appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
               }
             />
-            <div className={`${classes.phoneInner}`}>
-              <div className={classes.headlineStyle}>
-                {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
-                  ? defaultHeader
-                  : appDesignProperties.welcomeScreenInfo.welcomeScreenHeader ||
-                    'Welcome Headline'}
-              </div>
-              <p
-                className={clsx(
-                  classes.bodyText,
-                  classes.firstPhoneScreenBodyText,
-                )}
-              >
-                {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
-                  ? defaultStudyBody
-                  : appDesignProperties.welcomeScreenInfo.welcomeScreenBody ||
-                    'Body copy'}
-              </p>
-              <div className={clsx(classes.bodyText, classes.salutationText)}>
-                {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
-                  ? defaultSalutations
-                  : appDesignProperties.welcomeScreenInfo
-                      .welcomeScreenSalutation || 'Placeholder salutation,'}
-              </div>
-              <div className={clsx(classes.bodyText, classes.fromText)}>
-                {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
-                  ? defaultFrom
-                  : appDesignProperties.welcomeScreenInfo
-                      .welcomeScreenFromText || 'from placeholder'}
-              </div>
-            </div>
-            <div className={classes.phoneBottom}></div>
+            <WelcomeScreenPhoneContent
+              appDesignProperties={appDesignProperties}
+            />
+            <Box
+              className={clsx(
+                classes.phoneBottom,
+                classes.optionalDisclaimerTextOnPhone,
+              )}
+            >
+              {appDesignProperties.welcomeScreenInfo.useOptionalDisclaimer
+                ? 'This is a research study and does not provide medical advice,diagnosis, or treatment'
+                : ''}
+            </Box>
           </Box>
         </Box>
       </Paper>
@@ -1035,596 +676,91 @@ const AppDesign: React.FunctionComponent<
             support.
           </p>
           <ol className={classes.steps}>
-            <Subsection heading="Study Summary">
-              <FormGroup className={classes.formFields}>
-                <FormControl className={classes.firstFormElement}>
-                  <SimpleTextLabel htmlFor="study-name-input">
-                    Official Study Name*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="study-name-input"
-                    placeholder="Headline"
-                    value={appDesignProperties.studyTitle}
-                    onChange={e => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        studyTitle: e.target.value,
-                      })
-                    }}
-                    onBlur={() =>
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_NAME,
-                      )
-                    }
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                </FormControl>
-                <FormControl>
-                  <SimpleTextLabel>
-                    Body Copy (maximum 500 characters)
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    id="study-body-text"
-                    value={appDesignProperties.studySummaryBody}
-                    onChange={e => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        studySummaryBody: e.target.value,
-                      })
-                    }}
-                    onBlur={() =>
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION,
-                      )
-                    }
-                    multiline
-                    rows={8}
-                    rowsMax={10}
-                    placeholder="Lorem ipsum"
-                    inputProps={{ style: { width: '100%' }, maxLength: 500 }}
-                  />
-                </FormControl>
-              </FormGroup>
-            </Subsection>
-            <Subsection heading="Information about the Study Leads">
-              <FormGroup className={classes.formFields}>
-                <FormControl className={classes.firstFormElement}>
-                  <LeadInvestigatorDropdown
-                    orgMembership={orgMembership!}
-                    token={token!}
-                    onChange={(investigatorSelected: string) => {
-                      const newStudyLead = getContact('LEAD_INVESTIGATOR')
-                      newStudyLead.name = investigatorSelected
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        leadPrincipleInvestigatorInfo: newStudyLead,
-                      })
-                    }}
-                    currentInvestigatorSelected={
-                      appDesignProperties.leadPrincipleInvestigatorInfo?.name ||
-                      ''
-                    }
-                  ></LeadInvestigatorDropdown>
-                  <p className={classes.principleInvestigatorsParagraph}>
-                    Principle Investigators are required to be part of the study
-                    as a “Study Administrator”.
-                    <br></br>
-                    <br></br>
-                    If your PI is not listed in the dropdown, please add them to
-                    the study and/or make them a{' '}
-                    <strong>Co-Study Administrator</strong> via the{' '}
-                    <strong>
-                      <u>Access Settings</u>
-                    </strong>{' '}
-                    tab on the top right hand side.{' '}
-                  </p>
-                </FormControl>
-                <FormControl>
-                  <SimpleTextLabel htmlFor="institution-input">
-                    Institution Affiliation*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="institution-input"
-                    placeholder="Name of Institution"
-                    value={
-                      appDesignProperties.leadPrincipleInvestigatorInfo
-                        ?.affiliation || ''
-                    }
-                    onChange={e => {
-                      const newStudyLead = getContact('LEAD_INVESTIGATOR')
-                      newStudyLead.affiliation = e.target.value
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        leadPrincipleInvestigatorInfo: newStudyLead,
-                      })
-                    }}
-                    onBlur={() =>
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
-                      )
-                    }
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                </FormControl>
-                <FormControl>
-                  <SimpleTextLabel htmlFor="funder-input">
-                    Funder*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="funder-input"
-                    placeholder="Name of Funder(s)"
-                    value={appDesignProperties.funder?.name || ''}
-                    onChange={e => {
-                      const newFunder = getContact('FUNDER')
-                      newFunder.name = e.target.value
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        funder: newFunder,
-                      })
-                    }}
-                    onBlur={() =>
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
-                      )
-                    }
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                </FormControl>
-                <FormControl>
-                  <SimpleTextLabel htmlFor="IRB-approval-input">
-                    IRB Approval Number*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="IRB-approval-input"
-                    placeholder="XXXXXXXXXX"
-                    value={appDesignProperties.irbProtocolId}
-                    onChange={e => {
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        irbProtocolId: e.target.value,
-                      })
-                    }}
-                    onBlur={() =>
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER,
-                      )
-                    }
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                </FormControl>
-              </FormGroup>
-            </Subsection>
-            <Subsection heading="General Contact and Support">
-              <FormGroup className={classes.formFields}>
-                <FormControl className={classes.firstFormElement}>
-                  <SimpleTextLabel htmlFor="contact-lead-input">
-                    Contact Lead*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="contact-lead-input"
-                    placeholder="First and Last name"
-                    value={appDesignProperties.contactLeadInfo?.name || ''}
-                    onChange={e => {
-                      const newContactLead = getContact('CONTACT')
-                      newContactLead.name = e.target.value
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        contactLeadInfo: newContactLead,
-                      })
-                    }}
-                    onBlur={() =>
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
-                      )
-                    }
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                </FormControl>
-                <FormControl>
-                  <SimpleTextLabel htmlFor="role-in-study-input">
-                    Role in the Study*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="role-in-study-input"
-                    placeholder="Title of Position"
-                    value={appDesignProperties.contactLeadInfo?.position || ''}
-                    onChange={e => {
-                      const newContactLead = getContact('CONTACT')
-                      newContactLead.position = e.target.value
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        contactLeadInfo: newContactLead,
-                      })
-                    }}
-                    onBlur={() =>
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
-                      )
-                    }
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                </FormControl>
-                <FormControl
-                  className={clsx(
-                    !phoneNumberErrorState.isGeneralContactPhoneNumberValid &&
-                      'error',
-                  )}
-                >
-                  <SimpleTextLabel htmlFor="phone-number-contact-input">
-                    Phone Number*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="phone-number-contact-input"
-                    placeholder="xxx-xxx-xxxx"
-                    value={generalContactPhoneNumber}
-                    onChange={e => {
-                      setGeneralContactPhoneNumber(e.target.value)
-                    }}
-                    onBlur={() => {
-                      const isInvalidPhoneNumber =
-                        isInvalidPhone(generalContactPhoneNumber) &&
-                        generalContactPhoneNumber !== ''
-                      setPhoneNumberErrorState(prevState => {
-                        return {
-                          ...prevState,
-                          isGeneralContactPhoneNumberValid: !isInvalidPhoneNumber,
-                        }
-                      })
-                      const newContactLead = getContact('CONTACT')
-                      newContactLead.phone = makePhone(
-                        generalContactPhoneNumber,
-                      )
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        contactLeadInfo: newContactLead,
-                      })
-                    }}
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                  {!phoneNumberErrorState.isGeneralContactPhoneNumberValid && (
-                    <FormHelperText
-                      id="general-contact-phone-text"
-                      className={classes.errorText}
-                    >
-                      phone should be in the format: xxx-xxx-xxxx
-                    </FormHelperText>
-                  )}
-                </FormControl>
-                <FormControl
-                  className={clsx(
-                    !emailErrorState.isGeneralContactEmailValid && 'error',
-                  )}
-                >
-                  <SimpleTextLabel htmlFor="contact-email-input">
-                    Email*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="contact-email-input"
-                    placeholder="Institutional Email"
-                    value={appDesignProperties.contactLeadInfo?.email || ''}
-                    onChange={e => {
-                      const newContactLead = getContact('CONTACT')
-                      newContactLead.email = e.target.value
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        contactLeadInfo: newContactLead,
-                      })
-                    }}
-                    onBlur={() => {
-                      console.log(appDesignProperties.contactLeadInfo?.email)
-                      const validEmail =
-                        isValidEmail(
-                          appDesignProperties.contactLeadInfo?.email || '',
-                        ) || !appDesignProperties.contactLeadInfo?.email
-                      setEmailErrorState(prevState => {
-                        return {
-                          ...prevState,
-                          isGeneralContactEmailValid: validEmail,
-                        }
-                      })
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
-                      )
-                    }}
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                  {!emailErrorState.isGeneralContactEmailValid && (
-                    <FormHelperText
-                      id="general-contact-email-text"
-                      className={classes.errorText}
-                    >
-                      email should be in a valid format such as:
-                      example@placeholder.com
-                    </FormHelperText>
-                  )}
-                </FormControl>
-              </FormGroup>
-            </Subsection>
-            <Subsection heading="IRB or Ethics Board Contact">
-              <FormGroup className={classes.formFields}>
-                <FormControl className={classes.firstFormElement}>
-                  <SimpleTextLabel htmlFor="ethics-board-input">
-                    Name of IRB/Ethics Board*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="ethics-board-input"
-                    placeholder="First and Last name"
-                    value={appDesignProperties.ethicsBoardInfo?.name || ''}
-                    onChange={e => {
-                      const newEthicsBoard = getContact('ETHICS_BOARD')
-                      newEthicsBoard.name = e.target.value
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        ethicsBoardInfo: newEthicsBoard,
-                      })
-                    }}
-                    onBlur={() =>
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
-                      )
-                    }
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                </FormControl>
-                <FormControl
-                  className={clsx(
-                    !phoneNumberErrorState.isIrbPhoneNumberValid && 'error',
-                  )}
-                >
-                  <SimpleTextLabel htmlFor="ethics-phone-number-input">
-                    Phone Number*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={clsx(classes.informationRowStyle, 'error')}
-                    id="ethics-phone-number-input"
-                    placeholder="xxx-xxx-xxxx"
-                    value={irbPhoneNumber}
-                    onChange={e => {
-                      setIrbPhoneNumber(e.target.value)
-                    }}
-                    onBlur={() => {
-                      const isInvalidPhoneNumber =
-                        isInvalidPhone(irbPhoneNumber) && irbPhoneNumber !== ''
-                      setPhoneNumberErrorState(prevState => {
-                        return {
-                          ...prevState,
-                          isIrbPhoneNumberValid: !isInvalidPhoneNumber,
-                        }
-                      })
-                      const newEthicsBoard = getContact('ETHICS_BOARD')
-                      newEthicsBoard.phone = makePhone(irbPhoneNumber)
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        ethicsBoardInfo: newEthicsBoard,
-                      })
-                    }}
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                  {!phoneNumberErrorState.isIrbPhoneNumberValid && (
-                    <FormHelperText
-                      id="ethics-phone-text"
-                      className={classes.errorText}
-                    >
-                      phone should be in the format: xxx-xxx-xxxx
-                    </FormHelperText>
-                  )}
-                </FormControl>
-                <FormControl
-                  className={clsx(!emailErrorState.isIrbEmailValid && 'error')}
-                >
-                  <SimpleTextLabel htmlFor="ethics-email-input">
-                    Email*
-                  </SimpleTextLabel>
-                  <SimpleTextInput
-                    className={classes.informationRowStyle}
-                    id="ethics-email-input"
-                    placeholder="Institutional Email"
-                    value={appDesignProperties.ethicsBoardInfo?.email || ''}
-                    onChange={e => {
-                      const newEthicsBoard = getContact('ETHICS_BOARD')
-                      newEthicsBoard.email = e.target.value
-                      setAppDesignProperties({
-                        ...appDesignProperties,
-                        ethicsBoardInfo: newEthicsBoard,
-                      })
-                    }}
-                    onBlur={() => {
-                      const validEmail =
-                        isValidEmail(
-                          appDesignProperties.ethicsBoardInfo?.email || '',
-                        ) || !appDesignProperties.ethicsBoardInfo?.email
-                      setEmailErrorState(prevState => {
-                        return {
-                          ...prevState,
-                          isIrbEmailValid: validEmail,
-                        }
-                      })
-                      updateAppDesignInfo(
-                        AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS,
-                      )
-                    }}
-                    multiline
-                    rows={1}
-                    rowsMax={1}
-                    inputProps={{
-                      style: SimpleTextInputStyles,
-                    }}
-                  />
-                  {!emailErrorState.isIrbEmailValid && (
-                    <FormHelperText
-                      id="ethics-email-text"
-                      className={classes.errorText}
-                    >
-                      email should be in a valid format such as:
-                      example@placeholder.com
-                    </FormHelperText>
-                  )}
-                </FormControl>
-              </FormGroup>
-              <Box textAlign="left">
-                {saveLoader ? (
-                  <div className="text-center">
-                    <CircularProgress color="primary" size={25} />
-                  </div>
-                ) : (
-                  <SaveButton
-                    onClick={() => saveInfo()}
-                    id="save-button-study-builder-2"
-                  />
-                )}
-              </Box>
-            </Subsection>
+            <StudySummarySection
+              appDesignProperties={appDesignProperties}
+              setAppDesignProperties={setAppDesignProperties}
+              updateAppDesignInfo={updateAppDesignInfo}
+              SimpleTextInputStyles={SimpleTextInputStyles}
+            />
+            <StudyLeadInformationSection
+              appDesignProperties={appDesignProperties}
+              setAppDesignProperties={setAppDesignProperties}
+              updateAppDesignInfo={updateAppDesignInfo}
+              SimpleTextInputStyles={SimpleTextInputStyles}
+              orgMembership={orgMembership}
+              token={token}
+              getContactPersonObject={getContactPersonObject}
+              irbNameSameAsInstitution={irbNameSameAsInstitution}
+            />
+            <GeneralContactAndSupportSection
+              appDesignProperties={appDesignProperties}
+              setAppDesignProperties={setAppDesignProperties}
+              updateAppDesignInfo={updateAppDesignInfo}
+              SimpleTextInputStyles={SimpleTextInputStyles}
+              phoneNumberErrorState={phoneNumberErrorState}
+              setPhoneNumberErrorState={setPhoneNumberErrorState}
+              emailErrorState={emailErrorState}
+              setEmailErrorState={setEmailErrorState}
+              getContactPersonObject={getContactPersonObject}
+              generalContactPhoneNumber={generalContactPhoneNumber}
+              setGeneralContactPhoneNumber={setGeneralContactPhoneNumber}
+            />
+            <IrbBoardContactSection
+              appDesignProperties={appDesignProperties}
+              setAppDesignProperties={setAppDesignProperties}
+              updateAppDesignInfo={updateAppDesignInfo}
+              SimpleTextInputStyles={SimpleTextInputStyles}
+              phoneNumberErrorState={phoneNumberErrorState}
+              setPhoneNumberErrorState={setPhoneNumberErrorState}
+              emailErrorState={emailErrorState}
+              setEmailErrorState={setEmailErrorState}
+              getContactPersonObject={getContactPersonObject}
+              irbPhoneNumber={irbPhoneNumber}
+              setIrbPhoneNumber={setIrbPhoneNumber}
+              saveInfo={saveInfo}
+              saveLoader={saveLoader}
+              irbNameSameAsInstitution={irbNameSameAsInstitution}
+              setIrbNameSameAsInstitution={setIrbNameSameAsInstitution}
+            />
           </ol>
         </Box>
-
         <Box className={classes.phoneArea}>
           <MTBHeadingH1>What participants will see: </MTBHeadingH1>
           <Box className={classes.phone}>
-            <PhoneTopBar
-              color={appDesignProperties.backgroundColor.foreground}
+            <Box className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
+              <PhoneTopImgLeftHighlighted
+                title="phone top image"
+                width="312px"
+              />
+            </Box>
+            <StudyPageTopPhoneContent
+              appDesignProperties={appDesignProperties}
               previewFile={previewFile}
               isUsingDefaultMessage={
                 appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
               }
+              imgHeight={imgHeight}
+              appColor={
+                appDesignProperties.backgroundColor.foreground || '#6040FF'
+              }
             />
-            <div className={classes.phoneInnerBottom}>
-              <div className={classes.headlineStyle}>
-                {appDesignProperties.studyTitle || 'Title of study...'}
-              </div>
-              <p className={classes.bodyText}>
-                {appDesignProperties.studySummaryBody || 'Body...'}
-              </p>
-              <Divider className={classes.divider} />
-              <StudySummaryRoles
-                type="Lead Principal Investigator"
-                name={
-                  appDesignProperties.leadPrincipleInvestigatorInfo?.name ||
-                  'placeholder'
-                }
+            <Box className={classes.phoneBottom}>
+              <PhoneBottomImg title="phone bottom image" />
+            </Box>
+          </Box>
+          <Box className={classes.phone} style={{ marginTop: '134px' }}>
+            <Box className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
+              <PhoneTopImgRightHighlighted
+                title="phone top image"
+                width="312px"
               />
-              <StudySummaryRoles
-                type="Institution"
-                name={
-                  appDesignProperties.leadPrincipleInvestigatorInfo
-                    ?.affiliation || 'placeholder'
-                }
-              />
-              <StudySummaryRoles
-                type="Funder"
-                name={appDesignProperties.funder?.name || 'placeholder'}
-              />
-              <StudySummaryRoles
-                type="IRB Approval Number"
-                name={appDesignProperties.irbProtocolId || 'placeholder'}
-              />
-            </div>
-            <div
-              className={`${classes.phoneInnerBottom} ${classes.phoneGrayBackground}`}
-            >
-              <div className={classes.contactAndSupportText}>
-                Contact & support
-              </div>
-              <p className={classes.bodyPhoneText}>
-                For general questions about the study or to{' '}
-                <strong>withdraw</strong> from the study, please contact:
-              </p>
-              <div className={classes.summaryRoles}>
-                <StudySummaryRoles
-                  type={
-                    appDesignProperties.contactLeadInfo?.position ||
-                    'Role in study'
-                  }
-                  name={
-                    appDesignProperties.contactLeadInfo?.name || 'Contact lead'
-                  }
-                />
-              </div>
-              <ContactInformation
-                phoneNumber={
-                  appDesignProperties.contactLeadInfo?.phone?.number || ''
-                }
-                email={appDesignProperties.contactLeadInfo?.email || ''}
-              />
-              <Divider className={classes.divider} />
-              <p className={classes.bodyPhoneText}>
-                For questions about your rights as a research participant,
-                please contact :
-              </p>
-              <div className={classes.summaryRoles}>
-                <StudySummaryRoles
-                  type=""
-                  name={
-                    appDesignProperties.ethicsBoardInfo?.name ||
-                    'IRB/Ethics Board'
-                  }
-                />
-              </div>
-              <ContactInformation
-                phoneNumber={
-                  appDesignProperties.ethicsBoardInfo?.phone?.number || ''
-                }
-                email={appDesignProperties.ethicsBoardInfo?.email || ''}
-              />
-            </div>
+            </Box>
+            <StudyPageBottomPhoneContent
+              appDesignProperties={appDesignProperties}
+              generalContactPhoneNumber={generalContactPhoneNumber}
+              irbPhoneNumber={irbPhoneNumber}
+              studyID={study.identifier}
+            />
             <div className={classes.phoneBottom}>
               <PhoneBottomImg title="phone bottom image" />
             </div>

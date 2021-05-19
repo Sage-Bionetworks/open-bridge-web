@@ -58,7 +58,7 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
 
   return (
     <div>
-      <Box marginLeft="8px">Lead Principle Investigator*</Box>
+      <Box ml={1}>Lead Principle Investigator*</Box>
       <BlackBorderDropdown
         id="lead-investigator-drop-down"
         dropdown={leadInvestigatorOptions.map(item => ({

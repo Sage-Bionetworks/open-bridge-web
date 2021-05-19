@@ -2,6 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import PhoneIcon from '../../../assets/phone_icon.svg'
 import EmailIcon from '../../../assets/email_icon.svg'
+import { Box } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -35,16 +36,16 @@ const ContactInformation: React.FunctionComponent<ContactInformationProps> = ({
 }) => {
   const classes = useStyles()
   return (
-    <div className={classes.container}>
-      <div className={classes.row}>
+    <Box className={classes.container}>
+      <Box className={classes.row}>
         <img className={classes.icon} src={PhoneIcon} alt="phone_icon"></img>
-        <div>{phoneNumber || 'xxx-xxx-xxxx'}</div>
-      </div>
-      <div className={`${classes.row} ${classes.bottomRow}`}>
+        <Box>{phoneNumber || 'xxx-xxx-xxxx'}</Box>
+      </Box>
+      <Box className={`${classes.row} ${classes.bottomRow}`}>
         <img className={classes.icon} src={EmailIcon} alt="email_icon"></img>
-        <div>{email || 'placeholder@institution.com'}</div>
-      </div>
-    </div>
+        <Box>{email || 'placeholder@institution.com'}</Box>
+      </Box>
+    </Box>
   )
 }
 
