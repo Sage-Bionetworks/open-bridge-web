@@ -30,6 +30,7 @@ type TextInputWrapperProps = {
   extraClassname?: string
   readOnly?: boolean
   maxWordCount?: number
+  alternativeTextInputClassName?: string
 }
 
 const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
@@ -46,6 +47,7 @@ const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
   extraClassname,
   readOnly,
   maxWordCount,
+  alternativeTextInputClassName,
 }) => {
   const classes = useStyles()
   return (
@@ -53,8 +55,9 @@ const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
       {titleText && <SimpleTextLabel htmlFor={id}>{titleText}</SimpleTextLabel>}
       <SimpleTextInput
         className={clsx(
-          classes.informationRowStyle,
+          !alternativeTextInputClassName && classes.informationRowStyle,
           extraClassname && extraClassname,
+          alternativeTextInputClassName && alternativeTextInputClassName,
         )}
         id={id}
         placeholder={placeholder}
