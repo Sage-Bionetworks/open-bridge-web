@@ -5,7 +5,6 @@ import ContactInformation from './ContactInformation'
 import StudySummaryRoles from './StudySummaryRoles'
 import SectionIndicator from './SectionIndicator'
 import { StudyAppDesign } from '../../../types/types'
-import clsx from 'clsx'
 import { latoFont, poppinsFont } from '../../../style/theme'
 
 const useStyles = makeStyles(theme => ({
@@ -135,8 +134,8 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
           </Box>
         </Box>
         <Divider className={classes.divider} />
-        <Box className={classes.contactAndSupportText} marginTop="24px">
-          Research Rights
+        <Box className={classes.contactAndSupportText} mt={3}>
+          Your Participant Rights
         </Box>
         <p className={classes.bodyPhoneText}>
           For questions about your rights as a research participant, please
@@ -158,7 +157,7 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
           phoneNumber={irbPhoneNumber}
           email={appDesignProperties.ethicsBoardInfo?.email || ''}
         />
-        <Box marginTop="12px" width="100%">
+        <Box mt={1.5} width="100%">
           IRB Protocol ID: {appDesignProperties.irbProtocolId || 'placeholder'}
         </Box>
       </Box>

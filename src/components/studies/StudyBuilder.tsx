@@ -31,12 +31,12 @@ import EnrollmentTypeSelector from './enrollment-type-selector/EnrollmentTypeSel
 import Launch from './launch/Launch'
 import NavButtons from './NavButtons'
 import PassiveFeatures from './passive-features/PassiveFeatures'
+import Preview from './preview/Preview'
 import IntroInfo from './scheduler/IntroInfo'
 import Scheduler from './scheduler/Scheduler'
 import { StudySection } from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
-
 const subtitles: StringDictionary<string> = {
   description: 'Description',
   'team-settings': 'Team Settings',
@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   introInfoContainer: {
     textAlign: 'center',
     backgroundColor: '#FAFAFA',
-    minHeight: '100vh' ,
+    minHeight: '100vh',
     paddingTop: theme.spacing(5),
   },
 }))
@@ -94,10 +94,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ...otherProps
 }) => {
   const classes = useStyles()
-  let { id, section: _section } = useParams<{
-    id: string
-    section: StudySection
-  }>()
+  let { id, section: _section } =
+    useParams<{
+      id: string
+      section: StudySection
+    }>()
   const [section, setSection] = React.useState(_section)
   const [error, setError] = React.useState<string[]>([])
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
@@ -177,7 +178,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       if (!schedule || !token) {
         return
       }
-      const savedUpdatedSchedule = await StudyService.saveStudySchedule(schedule, token)
+      const savedUpdatedSchedule = await StudyService.saveStudySchedule(
+        schedule,
+        token,
+      )
       //we have the issue that scheduler comes back from the server without assessment resources
       //so we need to copy the resources back to the new schedule object before updating.
       //the reason why we want the updated object is that sessions ids get assigned by the server.
@@ -206,7 +210,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       setData({
         ...builderInfo,
         schedule: savedUpdatedSchedule,
-
       })
       setHasObjectChanged(false)
     } catch (e) {
@@ -304,7 +307,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   )
   if (builderInfo.study && !builderInfo.schedule) {
     return (
-      <Box className={classes.introInfoContainer}><IntroInfo
+      <Box className={classes.introInfoContainer}>
+        <IntroInfo
           onContinue={(
             studyName: string,
             duration: string,
@@ -374,16 +378,15 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                 left: '50%',
               }}
             ></LoadingComponent>
-            {error?.length && (
+            {!_.isEmpty(error) && (
               <Alert variant="outlined" color="error">
                 {Array.isArray(error) ? (
-                  error.map(e => <div style={{ textAlign: 'left' }}>{e}</div>)
+                  error.map(e => <div style={{ textAlign: 'left' }}>1{e}</div>)
                 ) : (
-                  <div style={{ textAlign: 'left' }}>{error}</div>
+                  <div style={{ textAlign: 'left' }}>{error}2</div>
                 )}
               </Alert>
             )}
-
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
               onError={ErrorHandler}
@@ -472,11 +475,17 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         {navButtons}
                       </AppDesign>
                     )}
+                    {section === 'preview' && (
+                      <Preview
+                        studyId={builderInfo.study.identifier}
+                        token={token!}
+                      ></Preview>
+                    )}
                     {section === 'launch' && (
                       <Launch
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
-                        id={id}
+                        study={builderInfo.study}
                         onUpdate={(_section: StudySection, data: any) => {
                           console.log(_section)
                           // moveToNextSection(_section)
@@ -489,11 +498,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       <PassiveFeatures
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
-                        study={builderInfo.study}
+                        features={
+                          builderInfo.study.clientData.backgroundRecorders
+                        }
                         onUpdate={(data: BackgroundRecorders) => {
                           setHasObjectChanged(true)
                           const updatedStudy = { ...builderInfo.study }
                           updatedStudy.clientData.backgroundRecorders = data
+
                           saveStudy(updatedStudy)
                         }}
                       >

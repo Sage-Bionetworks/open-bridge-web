@@ -21,7 +21,7 @@ const ColorPickerSection: React.FunctionComponent<ColorPickerSection> = ({
         Select a background color that matches your institution or study to be
         seen beneath your logo.
       </p>
-      <Box width="250px" height="230px" marginLeft="-10px">
+      <Box width="250px" height="230px" ml={-1.25}>
         <ReactColorPicker
           color={appDesignProperties.backgroundColor.foreground}
           onChange={(currentColor: string) => {

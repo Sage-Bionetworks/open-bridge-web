@@ -5,43 +5,25 @@ import {
   Box,
   CircularProgress,
   FormControl,
-  FormGroup,
   Radio,
   RadioGroup,
   FormControlLabel,
   FormHelperText,
 } from '@material-ui/core'
-import { StudyAppDesign } from '../../../types/types'
-import { playfairDisplayFont, poppinsFont } from '../../../style/theme'
-import {
-  SimpleTextInput,
-  SimpleTextLabel,
-} from '../../widgets/StyledComponents'
+import { StudyAppDesign, Contact } from '../../../types/types'
 import { AppDesignUpdateTypes } from './AppDesign'
 import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
 import clsx from 'clsx'
 import SaveButton from '../../widgets/SaveButton'
 import { makePhone } from '../../../helpers/utility'
+import FormGroupWrapper from './FormGroupWrapper'
+import TextInputWrapper from './TextInputWrapper'
+import { ContactType } from './AppDesign'
 
 const useStyles = makeStyles(theme => ({
-  formFields: {
-    fontFamily: poppinsFont,
-    fontSize: '14px',
-    marginBottom: '24px',
-
-    '& .MuiFormControl-root:not(:last-child)': {
-      marginBottom: '16px',
-    },
-  },
   irbInputFormControl: {
     width: '100%',
-    marginBottom: theme.spacing(1),
-  },
-  informationRowStyle: {
-    fontFamily: playfairDisplayFont,
-    fontWeight: 'normal',
-    fontSize: '15px',
-    lineHeight: '18px',
+    marginBottom: theme.spacing(1.5),
   },
   irbInput: {
     width: '100%',
@@ -58,7 +40,7 @@ type IrbBoardContactSectionProps = {
   updateAppDesignInfo: Function
   SimpleTextInputStyles: React.CSSProperties
   irbNameSameAsInstitution: boolean
-  getContact: Function
+  getContactPersonObject: (type: ContactType) => Contact
   setIrbNameSameAsInstitution: Function
   phoneNumberErrorState: {
     isGeneralContactPhoneNumberValid: boolean
@@ -82,7 +64,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
   updateAppDesignInfo,
   SimpleTextInputStyles,
   irbNameSameAsInstitution,
-  getContact,
+  getContactPersonObject,
   setIrbNameSameAsInstitution,
   phoneNumberErrorState,
   setPhoneNumberErrorState,
@@ -98,68 +80,79 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
     <Subsection heading="IRB or Ethics Board Contact">
       <Box
         width="80%"
-        marginTop="12px"
+        mt={1.5}
         fontSize="15px"
         lineHeight="18px"
         fontFamily="Lato"
-        marginBottom="16px"
+        mb={2}
       >
         For questions about your rights as a research participant in this study,
         please contact :
       </Box>
-      <FormGroup className={classes.formFields}>
-        <Box paddingLeft="2px" marginTop="8px">
+      <FormGroupWrapper>
+        <Box pl={0.25} mt={1}>
           What is your IRB of record?*
         </Box>
-        <Box
-          width="100%"
-          boxSizing="border-box"
-          marginTop="8px"
-          paddingLeft="48px"
-          paddingRight="8px"
-        >
+        <Box width="100%" boxSizing="border-box" mt={1} pl={6} pr={1}>
           <RadioGroup
             aria-label="gender"
             value={
               irbNameSameAsInstitution
-                ? 'Same Institutional Affiliation'
-                : 'Other'
+                ? 'affiliation_same'
+                : 'affiliation_other'
             }
             onChange={e => {
-              if (e.target.value === 'Same Institutional Affiliation') {
-                const studyLead = getContact('LEAD_INVESTIGATOR')
-                const newEthicsBoard = getContact('ETHICS_BOARD')
-                newEthicsBoard.name = studyLead.affiliation || ''
+              if (e.target.value === 'affiliation_same') {
+                const studyLeadObject = getContactPersonObject(
+                  'LEAD_INVESTIGATOR',
+                )
+                const newEthicsBoardObject = getContactPersonObject(
+                  'ETHICS_BOARD',
+                )
+                newEthicsBoardObject.name = studyLeadObject.affiliation || ''
                 setAppDesignProperties({
                   ...appDesignProperties,
-                  ethicsBoardInfo: newEthicsBoard,
+                  ethicsBoardInfo: newEthicsBoardObject,
                 })
               }
-              setIrbNameSameAsInstitution(
-                e.target.value === 'Same Institutional Affiliation',
-              )
+              setIrbNameSameAsInstitution(e.target.value === 'affiliation_same')
             }}
             style={{ marginBottom: '8px' }}
           >
             <FormControlLabel
-              value="Same Institutional Affiliation"
+              value="affiliation_same"
               control={<Radio />}
               label="Same Institutional Affiliation"
             />
-            <FormControlLabel value="Other" control={<Radio />} label="Other" />
+            <FormControlLabel
+              value="affiliation_other"
+              control={<Radio />}
+              label="Other"
+            />
           </RadioGroup>
           <FormControl className={classes.irbInputFormControl}>
-            <SimpleTextInput
-              className={clsx(classes.informationRowStyle, classes.irbInput)}
+            <TextInputWrapper
+              SimpleTextInputStyles={
+                {
+                  fontSize: '15px',
+                  width: '100%',
+                  height: '44px',
+                  boxSizing: 'border-box',
+                } as React.CSSProperties
+              }
               id="ethics-board-input"
               placeholder="Name IRB of record"
               value={appDesignProperties.ethicsBoardInfo?.name || ''}
-              onChange={e => {
-                const newEthicsBoard = getContact('ETHICS_BOARD')
-                newEthicsBoard.name = e.target.value
+              onChange={(
+                e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+              ) => {
+                const newEthicsBoardBoard = getContactPersonObject(
+                  'ETHICS_BOARD',
+                )
+                newEthicsBoardBoard.name = e.target.value
                 setAppDesignProperties({
                   ...appDesignProperties,
-                  ethicsBoardInfo: newEthicsBoard,
+                  ethicsBoardInfo: newEthicsBoardBoard,
                 })
               }}
               onBlur={() =>
@@ -167,14 +160,8 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
               }
               rows={1}
               rowsMax={1}
-              inputProps={{
-                style: {
-                  fontSize: '15px',
-                  width: '100%',
-                  height: '44px',
-                  boxSizing: 'border-box',
-                },
-              }}
+              multiline={false}
+              titleText=""
               readOnly={irbNameSameAsInstitution}
             />
           </FormControl>
@@ -184,15 +171,14 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             !phoneNumberErrorState.isIrbPhoneNumberValid && 'error',
           )}
         >
-          <SimpleTextLabel htmlFor="ethics-phone-number-input">
-            Phone Number*
-          </SimpleTextLabel>
-          <SimpleTextInput
-            className={clsx(classes.informationRowStyle, 'error')}
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="ethics-phone-number-input"
             placeholder="xxx-xxx-xxxx"
             value={irbPhoneNumber}
-            onChange={e => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
               setIrbPhoneNumber(e.target.value)
             }}
             onBlur={() => {
@@ -206,19 +192,19 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
                   }
                 },
               )
-              const newEthicsBoard = getContact('ETHICS_BOARD')
-              newEthicsBoard.phone = makePhone(irbPhoneNumber)
+              const newEthicsBoardObject = getContactPersonObject(
+                'ETHICS_BOARD',
+              )
+              newEthicsBoardObject.phone = makePhone(irbPhoneNumber)
               setAppDesignProperties({
                 ...appDesignProperties,
-                ethicsBoardInfo: newEthicsBoard,
+                ethicsBoardInfo: newEthicsBoardObject,
               })
             }}
             multiline
             rows={1}
             rowsMax={1}
-            inputProps={{
-              style: SimpleTextInputStyles,
-            }}
+            titleText="Phone Number*"
           />
           {!phoneNumberErrorState.isIrbPhoneNumberValid && (
             <FormHelperText
@@ -232,18 +218,21 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
         <FormControl
           className={clsx(!emailErrorState.isIrbEmailValid && 'error')}
         >
-          <SimpleTextLabel htmlFor="ethics-email-input">Email*</SimpleTextLabel>
-          <SimpleTextInput
-            className={classes.informationRowStyle}
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="ethics-email-input"
             placeholder="Institutional Email"
             value={appDesignProperties.ethicsBoardInfo?.email || ''}
-            onChange={e => {
-              const newEthicsBoard = getContact('ETHICS_BOARD')
-              newEthicsBoard.email = e.target.value
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
+              const newEthicsBoardObject = getContactPersonObject(
+                'ETHICS_BOARD',
+              )
+              newEthicsBoardObject.email = e.target.value
               setAppDesignProperties({
                 ...appDesignProperties,
-                ethicsBoardInfo: newEthicsBoard,
+                ethicsBoardInfo: newEthicsBoardObject,
               })
             }}
             onBlur={() => {
@@ -262,9 +251,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             multiline
             rows={1}
             rowsMax={1}
-            inputProps={{
-              style: SimpleTextInputStyles,
-            }}
+            titleText="Email*"
           />
           {!emailErrorState.isIrbEmailValid && (
             <FormHelperText
@@ -276,15 +263,14 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
           )}
         </FormControl>
         <FormControl>
-          <SimpleTextLabel htmlFor="IRB-approval-input">
-            IRB Protocol ID*
-          </SimpleTextLabel>
-          <SimpleTextInput
-            className={classes.informationRowStyle}
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="IRB-approval-input"
             placeholder="XXXXXXXXXX"
             value={appDesignProperties.irbProtocolId}
-            onChange={e => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
               setAppDesignProperties({
                 ...appDesignProperties,
                 irbProtocolId: e.target.value,
@@ -296,12 +282,10 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             multiline
             rows={1}
             rowsMax={1}
-            inputProps={{
-              style: SimpleTextInputStyles,
-            }}
+            titleText="IRB Protocol ID*"
           />
         </FormControl>
-      </FormGroup>
+      </FormGroupWrapper>
       <Box textAlign="left">
         {saveLoader ? (
           <div className="text-center">

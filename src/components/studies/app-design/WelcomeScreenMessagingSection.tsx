@@ -1,31 +1,15 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Subsection from './Subsection'
-import {
-  Box,
-  CircularProgress,
-  FormControl,
-  FormGroup,
-  Checkbox,
-} from '@material-ui/core'
+import { Box, CircularProgress, FormControl, Checkbox } from '@material-ui/core'
 import { StudyAppDesign } from '../../../types/types'
-import { playfairDisplayFont, poppinsFont } from '../../../style/theme'
-import {
-  SimpleTextInput,
-  SimpleTextLabel,
-} from '../../widgets/StyledComponents'
+import { playfairDisplayFont } from '../../../style/theme'
 import SaveButton from '../../widgets/SaveButton'
 import { AppDesignUpdateTypes } from './AppDesign'
+import FormGroupWrapper from './FormGroupWrapper'
+import TextInputWrapper from './TextInputWrapper'
 
 const useStyles = makeStyles(theme => ({
-  formFields: {
-    fontFamily: poppinsFont,
-    fontSize: '14px',
-    marginBottom: '24px',
-    '& .MuiFormControl-root:not(:last-child)': {
-      marginBottom: '16px',
-    },
-  },
   firstFormElement: {
     marginTop: theme.spacing(2.5),
   },
@@ -76,17 +60,18 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
   const classes = useStyles()
   return (
     <Subsection heading="Welcome screen messaging">
-      <FormGroup className={classes.formFields}>
+      <FormGroupWrapper>
         <FormControl className={classes.firstFormElement}>
-          <SimpleTextLabel htmlFor="headline-input">
-            Main Header
-          </SimpleTextLabel>
-          <SimpleTextInput
-            className={classes.headlineStyle}
+          <TextInputWrapper
+            SimpleTextInputStyles={
+              { fontSize: '24px', width: '100%' } as React.CSSProperties
+            }
             id="headline-input"
             placeholder="Welcome Headline"
             value={appDesignProperties.welcomeScreenInfo.welcomeScreenHeader}
-            onChange={e => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
               const newWelcomeScreenData = {
                 ...appDesignProperties.welcomeScreenInfo,
               }
@@ -104,17 +89,18 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
             multiline
             rows={2}
             rowsMax={4}
-            inputProps={{
-              style: { fontSize: '24px', width: '100%' },
-            }}
+            titleText="Main Header"
+            alternativeTextInputClassName={classes.headlineStyle}
           />
         </FormControl>
         <FormControl>
-          <SimpleTextLabel>Body Copy (maximum 250 characters)</SimpleTextLabel>
-          <SimpleTextInput
+          <TextInputWrapper
+            SimpleTextInputStyles={{ width: '100%' } as React.CSSProperties}
             id="outlined-textarea"
             value={appDesignProperties.welcomeScreenInfo.welcomeScreenBody}
-            onChange={e => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
               const newWelcomeScreenData = {
                 ...appDesignProperties.welcomeScreenInfo,
               }
@@ -133,17 +119,21 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
             rows={4}
             rowsMax={6}
             placeholder="What are the first things you want participants to know about the study."
-            inputProps={{ style: { width: '100%' }, maxLength: 250 }}
+            titleText="Body Copy (maximum 250 characters)"
+            alternativeTextInputClassName={'none'}
+            maxWordCount={250}
           />
         </FormControl>
         <FormControl>
-          <SimpleTextLabel>Salutations</SimpleTextLabel>
-          <SimpleTextInput
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="salutations"
             value={
               appDesignProperties.welcomeScreenInfo.welcomeScreenSalutation
             }
-            onChange={e => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
               const newWelcomeScreenData = {
                 ...appDesignProperties.welcomeScreenInfo,
               }
@@ -162,15 +152,17 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
             rows={2}
             rowsMax={4}
             placeholder="Thank you for your contribution"
-            inputProps={{ style: SimpleTextInputStyles }}
+            titleText="Salutations"
           />
         </FormControl>
         <FormControl>
-          <SimpleTextLabel>From</SimpleTextLabel>
-          <SimpleTextInput
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="signature-textarea"
             value={appDesignProperties.welcomeScreenInfo.welcomeScreenFromText}
-            onChange={e => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
               const newWelcomeScreenData = {
                 ...appDesignProperties.welcomeScreenInfo,
               }
@@ -189,10 +181,10 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
             rows={2}
             rowsMax={4}
             placeholder="Study team name"
-            inputProps={{ style: SimpleTextInputStyles }}
+            titleText="From"
           />
         </FormControl>
-        <Box marginTop="20px">Add optional disclaimer:</Box>
+        <Box mt={2.5}>Add optional disclaimer:</Box>
         <div className={classes.optionalDisclaimerRow}>
           <Checkbox
             checked={
@@ -220,7 +212,7 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
             diagnosis, or treatment.
           </div>
         </div>
-      </FormGroup>
+      </FormGroupWrapper>
       <Box textAlign="left">
         {saveLoader ? (
           <div className="text-center">

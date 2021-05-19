@@ -166,11 +166,10 @@ export type ColorScheme = {
 }
 
 export type BackgroundRecorders = {
-  accelGyro?: boolean
-  backgroundNoise?: boolean
-  weatherPollution?: boolean
-  passiveGaitDisplacement?: boolean
-  motion: boolean
+
+  microphone?: boolean
+  weather?: boolean
+  motion?: boolean
 }
 
 export type StudyBuilderInfo = {

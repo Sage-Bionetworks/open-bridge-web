@@ -1,33 +1,17 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Subsection from './Subsection'
-import { FormControl, FormGroup } from '@material-ui/core'
-import { StudyAppDesign } from '../../../types/types'
-import { playfairDisplayFont, poppinsFont } from '../../../style/theme'
-import {
-  SimpleTextInput,
-  SimpleTextLabel,
-} from '../../widgets/StyledComponents'
+import { FormControl } from '@material-ui/core'
+import { Contact, StudyAppDesign } from '../../../types/types'
 import { AppDesignUpdateTypes } from './AppDesign'
 import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
+import FormGroupWrapper from './FormGroupWrapper'
+import TextInputWrapper from './TextInputWrapper'
+import { ContactType } from './AppDesign'
 
 const useStyles = makeStyles(theme => ({
-  formFields: {
-    fontFamily: poppinsFont,
-    fontSize: '14px',
-    marginBottom: '24px',
-    '& .MuiFormControl-root:not(:last-child)': {
-      marginBottom: '16px',
-    },
-  },
   firstFormElement: {
     marginTop: theme.spacing(2.5),
-  },
-  informationRowStyle: {
-    fontFamily: playfairDisplayFont,
-    fontWeight: 'normal',
-    fontSize: '15px',
-    lineHeight: '18px',
   },
   principleInvestigatorsParagraph: {
     fontSize: '12px',
@@ -42,7 +26,7 @@ type StudyLeadInformationSectionProps = {
   setAppDesignProperties: Function
   updateAppDesignInfo: Function
   SimpleTextInputStyles: React.CSSProperties
-  getContact: Function
+  getContactPersonObject: (type: ContactType) => Contact
   orgMembership: string | undefined
   token: string | undefined
   irbNameSameAsInstitution: boolean
@@ -53,7 +37,7 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
   setAppDesignProperties,
   updateAppDesignInfo,
   SimpleTextInputStyles,
-  getContact,
+  getContactPersonObject,
   orgMembership,
   token,
   irbNameSameAsInstitution,
@@ -61,17 +45,19 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
   const classes = useStyles()
   return (
     <Subsection heading="Information about the Study Leads">
-      <FormGroup className={classes.formFields}>
+      <FormGroupWrapper>
         <FormControl className={classes.firstFormElement}>
           <LeadInvestigatorDropdown
             orgMembership={orgMembership!}
             token={token!}
             onChange={(investigatorSelected: string) => {
-              const newStudyLead = getContact('LEAD_INVESTIGATOR')
-              newStudyLead.name = investigatorSelected
+              const newStudyLeadObject = getContactPersonObject(
+                'LEAD_INVESTIGATOR',
+              )
+              newStudyLeadObject.name = investigatorSelected
               setAppDesignProperties({
                 ...appDesignProperties,
-                leadPrincipleInvestigatorInfo: newStudyLead,
+                leadPrincipleInvestigatorInfo: newStudyLeadObject,
               })
             }}
             currentInvestigatorSelected={
@@ -93,28 +79,31 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
           </p>
         </FormControl>
         <FormControl>
-          <SimpleTextLabel htmlFor="institution-input">
-            Institutional Affiliation*
-          </SimpleTextLabel>
-          <SimpleTextInput
-            className={classes.informationRowStyle}
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="institution-input"
             placeholder="Name of Institution"
             value={
               appDesignProperties.leadPrincipleInvestigatorInfo?.affiliation ||
               ''
             }
-            onChange={e => {
-              const newStudyLead = getContact('LEAD_INVESTIGATOR')
-              newStudyLead.affiliation = e.target.value
-              const newEthicsBoard = getContact('ETHICS_BOARD')
-              newEthicsBoard.name = irbNameSameAsInstitution
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
+              const newStudyLeadObject = getContactPersonObject(
+                'LEAD_INVESTIGATOR',
+              )
+              newStudyLeadObject.affiliation = e.target.value
+              const newEthicsBoardObject = getContactPersonObject(
+                'ETHICS_BOARD',
+              )
+              newEthicsBoardObject.name = irbNameSameAsInstitution
                 ? e.target.value
-                : newEthicsBoard.name
+                : newEthicsBoardObject.name
               setAppDesignProperties({
                 ...appDesignProperties,
-                leadPrincipleInvestigatorInfo: newStudyLead,
-                ethicsBoardInfo: newEthicsBoard,
+                leadPrincipleInvestigatorInfo: newStudyLeadObject,
+                ethicsBoardInfo: newEthicsBoardObject,
               })
             }}
             onBlur={() =>
@@ -123,24 +112,23 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             multiline
             rows={1}
             rowsMax={1}
-            inputProps={{
-              style: SimpleTextInputStyles,
-            }}
+            titleText="Institutional Affiliation*"
           />
         </FormControl>
         <FormControl>
-          <SimpleTextLabel htmlFor="funder-input">Funder*</SimpleTextLabel>
-          <SimpleTextInput
-            className={classes.informationRowStyle}
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="funder-input"
             placeholder="Name of Funder(s)"
             value={appDesignProperties.funder?.name || ''}
-            onChange={e => {
-              const newFunder = getContact('FUNDER')
-              newFunder.name = e.target.value
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
+              const newFunderObject = getContactPersonObject('FUNDER')
+              newFunderObject.name = e.target.value
               setAppDesignProperties({
                 ...appDesignProperties,
-                funder: newFunder,
+                funder: newFunderObject,
               })
             }}
             onBlur={() =>
@@ -149,12 +137,10 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             multiline
             rows={1}
             rowsMax={1}
-            inputProps={{
-              style: SimpleTextInputStyles,
-            }}
+            titleText="Funder*"
           />
         </FormControl>
-      </FormGroup>
+      </FormGroupWrapper>
     </Subsection>
   )
 }
