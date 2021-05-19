@@ -2,7 +2,10 @@ import { Button, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { useState } from 'react'
 import { ThemeType } from '../../../style/theme'
-import { StudyBuilderComponentProps } from '../../../types/types'
+import { Study, StudyBuilderComponentProps } from '../../../types/types'
+import AboutStudy from './AboutStudy'
+import IrbDetails from './IrbDetails'
+import LaunchAlerts from './LaunchAlerts'
 import LaunchStepper from './LaunchStepper'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -19,49 +22,53 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 }))
 
 export interface LaunchProps {
-  id: string
+  study: Study
 }
 
 function getSteps() {
   return [
-    { label: 'Study payment' },
     { label: 'Review Alerts' },
+    { label: 'About Study' },
     { label: 'IRB Details' },
     { label: 'Study is live' },
   ]
 }
 
-function getStepContent(step: number) {
+const StepContent: React.FunctionComponent<{ step: number; study: Study }> = ({
+  step,
+  study,
+}: {
+  step: number
+  study: Study
+}) => {
   switch (step) {
     case 0:
-      return 'Study payment...'
+      return <LaunchAlerts study={study} />
     case 1:
-      return 'Review Alerts...'
+      return <AboutStudy study={study} />
     case 2:
-      return 'IRB Details...'
+      return <IrbDetails study={study} />
     case 3:
-      return 'Study is live...'
+      return <>'Study is live...'</>
 
     default:
-      return 'Unknown step'
+      return <>'Unknown step'</>
   }
 }
 
 const Launch: React.FunctionComponent<
   LaunchProps & StudyBuilderComponentProps
 > = ({
-  id,
+  study,
   onUpdate,
   hasObjectChanged,
   saveLoader,
   children,
 }: LaunchProps & StudyBuilderComponentProps) => {
-
   const classes = useStyles()
 
   const [steps, setSteps] = useState(getSteps())
   const [activeStep, setActiveStep] = React.useState(0)
-
 
   const handleNext = () => {
     const newSteps = steps.map((s, i) =>
@@ -105,7 +112,7 @@ const Launch: React.FunctionComponent<
         ) : (
           <div>
             <Typography className={classes.instructions}>
-              {getStepContent(activeStep)}
+              <StepContent study={study} step={activeStep} />
             </Typography>
             <div>
               <Button
