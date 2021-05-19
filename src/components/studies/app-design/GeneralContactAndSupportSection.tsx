@@ -1,28 +1,18 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Subsection from './Subsection'
-import { FormControl, FormGroup, Box, FormHelperText } from '@material-ui/core'
+import { FormControl, Box, FormHelperText } from '@material-ui/core'
 import { StudyAppDesign } from '../../../types/types'
-import { playfairDisplayFont, poppinsFont } from '../../../style/theme'
-import {
-  SimpleTextInput,
-  SimpleTextLabel,
-} from '../../widgets/StyledComponents'
 import { AppDesignUpdateTypes } from './AppDesign'
 import clsx from 'clsx'
 import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
 import { makePhone } from '../../../helpers/utility'
 import FormGroupWrapper from './FormGroupWrapper'
+import TextInputWrapper from './TextInputWrapper'
 
 const useStyles = makeStyles(theme => ({
   firstFormElement: {
     marginTop: theme.spacing(2.5),
-  },
-  informationRowStyle: {
-    fontFamily: playfairDisplayFont,
-    fontWeight: 'normal',
-    fontSize: '15px',
-    lineHeight: '18px',
   },
   errorText: {
     marginTop: theme.spacing(-0.5),
@@ -77,15 +67,14 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
       </Box>
       <FormGroupWrapper>
         <FormControl className={classes.firstFormElement}>
-          <SimpleTextLabel htmlFor="contact-lead-input">
-            Contact Lead*
-          </SimpleTextLabel>
-          <SimpleTextInput
-            className={classes.informationRowStyle}
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="contact-lead-input"
             placeholder="First and Last name"
             value={appDesignProperties.contactLeadInfo?.name || ''}
-            onChange={e => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
               const newContactLead = getContact('CONTACT')
               newContactLead.name = e.target.value
               setAppDesignProperties({
@@ -96,24 +85,21 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             onBlur={() =>
               updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
             }
-            multiline
+            multiline={true}
             rows={1}
             rowsMax={1}
-            inputProps={{
-              style: SimpleTextInputStyles,
-            }}
+            titleText="Contact Lead*"
           />
         </FormControl>
         <FormControl>
-          <SimpleTextLabel htmlFor="role-in-study-input">
-            Role in the Study*
-          </SimpleTextLabel>
-          <SimpleTextInput
-            className={classes.informationRowStyle}
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="role-in-study-input"
             placeholder="Title of Position"
             value={appDesignProperties.contactLeadInfo?.position || ''}
-            onChange={e => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
               const newContactLead = getContact('CONTACT')
               newContactLead.position = e.target.value
               setAppDesignProperties({
@@ -127,9 +113,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             multiline
             rows={1}
             rowsMax={1}
-            inputProps={{
-              style: SimpleTextInputStyles,
-            }}
+            titleText="Role in the Study*"
           />
         </FormControl>
         <FormControl
@@ -137,15 +121,14 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             !phoneNumberErrorState.isGeneralContactPhoneNumberValid && 'error',
           )}
         >
-          <SimpleTextLabel htmlFor="phone-number-contact-input">
-            Phone Number*
-          </SimpleTextLabel>
-          <SimpleTextInput
-            className={classes.informationRowStyle}
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="phone-number-contact-input"
             placeholder="xxx-xxx-xxxx"
             value={generalContactPhoneNumber}
-            onChange={e => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
               setGeneralContactPhoneNumber(e.target.value)
             }}
             onBlur={() => {
@@ -170,9 +153,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             multiline
             rows={1}
             rowsMax={1}
-            inputProps={{
-              style: SimpleTextInputStyles,
-            }}
+            titleText="Phone Number*"
           />
           {!phoneNumberErrorState.isGeneralContactPhoneNumberValid && (
             <FormHelperText
@@ -188,15 +169,14 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             !emailErrorState.isGeneralContactEmailValid && 'error',
           )}
         >
-          <SimpleTextLabel htmlFor="contact-email-input">
-            Email*
-          </SimpleTextLabel>
-          <SimpleTextInput
-            className={classes.informationRowStyle}
+          <TextInputWrapper
+            SimpleTextInputStyles={SimpleTextInputStyles}
             id="contact-email-input"
             placeholder="Institutional Email"
             value={appDesignProperties.contactLeadInfo?.email || ''}
-            onChange={e => {
+            onChange={(
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+            ) => {
               const newContactLead = getContact('CONTACT')
               newContactLead.email = e.target.value
               setAppDesignProperties({
@@ -220,9 +200,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             multiline
             rows={1}
             rowsMax={1}
-            inputProps={{
-              style: SimpleTextInputStyles,
-            }}
+            titleText="Email*"
           />
           {!emailErrorState.isGeneralContactEmailValid && (
             <FormHelperText
