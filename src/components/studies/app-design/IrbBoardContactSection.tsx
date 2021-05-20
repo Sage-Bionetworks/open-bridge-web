@@ -123,11 +123,13 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
               value="affiliation_same"
               control={<Radio />}
               label="Same Institutional Affiliation"
+              id="affiliation-same-radio-button"
             />
             <FormControlLabel
               value="affiliation_other"
               control={<Radio />}
               label="Other"
+              id="affiliation-other-radio-button"
             />
           </RadioGroup>
           <FormControl className={classes.irbInputFormControl}>
@@ -208,7 +210,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
           />
           {!phoneNumberErrorState.isIrbPhoneNumberValid && (
             <FormHelperText
-              id="ethics-phone-text"
+              id="ethics-phone-bad-text"
               className={classes.errorText}
             >
               phone should be in the format: xxx-xxx-xxxx
@@ -255,7 +257,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
           />
           {!emailErrorState.isIrbEmailValid && (
             <FormHelperText
-              id="ethics-email-text"
+              id="ethics-bad-email-text"
               className={classes.errorText}
             >
               email should be in a valid format such as: example@placeholder.com
