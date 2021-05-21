@@ -96,10 +96,12 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
         label={'Start'}
         variant="small"
         border={false}
-        style={{ padding: '0 16px' }}
+        style={{margin: '24px 0px 0px 0', paddingBottom: 0}}
+  
       >
         <SelectWithEnum
           value={window.startTime}
+          style={{marginLeft: 0}}
           sourceData={getDropdownItems()}
           id="from"
           onChange={e =>
@@ -115,7 +117,8 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
         label={'Expire after'}
         variant="small"
         border={false}
-        style={{ padding: '0 16px' }}
+        style={{margin: '0px 0px 8px 0', paddingBottom: 0}}
+       
       >
         <Box display="inline-flex" alignItems="center">
           <Duration
@@ -137,7 +140,8 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
         variant="small"
         isCollapseLabelSmall={true}
         border={false}
-        style={{ padding: '0 16px' }}
+        style={{margin: '0px 0px 8px 0', paddingBottom: 0}}
+ 
 
       >
         <FormControlLabel

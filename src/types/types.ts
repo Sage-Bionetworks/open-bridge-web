@@ -1,4 +1,4 @@
-import { Schedule, StartEventId } from './scheduling'
+import { Schedule, ScheduleNotification, StartEventId } from './scheduling'
 
 /* *** General Types ********************************/
 export interface StringDictionary<T> {
@@ -119,6 +119,7 @@ export type Study = {
     generateIds?: boolean
     backgroundRecorders?: BackgroundRecorders
     welcomeScreenData?: WelcomeScreenData
+    notifications?: StringDictionary<ScheduleNotification[]>
   }
   createdOn?: Date
   modifiedOn?: Date

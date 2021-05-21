@@ -10,6 +10,11 @@ export enum DWsEnum {
   W = 'weeks',
 }
 
+export enum MHDsEnum {
+  M = 'minutes',
+  H = 'hours',
+  D = 'days',
+}
 
 export enum HDsEnum {
   H = 'hours',
@@ -53,6 +58,14 @@ export type AssessmentWindow = {
   persistent?: boolean
 }
 
+export type ScheduleNotification = {
+  notifyAt:  keyof typeof NotificationFreqEnum //notifyAt
+  offset: ReminderIntervalType //remindAt
+  interval?: string //reminderPeriod?
+  allowSnooze: boolean //allowSnooze
+  messages?: NotificationMessage[] //messages
+}
+
 export type SessionSchedule = {
   delay?: string //PD
   interval?: string //PD
@@ -60,11 +73,13 @@ export type SessionSchedule = {
   performanceOrder: PerformanceOrder
   timeWindows?: AssessmentWindow[]
   assessments?: Assessment[]
-  notifyAt?: keyof typeof NotificationFreqEnum
-  remindAt?: ReminderIntervalType
-  reminderPeriod?: string //PT10M
-  allowSnooze?: boolean
-  messages?: NotificationMessage[]
+  notifyAt?: keyof typeof NotificationFreqEnum //move to notification
+  remindAt?: ReminderIntervalType //move to notification
+  reminderPeriod?: string //PT10M //move to notification
+  allowSnooze?: boolean //move to notification
+  messages?: NotificationMessage[] //move to notification
+  notifications?: ScheduleNotification[]
+ 
 }
 
 export type StudySessionGeneral = {
