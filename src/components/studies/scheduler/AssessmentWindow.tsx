@@ -7,15 +7,14 @@ import {
   Paper
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Close'
-import moment from 'moment'
 import React from 'react'
 import {
   AssessmentWindow as AssessmentWindowType, HDWMEnum
 } from '../../../types/scheduling'
-import { StringDictionary } from '../../../types/types'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
+import { getDropdownTimeItems } from './utility'
 
 
 
@@ -52,17 +51,7 @@ export interface AssessmentWindowProps {
   onDelete: Function
 }
 
-function getDropdownItems(): StringDictionary<string> {
-  const menuItems: StringDictionary<string> = {}
-  const date = moment([2021, 1, 1, 8])
-  menuItems[date.format('HH:mm')] = date.format('LT')
 
-  for (let i = 0; i < 95; i++) {
-    date.add(15, 'm')
-    menuItems[date.format('HH:mm')] = date.format('LT')
-  }
-  return menuItems
-}
 
 const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
   window,
@@ -102,7 +91,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
         <SelectWithEnum
           value={window.startTime}
           style={{marginLeft: 0}}
-          sourceData={getDropdownItems()}
+          sourceData={getDropdownTimeItems()}
           id="from"
           onChange={e =>
             onChange({

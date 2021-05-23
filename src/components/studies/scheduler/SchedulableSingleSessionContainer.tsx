@@ -1,19 +1,11 @@
-import {
-  Box,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  makeStyles,
-  Switch,
-  TextField
-} from '@material-ui/core'
+import { Box, Button, makeStyles, Switch } from '@material-ui/core'
 import _ from 'lodash'
+import moment from 'moment'
 import React, { FunctionComponent } from 'react'
 import { DEFAULT_NOTIFICATION } from '../../../services/study.service'
 import { ThemeType } from '../../../style/theme'
 import {
   AssessmentWindow as AssessmentWindowType,
-  NotificationFreqEnum,
   ScheduleNotification,
 
   //NotificationReminder,
@@ -22,45 +14,30 @@ import {
   StudySession
 } from '../../../types/scheduling'
 import SaveButton from '../../widgets/SaveButton'
-import SelectWithEnum from '../../widgets/SelectWithEnum'
 import AssessmentWindow from './AssessmentWindow'
 import EndDate from './EndDate'
+import NotificationTime from './NotificationTime'
 import NotificationWindow from './NotificationWindow'
-import ReminderNotification, {
-  NotificationReminder
-} from './ReminderNotification'
 import RepeatFrequency from './RepeatFrequency'
 import SchedulingFormSection from './SchedulingFormSection'
 import StartDate from './StartDate'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   formSection: {
-    // backgroundColor: '#acacac',
     padding: `${theme.spacing(3)}px  ${theme.spacing(4)}px 0px ${theme.spacing(
       0 /*4,*/,
     )}px`,
     textAlign: 'left',
-    // marginBottom: theme.spacing(1),
   },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
   },
-
-  smallRadio: {
-    padding: '2px 9px',
-    marginTop: '2px',
-  },
-  multilineBodyText: {
-    backgroundColor: theme.palette.common.white,
-    '& textarea': {
-      backgroundColor: theme.palette.common.white,
-    },
-  },
 }))
 
 export const defaultSchedule: SessionSchedule = {
   performanceOrder: 'participant_choice',
+  timeWindows: [],
 }
 
 type SchedulableSingleSessionContainerProps = {
@@ -87,6 +64,22 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     const updateSessionSchedule = (newSession: SessionSchedule) => {
       console.log(newSession)
       onUpdateSessionSchedule(newSession)
+    }
+
+    const hasWindowLongerThan24h = () => {
+      const windows = studySession.timeWindows
+      if (!windows || windows.length == 0) {
+        return false
+      }
+      const over24 = windows.find(window => {
+        if (!window.expiration) {
+          return true
+        } else {
+          const expirationHours = moment.duration(window.expiration).hours()
+          return expirationHours > 24
+        }
+      })
+      return over24 !== undefined
     }
 
     const addNewWindow = () => {
@@ -167,18 +160,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
       }
       updateSessionSchedule(newState)
     }
-
-    const updateMessage = (options: { subject?: string; message?: string }) => {
-      const messages = schedulableSession.messages || []
-      // ALINA we only have one message right now
-      let message = messages[0] || { lang: 'en', subject: '', message: '' }
-      message = { ...message, ...options }
-      updateSessionSchedule({
-        ...schedulableSession,
-        messages: [message],
-      })
-    }
-
     return (
       <Box bgcolor="#F8F8F8" flexGrow="1" pb={2.5} pl={4}>
         <form noValidate autoComplete="off">
@@ -228,9 +209,11 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                     window={window}
                   ></AssessmentWindow>
                 ))}
-                <Button onClick={addNewWindow} variant="contained">
-                  +Add new window
-                </Button>
+                {!hasWindowLongerThan24h() && (
+                  <Button onClick={addNewWindow} variant="contained">
+                    +Add new window
+                  </Button>
+                )}
               </Box>
             </SchedulingFormSection>
             <SchedulingFormSection
@@ -266,117 +249,47 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                     <NotificationWindow
                       index={index}
                       notification={notification}
+                      isMultiday={hasWindowLongerThan24h()}
                       key={index}
                       onDelete={() => {
                         deleteNotification(index)
                       }}
                       onChange={(notification: ScheduleNotification) => {
-                        console.log('notification+')
                         updateNotification(notification, index)
                       }}
                       //window={window}
-                    ></NotificationWindow>
+                    >
+                      <NotificationTime
+                        notifyAt={notification.notifyAt}
+                        offset={notification.offset}
+                        isFollowUp={index > 0}
+                        windowStartTime={
+                          !_.isEmpty(schedulableSession.timeWindows)
+                            ? schedulableSession.timeWindows[0].startTime
+                            : undefined
+                        }
+                        isMultiday={hasWindowLongerThan24h()}
+                        onChange={e =>
+                          updateNotification(
+                            {
+                              ...notification,
+                              notifyAt: e.notifyAt,
+                              offset: e.offset,
+                            },
+                            index,
+                          )
+                        }
+                      />
+                    </NotificationWindow>
                   ),
                 )}
 
-                <Button onClick={addNewNotification} variant="contained">
-                  +Add new notification
-                </Button>
-
-                <SchedulingFormSection
-                  label={'Notify participant:'}
-                  variant="small"
-                  border={false}
-                >
-                  <SelectWithEnum
-                    value={schedulableSession.notifyAt || 'random'}
-                    style={{ marginLeft: 0 }}
-                    sourceData={NotificationFreqEnum}
-                    id="notificationfreq"
-                    onChange={e => {
-                      const n = e.target
-                        .value! as keyof typeof NotificationFreqEnum
-
-                      const newS = {
-                        ...schedulableSession,
-                        notifyAt: n,
-                      }
-                      console.log(newS.notifyAt)
-                      updateSessionSchedule(newS)
-                    }}
-                  ></SelectWithEnum>
-                </SchedulingFormSection>
-                <ReminderNotification
-                  reminder={{
-                    interval: schedulableSession.reminderPeriod,
-                    type: schedulableSession.remindAt,
-                  }}
-                  onChange={(remind: NotificationReminder) =>
-                    updateSessionSchedule({
-                      ...schedulableSession,
-                      reminderPeriod: remind.interval,
-                      remindAt: remind.type,
-                    })
-                  }
-                ></ReminderNotification>
-                <SchedulingFormSection
-                  label="Allow to snooze"
-                  isHideLabel={true}
-                  variant="small"
-                  border={false}
-                >
-                  <FormControlLabel
-                    style={{ display: 'block' }}
-                    control={
-                      <Checkbox
-                        value={schedulableSession.allowSnooze}
-                        checked={schedulableSession.allowSnooze}
-                        onChange={e =>
-                          updateSessionSchedule({
-                            ...schedulableSession,
-                            allowSnooze: e.target.checked,
-                          })
-                        }
-                      />
-                    }
-                    label="Allow participant to snooze"
-                  />
-                </SchedulingFormSection>
-                <SchedulingFormSection
-                  label={'Subject line:'}
-                  variant="small"
-                  border={false}
-                >
-                  <TextField
-                    color="secondary"
-                    multiline={false}
-                    fullWidth={true}
-                    variant="outlined"
-                    defaultValue={
-                      _.first(schedulableSession.messages)?.subject || ''
-                    }
-                    onBlur={e => updateMessage({ subject: e.target.value })}
-                  ></TextField>
-                </SchedulingFormSection>
-
-                <SchedulingFormSection
-                  label={'Body text (40 character limit)'}
-                  variant="small"
-                  border={false}
-                >
-                  <TextField
-                    color="secondary"
-                    multiline={true}
-                    fullWidth={true}
-                    variant="outlined"
-                    rows="3"
-                    classes={{ root: classes.multilineBodyText }}
-                    defaultValue={
-                      _.first(schedulableSession.messages)?.message || ''
-                    }
-                    onBlur={e => updateMessage({ message: e.target.value })}
-                  ></TextField>
-                </SchedulingFormSection>
+                {!schedulableSession.notifications ||
+                  (schedulableSession.notifications.length < 2 && (
+                    <Button onClick={addNewNotification} variant="contained">
+                      +Add new notification
+                    </Button>
+                  ))}
               </Box>
             </SchedulingFormSection>
           </Box>

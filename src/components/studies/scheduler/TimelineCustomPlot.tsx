@@ -94,10 +94,6 @@ type TimelineScheduleItem = {
   refGuid: string
   assessments?: any[]
 }
-/*interface CatInfo {
-  numb: number;
-
-}*/
 
 export type TimelineZoomLevel = 'Daily' | 'Weekly' | 'Monthly' | 'Quarterly'
 
@@ -185,7 +181,7 @@ function getSingleSessionDayX(
 
      const expiration = i.expiration? i.expiration: `P${scheduleLength}D`
 
-      const period =expiration[expiration.length - 1] as
+    /*  const period =expiration[expiration.length - 1] as
         | 'D'
         | 'M'
         | 'H'
@@ -201,7 +197,8 @@ function getSingleSessionDayX(
         W: 1 / 7,
       }
 
-      let expire = (parseInt(num) * 1) / lookup[period]
+      let expire = (parseInt(num) * 1) / lookup[period]*/
+      let expire = moment.duration(expiration).days()
 
       if (!i.expiration) {
         expire= expire -fractionOfDay

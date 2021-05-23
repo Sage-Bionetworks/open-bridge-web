@@ -26,9 +26,9 @@ const StudyService = {
 
 export const DEFAULT_NOTIFICATION: ScheduleNotification = {
   
-    notifyAt: 'start_of_window',
-    offset: 'after_window_start',
-    interval: 'P1D',
+    notifyAt: 'START_OF_WINDOW',
+    offset: undefined,
+    interval: undefined,
     allowSnooze: true,
     messages: [
       { subject: 'New Activities are Live', message: 'Please complete' },
@@ -232,9 +232,12 @@ async function getStudySchedule(
     return undefined
   }
 
+  if (study.clientData.notifications) {
+
   schedule.data.sessions.forEach(s=> {
     s.notifications= study.clientData.notifications![s.guid!] || []
   })
+}
   //end of temporary
   return schedule ? addAssessmentResourcesToSchedule(schedule.data) : undefined
 }
