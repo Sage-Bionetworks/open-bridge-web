@@ -31,9 +31,7 @@ import StartDate from './StartDate'
 const useStyles = makeStyles((theme: ThemeType) => ({
   formSection: {
     // backgroundColor: '#acacac',
-    padding: `${theme.spacing(3)}px  ${theme.spacing(4)}px 0px ${theme.spacing(
-      0 /*4,*/,
-    )}px`,
+    padding: theme.spacing(2, 4, 0),
     textAlign: 'left',
     // marginBottom: theme.spacing(1),
   },
@@ -140,6 +138,11 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
   return (
     <Box bgcolor="#F8F8F8" flexGrow="1" pb={2.5} pl={4}>
+      {sessionErrorState && (
+        <Box mt={4}>
+          {studySession.name} Session error message should go here
+        </Box>
+      )}
       <form noValidate autoComplete="off">
         <Box className={classes.formSection}>
           <StartDate
@@ -171,6 +174,12 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         </Box>
 
         <Box className={classes.formSection}>
+          {sessionErrorState &&
+            sessionErrorState.sessionWindowErrors.size > 0 && (
+              <Box mb={3}>
+                Session {studySession.name} Error message should go here
+              </Box>
+            )}
           <SchedulingFormSection label="Session Window:">
             <Box flexGrow={1}>
               {schedulableSession.timeWindows?.map((window, index) => (
