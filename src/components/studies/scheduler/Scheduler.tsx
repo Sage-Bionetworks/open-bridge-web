@@ -4,7 +4,7 @@ import {
   createStyles,
   FormControlLabel,
   makeStyles,
-  Theme
+  Theme,
 } from '@material-ui/core'
 import SaveIcon from '@material-ui/icons/Save'
 import _ from 'lodash'
@@ -17,7 +17,7 @@ import {
   Schedule,
   SessionSchedule,
   StartEventId,
-  StudySession
+  StudySession,
 } from '../../../types/scheduling'
 import { StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
@@ -28,7 +28,7 @@ import Duration from './Duration'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
-  SessionScheduleAction
+  SessionScheduleAction,
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import Timeline from './Timeline'
@@ -72,6 +72,7 @@ type SchedulerProps = {
   version?: number
   token: string
   onSave: Function
+  errors: string[]
 }
 
 const Scheduler: FunctionComponent<
@@ -84,14 +85,56 @@ const Scheduler: FunctionComponent<
   onSave,
   children,
   token,
-  version
+  version,
+  errors,
 }: SchedulerProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
 
   const [schedule, setSchedule] = React.useState({ ..._schedule })
-console.log('%c ---scheduler update--'+version, 'color: red' )
+  console.log('%c ---scheduler update--' + version, 'color: red')
 
+  const [schedulerErrorState, setSchedulerErrorState] = React.useState(
+    new Map<
+      string,
+      {
+        generalErrorMessage: string
+        sessionWindowErrors: Map<number, string>
+      }
+    >(),
+  )
 
+  React.useEffect(() => {
+    const newErrorState = new Map()
+    for (const error of errors) {
+      const errorInfo = error.split(' ')
+      if (errorInfo.length < 2) continue
+      const sessionKey = errorInfo[0]
+      const windowNumber = errorInfo[1].startsWith('Window')
+        ? parseInt(errorInfo[1].substring(errorInfo[1].length - 1))
+        : -1
+      const errorMessage = errorInfo[errorInfo.length - 1]
+      if (newErrorState.has(sessionKey)) {
+        const currentErrorState = newErrorState.get(sessionKey)
+        if (windowNumber === -1) {
+          currentErrorState!.generalErrorMessage = errorMessage
+        } else {
+          currentErrorState?.sessionWindowErrors.set(windowNumber, errorMessage)
+        }
+      } else {
+        const errorInfoToAdd = {
+          generalErrorMessage: '',
+          sessionWindowErrors: new Map<number, string>(),
+        }
+        if (windowNumber === -1) {
+          errorInfoToAdd!.generalErrorMessage = errorMessage
+        } else {
+          errorInfoToAdd?.sessionWindowErrors.set(windowNumber, errorMessage)
+        }
+        newErrorState.set(sessionKey, errorInfoToAdd)
+      }
+    }
+    setSchedulerErrorState(newErrorState)
+  }, [errors])
 
   const getStartEventIdFromSchedule = (
     schedule: Schedule,
@@ -146,7 +189,7 @@ console.log('%c ---scheduler update--'+version, 'color: red' )
   }
 
   return (
-    <>
+    <Box>
       <Loader reqStatusLoading={saveLoader} key="loader"></Loader>
       <NavigationPrompt when={hasObjectChanged} key="prompt">
         {({ onConfirm, onCancel }) => (
@@ -160,7 +203,7 @@ console.log('%c ---scheduler update--'+version, 'color: red' )
       </NavigationPrompt>
 
       <Box textAlign="left" key="content">
-        {/*<ObjectDebug data={timeline} label=""></ObjectDebug>*/}
+        {/* <ObjectDebug data={timeline} label=""></ObjectDebug> */}
         <div className={classes.scheduleHeader} key="intro">
           <FormControlLabel
             classes={{ label: classes.labelDuration }}
@@ -191,7 +234,11 @@ console.log('%c ---scheduler update--'+version, 'color: red' )
           )}
         </div>
         <Box bgcolor="#fff" p={2} mt={3} key="scheduler">
-          <Timeline token={token} version = {version!} schedule={schedule}></Timeline>
+          <Timeline
+            token={token}
+            version={version!}
+            schedule={schedule}
+          ></Timeline>
           <div className={classes.studyStartDateContainer}>
             <StudyStartDate
               style={{
@@ -229,7 +276,7 @@ console.log('%c ---scheduler update--'+version, 'color: red' )
                   performanceOrder={session.performanceOrder || 'sequential'}
                 />
               </Box>
-
+              {/* This is what is being displayed as the card */}
               <SchedulableSingleSessionContainer
                 key={session.guid}
                 studySession={session}
@@ -240,6 +287,9 @@ console.log('%c ---scheduler update--'+version, 'color: red' )
                     payload: { sessionId: session.guid!, schedule },
                   })
                 }}
+                sessionErrorState={schedulerErrorState.get(
+                  `${session.name}-${index + 1}`,
+                )}
               ></SchedulableSingleSessionContainer>
             </Box>
           ))}
@@ -247,7 +297,7 @@ console.log('%c ---scheduler update--'+version, 'color: red' )
 
         {children}
       </Box>
-    </>
+    </Box>
   )
 }
 

@@ -4,7 +4,7 @@ import {
   Checkbox,
   FormControlLabel,
   makeStyles,
-  TextField
+  TextField,
 } from '@material-ui/core'
 import _ from 'lodash'
 import React, { FunctionComponent } from 'react'
@@ -16,14 +16,14 @@ import {
   //NotificationReminder,
   //Reoccurence as ReoccurenceType,
   SessionSchedule,
-  StudySession
+  StudySession,
 } from '../../../types/scheduling'
 import SaveButton from '../../widgets/SaveButton'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import AssessmentWindow from './AssessmentWindow'
 import EndDate from './EndDate'
 import ReminderNotification, {
-  NotificationReminder
+  NotificationReminder,
 } from './ReminderNotification'
 import RepeatFrequency from './RepeatFrequency'
 import SchedulingFormSection from './SchedulingFormSection'
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   formSection: {
     // backgroundColor: '#acacac',
     padding: `${theme.spacing(3)}px  ${theme.spacing(4)}px 0px ${theme.spacing(
-      0/*4,*/
+      0 /*4,*/,
     )}px`,
     textAlign: 'left',
     // marginBottom: theme.spacing(1),
@@ -63,12 +63,19 @@ type SchedulableSingleSessionContainerProps = {
   studySession: StudySession
   onUpdateSessionSchedule: Function
   onSaveSessionSchedule: Function
+  sessionErrorState:
+    | {
+        generalErrorMessage: string
+        sessionWindowErrors: Map<number, string>
+      }
+    | undefined
 }
 
 const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSessionContainerProps> = ({
   studySession,
   onUpdateSessionSchedule,
   onSaveSessionSchedule,
+  sessionErrorState,
 }: SchedulableSingleSessionContainerProps) => {
   const classes = useStyles()
 
@@ -90,7 +97,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     const newState = { ...schedulableSession }
     let aWindow = {
       startTime: '08:00',
- 
     }
     newState.timeWindows
       ? newState.timeWindows.push(aWindow)
@@ -134,7 +140,13 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   }
 
   return (
-    <Box bgcolor="#F8F8F8" flexGrow="1" pb={2.5} pl={4}>
+    <Box
+      bgcolor="#F8F8F8"
+      flexGrow="1"
+      pb={2.5}
+      pl={4}
+      border={sessionErrorState?.generalErrorMessage ? '1px solid red' : ''}
+    >
       <form noValidate autoComplete="off">
         <Box className={classes.formSection}>
           <StartDate
@@ -180,6 +192,9 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                     updateWindow(window, index)
                   }
                   window={window}
+                  errorText={
+                    sessionErrorState?.sessionWindowErrors.get(index + 1) || ''
+                  }
                 ></AssessmentWindow>
               ))}
               <Button onClick={addNewWindow} variant="contained">
@@ -202,12 +217,12 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   onChange={e => {
                     const n = e.target
                       .value! as keyof typeof NotificationFreqEnum
-                      alert(n)
-                      const newS = {
-                        ...schedulableSession,
-                        notifyAt: n,
-                      }
-                      console.log(newS.notifyAt)
+                    alert(n)
+                    const newS = {
+                      ...schedulableSession,
+                      notifyAt: n,
+                    }
+                    console.log(newS.notifyAt)
                     updateSessionSchedule(newS)
                   }}
                 ></SelectWithEnum>
@@ -285,9 +300,8 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               </SchedulingFormSection>
             </Box>
           </SchedulingFormSection>
-     
         </Box>
-        <SaveButton   onClick={() => onSaveSessionSchedule()}></SaveButton>
+        <SaveButton onClick={() => onSaveSessionSchedule()}></SaveButton>
       </form>
     </Box>
   )

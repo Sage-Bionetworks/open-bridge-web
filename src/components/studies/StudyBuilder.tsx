@@ -10,7 +10,7 @@ import { useUserSessionDataState } from '../../helpers/AuthContext'
 import {
   StudyInfoData,
   useStudyInfoDataDispatch,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
 import { setBodyClass } from '../../helpers/utility'
 import AssessmentService from '../../services/assessment.service'
@@ -21,7 +21,7 @@ import {
   Assessment,
   BackgroundRecorders,
   StringDictionary,
-  Study
+  Study,
 } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
@@ -94,11 +94,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ...otherProps
 }) => {
   const classes = useStyles()
-  let { id, section: _section } =
-    useParams<{
-      id: string
-      section: StudySection
-    }>()
+  let { id, section: _section } = useParams<{
+    id: string
+    section: StudySection
+  }>()
   const [section, setSection] = React.useState(_section)
   const [error, setError] = React.useState<string[]>([])
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
@@ -213,7 +212,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       })
       setHasObjectChanged(false)
     } catch (e) {
-      console.log(e)
+      console.log(e, 'error')
       const entity = e.entity
       const errors = e.errors
       const ks = Object.keys(errors)
@@ -229,7 +228,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           windowIndex = _.first(keyArr[1]?.match(numberPattern))
         }
         const errorType = keyArr[keyArr.length - 1]
-
         const errorMessage = errors[key]
           .map((error: string) => error.replace(key, ''))
           .join(',')
@@ -237,10 +235,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         const sessionName = sessionIndex
           ? entity.sessions[sessionIndex[0]].name
           : ''
-        const finalError = `${sessionName}${
+        const finalError = `${sessionName}-${sessionIndex ? parseInt(sessionIndex) + 1 : 0}${
           windowIndex ? ' Window' + (parseInt(windowIndex) + 1) : ''
-        }: ${errorType} ${errorMessage}`
-        console.log(finalError)
+        } ${errorType} ${errorMessage}`
+        // console.log(sessionName, 'this is the name of the session')
+        // console.log(finalError, 'final error')
+        // console.log('current error', error)
         setError(prev => [...prev, finalError])
       })
       // displayError(e.errors)
@@ -410,6 +410,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                             schedule: schedule,
                           })
                         }}
+                        errors={error}
                       >
                         {navButtons}
                       </Scheduler>
