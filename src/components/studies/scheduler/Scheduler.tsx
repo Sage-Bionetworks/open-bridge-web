@@ -10,7 +10,7 @@ import SaveIcon from '@material-ui/icons/Save'
 import _ from 'lodash'
 import React, { FunctionComponent } from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { poppinsFont } from '../../../style/theme'
+import { poppinsFont, theme } from '../../../style/theme'
 import {
   DWsEnum,
   PerformanceOrder,
@@ -256,9 +256,17 @@ const Scheduler: FunctionComponent<
               }}
             />
           </div>
-
           {schedule.sessions.map((session, index) => (
-            <Box mb={2} display="flex" key={session.guid}>
+            <Box
+              mb={2}
+              display="flex"
+              key={session.guid}
+              border={
+                schedulerErrorState.get(`${session.name}-${index + 1}`)
+                  ? `1px solid ${theme.palette.error.main}`
+                  : ''
+              }
+            >
               <Box className={classes.assessments}>
                 <AssessmentList
                   studySessionIndex={index}
