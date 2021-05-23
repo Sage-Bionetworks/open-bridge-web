@@ -3,8 +3,9 @@ import {
   FormControlLabel,
   InputBase,
   InputLabel,
-  Select
+  Select,
 } from '@material-ui/core'
+import Alert from '@material-ui/lab/Alert'
 import { withStyles } from '@material-ui/core/styles'
 import { latoFont, poppinsFont } from '../../style/theme'
 
@@ -163,3 +164,5 @@ export const FormControlLabelHidden = withStyles(theme => ({
     },
   },
 }))(FormControlLabel)
+
+export const AlertWithText = withStyles(theme => ({}))(Alert)

@@ -27,6 +27,7 @@ import ReminderNotification, {
 import RepeatFrequency from './RepeatFrequency'
 import SchedulingFormSection from './SchedulingFormSection'
 import StartDate from './StartDate'
+import { AlertWithText } from '../../widgets/StyledComponents'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   formSection: {
@@ -68,6 +69,11 @@ type SchedulableSingleSessionContainerProps = {
     | undefined
 }
 
+type windowErrorArrayType = {
+  windowName: string
+  windowError: string
+}
+
 const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSessionContainerProps> = ({
   studySession,
   onUpdateSessionSchedule,
@@ -81,9 +87,26 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     setSchedulableSession,
   ] = React.useState<SessionSchedule>(studySession || defaultSchedule)
 
+  const [windowErrors, setWindowErrors] = React.useState<
+    windowErrorArrayType[]
+  >([])
+
   React.useEffect(() => {
     setSchedulableSession(studySession || defaultSchedule)
   }, [studySession])
+
+  React.useEffect(() => {
+    if (!sessionErrorState || sessionErrorState.sessionWindowErrors.size == 0)
+      return
+    const windowErrorsArray: windowErrorArrayType[] = []
+    sessionErrorState.sessionWindowErrors.forEach((el, key) => {
+      windowErrorsArray.push({
+        windowName: 'window ' + key,
+        windowError: el,
+      })
+    })
+    setWindowErrors(windowErrorsArray)
+  }, [sessionErrorState?.sessionWindowErrors])
 
   const updateSessionSchedule = (newSession: SessionSchedule) => {
     console.log(newSession)
@@ -138,10 +161,10 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
   return (
     <Box bgcolor="#F8F8F8" flexGrow="1" pb={2.5} pl={4}>
-      {sessionErrorState && (
-        <Box mt={4}>
-          {studySession.name} Session error message should go here
-        </Box>
+      {sessionErrorState && sessionErrorState.generalErrorMessage && (
+        <AlertWithText style={{ marginTop: '32px' }} severity="error">
+          {`${studySession.name} ${sessionErrorState.generalErrorMessage}`}
+        </AlertWithText>
       )}
       <form noValidate autoComplete="off">
         <Box className={classes.formSection}>
@@ -174,12 +197,18 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         </Box>
 
         <Box className={classes.formSection}>
-          {sessionErrorState &&
-            sessionErrorState.sessionWindowErrors.size > 0 && (
-              <Box mb={3}>
-                Session {studySession.name} Error message should go here
-              </Box>
-            )}
+          {windowErrors.length > 0 && (
+            <Box mb={3}>
+              {windowErrors.map((el, index) => {
+                return (
+                  <AlertWithText severity="error" key={index}>
+                    Session {studySession.name} in,{' '}
+                    {`${el.windowName}: ${el.windowError}`}
+                  </AlertWithText>
+                )
+              })}
+            </Box>
+          )}
           <SchedulingFormSection label="Session Window:">
             <Box flexGrow={1}>
               {schedulableSession.timeWindows?.map((window, index) => (
