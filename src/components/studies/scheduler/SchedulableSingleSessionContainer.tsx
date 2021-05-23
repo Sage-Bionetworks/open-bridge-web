@@ -8,11 +8,10 @@ import {
 } from '@material-ui/core'
 import _ from 'lodash'
 import React, { FunctionComponent } from 'react'
-import { ThemeType } from '../../../style/theme'
+import { ThemeType, theme } from '../../../style/theme'
 import {
   AssessmentWindow as AssessmentWindowType,
   NotificationFreqEnum,
-
   //NotificationReminder,
   //Reoccurence as ReoccurenceType,
   SessionSchedule,
@@ -145,7 +144,11 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
       flexGrow="1"
       pb={2.5}
       pl={4}
-      border={sessionErrorState?.generalErrorMessage ? '1px solid red' : ''}
+      border={
+        sessionErrorState?.generalErrorMessage
+          ? `1px solid ${theme.palette.error.main}`
+          : ''
+      }
     >
       <form noValidate autoComplete="off">
         <Box className={classes.formSection}>

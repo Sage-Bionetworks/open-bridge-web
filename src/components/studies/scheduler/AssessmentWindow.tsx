@@ -17,6 +17,7 @@ import { StringDictionary } from '../../../types/types'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
+import { theme } from '../../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -74,7 +75,9 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
   return (
     <Paper
       className={classes.root}
-      style={{ border: errorText ? '1px solid red' : '' }}
+      style={{
+        border: errorText ? `1px solid ${theme.palette.error.main}` : '',
+      }}
       elevation={2}
     >
       <Box position="relative">
