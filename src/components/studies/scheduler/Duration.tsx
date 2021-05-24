@@ -1,8 +1,26 @@
-import { Button, StandardTextFieldProps } from '@material-ui/core'
+import {
+  IconButton,
+  makeStyles,
+  StandardTextFieldProps
+} from '@material-ui/core'
+import ClearIcon from '@material-ui/icons/HighlightOff'
 import moment from 'moment'
 import React from 'react'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import SmallTextBox from '../../widgets/SmallTextBox'
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  clear: {
+    minWidth: 'auto',
+    padding: 0,
+    marginRight: theme.spacing(1),
+    marginLeft: theme.spacing(-0.75),
+  },
+}))
 
 export interface DurationProps {
   onChange: Function
@@ -24,6 +42,7 @@ const Duration: React.FunctionComponent<
   isIntro,
   ...props
 }: DurationProps) => {
+  const classes = useStyles()
   const [unt, setUnit] = React.useState<string | undefined>(undefined)
   const [num, setNum] = React.useState<number | undefined>(undefined)
 
@@ -72,7 +91,7 @@ const Duration: React.FunctionComponent<
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
+    <div className={classes.root}>
       <SmallTextBox
         value={num || ''}
         aria-label={numberLabel}
@@ -96,9 +115,12 @@ const Duration: React.FunctionComponent<
         }
         style={isIntro ? { width: '100px' } : undefined}
       ></SelectWithEnum>
-      <Button onClick={_e => onChange({ target: { value: undefined } })} style={{ minWidth: 'auto'}}>
-        Clear
-      </Button>
+      <IconButton
+        className={classes.clear}
+        onClick={_e => onChange({ target: { value: undefined } })}
+      >
+        <ClearIcon />
+      </IconButton>
     </div>
   )
 }

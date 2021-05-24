@@ -1,12 +1,11 @@
 import {
   Box,
-  Button,
+
   createStyles,
   FormControlLabel,
   makeStyles,
   Theme,
 } from '@material-ui/core'
-import SaveIcon from '@material-ui/icons/Save'
 import _ from 'lodash'
 import React, { FunctionComponent } from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
@@ -23,6 +22,7 @@ import { StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
 import Loader from '../../widgets/Loader'
+import SaveButton from '../../widgets/SaveButton'
 import AssessmentList from './AssessmentList'
 import Duration from './Duration'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
@@ -223,14 +223,7 @@ const Scheduler: FunctionComponent<
             }
           />
           {hasObjectChanged && (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => onSave()}
-              startIcon={<SaveIcon />}
-            >
-              Save changes
-            </Button>
+            <SaveButton onClick={() => onSave()}>Save changes</SaveButton>
           )}
         </div>
         <Box bgcolor="#fff" p={2} mt={3} key="scheduler">

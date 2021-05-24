@@ -56,7 +56,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
   style,
   children,
 }: StudyStartDateProps) => {
-  const options: StartEventId[] = ['activities_retrieved', 'study_start_date']
+  const options: StartEventId[] = ['timeline_retrieved', 'study_start_date']
   const classes = useStyles()
   const label = isIntro && children ? children : 'Define Day 1 of the study'
 

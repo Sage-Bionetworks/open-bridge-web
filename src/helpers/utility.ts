@@ -254,3 +254,4 @@ export const setBodyClass = (next?: string) => {
     window.document.body.classList.remove('whiteBg')
   }
 }
+
