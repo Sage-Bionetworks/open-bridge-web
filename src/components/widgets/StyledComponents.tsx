@@ -165,4 +165,13 @@ export const FormControlLabelHidden = withStyles(theme => ({
   },
 }))(FormControlLabel)
 
-export const AlertWithText = withStyles(theme => ({}))(Alert)
+export const AlertWithText = withStyles(theme => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    color: theme.palette.error.main,
+    backgroundColor: 'transparent',
+    fontSize: '15px',
+  },
+}))(Alert)

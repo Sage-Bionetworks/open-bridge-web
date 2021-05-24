@@ -28,6 +28,7 @@ import RepeatFrequency from './RepeatFrequency'
 import SchedulingFormSection from './SchedulingFormSection'
 import StartDate from './StartDate'
 import { AlertWithText } from '../../widgets/StyledComponents'
+import Alert_Icon from '../../../assets/alert_icon.svg'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   formSection: {
@@ -50,6 +51,10 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     '& textarea': {
       backgroundColor: theme.palette.common.white,
     },
+  },
+  firstAlertStyling: {
+    marginTop: theme.spacing(4),
+    marginLeft: theme.spacing(2),
   },
 }))
 
@@ -162,7 +167,11 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   return (
     <Box bgcolor="#F8F8F8" flexGrow="1" pb={2.5} pl={4}>
       {sessionErrorState && sessionErrorState.generalErrorMessage && (
-        <AlertWithText style={{ marginTop: '32px' }} severity="error">
+        <AlertWithText
+          icon={<img src={Alert_Icon} style={{ height: '20px' }}></img>}
+          className={classes.firstAlertStyling}
+          severity="error"
+        >
           {`${studySession.name} ${sessionErrorState.generalErrorMessage}`}
         </AlertWithText>
       )}
@@ -201,7 +210,13 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
             <Box mb={3}>
               {windowErrors.map((el, index) => {
                 return (
-                  <AlertWithText severity="error" key={index}>
+                  <AlertWithText
+                    severity="error"
+                    icon={
+                      <img src={Alert_Icon} style={{ height: '20px' }}></img>
+                    }
+                    key={index}
+                  >
                     Session {studySession.name} in,{' '}
                     {`${el.windowName}: ${el.windowError}`}
                   </AlertWithText>
