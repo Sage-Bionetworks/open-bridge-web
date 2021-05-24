@@ -1,4 +1,4 @@
-import { Box, Button, makeStyles, Switch } from '@material-ui/core'
+import { Box, makeStyles, Switch } from '@material-ui/core'
 import _ from 'lodash'
 import moment from 'moment'
 import React, { FunctionComponent } from 'react'
@@ -14,6 +14,7 @@ import {
   StudySession
 } from '../../../types/scheduling'
 import SaveButton from '../../widgets/SaveButton'
+import { BlueButton } from '../../widgets/StyledComponents'
 import AssessmentWindow from './AssessmentWindow'
 import EndDate from './EndDate'
 import NotificationTime from './NotificationTime'
@@ -210,9 +211,9 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   ></AssessmentWindow>
                 ))}
                 {!hasWindowLongerThan24h() && (
-                  <Button onClick={addNewWindow} variant="contained">
+                  <BlueButton onClick={addNewWindow} variant="contained">
                     +Add new window
-                  </Button>
+                  </BlueButton>
                 )}
               </Box>
             </SchedulingFormSection>
@@ -286,9 +287,9 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
                 {!schedulableSession.notifications ||
                   (schedulableSession.notifications.length < 2 && (
-                    <Button onClick={addNewNotification} variant="contained">
+                    <BlueButton onClick={addNewNotification} variant="contained">
                       +Add new notification
-                    </Button>
+                    </BlueButton>
                   ))}
               </Box>
             </SchedulingFormSection>
