@@ -247,7 +247,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
         <Box className={classes.formSection}>
           {windowErrors.length > 0 && (
-            <Box mb={3}>
+            <Box mb={3} ml={-2}>
               {windowErrors.map((el, index) => {
                 return (
                   <AlertWithText
