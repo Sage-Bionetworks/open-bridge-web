@@ -257,7 +257,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                     }
                     key={index}
                   >
-                    Session {studySession.name} in,{' '}
+                    Session {studySession.name} in{' '}
                     {`${el.windowName}: ${el.windowError}`}
                   </AlertWithText>
                 )
