@@ -96,7 +96,7 @@ const Scheduler: FunctionComponent<
     new Map<
       string,
       {
-        generalErrorMessage: string
+        generalErrorMessage: string[]
         sessionWindowErrors: Map<number, string>
       }
     >(),
@@ -117,17 +117,18 @@ const Scheduler: FunctionComponent<
       if (newErrorState.has(sessionKey)) {
         const currentErrorState = newErrorState.get(sessionKey)
         if (windowNumber === -1) {
-          currentErrorState!.generalErrorMessage = errorMessage
+          currentErrorState!.generalErrorMessage.push(errorMessage)
         } else {
           currentErrorState?.sessionWindowErrors.set(windowNumber, errorMessage)
         }
       } else {
+        const generalErrors: string[] = []
         const errorInfoToAdd = {
-          generalErrorMessage: '',
+          generalErrorMessage: generalErrors,
           sessionWindowErrors: new Map<number, string>(),
         }
         if (windowNumber === -1) {
-          errorInfoToAdd!.generalErrorMessage = errorMessage
+          errorInfoToAdd!.generalErrorMessage.push(errorMessage)
         } else {
           errorInfoToAdd?.sessionWindowErrors.set(windowNumber, errorMessage)
         }

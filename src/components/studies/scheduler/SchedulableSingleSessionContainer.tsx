@@ -59,7 +59,7 @@ type SchedulableSingleSessionContainerProps = {
   onSaveSessionSchedule: Function
   sessionErrorState:
     | {
-        generalErrorMessage: string
+        generalErrorMessage: string[]
         sessionWindowErrors: Map<number, string>
       }
     | undefined
@@ -92,8 +92,10 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   }, [studySession])
 
   React.useEffect(() => {
-    if (!sessionErrorState || sessionErrorState.sessionWindowErrors.size == 0)
+    if (!sessionErrorState || sessionErrorState.sessionWindowErrors.size == 0) {
+      setWindowErrors([])
       return
+    }
     const windowErrorsArray: windowErrorArrayType[] = []
     sessionErrorState.sessionWindowErrors.forEach((el, key) => {
       windowErrorsArray.push({
@@ -206,14 +208,20 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
   return (
     <Box bgcolor="#F8F8F8" flexGrow="1" pb={2.5} pl={4}>
-      {sessionErrorState && sessionErrorState.generalErrorMessage && (
-        <AlertWithText
-          icon={<img src={Alert_Icon} style={{ height: '20px' }}></img>}
-          className={classes.firstAlertStyling}
-          severity="error"
-        >
-          {`${studySession.name} ${sessionErrorState.generalErrorMessage}`}
-        </AlertWithText>
+      {sessionErrorState && sessionErrorState.generalErrorMessage.length > 0 && (
+        <Box className={classes.firstAlertStyling}>
+          {sessionErrorState.generalErrorMessage.map((el, index) => {
+            return (
+              <AlertWithText
+                key={index}
+                icon={<img src={Alert_Icon} style={{ height: '20px' }}></img>}
+                severity="error"
+              >
+                {`${studySession.name} ${sessionErrorState.generalErrorMessage[index]}`}
+              </AlertWithText>
+            )
+          })}
+        </Box>
       )}
       <form noValidate autoComplete="off">
         <Box className={classes.formSection}>
