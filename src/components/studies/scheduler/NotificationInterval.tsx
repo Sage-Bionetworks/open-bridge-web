@@ -20,14 +20,12 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 export interface NotificationIntervalProps {
-  // reminder: NotificationReminder
   repeatInterval?: string
   onChange: (interval: string | undefined) => void
 }
 
 const NotificationInterval: React.FunctionComponent<NotificationIntervalProps> =
   ({ repeatInterval, onChange }: NotificationIntervalProps) => {
-    const classes = useStyles()
     const [hasInterval, setHasInterval] = React.useState(true)
 
     return (
@@ -38,14 +36,18 @@ const NotificationInterval: React.FunctionComponent<NotificationIntervalProps> =
             control={
               <Checkbox
                 checked={hasInterval}
-                onChange={e => setHasInterval(e.target.checked)}
+                onChange={e => {
+                  if (! e.target.checked) {
+                    onChange(undefined)
+                  }
+                  setHasInterval(e.target.checked)}}
                 name="hasInterval"
                 color="primary"
               />
             }
             label="Repeat:"
           />
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+        {hasInterval &&  <div style={{ display: 'flex', alignItems: 'center' }}>
             every&nbsp;&nbsp;
             <Duration
               onChange={e => {
@@ -57,7 +59,7 @@ const NotificationInterval: React.FunctionComponent<NotificationIntervalProps> =
               unitData={MHDsEnum}
             ></Duration>
             until Session expires
-          </div>
+          </div>}
         </div>
       </SchedulingFormSection>
     )

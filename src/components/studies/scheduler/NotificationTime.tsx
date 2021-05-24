@@ -64,12 +64,12 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
 
     let periodMinutes = 0
     if (time) {
-      const windowStartPeriodMinutes = moment.duration(
-        `PT${windowStartTime?.replace(':', 'H')}M`,
-      ).minutes()
-      const timeOffsetPeriodMinutes = moment.duration(
-        `PT${time?.replace(':', 'H')}M`,
-      ).minutes()
+      const windowStartPeriodMinutes = moment
+        .duration(`PT${windowStartTime?.replace(':', 'H')}M`)
+        .minutes()
+      const timeOffsetPeriodMinutes = moment
+        .duration(`PT${time?.replace(':', 'H')}M`)
+        .minutes()
       periodMinutes = timeOffsetPeriodMinutes - windowStartPeriodMinutes
     }
     const durationFirstPass = moment.duration({
@@ -89,55 +89,24 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
   }
 
   React.useEffect(() => {
-    //PT26H30M
- if (offset) {
-    //const o1 = 'PT49H2M'
-    //console.log('offset+', o1)
-    // const offsetInMinutes = moment.duration(o1).asMinutes()
-    const parsedOffset = moment.duration(offset)
+    if (offset) {
+      const parsedOffset = moment.duration(offset)
 
-    /*console.log('DUR',offsetInMinutes )
-    const offsetDays = Math.floor(offsetInMinutes / (24 * 60))
-    const offsetTimeRemainingMins = offsetInMinutes % (24 * 60)
-    const offsetTimeHours = offsetTimeRemainingMins / 60
-    const offsetTimeMins = (
-      Math.round((offsetTimeHours - Math.floor(offsetTimeHours)) * 4) * 15
-    ).toString()
-    console.log(
-      `days ${offsetDays} ${Math.floor(offsetTimeHours)} ${offsetTimeMins}`,
-    )*/
-    console.log(
-      `days moment ${parsedOffset.days()} ${parsedOffset.hours()} ${
+      const roundedMinutes = (
         Math.round(parsedOffset.minutes() / 15) * 15
-      }`,
-    )
-    /*  console.log(
-      `${Math.floor(offsetTimeHours)
-        .toString()
-        .padStart(2, '0')}:${offsetTimeMins.padStart(2, '0')}`,
-    )
-    console.log('now with duration=======')
-    const iso8601Duration = "PT16H30M"*/
-
-    console.log()
-    // -> { _data: { days: 0, hours: 16, milliseconds: 0, minutes: 30, months: 0, seconds: 0, years: 0} ...
-
-    //moment.duration(iso8601Duration).asSeconds()
-    // -> 59400
-    const roundedMinutes = (Math.round(parsedOffset.minutes() / 15) * 15).toString()
-    setDaysForMultidayOffset(parsedOffset.days())
-    setTimeForMultidayOffset(
-      `${parsedOffset.hours().toString().padStart(2, '0')}:${roundedMinutes.padStart(
-        2,
-        '0',
-      )}`,
-    )
+      ).toString()
+      setDaysForMultidayOffset(parsedOffset.days())
+      setTimeForMultidayOffset(
+        `${parsedOffset
+          .hours()
+          .toString()
+          .padStart(2, '0')}:${roundedMinutes.padStart(2, '0')}`,
+      )
     }
   }, [])
 
   //--- initial notification fns ----//
   const toggleOffsetForInitialNotification = (value: string) => {
-    console.log('call', value)
     if (value === 'false') {
       onChange({ notifyAt: 'START_OF_WINDOW', offset: undefined })
       setHasOffset(false)

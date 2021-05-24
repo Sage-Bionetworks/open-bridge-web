@@ -76,24 +76,6 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
   isMultiday,
   children,
 }: NotificationWindowProps) => {
-  const [hasInterval, setHasInterval] = React.useState(false)
-
-  const changeNotificationInterval = (val: string) => {
-    setHasInterval(val === 'true')
-  }
-  /*  const changeOffsetOption = (value: string) => {
-console.log('call', value)
-    if (value==="false") {
-      console.log('changing')
-      onChange({
-        ...notification,
-        offset: undefined
-      })
-      setHasOffset(false)
-    } else {
-      setHasOffset(true)
-    }
-  }*/
   const updateMessage = (options: { subject?: string; message?: string }) => {
     const messages = notification.messages || []
     // ALINA we only have one message right now
@@ -171,7 +153,6 @@ console.log('call', value)
                 onChange({
                   ...notification,
                   interval: e,
-                  //remindAt: remind.type,
                 })
               }
             ></NotificationInterval>
