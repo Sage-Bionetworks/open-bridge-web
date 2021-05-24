@@ -252,6 +252,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         const schedule = await StudyService.getStudySchedule(
           studyFromServer?.scheduleGuid,
           token!,
+          studyFromServer.identifier //temporary to get notifications working
         )
         //@ts-ignore
         schedule!.guid = undefined

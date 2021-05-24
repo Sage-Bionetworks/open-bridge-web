@@ -10,6 +10,11 @@ export enum DWsEnum {
   W = 'weeks',
 }
 
+export enum MHDsEnum {
+  M = 'minutes',
+  H = 'hours',
+  D = 'days',
+}
 
 export enum HDsEnum {
   H = 'hours',
@@ -25,20 +30,21 @@ export enum HDWMEnum {
 
 }
 
-export enum NotificationFreqEnum {
-  'start_of_window' = 'At start of window',
-  'participant_choice' = 'Participant Choice',
-  'random' = 'Random within window',
+export enum NotificationTimeAtEnum {
+  'START_OF_WINDOW' = 'after start of window',
+  'END_OF_WINDOW' = 'before window expires',
+ 
 }
 
-export type ReminderIntervalType = 'before_window_end' | 'after_window_start'
+
+//export type ReminderIntervalType = 'before_window_end' | 'after_window_start'
 
 export type PerformanceOrder =
   | 'sequential'
   | 'randomized'
   | 'participant_choice' //done
 
-export type StartEventId = 'activities_retrieved' | 'study_start_date'
+export type StartEventId = 'timeline_retrieved' | 'study_start_date'
 
 export type NotificationMessage = {
   lang?: string
@@ -53,18 +59,36 @@ export type AssessmentWindow = {
   persistent?: boolean
 }
 
+/*Notification {
+  notifyAt: {START_OF_WINDOW, END_OF_WINDOW}
+  offset: Period (after in start, before in end)
+  interval: Period (can be minutes, hours, days)
+  allowSnooze: boolean
+  messages: List<NotificationMessage>+
+}*/
+
+export type ScheduleNotification = {
+  notifyAt:  keyof typeof NotificationTimeAtEnum //notifyAt
+  offset?: string //ReminderIntervalType //remindAt
+  interval?: string //reminderPeriod?
+  allowSnooze: boolean //allowSnooze
+  messages?: NotificationMessage[] //messages
+}
+
 export type SessionSchedule = {
   delay?: string //PD
   interval?: string //PD
   occurrences?: number
   performanceOrder: PerformanceOrder
-  timeWindows?: AssessmentWindow[]
+  timeWindows: AssessmentWindow[]
   assessments?: Assessment[]
-  notifyAt?: keyof typeof NotificationFreqEnum
-  remindAt?: ReminderIntervalType
-  reminderPeriod?: string //PT10M
-  allowSnooze?: boolean
-  messages?: NotificationMessage[]
+  notifyAt?: keyof typeof NotificationTimeAtEnum //move to notification
+  //remindAt?: ReminderIntervalType //move to notification
+  reminderPeriod?: string //PT10M //move to notification
+  allowSnooze?: boolean //move to notification
+  messages?: NotificationMessage[] //move to notification
+  notifications?: ScheduleNotification[]
+ 
 }
 
 export type StudySessionGeneral = {

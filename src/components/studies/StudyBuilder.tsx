@@ -181,6 +181,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       const savedUpdatedSchedule = await StudyService.saveStudySchedule(
         schedule,
         token,
+        builderInfo.study.identifier //this is temporary
       )
       //we have the issue that scheduler comes back from the server without assessment resources
       //so we need to copy the resources back to the new schedule object before updating.
@@ -210,6 +211,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       setData({
         ...builderInfo,
         schedule: savedUpdatedSchedule,
+        study: {...builderInfo.study, version: builderInfo.study.version+1} //temporary to get notifications working
       })
       setHasObjectChanged(false)
     } catch (e) {

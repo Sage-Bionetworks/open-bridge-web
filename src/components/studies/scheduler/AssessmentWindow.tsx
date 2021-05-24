@@ -7,15 +7,14 @@ import {
   Paper
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Close'
-import moment from 'moment'
 import React from 'react'
 import {
   AssessmentWindow as AssessmentWindowType, HDWMEnum
 } from '../../../types/scheduling'
-import { StringDictionary } from '../../../types/types'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
+import { getDropdownTimeItems } from './utility'
 
 
 
@@ -52,17 +51,7 @@ export interface AssessmentWindowProps {
   onDelete: Function
 }
 
-function getDropdownItems(): StringDictionary<string> {
-  const menuItems: StringDictionary<string> = {}
-  const date = moment([2021, 1, 1, 8])
-  menuItems[date.format('HH:mm')] = date.format('LT')
 
-  for (let i = 0; i < 95; i++) {
-    date.add(15, 'm')
-    menuItems[date.format('HH:mm')] = date.format('LT')
-  }
-  return menuItems
-}
 
 const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
   window,
@@ -96,11 +85,13 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
         label={'Start'}
         variant="small"
         border={false}
-        style={{ padding: '0 16px' }}
+        style={{margin: '24px 0px 0px 0', paddingBottom: 0}}
+  
       >
         <SelectWithEnum
           value={window.startTime}
-          sourceData={getDropdownItems()}
+          style={{marginLeft: 0}}
+          sourceData={getDropdownTimeItems()}
           id="from"
           onChange={e =>
             onChange({
@@ -115,7 +106,8 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
         label={'Expire after'}
         variant="small"
         border={false}
-        style={{ padding: '0 16px' }}
+        style={{margin: '0px 0px 8px 0', paddingBottom: 0}}
+       
       >
         <Box display="inline-flex" alignItems="center">
           <Duration
@@ -137,7 +129,8 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
         variant="small"
         isCollapseLabelSmall={true}
         border={false}
-        style={{ padding: '0 16px' }}
+        style={{margin: '0px 0px 8px 0', paddingBottom: 0}}
+ 
 
       >
         <FormControlLabel

@@ -182,6 +182,13 @@ const theme: Theme = createMuiTheme({
         },
       },
     },
+    MuiOutlinedInput: {
+      root: {borderRadius: 0, },
+      notchedOutline: {
+        borderColor:  '#6e6e6e'
+
+      }
+    },
     MuiDialogActions: {
       root: {
         padding: SPACE_UNIT * 3,

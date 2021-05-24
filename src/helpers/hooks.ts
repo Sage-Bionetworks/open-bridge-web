@@ -21,7 +21,7 @@ export const useStudyBuilderInfo = (id: string | undefined) => {
     }
     let schedule
     if (study.scheduleGuid) {
-      schedule = await StudyService.getStudySchedule(study.scheduleGuid, token!)
+      schedule = await StudyService.getStudySchedule(study.scheduleGuid, token!, study.identifier /*temporary*/)
     }
 
     return { schedule, study }

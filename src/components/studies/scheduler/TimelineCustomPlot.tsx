@@ -94,10 +94,6 @@ type TimelineScheduleItem = {
   refGuid: string
   assessments?: any[]
 }
-/*interface CatInfo {
-  numb: number;
-
-}*/
 
 export type TimelineZoomLevel = 'Daily' | 'Weekly' | 'Monthly' | 'Quarterly'
 
@@ -128,6 +124,7 @@ export interface SingleSessionPlotProps {
   zoomLevel: TimelineZoomLevel
   sessionGuid: string
   schedulingItems: TimelineScheduleItem[]
+  scheduleLength?: number
 }
 
 export interface SingleSessionLinePlotProps {
@@ -170,6 +167,7 @@ function getSingleSessionX(
 function getSingleSessionDayX(
   studySessionGuid: string,
   schedulingItems: TimelineScheduleItem[],
+  scheduleLength: number
 ): { day: number; startTime: number; expire: number }[] {
   let result: number[] = []
 
@@ -181,14 +179,16 @@ function getSingleSessionDayX(
       var stMin = startTimeAsTime.get('minutes')
       var fractionOfDay = (stHrAsMin + stMin) / (24 * 60)
 
-      const period = i.expiration[i.expiration.length - 1] as
+     const expiration = i.expiration? i.expiration: `P${scheduleLength}D`
+
+    /*  const period =expiration[expiration.length - 1] as
         | 'D'
         | 'M'
         | 'H'
         | 'W'
       const exp = ['M', 'H'].includes(period)
-        ? i.expiration.substr(2)
-        : i.expiration.substr(1)
+        ? expiration.substr(2)
+        : expiration.substr(1)
       const num = exp.substring(0, exp.length - 1)
       const lookup = {
         M: 1440,
@@ -197,8 +197,12 @@ function getSingleSessionDayX(
         W: 1 / 7,
       }
 
-      const expire = (parseInt(num) * 1) / lookup[period]
+      let expire = (parseInt(num) * 1) / lookup[period]*/
+      let expire = moment.duration(expiration).days()
 
+      if (!i.expiration) {
+        expire= expire -fractionOfDay
+      }
       return { day: i.startDay, startTime: fractionOfDay, expire: expire }
     })
 
@@ -330,9 +334,11 @@ const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   sessionGuid,
   zoomLevel,
   sessionIndex,
+  scheduleLength
 }) => {
   const classes = useStyles()
-  const sessionGraph = getSingleSessionDayX(sessionGuid, schedulingItems).map(
+  const singleSessionDayX = getSingleSessionDayX(sessionGuid, schedulingItems, scheduleLength!)
+  const sessionGraph = singleSessionDayX.map(
     i => (
       <div
         className={classes.dailyIntervalLine}
@@ -486,6 +492,7 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
                       zoomLevel={zoomLevel}
                       schedulingItems={schedulingItems}
                       sessionGuid={session.guid!}
+                      scheduleLength={scheduleLength}
                     />
                   ) : (
                     <NonDailySessionPlot
