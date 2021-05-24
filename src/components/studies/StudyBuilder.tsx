@@ -244,7 +244,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           windowIndex ? ';Window' + (parseInt(windowIndex) + 1) : ''
         };${errorType};${errorMessage}`
         setSchedulerError(prev => [...prev, finalError])
-        setError(prev => [...prev, finalError])
       })
       // displayError(e.errors)
     } finally {
