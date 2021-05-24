@@ -15,8 +15,8 @@ import {
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
-import { theme } from '../../../style/theme'
 import { getDropdownTimeItems } from './utility'
+import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -41,6 +41,9 @@ const useStyles = makeStyles(theme => ({
       fontSize: '12px',
     },
   },
+  redBorder: {
+    border: `1px solid ${theme.palette.error.main}`,
+  },
 }))
 
 export interface AssessmentWindowProps {
@@ -61,10 +64,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
   const classes = useStyles()
   return (
     <Paper
-      className={classes.root}
-      style={{
-        border: errorText ? `1px solid ${theme.palette.error.main}` : '',
-      }}
+      className={clsx(classes.root, errorText && classes.redBorder)}
       elevation={2}
     >
       <Box position="relative">
@@ -110,28 +110,6 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
               onChange={e =>
                 onChange({
                   ...window,
-                  startTime: e.target.value as string,
-                })
-              }
-              durationString={window.expiration || '    '}
-              unitLabel="Repeat Every"
-              numberLabel="frequency number"
-              unitData={HDWMEnum}
-            ></Duration>
-          </Box>
-        </SchedulingFormSection>
-        <SchedulingFormSection
-          label={''}
-          variant="small"
-          isCollapseLabelSmall={true}
-          border={false}
-          style={{ margin: '0px 0px 8px 0', paddingBottom: 0 }}
-        >
-          <Box display="inline-flex" alignItems="center">
-            <Duration
-              onChange={e =>
-                onChange({
-                  ...window,
                   expiration: e.target.value as string,
                 })
               }
@@ -147,7 +125,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
           variant="small"
           isCollapseLabelSmall={true}
           border={false}
-          style={{ padding: '0 16px' }}
+          style={{ margin: '0px 0px 8px 0', paddingBottom: 0 }}
         >
           <FormControlLabel
             style={{ alignItems: 'flex-start' }}
