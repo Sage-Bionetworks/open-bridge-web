@@ -180,7 +180,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       const savedUpdatedSchedule = await StudyService.saveStudySchedule(
         schedule,
         token,
-        builderInfo.study.identifier //this is temporary
+        builderInfo.study.identifier, //this is temporary
       )
       //we have the issue that scheduler comes back from the server without assessment resources
       //so we need to copy the resources back to the new schedule object before updating.
@@ -210,7 +210,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       setData({
         ...builderInfo,
         schedule: savedUpdatedSchedule,
-        study: {...builderInfo.study, version: builderInfo.study.version+1} //temporary to get notifications working
+        study: { ...builderInfo.study, version: builderInfo.study.version + 1 }, //temporary to get notifications working
       })
       setHasObjectChanged(false)
     } catch (e) {
@@ -237,12 +237,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         const sessionName = sessionIndex
           ? entity.sessions[sessionIndex[0]].name
           : ''
-        const finalError = `${sessionName}-${sessionIndex ? parseInt(sessionIndex) + 1 : 0}${
-          windowIndex ? ' Window' + (parseInt(windowIndex) + 1) : ''
-        } ${errorType} ${errorMessage}`
-        // console.log(sessionName, 'this is the name of the session')
-        // console.log(finalError, 'final error')
-        // console.log('current error', error)
+        const finalError = `${sessionName}-${
+          sessionIndex ? parseInt(sessionIndex) + 1 : 0
+        }${
+          windowIndex ? ';Window' + (parseInt(windowIndex) + 1) : ''
+        };${errorType};${errorMessage}`
         setError(prev => [...prev, finalError])
       })
       // displayError(e.errors)

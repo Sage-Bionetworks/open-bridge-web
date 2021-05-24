@@ -1,6 +1,5 @@
 import {
   Box,
-
   createStyles,
   FormControlLabel,
   makeStyles,
@@ -106,13 +105,15 @@ const Scheduler: FunctionComponent<
   React.useEffect(() => {
     const newErrorState = new Map()
     for (const error of errors) {
-      const errorInfo = error.split(' ')
+      const errorInfo = error.split(';')
       if (errorInfo.length < 2) continue
       const sessionKey = errorInfo[0]
       const windowNumber = errorInfo[1].startsWith('Window')
         ? parseInt(errorInfo[1].substring(errorInfo[1].length - 1))
         : -1
-      const errorMessage = errorInfo[errorInfo.length - 1]
+      const errorMessage =
+        errorInfo[errorInfo.length - 1 === 2 ? 1 : 2] +
+        errorInfo[errorInfo.length - 1]
       if (newErrorState.has(sessionKey)) {
         const currentErrorState = newErrorState.get(sessionKey)
         if (windowNumber === -1) {
