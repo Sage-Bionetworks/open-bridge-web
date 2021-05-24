@@ -164,7 +164,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
           />
           {!phoneNumberErrorState.isGeneralContactPhoneNumberValid && (
             <FormHelperText
-              id="general-contact-phone-text"
+              id="general-contact-bad-phone-text"
               className={classes.errorText}
             >
               phone should be in the format: xxx-xxx-xxxx
@@ -213,7 +213,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
           />
           {!emailErrorState.isGeneralContactEmailValid && (
             <FormHelperText
-              id="general-contact-email-text"
+              id="general-contact-bad-email-text"
               className={classes.errorText}
             >
               email should be in a valid format such as: example@placeholder.com
