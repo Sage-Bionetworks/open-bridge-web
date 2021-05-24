@@ -173,5 +173,6 @@ export const AlertWithText = withStyles(theme => ({
     color: theme.palette.error.main,
     backgroundColor: 'transparent',
     fontSize: '15px',
+    fontFamily: latoFont,
   },
 }))(Alert)
