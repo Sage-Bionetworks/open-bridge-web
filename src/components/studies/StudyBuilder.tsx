@@ -170,6 +170,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
   const saveStudySchedule = async (updatedSchedule?: Schedule) => {
     setError([])
+    setSchedulerError([])
 
     try {
       setSaveLoader(true)
@@ -243,6 +244,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           windowIndex ? ';Window' + (parseInt(windowIndex) + 1) : ''
         };${errorType};${errorMessage}`
         setSchedulerError(prev => [...prev, finalError])
+        setError(prev => [...prev, finalError])
       })
       // displayError(e.errors)
     } finally {
