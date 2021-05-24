@@ -100,12 +100,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }>()
   const [section, setSection] = React.useState(_section)
   const [error, setError] = React.useState<string[]>([])
+  const [schedulerError, setSchedulerError] = React.useState<string[]>([])
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [saveLoader, setSaveLoader] = React.useState(false)
   const { token } = useUserSessionDataState()
   const builderInfo: StudyInfoData = useStudyInfoDataState()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
-
   const [open, setOpen] = React.useState(true)
 
   const setData = (builderInfo: StudyInfoData) => {
@@ -242,7 +242,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         }${
           windowIndex ? ';Window' + (parseInt(windowIndex) + 1) : ''
         };${errorType};${errorMessage}`
-        setError(prev => [...prev, finalError])
+        setSchedulerError(prev => [...prev, finalError])
       })
       // displayError(e.errors)
     } finally {
@@ -411,7 +411,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                             schedule: schedule,
                           })
                         }}
-                        errors={error}
+                        errors={schedulerError}
                       >
                         {navButtons}
                       </Scheduler>
