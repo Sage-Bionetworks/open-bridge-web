@@ -28,20 +28,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     padding: theme.spacing(2, 4, 0),
     textAlign: 'left',
   },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  smallRadio: {
-    padding: '2px 9px',
-    marginTop: '2px',
-  },
-  multilineBodyText: {
-    backgroundColor: theme.palette.common.white,
-    '& textarea': {
-      backgroundColor: theme.palette.common.white,
-    },
-  },
   firstAlertStyling: {
     marginTop: theme.spacing(4),
     marginLeft: theme.spacing(2),
