@@ -1,37 +1,37 @@
 import { Box, Paper, Switch } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import clsx from 'clsx'
 import _ from 'lodash'
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
-import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
-import { ReactComponent as PhoneBottomImg } from '../../../assets/appdesign/phone_buttons.svg'
+import NavigationPrompt from 'react-router-navigation-prompt'
 import { ReactComponent as PhoneTopImgLeftHighlighted } from '../../../assets/appdesign/CustomizeAppTopbarLeft.svg'
 import { ReactComponent as PhoneTopImgRightHighlighted } from '../../../assets/appdesign/CustomizeAppTopbarRight.svg'
+import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
+import { ReactComponent as PhoneBottomImg } from '../../../assets/appdesign/phone_buttons.svg'
+import DefaultLogo from '../../../assets/logo_mtb.svg'
+import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import { ThemeType } from '../../../style/theme'
 import {
-  StudyBuilderComponentProps,
   Contact,
-  WelcomeScreenData,
-  StudyAppDesign,
   Study,
+  StudyAppDesign,
+  StudyBuilderComponentProps,
+  WelcomeScreenData
 } from '../../../types/types'
+import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
-import DefaultLogo from '../../../assets/logo_mtb.svg'
-import clsx from 'clsx'
-import { useUserSessionDataState } from '../../../helpers/AuthContext'
-import SectionIndicator from './SectionIndicator'
-import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
-import UploadStudyLogoSection from './UploadStudyLogoSection'
 import ColorPickerSection from './ColorPickerSection'
-import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
-import StudySummarySection from './StudySummarySection'
-import StudyLeadInformationSection from './StudyLeadInformationSection'
 import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
 import IrbBoardContactSection from './IrbBoardContactSection'
+import SectionIndicator from './SectionIndicator'
+import StudyLeadInformationSection from './StudyLeadInformationSection'
 import StudyPageBottomPhoneContent from './StudyPageBottomPhoneContent'
 import StudyPageTopPhoneContent from './StudyPageTopPhoneContent'
-import NavigationPrompt from 'react-router-navigation-prompt'
-import ConfirmationDialog from '../../widgets/ConfirmationDialog'
+import StudySummarySection from './StudySummarySection'
+import UploadStudyLogoSection from './UploadStudyLogoSection'
+import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
+import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
 
 const imgHeight = 70
 
@@ -281,10 +281,8 @@ const AppDesign: React.FunctionComponent<
 
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [
-    irbNameSameAsInstitution,
-    setIrbNameSameAsInstitution,
-  ] = useState<boolean>(true)
+  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] =
+    useState<boolean>(true)
 
   const SimpleTextInputStyles = {
     fontSize: '15px',
@@ -294,35 +292,31 @@ const AppDesign: React.FunctionComponent<
     boxSizing: 'border-box',
   } as React.CSSProperties
 
-  const [
-    appDesignProperties,
-    setAppDesignProperties,
-  ] = useState<StudyAppDesign>({
-    logo: '',
-    backgroundColor: {
-      foreground: '#6040FF',
-    },
-    welcomeScreenInfo: {
-      welcomeScreenBody: '',
-      welcomeScreenFromText: '',
-      welcomeScreenSalutation: '',
-      welcomeScreenHeader: '',
-      isUsingDefaultMessage: false,
-      useOptionalDisclaimer: false,
-    } as WelcomeScreenData,
-    studyTitle: '',
-    studySummaryBody: '',
-    irbProtocolId: '',
-    leadPrincipleInvestigatorInfo: undefined,
-    contactLeadInfo: undefined,
-    ethicsBoardInfo: undefined,
-    funder: undefined,
-  })
+  const [appDesignProperties, setAppDesignProperties] =
+    useState<StudyAppDesign>({
+      logo: '',
+      backgroundColor: {
+        foreground: '#6040FF',
+      },
+      welcomeScreenInfo: {
+        welcomeScreenBody: '',
+        welcomeScreenFromText: '',
+        welcomeScreenSalutation: '',
+        welcomeScreenHeader: '',
+        isUsingDefaultMessage: false,
+        useOptionalDisclaimer: false,
+      } as WelcomeScreenData,
+      studyTitle: '',
+      studySummaryBody: '',
+      irbProtocolId: '',
+      leadPrincipleInvestigatorInfo: undefined,
+      contactLeadInfo: undefined,
+      ethicsBoardInfo: undefined,
+      funder: undefined,
+    })
 
-  const [
-    generalContactPhoneNumber,
-    setGeneralContactPhoneNumber,
-  ] = React.useState('')
+  const [generalContactPhoneNumber, setGeneralContactPhoneNumber] =
+    React.useState('')
   const [irbPhoneNumber, setIrbPhoneNumber] = React.useState('')
 
   const [phoneNumberErrorState, setPhoneNumberErrorState] = React.useState({
@@ -542,232 +536,239 @@ const AppDesign: React.FunctionComponent<
   }
 
   return (
-    <Box className={classes.root}>
-      <NavigationPrompt when={hasObjectChanged} key="prompt">
-        {({ onConfirm, onCancel }) => (
-          <ConfirmationDialog
-            isOpen={hasObjectChanged}
-            type={'NAVIGATE'}
-            onCancel={onCancel}
-            onConfirm={onConfirm}
-          />
-        )}
-      </NavigationPrompt>
-      <Paper className={classes.section} elevation={2} id="container">
-        <Box className={classes.fields}>
-          <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
-          <p className={classes.smallScreenText}>
-            When a participant downloads the app, they will be presented a
-            welcome screen after signing into the study.
-            <br></br>
-            <br></br>
-            You can choose a default message or customize this screen below by
-            adding your logo, background color, and message. View how it would
-            be displayed to the right.
-          </p>
-          <div className={classes.switchContainer}>
-            <Box mr={1.5}>Use default message</Box>
-            <Box mt={0.5}>
-              <Switch
-                color="primary"
-                checked={
-                  !appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
-                }
-                onChange={() =>
-                  setAppDesignProperties(prevState => {
-                    const newWelcomeScreenData = {
-                      ...prevState.welcomeScreenInfo,
-                    }
-                    newWelcomeScreenData.isUsingDefaultMessage = !prevState
-                      .welcomeScreenInfo.isUsingDefaultMessage
-                    return {
-                      ...appDesignProperties,
-                      welcomeScreenInfo: newWelcomeScreenData,
-                    }
-                  })
-                }
-              ></Switch>
-            </Box>
-            <Box ml={1.5}>Customize</Box>
-          </div>
-          <div
-            className={clsx(
-              appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage &&
-                classes.hideSection,
+    <>
+      <Box className={classes.root}>
+        <NavigationPrompt when={hasObjectChanged} key="prompt">
+          {({ onConfirm, onCancel }) => (
+            <ConfirmationDialog
+              isOpen={hasObjectChanged}
+              type={'NAVIGATE'}
+              onCancel={onCancel}
+              onConfirm={onConfirm}
+            />
+          )}
+        </NavigationPrompt>
+        <Paper className={classes.section} elevation={2} id="container">
+          <Box className={classes.fields}>
+            <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
+            <p className={classes.smallScreenText}>
+              When a participant downloads the app, they will be presented a
+              welcome screen after signing into the study.
+              <br></br>
+              <br></br>
+              You can choose a default message or customize this screen below by
+              adding your logo, background color, and message. View how it would
+              be displayed to the right.
+            </p>
+            <div className={classes.switchContainer}>
+              <Box mr={1.5}>Use default message</Box>
+              <Box mt={0.5}>
+                <Switch
+                  color="primary"
+                  checked={
+                    !appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
+                  }
+                  onChange={() =>
+                    setAppDesignProperties(prevState => {
+                      const newWelcomeScreenData = {
+                        ...prevState.welcomeScreenInfo,
+                      }
+                      newWelcomeScreenData.isUsingDefaultMessage =
+                        !prevState.welcomeScreenInfo.isUsingDefaultMessage
+                      return {
+                        ...appDesignProperties,
+                        welcomeScreenInfo: newWelcomeScreenData,
+                      }
+                    })
+                  }
+                ></Switch>
+              </Box>
+              <Box ml={1.5}>Customize</Box>
+            </div>
+            <div
+              className={clsx(
+                appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage &&
+                  classes.hideSection,
+              )}
+            >
+              <ol className={classes.steps}>
+                <UploadStudyLogoSection
+                  handleFileChange={handleFileChange}
+                  previewFile={previewFile}
+                  imgHeight={imgHeight}
+                  saveLoader={saveLoader}
+                />
+                <ColorPickerSection
+                  appDesignProperties={appDesignProperties}
+                  setAppDesignProperties={setAppDesignProperties}
+                  debouncedUpdateColor={debouncedUpdateColor}
+                />
+                <WelcomeScreenMessagingSection
+                  appDesignProperties={appDesignProperties}
+                  setAppDesignProperties={setAppDesignProperties}
+                  updateAppDesignInfo={updateAppDesignInfo}
+                  saveLoader={saveLoader}
+                  saveInfo={saveInfo}
+                  SimpleTextInputStyles={SimpleTextInputStyles}
+                />
+              </ol>
+            </div>
+            {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage && (
+              <Box className={classes.hideSectionVisibility}>
+                <ol className={classes.steps}>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                </ol>
+              </Box>
             )}
-          >
-            <ol className={classes.steps}>
-              <UploadStudyLogoSection
-                handleFileChange={handleFileChange}
+          </Box>
+          <Box className={classes.phoneArea}>
+            <MTBHeadingH1>What participants will see: </MTBHeadingH1>
+            <Box className={classes.phone}>
+              {!appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage && [
+                <SectionIndicator
+                  index={1}
+                  className={classes.sectionOneIndicatorPosition}
+                  key={1}
+                />,
+                <SectionIndicator
+                  index={2}
+                  className={classes.sectionTwoIndicatorPosition}
+                  key={2}
+                />,
+              ]}
+
+              <PhoneTopBar
+                color={appDesignProperties.backgroundColor.foreground}
                 previewFile={previewFile}
-                imgHeight={imgHeight}
-                saveLoader={saveLoader}
+                isUsingDefaultMessage={
+                  appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
+                }
               />
-              <ColorPickerSection
+              <WelcomeScreenPhoneContent
                 appDesignProperties={appDesignProperties}
-                setAppDesignProperties={setAppDesignProperties}
-                debouncedUpdateColor={debouncedUpdateColor}
               />
-              <WelcomeScreenMessagingSection
+              <Box
+                className={clsx(
+                  classes.phoneBottom,
+                  classes.optionalDisclaimerTextOnPhone,
+                )}
+              >
+                {appDesignProperties.welcomeScreenInfo.useOptionalDisclaimer
+                  ? 'This is a research study and does not provide medical advice,diagnosis, or treatment'
+                  : ''}
+              </Box>
+            </Box>
+          </Box>
+        </Paper>
+        <Paper className={classes.section} elevation={2}>
+          <Box className={classes.fields}>
+            <MTBHeadingH2>Study Page</MTBHeadingH2>
+            <p className={classes.smallScreenText}>
+              Within the app, there will be a dedicated page where you can
+              describe your study further and list who to contact for
+              participant support.
+            </p>
+            <ol className={classes.steps}>
+              <StudySummarySection
                 appDesignProperties={appDesignProperties}
                 setAppDesignProperties={setAppDesignProperties}
                 updateAppDesignInfo={updateAppDesignInfo}
-                saveLoader={saveLoader}
-                saveInfo={saveInfo}
                 SimpleTextInputStyles={SimpleTextInputStyles}
               />
+              <StudyLeadInformationSection
+                appDesignProperties={appDesignProperties}
+                setAppDesignProperties={setAppDesignProperties}
+                updateAppDesignInfo={updateAppDesignInfo}
+                SimpleTextInputStyles={SimpleTextInputStyles}
+                orgMembership={orgMembership}
+                token={token}
+                getContactPersonObject={getContactPersonObject}
+                irbNameSameAsInstitution={irbNameSameAsInstitution}
+              />
+              <GeneralContactAndSupportSection
+                appDesignProperties={appDesignProperties}
+                setAppDesignProperties={setAppDesignProperties}
+                updateAppDesignInfo={updateAppDesignInfo}
+                SimpleTextInputStyles={SimpleTextInputStyles}
+                phoneNumberErrorState={phoneNumberErrorState}
+                setPhoneNumberErrorState={setPhoneNumberErrorState}
+                emailErrorState={emailErrorState}
+                setEmailErrorState={setEmailErrorState}
+                getContactPersonObject={getContactPersonObject}
+                generalContactPhoneNumber={generalContactPhoneNumber}
+                setGeneralContactPhoneNumber={setGeneralContactPhoneNumber}
+              />
+              <IrbBoardContactSection
+                appDesignProperties={appDesignProperties}
+                setAppDesignProperties={setAppDesignProperties}
+                updateAppDesignInfo={updateAppDesignInfo}
+                SimpleTextInputStyles={SimpleTextInputStyles}
+                phoneNumberErrorState={phoneNumberErrorState}
+                setPhoneNumberErrorState={setPhoneNumberErrorState}
+                emailErrorState={emailErrorState}
+                setEmailErrorState={setEmailErrorState}
+                getContactPersonObject={getContactPersonObject}
+                irbPhoneNumber={irbPhoneNumber}
+                setIrbPhoneNumber={setIrbPhoneNumber}
+                saveInfo={saveInfo}
+                saveLoader={saveLoader}
+                irbNameSameAsInstitution={irbNameSameAsInstitution}
+                setIrbNameSameAsInstitution={setIrbNameSameAsInstitution}
+              />
             </ol>
-          </div>
-          {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage && (
-            <Box className={classes.hideSectionVisibility}>
-              <ol className={classes.steps}>
-                <li></li>
-                <li></li>
-                <li></li>
-              </ol>
-            </Box>
-          )}
-        </Box>
-        <Box className={classes.phoneArea}>
-          <MTBHeadingH1>What participants will see: </MTBHeadingH1>
-          <Box className={classes.phone}>
-            {!appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage && [
-              <SectionIndicator
-                index={1}
-                className={classes.sectionOneIndicatorPosition}
-                key={1}
-              />,
-              <SectionIndicator
-                index={2}
-                className={classes.sectionTwoIndicatorPosition}
-                key={2}
-              />,
-            ]}
-
-            <PhoneTopBar
-              color={appDesignProperties.backgroundColor.foreground}
-              previewFile={previewFile}
-              isUsingDefaultMessage={
-                appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
-              }
-            />
-            <WelcomeScreenPhoneContent
-              appDesignProperties={appDesignProperties}
-            />
-            <Box
-              className={clsx(
-                classes.phoneBottom,
-                classes.optionalDisclaimerTextOnPhone,
-              )}
-            >
-              {appDesignProperties.welcomeScreenInfo.useOptionalDisclaimer
-                ? 'This is a research study and does not provide medical advice,diagnosis, or treatment'
-                : ''}
-            </Box>
           </Box>
-        </Box>
-      </Paper>
-      <Paper className={classes.section} elevation={2}>
-        <Box className={classes.fields}>
-          <MTBHeadingH2>Study Page</MTBHeadingH2>
-          <p className={classes.smallScreenText}>
-            Within the app, there will be a dedicated page where you can
-            describe your study further and list who to contact for participant
-            support.
-          </p>
-          <ol className={classes.steps}>
-            <StudySummarySection
-              appDesignProperties={appDesignProperties}
-              setAppDesignProperties={setAppDesignProperties}
-              updateAppDesignInfo={updateAppDesignInfo}
-              SimpleTextInputStyles={SimpleTextInputStyles}
-            />
-            <StudyLeadInformationSection
-              appDesignProperties={appDesignProperties}
-              setAppDesignProperties={setAppDesignProperties}
-              updateAppDesignInfo={updateAppDesignInfo}
-              SimpleTextInputStyles={SimpleTextInputStyles}
-              orgMembership={orgMembership}
-              token={token}
-              getContactPersonObject={getContactPersonObject}
-              irbNameSameAsInstitution={irbNameSameAsInstitution}
-            />
-            <GeneralContactAndSupportSection
-              appDesignProperties={appDesignProperties}
-              setAppDesignProperties={setAppDesignProperties}
-              updateAppDesignInfo={updateAppDesignInfo}
-              SimpleTextInputStyles={SimpleTextInputStyles}
-              phoneNumberErrorState={phoneNumberErrorState}
-              setPhoneNumberErrorState={setPhoneNumberErrorState}
-              emailErrorState={emailErrorState}
-              setEmailErrorState={setEmailErrorState}
-              getContactPersonObject={getContactPersonObject}
-              generalContactPhoneNumber={generalContactPhoneNumber}
-              setGeneralContactPhoneNumber={setGeneralContactPhoneNumber}
-            />
-            <IrbBoardContactSection
-              appDesignProperties={appDesignProperties}
-              setAppDesignProperties={setAppDesignProperties}
-              updateAppDesignInfo={updateAppDesignInfo}
-              SimpleTextInputStyles={SimpleTextInputStyles}
-              phoneNumberErrorState={phoneNumberErrorState}
-              setPhoneNumberErrorState={setPhoneNumberErrorState}
-              emailErrorState={emailErrorState}
-              setEmailErrorState={setEmailErrorState}
-              getContactPersonObject={getContactPersonObject}
-              irbPhoneNumber={irbPhoneNumber}
-              setIrbPhoneNumber={setIrbPhoneNumber}
-              saveInfo={saveInfo}
-              saveLoader={saveLoader}
-              irbNameSameAsInstitution={irbNameSameAsInstitution}
-              setIrbNameSameAsInstitution={setIrbNameSameAsInstitution}
-            />
-          </ol>
-        </Box>
-        <Box className={classes.phoneArea}>
-          <MTBHeadingH1>What participants will see: </MTBHeadingH1>
-          <Box className={classes.phone}>
-            <Box className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
-              <PhoneTopImgLeftHighlighted
-                title="phone top image"
-                width="312px"
+          <Box className={classes.phoneArea}>
+            <MTBHeadingH1>What participants will see: </MTBHeadingH1>
+            <Box className={classes.phone}>
+              <Box
+                className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}
+              >
+                <PhoneTopImgLeftHighlighted
+                  title="phone top image"
+                  width="312px"
+                />
+              </Box>
+              <StudyPageTopPhoneContent
+                appDesignProperties={appDesignProperties}
+                previewFile={previewFile}
+                isUsingDefaultMessage={
+                  appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
+                }
+                imgHeight={imgHeight}
+                appColor={
+                  appDesignProperties.backgroundColor.foreground || '#6040FF'
+                }
               />
+              <Box className={classes.phoneBottom}>
+                <PhoneBottomImg title="phone bottom image" />
+              </Box>
             </Box>
-            <StudyPageTopPhoneContent
-              appDesignProperties={appDesignProperties}
-              previewFile={previewFile}
-              isUsingDefaultMessage={
-                appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
-              }
-              imgHeight={imgHeight}
-              appColor={
-                appDesignProperties.backgroundColor.foreground || '#6040FF'
-              }
-            />
-            <Box className={classes.phoneBottom}>
-              <PhoneBottomImg title="phone bottom image" />
-            </Box>
-          </Box>
-          <Box className={classes.phone} style={{ marginTop: '134px' }}>
-            <Box className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
-              <PhoneTopImgRightHighlighted
-                title="phone top image"
-                width="312px"
+            <Box className={classes.phone} style={{ marginTop: '134px' }}>
+              <Box
+                className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}
+              >
+                <PhoneTopImgRightHighlighted
+                  title="phone top image"
+                  width="312px"
+                />
+              </Box>
+              <StudyPageBottomPhoneContent
+                appDesignProperties={appDesignProperties}
+                generalContactPhoneNumber={generalContactPhoneNumber}
+                irbPhoneNumber={irbPhoneNumber}
+                studyID={study.identifier}
               />
+              <div className={classes.phoneBottom}>
+                <PhoneBottomImg title="phone bottom image" />
+              </div>
             </Box>
-            <StudyPageBottomPhoneContent
-              appDesignProperties={appDesignProperties}
-              generalContactPhoneNumber={generalContactPhoneNumber}
-              irbPhoneNumber={irbPhoneNumber}
-              studyID={study.identifier}
-            />
-            <div className={classes.phoneBottom}>
-              <PhoneBottomImg title="phone bottom image" />
-            </div>
           </Box>
-        </Box>
-      </Paper>
-    </Box>
+        </Paper>
+      </Box>
+      {children}
+    </>
   )
 }
 
