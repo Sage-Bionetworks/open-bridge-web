@@ -200,10 +200,16 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
             return (
               <AlertWithText
                 key={index}
-                icon={<img src={Alert_Icon} style={{ height: '20px' }}></img>}
+                icon={
+                  <img
+                    src={Alert_Icon}
+                    style={{ height: '20px' }}
+                    alt={'error-message-' + index}
+                  ></img>
+                }
                 severity="error"
               >
-                {`${studySession.name} ${sessionErrorState.generalErrorMessage[index]}`}
+                {`${studySession.name} ${el}`}
               </AlertWithText>
             )
           })}
@@ -247,7 +253,11 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   <AlertWithText
                     severity="error"
                     icon={
-                      <img src={Alert_Icon} style={{ height: '20px' }}></img>
+                      <img
+                        src={Alert_Icon}
+                        style={{ height: '20px' }}
+                        alt={'window-error-' + index}
+                      ></img>
                     }
                     key={index}
                   >
