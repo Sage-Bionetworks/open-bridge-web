@@ -244,6 +244,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           windowIndex ? ';Window' + (parseInt(windowIndex) + 1) : ''
         };${errorType};${errorMessage}`
         setSchedulerError(prev => [...prev, finalError])
+        setError(prev => [...prev, finalError])
       })
       // displayError(e.errors)
     } finally {
@@ -380,7 +381,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                 left: '50%',
               }}
             ></LoadingComponent>
-            {!_.isEmpty(error) && (
+            {!_.isEmpty(error) && section !== 'scheduler' && (
               <Alert variant="outlined" color="error">
                 {Array.isArray(error) ? (
                   error.map(e => <div style={{ textAlign: 'left' }}>1{e}</div>)
