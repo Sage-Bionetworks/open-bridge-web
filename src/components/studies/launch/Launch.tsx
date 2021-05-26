@@ -1,8 +1,11 @@
-import { Button, Typography } from '@material-ui/core'
+import { Box, Button, Paper, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { useState } from 'react'
+import { ReactComponent as ArrowIcon } from '../../../assets/arrow_long.svg'
+import { ReactComponent as LockIcon } from '../../../assets/launch/lock_icon.svg'
 import { ThemeType } from '../../../style/theme'
 import { Study, StudyBuilderComponentProps } from '../../../types/types'
+import { NextButton, PrevButton } from '../../widgets/StyledComponents'
 import AboutStudy from './AboutStudy'
 import IrbDetails from './IrbDetails'
 import LaunchAlerts from './LaunchAlerts'
@@ -10,7 +13,7 @@ import LaunchStepper from './LaunchStepper'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
-    padding: theme.spacing(3),
+    padding: theme.spacing(3, 8),
   },
   button: {
     marginRight: theme.spacing(1),
@@ -23,6 +26,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
 export interface LaunchProps {
   study: Study
+  onSave: Function
+
 }
 
 function getSteps() {
@@ -34,20 +39,27 @@ function getSteps() {
   ]
 }
 
-const StepContent: React.FunctionComponent<{ step: number; study: Study }> = ({
-  step,
-  study,
-}: {
+type StepContentProps = {
   step: number
   study: Study
-}) => {
+  isFinished: boolean
+  onChange: Function
+}
+
+const StepContent: React.FunctionComponent<StepContentProps> = ({
+  step,
+  study,
+  isFinished,
+  onChange,
+
+}: StepContentProps) => {
   switch (step) {
     case 0:
       return <LaunchAlerts study={study} />
     case 1:
-      return <AboutStudy study={study} />
+      return <AboutStudy study={study} onChange={onChange} />
     case 2:
-      return <IrbDetails study={study} />
+      return <IrbDetails study={study} isFinished={isFinished} />
     case 3:
       return <>'Study is live...'</>
 
@@ -61,6 +73,7 @@ const Launch: React.FunctionComponent<
 > = ({
   study,
   onUpdate,
+  onSave,
   hasObjectChanged,
   saveLoader,
   children,
@@ -69,6 +82,7 @@ const Launch: React.FunctionComponent<
 
   const [steps, setSteps] = useState(getSteps())
   const [activeStep, setActiveStep] = React.useState(0)
+  const [isFinished, setIsFinished] = React.useState(false)
 
   const handleNext = () => {
     const newSteps = steps.map((s, i) =>
@@ -76,14 +90,17 @@ const Launch: React.FunctionComponent<
     )
     setSteps(newSteps)
     setActiveStep(prevActiveStep => prevActiveStep + 1)
+    onSave()
   }
 
   const handleStepClick = (index: number) => {
     setActiveStep(index)
+    onSave()
   }
 
   const handleBack = () => {
     setActiveStep(prevActiveStep => prevActiveStep - 1)
+    onSave()
   }
 
   const handleReset = () => {
@@ -91,9 +108,7 @@ const Launch: React.FunctionComponent<
   }
 
   return (
-    <>
-      {' '}
-      <h3>Launch Study Requirements</h3>
+    <Paper className={classes.root} elevation={2} id="container">
       <LaunchStepper
         steps={steps}
         activeStep={activeStep}
@@ -112,29 +127,60 @@ const Launch: React.FunctionComponent<
         ) : (
           <div>
             <Typography className={classes.instructions}>
-              <StepContent study={study} step={activeStep} />
+              <StepContent
+                study={study}
+                step={activeStep}
+                isFinished={isFinished}
+                onChange={(study: Study) => {
+                  console.log('onChange', study)
+                  onUpdate(study)
+                }}
+              />
             </Typography>
             <div>
-              <Button
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                className={classes.button}
-              >
-                Back
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleNext}
-                className={classes.button}
-              >
-                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-              </Button>
+              {!isFinished && (
+                <Box py={2} textAlign="left">
+                  {activeStep > 0 && activeStep < 3 && (
+                    <>
+                      <PrevButton
+                        variant="outlined"
+                        color="primary"
+                        onClick={handleBack}
+                      >
+                        <ArrowIcon /> {steps[activeStep - 1].label}
+                      </PrevButton>{' '}
+                      &nbsp;&nbsp;
+                    </>
+                  )}
+
+                  {activeStep < 2 && (
+                    <NextButton
+                      variant="contained"
+                      color="primary"
+                      onClick={handleNext}
+                    >
+                      {steps[activeStep + 1].label} <ArrowIcon />
+                    </NextButton>
+                  )}
+
+                  {activeStep == 2 && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => setIsFinished(true)}
+                    >
+                      {' '}
+                      <LockIcon style={{ marginRight: '4px' }} />
+                      Submit and lock the study
+                    </Button>
+                  )}
+                </Box>
+              )}
             </div>
           </div>
         )}
       </div>
-    </>
+    </Paper>
   )
 }
 
