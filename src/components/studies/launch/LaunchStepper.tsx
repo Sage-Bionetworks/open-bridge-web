@@ -5,16 +5,18 @@ import { StepIconProps } from '@material-ui/core/StepIcon'
 import StepLabel from '@material-ui/core/StepLabel'
 import Stepper from '@material-ui/core/Stepper'
 import {
-  createStyles, makeStyles,
+  createStyles,
+  makeStyles,
   Theme,
-
   withStyles
 } from '@material-ui/core/styles'
-import GroupAddIcon from '@material-ui/icons/GroupAdd'
-import SettingsIcon from '@material-ui/icons/Settings'
-import VideoLabelIcon from '@material-ui/icons/VideoLabel'
 import clsx from 'clsx'
 import React from 'react'
+import { ReactComponent as IrbIcon } from '../../../assets/launch/irb_icon.svg'
+import { ReactComponent as ReviewIcon } from '../../../assets/launch/review_icon.svg'
+import { ReactComponent as RocketIcon } from '../../../assets/launch/rocket_icon.svg'
+import { ReactComponent as TagIcon } from '../../../assets/launch/tag_icon.svg'
+import { ReactComponent as TagIconInactive } from '../../../assets/launch/tag_icon_inactive.svg'
 
 const ColorlibConnector = withStyles({
   alternativeLabel: {
@@ -38,17 +40,17 @@ const ColorlibConnector = withStyles({
   line: {
     height: 3,
     border: 0,
-    backgroundColor: '#eaeaf0',
+    backgroundColor: '#E3E1D3',
     borderRadius: 1,
   },
 })(StepConnector)
 const useColorlibStepIconStyles = makeStyles({
   root: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#E3E1D3',
     zIndex: 1,
     color: '#fff',
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     display: 'flex',
     borderRadius: '50%',
     justifyContent: 'center',
@@ -74,13 +76,20 @@ const useColorlibStepIconStyles = makeStyles({
 function ColorlibStepIcon(props: StepIconProps) {
   const classes = useColorlibStepIconStyles()
   const { active, completed } = props
-  console.log(props)
+  console.log('iconpops' + props.icon)
 
-  const icons: { [index: string]: React.ReactElement } = {
-    1: <SettingsIcon />,
-    2: <GroupAddIcon />,
-    3: <VideoLabelIcon />,
+  const icons: {
+    [index: string]: {
+      active: React.ReactElement
+      inactive: React.ReactElement
+    }
+  } = {
+    1: { active: <ReviewIcon />, inactive: <ReviewIcon /> },
+    2: { active: <TagIcon />, inactive: <TagIconInactive /> },
+    3: { active: <IrbIcon />, inactive: <IrbIcon /> },
+    4: { active: <RocketIcon />, inactive: <RocketIcon /> },
   }
+  const iconNode = icons[String(props.icon)]
 
   return (
     <div
@@ -89,7 +98,7 @@ function ColorlibStepIcon(props: StepIconProps) {
         [classes.completed]: completed,
       })}
     >
-      {icons[String(props.icon)]}
+      {active || completed ? iconNode.active : iconNode.inactive}
     </div>
   )
 }
@@ -98,6 +107,13 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: '100%',
+      height: '130px',
+      position: 'relative',
+    },
+    stepperRoot: {
+      position: 'absolute',
+      left: '-150px',
+      width: 'calc(100% + 300px)',
     },
   }),
 )
@@ -120,6 +136,7 @@ const LaunchStepper: React.FunctionComponent<LaunchStepperProps> = ({
       <Stepper
         alternativeLabel
         activeStep={activeStep}
+        classes={{ root: classes.stepperRoot }}
         connector={<ColorlibConnector />}
       >
         {steps.map((step, index) => (

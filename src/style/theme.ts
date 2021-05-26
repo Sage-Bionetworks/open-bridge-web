@@ -63,6 +63,10 @@ const globals: cssGlobalClasses = {
   '.whiteBg': {
     backgroundColor: '#fff',
   },
+  '.blackBg': {
+    backgroundColor: '#000',
+    color: '#FFF'
+  },
   listReset: {
     margin: '0',
     padding: '0',

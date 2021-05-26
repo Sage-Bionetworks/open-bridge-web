@@ -1,8 +1,8 @@
 import { Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
+import { RouteComponentProps } from 'react-router'
 import { ThemeType } from '../../../style/theme'
-import { Study } from '../../../types/types'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -10,25 +10,21 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
 }))
 
-export interface IrbDetailsProps {
-  study: Study
-  isFinished: boolean
-}
 
-const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
-  study,
-  isFinished
-}: IrbDetailsProps) => {
+
+const Live: React.FunctionComponent<RouteComponentProps> = ({
+  
+}: RouteComponentProps) => {
   const classes = useStyles()
 
   return (
     <>
       {' '}
-      <h3>IrbDetails </h3>
+      <h3>Live </h3>
 
-      {isFinished && <Button>Button</Button>}
+      { <Button>Live</Button>}
     </>
   )
 }
 
-export default IrbDetails
+export default Live
