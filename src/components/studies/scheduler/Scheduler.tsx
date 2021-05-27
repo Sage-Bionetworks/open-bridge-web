@@ -31,6 +31,7 @@ import actionsReducer, {
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import Timeline from './Timeline'
+import { SchedulerErrorType } from '../StudyBuilder'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -71,7 +72,7 @@ type SchedulerProps = {
   version?: number
   token: string
   onSave: Function
-  errors: string[]
+  schedulerErrors: SchedulerErrorType[]
 }
 
 const Scheduler: FunctionComponent<
@@ -85,7 +86,7 @@ const Scheduler: FunctionComponent<
   children,
   token,
   version,
-  errors,
+  schedulerErrors,
 }: SchedulerProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
 
@@ -103,8 +104,39 @@ const Scheduler: FunctionComponent<
   )
 
   React.useEffect(() => {
+    const stringifiedErrors: string[] = []
+    for (const error of schedulerErrors) {
+      const { entity, errors } = error
+      const ks = Object.keys(errors)
+      ks.forEach((key, index) => {
+        const keyArr = key.split('.')
+        //first session, timewindow, message
+        var numberPattern = /\d+/g
+        let windowIndex
+        const sessionIndex = _.first(keyArr[0]?.match(numberPattern))
+        // if 3 levels - assume window
+        if (keyArr.length > 2) {
+          windowIndex = _.first(keyArr[1]?.match(numberPattern))
+        }
+        const errorType = keyArr[keyArr.length - 1]
+        const currentError = errors[key]
+        const errorMessage = currentError
+          .map((error: string) => error.replace(key, ''))
+          .join(',')
+
+        const sessionName = sessionIndex
+          ? entity.sessions[sessionIndex[0]].name
+          : ''
+        const finalError = `${sessionName}-${
+          sessionIndex ? parseInt(sessionIndex) + 1 : 0
+        }${
+          windowIndex ? ';Window' + (parseInt(windowIndex) + 1) : ''
+        };${errorType};${errorMessage}`
+        stringifiedErrors.push(finalError)
+      })
+    }
     const newErrorState = new Map()
-    for (const error of errors) {
+    for (const error of stringifiedErrors) {
       const errorInfo = error.split(';')
       if (errorInfo.length < 2) continue
       const sessionKey = errorInfo[0]
@@ -136,7 +168,7 @@ const Scheduler: FunctionComponent<
       }
     }
     setSchedulerErrorState(newErrorState)
-  }, [errors])
+  }, [schedulerErrors])
 
   const getStartEventIdFromSchedule = (
     schedule: Schedule,

@@ -92,6 +92,11 @@ type StudyBuilderOwnProps = {}
 
 type StudyBuilderProps = StudyBuilderOwnProps & RouteComponentProps
 
+export type SchedulerErrorType = {
+  errors: any
+  entity: any
+}
+
 const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ...otherProps
 }) => {
@@ -102,6 +107,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }>()
   const [section, setSection] = React.useState(_section)
   const [error, setError] = React.useState<string[]>([])
+  const [schedulerErrors, setSchedulerErrors] = React.useState<
+    SchedulerErrorType[]
+  >([])
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [saveLoader, setSaveLoader] = React.useState(false)
   const { token } = useUserSessionDataState()
@@ -171,6 +179,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
   const saveStudySchedule = async (updatedSchedule?: Schedule) => {
     setError([])
+    setSchedulerErrors([])
     try {
       setSaveLoader(true)
       const schedule = updatedSchedule || builderInfo.schedule
@@ -217,34 +226,16 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       console.log(e, 'error')
       const entity = e.entity
       const errors = e.errors
-      const ks = Object.keys(errors)
-      ks.forEach((key, index) => {
-        const keyArr = key.split('.')
-        //first session, timewindow, message
-        var numberPattern = /\d+/g
-
-        let windowIndex
-        const sessionIndex = _.first(keyArr[0]?.match(numberPattern))
-        // if 3 levels - assume window
-        if (keyArr.length > 2) {
-          windowIndex = _.first(keyArr[1]?.match(numberPattern))
-        }
-        const errorType = keyArr[keyArr.length - 1]
-        const errorMessage = errors[key]
-          .map((error: string) => error.replace(key, ''))
-          .join(',')
-
-        const sessionName = sessionIndex
-          ? entity.sessions[sessionIndex[0]].name
-          : ''
-        const finalError = `${sessionName}-${
-          sessionIndex ? parseInt(sessionIndex) + 1 : 0
-        }${
-          windowIndex ? ';Window' + (parseInt(windowIndex) + 1) : ''
-        };${errorType};${errorMessage}`
-        setError(prev => [...prev, finalError])
-      })
-      // displayError(e.errors)
+      // This can occur when a request fails due to reasons besides bad user input.
+      if (!errors || !entity) {
+        setError(prev => [...prev, e.message])
+        return
+      }
+      const errorObject = {
+        entity: entity,
+        errors: errors,
+      }
+      setSchedulerErrors(prev => [...prev, errorObject])
     } finally {
       setSaveLoader(false)
     }
@@ -379,7 +370,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                 left: '50%',
               }}
             ></LoadingComponent>
-            {!_.isEmpty(error) && section !== 'scheduler' && (
+            {!_.isEmpty(error) && (
               <Alert variant="outlined" color="error">
                 {Array.isArray(error) ? (
                   error.map(e => <div style={{ textAlign: 'left' }}>1{e}</div>)
@@ -411,7 +402,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                             schedule: schedule,
                           })
                         }}
-                        errors={error}
+                        schedulerErrors={schedulerErrors}
                       >
                         {navButtons}
                       </Scheduler>
@@ -488,9 +479,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
                         study={builderInfo.study}
-                        onSave={()=>
-                          saveStudy(builderInfo.study)
-                        }
+                        onSave={() => saveStudy(builderInfo.study)}
                         onUpdate={(study: Study) => {
                           setHasObjectChanged(true)
                           setData({
