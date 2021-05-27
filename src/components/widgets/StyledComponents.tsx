@@ -150,9 +150,10 @@ export const SimpleTextInput = withStyles(theme => ({
     padding: '10px 12px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     fontFamily: [latoFont, 'Roboto'].join(','),
-    '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active': {
-      ' -webkit-box-shadow': '0 0 0 30px white inset !important',
-    },
+    '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active':
+      {
+        ' -webkit-box-shadow': '0 0 0 30px white inset !important',
+      },
   },
 }))(InputBase)
 
@@ -176,3 +177,25 @@ export const AlertWithText = withStyles(theme => ({
     fontFamily: latoFont,
   },
 }))(Alert)
+export const PrevButton = withStyles(theme => ({
+  root: {
+    '& svg': {
+      marginRight: theme.spacing(2),
+      '& path': {
+        fill: '#2a2a2a',
+      },
+    },
+  },
+}))(Button)
+
+export const NextButton = withStyles(theme => ({
+  root: {
+    '& svg': {
+      marginLeft: theme.spacing(2),
+      transform: 'scaleX(-1)',
+      '& path': {
+        fill: '#fcfcfc',
+      },
+    },
+  },
+}))(Button)

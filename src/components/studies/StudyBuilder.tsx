@@ -45,6 +45,7 @@ const subtitles: StringDictionary<string> = {
   branding: 'Customize your App',
   'enrollment-type-selector': 'Participant Study Enrollment',
   'passive-features': 'App Background Recorders ',
+  launch: 'Launch study requirements'
 }
 
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -56,6 +57,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   mainArea: {
     margin: '0 auto',
     minHeight: '100px',
+    overflow: 'hidden'
 
     //backgroundColor: theme.palette.background.default,
   },
@@ -486,9 +488,15 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
                         study={builderInfo.study}
-                        onUpdate={(_section: StudySection, data: any) => {
-                          console.log(_section)
-                          // moveToNextSection(_section)
+                        onSave={()=>
+                          saveStudy(builderInfo.study)
+                        }
+                        onUpdate={(study: Study) => {
+                          setHasObjectChanged(true)
+                          setData({
+                            ...builderInfo,
+                            study: study,
+                          })
                         }}
                       >
                         {navButtons}

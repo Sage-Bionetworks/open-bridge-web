@@ -246,12 +246,16 @@ export const isValidEmail = (email: string) => {
 }
 
 export const setBodyClass = (next?: string) => {
-  const whiteBgSections = ['launch', 'preview']
+  const whiteBgSections = [/*'launch',*/ 'preview']
+  const blackBgSections = ['study-live']
+
+  window.document.body.classList.remove('blackBg')
 
   if (next && whiteBgSections.includes(next)) {
     window.document.body.classList.add('whiteBg')
   } else {
     window.document.body.classList.remove('whiteBg')
   }
+  if (next && blackBgSections.includes(next))  {    window.document.body.classList.add('blackBg')}
 }
 
