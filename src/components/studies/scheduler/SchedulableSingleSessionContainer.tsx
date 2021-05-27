@@ -92,13 +92,15 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     setWindowErrors(windowErrorsArray)
   }, [sessionErrorState?.sessionWindowErrors])
 
-  const updateSessionSchedule = (newSession: SessionSchedule) => {
-    console.log(newSession)
-    onUpdateSessionSchedule(newSession)
-  }
+  React.useEffect(() => {
+    const session = !hasWindowLongerThan24h(studySession)
+      ? { ...studySession, interval: undefined }
+      : studySession
+    setSchedulableSession(session || defaultSchedule)
+  }, [studySession, studySession.timeWindows])
 
-  const hasWindowLongerThan24h = () => {
-    const windows = studySession.timeWindows
+  function hasWindowLongerThan24h(session?: StudySession) {
+    const windows = session ? session.timeWindows : studySession.timeWindows
     if (!windows || windows.length == 0) {
       return false
     }
@@ -106,11 +108,21 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
       if (!window.expiration) {
         return true
       } else {
-        const expirationHours = moment.duration(window.expiration).hours()
+        const expirationHours = moment.duration(window.expiration).asHours()
         return expirationHours > 24
       }
     })
     return over24 !== undefined
+  }
+  React.useEffect(() => {
+    const session = !hasWindowLongerThan24h(studySession)
+      ? { ...studySession, interval: undefined }
+      : studySession
+    setSchedulableSession(session || defaultSchedule)
+  }, [studySession, studySession.timeWindows])
+
+  const updateSessionSchedule = (newSession: SessionSchedule) => {
+    onUpdateSessionSchedule(newSession)
   }
 
   const addNewWindow = () => {
@@ -159,7 +171,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   }
 
   const deleteNotification = (index: number) => {
-    console.log('deleting notiication')
     const notificatons = [...(schedulableSession.notifications || [])]
     notificatons.splice(index, 1)
     const newState = {
@@ -182,7 +193,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     index: number,
   ) => {
     let existingNotifications = schedulableSession.notifications || []
-    console.log(notification, 'noti')
     const newState = {
       ...schedulableSession,
       notifications: existingNotifications.map((item, i) =>
@@ -191,6 +201,54 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     }
     updateSessionSchedule(newState)
   }
+
+  /*
+{sessionErrorState && sessionErrorState.generalErrorMessage.length > 0 && (
+        <Box className={classes.firstAlertStyling}>
+          {sessionErrorState.generalErrorMessage.map((el, index) => {
+            return (
+              <AlertWithText
+                key={index}
+                icon={
+                  <img
+                    src={Alert_Icon}
+                    style={{ height: '20px' }}
+                    alt={'error-message-' + index}
+                  ></img>
+                }
+                severity="error"
+              >
+                {`${studySession.name} ${el}`}
+              </AlertWithText>
+            )
+          })}
+        </Box>
+      )}
+<Box className={classes.formSection}>
+          {windowErrors.length > 0 && (
+            <Box mb={3} ml={-2}>
+              {windowErrors.map((el, index) => {
+                return (
+                  <AlertWithText
+                    severity="error"
+                    icon={
+                      <img
+                        src={Alert_Icon}
+                        style={{ height: '20px' }}
+                        alt={'window-error-' + index}
+                      ></img>
+                    }
+                    key={index}
+                  >
+                    Session {studySession.name} in{' '}
+                    {`${el.windowName}: ${el.windowError}`}
+                  </AlertWithText>
+                )
+              })}
+            </Box>
+          )}
+
+    */
 
   return (
     <Box bgcolor="#F8F8F8" flexGrow="1" pb={2.5} pl={4}>
@@ -246,28 +304,24 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         </Box>
 
         <Box className={classes.formSection}>
-          {windowErrors.length > 0 && (
-            <Box mb={3} ml={-2}>
-              {windowErrors.map((el, index) => {
-                return (
-                  <AlertWithText
-                    severity="error"
-                    icon={
-                      <img
-                        src={Alert_Icon}
-                        style={{ height: '20px' }}
-                        alt={'window-error-' + index}
-                      ></img>
-                    }
-                    key={index}
-                  >
-                    Session {studySession.name} in{' '}
-                    {`${el.windowName}: ${el.windowError}`}
-                  </AlertWithText>
-                )
-              })}
-            </Box>
-          )}
+          {windowErrors.map((el, index) => {
+            return (
+              <AlertWithText
+                severity="error"
+                icon={
+                  <img
+                    src={Alert_Icon}
+                    style={{ height: '20px' }}
+                    alt={'window-error-' + index}
+                  ></img>
+                }
+                key={index}
+              >
+                Session {studySession.name} in{' '}
+                {`${el.windowName}: ${el.windowError}`}
+              </AlertWithText>
+            )
+          })}
           <SchedulingFormSection label="Session Window:">
             <Box flexGrow={1}>
               {schedulableSession.timeWindows?.map((window, index) => (
@@ -275,7 +329,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   index={index}
                   key={`${index}${window.startTime}${window.expiration}`}
                   onDelete={() => {
-                    console.log('deleting1', index)
                     deleteWindow(index)
                   }}
                   onChange={(window: AssessmentWindowType) =>
@@ -359,6 +412,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   />
                 </NotificationWindow>
               ))}
+
               {!schedulableSession.notifications ||
                 (schedulableSession.notifications.length < 2 && (
                   <BlueButton onClick={addNewNotification} variant="contained">
@@ -373,5 +427,4 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     </Box>
   )
 }
-
 export default SchedulableSingleSessionContainer

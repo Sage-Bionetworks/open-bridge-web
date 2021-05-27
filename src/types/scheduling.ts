@@ -31,8 +31,8 @@ export enum HDWMEnum {
 }
 
 export enum NotificationTimeAtEnum {
-  'START_OF_WINDOW' = 'after start of window',
-  'END_OF_WINDOW' = 'before window expires',
+  'after_window_start' = 'after start of window',
+  'before_window_end' = 'before window expires',
  
 }
 
@@ -47,7 +47,7 @@ export type PerformanceOrder =
 export type StartEventId = 'timeline_retrieved' | 'study_start_date'
 
 export type NotificationMessage = {
-  lang?: string
+  lang: string
   subject: string
   message: string
 }
@@ -59,13 +59,6 @@ export type AssessmentWindow = {
   persistent?: boolean
 }
 
-/*Notification {
-  notifyAt: {START_OF_WINDOW, END_OF_WINDOW}
-  offset: Period (after in start, before in end)
-  interval: Period (can be minutes, hours, days)
-  allowSnooze: boolean
-  messages: List<NotificationMessage>+
-}*/
 
 export type ScheduleNotification = {
   notifyAt:  keyof typeof NotificationTimeAtEnum //notifyAt
