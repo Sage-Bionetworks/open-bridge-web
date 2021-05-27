@@ -139,7 +139,7 @@ const Scheduler: FunctionComponent<
           } else {
             currentErrorState?.sessionWindowErrors.set(
               windowNumber,
-              errorMessage,
+              wholeErrorMessage,
             )
           }
         } else {
@@ -151,7 +151,10 @@ const Scheduler: FunctionComponent<
           if (!windowNumber) {
             errorInfoToAdd!.generalErrorMessage.push(wholeErrorMessage)
           } else {
-            errorInfoToAdd?.sessionWindowErrors.set(windowNumber, errorMessage)
+            errorInfoToAdd?.sessionWindowErrors.set(
+              windowNumber,
+              wholeErrorMessage,
+            )
           }
           newErrorState.set(sessionKey, errorInfoToAdd)
         }
