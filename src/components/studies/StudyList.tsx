@@ -17,7 +17,7 @@ import { useStudyInfoDataDispatch } from '../../helpers/StudyInfoContext'
 import { generateNonambiguousCode } from '../../helpers/utility'
 import StudyService from '../../services/study.service'
 import constants from '../../types/constants'
-import { Study, StudyStatus } from '../../types/types'
+import { Study, StudyPhase } from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import { MTBHeading } from '../widgets/Headings'
 import Loader from '../widgets/Loader'
@@ -25,8 +25,10 @@ import StudyCard from './StudyCard'
 
 type StudyListOwnProps = {}
 
+type SectionStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'
+
 type StudySublistProps = {
-  status: StudyStatus
+  status: SectionStatus
   studies: Study[]
   onAction: Function
   renameStudyId: string
@@ -95,19 +97,22 @@ const useStyles = makeStyles(theme => ({
 
 const sections = [
   {
-    status: 'DRAFT' as StudyStatus,
+    studyStatus: ['design'] as StudyPhase[],
     title: 'Draft Studies',
-    filterTitle: 'Draft',
+    filterTitle: 'Design',
+    sectionStatus: 'DRAFT' as SectionStatus
   },
   {
-    status: 'ACTIVE' as StudyStatus,
+    studyStatus: ['recruitment', 'in_flight'] as StudyPhase[],
     title: 'Live Studies',
     filterTitle: 'Live',
+    sectionStatus: 'LIVE' as SectionStatus
   },
   {
-    status: 'COMPLETED' as StudyStatus,
+    studyStatus: ['completed', 'withdrawn', 'analysis', 'legacy'] as StudyPhase[],
     title: 'Completed Studies',
     filterTitle: 'Completed',
+    sectionStatus: 'COMPLETED' as SectionStatus
   },
 ]
 
@@ -122,10 +127,10 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   highlightedStudyId,
 }: StudySublistProps) => {
   const classes = useStyles()
-  const item = sections.find(section => section.status === status)!
-  const displayStudies = studies.filter(study => study.status === status)
+  const item = sections.find(section => section.sectionStatus === status)!
+  const displayStudies = studies.filter(study => item.studyStatus.includes(study.phase))
   const studyLink =
-    status === 'DRAFT'
+    item.sectionStatus === 'DRAFT'
       ? `/studies/builder/:id/session-creator`
       : `/studies/:id/participant-manager`
 
@@ -198,8 +203,8 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   }
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
 
-  const [statusFilters, setStatusFilters] = React.useState<StudyStatus[]>(
-    sections.map(section => section.status),
+  const [statusFilters, setStatusFilters] = React.useState<SectionStatus[]>(
+    sections.map(section => section.sectionStatus),
   )
   const [highlightedStudyId, setHighlightedStudyId] = React.useState<
     string | null
@@ -215,19 +220,19 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   })
 
   const resetStatusFilters = () =>
-    setStatusFilters(sections.map(section => section.status))
+    setStatusFilters(sections.map(section => section.sectionStatus))
 
   const createStudy = async (study?: Study) => {
     //if study is provided -- we are duplicating
     const id = generateNonambiguousCode(6)
 
-    const newStudy = study
+    const newStudy: Study = study
       ? {
           ...study!,
           identifier: id,
           version: 1,
           name: `Copy of ${study!.name}`,
-          status: 'DRAFT' as StudyStatus,
+          phase: 'design' as StudyPhase,
           createdOn: new Date(),
           modifiedOn: new Date(),
         }
@@ -235,7 +240,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           identifier: id,
           version: 1,
           clientData: {},
-          status: 'DRAFT' as StudyStatus,
+          phase: 'design' as StudyPhase,
           name: constants.constants.NEW_STUDY_NAME,
           createdOn: new Date(),
           modifiedOn: new Date(),
@@ -251,8 +256,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         // need to duplicate the schedule
         const schedule = await StudyService.getStudySchedule(
           studyFromServer?.scheduleGuid,
-          token!,
-          studyFromServer.identifier //temporary to get notifications working
+          token!
         )
         //@ts-ignore
         schedule!.guid = undefined
@@ -337,7 +341,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     }
   }
 
-  const isSelectedFilter = (filter: StudyStatus) =>
+  const isSelectedFilter = (filter: SectionStatus) =>
     statusFilters.indexOf(filter) > -1 && statusFilters.length === 1
 
   useEffect(() => {
@@ -394,12 +398,12 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
               </Button>
             </li>
             {sections.map(section => (
-              <li className={classes.filterItem} key={section.status}>
+              <li className={classes.filterItem} key={section.sectionStatus}>
                 <Button
-                  onClick={() => setStatusFilters([section.status])}
+                  onClick={() => setStatusFilters([section.sectionStatus])}
                   style={{
                     color: 'inherit',
-                    fontWeight: isSelectedFilter(section.status)
+                    fontWeight: isSelectedFilter(section.sectionStatus)
                       ? 'bolder'
                       : 'normal',
                     fontFamily: 'Poppins',
@@ -448,7 +452,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           onClose={handleMenuClose}
         >
           <MenuItem onClick={handleMenuClose}>View</MenuItem>
-          {menuAnchor?.study.status === 'DRAFT' && (
+          {menuAnchor?.study.phase === 'design' && (
             <MenuItem
               onClick={() => {
                 setRenameStudyId(menuAnchor?.study.identifier)

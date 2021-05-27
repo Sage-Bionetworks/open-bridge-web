@@ -67,13 +67,10 @@ const Duration: React.FunctionComponent<
   }, [durationString])
 
   const changeValue = (value?: number, unit?: string) => {
-    //console.log('changing value:' + value)
     if (unit) {
-      //console.log('has unit: ' + unit)
       setUnit(unit)
     }
     if (value) {
-      //console.log('has value: ' + value)
       setNum(value)
     }
     if (!unit || !value) {

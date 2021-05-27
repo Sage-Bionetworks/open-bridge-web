@@ -83,7 +83,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
     })
     console.log('parsed-z', durationWithoutNegatives.toISOString())!!!
     onChange({
-      notifyAt: 'START_OF_WINDOW',
+      notifyAt: 'after_window_start',
       offset: durationWithoutNegatives.toISOString(),
     })
   }
@@ -108,7 +108,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
   //--- initial notification fns ----//
   const toggleOffsetForInitialNotification = (value: string) => {
     if (value === 'false') {
-      onChange({ notifyAt: 'START_OF_WINDOW', offset: undefined })
+      onChange({ notifyAt: 'after_window_start', offset: undefined })
       setHasOffset(false)
     } else {
       setHasOffset(true)
@@ -140,7 +140,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
                 onChange={e => {
                   onChange({
                     offset: e.target.value,
-                    notifyAt: 'START_OF_WINDOW',
+                    notifyAt: 'after_window_start',
                   })
                 }}
                 durationString={offset || ''}
@@ -185,13 +185,13 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
         }}
       >
         <FormControlLabel
-          value={'START_OF_WINDOW'}
+          value={'after_window_start'}
           control={<Radio size="small" className={classes.smallRadio} />}
           label="after start of window"
         />
 
         <FormControlLabel
-          value={'END_OF_WINDOW'}
+          value={'before_window_end'}
           control={<Radio size="small" className={classes.smallRadio} />}
           label="before window expires "
         />

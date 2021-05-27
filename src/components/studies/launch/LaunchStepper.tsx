@@ -59,16 +59,8 @@ const useColorlibStepIconStyles = makeStyles({
   active: {
     backgroundColor: '#FFE500',
     boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
-
-    /*backgroundImage:
-      'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
-    boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',*/
   },
   completed: {
-    /*
-    backgroundImage:
-      'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
-  */
     backgroundColor: '#FFE500',
   },
 })
@@ -76,7 +68,6 @@ const useColorlibStepIconStyles = makeStyles({
 function ColorlibStepIcon(props: StepIconProps) {
   const classes = useColorlibStepIconStyles()
   const { active, completed } = props
-  console.log('iconpops' + props.icon)
 
   const icons: {
     [index: string]: {

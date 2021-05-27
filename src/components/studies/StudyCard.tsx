@@ -138,7 +138,7 @@ const CardBottom: FunctionComponent<{
 }> = ({ study }: { study: Study }) => {
   const classes = useStyles()
   const date = new Date(
-    study.status === 'DRAFT' ? study.modifiedOn! : study.createdOn!,
+    study.phase === 'design' ? study.modifiedOn! : study.createdOn!,
   )
 
   return (
@@ -152,7 +152,7 @@ const CardBottom: FunctionComponent<{
       right="8px"
     >
       <div className={classes.cardBottomContainer}>
-        {study.status === 'DRAFT' ? (
+        {study.phase === 'design' ? (
           <div className={classes.lastEditedTest}>Last edited:</div>
         ) : (
           <div className={classes.participantsRow}>
@@ -167,7 +167,7 @@ const CardBottom: FunctionComponent<{
 
         <div className={classes.studyStatusRow}>
           <div>
-            {study.status === 'DRAFT'
+            {study.phase === 'design'
               ? `${getFormattedDate(date)}`
               : `Launched: ${getFormattedDate(date)}`}
           </div>
@@ -183,8 +183,8 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
   onSetAnchor,
 }: StudyCardProps) => {
   function getCorrectCardName(status: string): string {
-    if (status === 'DRAFT') {
-      return 'Draft'
+    if (status === 'design') {
+      return 'design'
     } else if (status === 'COMPLETED') {
       return 'Closed'
     } else {
@@ -200,7 +200,7 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
       paddingTop="8px"
       className={classes.cardTopContainer}
     >
-      {study.status !== 'COMPLETED' ? (
+      {study.phase !== 'completed' ? (
         <IconButton
           style={{ padding: '0' }}
           onClick={e => {
@@ -213,13 +213,13 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
       ) : (
         <div />
       )}
-      {study.status === 'ACTIVE' ? (
+      {['recruitment', 'in_flight'].includes(study.phase) ? (
         <div className={classes.liveIconContainer}>
           <LiveIcon />
         </div>
       ) : (
         <div className={classes.cardStatus}>
-          {getCorrectCardName(study.status)}
+          {getCorrectCardName(study.phase)}
         </div>
       )}
     </Box>
@@ -286,7 +286,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
                 variant="h6"
                 color="textSecondary"
                 className={classes.studyNameText}
-                gutterBottom={study.status === 'DRAFT' ? true : false}
+                gutterBottom={study.phase === 'design' ? true : false}
               >
                 {study.name}
               </Typography>
@@ -304,8 +304,8 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
               />
             )}
           </div>
-          {study.status === 'DRAFT' && <DraftIcon />}
-          {study.status !== 'DRAFT' && (
+          {study.phase === 'design' && <DraftIcon />}
+          {study.phase !== 'design' && (
             <Typography className={classes.title} color="textSecondary">
               Study ID: {study.identifier}
             </Typography>

@@ -7,7 +7,7 @@ import {
   StartEventId,
   StudySession
 } from '../types/scheduling'
-import { StringDictionary, Study } from '../types/types'
+import { Study } from '../types/types'
 import AssessmentService from './assessment.service'
 
 const StudyService = {
@@ -26,12 +26,12 @@ const StudyService = {
 
 export const DEFAULT_NOTIFICATION: ScheduleNotification = {
   
-    notifyAt: 'START_OF_WINDOW',
+    notifyAt: 'after_window_start',
     offset: undefined,
     interval: undefined,
     allowSnooze: true,
     messages: [
-      { subject: 'New Activities are Live', message: 'Please complete' },
+      { subject: 'New Activities are Live', message: 'Please complete', lang: 'en' },
     ],
   
 }
@@ -60,11 +60,9 @@ async function getStudies(token: string): Promise<Study[]> {
     {},
     token,
   )
-  //alina: this is temporary until we get status returned from back end
 
-  return studies.data.items.map(study =>
-    study.status ? study : { ...study, status: 'DRAFT' },
-  )
+  return studies.data.items
+
 }
 
 async function getStudy(id: string, token: string): Promise<Study | undefined> {
@@ -144,23 +142,9 @@ async function removeStudy(studyId: string, token: string): Promise<Study[]> {
 
 async function saveStudySchedule(
   schedule: Schedule,
-  token: string,
-  studyId: string, //temporary!
+  token: string
 ): Promise<Schedule> {
   const scheduleEndpoint = constants.endpoints.schedule
-
-  // this section is temporary to get the notifications working before back end is completel
-  const notifications = schedule.sessions.reduce((pv, cv, index, all)=> {
-   pv[cv.guid!]=cv.notifications || []
-   return pv
-  },{} as StringDictionary<ScheduleNotification[]>)
-
-  const study = await getStudy(studyId, token)
-  study!.clientData.notifications = notifications 
-  await updateStudy(study!,token)
-
-  //end of temporary section
-
   try {
     const response = await callEndpoint<Schedule>(
       scheduleEndpoint.replace(':id', schedule.guid),
@@ -200,14 +184,6 @@ async function addAssessmentResourcesToSchedule(
       return assmnt
     })
     session.assessments = assmntWithResources ? [...assmntWithResources] : []
-
-    //ALINA temporary add notification
-    const notifications: ScheduleNotification[] = [
-      {...DEFAULT_NOTIFICATION}
-    ]
-    if (!session.notifications)  {
-      session.notifications = notifications
-    } 
   })
 
   return schedule
@@ -216,8 +192,7 @@ async function addAssessmentResourcesToSchedule(
 //returns scehdule and sessions
 async function getStudySchedule(
   scheduleId: string,
-  token: string,
-  studyId: string //temporary
+  token: string
 ): Promise<Schedule | undefined> {
   const schedule = await callEndpoint<Schedule>(
     constants.endpoints.schedule.replace(':id', scheduleId),
@@ -225,20 +200,6 @@ async function getStudySchedule(
     {},
     token,
   )
-
-  //temporary to get notifications working
-  const study =await  getStudy(studyId, token)
-  if (! schedule || ! study) {
-    return undefined
-  }
-
-  if (study.clientData.notifications) {
-
-  schedule.data.sessions.forEach(s=> {
-    s.notifications= study.clientData.notifications![s.guid!] || []
-  })
-}
-  //end of temporary
   return schedule ? addAssessmentResourcesToSchedule(schedule.data) : undefined
 }
 
