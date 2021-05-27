@@ -114,6 +114,8 @@ const Scheduler: FunctionComponent<
         var numberPattern = /\d+/g
         let windowIndex
         const sessionIndex = _.first(keyArr[0]?.match(numberPattern))
+        // This should not happen
+        if (!sessionIndex) return
         // if 3 levels - assume window
         if (keyArr.length > 2) {
           windowIndex = _.first(keyArr[1]?.match(numberPattern))
@@ -128,13 +130,11 @@ const Scheduler: FunctionComponent<
           ? entity.sessions[sessionIndex[0]].name
           : ''
         const wholeErrorMessage = errorType + errorMessage
-        const windowNumber = parseInt(windowIndex || '-2') + 1
-        const sessionKey = `${sessionName}-${
-          parseInt(sessionIndex || '-1') + 1
-        }`
+        const windowNumber = windowIndex ? parseInt(windowIndex) + 1 : undefined
+        const sessionKey = `${sessionName}-${parseInt(sessionIndex) + 1}`
         if (newErrorState.has(sessionKey)) {
           const currentErrorState = newErrorState.get(sessionKey)
-          if (windowNumber === -1) {
+          if (!windowNumber) {
             currentErrorState!.generalErrorMessage.push(wholeErrorMessage)
           } else {
             currentErrorState?.sessionWindowErrors.set(
@@ -148,7 +148,7 @@ const Scheduler: FunctionComponent<
             generalErrorMessage: generalErrors,
             sessionWindowErrors: new Map<number, string>(),
           }
-          if (windowNumber === -1) {
+          if (!windowNumber) {
             errorInfoToAdd!.generalErrorMessage.push(wholeErrorMessage)
           } else {
             errorInfoToAdd?.sessionWindowErrors.set(windowNumber, errorMessage)
