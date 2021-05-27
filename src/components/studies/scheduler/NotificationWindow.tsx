@@ -86,7 +86,6 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
       messages: [message],
     })
   }
-
   const classes = useStyles()
   return (
     <Paper className={classes.root} elevation={2}>
@@ -144,7 +143,7 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
 
         {children}
 
-        {index > 0 && (
+        {(index > 0 && isMultiday) && (
           <>
             <Divider className={classes.divider} />
             <NotificationInterval

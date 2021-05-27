@@ -13,6 +13,19 @@ export interface Response<T> {
 
 export type RequestStatus = 'IDLE' | 'PENDING' | 'RESOLVED' | 'REJECTED'
 
+export type StudyPhase = 'legacy'| 'design'| 'recruitment'| 'in_flight'|'analysis'|'completed'|'withdrawn'
+/*
+'legacy	If not set, the study is in the LEGACY phase, and no domain logic will be applied to the study, enrollments, etc.
+'design	Study is being designed and tested and has not begun. All accounts created in this phase are marked as test accounts, and schedules are still mutable. The study is not visible in public registries.
+'recruitment	Study has launched and is visible in public registries, and accepting new participants through some form of enrollment. The schedule is published when the study is transitioned to this phase, and can no longer change.
+'in_flight	The study is no longer accepting new participants, but participants are still active in the study. The study is no longer visible in public registries and will no longer accept new sign ups.
+'analysis	All participants have completed the study protocol, and the data is being analyzed. For IRBs, this study is still open and it should still be available in administrative UIs for reporting, but no mobile or desktop participant-facing client should be engaged with the study.
+'completed	Analysis has been completed and the study has been reported to the IRB. The study can now be logically deleted.
+'withdrawn'*/
+
+
+
+
 /* ***  User Types ********************************/
 
 export type UserSessionData = {
@@ -96,11 +109,11 @@ export type Assessment = {
 
 /* *** Study ********************************/
 export type EnrollmentType = 'ID' | 'PHONE'
-export type StudyStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'
+//export type StudyStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'
 export type StudyDesignType='observation' | 'intervention'
 export type Study = {
   identifier: string
-  status: StudyStatus
+  phase: StudyPhase
   version: number
   // name of the study
   name: string

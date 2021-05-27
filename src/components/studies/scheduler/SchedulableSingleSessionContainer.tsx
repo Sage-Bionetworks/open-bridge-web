@@ -58,17 +58,8 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     const [schedulableSession, setSchedulableSession] =
       React.useState<SessionSchedule>(studySession || defaultSchedule)
 
-    React.useEffect(() => {
-      setSchedulableSession(studySession || defaultSchedule)
-    }, [studySession])
-
-    const updateSessionSchedule = (newSession: SessionSchedule) => {
-      console.log(newSession)
-      onUpdateSessionSchedule(newSession)
-    }
-
-    const hasWindowLongerThan24h = () => {
-      const windows = studySession.timeWindows
+    function hasWindowLongerThan24h(session?: StudySession) {
+      const windows = session ? session.timeWindows : studySession.timeWindows
       if (!windows || windows.length == 0) {
         return false
       }
@@ -76,11 +67,22 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         if (!window.expiration) {
           return true
         } else {
-          const expirationHours = moment.duration(window.expiration).hours()
+          const expirationHours = moment.duration(window.expiration).asHours()
           return expirationHours > 24
         }
       })
       return over24 !== undefined
+    }
+
+    React.useEffect(() => {
+      const session = !hasWindowLongerThan24h(studySession)
+        ? { ...studySession, interval: undefined }
+        : studySession
+      setSchedulableSession(session || defaultSchedule)
+    }, [studySession, studySession.timeWindows])
+
+    const updateSessionSchedule = (newSession: SessionSchedule) => {
+      onUpdateSessionSchedule(newSession)
     }
 
     const addNewWindow = () => {
@@ -129,7 +131,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     }
 
     const deleteNotification = (index: number) => {
-      console.log('deleting notiication')
       const notificatons = [...(schedulableSession.notifications || [])]
       notificatons.splice(index, 1)
       const newState = {
@@ -152,7 +153,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
       index: number,
     ) => {
       let existingNotifications = schedulableSession.notifications || []
-      console.log(notification, 'noti')
       const newState = {
         ...schedulableSession,
         notifications: existingNotifications.map((item, i) =>
@@ -201,7 +201,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                     index={index}
                     key={`${index}${window.startTime}${window.expiration}`}
                     onDelete={() => {
-                      console.log('deleting1', index)
                       deleteWindow(index)
                     }}
                     onChange={(window: AssessmentWindowType) =>
@@ -287,7 +286,10 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
                 {!schedulableSession.notifications ||
                   (schedulableSession.notifications.length < 2 && (
-                    <BlueButton onClick={addNewNotification} variant="contained">
+                    <BlueButton
+                      onClick={addNewNotification}
+                      variant="contained"
+                    >
                       +Add new notification
                     </BlueButton>
                   ))}
