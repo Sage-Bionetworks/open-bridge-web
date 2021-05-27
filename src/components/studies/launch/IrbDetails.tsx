@@ -33,6 +33,11 @@ export interface IrbDetailsProps {
   isFinished: boolean
 }
 
+
+const LastScreen: React.FunctionComponent = () => {
+return <Button>Button</Button>
+}
+
 const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
   study,
   isFinished,
@@ -40,8 +45,8 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
   const classes = useStyles()
   const { token, orgMembership } = useUserSessionDataState()
 
-  return (
-    <Box textAlign="left">
+  return (<>
+   {!isFinished && <Box textAlign="left">
       <MTBHeadingH2>IRB Details &amp; Certification</MTBHeadingH2>
       <div>I certify that</div>
 
@@ -94,7 +99,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
           </FormControl>
         </Grid>
         <Grid item xs={6}></Grid>
-        <Grid item xs={6}>
+        <Grid item xs={6}> {/* role: 'principal_investigator', name: '' } as Contact)*/}
           <LeadInvestigatorDropdown
             token={token!}
             orgMembership={orgMembership!}
@@ -240,8 +245,11 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
         <strong>make changes</strong> to your study once you’ve{' '}
         <strong>submit</strong> the information from this page.
       </Box>
-      {isFinished && <Button>Button</Button>}
-    </Box>
+  
+    </Box>}
+    {isFinished && <LastScreen></LastScreen>}
+
+    </>
   )
 }
 
