@@ -202,54 +202,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     updateSessionSchedule(newState)
   }
 
-  /*
-{sessionErrorState && sessionErrorState.generalErrorMessage.length > 0 && (
-        <Box className={classes.firstAlertStyling}>
-          {sessionErrorState.generalErrorMessage.map((el, index) => {
-            return (
-              <AlertWithText
-                key={index}
-                icon={
-                  <img
-                    src={Alert_Icon}
-                    style={{ height: '20px' }}
-                    alt={'error-message-' + index}
-                  ></img>
-                }
-                severity="error"
-              >
-                {`${studySession.name} ${el}`}
-              </AlertWithText>
-            )
-          })}
-        </Box>
-      )}
-<Box className={classes.formSection}>
-          {windowErrors.length > 0 && (
-            <Box mb={3} ml={-2}>
-              {windowErrors.map((el, index) => {
-                return (
-                  <AlertWithText
-                    severity="error"
-                    icon={
-                      <img
-                        src={Alert_Icon}
-                        style={{ height: '20px' }}
-                        alt={'window-error-' + index}
-                      ></img>
-                    }
-                    key={index}
-                  >
-                    Session {studySession.name} in{' '}
-                    {`${el.windowName}: ${el.windowError}`}
-                  </AlertWithText>
-                )
-              })}
-            </Box>
-          )}
-
-    */
-
   return (
     <Box bgcolor="#F8F8F8" flexGrow="1" pb={2.5} pl={4}>
       {sessionErrorState && sessionErrorState.generalErrorMessage.length > 0 && (
