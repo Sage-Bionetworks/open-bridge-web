@@ -104,7 +104,7 @@ const Scheduler: FunctionComponent<
   )
 
   React.useEffect(() => {
-    const stringifiedErrors: string[] = []
+    const newErrorState = new Map()
     for (const error of schedulerErrors) {
       const { entity, errors } = error
       const ks = Object.keys(errors)
@@ -127,45 +127,35 @@ const Scheduler: FunctionComponent<
         const sessionName = sessionIndex
           ? entity.sessions[sessionIndex[0]].name
           : ''
-        const finalError = `${sessionName}-${
-          sessionIndex ? parseInt(sessionIndex) + 1 : 0
-        }${
-          windowIndex ? ';Window' + (parseInt(windowIndex) + 1) : ''
-        };${errorType};${errorMessage}`
-        stringifiedErrors.push(finalError)
+        const wholeErrorMessage = errorType + errorMessage
+        const windowNumber = parseInt(windowIndex || '-2') + 1
+        const sessionKey = `${sessionName}-${
+          parseInt(sessionIndex || '-1') + 1
+        }`
+        if (newErrorState.has(sessionKey)) {
+          const currentErrorState = newErrorState.get(sessionKey)
+          if (windowNumber === -1) {
+            currentErrorState!.generalErrorMessage.push(wholeErrorMessage)
+          } else {
+            currentErrorState?.sessionWindowErrors.set(
+              windowNumber,
+              errorMessage,
+            )
+          }
+        } else {
+          const generalErrors: string[] = []
+          const errorInfoToAdd = {
+            generalErrorMessage: generalErrors,
+            sessionWindowErrors: new Map<number, string>(),
+          }
+          if (windowNumber === -1) {
+            errorInfoToAdd!.generalErrorMessage.push(wholeErrorMessage)
+          } else {
+            errorInfoToAdd?.sessionWindowErrors.set(windowNumber, errorMessage)
+          }
+          newErrorState.set(sessionKey, errorInfoToAdd)
+        }
       })
-    }
-    const newErrorState = new Map()
-    for (const error of stringifiedErrors) {
-      const errorInfo = error.split(';')
-      if (errorInfo.length < 2) continue
-      const sessionKey = errorInfo[0]
-      const windowNumber = errorInfo[1].startsWith('Window')
-        ? parseInt(errorInfo[1].substring(errorInfo[1].length - 1))
-        : -1
-      const errorMessage =
-        errorInfo[errorInfo.length - 1 === 2 ? 1 : 2] +
-        errorInfo[errorInfo.length - 1]
-      if (newErrorState.has(sessionKey)) {
-        const currentErrorState = newErrorState.get(sessionKey)
-        if (windowNumber === -1) {
-          currentErrorState!.generalErrorMessage.push(errorMessage)
-        } else {
-          currentErrorState?.sessionWindowErrors.set(windowNumber, errorMessage)
-        }
-      } else {
-        const generalErrors: string[] = []
-        const errorInfoToAdd = {
-          generalErrorMessage: generalErrors,
-          sessionWindowErrors: new Map<number, string>(),
-        }
-        if (windowNumber === -1) {
-          errorInfoToAdd!.generalErrorMessage.push(errorMessage)
-        } else {
-          errorInfoToAdd?.sessionWindowErrors.set(windowNumber, errorMessage)
-        }
-        newErrorState.set(sessionKey, errorInfoToAdd)
-      }
     }
     setSchedulerErrorState(newErrorState)
   }, [schedulerErrors])
