@@ -228,6 +228,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       const errors = e.errors
       // This can occur when a request fails due to reasons besides bad user input.
       if (!errors || !entity) {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
         setError(prev => [...prev, e.message])
         return
       }
