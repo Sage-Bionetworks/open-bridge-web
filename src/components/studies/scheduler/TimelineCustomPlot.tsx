@@ -70,7 +70,7 @@ const useStyles = makeStyles(theme => ({
 
   dailyIntervalLine: {
     borderLeft: '1px solid black',
-   borderRight: '1px solid black',
+    borderRight: '1px solid black',
 
     padding: '3px 0',
     position: 'absolute',
@@ -80,7 +80,7 @@ const useStyles = makeStyles(theme => ({
   dailyIntervalInner: {
     backgroundColor: '#000',
     height: '1px',
-    textAlign: 'center'
+    textAlign: 'center',
   },
 }))
 
@@ -167,7 +167,7 @@ function getSingleSessionX(
 function getSingleSessionDayX(
   studySessionGuid: string,
   schedulingItems: TimelineScheduleItem[],
-  scheduleLength: number
+  scheduleLength: number,
 ): { day: number; startTime: number; expire: number }[] {
   let result: number[] = []
 
@@ -179,9 +179,9 @@ function getSingleSessionDayX(
       var stMin = startTimeAsTime.get('minutes')
       var fractionOfDay = (stHrAsMin + stMin) / (24 * 60)
 
-     const expiration = i.expiration? i.expiration: `P${scheduleLength}D`
+      const expiration = i.expiration ? i.expiration : `P${scheduleLength}D`
 
-    /*  const period =expiration[expiration.length - 1] as
+      /*  const period =expiration[expiration.length - 1] as
         | 'D'
         | 'M'
         | 'H'
@@ -198,10 +198,11 @@ function getSingleSessionDayX(
       }
 
       let expire = (parseInt(num) * 1) / lookup[period]*/
-      let expire = moment.duration(expiration).days()
+      const duration = moment.duration(expiration).asMinutes()
+      let expire = duration/1440
 
       if (!i.expiration) {
-        expire= expire -fractionOfDay
+        expire = expire - fractionOfDay
       }
       return { day: i.startDay, startTime: fractionOfDay, expire: expire }
     })
@@ -236,6 +237,7 @@ const DailyGridPlot: React.FunctionComponent<GridPlotProps> = ({
     <>
       {index2 === 0 && (
         <div
+          key={'hour'}
           style={{
             position: 'absolute',
             top: `${-containerTopPad}px`,
@@ -249,6 +251,7 @@ const DailyGridPlot: React.FunctionComponent<GridPlotProps> = ({
         </div>
       )}
       <div
+        key={`hour${index2}`}
         className={classes.gridLine}
         style={{
           height: `${numberSessions * graphSessionHeight}px`,
@@ -284,6 +287,7 @@ const NonDailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   const sessionGraph = getSingleSessionX(sessionGuid, schedulingItems).map(
     i => (
       <SessionIcon
+        key={`session${i}`}
         index={sessionIndex}
         style={{
           width: '20px',
@@ -306,10 +310,10 @@ const SessionLine: React.FunctionComponent<SingleSessionLinePlotProps> = ({
   dailyData,
 }) => {
   const classes = useStyles()
-if (zoomLevel === 'Daily' ) {
-  return <></>
-}
-//@ts-ignore
+  if (zoomLevel === 'Daily') {
+    return <></>
+  }
+  //@ts-ignore
   const data = zoomLevel === 'Daily' ? dailyData : nonDailyData
   const width =
     data[sessionIndex][data[sessionIndex].length - 1] *
@@ -334,42 +338,44 @@ const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   sessionGuid,
   zoomLevel,
   sessionIndex,
-  scheduleLength
+  scheduleLength,
 }) => {
   const classes = useStyles()
-  const singleSessionDayX = getSingleSessionDayX(sessionGuid, schedulingItems, scheduleLength!)
-  const sessionGraph = singleSessionDayX.map(
-    i => (
-      <div
-        className={classes.dailyIntervalLine}
-        style={{
-          width: `${i.expire * unitPixelWidth[zoomLevel]}px`,
-          top: `${graphSessionHeight * sessionIndex }px`,
-          left: `${(i.day + i.startTime) * unitPixelWidth[zoomLevel]}px`,
-        }}
-      >
-        <div className={classes.dailyIntervalInner}>
-
-        <SessionIcon
-        index={sessionIndex}
-        style={{
-          width: '20px',
-          display: 'block',
-          margin: '-5px auto 0 auto'
-          //marginTop: '-5px',
-        //  position: 'absolute',
-         // zIndex: 100,
-         // top: `${graphSessionHeight * sessionIndex - 5}px`,
-
-          //left: `${i * unitPixelWidth[zoomLevel] - 10}px`,
-        }}
-      ></SessionIcon>
-        </div>
-      </div>
-    ),
+  const singleSessionDayX = getSingleSessionDayX(
+    sessionGuid,
+    schedulingItems,
+    scheduleLength!,
   )
+  const sessionGraph = singleSessionDayX.map((i, index) => (
+    <div
+      className={classes.dailyIntervalLine}
+      key={`interval${index}`}
+      style={{
+        width: `${i.expire * unitPixelWidth[zoomLevel]}px`,
+        top: `${graphSessionHeight * sessionIndex}px`,
+        left: `${(i.day + i.startTime) * unitPixelWidth[zoomLevel]}px`,
+      }}
+    ><div className={classes.dailyIntervalInner}>
+        <SessionIcon
+          index={sessionIndex}
+          style={{
+            width: '20px',
+            display: 'block',
+            margin: '-5px auto 0 auto',
+            //marginTop: '-5px',
+            //  position: 'absolute',
+            // zIndex: 100,
+            // top: `${graphSessionHeight * sessionIndex - 5}px`,
 
-  return <>{sessionGraph}</>
+            //left: `${i * unitPixelWidth[zoomLevel] - 10}px`,
+          }}
+        ></SessionIcon>
+      </div>
+    </div>
+  ))
+
+return <>{sessionGraph}</>
+ //return <>nothing</>
 }
 
 const GridPlot: React.FunctionComponent<GridPlotProps> = ({
