@@ -31,7 +31,7 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
             unitData={DWsEnum }
           ></Duration>
         }
-        label={occurrences? ` for ${occurrences} times`: 'till the end of study'} 
+        label={occurrences? ` for ${occurrences} times`: 'until the end of study'} 
       />
     </SchedulingFormSection>
   )
