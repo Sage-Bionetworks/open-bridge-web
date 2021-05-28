@@ -60,12 +60,15 @@ const globals: cssGlobalClasses = {
     flexWrap: 'wrap',
     overflowWrap: 'normal',
   },*/
+  'a': {
+    color: 'black'
+  },
   '.whiteBg': {
     backgroundColor: '#fff',
   },
   '.blackBg': {
     backgroundColor: '#000',
-    color: '#FFF'
+
   },
   listReset: {
     margin: '0',
