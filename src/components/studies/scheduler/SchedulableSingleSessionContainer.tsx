@@ -256,24 +256,27 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         </Box>
 
         <Box className={classes.formSection}>
-          {windowErrors.map((el, index) => {
-            return (
-              <AlertWithText
-                severity="error"
-                icon={
-                  <img
-                    src={Alert_Icon}
-                    style={{ height: '20px' }}
-                    alt={'window-error-' + index}
-                  ></img>
-                }
-                key={index}
-              >
-                Session {studySession.name} in{' '}
-                {`${el.windowName}: ${el.windowError}`}
-              </AlertWithText>
-            )
-          })}
+          <Box ml={-2}>
+            {windowErrors.map((el, index) => {
+              return (
+                <AlertWithText
+                  severity="error"
+                  icon={
+                    <img
+                      src={Alert_Icon}
+                      style={{ height: '20px' }}
+                      alt={'window-error-' + index}
+                    ></img>
+                  }
+                  key={index}
+                >
+                  Session {studySession.name} in{' '}
+                  {`${el.windowName}: ${el.windowError}`}
+                </AlertWithText>
+              )
+            })}
+          </Box>
+
           <SchedulingFormSection label="Session Window:">
             <Box flexGrow={1}>
               {schedulableSession.timeWindows?.map((window, index) => (
