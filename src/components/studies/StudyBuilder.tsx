@@ -10,7 +10,7 @@ import { useUserSessionDataState } from '../../helpers/AuthContext'
 import {
   StudyInfoData,
   useStudyInfoDataDispatch,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
 import { setBodyClass } from '../../helpers/utility'
 import AssessmentService from '../../services/assessment.service'
@@ -21,7 +21,7 @@ import {
   Assessment,
   BackgroundRecorders,
   StringDictionary,
-  Study
+  Study,
 } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
@@ -92,23 +92,29 @@ type StudyBuilderOwnProps = {}
 
 type StudyBuilderProps = StudyBuilderOwnProps & RouteComponentProps
 
+export type SchedulerErrorType = {
+  errors: any
+  entity: any
+}
+
 const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ...otherProps
 }) => {
   const classes = useStyles()
-  let { id, section: _section } =
-    useParams<{
-      id: string
-      section: StudySection
-    }>()
+  let { id, section: _section } = useParams<{
+    id: string
+    section: StudySection
+  }>()
   const [section, setSection] = React.useState(_section)
   const [error, setError] = React.useState<string[]>([])
+  const [schedulerErrors, setSchedulerErrors] = React.useState<
+    SchedulerErrorType[]
+  >([])
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [saveLoader, setSaveLoader] = React.useState(false)
   const { token } = useUserSessionDataState()
   const builderInfo: StudyInfoData = useStudyInfoDataState()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
-
   const [open, setOpen] = React.useState(true)
 
   const setData = (builderInfo: StudyInfoData) => {
@@ -173,7 +179,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
   const saveStudySchedule = async (updatedSchedule?: Schedule) => {
     setError([])
-
+    setSchedulerErrors([])
     try {
       setSaveLoader(true)
       const schedule = updatedSchedule || builderInfo.schedule
@@ -214,36 +220,20 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         schedule: savedUpdatedSchedule})
       setHasObjectChanged(false)
     } catch (e) {
+      console.log(e, 'error')
       const entity = e.entity
       const errors = e.errors
-      const ks = Object.keys(errors)
-      ks.forEach((key, index) => {
-        const keyArr = key.split('.')
-        //first session, timewindow, message
-        var numberPattern = /\d+/g
-
-        let windowIndex
-        const sessionIndex = _.first(keyArr[0]?.match(numberPattern))
-        // if 3 levels - assume window
-        if (keyArr.length > 2) {
-          windowIndex = _.first(keyArr[1]?.match(numberPattern))
-        }
-        const errorType = keyArr[keyArr.length - 1]
-
-        const errorMessage = errors[key]
-          .map((error: string) => error.replace(key, ''))
-          .join(',')
-
-        const sessionName = sessionIndex
-          ? entity.sessions[sessionIndex[0]].name
-          : ''
-        const finalError = `${sessionName}${
-          windowIndex ? ' Window' + (parseInt(windowIndex) + 1) : ''
-        }: ${errorType} ${errorMessage}`
-        console.log(finalError)
-        setError(prev => [...prev, finalError])
-      })
-      // displayError(e.errors)
+      // This can occur when a request fails due to reasons besides bad user input.
+      if (!errors || !entity) {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        setError(prev => [...prev, e.message])
+        return
+      }
+      const errorObject = {
+        entity: entity,
+        errors: errors,
+      }
+      setSchedulerErrors(prev => [...prev, errorObject])
     } finally {
       setSaveLoader(false)
     }
@@ -410,6 +400,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                             schedule: schedule,
                           })
                         }}
+                        schedulerErrors={schedulerErrors}
                       >
                         {navButtons}
                       </Scheduler>
@@ -486,9 +477,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
                         study={builderInfo.study}
-                        onSave={()=>
-                          saveStudy(builderInfo.study)
-                        }
+                        onSave={() => saveStudy(builderInfo.study)}
                         onUpdate={(study: Study) => {
                           setHasObjectChanged(true)
                           setData({

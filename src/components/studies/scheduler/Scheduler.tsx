@@ -1,22 +1,21 @@
 import {
   Box,
-
   createStyles,
   FormControlLabel,
   makeStyles,
-  Theme
+  Theme,
 } from '@material-ui/core'
 import _ from 'lodash'
 import React, { FunctionComponent } from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { poppinsFont } from '../../../style/theme'
+import { poppinsFont, theme } from '../../../style/theme'
 import {
   DWsEnum,
   PerformanceOrder,
   Schedule,
   SessionSchedule,
   StartEventId,
-  StudySession
+  StudySession,
 } from '../../../types/scheduling'
 import { StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
@@ -28,10 +27,11 @@ import Duration from './Duration'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
-  SessionScheduleAction
+  SessionScheduleAction,
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import Timeline from './Timeline'
+import { SchedulerErrorType } from '../StudyBuilder'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -72,6 +72,7 @@ type SchedulerProps = {
   version?: number
   token: string
   onSave: Function
+  schedulerErrors: SchedulerErrorType[]
 }
 
 const Scheduler: FunctionComponent<
@@ -85,11 +86,82 @@ const Scheduler: FunctionComponent<
   children,
   token,
   version,
+  schedulerErrors,
 }: SchedulerProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
 
   const [schedule, setSchedule] = React.useState({ ..._schedule })
   console.log('%c ---scheduler update--' + version, 'color: red')
+
+  const [schedulerErrorState, setSchedulerErrorState] = React.useState(
+    new Map<
+      string,
+      {
+        generalErrorMessage: string[]
+        sessionWindowErrors: Map<number, string>
+      }
+    >(),
+  )
+
+  React.useEffect(() => {
+    const newErrorState = new Map()
+    for (const error of schedulerErrors) {
+      const { entity, errors } = error
+      const ks = Object.keys(errors)
+      ks.forEach((key, index) => {
+        const keyArr = key.split('.')
+        //first session, timewindow, message
+        var numberPattern = /\d+/g
+        let windowIndex
+        const sessionIndex = _.first(keyArr[0]?.match(numberPattern))
+        // This should not happen
+        if (!sessionIndex) return
+        // if 3 levels - assume window
+        if (keyArr.length > 2) {
+          windowIndex = _.first(keyArr[1]?.match(numberPattern))
+        }
+        const errorType = keyArr[keyArr.length - 1]
+        const currentError = errors[key]
+        const errorMessage = currentError
+          .map((error: string) => error.replace(key, ''))
+          .join(',')
+
+        const sessionName = sessionIndex
+          ? entity.sessions[sessionIndex[0]].name
+          : ''
+        const wholeErrorMessage = errorType + errorMessage
+        const windowNumber = windowIndex ? parseInt(windowIndex) + 1 : undefined
+        const sessionKey = `${sessionName}-${parseInt(sessionIndex) + 1}`
+        if (newErrorState.has(sessionKey)) {
+          const currentErrorState = newErrorState.get(sessionKey)
+          if (!windowNumber) {
+            currentErrorState!.generalErrorMessage.push(wholeErrorMessage)
+          } else {
+            currentErrorState?.sessionWindowErrors.set(
+              windowNumber,
+              wholeErrorMessage,
+            )
+          }
+        } else {
+          const generalErrors: string[] = []
+          const errorInfoToAdd = {
+            generalErrorMessage: generalErrors,
+            sessionWindowErrors: new Map<number, string>(),
+          }
+          if (!windowNumber) {
+            errorInfoToAdd!.generalErrorMessage.push(wholeErrorMessage)
+          } else {
+            errorInfoToAdd?.sessionWindowErrors.set(
+              windowNumber,
+              wholeErrorMessage,
+            )
+          }
+          newErrorState.set(sessionKey, errorInfoToAdd)
+        }
+      })
+    }
+    setSchedulerErrorState(newErrorState)
+  }, [schedulerErrors])
 
   const getStartEventIdFromSchedule = (
     schedule: Schedule,
@@ -144,7 +216,7 @@ const Scheduler: FunctionComponent<
   }
 
   return (
-    <>
+    <Box>
       <Loader reqStatusLoading={saveLoader} key="loader"></Loader>
       <NavigationPrompt when={hasObjectChanged} key="prompt">
         {({ onConfirm, onCancel }) => (
@@ -158,7 +230,7 @@ const Scheduler: FunctionComponent<
       </NavigationPrompt>
 
       <Box textAlign="left" key="content">
-        {/*<ObjectDebug data={timeline} label=""></ObjectDebug>*/}
+        {/* <ObjectDebug data={timeline} label=""></ObjectDebug> */}
         <div className={classes.scheduleHeader} key="intro">
           <FormControlLabel
             classes={{ label: classes.labelDuration }}
@@ -204,9 +276,17 @@ const Scheduler: FunctionComponent<
               }}
             />
           </div>
-
           {schedule.sessions.map((session, index) => (
-            <Box mb={2} display="flex" key={session.guid}>
+            <Box
+              mb={2}
+              display="flex"
+              key={session.guid}
+              border={
+                schedulerErrorState.get(`${session.name}-${index + 1}`)
+                  ? `1px solid ${theme.palette.error.main}`
+                  : ''
+              }
+            >
               <Box className={classes.assessments}>
                 <AssessmentList
                   studySessionIndex={index}
@@ -224,7 +304,7 @@ const Scheduler: FunctionComponent<
                   performanceOrder={session.performanceOrder || 'sequential'}
                 />
               </Box>
-
+              {/* This is what is being displayed as the card */}
               <SchedulableSingleSessionContainer
                 key={session.guid}
                 studySession={session}
@@ -235,6 +315,9 @@ const Scheduler: FunctionComponent<
                     payload: { sessionId: session.guid!, schedule },
                   })
                 }}
+                sessionErrorState={schedulerErrorState.get(
+                  `${session.name}-${index + 1}`,
+                )}
               ></SchedulableSingleSessionContainer>
             </Box>
           ))}
@@ -242,7 +325,7 @@ const Scheduler: FunctionComponent<
 
         {children}
       </Box>
-    </>
+    </Box>
   )
 }
 

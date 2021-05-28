@@ -3,8 +3,9 @@ import {
   FormControlLabel,
   InputBase,
   InputLabel,
-  Select
+  Select,
 } from '@material-ui/core'
+import Alert from '@material-ui/lab/Alert'
 import { withStyles } from '@material-ui/core/styles'
 import { latoFont, poppinsFont } from '../../style/theme'
 
@@ -165,6 +166,17 @@ export const FormControlLabelHidden = withStyles(theme => ({
   },
 }))(FormControlLabel)
 
+export const AlertWithText = withStyles(theme => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    color: theme.palette.error.main,
+    backgroundColor: 'transparent',
+    fontSize: '15px',
+    fontFamily: latoFont,
+  },
+}))(Alert)
 export const PrevButton = withStyles(theme => ({
   root: {
     '& svg': {

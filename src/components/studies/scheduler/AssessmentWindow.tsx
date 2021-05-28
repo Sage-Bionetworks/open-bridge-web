@@ -4,29 +4,29 @@ import {
   FormControlLabel,
   IconButton,
   makeStyles,
-  Paper
+  Paper,
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Close'
 import React from 'react'
 import {
-  AssessmentWindow as AssessmentWindowType, HDWMEnum
+  AssessmentWindow as AssessmentWindowType,
+  HDWMEnum,
 } from '../../../types/scheduling'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
 import { getDropdownTimeItems } from './utility'
-
-
+import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: '#ECF1F4',
     paddingBottom: theme.spacing(2),
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
   },
   windowNumber: {
     backgroundColor: theme.palette.primary.dark,
-    height:theme.spacing(6),
+    height: theme.spacing(6),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -38,39 +38,37 @@ const useStyles = makeStyles(theme => ({
     maxWidth: '300px',
     '& span': {
       display: 'block',
-      fontSize: '12px'
-    }
-  }
+      fontSize: '12px',
+    },
+  },
+  redBorder: {
+    border: `1px solid ${theme.palette.error.main}`,
+  },
 }))
-
 
 export interface AssessmentWindowProps {
   window: AssessmentWindowType
   index: number
-  onChange: (w: AssessmentWindowType) =>void
+  onChange: (w: AssessmentWindowType) => void
   onDelete: Function
+  errorText: string
 }
-
-
 
 const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
   window,
   onChange,
   onDelete,
   index,
+  errorText,
 }: AssessmentWindowProps) => {
-
   const classes = useStyles()
   return (
     <Paper
-     className={classes.root}
+      className={clsx(classes.root, errorText && classes.redBorder)}
       elevation={2}
     >
       <Box position="relative">
-        <Box className={classes.windowNumber}
-        >
-          {index + 1}.
-        </Box>
+        <Box className={classes.windowNumber}>{index + 1}.</Box>
         <IconButton
           style={{ position: 'absolute', top: '12px', right: '16px' }}
           edge="end"
@@ -81,75 +79,80 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
         </IconButton>
       </Box>
       <Box mx="auto" width="auto">
-      <SchedulingFormSection
-        label={'Start'}
-        variant="small"
-        border={false}
-        style={{margin: '24px 0px 0px 0', paddingBottom: 0}}
-  
-      >
-        <SelectWithEnum
-          value={window.startTime}
-          style={{marginLeft: 0}}
-          sourceData={getDropdownTimeItems()}
-          id="from"
-          onChange={e =>
-            onChange({
-              ...window,
-              startTime: e.target.value as string,
-            })
-          }
-        ></SelectWithEnum>
-      </SchedulingFormSection>
-
-      <SchedulingFormSection
-        label={'Expire after'}
-        variant="small"
-        border={false}
-        style={{margin: '0px 0px 8px 0', paddingBottom: 0}}
-       
-      >
-        <Box display="inline-flex" alignItems="center">
-          <Duration
-            onChange={e => 
+        <SchedulingFormSection
+          label={'Start'}
+          variant="small"
+          border={false}
+          style={{ margin: '24px 0px 0px 0', paddingBottom: 0 }}
+        >
+          <SelectWithEnum
+            value={window.startTime}
+            style={{ marginLeft: 0 }}
+            sourceData={getDropdownTimeItems()}
+            id="from"
+            onChange={e =>
               onChange({
                 ...window,
-               expiration: e.target.value as string,
+                startTime: e.target.value as string,
               })
             }
-            durationString={window.expiration || '    '}
-            unitLabel="Repeat Every"
-            numberLabel="frequency number"
-            unitData={HDWMEnum}
-          ></Duration>
-        </Box>
-      </SchedulingFormSection>
-      <SchedulingFormSection
-        label={''}
-        variant="small"
-        isCollapseLabelSmall={true}
-        border={false}
-        style={{margin: '0px 0px 8px 0', paddingBottom: 0}}
- 
+          ></SelectWithEnum>
+        </SchedulingFormSection>
 
-      >
-        <FormControlLabel
-        style={{alignItems: 'flex-start'}}
-          control={
-            <Checkbox
-              value={window.persistent}
-              checked={window.persistent === true}
-              onChange={e => {
+        <SchedulingFormSection
+          label={'Expire after'}
+          variant="small"
+          border={false}
+          style={{ margin: '0px 0px 8px 0', paddingBottom: 0 }}
+        >
+          <Box display="inline-flex" alignItems="center">
+            <Duration
+              onChange={e =>
                 onChange({
                   ...window,
-                  persistent: e.target.checked,
+                  expiration: e.target.value as string,
                 })
-              }}
-            />
-          }
-          label={<div className={classes.smallLabel}><strong>Persistent Mode</strong><br/><span>Allow participant to complete this session as often as they like within the window of time</span></div>}
-        />
-      </SchedulingFormSection>
+              }
+              durationString={window.expiration || '    '}
+              unitLabel="Repeat Every"
+              numberLabel="frequency number"
+              unitData={HDWMEnum}
+            ></Duration>
+          </Box>
+        </SchedulingFormSection>
+        <SchedulingFormSection
+          label={''}
+          variant="small"
+          isCollapseLabelSmall={true}
+          border={false}
+          style={{ margin: '0px 0px 8px 0', paddingBottom: 0 }}
+        >
+          <FormControlLabel
+            style={{ alignItems: 'flex-start' }}
+            control={
+              <Checkbox
+                value={window.persistent}
+                checked={window.persistent === true}
+                onChange={e => {
+                  onChange({
+                    ...window,
+                    persistent: e.target.checked,
+                  })
+                }}
+              />
+            }
+            label={
+              <div className={classes.smallLabel}>
+                <strong>Persistent Mode</strong>
+                <br />
+                <span>
+                  Allow participant to complete this session as often as they
+                  like within the window of time
+                </span>
+              </div>
+            }
+          />
+        </SchedulingFormSection>
       </Box>
     </Paper>
   )
