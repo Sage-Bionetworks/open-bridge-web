@@ -6,11 +6,13 @@ import SchedulingFormSection from './SchedulingFormSection'
 
 export interface RepeatFrequencyProps {
   interval: string | undefined //string($ISO 8601
+  occurrences?: number
   onChange: Function
 }
 
 const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
   interval,
+  occurrences,
   onChange,
 }: RepeatFrequencyProps) => {
   return (
@@ -29,7 +31,7 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
             unitData={DWsEnum }
           ></Duration>
         }
-        label=""
+        label={occurrences? ` for ${occurrences} times`: 'till the end of study'} 
       />
     </SchedulingFormSection>
   )
