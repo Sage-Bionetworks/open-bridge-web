@@ -75,7 +75,7 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
     onEnableNext(
       study.disease && study.clientData?.keywords && study.studyDesignType,
     )
-  }, [study.disease, study.clientData.keywords, study.studyDesignType])
+  }, [study])
 
   const changeDisease = (event: any, values: any) => {
     onChange({ ...study, disease: values.join(JOIN_TOKEN) })

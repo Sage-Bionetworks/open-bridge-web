@@ -159,7 +159,7 @@ const ALERTS: StudyAlertSection[] = [
         },
         isDismissable: false,
       },
-      {
+    {
         errorText: 'Please enter Institutional Affiliation',
         validationFn: (s: StudyInfoData) => {
           return !!s.study.institutionId
@@ -324,7 +324,7 @@ const StudyAlertComponent: React.FunctionComponent<
 
 const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
   studyInfo,
-  onEnableNext
+  onEnableNext,
 }: LaunchAlertsProps) => {
   const classes = useStyles()
 
@@ -347,9 +347,12 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
         alrts.push({ section: section, errors: er })
       }
     })
-onEnableNext(false)
+    onEnableNext(false)
     setAlerts(alrts)
+    const requiredAlert = alrts.find(alert=> alert.errors.find(error=> !error.isDismissable))
+    onEnableNext(!requiredAlert)
   }, [studyInfo])
+
 
   const ignore = (sectionPath: string, index: number) => {
     const sectionAlertsIndex = alerts.findIndex(a => a.section === sectionPath)
@@ -369,15 +372,15 @@ onEnableNext(false)
       newAlerts.splice(sectionAlertsIndex!, 1, replacementSection)
     }
     setAlerts(alerts => newAlerts)
-    
-onEnableNext(true)
+
+    onEnableNext(true)
   }
 
   return (
     <Container maxWidth="sm">
       <MTBHeadingH1>{studyInfo.study.name}</MTBHeadingH1>
-      <MTBHeadingH2>Please review the following alerts: </MTBHeadingH2>
-      <h3>LaunchAlerts </h3>
+     {alerts?.length && <MTBHeadingH2>Please review the following alerts: </MTBHeadingH2>}
+
 
       {alerts.map(alert => (
         <StudyAlertComponent
