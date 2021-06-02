@@ -23,7 +23,7 @@ export type StudySection =
   | 'team-settings'
   | 'timeline-viewer'
   | 'passive-features'
-  | 'branding'
+  | 'customize'
   | 'irb'
   | 'preview'
   | 'alerts'
@@ -31,7 +31,7 @@ export type StudySection =
 
 export const SECTIONS: { name: string; path: StudySection }[] = [
   // { name: 'Set up Study', path: 'description' },
-  { name: 'Customize App', path: 'branding' },
+  { name: 'Customize App', path: 'customize' },
 
   { name: 'Create Sessions', path: 'session-creator' },
   { name: 'Schedule Sessions', path: 'scheduler' },

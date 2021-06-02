@@ -65,7 +65,7 @@ export type ScheduleNotification = {
   offset?: string //ReminderIntervalType //remindAt
   interval?: string //reminderPeriod?
   allowSnooze: boolean //allowSnooze
-  messages?: NotificationMessage[] //messages
+  messages: NotificationMessage[] //messages
 }
 
 export type SessionSchedule = {

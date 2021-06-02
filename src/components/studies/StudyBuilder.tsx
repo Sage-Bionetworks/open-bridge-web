@@ -10,7 +10,7 @@ import { useUserSessionDataState } from '../../helpers/AuthContext'
 import {
   StudyInfoData,
   useStudyInfoDataDispatch,
-  useStudyInfoDataState,
+  useStudyInfoDataState
 } from '../../helpers/StudyInfoContext'
 import { setBodyClass } from '../../helpers/utility'
 import AssessmentService from '../../services/assessment.service'
@@ -21,7 +21,7 @@ import {
   Assessment,
   BackgroundRecorders,
   StringDictionary,
-  Study,
+  Study
 } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
@@ -42,7 +42,7 @@ const subtitles: StringDictionary<string> = {
   'team-settings': 'Team Settings',
   scheduler: 'Schedule Sessions',
   'session-creator': 'Create Sessions',
-  branding: 'Customize your App',
+  customize: 'Customize your App',
   'enrollment-type-selector': 'Participant Study Enrollment',
   'passive-features': 'App Background Recorders ',
   launch: 'Launch study requirements'
@@ -275,7 +275,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   | 'team-settings'
   | 'timeline-viewer'
   | 'passive-features'
-  | 'branding'
+  | 'customize'
   | 'irb'
   | 'preview'
   | 'alerts'
@@ -324,7 +324,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           className={clsx(classes.mainArea, {
             [classes.mainAreaNormal]: open,
             [classes.mainAreaWider]:
-              open && ['branding', 'scheduler'].includes(section),
+              open && ['customize', 'scheduler'].includes(section),
             [classes.mainAreaWide]: !open,
           })}
           pt={8}
@@ -353,7 +353,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
             className={clsx(classes.mainArea, {
               [classes.mainAreaNormal]: open,
               [classes.mainAreaWider]:
-                open && ['branding', 'scheduler'].includes(section),
+                open && ['customize', 'scheduler'].includes(section),
               [classes.mainAreaWide]: !open,
             })}
           >
@@ -446,7 +446,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       </EnrollmentTypeSelector>
                     )}
 
-                    {section === 'branding' && (
+                    {section === 'customize' && (
                       <AppDesign
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
@@ -476,7 +476,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       <Launch
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
-                        study={builderInfo.study}
+                        studyInfo={builderInfo}
                         onSave={() => saveStudy(builderInfo.study)}
                         onUpdate={(study: Study) => {
                           setHasObjectChanged(true)

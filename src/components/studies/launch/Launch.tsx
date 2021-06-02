@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import React, { useState } from 'react'
 import { ReactComponent as ArrowIcon } from '../../../assets/arrow_long.svg'
 import { ReactComponent as LockIcon } from '../../../assets/launch/lock_icon.svg'
+import { StudyInfoData } from '../../../helpers/StudyInfoContext'
 import { ThemeType } from '../../../style/theme'
 import { Study, StudyBuilderComponentProps } from '../../../types/types'
 import { NextButton, PrevButton } from '../../widgets/StyledComponents'
@@ -25,7 +26,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 }))
 
 export interface LaunchProps {
-  study: Study
+  studyInfo: StudyInfoData
   onSave: Function
 
 }
@@ -41,25 +42,28 @@ function getSteps() {
 
 type StepContentProps = {
   step: number
-  study: Study
+  studyInfo: StudyInfoData
   isFinished: boolean
   onChange: Function
+  onEnableNext: Function
 }
 
 const StepContent: React.FunctionComponent<StepContentProps> = ({
   step,
-  study,
+  studyInfo,
   isFinished,
   onChange,
+  onEnableNext,
 
-}: StepContentProps) => {
+
+}) => {
   switch (step) {
     case 0:
-      return <LaunchAlerts study={study} />
+      return <LaunchAlerts studyInfo={studyInfo} onEnableNext={onEnableNext}/>
     case 1:
-      return <AboutStudy study={study} onChange={onChange} />
+      return <AboutStudy study={studyInfo.study} onChange={onChange} onEnableNext={onEnableNext}/>
     case 2:
-      return <IrbDetails study={study} isFinished={isFinished} />
+      return <IrbDetails study={studyInfo.study} isFinished={isFinished}  />
     case 3:
       return <>'Study is live...'</>
 
@@ -71,7 +75,7 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
 const Launch: React.FunctionComponent<
   LaunchProps & StudyBuilderComponentProps
 > = ({
-  study,
+  studyInfo,
   onUpdate,
   onSave,
   hasObjectChanged,
@@ -83,6 +87,7 @@ const Launch: React.FunctionComponent<
   const [steps, setSteps] = useState(getSteps())
   const [activeStep, setActiveStep] = React.useState(0)
   const [isFinished, setIsFinished] = React.useState(false)
+  const [isNextEnabled, setIsNextEnabled]=React.useState(false)
 
   const handleNext = () => {
     const newSteps = steps.map((s, i) =>
@@ -97,6 +102,8 @@ const Launch: React.FunctionComponent<
     setActiveStep(index)
     onSave()
   }
+
+
 
   const handleBack = () => {
     setActiveStep(prevActiveStep => prevActiveStep - 1)
@@ -128,16 +135,15 @@ const Launch: React.FunctionComponent<
           <div>
             <Typography className={classes.instructions}>
               <StepContent
-                study={study}
+                studyInfo={studyInfo}
                 step={activeStep}
                 isFinished={isFinished}
+                onEnableNext={(isEnabled:boolean)=> setIsNextEnabled(isEnabled)}
                 onChange={(study: Study) => {
                   console.log('onChange', study)
                   onUpdate(study)
                 }}
-              />
-            </Typography>
-            <div>
+              />    <div>
               {!isFinished && (
                 <Box py={2} textAlign="left">
                   {activeStep > 0 && activeStep < 3 && (
@@ -158,6 +164,7 @@ const Launch: React.FunctionComponent<
                       variant="contained"
                       color="primary"
                       onClick={handleNext}
+                      disabled={!isNextEnabled}
                     >
                       {steps[activeStep + 1].label} <ArrowIcon />
                     </NextButton>
@@ -177,6 +184,8 @@ const Launch: React.FunctionComponent<
                 </Box>
               )}
             </div>
+            </Typography>
+        
           </div>
         )}
       </div>
