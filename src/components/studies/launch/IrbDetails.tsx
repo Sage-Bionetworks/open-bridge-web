@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 export interface IrbDetailsProps {
   study: Study
   isFinished: boolean
+  onEnableNext: Function
 }
 
 const LastScreen: React.FunctionComponent<{ study: Study }> = ({
@@ -104,6 +105,7 @@ type irbStudyDataType = {
 const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
   study,
   isFinished,
+  onEnableNext,
 }: IrbDetailsProps) => {
   const inputStyles = {
     width: '100%',
@@ -142,6 +144,38 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
     }
     setStudyData(irbStudyData)
   }, [])
+
+  useEffect(() => {
+    const certified =
+      certifyStatements.isStudyProtocolReviewed &&
+      certifyStatements.isStudyConsistentWithLaws
+    if (!certified) {
+      onEnableNext(false)
+      return
+    }
+    if (irbDecisionIsApproved) {
+      const approvalDate = studyData?.irbApprovalDate
+      const approvedUntil = studyData?.irbApprovedUntil
+      const isCorrectFormat =
+        approvalDate && approvedUntil && approvedUntil >= approvalDate
+      if (!isCorrectFormat) {
+        onEnableNext(false)
+        return
+      }
+    } else {
+      const exemptDate = studyData?.irbExemptDate
+      if (!exemptDate) {
+        onEnableNext(false)
+        return
+      }
+    }
+    const inputFieldsCorrectFormat =
+      studyData?.institutionalAffiliation &&
+      studyData?.irbProtocolId &&
+      studyData?.nameOfIrbRecord &&
+      studyData?.irbProtocolTitle
+    onEnableNext(inputFieldsCorrectFormat)
+  }, [study])
 
   const updateStudyData = (type: string) => {
     if (type === 'update_radio') {

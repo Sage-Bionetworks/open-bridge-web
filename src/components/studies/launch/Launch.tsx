@@ -63,7 +63,7 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
     case 1:
       return <AboutStudy study={studyInfo.study} onChange={onChange} onEnableNext={onEnableNext}/>
     case 2:
-      return <IrbDetails study={studyInfo.study} isFinished={isFinished}  />
+      return <IrbDetails study={studyInfo.study} isFinished={isFinished} onEnableNext={onEnableNext}/>
     case 3:
       return <>'Study is live...'</>
 
