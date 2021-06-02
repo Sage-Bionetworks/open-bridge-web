@@ -143,6 +143,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
                     notifyAt: 'after_window_start',
                   })
                 }}
+                onFocus={()=>toggleOffsetForInitialNotification('true')}
                 durationString={offset || ''}
                 unitLabel="Notification Offset"
                 numberLabel="notification offset"

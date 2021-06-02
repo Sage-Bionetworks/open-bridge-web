@@ -1,5 +1,6 @@
 import { Box } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import moment from 'moment'
 import React from 'react'
 import { useAsync } from '../../../helpers/AsyncHook'
 import StudyService from '../../../services/study.service'
@@ -50,13 +51,17 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
   const [dropdown, setDropdown] = React.useState(['Daily'])
-  const [
-    currentZoomLevel,
-    setCurrentZoomLevel,
-  ] = React.useState<TimelineZoomLevel>('Monthly')
+  const [currentZoomLevel, setCurrentZoomLevel] =
+    React.useState<TimelineZoomLevel>('Monthly')
 
   const classes = useStyles()
-  const { data: timeline, status, error, run, setData } = useAsync<any>({
+  const {
+    data: timeline,
+    status,
+    error,
+    run,
+    setData,
+  } = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
@@ -76,26 +81,19 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
       'Monthly',
       'Quarterly',
     ]
+    const duration = moment.duration(scheduleDuration)
 
-    const duarationStringLength = scheduleDuration.length
-    const unit = scheduleDuration[duarationStringLength - 1]
-    console.log(unit, scheduleDuration)
-    const n = parseInt(scheduleDuration.substr(1, duarationStringLength - 2))
-    const lengthInDays = unit === 'W' ? n * 7 : n
-    if (unit !== 'W' && unit !== 'D') {
-      throw new Error('Expects W or D study period')
-    }
+    const lengthInDays = duration.asDays()
     setScheduleLength(lengthInDays)
     if (lengthInDays < 8) {
       periods.splice(1)
-    }
-    if (lengthInDays < 31) {
+    } else if (lengthInDays < 31) {
       periods.splice(2)
-    }
-    if (lengthInDays < 92) {
+    } else if (lengthInDays < 92) {
       periods.splice(3)
     }
     console.log(periods)
+    setCurrentZoomLevel(periods[periods.length - 1])
     setDropdown(periods)
   }
 
@@ -132,7 +130,7 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
         </Box>
 
         <BlackBorderDropdown
-          width='100px'
+          width="100px"
           value={currentZoomLevel}
           onChange={e => {
             setCurrentZoomLevel(e.target.value as TimelineZoomLevel)

@@ -2,16 +2,18 @@ import { Box, makeStyles, Switch } from '@material-ui/core'
 import _ from 'lodash'
 import moment from 'moment'
 import React, { FunctionComponent } from 'react'
+import Alert_Icon from '../../../assets/alert_icon.svg'
 import { DEFAULT_NOTIFICATION } from '../../../services/study.service'
 import { ThemeType } from '../../../style/theme'
 import {
   AssessmentWindow as AssessmentWindowType,
-  SessionSchedule,
-  StudySession,
-  ScheduleNotification,
+
+
+  ScheduleNotification, SessionSchedule,
+  StudySession
 } from '../../../types/scheduling'
 import SaveButton from '../../widgets/SaveButton'
-import { BlueButton } from '../../widgets/StyledComponents'
+import { AlertWithText, BlueButton } from '../../widgets/StyledComponents'
 import AssessmentWindow from './AssessmentWindow'
 import EndDate from './EndDate'
 import NotificationTime from './NotificationTime'
@@ -19,8 +21,6 @@ import NotificationWindow from './NotificationWindow'
 import RepeatFrequency from './RepeatFrequency'
 import SchedulingFormSection from './SchedulingFormSection'
 import StartDate from './StartDate'
-import { AlertWithText } from '../../widgets/StyledComponents'
-import Alert_Icon from '../../../assets/alert_icon.svg'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   formSection: {
@@ -252,6 +252,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               })
             }}
             interval={schedulableSession.interval}
+            occurrences={schedulableSession?.occurrences}
           ></RepeatFrequency>
         </Box>
 

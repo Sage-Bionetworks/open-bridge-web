@@ -3,7 +3,7 @@ import {
   createStyles,
   FormControlLabel,
   makeStyles,
-  Theme,
+  Theme
 } from '@material-ui/core'
 import _ from 'lodash'
 import React, { FunctionComponent } from 'react'
@@ -15,23 +15,23 @@ import {
   Schedule,
   SessionSchedule,
   StartEventId,
-  StudySession,
+  StudySession
 } from '../../../types/scheduling'
 import { StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
 import Loader from '../../widgets/Loader'
 import SaveButton from '../../widgets/SaveButton'
+import { SchedulerErrorType } from '../StudyBuilder'
 import AssessmentList from './AssessmentList'
 import Duration from './Duration'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
-  SessionScheduleAction,
+  SessionScheduleAction
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import Timeline from './Timeline'
-import { SchedulerErrorType } from '../StudyBuilder'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -103,9 +103,9 @@ const Scheduler: FunctionComponent<
     >(),
   )
 
-  React.useEffect(() => {
+  function parseErrors(_schedulerErrors: SchedulerErrorType[]) {
     const newErrorState = new Map()
-    for (const error of schedulerErrors) {
+    for (const error of _schedulerErrors) {
       const { entity, errors } = error
       const ks = Object.keys(errors)
       ks.forEach((key, index) => {
@@ -126,40 +126,38 @@ const Scheduler: FunctionComponent<
           .map((error: string) => error.replace(key, ''))
           .join(',')
 
-        const sessionName = sessionIndex
-          ? entity.sessions[sessionIndex[0]].name
-          : ''
+        const sessionName = entity.sessions[sessionIndex[0]].name
         const wholeErrorMessage = errorType + errorMessage
+
         const windowNumber = windowIndex ? parseInt(windowIndex) + 1 : undefined
         const sessionKey = `${sessionName}-${parseInt(sessionIndex) + 1}`
+
+        let currentErrorState: any
         if (newErrorState.has(sessionKey)) {
-          const currentErrorState = newErrorState.get(sessionKey)
-          if (!windowNumber) {
-            currentErrorState!.generalErrorMessage.push(wholeErrorMessage)
-          } else {
-            currentErrorState?.sessionWindowErrors.set(
-              windowNumber,
-              wholeErrorMessage,
-            )
-          }
+          currentErrorState = newErrorState.get(sessionKey)
         } else {
-          const generalErrors: string[] = []
-          const errorInfoToAdd = {
-            generalErrorMessage: generalErrors,
+          currentErrorState = {
+            generalErrorMessage: [],
             sessionWindowErrors: new Map<number, string>(),
           }
-          if (!windowNumber) {
-            errorInfoToAdd!.generalErrorMessage.push(wholeErrorMessage)
-          } else {
-            errorInfoToAdd?.sessionWindowErrors.set(
-              windowNumber,
-              wholeErrorMessage,
-            )
-          }
-          newErrorState.set(sessionKey, errorInfoToAdd)
         }
+
+        if (!windowNumber) {
+          currentErrorState!.generalErrorMessage.push(wholeErrorMessage)
+        } else {
+          currentErrorState?.sessionWindowErrors.set(
+            windowNumber,
+            wholeErrorMessage,
+          )
+        }
+        newErrorState.set(sessionKey, currentErrorState)
       })
     }
+    return newErrorState
+  }
+
+  React.useEffect(() => {
+    const newErrorState = parseErrors(schedulerErrors)
     setSchedulerErrorState(newErrorState)
   }, [schedulerErrors])
 
