@@ -386,6 +386,18 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     }
                     onChange={e => {
                       const isApproved = e.target.value === 'irb_approved'
+                      if (isApproved) {
+                        setStudyData({
+                          ...studyData!,
+                          irbExemptDate: null,
+                        })
+                      } else {
+                        setStudyData({
+                          ...studyData!,
+                          irbApprovalDate: null,
+                          irbApprovedUntil: null,
+                        })
+                      }
                       setIrbDecisionIsApproved(isApproved)
                     }}
                   >
