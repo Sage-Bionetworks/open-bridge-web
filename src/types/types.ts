@@ -129,6 +129,7 @@ export type Study = {
   irbProtocolId?: string
   contacts?: Contact[]
   studyDesignType?: StudyDesignType
+  institutionId?: string
   disease?: string,
   clientData: {
     enrollmentType?: EnrollmentType

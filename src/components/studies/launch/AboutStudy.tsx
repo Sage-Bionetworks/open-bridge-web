@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 export interface AboutStudyProps {
   study: Study
   onChange: Function
+  onEnableNext: Function
 }
 
 const suggestions = [
@@ -66,15 +67,24 @@ const JOIN_TOKEN = '*'
 const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
   study,
   onChange,
+  onEnableNext,
 }: AboutStudyProps) => {
   const classes = useStyles()
+
+  React.useEffect(() => {
+    onEnableNext(
+      study.disease && study.clientData?.keywords && study.studyDesignType,
+    )
+  }, [study])
 
   const changeDisease = (event: any, values: any) => {
     onChange({ ...study, disease: values.join(JOIN_TOKEN) })
   }
   const changeKeywords = (event: any, values: any) => {
-
-    const clientData = {...study.clientData, keywords: values.join(JOIN_TOKEN)}
+    const clientData = {
+      ...study.clientData,
+      keywords: values.join(JOIN_TOKEN),
+    }
     onChange({ ...study, clientData })
   }
 
