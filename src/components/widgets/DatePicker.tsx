@@ -82,6 +82,7 @@ type DatePickerProps = {
   onBlur?: Function
   value: Date |null
   id: string
+  disabled?: boolean
 }
 
 
@@ -91,7 +92,8 @@ const DatePicker: FunctionComponent<DatePickerProps> = ({
   onChange,
   value,
   label,
-  id
+  id,
+  disabled
 }) => {
   const classes = useStyles()
   const [isDateControlFocused, setIsDateControlFocused] = React.useState(false)
@@ -133,6 +135,7 @@ const DatePicker: FunctionComponent<DatePickerProps> = ({
               KeyboardButtonProps={{
                 'aria-label': 'change date',
               }}
+              disabled={disabled}
             />
           </FormControl>
 
