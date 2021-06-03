@@ -55,6 +55,7 @@ export interface IrbDetailsProps {
   study: Study
   isFinished: boolean
   onEnableNext: Function
+  onChange: Function
 }
 
 const LastScreen: React.FunctionComponent<{ study: Study }> = ({
@@ -102,10 +103,26 @@ type irbStudyDataType = {
   irbExemptDate: Date | null
 }
 
+// enum UpdateStudyOptions {
+//   UPDATE_IRB_PROTOCOL_TITLE = 'UPDATE_IRB_PROTOCOL_TITLE',
+//   UPDATE_LEAD_PRINCIPLE_INVESTIGATOR = 'UPDATE_LEAD_PRINCIPLE_INVESTIGATOR',
+//   UPDATE_INSTITUTIONAL_AFFILIATION = 'UPDATE_INSTITUTIONAL_AFFILIATION',
+//   UPDATE_NAME_OF_IRB_RECORD = 'UPDATE_NAME_OF_IRB_RECORD',
+//   UPDATE_IRB_PROTOCOL_ID = 'UPDATE_IRB_PROTOCOL_ID',
+// }
+
+// type UpdateStudyTypes =
+//   | UpdateStudyOptions.UPDATE_INSTITUTIONAL_AFFILIATION
+//   | UpdateStudyOptions.UPDATE_LEAD_PRINCIPLE_INVESTIGATOR
+//   | UpdateStudyOptions.UPDATE_INSTITUTIONAL_AFFILIATION
+//   | UpdateStudyOptions.UPDATE_NAME_OF_IRB_RECORD
+//   | UpdateStudyOptions.UPDATE_IRB_PROTOCOL_ID
+
 const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
   study,
   isFinished,
   onEnableNext,
+  onChange,
 }: IrbDetailsProps) => {
   const inputStyles = {
     width: '100%',
@@ -177,14 +194,16 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
     onEnableNext(inputFieldsCorrectFormat)
   }, [study])
 
-  const updateStudyData = (type: string) => {
-    if (type === 'update_radio') {
-      setStudyData({
-        ...studyData!,
-        irbRecordSameInstitutionalAffiliation: false,
-      })
-    }
-  }
+  // const updateStudy = (type: string) => {
+  //   const newStudy = { ...study }
+  //   if (type === 'update_radio') {
+  //     setStudyData({
+  //       ...studyData!,
+  //       irbRecordSameInstitutionalAffiliation: false,
+  //     })
+  //   }
+  //   onChange(newStudy)
+  // }
 
   return (
     <>
