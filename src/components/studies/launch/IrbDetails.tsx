@@ -93,7 +93,6 @@ const LastScreen: React.FunctionComponent<{ study: Study }> = ({
 
 type irbStudyDataType = {
   irbRecordSameInstitutionalAffiliation: boolean
-  irbProtocolTitle: string
   irbApprovalDate: Date | null
   irbApprovedUntil: Date | null
   irbExemptDate: Date | null
@@ -130,7 +129,6 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
     const irbRecordSameInstitutionalAffiliation =
       nameOfIrbRecord === institutionalAffiliation
     const irbStudyData = {
-      irbProtocolTitle: '',
       irbApprovalDate: null,
       irbApprovedUntil: null,
       irbExemptDate: null,
@@ -169,8 +167,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
       investigator.affiliation &&
       study.irbProtocolId &&
       irb.name &&
-      studyData?.irbProtocolTitle
-    console.log('input in correct format', inputFieldsCorrectFormat)
+      study.clientData.irbProtocolTitle
     onEnableNext(inputFieldsCorrectFormat)
   })
 
@@ -245,13 +242,18 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                   IRB Protocol Title*
                 </SimpleTextLabel>
                 <SimpleTextInput
-                  value={studyData?.irbProtocolTitle || ''}
+                  value={study.clientData.irbProtocolTitle || ''}
                   placeholder="Official IRB Protocol Name"
                   onChange={e => {
-                    setStudyData({
-                      ...studyData!,
+                    const newClientData = {
+                      ...study.clientData,
                       irbProtocolTitle: e.target.value,
-                    })
+                    }
+                    const newStudy = {
+                      ...study,
+                      clientData: newClientData,
+                    }
+                    onChange(newStudy)
                   }}
                   id="protocolTitle"
                   rows={5}
