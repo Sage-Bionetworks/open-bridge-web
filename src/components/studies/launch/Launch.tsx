@@ -1,4 +1,4 @@
-import { Box, Button, Paper, Typography } from '@material-ui/core'
+import { Box, Button, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { useState } from 'react'
 import { ReactComponent as ArrowIcon } from '../../../assets/arrow_long.svg'
@@ -131,16 +131,16 @@ const Launch: React.FunctionComponent<
       <div>
         {activeStep === steps.length ? (
           <div>
-            <Typography className={classes.instructions}>
+            <div className={classes.instructions}>
               All steps completed - you&apos;re finished
-            </Typography>
+            </div>
             <Button onClick={handleReset} className={classes.button}>
               Reset
             </Button>
           </div>
         ) : (
           <div>
-            <Typography className={classes.instructions}>
+            <div className={classes.instructions}>
               <StepContent
                 studyInfo={studyInfo}
                 step={activeStep}
@@ -195,7 +195,7 @@ const Launch: React.FunctionComponent<
                   </Box>
                 )}
               </div>
-            </Typography>
+            </div>
           </div>
         )}
       </div>

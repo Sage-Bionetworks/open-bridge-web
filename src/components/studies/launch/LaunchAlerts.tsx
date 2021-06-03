@@ -8,6 +8,7 @@ import { StudyInfoData } from '../../../helpers/StudyInfoContext'
 import { DEFAULT_NOTIFICATION } from '../../../services/study.service'
 import { latoFont, ThemeType } from '../../../style/theme'
 import { ScheduleNotification } from '../../../types/scheduling'
+import { Contact } from '../../../types/types'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
 import { normalNavIcons, SECTIONS, StudySection } from '../sections'
 
@@ -89,6 +90,18 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
 }))
 
+function getStudySupportPerson(s: StudyInfoData): Contact | undefined {
+  return s.study.contacts?.find(el => el.role === 'study_support')
+}
+
+function getLeadPI(s: StudyInfoData): Contact | undefined {
+  return s.study.contacts?.find(c => c.role === 'principal_investigator')
+}
+
+function getIrbContact(s: StudyInfoData): Contact | undefined {
+  return s.study.contacts?.find(el => el.role === 'irb')
+}
+
 const ALERTS: StudyAlertSection[] = [
   {
     section: 'enrollment-type-selector',
@@ -105,9 +118,7 @@ const ALERTS: StudyAlertSection[] = [
     errors: [
       {
         errorText: 'Please create a schedule and select assessments',
-        validationFn: (s: StudyInfoData) => {
-          return !!s.schedule
-        },
+        validationFn: (s: StudyInfoData) => !!s.schedule,
         isDismissable: false,
       },
     ],
@@ -143,27 +154,20 @@ const ALERTS: StudyAlertSection[] = [
     section: 'customize',
     errors: [
       {
-        errorText: 'Please enter Sudy Summary copy',
-        validationFn: (s: StudyInfoData) => {
-          return !!s.study.details
-        },
+        errorText: 'Please enter Study Summary copy',
+        validationFn: (s: StudyInfoData) => !!s.study.details,
         isDismissable: false,
       },
       {
         errorText: 'Please enter Lead PI',
         validationFn: (s: StudyInfoData) => {
-          const pi = s.study.contacts?.find(
-            c => c.role === 'principal_investigator',
-          )
-          return !!pi
+          return !!getLeadPI(s)
         },
         isDismissable: false,
       },
-    {
+      {
         errorText: 'Please enter Institutional Affiliation',
-        validationFn: (s: StudyInfoData) => {
-          return !!s.study.institutionId
-        },
+        validationFn: (s: StudyInfoData) => !!getLeadPI(s)?.affiliation,
         isDismissable: false,
       },
 
@@ -177,66 +181,40 @@ const ALERTS: StudyAlertSection[] = [
       },
       {
         errorText: 'Please enter Contact Lead',
-        validationFn: (s: StudyInfoData) => {
-          const studySupport = s.study.contacts?.find(
-            el => el.role === 'study_support',
-          )
-          return !!studySupport
-        },
+        validationFn: (s: StudyInfoData) => !!getStudySupportPerson(s),
         isDismissable: false,
       },
       {
         errorText: 'Please enter Contact’s position',
-        validationFn: (s: StudyInfoData) => {
-          const studySupport = s.study.contacts?.find(
-            el => el.role === 'study_support',
-          )
-          return !!studySupport?.position
-        },
+        validationFn: (s: StudyInfoData) =>
+          !!getStudySupportPerson(s)?.position,
+
         isDismissable: false,
       },
       {
         errorText: 'Please enter Phone # of Contact Lead',
-        validationFn: (s: StudyInfoData) => {
-          const studySupport = s.study.contacts?.find(
-            el => el.role === 'study_support',
-          )
-          return !!studySupport?.phone
-        },
+        validationFn: (s: StudyInfoData) => !!getStudySupportPerson(s)?.phone,
         isDismissable: false,
       },
       {
         errorText: 'Please enter Email of Contact Lead',
-        validationFn: (s: StudyInfoData) => {
-          const studySupport = s.study.contacts?.find(
-            el => el.role === 'study_support',
-          )
-          return !!studySupport?.email
-        },
+        validationFn: (s: StudyInfoData) => !!getStudySupportPerson(s)?.email,
         isDismissable: false,
       },
       {
         errorText: 'Please enter IRB of Record Name',
-        validationFn: (s: StudyInfoData) => {
-          const irbInfo = s.study.contacts?.find(el => el.role === 'irb')
-          return !!irbInfo?.name
-        },
+        validationFn: (s: StudyInfoData) => !!getIrbContact(s)?.name,
+
         isDismissable: false,
       },
       {
         errorText: 'Please enter Phone # of IRB Contact',
-        validationFn: (s: StudyInfoData) => {
-          const irbInfo = s.study.contacts?.find(el => el.role === 'irb')
-          return !!irbInfo?.phone
-        },
+        validationFn: (s: StudyInfoData) => !!getIrbContact(s)?.phone,
         isDismissable: false,
       },
       {
         errorText: 'Please enter Email of IRB',
-        validationFn: (s: StudyInfoData) => {
-          const irbInfo = s.study.contacts?.find(el => el.role === 'irb')
-          return !!irbInfo?.email
-        },
+        validationFn: (s: StudyInfoData) => !!getIrbContact(s)?.email,
         isDismissable: false,
       },
       {
@@ -349,10 +327,11 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
     })
     onEnableNext(false)
     setAlerts(alrts)
-    const requiredAlert = alrts.find(alert=> alert.errors.find(error=> !error.isDismissable))
+    const requiredAlert = alrts.find(alert =>
+      alert.errors.find(error => !error.isDismissable),
+    )
     onEnableNext(!requiredAlert)
   }, [studyInfo])
-
 
   const ignore = (sectionPath: string, index: number) => {
     const sectionAlertsIndex = alerts.findIndex(a => a.section === sectionPath)
@@ -379,8 +358,9 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
   return (
     <Container maxWidth="sm">
       <MTBHeadingH1>{studyInfo.study.name}</MTBHeadingH1>
-     {alerts?.length && <MTBHeadingH2>Please review the following alerts: </MTBHeadingH2>}
-
+      {alerts?.length > 0 && (
+        <MTBHeadingH2>Please review the following alerts: </MTBHeadingH2>
+      )}
 
       {alerts.map(alert => (
         <StudyAlertComponent

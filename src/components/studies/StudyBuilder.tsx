@@ -155,7 +155,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     setData({ schedule: newSchedule, study: updatedStudy })
   }
 
-  const saveStudy = async (study: Study) => {
+  const saveStudy = async (study: Study= builderInfo.study) => {
+
     setHasObjectChanged(true)
     setSaveLoader(true)
 
@@ -171,6 +172,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       setHasObjectChanged(false)
       return updatedStudy
     } catch (e) {
+      if (e.statusCode === 401) {
+        throw(e)
+      }
       setError(e.message)
     } finally {
       setSaveLoader(false)
@@ -220,6 +224,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         schedule: savedUpdatedSchedule})
       setHasObjectChanged(false)
     } catch (e) {
+      if (e.statusCode === 401) {
+        throw(e)
+      }
       console.log(e, 'error')
       const entity = e.entity
       const errors = e.errors
@@ -239,14 +246,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     }
   }
 
-  const displayError = (errors: StringDictionary<string>) => {
-    try {
-      const errorKeys = Object.keys(errors)
-      console.log(errorKeys)
-    } catch (e) {}
-    return errors
-  }
-
   const changeSection = async (next: StudySection) => {
     if (section === next) {
       return
@@ -262,6 +261,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       case 'session-creator': {
         saveFn = saveStudySchedule
         break
+      }
+      case 'launch': {
+        saveFn = saveStudy
+        break
+        
       }
       /*case 'enrollment-type-selector': {
         saveFn = saveStudy
@@ -371,9 +375,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
             {!_.isEmpty(error) && (
               <Alert variant="outlined" color="error">
                 {Array.isArray(error) ? (
-                  error.map(e => <div style={{ textAlign: 'left' }}>1{e}</div>)
+                  error.map(e => <div style={{ textAlign: 'left' }}>{e}</div>)
                 ) : (
-                  <div style={{ textAlign: 'left' }}>{error}2</div>
+                  <div style={{ textAlign: 'left' }}>{error}</div>
                 )}
               </Alert>
             )}
@@ -479,6 +483,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         studyInfo={builderInfo}
                         onSave={() => saveStudy(builderInfo.study)}
                         onUpdate={(study: Study) => {
+                          console.log('study updating from laucn')
                           setHasObjectChanged(true)
                           setData({
                             ...builderInfo,
