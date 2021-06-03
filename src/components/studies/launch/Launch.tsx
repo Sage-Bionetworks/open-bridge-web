@@ -118,6 +118,12 @@ const Launch: React.FunctionComponent<
     onSave()
   }
 
+  const submitAndLock = () => {
+    onSave()
+    setIsFinished(true)
+    setIsFinished(true)
+  }
+
   const handleReset = () => {
     setActiveStep(0)
   }
@@ -184,7 +190,7 @@ const Launch: React.FunctionComponent<
                       <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => setIsFinished(true)}
+                        onClick={() => submitAndLock()}
                         disabled={!isNextEnabled}
                       >
                         {' '}
