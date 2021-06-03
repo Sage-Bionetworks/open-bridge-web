@@ -526,7 +526,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                       </FormControl>
                       <FormControl>
                         <DatePicker
-                          label="Date of Approval Expiration"
+                          label="Date of Expiration"
                           id="expirationDate"
                           value={
                             irbDecisionIsApproved
