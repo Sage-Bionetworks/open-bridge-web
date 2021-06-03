@@ -28,7 +28,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 export interface LaunchProps {
   studyInfo: StudyInfoData
   onSave: Function
-
 }
 
 function getSteps() {
@@ -54,16 +53,27 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
   isFinished,
   onChange,
   onEnableNext,
-
-
 }) => {
   switch (step) {
     case 0:
-      return <LaunchAlerts studyInfo={studyInfo} onEnableNext={onEnableNext}/>
+      return <LaunchAlerts studyInfo={studyInfo} onEnableNext={onEnableNext} />
     case 1:
-      return <AboutStudy study={studyInfo.study} onChange={onChange} onEnableNext={onEnableNext}/>
+      return (
+        <AboutStudy
+          study={studyInfo.study}
+          onChange={onChange}
+          onEnableNext={onEnableNext}
+        />
+      )
     case 2:
-      return <IrbDetails study={studyInfo.study} isFinished={isFinished}  />
+      return (
+        <IrbDetails
+          study={studyInfo.study}
+          onChange={onChange}
+          isFinished={isFinished}
+          onEnableNext={onEnableNext}
+        />
+      )
     case 3:
       return <>'Study is live...'</>
 
@@ -87,7 +97,7 @@ const Launch: React.FunctionComponent<
   const [steps, setSteps] = useState(getSteps())
   const [activeStep, setActiveStep] = React.useState(0)
   const [isFinished, setIsFinished] = React.useState(false)
-  const [isNextEnabled, setIsNextEnabled]=React.useState(false)
+  const [isNextEnabled, setIsNextEnabled] = React.useState(false)
 
   const handleNext = () => {
     const newSteps = steps.map((s, i) =>
@@ -103,8 +113,6 @@ const Launch: React.FunctionComponent<
     onSave()
   }
 
-
-
   const handleBack = () => {
     setActiveStep(prevActiveStep => prevActiveStep - 1)
     onSave()
@@ -113,7 +121,6 @@ const Launch: React.FunctionComponent<
   const handleReset = () => {
     setActiveStep(0)
   }
-
   return (
     <Paper className={classes.root} elevation={2} id="container">
       <LaunchStepper
@@ -138,54 +145,57 @@ const Launch: React.FunctionComponent<
                 studyInfo={studyInfo}
                 step={activeStep}
                 isFinished={isFinished}
-                onEnableNext={(isEnabled:boolean)=> setIsNextEnabled(isEnabled)}
+                onEnableNext={(isEnabled: boolean) =>
+                  setIsNextEnabled(isEnabled)
+                }
                 onChange={(study: Study) => {
                   console.log('onChange', study)
                   onUpdate(study)
                 }}
-              />    <div>
-              {!isFinished && (
-                <Box py={2} textAlign="left">
-                  {activeStep > 0 && activeStep < 3 && (
-                    <>
-                      <PrevButton
-                        variant="outlined"
+              />{' '}
+              <div>
+                {!isFinished && (
+                  <Box py={2} textAlign="left">
+                    {activeStep > 0 && activeStep < 3 && (
+                      <>
+                        <PrevButton
+                          variant="outlined"
+                          color="primary"
+                          onClick={handleBack}
+                        >
+                          <ArrowIcon /> {steps[activeStep - 1].label}
+                        </PrevButton>{' '}
+                        &nbsp;&nbsp;
+                      </>
+                    )}
+
+                    {activeStep < 2 && (
+                      <NextButton
+                        variant="contained"
                         color="primary"
-                        onClick={handleBack}
+                        onClick={handleNext}
+                        disabled={!isNextEnabled}
                       >
-                        <ArrowIcon /> {steps[activeStep - 1].label}
-                      </PrevButton>{' '}
-                      &nbsp;&nbsp;
-                    </>
-                  )}
+                        {steps[activeStep + 1].label} <ArrowIcon />
+                      </NextButton>
+                    )}
 
-                  {activeStep < 2 && (
-                    <NextButton
-                      variant="contained"
-                      color="primary"
-                      onClick={handleNext}
-                      disabled={!isNextEnabled}
-                    >
-                      {steps[activeStep + 1].label} <ArrowIcon />
-                    </NextButton>
-                  )}
-
-                  {activeStep == 2 && (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => setIsFinished(true)}
-                    >
-                      {' '}
-                      <LockIcon style={{ marginRight: '4px' }} />
-                      Submit and lock the study
-                    </Button>
-                  )}
-                </Box>
-              )}
+                    {activeStep == 2 && (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => setIsFinished(true)}
+                        disabled={!isNextEnabled}
+                      >
+                        {' '}
+                        <LockIcon style={{ marginRight: '4px' }} />
+                        Submit and lock the study
+                      </Button>
+                    )}
+                  </Box>
+                )}
+              </div>
             </div>
-            </div>
-        
           </div>
         )}
       </div>

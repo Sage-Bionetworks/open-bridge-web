@@ -6,23 +6,25 @@ import {
   FormControlLabel,
   Grid,
   Radio,
-  RadioGroup
+  RadioGroup,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ReactComponent as ArrowIcon } from '../../../assets/arrow_long.svg'
 import { ReactComponent as EnvelopeImg } from '../../../assets/launch/envelope_icon.svg'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import { ThemeType } from '../../../style/theme'
-import { Study } from '../../../types/types'
+import { Contact, Study } from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
 import {
   SimpleTextInput,
-  SimpleTextLabel
+  SimpleTextLabel,
+  AlertWithText,
 } from '../../widgets/StyledComponents'
 import LeadInvestigatorDropdown from '../app-design/LeadInvestigatorDropdown'
+import Alert_Icon from '../../../assets/alert_icon.svg'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -39,11 +41,21 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       },
     },
   },
+  input: {
+    height: '44px',
+  },
+  alertText: {
+    fontSize: '18px',
+    backgroundColor: 'transparent',
+    color: 'black',
+  },
 }))
 
 export interface IrbDetailsProps {
   study: Study
   isFinished: boolean
+  onEnableNext: Function
+  onChange: Function
 }
 
 const LastScreen: React.FunctionComponent<{ study: Study }> = ({
@@ -79,81 +91,208 @@ const LastScreen: React.FunctionComponent<{ study: Study }> = ({
   )
 }
 
+type irbStudyDataType = {
+  irbRecordSameInstitutionalAffiliation: boolean
+  irbApprovalDate: Date | null
+  irbApprovedUntil: Date | null
+  irbExemptDate: Date | null
+}
+
+type ContactRoleTypes =
+  | 'irb'
+  | 'principal_investigator'
+  | 'study_support'
+  | 'sponsor'
+
 const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
   study,
   isFinished,
+  onEnableNext,
+  onChange,
 }: IrbDetailsProps) => {
+  const inputStyles = {
+    width: '100%',
+  } as React.CSSProperties
+
   const classes = useStyles()
   const { token, orgMembership } = useUserSessionDataState()
+  const [studyData, setStudyData] = React.useState<irbStudyDataType>()
+  const [certifyStatements, setCertifyStatement] = React.useState({
+    isStudyProtocolReviewed: false,
+    isStudyConsistentWithLaws: false,
+  })
+  const [irbDecisionIsApproved, setIrbDecisionIsApproved] = React.useState(true)
+
+  useEffect(() => {
+    const institutionalAffiliation = getContactObject('principal_investigator')!
+      .affiliation
+    const nameOfIrbRecord = getContactObject('irb')!.name
+    const irbRecordSameInstitutionalAffiliation =
+      nameOfIrbRecord === institutionalAffiliation
+    const irbStudyData = {
+      irbApprovalDate: null,
+      irbApprovedUntil: null,
+      irbExemptDate: null,
+      irbRecordSameInstitutionalAffiliation: irbRecordSameInstitutionalAffiliation,
+    }
+    setStudyData(irbStudyData)
+  }, [])
+
+  useEffect(() => {
+    const certified =
+      certifyStatements.isStudyProtocolReviewed &&
+      certifyStatements.isStudyConsistentWithLaws
+    if (!certified) {
+      onEnableNext(false)
+      return
+    }
+    if (irbDecisionIsApproved) {
+      const approvalDate = studyData?.irbApprovalDate
+      const approvedUntil = studyData?.irbApprovedUntil
+      const isCorrectFormat =
+        approvalDate && approvedUntil && approvedUntil >= approvalDate
+      if (!isCorrectFormat) {
+        onEnableNext(false)
+        return
+      }
+    } else {
+      const exemptDate = studyData?.irbExemptDate
+      if (!exemptDate) {
+        onEnableNext(false)
+        return
+      }
+    }
+    const investigator = getContactObject('principal_investigator')!
+    const irb = getContactObject('irb')!
+    const inputFieldsCorrectFormat =
+      investigator.affiliation &&
+      study.irbProtocolId &&
+      irb.name &&
+      study.clientData.irbProtocolTitle
+    onEnableNext(inputFieldsCorrectFormat)
+  })
+
+  const getContactObject = (role: ContactRoleTypes) => {
+    return study?.contacts?.find(el => el.role === role)
+  }
+
+  const updateContactsArray = (
+    role: ContactRoleTypes,
+    newContactObject: Contact,
+    currentContactsArray: Contact[],
+  ) => {
+    const contactIndex = currentContactsArray.findIndex(el => el.role === role)
+    const newContactsArray = [...currentContactsArray]
+    newContactsArray[contactIndex] = newContactObject
+    return newContactsArray
+  }
 
   return (
     <>
       {!isFinished && (
         <Box textAlign="left">
           <MTBHeadingH2>IRB Details &amp; Certification</MTBHeadingH2>
-          <div>I certify that</div>
-
-          <FormControlLabel
-            key="confirmReviewed"
-            control={
-              <Checkbox
-                checked={true}
-                onChange={event => {
-                  if (event.target.checked) {
-                  }
-                }}
-                name="confirmReviewed"
-                color="primary"
-              />
-            }
-            label="The study protocol was reviewed by the IRB and /or equivalent body listed below."
-          />
-
-          <FormControlLabel
-            key="confirmConsistent"
-            control={
-              <Checkbox
-                checked={true}
-                onChange={event => {
-                  if (event.target.checked) {
-                  }
-                }}
-                name="confirmReviewed"
-                color="primary"
-              />
-            }
-            label="The Principal Investigator has assured that this study is consistent with applicable laws and regulations as well as relevant institutional policies.
-        "
-          />
+          <Box mt={2} mb={2} fontSize="16px" fontFamily="Lato">
+            I certify that
+          </Box>
+          <Box pl={3} mb={4}>
+            <FormControlLabel
+              key="confirmReviewed"
+              control={
+                <Checkbox
+                  checked={certifyStatements.isStudyProtocolReviewed}
+                  onChange={event => {
+                    setCertifyStatement(prevState => {
+                      return {
+                        ...prevState,
+                        isStudyProtocolReviewed: !prevState.isStudyProtocolReviewed,
+                      }
+                    })
+                  }}
+                  name="confirmReviewed"
+                  color="primary"
+                />
+              }
+              label="The study protocol was reviewed by the IRB and /or equivalent body listed below."
+            />
+            <FormControlLabel
+              key="confirmConsistent"
+              control={
+                <Checkbox
+                  checked={certifyStatements.isStudyConsistentWithLaws}
+                  onChange={event => {
+                    setCertifyStatement(prevState => {
+                      return {
+                        ...prevState,
+                        isStudyConsistentWithLaws: !prevState.isStudyConsistentWithLaws,
+                      }
+                    })
+                  }}
+                  name="confirmReviewed"
+                  color="primary"
+                />
+              }
+              label="The Principal Investigator has assured that this study is consistent with applicable laws and regulations as well as relevant institutional policies."
+            />
+          </Box>
 
           <Grid container spacing={4}>
             <Grid item xs={6}>
               <FormControl fullWidth>
                 <SimpleTextLabel htmlFor="protocolTitle">
-                  IRB Protocol Title
+                  IRB Protocol Title*
                 </SimpleTextLabel>
                 <SimpleTextInput
-                  value=""
+                  value={study.clientData.irbProtocolTitle || ''}
                   placeholder="Official IRB Protocol Name"
-                  onChange={e => {}}
+                  onChange={e => {
+                    const newClientData = {
+                      ...study.clientData,
+                      irbProtocolTitle: e.target.value,
+                    }
+                    const newStudy = {
+                      ...study,
+                      clientData: newClientData,
+                    }
+                    onChange(newStudy)
+                  }}
                   id="protocolTitle"
                   rows={5}
+                  className={classes.input}
+                  inputProps={{
+                    style: inputStyles,
+                  }}
                 />
               </FormControl>
             </Grid>
             <Grid item xs={6}></Grid>
             <Grid item xs={6}>
-              {' '}
-              {/* role: 'principal_investigator', name: '' } as Contact)*/}
               <LeadInvestigatorDropdown
                 token={token!}
                 orgMembership={orgMembership!}
-                currentInvestigatorSelected=""
-                onChange={() => {}}
+                currentInvestigatorSelected={
+                  getContactObject('principal_investigator')?.name || ''
+                }
+                onChange={(name: string) => {
+                  const newPrincipleInvestigator = {
+                    ...getContactObject('principal_investigator')!,
+                  }
+                  newPrincipleInvestigator!.name = name
+                  const newContactsArray = updateContactsArray(
+                    'principal_investigator',
+                    newPrincipleInvestigator,
+                    study.contacts!,
+                  )
+                  const newStudy: Study = {
+                    ...study,
+                    contacts: newContactsArray,
+                  }
+                  onChange(newStudy)
+                }}
               />
             </Grid>
             <Grid item xs={6}>
-              <Box fontSize="12px">
+              <Box fontSize="12px" mt={2}>
                 Principle Investigators must be listed as the "Study
                 Administrator".
                 <br />
@@ -174,18 +313,50 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                 &nbsp; tab on the top right hand side.
               </Box>
             </Grid>
-
-            <Grid item xs={6}>
+            <Grid item xs={6} style={{ marginTop: '-32px' }}>
               <FormControl fullWidth>
                 <SimpleTextLabel htmlFor="affiliation">
                   Institutional Affiliation*
                 </SimpleTextLabel>
                 <SimpleTextInput
-                  value=""
+                  value={
+                    getContactObject('principal_investigator')?.affiliation ||
+                    ''
+                  }
                   placeholder="Official IRB Protocol Name"
-                  onChange={e => {}}
+                  onChange={e => {
+                    const newPrincipleInvestigator = {
+                      ...getContactObject(`principal_investigator`)!,
+                    }
+                    newPrincipleInvestigator!.affiliation = e.target.value
+                    let newContactsArray = updateContactsArray(
+                      'principal_investigator',
+                      newPrincipleInvestigator,
+                      study.contacts!,
+                    )
+                    if (studyData?.irbRecordSameInstitutionalAffiliation) {
+                      const newIrbRecord = {
+                        ...getContactObject('irb')!,
+                      }
+                      newIrbRecord!.name = e.target.value
+                      newContactsArray = updateContactsArray(
+                        'irb',
+                        newIrbRecord,
+                        newContactsArray,
+                      )
+                    }
+                    const newStudy: Study = {
+                      ...study,
+                      contacts: newContactsArray,
+                    }
+                    onChange(newStudy)
+                  }}
                   id="affiliation"
                   multiline={false}
+                  className={classes.input}
+                  inputProps={{
+                    style: inputStyles,
+                  }}
                 />
               </FormControl>
             </Grid>
@@ -195,32 +366,87 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
 
             <Grid item xs={6}>
               <FormControl fullWidth>
-                <SimpleTextLabel htmlFor="notes">
+                <Box fontSize="14px" fontFamily="Poppins" mb={-1}>
                   What is your IRB of record?{' '}
-                </SimpleTextLabel>
-                <RadioGroup
-                  style={{ marginTop: '16px' }}
-                  aria-label="irb of record"
-                  name="irbOfRecord"
-                  value=""
-                  onChange={e => {}}
-                >
-                  <FormControlLabel
-                    control={<Radio value={'SAME'} />}
-                    label="Same Institutional Affiliation"
+                </Box>
+                <Box pl={4} mt={2}>
+                  <RadioGroup
+                    aria-label="irb of record"
+                    name="irbOfRecord"
+                    value={
+                      studyData?.irbRecordSameInstitutionalAffiliation
+                        ? 'aff_same'
+                        : 'aff_other'
+                    }
+                    onChange={e => {
+                      const isSameAsInstitution = e.target.value === 'aff_same'
+                      // let irbRecordName = studyData?.nameOfIrbRecord || ''
+                      if (isSameAsInstitution) {
+                        const newIrbRecord = {
+                          ...getContactObject('irb')!,
+                        }
+                        newIrbRecord!.name =
+                          getContactObject('principal_investigator')
+                            ?.affiliation || ''
+                        const newContactsArray = updateContactsArray(
+                          'irb',
+                          newIrbRecord,
+                          study.contacts!,
+                        )
+                        const newStudy: Study = {
+                          ...study,
+                          contacts: newContactsArray,
+                        }
+                        onChange(newStudy)
+                      }
+                      setStudyData({
+                        ...studyData!,
+                        irbRecordSameInstitutionalAffiliation: isSameAsInstitution,
+                      })
+                    }}
+                  >
+                    <FormControlLabel
+                      control={<Radio />}
+                      label="Same Institutional Affiliation"
+                      value="aff_same"
+                      id="aff_same_irb_record"
+                    />
+                    <FormControlLabel
+                      control={<Radio />}
+                      label="Other:"
+                      value="aff_other"
+                      id="aff_other_irb_record"
+                    />
+                  </RadioGroup>
+                  <SimpleTextInput
+                    value={getContactObject('irb')?.name || ''}
+                    placeholder="Name IRB of record"
+                    onChange={e => {
+                      const newIrbRecord = {
+                        ...getContactObject('irb')!,
+                      }
+                      newIrbRecord!.name = e.target.value
+                      const newContactsArray = updateContactsArray(
+                        'irb',
+                        newIrbRecord,
+                        study.contacts!,
+                      )
+                      const newStudy: Study = {
+                        ...study,
+                        contacts: newContactsArray,
+                      }
+                      onChange(newStudy)
+                    }}
+                    id="irbOfRecord"
+                    rows={5}
+                    className={classes.input}
+                    style={{ width: '100%', marginTop: '10px' }}
+                    inputProps={{
+                      style: inputStyles,
+                    }}
+                    readOnly={studyData?.irbRecordSameInstitutionalAffiliation}
                   />
-                  <FormControlLabel
-                    control={<Radio value={'OTHER'} />}
-                    label="Other:"
-                  />
-                </RadioGroup>
-                <SimpleTextInput
-                  value=""
-                  placeholder="Name IRB of record"
-                  onChange={e => {}}
-                  id="irbOfRecord"
-                  rows={5}
-                />
+                </Box>
               </FormControl>
             </Grid>
             <Grid item xs={6}></Grid>
@@ -230,67 +456,137 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                   IRB Protocol ID
                 </SimpleTextLabel>
                 <SimpleTextInput
-                  value=""
+                  value={study?.irbProtocolId || ''}
                   placeholder="Protocol ID"
-                  onChange={e => {}}
+                  onChange={e => {
+                    const newStudy: Study = {
+                      ...study,
+                      irbProtocolId: e.target.value,
+                    }
+                    onChange(newStudy)
+                  }}
                   id="protocolId"
                   multiline={false}
+                  className={classes.input}
                 />
               </FormControl>
             </Grid>
             <Grid item xs={6}></Grid>
             <Grid item xs={6}>
               <MTBHeadingH2>IRB Decision: </MTBHeadingH2>
-              <FormControl>
-                <RadioGroup
-                  aria-label="Irb Decision"
-                  name="irbDecision"
-                  value=""
-                  onChange={e => {}}
-                >
-                  <FormControlLabel
-                    control={<Radio value={'APPROVED'} />}
-                    label="Approved"
-                    labelPlacement="end"
-                  />
-                  <div>
+              <Box pl={3} mt={2}>
+                <FormControl>
+                  <RadioGroup
+                    aria-label="Irb Decision"
+                    name="irbDecision"
+                    value={
+                      irbDecisionIsApproved ? 'irb_approved' : 'irb_exempt'
+                    }
+                    onChange={e => {
+                      const isApproved = e.target.value === 'irb_approved'
+                      if (isApproved) {
+                        setStudyData({
+                          ...studyData!,
+                          irbExemptDate: null,
+                        })
+                      } else {
+                        setStudyData({
+                          ...studyData!,
+                          irbApprovalDate: null,
+                          irbApprovedUntil: null,
+                        })
+                      }
+                      setIrbDecisionIsApproved(isApproved)
+                    }}
+                  >
+                    <FormControlLabel
+                      control={<Radio />}
+                      label="Approved"
+                      labelPlacement="end"
+                      value="irb_approved"
+                    />
+                    <Box style={{ display: 'flex', flexDirection: 'row' }}>
+                      <FormControl style={{ marginRight: '8px' }}>
+                        <DatePicker
+                          label="Date of IRB Approval"
+                          id="approvalDate"
+                          value={
+                            irbDecisionIsApproved
+                              ? studyData?.irbApprovalDate || null
+                              : null
+                          }
+                          onChange={e => {
+                            setStudyData({
+                              ...studyData!,
+                              irbApprovalDate: e,
+                            })
+                          }}
+                          disabled={!irbDecisionIsApproved}
+                        ></DatePicker>
+                      </FormControl>
+                      <FormControl>
+                        <DatePicker
+                          label="Date of Expiration"
+                          id="expirationDate"
+                          value={
+                            irbDecisionIsApproved
+                              ? studyData?.irbApprovedUntil || null
+                              : null
+                          }
+                          onChange={e => {
+                            setStudyData({
+                              ...studyData!,
+                              irbApprovedUntil: e,
+                            })
+                          }}
+                          disabled={!irbDecisionIsApproved}
+                        ></DatePicker>
+                      </FormControl>
+                    </Box>
+                    <FormControlLabel
+                      control={<Radio />}
+                      label="Exempt"
+                      value="irb_exempt"
+                    />
                     <FormControl>
                       <DatePicker
-                        label="Date of Approval"
-                        id="approvalDate"
-                        value={null}
-                        onChange={e => {}}
+                        label="Date of Exemption"
+                        id="exemptionDate"
+                        value={
+                          !irbDecisionIsApproved
+                            ? studyData?.irbExemptDate || null
+                            : null
+                        }
+                        onChange={e => {
+                          setStudyData({
+                            ...studyData!,
+                            irbExemptDate: e,
+                          })
+                        }}
+                        disabled={irbDecisionIsApproved}
                       ></DatePicker>
                     </FormControl>
-                    <FormControl>
-                      <DatePicker
-                        label="Date of Approval Expiration"
-                        id="expirationDate"
-                        value={null}
-                        onChange={e => {}}
-                      ></DatePicker>
-                    </FormControl>
-                  </div>
-                  <FormControlLabel
-                    control={<Radio value={'EXEMPT'} />}
-                    label="Exempt"
-                  />
-                  <FormControl>
-                    <DatePicker
-                      label="Date of Exemption"
-                      id="exemptionDate"
-                      value={null}
-                      onChange={e => {}}
-                    ></DatePicker>
-                  </FormControl>
-                </RadioGroup>
-              </FormControl>
+                  </RadioGroup>
+                </FormControl>
+              </Box>
             </Grid>
           </Grid>
-          <Box fontSize="18px">
-            Please note that you will <strong>no longer</strong> be able to{' '}
-            <strong>make changes</strong> to your study once you’ve{' '}
-            <strong>submit</strong> the information from this page.
+          <Box mt={2}>
+            <AlertWithText
+              severity="error"
+              icon={
+                <img
+                  src={Alert_Icon}
+                  style={{ height: '30px' }}
+                  alt={'study-warning'}
+                ></img>
+              }
+              className={classes.alertText}
+            >
+              Please note that you will <strong>no longer</strong> be able to{' '}
+              <strong>make changes</strong> to your study once you’ve{' '}
+              <strong>submit</strong> the information from this page.
+            </AlertWithText>
           </Box>
         </Box>
       )}

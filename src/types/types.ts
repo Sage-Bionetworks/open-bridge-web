@@ -119,7 +119,6 @@ export type Study = {
   name: string
   // this is the body text
   details?: string
-
   subtitle?: string
   description?: string
   scheduleGuid?: string
@@ -138,9 +137,13 @@ export type Study = {
     welcomeScreenData?: WelcomeScreenData
     notifications?: StringDictionary<ScheduleNotification[]>
     keywords?: string
+    irbProtocolTitle?: string
   }
   createdOn?: Date
   modifiedOn?: Date
+  irbApprovedOn?: Date
+  irbApprovedUntil?: Date
+  irbExemptDate?: Date
 }
 
 export type WelcomeScreenData = {
