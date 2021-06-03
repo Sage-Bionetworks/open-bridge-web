@@ -87,6 +87,14 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
     }
     onChange({ ...study, clientData })
   }
+  const getSplitValue = (value: string | undefined) => {
+    if (!value) {
+      return []
+    }
+    const result = value.split(JOIN_TOKEN)
+
+    return result
+  }
 
   return (
     <div className={classes.root}>
@@ -124,7 +132,7 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
         id="diseases"
         options={diseases}
         onChange={changeDisease}
-        value={study.disease?.split(JOIN_TOKEN)}
+        value={getSplitValue(study.disease)}
         getOptionLabel={option => option}
         defaultValue={[]}
         renderInput={params => (
@@ -148,11 +156,11 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
 
       <Autocomplete
         multiple
-        id="keyworkds"
+        id="keywords"
         options={suggestions.map(option => option)}
         freeSolo
         onChange={changeKeywords}
-        value={study.clientData?.keywords?.split(JOIN_TOKEN)}
+        value={getSplitValue(study.clientData?.keywords)}
         renderTags={(value: string[], getTagProps) =>
           value.map((option: string, index: number) => (
             <Chip

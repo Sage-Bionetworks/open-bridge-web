@@ -92,8 +92,8 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
             <MTBHeadingH2> Preview your study on a mobile device</MTBHeadingH2>
             <MTBHeadingH1>Reminder of use:</MTBHeadingH1>
             <Box display="flex" justifyContent="space-between" mt={10} mb={8}>
-              {[...Array(4)].map(i => (
-                <Reminder></Reminder>
+              {[...Array(4)].map((_i, index) => (
+                <Reminder key={index}></Reminder>
               ))}
             </Box>
             <ErrorBoundary
