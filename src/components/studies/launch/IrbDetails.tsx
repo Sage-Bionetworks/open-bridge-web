@@ -122,6 +122,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
     isStudyConsistentWithLaws: false,
   })
   const [irbDecisionIsApproved, setIrbDecisionIsApproved] = React.useState(true)
+
   useEffect(() => {
     const institutionalAffiliation = getContactObject('principal_investigator')!
       .affiliation
