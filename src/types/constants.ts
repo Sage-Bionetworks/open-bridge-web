@@ -111,7 +111,7 @@ export default {
     //  enrollments: '/v5/studies/{studyId}/enrollments',
     enrollments: '/v5/studies/:studyId/enrollments',
     enrollmentsForUser: '/v5/studies/:studyId/participants/:userId/enrollments',
-    events: '/v5/studies/:studyId/participants/:userId/activityEvents',
+    events: '/v5/studies/:studyId/participants/:userId/activityevents',
     getAccountsForOrg: '/v1/organizations/:orgId/members',
     oauthSignIn: '/v3/auth/oauth/signIn',
     participant: '/v5/studies/:id/participants',
