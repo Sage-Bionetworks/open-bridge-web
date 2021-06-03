@@ -121,7 +121,6 @@ const Launch: React.FunctionComponent<
   const handleReset = () => {
     setActiveStep(0)
   }
-  console.log(studyInfo.study.contacts)
   return (
     <Paper className={classes.root} elevation={2} id="container">
       <LaunchStepper
@@ -186,6 +185,7 @@ const Launch: React.FunctionComponent<
                         variant="contained"
                         color="primary"
                         onClick={() => setIsFinished(true)}
+                        disabled={!isNextEnabled}
                       >
                         {' '}
                         <LockIcon style={{ marginRight: '4px' }} />

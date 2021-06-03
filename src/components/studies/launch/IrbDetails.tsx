@@ -15,7 +15,7 @@ import { ReactComponent as ArrowIcon } from '../../../assets/arrow_long.svg'
 import { ReactComponent as EnvelopeImg } from '../../../assets/launch/envelope_icon.svg'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import { ThemeType } from '../../../style/theme'
-import { Study } from '../../../types/types'
+import { Contact, Study } from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
 import {
@@ -92,31 +92,18 @@ const LastScreen: React.FunctionComponent<{ study: Study }> = ({
 }
 
 type irbStudyDataType = {
-  principleInvestigatorName: string
-  nameOfIrbRecord: string
   irbRecordSameInstitutionalAffiliation: boolean
-  institutionalAffiliation: string
-  irbProtocolId: string
   irbProtocolTitle: string
   irbApprovalDate: Date | null
   irbApprovedUntil: Date | null
   irbExemptDate: Date | null
 }
 
-// enum UpdateStudyOptions {
-//   UPDATE_IRB_PROTOCOL_TITLE = 'UPDATE_IRB_PROTOCOL_TITLE',
-//   UPDATE_LEAD_PRINCIPLE_INVESTIGATOR = 'UPDATE_LEAD_PRINCIPLE_INVESTIGATOR',
-//   UPDATE_INSTITUTIONAL_AFFILIATION = 'UPDATE_INSTITUTIONAL_AFFILIATION',
-//   UPDATE_NAME_OF_IRB_RECORD = 'UPDATE_NAME_OF_IRB_RECORD',
-//   UPDATE_IRB_PROTOCOL_ID = 'UPDATE_IRB_PROTOCOL_ID',
-// }
-
-// type UpdateStudyTypes =
-//   | UpdateStudyOptions.UPDATE_INSTITUTIONAL_AFFILIATION
-//   | UpdateStudyOptions.UPDATE_LEAD_PRINCIPLE_INVESTIGATOR
-//   | UpdateStudyOptions.UPDATE_INSTITUTIONAL_AFFILIATION
-//   | UpdateStudyOptions.UPDATE_NAME_OF_IRB_RECORD
-//   | UpdateStudyOptions.UPDATE_IRB_PROTOCOL_ID
+type ContactRoleTypes =
+  | 'irb'
+  | 'principal_investigator'
+  | 'study_support'
+  | 'sponsor'
 
 const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
   study,
@@ -137,27 +124,17 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
   })
   const [irbDecisionIsApproved, setIrbDecisionIsApproved] = React.useState(true)
   useEffect(() => {
-    const irbProtocolId = study.irbProtocolId || ''
-    const studyContacts = study.contacts || []
-    const principleInvestigator = studyContacts.find(
-      el => el.role === 'principal_investigator',
-    )
-    const principleInvestigatorName = principleInvestigator?.name || ''
-    const institutionalAffiliation = principleInvestigator?.affiliation || ''
-    const irbRecord = studyContacts.find(el => el.role === 'irb')
-    const nameOfIrbRecord = irbRecord?.name || ''
+    const institutionalAffiliation = getContactObject('principal_investigator')!
+      .affiliation
+    const nameOfIrbRecord = getContactObject('irb')!.name
     const irbRecordSameInstitutionalAffiliation =
       nameOfIrbRecord === institutionalAffiliation
     const irbStudyData = {
-      principleInvestigatorName: principleInvestigatorName,
-      nameOfIrbRecord: nameOfIrbRecord,
-      irbRecordSameInstitutionalAffiliation: irbRecordSameInstitutionalAffiliation,
-      institutionalAffiliation: institutionalAffiliation,
-      irbProtocolId: irbProtocolId,
       irbProtocolTitle: '',
       irbApprovalDate: null,
       irbApprovedUntil: null,
       irbExemptDate: null,
+      irbRecordSameInstitutionalAffiliation: irbRecordSameInstitutionalAffiliation,
     }
     setStudyData(irbStudyData)
   }, [])
@@ -186,24 +163,31 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
         return
       }
     }
+    const investigator = getContactObject('principal_investigator')!
+    const irb = getContactObject('irb')!
     const inputFieldsCorrectFormat =
-      studyData?.institutionalAffiliation &&
-      studyData?.irbProtocolId &&
-      studyData?.nameOfIrbRecord &&
+      investigator.affiliation &&
+      study.irbProtocolId &&
+      irb.name &&
       studyData?.irbProtocolTitle
+    console.log('input in correct format', inputFieldsCorrectFormat)
     onEnableNext(inputFieldsCorrectFormat)
-  }, [study])
+  })
 
-  // const updateStudy = (type: string) => {
-  //   const newStudy = { ...study }
-  //   if (type === 'update_radio') {
-  //     setStudyData({
-  //       ...studyData!,
-  //       irbRecordSameInstitutionalAffiliation: false,
-  //     })
-  //   }
-  //   onChange(newStudy)
-  // }
+  const getContactObject = (role: ContactRoleTypes) => {
+    return study?.contacts?.find(el => el.role === role)
+  }
+
+  const updateContactsArray = (
+    role: ContactRoleTypes,
+    newContactObject: Contact,
+    currentContactsArray: Contact[],
+  ) => {
+    const contactIndex = currentContactsArray.findIndex(el => el.role === role)
+    const newContactsArray = [...currentContactsArray]
+    newContactsArray[contactIndex] = newContactObject
+    return newContactsArray
+  }
 
   return (
     <>
@@ -284,9 +268,24 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                 token={token!}
                 orgMembership={orgMembership!}
                 currentInvestigatorSelected={
-                  studyData?.principleInvestigatorName || ''
+                  getContactObject('principal_investigator')?.name || ''
                 }
-                onChange={() => {}}
+                onChange={(name: string) => {
+                  const newPrincipleInvestigator = {
+                    ...getContactObject('principal_investigator')!,
+                  }
+                  newPrincipleInvestigator!.name = name
+                  const newContactsArray = updateContactsArray(
+                    'principal_investigator',
+                    newPrincipleInvestigator,
+                    study.contacts!,
+                  )
+                  const newStudy: Study = {
+                    ...study,
+                    contacts: newContactsArray,
+                  }
+                  onChange(newStudy)
+                }}
               />
             </Grid>
             <Grid item xs={6}>
@@ -317,18 +316,37 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                   Institutional Affiliation*
                 </SimpleTextLabel>
                 <SimpleTextInput
-                  value={studyData?.institutionalAffiliation || ''}
+                  value={
+                    getContactObject('principal_investigator')?.affiliation ||
+                    ''
+                  }
                   placeholder="Official IRB Protocol Name"
                   onChange={e => {
-                    let irbRecordName = studyData?.nameOfIrbRecord || ''
-                    if (studyData?.irbRecordSameInstitutionalAffiliation) {
-                      irbRecordName = e.target.value
+                    const newPrincipleInvestigator = {
+                      ...getContactObject(`principal_investigator`)!,
                     }
-                    setStudyData({
-                      ...studyData!,
-                      institutionalAffiliation: e.target.value,
-                      nameOfIrbRecord: irbRecordName,
-                    })
+                    newPrincipleInvestigator!.affiliation = e.target.value
+                    let newContactsArray = updateContactsArray(
+                      'principal_investigator',
+                      newPrincipleInvestigator,
+                      study.contacts!,
+                    )
+                    if (studyData?.irbRecordSameInstitutionalAffiliation) {
+                      const newIrbRecord = {
+                        ...getContactObject('irb')!,
+                      }
+                      newIrbRecord!.name = e.target.value
+                      newContactsArray = updateContactsArray(
+                        'irb',
+                        newIrbRecord,
+                        newContactsArray,
+                      )
+                    }
+                    const newStudy: Study = {
+                      ...study,
+                      contacts: newContactsArray,
+                    }
+                    onChange(newStudy)
                   }}
                   id="affiliation"
                   multiline={false}
@@ -359,15 +377,28 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     }
                     onChange={e => {
                       const isSameAsInstitution = e.target.value === 'aff_same'
-                      let irbRecordName = studyData?.nameOfIrbRecord || ''
+                      // let irbRecordName = studyData?.nameOfIrbRecord || ''
                       if (isSameAsInstitution) {
-                        irbRecordName =
-                          studyData?.institutionalAffiliation || ''
+                        const newIrbRecord = {
+                          ...getContactObject('irb')!,
+                        }
+                        newIrbRecord!.name =
+                          getContactObject('principal_investigator')
+                            ?.affiliation || ''
+                        const newContactsArray = updateContactsArray(
+                          'irb',
+                          newIrbRecord,
+                          study.contacts!,
+                        )
+                        const newStudy: Study = {
+                          ...study,
+                          contacts: newContactsArray,
+                        }
+                        onChange(newStudy)
                       }
                       setStudyData({
                         ...studyData!,
                         irbRecordSameInstitutionalAffiliation: isSameAsInstitution,
-                        nameOfIrbRecord: irbRecordName,
                       })
                     }}
                   >
@@ -385,13 +416,23 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     />
                   </RadioGroup>
                   <SimpleTextInput
-                    value={studyData?.nameOfIrbRecord || ''}
+                    value={getContactObject('irb')?.name || ''}
                     placeholder="Name IRB of record"
                     onChange={e => {
-                      setStudyData({
-                        ...studyData!,
-                        nameOfIrbRecord: e.target.value,
-                      })
+                      const newIrbRecord = {
+                        ...getContactObject('irb')!,
+                      }
+                      newIrbRecord!.name = e.target.value
+                      const newContactsArray = updateContactsArray(
+                        'irb',
+                        newIrbRecord,
+                        study.contacts!,
+                      )
+                      const newStudy: Study = {
+                        ...study,
+                        contacts: newContactsArray,
+                      }
+                      onChange(newStudy)
                     }}
                     id="irbOfRecord"
                     rows={5}
@@ -412,13 +453,14 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                   IRB Protocol ID
                 </SimpleTextLabel>
                 <SimpleTextInput
-                  value={studyData?.irbProtocolId}
+                  value={study?.irbProtocolId || ''}
                   placeholder="Protocol ID"
                   onChange={e => {
-                    setStudyData({
-                      ...studyData!,
+                    const newStudy: Study = {
+                      ...study,
                       irbProtocolId: e.target.value,
-                    })
+                    }
+                    onChange(newStudy)
                   }}
                   id="protocolId"
                   multiline={false}
