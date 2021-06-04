@@ -7,6 +7,7 @@ import {
   Grid,
   Radio,
   RadioGroup,
+  FormHelperText,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { useEffect } from 'react'
@@ -48,6 +49,10 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontSize: '18px',
     backgroundColor: 'transparent',
     color: 'black',
+  },
+  dateValidationErrorText: {
+    color: theme.palette.error.main,
+    fontSize: '13px',
   },
 }))
 
@@ -187,6 +192,10 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
     return newContactsArray
   }
 
+  const displayApprovalDateError =
+    studyData?.irbApprovalDate &&
+    studyData?.irbApprovedUntil &&
+    studyData?.irbApprovalDate > studyData?.irbApprovedUntil
   return (
     <>
       {!isFinished && (
@@ -473,7 +482,9 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
             </Grid>
             <Grid item xs={6}></Grid>
             <Grid item xs={6}>
-              <MTBHeadingH2>IRB Decision*: </MTBHeadingH2>
+              <MTBHeadingH2 style={{ fontSize: '16px' }}>
+                IRB Decision*:{' '}
+              </MTBHeadingH2>
               <Box pl={3} mt={2}>
                 <FormControl>
                   <RadioGroup
@@ -543,6 +554,15 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                         ></DatePicker>
                       </FormControl>
                     </Box>
+                    {displayApprovalDateError && (
+                      <FormHelperText
+                        id="approval-date-validation-error-text"
+                        className={classes.dateValidationErrorText}
+                      >
+                        Please make sure that expiration date is the same or
+                        after approval date.
+                      </FormHelperText>
+                    )}
                     <FormControlLabel
                       control={<Radio />}
                       label="Exempt"
