@@ -7,10 +7,9 @@ import { DEFAULT_NOTIFICATION } from '../../../services/study.service'
 import { ThemeType } from '../../../style/theme'
 import {
   AssessmentWindow as AssessmentWindowType,
-
-
-  ScheduleNotification, SessionSchedule,
-  StudySession
+  ScheduleNotification,
+  SessionSchedule,
+  StudySession,
 } from '../../../types/scheduling'
 import SaveButton from '../../widgets/SaveButton'
 import { AlertWithText, BlueButton } from '../../widgets/StyledComponents'
@@ -32,6 +31,11 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginTop: theme.spacing(4),
     marginLeft: theme.spacing(2),
   },
+  errorText: {
+    color: theme.palette.error.main,
+    backgroundColor: 'transparent',
+    fontSize: '15px',
+  },
 }))
 
 export const defaultSchedule: SessionSchedule = {
@@ -47,6 +51,7 @@ type SchedulableSingleSessionContainerProps = {
     | {
         generalErrorMessage: string[]
         sessionWindowErrors: Map<number, string>
+        notificationErrors: Map<number, string>
       }
     | undefined
 }
@@ -54,6 +59,11 @@ type SchedulableSingleSessionContainerProps = {
 type windowErrorArrayType = {
   windowName: string
   windowError: string
+}
+
+type notificationErrorArrayType = {
+  notficationError: string
+  notificationName: string
 }
 
 const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSessionContainerProps> = ({
@@ -71,6 +81,10 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
   const [windowErrors, setWindowErrors] = React.useState<
     windowErrorArrayType[]
+  >([])
+
+  const [notificationErrors, setNotificationErrors] = React.useState<
+    notificationErrorArrayType[]
   >([])
 
   React.useEffect(() => {
@@ -91,6 +105,21 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     })
     setWindowErrors(windowErrorsArray)
   }, [sessionErrorState?.sessionWindowErrors])
+
+  React.useEffect(() => {
+    if (!sessionErrorState || sessionErrorState.notificationErrors.size == 0) {
+      setNotificationErrors([])
+      return
+    }
+    const notificationErrorsArray: notificationErrorArrayType[] = []
+    sessionErrorState.notificationErrors.forEach((el, key) => {
+      notificationErrorsArray.push({
+        notificationName: 'notification ' + key,
+        notficationError: el,
+      })
+    })
+    setNotificationErrors(notificationErrorsArray)
+  }, [sessionErrorState?.notificationErrors])
 
   React.useEffect(() => {
     const session = !hasWindowLongerThan24h(studySession)
@@ -303,6 +332,28 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               )}
             </Box>
           </SchedulingFormSection>
+          <Box ml={-2}>
+            {!_.isEmpty(schedulableSession.notifications) &&
+              notificationErrors.map((el, index) => {
+                return (
+                  <AlertWithText
+                    severity="error"
+                    icon={
+                      <img
+                        src={Alert_Icon}
+                        style={{ height: '24px' }}
+                        alt={'notification-error-' + index}
+                      ></img>
+                    }
+                    key={index}
+                    className={classes.errorText}
+                  >
+                    Session {studySession.name} in{' '}
+                    {`${el.notificationName}: ${el.notficationError}`}
+                  </AlertWithText>
+                )
+              })}
+          </Box>
           <SchedulingFormSection
             label={
               <>
@@ -343,6 +394,10 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   onChange={(notification: ScheduleNotification) => {
                     updateNotification(notification, index)
                   }}
+                  isError={
+                    sessionErrorState?.notificationErrors.has(index + 1) ||
+                    false
+                  }
                   //window={window}
                 >
                   <NotificationTime

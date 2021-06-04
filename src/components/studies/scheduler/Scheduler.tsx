@@ -3,7 +3,7 @@ import {
   createStyles,
   FormControlLabel,
   makeStyles,
-  Theme
+  Theme,
 } from '@material-ui/core'
 import _ from 'lodash'
 import React, { FunctionComponent } from 'react'
@@ -15,7 +15,7 @@ import {
   Schedule,
   SessionSchedule,
   StartEventId,
-  StudySession
+  StudySession,
 } from '../../../types/scheduling'
 import { StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
@@ -28,7 +28,7 @@ import Duration from './Duration'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
-  SessionScheduleAction
+  SessionScheduleAction,
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import Timeline from './Timeline'
@@ -99,6 +99,7 @@ const Scheduler: FunctionComponent<
       {
         generalErrorMessage: string[]
         sessionWindowErrors: Map<number, string>
+        notificationErrors: Map<number, string>
       }
     >(),
   )
@@ -113,12 +114,19 @@ const Scheduler: FunctionComponent<
         //first session, timewindow, message
         var numberPattern = /\d+/g
         let windowIndex
+        let notificationIndex
         const sessionIndex = _.first(keyArr[0]?.match(numberPattern))
         // This should not happen
         if (!sessionIndex) return
         // if 3 levels - assume window
         if (keyArr.length > 2) {
-          windowIndex = _.first(keyArr[1]?.match(numberPattern))
+          if (keyArr[1].startsWith('notifications')) {
+            // notfication error
+            notificationIndex = _.first(keyArr[1]?.match(numberPattern))
+          } else {
+            // assume window error
+            windowIndex = _.first(keyArr[1]?.match(numberPattern))
+          }
         }
         const errorType = keyArr[keyArr.length - 1]
         const currentError = errors[key]
@@ -130,6 +138,9 @@ const Scheduler: FunctionComponent<
         const wholeErrorMessage = errorType + errorMessage
 
         const windowNumber = windowIndex ? parseInt(windowIndex) + 1 : undefined
+        const notificationNumber = notificationIndex
+          ? parseInt(notificationIndex) + 1
+          : undefined
         const sessionKey = `${sessionName}-${parseInt(sessionIndex) + 1}`
 
         let currentErrorState: any
@@ -139,16 +150,22 @@ const Scheduler: FunctionComponent<
           currentErrorState = {
             generalErrorMessage: [],
             sessionWindowErrors: new Map<number, string>(),
+            notificationErrors: new Map<number, string>(),
           }
         }
 
-        if (!windowNumber) {
-          currentErrorState!.generalErrorMessage.push(wholeErrorMessage)
-        } else {
+        if (windowNumber) {
           currentErrorState?.sessionWindowErrors.set(
             windowNumber,
             wholeErrorMessage,
           )
+        } else if (notificationNumber) {
+          currentErrorState?.notificationErrors.set(
+            notificationNumber,
+            wholeErrorMessage,
+          )
+        } else {
+          currentErrorState!.generalErrorMessage.push(wholeErrorMessage)
         }
         newErrorState.set(sessionKey, currentErrorState)
       })
