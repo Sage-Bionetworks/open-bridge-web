@@ -367,7 +367,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
             <Grid item xs={6}>
               <FormControl fullWidth>
                 <Box fontSize="14px" fontFamily="Poppins" mb={-1}>
-                  What is your IRB of record?{' '}
+                  What is your IRB of record?*
                 </Box>
                 <Box pl={4} mt={2}>
                   <RadioGroup
@@ -453,7 +453,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
             <Grid item xs={6}>
               <FormControl>
                 <SimpleTextLabel htmlFor="protocolId">
-                  IRB Protocol ID
+                  IRB Protocol ID*
                 </SimpleTextLabel>
                 <SimpleTextInput
                   value={study?.irbProtocolId || ''}
@@ -473,7 +473,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
             </Grid>
             <Grid item xs={6}></Grid>
             <Grid item xs={6}>
-              <MTBHeadingH2>IRB Decision: </MTBHeadingH2>
+              <MTBHeadingH2>IRB Decision*: </MTBHeadingH2>
               <Box pl={3} mt={2}>
                 <FormControl>
                   <RadioGroup
