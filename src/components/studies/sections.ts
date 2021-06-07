@@ -1,4 +1,3 @@
-
 import CreateSessionHoveredIcon from '../../assets/study-builder-icons/hovered/create_sessions_hover_icon.svg'
 import CustomizeAppHoveredIcon from '../../assets/study-builder-icons/hovered/customize_app_hover_icon.svg'
 import EnrollmentTypeHoveredIcon from '../../assets/study-builder-icons/hovered/enrollment_type_hover_icon.svg'
@@ -13,7 +12,6 @@ import LaunchStudyRegularIcon from '../../assets/study-builder-icons/normal/laun
 import PreviewStudyRegaularIcon from '../../assets/study-builder-icons/normal/preview_study_normal_icon.svg'
 import RecordersRegularIcon from '../../assets/study-builder-icons/normal/recorders_normal_icon.svg'
 import ScheduleSessionsRegularIcon from '../../assets/study-builder-icons/normal/schedule_sessions_normal_icon.svg'
-
 
 export type StudySection =
   | 'scheduler'
@@ -31,11 +29,10 @@ export type StudySection =
 
 export const SECTIONS: { name: string; path: StudySection }[] = [
   // { name: 'Set up Study', path: 'description' },
-  { name: 'Customize App', path: 'customize' },
-
   { name: 'Create Sessions', path: 'session-creator' },
   { name: 'Schedule Sessions', path: 'scheduler' },
   { name: 'Enrollment Type', path: 'enrollment-type-selector' },
+  { name: 'Customize App', path: 'customize' },
   // { name: 'Designate Groups', path: 'team-settings' },
 
   { name: 'Optional Monitoring', path: 'passive-features' },
@@ -46,21 +43,20 @@ export const SECTIONS: { name: string; path: StudySection }[] = [
 ]
 
 export const normalNavIcons = [
-  CustomizeAppRegularIcon,
   CreateSessionRegularIcon,
   ScheduleSessionsRegularIcon,
   EnrollmentTypeRegularIcon,
+  CustomizeAppRegularIcon,
   RecordersRegularIcon,
   PreviewStudyRegaularIcon,
   LaunchStudyRegularIcon,
 ]
 export const hoverNavIcons = [
-  CustomizeAppHoveredIcon,
   CreateSessionHoveredIcon,
   ScheduleSessionsHoveredIcon,
   EnrollmentTypeHoveredIcon,
+  CustomizeAppHoveredIcon,
   RecordersHoveredIcon,
   PreviewStudyHoveredIcon,
   LaunchStudyHoveredIcon,
 ]
-
