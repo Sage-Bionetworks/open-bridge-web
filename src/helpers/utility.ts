@@ -192,6 +192,16 @@ export const getRandomId = (): string => {
 export const getEnumKeys = <T>(enum1: T): (keyof T)[] =>
   Object.keys(enum1) as (keyof T)[]
 
+export const getEnumKeyByEnumValue = (
+  myEnum: any,
+  enumValue: number | string,
+): string => {
+  let keys = Object.keys(myEnum).filter(x => myEnum[x] == enumValue)
+  const result = keys.length > 0 ? keys[0] : ''
+
+  return result
+}
+
 export const bytesToSize = (bytes: number) => {
   const sizes = ['bytes', 'kb', 'MB', 'GB', 'TB']
   if (bytes === 0) return 'n/a'
@@ -256,6 +266,7 @@ export const setBodyClass = (next?: string) => {
   } else {
     window.document.body.classList.remove('whiteBg')
   }
-  if (next && blackBgSections.includes(next))  {    window.document.body.classList.add('blackBg')}
+  if (next && blackBgSections.includes(next)) {
+    window.document.body.classList.add('blackBg')
+  }
 }
-

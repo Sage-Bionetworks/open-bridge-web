@@ -26,6 +26,7 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
               onChange(e.target.value)
             }}
             durationString={interval || ''}
+            unitDefault={DWsEnum.D}
             unitLabel="Repeat Every"
             numberLabel="frequency number"
             unitData={DWsEnum }

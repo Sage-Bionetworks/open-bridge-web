@@ -317,14 +317,15 @@ const SessionLine: React.FunctionComponent<SingleSessionLinePlotProps> = ({
   }
   //@ts-ignore
   const data = zoomLevel === 'Daily' ? dailyData : nonDailyData
-  const width =
+  /*const width =
     data[sessionIndex][data[sessionIndex].length - 1] *
       unitPixelWidth[zoomLevel] -
-    data[sessionIndex][0] * unitPixelWidth[zoomLevel]
+    data[sessionIndex][0] * unitPixelWidth[zoomLevel]*/
 
   const result = (
     <>
       <div
+        key="slash"
         style={{
           position: 'absolute',
           top: `${graphSessionHeight * sessionIndex - 10}px`,
@@ -338,6 +339,7 @@ const SessionLine: React.FunctionComponent<SingleSessionLinePlotProps> = ({
       </div>
       <div
         className={classes.sessionLine}
+        key="sessionLine"
         style={{
           top: `${graphSessionHeight * sessionIndex}px`,
           width: `${getWidth(scheduleLength, zoomLevel) + 30}px`,
@@ -411,6 +413,7 @@ const GridPlot: React.FunctionComponent<GridPlotProps> = ({
     <>
       {index === 0 && <div className={classes.gridUnit}>{unit}</div>}
       <div
+      key="gridLine"
         className={classes.gridLine}
         style={{
           height: `${numberSessions * graphSessionHeight}px`,
@@ -420,6 +423,7 @@ const GridPlot: React.FunctionComponent<GridPlotProps> = ({
         }}
       >
         <div
+        key="gridLineUnit"
           className={classes.tickNumberDisplay}
           style={{
             left: `${unitPixelWidth[zoomLevel] / -2}px`,
@@ -490,20 +494,20 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
                   index={index}
                   zoomLevel={zoomLevel}
                   numberSessions={sortedSessions.length}
-                  key={i}
+                  key={`${i}_${index}`}
                 />
               ) : (
                 <GridPlot
                   index={index}
                   zoomLevel={zoomLevel}
                   numberSessions={sortedSessions.length}
-                  key={i}
+                  key={`${i}_${index}`}
                 />
               ),
             )}
             <div style={{ position: 'absolute', top: '30px' }}>
               {sortedSessions.map((session, sIndex) => (
-                <>
+                <div key={sIndex}>
                   <SessionLine
                     sessionIndex={sIndex}
                     nonDailyData={nonDailyData}
@@ -528,7 +532,7 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
                       sessionGuid={session.guid!}
                     />
                   )}
-                </>
+                </div>
               ))}
             </div>
           </div>

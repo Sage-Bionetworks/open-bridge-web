@@ -4,19 +4,19 @@ import {
   FormControlLabel,
   IconButton,
   makeStyles,
-  Paper,
+  Paper
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Close'
+import clsx from 'clsx'
 import React from 'react'
 import {
   AssessmentWindow as AssessmentWindowType,
-  HDWMEnum,
+  HDWMEnum
 } from '../../../types/scheduling'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
 import { getDropdownTimeItems } from './utility'
-import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -114,6 +114,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
                 })
               }
               durationString={window.expiration || '    '}
+              unitDefault={HDWMEnum.H}
               unitLabel="Repeat Every"
               numberLabel="frequency number"
               unitData={HDWMEnum}

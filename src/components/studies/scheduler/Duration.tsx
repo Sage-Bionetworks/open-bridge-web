@@ -6,6 +6,7 @@ import {
 import ClearIcon from '@material-ui/icons/HighlightOff'
 import moment from 'moment'
 import React from 'react'
+import { getEnumKeyByEnumValue } from '../../../helpers/utility'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import SmallTextBox from '../../widgets/SmallTextBox'
 
@@ -29,6 +30,7 @@ export interface DurationProps {
   unitLabel: string
   numberLabel: string
   isIntro?: boolean
+  unitDefault?: any
 }
 
 const Duration: React.FunctionComponent<
@@ -40,6 +42,7 @@ const Duration: React.FunctionComponent<
   unitLabel,
   numberLabel,
   isIntro,
+  unitDefault,
   ...props
 }: DurationProps) => {
   const classes = useStyles()
@@ -72,6 +75,11 @@ const Duration: React.FunctionComponent<
     }
     if (value) {
       setNum(value)
+
+      if (!unit && unitDefault) {
+        const unitDefaultValue=getEnumKeyByEnumValue(unitData, unitDefault)
+        setUnit(unitDefaultValue)
+      }
     }
     if (!unit || !value) {
       return
