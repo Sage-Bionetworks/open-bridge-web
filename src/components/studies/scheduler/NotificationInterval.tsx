@@ -53,6 +53,7 @@ const NotificationInterval: React.FunctionComponent<NotificationIntervalProps> =
               onChange={e => {
                 onChange(e.target.value)
               }}
+              unitDefault={MHDsEnum.M}
               durationString={repeatInterval || ''}
               unitLabel="Repeat Every"
               numberLabel="frequency number"

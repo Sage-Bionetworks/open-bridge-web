@@ -3,29 +3,29 @@ import {
   Drawer,
   Hidden,
   IconButton,
-  LinearProgress,
+  LinearProgress
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
 import PeopleIcon from '@material-ui/icons/People'
+import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { NavLink } from 'react-router-dom'
+import PARTICIPANTS_ICON from '../../assets/group_participants_icon.svg'
 import Logo from '../../assets/logo_mtb.svg'
 import { useStudyInfoDataState } from '../../helpers/StudyInfoContext'
 import { latoFont } from '../../style/theme'
 import constants from '../../types/constants'
 import BreadCrumb from '../widgets/BreadCrumb'
 import HideWhen from '../widgets/HideWhen'
-import PARTICIPANTS_ICON from '../../assets/group_participants_icon.svg'
 import MobileDrawerMenuHeader from '../widgets/MobileDrawerMenuHeader'
-import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
   toolbarStudyHeader: {
     height: '104px',
     display: 'flex',
-    backgroundColor: '#F8F8F8',
+    backgroundColor: '#F7F7F7', //'#F8F8F8',
 
     alignItems: 'center',
     flexDirection: 'row',
@@ -154,7 +154,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   const studyData = useStudyInfoDataState()
 
   return (
-    <Box bgcolor="#fff" px={2}>
+    <Box bgcolor="#F7F7F7" px={2}>
       <Hidden lgUp>
         <IconButton
           color="inherit"

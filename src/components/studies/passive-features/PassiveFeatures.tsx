@@ -7,13 +7,13 @@ import weather from '../../../assets/passive-features/recorders_weather.svg'
 import { latoFont, ThemeType } from '../../../style/theme'
 import {
   BackgroundRecorders,
-  StudyBuilderComponentProps,
+  StudyBuilderComponentProps
 } from '../../../types/types'
 import { MTBHeadingH3 } from '../../widgets/Headings'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
-    backgroundColor: '#fff',
+    backgroundColor: '#fefefe',
 
     padding: theme.spacing(6, 6, 7, 6),
     textAlign: 'left',
@@ -48,6 +48,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       verticalAlign: 'top',
       fontWeight: 'bold',
     },
+    '& td': {
+      verticalAlign: 'top'
+    }
   },
 
   toggle: {
@@ -156,10 +159,10 @@ const PassiveFeatures: React.FunctionComponent<
           </thead>
           <tbody>
             <tr>
-              <td style={{ width: '40%' }}>
+              <td style={{ width: '40%'}}>
                 {sensors[recorderType]!.description}
               </td>
-              <td style={{ width: '20%' }}>
+              <td style={{ width: '20%'}}>
                 {sensors[recorderType]!.frequency}
               </td>
               <td>{sensors[recorderType]!.burden}</td>

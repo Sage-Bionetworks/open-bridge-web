@@ -243,7 +243,7 @@ const theme: Theme = createMuiTheme({
       black: '#2E2E2E',
     },
     background: {
-      default: '#E5E5E5',
+      default: '#EBEBEB',
       paper: '#fff',
     },
     text: {

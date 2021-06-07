@@ -147,6 +147,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
                 durationString={offset || ''}
                 unitLabel="Notification Offset"
                 numberLabel="notification offset"
+                unitDefault={MHDsEnum.M}
                 unitData={MHDsEnum}
               ></Duration>
             </>
@@ -170,6 +171,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
         durationString={offset || ''}
         unitLabel="Repeat Every"
         numberLabel="frequency number"
+        unitDefault={MHDsEnum.H}
         unitData={MHDsEnum}
       ></Duration>
 

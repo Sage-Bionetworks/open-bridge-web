@@ -184,7 +184,7 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
 }: StudyCardProps) => {
   function getCorrectCardName(status: string): string {
     if (status === 'design') {
-      return 'design'
+      return 'Draft'
     } else if (status === 'COMPLETED') {
       return 'Closed'
     } else {

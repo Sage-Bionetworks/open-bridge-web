@@ -33,7 +33,7 @@ const useStyles = makeStyles(theme => ({
     gridColumnGap: theme.spacing(2),
     gridRowGap: theme.spacing(2),
     minHeight: theme.spacing(50),
-    backgroundColor: '#fff',
+    backgroundColor: '#fefefe',
   },
 
   closeButton: {
