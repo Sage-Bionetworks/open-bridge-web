@@ -77,7 +77,7 @@ const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = (
             rows={8}
             rowsMax={10}
             placeholder="Lorem ipsum"
-            titleText="Body Copy (maximum 500 characters)"
+            titleText="Body Copy (maximum 500 characters)*"
             maxWordCount={500}
           />
         </FormControl>
