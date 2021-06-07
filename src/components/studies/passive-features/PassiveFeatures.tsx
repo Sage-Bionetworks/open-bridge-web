@@ -7,7 +7,7 @@ import weather from '../../../assets/passive-features/recorders_weather.svg'
 import { latoFont, ThemeType } from '../../../style/theme'
 import {
   BackgroundRecorders,
-  StudyBuilderComponentProps
+  StudyBuilderComponentProps,
 } from '../../../types/types'
 import { MTBHeadingH3 } from '../../widgets/Headings'
 
@@ -21,6 +21,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
   intro: {
     marginBottom: theme.spacing(2),
+    lineHeight: '18px',
+    width: '85%',
   },
   featureHeading: {
     fontFamily: latoFont,
@@ -70,36 +72,28 @@ const sensors: Partial<RecorderInfo> = {
     description:
       'Motion Sensors Description about this background recorder and its use of accelerameter and gyro',
     title: 'Motion Sensors',
-    frequency:
-      'Lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor',
+    frequency: 'When using the app.',
     img: motion,
-    burden:
-      'Lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor',
+    burden: 'Uses battery capacity and requires more frequent battery charge.',
     value: false,
   },
   microphone: {
     description:
-      'Background Noise Description about this background recorder and its use of accelerameter and gyro',
-    frequency:
-      'Lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor',
-
+      'Noise can be distracting. The phone microphone can record background noise, which is converted into a measure of decibels relative to full scale. Recordings are not kept.',
+    frequency: 'When performing App activities.',
     title: 'Background Noise',
     img: noise,
-    burden:
-      'Lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor',
+    burden: 'Uses battery capacity and requires more frequent battery charge.',
 
     value: false,
   },
   weather: {
     description:
-      'Weather and Air Pollution Description about this background recorder and its use of accelerameter and gyro',
-    frequency:
-      'Lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor',
-
+      "The phone GPS indicates phone location that can be used to collect data about weather and air quality at that location. The GPS data isn't stored to maintain participant's privacy.",
+    frequency: 'When using the App',
     title: 'Weather and Air Pollution',
     img: weather,
-    burden:
-      'Lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor lorem ipsum dolor',
+    burden: 'Uses battery capacity and requires more frequent battery charge.',
 
     value: false,
   },
@@ -162,8 +156,12 @@ const PassiveFeatures: React.FunctionComponent<
           </thead>
           <tbody>
             <tr>
-              <td>{sensors[recorderType]!.description}</td>
-              <td>{sensors[recorderType]!.frequency}</td>
+              <td style={{ width: '40%' }}>
+                {sensors[recorderType]!.description}
+              </td>
+              <td style={{ width: '20%' }}>
+                {sensors[recorderType]!.frequency}
+              </td>
               <td>{sensors[recorderType]!.burden}</td>
             </tr>
           </tbody>
@@ -176,15 +174,16 @@ const PassiveFeatures: React.FunctionComponent<
     <>
       <div className={classes.root}>
         <MTBHeadingH3 className={classes.intro}>
-          The Mobile Toolbox App offers the additionally following passive
-          collection features.
+          Mobile Toolbox lets you add optional contextual/sensor monitoring to
+          your study. This can be used to assess the impact of environmental
+          factors on test performance.
         </MTBHeadingH3>
         <MTBHeadingH3 className={classes.intro}>
-          Please switch on the features you would like to use during your study.
+          When adding monitoring, please consider the impact on the
+          participant's experience and potential added burden.
         </MTBHeadingH3>
         <MTBHeadingH3 className={classes.intro}>
-          Participants will always have the ability to turn off these
-          permissions at any time.
+          Participants can turn optional monitoring on/off at any time.
         </MTBHeadingH3>
         <PFSection
           recorderType={'motion'}
