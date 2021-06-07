@@ -6,9 +6,10 @@ import {
   IconButton,
   makeStyles,
   Paper,
-  TextField
+  TextField,
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Close'
+import clsx from 'clsx'
 import _ from 'lodash'
 import React from 'react'
 import { ReactComponent as BellIcon } from '../../../assets/bell.svg'
@@ -57,6 +58,9 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(0, 4, 3, 16),
     backgroundColor: '#BBC3CD',
   },
+  error: {
+    border: `1px solid ${theme.palette.error.main}`,
+  },
 }))
 
 export interface NotificationWindowProps {
@@ -66,6 +70,7 @@ export interface NotificationWindowProps {
   onDelete: Function
   notification: ScheduleNotification
   children: React.ReactNode
+  isError: boolean
 }
 
 const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
@@ -75,6 +80,7 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
   index,
   isMultiday,
   children,
+  isError,
 }: NotificationWindowProps) => {
   const updateMessage = (options: { subject?: string; message?: string }) => {
     const messages = notification.messages || []
@@ -88,7 +94,10 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
   }
   const classes = useStyles()
   return (
-    <Paper className={classes.root} elevation={2}>
+    <Paper
+      className={clsx(classes.root, isError && classes.error)}
+      elevation={2}
+    >
       <Box position="relative">
         <Box className={classes.windowTitle}>
           <BellIcon style={{ marginRight: '16px' }} />
@@ -143,7 +152,7 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
 
         {children}
 
-        {(index > 0 && isMultiday) && (
+        {index > 0 && isMultiday && (
           <>
             <Divider className={classes.divider} />
             <NotificationInterval
