@@ -38,7 +38,7 @@ export const SECTIONS: { name: string; path: StudySection }[] = [
   { name: 'Enrollment Type', path: 'enrollment-type-selector' },
   // { name: 'Designate Groups', path: 'team-settings' },
 
-  { name: 'Passive Features', path: 'passive-features' },
+  { name: 'Optional Monitoring', path: 'passive-features' },
   { name: 'Preview Study', path: 'preview' },
   // { name: 'IRB Approval', path: 'irb' },
   // { name: 'Review Alerts', path: 'alerts' },
