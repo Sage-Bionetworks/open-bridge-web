@@ -35,11 +35,13 @@ import {
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
+import { MTBHeadingH3 } from '../../widgets/Headings'
 import HelpBox from '../../widgets/HelpBox'
 import {
   DialogButtonPrimary,
   DialogButtonSecondary
 } from '../../widgets/StyledComponents'
+import LiveIcon from '../LiveIcon'
 import AddParticipants from './AddParticipants'
 import DeleteDialog from './DeleteDialogContents'
 import ParticipantDownload, {
@@ -66,9 +68,8 @@ const useStyles = makeStyles(theme => ({
     boxShadow: 'none',
     padding: theme.spacing(0, 5, 2, 5),
   },
-  studyText: {
-    fontFamily: 'Lato',
-    fontWeight: 'lighter',
+  studyId: {
+    color: '#393434', marginRight: '24px', opacity: .75
   },
   topButtons: {
     marginRight: theme.spacing(2),
@@ -83,7 +84,8 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingLeft: theme.spacing(5),
+    fontSize: '16px'
+    //paddingLeft: theme.spacing(5),
   },
   horizontalGroup: {
     display: 'flex',
@@ -414,10 +416,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   } else {
     return (
       <Box>
-        <Box px={3} py={2}>
-          Study ID: {study.identifier}
+        <Box px={3} py={2} display="flex">
+         <MTBHeadingH3 className={classes.studyId}> Study ID: {study.identifier} </MTBHeadingH3><LiveIcon/>
         </Box>
-        <Button onClick={() => makeTestGroup()}>Make test group [test]</Button>
+       {/* <Button onClick={() => makeTestGroup()}>Make test group [test]</Button>*/}
 
         <Box px={3} py={2} position="relative">
           {!data?.items.length && !isEdit && (
