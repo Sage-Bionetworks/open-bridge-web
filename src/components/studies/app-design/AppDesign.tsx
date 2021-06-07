@@ -38,6 +38,7 @@ const imgHeight = 70
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: { counterReset: 'orderedlist' },
   section: {
+    backgroundColor: '#fefefe',
     padding: theme.spacing(9, 9, 10, 17),
     display: 'flex',
     justifyContent: 'space-between',

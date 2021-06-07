@@ -322,7 +322,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
   return (
     <>
-      <Box display="flex" bgcolor="white">
+      <Box display="flex" bgcolor="#f7f7f7">
         <Box width={open ? 210 : 56} flexShrink={0}></Box>
         <Box
           className={clsx(classes.mainArea, {

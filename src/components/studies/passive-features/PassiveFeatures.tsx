@@ -13,7 +13,7 @@ import { MTBHeadingH3 } from '../../widgets/Headings'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
-    backgroundColor: '#fff',
+    backgroundColor: '#fefefe',
 
     padding: theme.spacing(6, 6, 7, 6),
     textAlign: 'left',
