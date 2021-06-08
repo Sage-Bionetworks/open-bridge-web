@@ -7,6 +7,7 @@ const AccessService = {
   deleteIndividualAccount,
   getAliasFromSynapseByEmail,
   getAccountsForOrg,
+  getDetailedAccountsForOrg,
   getIndividualAccount,
   updateIndividualAccountRoles,
 }
@@ -78,6 +79,18 @@ async function getIndividualAccount(
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
   const result = await callEndpoint<OrgUser>(endpoint, 'GET', {}, token)
   return result.data
+}
+
+async function getDetailedAccountsForOrg(
+  token: string,
+  orgId: string,
+): Promise<OrgUser[]> {
+  const accounts = await AccessService.getAccountsForOrg(token!, orgId)
+  const promises = accounts.map(async account => {
+    return await AccessService.getIndividualAccount(token!, account.id)
+  })
+  const result = await Promise.all(promises)
+  return result
 }
 
 async function deleteIndividualAccount(
