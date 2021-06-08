@@ -81,7 +81,7 @@ const AssessmentCard: FunctionComponent<AssessmentCardProps> = ({
 
   return (
     <Card className={classes.root}>
-      <AssessmentImage resources={assessment.resources} name={assessment.title}>
+      <AssessmentImage resources={assessment.resources} variant='normal' name={assessment.title}>
         <Typography variant="subtitle2" className={classes.tags}>
           {assessment.tags.join(', ')}
         </Typography>

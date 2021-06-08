@@ -160,9 +160,9 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                 style={{ textAlign: 'left' }}
               >
                 <AssessmentImage
-                  name="X"
+                  name={`${data.title}_img`}
                   resources={data.resources}
-                  isSmall={true}
+                  variant="detail"
                 ></AssessmentImage>
               </Box>
               <Box textAlign="left">

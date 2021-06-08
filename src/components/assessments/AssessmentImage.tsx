@@ -22,17 +22,18 @@ const useStyles = makeStyles(theme =>
 type AssessmentImageProps = {
   resources: AssessmentResource[] | undefined
   name: string
-  isSmall?: boolean
+  variant: 'small' | 'detail' | 'normal'
   children?: ReactNode
 }
 
 const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
   resources,
   name,
-  isSmall = false,
+  variant = 'normal',
   children = <></>,
 }: AssessmentImageProps) => {
   const classes = useStyles()
+
   const screen = resources?.find(
     resource =>
       resource.category === 'icon' &&
@@ -41,9 +42,8 @@ const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
       resource.title.includes('_square') &&
       resource.url,
   )
- 
 
-  return isSmall ? (
+  return variant === 'small' ? (
     <img src={screen?.url || DefaultImg} alt={name} height="100%" />
   ) : (
     <CardMedia

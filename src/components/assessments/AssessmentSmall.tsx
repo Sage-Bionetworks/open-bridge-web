@@ -97,7 +97,7 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
     >
       <Box className={classes.card}>
         <AssessmentImage
-          isSmall={true}
+          variant="small"
           resources={assessment.resources}
           name={assessment.title}
         ></AssessmentImage>
