@@ -46,12 +46,12 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       outline: `4px solid ${theme.palette.primary.dark}`,
     },
   },
-  title: {
-    fontSize: 14,
+  studyId: {
+    fontSize: 12,
     fontFamily: 'Lato',
-    fontWeight: 'bold',
-    fontStyle: '12px',
+    marginBottom: theme.spacing(2),
   },
+
   liveIconContainer: {
     marginTop: theme.spacing(0.5),
     marginRight: theme.spacing(0.5),
@@ -121,7 +121,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       transform: 'scale(1)',
     },
   },
- 
 }))
 
 const cancelPropagation = (e: React.MouseEvent) => {
@@ -213,7 +212,7 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
       ) : (
         <div />
       )}
-      {['recruitment', 'in_flight'].includes(study.phase) ? (
+      {['recruitment', 'in_flight', 'live'].includes(study.phase) ? (
         <div className={classes.liveIconContainer}>
           <LiveIcon />
         </div>
@@ -266,10 +265,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
   return (
     <>
       <Card
-        className={clsx(
-          classes.root,
-          isNewlyAddedStudy && classes.isJustAdded
-        )}
+        className={clsx(classes.root, isNewlyAddedStudy && classes.isJustAdded)}
         onClick={e => {
           if (isRename) {
             cancelPropagation(e)
@@ -304,12 +300,10 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
               />
             )}
           </div>
+          <Typography className={classes.studyId} color="textSecondary">
+            Study ID: {study.identifier}
+          </Typography>
           {study.phase === 'design' && <DraftIcon />}
-          {study.phase !== 'design' && (
-            <Typography className={classes.title} color="textSecondary">
-              Study ID: {study.identifier}
-            </Typography>
-          )}
         </CardContent>
         <CardBottom study={study}></CardBottom>
       </Card>
