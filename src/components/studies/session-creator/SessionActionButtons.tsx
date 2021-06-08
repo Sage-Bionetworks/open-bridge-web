@@ -58,7 +58,7 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
       <BlueButton
         key="add_session"
         variant="contained"
-        onClick={() => onAddSession(sessions, [sessions[0].assessments![0]!])}
+        onClick={() => onAddSession(sessions, [])}
       >
         + Create new session
       </BlueButton>

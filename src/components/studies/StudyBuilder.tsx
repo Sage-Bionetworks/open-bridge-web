@@ -13,7 +13,6 @@ import {
   useStudyInfoDataState
 } from '../../helpers/StudyInfoContext'
 import { setBodyClass } from '../../helpers/utility'
-import AssessmentService from '../../services/assessment.service'
 import StudyService from '../../services/study.service'
 import { ThemeType } from '../../style/theme'
 import { Schedule, StartEventId, StudySession } from '../../types/scheduling'
@@ -146,13 +145,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     duration: string,
     start: StartEventId,
   ) => {
-    const defaultAssessment = await (
-      await AssessmentService.getAssessmentsWithResources()
-    ).assessments[0]
-
     const studySession = StudyService.createEmptyStudySession(start)
-    studySession.assessments = [defaultAssessment]
-
     let schedule: Schedule = {
       guid: '',
       name: studyId,
