@@ -232,10 +232,9 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                             assessment={assessment}
                             isDragging={snapshot.isDragging}
                           >
-                            {isEditable &&
-                              studySession.assessments!.length > 1 && (
-                                <Button
+                            {isEditable && <Button
                                   variant="text"
+                                  aria-label="delete assessment"
                                   className={classes.btnDeleteAssessment}
                                   onClick={e => {
                                     e.stopPropagation()
@@ -244,7 +243,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                                 >
                                   <DeleteIcon></DeleteIcon>
                                 </Button>
-                              )}
+                              }
                           </AssessmentSmall>
                         </div>
                       )}
