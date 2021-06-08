@@ -22,6 +22,10 @@ import HideWhen from '../widgets/HideWhen'
 import MobileDrawerMenuHeader from '../widgets/MobileDrawerMenuHeader'
 
 const useStyles = makeStyles(theme => ({
+  rootStudyTopNav: {
+    backgroundColor:"#F7F7F7",
+    padding: theme.spacing(0, 5)
+  },
   toolbarStudyHeader: {
     height: '104px',
     display: 'flex',
@@ -154,7 +158,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   const studyData = useStudyInfoDataState()
 
   return (
-    <Box bgcolor="#F7F7F7" px={2}>
+    <Box className={classes.rootStudyTopNav}>
       <Hidden lgUp>
         <IconButton
           color="inherit"
