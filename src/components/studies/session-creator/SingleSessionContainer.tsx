@@ -136,7 +136,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
     if (!studySession.assessments) {
       return
     }
-    const removeIndex = studySession.assessments.findIndex(a => a.guid)
+    const removeIndex = studySession.assessments.findIndex(a => a.guid===assessmentId)
     const result = [...studySession.assessments]
     result.splice(removeIndex, 1)
 
