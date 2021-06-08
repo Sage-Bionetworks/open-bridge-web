@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core'
+import { Box, Container } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { Alert } from '@material-ui/lab'
 import clsx from 'clsx'
@@ -61,23 +61,42 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
     //backgroundColor: theme.palette.background.default,
   },
-  mainAreaNormal: {
-    width: `${280 * 3 + 16 * 4}px`,
+  mainAreaNormalWithLeftNav: {
+    width: `1200px`,
+    [theme.breakpoints.down('lg')]: {
+      width: `905px`,
+    },
+
     [theme.breakpoints.down('md')]: {
-      width: `${280 * 2 + 16 * 2}px`,
+      width: `610px`,
     },
   },
 
-  mainAreaWider: {
-    width: `${280 * 4 + 16 * 3}px`,
+  mainAreaWideWithLeftNav: {
+    width: `1600px`,
+    [theme.breakpoints.down('lg')]: {
+    width: `1100px`
+    },
     [theme.breakpoints.down('md')]: {
       width: `768px`,
     },
   },
-  mainAreaWide: {
-    width: `${280 * 4 + 16 * 4}px`,
+  mainAreaNoLeftNav: {
+    width: `1500px`,
+    [theme.breakpoints.down('lg')]: {
+    width: '1200px',//`${(280+32) * 4 + 16 * 4}px`,
+    },
     [theme.breakpoints.down('md')]: {
-      width: `${280 * 3 + 16 * 3}px`,
+      width: `620px`,
+    },
+  },
+  mainAreaWideNoLeftNav: {
+    width: `1700px`,
+    [theme.breakpoints.down('lg')]: {
+    width: '1200px',//`${(280+32) * 4 + 16 * 4}px`,
+    },
+    [theme.breakpoints.down('md')]: {
+      width: `700px`,
     },
   },
   introInfoContainer: {
@@ -320,17 +339,29 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     )
   }
 
+  const getClasses = ()=> {
+   return  clsx(classes.mainArea, {
+      [classes.mainAreaNormalWithLeftNav]: open,
+      [classes.mainAreaWideWithLeftNav]:
+        open && ['customize', 'scheduler'].includes(section),
+      [classes.mainAreaNoLeftNav]: !open,
+      [classes.mainAreaWideNoLeftNav]:(!open && ['customize', 'scheduler'].includes(section)),
+
+  })}
+
   return (
     <>
       <Box display="flex" bgcolor="#f7f7f7">
         <Box width={open ? 210 : 56} flexShrink={0}></Box>
         <Box
-          className={clsx(classes.mainArea, {
-            [classes.mainAreaNormal]: open,
-            [classes.mainAreaWider]:
+          className={getClasses()/*clsx(classes.mainArea, {
+            [classes.mainAreaNormalWithLeftNav]: open,
+            [classes.mainAreaWideWithLeftNav]:
               open && ['customize', 'scheduler'].includes(section),
-            [classes.mainAreaWide]: !open,
-          })}
+            //[classes.mainAreaNoLeftNav]: !open,
+            [classes.mainAreaWideNoLeftNav]:(!open && ['customize', 'scheduler'].includes(section)),
+  
+          })*/}
           pt={8}
           pl={2}
         >
@@ -341,6 +372,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         {' '}
         {hasObjectChanged ? 'object changed' : 'no change'}
       </span>
+      <Container maxWidth="xl" style={{ height: '100vh', padding: '0' }}>
       <Box paddingTop={2} display="flex" position="relative">
         <StudyLeftNav
           open={open}
@@ -354,12 +386,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
         <Box className={classes.mainAreaWrapper}>
           <Box
-            className={clsx(classes.mainArea, {
-              [classes.mainAreaNormal]: open,
-              [classes.mainAreaWider]:
+            className={getClasses()/*clsx(classes.mainArea, {
+              [classes.mainAreaNormalWithLeftNav]: open,
+              [classes.mainAreaWideWithLeftNav]:
                 open && ['customize', 'scheduler'].includes(section),
-              [classes.mainAreaWide]: !open,
-            })}
+              [classes.mainAreaNoLeftNav]: !open,
+            })*/}
           >
             <LoadingComponent
               reqStatusLoading={saveLoader}
@@ -519,6 +551,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           </Box>
         </Box>
       </Box>
+   </Container>
     </>
   )
 }

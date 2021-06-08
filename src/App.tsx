@@ -1,5 +1,4 @@
 import {
-  Container,
   CssBaseline,
   ThemeProvider,
   Typography
@@ -107,7 +106,6 @@ function App() {
     <ThemeProvider theme={{ ...theme, ...cssVariables }}>
       <Typography component={'div'}>
         <CssBaseline />
-        <Container maxWidth="xl" style={{ height: '100vh', padding: '0' }}>
           <Router basename={process.env.PUBLIC_URL}>
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
@@ -122,7 +120,6 @@ function App() {
               )}
             </ErrorBoundary>
           </Router>
-        </Container>
       </Typography>
     </ThemeProvider>
   )
