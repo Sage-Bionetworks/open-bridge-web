@@ -32,7 +32,7 @@ export type UserSessionData = {
   token: string | undefined
   orgMembership: string | undefined
   dataGroups?: string[]
-  roles: AdminRoles[]
+  roles: AdminRole[]
   firstName?: string
   lastName?: string
   userName?: string
@@ -40,7 +40,7 @@ export type UserSessionData = {
   id: string
 }
 
-export type AdminRoles =
+export type AdminRole =
   | 'developer'
   | 'researcher'
   | 'study_coordinator'
@@ -60,7 +60,7 @@ export interface LoggedInUserData extends UserData {
   sessionToken: string
   orgMembership: string
   dataGroups?: string[]
-  roles: AdminRoles[]
+  roles: AdminRole[]
 }
 
 export interface OrgUser extends LoggedInUserData {

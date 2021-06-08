@@ -14,7 +14,9 @@ import React, { FunctionComponent } from 'react'
 import { NavLink } from 'react-router-dom'
 import PARTICIPANTS_ICON from '../../assets/group_participants_icon.svg'
 import Logo from '../../assets/logo_mtb.svg'
+import { useUserSessionDataState } from '../../helpers/AuthContext'
 import { useStudyInfoDataState } from '../../helpers/StudyInfoContext'
+import { isInAdminRole } from '../../helpers/utility'
 import { latoFont } from '../../style/theme'
 import constants from '../../types/constants'
 import BreadCrumb from '../widgets/BreadCrumb'
@@ -23,8 +25,8 @@ import MobileDrawerMenuHeader from '../widgets/MobileDrawerMenuHeader'
 
 const useStyles = makeStyles(theme => ({
   rootStudyTopNav: {
-    backgroundColor:"#F7F7F7",
-    padding: theme.spacing(0, 5)
+    backgroundColor: '#F7F7F7',
+    padding: theme.spacing(0, 5),
   },
   toolbarStudyHeader: {
     height: '104px',
@@ -154,7 +156,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   ]
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
-  //const sessionData = useUserSessionDataState()
+  const sessionData = useUserSessionDataState()
   const studyData = useStudyInfoDataState()
 
   return (
@@ -219,16 +221,18 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
                 </NavLink>
               ))}
           </Toolbar>
-          <Toolbar className={classes.toolbar}>
-            <NavLink
-              to={'/studies/:id/access-settings'.replace(':id', studyId)}
-              key={'path-to-access-settings'}
-              className={classes.toolbarLink}
-              activeClassName={classes.selectedLink}
-              style={{ display: 'flex' }}
-            >
-              <PeopleIcon></PeopleIcon>&nbsp;&nbsp;Access settings
-            </NavLink>
+          <Toolbar className={classes.toolbar} style={{ width: '160px' }}>
+            {isInAdminRole(sessionData.roles) && (
+              <NavLink
+                to={'/studies/:id/access-settings'.replace(':id', studyId)}
+                key={'path-to-access-settings'}
+                className={classes.toolbarLink}
+                activeClassName={classes.selectedLink}
+                style={{ display: 'flex' }}
+              >
+                <PeopleIcon></PeopleIcon>&nbsp;&nbsp;Access settings
+              </NavLink>
+            )}
           </Toolbar>
         </Box>
       </Hidden>
