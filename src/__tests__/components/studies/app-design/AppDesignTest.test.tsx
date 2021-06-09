@@ -3,15 +3,15 @@ import {
   queryByAttribute,
   render,
   waitFor,
-  within,
+  within
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import AppDesign from '../../../../components/studies/app-design/AppDesign'
-import { WelcomeScreenData, Study } from '../../../../types/types'
-import { UserSessionDataStateContext } from '../../../../helpers/AuthContext'
-import Server from '../../../../_tests_server/handlers/server'
 import { BrowserRouter } from 'react-router-dom'
+import AppDesign from '../../../../components/studies/app-design/AppDesign'
+import { UserSessionDataStateContext } from '../../../../helpers/AuthContext'
+import { Study, WelcomeScreenData } from '../../../../types/types'
+import Server from '../../../../_tests_server/handlers/server'
 
 const getById = queryByAttribute.bind(null, 'id')
 
@@ -26,7 +26,7 @@ let container: Element
 
 const studyTemplate = {
   identifier: 'testing_study',
-  status: 'DRAFT',
+  phase: 'design',
   version: 1,
   name: '',
   clientData: {

@@ -2,19 +2,34 @@ import { Box } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import moment from 'moment'
 import React from 'react'
+import Pluralize from 'react-pluralize'
+import { ReactComponent as NotificationsIcon } from '../../../assets/scheduler/notifications_icon.svg'
+import { ReactComponent as TimerIcon } from '../../../assets/scheduler/timer_icon.svg'
 import { useAsync } from '../../../helpers/AsyncHook'
 import StudyService from '../../../services/study.service'
+import { latoFont } from '../../../style/theme'
 import { Schedule } from '../../../types/scheduling'
 import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
 import SessionIcon from '../../widgets/SessionIcon'
 import TimelineCustomPlot, { TimelineZoomLevel } from './TimelineCustomPlot'
 
 const useStyles = makeStyles(theme => ({
+  stats: {
+    fontFamily: latoFont,
+    fontWeight: 'bold',
+    fontSize: '12px',
+    display: 'flex',
+    alignItems: 'center',
+
+    '& span': {
+      padding: theme.spacing(2,3,2,1)
+    }
+  },
   legend: {
     margin: theme.spacing(1, 0),
     display: 'flex',
     '& div': {
-      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(2),
     },
   },
 }))
@@ -112,20 +127,37 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   const getSession = (sessionGuid: string): TimelineSession => {
     return sessions.find(s => s.guid === sessionGuid)!
   }
+  if (status === 'PENDING') {
+    return <></>
+  }
 
   return (
     <Box padding="30px">
-      This timeline viewer will update to provide a visual summary of the
-      schedules you’ve defined below for each session.{timeline?.duration}{' '}
-      {schedFromDisplay?.duration}
+      {!timeline && (
+        <>
+          This timeline viewer will update to provide a visual summary of the
+          schedules you’ve defined below for each session.
+        </>
+      )}
+
+      {timeline && (
+        <div className={classes.stats}>
+          <NotificationsIcon />{' '}
+          <Pluralize
+            singular={'notification'}
+            count={timeline.totalNotifications}
+          />
+          <TimerIcon />{' '}
+          <Pluralize singular={'total minute'} count={timeline.totalMinutes} />
+        </div>
+      )}
+
       <Box display="flex" justifyContent="space-between">
         <Box className={classes.legend}>
           {schedFromDisplay?.sessions?.map((s, index) => (
-            <div key={s.guid}>
-              <SessionIcon index={index}>
+              <SessionIcon index={index} key={s.guid}>
                 {getSession(s.guid!)?.label}
               </SessionIcon>
-            </div>
           ))}
         </Box>
 

@@ -7,8 +7,7 @@ import {
   DialogTitle,
   IconButton,
   makeStyles,
-  Paper,
-  Typography
+  Paper
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import MailOutlineIcon from '@material-ui/icons/MailOutline'
@@ -17,7 +16,13 @@ import React, { FunctionComponent } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 import { ReactComponent as Delete } from '../../assets/trash.svg'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
+import {
+  StudyInfoData,
+  useStudyInfoDataState
+} from '../../helpers/StudyInfoContext'
 import AccessService from '../../services/access.service'
+import { poppinsFont } from '../../style/theme'
+import { MTBHeadingH1 } from '../widgets/Headings'
 import { Access, NO_ACCESS } from './AccessGrid'
 import AccountListing from './AccountListing'
 import MemberInvite, { NewOrgAccount } from './MemberInvite'
@@ -29,6 +34,14 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     padding: 0,
   },
+  heading: {
+    fontFamily: poppinsFont,
+    fontSize: '18px',
+    lineHeight: '27px',
+    '& p': {
+      color: '#fff',
+    },
+  },
   yellowButton: {
     marginTop: theme.spacing(2),
     backgroundColor: '#FFE500',
@@ -37,9 +50,7 @@ const useStyles = makeStyles(theme => ({
   newOrgAccount: {
     position: 'relative',
     marginBottom: theme.spacing(2),
-
     padding: theme.spacing(6, 12, 8, 12),
-
     '&$error': {
       border: `1px solid ${theme.palette.error.main}`,
     },
@@ -101,11 +112,8 @@ async function createNewAccount(
     return 'developer'
   }
   try {
-    const {
-      principalId,
-      firstName,
-      lastName,
-    } = await AccessService.getAliasFromSynapseByEmail(email)
+    const { principalId, firstName, lastName } =
+      await AccessService.getAliasFromSynapseByEmail(email)
 
     await AccessService.createIndividualAccount(
       token!,
@@ -130,6 +138,7 @@ function filterNewAccountsByAdded(
 }
 
 const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
+  const studyInfo: StudyInfoData = useStudyInfoDataState()
   const classes = useStyles()
 
   const [isOpenInvite, setIsOpenInvite] = React.useState(false)
@@ -138,7 +147,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
   ])
 
   const sessionData = useUserSessionDataState()
-  const { token, orgMembership} = sessionData
+  const { token, orgMembership } = sessionData
   const [updateToggle, setUpdateToggle] = React.useState(false)
 
   const closeInviteDialog = () => {
@@ -181,11 +190,19 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
     setUpdateToggle(prev => !prev)
   }
 
+  if (!studyInfo.study) {
+    return <></>
+  }
+
   return (
     <>
       <Container maxWidth="md" className={classes.root}>
         <Paper elevation={2} style={{ width: '100%' }}>
-          <AccountListing sessionData={sessionData} updateToggle={updateToggle}>
+          <AccountListing
+            sessionData={sessionData}
+            updateToggle={updateToggle}
+            study={studyInfo.study}
+          >
             <Button
               onClick={() => setIsOpenInvite(true)}
               variant="contained"
@@ -204,9 +221,11 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
       >
         <DialogTitle className={classes.addNewDialogHeader} disableTypography>
           <MailOutlineIcon style={{ width: '25px' }}></MailOutlineIcon>
-          <Typography variant="subtitle2" style={{ fontSize: '25px' }}>
-            Invite Team Members
-          </Typography>
+
+          <div className={classes.heading}>
+            Invite Team Members to:
+            <MTBHeadingH1>{studyInfo.study?.name || ''}</MTBHeadingH1>
+          </div>
           <IconButton
             aria-label="close"
             className={classes.iconButton}

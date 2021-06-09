@@ -113,10 +113,10 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
                   expiration: e.target.value as string,
                 })
               }
-              durationString={window.expiration || '    '}
+              durationString={window.expiration || ''}
               unitDefault={HDWMEnum.H}
-              unitLabel="Repeat Every"
-              numberLabel="frequency number"
+              unitLabel="Expire after"
+              numberLabel="expiration"
               unitData={HDWMEnum}
             ></Duration>
           </Box>

@@ -103,22 +103,21 @@ function getIrbContact(s: StudyInfoData): Contact | undefined {
 }
 
 const ALERTS: StudyAlertSection[] = [
-  {
-    section: 'enrollment-type-selector',
-    errors: [
-      {
-        errorText: 'Please select enrollment type',
-        validationFn: (s: StudyInfoData) => !!s.study.clientData.enrollmentType,
-        isDismissable: false,
-      },
-    ],
-  },
+
   {
     section: 'session-creator',
     errors: [
       {
         errorText: 'Please create a schedule and select assessments',
         validationFn: (s: StudyInfoData) => !!s.schedule,
+        isDismissable: false,
+      },
+      {
+        errorText: 'All study sessions need to have at least one assessment',
+        validationFn: (s: StudyInfoData) => {
+          const noAsseessments = s.schedule?.sessions.find(s=> !s.assessments || s.assessments.length === 0)
+         return !noAsseessments
+        },
         isDismissable: false,
       },
     ],
@@ -147,6 +146,16 @@ const ALERTS: StudyAlertSection[] = [
           return !!defaultNotifications
         },
         isDismissable: true,
+      },
+    ],
+  },
+  {
+    section: 'enrollment-type-selector',
+    errors: [
+      {
+        errorText: 'Please select enrollment type',
+        validationFn: (s: StudyInfoData) => !!s.study.clientData.enrollmentType,
+        isDismissable: false,
       },
     ],
   },

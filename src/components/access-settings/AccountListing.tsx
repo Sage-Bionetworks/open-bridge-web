@@ -3,10 +3,12 @@ import React, { FunctionComponent, ReactNode } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { ReactComponent as Delete } from '../../assets/trash.svg'
 import { useAsync } from '../../helpers/AsyncHook'
+import { isInAdminRole } from '../../helpers/utility'
 import AccessService from '../../services/access.service'
 import { globals } from '../../style/theme'
-import { OrgUser, UserSessionData } from '../../types/types'
+import { OrgUser, Study, UserSessionData } from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
+import { MTBHeadingH1, MTBHeadingH6 } from '../widgets/Headings'
 import Loader from '../widgets/Loader'
 import SideBarListItem from '../widgets/SideBarListItem'
 import AccessGrid, {
@@ -27,7 +29,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.common.white,
     padding: theme.spacing(4, 0, 3, 3.5),
   },
-  list: { ...globals.listReset, marginLeft: -theme.spacing(3.5) },
+  list: {
+    ...globals.listReset,
+    marginLeft: -theme.spacing(3.5),
+    marginTop: theme.spacing(3),
+  },
   buttons: {
     display: 'flex',
     marginTop: theme.spacing(6),
@@ -38,7 +44,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type AccountListingProps = {
   children?: ReactNode
-
+  study: Study
   updateToggle: boolean
   sessionData: UserSessionData
 }
@@ -56,17 +62,15 @@ function getNameDisplay({
 
 const NameDisplay: FunctionComponent<any> = ({
   member,
-  roles,
   index,
 }): JSX.Element => {
   let name = getNameDisplay(member)
-
   let admin = <></>
 
   if (index === 0) {
     name = name + ' (You)'
-    admin = roles.includes('admin') ? <div>Study Admin</div> : <></>
   }
+  admin = isInAdminRole(member.roles) ? <div>Study Admin</div> : <></>
 
   const firstLine = (
     <Box display="flex" justifyContent="space-between">
@@ -88,45 +92,48 @@ const NameDisplay: FunctionComponent<any> = ({
 const AccountListing: FunctionComponent<AccountListingProps> = ({
   updateToggle,
   sessionData,
+  study,
   children,
 }: AccountListingProps) => {
   const classes = useStyles()
-  const { token, roles, id, orgMembership } = sessionData
+  const { token, roles: myRoles, id, orgMembership } = sessionData
 
   const handleError = useErrorHandler()
 
-  const [currentMemberAccess, setCurrentMemberAccess] = React.useState<
-    { access: Access; member: OrgUser } | undefined
-  >()
+  const [currentMemberAccess, setCurrentMemberAccess] =
+    React.useState<{ access: Access; member: OrgUser } | undefined>()
   const [isAccessLoading, setIsAccessLoading] = React.useState(true)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
 
-  const { data: members, status, error, run, setData } = useAsync<any>({
+  const {
+    data: members,
+    status,
+    error,
+    run,
+    setData,
+  } = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
 
-
-  const getMembers = React.useCallback(async(orgMembership: string, token: string)=>  {
-    const members = await AccessService.getAccountsForOrg(
-      token!,
-      orgMembership!,
-    )
-    const meIndex = members.findIndex(m => m.id === id)
-    const result = [
-      members[meIndex],
-      ...members.slice(0, meIndex),
-      ...members.slice(meIndex + 1, members.length),
-    ]
-    return result
-  }, [id]
+  const getMembers = React.useCallback(
+    async (orgMembership: string, token: string) => {
+      const members = await AccessService.getDetailedAccountsForOrg(
+        token!,
+        orgMembership!,
+      )
+      const meIndex = members.findIndex(m => m.id === id)
+      const result = [
+        members[meIndex],
+        ...members.slice(0, meIndex),
+        ...members.slice(meIndex + 1, members.length),
+      ]
+      return result
+    },
+    [id],
   )
 
-
-
   React.useEffect(() => {
-
-
     return run(
       (async function (orgMembership, token) {
         const result = getMembers(orgMembership!, token!)
@@ -140,7 +147,6 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     await AccessService.deleteIndividualAccount(token!, member.id)
     const result = await getMembers(orgMembership!, token!)
     setData(result)
-
   }
 
   const updateRolesForExistingAccount = async ({
@@ -151,25 +157,23 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     access: Access
   }) => {
     const roles = getRolesFromAccess(access)
-    await AccessService.updateIndividualAccountRoles(
-      token!,
-      member.id,
-      roles,
-    )
+    await AccessService.updateIndividualAccountRoles(token!, member.id, roles)
     const result = await getMembers(orgMembership!, token!)
     setData(result)
-
   }
 
-  const updateAccess = React.useCallback(async (memberId: string) => {
-    setIsAccessLoading(true)
-    const member = await AccessService.getIndividualAccount(token!, memberId)
-    console.log(member.roles.join(','))
-    const access = getAccessFromRoles(member.roles)
+  const updateAccess = React.useCallback(
+    async (memberId: string) => {
+      setIsAccessLoading(true)
+      const member = await AccessService.getIndividualAccount(token!, memberId)
+      console.log(member.roles.join(','))
+      const access = getAccessFromRoles(member.roles)
 
-    setCurrentMemberAccess({ access, member })
-    setIsAccessLoading(false)
-  }, [token])
+      setCurrentMemberAccess({ access, member })
+      setIsAccessLoading(false)
+    },
+    [token],
+  )
 
   React.useEffect(() => {
     ;(async function (id) {
@@ -187,7 +191,8 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   return (
     <Box className={classes.root}>
       <Box className={classes.listing}>
-        <h3>Team Members</h3>
+        <MTBHeadingH6>Study ID: {study.identifier} </MTBHeadingH6>
+        <MTBHeadingH1 style={{ color: ' #FCFCFC' }}>{study.name}</MTBHeadingH1>
         {status === 'PENDING' && <Loader reqStatusLoading={true}></Loader>}{' '}
         <ul
           className={classes.list}
@@ -218,7 +223,6 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                 >
                   <NameDisplay
                     member={member}
-                    roles={roles}
                     index={index}
                   ></NameDisplay>
                 </div>
@@ -239,7 +243,6 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
               {' '}
               <NameDisplay
                 member={currentMemberAccess!.member}
-                roles={roles}
                 index={-1}
               ></NameDisplay>
             </h3>
@@ -254,7 +257,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
               isEdit={true}
             ></AccessGrid>
 
-            {roles.includes('admin') && (
+            {myRoles.includes('admin') && (
               <Box className={classes.buttons}>
                 <Button
                   aria-label="delete"

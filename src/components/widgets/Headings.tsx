@@ -58,3 +58,12 @@ export const MTBHeadingH5 = styled(Heading)({
   lineHeight: '21px',
   color: '#050505',
 })
+
+export const MTBHeadingH6 = styled(Heading)({
+  fontFamily: poppinsFont,
+  fontStyle: 'normal',
+  fontWeight: 'normal',
+  fontSize: '14px',
+  lineHeight: '21px',
+  color: '#fff',
+})

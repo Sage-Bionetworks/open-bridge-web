@@ -1,7 +1,7 @@
 import { Box, makeStyles, Radio } from '@material-ui/core'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
-import { AdminRoles } from '../../types/types'
+import { AdminRole } from '../../types/types'
 
 const useStyles = makeStyles(theme => ({
   cell: {
@@ -55,7 +55,7 @@ export const NO_ACCESS: Access = {
   STUDY_DATA: 'NO_ACCESS',
 }
 
-export function getRolesFromAccess(access: Access): AdminRoles[] {
+export function getRolesFromAccess(access: Access): AdminRole[] {
   if (access.STUDY_BUILDER === 'EDITOR') {
     return ['org_admin', "admin","researcher","developer"]
   }
@@ -65,7 +65,7 @@ export function getRolesFromAccess(access: Access): AdminRoles[] {
   return ['study_coordinator', 'developer']
 }
 
-export function getAccessFromRoles(roles: AdminRoles[]): Access {
+export function getAccessFromRoles(roles: AdminRole[]): Access {
   if (roles.includes('org_admin')) {
     return {
       STUDY_BUILDER: 'EDITOR',
