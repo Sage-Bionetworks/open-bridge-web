@@ -78,6 +78,7 @@ const Duration: React.FunctionComponent<
 
       if (!unit && unitDefault) {
         const unitDefaultValue=getEnumKeyByEnumValue(unitData, unitDefault)
+        unit=unitDefaultValue
         setUnit(unitDefaultValue)
       }
     }
