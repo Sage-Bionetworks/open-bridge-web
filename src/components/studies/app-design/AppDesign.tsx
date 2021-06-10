@@ -218,7 +218,6 @@ export type PossibleStudyUpdates =
   | AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION
 
 export interface AppDesignProps {
-  id: string
   onSave: Function
   study: Study
 }
@@ -266,7 +265,6 @@ const PhoneTopBar: React.FunctionComponent<{
 const AppDesign: React.FunctionComponent<
   AppDesignProps & StudyBuilderComponentProps
 > = ({
-  id,
   hasObjectChanged,
   saveLoader,
   children,
@@ -296,9 +294,7 @@ const AppDesign: React.FunctionComponent<
   const [appDesignProperties, setAppDesignProperties] =
     useState<StudyAppDesign>({
       logo: '',
-      backgroundColor: {
-        foreground: '#6040FF',
-      },
+      backgroundColor:  '#6040FF',
       welcomeScreenInfo: {
         welcomeScreenBody: '',
         welcomeScreenFromText: '',
@@ -384,7 +380,7 @@ const AppDesign: React.FunctionComponent<
   ) => {
     const appDesignProps = { ...appDesignProperties }
     if (color) {
-      appDesignProps.backgroundColor.foreground = color
+      appDesignProps.backgroundColor = color
     }
     const updatedStudy = { ...study }
     // update the study based on the update type specified
@@ -393,7 +389,7 @@ const AppDesign: React.FunctionComponent<
         updatedStudy.name = appDesignProps.studyTitle
         break
       case AppDesignUpdateTypes.UPDATE_STUDY_COLOR:
-        updatedStudy.colorScheme = { ...appDesignProps.backgroundColor }
+        updatedStudy.colorScheme = { ...updatedStudy.colorScheme, background: appDesignProps.backgroundColor }
         break
       case AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS:
         const contacts: Contact[] = []
@@ -421,9 +417,10 @@ const AppDesign: React.FunctionComponent<
         updatedStudy.studyLogoUrl = appDesignProps.logo
         break
       case AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO:
-        updatedStudy.clientData.welcomeScreenData = {
-          ...appDesignProps.welcomeScreenInfo,
+        updatedStudy.clientData = {
+         ...updatedStudy.clientData, welcomeScreenData:appDesignProps.welcomeScreenInfo
         }
+    
         break
     }
     onUpdate(updatedStudy)
@@ -486,9 +483,7 @@ const AppDesign: React.FunctionComponent<
         ethicsBoardInfo: irbInfo,
         contactLeadInfo: studySupport,
         logo: study.studyLogoUrl || '',
-        backgroundColor: study.colorScheme || {
-          ...appDesignProperties.backgroundColor,
-        },
+        backgroundColor: study.colorScheme?.background || appDesignProperties.backgroundColor,
         welcomeScreenInfo: welcomeScreenData,
         studyTitle: study.name || '',
         studySummaryBody: study.details || '',
@@ -641,7 +636,7 @@ const AppDesign: React.FunctionComponent<
               ]}
 
               <PhoneTopBar
-                color={appDesignProperties.backgroundColor.foreground}
+                color={appDesignProperties.backgroundColor}
                 previewFile={previewFile}
                 isUsingDefaultMessage={
                   appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
@@ -739,7 +734,7 @@ const AppDesign: React.FunctionComponent<
                 }
                 imgHeight={imgHeight}
                 appColor={
-                  appDesignProperties.backgroundColor.foreground || '#6040FF'
+                  appDesignProperties.backgroundColor|| '#6040FF'
                 }
               />
               <Box className={classes.phoneBottom}>

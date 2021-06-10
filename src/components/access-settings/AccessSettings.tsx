@@ -237,10 +237,10 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent className={classes.addNewDialogBody}>
-          <pre>
+         {/* <pre>
             Enter 'sErr' in email address to simulate synapse error. Enter
             'bErr' in email address to simulate bridge error.
-          </pre>
+         </pre>*/}
           {filterNewAccountsByAdded(newOrgAccounts).length > 0 && (
             <>
               <Paper

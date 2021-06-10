@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react'
-import { matchPath, Route, Switch } from 'react-router-dom'
+import { matchPath, Route, Switch, useHistory } from 'react-router-dom'
 import './App.css'
 import StudyTopNav from './components/studies/StudyTopNav'
 import TopNav from './components/widgets/AppTopNav'
@@ -8,6 +8,7 @@ import { useStudyInfoDataDispatch } from './helpers/StudyInfoContext'
 import { setBodyClass } from './helpers/utility'
 import PrivateRoutes from './routes_private'
 import { UserSessionData } from './types/types'
+
 
 const getParams = (pathname: string): { id?: string; section?: string } => {
   const path = `/studies/${
@@ -29,6 +30,7 @@ const AuthenticatedApp: FunctionComponent<
   const [studySection, setStudySection] = React.useState<string | undefined>()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
   const { data: builderInfo } = useStudyBuilderInfo(studyId)
+  const history = useHistory() 
 
   React.useEffect(() => {
     console.log('datachange', builderInfo?.study)
@@ -36,6 +38,14 @@ const AuthenticatedApp: FunctionComponent<
       studyDataUpdateFn({ type: 'SET_ALL', payload: builderInfo })
     }
   }, [builderInfo, studyDataUpdateFn])
+
+  //on routechange set body class
+  React.useEffect(() => {
+    return history.listen((location) => { 
+       const { id, section } = getParams(window.location.pathname)
+       setBodyClass(section)
+    }) 
+ },[history]) 
 
   React.useEffect(() => {
     const { id, section } = getParams(window.location.pathname)
