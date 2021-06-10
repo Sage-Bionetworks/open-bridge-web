@@ -3,8 +3,10 @@ import {
   createStyles,
   FormControlLabel,
   makeStyles,
+
   Theme
 } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
 import _ from 'lodash'
 import React, { FunctionComponent } from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
@@ -88,9 +90,10 @@ const Scheduler: FunctionComponent<
   schedulerErrors,
 }: SchedulerProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
-
+const[isErrorAlert, setIsErrorAlert]= React.useState(true)
   const [schedule, setSchedule] = React.useState({ ..._schedule })
   console.log('%c ---scheduler update--' + version, 'color: red')
+
 
   const [schedulerErrorState, setSchedulerErrorState] = React.useState(
     new Map<
@@ -231,7 +234,10 @@ const Scheduler: FunctionComponent<
 
   return (
     <Box>
-     
+      {schedulerErrors.length > 0 && <Alert onClose={()=>setIsErrorAlert(false)}  severity="error" style={{backgroundColor: '#EE6070', color: 'black', position: 'fixed',top: 0, left: 0, right: 0, zIndex: 1000, textAlign:"center"}}>
+          Please fix the errors below before continuing
+        </Alert>}
+
       <NavigationPrompt when={hasObjectChanged} key="prompt">
         {({ onConfirm, onCancel }) => (
           <ConfirmationDialog
