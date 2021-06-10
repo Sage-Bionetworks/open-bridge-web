@@ -9,7 +9,7 @@ import {
   AssessmentWindow as AssessmentWindowType,
   ScheduleNotification,
   SessionSchedule,
-  StudySession,
+  StudySession
 } from '../../../types/scheduling'
 import SaveButton from '../../widgets/SaveButton'
 import { AlertWithText, BlueButton } from '../../widgets/StyledComponents'
@@ -73,6 +73,9 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   sessionErrorState,
 }) => {
   const classes = useStyles()
+  if (studySession.name==='Session1') {
+  console.log('studySession', studySession)
+  }
 
   const [
     schedulableSession,
@@ -121,12 +124,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     setNotificationErrors(notificationErrorsArray)
   }, [sessionErrorState?.notificationErrors])
 
-  React.useEffect(() => {
-    const session = !hasWindowLongerThan24h(studySession)
-      ? { ...studySession, interval: undefined }
-      : studySession
-    setSchedulableSession(session || defaultSchedule)
-  }, [studySession, studySession.timeWindows])
 
   function hasWindowLongerThan24h(session?: StudySession) {
     const windows = session ? session.timeWindows : studySession.timeWindows
@@ -143,12 +140,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     })
     return over24 !== undefined
   }
-  React.useEffect(() => {
-    const session = !hasWindowLongerThan24h(studySession)
-      ? { ...studySession, interval: undefined }
-      : studySession
-    setSchedulableSession(session || defaultSchedule)
-  }, [studySession, studySession.timeWindows])
 
   const updateSessionSchedule = (newSession: SessionSchedule) => {
     onUpdateSessionSchedule(newSession)
@@ -281,7 +272,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               })
             }}
             interval={schedulableSession.interval}
-            occurrences={schedulableSession?.occurrences}
+            occurrences={schedulableSession.occurrences}
           ></RepeatFrequency>
         </Box>
 

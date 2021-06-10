@@ -2,6 +2,7 @@ import { Box } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import moment from 'moment'
 import React from 'react'
+import { useErrorHandler } from 'react-error-boundary'
 import Pluralize from 'react-pluralize'
 import { ReactComponent as NotificationsIcon } from '../../../assets/scheduler/notifications_icon.svg'
 import { ReactComponent as TimerIcon } from '../../../assets/scheduler/timer_icon.svg'
@@ -62,6 +63,7 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   version,
   schedule: schedFromDisplay,
 }: TimelineProps) => {
+  const handleError = useErrorHandler()
   const [sessions, setSessions] = React.useState<TimelineSession[]>([])
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
@@ -130,13 +132,17 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   if (status === 'PENDING') {
     return <></>
   }
+  if (status === 'REJECTED') {
+    handleError(error!)
+  }
+
 
   return (
     <Box padding="30px">
       {!timeline && (
         <>
           This timeline viewer will update to provide a visual summary of the
-          schedules you’ve defined below for each session.
+          schedules you’ve defined below for each session!.{status}
         </>
       )}
 
