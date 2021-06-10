@@ -167,7 +167,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     setData({ schedule: newSchedule, study: updatedStudy })
   }
 
-  const saveStudy = async (study: Study= builderInfo.study) => {
+  const saveStudy = async (study: Study= builderInfo.study): Promise<Study| undefined> => {
 
     setHasObjectChanged(true)
     setSaveLoader(true)
@@ -193,14 +193,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     }
   }
 
-  const saveStudySchedule = async (updatedSchedule?: Schedule) => {
+  const saveStudySchedule = async (updatedSchedule?: Schedule): Promise<Schedule|undefined> => {
     setError([])
     setSchedulerErrors([])
     try {
       setSaveLoader(true)
       const schedule = updatedSchedule || builderInfo.schedule
       if (!schedule || !token) {
-        return
+        return undefined
       }
       const savedUpdatedSchedule = await StudyService.saveStudySchedule(
         schedule,
@@ -235,6 +235,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         ...builderInfo,
         schedule: savedUpdatedSchedule})
       setHasObjectChanged(false)
+      return savedUpdatedSchedule
     } catch (e) {
       if (e.statusCode === 401) {
         throw(e)
@@ -246,13 +247,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       if (!errors || !entity) {
         window.scrollTo({ top: 0, behavior: 'smooth' })
         setError(prev => [...prev, e.message])
-        return
+        return undefined
       }
       const errorObject = {
         entity: entity,
         errors: errors,
       }
       setSchedulerErrors(prev => [...prev, errorObject])
+      return undefined
     } finally {
       setSaveLoader(false)
     }
@@ -279,12 +281,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         break
         
       }
-      /*case 'enrollment-type-selector': {
-        saveFn = saveStudy
-        break
-      }*/
 
       default: {
+        saveFn = saveStudy
       }
     }
     /*'description'
@@ -296,13 +295,16 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   | 'preview'
   | 'alerts'
   | 'launch'*/
+  let  updatedObject: Study | Schedule | undefined
     if (saveFn && hasObjectChanged) {
-      await saveFn()
+      updatedObject =  await saveFn()
     }
+    if (updatedObject || !hasObjectChanged) {
     window.history.pushState(null, '', next)
     setBodyClass(next)
     setSection(next)
   }
+}
 
   const navButtons = (
     <NavButtons
