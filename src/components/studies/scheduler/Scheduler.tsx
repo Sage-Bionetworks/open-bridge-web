@@ -3,7 +3,7 @@ import {
   createStyles,
   FormControlLabel,
   makeStyles,
-  Theme,
+  Theme
 } from '@material-ui/core'
 import _ from 'lodash'
 import React, { FunctionComponent } from 'react'
@@ -15,12 +15,11 @@ import {
   Schedule,
   SessionSchedule,
   StartEventId,
-  StudySession,
+  StudySession
 } from '../../../types/scheduling'
 import { StudyBuilderComponentProps } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
-import Loader from '../../widgets/Loader'
 import SaveButton from '../../widgets/SaveButton'
 import { SchedulerErrorType } from '../StudyBuilder'
 import AssessmentList from './AssessmentList'
@@ -28,7 +27,7 @@ import Duration from './Duration'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
-  SessionScheduleAction,
+  SessionScheduleAction
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import Timeline from './Timeline'
@@ -232,7 +231,7 @@ const Scheduler: FunctionComponent<
 
   return (
     <Box>
-      <Loader reqStatusLoading={saveLoader} key="loader"></Loader>
+     
       <NavigationPrompt when={hasObjectChanged} key="prompt">
         {({ onConfirm, onCancel }) => (
           <ConfirmationDialog

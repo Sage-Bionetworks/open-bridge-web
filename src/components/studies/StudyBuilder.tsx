@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     width: '1200px',//`${(280+32) * 4 + 16 * 4}px`,
     },
     [theme.breakpoints.down('md')]: {
-      width: `620px`,
+      width: `910px`,
     },
   },
   mainAreaWideNoLeftNav: {
@@ -95,7 +95,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     width: '1200px',//`${(280+32) * 4 + 16 * 4}px`,
     },
     [theme.breakpoints.down('md')]: {
-      width: `700px`,
+      width: `910px`,
     },
   },
   introInfoContainer: {
@@ -347,14 +347,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       <Box display="flex" bgcolor="#f7f7f7">
         <Box width={open ? 210 : 56} flexShrink={0}></Box>
         <Box
-          className={getClasses()/*clsx(classes.mainArea, {
-            [classes.mainAreaNormalWithLeftNav]: open,
-            [classes.mainAreaWideWithLeftNav]:
-              open && ['customize', 'scheduler'].includes(section),
-            //[classes.mainAreaNoLeftNav]: !open,
-            [classes.mainAreaWideNoLeftNav]:(!open && ['customize', 'scheduler'].includes(section)),
-  
-          })*/}
+          className={getClasses()}
           pt={8}
           pl={2}
         >
@@ -379,12 +372,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
         <Box className={classes.mainAreaWrapper}>
           <Box
-            className={getClasses()/*clsx(classes.mainArea, {
-              [classes.mainAreaNormalWithLeftNav]: open,
-              [classes.mainAreaWideWithLeftNav]:
-                open && ['customize', 'scheduler'].includes(section),
-              [classes.mainAreaNoLeftNav]: !open,
-            })*/}
+            className={getClasses()}
           >
             <LoadingComponent
               reqStatusLoading={saveLoader}
@@ -444,13 +432,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         sessions={builderInfo.schedule?.sessions || []}
                         onUpdate={(data: StudySession[]) => {
                           setHasObjectChanged(true)
-                          /* setData({
-                            ...builderInfo,
-                            schedule: {
-                              ...builderInfo.schedule!,
-                              sessions: data,
-                            },
-                          })*/
                           saveStudySchedule({
                             ...builderInfo.schedule!,
                             sessions: data,
@@ -479,17 +460,16 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       <AppDesign
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
-                        id={id}
                         study={builderInfo.study}
-                        onSave={(updatedStudy: Study) => {
-                          saveStudy(builderInfo.study)
+                        onSave={() => {
+                           saveStudy(builderInfo.study)
                         }}
-                        onUpdate={(study: Study) => {
+                        onUpdate={(updatedStudy: Study) => {
+                          const isTheSame = _.isEqual(updatedStudy, builderInfo.study)
+                         if ( !isTheSame) {
                           setHasObjectChanged(true)
-                          setData({
-                            ...builderInfo,
-                            study: study,
-                          })
+                          saveStudy(updatedStudy)
+                          }
                         }}
                       >
                         {navButtons}
@@ -508,7 +488,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         studyInfo={builderInfo}
                         onSave={() => saveStudy(builderInfo.study)}
                         onUpdate={(study: Study) => {
-                          console.log('study updating from laucn')
                           setHasObjectChanged(true)
                           setData({
                             ...builderInfo,

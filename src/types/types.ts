@@ -168,7 +168,7 @@ export type Contact = {
 
 export type StudyAppDesign = {
   logo: string
-  backgroundColor: ColorScheme
+  backgroundColor: string
   welcomeScreenInfo: WelcomeScreenData
   studyTitle: string
   studySummaryBody: string
