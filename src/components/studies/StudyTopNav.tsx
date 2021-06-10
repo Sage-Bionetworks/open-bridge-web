@@ -150,7 +150,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
 }: StudyTopNavProps) => {
   const links = [
     { path: '/studies/builder/:id/session-creator', name: 'STUDY BUILDER', status: ['design'] },
-    { path: '/studies/:id/participant-manager', name: 'PARTICIPANT MANAGER' ,  status: ['live', 'legacy'] },
+    { path: '/studies/:id/participant-manager', name: 'PARTICIPANT MANAGER' ,  status: ['live', 'legacy',  'recruitment', 'design'] },
     { path: '/studies/:id/compliance', name: 'ADHERENCE DATA',  status: ['live', 'legacy'] },
     { path: '/studies/:id/study-data', name: 'STUDY DATA',  status: ['live', 'legacy'] },
   ]
@@ -212,11 +212,12 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               .filter(section => section.name)
               .map(section => (
                 section.status.includes(studyData.study?.phase)?  <NavLink
-            
+          
                   to={section.path.replace(':id', studyId)}
                   key={section.path}
                   className={classes.toolbarLink}
                   activeClassName={classes.selectedLink}
+                  
                 >
                   {section.name}
                 </NavLink> :  <span   key={section.path} style={{opacity: .45}}

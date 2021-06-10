@@ -1,10 +1,9 @@
+import { FormControl, makeStyles } from '@material-ui/core'
 import React from 'react'
-import { makeStyles } from '@material-ui/core'
-import Subsection from './Subsection'
-import { FormControl } from '@material-ui/core'
 import { StudyAppDesign } from '../../../types/types'
 import { AppDesignUpdateTypes } from './AppDesign'
 import FormGroupWrapper from './FormGroupWrapper'
+import Subsection from './Subsection'
 import TextInputWrapper from './TextInputWrapper'
 
 const useStyles = makeStyles(theme => ({
@@ -76,7 +75,7 @@ const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = (
             multiline
             rows={8}
             rowsMax={10}
-            placeholder="Lorem ipsum"
+            placeholder="Body Copy"
             titleText="Body Copy (maximum 500 characters)*"
             maxWordCount={500}
           />

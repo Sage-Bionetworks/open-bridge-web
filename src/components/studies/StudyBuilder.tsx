@@ -282,6 +282,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         
       }
 
+      case 'customize': {
+        saveFn = saveStudy
+        break
+        
+      }
+
       default: {
         saveFn = saveStudy
       }
@@ -466,12 +472,13 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         onSave={() => {
                            saveStudy(builderInfo.study)
                         }}
+
                         onUpdate={(updatedStudy: Study) => {
-                          const isTheSame = _.isEqual(updatedStudy, builderInfo.study)
-                         if ( !isTheSame) {
                           setHasObjectChanged(true)
-                          saveStudy(updatedStudy)
-                          }
+                          setData({
+                            ...builderInfo,
+                            study: updatedStudy,
+                          })
                         }}
                       >
                         {navButtons}
@@ -488,7 +495,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         hasObjectChanged={hasObjectChanged}
                         saveLoader={saveLoader}
                         studyInfo={builderInfo}
-                        onSave={() => saveStudy(builderInfo.study)}
+                        onSave={() => saveStudy({...builderInfo.study, phase: 'recruitment'})}
                         onUpdate={(study: Study) => {
                           setHasObjectChanged(true)
                           setData({

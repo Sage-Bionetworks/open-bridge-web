@@ -127,7 +127,7 @@ const ALERTS: StudyAlertSection[] = [
     section: 'scheduler',
     errors: [
       {
-        errorText: 'Do you want to keep the default notification text',
+        errorText: 'Do you want to keep the default notification text?',
         validationFn: (s: StudyInfoData) => {
           const schedule = s.schedule
           if (!schedule) {
@@ -336,10 +336,10 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
     })
     onEnableNext(false)
     setAlerts(alrts)
-    const requiredAlert = alrts.find(alert =>
+    /*const requiredAlert = alrts.find(alert =>
       alert.errors.find(error => !error.isDismissable),
-    )
-    onEnableNext(!requiredAlert)
+    )*/
+    onEnableNext(alrts.length===0)
   }, [studyInfo])
 
   const ignore = (sectionPath: string, index: number) => {
@@ -366,11 +366,12 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
 
   return (
     <Container maxWidth="sm">
-      <MTBHeadingH1>{studyInfo.study.name}</MTBHeadingH1>
+      <Box textAlign="left">
+      <MTBHeadingH1 style={{marginBottom: '24px'}}>{studyInfo.study.name}</MTBHeadingH1>
       {alerts?.length > 0 && (
-        <MTBHeadingH2>Please review the following alerts: </MTBHeadingH2>
+        <MTBHeadingH2 style={{marginBottom: '40px'}}>Please review the following alerts: </MTBHeadingH2>
       )}
-
+</Box>
       {alerts.map(alert => (
         <StudyAlertComponent
           {...alert}
