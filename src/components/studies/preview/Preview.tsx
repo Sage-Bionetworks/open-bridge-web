@@ -4,12 +4,13 @@ import React, { ReactNode } from 'react'
 import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
 import appStoreBtn from '../../../assets/preview/appStoreBtn.png'
 import googlePlayBtn from '../../../assets/preview/googlePlayBtn.png'
+import PhoneImg from '../../../assets/preview/preview_phone.svg'
+import { ReactComponent as PlayImg } from '../../../assets/preview/preview_play.svg'
 import ParticipantService from '../../../services/participants.service'
-import { ThemeType } from '../../../style/theme'
+import { poppinsFont, ThemeType } from '../../../style/theme'
 import { ErrorFallback, ErrorHandler } from '../../widgets/ErrorHandler'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
 import { SimpleTextInput } from '../../widgets/StyledComponents'
-
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
     backgroundColor: '#fff',
@@ -17,17 +18,52 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     padding: theme.spacing(0, 6, 7, 6),
     textAlign: 'left',
   },
+  phone: {
+    width: '145px',
+    height: '275px',
+    marginRight: '64px',
+    textAlign: 'left',
+    flexShrink: 0,
+    backgroundRepeat: 'no-repeat',
+    backgroundColor: '#fff',
+    padding: '4px 12px 11px 10px',
+    backgroundImage: 'url(' + PhoneImg + ')',
+    '& > div:first-child': {
+      backgroundColor: '#fff',
+      borderRadius: '16px',
+      display: 'flex',
+      width: '100%',
+      height: '261px',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    '& > div:first-child >  div': {
+      borderRadius: '50%',
+      border: '3px solid black',
+      backgroundColor: '#FDE93D',
+      width: '70px',
+      height: '70px',
+      paddingTop: '17px',
+      paddingLeft: '22px',
+    },
+  },
+  mtbApp: {
+    marginTop: theme.spacing(3),
+    fontFamily: poppinsFont,
+    fontWeight: 600,
+    fontSize: '12px',
+    textAlign: 'center',
+  },
   inputs: {
     display: 'block',
     '& .MuiFormControl-root': {
       flexDirection: 'row',
-      alignItems: 'center'
-     
+      alignItems: 'center',
     },
     '& label': {
       marginTop: theme.spacing(2),
       width: theme.spacing(17),
-      flexShrink: 0
+      flexShrink: 0,
     },
   },
   storeButtons: {
@@ -40,12 +76,10 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
 }))
 
-
-
 export interface PreviewProps {
   children?: ReactNode
   studyId: string
-  token: string,
+  token: string
 }
 
 const Reminder: React.FunctionComponent = ({}) => {
@@ -65,27 +99,27 @@ const Reminder: React.FunctionComponent = ({}) => {
 
 const Preview: React.FunctionComponent<PreviewProps> = ({
   children,
-  studyId, 
-  token
-
+  studyId,
+  token,
 }: PreviewProps) => {
   const classes = useStyles()
   const [testParticipantId, setTestParticipantId] = React.useState('')
 
   const handleError = useErrorHandler()
 
-
-  const getTestParticipantId = async() => {
-  try{
-    const testId = await ParticipantService.addTestParticipantForPreview(studyId, token)
-    setTestParticipantId(testId)
-  } catch(e){
-    handleError(e!)
-  }
+  const getTestParticipantId = async () => {
+    try {
+      const testId = await ParticipantService.addTestParticipantForPreview(
+        studyId,
+        token,
+      )
+      setTestParticipantId(testId)
+    } catch (e) {
+      handleError(e!)
+    }
   }
   return (
     <>
-  
       {!testParticipantId ? (
         <div className={classes.root}>
           <Box textAlign="center">
@@ -100,23 +134,26 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
               FallbackComponent={ErrorFallback}
               onError={ErrorHandler}
             >
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={() => getTestParticipantId()}
-            >
-              Generate Preview
-            </Button>
-       </ErrorBoundary>
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={() => getTestParticipantId()}
+              >
+                Generate Preview
+              </Button>
+            </ErrorBoundary>
           </Box>
         </div>
       ) : (
         <div className={classes.root}>
-          <Box display="flex" width="528px" mx="auto">
-            <div
-              style={{ width: '140px', marginRight: '64px', textAlign: 'left' }}
-            >
-              PHONE
+          <Box display="flex" width="548px" mx="auto">
+            <div className={classes.phone}>
+              <div>
+                <div>
+                  <PlayImg />
+                </div>
+              </div>
+              <div className={classes.mtbApp}> Mobile Toolbox App</div>
             </div>
             <div>
               <MTBHeadingH2>
@@ -145,7 +182,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                 </Button>
               </div>
               <div className={classes.inputs}>
-                <FormControl  component="div">
+                <FormControl component="div">
                   <FormLabel component="label">Study ID:</FormLabel>
                   <SimpleTextInput
                     multiline={false}
