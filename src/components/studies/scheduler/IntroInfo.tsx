@@ -5,7 +5,7 @@ import {
   createStyles,
   Divider,
   FormControlLabel,
-  Theme
+  Theme,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
@@ -18,13 +18,11 @@ import StudyStartDate from './StudyStartDate'
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     labelDuration: {
-
       fontFamily: poppinsFont,
       fontSize: '18px',
       fontWeight: 600,
 
       textAlign: 'left',
-
     },
     container: {
       backgroundColor: '#FAFAFA',
@@ -43,10 +41,14 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'flex-end',
       alignItems: 'center',
     },
-    divider: {
+    divider2: {
       width: '100%',
       marginTop: theme.spacing(5),
       marginBottom: theme.spacing(3.75),
+    },
+    divider1: {
+      width: '100%',
+      marginBottom: theme.spacing(3),
     },
     headerText: {
       fontSize: '18px',
@@ -59,6 +61,23 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: '15px',
       fontWeight: 'lighter',
       lineHeight: '18px',
+    },
+    middleContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      position: 'relative',
+      marginLeft: theme.spacing(-8.75),
+    },
+    weekInformation: {
+      fontStyle: 'italic',
+      fontFamily: 'Lato',
+      fontSize: '12px',
+      lineHeight: '20px',
+      marginLeft: theme.spacing(2.25),
+      position: 'absolute',
+      right: theme.spacing(-18.75),
+      marginTop: theme.spacing(7.5),
+      textAlign: 'left',
     },
   }),
 )
@@ -80,7 +99,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
   return (
     <Container maxWidth="sm" className={classes.container}>
       <FormControlLabel
-      style={{marginBottom: '35px'}}
+        style={{ marginBottom: '35px' }}
         classes={{ labelPlacementStart: classes.labelDuration }}
         label={
           <Box width="210px" marginRight="40px">
@@ -93,39 +112,59 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
         }
         className={classes.formControl}
         labelPlacement="start"
-        control={<SimpleTextInput fullWidth onChange={e=> setStudyName(e.target.value)} style={{marginBottom: 0}}/>}
-      />
-      <FormControlLabel
-        classes={{labelPlacementStart: classes.labelDuration  }}
-        style={{ /*justifyContent: 'space-between'*/ }}
-        label={
-          <Box width="210px" marginRight="40px">
-            <strong className={classes.headerText}>
-              How long will the study run for?
-            </strong>
-            <br /> <br />
-            <div className={classes.description}>
-              This is the date the study will permanently close. Make sure to
-              add any extra buffer days you might need should the study go
-              longer.
-            </div>{' '}
-          </Box>
-        }
-        className={classes.formControl}
-        labelPlacement="start"
         control={
-          <Duration
-            onChange={e => setDuration(e.target.value)}
-            durationString={duration || ''}
-            unitLabel="study duration unit"
-            numberLabel="study duration number"
-            unitData={DWsEnum}
-            isIntro={true}
-          ></Duration>
+          <SimpleTextInput
+            fullWidth
+            onChange={e => setStudyName(e.target.value)}
+            style={{ marginBottom: 0 }}
+          />
         }
       />
-      <Divider className={classes.divider}></Divider>
+      <Divider className={classes.divider1}></Divider>
+      <Box className={classes.middleContainer}>
+        <FormControlLabel
+          classes={{ labelPlacementStart: classes.labelDuration }}
+          style={
+            {
+              /*justifyContent: 'space-between'*/
+            }
+          }
+          label={
+            <Box width="210px" marginRight="40px">
+              <strong className={classes.headerText}>
+                How long will the study run for?
+              </strong>
+              <br /> <br />
+              <div className={classes.description}>
+                This is the date the study will permanently close. Make sure to
+                add any extra buffer days you might need should the study go
+                longer.
+              </div>{' '}
+            </Box>
+          }
+          className={classes.formControl}
+          labelPlacement="start"
+          control={
+            <Duration
+              onChange={e => setDuration(e.target.value)}
+              durationString={duration || ''}
+              unitLabel="study duration unit"
+              numberLabel="study duration number"
+              unitData={DWsEnum}
+              isIntro={true}
+            ></Duration>
+          }
+        />
+        <p className={classes.weekInformation}>
+          1 year = 52 weeks
+          <br></br>2 year = 104 weeks
+          <br></br>3 year = 156 weeks
+          <br></br>4 year = 208 weeks
+          <br></br>5 year = 260 weeks
+        </p>
+      </Box>
 
+      <Divider className={classes.divider2}></Divider>
       <StudyStartDate
         isIntro={true}
         onChange={(pseudonym: StartEventId) => setstartEventId(pseudonym)}
