@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
-import { poppinsFont } from '../../../style/theme'
+import { poppinsFont, latoFont } from '../../../style/theme'
 import { DWsEnum, StartEventId } from '../../../types/scheduling'
 import { SimpleTextInput } from '../../widgets/StyledComponents'
 import Duration from './Duration'
@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     weekInformation: {
       fontStyle: 'italic',
-      fontFamily: 'Lato',
+      fontFamily: latoFont,
       fontSize: '12px',
       lineHeight: '20px',
       marginLeft: theme.spacing(2.25),
@@ -78,6 +78,7 @@ const useStyles = makeStyles((theme: Theme) =>
       right: theme.spacing(-18.75),
       marginTop: theme.spacing(7.5),
       textAlign: 'left',
+      listStyle: 'none',
     },
   }),
 )
@@ -155,13 +156,13 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
             ></Duration>
           }
         />
-        <p className={classes.weekInformation}>
-          1 year = 52 weeks
-          <br></br>2 year = 104 weeks
-          <br></br>3 year = 156 weeks
-          <br></br>4 year = 208 weeks
-          <br></br>5 year = 260 weeks
-        </p>
+        <ul className={classes.weekInformation}>
+          <li>1 year = 52 weeks</li>
+          <li>2 year = 104 weeks</li>
+          <li>3 year = 156 weeks</li>
+          <li>4 year = 208 weeks</li>
+          <li>5 year = 260 weeks</li>
+        </ul>
       </Box>
 
       <Divider className={classes.divider2}></Divider>
