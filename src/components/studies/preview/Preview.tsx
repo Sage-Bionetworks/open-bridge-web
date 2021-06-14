@@ -78,6 +78,29 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       marginRight: theme.spacing(2),
     },
   },
+  divider: {
+    width: '100%',
+    marginTop: theme.spacing(7.5),
+    marginBottom: theme.spacing(2.5),
+  },
+  sampleAssessmentDataText: {
+    fontFamily: poppinsFont,
+    fontSize: '18px',
+    lineHeight: '27px',
+    width: '110px',
+    marginLeft: theme.spacing(1.5),
+  },
+  assessmentsText: {
+    marginTop: theme.spacing(-0.25),
+    fontFamily: latoFont,
+    fontSize: '15px',
+    marginBottom: theme.spacing(5),
+  },
+  assessmentImg: {
+    height: '19px',
+    width: '24px',
+    marginTop: theme.spacing(0.75),
+  },
 }))
 
 export interface PreviewProps {
@@ -234,9 +257,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                 </div>
               </div>
             </Box>
-            <Divider
-              style={{ width: '100%', marginTop: '60px', marginBottom: '20px' }}
-            />
+            <Divider className={classes.divider} />
             <Box
               width="100%"
               display="flex"
@@ -246,31 +267,14 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
               <Box display="flex" flexDirection="row" alignItems="flex-start">
                 <img
                   src={SampleAssessmentDataImg}
-                  height="19px"
-                  width="24px"
-                  style={{ marginTop: '6px' }}
+                  className={classes.assessmentImg}
                 ></img>
-                <Box
-                  style={{
-                    fontFamily: poppinsFont,
-                    fontSize: '18px',
-                    lineHeight: '27px',
-                    width: '110px',
-                    marginLeft: '12px',
-                  }}
-                >
+                <Box className={classes.sampleAssessmentDataText}>
                   Sample Assessment Data
                 </Box>
               </Box>
               <Box width="300px">
-                <p
-                  style={{
-                    marginTop: '-2px',
-                    fontFamily: latoFont,
-                    fontSize: '15px',
-                    marginBottom: '40px',
-                  }}
-                >
+                <p className={classes.assessmentsText}>
                   There are no scores or data associated with this preview.
                   <br />
                   <br />
