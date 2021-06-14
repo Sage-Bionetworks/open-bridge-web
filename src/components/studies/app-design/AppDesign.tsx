@@ -531,17 +531,6 @@ const AppDesign: React.FunctionComponent<
     appDesignProperties.funder,
   ])
 
-  /*
-  useEffect(() => {
-    updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
-  }, [
-    appDesignProperties.leadPrincipleInvestigatorInfo?.name,
-    appDesignProperties.contactLeadInfo?.phone,
-    appDesignProperties.ethicsBoardInfo?.phone,
-    appDesignProperties.ethicsBoardInfo?.name,
-  ])
-  */
-
   const getContactPersonObject = (type: ContactType) => {
     if (type === 'FUNDER') {
       return appDesignProperties.funder
@@ -733,7 +722,6 @@ const AppDesign: React.FunctionComponent<
               <IrbBoardContactSection
                 appDesignProperties={appDesignProperties}
                 setAppDesignProperties={setAppDesignProperties}
-                updateAppDesignInfo={updateAppDesignInfo}
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 phoneNumberErrorState={phoneNumberErrorState}
                 setPhoneNumberErrorState={setPhoneNumberErrorState}

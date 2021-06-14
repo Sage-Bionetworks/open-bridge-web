@@ -36,7 +36,6 @@ const useStyles = makeStyles(theme => ({
 type IrbBoardContactSectionProps = {
   appDesignProperties: StudyAppDesign
   setAppDesignProperties: Function
-  updateAppDesignInfo: Function
   SimpleTextInputStyles: React.CSSProperties
   irbNameSameAsInstitution: boolean
   getContactPersonObject: (type: ContactType) => Contact
