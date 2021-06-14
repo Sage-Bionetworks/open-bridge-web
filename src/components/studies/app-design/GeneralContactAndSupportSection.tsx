@@ -23,7 +23,6 @@ const useStyles = makeStyles(theme => ({
 type GeneralContactAndSupportSectionProps = {
   appDesignProperties: StudyAppDesign
   setAppDesignProperties: Function
-  updateAppDesignInfo: Function
   SimpleTextInputStyles: React.CSSProperties
   getContactPersonObject: (type: ContactType) => Contact
   phoneNumberErrorState: {
@@ -43,7 +42,6 @@ type GeneralContactAndSupportSectionProps = {
 const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAndSupportSectionProps> = ({
   appDesignProperties,
   setAppDesignProperties,
-  updateAppDesignInfo,
   SimpleTextInputStyles,
   getContactPersonObject,
   phoneNumberErrorState,
@@ -85,9 +83,6 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
                 contactLeadInfo: newContactLeadObject,
               })
             }}
-            onBlur={() =>
-              updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
-            }
             multiline={true}
             rows={1}
             rowsMax={1}
@@ -112,9 +107,6 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
                 contactLeadInfo: newContactLeadObject,
               })
             }}
-            onBlur={() =>
-              updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
-            }
             multiline
             rows={1}
             rowsMax={1}
@@ -204,7 +196,6 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
                   isGeneralContactEmailValid: validEmail,
                 }
               })
-              updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
             }}
             multiline
             rows={1}

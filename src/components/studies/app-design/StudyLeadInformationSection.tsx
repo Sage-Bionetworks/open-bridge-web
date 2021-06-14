@@ -28,8 +28,6 @@ type StudyLeadInformationSectionProps = {
   orgMembership: string | undefined
   token: string | undefined
   irbNameSameAsInstitution: boolean
-  onUpdate: Function
-  study: Study
 }
 
 const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationSectionProps> = ({

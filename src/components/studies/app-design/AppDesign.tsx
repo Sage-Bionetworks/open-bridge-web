@@ -717,13 +717,10 @@ const AppDesign: React.FunctionComponent<
                 token={token}
                 getContactPersonObject={getContactPersonObject}
                 irbNameSameAsInstitution={irbNameSameAsInstitution}
-                onUpdate={onUpdate}
-                study={study}
               />
               <GeneralContactAndSupportSection
                 appDesignProperties={appDesignProperties}
                 setAppDesignProperties={setAppDesignProperties}
-                updateAppDesignInfo={updateAppDesignInfo}
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 phoneNumberErrorState={phoneNumberErrorState}
                 setPhoneNumberErrorState={setPhoneNumberErrorState}
