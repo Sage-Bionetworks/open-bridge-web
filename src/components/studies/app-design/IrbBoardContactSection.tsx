@@ -10,8 +10,7 @@ import {
   FormControlLabel,
   FormHelperText,
 } from '@material-ui/core'
-import { StudyAppDesign, Contact } from '../../../types/types'
-import { AppDesignUpdateTypes } from './AppDesign'
+import { StudyAppDesign, Contact, Study } from '../../../types/types'
 import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
 import clsx from 'clsx'
 import SaveButton from '../../widgets/SaveButton'
@@ -56,12 +55,13 @@ type IrbBoardContactSectionProps = {
   setEmailErrorState: Function
   saveLoader: boolean
   saveInfo: Function
+  study: Study
+  onUpdate: Function
 }
 
 const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProps> = ({
   appDesignProperties,
   setAppDesignProperties,
-  updateAppDesignInfo,
   SimpleTextInputStyles,
   irbNameSameAsInstitution,
   getContactPersonObject,
@@ -74,6 +74,8 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
   setEmailErrorState,
   saveLoader,
   saveInfo,
+  study,
+  onUpdate,
 }) => {
   const classes = useStyles()
   return (
@@ -157,9 +159,6 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
                   ethicsBoardInfo: newEthicsBoardBoard,
                 })
               }}
-              onBlur={() =>
-                updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
-              }
               rows={1}
               rowsMax={1}
               multiline={false}
@@ -248,7 +247,6 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
                   isIrbEmailValid: validEmail,
                 }
               })
-              updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
             }}
             multiline
             rows={1}
@@ -278,9 +276,11 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
                 irbProtocolId: e.target.value,
               })
             }}
-            onBlur={() =>
-              updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER)
-            }
+            onBlur={() => {
+              const newStudy = { ...study }
+              newStudy.irbProtocolId = appDesignProperties.irbProtocolId
+              onUpdate(newStudy)
+            }}
             multiline
             rows={1}
             rowsMax={1}

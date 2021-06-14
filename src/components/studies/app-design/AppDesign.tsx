@@ -746,6 +746,8 @@ const AppDesign: React.FunctionComponent<
                 saveLoader={saveLoader}
                 irbNameSameAsInstitution={irbNameSameAsInstitution}
                 setIrbNameSameAsInstitution={setIrbNameSameAsInstitution}
+                onUpdate={onUpdate}
+                study={study}
               />
             </ol>
           </Box>
