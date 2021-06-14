@@ -1,6 +1,6 @@
 import { Box, Button, FormControl, FormLabel, Divider } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useEffect } from 'react'
 import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
 import appStoreBtn from '../../../assets/preview/appStoreBtn.png'
 import googlePlayBtn from '../../../assets/preview/googlePlayBtn.png'
@@ -8,10 +8,13 @@ import PhoneImg from '../../../assets/preview/preview_phone.svg'
 import SampleAssessmentDataImg from '../../../assets/preview/sample_assessment_data.svg'
 import { ReactComponent as PlayImg } from '../../../assets/preview/preview_play.svg'
 import ParticipantService from '../../../services/participants.service'
-import { poppinsFont, ThemeType } from '../../../style/theme'
+import { poppinsFont, ThemeType, latoFont } from '../../../style/theme'
 import { ErrorFallback, ErrorHandler } from '../../widgets/ErrorHandler'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
 import { SimpleTextInput } from '../../widgets/StyledComponents'
+import { Assessment } from '../../../types/types'
+import { Schedule } from '../../../types/scheduling'
+import AssessmentSmall from '../../assessments/AssessmentSmall'
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
     backgroundColor: '#fff',
@@ -81,6 +84,7 @@ export interface PreviewProps {
   children?: ReactNode
   studyId: string
   token: string
+  schedule: Schedule
 }
 
 const Reminder: React.FunctionComponent = ({}) => {
@@ -102,9 +106,14 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
   children,
   studyId,
   token,
+  schedule,
 }: PreviewProps) => {
   const classes = useStyles()
   const [testParticipantId, setTestParticipantId] = React.useState('')
+
+  const [uniqueAssessments, setUniqueAssessments] = React.useState<
+    Assessment[]
+  >([])
 
   const handleError = useErrorHandler()
 
@@ -119,6 +128,25 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
       handleError(e!)
     }
   }
+
+  useEffect(() => {
+    const sessions = schedule.sessions
+    const allUniqueAssessments: Assessment[] = []
+    for (const session of sessions) {
+      if (!session.assessments) continue
+      for (const assessment of session.assessments) {
+        const assessmentAlreadyExists =
+          allUniqueAssessments.find(el => el.title === assessment.title) !==
+          undefined
+        if (assessmentAlreadyExists) {
+          continue
+        }
+        allUniqueAssessments.push(assessment)
+      }
+    }
+    setUniqueAssessments(allUniqueAssessments)
+  }, [])
+
   return (
     <>
       {!testParticipantId ? (
@@ -235,14 +263,27 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                 </Box>
               </Box>
               <Box width="300px">
-                <p style={{ marginTop: '-2px' }}>
+                <p
+                  style={{
+                    marginTop: '-2px',
+                    fontFamily: latoFont,
+                    fontSize: '15px',
+                    marginBottom: '40px',
+                  }}
+                >
                   There are no scores or data associated with this preview.
                   <br />
                   <br />
                   To view sample data from the assessments in your study, click
                   on the assessments below:{' '}
                 </p>
-                <Box></Box>
+                {uniqueAssessments.map((assessment, index) => {
+                  return (
+                    <Box onClick={() => {}} mb={2}>
+                      <AssessmentSmall assessment={assessment} key={index} />
+                    </Box>
+                  )
+                })}
               </Box>
             </Box>
           </Box>
