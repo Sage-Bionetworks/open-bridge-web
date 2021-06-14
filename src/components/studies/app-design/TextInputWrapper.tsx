@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
 
 type TextInputWrapperProps = {
   onChange: Function
-  onBlur: Function
+  onBlur?: Function
   id: string
   placeholder: string
   value: string
@@ -63,7 +63,7 @@ const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
         placeholder={placeholder}
         value={value}
         onChange={e => onChange(e)}
-        onBlur={e => onBlur(e)}
+        onBlur={e => (onBlur ? onBlur(e) : null)}
         multiline={multiline}
         rows={rows}
         rowsMax={rowsMax}

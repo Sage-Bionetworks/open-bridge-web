@@ -1,7 +1,6 @@
 import { FormControl, makeStyles } from '@material-ui/core'
 import React from 'react'
 import { Study, StudyAppDesign } from '../../../types/types'
-import { AppDesignUpdateTypes } from './AppDesign'
 import FormGroupWrapper from './FormGroupWrapper'
 import Subsection from './Subsection'
 import TextInputWrapper from './TextInputWrapper'

@@ -2,8 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Subsection from './Subsection'
 import { FormControl } from '@material-ui/core'
-import { Contact, StudyAppDesign } from '../../../types/types'
-import { AppDesignUpdateTypes } from './AppDesign'
+import { Contact, Study, StudyAppDesign } from '../../../types/types'
 import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
@@ -24,18 +23,18 @@ const useStyles = makeStyles(theme => ({
 type StudyLeadInformationSectionProps = {
   appDesignProperties: StudyAppDesign
   setAppDesignProperties: Function
-  updateAppDesignInfo: Function
   SimpleTextInputStyles: React.CSSProperties
   getContactPersonObject: (type: ContactType) => Contact
   orgMembership: string | undefined
   token: string | undefined
   irbNameSameAsInstitution: boolean
+  onUpdate: Function
+  study: Study
 }
 
 const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationSectionProps> = ({
   appDesignProperties,
   setAppDesignProperties,
-  updateAppDesignInfo,
   SimpleTextInputStyles,
   getContactPersonObject,
   orgMembership,
@@ -106,9 +105,6 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
                 ethicsBoardInfo: newEthicsBoardObject,
               })
             }}
-            onBlur={() =>
-              updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
-            }
             multiline
             rows={1}
             rowsMax={1}
@@ -131,9 +127,6 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
                 funder: newFunderObject,
               })
             }}
-            onBlur={() =>
-              updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
-            }
             multiline
             rows={1}
             rowsMax={1}

@@ -508,6 +508,31 @@ const AppDesign: React.FunctionComponent<
   }, [appDesignProperties.welcomeScreenInfo.useOptionalDisclaimer])
 
   useEffect(() => {
+    const newStudy = { ...study }
+    const contacts: Contact[] = []
+    if (appDesignProperties.ethicsBoardInfo) {
+      contacts.push(appDesignProperties.ethicsBoardInfo)
+    }
+    if (appDesignProperties.funder) {
+      contacts.push(appDesignProperties.funder)
+    }
+    if (appDesignProperties.contactLeadInfo) {
+      contacts.push(appDesignProperties.contactLeadInfo)
+    }
+    if (appDesignProperties.leadPrincipleInvestigatorInfo) {
+      contacts.push(appDesignProperties.leadPrincipleInvestigatorInfo)
+    }
+    newStudy.contacts = contacts
+    onUpdate(newStudy)
+  }, [
+    appDesignProperties.leadPrincipleInvestigatorInfo,
+    appDesignProperties.contactLeadInfo,
+    appDesignProperties.ethicsBoardInfo,
+    appDesignProperties.funder,
+  ])
+
+  /*
+  useEffect(() => {
     updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
   }, [
     appDesignProperties.leadPrincipleInvestigatorInfo?.name,
@@ -515,6 +540,7 @@ const AppDesign: React.FunctionComponent<
     appDesignProperties.ethicsBoardInfo?.phone,
     appDesignProperties.ethicsBoardInfo?.name,
   ])
+  */
 
   const getContactPersonObject = (type: ContactType) => {
     if (type === 'FUNDER') {
@@ -686,12 +712,13 @@ const AppDesign: React.FunctionComponent<
               <StudyLeadInformationSection
                 appDesignProperties={appDesignProperties}
                 setAppDesignProperties={setAppDesignProperties}
-                updateAppDesignInfo={updateAppDesignInfo}
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 orgMembership={orgMembership}
                 token={token}
                 getContactPersonObject={getContactPersonObject}
                 irbNameSameAsInstitution={irbNameSameAsInstitution}
+                onUpdate={onUpdate}
+                study={study}
               />
               <GeneralContactAndSupportSection
                 appDesignProperties={appDesignProperties}
