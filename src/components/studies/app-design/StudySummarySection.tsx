@@ -1,6 +1,6 @@
 import { FormControl, makeStyles } from '@material-ui/core'
 import React from 'react'
-import { StudyAppDesign } from '../../../types/types'
+import { Study, StudyAppDesign } from '../../../types/types'
 import { AppDesignUpdateTypes } from './AppDesign'
 import FormGroupWrapper from './FormGroupWrapper'
 import Subsection from './Subsection'
@@ -18,15 +18,17 @@ const useStyles = makeStyles(theme => ({
 type StudySummarySectionProps = {
   appDesignProperties: StudyAppDesign
   setAppDesignProperties: Function
-  updateAppDesignInfo: Function
   SimpleTextInputStyles: React.CSSProperties
+  onUpdate: Function
+  study: Study
 }
 
 const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = ({
   appDesignProperties,
   setAppDesignProperties,
-  updateAppDesignInfo,
   SimpleTextInputStyles,
+  onUpdate,
+  study,
 }) => {
   const classes = useStyles()
   return (
@@ -46,9 +48,11 @@ const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = (
                 studyTitle: e.target.value,
               })
             }}
-            onBlur={() =>
-              updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_NAME)
-            }
+            onBlur={() => {
+              const updatedStudy = { ...study }
+              updatedStudy.name = appDesignProperties.studyTitle
+              onUpdate(updatedStudy)
+            }}
             multiline
             rows={1}
             rowsMax={1}
@@ -69,9 +73,11 @@ const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = (
                 studySummaryBody: e.target.value,
               })
             }}
-            onBlur={() =>
-              updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION)
-            }
+            onBlur={() => {
+              const updatedStudy = { ...study }
+              updatedStudy.details = appDesignProperties.studySummaryBody
+              onUpdate(updatedStudy)
+            }}
             multiline
             rows={8}
             rowsMax={10}

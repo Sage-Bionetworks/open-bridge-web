@@ -679,8 +679,9 @@ const AppDesign: React.FunctionComponent<
               <StudySummarySection
                 appDesignProperties={appDesignProperties}
                 setAppDesignProperties={setAppDesignProperties}
-                updateAppDesignInfo={updateAppDesignInfo}
                 SimpleTextInputStyles={SimpleTextInputStyles}
+                onUpdate={onUpdate}
+                study={study}
               />
               <StudyLeadInformationSection
                 appDesignProperties={appDesignProperties}
