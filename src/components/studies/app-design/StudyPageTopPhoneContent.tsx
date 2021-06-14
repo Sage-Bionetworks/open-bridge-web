@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
   sectionFourIndicatorPosition: {
     position: 'absolute',
     marginLeft: theme.spacing(-7),
-    marginBottom: theme.spacing(79),
+    top: theme.spacing(2.5),
   },
   headlineStyle: {
     fontFamily: playfairDisplayFont,
@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
   sectionFiveIndicatorPosition: {
     position: 'absolute',
     marginLeft: theme.spacing(-7),
-    marginTop: theme.spacing(41),
+    top: theme.spacing(63)
   },
   container: {
     padding: theme.spacing(2, 2, 2, 2.25),
