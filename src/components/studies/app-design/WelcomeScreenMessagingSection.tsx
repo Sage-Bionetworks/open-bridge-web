@@ -2,10 +2,9 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Subsection from './Subsection'
 import { Box, CircularProgress, FormControl, Checkbox } from '@material-ui/core'
-import { StudyAppDesign } from '../../../types/types'
+import { Study, StudyAppDesign } from '../../../types/types'
 import { playfairDisplayFont } from '../../../style/theme'
 import SaveButton from '../../widgets/SaveButton'
-import { AppDesignUpdateTypes } from './AppDesign'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
 
@@ -43,21 +42,31 @@ const useStyles = makeStyles(theme => ({
 type WelcomeScreenMessagingSectionProps = {
   appDesignProperties: StudyAppDesign
   setAppDesignProperties: Function
-  updateAppDesignInfo: Function
   saveLoader: boolean
   saveInfo: Function
   SimpleTextInputStyles: React.CSSProperties
+  onUpdate: Function
+  study: Study
 }
 
 const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessagingSectionProps> = ({
   appDesignProperties,
   setAppDesignProperties,
-  updateAppDesignInfo,
   saveInfo,
   saveLoader,
   SimpleTextInputStyles,
+  onUpdate,
+  study,
 }) => {
   const classes = useStyles()
+
+  const updateWelcomeScreenInfo = () => {
+    const updatedStudy = { ...study }
+    updatedStudy.clientData.welcomeScreenData =
+      appDesignProperties.welcomeScreenInfo
+    onUpdate(updatedStudy)
+  }
+
   return (
     <Subsection heading="Welcome screen messaging">
       <FormGroupWrapper>
@@ -81,11 +90,7 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
                 welcomeScreenInfo: newWelcomeScreenData,
               })
             }}
-            onBlur={() =>
-              updateAppDesignInfo(
-                AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
-              )
-            }
+            onBlur={updateWelcomeScreenInfo}
             multiline
             rows={2}
             rowsMax={4}
@@ -110,11 +115,7 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
                 welcomeScreenInfo: newWelcomeScreenData,
               })
             }}
-            onBlur={() =>
-              updateAppDesignInfo(
-                AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
-              )
-            }
+            onBlur={updateWelcomeScreenInfo}
             multiline
             rows={4}
             rowsMax={6}
@@ -143,11 +144,7 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
                 welcomeScreenInfo: newWelcomeScreenData,
               })
             }}
-            onBlur={() =>
-              updateAppDesignInfo(
-                AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
-              )
-            }
+            onBlur={updateWelcomeScreenInfo}
             multiline
             rows={2}
             rowsMax={4}
@@ -172,11 +169,7 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
                 welcomeScreenInfo: newWelcomeScreenData,
               })
             }}
-            onBlur={() =>
-              updateAppDesignInfo(
-                AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO,
-              )
-            }
+            onBlur={updateWelcomeScreenInfo}
             multiline
             rows={2}
             rowsMax={4}
@@ -194,17 +187,18 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
             className={classes.checkBox}
             id="disclaimer-check-box"
             onChange={() => {
-              setAppDesignProperties((prevState: StudyAppDesign) => {
-                const newWelcomeScreenData = {
-                  ...prevState.welcomeScreenInfo,
-                }
-                newWelcomeScreenData.useOptionalDisclaimer = !prevState
-                  .welcomeScreenInfo.useOptionalDisclaimer
-                return {
-                  ...appDesignProperties,
-                  welcomeScreenInfo: newWelcomeScreenData,
-                }
+              const newStudy = { ...study }
+              const welcomeScreenData = {
+                ...appDesignProperties.welcomeScreenInfo,
+                useOptionalDisclaimer: !appDesignProperties.welcomeScreenInfo
+                  .useOptionalDisclaimer,
+              }
+              newStudy.clientData.welcomeScreenData = welcomeScreenData
+              setAppDesignProperties({
+                ...appDesignProperties,
+                welcomeScreenInfo: welcomeScreenData,
               })
+              onUpdate(newStudy)
             }}
           ></Checkbox>
           <div className={classes.optionalDisclaimerText}>

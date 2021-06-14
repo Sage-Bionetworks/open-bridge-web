@@ -17,7 +17,7 @@ import {
   Study,
   StudyAppDesign,
   StudyBuilderComponentProps,
-  WelcomeScreenData
+  WelcomeScreenData,
 } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
@@ -280,8 +280,10 @@ const AppDesign: React.FunctionComponent<
 
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] =
-    useState<boolean>(true)
+  const [
+    irbNameSameAsInstitution,
+    setIrbNameSameAsInstitution,
+  ] = useState<boolean>(true)
 
   const SimpleTextInputStyles = {
     fontSize: '15px',
@@ -291,29 +293,33 @@ const AppDesign: React.FunctionComponent<
     boxSizing: 'border-box',
   } as React.CSSProperties
 
-  const [appDesignProperties, setAppDesignProperties] =
-    useState<StudyAppDesign>({
-      logo: '',
-      backgroundColor:  '#6040FF',
-      welcomeScreenInfo: {
-        welcomeScreenBody: '',
-        welcomeScreenFromText: '',
-        welcomeScreenSalutation: '',
-        welcomeScreenHeader: '',
-        isUsingDefaultMessage: false,
-        useOptionalDisclaimer: false,
-      } as WelcomeScreenData,
-      studyTitle: '',
-      studySummaryBody: '',
-      irbProtocolId: '',
-      leadPrincipleInvestigatorInfo: undefined,
-      contactLeadInfo: undefined,
-      ethicsBoardInfo: undefined,
-      funder: undefined,
-    })
+  const [
+    appDesignProperties,
+    setAppDesignProperties,
+  ] = useState<StudyAppDesign>({
+    logo: '',
+    backgroundColor: '#6040FF',
+    welcomeScreenInfo: {
+      welcomeScreenBody: '',
+      welcomeScreenFromText: '',
+      welcomeScreenSalutation: '',
+      welcomeScreenHeader: '',
+      isUsingDefaultMessage: false,
+      useOptionalDisclaimer: false,
+    } as WelcomeScreenData,
+    studyTitle: '',
+    studySummaryBody: '',
+    irbProtocolId: '',
+    leadPrincipleInvestigatorInfo: undefined,
+    contactLeadInfo: undefined,
+    ethicsBoardInfo: undefined,
+    funder: undefined,
+  })
 
-  const [generalContactPhoneNumber, setGeneralContactPhoneNumber] =
-    React.useState('')
+  const [
+    generalContactPhoneNumber,
+    setGeneralContactPhoneNumber,
+  ] = React.useState('')
   const [irbPhoneNumber, setIrbPhoneNumber] = React.useState('')
 
   const [phoneNumberErrorState, setPhoneNumberErrorState] = React.useState({
@@ -389,7 +395,10 @@ const AppDesign: React.FunctionComponent<
         updatedStudy.name = appDesignProps.studyTitle
         break
       case AppDesignUpdateTypes.UPDATE_STUDY_COLOR:
-        updatedStudy.colorScheme = { ...updatedStudy.colorScheme, background: appDesignProps.backgroundColor }
+        updatedStudy.colorScheme = {
+          ...updatedStudy.colorScheme,
+          background: appDesignProps.backgroundColor,
+        }
         break
       case AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS:
         const contacts: Contact[] = []
@@ -418,9 +427,10 @@ const AppDesign: React.FunctionComponent<
         break
       case AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO:
         updatedStudy.clientData = {
-         ...updatedStudy.clientData, welcomeScreenData:appDesignProps.welcomeScreenInfo
+          ...updatedStudy.clientData,
+          welcomeScreenData: appDesignProps.welcomeScreenInfo,
         }
-    
+
         break
     }
     onUpdate(updatedStudy)
@@ -483,7 +493,8 @@ const AppDesign: React.FunctionComponent<
         ethicsBoardInfo: irbInfo,
         contactLeadInfo: studySupport,
         logo: study.studyLogoUrl || '',
-        backgroundColor: study.colorScheme?.background || appDesignProperties.backgroundColor,
+        backgroundColor:
+          study.colorScheme?.background || appDesignProperties.backgroundColor,
         welcomeScreenInfo: welcomeScreenData,
         studyTitle: study.name || '',
         studySummaryBody: study.details || '',
@@ -494,10 +505,7 @@ const AppDesign: React.FunctionComponent<
 
   useEffect(() => {
     updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO)
-  }, [
-    appDesignProperties.welcomeScreenInfo.useOptionalDisclaimer,
-    appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage,
-  ])
+  }, [appDesignProperties.welcomeScreenInfo.useOptionalDisclaimer])
 
   useEffect(() => {
     updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
@@ -569,8 +577,8 @@ const AppDesign: React.FunctionComponent<
                       const newWelcomeScreenData = {
                         ...prevState.welcomeScreenInfo,
                       }
-                      newWelcomeScreenData.isUsingDefaultMessage =
-                        !prevState.welcomeScreenInfo.isUsingDefaultMessage
+                      newWelcomeScreenData.isUsingDefaultMessage = !prevState
+                        .welcomeScreenInfo.isUsingDefaultMessage
                       return {
                         ...appDesignProperties,
                         welcomeScreenInfo: newWelcomeScreenData,
@@ -602,10 +610,11 @@ const AppDesign: React.FunctionComponent<
                 <WelcomeScreenMessagingSection
                   appDesignProperties={appDesignProperties}
                   setAppDesignProperties={setAppDesignProperties}
-                  updateAppDesignInfo={updateAppDesignInfo}
                   saveLoader={saveLoader}
                   saveInfo={saveInfo}
                   SimpleTextInputStyles={SimpleTextInputStyles}
+                  onUpdate={onUpdate}
+                  study={study}
                 />
               </ol>
             </div>
@@ -733,9 +742,7 @@ const AppDesign: React.FunctionComponent<
                   appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
                 }
                 imgHeight={imgHeight}
-                appColor={
-                  appDesignProperties.backgroundColor|| '#6040FF'
-                }
+                appColor={appDesignProperties.backgroundColor || '#6040FF'}
               />
               <Box className={classes.phoneBottom}>
                 <PhoneBottomImg title="phone bottom image" />
