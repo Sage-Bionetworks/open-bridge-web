@@ -11,6 +11,7 @@ import { ScheduleNotification } from '../../../types/scheduling'
 import { Contact } from '../../../types/types'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
 import { normalNavIcons, SECTIONS, StudySection } from '../sections'
+import { isSameAsDefaultSchedule } from '../scheduler/utility'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   /*root: {
@@ -103,7 +104,6 @@ function getIrbContact(s: StudyInfoData): Contact | undefined {
 }
 
 const ALERTS: StudyAlertSection[] = [
-
   {
     section: 'session-creator',
     errors: [
@@ -115,8 +115,10 @@ const ALERTS: StudyAlertSection[] = [
       {
         errorText: 'All study sessions need to have at least one assessment',
         validationFn: (s: StudyInfoData) => {
-          const noAsseessments = s.schedule?.sessions.find(s=> !s.assessments || s.assessments.length === 0)
-         return !noAsseessments
+          const noAsseessments = s.schedule?.sessions.find(
+            s => !s.assessments || s.assessments.length === 0,
+          )
+          return !noAsseessments
         },
         isDismissable: false,
       },
@@ -144,6 +146,16 @@ const ALERTS: StudyAlertSection[] = [
                 DEFAULT_NOTIFICATION.messages[0]!.subject,
           )
           return !!defaultNotifications
+        },
+        isDismissable: true,
+      },
+      {
+        errorText:
+          'Please make sure to edit schedule through the "Schedule Sessions" tab',
+        validationFn: (s: StudyInfoData) => {
+          const schedule = s.schedule
+          if (!schedule) return false
+          return !isSameAsDefaultSchedule(schedule)
         },
         isDismissable: true,
       },
@@ -339,7 +351,7 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
     /*const requiredAlert = alrts.find(alert =>
       alert.errors.find(error => !error.isDismissable),
     )*/
-    onEnableNext(alrts.length===0)
+    onEnableNext(alrts.length === 0)
   }, [studyInfo])
 
   const ignore = (sectionPath: string, index: number) => {
@@ -367,11 +379,15 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
   return (
     <Container maxWidth="sm">
       <Box textAlign="left">
-      <MTBHeadingH1 style={{marginBottom: '24px'}}>{studyInfo.study.name}</MTBHeadingH1>
-      {alerts?.length > 0 && (
-        <MTBHeadingH2 style={{marginBottom: '40px'}}>Please review the following alerts: </MTBHeadingH2>
-      )}
-</Box>
+        <MTBHeadingH1 style={{ marginBottom: '24px' }}>
+          {studyInfo.study.name}
+        </MTBHeadingH1>
+        {alerts?.length > 0 && (
+          <MTBHeadingH2 style={{ marginBottom: '40px' }}>
+            Please review the following alerts:{' '}
+          </MTBHeadingH2>
+        )}
+      </Box>
       {alerts.map(alert => (
         <StudyAlertComponent
           {...alert}
