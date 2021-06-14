@@ -22,9 +22,9 @@ type TextInputWrapperProps = {
   id: string
   placeholder: string
   value: string
-  multiline: boolean
-  rows: number
-  rowsMax: number
+  multiline?: boolean
+  rows?: number
+  rowsMax?: number
   SimpleTextInputStyles: React.CSSProperties
   titleText: string
   extraClassname?: string
@@ -65,8 +65,8 @@ const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
         onChange={e => onChange(e)}
         onBlur={e => (onBlur ? onBlur(e) : null)}
         multiline={multiline}
-        rows={rows}
-        rowsMax={rowsMax}
+        rows={rows ? rows : 1}
+        rowsMax={rowsMax ? rowsMax : 1}
         inputProps={{
           style: SimpleTextInputStyles,
           maxLength: maxWordCount,
