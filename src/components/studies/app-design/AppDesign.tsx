@@ -198,25 +198,6 @@ export type PreviewFile = {
   body?: string
 }
 
-export enum AppDesignUpdateTypes {
-  UPDATE_STUDY_NAME = 'UPDATE_STUDY_NAME',
-  UPDATE_STUDY_COLOR = 'UPDATE_STUDY_COLOR',
-  UPDATE_STUDY_CONTACTS = 'UPDATE_STUDY_CONTACTS',
-  UPDATE_STUDY_DESCRIPTION = 'UPDATE_STUDY_DESCRIPTION',
-  UPDATE_STUDY_IRB_NUMBER = 'UPDATE_STUDY_IRB_NUMBER',
-  UPDATE_STUDY_LOGO = 'UPDATE_STUDY_LOGO',
-  UPDATE_WELCOME_SCREEN_INFO = 'UPDATE_WELCOME_SCREEN_INFO',
-}
-
-export type PossibleStudyUpdates =
-  | AppDesignUpdateTypes.UPDATE_STUDY_NAME
-  | AppDesignUpdateTypes.UPDATE_STUDY_COLOR
-  | AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS
-  | AppDesignUpdateTypes.UPDATE_STUDY_LOGO
-  | AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER
-  | AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO
-  | AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION
-
 export interface AppDesignProps {
   onSave: Function
   study: Study
@@ -380,68 +361,15 @@ const AppDesign: React.FunctionComponent<
     onSave(updatedStudy)
   }
 
-  const updateAppDesignInfo = (
-    updateType: PossibleStudyUpdates,
-    color?: string,
-  ) => {
-    const appDesignProps = { ...appDesignProperties }
-    if (color) {
-      appDesignProps.backgroundColor = color
-    }
-    const updatedStudy = { ...study }
-    // update the study based on the update type specified
-    switch (updateType) {
-      case AppDesignUpdateTypes.UPDATE_STUDY_NAME:
-        updatedStudy.name = appDesignProps.studyTitle
-        break
-      case AppDesignUpdateTypes.UPDATE_STUDY_COLOR:
-        updatedStudy.colorScheme = {
-          ...updatedStudy.colorScheme,
-          background: appDesignProps.backgroundColor,
-        }
-        break
-      case AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS:
-        const contacts: Contact[] = []
-        if (appDesignProps.ethicsBoardInfo) {
-          contacts.push(appDesignProps.ethicsBoardInfo)
-        }
-        if (appDesignProps.funder) {
-          contacts.push(appDesignProps.funder)
-        }
-        if (appDesignProps.contactLeadInfo) {
-          contacts.push(appDesignProps.contactLeadInfo)
-        }
-        if (appDesignProps.leadPrincipleInvestigatorInfo) {
-          contacts.push(appDesignProps.leadPrincipleInvestigatorInfo)
-        }
-        updatedStudy.contacts = contacts
-        break
-      case AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION:
-        updatedStudy.details = appDesignProps.studySummaryBody
-        break
-      case AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER:
-        updatedStudy.irbProtocolId = appDesignProps.irbProtocolId
-        break
-      case AppDesignUpdateTypes.UPDATE_STUDY_LOGO:
-        updatedStudy.studyLogoUrl = appDesignProps.logo
-        break
-      case AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO:
-        updatedStudy.clientData = {
-          ...updatedStudy.clientData,
-          welcomeScreenData: appDesignProps.welcomeScreenInfo,
-        }
-
-        break
-    }
-    onUpdate(updatedStudy)
-  }
-
   const debouncedUpdateColor = useCallback(
-    _.debounce(
-      color =>
-        updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_COLOR, color),
-      1000,
-    ),
+    _.debounce(color => {
+      const updatedStudy = { ...study }
+      updatedStudy.colorScheme = {
+        ...updatedStudy.colorScheme,
+        background: color,
+      }
+      onUpdate(updatedStudy)
+    }, 1000),
     [],
   )
 
@@ -502,10 +430,6 @@ const AppDesign: React.FunctionComponent<
       }
     })
   }, [])
-
-  useEffect(() => {
-    updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO)
-  }, [appDesignProperties.welcomeScreenInfo.useOptionalDisclaimer])
 
   useEffect(() => {
     const newStudy = { ...study }
@@ -587,19 +511,20 @@ const AppDesign: React.FunctionComponent<
                   checked={
                     !appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
                   }
-                  onChange={() =>
-                    setAppDesignProperties(prevState => {
-                      const newWelcomeScreenData = {
-                        ...prevState.welcomeScreenInfo,
-                      }
-                      newWelcomeScreenData.isUsingDefaultMessage = !prevState
-                        .welcomeScreenInfo.isUsingDefaultMessage
-                      return {
-                        ...appDesignProperties,
-                        welcomeScreenInfo: newWelcomeScreenData,
-                      }
+                  onChange={() => {
+                    const updatedStudy = { ...study }
+                    const welcomeScreenInfo = {
+                      ...appDesignProperties.welcomeScreenInfo,
+                      isUsingDefaultMessage: !appDesignProperties
+                        .welcomeScreenInfo.isUsingDefaultMessage,
+                    }
+                    updatedStudy.clientData.welcomeScreenData = welcomeScreenInfo
+                    setAppDesignProperties({
+                      ...appDesignProperties,
+                      welcomeScreenInfo: welcomeScreenInfo,
                     })
-                  }
+                    onUpdate(updatedStudy)
+                  }}
                 ></Switch>
               </Box>
               <Box ml={1.5}>Customize</Box>
