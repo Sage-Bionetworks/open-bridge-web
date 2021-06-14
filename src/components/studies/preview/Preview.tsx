@@ -1,10 +1,11 @@
-import { Box, Button, FormControl, FormLabel } from '@material-ui/core'
+import { Box, Button, FormControl, FormLabel, Divider } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { ReactNode } from 'react'
 import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
 import appStoreBtn from '../../../assets/preview/appStoreBtn.png'
 import googlePlayBtn from '../../../assets/preview/googlePlayBtn.png'
 import PhoneImg from '../../../assets/preview/preview_phone.svg'
+import SampleAssessmentDataImg from '../../../assets/preview/sample_assessment_data.svg'
 import { ReactComponent as PlayImg } from '../../../assets/preview/preview_play.svg'
 import ParticipantService from '../../../services/participants.service'
 import { poppinsFont, ThemeType } from '../../../style/theme'
@@ -146,63 +147,104 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
         </div>
       ) : (
         <div className={classes.root}>
-          <Box display="flex" width="548px" mx="auto">
-            <div className={classes.phone}>
-              <div>
+          <Box width="548px" mx="auto">
+            <Box display="flex" width="100%">
+              <div className={classes.phone}>
                 <div>
-                  <PlayImg />
+                  <div>
+                    <PlayImg />
+                  </div>
+                </div>
+                <div className={classes.mtbApp}> Mobile Toolbox App</div>
+              </div>
+              <div>
+                <MTBHeadingH2>
+                  {' '}
+                  Preview your study on a mobile device
+                </MTBHeadingH2>
+                <p>Your draft study has been generated.</p>
+                <p>
+                  Please download and/or open the Mobile Toolbox App and login
+                  with the following credentials below.
+                </p>
+                <p>
+                  This login is only for preview purposes. There are no scores
+                  or data associated with this preview.
+                </p>
+                <p>
+                  To view a sample scoring for each assessment please view the
+                  Assessment Library.
+                </p>
+                <div className={classes.storeButtons}>
+                  <Button>
+                    <img src={appStoreBtn} />
+                  </Button>
+                  <Button>
+                    <img src={googlePlayBtn} />
+                  </Button>
+                </div>
+                <div className={classes.inputs}>
+                  <FormControl component="div">
+                    <FormLabel component="label">Study ID:</FormLabel>
+                    <SimpleTextInput
+                      multiline={false}
+                      fullWidth={true}
+                      value={studyId}
+                      readOnly
+                    ></SimpleTextInput>
+                  </FormControl>
+
+                  <FormControl component="div">
+                    <FormLabel component="label">Temporary ID:</FormLabel>
+                    <SimpleTextInput
+                      multiline={false}
+                      fullWidth={true}
+                      readOnly={true}
+                      value={testParticipantId}
+                    ></SimpleTextInput>
+                  </FormControl>
                 </div>
               </div>
-              <div className={classes.mtbApp}> Mobile Toolbox App</div>
-            </div>
-            <div>
-              <MTBHeadingH2>
-                {' '}
-                Preview your study on a mobile device
-              </MTBHeadingH2>
-              <p>Your draft study has been generated.</p>
-              <p>
-                Please download and/or open the Mobile Toolbox App and login
-                with the following credentials below.
-              </p>
-              <p>
-                This login is only for preview purposes. There are no scores or
-                data associated with this preview.
-              </p>
-              <p>
-                To view a sample scoring for each assessment please view the
-                Assessment Library.
-              </p>
-              <div className={classes.storeButtons}>
-                <Button>
-                  <img src={appStoreBtn} />
-                </Button>
-                <Button>
-                  <img src={googlePlayBtn} />
-                </Button>
-              </div>
-              <div className={classes.inputs}>
-                <FormControl component="div">
-                  <FormLabel component="label">Study ID:</FormLabel>
-                  <SimpleTextInput
-                    multiline={false}
-                    fullWidth={true}
-                    value={studyId}
-                    readOnly
-                  ></SimpleTextInput>
-                </FormControl>
-
-                <FormControl component="div">
-                  <FormLabel component="label">Temporary ID:</FormLabel>
-                  <SimpleTextInput
-                    multiline={false}
-                    fullWidth={true}
-                    readOnly={true}
-                    value={testParticipantId}
-                  ></SimpleTextInput>
-                </FormControl>
-              </div>
-            </div>
+            </Box>
+            <Divider
+              style={{ width: '100%', marginTop: '60px', marginBottom: '20px' }}
+            />
+            <Box
+              width="100%"
+              display="flex"
+              flexDirection="row"
+              justifyContent="space-between"
+            >
+              <Box display="flex" flexDirection="row" alignItems="flex-start">
+                <img
+                  src={SampleAssessmentDataImg}
+                  height="19px"
+                  width="24px"
+                  style={{ marginTop: '6px' }}
+                ></img>
+                <Box
+                  style={{
+                    fontFamily: poppinsFont,
+                    fontSize: '18px',
+                    lineHeight: '27px',
+                    width: '110px',
+                    marginLeft: '12px',
+                  }}
+                >
+                  Sample Assessment Data
+                </Box>
+              </Box>
+              <Box width="300px">
+                <p style={{ marginTop: '-2px' }}>
+                  There are no scores or data associated with this preview.
+                  <br />
+                  <br />
+                  To view sample data from the assessments in your study, click
+                  on the assessments below:{' '}
+                </p>
+                <Box></Box>
+              </Box>
+            </Box>
           </Box>
         </div>
       )}
