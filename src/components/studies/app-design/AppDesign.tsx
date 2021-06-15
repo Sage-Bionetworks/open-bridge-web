@@ -548,13 +548,49 @@ const AppDesign: React.FunctionComponent<
                   debouncedUpdateColor={debouncedUpdateColor}
                 />
                 <WelcomeScreenMessagingSection
-                  appDesignProperties={appDesignProperties}
-                  setAppDesignProperties={setAppDesignProperties}
                   saveLoader={saveLoader}
                   saveInfo={saveInfo}
                   SimpleTextInputStyles={SimpleTextInputStyles}
-                  onUpdate={onUpdate}
-                  study={study}
+                  onUpdate={(
+                    welcomeStringHeader: string,
+                    welcomeScreenBody: string,
+                    welcomeScreenSalutation: string,
+                    welcomeScreenFromText: string,
+                    useOptionalDisclaimer: boolean,
+                  ) => {
+                    const newWelcomeScreenData = {
+                      welcomeScreenHeader: welcomeStringHeader,
+                      welcomeScreenBody: welcomeScreenBody,
+                      welcomeScreenFromText: welcomeScreenFromText,
+                      welcomeScreenSalutation: welcomeScreenSalutation,
+                      useOptionalDisclaimer: useOptionalDisclaimer,
+                      isUsingDefaultMessage:
+                        study.clientData.welcomeScreenData
+                          ?.isUsingDefaultMessage || false,
+                    } as WelcomeScreenData
+                    const updatedStudy = { ...study }
+                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
+                    onUpdate(updatedStudy)
+                  }}
+                  welcomeScreenHeader={
+                    study.clientData.welcomeScreenData?.welcomeScreenHeader ||
+                    ''
+                  }
+                  welcomeScreenBody={
+                    study.clientData.welcomeScreenData?.welcomeScreenBody || ''
+                  }
+                  welcomeScreenFromText={
+                    study.clientData.welcomeScreenData?.welcomeScreenFromText ||
+                    ''
+                  }
+                  welcomeScreenSalutation={
+                    study.clientData.welcomeScreenData
+                      ?.welcomeScreenSalutation || ''
+                  }
+                  useOptionalDisclaimer={
+                    study.clientData.welcomeScreenData?.useOptionalDisclaimer ||
+                    false
+                  }
                 />
               </ol>
             </div>
@@ -601,7 +637,7 @@ const AppDesign: React.FunctionComponent<
                 )}
               >
                 {appDesignProperties.welcomeScreenInfo.useOptionalDisclaimer
-                  ? 'This is a research study and does not provide medical advice,diagnosis, or treatment'
+                  ? 'This is a research study and does not provide medical advice, diagnosis, or treatment'
                   : ''}
               </Box>
             </Box>

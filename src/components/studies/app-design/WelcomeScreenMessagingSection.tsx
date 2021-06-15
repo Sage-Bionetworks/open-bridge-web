@@ -40,32 +40,35 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type WelcomeScreenMessagingSectionProps = {
-  appDesignProperties: StudyAppDesign
-  setAppDesignProperties: Function
   saveLoader: boolean
   saveInfo: Function
   SimpleTextInputStyles: React.CSSProperties
-  onUpdate: Function
-  study: Study
+  onUpdate: (
+    welcomeStringHeader: string,
+    welcomeScreenBody: string,
+    welcomeScreenSalutation: string,
+    welcomeScreenFromText: string,
+    useOptionalDisclaimer: boolean,
+  ) => void
+  welcomeScreenHeader: string
+  welcomeScreenBody: string
+  welcomeScreenSalutation: string
+  welcomeScreenFromText: string
+  useOptionalDisclaimer: boolean
 }
 
 const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessagingSectionProps> = ({
-  appDesignProperties,
-  setAppDesignProperties,
   saveInfo,
   saveLoader,
   SimpleTextInputStyles,
   onUpdate,
-  study,
+  welcomeScreenHeader,
+  welcomeScreenBody,
+  welcomeScreenSalutation,
+  welcomeScreenFromText,
+  useOptionalDisclaimer,
 }) => {
   const classes = useStyles()
-
-  const updateWelcomeScreenInfo = () => {
-    const updatedStudy = { ...study }
-    updatedStudy.clientData.welcomeScreenData =
-      appDesignProperties.welcomeScreenInfo
-    onUpdate(updatedStudy)
-  }
 
   return (
     <Subsection heading="Welcome screen messaging">
@@ -77,20 +80,18 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
             }
             id="headline-input"
             placeholder="Welcome Headline"
-            value={appDesignProperties.welcomeScreenInfo.welcomeScreenHeader}
+            value={welcomeScreenHeader}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
-              const newWelcomeScreenData = {
-                ...appDesignProperties.welcomeScreenInfo,
-              }
-              newWelcomeScreenData.welcomeScreenHeader = e.target.value
-              setAppDesignProperties({
-                ...appDesignProperties,
-                welcomeScreenInfo: newWelcomeScreenData,
-              })
+              onUpdate(
+                e.target.value,
+                welcomeScreenBody,
+                welcomeScreenSalutation,
+                welcomeScreenFromText,
+                useOptionalDisclaimer,
+              )
             }}
-            onBlur={updateWelcomeScreenInfo}
             multiline
             rows={2}
             rowsMax={4}
@@ -102,20 +103,18 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
           <TextInputWrapper
             SimpleTextInputStyles={{ width: '100%' } as React.CSSProperties}
             id="outlined-textarea"
-            value={appDesignProperties.welcomeScreenInfo.welcomeScreenBody}
+            value={welcomeScreenBody}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
-              const newWelcomeScreenData = {
-                ...appDesignProperties.welcomeScreenInfo,
-              }
-              newWelcomeScreenData.welcomeScreenBody = e.target.value
-              setAppDesignProperties({
-                ...appDesignProperties,
-                welcomeScreenInfo: newWelcomeScreenData,
-              })
+              onUpdate(
+                welcomeScreenHeader,
+                e.target.value,
+                welcomeScreenSalutation,
+                welcomeScreenFromText,
+                useOptionalDisclaimer,
+              )
             }}
-            onBlur={updateWelcomeScreenInfo}
             multiline
             rows={4}
             rowsMax={6}
@@ -129,22 +128,18 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
           <TextInputWrapper
             SimpleTextInputStyles={SimpleTextInputStyles}
             id="salutations"
-            value={
-              appDesignProperties.welcomeScreenInfo.welcomeScreenSalutation
-            }
+            value={welcomeScreenSalutation}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
-              const newWelcomeScreenData = {
-                ...appDesignProperties.welcomeScreenInfo,
-              }
-              newWelcomeScreenData.welcomeScreenSalutation = e.target.value
-              setAppDesignProperties({
-                ...appDesignProperties,
-                welcomeScreenInfo: newWelcomeScreenData,
-              })
+              onUpdate(
+                welcomeScreenHeader,
+                welcomeScreenBody,
+                e.target.value,
+                welcomeScreenFromText,
+                useOptionalDisclaimer,
+              )
             }}
-            onBlur={updateWelcomeScreenInfo}
             multiline
             rows={2}
             rowsMax={4}
@@ -156,20 +151,18 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
           <TextInputWrapper
             SimpleTextInputStyles={SimpleTextInputStyles}
             id="signature-textarea"
-            value={appDesignProperties.welcomeScreenInfo.welcomeScreenFromText}
+            value={welcomeScreenFromText}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
-              const newWelcomeScreenData = {
-                ...appDesignProperties.welcomeScreenInfo,
-              }
-              newWelcomeScreenData.welcomeScreenFromText = e.target.value
-              setAppDesignProperties({
-                ...appDesignProperties,
-                welcomeScreenInfo: newWelcomeScreenData,
-              })
+              onUpdate(
+                welcomeScreenHeader,
+                welcomeScreenBody,
+                welcomeScreenSalutation,
+                e.target.value,
+                useOptionalDisclaimer,
+              )
             }}
-            onBlur={updateWelcomeScreenInfo}
             multiline
             rows={2}
             rowsMax={4}
@@ -180,25 +173,18 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
         <Box mt={2.5}>Add optional disclaimer:</Box>
         <div className={classes.optionalDisclaimerRow}>
           <Checkbox
-            checked={
-              appDesignProperties.welcomeScreenInfo.useOptionalDisclaimer
-            }
+            checked={useOptionalDisclaimer}
             inputProps={{ 'aria-label': 'primary checkbox' }}
             className={classes.checkBox}
             id="disclaimer-check-box"
             onChange={() => {
-              const newStudy = { ...study }
-              const welcomeScreenData = {
-                ...appDesignProperties.welcomeScreenInfo,
-                useOptionalDisclaimer: !appDesignProperties.welcomeScreenInfo
-                  .useOptionalDisclaimer,
-              }
-              newStudy.clientData.welcomeScreenData = welcomeScreenData
-              setAppDesignProperties({
-                ...appDesignProperties,
-                welcomeScreenInfo: welcomeScreenData,
-              })
-              onUpdate(newStudy)
+              onUpdate(
+                welcomeScreenHeader,
+                welcomeScreenBody,
+                welcomeScreenSalutation,
+                welcomeScreenFromText,
+                !useOptionalDisclaimer,
+              )
             }}
           ></Checkbox>
           <div className={classes.optionalDisclaimerText}>
