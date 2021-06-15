@@ -35,10 +35,11 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     marginBottom: theme.spacing(1.25),
     marginTop: theme.spacing(1),
+    position: 'relative',
   },
   sectionSixAndSevenIndicatorPosition: {
     position: 'absolute',
-    marginLeft: theme.spacing(-39.5),
+    right: theme.spacing(33),
   },
   container: {
     padding: theme.spacing(2, 2, 2, 2.25),
