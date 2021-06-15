@@ -3,7 +3,7 @@ import {
   CircularProgress,
   Dialog,
   IconButton,
-  Paper,
+  Paper
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import {
@@ -11,7 +11,7 @@ import {
   ColDef,
   DataGrid,
   GridOverlay,
-  ValueGetterParams,
+  ValueGetterParams
 } from '@material-ui/data-grid'
 import React, { FunctionComponent } from 'react'
 import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
@@ -27,9 +27,10 @@ import {
 } from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import HideWhen from '../../widgets/HideWhen'
+import SelectAll from '../../widgets/SelectAll'
 import {
   EditParticipantForm,
-  WithdrawParticipantForm,
+  WithdrawParticipantForm
 } from './ParticipantForms'
 import ParticipantTablePagination from './ParticipantTablePagination'
 
@@ -152,7 +153,7 @@ export type ParticipantTableGridProps = {
   onWithdrawParticipant: (participantId: string, note: string) => void
   pageSize: number
   setPageSize: Function
-  isEdit?: boolean
+
   status: 'PENDING' | 'RESOLVED' | 'IDLE'
 }
 
@@ -166,7 +167,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   currentPage,
   setCurrentPage,
   status,
-  isEdit,
+
   enrollmentType,
   onUpdateParticipant,
   onWithdrawParticipant,
@@ -209,6 +210,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     field: 'edit',
     headerName: 'Action',
     disableClickEventBubbling: true,
+    
     renderCell: (params: CellParams) => {
       const onClick = async () => {
         try {
@@ -273,7 +275,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     if (!participantColumns.find(col => col.field === 'phone'))
       participantColumns.splice(2, 0, phoneColumn)
   }
-  if (isEdit && gridType!== 'WITHDRAWN') {
+  if (gridType!== 'WITHDRAWN') {
     if (!participantColumns.find(col => col.field === 'edit')) {
       participantColumns.push(editColumn)
     }
@@ -286,6 +288,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   return (
     <>
       <Paper elevation={0}>
+      
         <div style={{ display: 'flex', height: '90vh' }}>
           <div style={{ flexGrow: 1 }}>
             <DataGrid
@@ -302,6 +305,15 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                 )
               }}
               components={{
+                Header: () => (
+                 <div style={{position: 'absolute', zIndex: 11, top: 0, left: 0, backgroundColor: '#fff'}}> <SelectAll 
+                  allText={`All ${totalParticipants} participants`}
+                  allPageText="All on this page"
+                  onSelectAllPage= {()=> {}}
+                  onSelectAll= {()=> {}}
+                  
+                  ></SelectAll></div>
+                ),
                 Footer: () => (
                   <ParticipantTablePagination
                     totalParticipants={totalParticipants}

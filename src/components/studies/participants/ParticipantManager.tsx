@@ -5,8 +5,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  Grid,
-  Switch,
   Tab,
   Tabs
 } from '@material-ui/core'
@@ -58,18 +56,20 @@ const useStyles = makeStyles(theme => ({
   tab: {
     backgroundColor: theme.palette.common.white,
 
-    '&:first-child': {
+   // '&:first-child': {
       marginRight: theme.spacing(2),
-    },
+   // },
   },
 
   tabPanel: {
     backgroundColor: theme.palette.common.white,
     boxShadow: 'none',
-    padding: theme.spacing(0, 5, 2, 5),
+    padding: theme.spacing(0, 0, 2, 0),
   },
   studyId: {
-    color: '#393434', marginRight: '24px', opacity: .75
+    color: '#393434',
+    marginRight: '24px',
+    opacity: 0.75,
   },
   topButtons: {
     marginRight: theme.spacing(2),
@@ -84,7 +84,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    fontSize: '16px'
+    fontSize: '16px',
     //paddingLeft: theme.spacing(5),
   },
   horizontalGroup: {
@@ -189,6 +189,7 @@ type ParticipantData = {
   total: number
 }
 
+
 const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const handleError = useErrorHandler()
   const classes = useStyles()
@@ -196,14 +197,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const { study }: StudyInfoData = useStudyInfoDataState()
   const { token } = useUserSessionDataState()
 
-  // If we are in editing mode
-  const [isEdit, setIsEdit] = React.useState(true)
   // The current page in the particpant grid the user is viewing
   const [currentPage, setCurrentPage] = React.useState(1)
   // The current page size of the particpant grid
   const [pageSize, setPageSize] = React.useState(50)
   // Withdrawn or active participants
   const [tab, setTab] = React.useState<ParticipantActivityType>('ACTIVE')
+  const [isAddOpen, setIsAddOpen] = React.useState(false)
   const [loadingIndicators, setLoadingIndicators] = React.useState<{
     isDeleting?: boolean
     isDownloading?: boolean
@@ -212,21 +212,17 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [isOpenDeleteDialog, setIsOpenDeleteDialog] = React.useState(false)
 
   // True if the user is currently searching for a particpant using id
-  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] = React.useState(false)
+  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] =
+    React.useState(false)
 
-  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
-    string | undefined
-  >(undefined)
+  const [fileDownloadUrl, setFileDownloadUrl] =
+    React.useState<string | undefined>(undefined)
 
   // Selected users
-  const [
-    selectedActiveParticipants,
-    setSelectedActiveParticipants,
-  ] = React.useState<ParticipantAccountSummary[]>([])
-  const [
-    selectedWithdrawnParticipants,
-    setSelectedWithdrawnParticipants,
-  ] = React.useState<ParticipantAccountSummary[]>([])
+  const [selectedActiveParticipants, setSelectedActiveParticipants] =
+    React.useState<ParticipantAccountSummary[]>([])
+  const [selectedWithdrawnParticipants, setSelectedWithdrawnParticipants] =
+    React.useState<ParticipantAccountSummary[]>([])
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
   }
@@ -237,10 +233,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   >([])
 
   //trigger data refresh on updates
-  const [
-    refreshParticipantsToggle,
-    setRefreshParticipantsToggle,
-  ] = React.useState(false)
+  const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
+    React.useState(false)
 
   const {
     data,
@@ -417,12 +411,16 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     return (
       <Box>
         <Box px={3} py={2} display="flex">
-         <MTBHeadingH3 className={classes.studyId}> Study ID: {study.identifier} </MTBHeadingH3><LiveIcon/>
+          <MTBHeadingH3 className={classes.studyId}>
+            {' '}
+            Study ID: {study.identifier}{' '}
+          </MTBHeadingH3>
+          <LiveIcon />
         </Box>
-       {/* <Button onClick={() => makeTestGroup()}>Make test group [test]</Button>*/}
+        {/* <Button onClick={() => makeTestGroup()}>Make test group [test]</Button>*/}
 
         <Box px={3} py={2} position="relative">
-          {!data?.items.length && !isEdit && (
+          {!data?.items.length && (
             <HelpBox
               topOffset={40}
               leftOffset={160}
@@ -438,172 +436,163 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             </HelpBox>
           )}
 
-
-          {(!data?.items.length && !isUserSearchingForParticipant && isEdit && (status === 'RESOLVED')) && (
-
-            <HelpBox
-              topOffset={340}
-              leftOffset={250}
-              arrowTailLength={150}
-              helpTextTopOffset={-70}
-              helpTextLeftOffset={140}
-              helpTextWidth={250}
-              arrowRotate={0}
-            >
-              <div>
-                You can upload a .csv or enter each participant credentials one
-                by one. When you are done, return to “View” mode to send them an
-                SMS link to download the app.
-              </div>
-            </HelpBox>
-          )}
-
-          <Grid
-            component="label"
-            container
-            alignItems="center"
-            spacing={0}
-            className={classes.topRow}
-          >
-            <div className={classes.horizontalGroup}>
-              <Grid item>View</Grid>
-              <Grid item>
-                <Switch
-                  checked={isEdit}
-                  classes={{ root: classes.switchRoot }}
-                  onChange={e => setIsEdit(e.target.checked)}
-                  name="viewEdit"
-                />
-              </Grid>
-              <Grid item>Edit</Grid>
-            </div>
-          </Grid>
-          <Box className={classes.topButtonContainer}>
-            {!isEdit && (
-              <div className={classes.inputRow}>
-                <Button className={classes.topButtons}>
-                  <img
-                    src={LinkIcon}
-                    className={classes.buttonImage}
-                    alt="link-icon"
-                  ></img>
-                  App Download Link
-                </Button>
-              </div>
+          {!data?.items.length &&
+            !isUserSearchingForParticipant &&
+            status === 'RESOLVED' && (
+              <HelpBox
+                topOffset={340}
+                leftOffset={250}
+                arrowTailLength={150}
+                helpTextTopOffset={-70}
+                helpTextLeftOffset={140}
+                helpTextWidth={250}
+                arrowRotate={0}
+              >
+                <div>
+                  You can upload a .csv or enter each participant credentials
+                  one by one. When you are done, return to “View” mode to send
+                  them an SMS link to download the app.
+                </div>
+              </HelpBox>
             )}
+
+          <Box className={classes.topButtonContainer}>
+            <div className={classes.inputRow}>
+              <Button className={classes.topButtons}>
+                <img
+                  src={LinkIcon}
+                  className={classes.buttonImage}
+                  alt="link-icon"
+                ></img>
+                App Download Link
+              </Button>
+            </div>
           </Box>
         </Box>
-        <CollapsibleLayout
-          expandedWidth={300}
-          isFullWidth={true}
-          isHideContentOnClose={true}
-          isDrawerHidden={!isEdit}
-          collapseButton={<CollapseIcon />}
-          expandButton={
-            <ExpandIcon style={{ marginLeft: '-3px', marginTop: '8px' }} />
-          }
-          toggleButtonStyle={{
-            display: 'block',
-            padding: '0',
-            backgroundColor: theme.palette.primary.dark,
-          }}
-        >
-          <>
-            <AddParticipants
-              study={study}
-              token={token!}
-              onAdded={() => {
-                setRefreshParticipantsToggle(prev => !prev)
-              }}
-            ></AddParticipants>
-          </>
-          <Box py={0} pr={3} pl={2}>
-            <Tabs
-              value={tab}
-              variant="standard"
-              onChange={handleTabChange}
-              TabIndicatorProps={{ hidden: true }}
-            >
-              <Tab
-                label={`Participant List ${
-                  tab === 'ACTIVE' ? (data ? data.total : '...') : ''
-                }`}
-                value={'ACTIVE'}
-                classes={{ root: classes.tab }}
-              />
-              <Tab
-                label={`Withdrawn Participants ${
-                  tab === 'WITHDRAWN' ? (data ? data.total : '...') : ''
-                }`}
-                value={'WITHDRAWN'}
-                classes={{ root: classes.tab }}
-              />
-            </Tabs>
-            <Box
-              bgcolor={theme.palette.common.white}
-              pt={3}
-              px={5}
-              pb={6}
-              display="flex"
-              flexDirection="row"
-              justifyContent="space-between"
-            >
-              <ParticipantSearch
-                onReset={() => {
-                  setIsUserSearchingForParticipant(false)
-                  handleResetSearch()
-                }}
-                onSearch={(searchedValue: string) => {
-                  setIsUserSearchingForParticipant(true)
-                  handleSearchParticipantRequest(searchedValue)
-                }}
-              />
 
-              {!isEdit && (
-                <>
-                  <ParticipantDownload
-                    type={tab}
-                    isProcessing={loadingIndicators.isDownloading}
-                    onDownload={downloadParticipants}
-                    fileDownloadUrl={fileDownloadUrl}
-                    hasItems={!!data?.items?.length}
-                    selectedLength={
-                      tab === 'ACTIVE'
-                        ? selectedActiveParticipants.length
-                        : selectedWithdrawnParticipants.length
-                    }
-                    onDone={() => {
-                      URL.revokeObjectURL(fileDownloadUrl!)
-                      setFileDownloadUrl(undefined)
-                    }}
-                  />
-                </>
-              )}
-              {isEdit && tab !== 'WITHDRAWN' && (
-                <Button
-                  aria-label="delete"
-                  onClick={() => {
-                    setParticipantsWithError([])
-                    setIsOpenDeleteDialog(true)
-                  }}
-                >
-                  <DeleteIcon style={{ marginRight: '8px' }}></DeleteIcon>Remove
-                  from Study
-                </Button>
-              )}
-            </Box>
-            <div
-              role="tabpanel"
-              hidden={false}
-              id={`active-participants`}
-              className={classes.tabPanel}
+        <Box py={0} pr={3} pl={2}>
+          <Tabs
+            value={tab}
+            variant="standard"
+            onChange={handleTabChange}
+            TabIndicatorProps={{ hidden: true }}
+          >
+            <Tab
+              label={`Participant List ${
+                tab === 'ACTIVE' ? (data ? data.total : '...') : ''
+              }`}
+              value={'ACTIVE'}
+              classes={{ root: classes.tab }}
+            />
+            <Tab
+              label={`Withdrawn Participants ${
+                tab === 'WITHDRAWN' ? (data ? data.total : '...') : ''
+              }`}
+              value={'WITHDRAWN'}
+              classes={{ root: classes.tab }}
+            />
+      
+          <Tab
+              label={`Test Accounts ${
+                tab === 'TEST' ? (data ? data.total : '...') : ''
+              }`}
+              value={'TEST'}
+              classes={{ root: classes.tab }}
+            />
+          </Tabs>
+          <Box marginTop="-16px">
+          <CollapsibleLayout
+              expandedWidth={300}
+              isFullWidth={true}
+              isHideContentOnClose={true}
+              isDrawerHidden={tab!=='ACTIVE'}
+              collapseButton={<CollapseIcon />}
+              onToggleClick={(open: boolean)=> setIsAddOpen(open)}
+              expandButton={
+                <ExpandIcon style={{ marginLeft: '-3px', marginTop: '8px' }} />
+              }
+              toggleButtonStyle={{
+                display: 'block',
+                padding: '0',
+                backgroundColor: theme.palette.primary.dark,
+              }}
             >
+              <>
+                <AddParticipants
+                  study={study}
+                  token={token!}
+                  onAdded={() => {
+                    setRefreshParticipantsToggle(prev => !prev)
+                  }}
+                ></AddParticipants>
+              </>
+              <div>
+          <Box
+            bgcolor={theme.palette.common.white}
+            pt={1}
+            px={5}
+            pb={0}
+            display="flex"
+            flexDirection="row"
+            justifyContent="space-between"
+          >
+            <ParticipantSearch
+              onReset={() => {
+                setIsUserSearchingForParticipant(false)
+                handleResetSearch()
+              }}
+              onSearch={(searchedValue: string) => {
+                setIsUserSearchingForParticipant(true)
+                handleSearchParticipantRequest(searchedValue)
+              }}
+            />
+
+            <>
+              <ParticipantDownload
+                type={tab}
+                isProcessing={loadingIndicators.isDownloading}
+                onDownload={downloadParticipants}
+                fileDownloadUrl={fileDownloadUrl}
+                hasItems={!!data?.items?.length}
+                selectedLength={
+                  tab === 'ACTIVE'
+                    ? selectedActiveParticipants.length
+                    : selectedWithdrawnParticipants.length
+                }
+                onDone={() => {
+                  URL.revokeObjectURL(fileDownloadUrl!)
+                  setFileDownloadUrl(undefined)
+                }}
+              />
+            </>
+
+            {tab !== 'WITHDRAWN' && (
+              <Button
+                aria-label="delete"
+                onClick={() => {
+                  setParticipantsWithError([])
+                  setIsOpenDeleteDialog(true)
+                }}
+              >
+                <DeleteIcon style={{ marginRight: '8px' }}></DeleteIcon>Remove
+                from Study
+              </Button>
+            )}
+          </Box>
+          <div
+            role="tabpanel"
+            hidden={tab === 'WITHDRAWN'}
+            id={`active-participants`}
+            className={classes.tabPanel}
+            style={{marginLeft: !isAddOpen? "-48px": "0"}}
+          >
+       
+
               <ParticipantTableGrid
                 rows={data?.items || []}
                 status={status}
                 studyId={study.identifier}
                 totalParticipants={data?.total || 0}
-                isEdit={isEdit}
                 gridType={tab}
                 onWithdrawParticipant={(participantId: string, note: string) =>
                   withdrawParticipant(participantId, note)
@@ -628,22 +617,35 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 pageSize={pageSize}
                 setPageSize={setPageSize}
               ></ParticipantTableGrid>
-            </div>
 
-            <div
-              role="tabpanel"
-              hidden={tab !== 'WITHDRAWN'}
-              id={`withdrawn-participants`}
-              className={classes.tabPanel}
-            >
-              <span>Withdrawn participants will go here</span>
-            </div>
-          </Box>
+          </div>
+
+          <div
+            role="tabpanel"
+            hidden={tab !== 'WITHDRAWN'}
+            id={`withdrawn-participants`}
+            className={classes.tabPanel}
+          >
+            <span>Withdrawn participants will go here</span>
+          </div>
+
+          <div
+            role="tabpanel"
+            hidden={tab !== 'TEST'}
+            id={`test-accounts`}
+            className={classes.tabPanel}
+          >
+            <span>Withdrawn participants will go here</span>
+          </div>
+          </div>
 
           <Box textAlign="center" pl={2}>
-            ADD A PARTICIPANT
-          </Box>
-        </CollapsibleLayout>
+                ADD A PARTICIPANT
+              </Box>
+            </CollapsibleLayout>
+            </Box>
+        </Box>
+
         <Dialog
           open={isOpenDeleteDialog}
           maxWidth="xs"

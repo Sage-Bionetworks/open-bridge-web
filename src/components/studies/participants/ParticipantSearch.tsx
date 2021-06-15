@@ -156,7 +156,7 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
         className={classes.buttonImage}
         alt="seach-icon"
       ></img>
-      Find Participant
+     
     </Button>
   )
 }
