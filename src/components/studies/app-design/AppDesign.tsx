@@ -653,11 +653,15 @@ const AppDesign: React.FunctionComponent<
             </p>
             <ol className={classes.steps}>
               <StudySummarySection
-                appDesignProperties={appDesignProperties}
-                setAppDesignProperties={setAppDesignProperties}
                 SimpleTextInputStyles={SimpleTextInputStyles}
-                onUpdate={onUpdate}
-                study={study}
+                onUpdate={(studyTitle: string, studySummaryBody: string) => {
+                  const updatedStudy = { ...study }
+                  updatedStudy.name = studyTitle
+                  updatedStudy.details = studySummaryBody
+                  onUpdate(updatedStudy)
+                }}
+                studyTitle={study.name || ''}
+                studySummaryBody={study.details || ''}
               />
               <StudyLeadInformationSection
                 appDesignProperties={appDesignProperties}
