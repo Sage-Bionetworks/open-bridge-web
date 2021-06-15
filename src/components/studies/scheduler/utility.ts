@@ -15,20 +15,15 @@ export function getDropdownTimeItems(): StringDictionary<string> {
 }
 
 export function isSameAsDefaultSchedule(schedule: Schedule) {
-  const defaultSessionDelay = undefined
-  const defaultSessionInterval = undefined
-  const defaultSessionOccurences = undefined
-  for (const session of schedule.sessions) {
-    const sessionDelay = session.delay
-    const sessionInterval = session.interval
-    const sessionOccurences = session.occurrences
+  //  undefined is the default value for schedule fields, such as delay, interval, etc...
+  const nonDefaultSession = schedule.sessions.find(session => {
     const isScheduleDifferentFromDefault =
-      sessionDelay !== defaultSessionDelay ||
-      sessionInterval !== defaultSessionInterval ||
-      sessionOccurences !== defaultSessionOccurences ||
+      session.delay !== undefined ||
+      session.interval !== undefined ||
+      session.occurrences !== undefined ||
       session.timeWindows.length !== 1
     if (isScheduleDifferentFromDefault) {
-      return false
+      return session
     }
     const sessionTimeWindow = session.timeWindows[0]
     if (
@@ -36,8 +31,9 @@ export function isSameAsDefaultSchedule(schedule: Schedule) {
       sessionTimeWindow.startTime !== '08:00' ||
       sessionTimeWindow.persistent
     ) {
-      return false
+      return session
     }
-  }
-  return true
+    return undefined
+  })
+  return nonDefaultSession === undefined
 }
