@@ -7,11 +7,13 @@ import {
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import {
-  CellParams,
-  ColDef,
   DataGrid,
+  GridCellParams,
+  GridColDef,
   GridOverlay,
-  ValueGetterParams
+  GridRowId,
+  GridRowSelectedParams,
+  GridValueGetterParams
 } from '@material-ui/data-grid'
 import React, { FunctionComponent } from 'react'
 import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
@@ -43,25 +45,25 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-function getPhone(params: ValueGetterParams) {
+function getPhone(params: GridValueGetterParams) {
   if (params.value) {
     return (params.value as { nationalFormat: string }).nationalFormat
   } else return ''
 }
 
-function getClinicVisit(params: ValueGetterParams) {
+function getClinicVisit(params: GridValueGetterParams) {
   if (params.value) {
     return new Date(params.value as string).toLocaleDateString()
   } else return ''
 }
 
-function getDateJoined(params: ValueGetterParams) {
+function getDateJoined(params: GridValueGetterParams) {
   if (params.value) {
     return new Date(params.value as string).toLocaleDateString()
   } else return '-'
 }
 
-const ACTIVE_PARTICIPANT_COLUMNS: ColDef[] = [
+const ACTIVE_PARTICIPANT_COLUMNS: GridColDef[] = [
   {
     field: 'externalId',
     headerName: 'Participant ID',
@@ -83,7 +85,7 @@ const ACTIVE_PARTICIPANT_COLUMNS: ColDef[] = [
   { field: 'notes', headerName: 'Notes', flex: 1 },
 ]
 
-const WITHDRAWN_PARTICIPANT_COLUMNS: ColDef[] = [
+const WITHDRAWN_PARTICIPANT_COLUMNS: GridColDef[] = [
   {
     field: 'externalId',
     headerName: 'Participant ID',
@@ -109,7 +111,6 @@ const WITHDRAWN_PARTICIPANT_COLUMNS: ColDef[] = [
     flex: 1,
   },
   { field: 'withdrawalNote', headerName: 'Withdrawal notes', flex: 1 },
-
 ]
 
 const phoneColumn = {
@@ -137,14 +138,19 @@ const EditDialogTitle: FunctionComponent<{
 }
 
 export type ParticipantTableGridProps = {
+  isAllSelected: boolean
   rows: ParticipantAccountSummary[]
+  selectedParticipants: ParticipantAccountSummary[]
   enrollmentType: EnrollmentType
   gridType: ParticipantActivityType
   studyId: string
   totalParticipants: number
   currentPage: number
   setCurrentPage: Function
-  onRowSelected: (participants: ParticipantAccountSummary[]) => void
+  onRowSelected: (
+    participants: ParticipantAccountSummary[],
+    isAll?: boolean,
+  ) => void
   onUpdateParticipant: (
     pId: string,
     notes: string,
@@ -167,8 +173,9 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   currentPage,
   setCurrentPage,
   status,
-
+  selectedParticipants,
   enrollmentType,
+  isAllSelected,
   onUpdateParticipant,
   onWithdrawParticipant,
   onRowSelected,
@@ -176,15 +183,16 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   const { token } = useUserSessionDataState()
 
   //when we are editing the record this is where the info is stored
-  const [participantToEdit, setParticipantToEdit] = React.useState<
-    | {
-        id: string
-        participant: EditableParticipantData
-        hasSignedIn: boolean
-        shouldWithdraw: boolean
-      }
-    | undefined
-  >(undefined)
+  const [participantToEdit, setParticipantToEdit] =
+    React.useState<
+      | {
+          id: string
+          participant: EditableParticipantData
+          hasSignedIn: boolean
+          shouldWithdraw: boolean
+        }
+      | undefined
+    >(undefined)
 
   // This is the total number of pages needed to list all participants based on the
   // page size selected
@@ -210,24 +218,24 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     field: 'edit',
     headerName: 'Action',
     disableClickEventBubbling: true,
-    
-    renderCell: (params: CellParams) => {
+
+    renderCell: (params: GridCellParams) => {
       const onClick = async () => {
         try {
           const getValString = (column: string): string | undefined => {
-            const result = params.getValue(column)?.toString()
+            const result = params.getValue(params.id, column)?.toString()
 
             return result
           }
 
           const getValDate = (column: string): Date | undefined => {
-            const result = params.getValue(column)?.toString()
+            const result = params.getValue(params.id, column)?.toString()
             const d = result ? new Date(result) : undefined
             return d
           }
 
           const getValPhone = (column: string): string | undefined => {
-            const result = params.getValue(column)?.toString()
+            const result = params.getValue(params.id, column)?.toString()
             return result?.replace('+1', '') || ''
           }
 
@@ -269,13 +277,16 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     },
   }
 
-  const participantColumns = (gridType==='ACTIVE')? [...ACTIVE_PARTICIPANT_COLUMNS]: [...WITHDRAWN_PARTICIPANT_COLUMNS]
+  const participantColumns =
+    gridType === 'ACTIVE'
+      ? [...ACTIVE_PARTICIPANT_COLUMNS]
+      : [...WITHDRAWN_PARTICIPANT_COLUMNS]
 
   if (enrollmentType === 'PHONE') {
     if (!participantColumns.find(col => col.field === 'phone'))
       participantColumns.splice(2, 0, phoneColumn)
   }
-  if (gridType!== 'WITHDRAWN') {
+  if (gridType !== 'WITHDRAWN') {
     if (!participantColumns.find(col => col.field === 'edit')) {
       participantColumns.push(editColumn)
     }
@@ -284,11 +295,19 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   const onPageSelectedChanged = (pageSelected: number) => {
     setCurrentPage(pageSelected)
   }
+  const [selectionModel, setSelectionModel] = React.useState<GridRowId[]>(
+    selectedParticipants.map(p => p.id),
+  )
+  React.useEffect(() => {
+    setSelectionModel(selectedParticipants.map(p => p.id))
+  }, [selectedParticipants])
+
+  const allSelectedPage = () =>
+    rows && !rows.find(row => !selectionModel.includes(row.id))
 
   return (
     <>
       <Paper elevation={0}>
-      
         <div style={{ display: 'flex', height: '90vh' }}>
           <div style={{ flexGrow: 1 }}>
             <DataGrid
@@ -297,22 +316,57 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               columns={participantColumns}
               pageSize={pageSize}
               checkboxSelection
-              onSelectionChange={selectedRows => {
-                console.log(selectedRows.rowIds)
+              /* onSelectionChange={(newSelection) => {
+                setSelection(newSelection.rowIds);
+              }}*/
+              onRowSelected={(row: GridRowSelectedParams) => {
+                let model: string[] = []
+                if (row.isSelected) {
+                  model = [...selectionModel, row.data.id]
+                } else {
+                  model = selectionModel.filter(
+                    id => id != row.data.id,
+                  ) as string[]
+                }
+
                 onRowSelected(
-                  rows.filter(row => selectedRows.rowIds.includes(row.id)) ||
-                    [],
+                  rows.filter(row => model.includes(row.id)) || [],
+                  false,
                 )
               }}
+              selectionModel={selectionModel}
               components={{
                 Header: () => (
-                 <div style={{position: 'absolute', zIndex: 11, top: 0, left: 0, backgroundColor: '#fff'}}> <SelectAll 
-                  allText={`All ${totalParticipants} participants`}
-                  allPageText="All on this page"
-                  onSelectAllPage= {()=> {}}
-                  onSelectAll= {()=> {}}
-                  
-                  ></SelectAll></div>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      zIndex: 11,
+                      top: 0,
+                      left: 0,
+                      backgroundColor: '#fff',
+                    }}
+                  >
+                    {' '}
+                    <SelectAll
+                      selectionType={
+                        isAllSelected
+                          ? 'ALL'
+                          : allSelectedPage()
+                          ? 'PAGE'
+                          : undefined
+                      }
+                      allText={`All ${totalParticipants} participants`}
+                      allPageText="All on this page"
+                      onSelectAllPage={() => {
+                        const ids = rows.map(row => row.id)
+                        onRowSelected(rows, false)
+                      }}
+                      onSelectAll={() => {
+                        const ids = rows.map(row => row.id)
+                        onRowSelected(rows, true)
+                      }}
+                    ></SelectAll>
+                  </div>
                 ),
                 Footer: () => (
                   <ParticipantTablePagination

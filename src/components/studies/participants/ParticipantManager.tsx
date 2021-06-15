@@ -50,15 +50,18 @@ import ParticipantTableGrid from './ParticipantTableGrid'
 
 const useStyles = makeStyles(theme => ({
   root: {},
-  switchRoot: {
-    //padding: '8px'
-  },
+
   tab: {
     backgroundColor: theme.palette.common.white,
+    marginRight: theme.spacing(2),
+  },
+  gridToolBar: {
+    backgroundColor: theme.palette.common.white,
+    padding: theme.spacing(1, 5, 0, 5),
 
-   // '&:first-child': {
-      marginRight: theme.spacing(2),
-   // },
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 
   tabPanel: {
@@ -109,6 +112,12 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
 }))
+
+const TAB_DEFs = [
+  { type: 'ACTIVE', label: 'Participant List' },
+  { type: 'WITHDRAWN', label: 'Withdrawn Participants' },
+  { type: 'TEST', label: 'Test Accounts' },
+]
 
 type ParticipantManagerOwnProps = {
   title?: string
@@ -178,7 +187,7 @@ async function getParticipants(
     }
     return updatedParticipant
   })
-
+console.log('returning result')
   return { items: result, total: numberOfParticipants }
 }
 
@@ -189,6 +198,11 @@ type ParticipantData = {
   total: number
 }
 
+type SelectedParticipansType ={
+  ACTIVE: ParticipantAccountSummary[],
+  TEST: ParticipantAccountSummary[],
+  WITHDRAWN: ParticipantAccountSummary[]
+}
 
 const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const handleError = useErrorHandler()
@@ -219,12 +233,22 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     React.useState<string | undefined>(undefined)
 
   // Selected users
-  const [selectedActiveParticipants, setSelectedActiveParticipants] =
+  /*const [selectedActiveParticipants, setSelectedActiveParticipants] =
     React.useState<ParticipantAccountSummary[]>([])
   const [selectedWithdrawnParticipants, setSelectedWithdrawnParticipants] =
-    React.useState<ParticipantAccountSummary[]>([])
+    React.useState<ParticipantAccountSummary[]>([])*/
+
+    const [selectedParticipants, setSelectedParticipants] =
+    React.useState<SelectedParticipansType>({ACTIVE:[], TEST: [], WITHDRAWN: []})
+    const [isAllSelected, setIsAllSelected]= React.useState(false)
+
+
+
+
+
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
+    setIsAllSelected(false)
   }
 
   //List of participants errored out during operation - used for deltee
@@ -253,12 +277,16 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       return
     }
     const fn = async () => {
-      const result = await run(
+      console.log('getting data')
+      const result: ParticipantData = await run(
         getParticipants(study.identifier, token!, currentPage, pageSize, tab),
       )
-      if (result) {
-        setParticipantData({ items: result.items, total: result.total })
-      }
+    console.log('resilt', result)
+     // if (result) {
+      //  console.log('got result')
+       // setParticipantData({ items: result.items, total: result.total })
+        
+     // }
     }
     fn()
   }, [
@@ -269,6 +297,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     token,
     tab,
   ])
+
+  React.useEffect (()=> {
+    console.log('data updated')
+    if (isAllSelected) {
+      console.log('selected')
+      setSelectedParticipants(prev => ({...prev, [tab]: data?.items || []}))
+    }
+  },[data])
 
   //callbacks from the participant grid
   const withdrawParticipant = async (participantId: string, note: string) => {
@@ -299,7 +335,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }
 
   /* THIS IS UTILITY FUNCTION JUST FOR TESTING! */
-  const makeTestGroup = async () => {
+  /*const makeTestGroup = async () => {
     for (let i = 0; i < selectedActiveParticipants.length; i++) {
       const result = await ParticipantService.updateParticipantGroup(
         study!.identifier,
@@ -308,24 +344,24 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         ['test_user'],
       )
     }
-  }
+  }*/
 
   const deleteSelectedParticipants = async () => {
     setLoadingIndicators(_ => ({ isDeleting: true }))
     setParticipantsWithError([])
     let isError = false
-    for (let i = 0; i < selectedActiveParticipants.length; i++) {
+    for (let i = 0; i < selectedParticipants.ACTIVE.length; i++) {
       try {
         const x = await ParticipantService.deleteParticipant(
           study!.identifier,
           token!,
-          selectedActiveParticipants[i].id,
+          selectedParticipants.ACTIVE[i].id,
         )
       } catch (e) {
         isError = true
         setParticipantsWithError(prev => [
           ...prev,
-          selectedActiveParticipants[i],
+          selectedParticipants.ACTIVE[i],
         ])
       }
     }
@@ -369,8 +405,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       selection === 'ALL'
         ? await getParticipants(study.identifier, token!, 0, 0, tab)
         : {
-            items: selectedActiveParticipants,
-            total: selectedActiveParticipants.length,
+            items: selectedParticipants.ACTIVE,
+            total: selectedParticipants.ACTIVE.length,
           }
     //massage data
     const transformedParticipantsData = participantsData.items.map(
@@ -477,37 +513,24 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             onChange={handleTabChange}
             TabIndicatorProps={{ hidden: true }}
           >
-            <Tab
-              label={`Participant List ${
-                tab === 'ACTIVE' ? (data ? data.total : '...') : ''
-              }`}
-              value={'ACTIVE'}
-              classes={{ root: classes.tab }}
-            />
-            <Tab
-              label={`Withdrawn Participants ${
-                tab === 'WITHDRAWN' ? (data ? data.total : '...') : ''
-              }`}
-              value={'WITHDRAWN'}
-              classes={{ root: classes.tab }}
-            />
-      
-          <Tab
-              label={`Test Accounts ${
-                tab === 'TEST' ? (data ? data.total : '...') : ''
-              }`}
-              value={'TEST'}
-              classes={{ root: classes.tab }}
-            />
+            {TAB_DEFs.map(tabDef => (
+              <Tab
+                label={`${tabDef.label} ${
+                  tab === tabDef.type ? (data ? data.total : '...') : ''
+                }`}
+                value={tabDef.type}
+                classes={{ root: classes.tab }}
+              />
+            ))}
           </Tabs>
           <Box marginTop="-16px">
-          <CollapsibleLayout
+            <CollapsibleLayout
               expandedWidth={300}
               isFullWidth={true}
               isHideContentOnClose={true}
-              isDrawerHidden={tab!=='ACTIVE'}
+              isDrawerHidden={tab !== 'ACTIVE'}
               collapseButton={<CollapseIcon />}
-              onToggleClick={(open: boolean)=> setIsAddOpen(open)}
+              onToggleClick={(open: boolean) => setIsAddOpen(open)}
               expandButton={
                 <ExpandIcon style={{ marginLeft: '-3px', marginTop: '8px' }} />
               }
@@ -527,130 +550,128 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 ></AddParticipants>
               </>
               <div>
-          <Box
-            bgcolor={theme.palette.common.white}
-            pt={1}
-            px={5}
-            pb={0}
-            display="flex"
-            flexDirection="row"
-            justifyContent="space-between"
-          >
-            <ParticipantSearch
-              onReset={() => {
-                setIsUserSearchingForParticipant(false)
-                handleResetSearch()
-              }}
-              onSearch={(searchedValue: string) => {
-                setIsUserSearchingForParticipant(true)
-                handleSearchParticipantRequest(searchedValue)
-              }}
-            />
+                <Box className={classes.gridToolBar}>
+                  <ParticipantSearch
+                    onReset={() => {
+                      setIsUserSearchingForParticipant(false)
+                      handleResetSearch()
+                    }}
+                    onSearch={(searchedValue: string) => {
+                      setIsUserSearchingForParticipant(true)
+                      handleSearchParticipantRequest(searchedValue)
+                    }}
+                  />
 
-            <>
-              <ParticipantDownload
-                type={tab}
-                isProcessing={loadingIndicators.isDownloading}
-                onDownload={downloadParticipants}
-                fileDownloadUrl={fileDownloadUrl}
-                hasItems={!!data?.items?.length}
-                selectedLength={
-                  tab === 'ACTIVE'
-                    ? selectedActiveParticipants.length
-                    : selectedWithdrawnParticipants.length
-                }
-                onDone={() => {
-                  URL.revokeObjectURL(fileDownloadUrl!)
-                  setFileDownloadUrl(undefined)
-                }}
-              />
-            </>
+                  <>
+                    <ParticipantDownload
+                      type={tab}
+                      isProcessing={loadingIndicators.isDownloading}
+                      onDownload={downloadParticipants}
+                      fileDownloadUrl={fileDownloadUrl}
+                      hasItems={!!data?.items?.length}
+                      selectedLength={
+                        selectedParticipants[tab].length
+                     
+                      }
+                      onDone={() => {
+                        URL.revokeObjectURL(fileDownloadUrl!)
+                        setFileDownloadUrl(undefined)
+                      }}
+                    />
+                  </>
 
-            {tab !== 'WITHDRAWN' && (
-              <Button
-                aria-label="delete"
-                onClick={() => {
-                  setParticipantsWithError([])
-                  setIsOpenDeleteDialog(true)
-                }}
-              >
-                <DeleteIcon style={{ marginRight: '8px' }}></DeleteIcon>Remove
-                from Study
-              </Button>
-            )}
-          </Box>
-          <div
-            role="tabpanel"
-            hidden={tab === 'WITHDRAWN'}
-            id={`active-participants`}
-            className={classes.tabPanel}
-            style={{marginLeft: !isAddOpen? "-48px": "0"}}
-          >
-       
+                  {tab !== 'WITHDRAWN' && (
+                    <Button
+                      aria-label="delete"
+                      onClick={() => {
+                        setParticipantsWithError([])
+                        setIsOpenDeleteDialog(true)
+                      }}
+                    >
+                      <DeleteIcon style={{ marginRight: '8px' }}></DeleteIcon>
+                      Remove from Study
+                    </Button>
+                  )}
+                </Box>
+                <div
+                  role="tabpanel"
+                  hidden={tab === 'WITHDRAWN'}
+                  id={`active-participants`}
+                  className={classes.tabPanel}
+                  style={{ marginLeft: !isAddOpen ? '-48px' : '0' }}
+                >
+                  <ParticipantTableGrid
+                    rows={data?.items || []}
+                    status={status}
+                    studyId={study.identifier}
+                    totalParticipants={data?.total || 0}
+                    isAllSelected= {isAllSelected}
+                    gridType={tab}
+                    selectedParticipants={selectedParticipants[tab]}
+                    onWithdrawParticipant={(
+                      participantId: string,
+                      note: string,
+                    ) => withdrawParticipant(participantId, note)}
+                    onUpdateParticipant={(
+                      participantId: string,
+                      notes: string,
+                      clinicVisitDate?: Date,
+                    ) =>
+                      updateParticipant(participantId, notes, clinicVisitDate)
+                    }
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    enrollmentType={study.clientData.enrollmentType!}
+                    onRowSelected={(
+                      /*id: string, isSelected: boolean*/ selection, isAll
+                    ) => {
+                      console.log("PMANAGER", selection, isAll)
+                     /* if (tab === 'ACTIVE') {
+                        setSelectedActiveParticipants(selection)
+                      } else {
+                        setSelectedWithdrawnParticipants(selection)
+                      }*/
+                      if (isAll !== undefined) {
+                      setIsAllSelected(isAll)
+                      }
+                      setSelectedParticipants(prev=> ({...prev, [tab]: selection}))
+                    }}
+                    pageSize={pageSize}
+                    setPageSize={setPageSize}
+                  ></ParticipantTableGrid>
+                </div>
 
-              <ParticipantTableGrid
-                rows={data?.items || []}
-                status={status}
-                studyId={study.identifier}
-                totalParticipants={data?.total || 0}
-                gridType={tab}
-                onWithdrawParticipant={(participantId: string, note: string) =>
-                  withdrawParticipant(participantId, note)
-                }
-                onUpdateParticipant={(
-                  participantId: string,
-                  notes: string,
-                  clinicVisitDate?: Date,
-                ) => updateParticipant(participantId, notes, clinicVisitDate)}
-                currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
-                enrollmentType={study.clientData.enrollmentType!}
-                onRowSelected={(
-                  /*id: string, isSelected: boolean*/ selection,
-                ) => {
-                  if (tab === 'ACTIVE') {
-                    setSelectedActiveParticipants(selection)
-                  } else {
-                    setSelectedWithdrawnParticipants(selection)
-                  }
-                }}
-                pageSize={pageSize}
-                setPageSize={setPageSize}
-              ></ParticipantTableGrid>
+                <div
+                  role="tabpanel"
+                  hidden={tab !== 'WITHDRAWN'}
+                  id={`withdrawn-participants`}
+                  className={classes.tabPanel}
+                >
+                  <span>Withdrawn participants will go here</span>
+                </div>
 
-          </div>
+                <div
+                  role="tabpanel"
+                  hidden={tab !== 'TEST'}
+                  id={`test-accounts`}
+                  className={classes.tabPanel}
+                >
+                  <span>Withdrawn participants will go here</span>
+                </div>
+              </div>
 
-          <div
-            role="tabpanel"
-            hidden={tab !== 'WITHDRAWN'}
-            id={`withdrawn-participants`}
-            className={classes.tabPanel}
-          >
-            <span>Withdrawn participants will go here</span>
-          </div>
-
-          <div
-            role="tabpanel"
-            hidden={tab !== 'TEST'}
-            id={`test-accounts`}
-            className={classes.tabPanel}
-          >
-            <span>Withdrawn participants will go here</span>
-          </div>
-          </div>
-
-          <Box textAlign="center" pl={2}>
+              <Box textAlign="center" pl={2}>
                 ADD A PARTICIPANT
               </Box>
             </CollapsibleLayout>
-            </Box>
+          </Box>
         </Box>
 
         <Dialog
           open={isOpenDeleteDialog}
           maxWidth="xs"
           scroll="body"
-          aria-labelledby="edit participant"
+          aria-labelledby="Remove Participant"
         >
           <DialogTitleWithClose
             onCancel={() => {
@@ -667,7 +688,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               <DeleteDialog
                 participantsWithError={participantsWithError}
                 study={study}
-                selectedParticipants={selectedActiveParticipants}
+                selectedParticipants={selectedParticipants[tab]}
                 isProcessing={!!loadingIndicators.isDeleting}
               />
             )}

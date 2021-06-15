@@ -3,21 +3,9 @@ import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React from 'react'
 
-interface StyleProps {
-  helpTextWidth: number
-  helpTextLeftOffset: number
-  helpTextTopOffset: number
-  arrowTailLength: number
-  arrowRotate: number
-}
-
 const useStyles = makeStyles(theme => ({
   root: {
-    '&:hover': {
-      fontWeight: 'bolder',
-      background: theme.palette.error.light,
-      boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.25)',
-    },
+    textAlign: 'left',
   },
   select: {
     paddingLeft: theme.spacing(2),
@@ -26,17 +14,16 @@ const useStyles = makeStyles(theme => ({
     cursor: 'pointer',
     '&$focused': {
       boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.25)',
-      backgroundColor: 'transparent'
+      backgroundColor: 'transparent',
     },
     '&:hover, &:active': {
       boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.25)',
-      backgroundColor: 'transparent'
+      backgroundColor: 'transparent',
     },
     '& .MuiCheckbox-root': {
       paddingRight: 0,
-      paddingLeft: 0
-
-    }
+      paddingLeft: 0,
+    },
   },
   arrowDown: {
     width: '0px',
@@ -52,16 +39,17 @@ const useStyles = makeStyles(theme => ({
     borderRight: '5px solid transparent',
     borderBottom: '5px solid #2f2f2f',
   },
-  focused: {
-
-  }
+  focused: {},
 }))
+
+export type SelectionType = 'ALL' | 'PAGE' | undefined
 
 export interface SelectAllProps {
   allText: string
   allPageText: string
   onSelectAllPage: Function
   onSelectAll: Function
+  selectionType: SelectionType
 }
 
 const SelectAll: React.FunctionComponent<SelectAllProps> = ({
@@ -69,29 +57,12 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
   allPageText,
   onSelectAllPage,
   onSelectAll,
-
-  children,
+  selectionType,
 }) => {
   const classes = useStyles()
-  /* const classes = useStyles({
-    helpTextWidth,
-    helpTextLeftOffset,
-    arrowRotate,
-    arrowTailLength,
-    helpTextTopOffset,
-  })
-*/
+
+  const [selection, setSelection] = React.useState<SelectionType>(selectionType)
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null)
-
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
 
   const handleMenuClose = () => {
     setMenuAnchor(null)
@@ -100,17 +71,30 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchor(event.currentTarget)
   }
+  const setSelect = (type: 'ALL' | 'PAGE') => {
+    setSelection(type)
+    handleMenuClose()
+    type === 'ALL' ? onSelectAll() : onSelectAllPage()
+  }
+
   return (
-    <Box textAlign="left">
+    <Box className={classes.root}>
       <Button
-      className={clsx(classes.select, Boolean(menuAnchor) && classes.focused)}
+        className={clsx(classes.select, Boolean(menuAnchor) && classes.focused)}
         aria-controls="simple-menu"
         aria-haspopup="true"
-  
         onClick={handleMenuClick}
       >
-        <Checkbox name="checkedI" checked={true} />{' '}
-        <div className={clsx(Boolean(menuAnchor) ? classes.arrowUp: classes.arrowDown)}></div>
+        <Checkbox
+          name="selectAllCheckbox"
+          checked={selection === 'ALL'}
+          indeterminate={selection === 'PAGE'}
+        />{' '}
+        <div
+          className={clsx(
+            Boolean(menuAnchor) ? classes.arrowUp : classes.arrowDown,
+          )}
+        ></div>
       </Button>
       <Menu
         id="study-menu"
@@ -118,24 +102,11 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
         keepMounted
         open={Boolean(menuAnchor)}
         onClose={handleMenuClose}
+        getContentAnchorEl={null}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem
-          onClick={() => {
-            //onSelectAll()
-            handleMenuClose()
-          }}
-        >
-          {allText}
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            // onSelectAllPage()
-            handleMenuClose()
-          }}
-        >
-          {allPageText}
-        </MenuItem>
+        <MenuItem onClick={() => setSelect('ALL')}>{allText}</MenuItem>
+        <MenuItem onClick={() => setSelect('PAGE')}>{allPageText}</MenuItem>
       </Menu>
     </Box>
   )
