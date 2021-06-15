@@ -2,7 +2,6 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Subsection from './Subsection'
 import { Box, CircularProgress, FormControl, Checkbox } from '@material-ui/core'
-import { Study, StudyAppDesign } from '../../../types/types'
 import { playfairDisplayFont } from '../../../style/theme'
 import SaveButton from '../../widgets/SaveButton'
 import FormGroupWrapper from './FormGroupWrapper'
@@ -140,9 +139,6 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
                 useOptionalDisclaimer,
               )
             }}
-            multiline
-            rows={2}
-            rowsMax={4}
             placeholder="Thank you for your contribution"
             titleText="Salutations"
           />
@@ -163,9 +159,6 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
                 useOptionalDisclaimer,
               )
             }}
-            multiline
-            rows={2}
-            rowsMax={4}
             placeholder="Study team name"
             titleText="From"
           />

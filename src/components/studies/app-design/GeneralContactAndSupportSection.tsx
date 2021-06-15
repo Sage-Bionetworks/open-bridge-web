@@ -2,7 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Subsection from './Subsection'
 import { FormControl, Box, FormHelperText } from '@material-ui/core'
-import { StudyAppDesign, Contact } from '../../../types/types'
+import { Contact } from '../../../types/types'
 import clsx from 'clsx'
 import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
 import { makePhone } from '../../../helpers/utility'
@@ -20,8 +20,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type GeneralContactAndSupportSectionProps = {
-  appDesignProperties: StudyAppDesign
-  setAppDesignProperties: Function
   SimpleTextInputStyles: React.CSSProperties
   getContactPersonObject: (type: ContactType) => Contact
   phoneNumberErrorState: {
@@ -36,11 +34,11 @@ type GeneralContactAndSupportSectionProps = {
   }
   setEmailErrorState: Function
   setPhoneNumberErrorState: Function
+  onUpdate: (contactLead: Contact) => void
+  contactLead: Contact
 }
 
 const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAndSupportSectionProps> = ({
-  appDesignProperties,
-  setAppDesignProperties,
   SimpleTextInputStyles,
   getContactPersonObject,
   phoneNumberErrorState,
@@ -49,6 +47,8 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
   emailErrorState,
   setEmailErrorState,
   setPhoneNumberErrorState,
+  onUpdate,
+  contactLead,
 }) => {
   const classes = useStyles()
   return (
@@ -69,22 +69,16 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             SimpleTextInputStyles={SimpleTextInputStyles}
             id="contact-lead-input"
             placeholder="First and Last name"
-            value={appDesignProperties.contactLeadInfo?.name || ''}
+            value={contactLead.name || ''}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
               const newContactLeadObject = getContactPersonObject(
-                'CONTACT_LEAD',
+                'study_support',
               )
               newContactLeadObject.name = e.target.value
-              setAppDesignProperties({
-                ...appDesignProperties,
-                contactLeadInfo: newContactLeadObject,
-              })
+              onUpdate(newContactLeadObject)
             }}
-            multiline={true}
-            rows={1}
-            rowsMax={1}
             titleText="Contact Lead*"
           />
         </FormControl>
@@ -93,22 +87,16 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             SimpleTextInputStyles={SimpleTextInputStyles}
             id="role-in-study-input"
             placeholder="Title of Position"
-            value={appDesignProperties.contactLeadInfo?.position || ''}
+            value={contactLead.position || ''}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
               const newContactLeadObject = getContactPersonObject(
-                'CONTACT_LEAD',
+                'study_support',
               )
               newContactLeadObject.position = e.target.value
-              setAppDesignProperties({
-                ...appDesignProperties,
-                contactLeadInfo: newContactLeadObject,
-              })
+              onUpdate(newContactLeadObject)
             }}
-            multiline
-            rows={1}
-            rowsMax={1}
             titleText="Role in the Study*"
           />
         </FormControl>
@@ -140,17 +128,11 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
                 },
               )
               const newContactLeadObject = getContactPersonObject(
-                'CONTACT_LEAD',
+                'study_support',
               )
               newContactLeadObject.phone = makePhone(generalContactPhoneNumber)
-              setAppDesignProperties({
-                ...appDesignProperties,
-                contactLeadInfo: newContactLeadObject,
-              })
+              onUpdate(newContactLeadObject)
             }}
-            multiline
-            rows={1}
-            rowsMax={1}
             titleText="Phone Number*"
           />
           {!phoneNumberErrorState.isGeneralContactPhoneNumberValid && (
@@ -171,24 +153,19 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             SimpleTextInputStyles={SimpleTextInputStyles}
             id="contact-email-input"
             placeholder="Institutional Email"
-            value={appDesignProperties.contactLeadInfo?.email || ''}
+            value={contactLead?.email || ''}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
               const newContactLeadObject = getContactPersonObject(
-                'CONTACT_LEAD',
+                'study_support',
               )
               newContactLeadObject.email = e.target.value
-              setAppDesignProperties({
-                ...appDesignProperties,
-                contactLeadInfo: newContactLeadObject,
-              })
+              onUpdate(newContactLeadObject)
             }}
             onBlur={() => {
               const validEmail =
-                isValidEmail(
-                  appDesignProperties.contactLeadInfo?.email || '',
-                ) || !appDesignProperties.contactLeadInfo?.email
+                isValidEmail(contactLead?.email || '') || !contactLead?.email
               setEmailErrorState((prevState: typeof emailErrorState) => {
                 return {
                   ...prevState,
@@ -196,9 +173,6 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
                 }
               })
             }}
-            multiline
-            rows={1}
-            rowsMax={1}
             titleText="Email*"
           />
           {!emailErrorState.isGeneralContactEmailValid && (

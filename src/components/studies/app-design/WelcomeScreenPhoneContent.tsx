@@ -1,7 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { StudyAppDesign } from '../../../types/types'
-import { Box, Divider } from '@material-ui/core'
+import { WelcomeScreenData } from '../../../types/types'
+import { Box } from '@material-ui/core'
 import SectionIndicator from './SectionIndicator'
 import clsx from 'clsx'
 import { latoFont, playfairDisplayFont } from '../../../style/theme'
@@ -48,11 +48,13 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type WelcomeScreenPhoneContentProps = {
-  appDesignProperties: StudyAppDesign
+  welcomeScreenContent: WelcomeScreenData
+  studyTitle: string
 }
 
 const WelcomeScreenPhoneContent: React.FunctionComponent<WelcomeScreenPhoneContentProps> = ({
-  appDesignProperties,
+  welcomeScreenContent,
+  studyTitle,
 }) => {
   const classes = useStyles()
   const defaultStudyBody =
@@ -62,35 +64,32 @@ const WelcomeScreenPhoneContent: React.FunctionComponent<WelcomeScreenPhoneConte
 
   return (
     <Box className={classes.phoneInner}>
-      {!appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage && (
+      {!welcomeScreenContent.isUsingDefaultMessage && (
         <SectionIndicator
           index={3}
           className={classes.sectionThreeIndicatorPosition}
         />
       )}
       <Box className={classes.headlineStyle}>
-        {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
-          ? 'Thanks for joining \n' + appDesignProperties.studyTitle
-          : appDesignProperties.welcomeScreenInfo.welcomeScreenHeader ||
-            'Welcome Headline'}
+        {welcomeScreenContent.isUsingDefaultMessage
+          ? 'Thanks for joining \n' + studyTitle
+          : welcomeScreenContent.welcomeScreenHeader || 'Welcome Headline'}
       </Box>
       <p className={clsx(classes.bodyText, classes.firstPhoneScreenBodyText)}>
-        {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
+        {welcomeScreenContent.isUsingDefaultMessage
           ? defaultStudyBody
-          : appDesignProperties.welcomeScreenInfo.welcomeScreenBody ||
-            'Body copy'}
+          : welcomeScreenContent.welcomeScreenBody || 'Body copy'}
       </p>
       <Box className={clsx(classes.bodyText, classes.salutationText)}>
-        {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
+        {welcomeScreenContent.isUsingDefaultMessage
           ? defaultSalutations
-          : appDesignProperties.welcomeScreenInfo.welcomeScreenSalutation ||
+          : welcomeScreenContent.welcomeScreenSalutation ||
             'Placeholder salutation,'}
       </Box>
       <Box className={clsx(classes.bodyText, classes.fromText)}>
-        {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
+        {welcomeScreenContent.isUsingDefaultMessage
           ? defaultFrom
-          : appDesignProperties.welcomeScreenInfo.welcomeScreenFromText ||
-            'from placeholder'}
+          : welcomeScreenContent.welcomeScreenFromText || 'from placeholder'}
       </Box>
     </Box>
   )

@@ -1,19 +1,18 @@
 import { Box } from '@material-ui/core'
 import ReactColorPicker from '@super-effective/react-color-picker'
 import React from 'react'
-import { StudyAppDesign } from '../../../types/types'
 import Subsection from './Subsection'
 
 type ColorPickerSection = {
-  appDesignProperties: StudyAppDesign
+  appBackgroundColor: string
   debouncedUpdateColor: Function
-  setAppDesignProperties: Function
+  setAppBackgroundColor: Function
 }
 
 const ColorPickerSection: React.FunctionComponent<ColorPickerSection> = ({
-  appDesignProperties,
+  appBackgroundColor,
   debouncedUpdateColor,
-  setAppDesignProperties,
+  setAppBackgroundColor,
 }) => {
   return (
     <Subsection heading="Select background color">
@@ -23,12 +22,9 @@ const ColorPickerSection: React.FunctionComponent<ColorPickerSection> = ({
       </p>
       <Box width="250px" height="230px" ml={-1.25}>
         <ReactColorPicker
-          color={appDesignProperties.backgroundColor}
+          color={appBackgroundColor}
           onChange={(currentColor: string) => {
-            setAppDesignProperties((prevState: StudyAppDesign) => ({
-              ...prevState,
-              backgroundColor: currentColor,
-            }))
+            setAppBackgroundColor(currentColor)
             debouncedUpdateColor(currentColor)
           }}
         />

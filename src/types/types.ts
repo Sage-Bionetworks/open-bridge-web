@@ -166,19 +166,6 @@ export type Contact = {
   jurisdiction?: string
 }
 
-export type StudyAppDesign = {
-  logo: string
-  backgroundColor: string
-  welcomeScreenInfo: WelcomeScreenData
-  studyTitle: string
-  studySummaryBody: string
-  irbProtocolId: string
-  leadPrincipleInvestigatorInfo: Contact | undefined
-  contactLeadInfo: Contact | undefined
-  ethicsBoardInfo: Contact | undefined
-  funder: Contact | undefined
-}
-
 export type ColorScheme = {
   foreground?: string
   background?: string
