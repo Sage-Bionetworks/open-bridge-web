@@ -1,5 +1,6 @@
 import moment from 'moment'
 import { StringDictionary } from '../../../types/types'
+import { Schedule } from '../../../types/scheduling'
 
 export function getDropdownTimeItems(): StringDictionary<string> {
   const menuItems: StringDictionary<string> = {}
@@ -13,3 +14,26 @@ export function getDropdownTimeItems(): StringDictionary<string> {
   return menuItems
 }
 
+export function isSameAsDefaultSchedule(schedule: Schedule) {
+  //  undefined is the default value for schedule fields, such as delay, interval, etc...
+  const nonDefaultSession = schedule.sessions.find(session => {
+    const isScheduleDifferentFromDefault =
+      session.delay !== undefined ||
+      session.interval !== undefined ||
+      session.occurrences !== undefined ||
+      session.timeWindows.length !== 1
+    if (isScheduleDifferentFromDefault) {
+      return session
+    }
+    const sessionTimeWindow = session.timeWindows[0]
+    if (
+      sessionTimeWindow.expiration !== undefined ||
+      sessionTimeWindow.startTime !== '08:00' ||
+      sessionTimeWindow.persistent
+    ) {
+      return session
+    }
+    return undefined
+  })
+  return nonDefaultSession === undefined
+}
