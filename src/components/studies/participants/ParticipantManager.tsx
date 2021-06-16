@@ -545,13 +545,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               </>
               <div>
                 <Box className={classes.gridToolBar}>
-                  <Box
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}
-                  >
+                  <Box display="flex" flexDirection="row" alignItems="center">
                     {tab !== 'WITHDRAWN' && (
                       <Button
                         aria-label="delete"
