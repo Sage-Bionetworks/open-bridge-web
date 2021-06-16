@@ -2,8 +2,7 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core'
 import Subsection from './Subsection'
 import { FormControl } from '@material-ui/core'
-import { Contact, StudyAppDesign } from '../../../types/types'
-import { AppDesignUpdateTypes } from './AppDesign'
+import { Contact } from '../../../types/types'
 import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
@@ -22,25 +21,31 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type StudyLeadInformationSectionProps = {
-  appDesignProperties: StudyAppDesign
-  setAppDesignProperties: Function
-  updateAppDesignInfo: Function
   SimpleTextInputStyles: React.CSSProperties
   getContactPersonObject: (type: ContactType) => Contact
   orgMembership: string | undefined
   token: string | undefined
   irbNameSameAsInstitution: boolean
+  leadPrincipalInvestigator: Contact
+  ethicsBoardContact: Contact
+  funder: Contact
+  onUpdate: (
+    leadPrincipalInvestigator: Contact,
+    funder: Contact,
+    ethicsBoardContact: Contact,
+  ) => void
 }
 
 const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationSectionProps> = ({
-  appDesignProperties,
-  setAppDesignProperties,
-  updateAppDesignInfo,
   SimpleTextInputStyles,
   getContactPersonObject,
   orgMembership,
   token,
   irbNameSameAsInstitution,
+  leadPrincipalInvestigator,
+  ethicsBoardContact,
+  funder,
+  onUpdate,
 }) => {
   const classes = useStyles()
   return (
@@ -52,17 +57,12 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             token={token!}
             onChange={(investigatorSelected: string) => {
               const newStudyLeadObject = getContactPersonObject(
-                'LEAD_INVESTIGATOR',
+                'principal_investigator',
               )
               newStudyLeadObject.name = investigatorSelected
-              setAppDesignProperties({
-                ...appDesignProperties,
-                leadPrincipleInvestigatorInfo: newStudyLeadObject,
-              })
+              onUpdate(newStudyLeadObject, funder, ethicsBoardContact)
             }}
-            currentInvestigatorSelected={
-              appDesignProperties.leadPrincipleInvestigatorInfo?.name || ''
-            }
+            currentInvestigatorSelected={leadPrincipalInvestigator?.name || ''}
           ></LeadInvestigatorDropdown>
           <p className={classes.principleInvestigatorsParagraph}>
             Principle Investigators are required to be part of the study as a
@@ -83,35 +83,20 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             SimpleTextInputStyles={SimpleTextInputStyles}
             id="institution-input"
             placeholder="Name of Institution"
-            value={
-              appDesignProperties.leadPrincipleInvestigatorInfo?.affiliation ||
-              ''
-            }
+            value={leadPrincipalInvestigator.affiliation || ''}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
               const newStudyLeadObject = getContactPersonObject(
-                'LEAD_INVESTIGATOR',
+                'principal_investigator',
               )
               newStudyLeadObject.affiliation = e.target.value
-              const newEthicsBoardObject = getContactPersonObject(
-                'ETHICS_BOARD',
-              )
+              const newEthicsBoardObject = getContactPersonObject('irb')
               newEthicsBoardObject.name = irbNameSameAsInstitution
                 ? e.target.value
                 : newEthicsBoardObject.name
-              setAppDesignProperties({
-                ...appDesignProperties,
-                leadPrincipleInvestigatorInfo: newStudyLeadObject,
-                ethicsBoardInfo: newEthicsBoardObject,
-              })
+              onUpdate(newStudyLeadObject, funder, newEthicsBoardObject)
             }}
-            onBlur={() =>
-              updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
-            }
-            multiline
-            rows={1}
-            rowsMax={1}
             titleText="Institutional Affiliation*"
           />
         </FormControl>
@@ -120,23 +105,18 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             SimpleTextInputStyles={SimpleTextInputStyles}
             id="funder-input"
             placeholder="Name of Funder(s)"
-            value={appDesignProperties.funder?.name || ''}
+            value={funder?.name || ''}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
-              const newFunderObject = getContactPersonObject('FUNDER')
+              const newFunderObject = getContactPersonObject('sponsor')
               newFunderObject.name = e.target.value
-              setAppDesignProperties({
-                ...appDesignProperties,
-                funder: newFunderObject,
-              })
+              onUpdate(
+                leadPrincipalInvestigator,
+                newFunderObject,
+                ethicsBoardContact,
+              )
             }}
-            onBlur={() =>
-              updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
-            }
-            multiline
-            rows={1}
-            rowsMax={1}
             titleText="Funder*"
           />
         </FormControl>

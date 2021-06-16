@@ -10,8 +10,7 @@ import {
   FormControlLabel,
   FormHelperText,
 } from '@material-ui/core'
-import { StudyAppDesign, Contact } from '../../../types/types'
-import { AppDesignUpdateTypes } from './AppDesign'
+import { Contact } from '../../../types/types'
 import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
 import clsx from 'clsx'
 import SaveButton from '../../widgets/SaveButton'
@@ -35,9 +34,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type IrbBoardContactSectionProps = {
-  appDesignProperties: StudyAppDesign
-  setAppDesignProperties: Function
-  updateAppDesignInfo: Function
   SimpleTextInputStyles: React.CSSProperties
   irbNameSameAsInstitution: boolean
   getContactPersonObject: (type: ContactType) => Contact
@@ -56,12 +52,12 @@ type IrbBoardContactSectionProps = {
   setEmailErrorState: Function
   saveLoader: boolean
   saveInfo: Function
+  onUpdate: (irbInfo: Contact, protocolId: string) => void
+  irbInfo: Contact
+  protocolId: string
 }
 
 const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProps> = ({
-  appDesignProperties,
-  setAppDesignProperties,
-  updateAppDesignInfo,
   SimpleTextInputStyles,
   irbNameSameAsInstitution,
   getContactPersonObject,
@@ -74,6 +70,9 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
   setEmailErrorState,
   saveLoader,
   saveInfo,
+  onUpdate,
+  protocolId,
+  irbInfo,
 }) => {
   const classes = useStyles()
   return (
@@ -104,16 +103,11 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             onChange={e => {
               if (e.target.value === 'affiliation_same') {
                 const studyLeadObject = getContactPersonObject(
-                  'LEAD_INVESTIGATOR',
+                  'principal_investigator',
                 )
-                const newEthicsBoardObject = getContactPersonObject(
-                  'ETHICS_BOARD',
-                )
+                const newEthicsBoardObject = getContactPersonObject('irb')
                 newEthicsBoardObject.name = studyLeadObject.affiliation || ''
-                setAppDesignProperties({
-                  ...appDesignProperties,
-                  ethicsBoardInfo: newEthicsBoardObject,
-                })
+                onUpdate(newEthicsBoardObject, protocolId)
               }
               setIrbNameSameAsInstitution(e.target.value === 'affiliation_same')
             }}
@@ -144,25 +138,14 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
               }
               id="ethics-board-input"
               placeholder="Name IRB of record"
-              value={appDesignProperties.ethicsBoardInfo?.name || ''}
+              value={irbInfo.name || ''}
               onChange={(
                 e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
               ) => {
-                const newEthicsBoardBoard = getContactPersonObject(
-                  'ETHICS_BOARD',
-                )
+                const newEthicsBoardBoard = getContactPersonObject('irb')
                 newEthicsBoardBoard.name = e.target.value
-                setAppDesignProperties({
-                  ...appDesignProperties,
-                  ethicsBoardInfo: newEthicsBoardBoard,
-                })
+                onUpdate(newEthicsBoardBoard, protocolId)
               }}
-              onBlur={() =>
-                updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
-              }
-              rows={1}
-              rowsMax={1}
-              multiline={false}
               titleText=""
               readOnly={irbNameSameAsInstitution}
             />
@@ -194,18 +177,10 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
                   }
                 },
               )
-              const newEthicsBoardObject = getContactPersonObject(
-                'ETHICS_BOARD',
-              )
+              const newEthicsBoardObject = getContactPersonObject('irb')
               newEthicsBoardObject.phone = makePhone(irbPhoneNumber)
-              setAppDesignProperties({
-                ...appDesignProperties,
-                ethicsBoardInfo: newEthicsBoardObject,
-              })
+              onUpdate(newEthicsBoardObject, protocolId)
             }}
-            multiline
-            rows={1}
-            rowsMax={1}
             titleText="Phone Number*"
           />
           {!phoneNumberErrorState.isIrbPhoneNumberValid && (
@@ -224,35 +199,24 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             SimpleTextInputStyles={SimpleTextInputStyles}
             id="ethics-email-input"
             placeholder="Institutional Email"
-            value={appDesignProperties.ethicsBoardInfo?.email || ''}
+            value={irbInfo.email || ''}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
-              const newEthicsBoardObject = getContactPersonObject(
-                'ETHICS_BOARD',
-              )
+              const newEthicsBoardObject = getContactPersonObject('irb')
               newEthicsBoardObject.email = e.target.value
-              setAppDesignProperties({
-                ...appDesignProperties,
-                ethicsBoardInfo: newEthicsBoardObject,
-              })
+              onUpdate(newEthicsBoardObject, protocolId)
             }}
             onBlur={() => {
               const validEmail =
-                isValidEmail(
-                  appDesignProperties.ethicsBoardInfo?.email || '',
-                ) || !appDesignProperties.ethicsBoardInfo?.email
+                isValidEmail(irbInfo.email || '') || !irbInfo.email
               setEmailErrorState((prevState: typeof emailErrorState) => {
                 return {
                   ...prevState,
                   isIrbEmailValid: validEmail,
                 }
               })
-              updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
             }}
-            multiline
-            rows={1}
-            rowsMax={1}
             titleText="Email*"
           />
           {!emailErrorState.isIrbEmailValid && (
@@ -269,21 +233,12 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             SimpleTextInputStyles={SimpleTextInputStyles}
             id="IRB-approval-input"
             placeholder="XXXXXXXXXX"
-            value={appDesignProperties.irbProtocolId}
+            value={protocolId}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
-              setAppDesignProperties({
-                ...appDesignProperties,
-                irbProtocolId: e.target.value,
-              })
+              onUpdate(irbInfo, e.target.value)
             }}
-            onBlur={() =>
-              updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER)
-            }
-            multiline
-            rows={1}
-            rowsMax={1}
             titleText="IRB Protocol ID*"
           />
         </FormControl>

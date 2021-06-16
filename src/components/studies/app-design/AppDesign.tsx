@@ -15,9 +15,8 @@ import { ThemeType } from '../../../style/theme'
 import {
   Contact,
   Study,
-  StudyAppDesign,
   StudyBuilderComponentProps,
-  WelcomeScreenData
+  WelcomeScreenData,
 } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
@@ -186,10 +185,10 @@ type UploadedFile = {
 }
 
 export type ContactType =
-  | 'FUNDER'
-  | 'ETHICS_BOARD'
-  | 'LEAD_INVESTIGATOR'
-  | 'CONTACT_LEAD'
+  | 'principal_investigator'
+  | 'irb'
+  | 'sponsor'
+  | 'study_support'
 
 export type PreviewFile = {
   file: File
@@ -197,25 +196,6 @@ export type PreviewFile = {
   size: number
   body?: string
 }
-
-export enum AppDesignUpdateTypes {
-  UPDATE_STUDY_NAME = 'UPDATE_STUDY_NAME',
-  UPDATE_STUDY_COLOR = 'UPDATE_STUDY_COLOR',
-  UPDATE_STUDY_CONTACTS = 'UPDATE_STUDY_CONTACTS',
-  UPDATE_STUDY_DESCRIPTION = 'UPDATE_STUDY_DESCRIPTION',
-  UPDATE_STUDY_IRB_NUMBER = 'UPDATE_STUDY_IRB_NUMBER',
-  UPDATE_STUDY_LOGO = 'UPDATE_STUDY_LOGO',
-  UPDATE_WELCOME_SCREEN_INFO = 'UPDATE_WELCOME_SCREEN_INFO',
-}
-
-export type PossibleStudyUpdates =
-  | AppDesignUpdateTypes.UPDATE_STUDY_NAME
-  | AppDesignUpdateTypes.UPDATE_STUDY_COLOR
-  | AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS
-  | AppDesignUpdateTypes.UPDATE_STUDY_LOGO
-  | AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER
-  | AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO
-  | AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION
 
 export interface AppDesignProps {
   onSave: Function
@@ -280,40 +260,26 @@ const AppDesign: React.FunctionComponent<
 
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] =
-    useState<boolean>(true)
+  const [
+    irbNameSameAsInstitution,
+    setIrbNameSameAsInstitution,
+  ] = useState<boolean>(true)
+
+  const [appBackgroundColor, setAppBackgroundColor] = useState('#6040FF')
+  const [logo, setLogo] = useState('')
 
   const SimpleTextInputStyles = {
     fontSize: '15px',
     width: '100%',
     height: '44px',
-    paddingTop: '13px',
+    paddingTop: '8px',
     boxSizing: 'border-box',
   } as React.CSSProperties
 
-  const [appDesignProperties, setAppDesignProperties] =
-    useState<StudyAppDesign>({
-      logo: '',
-      backgroundColor:  '#6040FF',
-      welcomeScreenInfo: {
-        welcomeScreenBody: '',
-        welcomeScreenFromText: '',
-        welcomeScreenSalutation: '',
-        welcomeScreenHeader: '',
-        isUsingDefaultMessage: false,
-        useOptionalDisclaimer: false,
-      } as WelcomeScreenData,
-      studyTitle: '',
-      studySummaryBody: '',
-      irbProtocolId: '',
-      leadPrincipleInvestigatorInfo: undefined,
-      contactLeadInfo: undefined,
-      ethicsBoardInfo: undefined,
-      funder: undefined,
-    })
-
-  const [generalContactPhoneNumber, setGeneralContactPhoneNumber] =
-    React.useState('')
+  const [
+    generalContactPhoneNumber,
+    setGeneralContactPhoneNumber,
+  ] = React.useState('')
   const [irbPhoneNumber, setIrbPhoneNumber] = React.useState('')
 
   const [phoneNumberErrorState, setPhoneNumberErrorState] = React.useState({
@@ -374,64 +340,15 @@ const AppDesign: React.FunctionComponent<
     onSave(updatedStudy)
   }
 
-  const updateAppDesignInfo = (
-    updateType: PossibleStudyUpdates,
-    color?: string,
-  ) => {
-    const appDesignProps = { ...appDesignProperties }
-    if (color) {
-      appDesignProps.backgroundColor = color
-    }
-    const updatedStudy = { ...study }
-    // update the study based on the update type specified
-    switch (updateType) {
-      case AppDesignUpdateTypes.UPDATE_STUDY_NAME:
-        updatedStudy.name = appDesignProps.studyTitle
-        break
-      case AppDesignUpdateTypes.UPDATE_STUDY_COLOR:
-        updatedStudy.colorScheme = { ...updatedStudy.colorScheme, background: appDesignProps.backgroundColor }
-        break
-      case AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS:
-        const contacts: Contact[] = []
-        if (appDesignProps.ethicsBoardInfo) {
-          contacts.push(appDesignProps.ethicsBoardInfo)
-        }
-        if (appDesignProps.funder) {
-          contacts.push(appDesignProps.funder)
-        }
-        if (appDesignProps.contactLeadInfo) {
-          contacts.push(appDesignProps.contactLeadInfo)
-        }
-        if (appDesignProps.leadPrincipleInvestigatorInfo) {
-          contacts.push(appDesignProps.leadPrincipleInvestigatorInfo)
-        }
-        updatedStudy.contacts = contacts
-        break
-      case AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION:
-        updatedStudy.details = appDesignProps.studySummaryBody
-        break
-      case AppDesignUpdateTypes.UPDATE_STUDY_IRB_NUMBER:
-        updatedStudy.irbProtocolId = appDesignProps.irbProtocolId
-        break
-      case AppDesignUpdateTypes.UPDATE_STUDY_LOGO:
-        updatedStudy.studyLogoUrl = appDesignProps.logo
-        break
-      case AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO:
-        updatedStudy.clientData = {
-         ...updatedStudy.clientData, welcomeScreenData:appDesignProps.welcomeScreenInfo
-        }
-    
-        break
-    }
-    onUpdate(updatedStudy)
-  }
-
   const debouncedUpdateColor = useCallback(
-    _.debounce(
-      color =>
-        updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_COLOR, color),
-      1000,
-    ),
+    _.debounce(color => {
+      const updatedStudy = { ...study }
+      updatedStudy.colorScheme = {
+        ...updatedStudy.colorScheme,
+        background: color,
+      }
+      onUpdate(updatedStudy)
+    }, 1000),
     [],
   )
 
@@ -454,7 +371,6 @@ const AppDesign: React.FunctionComponent<
     const leadPrincipleInvestigatorContact = contacts.find(
       el => el.role === 'principal_investigator',
     )
-    const funder = contacts.find(el => el.role === 'sponsor')
     const irbInfo = contacts.find(el => el.role === 'irb')
     const studySupport = contacts.find(el => el.role === 'study_support')
     if (studySupport?.phone) {
@@ -467,68 +383,38 @@ const AppDesign: React.FunctionComponent<
       const formattedPhone = formatPhoneNumber(phoneWithoutZipcode)
       setIrbPhoneNumber(formattedPhone)
     }
-    const isWelcomeScreenDataEmpty =
-      Object.keys(study.clientData.welcomeScreenData || {}).length === 0
-    const welcomeScreenData = isWelcomeScreenDataEmpty
-      ? { ...appDesignProperties.welcomeScreenInfo }
-      : { ...study.clientData.welcomeScreenData! }
     setIrbNameSameAsInstitution(
       irbInfo?.name === leadPrincipleInvestigatorContact?.affiliation,
     )
-    setAppDesignProperties(prevState => {
-      return {
-        ...prevState,
-        leadPrincipleInvestigatorInfo: leadPrincipleInvestigatorContact,
-        funder: funder,
-        ethicsBoardInfo: irbInfo,
-        contactLeadInfo: studySupport,
-        logo: study.studyLogoUrl || '',
-        backgroundColor: study.colorScheme?.background || appDesignProperties.backgroundColor,
-        welcomeScreenInfo: welcomeScreenData,
-        studyTitle: study.name || '',
-        studySummaryBody: study.details || '',
-        irbProtocolId: study.irbProtocolId || '',
-      }
-    })
+    if (study.colorScheme?.background) {
+      setAppBackgroundColor(study.colorScheme?.background)
+    }
+    if (study.studyLogoUrl) {
+      setLogo(study.studyLogoUrl)
+    }
   }, [])
 
-  useEffect(() => {
-    updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_WELCOME_SCREEN_INFO)
-  }, [
-    appDesignProperties.welcomeScreenInfo.useOptionalDisclaimer,
-    appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage,
-  ])
-
-  useEffect(() => {
-    updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_CONTACTS)
-  }, [
-    appDesignProperties.leadPrincipleInvestigatorInfo?.name,
-    appDesignProperties.contactLeadInfo?.phone,
-    appDesignProperties.ethicsBoardInfo?.phone,
-    appDesignProperties.ethicsBoardInfo?.name,
-  ])
+  const updateContacts = (
+    leadPrincipalInvestigator: Contact,
+    funder: Contact,
+    ethicsBoardContact: Contact,
+    contactLeadInfo: Contact,
+  ) => {
+    const updatedContacts: Contact[] = []
+    updatedContacts.push(ethicsBoardContact)
+    updatedContacts.push(funder)
+    updatedContacts.push(contactLeadInfo)
+    updatedContacts.push(leadPrincipalInvestigator)
+    return updatedContacts
+  }
 
   const getContactPersonObject = (type: ContactType) => {
-    if (type === 'FUNDER') {
-      return appDesignProperties.funder
-        ? { ...appDesignProperties.funder }
-        : ({ role: 'sponsor', name: '' } as Contact)
-    } else if (type === 'ETHICS_BOARD') {
-      return appDesignProperties.ethicsBoardInfo
-        ? { ...appDesignProperties.ethicsBoardInfo }
-        : ({ role: 'irb', name: '' } as Contact)
-    } else if (type === 'LEAD_INVESTIGATOR') {
-      return appDesignProperties.leadPrincipleInvestigatorInfo
-        ? { ...appDesignProperties.leadPrincipleInvestigatorInfo }
-        : ({ role: 'principal_investigator', name: '' } as Contact)
-    } else {
-      return appDesignProperties.contactLeadInfo
-        ? { ...appDesignProperties.contactLeadInfo }
-        : ({
-            role: 'study_support',
-            name: '',
-          } as Contact)
+    if (!study.contacts) return { role: type, name: '' } as Contact
+    const contactObject = study.contacts.find(el => el.role === type)
+    if (contactObject === undefined) {
+      return { role: type, name: '' } as Contact
     }
+    return { ...contactObject }
   }
 
   return (
@@ -562,28 +448,40 @@ const AppDesign: React.FunctionComponent<
                 <Switch
                   color="primary"
                   checked={
-                    !appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
+                    !study.clientData.welcomeScreenData
+                      ?.isUsingDefaultMessage || false
                   }
-                  onChange={() =>
-                    setAppDesignProperties(prevState => {
-                      const newWelcomeScreenData = {
-                        ...prevState.welcomeScreenInfo,
+                  onChange={() => {
+                    const updatedStudy = { ...study }
+                    let currentWelcomeScreenData
+                    if (!study.clientData.welcomeScreenData) {
+                      currentWelcomeScreenData = {
+                        welcomeScreenBody: '',
+                        welcomeScreenFromText: '',
+                        welcomeScreenSalutation: '',
+                        welcomeScreenHeader: '',
+                        isUsingDefaultMessage: false,
+                        useOptionalDisclaimer: false,
+                      } as WelcomeScreenData
+                    } else {
+                      currentWelcomeScreenData = {
+                        ...study.clientData.welcomeScreenData,
                       }
-                      newWelcomeScreenData.isUsingDefaultMessage =
-                        !prevState.welcomeScreenInfo.isUsingDefaultMessage
-                      return {
-                        ...appDesignProperties,
-                        welcomeScreenInfo: newWelcomeScreenData,
-                      }
-                    })
-                  }
+                    }
+                    const newWelcomeScreenData = {
+                      ...currentWelcomeScreenData,
+                      isUsingDefaultMessage: !currentWelcomeScreenData.isUsingDefaultMessage,
+                    }
+                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
+                    onUpdate(updatedStudy)
+                  }}
                 ></Switch>
               </Box>
               <Box ml={1.5}>Customize</Box>
             </div>
             <div
               className={clsx(
-                appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage &&
+                study.clientData.welcomeScreenData?.isUsingDefaultMessage &&
                   classes.hideSection,
               )}
             >
@@ -595,21 +493,58 @@ const AppDesign: React.FunctionComponent<
                   saveLoader={saveLoader}
                 />
                 <ColorPickerSection
-                  appDesignProperties={appDesignProperties}
-                  setAppDesignProperties={setAppDesignProperties}
+                  appBackgroundColor={appBackgroundColor}
+                  setAppBackgroundColor={setAppBackgroundColor}
                   debouncedUpdateColor={debouncedUpdateColor}
                 />
                 <WelcomeScreenMessagingSection
-                  appDesignProperties={appDesignProperties}
-                  setAppDesignProperties={setAppDesignProperties}
-                  updateAppDesignInfo={updateAppDesignInfo}
                   saveLoader={saveLoader}
                   saveInfo={saveInfo}
                   SimpleTextInputStyles={SimpleTextInputStyles}
+                  onUpdate={(
+                    welcomeStringHeader: string,
+                    welcomeScreenBody: string,
+                    welcomeScreenSalutation: string,
+                    welcomeScreenFromText: string,
+                    useOptionalDisclaimer: boolean,
+                  ) => {
+                    const newWelcomeScreenData = {
+                      welcomeScreenHeader: welcomeStringHeader,
+                      welcomeScreenBody: welcomeScreenBody,
+                      welcomeScreenFromText: welcomeScreenFromText,
+                      welcomeScreenSalutation: welcomeScreenSalutation,
+                      useOptionalDisclaimer: useOptionalDisclaimer,
+                      isUsingDefaultMessage:
+                        study.clientData.welcomeScreenData
+                          ?.isUsingDefaultMessage || false,
+                    } as WelcomeScreenData
+                    const updatedStudy = { ...study }
+                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
+                    onUpdate(updatedStudy)
+                  }}
+                  welcomeScreenHeader={
+                    study.clientData.welcomeScreenData?.welcomeScreenHeader ||
+                    ''
+                  }
+                  welcomeScreenBody={
+                    study.clientData.welcomeScreenData?.welcomeScreenBody || ''
+                  }
+                  welcomeScreenFromText={
+                    study.clientData.welcomeScreenData?.welcomeScreenFromText ||
+                    ''
+                  }
+                  welcomeScreenSalutation={
+                    study.clientData.welcomeScreenData
+                      ?.welcomeScreenSalutation || ''
+                  }
+                  useOptionalDisclaimer={
+                    study.clientData.welcomeScreenData?.useOptionalDisclaimer ||
+                    false
+                  }
                 />
               </ol>
             </div>
-            {appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage && (
+            {study.clientData.welcomeScreenData?.isUsingDefaultMessage && (
               <Box className={classes.hideSectionVisibility}>
                 <ol className={classes.steps}>
                   <li></li>
@@ -622,7 +557,7 @@ const AppDesign: React.FunctionComponent<
           <Box className={classes.phoneArea}>
             <MTBHeadingH1>What participants will see: </MTBHeadingH1>
             <Box className={classes.phone}>
-              {!appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage && [
+              {!study.clientData.welcomeScreenData?.isUsingDefaultMessage && [
                 <SectionIndicator
                   index={1}
                   className={classes.sectionOneIndicatorPosition}
@@ -634,16 +569,20 @@ const AppDesign: React.FunctionComponent<
                   key={2}
                 />,
               ]}
-
               <PhoneTopBar
-                color={appDesignProperties.backgroundColor}
+                color={appBackgroundColor}
                 previewFile={previewFile}
                 isUsingDefaultMessage={
-                  appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
+                  study.clientData.welcomeScreenData?.isUsingDefaultMessage ||
+                  false
                 }
               />
               <WelcomeScreenPhoneContent
-                appDesignProperties={appDesignProperties}
+                welcomeScreenContent={
+                  study.clientData.welcomeScreenData ||
+                  ({} as WelcomeScreenData)
+                }
+                studyTitle={study.name}
               />
               <Box
                 className={clsx(
@@ -651,8 +590,8 @@ const AppDesign: React.FunctionComponent<
                   classes.optionalDisclaimerTextOnPhone,
                 )}
               >
-                {appDesignProperties.welcomeScreenInfo.useOptionalDisclaimer
-                  ? 'This is a research study and does not provide medical advice,diagnosis, or treatment'
+                {study.clientData.welcomeScreenData?.useOptionalDisclaimer
+                  ? 'This is a research study and does not provide medical advice, diagnosis, or treatment'
                   : ''}
               </Box>
             </Box>
@@ -668,25 +607,44 @@ const AppDesign: React.FunctionComponent<
             </p>
             <ol className={classes.steps}>
               <StudySummarySection
-                appDesignProperties={appDesignProperties}
-                setAppDesignProperties={setAppDesignProperties}
-                updateAppDesignInfo={updateAppDesignInfo}
                 SimpleTextInputStyles={SimpleTextInputStyles}
+                onUpdate={(studyTitle: string, studySummaryBody: string) => {
+                  const updatedStudy = { ...study }
+                  updatedStudy.name = studyTitle
+                  updatedStudy.details = studySummaryBody
+                  onUpdate(updatedStudy)
+                }}
+                studyTitle={study.name || ''}
+                studySummaryBody={study.details || ''}
               />
               <StudyLeadInformationSection
-                appDesignProperties={appDesignProperties}
-                setAppDesignProperties={setAppDesignProperties}
-                updateAppDesignInfo={updateAppDesignInfo}
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 orgMembership={orgMembership}
                 token={token}
                 getContactPersonObject={getContactPersonObject}
                 irbNameSameAsInstitution={irbNameSameAsInstitution}
+                onUpdate={(
+                  leadPrincipalInvestigator: Contact,
+                  funder: Contact,
+                  ethicsBoardContact: Contact,
+                ) => {
+                  const updatedContacts = updateContacts(
+                    leadPrincipalInvestigator,
+                    funder,
+                    ethicsBoardContact,
+                    getContactPersonObject('study_support'),
+                  )
+                  const updatedStudy = { ...study }
+                  updatedStudy.contacts = updatedContacts
+                  onUpdate(updatedStudy)
+                }}
+                leadPrincipalInvestigator={getContactPersonObject(
+                  'principal_investigator',
+                )}
+                ethicsBoardContact={getContactPersonObject('irb')}
+                funder={getContactPersonObject('sponsor')}
               />
               <GeneralContactAndSupportSection
-                appDesignProperties={appDesignProperties}
-                setAppDesignProperties={setAppDesignProperties}
-                updateAppDesignInfo={updateAppDesignInfo}
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 phoneNumberErrorState={phoneNumberErrorState}
                 setPhoneNumberErrorState={setPhoneNumberErrorState}
@@ -695,11 +653,20 @@ const AppDesign: React.FunctionComponent<
                 getContactPersonObject={getContactPersonObject}
                 generalContactPhoneNumber={generalContactPhoneNumber}
                 setGeneralContactPhoneNumber={setGeneralContactPhoneNumber}
+                contactLead={getContactPersonObject('study_support')}
+                onUpdate={(contactLead: Contact) => {
+                  const updatedContacts = updateContacts(
+                    getContactPersonObject('principal_investigator'),
+                    getContactPersonObject('sponsor'),
+                    getContactPersonObject('irb'),
+                    contactLead,
+                  )
+                  const updatedStudy = { ...study }
+                  updatedStudy.contacts = updatedContacts
+                  onUpdate(updatedStudy)
+                }}
               />
               <IrbBoardContactSection
-                appDesignProperties={appDesignProperties}
-                setAppDesignProperties={setAppDesignProperties}
-                updateAppDesignInfo={updateAppDesignInfo}
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 phoneNumberErrorState={phoneNumberErrorState}
                 setPhoneNumberErrorState={setPhoneNumberErrorState}
@@ -712,6 +679,20 @@ const AppDesign: React.FunctionComponent<
                 saveLoader={saveLoader}
                 irbNameSameAsInstitution={irbNameSameAsInstitution}
                 setIrbNameSameAsInstitution={setIrbNameSameAsInstitution}
+                onUpdate={(irbInfo: Contact, protocolId: string) => {
+                  const updatedContacts = updateContacts(
+                    getContactPersonObject('principal_investigator'),
+                    getContactPersonObject('sponsor'),
+                    irbInfo,
+                    getContactPersonObject('study_support'),
+                  )
+                  const updatedStudy = { ...study }
+                  updatedStudy.contacts = updatedContacts
+                  updatedStudy.irbProtocolId = protocolId
+                  onUpdate(updatedStudy)
+                }}
+                irbInfo={getContactPersonObject('irb')}
+                protocolId={study.irbProtocolId || ''}
               />
             </ol>
           </Box>
@@ -727,15 +708,19 @@ const AppDesign: React.FunctionComponent<
                 />
               </Box>
               <StudyPageTopPhoneContent
-                appDesignProperties={appDesignProperties}
                 previewFile={previewFile}
                 isUsingDefaultMessage={
-                  appDesignProperties.welcomeScreenInfo.isUsingDefaultMessage
+                  study.clientData.welcomeScreenData?.isUsingDefaultMessage ||
+                  false
                 }
                 imgHeight={imgHeight}
-                appColor={
-                  appDesignProperties.backgroundColor|| '#6040FF'
-                }
+                appColor={appBackgroundColor}
+                leadInvestigator={getContactPersonObject(
+                  'principal_investigator',
+                )}
+                funder={getContactPersonObject('sponsor')}
+                studyTitle={study.name}
+                studySummaryBody={study.details || ''}
               />
               <Box className={classes.phoneBottom}>
                 <PhoneBottomImg title="phone bottom image" />
@@ -751,10 +736,12 @@ const AppDesign: React.FunctionComponent<
                 />
               </Box>
               <StudyPageBottomPhoneContent
-                appDesignProperties={appDesignProperties}
                 generalContactPhoneNumber={generalContactPhoneNumber}
                 irbPhoneNumber={irbPhoneNumber}
                 studyID={study.identifier}
+                irbProtocolId={study.irbProtocolId || ''}
+                ethicsBoardInfo={getContactPersonObject('irb')}
+                contactLead={getContactPersonObject('study_support')}
               />
               <div className={classes.phoneBottom}>
                 <PhoneBottomImg title="phone bottom image" />

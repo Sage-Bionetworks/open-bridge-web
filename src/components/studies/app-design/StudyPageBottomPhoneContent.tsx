@@ -4,8 +4,8 @@ import { Box, Divider } from '@material-ui/core'
 import ContactInformation from './ContactInformation'
 import StudySummaryRoles from './StudySummaryRoles'
 import SectionIndicator from './SectionIndicator'
-import { StudyAppDesign } from '../../../types/types'
 import { latoFont, poppinsFont } from '../../../style/theme'
+import { Contact } from '../../../types/types'
 
 const useStyles = makeStyles(theme => ({
   bodyPhoneText: {
@@ -83,17 +83,21 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type StudyPageBottomPhoneContentProps = {
-  appDesignProperties: StudyAppDesign
   generalContactPhoneNumber: string
   irbPhoneNumber: string
   studyID: string
+  ethicsBoardInfo: Contact
+  contactLead: Contact
+  irbProtocolId: string
 }
 
 const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneContentProps> = ({
-  appDesignProperties,
   generalContactPhoneNumber,
   irbPhoneNumber,
   studyID,
+  ethicsBoardInfo,
+  contactLead,
+  irbProtocolId,
 }) => {
   const classes = useStyles()
   return (
@@ -110,15 +114,13 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
             className={classes.sectionSixAndSevenIndicatorPosition}
           />
           <StudySummaryRoles
-            type={
-              appDesignProperties.contactLeadInfo?.position || 'Role in study'
-            }
-            name={appDesignProperties.contactLeadInfo?.name || 'Contact lead'}
+            type={contactLead.position || 'Role in study'}
+            name={contactLead.name || 'Contact lead'}
           />
         </Box>
         <ContactInformation
           phoneNumber={generalContactPhoneNumber}
-          email={appDesignProperties.contactLeadInfo?.email || ''}
+          email={contactLead.email || ''}
         />
         <Box className={classes.withdrawFromStudyContainer}>
           <p className={classes.widthdrawText}>
@@ -149,17 +151,15 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
           />
           <StudySummaryRoles
             type="IRB/Ethics Board of Record"
-            name={
-              appDesignProperties.ethicsBoardInfo?.name || 'IRB/Ethics Board'
-            }
+            name={ethicsBoardInfo.name || 'IRB/Ethics Board'}
           />
         </Box>
         <ContactInformation
           phoneNumber={irbPhoneNumber}
-          email={appDesignProperties.ethicsBoardInfo?.email || ''}
+          email={ethicsBoardInfo.email || ''}
         />
         <Box mt={1.5} width="100%">
-          IRB Protocol ID: {appDesignProperties.irbProtocolId || 'placeholder'}
+          IRB Protocol ID: {irbProtocolId || 'placeholder'}
         </Box>
       </Box>
     </Box>

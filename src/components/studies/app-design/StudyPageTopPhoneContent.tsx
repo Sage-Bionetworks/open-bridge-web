@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Box, Divider } from '@material-ui/core'
 import StudySummaryRoles from './StudySummaryRoles'
 import SectionIndicator from './SectionIndicator'
-import { StudyAppDesign } from '../../../types/types'
+import { Contact } from '../../../types/types'
 import { latoFont, playfairDisplayFont } from '../../../style/theme'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
 import { PreviewFile } from './AppDesign'
@@ -72,19 +72,25 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type StudyPageTopPhoneContentProps = {
-  appDesignProperties: StudyAppDesign
   isUsingDefaultMessage: boolean
   imgHeight: number
   appColor: string
   previewFile: PreviewFile | undefined
+  studyTitle: string
+  studySummaryBody: string
+  leadInvestigator: Contact
+  funder: Contact
 }
 
 const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContentProps> = ({
-  appDesignProperties,
   isUsingDefaultMessage,
   imgHeight,
   appColor,
   previewFile,
+  studyTitle,
+  studySummaryBody,
+  leadInvestigator,
+  funder,
 }) => {
   const classes = useStyles()
   return (
@@ -118,20 +124,15 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         />
         <Box height="420px">
           <Box className={classes.headlineStyle}>
-            {appDesignProperties.studyTitle || 'Title of study...'}
+            {studyTitle || 'Title of study...'}
           </Box>
-          <p className={classes.bodyText}>
-            {appDesignProperties.studySummaryBody || 'Body...'}
-          </p>
+          <p className={classes.bodyText}>{studySummaryBody || 'Body...'}</p>
         </Box>
 
         <Divider className={classes.divider} />
         <StudySummaryRoles
           type="Lead Principal Investigator"
-          name={
-            appDesignProperties.leadPrincipleInvestigatorInfo?.name ||
-            'placeholder'
-          }
+          name={leadInvestigator.name || 'placeholder'}
           className={classes.studySummaryRoles}
         />
         <SectionIndicator
@@ -141,15 +142,12 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
 
         <StudySummaryRoles
           type="Institution"
-          name={
-            appDesignProperties.leadPrincipleInvestigatorInfo?.affiliation ||
-            'placeholder'
-          }
+          name={leadInvestigator.affiliation || 'placeholder'}
           className={classes.studySummaryRoles}
         />
         <StudySummaryRoles
           type="Funder"
-          name={appDesignProperties.funder?.name || 'placeholder'}
+          name={funder.name || 'placeholder'}
           className={classes.studySummaryRoles}
         />
       </Box>

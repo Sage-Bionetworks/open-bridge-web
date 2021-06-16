@@ -1,7 +1,5 @@
 import { FormControl, makeStyles } from '@material-ui/core'
 import React from 'react'
-import { StudyAppDesign } from '../../../types/types'
-import { AppDesignUpdateTypes } from './AppDesign'
 import FormGroupWrapper from './FormGroupWrapper'
 import Subsection from './Subsection'
 import TextInputWrapper from './TextInputWrapper'
@@ -16,17 +14,17 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type StudySummarySectionProps = {
-  appDesignProperties: StudyAppDesign
-  setAppDesignProperties: Function
-  updateAppDesignInfo: Function
   SimpleTextInputStyles: React.CSSProperties
+  onUpdate: (studyTitle: string, studySummaryBody: string) => void
+  studyTitle: string
+  studySummaryBody: string
 }
 
 const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = ({
-  appDesignProperties,
-  setAppDesignProperties,
-  updateAppDesignInfo,
   SimpleTextInputStyles,
+  onUpdate,
+  studyTitle,
+  studySummaryBody,
 }) => {
   const classes = useStyles()
   return (
@@ -37,21 +35,12 @@ const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = (
             SimpleTextInputStyles={SimpleTextInputStyles}
             id="study-name-input"
             placeholder="Headline"
-            value={appDesignProperties.studyTitle}
+            value={studyTitle}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
-              setAppDesignProperties({
-                ...appDesignProperties,
-                studyTitle: e.target.value,
-              })
+              onUpdate(e.target.value, studySummaryBody)
             }}
-            onBlur={() =>
-              updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_NAME)
-            }
-            multiline
-            rows={1}
-            rowsMax={1}
             titleText="Study Name*"
             extraClassname={classes.studyNameInput}
           />
@@ -60,18 +49,12 @@ const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = (
           <TextInputWrapper
             SimpleTextInputStyles={{ width: '100%' } as React.CSSProperties}
             id="study-body-text"
-            value={appDesignProperties.studySummaryBody}
+            value={studySummaryBody}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
             ) => {
-              setAppDesignProperties({
-                ...appDesignProperties,
-                studySummaryBody: e.target.value,
-              })
+              onUpdate(studyTitle, e.target.value)
             }}
-            onBlur={() =>
-              updateAppDesignInfo(AppDesignUpdateTypes.UPDATE_STUDY_DESCRIPTION)
-            }
             multiline
             rows={8}
             rowsMax={10}
