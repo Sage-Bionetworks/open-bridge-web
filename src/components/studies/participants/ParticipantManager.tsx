@@ -198,10 +198,10 @@ type ParticipantData = {
   total: number
 }
 
-type SelectedParticipansType = {
-  ACTIVE: ParticipantAccountSummary[]
-  TEST: ParticipantAccountSummary[]
-  WITHDRAWN: ParticipantAccountSummary[]
+type SelectedParticipantIdsType = {
+  ACTIVE: string[]
+  TEST: string[]
+  WITHDRAWN: string[]
 }
 
 const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
@@ -232,14 +232,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [fileDownloadUrl, setFileDownloadUrl] =
     React.useState<string | undefined>(undefined)
 
-  // Selected users
-  /*const [selectedActiveParticipants, setSelectedActiveParticipants] =
-    React.useState<ParticipantAccountSummary[]>([])
-  const [selectedWithdrawnParticipants, setSelectedWithdrawnParticipants] =
-    React.useState<ParticipantAccountSummary[]>([])*/
-
-  const [selectedParticipants, setSelectedParticipants] =
-    React.useState<SelectedParticipansType>({
+  //user ids selectedForSction
+  const [selectedParticipantIds, setSelectedParticipantIds] =
+    React.useState<SelectedParticipantIdsType>({
       ACTIVE: [],
       TEST: [],
       WITHDRAWN: [],
@@ -302,9 +297,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     console.log('data updated - resetting selected')
     if (isAllSelected) {
       console.log('selected')
-      setSelectedParticipants(prev => ({ ...prev, [tab]: data?.items || [] }))
+      setSelectedParticipantIds(prev => ({ ...prev, [tab]: data?.items || [] }))
     } else {
-      setSelectedParticipants(prev => ({ ...prev, [tab]: [] }))
+      setSelectedParticipantIds(prev => ({ ...prev }))
     }
   }, [data])
 
@@ -352,19 +347,21 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setLoadingIndicators(_ => ({ isDeleting: true }))
     setParticipantsWithError([])
     let isError = false
-    for (let i = 0; i < selectedParticipants.ACTIVE.length; i++) {
+    for (let i = 0; i < selectedParticipantIds[tab].length; i++) {
       try {
         const x = await ParticipantService.deleteParticipant(
           study!.identifier,
           token!,
-          selectedParticipants.ACTIVE[i].id,
+          selectedParticipantIds[tab][i],
         )
       } catch (e) {
         isError = true
-        setParticipantsWithError(prev => [
-          ...prev,
-          selectedParticipants.ACTIVE[i],
-        ])
+        const errorParticipant = data?.items.find(
+          p => p.id === selectedParticipantIds[tab][i],
+        )
+        if (errorParticipant) {
+          setParticipantsWithError(prev => [...prev, errorParticipant])
+        }
       }
     }
     setLoadingIndicators(_ => ({ isDeleting: false }))
@@ -408,8 +405,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       selection === 'ALL'
         ? await getParticipants(study.identifier, token!, 0, 0, tab)
         : {
-            items: selectedParticipants[tab],
-            total: selectedParticipants[tab].length,
+            items:
+              data?.items.filter(p =>
+                selectedParticipantIds[tab].includes(p.id),
+              ) || [],
+            total: selectedParticipantIds[tab].length,
           }
     //massage data
     const transformedParticipantsData = participantsData.items.map(
@@ -573,7 +573,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       }
                       fileDownloadUrl={fileDownloadUrl}
                       hasItems={!!data?.items?.length}
-                      selectedLength={selectedParticipants[tab].length}
+                      selectedLength={selectedParticipantIds[tab].length}
                       onDone={() => {
                         URL.revokeObjectURL(fileDownloadUrl!)
                         setFileDownloadUrl(undefined)
@@ -620,7 +620,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     totalParticipants={data?.total || 0}
                     isAllSelected={isAllSelected}
                     gridType={tab}
-                    selectedParticipants={selectedParticipants[tab]}
+                    selectedParticipantIds={selectedParticipantIds[tab]}
                     onWithdrawParticipant={(
                       participantId: string,
                       note: string,
@@ -648,7 +648,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       if (isAll !== undefined) {
                         setIsAllSelected(isAll)
                       }
-                      setSelectedParticipants(prev => ({
+                      setSelectedParticipantIds(prev => ({
                         ...prev,
                         [tab]: selection,
                       }))
@@ -705,7 +705,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               <DeleteDialog
                 participantsWithError={participantsWithError}
                 study={study}
-                selectedParticipants={selectedParticipants[tab]}
+                selectedParticipants={
+                  data?.items.filter(participant =>
+                    selectedParticipantIds[tab].includes(participant.id),
+                  ) || []
+                }
                 isProcessing={!!loadingIndicators.isDeleting}
               />
             )}

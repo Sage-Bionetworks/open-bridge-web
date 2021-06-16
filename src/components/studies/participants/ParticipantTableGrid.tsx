@@ -140,7 +140,7 @@ const EditDialogTitle: FunctionComponent<{
 export type ParticipantTableGridProps = {
   isAllSelected: boolean
   rows: ParticipantAccountSummary[]
-  selectedParticipants: ParticipantAccountSummary[]
+  selectedParticipantIds: string[]
   enrollmentType: EnrollmentType
   gridType: ParticipantActivityType
   studyId: string
@@ -148,7 +148,7 @@ export type ParticipantTableGridProps = {
   currentPage: number
   setCurrentPage: Function
   onRowSelected: (
-    participants: ParticipantAccountSummary[],
+    participantIds: string[],
     isAll?: boolean,
   ) => void
   onUpdateParticipant: (
@@ -173,7 +173,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   currentPage,
   setCurrentPage,
   status,
-  selectedParticipants,
+  selectedParticipantIds,
   enrollmentType,
   isAllSelected,
   onUpdateParticipant,
@@ -295,12 +295,12 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   const onPageSelectedChanged = (pageSelected: number) => {
     setCurrentPage(pageSelected)
   }
-  const [selectionModel, setSelectionModel] = React.useState<GridRowId[]>(
-    selectedParticipants.map(p => p.id),
+  const [selectionModel, setSelectionModel] = React.useState<GridRowId[]>([
+    ...selectedParticipantIds]
   )
   React.useEffect(() => {
-    setSelectionModel(selectedParticipants.map(p => p.id))
-  }, [selectedParticipants])
+    setSelectionModel([...selectedParticipantIds])
+  }, [selectedParticipantIds, rows])
 
   const allSelectedPage = () =>
     rows && !rows.find(row => !selectionModel.includes(row.id))
@@ -322,6 +322,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               onRowSelected={(row: GridRowSelectedParams) => {
                 let model: string[] = []
                 if (row.isSelected) {
+                  console.log()
                   model = [...selectionModel, row.data.id]
                 } else {
                   model = selectionModel.filter(
@@ -330,7 +331,8 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                 }
 
                 onRowSelected(
-                  rows.filter(row => model.includes(row.id)) || [],
+                 // rows.filter(row => model.includes(row.id)) || [],
+                 model,
                   false,
                 )
               }}
@@ -359,11 +361,11 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                       allPageText="All on this page"
                       onSelectAllPage={() => {
                         const ids = rows.map(row => row.id)
-                        onRowSelected(rows, false)
+                        onRowSelected(ids, false)
                       }}
                       onSelectAll={() => {
                         const ids = rows.map(row => row.id)
-                        onRowSelected(rows, true)
+                        onRowSelected(ids, true)
                       }}
                     ></SelectAll>
                   </div>
