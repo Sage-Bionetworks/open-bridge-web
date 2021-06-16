@@ -6,7 +6,7 @@ import {
   DialogActions,
   DialogContent,
   Tab,
-  Tabs
+  Tabs,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { FunctionComponent } from 'react'
@@ -21,15 +21,15 @@ import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
-import { theme } from '../../../style/theme'
+import { theme, latoFont } from '../../../style/theme'
 import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
-  StringDictionary
+  StringDictionary,
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
@@ -37,16 +37,17 @@ import { MTBHeadingH3 } from '../../widgets/Headings'
 import HelpBox from '../../widgets/HelpBox'
 import {
   DialogButtonPrimary,
-  DialogButtonSecondary
+  DialogButtonSecondary,
 } from '../../widgets/StyledComponents'
 import LiveIcon from '../LiveIcon'
 import AddParticipants from './AddParticipants'
 import DeleteDialog from './DeleteDialogContents'
 import ParticipantDownload, {
-  ParticipantDownloadType
+  ParticipantDownloadType,
 } from './ParticipantDownload'
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
+import SMSPhoneImg from '../../../assets/ParticipantManager/joined_phone_icon.svg'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -57,11 +58,13 @@ const useStyles = makeStyles(theme => ({
   },
   gridToolBar: {
     backgroundColor: theme.palette.common.white,
-    padding: theme.spacing(1, 5, 0, 5),
+    // padding: theme.spacing(1, 5, 0, 5),
     height: theme.spacing(6),
-
+    paddingLeft: theme.spacing(3),
+    paddingRight: theme.spacing(3),
     display: 'flex',
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
 
@@ -227,19 +230,24 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [isOpenDeleteDialog, setIsOpenDeleteDialog] = React.useState(false)
 
   // True if the user is currently searching for a particpant using id
-  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] =
-    React.useState(false)
+  const [
+    isUserSearchingForParticipant,
+    setIsUserSearchingForParticipant,
+  ] = React.useState(false)
 
-  const [fileDownloadUrl, setFileDownloadUrl] =
-    React.useState<string | undefined>(undefined)
+  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
+    string | undefined
+  >(undefined)
 
   //user ids selectedForSction
-  const [selectedParticipantIds, setSelectedParticipantIds] =
-    React.useState<SelectedParticipantIdsType>({
-      ACTIVE: [],
-      TEST: [],
-      WITHDRAWN: [],
-    })
+  const [
+    selectedParticipantIds,
+    setSelectedParticipantIds,
+  ] = React.useState<SelectedParticipantIdsType>({
+    ACTIVE: [],
+    TEST: [],
+    WITHDRAWN: [],
+  })
   const [isAllSelected, setIsAllSelected] = React.useState(false)
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
@@ -253,8 +261,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   >([])
 
   //trigger data refresh on updates
-  const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
-    React.useState(false)
+  const [
+    refreshParticipantsToggle,
+    setRefreshParticipantsToggle,
+  ] = React.useState(false)
 
   const {
     data,
@@ -488,19 +498,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 </div>
               </HelpBox>
             )}
-
-          <Box className={classes.topButtonContainer}>
-            <div className={classes.inputRow}>
-              <Button className={classes.topButtons}>
-                <img
-                  src={LinkIcon}
-                  className={classes.buttonImage}
-                  alt="link-icon"
-                ></img>
-                App Download Link
-              </Button>
-            </div>
-          </Box>
         </Box>
 
         <Box py={0} pr={3} pl={2}>
@@ -512,9 +509,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           >
             {TAB_DEFs.map(tabDef => (
               <Tab
-                label={`${tabDef.label} ${
-                  tab === tabDef.type ? (data ? data.total : '...') : ''
-                }`}
+                label={`${tabDef.label} (${
+                  tab === tabDef.type ? (data ? data.total : '...') : '0'
+                })`}
                 value={tabDef.type}
                 classes={{ root: classes.tab }}
               />
@@ -548,18 +545,37 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               </>
               <div>
                 <Box className={classes.gridToolBar}>
-                  <ParticipantSearch
-                    onReset={() => {
-                      setIsUserSearchingForParticipant(false)
-                      handleResetSearch()
+                  <Box
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
                     }}
-                    onSearch={(searchedValue: string) => {
-                      setIsUserSearchingForParticipant(true)
-                      handleSearchParticipantRequest(searchedValue)
-                    }}
-                  />
+                  >
+                    {tab !== 'WITHDRAWN' && (
+                      <Button
+                        aria-label="delete"
+                        onClick={() => {
+                          // setParticipantsWithError([])
+                          //setIsOpenDeleteDialog(true)
+                        }}
+                        style={{
+                          marginRight: '24px',
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          fontFamily: latoFont,
+                          fontSize: '14px',
+                        }}
+                      >
+                        <img
+                          src={SMSPhoneImg}
+                          style={{ marginRight: '6px' }}
+                        ></img>
+                        Send SMS link
+                      </Button>
+                    )}
 
-                  <>
                     <ParticipantDownload
                       isProcessing={loadingIndicators.isDownloading}
                       onDownload={() =>
@@ -573,32 +589,31 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         setFileDownloadUrl(undefined)
                       }}
                     />
-                  </>
-
-                  {tab !== 'WITHDRAWN' && (
-                    <>
-                      <Button
-                        aria-label="delete"
-                        onClick={() => {
-                          // setParticipantsWithError([])
-                          //setIsOpenDeleteDialog(true)
-                        }}
-                      >
-                        Send SMS link
-                      </Button>
-
+                    {tab !== 'WITHDRAWN' && (
                       <Button
                         aria-label="delete"
                         onClick={() => {
                           setParticipantsWithError([])
                           setIsOpenDeleteDialog(true)
                         }}
+                        style={{ marginLeft: '24px' }}
                       >
                         <DeleteIcon style={{ marginRight: '8px' }}></DeleteIcon>
                         Remove from Study
                       </Button>
-                    </>
-                  )}
+                    )}
+                  </Box>
+
+                  <ParticipantSearch
+                    onReset={() => {
+                      setIsUserSearchingForParticipant(false)
+                      handleResetSearch()
+                    }}
+                    onSearch={(searchedValue: string) => {
+                      setIsUserSearchingForParticipant(true)
+                      handleSearchParticipantRequest(searchedValue)
+                    }}
+                  />
                 </Box>
                 <div
                   role="tabpanel"
