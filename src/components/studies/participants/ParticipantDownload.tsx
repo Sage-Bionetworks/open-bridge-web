@@ -1,11 +1,6 @@
-import { Box, CircularProgress, MenuItem } from '@material-ui/core'
+import { Box, Button, CircularProgress } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
-import { ParticipantActivityType } from '../../../types/types'
-import {
-  ButtonWithSelectButton,
-  ButtonWithSelectSelect
-} from '../../widgets/StyledComponents'
 
 const useStyles = makeStyles(theme => ({
   downloadButton: {
@@ -13,12 +8,9 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-
 export type ParticipantDownloadType = 'ALL' | 'SELECTED'
 
 type ParticipantDownloadProps = {
-  type: ParticipantActivityType
-  selection?: ParticipantDownloadType
   onDownload: Function
   onDone: Function
   hasItems: boolean
@@ -27,79 +19,50 @@ type ParticipantDownloadProps = {
   fileDownloadUrl?: string
 }
 
-const ParticipantDownload: React.FunctionComponent<ParticipantDownloadProps> = ({
-  type,
-  selection: _selection,
-  onDownload,
-  isProcessing,
-  fileDownloadUrl,
-  hasItems, selectedLength,
-  onDone,
-}) => {
-  const classes = useStyles()
-  const [selection, setSelection] = React.useState<ParticipantDownloadType>(
-    'SELECTED',
-  )
+const ParticipantDownload: React.FunctionComponent<ParticipantDownloadProps> =
+  ({
+    onDownload,
+    isProcessing,
+    fileDownloadUrl,
+    hasItems,
+    selectedLength,
+    onDone,
+  }) => {
+    const classes = useStyles()
 
-  function magicDownload() {
-    // create hidden link
-    const element = document.createElement('a')
-    document.body.appendChild(element)
-    element.setAttribute('href', fileDownloadUrl!)
-    element.setAttribute('download', 'StudyParticipants.csv')
-    element.style.display = ''
+    function magicDownload() {
+      // create hidden link
+      const element = document.createElement('a')
+      document.body.appendChild(element)
+      element.setAttribute('href', fileDownloadUrl!)
+      element.setAttribute('download', 'StudyParticipants.csv')
+      element.style.display = ''
 
-    element.click()
+      element.click()
 
-    document.body.removeChild(element)
-    //event.stopPropagation();
-  }
-
-  React.useEffect(() => {
-    if (fileDownloadUrl) {
-      console.log('download')
-      magicDownload()
-      setTimeout(() => onDone(), 1000)
+      document.body.removeChild(element)
+      //event.stopPropagation();
     }
-  }, [fileDownloadUrl])
 
-  const items =
-    type === 'ACTIVE'
-      ? [
-          { label: 'All Active Participants', value: 'ALL' },
-          { label: 'Selected Participants', value: 'SELECTED' },
-        ]
-      : [
-          { label: 'All Withdrawn Participants', value: 'ALL' },
-          { label: 'Selected Participants', value: 'SELECTED' },
-        ]
-  return (
-    <Box display="flex" alignItems="center">
-      <ButtonWithSelectSelect
-        key="session_select"
-        value={selection}
-        disabled= {!hasItems}
-        onChange={e => setSelection(e.target.value as ParticipantDownloadType)}
-        inputProps={{ 'aria-label': 'download participants' }}
-        disableUnderline={true}
-      >
-        {items.map(item => (
-          <MenuItem value={item.value} key={item.value}>
-            {item.label}
-          </MenuItem>
-        ))}
-      </ButtonWithSelectSelect>
-      <ButtonWithSelectButton
-        key="startDownload"
-        variant="contained"
-        onClick={() => onDownload(selection)}
-        className={classes.downloadButton}
-        disabled= {!hasItems || (selection === 'SELECTED' && selectedLength===0)}
-      >
-        {!isProcessing ? 'Download' : <CircularProgress size={24} />}
-      </ButtonWithSelectButton>
-    </Box>
-  )
-}
+    React.useEffect(() => {
+      if (fileDownloadUrl) {
+        console.log('download')
+        magicDownload()
+        setTimeout(() => onDone(), 1000)
+      }
+    }, [fileDownloadUrl])
+
+    return (
+      <Box display="flex" alignItems="center">
+        <Button
+          disabled={!hasItems || selectedLength === 0}
+          onClick={() => onDownload()}
+        >
+          {' '}
+          {!isProcessing ? 'Download' : <CircularProgress size={24} />}
+        </Button>
+      </Box>
+    )
+  }
 
 export default ParticipantDownload

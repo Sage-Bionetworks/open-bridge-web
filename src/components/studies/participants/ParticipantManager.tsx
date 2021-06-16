@@ -187,7 +187,7 @@ async function getParticipants(
     }
     return updatedParticipant
   })
-console.log('returning result')
+  console.log('returning result')
   return { items: result, total: numberOfParticipants }
 }
 
@@ -198,9 +198,9 @@ type ParticipantData = {
   total: number
 }
 
-type SelectedParticipansType ={
-  ACTIVE: ParticipantAccountSummary[],
-  TEST: ParticipantAccountSummary[],
+type SelectedParticipansType = {
+  ACTIVE: ParticipantAccountSummary[]
+  TEST: ParticipantAccountSummary[]
   WITHDRAWN: ParticipantAccountSummary[]
 }
 
@@ -238,13 +238,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [selectedWithdrawnParticipants, setSelectedWithdrawnParticipants] =
     React.useState<ParticipantAccountSummary[]>([])*/
 
-    const [selectedParticipants, setSelectedParticipants] =
-    React.useState<SelectedParticipansType>({ACTIVE:[], TEST: [], WITHDRAWN: []})
-    const [isAllSelected, setIsAllSelected]= React.useState(false)
-
-
-
-
+  const [selectedParticipants, setSelectedParticipants] =
+    React.useState<SelectedParticipansType>({
+      ACTIVE: [],
+      TEST: [],
+      WITHDRAWN: [],
+    })
+  const [isAllSelected, setIsAllSelected] = React.useState(false)
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
@@ -281,12 +281,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       const result: ParticipantData = await run(
         getParticipants(study.identifier, token!, currentPage, pageSize, tab),
       )
-    console.log('resilt', result)
-     // if (result) {
+      console.log('resilt', result)
+      // if (result) {
       //  console.log('got result')
-       // setParticipantData({ items: result.items, total: result.total })
-        
-     // }
+      // setParticipantData({ items: result.items, total: result.total })
+
+      // }
     }
     fn()
   }, [
@@ -298,13 +298,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     tab,
   ])
 
-  React.useEffect (()=> {
-    console.log('data updated')
+  React.useEffect(() => {
+    console.log('data updated - resetting selected')
     if (isAllSelected) {
       console.log('selected')
-      setSelectedParticipants(prev => ({...prev, [tab]: data?.items || []}))
+      setSelectedParticipants(prev => ({ ...prev, [tab]: data?.items || [] }))
+    } else {
+      setSelectedParticipants(prev => ({ ...prev, [tab]: [] }))
     }
-  },[data])
+  }, [data])
 
   //callbacks from the participant grid
   const withdrawParticipant = async (participantId: string, note: string) => {
@@ -398,6 +400,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }
 
   const downloadParticipants = async (selection: ParticipantDownloadType) => {
+    debugger
     setLoadingIndicators({ isDownloading: true })
 
     //if getting all participants
@@ -405,8 +408,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       selection === 'ALL'
         ? await getParticipants(study.identifier, token!, 0, 0, tab)
         : {
-            items: selectedParticipants.ACTIVE,
-            total: selectedParticipants.ACTIVE.length,
+            items: selectedParticipants[tab],
+            total: selectedParticipants[tab].length,
           }
     //massage data
     const transformedParticipantsData = participantsData.items.map(
@@ -564,15 +567,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
                   <>
                     <ParticipantDownload
-                      type={tab}
                       isProcessing={loadingIndicators.isDownloading}
-                      onDownload={downloadParticipants}
+                      onDownload={() =>
+                        downloadParticipants(isAllSelected ? 'ALL' : 'SELECTED')
+                      }
                       fileDownloadUrl={fileDownloadUrl}
                       hasItems={!!data?.items?.length}
-                      selectedLength={
-                        selectedParticipants[tab].length
-                     
-                      }
+                      selectedLength={selectedParticipants[tab].length}
                       onDone={() => {
                         URL.revokeObjectURL(fileDownloadUrl!)
                         setFileDownloadUrl(undefined)
@@ -581,16 +582,28 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   </>
 
                   {tab !== 'WITHDRAWN' && (
-                    <Button
-                      aria-label="delete"
-                      onClick={() => {
-                        setParticipantsWithError([])
-                        setIsOpenDeleteDialog(true)
-                      }}
-                    >
-                      <DeleteIcon style={{ marginRight: '8px' }}></DeleteIcon>
-                      Remove from Study
-                    </Button>
+                    <>
+                      <Button
+                        aria-label="delete"
+                        onClick={() => {
+                          // setParticipantsWithError([])
+                          //setIsOpenDeleteDialog(true)
+                        }}
+                      >
+                        Send SMS link
+                      </Button>
+
+                      <Button
+                        aria-label="delete"
+                        onClick={() => {
+                          setParticipantsWithError([])
+                          setIsOpenDeleteDialog(true)
+                        }}
+                      >
+                        <DeleteIcon style={{ marginRight: '8px' }}></DeleteIcon>
+                        Remove from Study
+                      </Button>
+                    </>
                   )}
                 </Box>
                 <div
@@ -605,7 +618,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     status={status}
                     studyId={study.identifier}
                     totalParticipants={data?.total || 0}
-                    isAllSelected= {isAllSelected}
+                    isAllSelected={isAllSelected}
                     gridType={tab}
                     selectedParticipants={selectedParticipants[tab]}
                     onWithdrawParticipant={(
@@ -623,18 +636,22 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     setCurrentPage={setCurrentPage}
                     enrollmentType={study.clientData.enrollmentType!}
                     onRowSelected={(
-                      /*id: string, isSelected: boolean*/ selection, isAll
+                      /*id: string, isSelected: boolean*/ selection,
+                      isAll,
                     ) => {
-                      console.log("PMANAGER", selection, isAll)
-                     /* if (tab === 'ACTIVE') {
+                      console.log('PMANAGER', selection, isAll)
+                      /* if (tab === 'ACTIVE') {
                         setSelectedActiveParticipants(selection)
                       } else {
                         setSelectedWithdrawnParticipants(selection)
                       }*/
                       if (isAll !== undefined) {
-                      setIsAllSelected(isAll)
+                        setIsAllSelected(isAll)
                       }
-                      setSelectedParticipants(prev=> ({...prev, [tab]: selection}))
+                      setSelectedParticipants(prev => ({
+                        ...prev,
+                        [tab]: selection,
+                      }))
                     }}
                     pageSize={pageSize}
                     setPageSize={setPageSize}
