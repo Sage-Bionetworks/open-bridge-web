@@ -221,14 +221,19 @@ export const randomInteger = (min: number, max: number): number => {
 
 //based on https://gist.github.com/lavoiesl/3223665
 // generates external id
-export const generateNonambiguousCode = (length: number): string => {
+export const generateNonambiguousCode = (
+  length: number,
+  isAlpha?: boolean,
+): string => {
   let result = ''
   const alpha = '23456789abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ'
-  const max_offset = alpha.length - 1
+  const numeric = '0123456789'
+  const symbols = isAlpha ? alpha : numeric
+  const max_offset = symbols.length - 1
 
   for (let i = 0; i < length; i++) {
     const index = randomInteger(0, max_offset)
-    result = result + alpha[index]
+    result = result + symbols[index]
   }
 
   return result
@@ -256,7 +261,7 @@ export const isValidEmail = (email: string) => {
   return re.test(String(email).toLowerCase())
 }
 
-export const isInAdminRole=(roles: AdminRole[])=> roles.includes('org_admin')
+export const isInAdminRole = (roles: AdminRole[]) => roles.includes('org_admin')
 
 export const setBodyClass = (next?: string) => {
   const whiteBgSections = [/*'launch',*/ 'preview']
