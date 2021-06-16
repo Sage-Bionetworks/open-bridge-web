@@ -154,20 +154,18 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
   }
 
   useEffect(() => {
-    const allUniqueAssessments: Assessment[] = []
+    let allAssessments: Assessment[] = []
     for (const session of scheduleSessions) {
       if (!session.assessments) continue
-      for (const assessment of session.assessments) {
-        const assessmentAlreadyExists =
-          allUniqueAssessments.find(el => el.title === assessment.title) !==
-          undefined
-        if (assessmentAlreadyExists) {
-          continue
-        }
-        allUniqueAssessments.push(assessment)
-      }
+      allAssessments = allAssessments.concat(session.assessments)
     }
-    setUniqueAssessments(allUniqueAssessments)
+    const uniqueAssessments = allAssessments.reduce((arr, assessment) => {
+      const assessmentExists =
+        arr.find(el => el.title === assessment.title) !== undefined
+      if (assessmentExists) return arr
+      return [...arr, assessment]
+    }, [] as Assessment[])
+    setUniqueAssessments(uniqueAssessments)
   }, [])
 
   return (
