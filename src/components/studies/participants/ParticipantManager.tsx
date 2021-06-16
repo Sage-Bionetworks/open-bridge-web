@@ -58,6 +58,7 @@ const useStyles = makeStyles(theme => ({
   gridToolBar: {
     backgroundColor: theme.palette.common.white,
     padding: theme.spacing(1, 5, 0, 5),
+    height: theme.spacing(6),
 
     display: 'flex',
     flexDirection: 'row',
@@ -214,7 +215,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   // The current page in the particpant grid the user is viewing
   const [currentPage, setCurrentPage] = React.useState(1)
   // The current page size of the particpant grid
-  const [pageSize, setPageSize] = React.useState(50)
+  const [pageSize, setPageSize] = React.useState(20)
   // Withdrawn or active participants
   const [tab, setTab] = React.useState<ParticipantActivityType>('ACTIVE')
   const [isAddOpen, setIsAddOpen] = React.useState(false)
@@ -266,7 +267,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     data: null,
   })
 
-  // need to configure this
   React.useEffect(() => {
     if (!study?.identifier) {
       return
@@ -276,12 +276,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       const result: ParticipantData = await run(
         getParticipants(study.identifier, token!, currentPage, pageSize, tab),
       )
-      console.log('resilt', result)
-      // if (result) {
-      //  console.log('got result')
-      // setParticipantData({ items: result.items, total: result.total })
-
-      // }
     }
     fn()
   }, [

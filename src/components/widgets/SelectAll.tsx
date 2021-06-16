@@ -1,5 +1,6 @@
 import { Box, Button, Checkbox, Menu, MenuItem } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import CheckIcon from '@material-ui/icons/Check'
 import clsx from 'clsx'
 import React from 'react'
 
@@ -7,17 +8,29 @@ const useStyles = makeStyles(theme => ({
   root: {
     textAlign: 'left',
   },
+  check: {
+    padding: theme.spacing(0.5, 0, 0.5, 2),
+  },
+  icon: {
+    marginLeft: '-10px',
+    width: '16px',
+    '& svg': {
+      width: '15px',
+      marginTop: '5px',
+    },
+  },
   select: {
-    paddingLeft: theme.spacing(2),
-    minWidth: theme.spacing(6),
+    paddingLeft: 0,
+    paddingRight: 0,
+    minWidth: 'auto',
     borderRadius: 0,
     cursor: 'pointer',
     '&$focused': {
-      boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.25)',
+      // boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.25)',
       backgroundColor: 'transparent',
     },
     '&:hover, &:active': {
-      boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.25)',
+      // boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.25)',
       backgroundColor: 'transparent',
     },
     '& .MuiCheckbox-root': {
@@ -49,6 +62,7 @@ export interface SelectAllProps {
   allPageText: string
   onSelectAllPage: Function
   onSelectAll: Function
+  onDeselect: Function
   selectionType: SelectionType
 }
 
@@ -57,6 +71,7 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
   allPageText,
   onSelectAllPage,
   onSelectAll,
+  onDeselect,
   selectionType,
 }) => {
   const classes = useStyles()
@@ -71,25 +86,42 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchor(event.currentTarget)
   }
-  const setSelect = (type: 'ALL' | 'PAGE') => {
+  const setSelect = (type: 'ALL' | 'PAGE' | undefined) => {
     setSelection(type)
     handleMenuClose()
-    type === 'ALL' ? onSelectAll() : onSelectAllPage()
+    if (!type) {
+      onDeselect()
+    } else {
+      type === 'ALL' ? onSelectAll() : onSelectAllPage()
+    }
   }
+  const menuItems = [
+    {
+      value: 'ALL',
+      label: allText,
+    },
+    {
+      value: 'PAGE',
+      label: allPageText,
+    },
+  ]
 
   return (
     <Box className={classes.root}>
+      <Checkbox
+        name="selectAllCheckbox"
+        className={classes.check}
+        checked={selection === 'ALL' || selection === 'PAGE'}
+        onChange={e => {
+          e.target.checked ? setSelect('ALL') : setSelect(undefined)
+        }}
+      />{' '}
       <Button
         className={clsx(classes.select, Boolean(menuAnchor) && classes.focused)}
         aria-controls="simple-menu"
         aria-haspopup="true"
         onClick={handleMenuClick}
       >
-        <Checkbox
-          name="selectAllCheckbox"
-          checked={selection === 'ALL'}
-          indeterminate={selection === 'PAGE'}
-        />{' '}
         <div
           className={clsx(
             Boolean(menuAnchor) ? classes.arrowUp : classes.arrowDown,
@@ -102,11 +134,18 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
         keepMounted
         open={Boolean(menuAnchor)}
         onClose={handleMenuClose}
-        getContentAnchorEl={null}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem onClick={() => setSelect('ALL')}>{allText}</MenuItem>
-        <MenuItem onClick={() => setSelect('PAGE')}>{allPageText}</MenuItem>
+        {menuItems.map(item => (
+          <MenuItem
+            onClick={() => setSelect(item.value as SelectionType)}
+            key={item.value}
+          >
+            <div className={classes.icon}>
+              {selection == item.value && <CheckIcon />}
+            </div>
+            {item.label}
+          </MenuItem>
+        ))}
       </Menu>
     </Box>
   )
