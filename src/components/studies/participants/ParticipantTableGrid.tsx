@@ -3,7 +3,8 @@ import {
   CircularProgress,
   Dialog,
   IconButton,
-  Paper
+  Paper,
+  Box,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import {
@@ -13,9 +14,9 @@ import {
   GridOverlay,
   GridRowId,
   GridRowSelectedParams,
-  GridValueGetterParams
+  GridValueGetterParams,
 } from '@material-ui/data-grid'
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, ReactNode } from 'react'
 import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
 import { ReactComponent as WithdrawIcon } from '../../../assets/withdraw.svg'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
@@ -25,16 +26,18 @@ import {
   EditableParticipantData,
   EnrollmentType,
   ParticipantAccountSummary,
-  ParticipantActivityType
+  ParticipantActivityType,
 } from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import HideWhen from '../../widgets/HideWhen'
 import SelectAll from '../../widgets/SelectAll'
 import {
   EditParticipantForm,
-  WithdrawParticipantForm
+  WithdrawParticipantForm,
 } from './ParticipantForms'
 import ParticipantTablePagination from './ParticipantTablePagination'
+import JoinedCheckSymbol from '../../../assets/ParticipantManager/joined_check_mark.svg'
+import JoinedPhoneSymbol from '../../../assets/ParticipantManager/joined_phone_icon.svg'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -63,6 +66,33 @@ function getDateJoined(params: GridValueGetterParams) {
   } else return '-'
 }
 
+function getDateJoinedWithIcons(params: GridValueGetterParams) {
+  const date = getDateJoined(params)
+  const displaySymbol = date !== '-'
+  // currently randomized
+  const displayCheckMark = Math.random() < 0.5
+  return (
+    <Box display="flex" flexDirection="row">
+      {displaySymbol && (
+        <img
+          src={displayCheckMark ? JoinedCheckSymbol : JoinedPhoneSymbol}
+          style={{ marginRight: '6px', width: '16px' }}
+        ></img>
+      )}
+      {date}
+    </Box>
+  )
+}
+
+function renderColumnHeader(icon: string, headerName: string) {
+  return (
+    <Box display="flex" flexDirection="row">
+      <img src={icon} style={{ marginRight: '6px', width: '16px' }}></img>
+      {headerName}
+    </Box>
+  ) as ReactNode
+}
+
 const ACTIVE_PARTICIPANT_COLUMNS: GridColDef[] = [
   {
     field: 'externalId',
@@ -78,8 +108,8 @@ const ACTIVE_PARTICIPANT_COLUMNS: GridColDef[] = [
   },
   {
     field: 'dateJoined',
-    headerName: 'Joined',
-    valueGetter: getDateJoined,
+    renderHeader: () => renderColumnHeader(JoinedCheckSymbol, 'Joined'),
+    renderCell: getDateJoinedWithIcons,
     flex: 1,
   },
   { field: 'notes', headerName: 'Notes', flex: 1 },
@@ -100,8 +130,8 @@ const WITHDRAWN_PARTICIPANT_COLUMNS: GridColDef[] = [
   },
   {
     field: 'dateJoined',
-    headerName: 'Joined',
-    valueGetter: getDateJoined,
+    renderHeader: () => renderColumnHeader(JoinedCheckSymbol, 'Joined'),
+    renderCell: getDateJoinedWithIcons,
     flex: 1,
   },
   {
@@ -147,10 +177,7 @@ export type ParticipantTableGridProps = {
   totalParticipants: number
   currentPage: number
   setCurrentPage: Function
-  onRowSelected: (
-    participantIds: string[],
-    isAll?: boolean,
-  ) => void
+  onRowSelected: (participantIds: string[], isAll?: boolean) => void
   onUpdateParticipant: (
     pId: string,
     notes: string,
@@ -183,16 +210,15 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   const { token } = useUserSessionDataState()
 
   //when we are editing the record this is where the info is stored
-  const [participantToEdit, setParticipantToEdit] =
-    React.useState<
-      | {
-          id: string
-          participant: EditableParticipantData
-          hasSignedIn: boolean
-          shouldWithdraw: boolean
-        }
-      | undefined
-    >(undefined)
+  const [participantToEdit, setParticipantToEdit] = React.useState<
+    | {
+        id: string
+        participant: EditableParticipantData
+        hasSignedIn: boolean
+        shouldWithdraw: boolean
+      }
+    | undefined
+  >(undefined)
 
   // This is the total number of pages needed to list all participants based on the
   // page size selected
@@ -296,8 +322,8 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     setCurrentPage(pageSelected)
   }
   const [selectionModel, setSelectionModel] = React.useState<GridRowId[]>([
-    ...selectedParticipantIds]
-  )
+    ...selectedParticipantIds,
+  ])
   React.useEffect(() => {
     setSelectionModel([...selectedParticipantIds])
   }, [selectedParticipantIds, rows])
@@ -331,8 +357,8 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                 }
 
                 onRowSelected(
-                 // rows.filter(row => model.includes(row.id)) || [],
-                 model,
+                  // rows.filter(row => model.includes(row.id)) || [],
+                  model,
                   false,
                 )
               }}
