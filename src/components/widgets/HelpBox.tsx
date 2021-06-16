@@ -66,7 +66,7 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
   }),
 }))
 
-export interface ButtonStyleProps {
+export interface HelpBoxProps {
   helpTextWidth?: number
   helpTextLeftOffset?: number
   helpTextTopOffset?: number
@@ -76,7 +76,7 @@ export interface ButtonStyleProps {
   arrowTailLength?: number
 }
 
-const HelpBox: React.FunctionComponent<ButtonStyleProps> = ({
+const HelpBox: React.FunctionComponent<HelpBoxProps> = ({
   helpTextWidth = 200,
   helpTextLeftOffset = 60,
   arrowRotate = 20,

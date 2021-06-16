@@ -206,7 +206,7 @@ export type StudyBuilderComponentProps = {
   saveLoader: boolean
 }
 
-export type ParticipantActivityType = 'ACTIVE' | 'WITHDRAWN'
+export type ParticipantActivityType = 'ACTIVE' | 'WITHDRAWN'|'TEST'
 export type EditableParticipantData = {
   clinicVisitDate?: Date
   notes?: string

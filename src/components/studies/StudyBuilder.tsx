@@ -364,7 +364,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       </Box>
       <span style={{ fontSize: '9px', position: 'absolute', right: '0' }}>
         {' '}
-        {/*hasObjectChanged ? 'object changed' : 'no change'*/}
+        {hasObjectChanged ? 'object changed' : 'no change'}
       </span>
       <Container maxWidth="xl" style={{ height: '100vh', padding: '0' }}>
       <Box paddingTop={2} display="flex" position="relative">

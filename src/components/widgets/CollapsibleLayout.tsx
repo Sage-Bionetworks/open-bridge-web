@@ -97,6 +97,7 @@ type CollapsibleLayoutProps = {
   collapseButton?: JSX.Element
   expandButton?: JSX.Element
   toggleButtonStyle?: React.CSSProperties
+  onToggleClick?: Function
 }
 
 const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
@@ -109,7 +110,8 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
   isDrawerHidden,
   collapseButton, 
   expandButton,
-  toggleButtonStyle
+  toggleButtonStyle,
+  onToggleClick
 }) => {
   const styleProps: StyleProps = {
     maxWidth: expandedWidth + 'px',
@@ -123,6 +125,11 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
   const openIcon = expandButton|| <ChevronRightIcon />
   const toggleStyle: React.CSSProperties = toggleButtonStyle || { borderRadius: 0, width: '48px', height: '100%' }
 
+  React.useEffect(()=> {
+    if (onToggleClick) {
+      onToggleClick(isOpen)
+    }
+  }, [isOpen])
   return (
     <>
       <Box paddingTop={2} display="flex" position="relative">
