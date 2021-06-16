@@ -13,8 +13,9 @@ import { ErrorFallback, ErrorHandler } from '../../widgets/ErrorHandler'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
 import { SimpleTextInput } from '../../widgets/StyledComponents'
 import { Assessment } from '../../../types/types'
-import { Schedule } from '../../../types/scheduling'
+import { StudySession } from '../../../types/scheduling'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
+
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
     backgroundColor: '#fff',
@@ -107,7 +108,7 @@ export interface PreviewProps {
   children?: ReactNode
   studyId: string
   token: string
-  schedule: Schedule
+  scheduleSessions: StudySession[]
 }
 
 const Reminder: React.FunctionComponent = ({}) => {
@@ -129,7 +130,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
   children,
   studyId,
   token,
-  schedule,
+  scheduleSessions,
 }: PreviewProps) => {
   const classes = useStyles()
   const [testParticipantId, setTestParticipantId] = React.useState('')
@@ -153,9 +154,8 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
   }
 
   useEffect(() => {
-    const sessions = schedule.sessions
     const allUniqueAssessments: Assessment[] = []
-    for (const session of sessions) {
+    for (const session of scheduleSessions) {
       if (!session.assessments) continue
       for (const assessment of session.assessments) {
         const assessmentAlreadyExists =
