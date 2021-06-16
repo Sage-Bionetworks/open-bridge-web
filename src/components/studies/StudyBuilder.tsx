@@ -488,6 +488,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       <Preview
                         studyId={builderInfo.study.identifier}
                         token={token!}
+                        scheduleSessions={builderInfo.schedule.sessions}
                       ></Preview>
                     )}
                     {section === 'launch' && (
