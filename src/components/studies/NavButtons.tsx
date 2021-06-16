@@ -9,12 +9,14 @@ export interface NavButtonsProps {
   currentSection: StudySection
   id: string
   onNavigate: Function
+  disabled?: boolean
 }
 
 const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
   currentSection,
   id,
   onNavigate,
+  disabled
 }: NavButtonsProps) => {
 
   const currentIndex = sectionLinks.findIndex(i => i.path === currentSection)
@@ -45,6 +47,7 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
             variant="contained"
             color="primary"
             onClick={() => onNavigate(next.path)}
+            disabled={disabled || false}
           >
             {next.name} <ArrowIcon />
           </NextButton>

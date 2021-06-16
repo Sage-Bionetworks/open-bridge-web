@@ -324,6 +324,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       id={id}
       currentSection={section}
       onNavigate={(section: StudySection) => changeSection(section)}
+      disabled={!allSessionsHaveAssessments()}
     ></NavButtons>
   )
   if (builderInfo.study && !builderInfo.schedule) {
