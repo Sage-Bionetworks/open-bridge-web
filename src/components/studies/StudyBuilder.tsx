@@ -268,7 +268,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }
 
   const changeSection = async (next: StudySection) => {
-    if (section === next) {
+    if (section === next || !allSessionsHaveAssessments()) {
       return
     }
 
