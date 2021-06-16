@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Alert } from '@material-ui/lab'
 import clsx from 'clsx'
 import _ from 'lodash'
-import React, { FunctionComponent, useEffect } from 'react'
+import React, { FunctionComponent } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { RouteComponentProps, useParams } from 'react-router-dom'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
@@ -124,7 +124,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     section: StudySection
   }>()
   const [section, setSection] = React.useState(_section)
-  const [allSessionsHaveAssessments, setAllSessionsHaveAssessments] = React.useState(true)
   const [error, setError] = React.useState<string[]>([])
   const [schedulerErrors, setSchedulerErrors] = React.useState<
     SchedulerErrorType[]
@@ -140,21 +139,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     studyDataUpdateFn({ type: 'SET_ALL', payload: builderInfo })
   }
 
-  useEffect(() => {
+  const allSessionsHaveAssessments = () => {
     const sessions = builderInfo.schedule?.sessions
-    if(!sessions || sessions.length === 0) {
-      setAllSessionsHaveAssessments(false)
-      return
-    }
-    for(const session of sessions!) {
-      const assessments = session.assessments
-      if(!assessments || assessments.length === 0) {
-        setAllSessionsHaveAssessments(false)
-        return;
-      }
-    }
-    setAllSessionsHaveAssessments(true)
-  })
+    return !_.isEmpty(sessions) && !sessions!.find(session=>_.isEmpty(session.assessments))
+  }
+    
 
   //Sets up the data from the intro page
   const createScheduleAndNameStudy = async (
@@ -394,7 +383,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
             changeSection(section)
           }}
           id={id}
-          disabled={!allSessionsHaveAssessments}
+          disabled={!allSessionsHaveAssessments()}
         ></StudyLeftNav>
 
         <Box className={classes.mainAreaWrapper}>
