@@ -206,6 +206,7 @@ const SessionCreator: FunctionComponent<
                   })
                 }
                 onUpdateAssessmentList={updateAssessmentList}
+                numberOfSessions={sessions.length}
               ></SingleSessionContainer>
             </Paper>
           ))}
