@@ -1,10 +1,10 @@
 import {
+  Box,
   Button,
   CircularProgress,
   Dialog,
   IconButton,
-  Paper,
-  Box,
+  Paper
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import {
@@ -14,10 +14,13 @@ import {
   GridOverlay,
   GridRowId,
   GridRowSelectedParams,
-  GridValueGetterParams,
+  GridValueGetterParams
 } from '@material-ui/data-grid'
 import React, { FunctionComponent, ReactNode } from 'react'
+import Pluralize from 'react-pluralize'
 import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
+import JoinedCheckSymbol from '../../../assets/ParticipantManager/joined_check_mark.svg'
+import JoinedPhoneSymbol from '../../../assets/ParticipantManager/joined_phone_icon.svg'
 import { ReactComponent as WithdrawIcon } from '../../../assets/withdraw.svg'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import ParticipantService from '../../../services/participants.service'
@@ -26,18 +29,18 @@ import {
   EditableParticipantData,
   EnrollmentType,
   ParticipantAccountSummary,
-  ParticipantActivityType,
+  ParticipantActivityType
 } from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import HideWhen from '../../widgets/HideWhen'
 import SelectAll from '../../widgets/SelectAll'
 import {
   EditParticipantForm,
-  WithdrawParticipantForm,
+  WithdrawParticipantForm
 } from './ParticipantForms'
 import ParticipantTablePagination from './ParticipantTablePagination'
-import JoinedCheckSymbol from '../../../assets/ParticipantManager/joined_check_mark.svg'
-import JoinedPhoneSymbol from '../../../assets/ParticipantManager/joined_phone_icon.svg'
+
+
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -45,6 +48,15 @@ const useStyles = makeStyles(theme => ({
     fontFamily: latoFont,
     fontSize: '15px',
     marginRight: theme.spacing(1),
+  },
+  selectionDisplay: {
+    fontFamily: latoFont,
+    height: theme.spacing(3),
+    textAlign: 'left',
+    padding: theme.spacing(1.5, 0, 0, 2),
+    fontWeight: 'bold',
+    fontSize: '12px',
+    fontStyle: 'italic',
   },
 }))
 
@@ -207,18 +219,20 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   onWithdrawParticipant,
   onRowSelected,
 }: ParticipantTableGridProps) => {
+  const classes = useStyles()
   const { token } = useUserSessionDataState()
 
   //when we are editing the record this is where the info is stored
-  const [participantToEdit, setParticipantToEdit] = React.useState<
-    | {
-        id: string
-        participant: EditableParticipantData
-        hasSignedIn: boolean
-        shouldWithdraw: boolean
-      }
-    | undefined
-  >(undefined)
+  const [participantToEdit, setParticipantToEdit] =
+    React.useState<
+      | {
+          id: string
+          participant: EditableParticipantData
+          hasSignedIn: boolean
+          shouldWithdraw: boolean
+        }
+      | undefined
+    >(undefined)
 
   // This is the total number of pages needed to list all participants based on the
   // page size selected
@@ -365,35 +379,49 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               selectionModel={selectionModel}
               components={{
                 Header: () => (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      zIndex: 11,
-                      top: 0,
-                      left: 0,
-                      backgroundColor: '#fff',
-                    }}
-                  >
-                    {' '}
-                    <SelectAll
-                      selectionType={
-                        isAllSelected
-                          ? 'ALL'
-                          : allSelectedPage()
-                          ? 'PAGE'
-                          : undefined
-                      }
-                      allText={`All ${totalParticipants} participants`}
-                      allPageText="All on this page"
-                      onSelectAllPage={() => {
-                        const ids = rows.map(row => row.id)
-                        onRowSelected(ids, false)
+                  <div style={{ position: 'relative' }}>
+                    <Box className={classes.selectionDisplay}>
+                      {`${isAllSelected ? 'All ' : ''}`}
+                      <Pluralize
+                        singular={'participant'}
+                        count={
+                          isAllSelected
+                            ? totalParticipants
+                            : selectedParticipantIds.length
+                        }
+                      />{' '}
+                      selected
+                    </Box>
+                    <div
+                      style={{
+                        position: 'absolute',
+                        zIndex: 11,
+                        top: 40,
+                        left: 0,
+                        backgroundColor: '#fff',
                       }}
-                      onSelectAll={() => {
-                        const ids = rows.map(row => row.id)
-                        onRowSelected(ids, true)
-                      }}
-                    ></SelectAll>
+                    >
+                      <SelectAll
+                        selectionType={
+                          isAllSelected
+                            ? 'ALL'
+                            : allSelectedPage()
+                            ? 'PAGE'
+                            : undefined
+                        }
+                        allText={`All ${totalParticipants} participants`}
+                        allPageText="All on this page"
+                        onSelectAllPage={() => {
+                          const ids = rows.map(row => row.id)
+                          onRowSelected(ids, false)
+                        }}
+                        onDeselect={() => onRowSelected([], false)}
+                        onSelectAll={() => {
+                          const ids = rows.map(row => row.id)
+                          onRowSelected(ids, true)
+                        }}
+                      ></SelectAll>
+                    </div>
                   </div>
                 ),
                 Footer: () => (
