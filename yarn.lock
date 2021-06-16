@@ -1554,7 +1554,7 @@
     react-is "^16.8.0 || ^17.0.0"
     react-transition-group "^4.4.0"
 
-"@material-ui/data-grid@4.0.0-alpha.31":
+"@material-ui/data-grid@^4.0.0-alpha.19":
   version "4.0.0-alpha.31"
   resolved "https://registry.yarnpkg.com/@material-ui/data-grid/-/data-grid-4.0.0-alpha.31.tgz#0428e9b3a881f0ac68bcaa9e4cf9b11f7fcdb3cb"
   integrity sha512-tzXfBgKWlByJlDcqgyUTHQxjr6nMfiqkkGeyCzTHeLVGb5iMdZtvwbamUSTSJ9TLzVqS4o5ZQcsEEAYVXqMkTA==
@@ -9600,11 +9600,6 @@ no-case@^3.0.4:
     lower-case "^2.0.2"
     tslib "^2.0.3"
 
-node-bin-setup@^1.0.0:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/node-bin-setup/-/node-bin-setup-1.0.6.tgz#4b5c9bb937ece702d7069b36ca78af4684677528"
-  integrity sha512-uPIxXNis1CRbv1DwqAxkgBk5NFV3s7cMN/Gf556jSw6jBvV7ca4F9lRL/8cALcZecRibeqU+5dFYqFFmzv5a0Q==
-
 node-fetch@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
@@ -9685,13 +9680,6 @@ node-request-interceptor@^0.6.3:
     debug "^4.3.0"
     headers-utils "^1.2.0"
     strict-event-emitter "^0.1.0"
-
-node@^16.3.0:
-  version "16.3.0"
-  resolved "https://registry.yarnpkg.com/node/-/node-16.3.0.tgz#87f2cf826936634faf91407f40dfaa44cf2389f2"
-  integrity sha512-aNOLBP7p6GS0CdsFTR3JjXd/kSfOYt6UvXL+UX7Fu+fIMr04lsZWpE+Y8CQOprwfrqnFSq3bkIscrAiZieM/kg==
-  dependencies:
-    node-bin-setup "^1.0.0"
 
 normalize-package-data@^2.3.2, normalize-package-data@^2.5.0:
   version "2.5.0"
