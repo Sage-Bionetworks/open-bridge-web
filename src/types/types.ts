@@ -196,7 +196,7 @@ export type StudyBuilderComponentProps = {
 export type ParticipantActivityType = 'ACTIVE' | 'WITHDRAWN'|'TEST'
 export type EditableParticipantData = {
   clinicVisitDate?: Date
-  notes?: string
+  note?: string
   externalId?: string
   phone?: Phone
   phoneNumber?: string
@@ -215,7 +215,7 @@ export type ParticipantAccountSummary = {
   studyExternalId?: string
   status?: 'unverified' | 'pending' | 'verified'
   createdOn?: string
-  notes?: string
+  note: string
 }
 
 export type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {

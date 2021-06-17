@@ -28,6 +28,9 @@ function mapWithdrawnParticipant(
   }
 }
 
+//backendExternalId = studyId:externalId
+function makeBackendExternalId (studyId: string, externalId: string) {return `${studyId}:${externalId}`}
+
 // gets clinic visits and join events for participants with the specified ids
 async function getRelevantEventsForParticipans(
   studyIdentifier: string,
@@ -388,13 +391,16 @@ async function addParticipant(
   const data: StringDictionary<any> = {
     appId: constants.constants.APP_ID,
 
-    dataGroups: IS_TEST ? ['test_user'] : undefined,
+   // dataGroups: IS_TEST ? ['test_user'] : undefined,
   }
-  if (options.phone) {
+
+  //if (options.phone) {
     data.phone = options.phone
-  }
+    data.note = options.note
+    data.clinicVisitDate = options.clinicVisitDate
+  //}
   if (options.externalId) {
-    data.externalIds = { [studyIdentifier]: options.externalId }
+    data.externalIds = { [studyIdentifier]: makeBackendExternalId(studyIdentifier, options.externalId) }
   }
 
   const result = await callEndpoint<{ identifier: string }>(
@@ -428,14 +434,14 @@ async function updateNotesAndClinicVisitForParticipant(
   participantId: string,
   options: EditableParticipantData,
 ): Promise<string> {
-  // update notes
+  // update note
   const endpoint = `${constants.endpoints.participant.replace(
     ':id',
     studyIdentifier,
   )}/${participantId}`
 
   const data = {
-    notes: options.notes,
+    note: options.note,
   }
 
   await callEndpoint<ParticipantAccountSummary>(endpoint, 'POST', data, token)

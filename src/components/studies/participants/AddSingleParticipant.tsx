@@ -69,7 +69,7 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
     let options: EditableParticipantData = {
       externalId: participant.externalId,
       clinicVisitDate: participant.clinicVisitDate,
-      notes: participant.notes,
+      note: participant.note,
     }
 
     try {

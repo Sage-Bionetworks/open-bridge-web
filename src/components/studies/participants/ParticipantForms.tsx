@@ -1,12 +1,12 @@
 import {
-  Box,
+    Box,
 
-  DialogActions,
-  DialogContent,
-  FormControl,
-  FormGroup,
-  FormHelperText,
-  makeStyles
+    DialogActions,
+    DialogContent,
+    FormControl,
+    FormGroup,
+    FormHelperText,
+    makeStyles
 } from '@material-ui/core'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
@@ -16,10 +16,10 @@ import { EditableParticipantData, EnrollmentType } from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import { MTBHeadingH3 } from '../../widgets/Headings'
 import {
-  DialogButtonPrimary,
-  DialogButtonSecondary,
-  SimpleTextInput,
-  SimpleTextLabel
+    DialogButtonPrimary,
+    DialogButtonSecondary,
+    SimpleTextInput,
+    SimpleTextLabel
 } from '../../widgets/StyledComponents'
 
 
@@ -63,7 +63,7 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
   children,
 }) => {
   const classes = useStyles()
-  const [notes, setNotes] = React.useState(participant.notes)
+  const [note, setNotes] = React.useState(participant.note)
   const [clinicVisitDate, setClinicVisitDate] = React.useState<
     Date | undefined
   >(participant.clinicVisitDate)
@@ -95,12 +95,12 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
           ></DatePicker>
 
           <FormControl>
-            <SimpleTextLabel htmlFor="notes">Notes</SimpleTextLabel>
+            <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
             <SimpleTextInput
-              value={notes}
+              value={note}
               placeholder="comments"
               onChange={e => setNotes(e.target.value)}
-              id="notes"
+              id="note"
               multiline={true}
               rows={5}
             />
@@ -115,7 +115,7 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
           </DialogButtonSecondary>
           <DialogButtonPrimary
          
-            onClick={() => onOK(notes, clinicVisitDate)}
+            onClick={() => onOK(note, clinicVisitDate)}
             color="primary"
             autoFocus
           >
@@ -157,14 +157,14 @@ export const WithdrawParticipantForm: FunctionComponent<{
         </Box>
         <FormGroup>
           <FormControl>
-            <SimpleTextLabel htmlFor="notes">Notes</SimpleTextLabel>
+            <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
             <SimpleTextInput
               fullWidth
               rowsMax={5}
               inputProps={{ maxLength: 256 }}
-              placeholder="notes"
+              placeholder="note"
               onChange={e => setNote(e.target.value)}
-              id="notes"
+              id="note"
               multiline={true}
               rows={5}
             />
@@ -253,12 +253,12 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
         ></DatePicker>
 
         <FormControl>
-          <SimpleTextLabel htmlFor="notes">Notes</SimpleTextLabel>
+          <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
           <SimpleTextInput
-            value={participant.notes}
-            onChange={e => onChange({ ...participant, notes: e.target.value })}
+            value={participant.note}
+            onChange={e => onChange({ ...participant, note: e.target.value })}
             placeholder="comments"
-            id="notes"
+            id="note"
             multiline={true}
             rows={5}
           />

@@ -125,7 +125,7 @@ const ACTIVE_PARTICIPANT_COLUMNS: GridColDef[] = [
     renderCell: getDateJoinedWithIcons,
     flex: 1,
   },
-  { field: 'notes', headerName: 'Notes', flex: 1 },
+  { field: 'note', headerName: 'Notes', flex: 1 },
 ]
 
 const WITHDRAWN_PARTICIPANT_COLUMNS: GridColDef[] = [
@@ -153,7 +153,7 @@ const WITHDRAWN_PARTICIPANT_COLUMNS: GridColDef[] = [
     valueGetter: getDateJoined,
     flex: 1,
   },
-  { field: 'withdrawalNote', headerName: 'Withdrawal notes', flex: 1 },
+  { field: 'withdrawalNote', headerName: 'Withdrawal note', flex: 1 },
 ]
 
 const phoneColumn = {
@@ -193,7 +193,7 @@ export type ParticipantTableGridProps = {
   onRowSelected: (participantIds: string[], isAll?: boolean) => void
   onUpdateParticipant: (
     pId: string,
-    notes: string,
+    note: string,
     clinicVisitDate?: Date,
   ) => void
   onWithdrawParticipant: (participantId: string, note: string) => void
@@ -282,7 +282,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
           const participant: EditableParticipantData = {
             clinicVisitDate: getValDate('clinicVisit'),
-            notes: getValString('notes'),
+            note: getValString('note'),
             externalId: getValString('externalId'),
             phoneNumber: getValPhone('phone'),
           }
@@ -469,8 +469,8 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
           <EditParticipantForm
             enrollmentType={enrollmentType}
             onCancel={() => setParticipantToEdit(undefined)}
-            onOK={(notes: string, cvd?: Date) => {
-              onUpdateParticipant(participantToEdit?.id!, notes, cvd)
+            onOK={(note: string, cvd?: Date) => {
+              onUpdateParticipant(participantToEdit?.id!, note, cvd)
               setParticipantToEdit(undefined)
             }}
             participant={participantToEdit?.participant || {}}

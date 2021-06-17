@@ -310,7 +310,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const updateParticipant = async (
     participantId: string,
-    notes: string,
+    note: string,
     clinicVisitDate?: Date,
   ) => {
     await ParticipantService.updateNotesAndClinicVisitForParticipant(
@@ -318,7 +318,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       token!,
       participantId,
       {
-        notes,
+        note,
         clinicVisitDate: clinicVisitDate,
       },
     )
@@ -417,7 +417,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         dateJoined: p.dateJoined
           ? new Date(p.dateJoined).toLocaleDateString()
           : '',
-        notes: '',
+        note: '',
       }),
     )
 
@@ -621,10 +621,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     ) => withdrawParticipant(participantId, note)}
                     onUpdateParticipant={(
                       participantId: string,
-                      notes: string,
+                      note: string,
                       clinicVisitDate?: Date,
                     ) =>
-                      updateParticipant(participantId, notes, clinicVisitDate)
+                      updateParticipant(participantId, note, clinicVisitDate)
                     }
                     currentPage={currentPage}
                     setCurrentPage={setCurrentPage}
