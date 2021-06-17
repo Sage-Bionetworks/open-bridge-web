@@ -9,7 +9,8 @@ import {
 } from '../types/types'
 
 export const CLINIC_EVENT_ID = 'clinic_visit'
-export const JOINED_EVENT_ID = 'created_on'
+export const JOINED_EVENT_ID = 'first_sign_in'
+export const LINK_SENT_EVENT_ID = 'install_link_sent'
 
 const IS_TEST: boolean = true
 
@@ -29,9 +30,11 @@ function mapWithdrawnParticipant(
 }
 
 //backendExternalId = studyId:externalId
-function makeBackendExternalId (studyId: string, externalId: string) {return `${studyId}:${externalId}`}
+function makeBackendExternalId(studyId: string, externalId: string) {
+  return `${studyId}:${externalId}`
+}
 
-function formatExternalId (studyId: string, externalId: string) {
+function formatExternalId(studyId: string, externalId: string) {
   return externalId.replace(`${studyId}:`, '')
 }
 
@@ -129,16 +132,20 @@ async function getAllEnrollmentsWithdrawn(
     [studyIdentifier, token],
   )
 }
-// get a page of participants
+// get participants
+//if page and offset not specified - get all
 async function getParticipants(
   studyIdentifier: string,
   token: string,
-  pageSize: number,
-  offsetBy: number,
+  pageSize?: number,
+  offsetBy?: number,
 ): Promise<{
   items: ParticipantAccountSummary[]
   total: number
 }> {
+  if (!pageSize) {
+    return getAllParticipants(studyIdentifier, token)
+  }
   const endpoint = constants.endpoints.participantsSearch.replace(
     ':id',
     studyIdentifier,
@@ -157,7 +164,10 @@ async function getParticipants(
 
   const mappedData = result.data.items.map(p => ({
     ...p,
-    externalId: formatExternalId(studyIdentifier, p.externalIds[studyIdentifier])
+    externalId: formatExternalId(
+      studyIdentifier,
+      p.externalIds[studyIdentifier],
+    ),
   }))
 
   //ALINA TODO: once there is a filter we can use that
@@ -221,7 +231,10 @@ async function getParticipantById(
     )
     return {
       ...result.data,
-      externalId: formatExternalId(studyIdentifier, result.data.externalIds[studyIdentifier])
+      externalId: formatExternalId(
+        studyIdentifier,
+        result.data.externalIds[studyIdentifier],
+      ),
     }
   } catch (e) {
     // If the participant is not found, return null.
@@ -256,9 +269,12 @@ async function deleteParticipant(
 async function getEnrollmentsWithdrawn(
   studyIdentifier: string,
   token: string,
-  pageSize: number,
-  offsetBy: number,
+  pageSize?: number,
+  offsetBy?: number,
 ): Promise<{ items: ExtendedParticipantAccountSummary[]; total: number }> {
+  if (!pageSize) {
+    return getAllEnrollmentsWithdrawn(studyIdentifier, token)
+  }
   const endpoint = `${constants.endpoints.enrollments.replace(
     ':studyId',
     studyIdentifier,
@@ -356,55 +372,38 @@ async function updateParticipantGroup(
   return result.data.identifier
 }
 
-// used for the preview screen in study builder
-async function addTestParticipantForPreview(
-  studyIdentifier: string,
-  token: string,
-): Promise<string> {
-  const endpoint = constants.endpoints.participant.replace(
-    ':id',
-    studyIdentifier,
-  )
-  const data: StringDictionary<any> = {
-    appId: constants.constants.APP_ID,
-    dataGroups: ['test_user'],
-    externalIds: { [studyIdentifier]: formatExternalId(studyIdentifier, generateNonambiguousCode(6)) },
-  }
-
-  const result = await callEndpoint<{ identifier: string }>(
-    endpoint,
-    'POST',
-    data,
-    token,
-  )
-
-  return result.data.identifier
-}
-
 //adds a participant
 
 async function addParticipant(
   studyIdentifier: string,
   token: string,
   options: EditableParticipantData,
+  isTestUser?: boolean,
 ): Promise<string> {
   const endpoint = constants.endpoints.participant.replace(
     ':id',
     studyIdentifier,
   )
+
   const data: StringDictionary<any> = {
     appId: constants.constants.APP_ID,
-
-   // dataGroups: IS_TEST ? ['test_user'] : undefined,
   }
 
   //if (options.phone) {
-    data.phone = options.phone
-    data.note = options.note
-    data.clinicVisitDate = options.clinicVisitDate
+  data.phone = options.phone
+  data.note = options.note
+  data.clinicVisitDate = options.clinicVisitDate
   //}
+  if (isTestUser) {
+    data.dataGroups = ['test_user']
+  }
   if (options.externalId) {
-    data.externalIds = { [studyIdentifier]: makeBackendExternalId(studyIdentifier, options.externalId) }
+    const backEndFormatExternalId = makeBackendExternalId(
+      studyIdentifier,
+      options.externalId,
+    )
+    data.externalIds = { [studyIdentifier]: backEndFormatExternalId }
+    data.password = backEndFormatExternalId
   }
 
   const result = await callEndpoint<{ identifier: string }>(
@@ -429,6 +428,15 @@ async function addParticipant(
   }
 
   return userId
+}
+
+// used for the preview screen in study builder
+async function addTestParticipantForPreview(
+  studyIdentifier: string,
+  token: string,
+): Promise<string> {
+  return addParticipant(  studyIdentifier,
+    token, {externalId: generateNonambiguousCode(6)}, true)
 }
 
 //used when editing a participant
