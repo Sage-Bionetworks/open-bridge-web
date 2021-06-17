@@ -5,9 +5,12 @@ import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { ThemeType } from '../../style/theme'
 import SideBarListItem from '../widgets/SideBarListItem'
-import { hoverNavIcons, normalNavIcons, SECTIONS as sectionLinks, StudySection } from './sections'
-
-
+import {
+  hoverNavIcons,
+  normalNavIcons,
+  SECTIONS as sectionLinks,
+  StudySection,
+} from './sections'
 
 const drawerWidth = 212
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -78,6 +81,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   listItemCollapsed: {
     marginLeft: theme.spacing(-0.5),
   },
+  disabledElement: {
+    opacity: 0.7,
+  },
 }))
 
 type StudyLeftNavOwnProps = {
@@ -86,6 +92,7 @@ type StudyLeftNavOwnProps = {
   open: boolean
   onToggle: Function
   onNavigate: Function
+  disabled: boolean
 }
 
 type StudyLeftNavProps = StudyLeftNavOwnProps
@@ -96,11 +103,11 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
   onToggle,
   onNavigate,
   currentSection = 'sessions-creator',
+  disabled,
 }) => {
   const classes = useStyles()
 
   const [currentHoveredElement, setCurrentHoveredElement] = React.useState(-1)
-
 
   function typeOfIcon(index: number, sectionPath: string) {
     if (index === currentHoveredElement || sectionPath === currentSection) {
@@ -137,7 +144,10 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
           {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
       </Box>
-      <ul className={classes.list}>
+      <ul
+        className={classes.list}
+        style={{ pointerEvents: disabled ? 'none' : 'all' }}
+      >
         {sectionLinks.map((sectionLink, index) => (
           <div
             onMouseOver={() => setCurrentHoveredElement(index)}
@@ -162,10 +172,23 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
               >
                 <img
                   src={typeOfIcon(index, sectionLink.path)[index]}
-                  className={classes.navIcon}
+                  className={clsx(
+                    classes.navIcon,
+                    disabled &&
+                      sectionLink.path !== 'session-creator' &&
+                      classes.disabledElement,
+                  )}
                   alt={sectionLink.name}
                 />
-                <span>{sectionLink.name}</span>
+                <span
+                  className={clsx(
+                    disabled &&
+                      sectionLink.path !== 'session-creator' &&
+                      classes.disabledElement,
+                  )}
+                >
+                  {sectionLink.name}
+                </span>
               </div>
             </SideBarListItem>
           </div>

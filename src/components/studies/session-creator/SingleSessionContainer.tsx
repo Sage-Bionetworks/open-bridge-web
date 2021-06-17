@@ -102,6 +102,7 @@ type SingleSessionContainerProps = {
   onUpdateSessionName: Function
   onUpdateAssessmentList: Function
   onRemoveSession: Function
+  numberOfSessions: number
 }
 
 const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = ({
@@ -112,6 +113,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
   onSetActiveSession,
   onUpdateSessionName,
   onUpdateAssessmentList,
+  numberOfSessions
 }: SingleSessionContainerProps) => {
   const classes = useStyles()
   const [isEditable, setIsEditable] = React.useState(false)
@@ -156,6 +158,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
   const getInner = (
     studySession: StudySession,
     sessionIndex: number,
+    numberOfSessions: number
   ): JSX.Element => {
     return (
       <>
@@ -171,8 +174,8 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
               ></EditableTextbox>
             </SessionIcon>
           </Box>
-
-          <Button
+          {numberOfSessions > 1 && 
+           <Button
             variant="text"
             className={classes.btnDeleteSession}
             onClick={e => {
@@ -180,9 +183,10 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
               //onRemoveSession(studySession.guid!)
               setIsConfirmDeleteOpen(true)
             }}
-          >
-            <ClearIcon fontSize="small"></ClearIcon>
-          </Button>
+            >
+              <ClearIcon fontSize="small"></ClearIcon>
+            </Button>
+          }
           <Box fontSize="12px" textAlign="right">
             {getTotalSessionTime(studySession.assessments) || 0} min.
             <ClockIcon
@@ -264,7 +268,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
         className={clsx(classes.root /*, studySession?.active && 'active')*/)}
         onClick={() => onSetActiveSession(studySession.guid!)}
       >
-        {getInner(studySession, sessionIndex)}
+        {getInner(studySession, sessionIndex, numberOfSessions)}
 
         <Box className={classes.actions}>
           <FormControlLabel

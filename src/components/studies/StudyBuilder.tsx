@@ -138,6 +138,13 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   const setData = (builderInfo: StudyInfoData) => {
     studyDataUpdateFn({ type: 'SET_ALL', payload: builderInfo })
   }
+
+  const allSessionsHaveAssessments = () => {
+    const sessions = builderInfo.schedule?.sessions
+    return !_.isEmpty(sessions) && !sessions!.find(session=>_.isEmpty(session.assessments))
+  }
+    
+
   //Sets up the data from the intro page
   const createScheduleAndNameStudy = async (
     studyId: string,
@@ -261,7 +268,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }
 
   const changeSection = async (next: StudySection) => {
-    if (section === next) {
+    if (section === next || !allSessionsHaveAssessments()) {
       return
     }
 
@@ -317,6 +324,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       id={id}
       currentSection={section}
       onNavigate={(section: StudySection) => changeSection(section)}
+      disabled={!allSessionsHaveAssessments()}
     ></NavButtons>
   )
   if (builderInfo.study && !builderInfo.schedule) {
@@ -376,6 +384,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
             changeSection(section)
           }}
           id={id}
+          disabled={!allSessionsHaveAssessments()}
         ></StudyLeftNav>
 
         <Box className={classes.mainAreaWrapper}>
