@@ -143,7 +143,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: '14px',
   },
   sendSMSButton: {
-    marginRight: '24px',
+    marginRight: theme.spacing(3),
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
