@@ -71,7 +71,7 @@ const useStyles = makeStyles(theme => ({
   gridToolBar: {
     backgroundColor: theme.palette.common.white,
     // padding: theme.spacing(1, 5, 0, 5),
-    height: theme.spacing(6),
+    height: theme.spacing(9),
     paddingLeft: theme.spacing(3),
     paddingRight: theme.spacing(3),
     display: 'flex',
@@ -583,7 +583,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   <Box
                     display="flex"
                     flexDirection="row"
-                    className={clsx(classes.tab_icon, tab !== tabDef.type && classes.unactiveTabIcon)}
+                    className={clsx(
+                      classes.tab_icon,
+                      tab !== tabDef.type && classes.unactiveTabIcon,
+                    )}
                   >
                     <img
                       src={
@@ -611,13 +614,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               isDrawerHidden={tab !== 'ACTIVE'}
               collapseButton={<CollapseIcon />}
               onToggleClick={(open: boolean) => setIsAddOpen(open)}
-              expandButton={
-                <ExpandIcon style={{ marginLeft: '-3px', marginTop: '8px' }} />
-              }
+              expandButton={<ExpandIcon />}
               toggleButtonStyle={{
                 display: 'block',
                 padding: '0',
                 backgroundColor: theme.palette.primary.dark,
+                borderRadius: '0',
               }}
             >
               <>

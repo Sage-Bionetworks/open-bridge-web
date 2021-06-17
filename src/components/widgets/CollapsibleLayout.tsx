@@ -28,8 +28,8 @@ const useStyles = makeStyles<ThemeType, StyleProps>((theme: ThemeType) => ({
   }),
   drawerToolbar: {
     display: 'flex',
-    height: theme.spacing(6),
-    backgroundColor: '#FAFAFA',
+    height: theme.spacing(9),
+    backgroundColor: 'white',
     justifyContent: 'space-between',
     alignItems: 'center',
     textAlign: 'center',
@@ -108,24 +108,28 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
   children,
   isHideContentOnClose,
   isDrawerHidden,
-  collapseButton, 
+  collapseButton,
   expandButton,
   toggleButtonStyle,
-  onToggleClick
+  onToggleClick,
 }) => {
   const styleProps: StyleProps = {
     maxWidth: expandedWidth + 'px',
-    collapsedHight: isHideContentOnClose ? '48px' : 'auto',
+    collapsedHight: isHideContentOnClose ? '72px' : 'auto',
     overflow: isHideContentOnClose ? 'hidden' : 'auto',
     height: isFullHeight ? '100%' : 'auto',
   }
   const classes = useStyles(styleProps)
   const [isOpen, setIsOpen] = React.useState(false)
-  const closeIcon = collapseButton|| <ChevronLeftIcon />
-  const openIcon = expandButton|| <ChevronRightIcon />
-  const toggleStyle: React.CSSProperties = toggleButtonStyle || { borderRadius: 0, width: '48px', height: '100%' }
+  const closeIcon = collapseButton || <ChevronLeftIcon />
+  const openIcon = expandButton || <ChevronRightIcon />
+  const toggleStyle: React.CSSProperties = toggleButtonStyle || {
+    borderRadius: 0,
+    width: '48px',
+    height: '100%',
+  }
 
-  React.useEffect(()=> {
+  React.useEffect(() => {
     if (onToggleClick) {
       onToggleClick(isOpen)
     }
@@ -156,9 +160,8 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
             >
               {isOpen ? closeIcon : openIcon}
             </IconButton>
-
           </Box>
-          {children[0]}
+          <Box style={isOpen ? {} : { display: 'none' }}>{children[0]}</Box>
         </Drawer>
         <Box className={classes.mainAreaWrapper}>
           <Box
