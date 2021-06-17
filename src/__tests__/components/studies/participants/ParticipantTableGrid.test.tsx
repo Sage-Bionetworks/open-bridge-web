@@ -84,7 +84,9 @@ const renderParticipantTableGrid = async () => {
         status={status as 'PENDING' | 'RESOLVED' | 'IDLE'}
         studyId={'mtb-user-testing'}
         totalParticipants={100}
-        isEdit={false}
+        isAllSelected={false}
+        selectedParticipantIds={[]}
+        //isEdit={false}
         currentPage={currentPage}
         setCurrentPage={onPageSelectedChanged}
         enrollmentType={'ID'}
