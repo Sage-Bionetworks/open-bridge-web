@@ -291,7 +291,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     console.log('data updated - resetting selected')
     if (isAllSelected) {
       console.log('selected')
-      setSelectedParticipantIds(prev => ({ ...prev, [tab]: data?.items || [] }))
+      setSelectedParticipantIds(prev => ({ ...prev, [tab]: data?.items.map(p=> p.id) || [] }))
     } else {
       setSelectedParticipantIds(prev => ({ ...prev }))
     }

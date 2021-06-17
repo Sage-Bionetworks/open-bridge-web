@@ -12,10 +12,11 @@ import {
   GridCellParams,
   GridColDef,
   GridOverlay,
-  GridRowId,
+
   GridRowSelectedParams,
   GridValueGetterParams
 } from '@material-ui/data-grid'
+import _ from 'lodash'
 import React, { FunctionComponent, ReactNode } from 'react'
 import Pluralize from 'react-pluralize'
 import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
@@ -335,11 +336,13 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   const onPageSelectedChanged = (pageSelected: number) => {
     setCurrentPage(pageSelected)
   }
-  const [selectionModel, setSelectionModel] = React.useState<GridRowId[]>([
+  const [selectionModel, setSelectionModel] = React.useState<string[]>([
     ...selectedParticipantIds,
   ])
   React.useEffect(() => {
-    setSelectionModel([...selectedParticipantIds])
+   
+      setSelectionModel([...selectedParticipantIds])
+    
   }, [selectedParticipantIds, rows])
 
   const allSelectedPage = () =>
@@ -367,7 +370,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                 } else {
                   model = selectionModel.filter(
                     id => id != row.data.id,
-                  ) as string[]
+                  ) 
                 }
 
                 onRowSelected(
@@ -413,7 +416,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                         allPageText="All on this page"
                         onSelectAllPage={() => {
                           const ids = rows.map(row => row.id)
-                          onRowSelected(ids, false)
+                          onRowSelected(_.uniq([...selectionModel, ...ids]), false)
                         }}
                         onDeselect={() => onRowSelected([], false)}
                         onSelectAll={() => {

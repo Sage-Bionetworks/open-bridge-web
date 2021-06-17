@@ -89,9 +89,8 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
   const setSelect = (type: 'ALL' | 'PAGE' | undefined) => {
     setSelection(type)
     handleMenuClose()
-    if (!type) {
-      onDeselect()
-    } else {
+
+    if (type) {
       type === 'ALL' ? onSelectAll() : onSelectAllPage()
     }
   }
@@ -112,8 +111,12 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
         name="selectAllCheckbox"
         className={classes.check}
         checked={selection === 'ALL' || selection === 'PAGE'}
-        onChange={e => {
-          e.target.checked ? setSelect('ALL') : setSelect(undefined)
+        onClick={() => {
+          if (selection === 'ALL' || selection === 'PAGE') {
+            onDeselect()
+          } else {
+            setSelect('ALL')
+          }
         }}
       />{' '}
       <Button
