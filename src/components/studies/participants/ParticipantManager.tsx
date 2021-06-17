@@ -53,8 +53,12 @@ const useStyles = makeStyles(theme => ({
   root: {},
 
   tab: {
-    backgroundColor: theme.palette.common.white,
     marginRight: theme.spacing(2),
+    width: '250px',
+    clipPath: 'polygon(10% 0%, 90% 0, 98% 100%,0 100%)',
+    marginLeft: theme.spacing(-3.5),
+    zIndex: 0,
+    backgroundColor: '#F0F0F0',
   },
   gridToolBar: {
     backgroundColor: theme.palette.common.white,
@@ -137,6 +141,10 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     fontFamily: latoFont,
     fontSize: '14px',
+  },
+  selectedTab: {
+    zIndex: 100,
+    backgroundColor: theme.palette.common.white,
   },
 }))
 
@@ -475,7 +483,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     handleError(error!)
   } else {
     return (
-      <Box>
+      <Box bgcolor="#F8F8F8">
         <Box px={3} py={2} display="flex">
           <MTBHeadingH3 className={classes.studyId}>
             {' '}
@@ -536,7 +544,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   tab === tabDef.type ? (data ? data.total : '...') : '0'
                 })`}
                 value={tabDef.type}
-                classes={{ root: classes.tab }}
+                classes={{
+                  root: clsx(
+                    classes.tab,
+                    tab === tabDef.type && classes.selectedTab,
+                  ),
+                }}
               />
             ))}
           </Tabs>
