@@ -23,7 +23,7 @@ import {
   useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
-import { theme, latoFont } from '../../../style/theme'
+import { theme, latoFont, poppinsFont } from '../../../style/theme'
 import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
@@ -47,6 +47,12 @@ import ParticipantDownload, {
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
 import SMSPhoneImg from '../../../assets/ParticipantManager/joined_phone_icon.svg'
+import ParticipantListFocusIcon from '../../../assets/ParticipantManager/participant_list_focus_icon.svg'
+import ParticipantListUnfocusIcon from '../../../assets/ParticipantManager/participant_list_unfocus_icon.svg'
+import TestAccountFocusIcon from '../../../assets/ParticipantManager/test_account_focus_icon.svg'
+import TestAccountUnfocusIcon from '../../../assets/ParticipantManager/test_account_unfocus_icon.svg'
+import WithdrawnParticipantsFocusIcon from '../../../assets/ParticipantManager/withdrawn_participants_focus_icon.svg'
+import WithdrawnParticipantsUnfocusIcon from '../../../assets/ParticipantManager/withdrawn_participants_unfocus_icon.svg'
 import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
@@ -59,6 +65,8 @@ const useStyles = makeStyles(theme => ({
     marginLeft: theme.spacing(-3.5),
     zIndex: 0,
     backgroundColor: '#F0F0F0',
+    fontSize: '12px',
+    fontFamily: poppinsFont,
   },
   gridToolBar: {
     backgroundColor: theme.palette.common.white,
@@ -146,12 +154,26 @@ const useStyles = makeStyles(theme => ({
     zIndex: 100,
     backgroundColor: theme.palette.common.white,
   },
+  withdrawnParticipants: {
+    width: '270px',
+  },
 }))
 
 const TAB_DEFs = [
   { type: 'ACTIVE', label: 'Participant List' },
   { type: 'WITHDRAWN', label: 'Withdrawn Participants' },
   { type: 'TEST', label: 'Test Accounts' },
+]
+
+const TAB_ICONS_FOCUS = [
+  ParticipantListFocusIcon,
+  WithdrawnParticipantsFocusIcon,
+  TestAccountFocusIcon,
+]
+const TAB_ICONS_UNFOCUS = [
+  ParticipantListUnfocusIcon,
+  WithdrawnParticipantsUnfocusIcon,
+  TestAccountUnfocusIcon,
 ]
 
 type ParticipantManagerOwnProps = {
@@ -538,18 +560,32 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             onChange={handleTabChange}
             TabIndicatorProps={{ hidden: true }}
           >
-            {TAB_DEFs.map(tabDef => (
+            {TAB_DEFs.map((tabDef, index) => (
               <Tab
-                label={`${tabDef.label} (${
-                  tab === tabDef.type ? (data ? data.total : '...') : '0'
-                })`}
                 value={tabDef.type}
                 classes={{
                   root: clsx(
                     classes.tab,
                     tab === tabDef.type && classes.selectedTab,
+                    tabDef.type === 'WITHDRAWN' &&
+                      classes.withdrawnParticipants,
                   ),
                 }}
+                icon={
+                  <Box display="flex" flexDirection="row">
+                    <img
+                      src={
+                        tab === tabDef.type
+                          ? TAB_ICONS_FOCUS[index]
+                          : TAB_ICONS_UNFOCUS[index]
+                      }
+                      style={{ marginRight: '6px' }}
+                    ></img>
+                    {`${tabDef.label} (${
+                      tab === tabDef.type ? (data ? data.total : '...') : '0'
+                    })`}
+                  </Box>
+                }
               />
             ))}
           </Tabs>
