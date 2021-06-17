@@ -55,7 +55,7 @@ const useStyles = makeStyles(theme => ({
   focused: {},
 }))
 
-export type SelectionType = 'ALL' | 'PAGE' | undefined
+export type SelectionType = 'ALL' | 'PAGE' | 'SOME' | 'NONE'
 
 export interface SelectAllProps {
   allText: string
@@ -86,12 +86,22 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setMenuAnchor(event.currentTarget)
   }
-  const setSelect = (type: 'ALL' | 'PAGE' | undefined) => {
+  const setSelect = (type: SelectionType) => {
     setSelection(type)
     handleMenuClose()
 
-    if (type) {
-      type === 'ALL' ? onSelectAll() : onSelectAllPage()
+    switch (type) {
+      case 'ALL': {
+        onSelectAll()
+        break
+      }
+      case 'PAGE': {
+        onSelectAllPage()
+        break
+      }
+      default: {
+        return
+      }
     }
   }
   const menuItems = [
@@ -111,8 +121,13 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
         name="selectAllCheckbox"
         className={classes.check}
         checked={selection === 'ALL' || selection === 'PAGE'}
+        indeterminate={selection === 'SOME'}
         onClick={() => {
-          if (selection === 'ALL' || selection === 'PAGE') {
+          if (
+            selection === 'ALL' ||
+            selection === 'PAGE' ||
+            selection === 'SOME'
+          ) {
             onDeselect()
           } else {
             setSelect('ALL')
