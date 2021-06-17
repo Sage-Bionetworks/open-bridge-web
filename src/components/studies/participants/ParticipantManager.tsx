@@ -157,6 +157,14 @@ const useStyles = makeStyles(theme => ({
   withdrawnParticipants: {
     width: '270px',
   },
+  tab_icon: {
+    borderBottom: '1px solid transparent',
+  },
+  unactiveTabIcon: {
+    '&:hover div': {
+      borderBottom: '1px solid black',
+    },
+  },
 }))
 
 const TAB_DEFs = [
@@ -572,7 +580,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   ),
                 }}
                 icon={
-                  <Box display="flex" flexDirection="row">
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    className={clsx(classes.tab_icon, tab !== tabDef.type && classes.unactiveTabIcon)}
+                  >
                     <img
                       src={
                         tab === tabDef.type
@@ -581,9 +593,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       }
                       style={{ marginRight: '6px' }}
                     ></img>
-                    {`${tabDef.label} (${
-                      tab === tabDef.type ? (data ? data.total : '...') : '0'
-                    })`}
+                    <div>
+                      {`${tabDef.label} (${
+                        tab === tabDef.type ? (data ? data.total : '...') : '0'
+                      })`}
+                    </div>
                   </Box>
                 }
               />
