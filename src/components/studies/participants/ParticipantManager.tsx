@@ -619,7 +619,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 display: 'block',
                 padding: '0',
                 backgroundColor: theme.palette.primary.dark,
-                borderRadius: '0',
+                borderRadius: '0px',
               }}
             >
               <>
