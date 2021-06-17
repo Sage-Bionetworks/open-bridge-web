@@ -15,7 +15,6 @@ import { jsonToCSV } from 'react-papaparse'
 import { RouteComponentProps } from 'react-router-dom'
 import { ReactComponent as ExpandIcon } from '../../../assets/add_participants.svg'
 import { ReactComponent as CollapseIcon } from '../../../assets/collapse.svg'
-import LinkIcon from '../../../assets/link_icon.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/trash.svg'
 import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
@@ -48,6 +47,7 @@ import ParticipantDownload, {
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
 import SMSPhoneImg from '../../../assets/ParticipantManager/joined_phone_icon.svg'
+import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -114,6 +114,29 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  disabledImage: {
+    opacity: 0.5,
+  },
+  topRowImage: {
+    marginRight: theme.spacing(0.75),
+  },
+  deleteIcon: {
+    height: '17px',
+    width: '13px',
+  },
+  deleteButtonParticipant: {
+    fontFamily: latoFont,
+    marginLeft: theme.spacing(3),
+    fontSize: '14px',
+  },
+  sendSMSButton: {
+    marginRight: '24px',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    fontFamily: latoFont,
+    fontSize: '14px',
   },
 }))
 
@@ -549,22 +572,17 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     {tab !== 'WITHDRAWN' && (
                       <Button
                         aria-label="delete"
-                        onClick={() => {
-                          // setParticipantsWithError([])
-                          //setIsOpenDeleteDialog(true)
-                        }}
-                        style={{
-                          marginRight: '24px',
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          fontFamily: latoFont,
-                          fontSize: '14px',
-                        }}
+                        onClick={() => {}}
+                        className={classes.sendSMSButton}
+                        disabled={selectedParticipantIds[tab].length === 0}
                       >
                         <img
                           src={SMSPhoneImg}
-                          style={{ marginRight: '6px' }}
+                          className={clsx(
+                            selectedParticipantIds[tab].length === 0 &&
+                              classes.disabledImage,
+                            classes.topRowImage,
+                          )}
                         ></img>
                         Send SMS link
                       </Button>
@@ -590,9 +608,17 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           setParticipantsWithError([])
                           setIsOpenDeleteDialog(true)
                         }}
-                        style={{ marginLeft: '24px' }}
+                        className={classes.deleteButtonParticipant}
+                        disabled={selectedParticipantIds[tab].length === 0}
                       >
-                        <DeleteIcon style={{ marginRight: '8px' }}></DeleteIcon>
+                        <DeleteIcon
+                          className={clsx(
+                            selectedParticipantIds[tab].length === 0 &&
+                              classes.disabledImage,
+                            classes.topRowImage,
+                            classes.deleteIcon,
+                          )}
+                        ></DeleteIcon>
                         Remove from Study
                       </Button>
                     )}

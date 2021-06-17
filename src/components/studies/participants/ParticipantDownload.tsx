@@ -60,7 +60,13 @@ const ParticipantDownload: React.FunctionComponent<ParticipantDownloadProps> = (
         onClick={() => onDownload()}
         style={{ fontFamily: latoFont, fontSize: '14px' }}
       >
-        <img src={DownloadIcon} style={{ marginRight: '6px' }}></img>
+        <img
+          src={DownloadIcon}
+          style={{
+            marginRight: '6px',
+            opacity: selectedLength === 0 ? 0.5 : 1,
+          }}
+        ></img>
         {!isProcessing ? 'Download.csv' : <CircularProgress size={24} />}
       </Button>
     </Box>
