@@ -215,7 +215,7 @@ export type ParticipantAccountSummary = {
   studyExternalId?: string
   status?: 'unverified' | 'pending' | 'verified'
   createdOn?: string
-  note: string
+  note?: string
 }
 
 export type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {
