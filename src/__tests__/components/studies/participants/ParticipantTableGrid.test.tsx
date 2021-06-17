@@ -1,17 +1,18 @@
-import React from 'react'
 import {
-  render,
   cleanup,
-  queryByAttribute,
-  within,
+  queryByAttribute, render,
+
+
+  within
 } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import React from 'react'
 import ParticipantTableGrid from '../../../../components/studies/participants/ParticipantTableGrid'
+import { UserSessionDataProvider } from '../../../../helpers/AuthContext'
 import {
   ParticipantAccountSummary,
-  ParticipantActivityType,
+  ParticipantActivityType
 } from '../../../../types/types'
-import { UserSessionDataProvider } from '../../../../helpers/AuthContext'
-import userEvent from '@testing-library/user-event'
 
 let currentPage = 1
 let pageSize = 25
@@ -93,7 +94,7 @@ const renderParticipantTableGrid = async () => {
         onWithdrawParticipant={(participantId: string, note: string) => {}}
         onUpdateParticipant={(
           participantId: string,
-          notes: string,
+          note: string,
           clinicVisitDate?: Date,
         ) => {}}
         gridType={{} as ParticipantActivityType}

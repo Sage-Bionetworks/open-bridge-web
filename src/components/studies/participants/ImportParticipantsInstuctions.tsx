@@ -51,7 +51,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
           <strong>Reference ID</strong> (Alternate ID for your reference)
         </li>
         <li>
-          <strong>Notes</strong> (for your reference)
+          <strong>Note</strong> (for your reference)
         </li>
       </ul>
     ) : (
@@ -63,7 +63,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
           <strong>Clinic Visit </strong>(can be updated later)
         </li>
         <li>
-          <strong>Notes</strong> (for your reference)
+          <strong>Note</strong> (for your reference)
         </li>
       </ul>
     )

@@ -110,13 +110,13 @@ type AddParticipantsProps = {
   onAdded: Function
 }
 
-const CSV_BY_ID_KEY = ['Participant ID', 'Clinic Visit', 'Notes']
+const CSV_BY_ID_KEY = ['Participant ID', 'Clinic Visit', 'Note']
 
 const CSV_BY_PHONE_KEY = [
   'Phone Number',
   'Participant ID',
   'Clinic Visit',
-  'Notes',
+  'Note',
 ]
 
 async function uploadCsvRow(
@@ -128,7 +128,7 @@ async function uploadCsvRow(
   const options: EditableParticipantData = {
     externalId: data['Participant ID'],
     clinicVisitDate: data['Clinic Visit'],
-    notes: data['Notes'],
+    note: data['Note'],
   }
   let result
   if (enrollmentType === 'ID') {
