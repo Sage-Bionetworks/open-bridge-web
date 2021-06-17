@@ -12,7 +12,6 @@ import {
   GridCellParams,
   GridColDef,
   GridOverlay,
-
   GridRowSelectedParams,
   GridValueGetterParams
 } from '@material-ui/data-grid'
@@ -34,14 +33,12 @@ import {
 } from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import HideWhen from '../../widgets/HideWhen'
-import SelectAll from '../../widgets/SelectAll'
+import SelectAll, { SelectionType } from '../../widgets/SelectAll'
 import {
   EditParticipantForm,
   WithdrawParticipantForm
 } from './ParticipantForms'
 import ParticipantTablePagination from './ParticipantTablePagination'
-
-
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -340,13 +337,24 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     ...selectedParticipantIds,
   ])
   React.useEffect(() => {
-   
-      setSelectionModel([...selectedParticipantIds])
-    
+    setSelectionModel([...selectedParticipantIds])
   }, [selectedParticipantIds, rows])
 
   const allSelectedPage = () =>
     rows && !rows.find(row => !selectionModel.includes(row.id))
+
+  const getSlectionType = (): SelectionType => {
+    if (isAllSelected) {
+      return 'ALL'
+    }
+    if (allSelectedPage()) {
+      return 'PAGE'
+    }
+    if (selectionModel.length) {
+      return 'SOME'
+    }
+    return 'NONE'
+  }
 
   return (
     <>
@@ -368,9 +376,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                   console.log()
                   model = [...selectionModel, row.data.id]
                 } else {
-                  model = selectionModel.filter(
-                    id => id != row.data.id,
-                  ) 
+                  model = selectionModel.filter(id => id != row.data.id)
                 }
 
                 onRowSelected(
@@ -383,7 +389,14 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               components={{
                 Header: () => (
                   <div style={{ position: 'relative' }}>
-                    <Box className={classes.selectionDisplay}>
+                    <Box
+                      className={classes.selectionDisplay}
+                      style={{
+                        visibility: !selectionModel?.length
+                          ? 'hidden'
+                          : 'visible',
+                      }}
+                    >
                       {`${isAllSelected ? 'All ' : ''}`}
                       <Pluralize
                         singular={'participant'}
@@ -395,6 +408,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                       />{' '}
                       selected
                     </Box>
+
                     <div
                       style={{
                         position: 'absolute',
@@ -405,18 +419,15 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                       }}
                     >
                       <SelectAll
-                        selectionType={
-                          isAllSelected
-                            ? 'ALL'
-                            : allSelectedPage()
-                            ? 'PAGE'
-                            : undefined
-                        }
-                        allText={`All ${totalParticipants} participants`}
-                        allPageText="All on this page"
+                        selectionType={getSlectionType()}
+                        allText={`Select all ${totalParticipants}`}
+                        allPageText="Select this page"
                         onSelectAllPage={() => {
                           const ids = rows.map(row => row.id)
-                          onRowSelected(_.uniq([...selectionModel, ...ids]), false)
+                          onRowSelected(
+                            _.uniq([...selectionModel, ...ids]),
+                            false,
+                          )
                         }}
                         onDeselect={() => onRowSelected([], false)}
                         onSelectAll={() => {

@@ -126,15 +126,7 @@ type ParticipantManagerOwnProps = {
   studyId?: string
 }
 
-const participantRecordTemplate: ParticipantAccountSummary = {
-  status: 'unverified',
 
-  firstName: '',
-  lastName: '',
-  email: '',
-  id: '',
-  externalIds: {},
-}
 
 async function getParticipants(
   studyId: string,
@@ -145,29 +137,20 @@ async function getParticipants(
 ): Promise<ParticipantData> {
   const offset = (currentPage - 1) * pageSize
 
-  let participants: ParticipantData
+  let participants: ParticipantData = (tab === 'WITHDRAWN') ?
+    await ParticipantService.getEnrollmentsWithdrawn(
+      studyId,
+      token!,
+      pageSize,
+      offset,
+    )
+  : await ParticipantService.getParticipants(
+            studyId,
+            token!,
+            pageSize,
+            offset,
+          )
 
-  if (tab === 'WITHDRAWN') {
-    participants =
-      pageSize > 0
-        ? await ParticipantService.getEnrollmentsWithdrawn(
-            studyId,
-            token!,
-            pageSize,
-            offset,
-          )
-        : await ParticipantService.getAllEnrollmentsWithdrawn(studyId, token!)
-  } else {
-    participants =
-      pageSize > 0
-        ? await ParticipantService.getParticipants(
-            studyId,
-            token!,
-            pageSize,
-            offset,
-          )
-        : await ParticipantService.getAllParticipants(studyId, token!)
-  }
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
   const eventsMap: StringDictionary<{
@@ -534,6 +517,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               toggleButtonStyle={{
                 display: 'block',
                 padding: '0',
+                borderRadius: 0,
+            
                 backgroundColor: theme.palette.primary.dark,
               }}
             >
