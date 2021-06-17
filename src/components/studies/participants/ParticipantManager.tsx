@@ -6,7 +6,7 @@ import {
   DialogActions,
   DialogContent,
   Tab,
-  Tabs
+  Tabs,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { FunctionComponent } from 'react'
@@ -15,21 +15,20 @@ import { jsonToCSV } from 'react-papaparse'
 import { RouteComponentProps } from 'react-router-dom'
 import { ReactComponent as ExpandIcon } from '../../../assets/add_participants.svg'
 import { ReactComponent as CollapseIcon } from '../../../assets/collapse.svg'
-import LinkIcon from '../../../assets/link_icon.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/trash.svg'
 import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
-import { theme } from '../../../style/theme'
+import { theme, latoFont, poppinsFont } from '../../../style/theme'
 import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
-  StringDictionary
+  StringDictionary,
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
@@ -37,31 +36,47 @@ import { MTBHeadingH3 } from '../../widgets/Headings'
 import HelpBox from '../../widgets/HelpBox'
 import {
   DialogButtonPrimary,
-  DialogButtonSecondary
+  DialogButtonSecondary,
 } from '../../widgets/StyledComponents'
 import LiveIcon from '../LiveIcon'
 import AddParticipants from './AddParticipants'
 import DeleteDialog from './DeleteDialogContents'
 import ParticipantDownload, {
-  ParticipantDownloadType
+  ParticipantDownloadType,
 } from './ParticipantDownload'
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
+import SMSPhoneImg from '../../../assets/ParticipantManager/joined_phone_icon.svg'
+import ParticipantListFocusIcon from '../../../assets/ParticipantManager/participant_list_focus_icon.svg'
+import ParticipantListUnfocusIcon from '../../../assets/ParticipantManager/participant_list_unfocus_icon.svg'
+import TestAccountFocusIcon from '../../../assets/ParticipantManager/test_account_focus_icon.svg'
+import TestAccountUnfocusIcon from '../../../assets/ParticipantManager/test_account_unfocus_icon.svg'
+import WithdrawnParticipantsFocusIcon from '../../../assets/ParticipantManager/withdrawn_participants_focus_icon.svg'
+import WithdrawnParticipantsUnfocusIcon from '../../../assets/ParticipantManager/withdrawn_participants_unfocus_icon.svg'
+import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
   root: {},
 
   tab: {
-    backgroundColor: theme.palette.common.white,
     marginRight: theme.spacing(2),
+    width: '250px',
+    clipPath: 'polygon(10% 0%, 90% 0, 98% 100%,0 100%)',
+    marginLeft: theme.spacing(-3.5),
+    zIndex: 0,
+    backgroundColor: '#F0F0F0',
+    fontSize: '12px',
+    fontFamily: poppinsFont,
   },
   gridToolBar: {
     backgroundColor: theme.palette.common.white,
-    padding: theme.spacing(1, 5, 0, 5),
-    height: theme.spacing(6),
-
+    // padding: theme.spacing(1, 5, 0, 5),
+    height: theme.spacing(9),
+    paddingLeft: theme.spacing(3),
+    paddingRight: theme.spacing(3),
     display: 'flex',
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
 
@@ -112,12 +127,61 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  disabledImage: {
+    opacity: 0.5,
+  },
+  topRowImage: {
+    marginRight: theme.spacing(0.75),
+  },
+  deleteIcon: {
+    height: '17px',
+    width: '13px',
+  },
+  deleteButtonParticipant: {
+    fontFamily: latoFont,
+    marginLeft: theme.spacing(3),
+    fontSize: '14px',
+  },
+  sendSMSButton: {
+    marginRight: theme.spacing(3),
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    fontFamily: latoFont,
+    fontSize: '14px',
+  },
+  selectedTab: {
+    zIndex: 100,
+    backgroundColor: theme.palette.common.white,
+  },
+  withdrawnParticipants: {
+    width: '270px',
+  },
+  tab_icon: {
+    borderBottom: '1px solid transparent',
+  },
+  unactiveTabIcon: {
+    '&:hover div': {
+      borderBottom: '1px solid black',
+    },
+  },
 }))
 
 const TAB_DEFs = [
   { type: 'ACTIVE', label: 'Participant List' },
   { type: 'WITHDRAWN', label: 'Withdrawn Participants' },
   { type: 'TEST', label: 'Test Accounts' },
+]
+
+const TAB_ICONS_FOCUS = [
+  ParticipantListFocusIcon,
+  WithdrawnParticipantsFocusIcon,
+  TestAccountFocusIcon,
+]
+const TAB_ICONS_UNFOCUS = [
+  ParticipantListUnfocusIcon,
+  WithdrawnParticipantsUnfocusIcon,
+  TestAccountUnfocusIcon,
 ]
 
 type ParticipantManagerOwnProps = {
@@ -210,19 +274,24 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [isOpenDeleteDialog, setIsOpenDeleteDialog] = React.useState(false)
 
   // True if the user is currently searching for a particpant using id
-  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] =
-    React.useState(false)
+  const [
+    isUserSearchingForParticipant,
+    setIsUserSearchingForParticipant,
+  ] = React.useState(false)
 
-  const [fileDownloadUrl, setFileDownloadUrl] =
-    React.useState<string | undefined>(undefined)
+  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
+    string | undefined
+  >(undefined)
 
   //user ids selectedForSction
-  const [selectedParticipantIds, setSelectedParticipantIds] =
-    React.useState<SelectedParticipantIdsType>({
-      ACTIVE: [],
-      TEST: [],
-      WITHDRAWN: [],
-    })
+  const [
+    selectedParticipantIds,
+    setSelectedParticipantIds,
+  ] = React.useState<SelectedParticipantIdsType>({
+    ACTIVE: [],
+    TEST: [],
+    WITHDRAWN: [],
+  })
   const [isAllSelected, setIsAllSelected] = React.useState(false)
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
@@ -236,8 +305,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   >([])
 
   //trigger data refresh on updates
-  const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
-    React.useState(false)
+  const [
+    refreshParticipantsToggle,
+    setRefreshParticipantsToggle,
+  ] = React.useState(false)
 
   const {
     data,
@@ -425,7 +496,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     handleError(error!)
   } else {
     return (
-      <Box>
+      <Box bgcolor="#F8F8F8">
         <Box px={3} py={2} display="flex">
           <MTBHeadingH3 className={classes.studyId}>
             {' '}
@@ -471,19 +542,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 </div>
               </HelpBox>
             )}
-
-          <Box className={classes.topButtonContainer}>
-            <div className={classes.inputRow}>
-              <Button className={classes.topButtons}>
-                <img
-                  src={LinkIcon}
-                  className={classes.buttonImage}
-                  alt="link-icon"
-                ></img>
-                App Download Link
-              </Button>
-            </div>
-          </Box>
         </Box>
 
         <Box py={0} pr={3} pl={2}>
@@ -493,13 +551,41 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             onChange={handleTabChange}
             TabIndicatorProps={{ hidden: true }}
           >
-            {TAB_DEFs.map(tabDef => (
+            {TAB_DEFs.map((tabDef, index) => (
               <Tab
-                label={`${tabDef.label} ${
-                  tab === tabDef.type ? (data ? data.total : '...') : ''
-                }`}
                 value={tabDef.type}
-                classes={{ root: classes.tab }}
+                classes={{
+                  root: clsx(
+                    classes.tab,
+                    tab === tabDef.type && classes.selectedTab,
+                    tabDef.type === 'WITHDRAWN' &&
+                      classes.withdrawnParticipants,
+                  ),
+                }}
+                icon={
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    className={clsx(
+                      classes.tab_icon,
+                      tab !== tabDef.type && classes.unactiveTabIcon,
+                    )}
+                  >
+                    <img
+                      src={
+                        tab === tabDef.type
+                          ? TAB_ICONS_FOCUS[index]
+                          : TAB_ICONS_UNFOCUS[index]
+                      }
+                      style={{ marginRight: '6px' }}
+                    ></img>
+                    <div>
+                      {`${tabDef.label} (${
+                        tab === tabDef.type ? (data ? data.total : '...') : '0'
+                      })`}
+                    </div>
+                  </Box>
+                }
               />
             ))}
           </Tabs>
@@ -511,15 +597,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               isDrawerHidden={tab !== 'ACTIVE'}
               collapseButton={<CollapseIcon />}
               onToggleClick={(open: boolean) => setIsAddOpen(open)}
-              expandButton={
-                <ExpandIcon style={{ marginLeft: '-3px', marginTop: '8px' }} />
-              }
+              expandButton={<ExpandIcon />}
               toggleButtonStyle={{
                 display: 'block',
                 padding: '0',
                 borderRadius: 0,
             
                 backgroundColor: theme.palette.primary.dark,
+                borderRadius: '0px',
               }}
             >
               <>
@@ -533,18 +618,26 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               </>
               <div>
                 <Box className={classes.gridToolBar}>
-                  <ParticipantSearch
-                    onReset={() => {
-                      setIsUserSearchingForParticipant(false)
-                      handleResetSearch()
-                    }}
-                    onSearch={(searchedValue: string) => {
-                      setIsUserSearchingForParticipant(true)
-                      handleSearchParticipantRequest(searchedValue)
-                    }}
-                  />
+                  <Box display="flex" flexDirection="row" alignItems="center">
+                    {tab !== 'WITHDRAWN' && (
+                      <Button
+                        aria-label="delete"
+                        onClick={() => {}}
+                        className={classes.sendSMSButton}
+                        disabled={selectedParticipantIds[tab].length === 0}
+                      >
+                        <img
+                          src={SMSPhoneImg}
+                          className={clsx(
+                            selectedParticipantIds[tab].length === 0 &&
+                              classes.disabledImage,
+                            classes.topRowImage,
+                          )}
+                        ></img>
+                        Send SMS link
+                      </Button>
+                    )}
 
-                  <>
                     <ParticipantDownload
                       isProcessing={loadingIndicators.isDownloading}
                       onDownload={() =>
@@ -558,32 +651,39 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         setFileDownloadUrl(undefined)
                       }}
                     />
-                  </>
-
-                  {tab !== 'WITHDRAWN' && (
-                    <>
-                      <Button
-                        aria-label="delete"
-                        onClick={() => {
-                          // setParticipantsWithError([])
-                          //setIsOpenDeleteDialog(true)
-                        }}
-                      >
-                        Send SMS link
-                      </Button>
-
+                    {tab !== 'WITHDRAWN' && (
                       <Button
                         aria-label="delete"
                         onClick={() => {
                           setParticipantsWithError([])
                           setIsOpenDeleteDialog(true)
                         }}
+                        className={classes.deleteButtonParticipant}
+                        disabled={selectedParticipantIds[tab].length === 0}
                       >
-                        <DeleteIcon style={{ marginRight: '8px' }}></DeleteIcon>
+                        <DeleteIcon
+                          className={clsx(
+                            selectedParticipantIds[tab].length === 0 &&
+                              classes.disabledImage,
+                            classes.topRowImage,
+                            classes.deleteIcon,
+                          )}
+                        ></DeleteIcon>
                         Remove from Study
                       </Button>
-                    </>
-                  )}
+                    )}
+                  </Box>
+
+                  <ParticipantSearch
+                    onReset={() => {
+                      setIsUserSearchingForParticipant(false)
+                      handleResetSearch()
+                    }}
+                    onSearch={(searchedValue: string) => {
+                      setIsUserSearchingForParticipant(true)
+                      handleSearchParticipantRequest(searchedValue)
+                    }}
+                  />
                 </Box>
                 <div
                   role="tabpanel"

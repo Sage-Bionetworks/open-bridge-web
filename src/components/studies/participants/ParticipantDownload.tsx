@@ -1,6 +1,8 @@
 import { Box, Button, CircularProgress } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
+import DownloadIcon from '../../../assets/ParticipantManager/download_icon.svg'
+import { latoFont } from '../../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   downloadButton: {
@@ -19,50 +21,56 @@ type ParticipantDownloadProps = {
   fileDownloadUrl?: string
 }
 
-const ParticipantDownload: React.FunctionComponent<ParticipantDownloadProps> =
-  ({
-    onDownload,
-    isProcessing,
-    fileDownloadUrl,
-    hasItems,
-    selectedLength,
-    onDone,
-  }) => {
-    const classes = useStyles()
+const ParticipantDownload: React.FunctionComponent<ParticipantDownloadProps> = ({
+  onDownload,
+  isProcessing,
+  fileDownloadUrl,
+  hasItems,
+  selectedLength,
+  onDone,
+}) => {
+  const classes = useStyles()
 
-    function magicDownload() {
-      // create hidden link
-      const element = document.createElement('a')
-      document.body.appendChild(element)
-      element.setAttribute('href', fileDownloadUrl!)
-      element.setAttribute('download', 'StudyParticipants.csv')
-      element.style.display = ''
+  function magicDownload() {
+    // create hidden link
+    const element = document.createElement('a')
+    document.body.appendChild(element)
+    element.setAttribute('href', fileDownloadUrl!)
+    element.setAttribute('download', 'StudyParticipants.csv')
+    element.style.display = ''
 
-      element.click()
+    element.click()
 
-      document.body.removeChild(element)
-      //event.stopPropagation();
-    }
-
-    React.useEffect(() => {
-      if (fileDownloadUrl) {
-        console.log('download')
-        magicDownload()
-        setTimeout(() => onDone(), 1000)
-      }
-    }, [fileDownloadUrl])
-
-    return (
-      <Box display="flex" alignItems="center">
-        <Button
-          disabled={!hasItems || selectedLength === 0}
-          onClick={() => onDownload()}
-        >
-          {' '}
-          {!isProcessing ? 'Download' : <CircularProgress size={24} />}
-        </Button>
-      </Box>
-    )
+    document.body.removeChild(element)
+    //event.stopPropagation();
   }
+
+  React.useEffect(() => {
+    if (fileDownloadUrl) {
+      console.log('download')
+      magicDownload()
+      setTimeout(() => onDone(), 1000)
+    }
+  }, [fileDownloadUrl])
+
+  return (
+    <Box display="flex" alignItems="center">
+      <Button
+        disabled={!hasItems || selectedLength === 0}
+        onClick={() => onDownload()}
+        style={{ fontFamily: latoFont, fontSize: '14px' }}
+      >
+        <img
+          src={DownloadIcon}
+          style={{
+            marginRight: '6px',
+            opacity: selectedLength === 0 ? 0.5 : 1,
+          }}
+        ></img>
+        {!isProcessing ? 'Download.csv' : <CircularProgress size={24} />}
+      </Button>
+    </Box>
+  )
+}
 
 export default ParticipantDownload

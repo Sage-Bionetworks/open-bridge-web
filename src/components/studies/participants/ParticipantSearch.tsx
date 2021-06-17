@@ -4,6 +4,7 @@ import React from 'react'
 import BlackXIcon from '../../../assets/black_x_icon.svg'
 import SearchIcon from '../../../assets/search_icon.svg'
 import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
+import { latoFont } from '../../../style/theme'
 
 const ENTER_KEY = 'Enter'
 
@@ -28,9 +29,12 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
     alignItems: 'center',
     height: '36px',
+    fontSize: '14px',
+    fontFamily: latoFont,
   },
   buttonImage: {
-    marginRight: theme.spacing(0.5),
+    marginRight: theme.spacing(0.75),
+    width: "14px"
   },
   searchIconContainer: {
     width: '42px',
