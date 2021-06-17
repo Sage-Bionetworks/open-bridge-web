@@ -31,6 +31,10 @@ function mapWithdrawnParticipant(
 //backendExternalId = studyId:externalId
 function makeBackendExternalId (studyId: string, externalId: string) {return `${studyId}:${externalId}`}
 
+function formatExternalId (studyId: string, externalId: string) {
+  return externalId.replace(`${studyId}:`, '')
+}
+
 // gets clinic visits and join events for participants with the specified ids
 async function getRelevantEventsForParticipans(
   studyIdentifier: string,
@@ -153,7 +157,7 @@ async function getParticipants(
 
   const mappedData = result.data.items.map(p => ({
     ...p,
-    externalId: p.externalIds[studyIdentifier],
+    externalId: formatExternalId(studyIdentifier, p.externalIds[studyIdentifier])
   }))
 
   //ALINA TODO: once there is a filter we can use that
@@ -217,7 +221,7 @@ async function getParticipantById(
     )
     return {
       ...result.data,
-      externalId: result.data.externalIds[studyIdentifier],
+      externalId: formatExternalId(studyIdentifier, result.data.externalIds[studyIdentifier])
     }
   } catch (e) {
     // If the participant is not found, return null.
@@ -352,7 +356,7 @@ async function updateParticipantGroup(
   return result.data.identifier
 }
 
-
+// used for the preview screen in study builder
 async function addTestParticipantForPreview(
   studyIdentifier: string,
   token: string,
@@ -364,7 +368,7 @@ async function addTestParticipantForPreview(
   const data: StringDictionary<any> = {
     appId: constants.constants.APP_ID,
     dataGroups: ['test_user'],
-    externalIds: { [studyIdentifier]: generateNonambiguousCode(6) },
+    externalIds: { [studyIdentifier]: formatExternalId(studyIdentifier, generateNonambiguousCode(6)) },
   }
 
   const result = await callEndpoint<{ identifier: string }>(
