@@ -169,7 +169,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
       investigator.affiliation &&
       study.irbProtocolId &&
       irb.name &&
-      study.clientData.irbProtocolTitle
+      study.irbName
     onEnableNext(inputFieldsCorrectFormat)
   })
 
