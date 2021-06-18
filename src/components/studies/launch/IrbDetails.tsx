@@ -551,8 +551,8 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                         id="approval-date-validation-error-text"
                         className={classes.dateValidationErrorText}
                       >
-                        Please make sure to fill in all information and ensure
-                        that expiration date is the same or after approval date.
+                        Please make sure that expiration date is the same or
+                        after approval date.
                       </FormHelperText>
                     )}
                     <FormControlLabel
