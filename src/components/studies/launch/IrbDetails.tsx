@@ -98,8 +98,6 @@ const LastScreen: React.FunctionComponent<{ study: Study }> = ({
 
 type irbStudyDataType = {
   irbRecordSameInstitutionalAffiliation: boolean
-  irbApprovalDate: Date | null
-  irbApprovedUntil: Date | null
   irbExemptDate: Date | null
 }
 
@@ -135,8 +133,6 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
     const irbRecordSameInstitutionalAffiliation =
       nameOfIrbRecord === institutionalAffiliation
     const irbStudyData = {
-      irbApprovalDate: null,
-      irbApprovedUntil: null,
       irbExemptDate: null,
       irbRecordSameInstitutionalAffiliation: irbRecordSameInstitutionalAffiliation,
     }
@@ -152,8 +148,8 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
       return
     }
     if (irbDecisionIsApproved) {
-      const approvalDate = studyData?.irbApprovalDate
-      const approvedUntil = studyData?.irbApprovedUntil
+      const approvalDate = study.irbApprovedOn
+      const approvedUntil = study.irbApprovedUntil
       const isCorrectFormat =
         approvalDate && approvedUntil && approvedUntil >= approvalDate
       if (!isCorrectFormat) {
@@ -193,9 +189,9 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
   }
 
   const displayApprovalDateError =
-    studyData?.irbApprovalDate &&
-    studyData?.irbApprovedUntil &&
-    studyData?.irbApprovalDate > studyData?.irbApprovedUntil
+    study.irbApprovedOn &&
+    study.irbApprovedUntil &&
+    study.irbApprovedOn > study.irbApprovedUntil
   return (
     <>
       {!isFinished && (
@@ -501,11 +497,10 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                           irbExemptDate: null,
                         })
                       } else {
-                        setStudyData({
-                          ...studyData!,
-                          irbApprovalDate: null,
-                          irbApprovedUntil: null,
-                        })
+                        const newStudy = { ...study }
+                        newStudy.irbApprovedUntil = undefined
+                        newStudy.irbApprovedOn = undefined
+                        onChange(newStudy)
                       }
                       setIrbDecisionIsApproved(isApproved)
                     }}
@@ -523,14 +518,13 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                           id="approvalDate"
                           value={
                             irbDecisionIsApproved
-                              ? studyData?.irbApprovalDate || null
+                              ? study.irbApprovedOn || null
                               : null
                           }
                           onChange={e => {
-                            setStudyData({
-                              ...studyData!,
-                              irbApprovalDate: e,
-                            })
+                            const newStudy = { ...study }
+                            newStudy.irbApprovedOn = e || undefined
+                            onChange(newStudy)
                           }}
                           disabled={!irbDecisionIsApproved}
                         ></DatePicker>
@@ -541,14 +535,13 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                           id="expirationDate"
                           value={
                             irbDecisionIsApproved
-                              ? studyData?.irbApprovedUntil || null
+                              ? study.irbApprovedUntil || null
                               : null
                           }
                           onChange={e => {
-                            setStudyData({
-                              ...studyData!,
-                              irbApprovedUntil: e,
-                            })
+                            const newStudy = { ...study }
+                            newStudy.irbApprovedUntil = e || undefined
+                            onChange(newStudy)
                           }}
                           disabled={!irbDecisionIsApproved}
                         ></DatePicker>
