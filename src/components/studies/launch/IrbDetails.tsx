@@ -248,16 +248,12 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                   IRB Protocol Title*
                 </SimpleTextLabel>
                 <SimpleTextInput
-                  value={study.clientData.irbProtocolTitle || ''}
+                  value={study.irbName || ''}
                   placeholder="Official IRB Protocol Name"
                   onChange={e => {
-                    const newClientData = {
-                      ...study.clientData,
-                      irbProtocolTitle: e.target.value,
-                    }
                     const newStudy = {
                       ...study,
-                      clientData: newClientData,
+                      irbName: e.target.value,
                     }
                     onChange(newStudy)
                   }}
