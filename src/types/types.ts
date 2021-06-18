@@ -140,9 +140,11 @@ export type Study = {
   }
   createdOn?: Date
   modifiedOn?: Date
-  irbApprovedOn?: Date
-  irbApprovedUntil?: Date
-  irbExemptDate?: Date
+  // date string
+  irbExpiresOn?: string
+  // date string
+  irbDecisionOn?: string
+  irbDecisionType?: 'exempt' | 'approved'
   irbName?: string
 }
 

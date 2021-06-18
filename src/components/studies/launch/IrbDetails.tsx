@@ -26,6 +26,7 @@ import {
 } from '../../widgets/StyledComponents'
 import LeadInvestigatorDropdown from '../app-design/LeadInvestigatorDropdown'
 import Alert_Icon from '../../../assets/alert_icon.svg'
+import moment from 'moment'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -98,7 +99,6 @@ const LastScreen: React.FunctionComponent<{ study: Study }> = ({
 
 type irbStudyDataType = {
   irbRecordSameInstitutionalAffiliation: boolean
-  irbExemptDate: Date | null
 }
 
 type ContactRoleTypes =
@@ -119,12 +119,14 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
 
   const classes = useStyles()
   const { token, orgMembership } = useUserSessionDataState()
-  const [studyData, setStudyData] = React.useState<irbStudyDataType>()
+  const [
+    irbRecordSameInstAffiliation,
+    setIrbRecordSameInstAffiliation,
+  ] = React.useState<boolean>(false)
   const [certifyStatements, setCertifyStatement] = React.useState({
     isStudyProtocolReviewed: false,
     isStudyConsistentWithLaws: false,
   })
-  const [irbDecisionIsApproved, setIrbDecisionIsApproved] = React.useState(true)
 
   useEffect(() => {
     const institutionalAffiliation = getContactObject('principal_investigator')!
@@ -132,11 +134,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
     const nameOfIrbRecord = getContactObject('irb')!.name
     const irbRecordSameInstitutionalAffiliation =
       nameOfIrbRecord === institutionalAffiliation
-    const irbStudyData = {
-      irbExemptDate: null,
-      irbRecordSameInstitutionalAffiliation: irbRecordSameInstitutionalAffiliation,
-    }
-    setStudyData(irbStudyData)
+    setIrbRecordSameInstAffiliation(irbRecordSameInstitutionalAffiliation)
   }, [])
 
   useEffect(() => {
@@ -147,9 +145,9 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
       onEnableNext(false)
       return
     }
-    if (irbDecisionIsApproved) {
-      const approvalDate = study.irbApprovedOn
-      const approvedUntil = study.irbApprovedUntil
+    if (study.irbDecisionType === 'approved' || !study.irbDecisionType) {
+      const approvalDate = study.irbDecisionOn
+      const approvedUntil = study.irbExpiresOn
       const isCorrectFormat =
         approvalDate && approvedUntil && approvedUntil >= approvalDate
       if (!isCorrectFormat) {
@@ -157,7 +155,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
         return
       }
     } else {
-      const exemptDate = studyData?.irbExemptDate
+      const exemptDate = study.irbExpiresOn
       if (!exemptDate) {
         onEnableNext(false)
         return
@@ -188,10 +186,27 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
     return newContactsArray
   }
 
+  const getDateWithTimeZone = (date: Date) => {
+    // code from: https://stackoverflow.com/questions/7556591/is-the-javascript-date-object-always-one-day-off
+    return new Date(date.getTime() - date.getTimezoneOffset() * -60000)
+  }
+
+  const getFormattedDate = (date: Date | null) => {
+    return date ? moment(date).format('YYYY-MM-DD') : ''
+  }
+
   const displayApprovalDateError =
-    study.irbApprovedOn &&
-    study.irbApprovedUntil &&
-    study.irbApprovedOn > study.irbApprovedUntil
+    study.irbDecisionOn &&
+    study.irbExpiresOn &&
+    study.irbDecisionOn > study.irbExpiresOn
+  const irbDecisionIsApproved =
+    !study.irbDecisionType || study.irbDecisionType === 'approved'
+  const irbDecisionDate = study.irbDecisionOn
+    ? getDateWithTimeZone(new Date(study.irbDecisionOn))
+    : null
+  const irbExpirationDate = study.irbExpiresOn
+    ? getDateWithTimeZone(new Date(study.irbExpiresOn))
+    : null
   return (
     <>
       {!isFinished && (
@@ -335,7 +350,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                       newPrincipleInvestigator,
                       study.contacts!,
                     )
-                    if (studyData?.irbRecordSameInstitutionalAffiliation) {
+                    if (irbRecordSameInstAffiliation) {
                       const newIrbRecord = {
                         ...getContactObject('irb')!,
                       }
@@ -375,9 +390,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     aria-label="irb of record"
                     name="irbOfRecord"
                     value={
-                      studyData?.irbRecordSameInstitutionalAffiliation
-                        ? 'aff_same'
-                        : 'aff_other'
+                      irbRecordSameInstAffiliation ? 'aff_same' : 'aff_other'
                     }
                     onChange={e => {
                       const isSameAsInstitution = e.target.value === 'aff_same'
@@ -400,10 +413,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                         }
                         onChange(newStudy)
                       }
-                      setStudyData({
-                        ...studyData!,
-                        irbRecordSameInstitutionalAffiliation: isSameAsInstitution,
-                      })
+                      setIrbRecordSameInstAffiliation(isSameAsInstitution)
                     }}
                   >
                     <FormControlLabel
@@ -445,7 +455,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     inputProps={{
                       style: inputStyles,
                     }}
-                    readOnly={studyData?.irbRecordSameInstitutionalAffiliation}
+                    readOnly={irbRecordSameInstAffiliation}
                   />
                 </Box>
               </FormControl>
@@ -487,18 +497,11 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     }
                     onChange={e => {
                       const isApproved = e.target.value === 'irb_approved'
-                      if (isApproved) {
-                        setStudyData({
-                          ...studyData!,
-                          irbExemptDate: null,
-                        })
-                      } else {
-                        const newStudy = { ...study }
-                        newStudy.irbApprovedUntil = undefined
-                        newStudy.irbApprovedOn = undefined
-                        onChange(newStudy)
-                      }
-                      setIrbDecisionIsApproved(isApproved)
+                      const newStudy = { ...study }
+                      newStudy.irbDecisionType = isApproved
+                        ? 'approved'
+                        : 'exempt'
+                      onChange(newStudy)
                     }}
                   >
                     <FormControlLabel
@@ -512,15 +515,14 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                         <DatePicker
                           label="Date of IRB Approval"
                           id="approvalDate"
-                          value={
-                            irbDecisionIsApproved
-                              ? study.irbApprovedOn || null
-                              : null
-                          }
+                          value={irbDecisionIsApproved ? irbDecisionDate : null}
                           onChange={e => {
-                            const newStudy = { ...study }
-                            newStudy.irbApprovedOn = e || undefined
-                            onChange(newStudy)
+                            const updatedStudy = { ...study }
+                            if (!updatedStudy.irbDecisionType) {
+                              updatedStudy.irbDecisionType = 'approved'
+                            }
+                            updatedStudy.irbDecisionOn = getFormattedDate(e)
+                            onChange(updatedStudy)
                           }}
                           disabled={!irbDecisionIsApproved}
                         ></DatePicker>
@@ -530,14 +532,15 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                           label="Date of Expiration"
                           id="expirationDate"
                           value={
-                            irbDecisionIsApproved
-                              ? study.irbApprovedUntil || null
-                              : null
+                            irbDecisionIsApproved ? irbExpirationDate : null
                           }
                           onChange={e => {
-                            const newStudy = { ...study }
-                            newStudy.irbApprovedUntil = e || undefined
-                            onChange(newStudy)
+                            const updatedStudy = { ...study }
+                            if (!updatedStudy.irbDecisionType) {
+                              updatedStudy.irbDecisionType = 'approved'
+                            }
+                            updatedStudy.irbExpiresOn = getFormattedDate(e)
+                            onChange(updatedStudy)
                           }}
                           disabled={!irbDecisionIsApproved}
                         ></DatePicker>
@@ -548,8 +551,8 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                         id="approval-date-validation-error-text"
                         className={classes.dateValidationErrorText}
                       >
-                        Please make sure that expiration date is the same or
-                        after approval date.
+                        Please make sure to fill in all information and ensure
+                        that expiration date is the same or after approval date.
                       </FormHelperText>
                     )}
                     <FormControlLabel
@@ -563,14 +566,21 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                         id="exemptionDate"
                         value={
                           !irbDecisionIsApproved
-                            ? studyData?.irbExemptDate || null
+                            ? irbDecisionDate || null
                             : null
                         }
                         onChange={e => {
-                          setStudyData({
-                            ...studyData!,
-                            irbExemptDate: e,
-                          })
+                          const updatedStudy = {
+                            ...study,
+                          }
+                          if (!updatedStudy.irbDecisionType) {
+                            updatedStudy.irbDecisionType = 'exempt'
+                          }
+                          if (!updatedStudy.irbExpiresOn) {
+                            updatedStudy.irbExpiresOn = getFormattedDate(e)
+                          }
+                          updatedStudy.irbDecisionOn = getFormattedDate(e)
+                          onChange(updatedStudy)
                         }}
                         disabled={irbDecisionIsApproved}
                       ></DatePicker>
