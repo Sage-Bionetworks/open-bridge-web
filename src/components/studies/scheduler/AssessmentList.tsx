@@ -1,10 +1,4 @@
-import {
-  Box,
-  FormControlLabel,
-  FormGroup,
-  makeStyles,
-  Checkbox,
-} from '@material-ui/core'
+import { Box, FormControlLabel, FormGroup, makeStyles } from '@material-ui/core'
 import ClockIcon from '@material-ui/icons/AccessTime'
 import clsx from 'clsx'
 import React from 'react'
@@ -55,21 +49,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontFamily: latoFont,
     fontSize: '13px',
   },
-  randomizedTextContainer: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: '16px',
-    alignItems: 'center',
-    fontFamily: latoFont,
-    fontSize: '13px',
-  },
-  checkBox: {
-    width: '18px',
-    height: '18px',
-    marginRight: '8px',
-  },
 }))
 
 export interface AssessmentListProps {
@@ -119,6 +98,7 @@ type AssessmentDisplayType = {
   assessment: Assessment
   translateY: number
   assessmentIndex: number
+  realIndex: number
 }
 
 const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
@@ -132,7 +112,6 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   const [isGroupAssessments, setIsGroupAssessments] = React.useState(
     performanceOrder !== 'participant_choice',
   )
-  const [isRandomized, setIsRandomized] = React.useState(false)
 
   const [assessmentsToDisplay, setAssessentsToDisplay] = React.useState<
     AssessmentDisplayType[]
@@ -148,20 +127,22 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
         assessment: assessment,
         translateY: 0,
         assessmentIndex: index,
+        realIndex: index,
       } as AssessmentDisplayType
     })
-    if (isRandomized) {
+    if (performanceOrder === 'randomized') {
       const shuffledAssesments = shuffle([...assessments])
       for (const assessmentInfo of assessments) {
-        const indexChanged =
-          shuffledAssesments.findIndex(
-            el => el.assessmentIndex === assessmentInfo.assessmentIndex,
-          ) - assessmentInfo.assessmentIndex
+        const newIndex = shuffledAssesments.findIndex(
+          el => el.assessmentIndex === assessmentInfo.assessmentIndex,
+        )
+        const indexChanged = newIndex - assessmentInfo.assessmentIndex
         assessmentInfo.translateY = indexChanged * 96 + indexChanged * 8
+        assessmentInfo.realIndex = newIndex
       }
     }
     setAssessentsToDisplay(assessments)
-  }, [isRandomized])
+  }, [performanceOrder])
 
   // Code taken from: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
   const shuffle = (array: AssessmentDisplayType[]) => {
@@ -177,28 +158,9 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   const performanceOrderList = [
     { value: 'participant_choice', label: 'Participant Choice' },
     { value: 'sequential', label: 'Fixed Order' },
+    { value: 'randomized', label: 'Random Fixed Order' },
   ]
 
-  const getCardStyle = (
-    index: number,
-    assessmentsNumber: number,
-  ): React.CSSProperties => {
-    if (assessmentsNumber === 1) {
-      return {}
-    }
-    const offsetUnit = -16 / assessmentsNumber
-    const mTop = `${index === 0 ? 0 : -75 * 1}px`
-
-    const mLeft = `${offsetUnit * index}px`
-    const mRight = `${offsetUnit * (assessmentsNumber - index)}px`
-    return {
-      marginLeft: mLeft,
-      marginRight: mRight,
-      marginTop: mTop,
-      boxShadow: '5px 5px 10px 0 rgb(0 0 0 / 10%)',
-      width: '248px',
-    }
-  }
   return (
     <Box marginLeft="4px" marginTop="4px">
       <SessionHeader
@@ -218,7 +180,10 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
               key={studySession.guid! + assessmentInfo.assessment.guid + index}
               style={{
                 opacity:
-                  performanceOrder === 'sequential' && index > 0 ? 0.3 : 1,
+                  performanceOrder !== 'participant_choice' &&
+                  assessmentInfo.realIndex !== 0
+                    ? 0.3
+                    : 1,
                 transform: `translateY(${assessmentInfo.translateY}px)`,
                 transitionDuration: '0.4s',
               }}
@@ -242,7 +207,6 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
                 width="180px"
                 value={performanceOrder}
                 onChange={e => {
-                  setIsRandomized(false)
                   onChangePerformanceOrder(e.target.value as PerformanceOrder)
                 }}
                 emptyValueLabel="select"
@@ -256,16 +220,6 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
               </Box>
             }
           />
-          {performanceOrder === 'participant_choice' && (
-            <Box className={classes.randomizedTextContainer}>
-              <Checkbox
-                checked={isRandomized}
-                className={classes.checkBox}
-                onClick={() => setIsRandomized(!isRandomized)}
-              />
-              Randomize
-            </Box>
-          )}
         </FormGroup>
       )}
     </Box>
