@@ -137,13 +137,15 @@ export type Study = {
     welcomeScreenData?: WelcomeScreenData
     notifications?: StringDictionary<ScheduleNotification[]>
     keywords?: string
-    irbProtocolTitle?: string
   }
   createdOn?: Date
   modifiedOn?: Date
-  irbApprovedOn?: Date
-  irbApprovedUntil?: Date
-  irbExemptDate?: Date
+  // date string
+  irbExpiresOn?: string
+  // date string
+  irbDecisionOn?: string
+  irbDecisionType?: 'exempt' | 'approved'
+  irbName?: string
 }
 
 export type WelcomeScreenData = {

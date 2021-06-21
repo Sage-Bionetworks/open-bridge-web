@@ -8,7 +8,7 @@ import {
   createStyles,
   makeStyles,
   Theme,
-  withStyles
+  withStyles,
 } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React from 'react'
@@ -58,7 +58,6 @@ const useColorlibStepIconStyles = makeStyles({
   },
   active: {
     backgroundColor: '#FFE500',
-    boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
   },
   completed: {
     backgroundColor: '#FFE500',

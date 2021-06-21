@@ -195,6 +195,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         throw(e)
       }
       setError(e.message)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     } finally {
       setSaveLoader(false)
     }
@@ -284,6 +285,15 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         break
       }
       case 'launch': {
+        const missingIrbInfo = 
+        !builderInfo.study.irbDecisionType ||
+        !builderInfo.study.irbDecisionOn ||
+        !builderInfo.study.irbExpiresOn
+        if(missingIrbInfo) {
+          delete builderInfo.study.irbDecisionOn
+          delete builderInfo.study.irbExpiresOn
+          delete builderInfo.study.irbDecisionType
+        }
         saveFn = saveStudy
         break
         
