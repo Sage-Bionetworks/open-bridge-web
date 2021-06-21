@@ -13,7 +13,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
     padding: '12px',
     border: '1px solid #C4C4C4',
-
     '&.active': {
       border: theme.activeBorder,
     },
@@ -38,16 +37,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontWeight: 'bold',
     width: '80px',
     textAlign: 'left',
-  },
-  randomizeText: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: theme.spacing(2),
-    alignItems: 'center',
-    fontFamily: latoFont,
-    fontSize: '13px',
   },
 }))
 
