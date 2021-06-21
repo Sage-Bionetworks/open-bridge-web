@@ -16,7 +16,7 @@ import { jsonToCSV } from 'react-papaparse'
 import { RouteComponentProps } from 'react-router-dom'
 import { ReactComponent as CollapseIcon } from '../../../assets/collapse.svg'
 import { ReactComponent as AddParticipantsIcon } from '../../../assets/participants/add_participants.svg'
-import { ReactComponent as AddTestParticipantsIconImg } from '../../../assets/participants/add_test_participants.svg'
+import { ReactComponent as AddTestParticipantsIcon } from '../../../assets/participants/add_test_participants.svg'
 import SMSPhoneImg from '../../../assets/participants/joined_phone_icon.svg'
 import ParticipantListFocusIcon from '../../../assets/participants/participant_list_focus_icon.svg'
 import ParticipantListUnfocusIcon from '../../../assets/participants/participant_list_unfocus_icon.svg'
@@ -37,6 +37,7 @@ import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
+  RequestStatus,
   StringDictionary
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
@@ -138,6 +139,12 @@ const useStyles = makeStyles(theme => ({
     height: '17px',
     width: '13px',
   },
+  addParticipantIcon: {
+    width: theme.spacing(6),
+    height: theme.spacing(6),
+    backgroundColor: '#AEDCC9',
+    paddingTop: theme.spacing(1.5),
+  },
   deleteButtonParticipant: {
     fontFamily: latoFont,
     marginLeft: theme.spacing(3),
@@ -168,11 +175,22 @@ const useStyles = makeStyles(theme => ({
   },
   collapsedAddTestUser: {
     '& > rect': {
-      fill: '#AEDCC9'
-
-    }
-  }
+      fill: '#AEDCC9',
+    },
+  },
 }))
+
+/** types and constants  */
+type ParticipantData = {
+  items: ExtendedParticipantAccountSummary[]
+  total: number
+}
+
+type SelectedParticipantIdsType = {
+  ACTIVE: string[]
+  TEST: string[]
+  WITHDRAWN: string[]
+}
 
 const TAB_DEFs = [
   { type: 'ACTIVE', label: 'Participant List' },
@@ -191,19 +209,7 @@ const TAB_ICONS_UNFOCUS = [
   TestAccountUnfocusIcon,
 ]
 
-
-const AddTestParticipantsIcon = () => (
-  <div style={{width: '48px', height: '48px', backgroundColor:'#AEDCC9', paddingTop: '12px'}}> <AddTestParticipantsIconImg /></div>
-)
-
-type ParticipantManagerOwnProps = {
-  title?: string
-  paragraph?: string
-  studyId?: string
-}
-
-
-
+/*** general functions */
 async function getParticipants(
   studyId: string,
   token: string,
@@ -213,20 +219,21 @@ async function getParticipants(
 ): Promise<ParticipantData> {
   const offset = (currentPage - 1) * pageSize
 
-  let participants: ParticipantData = (tab === 'WITHDRAWN') ?
-    await ParticipantService.getEnrollmentsWithdrawn(
-      studyId,
-      token!,
-      pageSize,
-      offset,
-    )
-  : await ParticipantService.getActiveParticipants(
-            studyId,
-            token!,
-            pageSize,
-            offset,
-            'enrolled'
-          )
+  let participants: ParticipantData =
+    tab === 'WITHDRAWN'
+      ? await ParticipantService.getEnrollmentsWithdrawn(
+          studyId,
+          token!,
+          pageSize,
+          offset,
+        )
+      : await ParticipantService.getActiveParticipants(
+          studyId,
+          token!,
+          pageSize,
+          offset,
+          'enrolled',
+        )
 
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
@@ -252,18 +259,70 @@ async function getParticipants(
   return { items: result, total: numberOfParticipants }
 }
 
+/***  subcomponents  */
+const AddTestParticipantsIconSC = () => {
+  const classes = useStyles()
+  return (
+    <div className={classes.addParticipantIcon}>
+      <AddTestParticipantsIcon />
+    </div>
+  )
+}
+
+const HelpBoxSC: FunctionComponent<{
+  numRows: number | undefined
+  status: RequestStatus
+}> = ({ numRows, status }) => {
+  return (
+    <Box px={3} py={2} position="relative">
+      {!numRows && status !== 'PENDING' && (
+        <HelpBox
+          topOffset={40}
+          leftOffset={160}
+          arrowTailLength={150}
+          helpTextTopOffset={40}
+          helpTextLeftOffset={100}
+          arrowRotate={45}
+        >
+          <div>
+            Currently there are no participants enrolled in this study. To add
+            participants, switch to Edit mode.
+          </div>
+        </HelpBox>
+      )}
+
+      {!numRows &&
+        /*!isUserSearchingForParticipant &&*/
+        status === 'RESOLVED' && (
+          <HelpBox
+            topOffset={340}
+            leftOffset={250}
+            arrowTailLength={150}
+            helpTextTopOffset={-70}
+            helpTextLeftOffset={140}
+            helpTextWidth={250}
+            arrowRotate={0}
+          >
+            <div>
+              You can upload a .csv or enter each participant credentials one by
+              one. When you are done, return to “View” mode to send them an SMS
+              link to download the app.
+            </div>
+          </HelpBox>
+        )}
+    </Box>
+  )
+}
+
+/*** main component */
+
+type ParticipantManagerOwnProps = {
+  title?: string
+  paragraph?: string
+  studyId?: string
+}
+
 type ParticipantManagerProps = ParticipantManagerOwnProps & RouteComponentProps
-
-type ParticipantData = {
-  items: ExtendedParticipantAccountSummary[]
-  total: number
-}
-
-type SelectedParticipantIdsType = {
-  ACTIVE: string[]
-  TEST: string[]
-  WITHDRAWN: string[]
-}
 
 const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const handleError = useErrorHandler()
@@ -287,24 +346,19 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [isOpenDeleteDialog, setIsOpenDeleteDialog] = React.useState(false)
 
   // True if the user is currently searching for a particpant using id
-  const [
-    isUserSearchingForParticipant,
-    setIsUserSearchingForParticipant,
-  ] = React.useState(false)
+  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] =
+    React.useState(false)
 
-  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
-    string | undefined
-  >(undefined)
+  const [fileDownloadUrl, setFileDownloadUrl] =
+    React.useState<string | undefined>(undefined)
 
   //user ids selectedForSction
-  const [
-    selectedParticipantIds,
-    setSelectedParticipantIds,
-  ] = React.useState<SelectedParticipantIdsType>({
-    ACTIVE: [],
-    TEST: [],
-    WITHDRAWN: [],
-  })
+  const [selectedParticipantIds, setSelectedParticipantIds] =
+    React.useState<SelectedParticipantIdsType>({
+      ACTIVE: [],
+      TEST: [],
+      WITHDRAWN: [],
+    })
   const [isAllSelected, setIsAllSelected] = React.useState(false)
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
@@ -318,10 +372,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   >([])
 
   //trigger data refresh on updates
-  const [
-    refreshParticipantsToggle,
-    setRefreshParticipantsToggle,
-  ] = React.useState(false)
+  const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
+    React.useState(false)
 
   const {
     data,
@@ -358,7 +410,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     console.log('data updated - resetting selected')
     if (isAllSelected) {
       console.log('selected')
-      setSelectedParticipantIds(prev => ({ ...prev, [tab]: data?.items.map(p=> p.id) || [] }))
+      setSelectedParticipantIds(prev => ({
+        ...prev,
+        [tab]: data?.items.map(p => p.id) || [],
+      }))
     } else {
       setSelectedParticipantIds(prev => ({ ...prev }))
     }
@@ -519,43 +574,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         </Box>
         {/* <Button onClick={() => makeTestGroup()}>Make test group [test]</Button>*/}
 
-        <Box px={3} py={2} position="relative">
-          {(!data?.items.length && status!== 'PENDING') &&  (
-            <HelpBox
-              topOffset={40}
-              leftOffset={160}
-              arrowTailLength={150}
-              helpTextTopOffset={40}
-              helpTextLeftOffset={100}
-              arrowRotate={45}
-            >
-              <div>
-                Currently there are no participants enrolled in this study. To
-                add participants, switch to Edit mode.
-              </div>
-            </HelpBox>
-          )}
-
-          {!data?.items.length &&
-            !isUserSearchingForParticipant &&
-            status === 'RESOLVED' && (
-              <HelpBox
-                topOffset={340}
-                leftOffset={250}
-                arrowTailLength={150}
-                helpTextTopOffset={-70}
-                helpTextLeftOffset={140}
-                helpTextWidth={250}
-                arrowRotate={0}
-              >
-                <div>
-                  You can upload a .csv or enter each participant credentials
-                  one by one. When you are done, return to “View” mode to send
-                  them an SMS link to download the app.
-                </div>
-              </HelpBox>
-            )}
-        </Box>
+        <HelpBoxSC numRows={data?.items.length} status={status} />
 
         <Box py={0} pr={3} pl={2}>
           <Tabs
@@ -608,14 +627,27 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               isFullWidth={true}
               isHideContentOnClose={true}
               isDrawerHidden={tab === 'WITHDRAWN'}
-              collapseButton={<CollapseIcon className={clsx(tab=== 'TEST' && classes.collapsedAddTestUser)}/>}
+              collapseButton={
+                <CollapseIcon
+                  className={clsx(
+                    tab === 'TEST' && classes.collapsedAddTestUser,
+                  )}
+                />
+              }
               onToggleClick={(open: boolean) => setIsAddOpen(open)}
-              expandButton={tab==='ACTIVE'?<AddParticipantsIcon />:<AddTestParticipantsIcon/>}
+              expandButton={
+                tab === 'ACTIVE' ? (
+                  <AddParticipantsIcon />
+                ) : (
+                  <AddTestParticipantsIconSC />
+                )
+              }
               toggleButtonStyle={{
                 display: 'block',
                 padding: '0',
                 borderRadius: 0,
-                backgroundColor: tab==='ACTIVE'? theme.palette.primary.dark : '#AEDCC9'
+                backgroundColor:
+                  tab === 'ACTIVE' ? theme.palette.primary.dark : '#AEDCC9',
               }}
             >
               <>
@@ -729,7 +761,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       /*id: string, isSelected: boolean*/ selection,
                       isAll,
                     ) => {
-                 
                       if (isAll !== undefined) {
                         setIsAllSelected(isAll)
                       }
@@ -747,15 +778,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   role="tabpanel"
                   hidden={tab !== 'WITHDRAWN'}
                   id={`withdrawn-participants`}
-                  className={classes.tabPanel}
-                >
-                  <span>Withdrawn participants will go here</span>
-                </div>
-
-                <div
-                  role="tabpanel"
-                  hidden={tab !== 'TEST'}
-                  id={`test-accounts`}
                   className={classes.tabPanel}
                 >
                   <span>Withdrawn participants will go here</span>
