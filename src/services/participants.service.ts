@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { callEndpoint, generateNonambiguousCode } from '../helpers/utility'
 import constants from '../types/constants'
 import {
@@ -154,6 +155,7 @@ async function getParticipants(
   const data = {
     pageSize: pageSize,
     offsetBy: offsetBy,
+    enrolledInStudyId: studyIdentifier,
     noneOfGroups: IS_TEST ? undefined : ['test_user'],
   }
 
@@ -164,10 +166,9 @@ async function getParticipants(
 
   const mappedData = result.data.items.map(p => ({
     ...p,
-    externalId: formatExternalId(
-      studyIdentifier,
-      p.externalIds[studyIdentifier],
-    ),
+    externalId: p.externalIds[studyIdentifier]
+      ? formatExternalId(studyIdentifier, p.externalIds[studyIdentifier])
+      : '',
   }))
 
   //ALINA TODO: once there is a filter we can use that
@@ -265,6 +266,67 @@ async function deleteParticipant(
   return result.data.identifier
 }
 
+async function getActiveParticipants(
+  studyIdentifier: string,
+  token: string,
+  pageSize: number,
+  offsetBy: number,
+  filter: 'withdrawn' | 'enrolled' | 'test',
+): Promise<{ items: ExtendedParticipantAccountSummary[]; total: number }> {
+  // get enrollment for non test account
+  const endpoint = `${constants.endpoints.enrollments.replace(
+    ':studyId',
+    studyIdentifier,
+  )}`
+  const data = {
+    enrollmentFilter: filter !== 'test' ? filter : undefined,
+    pageSize: pageSize,
+    offsetBy: offsetBy,
+    includeTesters: false,
+  }
+
+  const enrolledNonTesters = (
+    await callEndpoint<{
+      items: EnrolledAccountRecord[]
+      total: number
+    }>(endpoint, 'GET', data, token)
+  ).data
+
+  //if we want only test accoutnt we will be all accounts w/ filtered non testers
+  let result = enrolledNonTesters
+  if (filter === 'test') {
+    data.includeTesters = true
+    const enrolledAll = (
+      await callEndpoint<{
+        items: EnrolledAccountRecord[]
+        total: number
+      }>(endpoint, 'GET', data, token)
+    ).data
+
+    const enrolledNonTesterIds = enrolledNonTesters.items.map(p => p.participant.identifier)
+    const enrolledTesters = enrolledAll.items.filter(
+      p => !_.includes(enrolledNonTesterIds, p.participant.identifier),
+    )
+    result = { items: enrolledTesters, total: enrolledTesters.length }
+  }
+
+  let resultItems: ParticipantAccountSummary[] = []
+  if (filter === 'withdrawn') {
+    resultItems = result.items.map(p =>
+      mapWithdrawnParticipant(p, studyIdentifier),
+    )
+  }
+  if (filter === 'enrolled' || filter === 'test') {
+    const participantPromises = result.items.map(i =>
+      getParticipantById(studyIdentifier, token, i.participant.identifier),
+    )
+    const resolvedParticipants = await Promise.all(participantPromises)
+    resultItems = resolvedParticipants.filter(p => p !== null) as ParticipantAccountSummary[]
+  }
+
+  return { items: resultItems, total: result.total }
+}
+
 //gets a list of withdrawn participants
 async function getEnrollmentsWithdrawn(
   studyIdentifier: string,
@@ -279,6 +341,7 @@ async function getEnrollmentsWithdrawn(
     ':studyId',
     studyIdentifier,
   )}`
+
   const data = {
     enrollmentFilter: 'withdrawn',
     pageSize: pageSize,
@@ -435,8 +498,12 @@ async function addTestParticipantForPreview(
   studyIdentifier: string,
   token: string,
 ): Promise<string> {
-  return addParticipant(  studyIdentifier,
-    token, {externalId: generateNonambiguousCode(6)}, true)
+  return addParticipant(
+    studyIdentifier,
+    token,
+    { externalId: generateNonambiguousCode(6) },
+    true,
+  )
 }
 
 //used when editing a participant
@@ -519,6 +586,7 @@ const ParticipantService = {
   getEnrollmentsWithdrawnById,
   getAllEnrollmentsWithdrawn,
   getParticipantById,
+  getActiveParticipants,
   getParticipants,
   getRequestInfoForParticipant,
   updateNotesAndClinicVisitForParticipant,

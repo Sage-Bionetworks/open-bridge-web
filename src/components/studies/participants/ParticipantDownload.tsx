@@ -1,7 +1,7 @@
 import { Box, Button, CircularProgress } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
-import DownloadIcon from '../../../assets/ParticipantManager/download_icon.svg'
+import DownloadIcon from '../../../assets/participants/download_icon.svg'
 import { latoFont } from '../../../style/theme'
 
 const useStyles = makeStyles(theme => ({

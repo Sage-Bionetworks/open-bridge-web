@@ -6,29 +6,38 @@ import {
   DialogActions,
   DialogContent,
   Tab,
-  Tabs,
+  Tabs
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { jsonToCSV } from 'react-papaparse'
 import { RouteComponentProps } from 'react-router-dom'
-import { ReactComponent as ExpandIcon } from '../../../assets/add_participants.svg'
 import { ReactComponent as CollapseIcon } from '../../../assets/collapse.svg'
+import { ReactComponent as AddParticipantsIcon } from '../../../assets/participants/add_participants.svg'
+import { ReactComponent as AddTestParticipantsIconImg } from '../../../assets/participants/add_test_participants.svg'
+import SMSPhoneImg from '../../../assets/participants/joined_phone_icon.svg'
+import ParticipantListFocusIcon from '../../../assets/participants/participant_list_focus_icon.svg'
+import ParticipantListUnfocusIcon from '../../../assets/participants/participant_list_unfocus_icon.svg'
+import TestAccountFocusIcon from '../../../assets/participants/test_account_focus_icon.svg'
+import TestAccountUnfocusIcon from '../../../assets/participants/test_account_unfocus_icon.svg'
+import WithdrawnParticipantsFocusIcon from '../../../assets/participants/withdrawn_participants_focus_icon.svg'
+import WithdrawnParticipantsUnfocusIcon from '../../../assets/participants/withdrawn_participants_unfocus_icon.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/trash.svg'
 import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
-  useStudyInfoDataState,
+  useStudyInfoDataState
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
-import { theme, latoFont, poppinsFont } from '../../../style/theme'
+import { latoFont, poppinsFont, theme } from '../../../style/theme'
 import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
-  StringDictionary,
+  StringDictionary
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
@@ -36,24 +45,16 @@ import { MTBHeadingH3 } from '../../widgets/Headings'
 import HelpBox from '../../widgets/HelpBox'
 import {
   DialogButtonPrimary,
-  DialogButtonSecondary,
+  DialogButtonSecondary
 } from '../../widgets/StyledComponents'
 import LiveIcon from '../LiveIcon'
 import AddParticipants from './AddParticipants'
 import DeleteDialog from './DeleteDialogContents'
 import ParticipantDownload, {
-  ParticipantDownloadType,
+  ParticipantDownloadType
 } from './ParticipantDownload'
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
-import SMSPhoneImg from '../../../assets/ParticipantManager/joined_phone_icon.svg'
-import ParticipantListFocusIcon from '../../../assets/ParticipantManager/participant_list_focus_icon.svg'
-import ParticipantListUnfocusIcon from '../../../assets/ParticipantManager/participant_list_unfocus_icon.svg'
-import TestAccountFocusIcon from '../../../assets/ParticipantManager/test_account_focus_icon.svg'
-import TestAccountUnfocusIcon from '../../../assets/ParticipantManager/test_account_unfocus_icon.svg'
-import WithdrawnParticipantsFocusIcon from '../../../assets/ParticipantManager/withdrawn_participants_focus_icon.svg'
-import WithdrawnParticipantsUnfocusIcon from '../../../assets/ParticipantManager/withdrawn_participants_unfocus_icon.svg'
-import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -165,6 +166,12 @@ const useStyles = makeStyles(theme => ({
       borderBottom: '1px solid black',
     },
   },
+  collapsedAddTestUser: {
+    '& > rect': {
+      fill: '#AEDCC9'
+
+    }
+  }
 }))
 
 const TAB_DEFs = [
@@ -183,6 +190,11 @@ const TAB_ICONS_UNFOCUS = [
   WithdrawnParticipantsUnfocusIcon,
   TestAccountUnfocusIcon,
 ]
+
+
+const AddTestParticipantsIcon = () => (
+  <div style={{width: '48px', height: '48px', backgroundColor:'#AEDCC9', paddingTop: '12px'}}> <AddTestParticipantsIconImg /></div>
+)
 
 type ParticipantManagerOwnProps = {
   title?: string
@@ -208,11 +220,12 @@ async function getParticipants(
       pageSize,
       offset,
     )
-  : await ParticipantService.getParticipants(
+  : await ParticipantService.getActiveParticipants(
             studyId,
             token!,
             pageSize,
             offset,
+            'enrolled'
           )
 
   const retrievedParticipants = participants ? participants.items : []
@@ -507,7 +520,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         {/* <Button onClick={() => makeTestGroup()}>Make test group [test]</Button>*/}
 
         <Box px={3} py={2} position="relative">
-          {!data?.items.length && (
+          {(!data?.items.length && status!== 'PENDING') &&  (
             <HelpBox
               topOffset={40}
               leftOffset={160}
@@ -594,16 +607,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               expandedWidth={300}
               isFullWidth={true}
               isHideContentOnClose={true}
-              isDrawerHidden={tab !== 'ACTIVE'}
-              collapseButton={<CollapseIcon />}
+              isDrawerHidden={tab === 'WITHDRAWN'}
+              collapseButton={<CollapseIcon className={clsx(tab=== 'TEST' && classes.collapsedAddTestUser)}/>}
               onToggleClick={(open: boolean) => setIsAddOpen(open)}
-              expandButton={<ExpandIcon />}
+              expandButton={tab==='ACTIVE'?<AddParticipantsIcon />:<AddTestParticipantsIcon/>}
               toggleButtonStyle={{
                 display: 'block',
                 padding: '0',
                 borderRadius: 0,
-            
-                backgroundColor: theme.palette.primary.dark,
+                backgroundColor: tab==='ACTIVE'? theme.palette.primary.dark : '#AEDCC9'
               }}
             >
               <>
@@ -686,7 +698,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 </Box>
                 <div
                   role="tabpanel"
-                  hidden={tab === 'WITHDRAWN'}
+                  hidden={false}
                   id={`active-participants`}
                   className={classes.tabPanel}
                   style={{ marginLeft: !isAddOpen ? '-48px' : '0' }}
@@ -717,12 +729,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       /*id: string, isSelected: boolean*/ selection,
                       isAll,
                     ) => {
-                      console.log('PMANAGER', selection, isAll)
-                      /* if (tab === 'ACTIVE') {
-                        setSelectedActiveParticipants(selection)
-                      } else {
-                        setSelectedWithdrawnParticipants(selection)
-                      }*/
+                 
                       if (isAll !== undefined) {
                         setIsAllSelected(isAll)
                       }
