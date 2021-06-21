@@ -151,7 +151,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   ]
 
   return (
-    <Box marginLeft="4px" marginTop="4px">
+    <Box m={0.5}>
       <SessionHeader
         order={studySessionIndex}
         name={studySession.name}
