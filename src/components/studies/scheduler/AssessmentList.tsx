@@ -1,8 +1,14 @@
-import { Box, FormControlLabel, FormGroup, makeStyles } from '@material-ui/core'
+import {
+  Box,
+  FormControlLabel,
+  FormGroup,
+  makeStyles,
+  Checkbox,
+} from '@material-ui/core'
 import ClockIcon from '@material-ui/icons/AccessTime'
 import clsx from 'clsx'
 import React from 'react'
-import { ThemeType, poppinsFont } from '../../../style/theme'
+import { ThemeType, poppinsFont, latoFont } from '../../../style/theme'
 import { PerformanceOrder, StudySession } from '../../../types/scheduling'
 import { Assessment } from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
@@ -38,6 +44,31 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontWeight: 'bold',
     width: '80px',
     textAlign: 'left',
+  },
+  randomizeText: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: theme.spacing(2),
+    alignItems: 'center',
+    fontFamily: latoFont,
+    fontSize: '13px',
+  },
+  randomizedTextContainer: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: '16px',
+    alignItems: 'center',
+    fontFamily: latoFont,
+    fontSize: '13px',
+  },
+  checkBox: {
+    width: '18px',
+    height: '18px',
+    marginRight: '8px',
   },
 }))
 
@@ -95,6 +126,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   const [isGroupAssessments, setIsGroupAssessments] = React.useState(
     performanceOrder !== 'participant_choice',
   )
+  const [isRandomized, setIsRandomized] = React.useState(false)
 
   const performanceOrderList = [
     { value: 'participant_choice', label: 'Participant Choice' },
@@ -167,7 +199,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
                   onChangePerformanceOrder(e.target.value as PerformanceOrder)
                 }
                 emptyValueLabel="select"
-                itemHeight="40px"
+                itemHeight="42px"
                 dropdown={performanceOrderList}
               />
             }
@@ -177,6 +209,14 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
               </Box>
             }
           />
+          <Box className={classes.randomizedTextContainer}>
+            <Checkbox
+              checked={isRandomized}
+              className={classes.checkBox}
+              onClick={() => setIsRandomized(!isRandomized)}
+            />
+            Randomize
+          </Box>
         </FormGroup>
       )}
     </Box>
