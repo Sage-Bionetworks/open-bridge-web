@@ -50,10 +50,11 @@ const SessionHeader: React.FunctionComponent<SessionHeaderProps> = ({
   name,
   assessments,
 }: SessionHeaderProps) => {
-  const totalTime = assessments.reduce(
-    (prev, curr) => prev + Number(curr.minutesToComplete),
-    0,
-  )
+  const totalTime = assessments.reduce((total, curr) => {
+    const time = curr.minutesToComplete
+    return total + (time ? time : 0)
+  }, 0)
+
   const result = (
     <Box>
       <SessionIcon index={order}>
