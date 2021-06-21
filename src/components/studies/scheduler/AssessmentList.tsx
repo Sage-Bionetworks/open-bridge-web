@@ -6,7 +6,7 @@ import { ThemeType, poppinsFont } from '../../../style/theme'
 import { PerformanceOrder, StudySession } from '../../../types/scheduling'
 import { Assessment } from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
-import SaveBlackBorderDropdown from '../../widgets/BlackBorderDropdown'
+import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
 import SessionIcon from '../../widgets/SessionIcon'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -24,14 +24,20 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     padding: theme.spacing(2),
   },
   order: {
-    marginRight: '16px',
-    marginTop: '16px',
-    '& span': {
-      fontSize: '11px',
-      fontFamily: poppinsFont,
-      lineHeight: '15px',
-      fontWeight: 'bold',
-    },
+    width: '100%',
+    marginLeft: '0px',
+    marginTop: theme.spacing(1.5),
+    display: 'flex',
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+  },
+  assessmentOrderText: {
+    fontSize: '11px',
+    fontFamily: poppinsFont,
+    lineHeight: '15px',
+    fontWeight: 'bold',
+    width: '80px',
+    textAlign: 'left',
   },
 }))
 
@@ -58,14 +64,19 @@ const SessionHeader: React.FunctionComponent<SessionHeaderProps> = ({
   }, 0)
 
   const result = (
-    <Box>
+    <Box mb={2}>
       <SessionIcon index={order}>
         <span>{name}</span>
       </SessionIcon>
-      <Box textAlign="right" paddingBottom="16px">
+      <Box
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="flex-end"
+      >
         {totalTime} min &nbsp;&nbsp;
         <ClockIcon
-          style={{ fontSize: '12px', verticalAlign: 'middle' }}
+          style={{ fontSize: '18px', verticalAlign: 'middle' }}
         ></ClockIcon>
       </Box>
     </Box>
@@ -112,7 +123,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
     }
   }
   return (
-    <>
+    <Box marginLeft="4px" marginTop="4px">
       <SessionHeader
         order={studySessionIndex}
         name={studySession.name}
@@ -149,21 +160,26 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
             labelPlacement="start"
             className={classes.order}
             control={
-              <SaveBlackBorderDropdown
-                width="150px"
+              <BlackBorderDropdown
+                width="180px"
                 value={performanceOrder}
                 onChange={e =>
                   onChangePerformanceOrder(e.target.value as PerformanceOrder)
                 }
                 emptyValueLabel="select"
+                itemHeight="40px"
                 dropdown={performanceOrderList}
               />
             }
-            label="Assessment Order:"
+            label={
+              <Box className={classes.assessmentOrderText}>
+                Assessment Order:
+              </Box>
+            }
           />
         </FormGroup>
       )}
-    </>
+    </Box>
   )
 }
 
