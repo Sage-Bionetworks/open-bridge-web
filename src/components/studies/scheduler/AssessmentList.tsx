@@ -2,7 +2,7 @@ import { Box, FormControlLabel, FormGroup, makeStyles } from '@material-ui/core'
 import ClockIcon from '@material-ui/icons/AccessTime'
 import clsx from 'clsx'
 import React from 'react'
-import { ThemeType, poppinsFont, latoFont } from '../../../style/theme'
+import { ThemeType, poppinsFont } from '../../../style/theme'
 import { PerformanceOrder, StudySession } from '../../../types/scheduling'
 import { Assessment } from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
@@ -11,7 +11,7 @@ import SessionIcon from '../../widgets/SessionIcon'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
-    padding: '12px',
+    padding: theme.spacing(1.5),
     border: '1px solid #C4C4C4',
     '&.active': {
       border: theme.activeBorder,
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   order: {
     width: '100%',
-    marginLeft: '0px',
+    marginLeft: theme.spacing(0),
     marginTop: theme.spacing(1.5),
     display: 'flex',
     flexDirection: 'row-reverse',
