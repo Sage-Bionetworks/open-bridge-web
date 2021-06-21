@@ -131,7 +131,6 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   const performanceOrderList = [
     { value: 'participant_choice', label: 'Participant Choice' },
     { value: 'sequential', label: 'Fixed Order' },
-    { value: 'randomized', label: 'Random Order' },
   ]
 
   const getCardStyle = (
@@ -171,14 +170,13 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
           studySession.assessments.map((assessment, index) => (
             <Box
               key={studySession.guid! + assessment.guid + index}
-              style={
-                performanceOrder !== 'participant_choice'
-                  ? getCardStyle(index, studySession.assessments?.length || 0)
-                  : {}
-              }
+              style={{
+                opacity:
+                  performanceOrder === 'sequential' && index > 0 ? 0.3 : 1,
+              }}
             >
               <AssessmentSmall
-                isHideDuration={false /*performanceOrder === 'randomized'*/}
+                isHideDuration={false}
                 assessment={assessment}
                 hasHover={false}
                 isDragging={false}
