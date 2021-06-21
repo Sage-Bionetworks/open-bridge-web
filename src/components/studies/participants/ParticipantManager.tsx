@@ -272,6 +272,7 @@ const AddTestParticipantsIconSC = () => {
 const HelpBoxSC: FunctionComponent<{
   numRows: number | undefined
   status: RequestStatus
+
 }> = ({ numRows, status }) => {
   return (
     <Box px={3} py={2} position="relative">
@@ -574,7 +575,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         </Box>
         {/* <Button onClick={() => makeTestGroup()}>Make test group [test]</Button>*/}
 
-        <HelpBoxSC numRows={data?.items.length} status={status} />
+       {tab === 'ACTIVE' && <HelpBoxSC numRows={data?.items.length} status={status} />}
 
         <Box py={0} pr={3} pl={2}>
           <Tabs
@@ -657,6 +658,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   onAdded={() => {
                     setRefreshParticipantsToggle(prev => !prev)
                   }}
+                  isTestAccount = {tab === 'TEST'}
                 ></AddParticipants>
               </>
               <div>
@@ -785,7 +787,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               </div>
 
               <Box textAlign="center" pl={2}>
-                ADD A PARTICIPANT
+               { tab!== 'TEST'? 'ADD A PARTICIPANT': 'ADD TEST USER'}
               </Box>
             </CollapsibleLayout>
           </Box>

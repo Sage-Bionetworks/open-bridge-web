@@ -494,7 +494,7 @@ async function addParticipant(
 }
 
 // used for the preview screen in study builder
-async function addTestParticipantForPreview(
+async function addTestParticipant(
   studyIdentifier: string,
   token: string,
 ): Promise<string> {
@@ -578,7 +578,7 @@ async function getRequestInfoForParticipant(
 
 const ParticipantService = {
   addParticipant,
-  addTestParticipantForPreview,
+  addTestParticipant,
   deleteParticipant,
   getAllParticipants,
   getRelevantEventsForParticipans,
