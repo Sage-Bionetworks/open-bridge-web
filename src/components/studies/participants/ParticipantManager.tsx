@@ -580,9 +580,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       style={{ marginRight: '6px' }}
                     ></img>
                     <div>
-                      {`${tabDef.label} (${
-                        tab === tabDef.type ? (data ? data.total : '...') : '0'
-                      })`}
+                      {`${tabDef.label} ${
+                        tab === tabDef.type ? (data ? `(${data.total})` : '(...)') : ''
+                      }`}
                     </div>
                   </Box>
                 }
