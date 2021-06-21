@@ -115,6 +115,12 @@ const SessionHeader: React.FunctionComponent<SessionHeaderProps> = ({
   return result
 }
 
+type AssessmentDisplayType = {
+  assessment: Assessment
+  translateY: number
+  assessmentIndex: number
+}
+
 const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   studySession,
   performanceOrder,
@@ -127,6 +133,46 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
     performanceOrder !== 'participant_choice',
   )
   const [isRandomized, setIsRandomized] = React.useState(false)
+
+  const [assessmentsToDisplay, setAssessentsToDisplay] = React.useState<
+    AssessmentDisplayType[]
+  >([])
+
+  React.useEffect(() => {
+    if (!studySession.assessments) {
+      setAssessentsToDisplay([])
+      return
+    }
+    let assessments = studySession.assessments.map((assessment, index) => {
+      return {
+        assessment: assessment,
+        translateY: 0,
+        assessmentIndex: index,
+      } as AssessmentDisplayType
+    })
+    if (isRandomized) {
+      const shuffledAssesments = shuffle([...assessments])
+      for (const assessmentInfo of assessments) {
+        const indexChanged =
+          shuffledAssesments.findIndex(
+            el => el.assessmentIndex === assessmentInfo.assessmentIndex,
+          ) - assessmentInfo.assessmentIndex
+        assessmentInfo.translateY = indexChanged * 96 + indexChanged * 8
+      }
+    }
+    setAssessentsToDisplay(assessments)
+  }, [isRandomized])
+
+  // Code taken from: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+  const shuffle = (array: AssessmentDisplayType[]) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      const temp = array[i]
+      array[i] = array[j]
+      array[j] = temp
+    }
+    return array
+  }
 
   const performanceOrderList = [
     { value: 'participant_choice', label: 'Participant Choice' },
@@ -167,17 +213,19 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
         })}
       >
         {studySession.assessments &&
-          studySession.assessments.map((assessment, index) => (
+          assessmentsToDisplay.map((assessmentInfo, index) => (
             <Box
-              key={studySession.guid! + assessment.guid + index}
+              key={studySession.guid! + assessmentInfo.assessment.guid + index}
               style={{
                 opacity:
                   performanceOrder === 'sequential' && index > 0 ? 0.3 : 1,
+                transform: `translateY(${assessmentInfo.translateY}px)`,
+                transitionDuration: '0.4s',
               }}
             >
               <AssessmentSmall
                 isHideDuration={false}
-                assessment={assessment}
+                assessment={assessmentInfo.assessment}
                 hasHover={false}
                 isDragging={false}
               ></AssessmentSmall>
@@ -207,14 +255,16 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
               </Box>
             }
           />
-          <Box className={classes.randomizedTextContainer}>
-            <Checkbox
-              checked={isRandomized}
-              className={classes.checkBox}
-              onClick={() => setIsRandomized(!isRandomized)}
-            />
-            Randomize
-          </Box>
+          {performanceOrder === 'participant_choice' && (
+            <Box className={classes.randomizedTextContainer}>
+              <Checkbox
+                checked={isRandomized}
+                className={classes.checkBox}
+                onClick={() => setIsRandomized(!isRandomized)}
+              />
+              Randomize
+            </Box>
+          )}
         </FormGroup>
       )}
     </Box>
