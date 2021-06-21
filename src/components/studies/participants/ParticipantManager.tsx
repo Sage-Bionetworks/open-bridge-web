@@ -604,7 +604,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 borderRadius: 0,
             
                 backgroundColor: theme.palette.primary.dark,
-                borderRadius: '0px',
               }}
             >
               <>
