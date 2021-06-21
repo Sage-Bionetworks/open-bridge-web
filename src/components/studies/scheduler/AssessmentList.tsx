@@ -241,9 +241,10 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
               <BlackBorderDropdown
                 width="180px"
                 value={performanceOrder}
-                onChange={e =>
+                onChange={e => {
+                  setIsRandomized(false)
                   onChangePerformanceOrder(e.target.value as PerformanceOrder)
-                }
+                }}
                 emptyValueLabel="select"
                 itemHeight="42px"
                 dropdown={performanceOrderList}
