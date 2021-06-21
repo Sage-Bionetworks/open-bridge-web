@@ -61,7 +61,7 @@ function addSession(
     name,
   }*/
   const session = StudyService.createEmptyStudySession(
-    sessions[0].startEventId!,
+    sessions.length? sessions[0].startEventId!: 'study_start_date',
     name,
   )
 
