@@ -51,6 +51,9 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     marginBottom: theme.spacing(2),
     padding: theme.spacing(6, 4, 8, 4),
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(6, 0, 8, 0),
+    },
     '&$error': {
       border: `1px solid ${theme.palette.error.main}`,
     },
