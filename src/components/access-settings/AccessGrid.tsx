@@ -211,8 +211,7 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
                       restriction,
                       role_key,
                       isCoadmin ||
-                        getRolesFromAccess(access).includes('org_admin') ||
-                        false,
+                        getRolesFromAccess(access).includes('org_admin'),
                     )}
                 </td>
               ))}
