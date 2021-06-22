@@ -50,6 +50,7 @@ const roles: AccessLabel[] = [
   { PARTICIPANT_MANAGER: 'PARTICIPANT MANAGER' },
   { ADHERENCE_DATA: 'ADHERENCE DATA' },
   { STUDY_DATA: 'STUDY DATA' },
+  { ACCESS_SETTINGS: 'ACCESS SETTINGS' },
 ]
 
 export const NO_ACCESS: Access = {

@@ -14,7 +14,7 @@ import AccessGrid, { Access, getAccessFromRoles } from './AccessGrid'
 const useStyles = makeStyles(theme => ({
   root: {
     minWidth: '500px',
-    border: "1px solid purple"
+    border: '1px solid purple',
   },
 }))
 
@@ -84,8 +84,18 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
           />
         }
         label="MAKE CO-ADMINISTRATOR OF STUDY"
-        style={{ marginBottom: '48px', marginTop: '8px' }}
+        style={{ marginBottom: coadmin ? '12px' : '42px', marginTop: '8px' }}
       />
+      {coadmin && (
+        <Box mb={4}>
+          Administrators have full access to a study. They can add/delete team
+          members.
+          <br />
+          <br />
+          <strong>Principal Investigators</strong> are required to be part of
+          the study as a Study Administrator in order to launch a study.
+        </Box>
+      )}
       <AccessGrid
         access={access}
         onUpdate={(_access: Access) => {
