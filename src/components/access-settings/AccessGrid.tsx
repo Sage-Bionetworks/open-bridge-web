@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { latoFont } from '../../style/theme'
 import { AdminRole } from '../../types/types'
+import CheckIcon from '@material-ui/icons/Check'
 
 const useStyles = makeStyles(theme => ({
   cell: {
@@ -126,6 +127,22 @@ const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponen
 }) => {
   const key = Object.keys(role_key)[0] as keyof Access
   let checkboxChecked = false
+  if (!currentUserIsAdmin) {
+    if (!isEqualToCurrentValue) {
+      return null
+    }
+    return (
+      <Box
+        mt={-2.5}
+        height="40px"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <CheckIcon style={{ color: 'black' }} />
+      </Box>
+    )
+  }
   if (key === 'ACCESS_SETTINGS') {
     checkboxChecked = true
     if (restriction === 'NO_ACCESS') {
