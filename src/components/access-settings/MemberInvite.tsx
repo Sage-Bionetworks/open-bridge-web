@@ -51,13 +51,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
 
   return (
     <Container maxWidth="lg" className={classes.root}>
-      <Box
-        style={{
-          fontFamily: poppinsFont,
-          fontSize: '14px',
-          marginBottom: '6px',
-        }}
-      >
+      <Box fontFamily={poppinsFont} fontSize="14px" mb={0.75}>
         Email Address:
       </Box>
       <TextField

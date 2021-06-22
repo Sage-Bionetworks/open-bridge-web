@@ -160,7 +160,6 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
         )
       }
     }
-
     return (
       <Radio
         checked={
