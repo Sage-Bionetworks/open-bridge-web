@@ -3,9 +3,11 @@ import {
   FormControlLabel,
   makeStyles,
   Switch,
-  TextField
+  TextField,
+  Box,
 } from '@material-ui/core'
 import React, { FunctionComponent } from 'react'
+import { poppinsFont } from '../../style/theme'
 import ErrorDisplay from '../widgets/ErrorDisplay'
 import AccessGrid, { Access, getAccessFromRoles } from './AccessGrid'
 
@@ -49,14 +51,17 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
 
   return (
     <Container maxWidth="lg" className={classes.root}>
+      <Box fontFamily={poppinsFont} fontSize="14px" mb={0.75}>
+        Email Address:
+      </Box>
       <TextField
-        label="Email Adderess:"
         fullWidth
         variant="outlined"
         onChange={e => setEmail(e.target.value)}
         onBlur={e => onUpdate({ ...newOrgAccount, email: email })}
         color="secondary"
         value={email || ''}
+        placeholder="email@synapse.org"
       ></TextField>
       {newOrgAccount.error && (
         <ErrorDisplay>{newOrgAccount.error.toString()}</ErrorDisplay>
@@ -71,7 +76,18 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
           />
         }
         label="MAKE CO-ADMINISTRATOR OF STUDY"
+        style={{ marginBottom: coadmin ? '12px' : '42px', marginTop: '8px' }}
       />
+      {coadmin && (
+        <Box mb={4}>
+          Administrators have full access to a study. They can add/delete team
+          members.
+          <br />
+          <br />
+          <strong>Principal Investigators</strong> are required to be part of
+          the study as a Study Administrator in order to launch a study.
+        </Box>
+      )}
       <AccessGrid
         access={access}
         onUpdate={(_access: Access) => {
@@ -80,6 +96,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
           onUpdate({ ...newOrgAccount, access: _access })
         }}
         isEdit={true}
+        isCoadmin={coadmin}
       ></AccessGrid>
     </Container>
   )
