@@ -50,7 +50,7 @@ const useStyles = makeStyles(theme => ({
   newOrgAccount: {
     position: 'relative',
     marginBottom: theme.spacing(2),
-    padding: theme.spacing(6, 12, 8, 12),
+    padding: theme.spacing(6, 4, 8, 4),
     '&$error': {
       border: `1px solid ${theme.palette.error.main}`,
     },

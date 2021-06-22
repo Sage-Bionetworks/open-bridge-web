@@ -210,7 +210,9 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
                     getRadioButtonDisplay(
                       restriction,
                       role_key,
-                      isCoadmin || false,
+                      isCoadmin ||
+                        getRolesFromAccess(access).includes('org_admin') ||
+                        false,
                     )}
                 </td>
               ))}

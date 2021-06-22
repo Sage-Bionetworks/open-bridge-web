@@ -12,9 +12,7 @@ import ErrorDisplay from '../widgets/ErrorDisplay'
 import AccessGrid, { Access, getAccessFromRoles } from './AccessGrid'
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    minWidth: '550px',
-  },
+  root: {},
 }))
 
 export type NewOrgAccount = {
@@ -69,6 +67,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
         onBlur={e => onUpdate({ ...newOrgAccount, email: email })}
         color="secondary"
         value={email || ''}
+        placeholder="email@synapse.org"
       ></TextField>
       {newOrgAccount.error && (
         <ErrorDisplay>{newOrgAccount.error.toString()}</ErrorDisplay>
