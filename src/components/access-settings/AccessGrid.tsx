@@ -1,17 +1,21 @@
 import { Box, makeStyles, Radio } from '@material-ui/core'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
+import { latoFont } from '../../style/theme'
 import { AdminRole } from '../../types/types'
 
 const useStyles = makeStyles(theme => ({
   cell: {
     borderBottom: '1px solid black',
-
     padding: '10px',
+    fontFamily: latoFont,
+    fontSize: '14px',
   },
   data: {
     width: '100px',
     textAlign: 'center',
+    fontFamily: latoFont,
+    fontSize: '14px',
   },
   dot: {
     width: '14px',
@@ -57,7 +61,7 @@ export const NO_ACCESS: Access = {
 
 export function getRolesFromAccess(access: Access): AdminRole[] {
   if (access.STUDY_BUILDER === 'EDITOR') {
-    return ['org_admin', "admin","researcher","developer"]
+    return ['org_admin', 'admin', 'researcher', 'developer']
   }
   if (access.ADHERENCE_DATA === 'VIEWER') {
     return ['researcher']

@@ -3,14 +3,19 @@ import {
   FormControlLabel,
   makeStyles,
   Switch,
-  TextField
+  TextField,
+  Box,
 } from '@material-ui/core'
 import React, { FunctionComponent } from 'react'
+import { poppinsFont } from '../../style/theme'
 import ErrorDisplay from '../widgets/ErrorDisplay'
 import AccessGrid, { Access, getAccessFromRoles } from './AccessGrid'
 
 const useStyles = makeStyles(theme => ({
-  root: {},
+  root: {
+    minWidth: '500px',
+    border: "1px solid purple"
+  },
 }))
 
 export type NewOrgAccount = {
@@ -49,8 +54,16 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
 
   return (
     <Container maxWidth="lg" className={classes.root}>
+      <Box
+        style={{
+          fontFamily: poppinsFont,
+          fontSize: '14px',
+          marginBottom: '6px',
+        }}
+      >
+        Email Address:
+      </Box>
       <TextField
-        label="Email Adderess:"
         fullWidth
         variant="outlined"
         onChange={e => setEmail(e.target.value)}
@@ -71,6 +84,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
           />
         }
         label="MAKE CO-ADMINISTRATOR OF STUDY"
+        style={{ marginBottom: '48px', marginTop: '8px' }}
       />
       <AccessGrid
         access={access}

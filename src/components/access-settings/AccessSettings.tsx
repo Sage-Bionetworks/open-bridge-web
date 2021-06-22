@@ -7,7 +7,7 @@ import {
   DialogTitle,
   IconButton,
   makeStyles,
-  Paper
+  Paper,
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import MailOutlineIcon from '@material-ui/icons/MailOutline'
@@ -18,7 +18,7 @@ import { ReactComponent as Delete } from '../../assets/trash.svg'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
 import {
   StudyInfoData,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
 import AccessService from '../../services/access.service'
 import { poppinsFont } from '../../style/theme'
@@ -54,6 +54,9 @@ const useStyles = makeStyles(theme => ({
     '&$error': {
       border: `1px solid ${theme.palette.error.main}`,
     },
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   addNewDialogHeader: {
     color: theme.palette.common.white,
@@ -112,8 +115,11 @@ async function createNewAccount(
     return 'developer'
   }
   try {
-    const { principalId, firstName, lastName } =
-      await AccessService.getAliasFromSynapseByEmail(email)
+    const {
+      principalId,
+      firstName,
+      lastName,
+    } = await AccessService.getAliasFromSynapseByEmail(email)
 
     await AccessService.createIndividualAccount(
       token!,
@@ -237,7 +243,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent className={classes.addNewDialogBody}>
-         {/* <pre>
+          {/* <pre>
             Enter 'sErr' in email address to simulate synapse error. Enter
             'bErr' in email address to simulate bridge error.
          </pre>*/}
