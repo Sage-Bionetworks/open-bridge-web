@@ -225,7 +225,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
             ))}
           </Toolbar>
           <Toolbar className={classes.toolbar} style={{ width: '160px' }}>
-            {isInAdminRole(sessionData.roles) && (
+            {(isInAdminRole(sessionData.roles)|| true /* enable all aggess*/) && (
               <NavLink
                 to={'/studies/:id/access-settings'.replace(':id', studyId)}
                 key={'path-to-access-settings'}

@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import { callEndpoint, generateNonambiguousCode } from '../helpers/utility'
 import constants from '../types/constants'
 import {
@@ -6,6 +5,7 @@ import {
   EnrolledAccountRecord,
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
+  ParticipantActivityType,
   StringDictionary
 } from '../types/types'
 
@@ -22,11 +22,13 @@ function mapWithdrawnParticipant(
 ): ExtendedParticipantAccountSummary {
   return {
     ...p.participant,
-    externalId: p.externalId,
+    externalId: formatExternalId(studyIdentifier, p.externalId),
     id: p.participant.identifier,
     dateWithdrawn: p.withdrawnOn,
     withdrawalNote: p.withdrawalNote,
-    externalIds: { [studyIdentifier]: p.externalId },
+    externalIds: {
+      [studyIdentifier]: formatExternalId(studyIdentifier, p.externalId),
+    },
   }
 }
 
@@ -110,32 +112,9 @@ async function getAllPages<T>(
   })
 }
 
-//gets all pages for participants. Used with the 'all' functionality
-async function getAllParticipants(
-  studyIdentifier: string,
-  token: string,
-): Promise<{
-  items: ParticipantAccountSummary[]
-  total: number
-}> {
-  return getAllPages<ParticipantAccountSummary>(getParticipants, [
-    studyIdentifier,
-    token,
-  ])
-}
-
-async function getAllEnrollmentsWithdrawn(
-  studyIdentifier: string,
-  token: string,
-): Promise<{ items: ExtendedParticipantAccountSummary[]; total: number }> {
-  return getAllPages<ExtendedParticipantAccountSummary>(
-    getEnrollmentsWithdrawn,
-    [studyIdentifier, token],
-  )
-}
 // get participants
 //if page and offset not specified - get all
-async function getParticipants(
+async function getTestParticipants(
   studyIdentifier: string,
   token: string,
   pageSize?: number,
@@ -144,9 +123,6 @@ async function getParticipants(
   items: ParticipantAccountSummary[]
   total: number
 }> {
-  if (!pageSize) {
-    return getAllParticipants(studyIdentifier, token)
-  }
   const endpoint = constants.endpoints.participantsSearch.replace(
     ':id',
     studyIdentifier,
@@ -156,7 +132,7 @@ async function getParticipants(
     pageSize: pageSize,
     offsetBy: offsetBy,
     enrolledInStudyId: studyIdentifier,
-    noneOfGroups: IS_TEST ? undefined : ['test_user'],
+    allOfGroups: ['test_user'],
   }
 
   const result = await callEndpoint<{
@@ -266,99 +242,70 @@ async function deleteParticipant(
   return result.data.identifier
 }
 
-async function getActiveParticipants(
+async function getParticipants(
   studyIdentifier: string,
   token: string,
+  participantType: ParticipantActivityType,
   pageSize: number,
   offsetBy: number,
-  filter: 'withdrawn' | 'enrolled' | 'test',
 ): Promise<{ items: ExtendedParticipantAccountSummary[]; total: number }> {
   // get enrollment for non test account
+  if (!pageSize) {
+    return getAllPages<ParticipantAccountSummary>(getParticipants, [
+      studyIdentifier,
+      token,
+      participantType,
+    ])
+  }
+
+
+  if (participantType === 'TEST') {
+    return getTestParticipants(studyIdentifier, token, pageSize, offsetBy)
+  }
+
+  const queryFilter =
+  participantType === 'ACTIVE'
+    ? 'enrolled'
+    : participantType === 'WITHDRAWN'
+    ? 'withdrawn'
+    : 'all'
   const endpoint = `${constants.endpoints.enrollments.replace(
     ':studyId',
     studyIdentifier,
   )}`
   const data = {
-    enrollmentFilter: filter !== 'test' ? filter : undefined,
+    enrollmentFilter: queryFilter,
     pageSize: pageSize,
     offsetBy: offsetBy,
     includeTesters: false,
   }
 
-  const enrolledNonTesters = (
+  const result = (
     await callEndpoint<{
       items: EnrolledAccountRecord[]
       total: number
     }>(endpoint, 'GET', data, token)
   ).data
 
-  //if we want only test accoutnt we will be all accounts w/ filtered non testers
-  let result = enrolledNonTesters
-  if (filter === 'test') {
-    data.includeTesters = true
-    const enrolledAll = (
-      await callEndpoint<{
-        items: EnrolledAccountRecord[]
-        total: number
-      }>(endpoint, 'GET', data, token)
-    ).data
-
-    const enrolledNonTesterIds = enrolledNonTesters.items.map(p => p.participant.identifier)
-    const enrolledTesters = enrolledAll.items.filter(
-      p => !_.includes(enrolledNonTesterIds, p.participant.identifier),
-    )
-    result = { items: enrolledTesters, total: enrolledTesters.length }
-  }
-
   let resultItems: ParticipantAccountSummary[] = []
-  if (filter === 'withdrawn') {
+  if (queryFilter === 'withdrawn') {
     resultItems = result.items.map(p =>
       mapWithdrawnParticipant(p, studyIdentifier),
     )
   }
-  if (filter === 'enrolled' || filter === 'test') {
+  if (queryFilter === 'enrolled') {
     const participantPromises = result.items.map(i =>
       getParticipantById(studyIdentifier, token, i.participant.identifier),
     )
     const resolvedParticipants = await Promise.all(participantPromises)
-    resultItems = resolvedParticipants.filter(p => p !== null) as ParticipantAccountSummary[]
+    resultItems = resolvedParticipants.filter(
+      p => p !== null,
+    ) as ParticipantAccountSummary[]
   }
 
   return { items: resultItems, total: result.total }
 }
 
-//gets a list of withdrawn participants
-async function getEnrollmentsWithdrawn(
-  studyIdentifier: string,
-  token: string,
-  pageSize?: number,
-  offsetBy?: number,
-): Promise<{ items: ExtendedParticipantAccountSummary[]; total: number }> {
-  if (!pageSize) {
-    return getAllEnrollmentsWithdrawn(studyIdentifier, token)
-  }
-  const endpoint = `${constants.endpoints.enrollments.replace(
-    ':studyId',
-    studyIdentifier,
-  )}`
-
-  const data = {
-    enrollmentFilter: 'withdrawn',
-    pageSize: pageSize,
-    offsetBy: offsetBy,
-    includeTesters: IS_TEST,
-  }
-
-  const result = await callEndpoint<{
-    items: EnrolledAccountRecord[]
-    total: number
-  }>(endpoint, 'GET', data, token)
-  const resultItems = result.data.items.map(p =>
-    mapWithdrawnParticipant(p, studyIdentifier),
-  )
-
-  return { items: resultItems, total: result.data.total }
-}
 
 async function getEnrollmentsWithdrawnById(
   studyIdentifier: string,
@@ -580,13 +527,9 @@ const ParticipantService = {
   addParticipant,
   addTestParticipant,
   deleteParticipant,
-  getAllParticipants,
   getRelevantEventsForParticipans,
-  getEnrollmentsWithdrawn,
   getEnrollmentsWithdrawnById,
-  getAllEnrollmentsWithdrawn,
   getParticipantById,
-  getActiveParticipants,
   getParticipants,
   getRequestInfoForParticipant,
   updateNotesAndClinicVisitForParticipant,
