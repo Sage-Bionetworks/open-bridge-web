@@ -107,6 +107,12 @@ export function getAccessFromRoles(roles: AdminRole[]): Access {
   return NO_ACCESS
 }
 
+type AccessGridRadioComponentsProps = {
+  restriction: string
+  role_key: AccessLabel
+  isCoAdmin: boolean
+}
+
 const AccessGrid: FunctionComponent<AccessGridProps> = ({
   access,
   onUpdate,
@@ -131,11 +137,11 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
     onUpdate({ ...access, [accessKey]: restriction })
   }
 
-  const getRadioButtonDisplay = (
-    restriction: string,
-    role_key: AccessLabel,
-    isCoadmin: boolean,
-  ) => {
+  const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponentsProps> = ({
+    restriction,
+    role_key,
+    isCoAdmin,
+  }) => {
     const key = Object.keys(role_key)[0] as keyof Access
     let checkboxChecked = false
     if (key === 'ACCESS_SETTINGS') {
@@ -143,10 +149,10 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
       if (restriction === 'NO_ACCESS') {
         return null
       }
-      if (restriction === 'VIEWER' && isCoadmin) {
+      if (restriction === 'VIEWER' && isCoAdmin) {
         return null
       }
-      if (restriction === 'EDITOR' && !isCoadmin) {
+      if (restriction === 'EDITOR' && !isCoAdmin) {
         return (
           <Box
             fontSize="10px"
@@ -205,13 +211,16 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
                   ) : (
                     <>&nbsp;</>
                   )}
-                  {isEdit &&
-                    getRadioButtonDisplay(
-                      restriction,
-                      role_key,
-                      isCoadmin ||
-                        getRolesFromAccess(access).includes('org_admin'),
-                    )}
+                  {isEdit && (
+                    <AccessGridRadioComponents
+                      restriction={restriction}
+                      role_key={role_key}
+                      isCoAdmin={
+                        isCoadmin ||
+                        getRolesFromAccess(access).includes('org_admin')
+                      }
+                    />
+                  )}
                 </td>
               ))}
             </tr>
