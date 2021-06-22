@@ -13,8 +13,7 @@ import AccessGrid, { Access, getAccessFromRoles } from './AccessGrid'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    minWidth: '500px',
-    border: '1px solid purple',
+    minWidth: '550px',
   },
 }))
 
@@ -104,6 +103,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
           onUpdate({ ...newOrgAccount, access: _access })
         }}
         isEdit={true}
+        isCoadmin={coadmin}
       ></AccessGrid>
     </Container>
   )
