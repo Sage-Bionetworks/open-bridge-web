@@ -261,7 +261,8 @@ export const isValidEmail = (email: string) => {
   return re.test(String(email).toLowerCase())
 }
 
-export const isInAdminRole = (roles: AdminRole[]) => roles.includes('org_admin')
+export const isInAdminRole = (roles: AdminRole[]) => false
+// roles.includes('org_admin')
 
 export const setBodyClass = (next?: string) => {
   const whiteBgSections = [/*'launch',*/ 'preview']

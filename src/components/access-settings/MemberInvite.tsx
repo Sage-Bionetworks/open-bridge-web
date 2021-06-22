@@ -9,6 +9,8 @@ import {
 import React, { FunctionComponent } from 'react'
 import { poppinsFont } from '../../style/theme'
 import ErrorDisplay from '../widgets/ErrorDisplay'
+import { isInAdminRole } from '../../helpers/utility'
+import { useUserSessionDataState } from '../../helpers/AuthContext'
 import AccessGrid, { Access, getAccessFromRoles } from './AccessGrid'
 
 const useStyles = makeStyles(theme => ({
@@ -41,6 +43,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
   const [email, setEmail] = React.useState(newOrgAccount.email)
   const [access, setAccess] = React.useState(newOrgAccount.access)
   const [coadmin, setCoadmin] = React.useState(false)
+  const sessionData = useUserSessionDataState()
 
   const updateCoadmin = (isChecked: boolean) => {
     setCoadmin(isChecked)
@@ -97,6 +100,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
         }}
         isEdit={true}
         isCoadmin={coadmin}
+        currentUserIsAdmin={isInAdminRole(sessionData.roles)}
       ></AccessGrid>
     </Container>
   )

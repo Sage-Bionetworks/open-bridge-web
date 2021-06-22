@@ -255,6 +255,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                 })
               }
               isEdit={true}
+              currentUserIsAdmin={isInAdminRole(myRoles)}
             ></AccessGrid>
 
             {myRoles.includes('admin') && (

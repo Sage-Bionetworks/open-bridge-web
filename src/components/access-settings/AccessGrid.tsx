@@ -33,6 +33,7 @@ type AccessGridProps = {
   onUpdate?: Function
   isEdit?: boolean
   isCoadmin?: boolean
+  currentUserIsAdmin: boolean
 }
 
 export type AccessLabel = {
@@ -111,6 +112,7 @@ type AccessGridRadioComponentsProps = {
   restriction: string
   role_key: AccessLabel
   isCoAdmin: boolean
+  currentUserIsAdmin: boolean
 }
 
 const AccessGrid: FunctionComponent<AccessGridProps> = ({
@@ -118,6 +120,7 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
   onUpdate,
   isEdit,
   isCoadmin,
+  currentUserIsAdmin,
 }: AccessGridProps) => {
   const classes = useStyles()
 
@@ -141,6 +144,7 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
     restriction,
     role_key,
     isCoAdmin,
+    currentUserIsAdmin,
   }) => {
     const key = Object.keys(role_key)[0] as keyof Access
     let checkboxChecked = false
@@ -219,6 +223,7 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
                         isCoadmin ||
                         getRolesFromAccess(access).includes('org_admin')
                       }
+                      currentUserIsAdmin={currentUserIsAdmin}
                     />
                   )}
                 </td>
