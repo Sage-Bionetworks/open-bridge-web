@@ -219,21 +219,13 @@ async function getParticipants(
 ): Promise<ParticipantData> {
   const offset = (currentPage - 1) * pageSize
 
-  let participants: ParticipantData =
-    tab === 'WITHDRAWN'
-      ? await ParticipantService.getEnrollmentsWithdrawn(
-          studyId,
-          token!,
-          pageSize,
-          offset,
-        )
-      : await ParticipantService.getActiveParticipants(
-          studyId,
-          token!,
-          pageSize,
-          offset,
-          'enrolled',
-        )
+  let participants: ParticipantData = await ParticipantService.getParticipants(
+    studyId,
+    token!,
+    tab,
+    pageSize,
+    offset,
+  )
 
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
@@ -272,7 +264,6 @@ const AddTestParticipantsIconSC = () => {
 const HelpBoxSC: FunctionComponent<{
   numRows: number | undefined
   status: RequestStatus
-
 }> = ({ numRows, status }) => {
   return (
     <Box px={3} py={2} position="relative">
@@ -335,7 +326,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   // The current page in the particpant grid the user is viewing
   const [currentPage, setCurrentPage] = React.useState(1)
   // The current page size of the particpant grid
-  const [pageSize, setPageSize] = React.useState(20)
+  const [pageSize, setPageSize] = React.useState(25)
   // Withdrawn or active participants
   const [tab, setTab] = React.useState<ParticipantActivityType>('ACTIVE')
   const [isAddOpen, setIsAddOpen] = React.useState(false)
@@ -364,6 +355,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
+    setCurrentPage(1)
     setIsAllSelected(false)
   }
 
@@ -447,18 +439,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     )
     setRefreshParticipantsToggle(prev => !prev)
   }
-
-  /* THIS IS UTILITY FUNCTION JUST FOR TESTING! */
-  /*const makeTestGroup = async () => {
-    for (let i = 0; i < selectedActiveParticipants.length; i++) {
-      const result = await ParticipantService.updateParticipantGroup(
-        study!.identifier,
-        token!,
-        selectedActiveParticipants[i].id,
-        ['test_user'],
-      )
-    }
-  }*/
 
   const deleteSelectedParticipants = async () => {
     setLoadingIndicators(_ => ({ isDeleting: true }))
@@ -573,9 +553,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           </MTBHeadingH3>
           <LiveIcon />
         </Box>
-        {/* <Button onClick={() => makeTestGroup()}>Make test group [test]</Button>*/}
 
-       {tab === 'ACTIVE' && <HelpBoxSC numRows={data?.items.length} status={status} />}
+        {tab === 'ACTIVE' && (
+          <HelpBoxSC numRows={data?.items.length} status={status} />
+        )}
 
         <Box py={0} pr={3} pl={2}>
           <Tabs
@@ -614,7 +595,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     ></img>
                     <div>
                       {`${tabDef.label} ${
-                        tab === tabDef.type ? (data ? `(${data.total})` : '(...)') : ''
+                        tab === tabDef.type
+                          ? data
+                            ? `(${data.total})`
+                            : '(...)'
+                          : ''
                       }`}
                     </div>
                   </Box>
@@ -658,7 +643,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   onAdded={() => {
                     setRefreshParticipantsToggle(prev => !prev)
                   }}
-                  isTestAccount = {tab === 'TEST'}
+                  isTestAccount={tab === 'TEST'}
                 ></AddParticipants>
               </>
               <div>
@@ -735,7 +720,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   hidden={false}
                   id={`active-participants`}
                   className={classes.tabPanel}
-                  style={{ marginLeft: !isAddOpen ? '-48px' : '0' }}
+                  style={{
+                    marginLeft:
+                      !isAddOpen && tab !== 'WITHDRAWN' ? '-48px' : '0',
+                  }}
                 >
                   <ParticipantTableGrid
                     rows={data?.items || []}
@@ -775,19 +763,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     setPageSize={setPageSize}
                   ></ParticipantTableGrid>
                 </div>
-
-                <div
-                  role="tabpanel"
-                  hidden={tab !== 'WITHDRAWN'}
-                  id={`withdrawn-participants`}
-                  className={classes.tabPanel}
-                >
-                  <span>Withdrawn participants will go here</span>
-                </div>
               </div>
 
               <Box textAlign="center" pl={2}>
-               { tab!== 'TEST'? 'ADD A PARTICIPANT': 'ADD TEST USER'}
+                {tab !== 'TEST' ? 'ADD A PARTICIPANT' : 'ADD TEST USER'}
               </Box>
             </CollapsibleLayout>
           </Box>

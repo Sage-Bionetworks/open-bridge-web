@@ -337,13 +337,13 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     ...selectedParticipantIds,
   ])
   React.useEffect(() => {
-    setSelectionModel([...selectedParticipantIds])
+    setSelectionModel([...selectedParticipantIds.filter(id=> rows.find(row=> row.id === id))])
   }, [selectedParticipantIds, rows])
 
   const allSelectedPage = () =>
     rows && !rows.find(row => !selectionModel.includes(row.id))
 
-  const getSlectionType = (): SelectionType => {
+  const getSelectionType = (): SelectionType => {
     if (isAllSelected) {
       return 'ALL'
     }
@@ -403,7 +403,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                         count={
                           isAllSelected
                             ? totalParticipants
-                            : selectedParticipantIds.length
+                            : selectionModel.length
                         }
                       />{' '}
                       selected
@@ -419,7 +419,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                       }}
                     >
                       <SelectAll
-                        selectionType={getSlectionType()}
+                        selectionType={getSelectionType()}
                         allText={`Select all ${totalParticipants}`}
                         allPageText="Select this page"
                         onSelectAllPage={() => {
