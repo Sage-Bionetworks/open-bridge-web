@@ -40,6 +40,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'space-between',
     bottom: theme.spacing(4),
   },
+  studyInfoNameText: {
+    fontFamily: poppinsFont,
+    lineHeight: '27px',
+    fontSize: '18px',
+  },
 }))
 
 type AccountListingProps = {
@@ -85,6 +90,29 @@ const NameDisplay: FunctionComponent<any> = ({
     <Box style={{ textTransform: 'none' }}>
       {firstLine}
       <span>{member.email}</span>
+    </Box>
+  )
+}
+
+const NameDisplayDetail: React.FunctionComponent<{ member: OrgUser }> = ({
+  member,
+}) => {
+  const classes = useStyles()
+  return (
+    <Box style={{ marginBottom: '80px', marginTop: '100px' }}>
+      <Box display="flex" alignItems="center">
+        <Box className={classes.studyInfoNameText} fontWeight="bold">
+          {getNameDisplay(member)}
+        </Box>
+        {isInAdminRole(member.roles) && (
+          <Box className={classes.studyInfoNameText} fontWeight="normal">
+            &#8287;{'| Study Admin'}
+          </Box>
+        )}
+      </Box>
+      <Box fontFamily={poppinsFont} fontSize="14px" mt={0.5}>
+        {member.email}
+      </Box>
     </Box>
   )
 }
@@ -231,31 +259,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
       >
         {currentMemberAccess && (
           <Box pl={10} position="relative" pb={10}>
-            <Box style={{ marginBottom: '80px', marginTop: '100px' }}>
-              <Box display="flex" alignItems="center">
-                <Box
-                  fontFamily={poppinsFont}
-                  lineHeight="27px"
-                  fontWeight="bold"
-                  fontSize="18px"
-                >
-                  {getNameDisplay(currentMemberAccess!.member)}
-                </Box>
-                {isInAdminRole(currentMemberAccess!.member.roles) && (
-                  <Box
-                    fontFamily={poppinsFont}
-                    lineHeight="27px"
-                    fontSize="18px"
-                    whiteSpace="include"
-                  >
-                    &#8287;{'| Study Admin'}
-                  </Box>
-                )}
-              </Box>
-              <Box fontFamily={poppinsFont} fontSize="14px" mt={0.5}>
-                {currentMemberAccess.member.email}
-              </Box>
-            </Box>
+            <NameDisplayDetail member={currentMemberAccess!.member} />
             <AccessGrid
               access={currentMemberAccess!.access!}
               onUpdate={(_access: Access) =>
