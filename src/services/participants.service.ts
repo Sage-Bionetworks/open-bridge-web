@@ -6,7 +6,7 @@ import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
-  StringDictionary
+  StringDictionary,
 } from '../types/types'
 
 export const CLINIC_EVENT_ID = 'clinic_visit'
@@ -258,17 +258,16 @@ async function getParticipants(
     ])
   }
 
-
   if (participantType === 'TEST') {
     return getTestParticipants(studyIdentifier, token, pageSize, offsetBy)
   }
 
   const queryFilter =
-  participantType === 'ACTIVE'
-    ? 'enrolled'
-    : participantType === 'WITHDRAWN'
-    ? 'withdrawn'
-    : 'all'
+    participantType === 'ACTIVE'
+      ? 'enrolled'
+      : participantType === 'WITHDRAWN'
+      ? 'withdrawn'
+      : 'all'
   const endpoint = `${constants.endpoints.enrollments.replace(
     ':studyId',
     studyIdentifier,
@@ -306,6 +305,22 @@ async function getParticipants(
   return { items: resultItems, total: result.total }
 }
 
+async function getNumEnrolledParticipants(
+  studyIdentifier: string,
+  token: string,
+) {
+  const endpoint = `${constants.endpoints.studies}/${studyIdentifier}/enrollments`
+  const body = {
+    enrollmentFilter: 'enrolled',
+  }
+  const result = await callEndpoint<{ total: number }>(
+    endpoint,
+    'GET',
+    body,
+    token,
+  )
+  return result.data.total
+}
 
 async function getEnrollmentsWithdrawnById(
   studyIdentifier: string,
@@ -528,6 +543,7 @@ const ParticipantService = {
   addTestParticipant,
   deleteParticipant,
   getRelevantEventsForParticipans,
+  getNumEnrolledParticipants,
   getEnrollmentsWithdrawnById,
   getParticipantById,
   getParticipants,

@@ -11,6 +11,8 @@ import participants_icon from '../../assets/participants_icon.svg'
 import { ThemeType } from '../../style/theme'
 import { Study } from '../../types/types'
 import LiveIcon from './LiveIcon'
+import ParticipantService from '../../services/participants.service'
+import { useUserSessionDataState } from '../../helpers/AuthContext'
 
 const DraftIcon = () => {
   return (
@@ -136,9 +138,22 @@ const CardBottom: FunctionComponent<{
   study: Study
 }> = ({ study }: { study: Study }) => {
   const classes = useStyles()
+  const [numParticipants, setNumParticipants] = React.useState('--')
   const date = new Date(
     study.phase === 'design' ? study.modifiedOn! : study.createdOn!,
   )
+  const { token } = useUserSessionDataState()
+
+  React.useEffect(() => {
+    const getParticipantCount = async () => {
+      const newParticipantNumber = await ParticipantService.getNumEnrolledParticipants(
+        study.identifier,
+        token!,
+      )
+      setNumParticipants('' + newParticipantNumber)
+    }
+    getParticipantCount()
+  }, [token])
 
   return (
     <Box
@@ -160,7 +175,7 @@ const CardBottom: FunctionComponent<{
               className={classes.participantsIcon}
               alt="participant number"
             />
-            [56]
+            {numParticipants}
           </div>
         )}
 
