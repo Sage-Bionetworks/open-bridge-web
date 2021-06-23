@@ -7,7 +7,7 @@ import {
   StartEventId,
   StudySession
 } from '../types/scheduling'
-import { Study,StudyPhase } from '../types/types'
+import { Study } from '../types/types'
 import AssessmentService from './assessment.service'
 
 const StudyService = {
