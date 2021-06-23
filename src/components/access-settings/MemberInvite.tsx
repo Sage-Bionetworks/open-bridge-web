@@ -7,7 +7,7 @@ import {
   Box,
 } from '@material-ui/core'
 import React, { FunctionComponent } from 'react'
-import { poppinsFont } from '../../style/theme'
+import { latoFont, poppinsFont } from '../../style/theme'
 import ErrorDisplay from '../widgets/ErrorDisplay'
 import { isInAdminRole } from '../../helpers/utility'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
@@ -65,6 +65,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
         color="secondary"
         value={email || ''}
         placeholder="email@synapse.org"
+        style={{ fontFamily: latoFont }}
       ></TextField>
       {newOrgAccount.error && (
         <ErrorDisplay>{newOrgAccount.error.toString()}</ErrorDisplay>
@@ -79,7 +80,11 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
           />
         }
         label="MAKE CO-ADMINISTRATOR OF STUDY"
-        style={{ marginBottom: coadmin ? '12px' : '42px', marginTop: '8px' }}
+        style={{
+          marginBottom: coadmin ? '12px' : '42px',
+          marginTop: '8px',
+          fontFamily: latoFont,
+        }}
       />
       {coadmin && (
         <Box mb={4}>

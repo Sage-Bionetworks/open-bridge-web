@@ -17,6 +17,7 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     fontFamily: latoFont,
     fontSize: '14px',
+    fontWeight: 'normal',
   },
   dot: {
     width: '14px',
@@ -158,7 +159,7 @@ const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponen
           fontStyle="italic"
           fontFamily={latoFont}
           mt={-2.5}
-          fontWeight="bold"
+          fontWeight="normal"
         >
           Only available to Administrators
         </Box>
