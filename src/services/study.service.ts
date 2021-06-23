@@ -7,7 +7,7 @@ import {
   StartEventId,
   StudySession
 } from '../types/scheduling'
-import { Study } from '../types/types'
+import { Study,StudyPhase } from '../types/types'
 import AssessmentService from './assessment.service'
 
 const StudyService = {
@@ -60,7 +60,18 @@ async function getStudies(token: string): Promise<Study[]> {
     {},
     token,
   )
-
+  for (const study of studies.data.items) {
+    const phases = [
+      'design',
+      'recruitment',
+      'in_flight',
+      'withdrawn',
+      'analysis',
+      'completed',
+    ]
+    const randomPhase = phases[Math.floor(Math.random() * (phases.length - 1))]
+    study.phase = randomPhase as StudyPhase
+  }
   return studies.data.items
 
 }

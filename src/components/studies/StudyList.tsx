@@ -5,7 +5,7 @@ import {
   Divider,
   makeStyles,
   Menu,
-  MenuItem
+  MenuItem,
 } from '@material-ui/core'
 import Link from '@material-ui/core/Link'
 import React, { FunctionComponent, useEffect } from 'react'
@@ -97,22 +97,28 @@ const useStyles = makeStyles(theme => ({
 
 const sections = [
   {
-    studyStatus: ['design'] as StudyPhase[],
+    studyStatus: ['design', 'recruitment'] as StudyPhase[],
     title: 'Draft Studies',
     filterTitle: 'Design',
-    sectionStatus: 'DRAFT' as SectionStatus
+    sectionStatus: 'DRAFT' as SectionStatus,
   },
   {
-    studyStatus: ['recruitment', 'in_flight'] as StudyPhase[],
+    studyStatus: ['in_flight'] as StudyPhase[],
     title: 'Live Studies',
     filterTitle: 'Live',
-    sectionStatus: 'LIVE' as SectionStatus
+    sectionStatus: 'LIVE' as SectionStatus,
   },
   {
-    studyStatus: ['completed', 'withdrawn', 'analysis', 'legacy'] as StudyPhase[],
+    studyStatus: ['completed', 'analysis'] as StudyPhase[],
     title: 'Completed Studies',
     filterTitle: 'Completed',
-    sectionStatus: 'COMPLETED' as SectionStatus
+    sectionStatus: 'COMPLETED' as SectionStatus,
+  },
+  {
+    studyStatus: ['withdrawn'] as StudyPhase[],
+    title: 'Withdrawn Studies',
+    filterTitle: 'Withdrawn',
+    sectionStatus: 'WITHDRAWN' as SectionStatus,
   },
 ]
 
@@ -128,7 +134,9 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
 }: StudySublistProps) => {
   const classes = useStyles()
   const item = sections.find(section => section.sectionStatus === status)!
-  const displayStudies = studies.filter(study => item.studyStatus.includes(study.phase))
+  const displayStudies = studies.filter(study =>
+    item.studyStatus.includes(study.phase),
+  )
   const studyLink =
     item.sectionStatus === 'DRAFT'
       ? `/studies/builder/:id/session-creator`
@@ -175,6 +183,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
                 onAction(study, 'ANCHOR', e)
               }}
               isNewlyAddedStudy={highlightedStudyId === study.identifier}
+              section={item.sectionStatus}
             ></StudyCard>
           </Link>
         ))}
@@ -256,7 +265,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         // need to duplicate the schedule
         const schedule = await StudyService.getStudySchedule(
           studyFromServer?.scheduleGuid,
-          token!
+          token!,
         )
         //@ts-ignore
         schedule!.guid = undefined
@@ -379,6 +388,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       </div>
     )
   }
+
   return (
     <Loader reqStatusLoading={status === 'PENDING' || !studies} variant="full">
       <Container maxWidth="lg" className={classes.studyContainer}>
@@ -427,7 +437,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         {studies!.length > 0 &&
           statusFilters.map((status, index) => (
             <Box
-              style={{ paddingBottom: index < 2 ? '24px' : '0' }}
+              style={{ paddingBottom: index < 3 ? '24px' : '0' }}
               key={status}
             >
               <StudySublist

@@ -10,9 +10,11 @@ import React, { FunctionComponent } from 'react'
 import participants_icon from '../../assets/participants_icon.svg'
 import { ThemeType } from '../../style/theme'
 import { Study } from '../../types/types'
-import LiveIcon from './LiveIcon'
 import ParticipantService from '../../services/participants.service'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
+import LiveIcon from '../../assets/live_study_icon.svg'
+import CompletedIcon from '../../assets/completed_study_icon.svg'
+import WithdrawnIcon from '../../assets/cancelled_study_icon.svg'
 
 const DraftIcon = () => {
   return (
@@ -195,14 +197,15 @@ const CardBottom: FunctionComponent<{
 const CardTop: FunctionComponent<StudyCardProps> = ({
   study,
   onSetAnchor,
+  section,
 }: StudyCardProps) => {
-  function getCorrectCardName(status: string): string {
-    if (status === 'design') {
-      return 'Draft'
-    } else if (status === 'COMPLETED') {
-      return 'Closed'
+  function getStatusIcon(section: string) {
+    if (section === 'LIVE') {
+      return LiveIcon
+    } else if (section === 'COMPLETED') {
+      return CompletedIcon
     } else {
-      return 'Live'
+      return WithdrawnIcon
     }
   }
   const classes = useStyles()
@@ -227,14 +230,12 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
       ) : (
         <div />
       )}
-      {['recruitment', 'in_flight', 'live'].includes(study.phase) ? (
+      {section !== 'DRAFT' ? (
         <div className={classes.liveIconContainer}>
-          <LiveIcon />
+          <img src={getStatusIcon(section)}></img>
         </div>
       ) : (
-        <div className={classes.cardStatus}>
-          {getCorrectCardName(study.phase)}
-        </div>
+        <div className={classes.cardStatus}>Draft</div>
       )}
     </Box>
   )
@@ -246,6 +247,7 @@ type StudyCardProps = {
   isRename?: boolean
   onRename?: Function
   isNewlyAddedStudy?: boolean
+  section: string
 }
 
 const StudyCard: FunctionComponent<StudyCardProps> = ({
@@ -254,6 +256,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
   isRename,
   onRename,
   isNewlyAddedStudy,
+  section,
 }) => {
   const classes = useStyles()
   const input = React.createRef<HTMLInputElement>()
@@ -288,7 +291,11 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
         }}
       >
         <>
-          <CardTop study={study} onSetAnchor={onSetAnchor}></CardTop>
+          <CardTop
+            section={section}
+            study={study}
+            onSetAnchor={onSetAnchor}
+          ></CardTop>
         </>
         <CardContent>
           <div>
