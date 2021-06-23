@@ -7,8 +7,10 @@ import {
   Box,
 } from '@material-ui/core'
 import React, { FunctionComponent } from 'react'
-import { poppinsFont } from '../../style/theme'
+import { latoFont, poppinsFont } from '../../style/theme'
 import ErrorDisplay from '../widgets/ErrorDisplay'
+import { isInAdminRole } from '../../helpers/utility'
+import { useUserSessionDataState } from '../../helpers/AuthContext'
 import AccessGrid, { Access, getAccessFromRoles } from './AccessGrid'
 
 const useStyles = makeStyles(theme => ({
@@ -41,6 +43,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
   const [email, setEmail] = React.useState(newOrgAccount.email)
   const [access, setAccess] = React.useState(newOrgAccount.access)
   const [coadmin, setCoadmin] = React.useState(false)
+  const sessionData = useUserSessionDataState()
 
   const updateCoadmin = (isChecked: boolean) => {
     setCoadmin(isChecked)
@@ -62,6 +65,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
         color="secondary"
         value={email || ''}
         placeholder="email@synapse.org"
+        style={{ fontFamily: latoFont }}
       ></TextField>
       {newOrgAccount.error && (
         <ErrorDisplay>{newOrgAccount.error.toString()}</ErrorDisplay>
@@ -76,7 +80,11 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
           />
         }
         label="MAKE CO-ADMINISTRATOR OF STUDY"
-        style={{ marginBottom: coadmin ? '12px' : '42px', marginTop: '8px' }}
+        style={{
+          marginBottom: coadmin ? '12px' : '42px',
+          marginTop: '8px',
+          fontFamily: latoFont,
+        }}
       />
       {coadmin && (
         <Box mb={4}>
@@ -97,6 +105,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
         }}
         isEdit={true}
         isCoadmin={coadmin}
+        currentUserIsAdmin={isInAdminRole(sessionData.roles)}
       ></AccessGrid>
     </Container>
   )

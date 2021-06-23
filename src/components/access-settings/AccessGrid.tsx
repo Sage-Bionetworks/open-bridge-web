@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { latoFont } from '../../style/theme'
 import { AdminRole } from '../../types/types'
+import CheckIcon from '@material-ui/icons/Check'
 
 const useStyles = makeStyles(theme => ({
   cell: {
@@ -16,6 +17,7 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     fontFamily: latoFont,
     fontSize: '14px',
+    fontWeight: 'normal',
   },
   dot: {
     width: '14px',
@@ -33,6 +35,7 @@ type AccessGridProps = {
   onUpdate?: Function
   isEdit?: boolean
   isCoadmin?: boolean
+  currentUserIsAdmin: boolean
 }
 
 export type AccessLabel = {
@@ -111,6 +114,66 @@ type AccessGridRadioComponentsProps = {
   restriction: string
   role_key: AccessLabel
   isCoAdmin: boolean
+  currentUserIsAdmin: boolean
+  onUpdate: Function
+  isEqualToCurrentValue: boolean
+}
+const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponentsProps> = ({
+  restriction,
+  role_key,
+  isCoAdmin,
+  currentUserIsAdmin,
+  onUpdate,
+  isEqualToCurrentValue,
+}) => {
+  const key = Object.keys(role_key)[0] as keyof Access
+  let checkboxChecked = false
+  if (!currentUserIsAdmin) {
+    if (!isEqualToCurrentValue) {
+      return null
+    }
+    return (
+      <Box
+        mt={-2.5}
+        height="40px"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <CheckIcon style={{ color: 'black' }} />
+      </Box>
+    )
+  }
+  if (key === 'ACCESS_SETTINGS') {
+    checkboxChecked = true
+    if (restriction === 'NO_ACCESS') {
+      return null
+    }
+    if (restriction === 'VIEWER' && isCoAdmin) {
+      return null
+    }
+    if (restriction === 'EDITOR' && !isCoAdmin) {
+      return (
+        <Box
+          fontSize="10px"
+          fontStyle="italic"
+          fontFamily={latoFont}
+          mt={-2.5}
+          fontWeight="normal"
+        >
+          Only available to Administrators
+        </Box>
+      )
+    }
+  }
+  return (
+    <Radio
+      checked={checkboxChecked || isEqualToCurrentValue}
+      value={restriction}
+      onChange={e => onUpdate(e)}
+      radioGroup={'group_' + Object.keys(role_key)}
+    ></Radio>
+  )
 }
 
 const AccessGrid: FunctionComponent<AccessGridProps> = ({
@@ -118,6 +181,7 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
   onUpdate,
   isEdit,
   isCoadmin,
+  currentUserIsAdmin,
 }: AccessGridProps) => {
   const classes = useStyles()
 
@@ -135,49 +199,6 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
     }
     const accessKey = Object.keys(accessObject)[0]
     onUpdate({ ...access, [accessKey]: restriction })
-  }
-
-  const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponentsProps> = ({
-    restriction,
-    role_key,
-    isCoAdmin,
-  }) => {
-    const key = Object.keys(role_key)[0] as keyof Access
-    let checkboxChecked = false
-    if (key === 'ACCESS_SETTINGS') {
-      checkboxChecked = true
-      if (restriction === 'NO_ACCESS') {
-        return null
-      }
-      if (restriction === 'VIEWER' && isCoAdmin) {
-        return null
-      }
-      if (restriction === 'EDITOR' && !isCoAdmin) {
-        return (
-          <Box
-            fontSize="10px"
-            fontStyle="italic"
-            fontFamily={latoFont}
-            mt={-2.5}
-            fontWeight="bold"
-          >
-            Only available to Administrators
-          </Box>
-        )
-      }
-    }
-    return (
-      <Radio
-        checked={
-          checkboxChecked || isEqualToCurrentValue(restriction, role_key)
-        }
-        value={restriction}
-        onChange={e => {
-          updateAccess(e.target.value, role_key)
-        }}
-        radioGroup={'group_' + Object.keys(role_key)}
-      ></Radio>
-    )
   }
 
   return (
@@ -219,6 +240,14 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
                         isCoadmin ||
                         getRolesFromAccess(access).includes('org_admin')
                       }
+                      currentUserIsAdmin={currentUserIsAdmin}
+                      onUpdate={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        updateAccess(e.target.value, role_key)
+                      }}
+                      isEqualToCurrentValue={isEqualToCurrentValue(
+                        restriction,
+                        role_key,
+                      )}
                     />
                   )}
                 </td>

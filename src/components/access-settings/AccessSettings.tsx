@@ -16,6 +16,7 @@ import React, { FunctionComponent } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 import { ReactComponent as Delete } from '../../assets/trash.svg'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
+import { isInAdminRole } from '../../helpers/utility'
 import {
   StudyInfoData,
   useStudyInfoDataState,
@@ -203,6 +204,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
     return <></>
   }
 
+  const userIsAdmin = isInAdminRole(sessionData.roles)
   return (
     <>
       <Container maxWidth="md" className={classes.root}>
@@ -212,13 +214,15 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
             updateToggle={updateToggle}
             study={studyInfo.study}
           >
-            <Button
-              onClick={() => setIsOpenInvite(true)}
-              variant="contained"
-              className={classes.yellowButton}
-            >
-              Invite a Member
-            </Button>
+            {userIsAdmin && (
+              <Button
+                onClick={() => setIsOpenInvite(true)}
+                variant="contained"
+                className={classes.yellowButton}
+              >
+                Invite a Member
+              </Button>
+            )}
           </AccountListing>
         </Paper>
       </Container>

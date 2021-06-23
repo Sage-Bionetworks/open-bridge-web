@@ -5,7 +5,7 @@ import { ReactComponent as Delete } from '../../assets/trash.svg'
 import { useAsync } from '../../helpers/AsyncHook'
 import { isInAdminRole } from '../../helpers/utility'
 import AccessService from '../../services/access.service'
-import { globals } from '../../style/theme'
+import { globals, poppinsFont } from '../../style/theme'
 import { OrgUser, Study, UserSessionData } from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import { MTBHeadingH1, MTBHeadingH6 } from '../widgets/Headings'
@@ -14,7 +14,7 @@ import SideBarListItem from '../widgets/SideBarListItem'
 import AccessGrid, {
   Access,
   getAccessFromRoles,
-  getRolesFromAccess
+  getRolesFromAccess,
 } from './AccessGrid'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -39,6 +39,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginTop: theme.spacing(6),
     justifyContent: 'space-between',
     bottom: theme.spacing(4),
+  },
+  studyInfoNameText: {
+    fontFamily: poppinsFont,
+    lineHeight: '27px',
+    fontSize: '18px',
   },
 }))
 
@@ -89,6 +94,29 @@ const NameDisplay: FunctionComponent<any> = ({
   )
 }
 
+const NameDisplayDetail: React.FunctionComponent<{ member: OrgUser }> = ({
+  member,
+}) => {
+  const classes = useStyles()
+  return (
+    <Box style={{ marginBottom: '80px', marginTop: '100px' }}>
+      <Box display="flex" alignItems="center">
+        <Box className={classes.studyInfoNameText} fontWeight="bold">
+          {getNameDisplay(member)}
+        </Box>
+        {isInAdminRole(member.roles) && (
+          <Box className={classes.studyInfoNameText} fontWeight="normal">
+            &#8287;{'| Study Admin'}
+          </Box>
+        )}
+      </Box>
+      <Box fontFamily={poppinsFont} fontSize="14px" mt={0.5}>
+        {member.email}
+      </Box>
+    </Box>
+  )
+}
+
 const AccountListing: FunctionComponent<AccountListingProps> = ({
   updateToggle,
   sessionData,
@@ -100,18 +128,13 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
 
   const handleError = useErrorHandler()
 
-  const [currentMemberAccess, setCurrentMemberAccess] =
-    React.useState<{ access: Access; member: OrgUser } | undefined>()
+  const [currentMemberAccess, setCurrentMemberAccess] = React.useState<
+    { access: Access; member: OrgUser } | undefined
+  >()
   const [isAccessLoading, setIsAccessLoading] = React.useState(true)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
 
-  const {
-    data: members,
-    status,
-    error,
-    run,
-    setData,
-  } = useAsync<any>({
+  const { data: members, status, error, run, setData } = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
@@ -221,10 +244,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                     width: '100%',
                   }}
                 >
-                  <NameDisplay
-                    member={member}
-                    index={index}
-                  ></NameDisplay>
+                  <NameDisplay member={member} index={index}></NameDisplay>
                 </div>
               </SideBarListItem>
             ))}
@@ -238,14 +258,8 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
         style={{ width: 'auto', margin: '0 auto' }}
       >
         {currentMemberAccess && (
-          <Box pl={15} position="relative" pb={10}>
-            <h3 style={{ marginBottom: '80px', marginTop: '100px' }}>
-              {' '}
-              <NameDisplay
-                member={currentMemberAccess!.member}
-                index={-1}
-              ></NameDisplay>
-            </h3>
+          <Box pl={10} position="relative" pb={10}>
+            <NameDisplayDetail member={currentMemberAccess!.member} />
             <AccessGrid
               access={currentMemberAccess!.access!}
               onUpdate={(_access: Access) =>
@@ -255,8 +269,8 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                 })
               }
               isEdit={true}
+              currentUserIsAdmin={isInAdminRole(myRoles)}
             ></AccessGrid>
-
             {myRoles.includes('admin') && (
               <Box className={classes.buttons}>
                 <Button
