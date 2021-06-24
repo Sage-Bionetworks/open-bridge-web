@@ -6,7 +6,7 @@ import {
   DialogActions,
   DialogContent,
   Tab,
-  Tabs
+  Tabs,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
@@ -29,7 +29,7 @@ import { useAsync } from '../../../helpers/AsyncHook'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
 import ParticipantService from '../../../services/participants.service'
 import { latoFont, poppinsFont, theme } from '../../../style/theme'
@@ -38,7 +38,7 @@ import {
   ParticipantAccountSummary,
   ParticipantActivityType,
   RequestStatus,
-  StringDictionary
+  StringDictionary,
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
@@ -46,16 +46,17 @@ import { MTBHeadingH3 } from '../../widgets/Headings'
 import HelpBox from '../../widgets/HelpBox'
 import {
   DialogButtonPrimary,
-  DialogButtonSecondary
+  DialogButtonSecondary,
 } from '../../widgets/StyledComponents'
 import LiveIcon from '../LiveIcon'
 import AddParticipants from './AddParticipants'
-import DeleteDialog from './DeleteDialogContents'
+import DeleteDialog from './DialogContents'
 import ParticipantDownload, {
-  ParticipantDownloadType
+  ParticipantDownloadType,
 } from './ParticipantDownload'
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
+import { ReactComponent as PinkSendSMSIcon } from '../../../assets/participant-manager/send_sms_link_pink_icon.svg'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -177,6 +178,12 @@ const useStyles = makeStyles(theme => ({
     '& > rect': {
       fill: '#AEDCC9',
     },
+  },
+  primaryDialogButton: {
+    border: 'none',
+    height: '48px',
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
   },
 }))
 
@@ -335,22 +342,30 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     isDownloading?: boolean
   }>({})
   // Should delete dialog be open
-  const [isOpenDeleteDialog, setIsOpenDeleteDialog] = React.useState(false)
+  const [dialogState, setDialogState] = React.useState({
+    dialogOpenRemove: false,
+    dialogOpenSMS: false,
+  })
 
   // True if the user is currently searching for a particpant using id
-  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] =
-    React.useState(false)
+  const [
+    isUserSearchingForParticipant,
+    setIsUserSearchingForParticipant,
+  ] = React.useState(false)
 
-  const [fileDownloadUrl, setFileDownloadUrl] =
-    React.useState<string | undefined>(undefined)
+  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
+    string | undefined
+  >(undefined)
 
   //user ids selectedForSction
-  const [selectedParticipantIds, setSelectedParticipantIds] =
-    React.useState<SelectedParticipantIdsType>({
-      ACTIVE: [],
-      TEST: [],
-      WITHDRAWN: [],
-    })
+  const [
+    selectedParticipantIds,
+    setSelectedParticipantIds,
+  ] = React.useState<SelectedParticipantIdsType>({
+    ACTIVE: [],
+    TEST: [],
+    WITHDRAWN: [],
+  })
   const [isAllSelected, setIsAllSelected] = React.useState(false)
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
@@ -365,8 +380,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   >([])
 
   //trigger data refresh on updates
-  const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
-    React.useState(false)
+  const [
+    refreshParticipantsToggle,
+    setRefreshParticipantsToggle,
+  ] = React.useState(false)
 
   const {
     data,
@@ -463,7 +480,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     }
     setLoadingIndicators(_ => ({ isDeleting: false }))
     if (!isError) {
-      setIsOpenDeleteDialog(false)
+      setDialogState({ dialogOpenRemove: false, dialogOpenSMS: false })
       setRefreshParticipantsToggle(prev => !prev)
     }
   }
@@ -651,8 +668,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   <Box display="flex" flexDirection="row" alignItems="center">
                     {tab !== 'WITHDRAWN' && (
                       <Button
-                        aria-label="delete"
-                        onClick={() => {}}
+                        aria-label="send-sms-text"
+                        onClick={() => {
+                          setParticipantsWithError([])
+                          setDialogState({
+                            dialogOpenRemove: false,
+                            dialogOpenSMS: true,
+                          })
+                        }}
                         className={classes.sendSMSButton}
                         disabled={selectedParticipantIds[tab].length === 0}
                       >
@@ -686,7 +709,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         aria-label="delete"
                         onClick={() => {
                           setParticipantsWithError([])
-                          setIsOpenDeleteDialog(true)
+                          setDialogState({
+                            dialogOpenRemove: true,
+                            dialogOpenSMS: false,
+                          })
                         }}
                         className={classes.deleteButtonParticipant}
                         disabled={selectedParticipantIds[tab].length === 0}
@@ -773,23 +799,31 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         </Box>
 
         <Dialog
-          open={isOpenDeleteDialog}
+          open={dialogState.dialogOpenSMS || dialogState.dialogOpenRemove}
           maxWidth="xs"
           scroll="body"
           aria-labelledby="Remove Participant"
         >
           <DialogTitleWithClose
             onCancel={() => {
-              setIsOpenDeleteDialog(false)
+              setDialogState({ dialogOpenRemove: false, dialogOpenSMS: false })
             }}
           >
             <>
-              <DeleteIcon style={{ width: '25px' }}></DeleteIcon>
-              <span style={{ paddingLeft: '8px' }}>Remove From Study</span>
+              {dialogState.dialogOpenRemove ? (
+                <DeleteIcon style={{ width: '25px' }}></DeleteIcon>
+              ) : (
+                <PinkSendSMSIcon style={{ width: '25px' }}></PinkSendSMSIcon>
+              )}
+              <span style={{ paddingLeft: '8px' }}>
+                {dialogState.dialogOpenRemove
+                  ? 'Remove From Study'
+                  : 'Sending SMS Download Link'}
+              </span>
             </>
           </DialogTitleWithClose>
-          <DialogContent>
-            {isOpenDeleteDialog && (
+          <DialogContent style={{ display: 'flex', justifyContent: 'center' }}>
+            {(dialogState.dialogOpenRemove || dialogState.dialogOpenSMS) && (
               <DeleteDialog
                 participantsWithError={participantsWithError}
                 study={study}
@@ -799,6 +833,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   ) || []
                 }
                 isProcessing={!!loadingIndicators.isDeleting}
+                isRemove={dialogState.dialogOpenRemove}
               />
             )}
           </DialogContent>
@@ -806,7 +841,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           {participantsWithError.length === 0 && (
             <DialogActions>
               <DialogButtonSecondary
-                onClick={() => setIsOpenDeleteDialog(false)}
+                onClick={() =>
+                  setDialogState({
+                    dialogOpenRemove: false,
+                    dialogOpenSMS: false,
+                  })
+                }
+                style={{ height: '48px' }}
               >
                 Cancel
               </DialogButtonSecondary>
@@ -814,8 +855,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               <DialogButtonPrimary
                 onClick={() => deleteSelectedParticipants()}
                 autoFocus
+                className={classes.primaryDialogButton}
               >
-                Permanently Remove
+                {dialogState.dialogOpenRemove
+                  ? 'Permanently Remove'
+                  : 'Yes, send SMS'}
               </DialogButtonPrimary>
             </DialogActions>
           )}
@@ -825,7 +869,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               <DialogButtonPrimary
                 onClick={() => {
                   setRefreshParticipantsToggle(prev => !prev)
-                  setIsOpenDeleteDialog(false)
+                  setDialogState({
+                    dialogOpenRemove: false,
+                    dialogOpenSMS: false,
+                  })
                 }}
                 color="primary"
               >
