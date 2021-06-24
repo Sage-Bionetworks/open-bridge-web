@@ -197,10 +197,11 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const handleError = useErrorHandler()
 
   const { token } = useUserSessionDataState()
-  const [menuAnchor, setMenuAnchor] = React.useState<null | {
-    study: Study
-    anchorEl: HTMLElement
-  }>(null)
+  const [menuAnchor, setMenuAnchor] =
+    React.useState<null | {
+      study: Study
+      anchorEl: HTMLElement
+    }>(null)
   const [renameStudyId, setRenameStudyId] = React.useState('')
   const classes = useStyles()
   const handleMenuClose = () => {
@@ -215,15 +216,18 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const [statusFilters, setStatusFilters] = React.useState<SectionStatus[]>(
     sections.map(section => section.sectionStatus),
   )
-  const [highlightedStudyId, setHighlightedStudyId] = React.useState<
-    string | null
-  >(null)
+  const [highlightedStudyId, setHighlightedStudyId] =
+    React.useState<string | null>(null)
 
   let resetNewlyAddedStudyID: NodeJS.Timeout
 
-  const { data: studies, status, error, run, setData: setStudies } = useAsync<
-    Study[]
-  >({
+  const {
+    data: studies,
+    status,
+    error,
+    run,
+    setData: setStudies,
+  } = useAsync<Study[]>({
     status: 'PENDING',
     data: [],
   })
@@ -364,9 +368,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             setStudies(studies)
           }
         } catch (e) {
-          // isSubscribed && setError(e)
-        } finally {
-          // isSubscribed && setIsLoading(false)
+          handleError(e)
         }
       }
     }
