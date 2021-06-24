@@ -666,30 +666,31 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               <div>
                 <Box className={classes.gridToolBar}>
                   <Box display="flex" flexDirection="row" alignItems="center">
-                    {tab !== 'WITHDRAWN' && (
-                      <Button
-                        aria-label="send-sms-text"
-                        onClick={() => {
-                          setParticipantsWithError([])
-                          setDialogState({
-                            dialogOpenRemove: false,
-                            dialogOpenSMS: true,
-                          })
-                        }}
-                        className={classes.sendSMSButton}
-                        disabled={selectedParticipantIds[tab].length === 0}
-                      >
-                        <img
-                          src={SMSPhoneImg}
-                          className={clsx(
-                            selectedParticipantIds[tab].length === 0 &&
-                              classes.disabledImage,
-                            classes.topRowImage,
-                          )}
-                        ></img>
-                        Send SMS link
-                      </Button>
-                    )}
+                    {tab !== 'WITHDRAWN' &&
+                      study.clientData.enrollmentType === 'PHONE' && (
+                        <Button
+                          aria-label="send-sms-text"
+                          onClick={() => {
+                            setParticipantsWithError([])
+                            setDialogState({
+                              dialogOpenRemove: false,
+                              dialogOpenSMS: true,
+                            })
+                          }}
+                          className={classes.sendSMSButton}
+                          disabled={selectedParticipantIds[tab].length === 0}
+                        >
+                          <img
+                            src={SMSPhoneImg}
+                            className={clsx(
+                              selectedParticipantIds[tab].length === 0 &&
+                                classes.disabledImage,
+                              classes.topRowImage,
+                            )}
+                          ></img>
+                          Send SMS link
+                        </Button>
+                      )}
 
                     <ParticipantDownload
                       isProcessing={loadingIndicators.isDownloading}
