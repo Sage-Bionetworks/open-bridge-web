@@ -6,14 +6,17 @@ import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
-  StringDictionary,
+  StringDictionary
 } from '../types/types'
 
 export const CLINIC_EVENT_ID = 'clinic_visit'
 export const JOINED_EVENT_ID = 'first_sign_in'
 export const LINK_SENT_EVENT_ID = 'install_link_sent'
 
-const IS_TEST: boolean = true
+export type ParticipantRelevantEvents ={
+  clinicVisitDate: string; joinedDate: string;  smsDate: string
+}
+
 
 //formats participant in the format required by datagrid
 function mapWithdrawnParticipant(
@@ -46,7 +49,7 @@ async function getRelevantEventsForParticipans(
   studyIdentifier: string,
   token: string,
   participantId: string[],
-): Promise<StringDictionary<{ clinicVisitDate: string; joinedDate: string }>> {
+): Promise<StringDictionary<ParticipantRelevantEvents>> {
   //transform ids into promises
   const promises = participantId.map(async pId => {
     const endpoint = constants.endpoints.events
@@ -71,17 +74,22 @@ async function getRelevantEventsForParticipans(
       )
       //joinedDate eventIds will change
       let joinedDate = item.apiCall.data.items.find(
-        event => event.eventId === JOINED_EVENT_ID,
+        event => event.eventId === `custom:${JOINED_EVENT_ID}`,//TODO: this will not be custom
+      )
+
+      let smsDate = item.apiCall.data.items.find(
+        event => event.eventId === `custom:${LINK_SENT_EVENT_ID}`,//TODO: this will not be custom
       )
 
       //ALINA: remove when real event. Just introducing randomness
-      if (Math.random() > 0.5) joinedDate = undefined
+      //if (Math.random() > 0.5) joinedDate = undefined
 
       return {
         ...acc,
         [item.participantId]: {
           clinicVisitDate: clinicVisitDate?.timestamp || '',
           joinedDate: joinedDate?.timestamp || '',
+          smsDate: smsDate?.timestamp || ''
         },
       }
     }, {})

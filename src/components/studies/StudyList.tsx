@@ -100,19 +100,24 @@ const sections = [
     studyStatus: ['design'] as StudyPhase[],
     title: 'Draft Studies',
     filterTitle: 'Design',
-    sectionStatus: 'DRAFT' as SectionStatus
+    sectionStatus: 'DRAFT' as SectionStatus,
   },
   {
     studyStatus: ['recruitment', 'in_flight'] as StudyPhase[],
     title: 'Live Studies',
     filterTitle: 'Live',
-    sectionStatus: 'LIVE' as SectionStatus
+    sectionStatus: 'LIVE' as SectionStatus,
   },
   {
-    studyStatus: ['completed', 'withdrawn', 'analysis', 'legacy'] as StudyPhase[],
+    studyStatus: [
+      'completed',
+      'withdrawn',
+      'analysis',
+      'legacy',
+    ] as StudyPhase[],
     title: 'Completed Studies',
     filterTitle: 'Completed',
-    sectionStatus: 'COMPLETED' as SectionStatus
+    sectionStatus: 'COMPLETED' as SectionStatus,
   },
 ]
 
@@ -128,7 +133,9 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
 }: StudySublistProps) => {
   const classes = useStyles()
   const item = sections.find(section => section.sectionStatus === status)!
-  const displayStudies = studies.filter(study => item.studyStatus.includes(study.phase))
+  const displayStudies = studies.filter(study =>
+    item.studyStatus.includes(study.phase),
+  )
   const studyLink =
     item.sectionStatus === 'DRAFT'
       ? `/studies/builder/:id/session-creator`
@@ -188,10 +195,11 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const handleError = useErrorHandler()
 
   const { token } = useUserSessionDataState()
-  const [menuAnchor, setMenuAnchor] = React.useState<null | {
-    study: Study
-    anchorEl: HTMLElement
-  }>(null)
+  const [menuAnchor, setMenuAnchor] =
+    React.useState<null | {
+      study: Study
+      anchorEl: HTMLElement
+    }>(null)
   const [renameStudyId, setRenameStudyId] = React.useState('')
   const classes = useStyles()
   const handleMenuClose = () => {
@@ -206,15 +214,18 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const [statusFilters, setStatusFilters] = React.useState<SectionStatus[]>(
     sections.map(section => section.sectionStatus),
   )
-  const [highlightedStudyId, setHighlightedStudyId] = React.useState<
-    string | null
-  >(null)
+  const [highlightedStudyId, setHighlightedStudyId] =
+    React.useState<string | null>(null)
 
   let resetNewlyAddedStudyID: NodeJS.Timeout
 
-  const { data: studies, status, error, run, setData: setStudies } = useAsync<
-    Study[]
-  >({
+  const {
+    data: studies,
+    status,
+    error,
+    run,
+    setData: setStudies,
+  } = useAsync<Study[]>({
     status: 'PENDING',
     data: [],
   })
@@ -256,7 +267,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         // need to duplicate the schedule
         const schedule = await StudyService.getStudySchedule(
           studyFromServer?.scheduleGuid,
-          token!
+          token!,
         )
         //@ts-ignore
         schedule!.guid = undefined
@@ -355,9 +366,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             setStudies(studies)
           }
         } catch (e) {
-          // isSubscribed && setError(e)
-        } finally {
-          // isSubscribed && setIsLoading(false)
+          handleError(e)
         }
       }
     }

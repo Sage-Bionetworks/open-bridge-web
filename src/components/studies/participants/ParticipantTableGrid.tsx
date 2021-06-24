@@ -10,6 +10,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import {
   DataGrid,
   GridCellParams,
+  GridCellValue,
   GridColDef,
   GridOverlay,
   GridRowSelectedParams,
@@ -63,33 +64,28 @@ function getPhone(params: GridValueGetterParams) {
     return (params.value as { nationalFormat: string }).nationalFormat
   } else return ''
 }
-
-function getClinicVisit(params: GridValueGetterParams) {
-  if (params.value) {
-    return new Date(params.value as string).toLocaleDateString()
-  } else return ''
+function getDate(value: GridCellValue) {
+  return value ? new Date(value as string).toLocaleDateString() : undefined
 }
 
-function getDateJoined(params: GridValueGetterParams) {
-  if (params.value) {
-    return new Date(params.value as string).toLocaleDateString()
-  } else return '-'
-}
 
-function getDateJoinedWithIcons(params: GridValueGetterParams) {
-  const date = getDateJoined(params)
-  const displaySymbol = date !== '-'
-  // currently randomized
-  const displayCheckMark = Math.random() < 0.5
+
+function getJoinedDateWithIcons(params: GridValueGetterParams) {
+  const joinedDate = params.row.joinedDate
+  const smsDate = params.row.smsDate
+
+  const dateToDisplay = joinedDate || smsDate
+  const formattedDate = getDate(dateToDisplay)
+  const hasJoined= !! joinedDate
   return (
     <Box display="flex" flexDirection="row">
-      {displaySymbol && (
+      {dateToDisplay && (
         <img
-          src={displayCheckMark ? JoinedCheckSymbol : JoinedPhoneSymbol}
+          src={ hasJoined ? JoinedCheckSymbol : JoinedPhoneSymbol}
           style={{ marginRight: '6px', width: '16px' }}
         ></img>
       )}
-      {date}
+      {formattedDate}
     </Box>
   )
 }
@@ -111,15 +107,15 @@ const ACTIVE_PARTICIPANT_COLUMNS: GridColDef[] = [
   },
   { field: 'id', headerName: 'HealthCode', flex: 2 },
   {
-    field: 'clinicVisit',
+    field: 'clinicVisitDate',
     headerName: 'Clinic Visit',
-    valueGetter: getClinicVisit,
+    valueGetter: params => getDate(params.value) || ' ',
     flex: 1,
   },
   {
-    field: 'dateJoined',
+    field: 'joinedDate',
     renderHeader: () => renderColumnHeader(JoinedCheckSymbol, 'Joined'),
-    renderCell: getDateJoinedWithIcons,
+    renderCell: getJoinedDateWithIcons,
     flex: 1,
   },
   { field: 'note', headerName: 'Notes', flex: 1 },
@@ -133,21 +129,21 @@ const WITHDRAWN_PARTICIPANT_COLUMNS: GridColDef[] = [
   },
   { field: 'id', headerName: 'HealthCode', flex: 2 },
   {
-    field: 'clinicVisit',
+    field: 'clinicVisitDate',
     headerName: 'Clinic Visit',
-    valueGetter: getClinicVisit,
+    valueGetter: params => getDate(params.value) || ' ',
     flex: 1,
   },
   {
-    field: 'dateJoined',
+    field: 'joinedDate',
     renderHeader: () => renderColumnHeader(JoinedCheckSymbol, 'Joined'),
-    renderCell: getDateJoinedWithIcons,
+    renderCell: getJoinedDateWithIcons,
     flex: 1,
   },
   {
     field: 'dateWithdrawn',
     headerName: 'Withdrawn',
-    valueGetter: getDateJoined,
+    valueGetter:  params => getDate(params.value) || '-',
     flex: 1,
   },
   { field: 'withdrawalNote', headerName: 'Withdrawal note', flex: 1 },
@@ -278,7 +274,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
           }
 
           const participant: EditableParticipantData = {
-            clinicVisitDate: getValDate('clinicVisit'),
+            clinicVisitDate: getValDate('clinicVisitDate'),
             note: getValString('note'),
             externalId: getValString('externalId'),
             phoneNumber: getValPhone('phone'),
@@ -337,7 +333,9 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     ...selectedParticipantIds,
   ])
   React.useEffect(() => {
-    setSelectionModel([...selectedParticipantIds.filter(id=> rows.find(row=> row.id === id))])
+    setSelectionModel([
+      ...selectedParticipantIds.filter(id => rows.find(row => row.id === id)),
+    ])
   }, [selectedParticipantIds, rows])
 
   const allSelectedPage = () =>
