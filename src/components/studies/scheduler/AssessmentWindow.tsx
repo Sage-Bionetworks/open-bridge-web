@@ -103,7 +103,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
           label={'Expire after'}
           variant="small"
           border={false}
-          style={{ margin: '0px 0px 8px 0', paddingBottom: 0 }}
+          style={{ margin: '0px 0px 16px 0px', paddingBottom: 0 }}
         >
           <Box display="inline-flex" alignItems="center">
             <Duration
@@ -120,39 +120,6 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
               unitData={HDWMEnum}
             ></Duration>
           </Box>
-        </SchedulingFormSection>
-        <SchedulingFormSection
-          label={''}
-          variant="small"
-          isCollapseLabelSmall={true}
-          border={false}
-          style={{ margin: '0px 0px 8px 0', paddingBottom: 0 }}
-        >
-          <FormControlLabel
-            style={{ alignItems: 'flex-start' }}
-            control={
-              <Checkbox
-                value={window.persistent}
-                checked={window.persistent === true}
-                onChange={e => {
-                  onChange({
-                    ...window,
-                    persistent: e.target.checked,
-                  })
-                }}
-              />
-            }
-            label={
-              <div className={classes.smallLabel}>
-                <strong>Persistent Mode</strong>
-                <br />
-                <span>
-                  Allow participant to complete this session as often as they
-                  like within the window of time
-                </span>
-              </div>
-            }
-          />
         </SchedulingFormSection>
       </Box>
     </Paper>
