@@ -31,7 +31,7 @@ import {
   StudyInfoData,
   useStudyInfoDataState
 } from '../../../helpers/StudyInfoContext'
-import ParticipantService from '../../../services/participants.service'
+import ParticipantService, { ParticipantRelevantEvents } from '../../../services/participants.service'
 import { latoFont, poppinsFont, theme } from '../../../style/theme'
 import {
   ExtendedParticipantAccountSummary,
@@ -229,10 +229,7 @@ async function getParticipants(
 
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
-  const eventsMap: StringDictionary<{
-    clinicVisitDate: string
-    joinedDate: string
-  }> = await ParticipantService.getRelevantEventsForParticipans(
+  const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipans(
     studyId,
     token,
     retrievedParticipants.map(p => p.id),
@@ -242,8 +239,9 @@ async function getParticipants(
     const event = eventsMap[id]
     const updatedParticipant = {
       ...participant,
-      clinicVisit: event.clinicVisitDate,
-      dateJoined: event.joinedDate,
+      clinicVisitDate: event.clinicVisitDate,
+      joinedDate: event.joinedDate,
+      smsDate: event.smsDate
     }
     return updatedParticipant
   })
@@ -514,11 +512,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         participantId: p.externalIds[study.identifier],
         healthCode: p.id,
         phoneNumber: p.phone?.nationalFormat,
-        clinicVisit: p.clinicVisit
-          ? new Date(p.clinicVisit).toLocaleDateString()
+        clinicVisitDate: p.clinicVisitDate
+          ? new Date(p.clinicVisitDate).toLocaleDateString()
           : '-',
-        dateJoined: p.dateJoined
-          ? new Date(p.dateJoined).toLocaleDateString()
+        joinedDate: p.joinedDate
+          ? new Date(p.joinedDate).toLocaleDateString()
           : '',
         note: '',
       }),

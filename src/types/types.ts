@@ -221,8 +221,9 @@ export type ParticipantAccountSummary = {
 }
 
 export type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {
-  clinicVisit?: Date | string
-  dateJoined?: Date | string
+  clinicVisitDate?: Date | string
+  joinedDate?: Date | string
+  smsDate?: Date | string
   dateWithdrawn?: Date | string
   withdrawalNote?: string
   studyId?: string
