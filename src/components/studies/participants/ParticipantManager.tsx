@@ -31,7 +31,9 @@ import {
   StudyInfoData,
   useStudyInfoDataState
 } from '../../../helpers/StudyInfoContext'
-import ParticipantService, { ParticipantRelevantEvents } from '../../../services/participants.service'
+import ParticipantService, {
+  ParticipantRelevantEvents
+} from '../../../services/participants.service'
 import { latoFont, poppinsFont, theme } from '../../../style/theme'
 import {
   ExtendedParticipantAccountSummary,
@@ -56,6 +58,7 @@ import ParticipantDownload, {
 } from './ParticipantDownload'
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
+import ParticipantTablePagination from './ParticipantTablePagination'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -210,6 +213,31 @@ const TAB_ICONS_UNFOCUS = [
 ]
 
 /*** general functions */
+
+const getCurrentPageFromPageNavigationArrowPressed = (
+  type: string,
+  currentPage: number,
+  totalParticipants: number,
+  pageSize: number,
+): number => {
+  // "FF" = forward to last page
+  // "F" = forward to next pages
+  // "B" = back to previous page
+  // "BB" = back to beginning
+
+  const numberOfPages = Math.ceil(totalParticipants / pageSize)
+  if (type === 'F' && currentPage !== numberOfPages) {
+    return currentPage + 1
+  } else if (type === 'FF' && currentPage !== numberOfPages) {
+    return numberOfPages
+  } else if (type === 'B' && currentPage !== 1) {
+    return currentPage - 1
+  } else if (type === 'BB' && currentPage !== 1) {
+    return 1
+  }
+  return currentPage //should not happen
+}
+
 async function getParticipants(
   studyId: string,
   token: string,
@@ -229,11 +257,12 @@ async function getParticipants(
 
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
-  const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipans(
-    studyId,
-    token,
-    retrievedParticipants.map(p => p.id),
-  )
+  const eventsMap: StringDictionary<ParticipantRelevantEvents> =
+    await ParticipantService.getRelevantEventsForParticipans(
+      studyId,
+      token,
+      retrievedParticipants.map(p => p.id),
+    )
   const result = retrievedParticipants!.map(participant => {
     const id = participant.id as string
     const event = eventsMap[id]
@@ -241,7 +270,7 @@ async function getParticipants(
       ...participant,
       clinicVisitDate: event.clinicVisitDate,
       joinedDate: event.joinedDate,
-      smsDate: event.smsDate
+      smsDate: event.smsDate,
     }
     return updatedParticipant
   })
@@ -742,8 +771,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     ) =>
                       updateParticipant(participantId, note, clinicVisitDate)
                     }
-                    currentPage={currentPage}
-                    setCurrentPage={setCurrentPage}
                     enrollmentType={study.clientData.enrollmentType!}
                     onRowSelected={(
                       /*id: string, isSelected: boolean*/ selection,
@@ -757,9 +784,27 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         [tab]: selection,
                       }))
                     }}
-                    pageSize={pageSize}
-                    setPageSize={setPageSize}
-                  ></ParticipantTableGrid>
+                  >
+                    <ParticipantTablePagination
+                      totalParticipants={data?.total || 0}
+                      onPageSelectedChanged={(pageSelected: number) => {
+                        setCurrentPage(pageSelected)
+                      }}
+                      currentPage={currentPage}
+                      pageSize={pageSize}
+                      setPageSize={setPageSize}
+                      handlePageNavigationArrowPressed={(button: string) => {
+                        const currPage =
+                          getCurrentPageFromPageNavigationArrowPressed(
+                            button,
+                            currentPage,
+                            data?.total || 0,
+                            pageSize,
+                          )
+                        setCurrentPage(currPage)
+                      }}
+                    />
+                  </ParticipantTableGrid>
                 </div>
               </div>
 
