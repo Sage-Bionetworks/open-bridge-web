@@ -8,6 +8,7 @@ import {
   Study,
   ParticipantActivityType,
   EnrolledAccountRecord,
+  Phone,
 } from '../../../types/types'
 import clsx from 'clsx'
 import ParticipantService from '../../../services/participants.service'
@@ -49,6 +50,12 @@ type DialogContentsProps = {
   token: string
 }
 
+type ParticipantDisplayType = {
+  identifier: string
+  externalId: string
+  phone?: Phone
+}
+
 function formatExternalID(id: string) {
   const arr = id.split(':')
   return arr.length === 1 ? arr[0] : arr[1]
@@ -56,11 +63,11 @@ function formatExternalID(id: string) {
 
 function formatIds(
   isEnrolledById: boolean,
-  participants: EnrolledAccountRecord[],
+  participants: ParticipantDisplayType[],
 ): string[] {
-  return participants.map((participant: EnrolledAccountRecord) =>
+  return participants.map((participant: ParticipantDisplayType) =>
     !isEnrolledById
-      ? participant.participant.phone?.nationalFormat ||
+      ? participant.phone?.nationalFormat ||
         formatExternalID(participant.externalId) ||
         'unknown'
       : formatExternalID(participant.externalId) || 'unknown',
@@ -79,11 +86,12 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
 }) => {
   const classes = useStyles()
   const [participantData, setParticipantData] = React.useState<
-    EnrolledAccountRecord[]
+    ParticipantDisplayType[]
   >([])
   const [loadingData, setLoadingData] = React.useState(false)
 
   const setData = async () => {
+    let finalResult: EnrolledAccountRecord[] = []
     const resultEnrolled = await ParticipantService.getAllParticipantsInEnrollmentType(
       study.identifier,
       token,
@@ -91,6 +99,7 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
       false,
     )
     const enrolledNonTestParticipants = resultEnrolled.items
+    finalResult = enrolledNonTestParticipants
     if (tab === 'TEST') {
       const resultAll = await ParticipantService.getAllParticipantsInEnrollmentType(
         study.identifier,
@@ -120,10 +129,16 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
               participant.participant.identifier === el.participant.identifier,
           ) === undefined,
       )
-      setParticipantData(testParticipants)
-    } else {
-      setParticipantData(enrolledNonTestParticipants)
+      finalResult = testParticipants
     }
+    const formattedData = finalResult.map(participant => {
+      return {
+        identifier: participant.participant.identifier,
+        externalId: participant.externalId || '',
+        phone: participant.participant.phone,
+      } as ParticipantDisplayType
+    })
+    setParticipantData(formattedData)
     setLoadingData(false)
   }
 
@@ -135,17 +150,10 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
     }
     const formattedData = selectedParticipants.map(participant => {
       return {
-        enrolledBy: {},
-        enrolledOn: new Date(participant.createdOn || ''),
+        identifier: participant.id,
         externalId: participant.externalIds[study.identifier] || '',
-        participant: {
-          identifier: participant.id,
-          phone: participant.phone,
-        },
-        studyId: study.identifier,
-        withdrawnBy: {},
-        withdrawnOn: new Date(),
-      } as EnrolledAccountRecord
+        phone: participant.phone,
+      } as ParticipantDisplayType
     })
     setParticipantData(formattedData)
     setLoadingData(false)
