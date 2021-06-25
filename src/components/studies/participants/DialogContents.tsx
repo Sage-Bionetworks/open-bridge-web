@@ -49,6 +49,11 @@ type DialogContentsProps = {
   token: string
 }
 
+function formatExternalID(id: string) {
+  const arr = id.split(':')
+  return arr.length === 1 ? arr[0] : arr[1]
+}
+
 function formatIds(
   enrollmentType: EnrollmentType,
   participants: EnrolledAccountRecord[],
@@ -56,9 +61,9 @@ function formatIds(
   return participants.map((participant: EnrolledAccountRecord) =>
     enrollmentType === 'PHONE'
       ? participant.participant.phone?.nationalFormat ||
-        participant.externalId.split(':')[1] ||
+        formatExternalID(participant.externalId) ||
         'unknown'
-      : participant.externalId.split(':')[1] || 'unknown',
+      : formatExternalID(participant.externalId) || 'unknown',
   )
 }
 
@@ -131,17 +136,6 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
     setParticipantData(formattedData)
     setLoadingData(false)
   }, [selectingAll, selectedParticipants])
-
-  if (selectedParticipants.length === 0) {
-    // this should never happen
-    return (
-      <Box className={classes.root}>
-        {`Please select participants you would like to ${
-          isRemove ? 'removed' : 'send message to'
-        }`}
-      </Box>
-    )
-  }
 
   if (isProcessing || loadingData) {
     return (
