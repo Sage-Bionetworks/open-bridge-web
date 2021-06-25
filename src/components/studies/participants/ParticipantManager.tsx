@@ -835,6 +835,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 }
                 isProcessing={!!loadingIndicators.isDeleting}
                 isRemove={dialogState.dialogOpenRemove}
+                selectingAll={isAllSelected}
+                tab={tab}
+                token={token!}
               />
             )}
           </DialogContent>

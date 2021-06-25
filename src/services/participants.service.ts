@@ -305,6 +305,34 @@ async function getParticipants(
   return { items: resultItems, total: result.total }
 }
 
+async function getAllParticipantsInEnrollmentType(
+  studyIdentifier: string,
+  token: string,
+  enrollmentType: string,
+  includeTesters?: boolean,
+  pageSize?: number,
+  offsetBy?: number,
+) {
+  if (!pageSize) {
+    return getAllPages<EnrolledAccountRecord>(
+      getAllParticipantsInEnrollmentType,
+      [studyIdentifier, token, enrollmentType, includeTesters || false],
+    )
+  }
+  const endpoint = `${constants.endpoints.studies}/${studyIdentifier}/enrollments`
+  const body = {
+    enrollmentFilter: enrollmentType,
+    includeTesters: includeTesters || false,
+    pageSize: pageSize,
+    offsetBy: offsetBy ? offsetBy : 0,
+  }
+  const result = await callEndpoint<{
+    items: EnrolledAccountRecord[]
+    total: number
+  }>(endpoint, 'GET', body, token)
+  return { items: result.data.items, total: result.data.total }
+}
+
 async function getNumEnrolledParticipants(
   studyIdentifier: string,
   token: string,
@@ -542,6 +570,7 @@ const ParticipantService = {
   addParticipant,
   addTestParticipant,
   deleteParticipant,
+  getAllParticipantsInEnrollmentType,
   getRelevantEventsForParticipans,
   getNumEnrolledParticipants,
   getEnrollmentsWithdrawnById,

@@ -1,13 +1,16 @@
 import { Box, CircularProgress, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { latoFont } from '../../../style/theme'
 import {
   EnrollmentType,
   ParticipantAccountSummary,
   Study,
+  ParticipantActivityType,
+  EnrolledAccountRecord,
 } from '../../../types/types'
 import clsx from 'clsx'
+import ParticipantService from '../../../services/participants.service'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -41,19 +44,22 @@ type DialogContentsProps = {
   isProcessing: boolean
   // if this is false, then sms is implied to be true
   isRemove: boolean
+  selectingAll: boolean
+  tab: ParticipantActivityType
+  token: string
 }
 
 function formatIds(
   studyId: string,
   enrollmentType: EnrollmentType,
-  participants: ParticipantAccountSummary[],
+  participants: EnrolledAccountRecord[],
 ): string[] {
-  return participants.map(participant =>
+  return participants.map((participant: EnrolledAccountRecord) =>
     enrollmentType === 'PHONE'
-      ? participant.phone?.nationalFormat ||
-        participant.externalIds[studyId] ||
+      ? participant.participant.phone?.nationalFormat ||
+        participant.externalId ||
         'unknown'
-      : participant.externalIds[studyId] || 'unknown',
+      : participant.externalId || 'unknown',
   )
 }
 
@@ -63,8 +69,69 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
   study,
   isProcessing,
   isRemove,
+  selectingAll,
+  tab,
+  token,
 }) => {
   const classes = useStyles()
+  const [participantData, setParticipantData] = React.useState<
+    EnrolledAccountRecord[]
+  >([])
+  const [loadingData, setLoadingData] = React.useState(false)
+
+  const setData = async () => {
+    const result1 = await ParticipantService.getAllParticipantsInEnrollmentType(
+      study.identifier,
+      token,
+      'enrolled',
+      false,
+    )
+    const dataWithoutTestMembers = result1.items
+    if (tab === 'TEST') {
+      const result2 = await ParticipantService.getAllParticipantsInEnrollmentType(
+        study.identifier,
+        token,
+        'enrolled',
+        true,
+      )
+      const dataWithTestMembers = result2.items
+      const testParticipants = dataWithTestMembers.filter(
+        el =>
+          dataWithoutTestMembers.find(
+            participant => participant.externalId === el.externalId,
+          ) === undefined,
+      )
+      setParticipantData(testParticipants)
+    } else {
+      dataWithoutTestMembers.filter(el => el.withdrawnOn === undefined)
+      setParticipantData(dataWithoutTestMembers)
+    }
+    setLoadingData(false)
+  }
+
+  useEffect(() => {
+    setLoadingData(true)
+    if (selectingAll) {
+      setData()
+      return
+    }
+    const formattedData = selectedParticipants.map(participant => {
+      return {
+        enrolledBy: {},
+        enrolledOn: new Date(participant.createdOn || ''),
+        externalId: participant.externalIds[study.identifier] || '',
+        participant: {
+          identifier: participant.id,
+          phone: participant.phone,
+        },
+        studyId: study.identifier,
+        withdrawnBy: {},
+        withdrawnOn: new Date(),
+      } as EnrolledAccountRecord
+    })
+    setParticipantData(formattedData)
+    setLoadingData(false)
+  }, [selectingAll, selectedParticipants])
 
   if (selectedParticipants.length === 0) {
     // this should never happen
@@ -77,7 +144,7 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
     )
   }
 
-  if (isProcessing) {
+  if (isProcessing || loadingData) {
     return (
       <Box className={classes.root}>
         <Box textAlign="center" mx="auto">
@@ -90,13 +157,13 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
   const idsToRemoveList = formatIds(
     study.identifier,
     study.clientData.enrollmentType!,
-    selectedParticipants,
+    participantData,
   )
 
   const idsWithErrorsList = formatIds(
     study!.identifier,
     study!.clientData.enrollmentType!,
-    participantsWithError,
+    participantData,
   )
 
   if (participantsWithError.length === 0) {
@@ -107,7 +174,7 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
             <Box mb={1}>
               {isRemove
                 ? 'Are you sure you would like to permanently remove the following participant(s):'
-                : `You will be sending the following SMS to the following ${selectedParticipants.length} participant(s) listed below:`}
+                : `You will be sending the following SMS to the following ${participantData.length} participant(s) listed below:`}
             </Box>
             {!isRemove && (
               <Box
