@@ -170,7 +170,7 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
     )
   }
 
-  const idsToRemoveList = formatIds(
+  const selectedIds = formatIds(
     isSignInById(study.signInTypes),
     participantData,
   )
@@ -213,7 +213,7 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
               )}
               elevation={0}
             >
-              {idsToRemoveList.map(id => (
+              {selectedIds.map(id => (
                 <span>{id}</span>
               ))}
             </Paper>
