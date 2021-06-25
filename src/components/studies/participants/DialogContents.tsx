@@ -90,7 +90,7 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
       'enrolled',
       false,
     )
-    const dataWithoutTestMembers = resultEnrolled.items
+    const enrolledNonTestParticipants = resultEnrolled.items
     if (tab === 'TEST') {
       const resultAll = await ParticipantService.getAllParticipantsInEnrollmentType(
         study.identifier,
@@ -104,23 +104,25 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
         'withdrawn',
         false,
       )
-      const dataAllTestMembers = resultAll.items
-      const dataWithdrawnMembers = resultWithdrawn.items
-      let testParticipants = dataAllTestMembers.filter(
+      const allParticipants = resultAll.items
+      const withdrawnNonTestParticipants = resultWithdrawn.items
+      let testParticipants = allParticipants.filter(
         el =>
-          dataWithoutTestMembers.find(
-            participant => participant.externalId === el.externalId,
+          enrolledNonTestParticipants.find(
+            participant =>
+              participant.participant.identifier === el.participant.identifier,
           ) === undefined,
       )
       testParticipants = testParticipants.filter(
         el =>
-          dataWithdrawnMembers.find(
-            participant => participant.externalId === el.externalId,
+          withdrawnNonTestParticipants.find(
+            participant =>
+              participant.participant.identifier === el.participant.identifier,
           ) === undefined,
       )
       setParticipantData(testParticipants)
     } else {
-      setParticipantData(dataWithoutTestMembers)
+      setParticipantData(enrolledNonTestParticipants)
     }
     setLoadingData(false)
   }
