@@ -5,7 +5,7 @@ import {
   Divider,
   makeStyles,
   Menu,
-  MenuItem,
+  MenuItem
 } from '@material-ui/core'
 import Link from '@material-ui/core/Link'
 import React, { FunctionComponent, useEffect } from 'react'
@@ -255,6 +255,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           clientData: {},
           phase: 'design' as StudyPhase,
           name: constants.constants.NEW_STUDY_NAME,
+          signInTypes: [],
           createdOn: new Date(),
           modifiedOn: new Date(),
         }

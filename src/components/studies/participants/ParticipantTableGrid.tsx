@@ -175,7 +175,6 @@ export type ParticipantTableGridProps = {
   isAllSelected: boolean
   rows: ParticipantAccountSummary[]
   selectedParticipantIds: string[]
-  //enrollmentType: EnrollmentType
   isEnrolledById: boolean,
   gridType: ParticipantActivityType
   studyId: string
