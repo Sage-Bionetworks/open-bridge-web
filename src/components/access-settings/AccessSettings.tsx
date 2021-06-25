@@ -7,7 +7,7 @@ import {
   DialogTitle,
   IconButton,
   makeStyles,
-  Paper
+  Paper,
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import MailOutlineIcon from '@material-ui/icons/MailOutline'
@@ -18,7 +18,7 @@ import { ReactComponent as Delete } from '../../assets/trash.svg'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
 import {
   StudyInfoData,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
 import { isInAdminRole } from '../../helpers/utility'
 import AccessService from '../../services/access.service'
@@ -116,16 +116,12 @@ async function createNewAccount(
   currentUserOrg: string,
 ) {
   const mapAccessToRole = (access: Access): string => {
-    debugger
-   // if (access.ACCESS_SETTINGS.)
+    // if (access.ACCESS_SETTINGS.)
     return 'developer'
   }
   try {
-    const {
-      principalId,
-      firstName,
-      lastName,
-    } = await AccessService.getAliasFromSynapseByEmail(email)
+    const { principalId, firstName, lastName } =
+      await AccessService.getAliasFromSynapseByEmail(email)
 
     await AccessService.createIndividualAccount(
       token!,
