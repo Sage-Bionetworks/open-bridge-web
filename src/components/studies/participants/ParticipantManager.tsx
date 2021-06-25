@@ -52,7 +52,7 @@ import {
 } from '../../widgets/StyledComponents'
 import LiveIcon from '../LiveIcon'
 import AddParticipants from './AddParticipants'
-import DeleteDialog from './DialogContents'
+import DialogContents from './DialogContents'
 import ParticipantDownload, {
   ParticipantDownloadType,
 } from './ParticipantDownload'
@@ -868,7 +868,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           </DialogTitleWithClose>
           <DialogContent style={{ display: 'flex', justifyContent: 'center' }}>
             {(dialogState.dialogOpenRemove || dialogState.dialogOpenSMS) && (
-              <DeleteDialog
+              <DialogContents
                 participantsWithError={participantsWithError}
                 study={study}
                 selectedParticipants={
