@@ -1,25 +1,25 @@
 import {
-    Box,
+  Box,
 
-    DialogActions,
-    DialogContent,
-    FormControl,
-    FormGroup,
-    FormHelperText,
-    makeStyles
+  DialogActions,
+  DialogContent,
+  FormControl,
+  FormGroup,
+  FormHelperText,
+  makeStyles
 } from '@material-ui/core'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { isInvalidPhone } from '../../../helpers/utility'
 import { latoFont } from '../../../style/theme'
-import { EditableParticipantData, EnrollmentType } from '../../../types/types'
+import { EditableParticipantData } from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import { MTBHeadingH3 } from '../../widgets/Headings'
 import {
-    DialogButtonPrimary,
-    DialogButtonSecondary,
-    SimpleTextInput,
-    SimpleTextLabel
+  DialogButtonPrimary,
+  DialogButtonSecondary,
+  SimpleTextInput,
+  SimpleTextLabel
 } from '../../widgets/StyledComponents'
 
 
@@ -42,13 +42,13 @@ const useStyles = makeStyles(theme => ({
 
 type AddParticipantFormProps = {
   participant: EditableParticipantData
-  enrollmentType: EnrollmentType
+  isEnrolledById: boolean
 
   onChange: (p: EditableParticipantData) => void
 }
 
 export type EditParticipantFormProps = {
-  enrollmentType: EnrollmentType
+  isEnrolledById: boolean
   participant: EditableParticipantData
   onOK: Function
   onCancel: Function
@@ -57,7 +57,7 @@ export type EditParticipantFormProps = {
 
 export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
   participant,
-  enrollmentType,
+  isEnrolledById,
   onOK,
   onCancel,
   children,
@@ -77,10 +77,9 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
       <DialogContent>
         <Box mt={0} mb={3}>
           <MTBHeadingH3>
-            {enrollmentType === 'ID' && (
+            {isEnrolledById? (
               <span>Reference ID: {participant.externalId}</span>
-            )}
-            {enrollmentType === 'PHONE' && (
+            ) : (
               <span>Phone number: {participant.phoneNumber}</span>
             )}
           </MTBHeadingH3>
@@ -128,11 +127,11 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
 }
 
 export const WithdrawParticipantForm: FunctionComponent<{
-  enrollmentType: EnrollmentType
+  isEnrolledById: boolean
   participant: EditableParticipantData
   onOK: Function
   onCancel: Function
-}> = ({ enrollmentType, participant, onOK, onCancel }) => {
+}> = ({ isEnrolledById, participant, onOK, onCancel }) => {
   const classes = useStyles()
   const [note, setNote] = React.useState('')
   return (
@@ -147,9 +146,9 @@ export const WithdrawParticipantForm: FunctionComponent<{
             Are you sure you would like to withdraw the following participant:
           </p>
           <p>
-            {enrollmentType === 'PHONE'
-              ? participant.phoneNumber
-              : participant.externalId}{' '}
+            {isEnrolledById
+              ? participant.externalId :participant.phoneNumber}
+
           </p>
           <p>
             <strong>This action cannot be undone.</strong>
@@ -185,7 +184,7 @@ export const WithdrawParticipantForm: FunctionComponent<{
 
 export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
   participant,
-  enrollmentType,
+  isEnrolledById,
   onChange,
 }) => {
   const classes = useStyles()
@@ -201,7 +200,7 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
   const extId = (
     <FormControl>
       <SimpleTextLabel htmlFor="participant-id">
-        {`Participant ID${enrollmentType === 'ID' ? '*' : ''}`}
+        {`Participant ID${isEnrolledById? '*' : ''}`}
       </SimpleTextLabel>
       <SimpleTextInput
         placeholder="xxx-xxx-xxxx"
@@ -216,8 +215,8 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
   return (
     <>
       <FormGroup className={classes.addForm}>
-        {enrollmentType === 'ID' && extId}
-        {enrollmentType === 'PHONE' && (
+        {isEnrolledById && extId}
+        {!isEnrolledById  && (
           <>
             <FormControl className={clsx(validationErrors.phone && 'error')}>
               <SimpleTextLabel htmlFor="phone">Phone Number*</SimpleTextLabel>

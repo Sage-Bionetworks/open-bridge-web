@@ -31,6 +31,7 @@ import {
   StudyInfoData,
   useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
+import { isSignInById } from '../../../helpers/utility'
 import ParticipantService, {
   ParticipantRelevantEvents
 } from '../../../services/participants.service'
@@ -250,7 +251,7 @@ async function getParticipants(
   token: string,
   currentPage: number,
   pageSize: number, // set to 0 to get all the participants
-  tab: ParticipantActivityType = 'ACTIVE',
+  tab: ParticipantActivityType,
 ): Promise<ParticipantData> {
   const offset = (currentPage - 1) * pageSize
 
@@ -265,7 +266,7 @@ async function getParticipants(
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
   const eventsMap: StringDictionary<ParticipantRelevantEvents> =
-    await ParticipantService.getRelevantEventsForParticipans(
+    await ParticipantService.getRelevantEventsForParticipants(
       studyId,
       token,
       retrievedParticipants.map(p => p.id),
@@ -300,7 +301,7 @@ const HelpBoxSC: FunctionComponent<{
   status: RequestStatus
 }> = ({ numRows, status }) => {
   return (
-    <Box px={3} py={2} position="relative">
+    <Box position="relative">
       {!numRows && status !== 'PENDING' && (
         <HelpBox
           topOffset={40}
@@ -317,25 +318,23 @@ const HelpBoxSC: FunctionComponent<{
         </HelpBox>
       )}
 
-      {!numRows &&
-        /*!isUserSearchingForParticipant &&*/
-        status === 'RESOLVED' && (
-          <HelpBox
-            topOffset={340}
-            leftOffset={250}
-            arrowTailLength={150}
-            helpTextTopOffset={-70}
-            helpTextLeftOffset={140}
-            helpTextWidth={250}
-            arrowRotate={0}
-          >
-            <div>
-              You can upload a .csv or enter each participant credentials one by
-              one. When you are done, return to “View” mode to send them an SMS
-              link to download the app.
-            </div>
-          </HelpBox>
-        )}
+      {!numRows && status === 'RESOLVED' && (
+        <HelpBox
+          topOffset={340}
+          leftOffset={250}
+          arrowTailLength={150}
+          helpTextTopOffset={-70}
+          helpTextLeftOffset={140}
+          helpTextWidth={250}
+          arrowRotate={0}
+        >
+          <div>
+            You can upload a .csv or enter each participant credentials one by
+            one. When you are done, return to “View” mode to send them an SMS
+            link to download the app.
+          </div>
+        </HelpBox>
+      )}
     </Box>
   )
 }
@@ -513,32 +512,54 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }
 
   const handleSearchParticipantRequest = async (searchedValue: string) => {
-    const result =
-      tab === 'ACTIVE'
-        ? await ParticipantService.getParticipantById(
+    const result = await ParticipantService.getEnrollmentById(
+      study.identifier,
+      token!,
+      searchedValue,
+    )
+    //tab === 'ACTIVE'
+    /* ? await ParticipantService.getParticipantById(
             study.identifier,
             token!,
             searchedValue,
+            tab
           )
         : await ParticipantService.getEnrollmentsWithdrawnById(
             study.identifier,
             token!,
             searchedValue,
-          )
-    const realResult = result ? [result] : []
-    const totalParticipantsFound = result ? 1 : 0
-    setParticipantData({ items: realResult, total: totalParticipantsFound })
+          )*/
+    //  const realResult = result ? [result] : []
+    // const totalParticipantsFound = result ? 1 : 0
+    if (result) {
+      const eventsMap: StringDictionary<ParticipantRelevantEvents> =
+        await ParticipantService.getRelevantEventsForParticipants(
+          study.identifier,
+          token!,
+          [result.id],
+        )
+
+      const event = eventsMap[result.id]
+      const updatedParticipant = {
+        ...result,
+        clinicVisitDate: event.clinicVisitDate,
+        joinedDate: event.joinedDate,
+        smsDate: event.smsDate,
+      }
+      setParticipantData({ items: [updatedParticipant], total: 1 })
+    } else {
+      setParticipantData({ items: [], total: 0 })
+    }
   }
 
   const handleResetSearch = async () => {
     const result = await run(
-      getParticipants(study!.identifier, token!, currentPage, pageSize),
+      getParticipants(study!.identifier, token!, currentPage, pageSize, tab),
     )
     setParticipantData({ items: result.items, total: result.total })
   }
 
   const downloadParticipants = async (selection: ParticipantDownloadType) => {
-    debugger
     setLoadingIndicators({ isDownloading: true })
 
     //if getting all participants
@@ -598,7 +619,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           <img src={LiveIcon} style={{ height: "25px" }}></img>
         </Box>
 
-        {tab === 'ACTIVE' && (
+        {tab === 'ACTIVE' && !isUserSearchingForParticipant && (
           <HelpBoxSC numRows={data?.items.length} status={status} />
         )}
 
@@ -651,7 +672,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               />
             ))}
           </Tabs>
-          <Box marginTop="-16px">
+          <Box marginTop="-16px" bgcolor="white">
             <CollapsibleLayout
               expandedWidth={300}
               isFullWidth={true}
@@ -798,7 +819,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     ) =>
                       updateParticipant(participantId, note, clinicVisitDate)
                     }
-                    enrollmentType={study.clientData.enrollmentType!}
+                    isEnrolledById={isSignInById(study.signInTypes)}
                     onRowSelected={(
                       /*id: string, isSelected: boolean*/ selection,
                       isAll,

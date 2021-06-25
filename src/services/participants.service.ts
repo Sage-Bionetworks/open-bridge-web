@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { callEndpoint, generateNonambiguousCode } from '../helpers/utility'
 import constants from '../types/constants'
 import {
@@ -45,7 +46,7 @@ function formatExternalId(studyId: string, externalId: string) {
 }
 
 // gets clinic visits and join events for participants with the specified ids
-async function getRelevantEventsForParticipans(
+async function getRelevantEventsForParticipants(
   studyIdentifier: string,
   token: string,
   participantId: string[],
@@ -198,10 +199,11 @@ data.noneOfGroups =  []
   return { items: [...filteredDataTest, ...filteredDataReal], total: totalTest*1+ totalReal }*/
 }
 
-async function getParticipantById(
+async function getActiveParticipantById(
   studyIdentifier: string,
   token: string,
   participantId: string,
+
 ): Promise<ParticipantAccountSummary | null> {
   const endpoint = constants.endpoints.participant.replace(
     ':id',
@@ -302,7 +304,7 @@ async function getParticipants(
   }
   if (queryFilter === 'enrolled') {
     const participantPromises = result.items.map(i =>
-      getParticipantById(studyIdentifier, token, i.participant.identifier),
+      getActiveParticipantById(studyIdentifier, token, i.participant.identifier),
     )
     const resolvedParticipants = await Promise.all(participantPromises)
     resultItems = resolvedParticipants.filter(
@@ -358,10 +360,12 @@ async function getNumEnrolledParticipants(
   return result.data.total
 }
 
-async function getEnrollmentsWithdrawnById(
+async function getEnrollmentById(
   studyIdentifier: string,
   token: string,
   participantId: string,
+
+
 ) {
   const endpoint = constants.endpoints.enrollmentsForUser
     .replace(':studyId', studyIdentifier)
@@ -375,8 +379,19 @@ async function getEnrollmentsWithdrawnById(
     )
     const filteredRows = result.data.items
       .filter(p => p.studyId === studyIdentifier)
-      .map(p => mapWithdrawnParticipant(p, studyIdentifier))
-    return filteredRows?.length ? filteredRows[0] : null
+
+    if (_.isEmpty(filteredRows)) {
+      return null
+    }
+    const participant = filteredRows[0]
+    let mappedResult
+    if ( participant.withdrawnOn) {
+
+    return mapWithdrawnParticipant(filteredRows[0], studyIdentifier)
+    } else {
+      return getActiveParticipantById(studyIdentifier, token, filteredRows[0].participant.identifier)
+    }
+
   } catch (e) {
     // If the participant is not found, return null.
     if (e.statusCode === 404) {
@@ -578,11 +593,11 @@ const ParticipantService = {
   addParticipant,
   addTestParticipant,
   deleteParticipant,
-  getAllParticipantsInEnrollmentType,
-  getRelevantEventsForParticipans,
+  getRelevantEventsForParticipants,
   getNumEnrolledParticipants,
-  getEnrollmentsWithdrawnById,
-  getParticipantById,
+  getAllParticipantsInEnrollmentType,
+  getEnrollmentById,
+  getActiveParticipantById,
   getParticipants,
   getRequestInfoForParticipant,
   updateNotesAndClinicVisitForParticipant,
