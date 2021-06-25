@@ -149,6 +149,17 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
     setLoadingData(false)
   }, [selectingAll, selectedParticipants])
 
+  if (selectedParticipants.length === 0) {
+    // this should never happen
+    return (
+      <Box className={classes.root}>
+        {`Please select participants you would like to ${
+          isRemove ? 'removed' : 'send message to'
+        }`}
+      </Box>
+    )
+  }
+
   if (isProcessing || loadingData) {
     return (
       <Box className={classes.root}>
