@@ -107,7 +107,6 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
       )
       setParticipantData(testParticipants)
     } else {
-      dataWithoutTestMembers.filter(el => el.withdrawnOn === undefined)
       setParticipantData(dataWithoutTestMembers)
     }
     setLoadingData(false)
