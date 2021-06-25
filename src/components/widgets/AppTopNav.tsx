@@ -7,7 +7,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Paper
+  Paper,
 } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import { makeStyles } from '@material-ui/core/styles'
@@ -33,7 +33,7 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: theme.spacing(0, 3)
+    padding: theme.spacing(0, 3),
   },
 
   toolbar: {
