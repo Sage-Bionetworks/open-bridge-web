@@ -293,7 +293,7 @@ const HelpBoxSC: FunctionComponent<{
   status: RequestStatus
 }> = ({ numRows, status }) => {
   return (
-    <Box px={3} py={2} position="relative">
+    <Box position="relative">
       {!numRows && status !== 'PENDING' && (
         <HelpBox
           topOffset={40}
