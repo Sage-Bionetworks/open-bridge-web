@@ -50,7 +50,7 @@ import {
   DialogButtonPrimary,
   DialogButtonSecondary,
 } from '../../widgets/StyledComponents'
-import LiveIcon from '../LiveIcon'
+import LiveIcon from '../../../assets/live_study_icon.svg'
 import AddParticipants from './AddParticipants'
 import DialogContents from './DialogContents'
 import ParticipantDownload, {
@@ -590,12 +590,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   } else {
     return (
       <Box bgcolor="#F8F8F8">
-        <Box px={3} py={2} display="flex">
+        <Box px={3} py={2} display="flex" alignItems="center">
           <MTBHeadingH3 className={classes.studyId}>
             {' '}
             Study ID: {study.identifier}{' '}
           </MTBHeadingH3>
-          <LiveIcon />
+          <img src={LiveIcon} style={{ height: "25px" }}></img>
         </Box>
 
         {tab === 'ACTIVE' && (
