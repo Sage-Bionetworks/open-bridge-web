@@ -221,6 +221,7 @@ export type ParticipantAccountSummary = {
   status?: 'unverified' | 'pending' | 'verified'
   createdOn?: string
   note?: string
+  dataGroups?:string[]
 }
 
 export type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {

@@ -509,6 +509,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       study.identifier,
       token!,
       searchedValue,
+      tab
     )
     //tab === 'ACTIVE'
     /* ? await ParticipantService.getParticipantById(
@@ -541,6 +542,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       }
       setParticipantData({ items: [updatedParticipant], total: 1 })
     } else {
+  
       setParticipantData({ items: [], total: 0 })
     }
   }

@@ -7,17 +7,18 @@ import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
-  StringDictionary
+  StringDictionary,
 } from '../types/types'
 
 export const CLINIC_EVENT_ID = 'clinic_visit'
 export const JOINED_EVENT_ID = 'first_sign_in'
 export const LINK_SENT_EVENT_ID = 'install_link_sent'
 
-export type ParticipantRelevantEvents ={
-  clinicVisitDate: string; joinedDate: string;  smsDate: string
+export type ParticipantRelevantEvents = {
+  clinicVisitDate: string
+  joinedDate: string
+  smsDate: string
 }
-
 
 //formats participant in the format required by datagrid
 function mapWithdrawnParticipant(
@@ -42,7 +43,7 @@ function makeBackendExternalId(studyId: string, externalId: string) {
 }
 
 function formatExternalId(studyId: string, externalId: string) {
-  return externalId.replace(`${studyId}:`, '')
+  return externalId ? externalId.replace(`${studyId}:`, '') : 'withdrawn'
 }
 
 // gets clinic visits and join events for participants with the specified ids
@@ -75,11 +76,11 @@ async function getRelevantEventsForParticipants(
       )
       //joinedDate eventIds will change
       let joinedDate = item.apiCall.data.items.find(
-        event => event.eventId === `custom:${JOINED_EVENT_ID}`,//TODO: this will not be custom
+        event => event.eventId === `custom:${JOINED_EVENT_ID}`, //TODO: this will not be custom
       )
 
       let smsDate = item.apiCall.data.items.find(
-        event => event.eventId === `custom:${LINK_SENT_EVENT_ID}`,//TODO: this will not be custom
+        event => event.eventId === `custom:${LINK_SENT_EVENT_ID}`, //TODO: this will not be custom
       )
 
       //ALINA: remove when real event. Just introducing randomness
@@ -90,7 +91,7 @@ async function getRelevantEventsForParticipants(
         [item.participantId]: {
           clinicVisitDate: clinicVisitDate?.timestamp || '',
           joinedDate: joinedDate?.timestamp || '',
-          smsDate: smsDate?.timestamp || ''
+          smsDate: smsDate?.timestamp || '',
         },
       }
     }, {})
@@ -151,9 +152,10 @@ async function getTestParticipants(
 
   const mappedData = result.data.items.map(p => ({
     ...p,
-    externalId: p.externalIds[studyIdentifier]
-      ? formatExternalId(studyIdentifier, p.externalIds[studyIdentifier])
-      : '',
+    externalId: formatExternalId(
+      studyIdentifier,
+      p.externalIds[studyIdentifier],
+    ),
   }))
 
   //ALINA TODO: once there is a filter we can use that
@@ -203,7 +205,6 @@ async function getActiveParticipantById(
   studyIdentifier: string,
   token: string,
   participantId: string,
-
 ): Promise<ParticipantAccountSummary | null> {
   const endpoint = constants.endpoints.participant.replace(
     ':id',
@@ -304,7 +305,11 @@ async function getParticipants(
   }
   if (queryFilter === 'enrolled') {
     const participantPromises = result.items.map(i =>
-      getActiveParticipantById(studyIdentifier, token, i.participant.identifier),
+      getActiveParticipantById(
+        studyIdentifier,
+        token,
+        i.participant.identifier,
+      ),
     )
     const resolvedParticipants = await Promise.all(participantPromises)
     resultItems = resolvedParticipants.filter(
@@ -364,12 +369,12 @@ async function getEnrollmentById(
   studyIdentifier: string,
   token: string,
   participantId: string,
-
-
+  participantType: ParticipantActivityType,
 ) {
   const endpoint = constants.endpoints.enrollmentsForUser
     .replace(':studyId', studyIdentifier)
     .replace(':userId', participantId)
+    .trim()
   try {
     const result = await callEndpoint<{ items: EnrolledAccountRecord[] }>(
       endpoint,
@@ -377,21 +382,43 @@ async function getEnrollmentById(
       {},
       token,
     )
-    const filteredRows = result.data.items
-      .filter(p => p.studyId === studyIdentifier)
+    const filteredRows = result.data.items.filter(
+      p => p.studyId === studyIdentifier,
+    )
 
     if (_.isEmpty(filteredRows)) {
       return null
     }
     const participant = filteredRows[0]
-    let mappedResult
-    if ( participant.withdrawnOn) {
+    const recordFromParticipantApi = await getActiveParticipantById(
+      studyIdentifier,
+      token,
+      participant.participant.identifier,
+    )
 
-    return mapWithdrawnParticipant(filteredRows[0], studyIdentifier)
-    } else {
-      return getActiveParticipantById(studyIdentifier, token, filteredRows[0].participant.identifier)
+    const isWithdrawn = participant.withdrawnOn !== undefined
+    const isTestUser =
+      recordFromParticipantApi?.dataGroups?.includes('test_user')
+    if (participantType === 'WITHDRAWN' && (!isWithdrawn || isTestUser)) {
+      return null
+    }
+    if (participantType === 'ACTIVE' && (isWithdrawn || isTestUser)) {
+      return null
     }
 
+    if (participantType === 'TEST' && !isTestUser) {
+      return null
+    }
+
+    if (participant.withdrawnOn && participantType !== 'TEST') {
+      return mapWithdrawnParticipant(filteredRows[0], studyIdentifier)
+    } else {
+      return getActiveParticipantById(
+        studyIdentifier,
+        token,
+        filteredRows[0].participant.identifier,
+      )
+    }
   } catch (e) {
     // If the participant is not found, return null.
     if (e.statusCode === 404) {
