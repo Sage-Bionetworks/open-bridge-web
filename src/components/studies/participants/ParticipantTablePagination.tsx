@@ -43,7 +43,7 @@ type ParticpantTablePaginationProps = {
   currentPage: number
   pageSize: number
   setPageSize: Function
-  numberOfPages: number
+ 
   handlePageNavigationArrowPressed: Function
 }
 
@@ -53,7 +53,7 @@ const ParticipantTablePagination: React.FunctionComponent<ParticpantTablePaginat
   currentPage,
   pageSize,
   setPageSize,
-  numberOfPages,
+
   handlePageNavigationArrowPressed,
 }) => {
   const classes = useStyles()
@@ -90,7 +90,7 @@ const ParticipantTablePagination: React.FunctionComponent<ParticpantTablePaginat
       <PageSelector
         onPageSelected={onPageSelectedChanged}
         currentPageSelected={currentPage}
-        numberOfPages={numberOfPages}
+        numberOfPages={Math.ceil(totalParticipants / pageSize)}
         handlePageNavigationArrowPressed={handlePageNavigationArrowPressed}
       />
       <div className={classes.pageSizeSelectorContainer}>
