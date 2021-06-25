@@ -1,9 +1,9 @@
 import { Box, makeStyles, Radio } from '@material-ui/core'
+import CheckIcon from '@material-ui/icons/Check'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { latoFont } from '../../style/theme'
 import { AdminRole } from '../../types/types'
-import CheckIcon from '@material-ui/icons/Check'
 
 const useStyles = makeStyles(theme => ({
   cell: {
@@ -77,6 +77,7 @@ export function getRolesFromAccess(access: Access): AdminRole[] {
 }
 
 export function getAccessFromRoles(roles: AdminRole[]): Access {
+debugger
   if (roles.includes('org_admin')) {
     return {
       STUDY_BUILDER: 'EDITOR',
