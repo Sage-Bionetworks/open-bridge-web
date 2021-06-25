@@ -1,8 +1,7 @@
 import {
   cleanup,
-  queryByAttribute, render,
-
-
+  queryByAttribute,
+  render,
   within
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -87,12 +86,8 @@ const renderParticipantTableGrid = async () => {
         isAllSelected={false}
         selectedParticipantIds={[]}
         //isEdit={false}
-        currentPage={currentPage}
-        setCurrentPage={onPageSelectedChanged}
-        enrollmentType={'ID'}
+        isEnrolledById={true}
         onRowSelected={(/*id: string, isSelected: boolean*/ selection) => {}}
-        pageSize={pageSize}
-        setPageSize={updatePageSize}
         onWithdrawParticipant={(participantId: string, note: string) => {}}
         onUpdateParticipant={(
           participantId: string,
@@ -100,7 +95,9 @@ const renderParticipantTableGrid = async () => {
           clinicVisitDate?: Date,
         ) => {}}
         gridType={{} as ParticipantActivityType}
-      ></ParticipantTableGrid>
+      >
+        <></>
+      </ParticipantTableGrid>
       ,
     </UserSessionDataProvider>,
   ).container

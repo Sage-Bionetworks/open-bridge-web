@@ -108,7 +108,8 @@ export type Assessment = {
 }
 
 /* *** Study ********************************/
-export type EnrollmentType = 'ID' | 'PHONE'
+export type SignInType = 'phone_password' | 'external_id_password'
+//export type EnrollmentType = 'ID' | 'PHONE'
 //export type StudyStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'
 export type StudyDesignType='observation' | 'intervention'
 export type Study = {
@@ -127,16 +128,18 @@ export type Study = {
   colorScheme?: ColorScheme
   irbProtocolId?: string
   contacts?: Contact[]
-  studyDesignType?: StudyDesignType
+  studyDesignTypes?: StudyDesignType[]
   institutionId?: string
-  disease?: string,
+  diseases?: string[],
+  keywords?: string,
+  signInTypes: SignInType []
   clientData: {
-    enrollmentType?: EnrollmentType
+   // enrollmentType?: EnrollmentType
     generateIds?: boolean
     backgroundRecorders?: BackgroundRecorders
     welcomeScreenData?: WelcomeScreenData
     notifications?: StringDictionary<ScheduleNotification[]>
-    keywords?: string
+ 
   }
   createdOn?: Date
   modifiedOn?: Date

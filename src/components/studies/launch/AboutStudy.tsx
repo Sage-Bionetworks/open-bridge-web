@@ -72,20 +72,14 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
   const classes = useStyles()
 
   React.useEffect(() => {
-    onEnableNext(
-      study.disease && study.clientData?.keywords && study.studyDesignType,
-    )
+    onEnableNext(study.diseases && study.keywords && study.studyDesignTypes?.length)
   }, [study])
 
-  const changeDisease = (event: any, values: any) => {
-    onChange({ ...study, disease: values.join(JOIN_TOKEN) })
+  const changeDiseases = (event: any, values: any) => {
+    onChange({ ...study, diseases: values })
   }
   const changeKeywords = (event: any, values: any) => {
-    const clientData = {
-      ...study.clientData,
-      keywords: values.join(JOIN_TOKEN),
-    }
-    onChange({ ...study, clientData })
+    onChange({ ...study, keywords: values.join(JOIN_TOKEN) })
   }
   const getSplitValue = (value: string | undefined) => {
     if (!value) {
@@ -104,8 +98,8 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
         aria-label="Study Type"
         name="studyType"
         classes={{ root: classes.studyType }}
-        value={study.studyDesignType}
-        onChange={e => onChange({ ...study, studyDesignType: e.target.value })}
+        value={study.studyDesignTypes? study.studyDesignTypes[0] : ''}
+        onChange={e => onChange({ ...study, studyDesignTypes: [e.target.value] })}
       >
         <FormControlLabel
           value="observation"
@@ -131,8 +125,8 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
         limitTags={2}
         id="diseases"
         options={diseases}
-        onChange={changeDisease}
-        value={getSplitValue(study.disease)}
+        onChange={changeDiseases}
+        value={study.diseases}
         getOptionLabel={option => option}
         defaultValue={[]}
         renderInput={params => (
@@ -160,7 +154,7 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
         options={suggestions.map(option => option)}
         freeSolo
         onChange={changeKeywords}
-        value={getSplitValue(study.clientData?.keywords)}
+        value={getSplitValue(study.keywords)}
         renderTags={(value: string[], getTagProps) =>
           value.map((option: string, index: number) => (
             <Chip

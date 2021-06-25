@@ -1,9 +1,9 @@
 import { Box, CircularProgress } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
+import { isSignInById } from '../../../helpers/utility'
 import { latoFont } from '../../../style/theme'
 import {
-  EnrollmentType,
   ParticipantAccountSummary,
   Study
 } from '../../../types/types'
@@ -35,11 +35,11 @@ type DeleteDialogContentsProps = {
 
 function formatIds(
   studyId: string,
-  enrollmentType: EnrollmentType,
+  isEnrolledById: boolean,
   participants: ParticipantAccountSummary[],
 ): string[] {
   return participants.map(participant =>
-    enrollmentType === 'PHONE'
+    !isEnrolledById
       ? participant.phone?.nationalFormat ||
         participant.externalIds[studyId] ||
         'unknown'
@@ -75,13 +75,14 @@ const DeleteDialogContents: React.FunctionComponent<DeleteDialogContentsProps> =
 
   const idsToRemoveList = formatIds(
     study.identifier,
-    study.clientData.enrollmentType!,
+    isSignInById( study.signInTypes),
+
     selectedParticipants,
   )
 
   const idsWithErrorsList = formatIds(
     study!.identifier,
-    study!.clientData.enrollmentType!,
+    isSignInById( study.signInTypes),
     participantsWithError,
   )
 

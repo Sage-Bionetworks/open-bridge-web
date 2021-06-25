@@ -1,8 +1,5 @@
-import { getItem, KEYS, MOCKS, setItem } from '../services/lshelper'
-import { Schedule } from '../types/scheduling'
-import { Study, StudyPhase } from '../types/types'
 
-async function getStudies() {
+/*async function getStudies() {
   let studies = await getItem<Study[]>(KEYS.STUDIES)
   if (!studies) {
     const mocks = MOCKS.STUDIES.map(s => ({
@@ -20,7 +17,7 @@ async function getStudies() {
 async function getAllSchedules(): Promise<Schedule[]> {
   let s = await getItem<Schedule[]>(KEYS.SCHEDULES)
   return s || []
-}
+}*/
 
 export const handlers = [
   // get all studies

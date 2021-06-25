@@ -18,11 +18,11 @@ import React, { FunctionComponent } from 'react'
 import { CSVReader } from 'react-papaparse'
 import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
 import { ReactComponent as UploadIcon } from '../../../assets/upload.svg'
-import { isInvalidPhone, makePhone } from '../../../helpers/utility'
+import { isInvalidPhone, isSignInById, makePhone } from '../../../helpers/utility'
 import { poppinsFont, theme } from '../../../style/theme'
 import {
   EditableParticipantData,
-  EnrollmentType,
+
   Study
 } from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
@@ -132,17 +132,18 @@ const CSV_BY_PHONE_KEY = [
 
 async function uploadCsvRow(
   data: any,
-  enrollmentType: EnrollmentType,
+  isEnrolledById: boolean,
   studyIdentifier: string,
   token: string,
 ) {
+
   const options: EditableParticipantData = {
     externalId: data['Participant ID'],
     clinicVisitDate: data['Clinic Visit'],
     note: data['Note'],
   }
   let result
-  if (enrollmentType === 'ID') {
+  if (isEnrolledById) {
     if (!options.externalId) {
       throw new Error('no id')
     } else {
@@ -174,7 +175,8 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
   const [tab, setTab] = React.useState(0)
 
   const classes = useStyles()
-  const { enrollmentType = 'ID', generateIds } = study.clientData
+  const generateIds  = study.clientData.generateIds
+  const isEnrolledById = isSignInById(study.signInTypes)
 
   const [isOpenUpload, setIsOpenUpload] = React.useState(false)
   const [isCsvUploaded, setIsCsvUploaded] = React.useState(false)
@@ -196,7 +198,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
 
     const keysString = Object.keys(rows[0]?.data).sort().join(',')
     const valid =
-      enrollmentType === 'ID'
+    isEnrolledById
         ? CSV_BY_ID_KEY.sort().join(',') === keysString
         : CSV_BY_PHONE_KEY.sort().join(',') === keysString
     if (!valid) {
@@ -210,13 +212,13 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       console.log(progress)
       const data = row.data
       try {
-        await uploadCsvRow(data, enrollmentType, study.identifier, token)
+        await uploadCsvRow(data, isEnrolledById, study.identifier, token)
         setProgress(prev => prev + progressTick)
       } catch (error) {
         console.log('error', importError.length)
         console.log(importError)
         const key =
-          enrollmentType === 'ID'
+        isEnrolledById
             ? data['Participant ID']
             : data['Phone Number']
         setImportError(prev => [...prev, `${key}: ${error.message || error}`])
@@ -351,7 +353,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             </Tabs>
 
             <TabPanel value={tab} index={0}>
-              <ImportParticipantsInstructions enrollmentType={enrollmentType}>
+              <ImportParticipantsInstructions isEnrolledById={isEnrolledById}>
                 <BlueButton
                   onClick={() => {
                     setIsCsvUploaded(false)
@@ -369,7 +371,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             </TabPanel>
             <TabPanel value={tab} index={1}>
               <AddSingleParticipant
-                enrollmentType={enrollmentType}
+               isEnrolledById={isEnrolledById}
                 token={token}
                 studyIdentifier={study.identifier}
                 onAdded={() => onAdded()}
