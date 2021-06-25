@@ -7,7 +7,7 @@ import {
   DialogTitle,
   IconButton,
   makeStyles,
-  Paper,
+  Paper
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import MailOutlineIcon from '@material-ui/icons/MailOutline'
@@ -16,11 +16,11 @@ import React, { FunctionComponent } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 import { ReactComponent as Delete } from '../../assets/trash.svg'
 import { useUserSessionDataState } from '../../helpers/AuthContext'
-import { isInAdminRole } from '../../helpers/utility'
 import {
   StudyInfoData,
-  useStudyInfoDataState,
+  useStudyInfoDataState
 } from '../../helpers/StudyInfoContext'
+import { isInAdminRole } from '../../helpers/utility'
 import AccessService from '../../services/access.service'
 import { poppinsFont } from '../../style/theme'
 import { MTBHeadingH1 } from '../widgets/Headings'
@@ -116,6 +116,8 @@ async function createNewAccount(
   currentUserOrg: string,
 ) {
   const mapAccessToRole = (access: Access): string => {
+    debugger
+   // if (access.ACCESS_SETTINGS.)
     return 'developer'
   }
   try {
