@@ -33,7 +33,7 @@ import {
 } from '../../../helpers/StudyInfoContext'
 import { isSignInById } from '../../../helpers/utility'
 import ParticipantService, {
-  ParticipantRelevantEvents
+  ParticipantRelevantEvents,
 } from '../../../services/participants.service'
 import { latoFont, poppinsFont, theme } from '../../../style/theme'
 import {
@@ -265,12 +265,11 @@ async function getParticipants(
 
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
-  const eventsMap: StringDictionary<ParticipantRelevantEvents> =
-    await ParticipantService.getRelevantEventsForParticipants(
-      studyId,
-      token,
-      retrievedParticipants.map(p => p.id),
-    )
+  const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipants(
+    studyId,
+    token,
+    retrievedParticipants.map(p => p.id),
+  )
   const result = retrievedParticipants!.map(participant => {
     const id = participant.id as string
     const event = eventsMap[id]
@@ -532,12 +531,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     //  const realResult = result ? [result] : []
     // const totalParticipantsFound = result ? 1 : 0
     if (result) {
-      const eventsMap: StringDictionary<ParticipantRelevantEvents> =
-        await ParticipantService.getRelevantEventsForParticipants(
-          study.identifier,
-          token!,
-          [result.id],
-        )
+      const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipants(
+        study.identifier,
+        token!,
+        [result.id],
+      )
 
       const event = eventsMap[result.id]
       const updatedParticipant = {
@@ -616,7 +614,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             {' '}
             Study ID: {study.identifier}{' '}
           </MTBHeadingH3>
-          <img src={LiveIcon} style={{ height: "25px" }}></img>
+          <img src={LiveIcon} style={{ height: '25px' }}></img>
         </Box>
 
         {tab === 'ACTIVE' && !isUserSearchingForParticipant && (
@@ -714,31 +712,30 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               <div>
                 <Box className={classes.gridToolBar}>
                   <Box display="flex" flexDirection="row" alignItems="center">
-                    {tab !== 'WITHDRAWN' &&
-                      study.clientData.enrollmentType === 'PHONE' && (
-                        <Button
-                          aria-label="send-sms-text"
-                          onClick={() => {
-                            setParticipantsWithError([])
-                            setDialogState({
-                              dialogOpenRemove: false,
-                              dialogOpenSMS: true,
-                            })
-                          }}
-                          className={classes.sendSMSButton}
-                          disabled={selectedParticipantIds[tab].length === 0}
-                        >
-                          <img
-                            src={SMSPhoneImg}
-                            className={clsx(
-                              selectedParticipantIds[tab].length === 0 &&
-                                classes.disabledImage,
-                              classes.topRowImage,
-                            )}
-                          ></img>
-                          Send SMS link
-                        </Button>
-                      )}
+                    {tab !== 'WITHDRAWN' && !isSignInById(study.signInTypes) && (
+                      <Button
+                        aria-label="send-sms-text"
+                        onClick={() => {
+                          setParticipantsWithError([])
+                          setDialogState({
+                            dialogOpenRemove: false,
+                            dialogOpenSMS: true,
+                          })
+                        }}
+                        className={classes.sendSMSButton}
+                        disabled={selectedParticipantIds[tab].length === 0}
+                      >
+                        <img
+                          src={SMSPhoneImg}
+                          className={clsx(
+                            selectedParticipantIds[tab].length === 0 &&
+                              classes.disabledImage,
+                            classes.topRowImage,
+                          )}
+                        ></img>
+                        Send SMS link
+                      </Button>
+                    )}
 
                     <ParticipantDownload
                       isProcessing={loadingIndicators.isDownloading}
@@ -842,13 +839,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       pageSize={pageSize}
                       setPageSize={setPageSize}
                       handlePageNavigationArrowPressed={(button: string) => {
-                        const currPage =
-                          getCurrentPageFromPageNavigationArrowPressed(
-                            button,
-                            currentPage,
-                            data?.total || 0,
-                            pageSize,
-                          )
+                        const currPage = getCurrentPageFromPageNavigationArrowPressed(
+                          button,
+                          currentPage,
+                          data?.total || 0,
+                          pageSize,
+                        )
                         setCurrentPage(currPage)
                       }}
                     />

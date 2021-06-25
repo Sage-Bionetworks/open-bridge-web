@@ -2,8 +2,8 @@ import { Box, CircularProgress, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React, { useEffect } from 'react'
 import { latoFont } from '../../../style/theme'
+import { isSignInById } from '../../../helpers/utility'
 import {
-  EnrollmentType,
   ParticipantAccountSummary,
   Study,
   ParticipantActivityType,
@@ -55,11 +55,11 @@ function formatExternalID(id: string) {
 }
 
 function formatIds(
-  enrollmentType: EnrollmentType,
+  isEnrolledById: boolean,
   participants: EnrolledAccountRecord[],
 ): string[] {
   return participants.map((participant: EnrolledAccountRecord) =>
-    enrollmentType === 'PHONE'
+    !isEnrolledById
       ? participant.participant.phone?.nationalFormat ||
         formatExternalID(participant.externalId) ||
         'unknown'
@@ -171,12 +171,12 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
   }
 
   const idsToRemoveList = formatIds(
-    study.clientData.enrollmentType!,
+    isSignInById(study.signInTypes),
     participantData,
   )
 
   const idsWithErrorsList = formatIds(
-    study!.clientData.enrollmentType!,
+    isSignInById(study.signInTypes),
     participantData,
   )
 
