@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
 
 type AddSingleParticipantProps = {
   token: string
-  enrollmentType: 'PHONE' | 'ID'
+  isEnrolledById: boolean
   onAdded: Function
   studyIdentifier: string
 }
@@ -49,7 +49,7 @@ export async function addParticipantByPhone(
 // -----------------  Add participant  tab control
 const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
   onAdded,
-  enrollmentType,
+  isEnrolledById,
 
   token,
   studyIdentifier,
@@ -73,7 +73,7 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
     }
 
     try {
-      if (enrollmentType === 'PHONE') {
+      if (!isEnrolledById) {
         await addParticipantByPhone(
           studyIdentifier,
           token,
@@ -95,10 +95,10 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
 
   const isAddDisabled = (): boolean => {
     return (
-      (enrollmentType === 'PHONE' &&
+      (!isEnrolledById &&
         (!participant.phoneNumber ||
           isInvalidPhone(participant.phoneNumber))) ||
-      (enrollmentType === 'ID' && !participant.externalId)
+      (isEnrolledById && !participant.externalId)
     )
   }
 
@@ -109,7 +109,7 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
         {error && <Alert color="error">{error}</Alert>}
       </Box>
       <AddParticipantForm
-        enrollmentType={enrollmentType}
+        isEnrolledById={isEnrolledById}
         participant={participant}
         onChange={participant => {
           if (participant) {

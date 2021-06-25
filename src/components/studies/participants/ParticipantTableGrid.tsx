@@ -28,7 +28,7 @@ import ParticipantService from '../../../services/participants.service'
 import { latoFont } from '../../../style/theme'
 import {
   EditableParticipantData,
-  EnrollmentType,
+
   ParticipantAccountSummary,
   ParticipantActivityType,
   RequestStatus
@@ -175,7 +175,8 @@ export type ParticipantTableGridProps = {
   isAllSelected: boolean
   rows: ParticipantAccountSummary[]
   selectedParticipantIds: string[]
-  enrollmentType: EnrollmentType
+  //enrollmentType: EnrollmentType
+  isEnrolledById: boolean,
   gridType: ParticipantActivityType
   studyId: string
   totalParticipants: number
@@ -197,7 +198,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   gridType,
   status,
   selectedParticipantIds,
-  enrollmentType,
+  isEnrolledById,
   isAllSelected,
   onUpdateParticipant,
   onWithdrawParticipant,
@@ -287,7 +288,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
       ? [...ACTIVE_PARTICIPANT_COLUMNS]
       : [...WITHDRAWN_PARTICIPANT_COLUMNS]
 
-  if (enrollmentType === 'PHONE') {
+  if (!isEnrolledById) {
     if (!participantColumns.find(col => col.field === 'phone'))
       participantColumns.splice(2, 0, phoneColumn)
   }
@@ -429,7 +430,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
         <HideWhen hideWhen={participantToEdit?.shouldWithdraw || false}>
           <EditParticipantForm
-            enrollmentType={enrollmentType}
+            isEnrolledById = {isEnrolledById}
             onCancel={() => setParticipantToEdit(undefined)}
             onOK={(note: string, cvd?: Date) => {
               onUpdateParticipant(participantToEdit?.id!, note, cvd)
@@ -451,7 +452,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             </Button>
           </EditParticipantForm>
           <WithdrawParticipantForm
-            enrollmentType={enrollmentType}
+            isEnrolledById= {isEnrolledById}
             onCancel={() => setParticipantToEdit(undefined)}
             onOK={(note: string) => {
               onWithdrawParticipant(participantToEdit?.id!, note)

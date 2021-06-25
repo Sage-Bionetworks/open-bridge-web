@@ -8,11 +8,12 @@ import {
 import { makeStyles } from '@material-ui/core/styles'
 import CheckIcon from '@material-ui/icons/Check'
 import clsx from 'clsx'
+import _ from 'lodash'
 import React from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import { latoFont, poppinsFont, ThemeType } from '../../../style/theme'
 import {
-  EnrollmentType,
+  SignInType,
   Study,
   StudyBuilderComponentProps
 } from '../../../types/types'
@@ -84,24 +85,22 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
   firstColumn: {
     width: theme.spacing(21),
-    flexShrink: 0
+    flexShrink: 0,
   },
   heading: {
     padding: theme.spacing(0, 6),
     textAlign: 'center',
     //display: 'block',
     display: 'flex',
-  justifyContent: 'center',
-  flexDirection: 'column',
-
+    justifyContent: 'center',
+    flexDirection: 'column',
   },
   notFirstColumn: {
     width: theme.spacing(32),
     '& table th > span ': {
-
       textAlign: 'center',
       display: 'block',
-     
+
       fontFamily: poppinsFont,
       fontSize: '14px',
       fontWeight: 700,
@@ -123,7 +122,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     },
 
     '& $heading': {
-      paddingTop: theme.spacing(3)
+      paddingTop: theme.spacing(3),
     },
     '& > div': {
       marginTop: '-10px',
@@ -158,21 +157,24 @@ const EnrollmentTypeSelector: React.FunctionComponent<
 }: EnrollmentTypeSelectorProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
 
-  const updateStudy = (clientData: {
-    enrollmentType?: EnrollmentType
-    isGenerateIds?: boolean
-  }) => {
+  const updateStudy = (signInTypes: SignInType[], isGenerateIds?: boolean) => {
     let studyClientData = study.clientData || {}
-    if (clientData.enrollmentType !== undefined) {
-      studyClientData.enrollmentType = clientData.enrollmentType
-      if (clientData.enrollmentType === 'PHONE') {
+    if (isGenerateIds !== undefined) {
+      studyClientData.generateIds = isGenerateIds
+    }
+
+    if (!_.isEmpty(signInTypes)) {
+      // studyClientData.signInType = clientData.signInType
+      if (signInTypes.includes('phone_password')) {
         studyClientData.generateIds = undefined
       }
     }
-    if (clientData.isGenerateIds !== undefined) {
-      studyClientData.generateIds = clientData.isGenerateIds
-    }
-    onUpdate({ ...study, clientData: studyClientData })
+
+    onUpdate({
+      ...study,
+      clientData: studyClientData,
+      signInTypes: signInTypes,
+    })
   }
 
   return (
@@ -220,11 +222,12 @@ const EnrollmentTypeSelector: React.FunctionComponent<
             className={clsx(
               classes.column,
               classes.notFirstColumn,
-              study.clientData.enrollmentType === 'PHONE' &&
+              study.signInTypes &&
+                study.signInTypes[0] === 'phone_password' &&
                 classes.selectedColumn,
             )}
             elevation={2}
-            onClick={() => updateStudy({ enrollmentType: 'PHONE' })}
+            onClick={() => updateStudy(['phone_password'] as SignInType[])}
           >
             <div>
               <table width="100%" className={classes.table}>
@@ -238,7 +241,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<
                       </span>
                       <Box
                         className={classes.additionalInfo}
-                        hidden={study.clientData.enrollmentType !== 'PHONE'}
+                        hidden={!study.signInTypes.includes('phone_password')}
                       >
                         <Box px={0} py={2}>
                           In using phone numbers, I confirm that I have
@@ -269,10 +272,10 @@ const EnrollmentTypeSelector: React.FunctionComponent<
             className={clsx(
               classes.column,
               classes.notFirstColumn,
-              study.clientData.enrollmentType === 'ID' &&
+              study.signInTypes.includes('external_id_password') &&
                 classes.selectedColumn,
             )}
-            onClick={() => updateStudy({ enrollmentType: 'ID' })}
+            onClick={() => updateStudy(['external_id_password'])}
           >
             <div>
               <table width="100%" className={classes.table}>
@@ -286,7 +289,9 @@ const EnrollmentTypeSelector: React.FunctionComponent<
                       <Box
                         className={classes.additionalInfo}
                         style={{ textAlign: 'left' }}
-                        hidden={study.clientData.enrollmentType !== 'ID'}
+                        hidden={
+                          !study.signInTypes.includes('external_id_password')
+                        }
                       >
                         <RadioGroup
                           aria-label="How to generate Id"
@@ -298,9 +303,10 @@ const EnrollmentTypeSelector: React.FunctionComponent<
                             e.preventDefault()
                             e.stopPropagation()
 
-                            updateStudy({
-                              isGenerateIds: e.target.value === 'true',
-                            })
+                            updateStudy(
+                              study.signInTypes,
+                              e.target.value === 'true',
+                            )
                           }}
                         >
                           <FormControlLabel

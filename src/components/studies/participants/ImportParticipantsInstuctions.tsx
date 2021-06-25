@@ -1,7 +1,7 @@
 import { Box, makeStyles } from '@material-ui/core'
 import React, { FunctionComponent } from 'react'
 import { ReactComponent as DownloadIcon } from '../../../assets/download.svg'
-import { EnrollmentType } from '../../../types/types'
+//import { EnrollmentType } from '../../../types/types'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -20,26 +20,37 @@ const useStyles = makeStyles(theme => ({
 
 // -----------------  Import participants tab control
 const ImportParticipantsInstructions: FunctionComponent<{
-  enrollmentType: EnrollmentType
+  isEnrolledById: boolean
   children: React.ReactNode
-}> = ({ children, enrollmentType }) => {
+}> = ({ children, isEnrolledById }) => {
   const classes = useStyles()
   const template =
-    enrollmentType === 'PHONE' ? (
+  isEnrolledById ?  (
+      <a href="/participantImport_id_template.csv" download="Ids_Template.csv">
+        <strong>Ids_Template.csv</strong>
+      </a>
+    ): (
       <a
         href="/participantImport_phone_template.csv"
         download="Phones_Template.csv"
       >
         <strong>Phones_Template.csv</strong>
       </a>
-    ) : (
-      <a href="/participantImport_id_template.csv" download="Ids_Template.csv">
-        <strong>Ids_Template.csv</strong>
-      </a>
-    )
+    ) 
 
-  const recList =
-    enrollmentType === 'PHONE' ? (
+  const recList = isEnrolledById?  (
+      <ul>
+        <li>
+          <strong>ParticipantID* </strong>
+        </li>
+        <li>
+          <strong>Clinic Visit </strong>(can be updated later)
+        </li>
+        <li>
+          <strong>Note</strong> (for your reference)
+        </li>
+      </ul>
+    ): (
       <ul>
         <li>
           <strong>Phone Number* </strong>
@@ -54,19 +65,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
           <strong>Note</strong> (for your reference)
         </li>
       </ul>
-    ) : (
-      <ul>
-        <li>
-          <strong>ParticipantID* </strong>
-        </li>
-        <li>
-          <strong>Clinic Visit </strong>(can be updated later)
-        </li>
-        <li>
-          <strong>Note</strong> (for your reference)
-        </li>
-      </ul>
-    )
+    ) 
 
   return (
     <Box>

@@ -1,16 +1,15 @@
 import {
-  Container,
+  Box, Container,
   FormControlLabel,
   makeStyles,
   Switch,
-  TextField,
-  Box,
+  TextField
 } from '@material-ui/core'
 import React, { FunctionComponent } from 'react'
+import { useUserSessionDataState } from '../../helpers/AuthContext'
+import { isInAdminRole } from '../../helpers/utility'
 import { latoFont, poppinsFont } from '../../style/theme'
 import ErrorDisplay from '../widgets/ErrorDisplay'
-import { isInAdminRole } from '../../helpers/utility'
-import { useUserSessionDataState } from '../../helpers/AuthContext'
 import AccessGrid, { Access, getAccessFromRoles } from './AccessGrid'
 
 const useStyles = makeStyles(theme => ({
@@ -47,8 +46,11 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
 
   const updateCoadmin = (isChecked: boolean) => {
     setCoadmin(isChecked)
+    debugger
     if (isChecked) {
-      setAccess(getAccessFromRoles(['admin']))
+      debugger
+      setAccess(getAccessFromRoles(['org_admin']))
+      onUpdate({...newOrgAccount, access: access})
     }
   }
 

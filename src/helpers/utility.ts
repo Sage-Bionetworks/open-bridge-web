@@ -4,6 +4,7 @@ import {
   AdminRole,
   Phone,
   Response,
+  SignInType,
   StringDictionary,
   UserSessionData
 } from '../types/types'
@@ -262,6 +263,10 @@ export const isValidEmail = (email: string) => {
 }
 
 export const isInAdminRole = (roles: AdminRole[]) => roles.includes('org_admin')
+
+export const isSignInById = (signIn?: SignInType[]):boolean => {
+  return !signIn || !signIn.includes('phone_password')
+}
 
 export const setBodyClass = (next?: string) => {
   const whiteBgSections = [/*'launch',*/ 'preview']

@@ -10,8 +10,8 @@ import { latoFont, ThemeType } from '../../../style/theme'
 import { ScheduleNotification } from '../../../types/scheduling'
 import { Contact } from '../../../types/types'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
-import { normalNavIcons, SECTIONS, StudySection } from '../sections'
 import { isSameAsDefaultSchedule } from '../scheduler/utility'
+import { normalNavIcons, SECTIONS, StudySection } from '../sections'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   /*root: {
@@ -57,6 +57,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   reviewIgnoreButtons: {
     display: 'flex',
+    flexShrink: 0,
     justifyContent: 'space-between',
     marginLeft: theme.spacing(2),
     width: '146px',
@@ -166,7 +167,7 @@ const ALERTS: StudyAlertSection[] = [
     errors: [
       {
         errorText: 'Please select enrollment type',
-        validationFn: (s: StudyInfoData) => !!s.study.clientData.enrollmentType,
+        validationFn: (s: StudyInfoData) => !_.isEmpty(s.study.signInTypes),
         isDismissable: false,
       },
     ],
