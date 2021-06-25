@@ -670,7 +670,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               />
             ))}
           </Tabs>
-          <Box marginTop="-16px" bgcolor="white">
+          <Box bgcolor="white">
             <CollapsibleLayout
               expandedWidth={300}
               isFullWidth={true}
