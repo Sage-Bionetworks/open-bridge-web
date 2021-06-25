@@ -136,7 +136,7 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
   }, [isOpen])
   return (
     <>
-      <Box paddingTop={2} display="flex" position="relative">
+      <Box display="flex" position="relative">
         <Drawer
           variant="permanent"
           elevation={1}
