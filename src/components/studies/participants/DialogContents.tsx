@@ -50,16 +50,15 @@ type DialogContentsProps = {
 }
 
 function formatIds(
-  studyId: string,
   enrollmentType: EnrollmentType,
   participants: EnrolledAccountRecord[],
 ): string[] {
   return participants.map((participant: EnrolledAccountRecord) =>
     enrollmentType === 'PHONE'
       ? participant.participant.phone?.nationalFormat ||
-        participant.externalId ||
+        participant.externalId.split(':')[1] ||
         'unknown'
-      : participant.externalId || 'unknown',
+      : participant.externalId.split(':')[1] || 'unknown',
   )
 }
 
@@ -155,13 +154,11 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
   }
 
   const idsToRemoveList = formatIds(
-    study.identifier,
     study.clientData.enrollmentType!,
     participantData,
   )
 
   const idsWithErrorsList = formatIds(
-    study!.identifier,
     study!.clientData.enrollmentType!,
     participantData,
   )
