@@ -84,24 +84,37 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
   const [loadingData, setLoadingData] = React.useState(false)
 
   const setData = async () => {
-    const result1 = await ParticipantService.getAllParticipantsInEnrollmentType(
+    const resultEnrolled = await ParticipantService.getAllParticipantsInEnrollmentType(
       study.identifier,
       token,
       'enrolled',
       false,
     )
-    const dataWithoutTestMembers = result1.items
+    const dataWithoutTestMembers = resultEnrolled.items
     if (tab === 'TEST') {
-      const result2 = await ParticipantService.getAllParticipantsInEnrollmentType(
+      const resultAll = await ParticipantService.getAllParticipantsInEnrollmentType(
         study.identifier,
         token,
-        'enrolled',
+        'all',
         true,
       )
-      const dataWithTestMembers = result2.items
-      const testParticipants = dataWithTestMembers.filter(
+      const resultWithdrawn = await ParticipantService.getAllParticipantsInEnrollmentType(
+        study.identifier,
+        token,
+        'withdrawn',
+        false,
+      )
+      const dataAllTestMembers = resultAll.items
+      const dataWithdrawnMembers = resultWithdrawn.items
+      let testParticipants = dataAllTestMembers.filter(
         el =>
           dataWithoutTestMembers.find(
+            participant => participant.externalId === el.externalId,
+          ) === undefined,
+      )
+      testParticipants = testParticipants.filter(
+        el =>
+          dataWithdrawnMembers.find(
             participant => participant.externalId === el.externalId,
           ) === undefined,
       )
