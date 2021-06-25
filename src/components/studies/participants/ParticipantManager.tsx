@@ -293,7 +293,7 @@ const HelpBoxSC: FunctionComponent<{
   status: RequestStatus
 }> = ({ numRows, status }) => {
   return (
-    <Box px={3} py={2} position="relative">
+    <Box position="relative">
       {!numRows && status !== 'PENDING' && (
         <HelpBox
           topOffset={40}
@@ -634,7 +634,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               />
             ))}
           </Tabs>
-          <Box marginTop="-16px">
+          <Box marginTop="-16px" bgcolor="white">
             <CollapsibleLayout
               expandedWidth={300}
               isFullWidth={true}

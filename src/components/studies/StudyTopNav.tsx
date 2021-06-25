@@ -186,7 +186,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
             }}
           >
             <NavLink
-              to={'/'}
+              to={'/Studies'}
               key="home"
               className={classes.toolbarLink}
               style={{ paddingBottom: '0' }}
