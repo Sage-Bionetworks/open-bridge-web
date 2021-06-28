@@ -35,6 +35,21 @@ const useStyles = makeStyles(theme => ({
       marginRight: theme.spacing(2),
     },
   },
+  toolTip: {
+    backgroundColor: theme.palette.primary.dark,
+    padding: theme.spacing(1, 1, 0.1, 1),
+    boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.2)',
+  },
+  arrow: {
+    backgroundColor: 'transparent',
+    color: theme.palette.primary.dark,
+    fontSize: '20px',
+  },
+  assessmentBox: {
+    width: '100%',
+    height: '100px',
+    marginBottom: '8px',
+  },
 }))
 
 type TimelineSession = {
@@ -159,43 +174,12 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
       <Box display="flex" justifyContent="space-between">
         <Box className={classes.legend}>
           {schedFromDisplay?.sessions?.map((s, index) => (
-            <Box
-              style={{
-                cursor: 'pointer',
-                position: 'relative',
-              }}
-              onMouseEnter={() => setHoveredLegendSession(index)}
-              onMouseLeave={() => setHoveredLegendSession(-1)}
-            >
-              <SessionIcon index={index} key={s.guid}>
-                {getSession(s.guid!)?.label}
-              </SessionIcon>
-              {hoveredLegendSession === index && (
-                <Box
-                  style={{
-                    width: '115px',
-                    position: 'absolute',
-                    backgroundColor: '#BCD5E4',
-                    zIndex: 2000,
-                    top: '28px',
-                    left: '-16px',
-                    padding: '8px 8px 0px 8px',
-                    transitionDuration: '0.4s',
-                    transform: 'Scale(1)',
-                    boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.2)',
-                    clipPath: '50% 0%, ',
-                  }}
-                >
+            <Tooltip
+              title={
+                <Box width="115px">
                   {s.assessments?.map((assessment, index) => {
                     return (
-                      <Box
-                        style={{
-                          width: '100%',
-                          height: '100px',
-                          marginBottom: '8px',
-                          maxWidth: '100%',
-                        }}
-                      >
+                      <Box className={classes.assessmentBox}>
                         <AssessmentImage
                           resources={assessment.resources}
                           variant="small"
@@ -210,8 +194,19 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
                     )
                   })}
                 </Box>
-              )}
-            </Box>
+              }
+              arrow
+              classes={{
+                tooltip: classes.toolTip,
+                arrow: classes.arrow,
+              }}
+            >
+              <Box style={{ cursor: 'pointer' }}>
+                <SessionIcon index={index} key={s.guid}>
+                  {getSession(s.guid!)?.label}
+                </SessionIcon>
+              </Box>
+            </Tooltip>
           ))}
         </Box>
         <BlackBorderDropdown
