@@ -85,7 +85,6 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
   const [dropdown, setDropdown] = React.useState(['Daily'])
-  const [hoveredLegendSession, setHoveredLegendSession] = React.useState(-1)
   const [
     currentZoomLevel,
     setCurrentZoomLevel,
@@ -158,7 +157,6 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
           schedules you’ve defined below for each session!.{status}
         </>
       )}
-
       {timeline && (
         <div className={classes.stats}>
           <NotificationsIcon />{' '}
@@ -170,7 +168,6 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
           <Pluralize singular={'total minute'} count={timeline.totalMinutes} />
         </div>
       )}
-
       <Box display="flex" justifyContent="space-between">
         <Box className={classes.legend}>
           {schedFromDisplay?.sessions?.map((s, index) => (
