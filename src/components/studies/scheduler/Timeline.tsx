@@ -13,6 +13,8 @@ import { Schedule } from '../../../types/scheduling'
 import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
 import SessionIcon from '../../widgets/SessionIcon'
 import TimelineCustomPlot, { TimelineZoomLevel } from './TimelineCustomPlot'
+import AssessmentImage from '../../assessments/AssessmentImage'
+import Tooltip from '@material-ui/core/Tooltip'
 
 const useStyles = makeStyles(theme => ({
   stats: {
@@ -23,8 +25,8 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
 
     '& span': {
-      padding: theme.spacing(2,3,2,1)
-    }
+      padding: theme.spacing(2, 3, 2, 1),
+    },
   },
   legend: {
     margin: theme.spacing(1, 0),
@@ -68,17 +70,14 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
   const [dropdown, setDropdown] = React.useState(['Daily'])
-  const [currentZoomLevel, setCurrentZoomLevel] =
-    React.useState<TimelineZoomLevel>('Monthly')
+  const [hoveredLegendSession, setHoveredLegendSession] = React.useState(-1)
+  const [
+    currentZoomLevel,
+    setCurrentZoomLevel,
+  ] = React.useState<TimelineZoomLevel>('Monthly')
 
   const classes = useStyles()
-  const {
-    data: timeline,
-    status,
-    error,
-    run,
-    setData,
-  } = useAsync<any>({
+  const { data: timeline, status, error, run, setData } = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
@@ -136,7 +135,6 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
     handleError(error!)
   }
 
-
   return (
     <Box padding="30px">
       {!timeline && (
@@ -161,12 +159,19 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
       <Box display="flex" justifyContent="space-between">
         <Box className={classes.legend}>
           {schedFromDisplay?.sessions?.map((s, index) => (
+            <Box
+              style={{
+                cursor: 'pointer',
+                position: 'relative',
+              }}
+              onMouseEnter={() => setHoveredLegendSession(index)}
+              onMouseLeave={() => setHoveredLegendSession(-1)}
+            >
               <SessionIcon index={index} key={s.guid}>
                 {getSession(s.guid!)?.label}
               </SessionIcon>
           ))}
         </Box>
-
         <BlackBorderDropdown
           width="100px"
           value={currentZoomLevel}
