@@ -170,6 +170,48 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
               <SessionIcon index={index} key={s.guid}>
                 {getSession(s.guid!)?.label}
               </SessionIcon>
+              {hoveredLegendSession === index && (
+                <Box
+                  style={{
+                    width: '115px',
+                    position: 'absolute',
+                    backgroundColor: '#BCD5E4',
+                    zIndex: 2000,
+                    top: '28px',
+                    left: '-16px',
+                    padding: '8px 8px 0px 8px',
+                    transitionDuration: '0.4s',
+                    transform: 'Scale(1)',
+                    boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.2)',
+                    clipPath: '50% 0%, ',
+                  }}
+                >
+                  {s.assessments?.map((assessment, index) => {
+                    return (
+                      <Box
+                        style={{
+                          width: '100%',
+                          height: '100px',
+                          marginBottom: '8px',
+                          maxWidth: '100%',
+                        }}
+                      >
+                        <AssessmentImage
+                          resources={assessment.resources}
+                          variant="small"
+                          name={assessment.title}
+                          key={index}
+                          smallVariantProperties={{
+                            width: '100%',
+                            backgroundColor: '#F6F6F6',
+                          }}
+                        ></AssessmentImage>
+                      </Box>
+                    )
+                  })}
+                </Box>
+              )}
+            </Box>
           ))}
         </Box>
         <BlackBorderDropdown
