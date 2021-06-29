@@ -4,7 +4,7 @@ import { StudySession } from '../../../types/scheduling'
 import {
   BlueButton,
   ButtonWithSelectButton,
-  ButtonWithSelectSelect
+  ButtonWithSelectSelect,
 } from '../../widgets/StyledComponents'
 
 const useStyles = makeStyles(theme => ({
@@ -45,11 +45,16 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
 
   const duplicateSession = (selectedId?: string) => {
     const session = sessions.find(s => s.guid === selectedId)
+    const name = session?.name ? session.name + ' (copy)' : undefined
 
-    if (!selectedId || !session?.assessments || session.assessments.length === 0) {
-      onAddSession(sessions, [])
+    if (
+      !selectedId ||
+      !session?.assessments ||
+      session.assessments.length === 0
+    ) {
+      onAddSession(sessions, [], name)
     } else {
-      onAddSession(sessions, [...session.assessments])
+      onAddSession(sessions, [...session.assessments], name)
     }
   }
 
@@ -74,7 +79,10 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
             disableUnderline={true}
           >
             {sessions.map((session, index) => (
-              <MenuItem value={session.guid} key={`${session.guid}menu${index}`}>
+              <MenuItem
+                value={session.guid}
+                key={`${session.guid}menu${index}`}
+              >
                 {session.name}
               </MenuItem>
             ))}
