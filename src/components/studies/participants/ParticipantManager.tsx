@@ -907,6 +907,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           token={token!}
           studyId={study.identifier}
           toggleParticipantRefresh={toggleParticipantRefresh}
+          isAllSelected={isAllSelected}
         ></BatchEditForm>
         <Dialog
           open={dialogState.dialogOpenSMS || dialogState.dialogOpenRemove}

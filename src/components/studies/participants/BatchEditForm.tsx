@@ -12,6 +12,7 @@ type BatchEditFormProps = {
   token: string
   studyId: string
   toggleParticipantRefresh: Function
+  isAllSelected: boolean
 }
 
 const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
@@ -22,6 +23,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
   token,
   studyId,
   toggleParticipantRefresh,
+  isAllSelected,
 }) => {
   const [isLoading, setIsLoading] = React.useState(false)
 
@@ -47,7 +49,20 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
         onOK={async (note: string, cvd?: Date) => {
           if (!note && !cvd) return
           setIsLoading(true)
-          for (const selectedParticipantId of selectedParticipants) {
+          let participants = selectedParticipants
+          if (isAllSelected) {
+            const resultEnrolled = await ParticipantService.getAllParticipantsInEnrollmentType(
+              studyId,
+              token,
+              'enrolled',
+              false,
+            )
+            const enrolledNonTestParticipants = resultEnrolled.items
+            participants = enrolledNonTestParticipants.map(
+              el => el.participant.identifier,
+            )
+          }
+          for (const selectedParticipantId of participants) {
             if (note) {
               await ParticipantService.updateParticipantNote(
                 studyId,
