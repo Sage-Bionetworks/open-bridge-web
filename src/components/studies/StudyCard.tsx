@@ -130,7 +130,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    boxShadow: '-2px 1px 2px 1px rgba(0, 0, 0, 0.2)',
     backgroundColor: 'white',
     width: '28px',
     height: '40px',
@@ -208,6 +207,7 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
   study,
   onSetAnchor,
   section,
+  isMenuOpen,
 }: StudyCardProps) => {
   function getStatusIcon(section: string) {
     if (section === 'LIVE') {
@@ -232,7 +232,14 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
             onSetAnchor(e.currentTarget)
           }}
         >
-          <Box className={classes.menuBox}>
+          <Box
+            className={classes.menuBox}
+            style={
+              isMenuOpen
+                ? { boxShadow: '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)' }
+                : {}
+            }
+          >
             <MoreVertIcon />
           </Box>
         </IconButton>
@@ -257,6 +264,7 @@ type StudyCardProps = {
   onRename?: Function
   isNewlyAddedStudy?: boolean
   section: string
+  isMenuOpen: boolean
 }
 
 const StudyCard: FunctionComponent<StudyCardProps> = ({
@@ -266,6 +274,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
   onRename,
   isNewlyAddedStudy,
   section,
+  isMenuOpen
 }) => {
   const classes = useStyles()
   const input = React.createRef<HTMLInputElement>()
@@ -304,6 +313,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
             section={section}
             study={study}
             onSetAnchor={onSetAnchor}
+            isMenuOpen={isMenuOpen}
           ></CardTop>
         </>
         <CardContent>

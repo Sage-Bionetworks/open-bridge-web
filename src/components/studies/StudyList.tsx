@@ -34,6 +34,10 @@ type StudySublistProps = {
   onAction: Function
   renameStudyId: string
   highlightedStudyId: string | null
+  menuAnchor: {
+    study: Study
+    anchorEl: HTMLElement
+  } | null
 }
 
 type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME'
@@ -143,10 +147,10 @@ type StudyListProps = StudyListOwnProps & RouteComponentProps
 const StudySublist: FunctionComponent<StudySublistProps> = ({
   studies,
   status,
-
   renameStudyId,
   onAction,
   highlightedStudyId,
+  menuAnchor,
 }: StudySublistProps) => {
   const classes = useStyles()
   const item = sections.find(section => section.sectionStatus === status)!
@@ -200,6 +204,10 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
               }}
               isNewlyAddedStudy={highlightedStudyId === study.identifier}
               section={item.sectionStatus}
+              isMenuOpen={
+                menuAnchor !== null &&
+                menuAnchor.study.identifier === study.identifier
+              }
             ></StudyCard>
           </Link>
         ))}
@@ -465,6 +473,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                     : onAction(s, action)
                 }}
                 highlightedStudyId={highlightedStudyId}
+                menuAnchor={menuAnchor}
               />
             </Box>
           ))}
