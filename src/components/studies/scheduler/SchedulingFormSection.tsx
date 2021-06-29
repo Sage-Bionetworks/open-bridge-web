@@ -44,6 +44,9 @@ const useStyles = makeStyles(theme => ({
       fontSize: '16px',
       width: theme.spacing(10),
     },
+    '&.Mui-focused': {
+      color: 'inherit',
+    },
 
     '&.small': {
       paddingRight: theme.spacing(2),
