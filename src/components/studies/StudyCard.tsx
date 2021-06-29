@@ -72,8 +72,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: theme.spacing(1.25, 1.25),
     alignItems: 'center',
+    height: '40px',
   },
   lastEditedTest: {
     fontFamily: 'Lato',
@@ -125,6 +125,15 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     '100%': {
       transform: 'scale(1)',
     },
+  },
+  menuBox: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    boxShadow: '-2px 1px 2px 1px rgba(0, 0, 0, 0.2)',
+    backgroundColor: 'white',
+    width: '28px',
+    height: '40px',
   },
 }))
 
@@ -212,21 +221,20 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
   const classes = useStyles()
 
   return (
-    <Box
-      display="flex"
-      textAlign="left"
-      paddingTop="8px"
-      className={classes.cardTopContainer}
-    >
+    <Box display="flex" textAlign="left" className={classes.cardTopContainer}>
       {study.phase !== 'completed' ? (
         <IconButton
-          style={{ padding: '0' }}
+          style={{
+            padding: '0',
+          }}
           onClick={e => {
             cancelPropagation(e)
             onSetAnchor(e.currentTarget)
           }}
         >
-          <MoreVertIcon />
+          <Box className={classes.menuBox}>
+            <MoreVertIcon />
+          </Box>
         </IconButton>
       ) : (
         <div />
