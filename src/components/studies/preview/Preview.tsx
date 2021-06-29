@@ -15,6 +15,7 @@ import AssessmentSmall from '../../assessments/AssessmentSmall'
 import { ErrorFallback, ErrorHandler } from '../../widgets/ErrorHandler'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
 import { SimpleTextInput } from '../../widgets/StyledComponents'
+import { formatStudyId } from '../../../helpers/utility'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -143,10 +144,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
 
   const getTestParticipantId = async () => {
     try {
-      const testId = await ParticipantService.addTestParticipant(
-        studyId,
-        token,
-      )
+      const testId = await ParticipantService.addTestParticipant(studyId, token)
       setTestParticipantId(testId)
     } catch (e) {
       handleError(e!)
@@ -238,7 +236,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                     <SimpleTextInput
                       multiline={false}
                       fullWidth={true}
-                      value={studyId}
+                      value={formatStudyId(studyId)}
                       readOnly
                     ></SimpleTextInput>
                   </FormControl>

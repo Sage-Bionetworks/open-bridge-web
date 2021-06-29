@@ -15,6 +15,7 @@ import { useUserSessionDataState } from '../../helpers/AuthContext'
 import LiveIcon from '../../assets/live_study_icon.svg'
 import CompletedIcon from '../../assets/completed_study_icon.svg'
 import WithdrawnIcon from '../../assets/cancelled_study_icon.svg'
+import { formatStudyId } from '../../helpers/utility'
 
 const DraftIcon = () => {
   return (
@@ -323,7 +324,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
             )}
           </div>
           <Typography className={classes.studyId} color="textSecondary">
-            Study ID: {study.identifier}
+            Study ID: {formatStudyId(study.identifier)}
           </Typography>
           {study.phase === 'design' && <DraftIcon />}
         </CardContent>
