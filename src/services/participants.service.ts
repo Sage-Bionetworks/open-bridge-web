@@ -601,56 +601,6 @@ async function updateParticipantClinicVisit(
   return participantId
 }
 
-//used when editing a participant
-// async function updateNotesAndClinicVisitForParticipant(
-//   studyIdentifier: string,
-//   token: string,
-//   participantId: string,
-//   options: EditableParticipantData,
-// ): Promise<string> {
-//   // update note
-//   const endpoint = `${constants.endpoints.participant.replace(
-//     ':id',
-//     studyIdentifier,
-//   )}/${participantId}`
-
-//   const data = {
-//     note: options.note,
-//   }
-
-//   await callEndpoint<ParticipantAccountSummary>(endpoint, 'POST', data, token)
-
-//   // update events
-//   let eventEndpoint = constants.endpoints.events
-//     .replace(':studyId', studyIdentifier)
-//     .replace(':userId', participantId)
-
-//   if (options.clinicVisitDate) {
-//     // if we have clinicVisitDate - update it
-//     const data = {
-//       eventId: CLINIC_EVENT_ID,
-//       timestamp: new Date(options.clinicVisitDate).toISOString(),
-//     }
-
-//     await callEndpoint<{ identifier: string }>(
-//       eventEndpoint,
-//       'POST',
-//       data,
-//       token,
-//     )
-//   } else {
-//     // if it is empty - delete it
-//     eventEndpoint = eventEndpoint + CLINIC_EVENT_ID
-//     await callEndpoint<{ identifier: string }>(
-//       eventEndpoint,
-//       'DELETE',
-//       {},
-//       token,
-//     )
-//   }
-//   return participantId
-// }
-
 async function getRequestInfoForParticipant(
   studyIdentifier: string,
   token: string,
@@ -681,7 +631,6 @@ const ParticipantService = {
   getActiveParticipantById,
   getParticipants,
   getRequestInfoForParticipant,
-  // updateNotesAndClinicVisitForParticipant,
   updateParticipantGroup,
   updateParticipantNote,
   updateParticipantClinicVisit,
