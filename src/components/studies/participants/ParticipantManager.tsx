@@ -436,8 +436,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     data: null,
   })
 
-  console.log('data', data)
-
   React.useEffect(() => {
     if (!study?.identifier) {
       return
