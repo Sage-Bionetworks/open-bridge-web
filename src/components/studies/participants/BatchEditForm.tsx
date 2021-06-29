@@ -23,6 +23,8 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
   studyId,
   toggleParticipantRefresh,
 }) => {
+  const [isLoading, setIsLoading] = React.useState(false)
+
   return (
     <Dialog
       open={isBatchEditOpen}
@@ -44,6 +46,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
         }}
         onOK={async (note: string, cvd?: Date) => {
           if (!note && !cvd) return
+          setIsLoading(true)
           for (const selectedParticipantId of selectedParticipants) {
             if (note) {
               await ParticipantService.updateParticipantNote(
@@ -63,10 +66,12 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
             }
           }
           setIsBatchEditOpen(false)
+          setIsLoading(false)
           toggleParticipantRefresh()
         }}
         participant={{}}
         isBatchEdit
+        isLoading={isLoading}
       ></EditParticipantForm>
     </Dialog>
   )

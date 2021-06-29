@@ -1,12 +1,12 @@
 import {
   Box,
-
   DialogActions,
   DialogContent,
   FormControl,
   FormGroup,
   FormHelperText,
-  makeStyles
+  makeStyles,
+  CircularProgress
 } from '@material-ui/core'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
@@ -54,6 +54,7 @@ export type EditParticipantFormProps = {
   onCancel: Function
   children?: React.ReactNode
   isBatchEdit?: boolean
+  isLoading?: boolean
 }
 
 export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
@@ -63,6 +64,7 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
   onCancel,
   children,
   isBatchEdit,
+  isLoading
 }) => {
   const classes = useStyles()
   const [note, setNotes] = React.useState(participant.note)
@@ -110,7 +112,7 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
       </DialogContent>
       <DialogActions style={{ justifyContent: 'space-between' }}>
         {children && children}
-        <div>
+        {!isLoading ? <div>
           <DialogButtonSecondary onClick={() => onCancel()} color="primary">
             Cancel
           </DialogButtonSecondary>
@@ -122,7 +124,7 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
           >
             Save Changes
           </DialogButtonPrimary>
-        </div>
+        </div> : <CircularProgress color="primary"/>}
       </DialogActions>
     </>
   )
