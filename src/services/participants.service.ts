@@ -39,11 +39,11 @@ function mapWithdrawnParticipant(
 
 //backendExternalId = studyId:externalId
 function makeBackendExternalId(studyId: string, externalId: string) {
-  return `${studyId}:${externalId}`
+  return `${externalId}:${studyId}`
 }
 
-function formatExternalId(studyId: string, externalId: string) {
-  return externalId ? externalId.replace(`${studyId}:`, '') : 'withdrawn'
+export function formatExternalId(studyId: string, externalId: string) {
+  return externalId ? externalId.replace(`:${studyId}`, '') : 'withdrawn'
 }
 
 // gets clinic visits and join events for participants with the specified ids
@@ -620,6 +620,7 @@ const ParticipantService = {
   addParticipant,
   addTestParticipant,
   deleteParticipant,
+  formatExternalId,
   getRelevantEventsForParticipants,
   getNumEnrolledParticipants,
   getAllParticipantsInEnrollmentType,

@@ -1,17 +1,19 @@
 import { Box, CircularProgress, Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import React, { useEffect } from 'react'
-import { latoFont } from '../../../style/theme'
-import { isSignInById } from '../../../helpers/utility'
-import {
-  ParticipantAccountSummary,
-  Study,
-  ParticipantActivityType,
-  EnrolledAccountRecord,
-  Phone,
-} from '../../../types/types'
 import clsx from 'clsx'
-import ParticipantService from '../../../services/participants.service'
+import React, { useEffect } from 'react'
+import { isSignInById } from '../../../helpers/utility'
+import ParticipantService, {
+  formatExternalId,
+} from '../../../services/participants.service'
+import { latoFont } from '../../../style/theme'
+import {
+  EnrolledAccountRecord,
+  ParticipantAccountSummary,
+  ParticipantActivityType,
+  Phone,
+  Study,
+} from '../../../types/types'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -56,21 +58,19 @@ type ParticipantDisplayType = {
   phone?: Phone
 }
 
-function formatExternalID(id: string) {
-  const arr = id.split(':')
-  return arr.length === 1 ? arr[0] : arr[1]
-}
-
 function formatIds(
+  studyId: string,
   isEnrolledById: boolean,
   participants: ParticipantDisplayType[],
 ): string[] {
   return participants.map((participant: ParticipantDisplayType) =>
     !isEnrolledById
-      ? participant.phone?.nationalFormat ||
-        formatExternalID(participant.externalId) ||
-        'unknown'
-      : formatExternalID(participant.externalId) || 'unknown',
+      ? participant.phone?.nationalFormat || participant.externalId
+        ? formatExternalId(studyId, participant.externalId)
+        : 'unknown'
+      : participant.externalId
+      ? formatExternalId(studyId, participant.externalId)
+      : 'unknown',
   )
 }
 
@@ -92,27 +92,30 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
 
   const setData = async () => {
     let finalResult: EnrolledAccountRecord[] = []
-    const resultEnrolled = await ParticipantService.getAllParticipantsInEnrollmentType(
-      study.identifier,
-      token,
-      'enrolled',
-      false,
-    )
+    const resultEnrolled =
+      await ParticipantService.getAllParticipantsInEnrollmentType(
+        study.identifier,
+        token,
+        'enrolled',
+        false,
+      )
     const enrolledNonTestParticipants = resultEnrolled.items
     finalResult = enrolledNonTestParticipants
     if (tab === 'TEST') {
-      const resultAll = await ParticipantService.getAllParticipantsInEnrollmentType(
-        study.identifier,
-        token,
-        'all',
-        true,
-      )
-      const resultWithdrawn = await ParticipantService.getAllParticipantsInEnrollmentType(
-        study.identifier,
-        token,
-        'withdrawn',
-        false,
-      )
+      const resultAll =
+        await ParticipantService.getAllParticipantsInEnrollmentType(
+          study.identifier,
+          token,
+          'all',
+          true,
+        )
+      const resultWithdrawn =
+        await ParticipantService.getAllParticipantsInEnrollmentType(
+          study.identifier,
+          token,
+          'withdrawn',
+          false,
+        )
       const allParticipants = resultAll.items
       const withdrawnNonTestParticipants = resultWithdrawn.items
       let testParticipants = allParticipants.filter(
@@ -181,11 +184,13 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
   }
 
   const selectedIds = formatIds(
+    study.identifier,
     isSignInById(study.signInTypes),
     participantData,
   )
 
   const idsWithErrorsList = formatIds(
+    study.identifier,
     isSignInById(study.signInTypes),
     participantData,
   )
