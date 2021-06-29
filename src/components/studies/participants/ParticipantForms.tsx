@@ -53,6 +53,7 @@ export type EditParticipantFormProps = {
   onOK: Function
   onCancel: Function
   children?: React.ReactNode
+  isBatchEdit?: boolean
 }
 
 export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
@@ -61,6 +62,7 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
   onOK,
   onCancel,
   children,
+  isBatchEdit,
 }) => {
   const classes = useStyles()
   const [note, setNotes] = React.useState(participant.note)
@@ -77,11 +79,11 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
       <DialogContent>
         <Box mt={0} mb={3}>
           <MTBHeadingH3>
-            {isEnrolledById? (
+            {!isBatchEdit ? isEnrolledById ? (
               <span>Reference ID: {participant.externalId}</span>
             ) : (
               <span>Phone number: {participant.phoneNumber}</span>
-            )}
+            ) : "Assign the same values to selected participants:"}
           </MTBHeadingH3>
         </Box>
 

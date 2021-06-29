@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import _, { constant } from 'lodash'
 import { callEndpoint, generateNonambiguousCode } from '../helpers/utility'
 import constants from '../types/constants'
 import {
@@ -397,8 +397,9 @@ async function getEnrollmentById(
     )
 
     const isWithdrawn = participant.withdrawnOn !== undefined
-    const isTestUser =
-      recordFromParticipantApi?.dataGroups?.includes('test_user')
+    const isTestUser = recordFromParticipantApi?.dataGroups?.includes(
+      'test_user',
+    )
     if (participantType === 'WITHDRAWN' && (!isWithdrawn || isTestUser)) {
       return null
     }
@@ -546,35 +547,39 @@ async function addTestParticipant(
   )
 }
 
-//used when editing a participant
-async function updateNotesAndClinicVisitForParticipant(
+async function updateParticipantNote(
   studyIdentifier: string,
   token: string,
   participantId: string,
-  options: EditableParticipantData,
-): Promise<string> {
+  note?: string,
+) {
   // update note
   const endpoint = `${constants.endpoints.participant.replace(
     ':id',
     studyIdentifier,
   )}/${participantId}`
-
   const data = {
-    note: options.note,
+    note: note,
   }
-
   await callEndpoint<ParticipantAccountSummary>(endpoint, 'POST', data, token)
+  return participantId
+}
 
-  // update events
+async function updateParticipantClinicVisit(
+  studyIdentifier: string,
+  token: string,
+  participantId: string,
+  clinicVisitDate?: Date,
+) {
   let eventEndpoint = constants.endpoints.events
     .replace(':studyId', studyIdentifier)
     .replace(':userId', participantId)
 
-  if (options.clinicVisitDate) {
+  if (clinicVisitDate) {
     // if we have clinicVisitDate - update it
     const data = {
       eventId: CLINIC_EVENT_ID,
-      timestamp: new Date(options.clinicVisitDate).toISOString(),
+      timestamp: new Date(clinicVisitDate).toISOString(),
     }
 
     await callEndpoint<{ identifier: string }>(
@@ -596,13 +601,62 @@ async function updateNotesAndClinicVisitForParticipant(
   return participantId
 }
 
+//used when editing a participant
+// async function updateNotesAndClinicVisitForParticipant(
+//   studyIdentifier: string,
+//   token: string,
+//   participantId: string,
+//   options: EditableParticipantData,
+// ): Promise<string> {
+//   // update note
+//   const endpoint = `${constants.endpoints.participant.replace(
+//     ':id',
+//     studyIdentifier,
+//   )}/${participantId}`
+
+//   const data = {
+//     note: options.note,
+//   }
+
+//   await callEndpoint<ParticipantAccountSummary>(endpoint, 'POST', data, token)
+
+//   // update events
+//   let eventEndpoint = constants.endpoints.events
+//     .replace(':studyId', studyIdentifier)
+//     .replace(':userId', participantId)
+
+//   if (options.clinicVisitDate) {
+//     // if we have clinicVisitDate - update it
+//     const data = {
+//       eventId: CLINIC_EVENT_ID,
+//       timestamp: new Date(options.clinicVisitDate).toISOString(),
+//     }
+
+//     await callEndpoint<{ identifier: string }>(
+//       eventEndpoint,
+//       'POST',
+//       data,
+//       token,
+//     )
+//   } else {
+//     // if it is empty - delete it
+//     eventEndpoint = eventEndpoint + CLINIC_EVENT_ID
+//     await callEndpoint<{ identifier: string }>(
+//       eventEndpoint,
+//       'DELETE',
+//       {},
+//       token,
+//     )
+//   }
+//   return participantId
+// }
+
 async function getRequestInfoForParticipant(
   studyIdentifier: string,
   token: string,
   participantId: string,
 ) {
   //transform ids into promises
-
   const endpoint = constants.endpoints.requestInfo
     .replace(':studyId', studyIdentifier)
     .replace(':userId', participantId)
@@ -627,8 +681,10 @@ const ParticipantService = {
   getActiveParticipantById,
   getParticipants,
   getRequestInfoForParticipant,
-  updateNotesAndClinicVisitForParticipant,
+  // updateNotesAndClinicVisitForParticipant,
   updateParticipantGroup,
+  updateParticipantNote,
+  updateParticipantClinicVisit,
   withdrawParticipant,
 }
 

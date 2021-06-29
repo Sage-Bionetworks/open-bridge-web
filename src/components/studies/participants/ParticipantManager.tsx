@@ -62,6 +62,7 @@ import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
 import ParticipantTablePagination from './ParticipantTablePagination'
 import BatchEditIcon from '../../../assets/participant-manager/batch_edit_icon.svg'
+import BatchEditForm from './BatchEditForm'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -371,6 +372,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   // Withdrawn or active participants
   const [tab, setTab] = React.useState<ParticipantActivityType>('ACTIVE')
   const [isAddOpen, setIsAddOpen] = React.useState(false)
+  const [isBatchEditOpen, setIsBatchEditOpen] = React.useState(false)
   const [loadingIndicators, setLoadingIndicators] = React.useState<{
     isDeleting?: boolean
     isDownloading?: boolean
@@ -419,6 +421,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setRefreshParticipantsToggle,
   ] = React.useState(false)
 
+  const toggleParticipantRefresh = () => {
+    setRefreshParticipantsToggle(prev => !prev)
+  }
+
   const {
     data,
     status,
@@ -429,6 +435,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     status: 'PENDING',
     data: null,
   })
+
+  console.log('data', data)
 
   React.useEffect(() => {
     if (!study?.identifier) {
@@ -479,14 +487,17 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     note: string,
     clinicVisitDate?: Date,
   ) => {
-    await ParticipantService.updateNotesAndClinicVisitForParticipant(
+    await ParticipantService.updateParticipantNote(
       study!.identifier,
       token!,
       participantId,
-      {
-        note,
-        clinicVisitDate: clinicVisitDate,
-      },
+      note,
+    )
+    await ParticipantService.updateParticipantClinicVisit(
+      study!.identifier,
+      token!,
+      participantId,
+      clinicVisitDate,
     )
     setRefreshParticipantsToggle(prev => !prev)
   }
@@ -749,7 +760,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     {tab === 'ACTIVE' && (
                       <Button
                         aria-label="batch-edit"
-                        onClick={() => {}}
+                        onClick={() => {
+                          setIsBatchEditOpen(true)
+                        }}
                         className={classes.batchEditButton}
                         disabled={selectedParticipantIds[tab].length <= 1}
                       >
@@ -886,7 +899,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             </CollapsibleLayout>
           </Box>
         </Box>
-
+        <BatchEditForm
+          isEnrolledById={false}
+          isBatchEditOpen={isBatchEditOpen}
+          setIsBatchEditOpen={setIsBatchEditOpen}
+          selectedParticipants={selectedParticipantIds[tab]}
+          token={token!}
+          studyId={study.identifier}
+          toggleParticipantRefresh={toggleParticipantRefresh}
+        ></BatchEditForm>
         <Dialog
           open={dialogState.dialogOpenSMS || dialogState.dialogOpenRemove}
           maxWidth="xs"
