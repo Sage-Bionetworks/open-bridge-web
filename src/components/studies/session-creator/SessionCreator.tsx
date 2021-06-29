@@ -8,7 +8,7 @@ import {
   DialogTitle,
   IconButton,
   makeStyles,
-  Paper
+  Paper,
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import SaveIcon from '@material-ui/icons/Save'
@@ -91,10 +91,8 @@ const SessionCreator: FunctionComponent<
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
 
-  const [
-    isAddingAssessmentToSession,
-    setIsAddingAssessmentToSession,
-  ] = useState(false)
+  const [isAddingAssessmentToSession, setIsAddingAssessmentToSession] =
+    useState(false)
   const [activeSession, setActiveSession] = React.useState(
     sessions.length > 0 ? sessions[0].guid : undefined,
   )
@@ -218,11 +216,12 @@ const SessionCreator: FunctionComponent<
             onAddSession={(
               sessions: StudySession[],
               assessments: Assessment[],
+              name: string,
             ) =>
               sessionsUpdateFn({
                 type: Types.AddSession,
                 payload: {
-                  name: 'Session' + sessions.length.toString(),
+                  name: name || 'Session' + (sessions.length + 1).toString(),
                   assessments,
                 },
               })
