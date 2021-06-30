@@ -204,10 +204,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
               }}
               isNewlyAddedStudy={highlightedStudyId === study.identifier}
               section={item.sectionStatus}
-              isMenuOpen={
-                menuAnchor !== null &&
-                menuAnchor.study.identifier === study.identifier
-              }
+              isMenuOpen={menuAnchor?.study?.identifier === study.identifier}
             ></StudyCard>
           </Link>
         ))}
