@@ -43,7 +43,13 @@ function makeBackendExternalId(studyId: string, externalId: string) {
 }
 
 export function formatExternalId(studyId: string, externalId: string) {
-  return externalId ? externalId.replace(`:${studyId}`, '') : 'withdrawn'
+  if (!externalId) {
+    return 'withdrawn'
+  }
+  let forDisplay = externalId.replace(`:${studyId}`, '')
+  return forDisplay.length !== 6
+    ? forDisplay
+    : `${forDisplay.substr(0, 3)}-${forDisplay.substr(3, 3)}`
 }
 
 // gets clinic visits and join events for participants with the specified ids
@@ -82,10 +88,6 @@ async function getRelevantEventsForParticipants(
       let smsDate = item.apiCall.data.items.find(
         event => event.eventId === `custom:${LINK_SENT_EVENT_ID}`, //TODO: this will not be custom
       )
-
-      //ALINA: remove when real event. Just introducing randomness
-      //if (Math.random() > 0.5) joinedDate = undefined
-
       return {
         ...acc,
         [item.participantId]: {

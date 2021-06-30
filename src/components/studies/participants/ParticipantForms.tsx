@@ -1,12 +1,11 @@
 import {
   Box,
-
   DialogActions,
   DialogContent,
   FormControl,
   FormGroup,
   FormHelperText,
-  makeStyles
+  makeStyles,
 } from '@material-ui/core'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
@@ -15,13 +14,13 @@ import { latoFont } from '../../../style/theme'
 import { EditableParticipantData } from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import { MTBHeadingH3 } from '../../widgets/Headings'
+import TextMask from '../../widgets/MaskedInput'
 import {
   DialogButtonPrimary,
   DialogButtonSecondary,
   SimpleTextInput,
-  SimpleTextLabel
+  SimpleTextLabel,
 } from '../../widgets/StyledComponents'
-
 
 const useStyles = makeStyles(theme => ({
   addForm: {
@@ -55,76 +54,70 @@ export type EditParticipantFormProps = {
   children?: React.ReactNode
 }
 
-export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
-  participant,
-  isEnrolledById,
-  onOK,
-  onCancel,
-  children,
-}) => {
-  const classes = useStyles()
-  const [note, setNotes] = React.useState(participant.note)
-  const [clinicVisitDate, setClinicVisitDate] = React.useState<
-    Date | undefined
-  >(participant.clinicVisitDate)
+export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> =
+  ({ participant, isEnrolledById, onOK, onCancel, children }) => {
+    const classes = useStyles()
+    const [note, setNotes] = React.useState(participant.note)
+    const [clinicVisitDate, setClinicVisitDate] = React.useState<
+      Date | undefined
+    >(participant.clinicVisitDate)
 
-  const handleDateChange = (date: Date | null) => {
-    setClinicVisitDate(date ? date : undefined)
+    const handleDateChange = (date: Date | null) => {
+      setClinicVisitDate(date ? date : undefined)
+    }
+
+    return (
+      <>
+        <DialogContent>
+          <Box mt={0} mb={3}>
+            <MTBHeadingH3>
+              {isEnrolledById ? (
+                <span>Reference ID: {participant.externalId}</span>
+              ) : (
+                <span>Phone number: {participant.phoneNumber}</span>
+              )}
+            </MTBHeadingH3>
+          </Box>
+
+          <FormGroup className={classes.addForm}>
+            <DatePicker
+              label="Clinic Visit 1"
+              id="clinic-visit"
+              value={clinicVisitDate || null}
+              onChange={e => handleDateChange(e)}
+            ></DatePicker>
+
+            <FormControl>
+              <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
+              <SimpleTextInput
+                value={note}
+                placeholder="comments"
+                onChange={e => setNotes(e.target.value)}
+                id="note"
+                multiline={true}
+                rows={5}
+              />
+            </FormControl>
+          </FormGroup>
+        </DialogContent>
+        <DialogActions style={{ justifyContent: 'space-between' }}>
+          {children && children}
+          <div>
+            <DialogButtonSecondary onClick={() => onCancel()} color="primary">
+              Cancel
+            </DialogButtonSecondary>
+            <DialogButtonPrimary
+              onClick={() => onOK(note, clinicVisitDate)}
+              color="primary"
+              autoFocus
+            >
+              Save Changes
+            </DialogButtonPrimary>
+          </div>
+        </DialogActions>
+      </>
+    )
   }
-
-  return (
-    <>
-      <DialogContent>
-        <Box mt={0} mb={3}>
-          <MTBHeadingH3>
-            {isEnrolledById? (
-              <span>Reference ID: {participant.externalId}</span>
-            ) : (
-              <span>Phone number: {participant.phoneNumber}</span>
-            )}
-          </MTBHeadingH3>
-        </Box>
-
-        <FormGroup className={classes.addForm}>
-          <DatePicker
-            label="Clinic Visit 1"
-            id="clinic-visit"
-            value={clinicVisitDate || null}
-            onChange={e => handleDateChange(e)}
-          ></DatePicker>
-
-          <FormControl>
-            <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
-            <SimpleTextInput
-              value={note}
-              placeholder="comments"
-              onChange={e => setNotes(e.target.value)}
-              id="note"
-              multiline={true}
-              rows={5}
-            />
-          </FormControl>
-        </FormGroup>
-      </DialogContent>
-      <DialogActions style={{ justifyContent: 'space-between' }}>
-        {children && children}
-        <div>
-          <DialogButtonSecondary onClick={() => onCancel()} color="primary">
-            Cancel
-          </DialogButtonSecondary>
-          <DialogButtonPrimary
-         
-            onClick={() => onOK(note, clinicVisitDate)}
-            color="primary"
-            autoFocus
-          >
-            Save Changes
-          </DialogButtonPrimary>
-        </div>
-      </DialogActions>
-    </>
-  )
-}
 
 export const WithdrawParticipantForm: FunctionComponent<{
   isEnrolledById: boolean
@@ -146,9 +139,7 @@ export const WithdrawParticipantForm: FunctionComponent<{
             Are you sure you would like to withdraw the following participant:
           </p>
           <p>
-            {isEnrolledById
-              ? participant.externalId :participant.phoneNumber}
-
+            {isEnrolledById ? participant.externalId : participant.phoneNumber}
           </p>
           <p>
             <strong>This action cannot be undone.</strong>
@@ -173,8 +164,12 @@ export const WithdrawParticipantForm: FunctionComponent<{
       <DialogActions>
         <DialogButtonSecondary onClick={() => onCancel()} color="primary">
           Cancel
-        </DialogButtonSecondary >
-        <DialogButtonPrimary onClick={() => onOK(note)} color="primary" autoFocus>
+        </DialogButtonSecondary>
+        <DialogButtonPrimary
+          onClick={() => onOK(note)}
+          color="primary"
+          autoFocus
+        >
           Yes, withdraw participant
         </DialogButtonPrimary>
       </DialogActions>
@@ -200,14 +195,23 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
   const extId = (
     <FormControl>
       <SimpleTextLabel htmlFor="participant-id">
-        {`Participant ID${isEnrolledById? '*' : ''}`}
+        {`Participant IDs${isEnrolledById ? '*' : ''}`}
       </SimpleTextLabel>
       <SimpleTextInput
-        placeholder="xxx-xxx-xxxx"
         id="participant-id"
         fullWidth={true}
         value={participant.externalId}
-        onChange={e => onChange({ ...participant, externalId: e.target.value })}
+        inputProps={{
+          maskType: 'ID',
+          placeholder: 'xxx-xxx',
+          onAccept: (v: string) => {
+            onChange({
+              ...participant,
+              externalId: v,
+            })
+          },
+        }}
+        inputComponent={TextMask as any}
       />
     </FormControl>
   )
@@ -216,7 +220,7 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
     <>
       <FormGroup className={classes.addForm}>
         {isEnrolledById && extId}
-        {!isEnrolledById  && (
+        {!isEnrolledById && (
           <>
             <FormControl className={clsx(validationErrors.phone && 'error')}>
               <SimpleTextLabel htmlFor="phone">Phone Number*</SimpleTextLabel>
@@ -225,19 +229,24 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
                 id="phone"
                 fullWidth={true}
                 value={participant.phoneNumber || ''}
+                inputProps={{
+                  maskType: 'PHONE',
+                  placeholder: '(xxx)xxx-xxx',
+                  onAccept: (v: string) => {
+                    onChange({ ...participant, phoneNumber: v })
+                  },
+                }}
+                inputComponent={TextMask as any}
                 onBlur={() =>
                   setValidationErrors(prev => ({
                     ...prev,
                     phone: isInvalidPhone(participant.phoneNumber || ''),
                   }))
                 }
-                onChange={e =>
-                  onChange({ ...participant, phoneNumber: e.target.value })
-                }
               />
               {validationErrors.phone && (
                 <FormHelperText id="phone-text">
-                  phone should be in the format: xxx-xxx-xxxx
+                  phone should be in the format: (xxx)xxx-xxxx
                 </FormHelperText>
               )}
             </FormControl>
