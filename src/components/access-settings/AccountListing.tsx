@@ -3,7 +3,7 @@ import React, { FunctionComponent, ReactNode } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import { ReactComponent as Delete } from '../../assets/trash.svg'
 import { useAsync } from '../../helpers/AsyncHook'
-import { isInAdminRole } from '../../helpers/utility'
+import { isInAdminRole, formatStudyId } from '../../helpers/utility'
 import AccessService from '../../services/access.service'
 import { globals, poppinsFont } from '../../style/theme'
 import { OrgUser, Study, UserSessionData } from '../../types/types'
@@ -214,7 +214,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   return (
     <Box className={classes.root}>
       <Box className={classes.listing}>
-        <MTBHeadingH6>Study ID: {study.identifier} </MTBHeadingH6>
+        <MTBHeadingH6>Study ID: {formatStudyId(study.identifier)} </MTBHeadingH6>
         <MTBHeadingH1 style={{ color: ' #FCFCFC' }}>{study.name}</MTBHeadingH1>
         {status === 'PENDING' && <Loader reqStatusLoading={true}></Loader>}{' '}
         <ul

@@ -15,13 +15,13 @@ import { latoFont } from '../../../style/theme'
 import { EditableParticipantData } from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import { MTBHeadingH3 } from '../../widgets/Headings'
+import TextMask from '../../widgets/MaskedInput'
 import {
   DialogButtonPrimary,
   DialogButtonSecondary,
   SimpleTextInput,
-  SimpleTextLabel
+  SimpleTextLabel,
 } from '../../widgets/StyledComponents'
-
 
 const useStyles = makeStyles(theme => ({
   addForm: {
@@ -72,9 +72,9 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
     Date | undefined
   >(participant.clinicVisitDate)
 
-  const handleDateChange = (date: Date | null) => {
-    setClinicVisitDate(date ? date : undefined)
-  }
+    const handleDateChange = (date: Date | null) => {
+      setClinicVisitDate(date ? date : undefined)
+    }
 
   return (
     <>
@@ -88,15 +88,13 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
             ) : "Assign the same values to selected participants:"}
           </MTBHeadingH3>
         </Box>
-
-        <FormGroup className={classes.addForm}>
-          <DatePicker
-            label="Clinic Visit 1"
-            id="clinic-visit"
-            value={clinicVisitDate || null}
-            onChange={e => handleDateChange(e)}
-          ></DatePicker>
-
+          <FormGroup className={classes.addForm}>
+            <DatePicker
+              label="Clinic Visit 1"
+              id="clinic-visit"
+              value={clinicVisitDate || null}
+              onChange={e => handleDateChange(e)}
+            ></DatePicker>
           <FormControl>
             <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
             <SimpleTextInput
@@ -150,9 +148,7 @@ export const WithdrawParticipantForm: FunctionComponent<{
             Are you sure you would like to withdraw the following participant:
           </p>
           <p>
-            {isEnrolledById
-              ? participant.externalId :participant.phoneNumber}
-
+            {isEnrolledById ? participant.externalId : participant.phoneNumber}
           </p>
           <p>
             <strong>This action cannot be undone.</strong>
@@ -177,8 +173,12 @@ export const WithdrawParticipantForm: FunctionComponent<{
       <DialogActions>
         <DialogButtonSecondary onClick={() => onCancel()} color="primary">
           Cancel
-        </DialogButtonSecondary >
-        <DialogButtonPrimary onClick={() => onOK(note)} color="primary" autoFocus>
+        </DialogButtonSecondary>
+        <DialogButtonPrimary
+          onClick={() => onOK(note)}
+          color="primary"
+          autoFocus
+        >
           Yes, withdraw participant
         </DialogButtonPrimary>
       </DialogActions>
@@ -204,14 +204,23 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
   const extId = (
     <FormControl>
       <SimpleTextLabel htmlFor="participant-id">
-        {`Participant ID${isEnrolledById? '*' : ''}`}
+        {`Participant IDs${isEnrolledById ? '*' : ''}`}
       </SimpleTextLabel>
       <SimpleTextInput
-        placeholder="xxx-xxx-xxxx"
         id="participant-id"
         fullWidth={true}
         value={participant.externalId}
-        onChange={e => onChange({ ...participant, externalId: e.target.value })}
+        inputProps={{
+          maskType: 'ID',
+          placeholder: 'xxx-xxx',
+          onAccept: (v: string) => {
+            onChange({
+              ...participant,
+              externalId: v,
+            })
+          },
+        }}
+        inputComponent={TextMask as any}
       />
     </FormControl>
   )
@@ -220,7 +229,7 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
     <>
       <FormGroup className={classes.addForm}>
         {isEnrolledById && extId}
-        {!isEnrolledById  && (
+        {!isEnrolledById && (
           <>
             <FormControl className={clsx(validationErrors.phone && 'error')}>
               <SimpleTextLabel htmlFor="phone">Phone Number*</SimpleTextLabel>
@@ -229,19 +238,24 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
                 id="phone"
                 fullWidth={true}
                 value={participant.phoneNumber || ''}
+                inputProps={{
+                  maskType: 'PHONE',
+                  placeholder: '(xxx)xxx-xxx',
+                  onAccept: (v: string) => {
+                    onChange({ ...participant, phoneNumber: v })
+                  },
+                }}
+                inputComponent={TextMask as any}
                 onBlur={() =>
                   setValidationErrors(prev => ({
                     ...prev,
                     phone: isInvalidPhone(participant.phoneNumber || ''),
                   }))
                 }
-                onChange={e =>
-                  onChange({ ...participant, phoneNumber: e.target.value })
-                }
               />
               {validationErrors.phone && (
                 <FormHelperText id="phone-text">
-                  phone should be in the format: xxx-xxx-xxxx
+                  phone should be in the format: (xxx)xxx-xxxx
                 </FormHelperText>
               )}
             </FormControl>

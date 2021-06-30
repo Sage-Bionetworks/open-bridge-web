@@ -15,6 +15,7 @@ import { useUserSessionDataState } from '../../helpers/AuthContext'
 import LiveIcon from '../../assets/live_study_icon.svg'
 import CompletedIcon from '../../assets/completed_study_icon.svg'
 import WithdrawnIcon from '../../assets/cancelled_study_icon.svg'
+import { formatStudyId } from '../../helpers/utility'
 
 const DraftIcon = () => {
   return (
@@ -71,8 +72,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: theme.spacing(1.25, 1.25),
     alignItems: 'center',
+    height: '40px',
   },
   lastEditedTest: {
     fontFamily: 'Lato',
@@ -124,6 +125,14 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     '100%': {
       transform: 'scale(1)',
     },
+  },
+  menuBox: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    width: '28px',
+    height: '40px',
   },
 }))
 
@@ -198,6 +207,7 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
   study,
   onSetAnchor,
   section,
+  isMenuOpen,
 }: StudyCardProps) => {
   function getStatusIcon(section: string) {
     if (section === 'LIVE') {
@@ -211,21 +221,27 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
   const classes = useStyles()
 
   return (
-    <Box
-      display="flex"
-      textAlign="left"
-      paddingTop="8px"
-      className={classes.cardTopContainer}
-    >
+    <Box display="flex" textAlign="left" className={classes.cardTopContainer}>
       {study.phase !== 'completed' ? (
         <IconButton
-          style={{ padding: '0' }}
+          style={{
+            padding: '0',
+          }}
           onClick={e => {
             cancelPropagation(e)
             onSetAnchor(e.currentTarget)
           }}
         >
-          <MoreVertIcon />
+          <Box
+            className={classes.menuBox}
+            style={
+              isMenuOpen
+                ? { boxShadow: '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)' }
+                : {}
+            }
+          >
+            <MoreVertIcon />
+          </Box>
         </IconButton>
       ) : (
         <div />
@@ -248,6 +264,7 @@ type StudyCardProps = {
   onRename?: Function
   isNewlyAddedStudy?: boolean
   section: string
+  isMenuOpen: boolean
 }
 
 const StudyCard: FunctionComponent<StudyCardProps> = ({
@@ -257,6 +274,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
   onRename,
   isNewlyAddedStudy,
   section,
+  isMenuOpen
 }) => {
   const classes = useStyles()
   const input = React.createRef<HTMLInputElement>()
@@ -295,6 +313,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
             section={section}
             study={study}
             onSetAnchor={onSetAnchor}
+            isMenuOpen={isMenuOpen}
           ></CardTop>
         </>
         <CardContent>
@@ -323,7 +342,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
             )}
           </div>
           <Typography className={classes.studyId} color="textSecondary">
-            Study ID: {study.identifier}
+            Study ID: {formatStudyId(study.identifier)}
           </Typography>
           {study.phase === 'design' && <DraftIcon />}
         </CardContent>

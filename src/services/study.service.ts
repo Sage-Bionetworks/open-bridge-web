@@ -5,7 +5,7 @@ import {
   Schedule,
   ScheduleNotification,
   StartEventId,
-  StudySession
+  StudySession,
 } from '../types/scheduling'
 import { Study } from '../types/types'
 import AssessmentService from './assessment.service'
@@ -25,15 +25,17 @@ const StudyService = {
 }
 
 export const DEFAULT_NOTIFICATION: ScheduleNotification = {
-  
-    notifyAt: 'after_window_start',
-    offset: undefined,
-    interval: undefined,
-    allowSnooze: true,
-    messages: [
-      { subject: 'New Activities are Live', message: 'Please complete', lang: 'en' },
-    ],
-  
+  notifyAt: 'after_window_start',
+  offset: undefined,
+  interval: undefined,
+  allowSnooze: true,
+  messages: [
+    {
+      subject: 'New Activities are Live',
+      message: 'Please complete',
+      lang: 'en',
+    },
+  ],
 }
 
 function createEmptyStudySession(
@@ -49,6 +51,7 @@ function createEmptyStudySession(
     timeWindows: [defaultTimeWindow],
     performanceOrder: 'participant_choice',
     assessments: [],
+    notifications: [{ ...DEFAULT_NOTIFICATION }],
   }
   return studySession
 }
@@ -62,7 +65,6 @@ async function getStudies(token: string): Promise<Study[]> {
   )
 
   return studies.data.items
-
 }
 
 async function getStudy(id: string, token: string): Promise<Study | undefined> {
@@ -142,7 +144,7 @@ async function removeStudy(studyId: string, token: string): Promise<Study[]> {
 
 async function saveStudySchedule(
   schedule: Schedule,
-  token: string
+  token: string,
 ): Promise<Schedule> {
   const scheduleEndpoint = constants.endpoints.schedule
   try {
@@ -192,7 +194,7 @@ async function addAssessmentResourcesToSchedule(
 //returns scehdule and sessions
 async function getStudySchedule(
   scheduleId: string,
-  token: string
+  token: string,
 ): Promise<Schedule | undefined> {
   const schedule = await callEndpoint<Schedule>(
     constants.endpoints.schedule.replace(':id', scheduleId),

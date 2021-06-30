@@ -24,6 +24,7 @@ type AssessmentImageProps = {
   name: string
   variant: 'small' | 'detail' | 'normal'
   children?: ReactNode
+  smallVariantProperties?: React.CSSProperties
 }
 
 const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
@@ -31,6 +32,7 @@ const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
   name,
   variant = 'normal',
   children = <></>,
+  smallVariantProperties
 }: AssessmentImageProps) => {
   const classes = useStyles()
 
@@ -44,7 +46,7 @@ const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
   )
 
   return variant === 'small' ? (
-    <img src={screen?.url || DefaultImg} alt={name} height="100%" />
+    <img src={screen?.url || DefaultImg} alt={name} height="100%" style={smallVariantProperties}/>
   ) : (
     <CardMedia
       className={classes.media}

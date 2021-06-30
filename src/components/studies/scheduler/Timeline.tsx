@@ -13,6 +13,8 @@ import { Schedule } from '../../../types/scheduling'
 import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
 import SessionIcon from '../../widgets/SessionIcon'
 import TimelineCustomPlot, { TimelineZoomLevel } from './TimelineCustomPlot'
+import AssessmentImage from '../../assessments/AssessmentImage'
+import Tooltip from '@material-ui/core/Tooltip'
 
 const useStyles = makeStyles(theme => ({
   stats: {
@@ -23,8 +25,8 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
 
     '& span': {
-      padding: theme.spacing(2,3,2,1)
-    }
+      padding: theme.spacing(2, 3, 2, 1),
+    },
   },
   legend: {
     margin: theme.spacing(1, 0),
@@ -32,6 +34,21 @@ const useStyles = makeStyles(theme => ({
     '& div': {
       marginRight: theme.spacing(2),
     },
+  },
+  toolTip: {
+    backgroundColor: theme.palette.primary.dark,
+    padding: theme.spacing(1, 1, 0.1, 1),
+    boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.2)',
+  },
+  arrow: {
+    backgroundColor: 'transparent',
+    color: theme.palette.primary.dark,
+    fontSize: '20px',
+  },
+  assessmentBox: {
+    width: '100%',
+    height: '100px',
+    marginBottom: '8px',
   },
 }))
 
@@ -68,17 +85,13 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
   const [dropdown, setDropdown] = React.useState(['Daily'])
-  const [currentZoomLevel, setCurrentZoomLevel] =
-    React.useState<TimelineZoomLevel>('Monthly')
+  const [
+    currentZoomLevel,
+    setCurrentZoomLevel,
+  ] = React.useState<TimelineZoomLevel>('Monthly')
 
   const classes = useStyles()
-  const {
-    data: timeline,
-    status,
-    error,
-    run,
-    setData,
-  } = useAsync<any>({
+  const { data: timeline, status, error, run, setData } = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
@@ -136,7 +149,6 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
     handleError(error!)
   }
 
-
   return (
     <Box padding="30px">
       {!timeline && (
@@ -145,7 +157,6 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
           schedules you’ve defined below for each session!.{status}
         </>
       )}
-
       {timeline && (
         <div className={classes.stats}>
           <NotificationsIcon />{' '}
@@ -157,16 +168,44 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
           <Pluralize singular={'total minute'} count={timeline.totalMinutes} />
         </div>
       )}
-
       <Box display="flex" justifyContent="space-between">
         <Box className={classes.legend}>
           {schedFromDisplay?.sessions?.map((s, index) => (
-              <SessionIcon index={index} key={s.guid}>
-                {getSession(s.guid!)?.label}
-              </SessionIcon>
+            <Tooltip
+              title={
+                <Box width="115px">
+                  {s.assessments?.map((assessment, index) => {
+                    return (
+                      <Box className={classes.assessmentBox}>
+                        <AssessmentImage
+                          resources={assessment.resources}
+                          variant="small"
+                          name={assessment.title}
+                          key={index}
+                          smallVariantProperties={{
+                            width: '100%',
+                            backgroundColor: '#F6F6F6',
+                          }}
+                        ></AssessmentImage>
+                      </Box>
+                    )
+                  })}
+                </Box>
+              }
+              arrow
+              classes={{
+                tooltip: classes.toolTip,
+                arrow: classes.arrow,
+              }}
+            >
+              <Box style={{ cursor: 'pointer' }}>
+                <SessionIcon index={index} key={s.guid}>
+                  {getSession(s.guid!)?.label}
+                </SessionIcon>
+              </Box>
+            </Tooltip>
           ))}
         </Box>
-
         <BlackBorderDropdown
           width="100px"
           value={currentZoomLevel}

@@ -5,7 +5,7 @@ import {
   Divider,
   makeStyles,
   Menu,
-  MenuItem
+  MenuItem,
 } from '@material-ui/core'
 import Link from '@material-ui/core/Link'
 import React, { FunctionComponent, useEffect } from 'react'
@@ -22,6 +22,7 @@ import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import { MTBHeading } from '../widgets/Headings'
 import Loader from '../widgets/Loader'
 import StudyCard from './StudyCard'
+import { latoFont } from '../../style/theme'
 
 type StudyListOwnProps = {}
 
@@ -33,6 +34,10 @@ type StudySublistProps = {
   onAction: Function
   renameStudyId: string
   highlightedStudyId: string | null
+  menuAnchor: {
+    study: Study
+    anchorEl: HTMLElement
+  } | null
 }
 
 type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME'
@@ -93,6 +98,21 @@ const useStyles = makeStyles(theme => ({
     },
     fontFamily: 'Lato',
   },
+  list: {
+    fontFamily: latoFont,
+    fontSize: '14px',
+    lineHeight: '17px',
+    paddingTop: theme.spacing(0),
+    paddingBottom: theme.spacing(0),
+  },
+  paper: {
+    marginLeft: theme.spacing(3.5),
+    borderRadius: '0px',
+    '& li': {
+      padding: theme.spacing(1.25, 2, 1.25, 2),
+    },
+    boxShadow: '2px 1.5px 2px 1px rgba(0, 0, 0, 0.15)',
+  },
 }))
 
 const sections = [
@@ -127,10 +147,10 @@ type StudyListProps = StudyListOwnProps & RouteComponentProps
 const StudySublist: FunctionComponent<StudySublistProps> = ({
   studies,
   status,
-
   renameStudyId,
   onAction,
   highlightedStudyId,
+  menuAnchor,
 }: StudySublistProps) => {
   const classes = useStyles()
   const item = sections.find(section => section.sectionStatus === status)!
@@ -184,6 +204,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
               }}
               isNewlyAddedStudy={highlightedStudyId === study.identifier}
               section={item.sectionStatus}
+              isMenuOpen={menuAnchor?.study?.identifier === study.identifier}
             ></StudyCard>
           </Link>
         ))}
@@ -197,11 +218,10 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const handleError = useErrorHandler()
 
   const { token } = useUserSessionDataState()
-  const [menuAnchor, setMenuAnchor] =
-    React.useState<null | {
-      study: Study
-      anchorEl: HTMLElement
-    }>(null)
+  const [menuAnchor, setMenuAnchor] = React.useState<null | {
+    study: Study
+    anchorEl: HTMLElement
+  }>(null)
   const [renameStudyId, setRenameStudyId] = React.useState('')
   const classes = useStyles()
   const handleMenuClose = () => {
@@ -216,18 +236,15 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const [statusFilters, setStatusFilters] = React.useState<SectionStatus[]>(
     sections.map(section => section.sectionStatus),
   )
-  const [highlightedStudyId, setHighlightedStudyId] =
-    React.useState<string | null>(null)
+  const [highlightedStudyId, setHighlightedStudyId] = React.useState<
+    string | null
+  >(null)
 
   let resetNewlyAddedStudyID: NodeJS.Timeout
 
-  const {
-    data: studies,
-    status,
-    error,
-    run,
-    setData: setStudies,
-  } = useAsync<Study[]>({
+  const { data: studies, status, error, run, setData: setStudies } = useAsync<
+    Study[]
+  >({
     status: 'PENDING',
     data: [],
   })
@@ -453,6 +470,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                     : onAction(s, action)
                 }}
                 highlightedStudyId={highlightedStudyId}
+                menuAnchor={menuAnchor}
               />
             </Box>
           ))}
@@ -463,6 +481,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           keepMounted
           open={Boolean(menuAnchor?.anchorEl)}
           onClose={handleMenuClose}
+          classes={{ paper: classes.paper, list: classes.list }}
         >
           <MenuItem onClick={handleMenuClose}>View</MenuItem>
           {menuAnchor?.study.phase === 'design' && (

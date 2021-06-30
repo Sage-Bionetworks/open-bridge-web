@@ -283,3 +283,9 @@ export const setBodyClass = (next?: string) => {
     window.document.body.classList.add('blackBg')
   }
 }
+
+// Format the studyId to take the form xxx-xxx
+export const formatStudyId = (studyId: string) => {
+  if(studyId.length !== 6) return studyId
+  return studyId.substring(0, 3) + "-" + studyId.substring(3)
+}

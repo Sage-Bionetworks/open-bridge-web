@@ -33,7 +33,7 @@ import {
   StudyInfoData,
   useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
-import { isSignInById } from '../../../helpers/utility'
+import { isSignInById, formatStudyId } from '../../../helpers/utility'
 import ParticipantService, {
   ParticipantRelevantEvents,
 } from '../../../services/participants.service'
@@ -627,7 +627,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         <Box px={3} py={2} display="flex" alignItems="center">
           <MTBHeadingH3 className={classes.studyId}>
             {' '}
-            Study ID: {study.identifier}{' '}
+            Study ID: {formatStudyId(study.identifier)}{' '}
           </MTBHeadingH3>
           <img src={LiveIcon} style={{ height: '25px' }}></img>
         </Box>
