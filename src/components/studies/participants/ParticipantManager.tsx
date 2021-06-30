@@ -421,10 +421,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setRefreshParticipantsToggle,
   ] = React.useState(false)
 
-  const toggleParticipantRefresh = () => {
-    setRefreshParticipantsToggle(prev => !prev)
-  }
-
   const {
     data,
     status,
@@ -898,13 +894,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           </Box>
         </Box>
         <BatchEditForm
-          isEnrolledById={false}
+          isEnrolledById={isSignInById(study.signInTypes)}
           isBatchEditOpen={isBatchEditOpen}
-          setIsBatchEditOpen={setIsBatchEditOpen}
+          onSetIsBatchEditOpen={setIsBatchEditOpen}
           selectedParticipants={selectedParticipantIds[tab]}
           token={token!}
           studyId={study.identifier}
-          toggleParticipantRefresh={toggleParticipantRefresh}
+          onToggleParticipantRefresh={() =>
+            setRefreshParticipantsToggle(prev => !prev)
+          }
           isAllSelected={isAllSelected}
         ></BatchEditForm>
         <Dialog

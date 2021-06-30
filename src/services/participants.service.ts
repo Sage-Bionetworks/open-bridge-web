@@ -1,4 +1,4 @@
-import _, { constant } from 'lodash'
+import _ from 'lodash'
 import { callEndpoint, generateNonambiguousCode } from '../helpers/utility'
 import constants from '../types/constants'
 import {

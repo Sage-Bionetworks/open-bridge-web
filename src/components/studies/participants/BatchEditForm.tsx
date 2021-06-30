@@ -7,25 +7,68 @@ import ParticipantService from '../../../services/participants.service'
 type BatchEditFormProps = {
   isEnrolledById: boolean
   isBatchEditOpen: boolean
-  setIsBatchEditOpen: Function
+  onSetIsBatchEditOpen: Function
   selectedParticipants: string[]
   token: string
   studyId: string
-  toggleParticipantRefresh: Function
+  onToggleParticipantRefresh: Function
   isAllSelected: boolean
 }
 
 const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
   isEnrolledById,
   isBatchEditOpen,
-  setIsBatchEditOpen,
+  onSetIsBatchEditOpen,
   selectedParticipants,
   token,
   studyId,
-  toggleParticipantRefresh,
+  onToggleParticipantRefresh,
   isAllSelected,
 }) => {
   const [isLoading, setIsLoading] = React.useState(false)
+
+  const updateParticipants = async (note: string, cvd?: Date) => {
+    if (!note && !cvd) return
+    setIsLoading(true)
+    let participantIds = selectedParticipants
+    if (isAllSelected) {
+      const resultEnrolled = await ParticipantService.getAllParticipantsInEnrollmentType(
+        studyId,
+        token,
+        'enrolled',
+        false,
+      )
+      const enrolledNonTestParticipants = resultEnrolled.items
+      participantIds = enrolledNonTestParticipants.map(
+        el => el.participant.identifier,
+      )
+    }
+    if (note) {
+      const promises = participantIds.map(async selectedParticipantId => {
+        return await ParticipantService.updateParticipantNote(
+          studyId,
+          token,
+          selectedParticipantId,
+          note,
+        )
+      })
+      await Promise.all(promises)
+    }
+    if (cvd) {
+      const promises = participantIds.map(async selectedParticipantId => {
+        return await ParticipantService.updateParticipantClinicVisit(
+          studyId,
+          token,
+          selectedParticipantId,
+          cvd,
+        )
+      })
+      await Promise.all(promises)
+    }
+    onSetIsBatchEditOpen(false)
+    setIsLoading(false)
+    onToggleParticipantRefresh()
+  }
 
   return (
     <Dialog
@@ -36,7 +79,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
     >
       <EditDialogTitle
         onCancel={() => {
-          setIsBatchEditOpen(false)
+          onSetIsBatchEditOpen(false)
         }}
         shouldWithdraw={false}
         batchEdit
@@ -44,46 +87,9 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
       <EditParticipantForm
         isEnrolledById={isEnrolledById}
         onCancel={() => {
-          setIsBatchEditOpen(false)
+          onSetIsBatchEditOpen(false)
         }}
-        onOK={async (note: string, cvd?: Date) => {
-          if (!note && !cvd) return
-          setIsLoading(true)
-          let participants = selectedParticipants
-          if (isAllSelected) {
-            const resultEnrolled = await ParticipantService.getAllParticipantsInEnrollmentType(
-              studyId,
-              token,
-              'enrolled',
-              false,
-            )
-            const enrolledNonTestParticipants = resultEnrolled.items
-            participants = enrolledNonTestParticipants.map(
-              el => el.participant.identifier,
-            )
-          }
-          for (const selectedParticipantId of participants) {
-            if (note) {
-              await ParticipantService.updateParticipantNote(
-                studyId,
-                token,
-                selectedParticipantId,
-                note,
-              )
-            }
-            if (cvd) {
-              await ParticipantService.updateParticipantClinicVisit(
-                studyId,
-                token,
-                selectedParticipantId,
-                cvd,
-              )
-            }
-          }
-          setIsBatchEditOpen(false)
-          setIsLoading(false)
-          toggleParticipantRefresh()
-        }}
+        onOK={(note: string, cvd?: Date) => updateParticipants(note, cvd)}
         participant={{}}
         isBatchEdit
         isLoading={isLoading}
