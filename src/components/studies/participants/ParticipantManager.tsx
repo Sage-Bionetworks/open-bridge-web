@@ -61,6 +61,8 @@ import ParticipantDownload, {
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
 import ParticipantTablePagination from './ParticipantTablePagination'
+import BatchEditIcon from '../../../assets/participant-manager/batch_edit_icon.svg'
+import BatchEditForm from './BatchEditForm'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -156,7 +158,15 @@ const useStyles = makeStyles(theme => ({
     fontSize: '14px',
   },
   sendSMSButton: {
-    marginRight: theme.spacing(3),
+    marginRight: theme.spacing(1),
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    fontFamily: latoFont,
+    fontSize: '14px',
+  },
+  batchEditButton: {
+    marginRight: theme.spacing(2),
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
@@ -265,12 +275,11 @@ async function getParticipants(
 
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
-  const eventsMap: StringDictionary<ParticipantRelevantEvents> =
-    await ParticipantService.getRelevantEventsForParticipants(
-      studyId,
-      token,
-      retrievedParticipants.map(p => p.id),
-    )
+  const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipants(
+    studyId,
+    token,
+    retrievedParticipants.map(p => p.id),
+  )
   const result = retrievedParticipants!.map(participant => {
     const id = participant.id as string
     const event = eventsMap[id]
@@ -363,6 +372,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   // Withdrawn or active participants
   const [tab, setTab] = React.useState<ParticipantActivityType>('ACTIVE')
   const [isAddOpen, setIsAddOpen] = React.useState(false)
+  const [isBatchEditOpen, setIsBatchEditOpen] = React.useState(false)
   const [loadingIndicators, setLoadingIndicators] = React.useState<{
     isDeleting?: boolean
     isDownloading?: boolean
@@ -374,19 +384,24 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   })
 
   // True if the user is currently searching for a particpant using id
-  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] =
-    React.useState(false)
+  const [
+    isUserSearchingForParticipant,
+    setIsUserSearchingForParticipant,
+  ] = React.useState(false)
 
-  const [fileDownloadUrl, setFileDownloadUrl] =
-    React.useState<string | undefined>(undefined)
+  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
+    string | undefined
+  >(undefined)
 
   //user ids selectedForSction
-  const [selectedParticipantIds, setSelectedParticipantIds] =
-    React.useState<SelectedParticipantIdsType>({
-      ACTIVE: [],
-      TEST: [],
-      WITHDRAWN: [],
-    })
+  const [
+    selectedParticipantIds,
+    setSelectedParticipantIds,
+  ] = React.useState<SelectedParticipantIdsType>({
+    ACTIVE: [],
+    TEST: [],
+    WITHDRAWN: [],
+  })
   const [isAllSelected, setIsAllSelected] = React.useState(false)
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
@@ -401,8 +416,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   >([])
 
   //trigger data refresh on updates
-  const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
-    React.useState(false)
+  const [
+    refreshParticipantsToggle,
+    setRefreshParticipantsToggle,
+  ] = React.useState(false)
 
   const {
     data,
@@ -464,14 +481,17 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     note: string,
     clinicVisitDate?: Date,
   ) => {
-    await ParticipantService.updateNotesAndClinicVisitForParticipant(
+    await ParticipantService.updateParticipantNote(
       study!.identifier,
       token!,
       participantId,
-      {
-        note,
-        clinicVisitDate: clinicVisitDate,
-      },
+      note,
+    )
+    await ParticipantService.updateParticipantClinicVisit(
+      study!.identifier,
+      token!,
+      participantId,
+      clinicVisitDate,
     )
     setRefreshParticipantsToggle(prev => !prev)
   }
@@ -509,7 +529,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       study.identifier,
       token!,
       searchedValue,
-      tab
+      tab,
     )
     //tab === 'ACTIVE'
     /* ? await ParticipantService.getParticipantById(
@@ -526,12 +546,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     //  const realResult = result ? [result] : []
     // const totalParticipantsFound = result ? 1 : 0
     if (result) {
-      const eventsMap: StringDictionary<ParticipantRelevantEvents> =
-        await ParticipantService.getRelevantEventsForParticipants(
-          study.identifier,
-          token!,
-          [result.id],
-        )
+      const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipants(
+        study.identifier,
+        token!,
+        [result.id],
+      )
 
       const event = eventsMap[result.id]
       const updatedParticipant = {
@@ -542,7 +561,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       }
       setParticipantData({ items: [updatedParticipant], total: 1 })
     } else {
-  
       setParticipantData({ items: [], total: 0 })
     }
   }
@@ -733,6 +751,26 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         Send SMS link
                       </Button>
                     )}
+                    {tab === 'ACTIVE' && (
+                      <Button
+                        aria-label="batch-edit"
+                        onClick={() => {
+                          setIsBatchEditOpen(true)
+                        }}
+                        className={classes.batchEditButton}
+                        disabled={selectedParticipantIds[tab].length <= 1}
+                      >
+                        <img
+                          className={clsx(
+                            selectedParticipantIds[tab].length <= 1 &&
+                              classes.disabledImage,
+                            classes.topRowImage,
+                          )}
+                          src={BatchEditIcon}
+                        ></img>
+                        Batch Edit
+                      </Button>
+                    )}
 
                     <ParticipantDownload
                       isProcessing={loadingIndicators.isDownloading}
@@ -836,13 +874,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       pageSize={pageSize}
                       setPageSize={setPageSize}
                       handlePageNavigationArrowPressed={(button: string) => {
-                        const currPage =
-                          getCurrentPageFromPageNavigationArrowPressed(
-                            button,
-                            currentPage,
-                            data?.total || 0,
-                            pageSize,
-                          )
+                        const currPage = getCurrentPageFromPageNavigationArrowPressed(
+                          button,
+                          currentPage,
+                          data?.total || 0,
+                          pageSize,
+                        )
                         setCurrentPage(currPage)
                       }}
                     />
@@ -856,7 +893,18 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             </CollapsibleLayout>
           </Box>
         </Box>
-
+        <BatchEditForm
+          isEnrolledById={isSignInById(study.signInTypes)}
+          isBatchEditOpen={isBatchEditOpen}
+          onSetIsBatchEditOpen={setIsBatchEditOpen}
+          selectedParticipants={selectedParticipantIds[tab]}
+          token={token!}
+          studyId={study.identifier}
+          onToggleParticipantRefresh={() =>
+            setRefreshParticipantsToggle(prev => !prev)
+          }
+          isAllSelected={isAllSelected}
+        ></BatchEditForm>
         <Dialog
           open={dialogState.dialogOpenSMS || dialogState.dialogOpenRemove}
           maxWidth="xs"

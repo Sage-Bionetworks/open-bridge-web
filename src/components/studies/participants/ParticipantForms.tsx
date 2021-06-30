@@ -6,6 +6,7 @@ import {
   FormGroup,
   FormHelperText,
   makeStyles,
+  CircularProgress
 } from '@material-ui/core'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
@@ -52,33 +53,41 @@ export type EditParticipantFormProps = {
   onOK: Function
   onCancel: Function
   children?: React.ReactNode
+  isBatchEdit?: boolean
+  isLoading?: boolean
 }
 
-export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> =
-  ({ participant, isEnrolledById, onOK, onCancel, children }) => {
-    const classes = useStyles()
-    const [note, setNotes] = React.useState(participant.note)
-    const [clinicVisitDate, setClinicVisitDate] = React.useState<
-      Date | undefined
-    >(participant.clinicVisitDate)
+export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
+  participant,
+  isEnrolledById,
+  onOK,
+  onCancel,
+  children,
+  isBatchEdit,
+  isLoading
+}) => {
+  const classes = useStyles()
+  const [note, setNotes] = React.useState(participant.note)
+  const [clinicVisitDate, setClinicVisitDate] = React.useState<
+    Date | undefined
+  >(participant.clinicVisitDate)
 
     const handleDateChange = (date: Date | null) => {
       setClinicVisitDate(date ? date : undefined)
     }
 
-    return (
-      <>
-        <DialogContent>
-          <Box mt={0} mb={3}>
-            <MTBHeadingH3>
-              {isEnrolledById ? (
-                <span>Reference ID: {participant.externalId}</span>
-              ) : (
-                <span>Phone number: {participant.phoneNumber}</span>
-              )}
-            </MTBHeadingH3>
-          </Box>
-
+  return (
+    <>
+      <DialogContent>
+        <Box mt={0} mb={3}>
+          <MTBHeadingH3>
+            {!isBatchEdit ? isEnrolledById ? (
+              <span>Reference ID: {participant.externalId}</span>
+            ) : (
+              <span>Phone number: {participant.phoneNumber}</span>
+            ) : "Assign the same values to selected participants:"}
+          </MTBHeadingH3>
+        </Box>
           <FormGroup className={classes.addForm}>
             <DatePicker
               label="Clinic Visit 1"
@@ -86,38 +95,38 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> =
               value={clinicVisitDate || null}
               onChange={e => handleDateChange(e)}
             ></DatePicker>
-
-            <FormControl>
-              <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
-              <SimpleTextInput
-                value={note}
-                placeholder="comments"
-                onChange={e => setNotes(e.target.value)}
-                id="note"
-                multiline={true}
-                rows={5}
-              />
-            </FormControl>
-          </FormGroup>
-        </DialogContent>
-        <DialogActions style={{ justifyContent: 'space-between' }}>
-          {children && children}
-          <div>
-            <DialogButtonSecondary onClick={() => onCancel()} color="primary">
-              Cancel
-            </DialogButtonSecondary>
-            <DialogButtonPrimary
-              onClick={() => onOK(note, clinicVisitDate)}
-              color="primary"
-              autoFocus
-            >
-              Save Changes
-            </DialogButtonPrimary>
-          </div>
-        </DialogActions>
-      </>
-    )
-  }
+          <FormControl>
+            <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
+            <SimpleTextInput
+              value={note}
+              placeholder="comments"
+              onChange={e => setNotes(e.target.value)}
+              id="note"
+              multiline={true}
+              rows={5}
+            />
+          </FormControl>
+        </FormGroup>
+      </DialogContent>
+      <DialogActions style={{ justifyContent: 'space-between' }}>
+        {children && children}
+        {!isLoading ? <div>
+          <DialogButtonSecondary onClick={() => onCancel()} color="primary">
+            Cancel
+          </DialogButtonSecondary>
+          <DialogButtonPrimary
+         
+            onClick={() => onOK(note, clinicVisitDate)}
+            color="primary"
+            autoFocus
+          >
+            Save Changes
+          </DialogButtonPrimary>
+        </div> : <CircularProgress color="primary"/>}
+      </DialogActions>
+    </>
+  )
+}
 
 export const WithdrawParticipantForm: FunctionComponent<{
   isEnrolledById: boolean

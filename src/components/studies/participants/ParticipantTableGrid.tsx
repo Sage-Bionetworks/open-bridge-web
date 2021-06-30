@@ -154,11 +154,12 @@ const phoneColumn = {
   valueGetter: getPhone,
 }
 
-const EditDialogTitle: FunctionComponent<{
+export const EditDialogTitle: FunctionComponent<{
   onCancel: Function
   shouldWithdraw?: boolean
-}> = ({ onCancel, shouldWithdraw }) => {
-  const title = shouldWithdraw ? 'Withdraw' : 'Edit Participant Detail'
+  batchEdit?: boolean
+}> = ({ onCancel, shouldWithdraw,batchEdit }) => {
+  const title = shouldWithdraw ? 'Withdraw' : !batchEdit ? 'Edit Participant Detail' : "Batch Edit Multiple Participant Details "
   const Icon = shouldWithdraw ? WithdrawIcon : PencilIcon
 
   return (
