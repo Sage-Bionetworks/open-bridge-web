@@ -16,12 +16,13 @@ import { jsonToCSV } from 'react-papaparse'
 import { RouteComponentProps } from 'react-router-dom'
 import { ReactComponent as CollapseIcon } from '../../../assets/collapse.svg'
 import LiveIcon from '../../../assets/live_study_icon.svg'
-import { ReactComponent as PinkSendSMSIcon } from '../../../assets/participant-manager/send_sms_link_pink_icon.svg'
 import { ReactComponent as AddParticipantsIcon } from '../../../assets/participants/add_participants.svg'
 import { ReactComponent as AddTestParticipantsIcon } from '../../../assets/participants/add_test_participants.svg'
+import BatchEditIcon from '../../../assets/participants/batch_edit_icon.svg'
 import SMSPhoneImg from '../../../assets/participants/joined_phone_icon.svg'
 import ParticipantListFocusIcon from '../../../assets/participants/participant_list_focus_icon.svg'
 import ParticipantListUnfocusIcon from '../../../assets/participants/participant_list_unfocus_icon.svg'
+import { ReactComponent as PinkSendSMSIcon } from '../../../assets/participants/send_sms_link_pink_icon.svg'
 import TestAccountFocusIcon from '../../../assets/participants/test_account_focus_icon.svg'
 import TestAccountUnfocusIcon from '../../../assets/participants/test_account_unfocus_icon.svg'
 import WithdrawnParticipantsFocusIcon from '../../../assets/participants/withdrawn_participants_focus_icon.svg'
@@ -33,7 +34,7 @@ import {
   StudyInfoData,
   useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
-import { isSignInById, formatStudyId } from '../../../helpers/utility'
+import { formatStudyId, isSignInById } from '../../../helpers/utility'
 import ParticipantService, {
   ParticipantRelevantEvents,
 } from '../../../services/participants.service'
@@ -54,6 +55,7 @@ import {
   DialogButtonSecondary,
 } from '../../widgets/StyledComponents'
 import AddParticipants from './AddParticipants'
+import BatchEditForm from './BatchEditForm'
 import DialogContents from './DialogContents'
 import ParticipantDownload, {
   ParticipantDownloadType,
@@ -61,8 +63,6 @@ import ParticipantDownload, {
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
 import ParticipantTablePagination from './ParticipantTablePagination'
-import BatchEditIcon from '../../../assets/participant-manager/batch_edit_icon.svg'
-import BatchEditForm from './BatchEditForm'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -275,11 +275,12 @@ async function getParticipants(
 
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
-  const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipants(
-    studyId,
-    token,
-    retrievedParticipants.map(p => p.id),
-  )
+  const eventsMap: StringDictionary<ParticipantRelevantEvents> =
+    await ParticipantService.getRelevantEventsForParticipants(
+      studyId,
+      token,
+      retrievedParticipants.map(p => p.id),
+    )
   const result = retrievedParticipants!.map(participant => {
     const id = participant.id as string
     const event = eventsMap[id]
@@ -384,24 +385,19 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   })
 
   // True if the user is currently searching for a particpant using id
-  const [
-    isUserSearchingForParticipant,
-    setIsUserSearchingForParticipant,
-  ] = React.useState(false)
+  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] =
+    React.useState(false)
 
-  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
-    string | undefined
-  >(undefined)
+  const [fileDownloadUrl, setFileDownloadUrl] =
+    React.useState<string | undefined>(undefined)
 
   //user ids selectedForSction
-  const [
-    selectedParticipantIds,
-    setSelectedParticipantIds,
-  ] = React.useState<SelectedParticipantIdsType>({
-    ACTIVE: [],
-    TEST: [],
-    WITHDRAWN: [],
-  })
+  const [selectedParticipantIds, setSelectedParticipantIds] =
+    React.useState<SelectedParticipantIdsType>({
+      ACTIVE: [],
+      TEST: [],
+      WITHDRAWN: [],
+    })
   const [isAllSelected, setIsAllSelected] = React.useState(false)
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
@@ -416,10 +412,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   >([])
 
   //trigger data refresh on updates
-  const [
-    refreshParticipantsToggle,
-    setRefreshParticipantsToggle,
-  ] = React.useState(false)
+  const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
+    React.useState(false)
 
   const {
     data,
@@ -546,11 +540,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     //  const realResult = result ? [result] : []
     // const totalParticipantsFound = result ? 1 : 0
     if (result) {
-      const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipants(
-        study.identifier,
-        token!,
-        [result.id],
-      )
+      const eventsMap: StringDictionary<ParticipantRelevantEvents> =
+        await ParticipantService.getRelevantEventsForParticipants(
+          study.identifier,
+          token!,
+          [result.id],
+        )
 
       const event = eventsMap[result.id]
       const updatedParticipant = {
@@ -874,12 +869,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       pageSize={pageSize}
                       setPageSize={setPageSize}
                       handlePageNavigationArrowPressed={(button: string) => {
-                        const currPage = getCurrentPageFromPageNavigationArrowPressed(
-                          button,
-                          currentPage,
-                          data?.total || 0,
-                          pageSize,
-                        )
+                        const currPage =
+                          getCurrentPageFromPageNavigationArrowPressed(
+                            button,
+                            currentPage,
+                            data?.total || 0,
+                            pageSize,
+                          )
                         setCurrentPage(currPage)
                       }}
                     />
