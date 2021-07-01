@@ -3,12 +3,12 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
-  TextField
+  TextField,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Autocomplete from '@material-ui/lab/Autocomplete/Autocomplete'
 import React from 'react'
-import { ThemeType } from '../../../style/theme'
+import { latoFont, ThemeType } from '../../../style/theme'
 import { Study } from '../../../types/types'
 import { MTBHeadingH2 } from '../../widgets/Headings'
 import { diseases } from './diseases'
@@ -47,6 +47,12 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       border: 'none',
     },
   },
+  descriptionText: {
+    fontFamily: latoFont,
+    fontSize: '16px',
+    lineHeight: '19px',
+    marginBottom: theme.spacing(0.5)
+  },
 }))
 
 export interface AboutStudyProps {
@@ -72,7 +78,9 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
   const classes = useStyles()
 
   React.useEffect(() => {
-    onEnableNext(study.diseases && study.keywords && study.studyDesignTypes?.length)
+    onEnableNext(
+      study.diseases && study.keywords && study.studyDesignTypes?.length,
+    )
   }, [study])
 
   const changeDiseases = (event: any, values: any) => {
@@ -98,8 +106,10 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
         aria-label="Study Type"
         name="studyType"
         classes={{ root: classes.studyType }}
-        value={study.studyDesignTypes? study.studyDesignTypes[0] : ''}
-        onChange={e => onChange({ ...study, studyDesignTypes: [e.target.value] })}
+        value={study.studyDesignTypes ? study.studyDesignTypes[0] : ''}
+        onChange={e =>
+          onChange({ ...study, studyDesignTypes: [e.target.value] })
+        }
       >
         <FormControlLabel
           value="observation"
@@ -117,9 +127,13 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
       </RadioGroup>
 
       <MTBHeadingH2 className={classes.subhead}>
-        What diseases or conditions is your study targeting?{' '}
+        What conditions or diseases is your study targeting?
       </MTBHeadingH2>
-
+      <p className={classes.descriptionText}>
+        These are diseases that participants in your study might be diagnosed
+        with (e.g. MCI, Healthy Adults, Alzheimer's Disease). Please list all
+        that apply.
+      </p>
       <Autocomplete
         multiple
         limitTags={2}
@@ -142,7 +156,7 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
       <MTBHeadingH2 className={classes.subhead}>
         What keywords would you like to associate with this study?
       </MTBHeadingH2>
-      <p>
+      <p className={classes.descriptionText}>
         Keywords help describe your study. Some examples of past keywords
         assigned are: "neurodegeneration, neurology" and "sleep" and
         "cardiorespiratory fitness, physical activity, heart rate".
