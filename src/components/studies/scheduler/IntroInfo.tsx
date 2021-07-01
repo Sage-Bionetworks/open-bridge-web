@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: theme.spacing(2.25),
       position: 'absolute',
       right: theme.spacing(-18.75),
-      marginTop: theme.spacing(7.5),
+      marginTop: theme.spacing(5),
       textAlign: 'left',
       listStyle: 'none',
     },
@@ -137,9 +137,8 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
               </strong>
               <br /> <br />
               <div className={classes.description}>
-                This is the date the study will permanently close. Make sure to
-                add any extra buffer days you might need should the study go
-                longer.
+                This is the duration that a participant is involved in the
+                study.
               </div>{' '}
             </Box>
           }
