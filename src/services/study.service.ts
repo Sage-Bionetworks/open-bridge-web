@@ -65,23 +65,23 @@ async function editStudyLogo(
   fileBody: string,
   mimeType: string,
   file: File,
-) {
+): Promise<Study> {
   try {
     // upload to the backend
     const uploadToBackendEndpoint = `${constants.endpoints.studies}/${studyId}/logo`
-    const bodyForUploadBackendEndpoint = {
+    const bodyForUploadBackendEndpoint: FileRevision = {
       name: fileName,
       mimeType: mimeType,
       size: fileSize,
       fileGuid: fileBody,
-    } as FileRevision
-    const uploadResult = await callEndpoint(
+    }
+    const uploadResult = await callEndpoint<FileRevision>(
       uploadToBackendEndpoint,
       'POST',
       bodyForUploadBackendEndpoint,
       token,
     )
-    const uploadData = uploadResult.data as FileRevision
+    const uploadData = uploadResult.data
     // upload to aws
     let headers: HeadersInit = new Headers()
     headers.set('Content-Type', mimeType)
@@ -95,13 +95,13 @@ async function editStudyLogo(
     await fetch(uploadURL, config)
     // Tell the backend that we have successfully finished uploading file to aws
     const successfulUploadEndpoint = `${constants.endpoints.studies}/${studyId}/logo/${uploadData.createdOn}`
-    const successulyUploadResponse = await callEndpoint(
+    const successfulUploadResponse = await callEndpoint<Study>(
       successfulUploadEndpoint,
       'POST',
       {},
       token,
     )
-    return successulyUploadResponse.data
+    return successfulUploadResponse.data
   } catch (error) {
     throw error
   }

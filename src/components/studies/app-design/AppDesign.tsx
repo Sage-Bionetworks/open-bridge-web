@@ -304,7 +304,7 @@ const AppDesign: React.FunctionComponent<
     const file = event.target.files[0]
     const previewForImage = getPreviewForImage(file)
     try {
-      const uploadResponse = (await StudyService.editStudyLogo(
+      const uploadResponse = await StudyService.editStudyLogo(
         study.identifier,
         token!,
         previewForImage.size,
@@ -312,12 +312,13 @@ const AppDesign: React.FunctionComponent<
         previewForImage.body || '',
         file.type,
         previewForImage.file,
-      )) as Study
-      const updatedStudy = {
+      )
+      console.log('final response', uploadResponse)
+      const updatedStudy: Study = {
         ...study,
         studyLogoUrl: uploadResponse.studyLogoUrl,
         version: uploadResponse.version,
-      } as Study
+      }
       onUpdate(updatedStudy)
     } catch (error) {
       onError(error)
@@ -364,17 +365,29 @@ const AppDesign: React.FunctionComponent<
     onSave(updatedStudy)
   }
 
-  const debouncedUpdateColor = useCallback(
-    _.debounce(color => {
-      const updatedStudy = { ...study }
-      updatedStudy.colorScheme = {
-        ...updatedStudy.colorScheme,
-        background: color,
-      }
-      onUpdate(updatedStudy)
-    }, 1000),
-    [],
-  )
+  // This is the method without useCallback or debounce.
+  const debouncedUpdateColor = (color: string, version: number) => {
+    const updatedStudy = { ...study }
+    console.log('color version', version)
+    updatedStudy.colorScheme = {
+      ...updatedStudy.colorScheme,
+      background: color,
+    }
+    onUpdate(updatedStudy)
+  }
+  
+  // This is the original code
+  // const debouncedUpdateColor = useCallback(
+  //   _.debounce(color => {
+  //     const updatedStudy = { ...study }
+  //     updatedStudy.colorScheme = {
+  //       ...updatedStudy.colorScheme,
+  //       background: color,
+  //     }
+  //     onUpdate(updatedStudy)
+  //   }, 1000),
+  //   [],
+  // )
 
   const formatPhoneNumber = (phoneNumber: string) => {
     if (phoneNumber.length !== 10) {
@@ -517,7 +530,9 @@ const AppDesign: React.FunctionComponent<
                 <ColorPickerSection
                   appBackgroundColor={appBackgroundColor}
                   setAppBackgroundColor={setAppBackgroundColor}
-                  debouncedUpdateColor={debouncedUpdateColor}
+                  debouncedUpdateColor={(color: string) =>
+                    debouncedUpdateColor(color, study.version)
+                  }
                 />
                 <WelcomeScreenMessagingSection
                   saveLoader={saveLoader}
