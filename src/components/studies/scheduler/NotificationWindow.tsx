@@ -129,6 +129,9 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
             variant="outlined"
             defaultValue={_.first(notification.messages)?.subject || ''}
             onBlur={e => updateMessage({ subject: e.target.value })}
+            inputProps={{
+              maxLength: 40,
+            }}
           ></TextField>
         </SchedulingFormSection>
 
@@ -146,6 +149,9 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
             classes={{ root: classes.multilineBodyText }}
             defaultValue={_.first(notification.messages)?.message || ''}
             onBlur={e => updateMessage({ message: e.target.value })}
+            inputProps={{
+              maxLength: 40,
+            }}
           ></TextField>
         </SchedulingFormSection>
         <Divider className={classes.divider} />
