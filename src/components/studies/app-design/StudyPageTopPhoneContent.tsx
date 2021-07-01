@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
   sectionFiveIndicatorPosition: {
     position: 'absolute',
     marginLeft: theme.spacing(-7),
-    top: theme.spacing(63)
+    top: theme.spacing(63),
   },
   container: {
     padding: theme.spacing(2, 2, 2, 2.25),
@@ -80,6 +80,7 @@ type StudyPageTopPhoneContentProps = {
   studySummaryBody: string
   leadInvestigator: Contact
   funder: Contact
+  studyLogoUrl?: string
 }
 
 const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContentProps> = ({
@@ -91,6 +92,7 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
   studySummaryBody,
   leadInvestigator,
   funder,
+  studyLogoUrl,
 }) => {
   const classes = useStyles()
   return (
@@ -102,9 +104,9 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         }}
       >
         {!isUsingDefaultMessage ? (
-          previewFile && (
+          (previewFile || studyLogoUrl) && (
             <img
-              src={previewFile.body}
+              src={studyLogoUrl || previewFile!.body}
               style={{ height: `${imgHeight}px` }}
               alt="study-logo"
             />

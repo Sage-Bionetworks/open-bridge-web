@@ -11,12 +11,14 @@ import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
 import { ReactComponent as PhoneBottomImg } from '../../../assets/appdesign/phone_buttons.svg'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
+import StudyService from '../../../services/study.service'
 import { ThemeType } from '../../../style/theme'
 import {
   Contact,
   Study,
   StudyBuilderComponentProps,
   WelcomeScreenData,
+  FileRevision,
 } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
@@ -216,7 +218,13 @@ const PhoneTopBar: React.FunctionComponent<{
   color?: string
   previewFile?: PreviewFile
   isUsingDefaultMessage?: boolean
-}> = ({ color = 'transparent', previewFile, isUsingDefaultMessage }) => {
+  studyLogoUrl?: string
+}> = ({
+  color = 'transparent',
+  previewFile,
+  isUsingDefaultMessage,
+  studyLogoUrl,
+}) => {
   const classes = useStyles()
   return (
     <div
@@ -224,9 +232,9 @@ const PhoneTopBar: React.FunctionComponent<{
       style={{ backgroundColor: isUsingDefaultMessage ? '#BCD5E4' : color }}
     >
       {!isUsingDefaultMessage ? (
-        previewFile && (
+        (previewFile || studyLogoUrl) && (
           <img
-            src={previewFile.body}
+            src={studyLogoUrl || previewFile!.body}
             style={{ height: `${imgHeight}px` }}
             alt="study-logo"
           />
@@ -259,6 +267,7 @@ const AppDesign: React.FunctionComponent<
   const classes = useStyles()
 
   const [previewFile, setPreviewFile] = useState<PreviewFile>()
+  const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
   const [
     irbNameSameAsInstitution,
@@ -266,7 +275,6 @@ const AppDesign: React.FunctionComponent<
   ] = useState<boolean>(true)
 
   const [appBackgroundColor, setAppBackgroundColor] = useState('#6040FF')
-  const [logo, setLogo] = useState('')
 
   const SimpleTextInputStyles = {
     fontSize: '15px',
@@ -297,9 +305,39 @@ const AppDesign: React.FunctionComponent<
     if (!event.target.files) {
       return
     }
+    setIsSettingStudyLogo(true)
     const file = event.target.files[0]
     const previewForImage = getPreviewForImage(file)
+    const response = (await StudyService.editStudyLogo(
+      study.identifier,
+      token!,
+      previewForImage.size,
+      previewForImage.name,
+      previewForImage.body || '',
+      file.type,
+    )) as FileRevision
+    const result2 = await StudyService.uploadToAWS(
+      response.uploadURL!,
+      previewForImage.file,
+      file.type,
+    )
+    if (result2.ok) {
+      const result3 = (await StudyService.finishLogoUpload(
+        study.identifier,
+        token!,
+        response.createdOn!,
+      )) as Study
+      const updatedStudy = {
+        ...study,
+        studyLogoUrl: result3.studyLogoUrl,
+        version: result3.version,
+      } as Study
+      onUpdate(updatedStudy)
+    } else {
+      console.log('something broke')
+    }
     setPreviewFile(previewForImage)
+    setIsSettingStudyLogo(false)
   }
 
   const saveInfo = () => {
@@ -388,9 +426,6 @@ const AppDesign: React.FunctionComponent<
     )
     if (study.colorScheme?.background) {
       setAppBackgroundColor(study.colorScheme?.background)
-    }
-    if (study.studyLogoUrl) {
-      setLogo(study.studyLogoUrl)
     }
   }, [])
 
@@ -491,6 +526,8 @@ const AppDesign: React.FunctionComponent<
                   previewFile={previewFile}
                   imgHeight={imgHeight}
                   saveLoader={saveLoader}
+                  studyLogoUrl={study.studyLogoUrl}
+                  isSettingStudyLogo={isSettingStudyLogo}
                 />
                 <ColorPickerSection
                   appBackgroundColor={appBackgroundColor}
@@ -576,6 +613,7 @@ const AppDesign: React.FunctionComponent<
                   study.clientData.welcomeScreenData?.isUsingDefaultMessage ||
                   false
                 }
+                studyLogoUrl={study.studyLogoUrl}
               />
               <WelcomeScreenPhoneContent
                 welcomeScreenContent={
@@ -709,6 +747,7 @@ const AppDesign: React.FunctionComponent<
               </Box>
               <StudyPageTopPhoneContent
                 previewFile={previewFile}
+                studyLogoUrl={study.studyLogoUrl}
                 isUsingDefaultMessage={
                   study.clientData.welcomeScreenData?.isUsingDefaultMessage ||
                   false

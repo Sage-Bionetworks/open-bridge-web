@@ -160,6 +160,20 @@ export type WelcomeScreenData = {
   isUsingDefaultMessage: boolean
 }
 
+export type FileRevision = {
+  name: string
+  mimeType: string
+  fileGuid?: string
+  description?: string
+  // date-time
+  createdOn?: string
+  size?: number
+  uploadURL?: string
+  downloadURL?: string
+  status?: "pending" | "available"
+  type?: string
+}
+
 export type Contact = {
   name: string
   role: string

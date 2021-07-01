@@ -20,6 +20,8 @@ type UploadStudyLogoSection = {
   imgHeight: number
   saveLoader: boolean
   previewFile: PreviewFile | undefined
+  studyLogoUrl?: string
+  isSettingStudyLogo: boolean
 }
 
 const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = ({
@@ -27,6 +29,8 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = 
   imgHeight,
   saveLoader,
   previewFile,
+  studyLogoUrl,
+  isSettingStudyLogo,
 }) => {
   const classes = useStyles()
   return (
@@ -47,9 +51,9 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = 
             border: '1px solid black',
           }}
         >
-          {previewFile && (
+          {(previewFile || studyLogoUrl) && (
             <img
-              src={previewFile.body}
+              src={studyLogoUrl || previewFile!.body}
               style={{ height: `${imgHeight}px`, width: '310px' }}
             />
           )}
@@ -61,23 +65,26 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = 
           <CircularProgress color="primary" />
         </Box>
       )}
-
-      <Button
-        variant="contained"
-        component="label"
-        color="primary"
-        className={classes.uploadButton}
-      >
-        Upload
-        <input
-          accept="image/*,.pdf,.doc,.docx,.jpg,.png, .txt"
-          id="file"
-          multiple={false}
-          type="file"
-          onChange={e => handleFileChange(e)}
-          style={{ display: 'none' }}
-        />
-      </Button>
+      {isSettingStudyLogo ? (
+        <CircularProgress color="primary" className={classes.uploadButton} />
+      ) : (
+        <Button
+          variant="contained"
+          component="label"
+          color="primary"
+          className={classes.uploadButton}
+        >
+          Upload
+          <input
+            accept="image/*,.pdf,.jpg,.png,.svg"
+            id="file"
+            multiple={false}
+            type="file"
+            onChange={e => handleFileChange(e)}
+            style={{ display: 'none' }}
+          />
+        </Button>
+      )}
     </Subsection>
   )
 }

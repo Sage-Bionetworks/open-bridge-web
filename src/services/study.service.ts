@@ -7,10 +7,11 @@ import {
   StartEventId,
   StudySession,
 } from '../types/scheduling'
-import { Study } from '../types/types'
+import { Study, FileRevision } from '../types/types'
 import AssessmentService from './assessment.service'
 
 const StudyService = {
+  editStudyLogo,
   getStudies,
   getStudy,
   createStudy,
@@ -22,6 +23,8 @@ const StudyService = {
   getStudyScheduleTimeline,
   saveStudySchedule,
   createEmptyStudySession,
+  uploadToAWS,
+  finishLogoUpload,
 }
 
 export const DEFAULT_NOTIFICATION: ScheduleNotification = {
@@ -54,6 +57,48 @@ function createEmptyStudySession(
     notifications: [{ ...DEFAULT_NOTIFICATION }],
   }
   return studySession
+}
+
+async function editStudyLogo(
+  studyId: string,
+  token: string,
+  fileSize: number,
+  fileName: string,
+  fileBody: string,
+  mimeType: string,
+) {
+  const endpoint = `${constants.endpoints.studies}/${studyId}/logo`
+  const body = {
+    name: fileName,
+    mimeType: mimeType,
+    size: fileSize,
+    fileGuid: fileBody,
+  } as FileRevision
+  const result = await callEndpoint(endpoint, 'POST', body, token)
+  return result.data
+}
+
+async function uploadToAWS(uploadURL: string, file: File, mimeType: string) {
+  let headers: HeadersInit = new Headers()
+  headers.set('Content-Type', mimeType)
+  headers.set('Content-Disposition', 'inline')
+  const config = {
+    method: 'PUT',
+    headers,
+    body: file,
+  }
+  const response = await fetch(uploadURL, config)
+  return response
+}
+
+async function finishLogoUpload(
+  studyId: string,
+  token: string,
+  createdOn: string,
+) {
+  const endpoint = `${constants.endpoints.studies}/${studyId}/logo/${createdOn}`
+  const result = await callEndpoint(endpoint, 'POST', {}, token)
+  return result.data
 }
 
 async function getStudies(token: string): Promise<Study[]> {
