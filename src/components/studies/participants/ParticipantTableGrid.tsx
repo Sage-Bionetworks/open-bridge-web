@@ -12,9 +12,14 @@ import {
   GridCellParams,
   GridCellValue,
   GridColDef,
+  GridColumnMenuContainer,
+  GridColumnMenuProps,
+  GridColumnsMenuItem,
   GridOverlay,
   GridRowSelectedParams,
+  GridToolbarContainer,
   GridValueGetterParams,
+  HideGridColMenuItem,
 } from '@material-ui/data-grid'
 import _ from 'lodash'
 import React, { FunctionComponent, ReactNode } from 'react'
@@ -22,6 +27,8 @@ import Pluralize from 'react-pluralize'
 import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
 import JoinedCheckSymbol from '../../../assets/participants/joined_check_mark.svg'
 import JoinedPhoneSymbol from '../../../assets/participants/joined_phone_icon.svg'
+import { ReactComponent as HidePhoneIcon } from '../../../assets/participants/phone_hide_icon.svg'
+import { ReactComponent as ShowPhoneIcon } from '../../../assets/participants/phone_show_icon.svg'
 import { ReactComponent as WithdrawIcon } from '../../../assets/withdraw.svg'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
 import ParticipantService, {
@@ -59,6 +66,186 @@ const useStyles = makeStyles(theme => ({
     fontStyle: 'italic',
   },
 }))
+
+/**********************************************   SUBCOMPONENTS ****************************************************/
+
+//---------------------- cell for displaying phone
+const PhoneCell: FunctionComponent<{ params: GridCellParams }> = ({
+  params,
+}) => {
+  const [isHidden, setIsHidden] = React.useState(true)
+  const getValPhone = (column: string): string | undefined => {
+    const result = params.getValue(params.id, column)?.toString()
+    return result?.replace('+1', '') || ''
+  }
+  const onClick = async () => {
+    setIsHidden(prev => !prev)
+
+    try {
+    } catch (e) {
+      console.log('Error in  onClick', e.message)
+    }
+  }
+
+  return params.formattedValue ? (
+    <div style={{ textAlign: 'center', width: '100%' }}>
+      {!isHidden && params.formattedValue}
+      <Button onClick={onClick} style={{ minWidth: 'auto', margin: '0 auto' }}>
+        {isHidden ? <ShowPhoneIcon /> : <HidePhoneIcon />}
+      </Button>
+    </div>
+  ) : (
+    <></>
+  )
+}
+
+//---------------------- cell for editing participant
+
+const EditCell: FunctionComponent<{
+  params: GridCellParams
+  studyId: string
+  token: string
+  onSetParticipantToEdit: Function
+}> = ({ params, studyId, token, onSetParticipantToEdit }) => {
+  const onClick = async () => {
+    try {
+      const getValString = (column: string): string | undefined => {
+        const result = params.getValue(params.id, column)?.toString()
+
+        return result
+      }
+
+      const getValDate = (column: string): Date | undefined => {
+        const result = params.getValue(params.id, column)?.toString()
+        const d = result ? new Date(result) : undefined
+        return d
+      }
+
+      const getValPhone = (column: string): string | undefined => {
+        const result = params.getValue(params.id, column)?.toString()
+        return result?.replace('+1', '') || ''
+      }
+
+      const participant: EditableParticipantData = {
+        clinicVisitDate: getValDate('clinicVisitDate'),
+        note: getValString('note'),
+        externalId: getValString('externalId'),
+        phoneNumber: getValPhone('phone'),
+      }
+
+      const event = await ParticipantService.getRequestInfoForParticipant(
+        studyId,
+        token!,
+        getValString('id')!,
+      )
+
+      const hasSignedIn = event.signedInOn !== undefined
+
+      onSetParticipantToEdit({
+        id: getValString('id')!,
+        participant,
+        hasSignedIn,
+        shouldWithdraw: false,
+      })
+    } catch (e) {
+      console.log('Error in  onClick', e.message)
+    }
+  }
+  const isWithdrawn =
+    params.row['externalId'] === EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING
+  return !isWithdrawn ? (
+    <IconButton
+      onClick={onClick}
+      aria-label="edit participant"
+      component="span"
+    >
+      <PencilIcon />
+    </IconButton>
+  ) : (
+    <></>
+  )
+}
+
+//---------------------- selection control
+
+const SelectionControl: FunctionComponent<{
+  selectionModel: string[]
+  isAllSelected: boolean
+  totalParticipants: number
+  onSelectAllPage: Function
+  onSelectAll: Function
+  onDeselect: Function
+  selectionType: any
+}> = ({
+  selectionModel,
+  isAllSelected,
+  totalParticipants,
+  selectionType,
+  onSelectAll,
+  onSelectAllPage,
+  onDeselect,
+}) => {
+  const classes = useStyles()
+
+  return (
+    <GridToolbarContainer>
+      <div style={{ position: 'relative' }}>
+        <Box
+          className={classes.selectionDisplay}
+          style={{
+            visibility: !selectionModel?.length ? 'hidden' : 'visible',
+          }}
+        >
+          {`${isAllSelected ? 'All ' : ''}`}
+          <Pluralize
+            singular={'participant'}
+            count={isAllSelected ? totalParticipants : selectionModel.length}
+          />{' '}
+          selected
+        </Box>
+
+        <div
+          style={{
+            position: 'absolute',
+            zIndex: 11,
+            top: 40,
+            left: 0,
+            backgroundColor: '#fff',
+          }}
+        >
+          <SelectAll
+            selectionType={selectionType}
+            allText={`Select all ${totalParticipants}`}
+            allPageText="Select this page"
+            onSelectAllPage={onSelectAllPage}
+            onDeselect={onDeselect}
+            onSelectAll={onSelectAll}
+          ></SelectAll>
+        </div>
+      </div>
+    </GridToolbarContainer>
+  )
+}
+
+export function CustomColumnMenuComponent(
+  props: GridColumnMenuProps & { color: string },
+) {
+  const classes = useStyles()
+  const { hideMenu, currentColumn, color, ...other } = props
+  // more info here: https://material-ui.com/components/data-grid/components/#components
+  /*if (currentColumn.field === 'name') { }*/
+
+  return (
+    <GridColumnMenuContainer
+      hideMenu={hideMenu}
+      currentColumn={currentColumn}
+      {...other}
+    >
+      <GridColumnsMenuItem onClick={hideMenu} column={currentColumn!} />
+      <HideGridColMenuItem onClick={hideMenu} column={currentColumn!} />
+    </GridColumnMenuContainer>
+  )
+}
 
 function getPhone(params: GridValueGetterParams) {
   if (params.value) {
@@ -148,11 +335,17 @@ const WITHDRAWN_PARTICIPANT_COLUMNS: GridColDef[] = [
   { field: 'withdrawalNote', headerName: 'Withdrawal note', flex: 1 },
 ]
 
-const phoneColumn = {
+const phoneColumn: GridColDef = {
   field: 'phone',
   headerName: 'Phone Number',
   flex: 1,
   valueGetter: getPhone,
+
+  disableClickEventBubbling: true,
+
+  renderCell: (params: GridCellParams) => {
+    return <PhoneCell params={params}></PhoneCell>
+  },
 }
 
 export const EditDialogTitle: FunctionComponent<{
@@ -230,65 +423,14 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     headerName: 'Action',
     disableClickEventBubbling: true,
 
-    renderCell: (params: GridCellParams) => {
-      const onClick = async () => {
-        try {
-          const getValString = (column: string): string | undefined => {
-            const result = params.getValue(params.id, column)?.toString()
-
-            return result
-          }
-
-          const getValDate = (column: string): Date | undefined => {
-            const result = params.getValue(params.id, column)?.toString()
-            const d = result ? new Date(result) : undefined
-            return d
-          }
-
-          const getValPhone = (column: string): string | undefined => {
-            const result = params.getValue(params.id, column)?.toString()
-            return result?.replace('+1', '') || ''
-          }
-
-          const participant: EditableParticipantData = {
-            clinicVisitDate: getValDate('clinicVisitDate'),
-            note: getValString('note'),
-            externalId: getValString('externalId'),
-            phoneNumber: getValPhone('phone'),
-          }
-
-          const event = await ParticipantService.getRequestInfoForParticipant(
-            studyId,
-            token!,
-            getValString('id')!,
-          )
-
-          const hasSignedIn = event.signedInOn !== undefined
-
-          setParticipantToEdit({
-            id: getValString('id')!,
-            participant,
-            hasSignedIn,
-            shouldWithdraw: false,
-          })
-        } catch (e) {
-          console.log('Error in  onClick', e.message)
-        }
-      }
-      const isWithdrawn =
-        params.row['externalId'] === EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING
-      return !isWithdrawn ? (
-        <IconButton
-          onClick={onClick}
-          aria-label="edit participant"
-          component="span"
-        >
-          <PencilIcon />
-        </IconButton>
-      ) : (
-        <></>
-      )
-    },
+    renderCell: (params: GridCellParams) => (
+      <EditCell
+        params={params}
+        studyId={studyId}
+        token={token!}
+        onSetParticipantToEdit={setParticipantToEdit}
+      />
+    ),
   }
 
   const participantColumns =
@@ -305,6 +447,11 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
       participantColumns.push(editColumn)
     }
   }
+
+  participantColumns.forEach(c => {
+    c.sortable = false
+    c.filterable = false
+  })
 
   const [selectionModel, setSelectionModel] = React.useState<string[]>([
     ...selectedParticipantIds,
@@ -358,57 +505,26 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               }}
               selectionModel={selectionModel}
               components={{
-                Header: () => (
-                  <div style={{ position: 'relative' }}>
-                    <Box
-                      className={classes.selectionDisplay}
-                      style={{
-                        visibility: !selectionModel?.length
-                          ? 'hidden'
-                          : 'visible',
-                      }}
-                    >
-                      {`${isAllSelected ? 'All ' : ''}`}
-                      <Pluralize
-                        singular={'participant'}
-                        count={
-                          isAllSelected
-                            ? totalParticipants
-                            : selectionModel.length
-                        }
-                      />{' '}
-                      selected
-                    </Box>
+                ColumnMenu: CustomColumnMenuComponent,
 
-                    <div
-                      style={{
-                        position: 'absolute',
-                        zIndex: 11,
-                        top: 40,
-                        left: 0,
-                        backgroundColor: '#fff',
-                      }}
-                    >
-                      <SelectAll
-                        selectionType={getSelectionType()}
-                        allText={`Select all ${totalParticipants}`}
-                        allPageText="Select this page"
-                        onSelectAllPage={() => {
-                          const ids = rows.map(row => row.id)
-                          onRowSelected(
-                            _.uniq([...selectionModel, ...ids]),
-                            false,
-                          )
-                        }}
-                        onDeselect={() => onRowSelected([], false)}
-                        onSelectAll={() => {
-                          const ids = rows.map(row => row.id)
-                          onRowSelected(ids, true)
-                        }}
-                      ></SelectAll>
-                    </div>
-                  </div>
+                Toolbar: () => (
+                  <SelectionControl
+                    selectionModel={selectionModel}
+                    isAllSelected={isAllSelected}
+                    totalParticipants={totalParticipants}
+                    selectionType={getSelectionType()}
+                    onSelectAllPage={() => {
+                      const ids = rows.map(row => row.id)
+                      onRowSelected(_.uniq([...selectionModel, ...ids]), false)
+                    }}
+                    onDeselect={() => onRowSelected([], false)}
+                    onSelectAll={() => {
+                      const ids = rows.map(row => row.id)
+                      onRowSelected(ids, true)
+                    }}
+                  />
                 ),
+
                 Footer: () => <>{children}</>,
                 NoRowsOverlay: () => (
                   <GridOverlay>
