@@ -4,7 +4,7 @@ import {
   CircularProgress,
   Dialog,
   IconButton,
-  Paper
+  Paper,
 } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import {
@@ -14,7 +14,7 @@ import {
   GridColDef,
   GridOverlay,
   GridRowSelectedParams,
-  GridValueGetterParams
+  GridValueGetterParams,
 } from '@material-ui/data-grid'
 import _ from 'lodash'
 import React, { FunctionComponent, ReactNode } from 'react'
@@ -24,21 +24,22 @@ import JoinedCheckSymbol from '../../../assets/participants/joined_check_mark.sv
 import JoinedPhoneSymbol from '../../../assets/participants/joined_phone_icon.svg'
 import { ReactComponent as WithdrawIcon } from '../../../assets/withdraw.svg'
 import { useUserSessionDataState } from '../../../helpers/AuthContext'
-import ParticipantService from '../../../services/participants.service'
+import ParticipantService, {
+  EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING,
+} from '../../../services/participants.service'
 import { latoFont } from '../../../style/theme'
 import {
   EditableParticipantData,
-
   ParticipantAccountSummary,
   ParticipantActivityType,
-  RequestStatus
+  RequestStatus,
 } from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import HideWhen from '../../widgets/HideWhen'
 import SelectAll, { SelectionType } from '../../widgets/SelectAll'
 import {
   EditParticipantForm,
-  WithdrawParticipantForm
+  WithdrawParticipantForm,
 } from './ParticipantForms'
 
 const useStyles = makeStyles(theme => ({
@@ -158,8 +159,12 @@ export const EditDialogTitle: FunctionComponent<{
   onCancel: Function
   shouldWithdraw?: boolean
   batchEdit?: boolean
-}> = ({ onCancel, shouldWithdraw,batchEdit }) => {
-  const title = shouldWithdraw ? 'Withdraw' : !batchEdit ? 'Edit Participant Detail' : "Batch Edit Multiple Participant Details "
+}> = ({ onCancel, shouldWithdraw, batchEdit }) => {
+  const title = shouldWithdraw
+    ? 'Withdraw'
+    : !batchEdit
+    ? 'Edit Participant Detail'
+    : 'Batch Edit Multiple Participant Details '
   const Icon = shouldWithdraw ? WithdrawIcon : PencilIcon
 
   return (
@@ -176,7 +181,7 @@ export type ParticipantTableGridProps = {
   isAllSelected: boolean
   rows: ParticipantAccountSummary[]
   selectedParticipantIds: string[]
-  isEnrolledById: boolean,
+  isEnrolledById: boolean
   gridType: ParticipantActivityType
   studyId: string
   totalParticipants: number
@@ -270,8 +275,9 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
           console.log('Error in  onClick', e.message)
         }
       }
-
-      return (
+      const isWithdrawn =
+        params.row['externalId'] === EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING
+      return !isWithdrawn ? (
         <IconButton
           onClick={onClick}
           aria-label="edit participant"
@@ -279,6 +285,8 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
         >
           <PencilIcon />
         </IconButton>
+      ) : (
+        <></>
       )
     },
   }
@@ -333,7 +341,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               density="standard"
               columns={participantColumns}
               checkboxSelection
-         
               onRowSelected={(row: GridRowSelectedParams) => {
                 let model: string[] = []
                 if (row.isSelected) {
@@ -430,7 +437,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
         <HideWhen hideWhen={participantToEdit?.shouldWithdraw || false}>
           <EditParticipantForm
-            isEnrolledById = {isEnrolledById}
+            isEnrolledById={isEnrolledById}
             onCancel={() => setParticipantToEdit(undefined)}
             onOK={(note: string, cvd?: Date) => {
               onUpdateParticipant(participantToEdit?.id!, note, cvd)
@@ -452,7 +459,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             </Button>
           </EditParticipantForm>
           <WithdrawParticipantForm
-            isEnrolledById= {isEnrolledById}
+            isEnrolledById={isEnrolledById}
             onCancel={() => setParticipantToEdit(undefined)}
             onOK={(note: string) => {
               onWithdrawParticipant(participantToEdit?.id!, note)

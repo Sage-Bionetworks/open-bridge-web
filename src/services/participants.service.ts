@@ -13,6 +13,7 @@ import {
 export const CLINIC_EVENT_ID = 'clinic_visit'
 export const JOINED_EVENT_ID = 'first_sign_in'
 export const LINK_SENT_EVENT_ID = 'install_link_sent'
+export const EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING = 'withdrawn'
 
 export type ParticipantRelevantEvents = {
   clinicVisitDate: string
@@ -44,7 +45,7 @@ function makeBackendExternalId(studyId: string, externalId: string) {
 
 export function formatExternalId(studyId: string, externalId: string) {
   if (!externalId) {
-    return 'withdrawn'
+    return EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING
   }
   let forDisplay = externalId.replace(`:${studyId}`, '')
   return forDisplay.length !== 6
@@ -399,9 +400,8 @@ async function getEnrollmentById(
     )
 
     const isWithdrawn = participant.withdrawnOn !== undefined
-    const isTestUser = recordFromParticipantApi?.dataGroups?.includes(
-      'test_user',
-    )
+    const isTestUser =
+      recordFromParticipantApi?.dataGroups?.includes('test_user')
     if (participantType === 'WITHDRAWN' && (!isWithdrawn || isTestUser)) {
       return null
     }
