@@ -491,7 +491,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         onSave={() => {
                            saveStudy(builderInfo.study)
                         }}
-
                         onUpdate={(updatedStudy: Study) => {
                           setHasObjectChanged(true)
                           setData({
@@ -499,6 +498,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                             study: updatedStudy,
                           })
                         }}
+                        onError={(error: string) => setError(prev => [...prev, error])}
                       >
                         {navButtons}
                       </AppDesign>

@@ -2,7 +2,6 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, Button, CircularProgress } from '@material-ui/core'
 import Subsection from './Subsection'
-import { PreviewFile } from './AppDesign'
 import { bytesToSize } from '../../../helpers/utility'
 
 const useStyles = makeStyles(theme => ({
@@ -19,23 +18,23 @@ type UploadStudyLogoSection = {
   handleFileChange: Function
   imgHeight: number
   saveLoader: boolean
-  previewFile: PreviewFile | undefined
+  studyLogoUrl?: string
+  isSettingStudyLogo: boolean
 }
 
 const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = ({
   handleFileChange,
   imgHeight,
   saveLoader,
-  previewFile,
+  studyLogoUrl,
+  isSettingStudyLogo,
 }) => {
   const classes = useStyles()
   return (
     <Subsection heading="Upload Study Logo">
       <Box>
         <Box className={classes.studyLogoUploadText}>
-          {`Study Logo: 320px x 80px ${
-            previewFile ? bytesToSize(previewFile.size) : ''
-          }`}
+          All images will be compressed to: 320px x 80px
         </Box>
 
         <Box
@@ -47,9 +46,9 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = 
             border: '1px solid black',
           }}
         >
-          {previewFile && (
+          {studyLogoUrl && (
             <img
-              src={previewFile.body}
+              src={studyLogoUrl}
               style={{ height: `${imgHeight}px`, width: '310px' }}
             />
           )}
@@ -61,23 +60,26 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = 
           <CircularProgress color="primary" />
         </Box>
       )}
-
-      <Button
-        variant="contained"
-        component="label"
-        color="primary"
-        className={classes.uploadButton}
-      >
-        Upload
-        <input
-          accept="image/*,.pdf,.doc,.docx,.jpg,.png, .txt"
-          id="file"
-          multiple={false}
-          type="file"
-          onChange={e => handleFileChange(e)}
-          style={{ display: 'none' }}
-        />
-      </Button>
+      {isSettingStudyLogo ? (
+        <CircularProgress color="primary" className={classes.uploadButton} />
+      ) : (
+        <Button
+          variant="contained"
+          component="label"
+          color="primary"
+          className={classes.uploadButton}
+        >
+          Upload
+          <input
+            accept="image/*,.pdf,.jpg,.png,.svg"
+            id="file"
+            multiple={false}
+            type="file"
+            onChange={e => handleFileChange(e)}
+            style={{ display: 'none' }}
+          />
+        </Button>
+      )}
     </Subsection>
   )
 }
