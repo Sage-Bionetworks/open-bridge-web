@@ -75,7 +75,6 @@ type StudyPageTopPhoneContentProps = {
   isUsingDefaultMessage: boolean
   imgHeight: number
   appColor: string
-  previewFile: PreviewFile | undefined
   studyTitle: string
   studySummaryBody: string
   leadInvestigator: Contact
@@ -87,7 +86,6 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
   isUsingDefaultMessage,
   imgHeight,
   appColor,
-  previewFile,
   studyTitle,
   studySummaryBody,
   leadInvestigator,
@@ -104,9 +102,9 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         }}
       >
         {!isUsingDefaultMessage ? (
-          (previewFile || studyLogoUrl) && (
+          studyLogoUrl && (
             <img
-              src={studyLogoUrl || previewFile!.body}
+              src={studyLogoUrl}
               style={{ height: `${imgHeight}px` }}
               alt="study-logo"
             />

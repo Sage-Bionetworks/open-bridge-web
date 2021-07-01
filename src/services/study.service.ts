@@ -23,8 +23,6 @@ const StudyService = {
   getStudyScheduleTimeline,
   saveStudySchedule,
   createEmptyStudySession,
-  uploadToAWS,
-  finishLogoUpload,
 }
 
 export const DEFAULT_NOTIFICATION: ScheduleNotification = {
@@ -66,39 +64,47 @@ async function editStudyLogo(
   fileName: string,
   fileBody: string,
   mimeType: string,
+  file: File,
 ) {
-  const endpoint = `${constants.endpoints.studies}/${studyId}/logo`
-  const body = {
-    name: fileName,
-    mimeType: mimeType,
-    size: fileSize,
-    fileGuid: fileBody,
-  } as FileRevision
-  const result = await callEndpoint(endpoint, 'POST', body, token)
-  return result.data
-}
-
-async function uploadToAWS(uploadURL: string, file: File, mimeType: string) {
-  let headers: HeadersInit = new Headers()
-  headers.set('Content-Type', mimeType)
-  headers.set('Content-Disposition', 'inline')
-  const config = {
-    method: 'PUT',
-    headers,
-    body: file,
+  try {
+    // upload to the backend
+    const uploadToBackendEndpoint = `${constants.endpoints.studies}/${studyId}/logo`
+    const bodyForUploadBackendEndpoint = {
+      name: fileName,
+      mimeType: mimeType,
+      size: fileSize,
+      fileGuid: fileBody,
+    } as FileRevision
+    const uploadResult = await callEndpoint(
+      uploadToBackendEndpoint,
+      'POST',
+      bodyForUploadBackendEndpoint,
+      token,
+    )
+    const uploadData = uploadResult.data as FileRevision
+    // upload to aws
+    let headers: HeadersInit = new Headers()
+    headers.set('Content-Type', mimeType)
+    headers.set('Content-Disposition', 'inline')
+    const config = {
+      method: 'PUT',
+      headers,
+      body: file,
+    }
+    const uploadURL = uploadData.uploadURL!
+    await fetch(uploadURL, config)
+    // Tell the backend that we have successfully finished uploading file to aws
+    const successfulUploadEndpoint = `${constants.endpoints.studies}/${studyId}/logo/${uploadData.createdOn}`
+    const successulyUploadResponse = await callEndpoint(
+      successfulUploadEndpoint,
+      'POST',
+      {},
+      token,
+    )
+    return successulyUploadResponse.data
+  } catch (error) {
+    throw error
   }
-  const response = await fetch(uploadURL, config)
-  return response
-}
-
-async function finishLogoUpload(
-  studyId: string,
-  token: string,
-  createdOn: string,
-) {
-  const endpoint = `${constants.endpoints.studies}/${studyId}/logo/${createdOn}`
-  const result = await callEndpoint(endpoint, 'POST', {}, token)
-  return result.data
 }
 
 async function getStudies(token: string): Promise<Study[]> {

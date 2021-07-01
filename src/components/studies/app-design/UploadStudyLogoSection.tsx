@@ -2,7 +2,6 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, Button, CircularProgress } from '@material-ui/core'
 import Subsection from './Subsection'
-import { PreviewFile } from './AppDesign'
 import { bytesToSize } from '../../../helpers/utility'
 
 const useStyles = makeStyles(theme => ({
@@ -19,7 +18,6 @@ type UploadStudyLogoSection = {
   handleFileChange: Function
   imgHeight: number
   saveLoader: boolean
-  previewFile: PreviewFile | undefined
   studyLogoUrl?: string
   isSettingStudyLogo: boolean
 }
@@ -28,7 +26,6 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = 
   handleFileChange,
   imgHeight,
   saveLoader,
-  previewFile,
   studyLogoUrl,
   isSettingStudyLogo,
 }) => {
@@ -37,9 +34,7 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = 
     <Subsection heading="Upload Study Logo">
       <Box>
         <Box className={classes.studyLogoUploadText}>
-          {`Study Logo: 320px x 80px ${
-            previewFile ? bytesToSize(previewFile.size) : ''
-          }`}
+          {`Study Logo: 320px x 80px`}
         </Box>
 
         <Box
@@ -51,9 +46,9 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = 
             border: '1px solid black',
           }}
         >
-          {(previewFile || studyLogoUrl) && (
+          {studyLogoUrl && (
             <img
-              src={studyLogoUrl || previewFile!.body}
+              src={studyLogoUrl}
               style={{ height: `${imgHeight}px`, width: '310px' }}
             />
           )}

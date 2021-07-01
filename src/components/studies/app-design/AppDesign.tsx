@@ -202,6 +202,7 @@ export type PreviewFile = {
 export interface AppDesignProps {
   onSave: Function
   study: Study
+  onError: Function
 }
 
 function getPreviewForImage(file: File): PreviewFile {
@@ -216,15 +217,9 @@ function getPreviewForImage(file: File): PreviewFile {
 
 const PhoneTopBar: React.FunctionComponent<{
   color?: string
-  previewFile?: PreviewFile
   isUsingDefaultMessage?: boolean
   studyLogoUrl?: string
-}> = ({
-  color = 'transparent',
-  previewFile,
-  isUsingDefaultMessage,
-  studyLogoUrl,
-}) => {
+}> = ({ color = 'transparent', isUsingDefaultMessage, studyLogoUrl }) => {
   const classes = useStyles()
   return (
     <div
@@ -232,9 +227,9 @@ const PhoneTopBar: React.FunctionComponent<{
       style={{ backgroundColor: isUsingDefaultMessage ? '#BCD5E4' : color }}
     >
       {!isUsingDefaultMessage ? (
-        (previewFile || studyLogoUrl) && (
+        studyLogoUrl && (
           <img
-            src={studyLogoUrl || previewFile!.body}
+            src={studyLogoUrl}
             style={{ height: `${imgHeight}px` }}
             alt="study-logo"
           />
@@ -259,6 +254,7 @@ const AppDesign: React.FunctionComponent<
   onUpdate,
   onSave,
   study,
+  onError,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
@@ -266,7 +262,6 @@ const AppDesign: React.FunctionComponent<
 
   const classes = useStyles()
 
-  const [previewFile, setPreviewFile] = useState<PreviewFile>()
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
   const [
@@ -308,36 +303,27 @@ const AppDesign: React.FunctionComponent<
     setIsSettingStudyLogo(true)
     const file = event.target.files[0]
     const previewForImage = getPreviewForImage(file)
-    const response = (await StudyService.editStudyLogo(
-      study.identifier,
-      token!,
-      previewForImage.size,
-      previewForImage.name,
-      previewForImage.body || '',
-      file.type,
-    )) as FileRevision
-    const result2 = await StudyService.uploadToAWS(
-      response.uploadURL!,
-      previewForImage.file,
-      file.type,
-    )
-    if (result2.ok) {
-      const result3 = (await StudyService.finishLogoUpload(
+    try {
+      const uploadResponse = (await StudyService.editStudyLogo(
         study.identifier,
         token!,
-        response.createdOn!,
+        previewForImage.size,
+        previewForImage.name,
+        previewForImage.body || '',
+        file.type,
+        previewForImage.file,
       )) as Study
       const updatedStudy = {
         ...study,
-        studyLogoUrl: result3.studyLogoUrl,
-        version: result3.version,
+        studyLogoUrl: uploadResponse.studyLogoUrl,
+        version: uploadResponse.version,
       } as Study
       onUpdate(updatedStudy)
-    } else {
-      console.log('something broke')
+    } catch (error) {
+      onError(error)
+    } finally {
+      setIsSettingStudyLogo(false)
     }
-    setPreviewFile(previewForImage)
-    setIsSettingStudyLogo(false)
   }
 
   const saveInfo = () => {
@@ -523,7 +509,6 @@ const AppDesign: React.FunctionComponent<
               <ol className={classes.steps}>
                 <UploadStudyLogoSection
                   handleFileChange={handleFileChange}
-                  previewFile={previewFile}
                   imgHeight={imgHeight}
                   saveLoader={saveLoader}
                   studyLogoUrl={study.studyLogoUrl}
@@ -608,7 +593,6 @@ const AppDesign: React.FunctionComponent<
               ]}
               <PhoneTopBar
                 color={appBackgroundColor}
-                previewFile={previewFile}
                 isUsingDefaultMessage={
                   study.clientData.welcomeScreenData?.isUsingDefaultMessage ||
                   false
@@ -746,7 +730,6 @@ const AppDesign: React.FunctionComponent<
                 />
               </Box>
               <StudyPageTopPhoneContent
-                previewFile={previewFile}
                 studyLogoUrl={study.studyLogoUrl}
                 isUsingDefaultMessage={
                   study.clientData.welcomeScreenData?.isUsingDefaultMessage ||
