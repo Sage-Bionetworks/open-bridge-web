@@ -82,7 +82,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginLeft: theme.spacing(-0.5),
   },
   disabledElement: {
-    opacity: 0.7,
+    opacity: 0.3,
   },
 }))
 
