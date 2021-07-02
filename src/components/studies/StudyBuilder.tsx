@@ -10,7 +10,7 @@ import { useUserSessionDataState } from '../../helpers/AuthContext'
 import {
   StudyInfoData,
   useStudyInfoDataDispatch,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
 import { setBodyClass } from '../../helpers/utility'
 import StudyService from '../../services/study.service'
@@ -20,7 +20,7 @@ import {
   Assessment,
   BackgroundRecorders,
   StringDictionary,
-  Study
+  Study,
 } from '../../types/types'
 import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
 import { MTBHeadingH1 } from '../widgets/Headings'
@@ -44,66 +44,66 @@ const subtitles: StringDictionary<string> = {
   customize: 'Customize your App',
   'enrollment-type-selector': 'Participant Study Enrollment',
   'passive-features': 'App Background Recorders ',
-  launch: 'Launch study requirements'
+  launch: 'Launch study requirements',
 }
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   mainAreaWrapper: {
     textAlign: 'center',
-    flexGrow: 1
+    flexGrow: 1,
     // backgroundColor: theme.palette.background.default
   },
   mainArea: {
     margin: '0 auto',
     minHeight: '100px',
-    overflow: 'hidden'
+    overflow: 'hidden',
 
     //backgroundColor: theme.palette.background.default,
   },
   mainAreaNormalWithLeftNav: {
     width: `1200px`,
     [theme.breakpoints.down('lg')]: {
-      width: `905px`
+      width: `905px`,
     },
 
     [theme.breakpoints.down('md')]: {
-      width: `610px`
-    }
+      width: `610px`,
+    },
   },
 
   mainAreaWideWithLeftNav: {
     width: `1600px`,
     [theme.breakpoints.down('lg')]: {
-      width: `1100px`
+      width: `1100px`,
     },
     [theme.breakpoints.down('md')]: {
-      width: `768px`
-    }
+      width: `768px`,
+    },
   },
   mainAreaNoLeftNav: {
     width: `1500px`,
     [theme.breakpoints.down('lg')]: {
-      width: '1200px' //`${(280+32) * 4 + 16 * 4}px`,
+      width: '1200px', //`${(280+32) * 4 + 16 * 4}px`,
     },
     [theme.breakpoints.down('md')]: {
-      width: `910px`
-    }
+      width: `910px`,
+    },
   },
   mainAreaWideNoLeftNav: {
     width: `1700px`,
     [theme.breakpoints.down('lg')]: {
-      width: '1200px' //`${(280+32) * 4 + 16 * 4}px`,
+      width: '1200px', //`${(280+32) * 4 + 16 * 4}px`,
     },
     [theme.breakpoints.down('md')]: {
-      width: `910px`
-    }
+      width: `910px`,
+    },
   },
   introInfoContainer: {
     textAlign: 'center',
     backgroundColor: '#FAFAFA',
     minHeight: '100vh',
-    paddingTop: theme.spacing(5)
-  }
+    paddingTop: theme.spacing(5),
+  },
 }))
 
 type StudyBuilderOwnProps = {}
@@ -138,7 +138,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
   const setData = (builderInfo: StudyInfoData) => {
     console.log('updating fn: ' + JSON.stringify(builderInfo))
-    studyDataUpdateFn({ type: 'SET_ALL', payload: builderInfo })
+    studyDataUpdateFn({
+      type: 'SET_ALL',
+      payload: builderInfo,
+    })
   }
 
   const allSessionsHaveAssessments = () => {
@@ -154,42 +157,48 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     studyId: string,
     studyName: string,
     duration: string,
-    start: StartEventId
+    start: StartEventId,
   ) => {
     const studySession = StudyService.createEmptyStudySession(start)
     let schedule: Schedule = {
       guid: '',
       name: studyId,
       duration,
-      sessions: [studySession]
+      sessions: [studySession],
     }
     const newSchedule = await StudyService.createNewStudySchedule(
       schedule,
-      token!
+      token!,
     )
 
     let updatedStudy = {
       ...builderInfo.study,
       scheduleGuid: newSchedule.guid,
-      name: studyName
+      name: studyName,
     }
     const newVersion = await StudyService.updateStudy(updatedStudy, token!)
     updatedStudy.version = newVersion
-    setData({ schedule: newSchedule, study: updatedStudy })
+    setData({
+      schedule: newSchedule,
+      study: updatedStudy,
+    })
   }
 
   const saveStudy = async (
-    study: Study = builderInfo.study
+    study: Study = builderInfo.study,
   ): Promise<Study | undefined> => {
     setHasObjectChanged(true)
     setSaveLoader(true)
 
     try {
       const newVersion = await StudyService.updateStudy(study, token!)
-      const updatedStudy = { ...study, version: newVersion }
+      const updatedStudy = {
+        ...study,
+        version: newVersion,
+      }
       setData({
         ...builderInfo,
-        study: updatedStudy
+        study: updatedStudy,
       })
       setError([])
 
@@ -200,14 +209,17 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         throw e
       }
       setError(e.message)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      })
     } finally {
       setSaveLoader(false)
     }
   }
 
   const saveStudySchedule = async (
-    updatedSchedule?: Schedule
+    updatedSchedule?: Schedule,
   ): Promise<Schedule | undefined> => {
     setError([])
     setSchedulerErrors([])
@@ -217,9 +229,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       if (!schedule || !token) {
         return undefined
       }
+
       const savedUpdatedSchedule = await StudyService.saveStudySchedule(
         schedule,
-        token
+        token,
       )
       //we have the issue that scheduler comes back from the server without assessment resources
       //so we need to copy the resources back to the new schedule object before updating.
@@ -228,7 +241,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
       const oldSessionAssessments = schedule.sessions.reduce(function (
         prev,
-        curr
+        curr,
       ) {
         if (curr.assessments) {
           return [...prev, ...curr.assessments]
@@ -241,14 +254,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       savedUpdatedSchedule.sessions.forEach(session => {
         session.assessments?.forEach(assessment => {
           assessment.resources = oldSessionAssessments.find(
-            oa => oa.guid === assessment.guid
+            oa => oa.guid === assessment.guid,
           )?.resources
         })
       })
       console.log('studyVersion in SB', savedUpdatedSchedule.version)
       setData({
         ...builderInfo,
-        schedule: savedUpdatedSchedule
+        schedule: savedUpdatedSchedule,
       })
       setHasObjectChanged(false)
       return savedUpdatedSchedule
@@ -261,13 +274,16 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       const errors = e.errors
       // This can occur when a request fails due to reasons besides bad user input.
       if (!errors || !entity) {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth',
+        })
         setError(prev => [...prev, e.message])
         return undefined
       }
       const errorObject = {
         entity: entity,
-        errors: errors
+        errors: errors,
       }
       setSchedulerErrors(prev => [...prev, errorObject])
       return undefined
@@ -350,13 +366,13 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           onContinue={(
             studyName: string,
             duration: string,
-            startEventId: StartEventId
+            startEventId: StartEventId,
           ) => {
             createScheduleAndNameStudy(
               builderInfo.study.identifier,
               studyName,
               duration,
-              startEventId
+              startEventId,
             )
           }}
         ></IntroInfo>
@@ -371,7 +387,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         open && ['customize', 'scheduler'].includes(section),
       [classes.mainAreaNoLeftNav]: !open,
       [classes.mainAreaWideNoLeftNav]:
-        !open && ['customize', 'scheduler'].includes(section)
+        !open && ['customize', 'scheduler'].includes(section),
     })
   }
 
@@ -383,11 +399,23 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>
         </Box>
       </Box>
-      <span style={{ fontSize: '9px', position: 'absolute', right: '0' }}>
+      <span
+        style={{
+          fontSize: '9px',
+          position: 'absolute',
+          right: '0',
+        }}
+      >
         {' '}
         {hasObjectChanged ? 'object changed' : 'no change'}
       </span>
-      <Container maxWidth="xl" style={{ height: '100vh', padding: '0' }}>
+      <Container
+        maxWidth="xl"
+        style={{
+          height: '100vh',
+          padding: '0',
+        }}
+      >
         <Box paddingTop={2} display="flex" position="relative">
           <StudyLeftNav
             open={open}
@@ -410,15 +438,29 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                   width: '2rem',
                   position: 'absolute',
                   top: '30px',
-                  left: '50%'
+                  left: '50%',
                 }}
               ></LoadingComponent>
               {!_.isEmpty(error) && (
                 <Alert variant="outlined" color="error">
                   {Array.isArray(error) ? (
-                    error.map(e => <div style={{ textAlign: 'left' }}>{e}</div>)
+                    error.map(e => (
+                      <div
+                        style={{
+                          textAlign: 'left',
+                        }}
+                      >
+                        {e}
+                      </div>
+                    ))
                   ) : (
-                    <div style={{ textAlign: 'left' }}>{error}</div>
+                    <div
+                      style={{
+                        textAlign: 'left',
+                      }}
+                    >
+                      {error}
+                    </div>
                   )}
                 </Alert>
               )}
@@ -442,7 +484,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                             setHasObjectChanged(true)
                             setData({
                               ...builderInfo,
-                              schedule: schedule
+                              schedule: schedule,
                             })
                           }}
                           schedulerErrors={schedulerErrors}
@@ -461,7 +503,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                             setHasObjectChanged(true)
                             saveStudySchedule({
                               ...builderInfo.schedule!,
-                              sessions: data
+                              sessions: data,
                             })
                           }}
                         >
@@ -494,7 +536,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                             setHasObjectChanged(true)
                             setData({
                               ...builderInfo,
-                              study: updatedStudy
+                              study: updatedStudy,
                             })
                             builderInfo.study = updatedStudy
                           }}
@@ -520,14 +562,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           onSave={() =>
                             saveStudy({
                               ...builderInfo.study,
-                              phase: 'recruitment'
+                              phase: 'recruitment',
                             })
                           }
                           onUpdate={(study: Study) => {
                             setHasObjectChanged(true)
                             setData({
                               ...builderInfo,
-                              study: study
+                              study: study,
                             })
                           }}
                         >
@@ -543,7 +585,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           }
                           onUpdate={(data: BackgroundRecorders) => {
                             setHasObjectChanged(true)
-                            const updatedStudy = { ...builderInfo.study }
+                            const updatedStudy = {
+                              ...builderInfo.study,
+                            }
                             updatedStudy.clientData.backgroundRecorders = data
 
                             saveStudy(updatedStudy)
