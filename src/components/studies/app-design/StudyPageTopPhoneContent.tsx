@@ -82,77 +82,76 @@ type StudyPageTopPhoneContentProps = {
   studyLogoUrl?: string
 }
 
-const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContentProps> =
-  ({
-    isUsingDefaultMessage,
-    imgHeight,
-    appColor,
-    studyTitle,
-    studySummaryBody,
-    leadInvestigator,
-    funder,
-    studyLogoUrl,
-  }) => {
-    const classes = useStyles()
-    return (
-      <Box className={classes.container}>
-        <Box
-          className={classes.studyLogoContainer}
-          style={{
-            backgroundColor: isUsingDefaultMessage ? '#BCD5E4' : appColor,
-          }}>
-          {!isUsingDefaultMessage ? (
-            studyLogoUrl && (
-              <img
-                src={studyLogoUrl}
-                style={{height: `${imgHeight}px`}}
-                alt="study-logo"
-              />
-            )
-          ) : (
+const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContentProps> = ({
+  isUsingDefaultMessage,
+  imgHeight,
+  appColor,
+  studyTitle,
+  studySummaryBody,
+  leadInvestigator,
+  funder,
+  studyLogoUrl,
+}) => {
+  const classes = useStyles()
+  return (
+    <Box className={classes.container}>
+      <Box
+        className={classes.studyLogoContainer}
+        style={{
+          backgroundColor: isUsingDefaultMessage ? '#BCD5E4' : appColor,
+        }}>
+        {!isUsingDefaultMessage ? (
+          studyLogoUrl && (
             <img
-              src={DefaultLogo}
-              style={{height: `${imgHeight - 16}px`}}
+              src={studyLogoUrl}
+              style={{height: `${imgHeight}px`}}
               alt="study-logo"
             />
-          )}
-        </Box>
-        <Box className={classes.innerContainer}>
-          <SectionIndicator
-            index={4}
-            className={classes.sectionFourIndicatorPosition}
+          )
+        ) : (
+          <img
+            src={DefaultLogo}
+            style={{height: `${imgHeight - 16}px`}}
+            alt="study-logo"
           />
-          <Box height="420px">
-            <Box className={classes.headlineStyle}>
-              {studyTitle || 'Title of study...'}
-            </Box>
-            <p className={classes.bodyText}>{studySummaryBody || 'Body...'}</p>
-          </Box>
-
-          <Divider className={classes.divider} />
-          <StudySummaryRoles
-            type="Lead Principal Investigator"
-            name={leadInvestigator.name || 'placeholder'}
-            className={classes.studySummaryRoles}
-          />
-          <SectionIndicator
-            index={5}
-            className={classes.sectionFiveIndicatorPosition}
-          />
-
-          <StudySummaryRoles
-            type="Institution"
-            name={leadInvestigator.affiliation || 'placeholder'}
-            className={classes.studySummaryRoles}
-          />
-          <StudySummaryRoles
-            type="Funder"
-            name={funder.name || 'placeholder'}
-            className={classes.studySummaryRoles}
-          />
-        </Box>
+        )}
       </Box>
-    )
-  }
+      <Box className={classes.innerContainer}>
+        <SectionIndicator
+          index={4}
+          className={classes.sectionFourIndicatorPosition}
+        />
+        <Box height="420px">
+          <Box className={classes.headlineStyle}>
+            {studyTitle || 'Title of study...'}
+          </Box>
+          <p className={classes.bodyText}>{studySummaryBody || 'Body...'}</p>
+        </Box>
+
+        <Divider className={classes.divider} />
+        <StudySummaryRoles
+          type="Lead Principal Investigator"
+          name={leadInvestigator.name || 'placeholder'}
+          className={classes.studySummaryRoles}
+        />
+        <SectionIndicator
+          index={5}
+          className={classes.sectionFiveIndicatorPosition}
+        />
+
+        <StudySummaryRoles
+          type="Institution"
+          name={leadInvestigator.affiliation || 'placeholder'}
+          className={classes.studySummaryRoles}
+        />
+        <StudySummaryRoles
+          type="Funder"
+          name={funder.name || 'placeholder'}
+          className={classes.studySummaryRoles}
+        />
+      </Box>
+    </Box>
+  )
+}
 
 export default StudyPageTopPhoneContent

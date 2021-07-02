@@ -45,27 +45,26 @@ const useStyles = makeStyles(theme => ({
 
 type AssessmentLibraryWrapperProps = AssessmentLibraryWrapperOwnProps
 
-const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps> =
-  ({
-    children,
-    tags,
-    assessments,
-    onChangeTags,
-  }: AssessmentLibraryWrapperProps) => {
-    const classes = useStyles()
+const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps> = ({
+  children,
+  tags,
+  assessments,
+  onChangeTags,
+}: AssessmentLibraryWrapperProps) => {
+  const classes = useStyles()
 
-    return (
-      <Box className={classes.root}>
-        <AssessmentLibraryFilter
-          tags={tags}
-          assessments={assessments}
-          onChangeTags={(tags: string[]) => onChangeTags(tags)}
-        />
-        <Container className={classes.assessmentContainer} maxWidth="xl">
-          <Box className={classes.cardGrid}>{children}</Box>
-        </Container>
-      </Box>
-    )
-  }
+  return (
+    <Box className={classes.root}>
+      <AssessmentLibraryFilter
+        tags={tags}
+        assessments={assessments}
+        onChangeTags={(tags: string[]) => onChangeTags(tags)}
+      />
+      <Container className={classes.assessmentContainer} maxWidth="xl">
+        <Box className={classes.cardGrid}>{children}</Box>
+      </Container>
+    </Box>
+  )
+}
 
 export default AssessmentLibraryWrapper
