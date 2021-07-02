@@ -6,12 +6,12 @@ import {
   FormGroup,
   FormHelperText,
   makeStyles,
-  CircularProgress
+  CircularProgress,
 } from '@material-ui/core'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { isInvalidPhone } from '../../../helpers/utility'
-import { latoFont } from '../../../style/theme'
+import { latoFont, poppinsFont } from '../../../style/theme'
 import { EditableParticipantData } from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import { MTBHeadingH3 } from '../../widgets/Headings'
@@ -22,6 +22,7 @@ import {
   SimpleTextInput,
   SimpleTextLabel,
 } from '../../widgets/StyledComponents'
+import TimezoneDropdown from './TimezoneDropdown'
 
 const useStyles = makeStyles(theme => ({
   addForm: {
@@ -64,7 +65,7 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
   onCancel,
   children,
   isBatchEdit,
-  isLoading
+  isLoading,
 }) => {
   const classes = useStyles()
   const [note, setNotes] = React.useState(participant.note)
@@ -72,29 +73,39 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
     Date | undefined
   >(participant.clinicVisitDate)
 
-    const handleDateChange = (date: Date | null) => {
-      setClinicVisitDate(date ? date : undefined)
-    }
+  const handleDateChange = (date: Date | null) => {
+    setClinicVisitDate(date ? date : undefined)
+  }
 
   return (
     <>
       <DialogContent>
         <Box mt={0} mb={3}>
           <MTBHeadingH3>
-            {!isBatchEdit ? isEnrolledById ? (
-              <span>Reference ID: {participant.externalId}</span>
+            {!isBatchEdit ? (
+              isEnrolledById ? (
+                <span>Reference ID: {participant.externalId}</span>
+              ) : (
+                <span>Phone number: {participant.phoneNumber}</span>
+              )
             ) : (
-              <span>Phone number: {participant.phoneNumber}</span>
-            ) : "Assign the same values to selected participants:"}
+              'Assign the same values to selected participants:'
+            )}
           </MTBHeadingH3>
         </Box>
-          <FormGroup className={classes.addForm}>
-            <DatePicker
-              label="Clinic Visit 1"
-              id="clinic-visit"
-              value={clinicVisitDate || null}
-              onChange={e => handleDateChange(e)}
-            ></DatePicker>
+        <FormGroup className={classes.addForm}>
+          <DatePicker
+            label="Clinic Visit 1"
+            id="clinic-visit"
+            value={clinicVisitDate || null}
+            onChange={e => handleDateChange(e)}
+          ></DatePicker>
+          <SimpleTextLabel htmlFor="note">
+            Participant Time Zone
+          </SimpleTextLabel>
+          <Box style={{ width: '350px', marginBottom: '24px' }}>
+            <TimezoneDropdown />
+          </Box>
           <FormControl>
             <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
             <SimpleTextInput
@@ -110,19 +121,22 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
       </DialogContent>
       <DialogActions style={{ justifyContent: 'space-between' }}>
         {children && children}
-        {!isLoading ? <div>
-          <DialogButtonSecondary onClick={() => onCancel()} color="primary">
-            Cancel
-          </DialogButtonSecondary>
-          <DialogButtonPrimary
-         
-            onClick={() => onOK(note, clinicVisitDate)}
-            color="primary"
-            autoFocus
-          >
-            Save Changes
-          </DialogButtonPrimary>
-        </div> : <CircularProgress color="primary"/>}
+        {!isLoading ? (
+          <div>
+            <DialogButtonSecondary onClick={() => onCancel()} color="primary">
+              Cancel
+            </DialogButtonSecondary>
+            <DialogButtonPrimary
+              onClick={() => onOK(note, clinicVisitDate)}
+              color="primary"
+              autoFocus
+            >
+              Save Changes
+            </DialogButtonPrimary>
+          </div>
+        ) : (
+          <CircularProgress color="primary" />
+        )}
       </DialogActions>
     </>
   )
