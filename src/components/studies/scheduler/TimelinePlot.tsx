@@ -89,26 +89,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
     return {x: result, y: y}
   }
   const markers = [
-    0,
-    5,
-    1,
-    2,
-    13,
-    14,
-    19,
-    21,
-    22,
-    8,
-    15,
-    20,
-    23,
-    12,
-    16,
-    24,
-    9,
-    7,
-    6,
-    10,
+    0, 5, 1, 2, 13, 14, 19, 21, 22, 8, 15, 20, 23, 12, 16, 24, 9, 7, 6, 10,
   ]
   const data = sortedSessions.map((session, index) => {
     const {x, y} = getXY(session.guid!, index + 1, sortedSessions.length)

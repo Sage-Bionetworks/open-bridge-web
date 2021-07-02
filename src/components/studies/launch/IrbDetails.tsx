@@ -118,18 +118,17 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
 
   const classes = useStyles()
   const {token, orgMembership} = useUserSessionDataState()
-  const [
-    irbRecordSameInstAffiliation,
-    setIrbRecordSameInstAffiliation,
-  ] = React.useState<boolean>(false)
+  const [irbRecordSameInstAffiliation, setIrbRecordSameInstAffiliation] =
+    React.useState<boolean>(false)
   const [certifyStatements, setCertifyStatement] = React.useState({
     isStudyProtocolReviewed: false,
     isStudyConsistentWithLaws: false,
   })
 
   useEffect(() => {
-    const institutionalAffiliation = getContactObject('principal_investigator')!
-      .affiliation
+    const institutionalAffiliation = getContactObject(
+      'principal_investigator'
+    )!.affiliation
     const nameOfIrbRecord = getContactObject('irb')!.name
     const irbRecordSameInstitutionalAffiliation =
       nameOfIrbRecord === institutionalAffiliation
@@ -224,7 +223,8 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     setCertifyStatement(prevState => {
                       return {
                         ...prevState,
-                        isStudyProtocolReviewed: !prevState.isStudyProtocolReviewed,
+                        isStudyProtocolReviewed:
+                          !prevState.isStudyProtocolReviewed,
                       }
                     })
                   }}
@@ -243,7 +243,8 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     setCertifyStatement(prevState => {
                       return {
                         ...prevState,
-                        isStudyConsistentWithLaws: !prevState.isStudyConsistentWithLaws,
+                        isStudyConsistentWithLaws:
+                          !prevState.isStudyConsistentWithLaws,
                       }
                     })
                   }}

@@ -396,9 +396,8 @@ async function getEnrollmentById(
     )
 
     const isWithdrawn = participant.withdrawnOn !== undefined
-    const isTestUser = recordFromParticipantApi?.dataGroups?.includes(
-      'test_user'
-    )
+    const isTestUser =
+      recordFromParticipantApi?.dataGroups?.includes('test_user')
     if (participantType === 'WITHDRAWN' && (!isWithdrawn || isTestUser)) {
       return null
     }

@@ -111,198 +111,199 @@ type SingleSessionContainerProps = {
   numberOfSessions: number
 }
 
-const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = ({
-  sessionIndex,
-  studySession,
-  onShowAssessments,
-  onRemoveSession,
-  onSetActiveSession,
-  onUpdateSessionName,
-  onUpdateAssessmentList,
-  numberOfSessions,
-}: SingleSessionContainerProps) => {
-  const classes = useStyles()
-  const [isEditable, setIsEditable] = React.useState(false)
-  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
+const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> =
+  ({
+    sessionIndex,
+    studySession,
+    onShowAssessments,
+    onRemoveSession,
+    onSetActiveSession,
+    onUpdateSessionName,
+    onUpdateAssessmentList,
+    numberOfSessions,
+  }: SingleSessionContainerProps) => {
+    const classes = useStyles()
+    const [isEditable, setIsEditable] = React.useState(false)
+    const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
 
-  const rearrangeAssessments = (
-    assessments: Assessment[] | undefined,
-    dropResult: DropResult
-  ) => {
-    if (!dropResult.destination || !assessments) {
-      return
+    const rearrangeAssessments = (
+      assessments: Assessment[] | undefined,
+      dropResult: DropResult
+    ) => {
+      if (!dropResult.destination || !assessments) {
+        return
+      }
+      const newAssessmentList = rearrangeList(
+        assessments,
+        dropResult.source,
+        dropResult.destination
+      )
+      onUpdateAssessmentList(studySession.guid!, newAssessmentList)
     }
-    const newAssessmentList = rearrangeList(
-      assessments,
-      dropResult.source,
-      dropResult.destination
-    )
-    onUpdateAssessmentList(studySession.guid!, newAssessmentList)
-  }
 
-  const removeAssessment = (assessmentId: string) => {
-    if (!studySession.assessments) {
-      return
+    const removeAssessment = (assessmentId: string) => {
+      if (!studySession.assessments) {
+        return
+      }
+      const removeIndex = studySession.assessments.findIndex(
+        a => a.guid === assessmentId
+      )
+      const result = [...studySession.assessments]
+      result.splice(removeIndex, 1)
+
+      onUpdateAssessmentList(studySession.guid!, result)
     }
-    const removeIndex = studySession.assessments.findIndex(
-      a => a.guid === assessmentId
-    )
-    const result = [...studySession.assessments]
-    result.splice(removeIndex, 1)
 
-    onUpdateAssessmentList(studySession.guid!, result)
-  }
-
-  const getTotalSessionTime = (assessments?: Assessment[]): number => {
-    if (!assessments) {
-      return 0
+    const getTotalSessionTime = (assessments?: Assessment[]): number => {
+      if (!assessments) {
+        return 0
+      }
+      const result = assessments.reduce((prev, curr, ndx) => {
+        return prev + Number(curr.minutesToComplete)
+      }, 0)
+      return result
     }
-    const result = assessments.reduce((prev, curr, ndx) => {
-      return prev + Number(curr.minutesToComplete)
-    }, 0)
-    return result
-  }
 
-  const getInner = (
-    studySession: StudySession,
-    sessionIndex: number,
-    numberOfSessions: number
-  ): JSX.Element => {
+    const getInner = (
+      studySession: StudySession,
+      sessionIndex: number,
+      numberOfSessions: number
+    ): JSX.Element => {
+      return (
+        <>
+          <Box className={classes.inner}>
+            <Box marginRight={2}>
+              <SessionIcon index={sessionIndex}>
+                <EditableTextbox
+                  component="h4"
+                  initValue={studySession.name}
+                  onTriggerUpdate={(newValue: string) =>
+                    onUpdateSessionName(studySession.guid!, newValue)
+                  }></EditableTextbox>
+              </SessionIcon>
+            </Box>
+            {numberOfSessions > 1 && (
+              <Button
+                variant="text"
+                className={classes.btnDeleteSession}
+                onClick={e => {
+                  e.stopPropagation()
+                  //onRemoveSession(studySession.guid!)
+                  setIsConfirmDeleteOpen(true)
+                }}>
+                <ClearIcon fontSize="small"></ClearIcon>
+              </Button>
+            )}
+            <Box fontSize="12px" textAlign="right">
+              {getTotalSessionTime(studySession.assessments) || 0} min.
+              <ClockIcon
+                style={{fontSize: '12px', verticalAlign: 'middle'}}></ClockIcon>
+            </Box>
+          </Box>
+
+          <DragDropContext
+            onDragEnd={(dropResult: DropResult) =>
+              rearrangeAssessments(studySession.assessments, dropResult)
+            }>
+            <div className={classes.droppable}>
+              <Droppable
+                droppableId={studySession.guid + studySession.name}
+                type="ASSESSMENT">
+                {(provided, snapshot) => (
+                  <div
+                    className={clsx({
+                      dragging: snapshot.isDraggingOver,
+                    })}
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}>
+                    {!studySession.assessments ||
+                      (studySession.assessments.length === 0 && (
+                        <Box marginTop={7} padding={2}>
+                          Add assessments to this session by clicking on the "+"
+                          below.{' '}
+                        </Box>
+                      ))}
+                    {studySession.assessments?.map((assessment, index) => (
+                      <Draggable
+                        draggableId={assessment.guid + index}
+                        index={index}
+                        key={assessment.guid + index}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}>
+                            <AssessmentSmall
+                              assessment={assessment}
+                              isDragging={snapshot.isDragging}>
+                              {isEditable && (
+                                <Button
+                                  variant="text"
+                                  aria-label="delete assessment"
+                                  className={classes.btnDeleteAssessment}
+                                  onClick={e => {
+                                    e.stopPropagation()
+                                    removeAssessment(assessment.guid)
+                                  }}>
+                                  <DeleteIcon></DeleteIcon>
+                                </Button>
+                              )}
+                            </AssessmentSmall>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          </DragDropContext>
+        </>
+      )
+    }
     return (
       <>
-        <Box className={classes.inner}>
-          <Box marginRight={2}>
-            <SessionIcon index={sessionIndex}>
-              <EditableTextbox
-                component="h4"
-                initValue={studySession.name}
-                onTriggerUpdate={(newValue: string) =>
-                  onUpdateSessionName(studySession.guid!, newValue)
-                }></EditableTextbox>
-            </SessionIcon>
-          </Box>
-          {numberOfSessions > 1 && (
+        <Box
+          className={clsx(classes.root /*, studySession?.active && 'active')*/)}
+          onClick={() => onSetActiveSession(studySession.guid!)}>
+          {getInner(studySession, sessionIndex, numberOfSessions)}
+
+          <Box className={classes.actions}>
+            <FormControlLabel
+              control={
+                <Switch
+                  value={isEditable}
+                  onChange={e => setIsEditable(e.target.checked)}
+                />
+              }
+              label="Edit"
+            />
+
             <Button
+              onClick={() => onShowAssessments()}
               variant="text"
-              className={classes.btnDeleteSession}
-              onClick={e => {
-                e.stopPropagation()
-                //onRemoveSession(studySession.guid!)
-                setIsConfirmDeleteOpen(true)
-              }}>
-              <ClearIcon fontSize="small"></ClearIcon>
+              style={{padding: '0px', minWidth: 'auto'}}>
+              <AddIcon></AddIcon>
             </Button>
-          )}
-          <Box fontSize="12px" textAlign="right">
-            {getTotalSessionTime(studySession.assessments) || 0} min.
-            <ClockIcon
-              style={{fontSize: '12px', verticalAlign: 'middle'}}></ClockIcon>
           </Box>
         </Box>
-
-        <DragDropContext
-          onDragEnd={(dropResult: DropResult) =>
-            rearrangeAssessments(studySession.assessments, dropResult)
-          }>
-          <div className={classes.droppable}>
-            <Droppable
-              droppableId={studySession.guid + studySession.name}
-              type="ASSESSMENT">
-              {(provided, snapshot) => (
-                <div
-                  className={clsx({
-                    dragging: snapshot.isDraggingOver,
-                  })}
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}>
-                  {!studySession.assessments ||
-                    (studySession.assessments.length === 0 && (
-                      <Box marginTop={7} padding={2}>
-                        Add assessments to this session by clicking on the "+"
-                        below.{' '}
-                      </Box>
-                    ))}
-                  {studySession.assessments?.map((assessment, index) => (
-                    <Draggable
-                      draggableId={assessment.guid + index}
-                      index={index}
-                      key={assessment.guid + index}>
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}>
-                          <AssessmentSmall
-                            assessment={assessment}
-                            isDragging={snapshot.isDragging}>
-                            {isEditable && (
-                              <Button
-                                variant="text"
-                                aria-label="delete assessment"
-                                className={classes.btnDeleteAssessment}
-                                onClick={e => {
-                                  e.stopPropagation()
-                                  removeAssessment(assessment.guid)
-                                }}>
-                                <DeleteIcon></DeleteIcon>
-                              </Button>
-                            )}
-                          </AssessmentSmall>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
+        <ConfirmationDialog
+          isOpen={isConfirmDeleteOpen}
+          title={'Delete Session'}
+          type={'DELETE'}
+          onCancel={() => setIsConfirmDeleteOpen(false)}
+          onConfirm={() => {
+            setIsConfirmDeleteOpen(false)
+            onRemoveSession(studySession.guid!)
+          }}>
+          <div>
+            Are you sure you would like to permanently delete:{' '}
+            <p>{studySession.name}</p>
           </div>
-        </DragDropContext>
+        </ConfirmationDialog>
       </>
     )
   }
-  return (
-    <>
-      <Box
-        className={clsx(classes.root /*, studySession?.active && 'active')*/)}
-        onClick={() => onSetActiveSession(studySession.guid!)}>
-        {getInner(studySession, sessionIndex, numberOfSessions)}
-
-        <Box className={classes.actions}>
-          <FormControlLabel
-            control={
-              <Switch
-                value={isEditable}
-                onChange={e => setIsEditable(e.target.checked)}
-              />
-            }
-            label="Edit"
-          />
-
-          <Button
-            onClick={() => onShowAssessments()}
-            variant="text"
-            style={{padding: '0px', minWidth: 'auto'}}>
-            <AddIcon></AddIcon>
-          </Button>
-        </Box>
-      </Box>
-      <ConfirmationDialog
-        isOpen={isConfirmDeleteOpen}
-        title={'Delete Session'}
-        type={'DELETE'}
-        onCancel={() => setIsConfirmDeleteOpen(false)}
-        onConfirm={() => {
-          setIsConfirmDeleteOpen(false)
-          onRemoveSession(studySession.guid!)
-        }}>
-        <div>
-          Are you sure you would like to permanently delete:{' '}
-          <p>{studySession.name}</p>
-        </div>
-      </ConfirmationDialog>
-    </>
-  )
-}
 
 export default SingleSessionContainer
