@@ -1,14 +1,14 @@
 // pick a date util library
 
-import { Box, CircularProgress } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Box, CircularProgress} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
-import React, { FunctionComponent } from 'react'
-import { isInvalidPhone, makePhone } from '../../../helpers/utility'
+import React, {FunctionComponent} from 'react'
+import {isInvalidPhone, makePhone} from '../../../helpers/utility'
 import ParticipantService from '../../../services/participants.service'
-import { EditableParticipantData, Phone } from '../../../types/types'
-import { BlueButton } from '../../widgets/StyledComponents'
-import { AddParticipantForm } from './ParticipantForms'
+import {EditableParticipantData, Phone} from '../../../types/types'
+import {BlueButton} from '../../widgets/StyledComponents'
+import {AddParticipantForm} from './ParticipantForms'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -24,7 +24,7 @@ type AddSingleParticipantProps = {
 export async function addParticipantById(
   studyIdentifier: string,
   token: string,
-  options: EditableParticipantData,
+  options: EditableParticipantData
 ) {
   await ParticipantService.addParticipant(studyIdentifier, token, options)
 }
@@ -33,7 +33,7 @@ export async function addParticipantByPhone(
   studyIdentifier: string,
   token: string,
   phone: Phone,
-  options: EditableParticipantData,
+  options: EditableParticipantData
 ) {
   /*if (!externalId) {
     const studyPrefix = studyIdentifier.substr(0, 3)
@@ -58,7 +58,7 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
   const [participant, setParticipant] = React.useState<EditableParticipantData>(
     {
       externalId: '',
-    },
+    }
   )
   const [error, setError] = React.useState('')
   const [isLoading, setIsLoading] = React.useState(false)
@@ -78,15 +78,15 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
           studyIdentifier,
           token,
           makePhone(participant.phoneNumber || ''),
-          options,
+          options
         )
       } else {
         await addParticipantById(studyIdentifier, token, options)
       }
 
       onAdded()
-      setParticipant({ externalId: '' })
-    } catch (e: any) {
+      setParticipant({externalId: ''})
+    } catch (e) {
       setError(e?.message.toString() || e.toString())
     } finally {
       setIsLoading(false)
@@ -123,8 +123,7 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
           color="primary"
           variant="contained"
           disabled={isAddDisabled()}
-          onClick={() => addSingleParticipant(participant)}
-        >
+          onClick={() => addSingleParticipant(participant)}>
           +Add to study
         </BlueButton>
       </Box>

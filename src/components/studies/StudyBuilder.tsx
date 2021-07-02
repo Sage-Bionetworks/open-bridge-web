@@ -1,29 +1,29 @@
-import { Box, Container } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
-import { Alert } from '@material-ui/lab'
+import {Box, Container} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
+import {Alert} from '@material-ui/lab'
 import clsx from 'clsx'
 import _ from 'lodash'
-import React, { FunctionComponent } from 'react'
-import { ErrorBoundary } from 'react-error-boundary'
-import { RouteComponentProps, useParams } from 'react-router-dom'
-import { useUserSessionDataState } from '../../helpers/AuthContext'
+import React, {FunctionComponent} from 'react'
+import {ErrorBoundary} from 'react-error-boundary'
+import {RouteComponentProps, useParams} from 'react-router-dom'
+import {useUserSessionDataState} from '../../helpers/AuthContext'
 import {
   StudyInfoData,
   useStudyInfoDataDispatch,
-  useStudyInfoDataState
+  useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
-import { setBodyClass } from '../../helpers/utility'
+import {setBodyClass} from '../../helpers/utility'
 import StudyService from '../../services/study.service'
-import { ThemeType } from '../../style/theme'
-import { Schedule, StartEventId, StudySession } from '../../types/scheduling'
+import {ThemeType} from '../../style/theme'
+import {Schedule, StartEventId, StudySession} from '../../types/scheduling'
 import {
   Assessment,
   BackgroundRecorders,
   StringDictionary,
-  Study
+  Study,
 } from '../../types/types'
-import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
-import { MTBHeadingH1 } from '../widgets/Headings'
+import {ErrorFallback, ErrorHandler} from '../widgets/ErrorHandler'
+import {MTBHeadingH1} from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
 import AppDesign from './app-design/AppDesign'
 import EnrollmentTypeSelector from './enrollment-type-selector/EnrollmentTypeSelector'
@@ -33,7 +33,7 @@ import PassiveFeatures from './passive-features/PassiveFeatures'
 import Preview from './preview/Preview'
 import IntroInfo from './scheduler/IntroInfo'
 import Scheduler from './scheduler/Scheduler'
-import { StudySection } from './sections'
+import {StudySection} from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
 const subtitles: StringDictionary<string> = {
@@ -44,7 +44,7 @@ const subtitles: StringDictionary<string> = {
   customize: 'Customize your App',
   'enrollment-type-selector': 'Participant Study Enrollment',
   'passive-features': 'App Background Recorders ',
-  launch: 'Launch study requirements'
+  launch: 'Launch study requirements',
 }
 
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   mainArea: {
     margin: '0 auto',
     minHeight: '100px',
-    overflow: 'hidden'
+    overflow: 'hidden',
 
     //backgroundColor: theme.palette.background.default,
   },
@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   mainAreaWideWithLeftNav: {
     width: `1600px`,
     [theme.breakpoints.down('lg')]: {
-    width: `1100px`
+      width: `1100px`,
     },
     [theme.breakpoints.down('md')]: {
       width: `768px`,
@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   mainAreaNoLeftNav: {
     width: `1500px`,
     [theme.breakpoints.down('lg')]: {
-    width: '1200px',//`${(280+32) * 4 + 16 * 4}px`,
+      width: '1200px', //`${(280+32) * 4 + 16 * 4}px`,
     },
     [theme.breakpoints.down('md')]: {
       width: `910px`,
@@ -92,7 +92,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   mainAreaWideNoLeftNav: {
     width: `1700px`,
     [theme.breakpoints.down('lg')]: {
-    width: '1200px',//`${(280+32) * 4 + 16 * 4}px`,
+      width: '1200px', //`${(280+32) * 4 + 16 * 4}px`,
     },
     [theme.breakpoints.down('md')]: {
       width: `910px`,
@@ -119,7 +119,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ...otherProps
 }) => {
   const classes = useStyles()
-  let { id, section: _section } = useParams<{
+  let {id, section: _section} = useParams<{
     id: string
     section: StudySection
   }>()
@@ -130,27 +130,32 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   >([])
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [saveLoader, setSaveLoader] = React.useState(false)
-  const { token } = useUserSessionDataState()
+  const {token} = useUserSessionDataState()
   const builderInfo: StudyInfoData = useStudyInfoDataState()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
   const [open, setOpen] = React.useState(true)
 
   const setData = (builderInfo: StudyInfoData) => {
-    studyDataUpdateFn({ type: 'SET_ALL', payload: builderInfo })
+    studyDataUpdateFn({
+      type: 'SET_ALL',
+      payload: builderInfo,
+    })
   }
 
   const allSessionsHaveAssessments = () => {
     const sessions = builderInfo.schedule?.sessions
-    return !_.isEmpty(sessions) && !sessions!.find(session=>_.isEmpty(session.assessments))
+    return (
+      !_.isEmpty(sessions) &&
+      !sessions!.find(session => _.isEmpty(session.assessments))
+    )
   }
-    
 
   //Sets up the data from the intro page
   const createScheduleAndNameStudy = async (
     studyId: string,
     studyName: string,
     duration: string,
-    start: StartEventId,
+    start: StartEventId
   ) => {
     const studySession = StudyService.createEmptyStudySession(start)
     let schedule: Schedule = {
@@ -161,7 +166,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     }
     const newSchedule = await StudyService.createNewStudySchedule(
       schedule,
-      token!,
+      token!
     )
 
     let updatedStudy = {
@@ -171,17 +176,24 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     }
     const newVersion = await StudyService.updateStudy(updatedStudy, token!)
     updatedStudy.version = newVersion
-    setData({ schedule: newSchedule, study: updatedStudy })
+    setData({
+      schedule: newSchedule,
+      study: updatedStudy,
+    })
   }
 
-  const saveStudy = async (study: Study= builderInfo.study): Promise<Study| undefined> => {
-
+  const saveStudy = async (
+    study: Study = builderInfo.study
+  ): Promise<Study | undefined> => {
     setHasObjectChanged(true)
     setSaveLoader(true)
 
     try {
       const newVersion = await StudyService.updateStudy(study, token!)
-      const updatedStudy = { ...study, version: newVersion }
+      const updatedStudy = {
+        ...study,
+        version: newVersion,
+      }
       setData({
         ...builderInfo,
         study: updatedStudy,
@@ -192,16 +204,21 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       return updatedStudy
     } catch (e) {
       if (e.statusCode === 401) {
-        throw(e)
+        throw e
       }
       setError(e.message)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      })
     } finally {
       setSaveLoader(false)
     }
   }
 
-  const saveStudySchedule = async (updatedSchedule?: Schedule): Promise<Schedule|undefined> => {
+  const saveStudySchedule = async (
+    updatedSchedule?: Schedule
+  ): Promise<Schedule | undefined> => {
     setError([])
     setSchedulerErrors([])
     try {
@@ -210,6 +227,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       if (!schedule || !token) {
         return undefined
       }
+
       const savedUpdatedSchedule = await StudyService.saveStudySchedule(
         schedule,
         token
@@ -221,7 +239,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
       const oldSessionAssessments = schedule.sessions.reduce(function (
         prev,
-        curr,
+        curr
       ) {
         if (curr.assessments) {
           return [...prev, ...curr.assessments]
@@ -234,26 +252,29 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       savedUpdatedSchedule.sessions.forEach(session => {
         session.assessments?.forEach(assessment => {
           assessment.resources = oldSessionAssessments.find(
-            oa => oa.guid === assessment.guid,
+            oa => oa.guid === assessment.guid
           )?.resources
         })
       })
-      console.log('studyVersion in SB', savedUpdatedSchedule.version)
       setData({
         ...builderInfo,
-        schedule: savedUpdatedSchedule})
+        schedule: savedUpdatedSchedule,
+      })
       setHasObjectChanged(false)
       return savedUpdatedSchedule
     } catch (e) {
       if (e.statusCode === 401) {
-        throw(e)
+        throw e
       }
       console.log(e, 'error')
       const entity = e.entity
       const errors = e.errors
       // This can occur when a request fails due to reasons besides bad user input.
       if (!errors || !entity) {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth',
+        })
         setError(prev => [...prev, e.message])
         return undefined
       }
@@ -285,24 +306,22 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         break
       }
       case 'launch': {
-        const missingIrbInfo = 
-        !builderInfo.study.irbDecisionType ||
-        !builderInfo.study.irbDecisionOn ||
-        !builderInfo.study.irbExpiresOn
-        if(missingIrbInfo) {
+        const missingIrbInfo =
+          !builderInfo.study.irbDecisionType ||
+          !builderInfo.study.irbDecisionOn ||
+          !builderInfo.study.irbExpiresOn
+        if (missingIrbInfo) {
           delete builderInfo.study.irbDecisionOn
           delete builderInfo.study.irbExpiresOn
           delete builderInfo.study.irbDecisionType
         }
         saveFn = saveStudy
         break
-        
       }
 
       case 'customize': {
         saveFn = saveStudy
         break
-        
       }
 
       default: {
@@ -318,24 +337,23 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   | 'preview'
   | 'alerts'
   | 'launch'*/
-  let  updatedObject: Study | Schedule | undefined
+    let updatedObject: Study | Schedule | undefined
     if (saveFn && hasObjectChanged) {
-      updatedObject =  await saveFn()
+      updatedObject = await saveFn()
     }
     if (updatedObject || !hasObjectChanged) {
-    window.history.pushState(null, '', next)
-    setBodyClass(next)
-    setSection(next)
+      window.history.pushState(null, '', next)
+      setBodyClass(next)
+      setSection(next)
+    }
   }
-}
 
   const navButtons = (
     <NavButtons
       id={id}
       currentSection={section}
       onNavigate={(section: StudySection) => changeSection(section)}
-      disabled={!allSessionsHaveAssessments()}
-    ></NavButtons>
+      disabled={!allSessionsHaveAssessments()}></NavButtons>
   )
   if (builderInfo.study && !builderInfo.schedule) {
     return (
@@ -344,215 +362,231 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           onContinue={(
             studyName: string,
             duration: string,
-            startEventId: StartEventId,
+            startEventId: StartEventId
           ) => {
             createScheduleAndNameStudy(
               builderInfo.study.identifier,
               studyName,
               duration,
-              startEventId,
+              startEventId
             )
-          }}
-        ></IntroInfo>
+          }}></IntroInfo>
       </Box>
     )
   }
 
-  const getClasses = ()=> {
-   return  clsx(classes.mainArea, {
+  const getClasses = () => {
+    return clsx(classes.mainArea, {
       [classes.mainAreaNormalWithLeftNav]: open,
       [classes.mainAreaWideWithLeftNav]:
         open && ['customize', 'scheduler'].includes(section),
       [classes.mainAreaNoLeftNav]: !open,
-      [classes.mainAreaWideNoLeftNav]:(!open && ['customize', 'scheduler'].includes(section)),
-
-  })}
+      [classes.mainAreaWideNoLeftNav]:
+        !open && ['customize', 'scheduler'].includes(section),
+    })
+  }
 
   return (
     <>
       <Box display="flex" bgcolor="#f7f7f7">
         <Box width={open ? 210 : 56} flexShrink={0}></Box>
-        <Box
-          className={getClasses()}
-          pt={8}
-          pl={2}
-        >
+        <Box className={getClasses()} pt={8} pl={2}>
           <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>
         </Box>
       </Box>
-      <span style={{ fontSize: '9px', position: 'absolute', right: '0' }}>
+      <span
+        style={{
+          fontSize: '9px',
+          position: 'absolute',
+          right: '0',
+        }}>
         {' '}
         {hasObjectChanged ? 'object changed' : 'no change'}
       </span>
-      <Container maxWidth="xl" style={{ height: '100vh', padding: '0' }}>
-      <Box paddingTop={2} display="flex" position="relative">
-        <StudyLeftNav
-          open={open}
-          onToggle={() => setOpen(prev => !prev)}
-          currentSection={section}
-          onNavigate={(section: StudySection) => {
-            changeSection(section)
-          }}
-          id={id}
-          disabled={!allSessionsHaveAssessments()}
-        ></StudyLeftNav>
+      <Container
+        maxWidth="xl"
+        style={{
+          height: '100vh',
+          padding: '0',
+        }}>
+        <Box paddingTop={2} display="flex" position="relative">
+          <StudyLeftNav
+            open={open}
+            onToggle={() => setOpen(prev => !prev)}
+            currentSection={section}
+            onNavigate={(section: StudySection) => {
+              changeSection(section)
+            }}
+            id={id}
+            disabled={!allSessionsHaveAssessments()}></StudyLeftNav>
 
-        <Box className={classes.mainAreaWrapper}>
-          <Box
-            className={getClasses()}
-          >
-            <LoadingComponent
-              reqStatusLoading={saveLoader}
-              variant="small"
-              loaderSize="2rem"
-              style={{
-                width: '2rem',
-                position: 'absolute',
-                top: '30px',
-                left: '50%',
-              }}
-            ></LoadingComponent>
-            {!_.isEmpty(error) && (
-              <Alert variant="outlined" color="error">
-                {Array.isArray(error) ? (
-                  error.map(e => <div style={{ textAlign: 'left' }}>{e}</div>)
-                ) : (
-                  <div style={{ textAlign: 'left' }}>{error}</div>
-                )}
-              </Alert>
-            )}
-            <ErrorBoundary
-              FallbackComponent={ErrorFallback}
-              onError={ErrorHandler}
-            >
-              <LoadingComponent reqStatusLoading={!builderInfo}>
-                {builderInfo.schedule && builderInfo.study && (
-                  <>
-                    {section === 'scheduler' && (
-                      <Scheduler
-                        id={id}
-                        token={token!}
-                        schedule={builderInfo.schedule}
-                        version={builderInfo.schedule?.version}
-                        hasObjectChanged={hasObjectChanged}
-                        saveLoader={saveLoader}
-                        onSave={() => saveStudySchedule()}
-                        onUpdate={(schedule: Schedule) => {
-                          setHasObjectChanged(true)
-                          setData({
-                            ...builderInfo,
-                            schedule: schedule,
-                          })
-                        }}
-                        schedulerErrors={schedulerErrors}
-                      >
-                        {navButtons}
-                      </Scheduler>
-                    )}
+          <Box className={classes.mainAreaWrapper}>
+            <Box className={getClasses()}>
+              <LoadingComponent
+                reqStatusLoading={saveLoader}
+                variant="small"
+                loaderSize="2rem"
+                style={{
+                  width: '2rem',
+                  position: 'absolute',
+                  top: '30px',
+                  left: '50%',
+                }}></LoadingComponent>
+              {!_.isEmpty(error) && (
+                <Alert variant="outlined" color="error">
+                  {Array.isArray(error) ? (
+                    error.map(e => (
+                      <div
+                        style={{
+                          textAlign: 'left',
+                        }}>
+                        {e}
+                      </div>
+                    ))
+                  ) : (
+                    <div
+                      style={{
+                        textAlign: 'left',
+                      }}>
+                      {error}
+                    </div>
+                  )}
+                </Alert>
+              )}
+              <ErrorBoundary
+                FallbackComponent={ErrorFallback}
+                onError={ErrorHandler}>
+                <LoadingComponent reqStatusLoading={!builderInfo}>
+                  {builderInfo.schedule && builderInfo.study && (
+                    <>
+                      {section === 'scheduler' && (
+                        <Scheduler
+                          id={id}
+                          token={token!}
+                          schedule={builderInfo.schedule}
+                          version={builderInfo.schedule?.version}
+                          hasObjectChanged={hasObjectChanged}
+                          saveLoader={saveLoader}
+                          onSave={() => saveStudySchedule()}
+                          onUpdate={(schedule: Schedule) => {
+                            setHasObjectChanged(true)
+                            setData({
+                              ...builderInfo,
+                              schedule: schedule,
+                            })
+                          }}
+                          schedulerErrors={schedulerErrors}>
+                          {navButtons}
+                        </Scheduler>
+                      )}
+                      {section === 'session-creator' && (
+                        <SessionCreator
+                          hasObjectChanged={hasObjectChanged}
+                          saveLoader={saveLoader}
+                          id={id}
+                          onSave={() => saveStudySchedule()}
+                          sessions={builderInfo.schedule?.sessions || []}
+                          onUpdate={(data: StudySession[]) => {
+                            setHasObjectChanged(true)
+                            saveStudySchedule({
+                              ...builderInfo.schedule!,
+                              sessions: data,
+                            })
+                          }}>
+                          {navButtons}
+                        </SessionCreator>
+                      )}
+                      {section === 'enrollment-type-selector' && (
+                        <EnrollmentTypeSelector
+                          hasObjectChanged={hasObjectChanged}
+                          saveLoader={saveLoader}
+                          study={builderInfo.study}
+                          onUpdate={(study: Study) => {
+                            setHasObjectChanged(true)
+                            saveStudy(study)
+                          }}>
+                          {navButtons}
+                        </EnrollmentTypeSelector>
+                      )}
+                      s
+                      {section === 'customize' && (
+                        <AppDesign
+                          hasObjectChanged={hasObjectChanged}
+                          saveLoader={saveLoader}
+                          study={builderInfo.study}
+                          onSave={() => {
+                            saveStudy(builderInfo.study)
+                          }}
+                          onUpdate={(updatedStudy: Study) => {
+                            setHasObjectChanged(true)
+                            setData({
+                              ...builderInfo,
+                              study: updatedStudy,
+                            })
+                            builderInfo.study = updatedStudy
+                          }}
+                          onError={(error: string) =>
+                            setError(prev => [...prev, error])
+                          }>
+                          {navButtons}
+                        </AppDesign>
+                      )}
+                      {section === 'preview' && (
+                        <Preview
+                          studyId={builderInfo.study.identifier}
+                          token={token!}
+                          scheduleSessions={
+                            builderInfo.schedule.sessions
+                          }></Preview>
+                      )}
+                      {section === 'launch' && (
+                        <Launch
+                          hasObjectChanged={hasObjectChanged}
+                          saveLoader={saveLoader}
+                          studyInfo={builderInfo}
+                          onSave={() =>
+                            saveStudy({
+                              ...builderInfo.study,
+                              phase: 'recruitment',
+                            })
+                          }
+                          onUpdate={(study: Study) => {
+                            setHasObjectChanged(true)
+                            setData({
+                              ...builderInfo,
+                              study: study,
+                            })
+                          }}>
+                          {navButtons}
+                        </Launch>
+                      )}
+                      {section === 'passive-features' && (
+                        <PassiveFeatures
+                          hasObjectChanged={hasObjectChanged}
+                          saveLoader={saveLoader}
+                          features={
+                            builderInfo.study.clientData.backgroundRecorders
+                          }
+                          onUpdate={(data: BackgroundRecorders) => {
+                            setHasObjectChanged(true)
+                            const updatedStudy = {
+                              ...builderInfo.study,
+                            }
+                            updatedStudy.clientData.backgroundRecorders = data
 
-                    {section === 'session-creator' && (
-                      <SessionCreator
-                        hasObjectChanged={hasObjectChanged}
-                        saveLoader={saveLoader}
-                        id={id}
-                        onSave={() => saveStudySchedule()}
-                        sessions={builderInfo.schedule?.sessions || []}
-                        onUpdate={(data: StudySession[]) => {
-                          setHasObjectChanged(true)
-                          saveStudySchedule({
-                            ...builderInfo.schedule!,
-                            sessions: data,
-                          })
-                        }}
-                      >
-                        {navButtons}
-                      </SessionCreator>
-                    )}
-
-                    {section === 'enrollment-type-selector' && (
-                      <EnrollmentTypeSelector
-                        hasObjectChanged={hasObjectChanged}
-                        saveLoader={saveLoader}
-                        study={builderInfo.study}
-                        onUpdate={(study: Study) => {
-                          setHasObjectChanged(true)
-                          saveStudy(study)
-                        }}
-                      >
-                        {navButtons}
-                      </EnrollmentTypeSelector>
-                    )}
-
-                    {section === 'customize' && (
-                      <AppDesign
-                        hasObjectChanged={hasObjectChanged}
-                        saveLoader={saveLoader}
-                        study={builderInfo.study}
-                        onSave={() => {
-                           saveStudy(builderInfo.study)
-                        }}
-                        onUpdate={(updatedStudy: Study) => {
-                          setHasObjectChanged(true)
-                          setData({
-                            ...builderInfo,
-                            study: updatedStudy,
-                          })
-                        }}
-                        onError={(error: string) => setError(prev => [...prev, error])}
-                      >
-                        {navButtons}
-                      </AppDesign>
-                    )}
-                    {section === 'preview' && (
-                      <Preview
-                        studyId={builderInfo.study.identifier}
-                        token={token!}
-                        scheduleSessions={builderInfo.schedule.sessions}
-                      ></Preview>
-                    )}
-                    {section === 'launch' && (
-                      <Launch
-                        hasObjectChanged={hasObjectChanged}
-                        saveLoader={saveLoader}
-                        studyInfo={builderInfo}
-                        onSave={() => saveStudy({...builderInfo.study, phase: 'recruitment'})}
-                        onUpdate={(study: Study) => {
-                          setHasObjectChanged(true)
-                          setData({
-                            ...builderInfo,
-                            study: study,
-                          })
-                        }}
-                      >
-                        {navButtons}
-                      </Launch>
-                    )}
-                    {section === 'passive-features' && (
-                      <PassiveFeatures
-                        hasObjectChanged={hasObjectChanged}
-                        saveLoader={saveLoader}
-                        features={
-                          builderInfo.study.clientData.backgroundRecorders
-                        }
-                        onUpdate={(data: BackgroundRecorders) => {
-                          setHasObjectChanged(true)
-                          const updatedStudy = { ...builderInfo.study }
-                          updatedStudy.clientData.backgroundRecorders = data
-
-                          saveStudy(updatedStudy)
-                        }}
-                      >
-                        {navButtons}
-                      </PassiveFeatures>
-                    )}
-                  </>
-                )}
-              </LoadingComponent>
-            </ErrorBoundary>
+                            saveStudy(updatedStudy)
+                          }}>
+                          {navButtons}
+                        </PassiveFeatures>
+                      )}
+                    </>
+                  )}
+                </LoadingComponent>
+              </ErrorBoundary>
+            </Box>
           </Box>
         </Box>
-      </Box>
-   </Container>
+      </Container>
     </>
   )
 }

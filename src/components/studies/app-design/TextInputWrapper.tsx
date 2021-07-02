@@ -1,10 +1,7 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core'
-import {
-  SimpleTextInput,
-  SimpleTextLabel,
-} from '../../widgets/StyledComponents'
-import { playfairDisplayFont } from '../../../style/theme'
+import {makeStyles} from '@material-ui/core'
+import {SimpleTextInput, SimpleTextLabel} from '../../widgets/StyledComponents'
+import {playfairDisplayFont} from '../../../style/theme'
 import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
@@ -57,7 +54,7 @@ const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
         className={clsx(
           !alternativeTextInputClassName && classes.informationRowStyle,
           extraClassname && extraClassname,
-          alternativeTextInputClassName && alternativeTextInputClassName,
+          alternativeTextInputClassName && alternativeTextInputClassName
         )}
         id={id}
         placeholder={placeholder}

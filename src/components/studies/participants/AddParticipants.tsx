@@ -9,29 +9,25 @@ import {
   LinearProgress,
   Paper,
   Tab,
-  Tabs
+  Tabs,
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { CSVReader } from 'react-papaparse'
-import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
-import { ReactComponent as UploadIcon } from '../../../assets/upload.svg'
-import { isInvalidPhone, isSignInById, makePhone } from '../../../helpers/utility'
-import { poppinsFont, theme } from '../../../style/theme'
-import {
-  EditableParticipantData,
-
-  Study
-} from '../../../types/types'
+import React, {FunctionComponent} from 'react'
+import {CSVReader} from 'react-papaparse'
+import {ReactComponent as PencilIcon} from '../../../assets/edit_pencil.svg'
+import {ReactComponent as UploadIcon} from '../../../assets/upload.svg'
+import {isInvalidPhone, isSignInById, makePhone} from '../../../helpers/utility'
+import {poppinsFont, theme} from '../../../style/theme'
+import {EditableParticipantData, Study} from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
-import { BlueButton } from '../../widgets/StyledComponents'
+import {BlueButton} from '../../widgets/StyledComponents'
 import TabPanel from '../../widgets/TabPanel'
 import AddGeneratedParticipant from './AddGeneratedParticipant'
 import AddSingleParticipant, {
   addParticipantById,
-  addParticipantByPhone
+  addParticipantByPhone,
 } from './AddSingleParticipant'
 import ImportParticipantsInstructions from './ImportParticipantsInstuctions'
 
@@ -134,9 +130,8 @@ async function uploadCsvRow(
   data: any,
   isEnrolledById: boolean,
   studyIdentifier: string,
-  token: string,
+  token: string
 ) {
-
   const options: EditableParticipantData = {
     externalId: data['Participant ID'],
     clinicVisitDate: data['Clinic Visit'],
@@ -158,7 +153,7 @@ async function uploadCsvRow(
         studyIdentifier,
         token,
         phone,
-        options,
+        options
       )
     }
   }
@@ -175,7 +170,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
   const [tab, setTab] = React.useState(0)
 
   const classes = useStyles()
-  const generateIds  = study.clientData.generateIds
+  const generateIds = study.clientData.generateIds
   const isEnrolledById = isSignInById(study.signInTypes)
 
   const [isOpenUpload, setIsOpenUpload] = React.useState(false)
@@ -197,10 +192,9 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
     setImportError([])
 
     const keysString = Object.keys(rows[0]?.data).sort().join(',')
-    const valid =
-    isEnrolledById
-        ? CSV_BY_ID_KEY.sort().join(',') === keysString
-        : CSV_BY_PHONE_KEY.sort().join(',') === keysString
+    const valid = isEnrolledById
+      ? CSV_BY_ID_KEY.sort().join(',') === keysString
+      : CSV_BY_PHONE_KEY.sort().join(',') === keysString
     if (!valid) {
       setImportError([...importError, 'Please check the format of your file'])
       return
@@ -217,10 +211,9 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       } catch (error) {
         console.log('error', importError.length)
         console.log(importError)
-        const key =
-        isEnrolledById
-            ? data['Participant ID']
-            : data['Phone Number']
+        const key = isEnrolledById
+          ? data['Participant ID']
+          : data['Phone Number']
         setImportError(prev => [...prev, `${key}: ${error.message || error}`])
       }
     }
@@ -243,12 +236,11 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
         open={isOpenUpload}
         maxWidth="sm"
         fullWidth
-        aria-labelledby="form-dialog-title"
-      >
+        aria-labelledby="form-dialog-title">
         <DialogTitleWithClose onCancel={() => setIsOpenUpload(false)}>
           <>
-            <CloudUploadIcon style={{ width: '25px' }}></CloudUploadIcon>
-            <span style={{ paddingLeft: '8px' }}>Upload file</span>
+            <CloudUploadIcon style={{width: '25px'}}></CloudUploadIcon>
+            <span style={{paddingLeft: '8px'}}>Upload file</span>
           </>
         </DialogTitleWithClose>
 
@@ -257,9 +249,8 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             <div
               className={clsx(
                 classes.dropAreaUploading,
-                isCsvUploaded && classes.dropAreaUploadingWithBorder,
-              )}
-            >
+                isCsvUploaded && classes.dropAreaUploadingWithBorder
+              )}>
               {!isCsvUploaded && (
                 <CSVReader
                   onDrop={handleOnDrop}
@@ -269,13 +260,12 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
                     header: true,
                     dynamicTyping: true,
                     skipEmptyLines: true,
-                  }}
-                >
+                  }}>
                   <span>Drop CSV file here or click to upload.</span>
                 </CSVReader>
               )}
               {isCsvUploaded && (
-                <div style={{ height: '100%', padding: '70px 60px' }}>
+                <div style={{height: '100%', padding: '70px 60px'}}>
                   {!isCsvProcessed && (
                     <>
                       {' '}
@@ -309,8 +299,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             disabled={isCsvUploaded}
             onClick={() => setIsOpenUpload(false)}
             color="secondary"
-            variant="outlined"
-          >
+            variant="outlined">
             Cancel
           </Button>
           {isCsvProcessed && (
@@ -320,15 +309,14 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
                 setIsOpenUpload(false)
               }}
               color="primary"
-              variant="contained"
-            >
+              variant="contained">
               &nbsp;Done
             </Button>
           )}
         </DialogActions>
       </Dialog>
 
-      <Paper square style={{ whiteSpace: 'break-spaces' }}>
+      <Paper square style={{whiteSpace: 'break-spaces'}}>
         {!isAutoGenerated() && (
           <>
             <Tabs
@@ -338,8 +326,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
               aria-label="add participant tabs"
               classes={{
                 indicator: classes.tabIndicator,
-              }}
-            >
+              }}>
               <Tab
                 label="Upload .csv "
                 icon={<UploadIcon />}
@@ -360,22 +347,18 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
                     setIsOpenUpload(true)
                   }}
                   color="primary"
-                  variant="contained"
-                >
-                  <UploadIcon
-                    style={{ marginRight: '3px', marginTop: '3px' }}
-                  />{' '}
+                  variant="contained">
+                  <UploadIcon style={{marginRight: '3px', marginTop: '3px'}} />{' '}
                   Upload CSV File
                 </BlueButton>
               </ImportParticipantsInstructions>
             </TabPanel>
             <TabPanel value={tab} index={1}>
               <AddSingleParticipant
-               isEnrolledById={isEnrolledById}
+                isEnrolledById={isEnrolledById}
                 token={token}
                 studyIdentifier={study.identifier}
-                onAdded={() => onAdded()}
-              ></AddSingleParticipant>
+                onAdded={() => onAdded()}></AddSingleParticipant>
             </TabPanel>
           </>
         )}
@@ -384,9 +367,10 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             <Box
               className={classes.titleBar}
               style={{
-                borderColor: isTestAccount ? '#AEDCC9' : theme.palette.secondary.contrastText
-              }}
-            >
+                borderColor: isTestAccount
+                  ? '#AEDCC9'
+                  : theme.palette.secondary.contrastText,
+              }}>
               Generate IDs
             </Box>
             <Box p={2}>
@@ -394,8 +378,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
                 token={token}
                 studyIdentifier={study.identifier}
                 isTestAccount={isTestAccount}
-                onAdded={() => onAdded()}
-              ></AddGeneratedParticipant>
+                onAdded={() => onAdded()}></AddGeneratedParticipant>
             </Box>
           </>
         )}

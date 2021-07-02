@@ -4,9 +4,9 @@ import {
   Grid,
   makeStyles,
   TextField,
-  Typography
+  Typography,
 } from '@material-ui/core'
-import React, { FunctionComponent, useState } from 'react'
+import React, {FunctionComponent, useState} from 'react'
 import UserService from '../../services/user.service'
 
 type PasswordResetProps = {
@@ -41,7 +41,7 @@ const PasswordReset: FunctionComponent<PasswordResetProps> = ({
     const success = response.status === 200 || response.status === 202
     callbackFn(
       success,
-      success ? 'Password has been sent' : 'Password reset error',
+      success ? 'Password has been sent' : 'Password reset error'
     )
   }
 
@@ -72,8 +72,7 @@ const PasswordReset: FunctionComponent<PasswordResetProps> = ({
           color="primary"
           className={classes.submit}
           disabled={!username}
-          onClick={() => requestResetPassword(username)}
-        >
+          onClick={() => requestResetPassword(username)}>
           Send Email
         </Button>
         <Grid container>

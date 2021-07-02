@@ -1,16 +1,16 @@
-import { makeStyles, MenuItem, Select, SelectProps } from '@material-ui/core'
+import {makeStyles, MenuItem, Select, SelectProps} from '@material-ui/core'
 import React from 'react'
-import { ThemeType } from '../../style/theme'
+import {ThemeType} from '../../style/theme'
 
 interface StyleProps {
   width: string //px or %
-  itemHeight: string,
+  itemHeight: string
 }
 const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
-  root:  props => ({ width: props.width}),
+  root: props => ({width: props.width}),
   select: props => ({
     height: props.itemHeight,
-   
+
     border: '1px solid black',
     backgroundColor: 'white',
     display: 'flex',
@@ -28,7 +28,7 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
     paddingLeft: theme.spacing(2),
   }),
 
-  optionClass: props=> ({
+  optionClass: props => ({
     width: props.width,
     backgroundColor: 'white',
     height: props.itemHeight,
@@ -56,23 +56,30 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
   },
   listBorder: {
     borderRadius: '0px',
-    
   },
 }))
 
-
 export interface BlackBorderDropdownStyleProps {
-  width:  string
-  itemHeight?: string,
+  width: string
+  itemHeight?: string
   value: string
   onChange: Function
-  dropdown: {value: string, label: string}[]
+  dropdown: {value: string; label: string}[]
   emptyValueLabel: string
 }
 
 const SaveBlackBorderDropdown: React.FunctionComponent<
   SelectProps & BlackBorderDropdownStyleProps
-> = ({ value, onChange, dropdown, id, emptyValueLabel, width, itemHeight="30px", ...other }) => {
+> = ({
+  value,
+  onChange,
+  dropdown,
+  id,
+  emptyValueLabel,
+  width,
+  itemHeight = '30px',
+  ...other
+}) => {
   const classes = useStyles({width, itemHeight})
 
   return (
@@ -88,7 +95,7 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
         root: classes.select,
       }}
       MenuProps={{
-        classes: { list: classes.listPadding, paper: classes.listBorder },
+        classes: {list: classes.listPadding, paper: classes.listBorder},
         getContentAnchorEl: null,
         anchorOrigin: {
           vertical: 'bottom',
@@ -99,9 +106,8 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
           horizontal: 'center',
         },
       }}
-      displayEmpty
-    >
-      <MenuItem value="" disabled style={{ display: 'none' }}>
+      displayEmpty>
+      <MenuItem value="" disabled style={{display: 'none'}}>
         {emptyValueLabel}
       </MenuItem>
       {dropdown.map((el, index) => (
@@ -109,8 +115,7 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
           className={classes.optionClass}
           key={index}
           value={el.value}
-          id={`investigator-${index}`}
-        >
+          id={`investigator-${index}`}>
           {el.label}
         </MenuItem>
       ))}

@@ -1,8 +1,8 @@
-import { Button, ButtonProps } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Button, ButtonProps} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
-import { ReactComponent as SaveIcon } from '../../assets/save_icon.svg'
-import { latoFont, ThemeType } from '../../style/theme'
+import {ReactComponent as SaveIcon} from '../../assets/save_icon.svg'
+import {latoFont, ThemeType} from '../../style/theme'
 
 interface StyleProps {
   width: number
@@ -37,7 +37,7 @@ const SaveButton: React.FunctionComponent<ButtonProps & ButtonStyleProps> = ({
   id,
   ...other
 }) => {
-  const classes = useStyles({ width: inputWidth })
+  const classes = useStyles({width: inputWidth})
 
   return (
     <Button
@@ -46,8 +46,7 @@ const SaveButton: React.FunctionComponent<ButtonProps & ButtonStyleProps> = ({
       color="primary"
       onClick={onClick}
       startIcon={<SaveIcon />}
-      id={id}
-    >
+      id={id}>
       Save changes
     </Button>
   )

@@ -34,7 +34,7 @@ self.addEventListener('message', async function (event) {
   }
 
   const allClients = await self.clients.matchAll()
-  const allClientIds = allClients.map((client) => client.id)
+  const allClientIds = allClients.map(client => client.id)
 
   switch (event.data) {
     case 'KEEPALIVE_REQUEST': {
@@ -70,7 +70,7 @@ self.addEventListener('message', async function (event) {
     }
 
     case 'CLIENT_CLOSED': {
-      const remainingClients = allClients.filter((client) => {
+      const remainingClients = allClients.filter(client => {
         return client.id !== clientId
       })
 
@@ -85,7 +85,7 @@ self.addEventListener('message', async function (event) {
 })
 
 self.addEventListener('fetch', function (event) {
-  const { clientId, request } = event
+  const {clientId, request} = event
   const requestId = uuidv4()
   const requestClone = request.clone()
   const getOriginalResponse = () => fetch(requestClone)
@@ -160,7 +160,7 @@ self.addEventListener('fetch', function (event) {
         case 'MOCK_SUCCESS': {
           setTimeout(
             resolve.bind(this, createResponse(clientMessage)),
-            clientMessage.payload.delay,
+            clientMessage.payload.delay
           )
           break
         }
@@ -170,7 +170,7 @@ self.addEventListener('fetch', function (event) {
         }
 
         case 'NETWORK_ERROR': {
-          const { name, message } = clientMessage.payload
+          const {name, message} = clientMessage.payload
           const networkError = new Error(message)
           networkError.name = name
 
@@ -192,14 +192,14 @@ This exception has been gracefully handled as a 500 response, however, it's stro
 If you wish to mock an error response, please refer to this guide: https://mswjs.io/docs/recipes/mocking-error-responses\
   `,
             request.method,
-            request.url,
+            request.url
           )
 
           return resolve(createResponse(clientMessage))
         }
       }
     })
-      .then(async (response) => {
+      .then(async response => {
         const client = await self.clients.get(clientId)
         const clonedResponse = response.clone()
 
@@ -220,14 +220,14 @@ If you wish to mock an error response, please refer to this guide: https://mswjs
 
         return response
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(
           '[MSW] Failed to mock a "%s" request to "%s": %s',
           request.method,
           request.url,
-          error,
+          error
         )
-      }),
+      })
   )
 })
 
@@ -245,7 +245,7 @@ function sendToClient(client, message) {
   return new Promise((resolve, reject) => {
     const channel = new MessageChannel()
 
-    channel.port1.onmessage = (event) => {
+    channel.port1.onmessage = event => {
       if (event.data && event.data.error) {
         reject(event.data.error)
       } else {

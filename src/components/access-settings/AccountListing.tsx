@@ -1,14 +1,14 @@
-import { Box, Button, makeStyles, Theme } from '@material-ui/core'
-import React, { FunctionComponent, ReactNode } from 'react'
-import { useErrorHandler } from 'react-error-boundary'
-import { ReactComponent as Delete } from '../../assets/trash.svg'
-import { useAsync } from '../../helpers/AsyncHook'
-import { isInAdminRole, formatStudyId } from '../../helpers/utility'
+import {Box, Button, makeStyles, Theme} from '@material-ui/core'
+import React, {FunctionComponent, ReactNode} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import {ReactComponent as Delete} from '../../assets/trash.svg'
+import {useAsync} from '../../helpers/AsyncHook'
+import {isInAdminRole, formatStudyId} from '../../helpers/utility'
 import AccessService from '../../services/access.service'
-import { globals, poppinsFont } from '../../style/theme'
-import { OrgUser, Study, UserSessionData } from '../../types/types'
+import {globals, poppinsFont} from '../../style/theme'
+import {OrgUser, Study, UserSessionData} from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
-import { MTBHeadingH1, MTBHeadingH6 } from '../widgets/Headings'
+import {MTBHeadingH1, MTBHeadingH6} from '../widgets/Headings'
 import Loader from '../widgets/Loader'
 import SideBarListItem from '../widgets/SideBarListItem'
 import AccessGrid, {
@@ -65,10 +65,7 @@ function getNameDisplay({
   return name
 }
 
-const NameDisplay: FunctionComponent<any> = ({
-  member,
-  index,
-}): JSX.Element => {
+const NameDisplay: FunctionComponent<any> = ({member, index}): JSX.Element => {
   let name = getNameDisplay(member)
   let admin = <></>
 
@@ -87,19 +84,19 @@ const NameDisplay: FunctionComponent<any> = ({
   )
 
   return (
-    <Box style={{ textTransform: 'none' }}>
+    <Box style={{textTransform: 'none'}}>
       {firstLine}
       <span>{member.email}</span>
     </Box>
   )
 }
 
-const NameDisplayDetail: React.FunctionComponent<{ member: OrgUser }> = ({
+const NameDisplayDetail: React.FunctionComponent<{member: OrgUser}> = ({
   member,
 }) => {
   const classes = useStyles()
   return (
-    <Box style={{ marginBottom: '80px', marginTop: '100px' }}>
+    <Box style={{marginBottom: '80px', marginTop: '100px'}}>
       <Box display="flex" alignItems="center">
         <Box className={classes.studyInfoNameText} fontWeight="bold">
           {getNameDisplay(member)}
@@ -124,17 +121,17 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   children,
 }: AccountListingProps) => {
   const classes = useStyles()
-  const { token, roles: myRoles, id, orgMembership } = sessionData
+  const {token, roles: myRoles, id, orgMembership} = sessionData
 
   const handleError = useErrorHandler()
 
   const [currentMemberAccess, setCurrentMemberAccess] = React.useState<
-    { access: Access; member: OrgUser } | undefined
+    {access: Access; member: OrgUser} | undefined
   >()
   const [isAccessLoading, setIsAccessLoading] = React.useState(true)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
 
-  const { data: members, status, error, run, setData } = useAsync<any>({
+  const {data: members, status, error, run, setData} = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
@@ -143,7 +140,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     async (orgMembership: string, token: string) => {
       const members = await AccessService.getDetailedAccountsForOrg(
         token!,
-        orgMembership!,
+        orgMembership!
       )
       const meIndex = members.findIndex(m => m.id === id)
       const result = [
@@ -153,7 +150,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
       ]
       return result
     },
-    [id],
+    [id]
   )
 
   React.useEffect(() => {
@@ -162,7 +159,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
         const result = getMembers(orgMembership!, token!)
 
         return result
-      })(orgMembership, token),
+      })(orgMembership, token)
     )
   }, [run, orgMembership, token, updateToggle, getMembers])
 
@@ -192,10 +189,10 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
       console.log(member.roles.join(','))
       const access = getAccessFromRoles(member.roles)
 
-      setCurrentMemberAccess({ access, member })
+      setCurrentMemberAccess({access, member})
       setIsAccessLoading(false)
     },
-    [token],
+    [token]
   )
 
   React.useEffect(() => {
@@ -214,8 +211,10 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   return (
     <Box className={classes.root}>
       <Box className={classes.listing}>
-        <MTBHeadingH6>Study ID: {formatStudyId(study.identifier)} </MTBHeadingH6>
-        <MTBHeadingH1 style={{ color: ' #FCFCFC' }}>{study.name}</MTBHeadingH1>
+        <MTBHeadingH6>
+          Study ID: {formatStudyId(study.identifier)}{' '}
+        </MTBHeadingH6>
+        <MTBHeadingH1 style={{color: ' #FCFCFC'}}>{study.name}</MTBHeadingH1>
         {status === 'PENDING' && <Loader reqStatusLoading={true}></Loader>}{' '}
         <ul
           className={classes.list}
@@ -223,8 +222,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
             maxHeight: '400px',
             overflow: 'scroll',
             marginBottom: '16px',
-          }}
-        >
+          }}>
           {members &&
             members.map((member: any, index: number) => (
               <SideBarListItem
@@ -235,15 +233,13 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                   member.id ===
                   /*currentMemberId*/ currentMemberAccess?.member.id
                 }
-                onClick={() => updateAccess(member.id)}
-              >
+                onClick={() => updateAccess(member.id)}>
                 <div
                   style={{
                     paddingLeft: '8px',
                     textAlign: 'left',
                     width: '100%',
-                  }}
-                >
+                  }}>
                   <NameDisplay member={member} index={index}></NameDisplay>
                 </div>
               </SideBarListItem>
@@ -255,8 +251,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
       </Box>
       <Loader
         reqStatusLoading={!currentMemberAccess?.member || isAccessLoading}
-        style={{ width: 'auto', margin: '0 auto' }}
-      >
+        style={{width: 'auto', margin: '0 auto'}}>
         {currentMemberAccess && (
           <Box pl={10} position="relative" pb={10}>
             <NameDisplayDetail member={currentMemberAccess!.member} />
@@ -269,8 +264,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                 })
               }
               isEdit={true}
-              currentUserIsAdmin={isInAdminRole(myRoles)}
-            ></AccessGrid>
+              currentUserIsAdmin={isInAdminRole(myRoles)}></AccessGrid>
             {myRoles.includes('admin') && (
               <Box className={classes.buttons}>
                 <Button
@@ -278,8 +272,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                   onClick={() => {
                     setIsConfirmDeleteOpen(true)
                   }}
-                  startIcon={<Delete />}
-                >
+                  startIcon={<Delete />}>
                   Remove from study
                 </Button>
                 <Button
@@ -288,8 +281,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                   variant="contained"
                   onClick={() =>
                     updateRolesForExistingAccount(currentMemberAccess!)
-                  }
-                >
+                  }>
                   Save changes
                 </Button>
               </Box>
@@ -301,13 +293,12 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
               type={'DELETE'}
               onCancel={() => setIsConfirmDeleteOpen(false)}
               onConfirm={() => {
-                const member = { ...currentMemberAccess!.member }
+                const member = {...currentMemberAccess!.member}
                 // setCurrentMemberId(members[0].id)
                 deleteExistingAccount(member)
 
                 setIsConfirmDeleteOpen(false)
-              }}
-            >
+              }}>
               <div>
                 <strong>
                   Are you sure you would like to permanently delete{' '}

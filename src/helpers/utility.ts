@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import {useState} from 'react'
 import CONSTANTS from '../types/constants'
 import {
   AdminRole,
@@ -6,7 +6,7 @@ import {
   Response,
   SignInType,
   StringDictionary,
-  UserSessionData
+  UserSessionData,
 } from '../types/types'
 
 type RestMethod = 'POST' | 'GET' | 'DELETE'
@@ -15,14 +15,14 @@ function makeRequest(
   method: RestMethod = 'POST',
   url: string,
   body: any,
-  token?: string,
+  token?: string
 ): Promise<any> {
   return new Promise(function (resolve, reject) {
     var xhr = new XMLHttpRequest()
     xhr.open(method, url)
     xhr.onload = function () {
       if ((this.status >= 200 && this.status < 300) || this.status === 412) {
-        resolve({ status: this.status, response: xhr.response, ok: true })
+        resolve({status: this.status, response: xhr.response, ok: true})
       } else {
         reject({
           status: this.status,
@@ -52,7 +52,7 @@ export const callEndpointXHR = async <T>(
   endpoint: string,
   method: RestMethod = 'POST',
   data: StringDictionary<any>,
-  token?: string,
+  token?: string
 ): Promise<Response<T>> => {
   let body: string | undefined = JSON.stringify(data)
 
@@ -65,13 +65,13 @@ export const callEndpointXHR = async <T>(
     body = undefined
   }
   return makeRequest(method, endpoint, body, token).then(
-    ({ status, response, ok }) => {
+    ({status, response, ok}) => {
       const result = JSON.parse(response)
-      return { status: status, data: result, ok: ok }
+      return {status: status, data: result, ok: ok}
     },
     error => {
       throw error
-    },
+    }
   )
 }
 
@@ -80,7 +80,7 @@ export const callEndpoint = async <T>(
   method: RestMethod = 'POST',
   data: StringDictionary<any>,
   token?: string,
-  isSynapseEndpoint?: boolean,
+  isSynapseEndpoint?: boolean
 ): Promise<Response<T>> => {
   const ls = window.localStorage
   const isE2E = ls.getItem('crc_e2e')
@@ -118,7 +118,7 @@ export const callEndpoint = async <T>(
     //alert(JSON.stringify(result, null, 2))
     throw result
   }
-  return { status: response.status, data: result, ok: response.ok }
+  return {status: response.status, data: result, ok: response.ok}
 }
 
 export const getSession = (): UserSessionData | undefined => {
@@ -140,7 +140,7 @@ export const setSession = (data: UserSessionData) => {
   sessionStorage.setItem(CONSTANTS.constants.SESSION_NAME, JSON.stringify(data))
 }
 
-export const getSearchParams = (search: string): { [key: string]: string } => {
+export const getSearchParams = (search: string): {[key: string]: string} => {
   const searchParamsProps: any = {}
   // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams -- needs polyfill for ie11
   const searchParams = new URLSearchParams(search)
@@ -153,7 +153,7 @@ export const getSearchParams = (search: string): { [key: string]: string } => {
 // function to use session storage (react hooks)
 export const useSessionStorage = (
   key: string,
-  initialValue: string | undefined,
+  initialValue: string | undefined
 ): [string | undefined, (value: string | undefined) => void] => {
   // Pass initial state function to useState so logic is only executed once
   const [storedValue, setStoredValue] = useState(() => {
@@ -196,7 +196,7 @@ export const getEnumKeys = <T>(enum1: T): (keyof T)[] =>
 
 export const getEnumKeyByEnumValue = (
   myEnum: any,
-  enumValue: number | string,
+  enumValue: number | string
 ): string => {
   let keys = Object.keys(myEnum).filter(x => myEnum[x] == enumValue)
   const result = keys.length > 0 ? keys[0] : ''
@@ -209,7 +209,7 @@ export const bytesToSize = (bytes: number) => {
   if (bytes === 0) return 'n/a'
   const i = parseInt(
     Math.floor(Math.log(bytes) / Math.log(1024)).toString(),
-    10,
+    10
   )
   if (i === 0) return `${bytes} ${sizes[i]})`
   return `${(bytes / 1024 ** i).toFixed(1)}${sizes[i]}`
@@ -224,7 +224,7 @@ export const randomInteger = (min: number, max: number): number => {
 // generates external id
 export const generateNonambiguousCode = (
   length: number,
-  isAlpha?: boolean,
+  isAlpha?: boolean
 ): string => {
   let result = ''
   const alpha = '23456789abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ'
@@ -257,14 +257,13 @@ export const isInvalidPhone = (phone: string): boolean => {
   This function is taken from: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
 */
 export const isValidEmail = (email: string) => {
-  const re =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(String(email).toLowerCase())
 }
 
 export const isInAdminRole = (roles: AdminRole[]) => roles.includes('org_admin')
 
-export const isSignInById = (signIn?: SignInType[]):boolean => {
+export const isSignInById = (signIn?: SignInType[]): boolean => {
   return !signIn || !signIn.includes('phone_password')
 }
 
@@ -286,6 +285,6 @@ export const setBodyClass = (next?: string) => {
 
 // Format the studyId to take the form xxx-xxx
 export const formatStudyId = (studyId: string) => {
-  if(studyId.length !== 6) return studyId
-  return studyId.substring(0, 3) + "-" + studyId.substring(3)
+  if (studyId.length !== 6) return studyId
+  return studyId.substring(0, 3) + '-' + studyId.substring(3)
 }

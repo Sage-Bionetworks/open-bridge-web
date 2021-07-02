@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Schedule } from '../types/scheduling'
-import { Study } from '../types/types'
+import {Schedule} from '../types/scheduling'
+import {Study} from '../types/types'
 
 export type StudyInfoData = {
   study: Study
@@ -9,30 +9,30 @@ export type StudyInfoData = {
 
 type ActionType = 'SET_ALL' | 'SET_STUDY' | 'SET_SCHEDULE'
 
-type Action = { type: ActionType; payload: StudyInfoData }
+type Action = {type: ActionType; payload: StudyInfoData}
 type Dispatch = (action: Action) => void
 
-type StudyInfoProviderProps = { children: React.ReactNode }
+type StudyInfoProviderProps = {children: React.ReactNode}
 
-const initialState: StudyInfoData| {} = {}
+const initialState: StudyInfoData | {} = {}
 
 const StudyInfoStateContext = React.createContext<StudyInfoData | undefined>(
-  undefined,
+  undefined
 )
 const StudyInfoDispatchContext = React.createContext<Dispatch | undefined>(
-  undefined,
+  undefined
 )
 
 function studyInfoReducer(state: StudyInfoData, action: Action): StudyInfoData {
   switch (action.type) {
     case 'SET_ALL': {
-     // console.log('setting all')
+      // console.log('setting all')
       const newState = {
         ...state,
         schedule: action.payload.schedule,
         study: action.payload.study,
       }
-     // console.log(JSON.stringify(newState))
+      // console.log(JSON.stringify(newState))
       return newState
     }
     case 'SET_STUDY': {
@@ -59,10 +59,10 @@ function studyInfoReducer(state: StudyInfoData, action: Action): StudyInfoData {
     }
   }
 }
-function StudyInfoDataProvider({ children }: StudyInfoProviderProps) {
+function StudyInfoDataProvider({children}: StudyInfoProviderProps) {
   const [state, dispatch] = React.useReducer(
     studyInfoReducer,
-    initialState as StudyInfoData,
+    initialState as StudyInfoData
   )
 
   return (
@@ -86,14 +86,10 @@ function useStudyInfoDataDispatch() {
   const context = React.useContext(StudyInfoDispatchContext)
   if (context === undefined) {
     throw new Error(
-      'useStudyInfoDispatch must be used within a StudyInfoContext',
+      'useStudyInfoDispatch must be used within a StudyInfoContext'
     )
   }
   return context
 }
 
-export {
-  StudyInfoDataProvider,
-  useStudyInfoDataState,
-  useStudyInfoDataDispatch,
-}
+export {StudyInfoDataProvider, useStudyInfoDataState, useStudyInfoDataDispatch}

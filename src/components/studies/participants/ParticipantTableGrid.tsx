@@ -6,7 +6,7 @@ import {
   IconButton,
   Paper,
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import {
   DataGrid,
   GridCellParams,
@@ -22,19 +22,19 @@ import {
   HideGridColMenuItem,
 } from '@material-ui/data-grid'
 import _ from 'lodash'
-import React, { FunctionComponent, ReactNode } from 'react'
+import React, {FunctionComponent, ReactNode} from 'react'
 import Pluralize from 'react-pluralize'
-import { ReactComponent as PencilIcon } from '../../../assets/edit_pencil.svg'
+import {ReactComponent as PencilIcon} from '../../../assets/edit_pencil.svg'
 import JoinedCheckSymbol from '../../../assets/participants/joined_check_mark.svg'
 import JoinedPhoneSymbol from '../../../assets/participants/joined_phone_icon.svg'
-import { ReactComponent as HidePhoneIcon } from '../../../assets/participants/phone_hide_icon.svg'
-import { ReactComponent as ShowPhoneIcon } from '../../../assets/participants/phone_show_icon.svg'
-import { ReactComponent as WithdrawIcon } from '../../../assets/withdraw.svg'
-import { useUserSessionDataState } from '../../../helpers/AuthContext'
+import {ReactComponent as HidePhoneIcon} from '../../../assets/participants/phone_hide_icon.svg'
+import {ReactComponent as ShowPhoneIcon} from '../../../assets/participants/phone_show_icon.svg'
+import {ReactComponent as WithdrawIcon} from '../../../assets/withdraw.svg'
+import {useUserSessionDataState} from '../../../helpers/AuthContext'
 import ParticipantService, {
   EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING,
 } from '../../../services/participants.service'
-import { latoFont } from '../../../style/theme'
+import {latoFont} from '../../../style/theme'
 import {
   EditableParticipantData,
   ParticipantAccountSummary,
@@ -43,11 +43,8 @@ import {
 } from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import HideWhen from '../../widgets/HideWhen'
-import SelectAll, { SelectionType } from '../../widgets/SelectAll'
-import {
-  EditParticipantForm,
-  WithdrawParticipantForm,
-} from './ParticipantForms'
+import SelectAll, {SelectionType} from '../../widgets/SelectAll'
+import {EditParticipantForm, WithdrawParticipantForm} from './ParticipantForms'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -70,9 +67,7 @@ const useStyles = makeStyles(theme => ({
 /**********************************************   SUBCOMPONENTS ****************************************************/
 
 //---------------------- cell for displaying phone
-const PhoneCell: FunctionComponent<{ params: GridCellParams }> = ({
-  params,
-}) => {
+const PhoneCell: FunctionComponent<{params: GridCellParams}> = ({params}) => {
   const [isHidden, setIsHidden] = React.useState(true)
   const getValPhone = (column: string): string | undefined => {
     const result = params.getValue(params.id, column)?.toString()
@@ -88,9 +83,9 @@ const PhoneCell: FunctionComponent<{ params: GridCellParams }> = ({
   }
 
   return params.formattedValue ? (
-    <div style={{ textAlign: 'center', width: '100%' }}>
+    <div style={{textAlign: 'center', width: '100%'}}>
       {!isHidden && params.formattedValue}
-      <Button onClick={onClick} style={{ minWidth: 'auto', margin: '0 auto' }}>
+      <Button onClick={onClick} style={{minWidth: 'auto', margin: '0 auto'}}>
         {isHidden ? <ShowPhoneIcon /> : <HidePhoneIcon />}
       </Button>
     </div>
@@ -106,7 +101,7 @@ const EditCell: FunctionComponent<{
   studyId: string
   token: string
   onSetParticipantToEdit: Function
-}> = ({ params, studyId, token, onSetParticipantToEdit }) => {
+}> = ({params, studyId, token, onSetParticipantToEdit}) => {
   const onClick = async () => {
     try {
       const getValString = (column: string): string | undefined => {
@@ -136,7 +131,7 @@ const EditCell: FunctionComponent<{
       const event = await ParticipantService.getRequestInfoForParticipant(
         studyId,
         token!,
-        getValString('id')!,
+        getValString('id')!
       )
 
       const hasSignedIn = event.signedInOn !== undefined
@@ -157,8 +152,7 @@ const EditCell: FunctionComponent<{
     <IconButton
       onClick={onClick}
       aria-label="edit participant"
-      component="span"
-    >
+      component="span">
       <PencilIcon />
     </IconButton>
   ) : (
@@ -189,13 +183,12 @@ const SelectionControl: FunctionComponent<{
 
   return (
     <GridToolbarContainer>
-      <div style={{ position: 'relative' }}>
+      <div style={{position: 'relative'}}>
         <Box
           className={classes.selectionDisplay}
           style={{
             visibility: !selectionModel?.length ? 'hidden' : 'visible',
-          }}
-        >
+          }}>
           {`${isAllSelected ? 'All ' : ''}`}
           <Pluralize
             singular={'participant'}
@@ -211,16 +204,14 @@ const SelectionControl: FunctionComponent<{
             top: 40,
             left: 0,
             backgroundColor: '#fff',
-          }}
-        >
+          }}>
           <SelectAll
             selectionType={selectionType}
             allText={`Select all ${totalParticipants}`}
             allPageText="Select this page"
             onSelectAllPage={onSelectAllPage}
             onDeselect={onDeselect}
-            onSelectAll={onSelectAll}
-          ></SelectAll>
+            onSelectAll={onSelectAll}></SelectAll>
         </div>
       </div>
     </GridToolbarContainer>
@@ -228,10 +219,10 @@ const SelectionControl: FunctionComponent<{
 }
 
 export function CustomColumnMenuComponent(
-  props: GridColumnMenuProps & { color: string },
+  props: GridColumnMenuProps & {color: string}
 ) {
   const classes = useStyles()
-  const { hideMenu, currentColumn, color, ...other } = props
+  const {hideMenu, currentColumn, color, ...other} = props
   // more info here: https://material-ui.com/components/data-grid/components/#components
   /*if (currentColumn.field === 'name') { }*/
 
@@ -239,8 +230,7 @@ export function CustomColumnMenuComponent(
     <GridColumnMenuContainer
       hideMenu={hideMenu}
       currentColumn={currentColumn}
-      {...other}
-    >
+      {...other}>
       <GridColumnsMenuItem onClick={hideMenu} column={currentColumn!} />
       <HideGridColMenuItem onClick={hideMenu} column={currentColumn!} />
     </GridColumnMenuContainer>
@@ -249,7 +239,7 @@ export function CustomColumnMenuComponent(
 
 function getPhone(params: GridValueGetterParams) {
   if (params.value) {
-    return (params.value as { nationalFormat: string }).nationalFormat
+    return (params.value as {nationalFormat: string}).nationalFormat
   } else return ''
 }
 function getDate(value: GridCellValue) {
@@ -268,8 +258,7 @@ function getJoinedDateWithIcons(params: GridValueGetterParams) {
       {dateToDisplay && (
         <img
           src={hasJoined ? JoinedCheckSymbol : JoinedPhoneSymbol}
-          style={{ marginRight: '6px', width: '16px' }}
-        ></img>
+          style={{marginRight: '6px', width: '16px'}}></img>
       )}
       {formattedDate}
     </Box>
@@ -279,7 +268,7 @@ function getJoinedDateWithIcons(params: GridValueGetterParams) {
 function renderColumnHeader(icon: string, headerName: string) {
   return (
     <Box display="flex" flexDirection="row">
-      <img src={icon} style={{ marginRight: '6px', width: '16px' }}></img>
+      <img src={icon} style={{marginRight: '6px', width: '16px'}}></img>
       {headerName}
     </Box>
   ) as ReactNode
@@ -291,7 +280,7 @@ const ACTIVE_PARTICIPANT_COLUMNS: GridColDef[] = [
     headerName: 'Participant ID',
     flex: 2,
   },
-  { field: 'id', headerName: 'HealthCode', flex: 2 },
+  {field: 'id', headerName: 'HealthCode', flex: 2},
   {
     field: 'clinicVisitDate',
     headerName: 'Clinic Visit',
@@ -304,7 +293,7 @@ const ACTIVE_PARTICIPANT_COLUMNS: GridColDef[] = [
     renderCell: getJoinedDateWithIcons,
     flex: 1,
   },
-  { field: 'note', headerName: 'Notes', flex: 1 },
+  {field: 'note', headerName: 'Notes', flex: 1},
 ]
 
 const WITHDRAWN_PARTICIPANT_COLUMNS: GridColDef[] = [
@@ -313,7 +302,7 @@ const WITHDRAWN_PARTICIPANT_COLUMNS: GridColDef[] = [
     headerName: 'Participant ID',
     flex: 2,
   },
-  { field: 'id', headerName: 'HealthCode', flex: 2 },
+  {field: 'id', headerName: 'HealthCode', flex: 2},
   {
     field: 'clinicVisitDate',
     headerName: 'Clinic Visit',
@@ -332,7 +321,7 @@ const WITHDRAWN_PARTICIPANT_COLUMNS: GridColDef[] = [
     valueGetter: params => getDate(params.value) || '-',
     flex: 1,
   },
-  { field: 'withdrawalNote', headerName: 'Withdrawal note', flex: 1 },
+  {field: 'withdrawalNote', headerName: 'Withdrawal note', flex: 1},
 ]
 
 const phoneColumn: GridColDef = {
@@ -352,7 +341,7 @@ export const EditDialogTitle: FunctionComponent<{
   onCancel: Function
   shouldWithdraw?: boolean
   batchEdit?: boolean
-}> = ({ onCancel, shouldWithdraw, batchEdit }) => {
+}> = ({onCancel, shouldWithdraw, batchEdit}) => {
   const title = shouldWithdraw
     ? 'Withdraw'
     : !batchEdit
@@ -363,8 +352,8 @@ export const EditDialogTitle: FunctionComponent<{
   return (
     <DialogTitleWithClose onCancel={onCancel}>
       <>
-        <Icon style={{ width: '25px' }}></Icon>
-        <span style={{ paddingLeft: '8px' }}>{title}</span>
+        <Icon style={{width: '25px'}}></Icon>
+        <span style={{paddingLeft: '8px'}}>{title}</span>
       </>
     </DialogTitleWithClose>
   )
@@ -382,7 +371,7 @@ export type ParticipantTableGridProps = {
   onUpdateParticipant: (
     pId: string,
     note: string,
-    clinicVisitDate?: Date,
+    clinicVisitDate?: Date
   ) => void
   onWithdrawParticipant: (participantId: string, note: string) => void
   children: React.ReactNode //paging control
@@ -404,19 +393,18 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   children,
 }: ParticipantTableGridProps) => {
   const classes = useStyles()
-  const { token } = useUserSessionDataState()
+  const {token} = useUserSessionDataState()
 
   //when we are editing the record this is where the info is stored
-  const [participantToEdit, setParticipantToEdit] =
-    React.useState<
-      | {
-          id: string
-          participant: EditableParticipantData
-          hasSignedIn: boolean
-          shouldWithdraw: boolean
-        }
-      | undefined
-    >(undefined)
+  const [participantToEdit, setParticipantToEdit] = React.useState<
+    | {
+        id: string
+        participant: EditableParticipantData
+        hasSignedIn: boolean
+        shouldWithdraw: boolean
+      }
+    | undefined
+  >(undefined)
 
   const editColumn = {
     field: 'edit',
@@ -481,8 +469,8 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   return (
     <>
       <Paper elevation={0}>
-        <div style={{ display: 'flex', height: '90vh' }}>
-          <div style={{ flexGrow: 1 }}>
+        <div style={{display: 'flex', height: '90vh'}}>
+          <div style={{flexGrow: 1}}>
             <DataGrid
               rows={rows}
               density="standard"
@@ -500,7 +488,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                 onRowSelected(
                   // rows.filter(row => model.includes(row.id)) || [],
                   model,
-                  false,
+                  false
                 )
               }}
               selectionModel={selectionModel}
@@ -544,8 +532,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
         open={participantToEdit !== undefined}
         maxWidth="sm"
         fullWidth
-        aria-labelledby="edit participant"
-      >
+        aria-labelledby="edit participant">
         <EditDialogTitle
           onCancel={() => setParticipantToEdit(undefined)}
           shouldWithdraw={participantToEdit?.shouldWithdraw}
@@ -559,8 +546,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               onUpdateParticipant(participantToEdit?.id!, note, cvd)
               setParticipantToEdit(undefined)
             }}
-            participant={participantToEdit?.participant || {}}
-          >
+            participant={participantToEdit?.participant || {}}>
             <Button
               onClick={() =>
                 setParticipantToEdit(prev => ({
@@ -568,8 +554,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                   shouldWithdraw: true,
                 }))
               }
-              color="secondary"
-            >
+              color="secondary">
               <WithdrawIcon />
               &nbsp; Withdraw from study
             </Button>
@@ -581,8 +566,9 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               onWithdrawParticipant(participantToEdit?.id!, note)
               setParticipantToEdit(undefined)
             }}
-            participant={participantToEdit?.participant || {}}
-          ></WithdrawParticipantForm>
+            participant={
+              participantToEdit?.participant || {}
+            }></WithdrawParticipantForm>
         </HideWhen>
       </Dialog>
     </>

@@ -3,14 +3,14 @@ import {
   queryByAttribute,
   render,
   waitFor,
-  within
+  within,
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { BrowserRouter } from 'react-router-dom'
+import {BrowserRouter} from 'react-router-dom'
 import AppDesign from '../../../../components/studies/app-design/AppDesign'
-import { UserSessionDataStateContext } from '../../../../helpers/AuthContext'
-import { Study, WelcomeScreenData } from '../../../../types/types'
+import {UserSessionDataStateContext} from '../../../../helpers/AuthContext'
+import {Study, WelcomeScreenData} from '../../../../types/types'
 import Server from '../../../../_tests_server/handlers/server'
 
 const getById = queryByAttribute.bind(null, 'id')
@@ -57,20 +57,18 @@ const renderAppDesignComponent = () => {
           id: 'testID',
           roles: ['org_admin'],
           dataGroups: [],
-        }}
-      >
+        }}>
         <AppDesign
           hasObjectChanged={false}
           saveLoader={false}
           id={'test'}
-          study={{ ...studyObject }}
+          study={{...studyObject}}
           onSave={onSave}
-          onUpdate={onUpdate}
-        ></AppDesign>
+          onUpdate={onUpdate}></AppDesign>
         ,
       </UserSessionDataStateContext.Provider>
       ,
-    </BrowserRouter>,
+    </BrowserRouter>
   ).container
   container = getById(appDesign as HTMLElement, 'container')!
 }
@@ -107,20 +105,20 @@ test('should study lead information section behave correctly', async () => {
   // Test the study lead drop down
   const leadPrincipleInvestigatorDropDown = getById(
     appDesign as HTMLElement,
-    'lead-investigator-drop-down',
+    'lead-investigator-drop-down'
   )
   const selectNode = leadPrincipleInvestigatorDropDown?.parentNode?.querySelector(
-    '[role=button]',
+    '[role=button]'
   )
   userEvent.click(selectNode!)
   const listbox = document.body.querySelector('ul[role=listbox]')
   await waitFor(() =>
     expect(
-      within(listbox as HTMLElement).getByText('John Roberts'),
-    ).toBeInTheDocument(),
+      within(listbox as HTMLElement).getByText('John Roberts')
+    ).toBeInTheDocument()
   )
   const selectedItemDefault = within(listbox as HTMLElement).getByText(
-    'John Roberts',
+    'John Roberts'
   )
   userEvent.click(selectedItemDefault)
   studyObject.contacts?.push({
@@ -133,7 +131,7 @@ test('should study lead information section behave correctly', async () => {
   userEvent.type(institution!, TESTING_TEXT)
   userEvent.click(container)
   const currentInvestigator = studyObject.contacts?.find(
-    el => el.role === 'principal_investigator',
+    el => el.role === 'principal_investigator'
   )
   currentInvestigator!.affiliation = TESTING_TEXT
   studyObject.contacts?.unshift({
@@ -156,13 +154,13 @@ test('should save buttons be called correctly', async () => {
   // test both save buttons
   const saveButton = getById(
     appDesign as HTMLElement,
-    'save-button-study-builder-1',
+    'save-button-study-builder-1'
   )
   userEvent.click(saveButton!)
   expect(onSave).toHaveBeenCalledTimes(1)
   const saveButton2 = getById(
     appDesign as HTMLElement,
-    'save-button-study-builder-2',
+    'save-button-study-builder-2'
   )
   userEvent.click(saveButton2!)
   expect(onSave).toHaveBeenCalledTimes(2)
@@ -195,7 +193,7 @@ test('should welcome screen messaging section behave correctly', async () => {
 
   const disclaimerCheckBox = getById(
     appDesign as HTMLElement,
-    'disclaimer-check-box',
+    'disclaimer-check-box'
   )
   userEvent.click(disclaimerCheckBox!)
   expect(disclaimerCheckBox).toBeChecked()
@@ -221,7 +219,7 @@ test('should general contact and support section behave correctly', () => {
 
   const contactLeadPhoneNumber = getById(
     appDesign as HTMLElement,
-    'phone-number-contact-input',
+    'phone-number-contact-input'
   )
   userEvent.type(contactLeadPhoneNumber!, TESTING_TEXT_PHONE_NUMBER)
   userEvent.click(container)
@@ -233,7 +231,7 @@ test('should general contact and support section behave correctly', () => {
 
   const contactLeadEmail = getById(
     appDesign as HTMLElement,
-    'contact-email-input',
+    'contact-email-input'
   )
   userEvent.type(contactLeadEmail!, TESTING_TEXT_EMAIL)
   userEvent.click(container)
@@ -244,12 +242,12 @@ test('should general contact and support section behave correctly', () => {
 test('should ethics board contact section behave correctly', () => {
   const differingIRBContactButton = getById(
     appDesign as HTMLElement,
-    'affiliation-other-radio-button',
+    'affiliation-other-radio-button'
   )
   userEvent.click(differingIRBContactButton!)
   const ethicsBoardName = getById(
     appDesign as HTMLElement,
-    'ethics-board-input',
+    'ethics-board-input'
   )
   userEvent.type(ethicsBoardName!, TESTING_TEXT)
   userEvent.click(container)
@@ -261,7 +259,7 @@ test('should ethics board contact section behave correctly', () => {
 
   const ethicsBoardPhoneNumber = getById(
     appDesign as HTMLElement,
-    'ethics-phone-number-input',
+    'ethics-phone-number-input'
   )
   userEvent.type(ethicsBoardPhoneNumber!, TESTING_TEXT_PHONE_NUMBER)
   userEvent.click(container!)
@@ -273,7 +271,7 @@ test('should ethics board contact section behave correctly', () => {
 
   const ethicsBoardEmail = getById(
     appDesign as HTMLElement,
-    'ethics-email-input',
+    'ethics-email-input'
   )
   userEvent.type(ethicsBoardEmail!, TESTING_TEXT_EMAIL)
   userEvent.click(container)
@@ -282,7 +280,7 @@ test('should ethics board contact section behave correctly', () => {
 
   const IRBApprovalNumber = getById(
     appDesign as HTMLElement,
-    'IRB-approval-input',
+    'IRB-approval-input'
   )
   userEvent.type(IRBApprovalNumber!, TESTING_TEXT)
   userEvent.click(container)
@@ -293,7 +291,7 @@ test('should ethics board contact section behave correctly', () => {
 test('should study summary section behave correctly', () => {
   const officialStudyName = getById(
     appDesign as HTMLElement,
-    'study-name-input',
+    'study-name-input'
   )
   userEvent.type(officialStudyName!, TESTING_TEXT)
   userEvent.click(container)
@@ -311,12 +309,12 @@ test('should study summary section behave correctly', () => {
 test('should error text appear when emails are badly formatted', () => {
   const ethicsBoardEmail = getById(
     appDesign as HTMLElement,
-    'ethics-email-input',
+    'ethics-email-input'
   )
   userEvent.type(ethicsBoardEmail!, TESTIING_TEXT_BAD_EMAIL)
   userEvent.click(container)
   expect(
-    getById(appDesign as HTMLElement, 'ethics-bad-email-text'),
+    getById(appDesign as HTMLElement, 'ethics-bad-email-text')
   ).not.toBeNull()
   userEvent.clear(ethicsBoardEmail!)
   userEvent.click(container)
@@ -324,29 +322,29 @@ test('should error text appear when emails are badly formatted', () => {
 
   const contactLeadEmail = getById(
     appDesign as HTMLElement,
-    'contact-email-input',
+    'contact-email-input'
   )
   userEvent.type(contactLeadEmail!, TESTIING_TEXT_BAD_EMAIL)
   userEvent.click(container)
   expect(
-    getById(appDesign as HTMLElement, 'general-contact-bad-email-text'),
+    getById(appDesign as HTMLElement, 'general-contact-bad-email-text')
   ).not.toBeNull()
   userEvent.clear(contactLeadEmail!)
   userEvent.click(container)
   expect(
-    getById(appDesign as HTMLElement, 'general-contact-bad-email-text'),
+    getById(appDesign as HTMLElement, 'general-contact-bad-email-text')
   ).toBeNull()
 })
 
 test('should error text appear when phone numbers are badly formatted', () => {
   const ethicsBoardPhoneNumber = getById(
     appDesign as HTMLElement,
-    'ethics-phone-number-input',
+    'ethics-phone-number-input'
   )
   userEvent.type(ethicsBoardPhoneNumber!, TESTING_TEXT_BAD_PHONE_NUMBER)
   userEvent.click(container)
   expect(
-    getById(appDesign as HTMLElement, 'ethics-phone-bad-text'),
+    getById(appDesign as HTMLElement, 'ethics-phone-bad-text')
   ).not.toBeNull()
   userEvent.clear(ethicsBoardPhoneNumber!)
   userEvent.click(container)
@@ -354,16 +352,16 @@ test('should error text appear when phone numbers are badly formatted', () => {
 
   const contactLeadPhoneNumber = getById(
     appDesign as HTMLElement,
-    'phone-number-contact-input',
+    'phone-number-contact-input'
   )
   userEvent.type(contactLeadPhoneNumber!, TESTING_TEXT_BAD_PHONE_NUMBER)
   userEvent.click(container)
   expect(
-    getById(appDesign as HTMLElement, 'general-contact-bad-phone-text'),
+    getById(appDesign as HTMLElement, 'general-contact-bad-phone-text')
   ).not.toBeNull()
   userEvent.clear(contactLeadPhoneNumber!)
   userEvent.click(container)
   expect(
-    getById(appDesign as HTMLElement, 'general-contact-bad-phone-text'),
+    getById(appDesign as HTMLElement, 'general-contact-bad-phone-text')
   ).toBeNull()
 })

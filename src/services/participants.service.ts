@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { callEndpoint, generateNonambiguousCode } from '../helpers/utility'
+import {callEndpoint, generateNonambiguousCode} from '../helpers/utility'
 import constants from '../types/constants'
 import {
   EditableParticipantData,
@@ -24,7 +24,7 @@ export type ParticipantRelevantEvents = {
 //formats participant in the format required by datagrid
 function mapWithdrawnParticipant(
   p: EnrolledAccountRecord,
-  studyIdentifier: string,
+  studyIdentifier: string
 ): ExtendedParticipantAccountSummary {
   return {
     ...p.participant,
@@ -57,7 +57,7 @@ export function formatExternalId(studyId: string, externalId: string) {
 async function getRelevantEventsForParticipants(
   studyIdentifier: string,
   token: string,
-  participantId: string[],
+  participantId: string[]
 ): Promise<StringDictionary<ParticipantRelevantEvents>> {
   //transform ids into promises
   const promises = participantId.map(async pId => {
@@ -65,13 +65,13 @@ async function getRelevantEventsForParticipants(
       .replace(':studyId', studyIdentifier)
       .replace(':userId', pId)
 
-    const apiCall = await callEndpoint<{ items: any[] }>(
+    const apiCall = await callEndpoint<{items: any[]}>(
       endpoint,
       'GET',
       {},
-      token,
+      token
     )
-    return { participantId: pId, apiCall: apiCall }
+    return {participantId: pId, apiCall: apiCall}
   })
 
   //execute promises and reduce array to dictionary object
@@ -79,15 +79,15 @@ async function getRelevantEventsForParticipants(
     const items = result.reduce((acc, item) => {
       //clinic visits
       const clinicVisitDate = item.apiCall.data.items.find(
-        event => event.eventId === `custom:${CLINIC_EVENT_ID}`,
+        event => event.eventId === `custom:${CLINIC_EVENT_ID}`
       )
       //joinedDate eventIds will change
       let joinedDate = item.apiCall.data.items.find(
-        event => event.eventId === `custom:${JOINED_EVENT_ID}`, //TODO: this will not be custom
+        event => event.eventId === `custom:${JOINED_EVENT_ID}` //TODO: this will not be custom
       )
 
       let smsDate = item.apiCall.data.items.find(
-        event => event.eventId === `custom:${LINK_SENT_EVENT_ID}`, //TODO: this will not be custom
+        event => event.eventId === `custom:${LINK_SENT_EVENT_ID}` //TODO: this will not be custom
       )
       return {
         ...acc,
@@ -104,8 +104,8 @@ async function getRelevantEventsForParticipants(
 
 async function getAllPages<T>(
   fn: Function,
-  args: any[],
-): Promise<{ items: T[]; total: number }> {
+  args: any[]
+): Promise<{items: T[]; total: number}> {
   const pageSize = 50
   const result = await fn(...args, pageSize, 0)
   const pages = Math.ceil(result.total / pageSize)
@@ -113,7 +113,7 @@ async function getAllPages<T>(
     return result
   }
 
-  const queries: Promise<{ items: T[]; total: number }>[] = []
+  const queries: Promise<{items: T[]; total: number}>[] = []
   for (let i = 0; i < pages; i++) {
     queries.push(fn(...args, pageSize, i * pageSize))
   }
@@ -121,7 +121,7 @@ async function getAllPages<T>(
     const allItems1 = result.map(i => i.items as T[])
     const allItems = allItems1.flat()
 
-    return { items: allItems, total: result[0].total }
+    return {items: allItems, total: result[0].total}
   })
 }
 
@@ -131,14 +131,14 @@ async function getTestParticipants(
   studyIdentifier: string,
   token: string,
   pageSize?: number,
-  offsetBy?: number,
+  offsetBy?: number
 ): Promise<{
   items: ParticipantAccountSummary[]
   total: number
 }> {
   const endpoint = constants.endpoints.participantsSearch.replace(
     ':id',
-    studyIdentifier,
+    studyIdentifier
   )
 
   const data = {
@@ -157,7 +157,7 @@ async function getTestParticipants(
     ...p,
     externalId: formatExternalId(
       studyIdentifier,
-      p.externalIds[studyIdentifier],
+      p.externalIds[studyIdentifier]
     ),
   }))
 
@@ -165,7 +165,7 @@ async function getTestParticipants(
   /*.filter(item =>
     item.studyIds?.includes(studyIdentifier),
   )*/
-  return { items: mappedData, total: result.data.total }
+  return {items: mappedData, total: result.data.total}
 
   /* ALINA: 3/9 -- uncomment this for testing delete failures */
   /*
@@ -207,24 +207,24 @@ data.noneOfGroups =  []
 async function getActiveParticipantById(
   studyIdentifier: string,
   token: string,
-  participantId: string,
+  participantId: string
 ): Promise<ParticipantAccountSummary | null> {
   const endpoint = constants.endpoints.participant.replace(
     ':id',
-    studyIdentifier,
+    studyIdentifier
   )
   try {
     const result = await callEndpoint<ParticipantAccountSummary>(
       `${endpoint}/${participantId}`,
       'GET',
       {},
-      token,
+      token
     )
     return {
       ...result.data,
       externalId: formatExternalId(
         studyIdentifier,
-        result.data.externalIds[studyIdentifier],
+        result.data.externalIds[studyIdentifier]
       ),
     }
   } catch (e) {
@@ -240,18 +240,18 @@ async function getActiveParticipantById(
 async function deleteParticipant(
   studyIdentifier: string,
   token: string,
-  participantId: string,
+  participantId: string
 ): Promise<string> {
   const endpoint = `${constants.endpoints.participant.replace(
     ':id',
-    studyIdentifier,
+    studyIdentifier
   )}/${participantId}`
 
-  const result = await callEndpoint<{ identifier: string }>(
+  const result = await callEndpoint<{identifier: string}>(
     endpoint,
     'DELETE',
     {},
-    token,
+    token
   )
   return result.data.identifier
 }
@@ -261,8 +261,8 @@ async function getParticipants(
   token: string,
   participantType: ParticipantActivityType,
   pageSize: number,
-  offsetBy: number,
-): Promise<{ items: ExtendedParticipantAccountSummary[]; total: number }> {
+  offsetBy: number
+): Promise<{items: ExtendedParticipantAccountSummary[]; total: number}> {
   // get enrollment for non test account
   if (!pageSize) {
     return getAllPages<ParticipantAccountSummary>(getParticipants, [
@@ -284,7 +284,7 @@ async function getParticipants(
       : 'all'
   const endpoint = `${constants.endpoints.enrollments.replace(
     ':studyId',
-    studyIdentifier,
+    studyIdentifier
   )}`
   const data = {
     enrollmentFilter: queryFilter,
@@ -303,24 +303,20 @@ async function getParticipants(
   let resultItems: ParticipantAccountSummary[] = []
   if (queryFilter === 'withdrawn') {
     resultItems = result.items.map(p =>
-      mapWithdrawnParticipant(p, studyIdentifier),
+      mapWithdrawnParticipant(p, studyIdentifier)
     )
   }
   if (queryFilter === 'enrolled') {
     const participantPromises = result.items.map(i =>
-      getActiveParticipantById(
-        studyIdentifier,
-        token,
-        i.participant.identifier,
-      ),
+      getActiveParticipantById(studyIdentifier, token, i.participant.identifier)
     )
     const resolvedParticipants = await Promise.all(participantPromises)
     resultItems = resolvedParticipants.filter(
-      p => p !== null,
+      p => p !== null
     ) as ParticipantAccountSummary[]
   }
 
-  return { items: resultItems, total: result.total }
+  return {items: resultItems, total: result.total}
 }
 
 async function getAllParticipantsInEnrollmentType(
@@ -329,12 +325,12 @@ async function getAllParticipantsInEnrollmentType(
   enrollmentType: string,
   includeTesters?: boolean,
   pageSize?: number,
-  offsetBy?: number,
+  offsetBy?: number
 ) {
   if (!pageSize) {
     return getAllPages<EnrolledAccountRecord>(
       getAllParticipantsInEnrollmentType,
-      [studyIdentifier, token, enrollmentType, includeTesters || false],
+      [studyIdentifier, token, enrollmentType, includeTesters || false]
     )
   }
   const endpoint = `${constants.endpoints.studies}/${studyIdentifier}/enrollments`
@@ -348,22 +344,22 @@ async function getAllParticipantsInEnrollmentType(
     items: EnrolledAccountRecord[]
     total: number
   }>(endpoint, 'GET', body, token)
-  return { items: result.data.items, total: result.data.total }
+  return {items: result.data.items, total: result.data.total}
 }
 
 async function getNumEnrolledParticipants(
   studyIdentifier: string,
-  token: string,
+  token: string
 ) {
   const endpoint = `${constants.endpoints.studies}/${studyIdentifier}/enrollments`
   const body = {
     enrollmentFilter: 'enrolled',
   }
-  const result = await callEndpoint<{ total: number }>(
+  const result = await callEndpoint<{total: number}>(
     endpoint,
     'GET',
     body,
-    token,
+    token
   )
   return result.data.total
 }
@@ -372,21 +368,21 @@ async function getEnrollmentById(
   studyIdentifier: string,
   token: string,
   participantId: string,
-  participantType: ParticipantActivityType,
+  participantType: ParticipantActivityType
 ) {
   const endpoint = constants.endpoints.enrollmentsForUser
     .replace(':studyId', studyIdentifier)
     .replace(':userId', participantId)
     .trim()
   try {
-    const result = await callEndpoint<{ items: EnrolledAccountRecord[] }>(
+    const result = await callEndpoint<{items: EnrolledAccountRecord[]}>(
       endpoint,
       'GET',
       {},
-      token,
+      token
     )
     const filteredRows = result.data.items.filter(
-      p => p.studyId === studyIdentifier,
+      p => p.studyId === studyIdentifier
     )
 
     if (_.isEmpty(filteredRows)) {
@@ -396,12 +392,13 @@ async function getEnrollmentById(
     const recordFromParticipantApi = await getActiveParticipantById(
       studyIdentifier,
       token,
-      participant.participant.identifier,
+      participant.participant.identifier
     )
 
     const isWithdrawn = participant.withdrawnOn !== undefined
-    const isTestUser =
-      recordFromParticipantApi?.dataGroups?.includes('test_user')
+    const isTestUser = recordFromParticipantApi?.dataGroups?.includes(
+      'test_user'
+    )
     if (participantType === 'WITHDRAWN' && (!isWithdrawn || isTestUser)) {
       return null
     }
@@ -419,7 +416,7 @@ async function getEnrollmentById(
       return getActiveParticipantById(
         studyIdentifier,
         token,
-        filteredRows[0].participant.identifier,
+        filteredRows[0].participant.identifier
       )
     }
   } catch (e) {
@@ -436,20 +433,20 @@ async function withdrawParticipant(
   studyIdentifier: string,
   token: string,
   participantId: string,
-  note?: string,
+  note?: string
 ): Promise<string> {
   const endpoint = `${constants.endpoints.enrollments.replace(
     ':studyId',
-    studyIdentifier,
+    studyIdentifier
   )}/${participantId}${
     note ? '?withdrawalNote=' + encodeURIComponent(note) + '' : ''
   }`
 
-  const result = await callEndpoint<{ identifier: string }>(
+  const result = await callEndpoint<{identifier: string}>(
     endpoint,
     'DELETE',
     {},
-    token,
+    token
   )
 
   return result.data.identifier
@@ -459,21 +456,21 @@ async function updateParticipantGroup(
   studyIdentifier: string,
   token: string,
   participantId: string,
-  dataGroups: string[],
+  dataGroups: string[]
 ): Promise<string> {
   const endpoint = `${constants.endpoints.participant.replace(
     ':id',
-    studyIdentifier,
+    studyIdentifier
   )}/${participantId}`
   const data = {
     dataGroups: dataGroups,
   }
 
-  const result = await callEndpoint<{ identifier: string }>(
+  const result = await callEndpoint<{identifier: string}>(
     endpoint,
     'POST',
     data,
-    token,
+    token
   )
   return result.data.identifier
 }
@@ -484,11 +481,11 @@ async function addParticipant(
   studyIdentifier: string,
   token: string,
   options: EditableParticipantData,
-  isTestUser?: boolean,
+  isTestUser?: boolean
 ): Promise<string> {
   const endpoint = constants.endpoints.participant.replace(
     ':id',
-    studyIdentifier,
+    studyIdentifier
   )
 
   const data: StringDictionary<any> = {
@@ -506,17 +503,17 @@ async function addParticipant(
   if (options.externalId) {
     const backEndFormatExternalId = makeBackendExternalId(
       studyIdentifier,
-      options.externalId,
+      options.externalId
     )
-    data.externalIds = { [studyIdentifier]: backEndFormatExternalId }
+    data.externalIds = {[studyIdentifier]: backEndFormatExternalId}
     data.password = backEndFormatExternalId
   }
 
-  const result = await callEndpoint<{ identifier: string }>(
+  const result = await callEndpoint<{identifier: string}>(
     endpoint,
     'POST',
     data,
-    token,
+    token
   )
 
   const userId = result.data.identifier
@@ -530,7 +527,7 @@ async function addParticipant(
       timestamp: new Date(options.clinicVisitDate).toISOString(),
     }
 
-    await callEndpoint<{ identifier: string }>(endpoint, 'POST', data, token)
+    await callEndpoint<{identifier: string}>(endpoint, 'POST', data, token)
   }
 
   return userId
@@ -539,13 +536,13 @@ async function addParticipant(
 // used for the preview screen in study builder
 async function addTestParticipant(
   studyIdentifier: string,
-  token: string,
+  token: string
 ): Promise<string> {
   return addParticipant(
     studyIdentifier,
     token,
-    { externalId: generateNonambiguousCode(6) },
-    true,
+    {externalId: generateNonambiguousCode(6)},
+    true
   )
 }
 
@@ -553,12 +550,12 @@ async function updateParticipantNote(
   studyIdentifier: string,
   token: string,
   participantId: string,
-  note?: string,
+  note?: string
 ) {
   // update note
   const endpoint = `${constants.endpoints.participant.replace(
     ':id',
-    studyIdentifier,
+    studyIdentifier
   )}/${participantId}`
   const data = {
     note: note,
@@ -571,7 +568,7 @@ async function updateParticipantClinicVisit(
   studyIdentifier: string,
   token: string,
   participantId: string,
-  clinicVisitDate?: Date,
+  clinicVisitDate?: Date
 ) {
   let eventEndpoint = constants.endpoints.events
     .replace(':studyId', studyIdentifier)
@@ -584,21 +581,11 @@ async function updateParticipantClinicVisit(
       timestamp: new Date(clinicVisitDate).toISOString(),
     }
 
-    await callEndpoint<{ identifier: string }>(
-      eventEndpoint,
-      'POST',
-      data,
-      token,
-    )
+    await callEndpoint<{identifier: string}>(eventEndpoint, 'POST', data, token)
   } else {
     // if it is empty - delete it
     eventEndpoint = eventEndpoint + CLINIC_EVENT_ID
-    await callEndpoint<{ identifier: string }>(
-      eventEndpoint,
-      'DELETE',
-      {},
-      token,
-    )
+    await callEndpoint<{identifier: string}>(eventEndpoint, 'DELETE', {}, token)
   }
   return participantId
 }
@@ -606,19 +593,14 @@ async function updateParticipantClinicVisit(
 async function getRequestInfoForParticipant(
   studyIdentifier: string,
   token: string,
-  participantId: string,
+  participantId: string
 ) {
   //transform ids into promises
   const endpoint = constants.endpoints.requestInfo
     .replace(':studyId', studyIdentifier)
     .replace(':userId', participantId)
 
-  const info = await callEndpoint<{ signedInOn: any }>(
-    endpoint,
-    'GET',
-    {},
-    token,
-  )
+  const info = await callEndpoint<{signedInOn: any}>(endpoint, 'GET', {}, token)
   return info.data
 }
 

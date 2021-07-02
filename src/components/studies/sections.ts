@@ -27,19 +27,19 @@ export type StudySection =
   | 'alerts'
   | 'launch'
 
-export const SECTIONS: { name: string; path: StudySection }[] = [
+export const SECTIONS: {name: string; path: StudySection}[] = [
   // { name: 'Set up Study', path: 'description' },
-  { name: 'Create Sessions', path: 'session-creator' },
-  { name: 'Schedule Sessions', path: 'scheduler' },
-  { name: 'Enrollment Type', path: 'enrollment-type-selector' },
-  { name: 'Customize App', path: 'customize' },
+  {name: 'Create Sessions', path: 'session-creator'},
+  {name: 'Schedule Sessions', path: 'scheduler'},
+  {name: 'Enrollment Type', path: 'enrollment-type-selector'},
+  {name: 'Customize App', path: 'customize'},
   // { name: 'Designate Groups', path: 'team-settings' },
 
-  { name: 'Optional Monitoring', path: 'passive-features' },
-  { name: 'Preview Study', path: 'preview' },
+  {name: 'Optional Monitoring', path: 'passive-features'},
+  {name: 'Preview Study', path: 'preview'},
   // { name: 'IRB Approval', path: 'irb' },
   // { name: 'Review Alerts', path: 'alerts' },
-  { name: 'Launch Study', path: 'launch' },
+  {name: 'Launch Study', path: 'launch'},
 ]
 
 export const normalNavIcons = [

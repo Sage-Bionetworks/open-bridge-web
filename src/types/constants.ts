@@ -5,7 +5,7 @@ export default {
     SESSION_NAME: 'bridge-session-mtb-user-testing',
     ENDPOINT: 'https://webservices.sagebridge.org',
     SYNAPSE_ENDPOINT: 'https://repo-prod.prod.sagebase.org',
-    NEW_STUDY_NAME: 'NEW_STUDY_UNNAMED'
+    NEW_STUDY_NAME: 'NEW_STUDY_UNNAMED',
   },
 
   /* templateTitles: {
@@ -23,10 +23,10 @@ export default {
     sms_verify_phone: 'Verify phone number',
   },*/
   environments: [
-    { value: 'local', label: 'Local' },
-    { value: 'develop', label: 'Development' },
-    { value: 'staging', label: 'Staging' },
-    { value: 'production', label: 'Production' },
+    {value: 'local', label: 'Local'},
+    {value: 'develop', label: 'Development'},
+    {value: 'staging', label: 'Staging'},
+    {value: 'production', label: 'Production'},
   ],
   /*host: {
     local: 'http://localhost:9000',
@@ -99,7 +99,7 @@ export default {
   masterschedule: '/v3/schedulerconfigs',
   metadata: '/v3/sharedmodules/metadata',*/
 
-   // assessment: '/v1/assessments/:id',
+    // assessment: '/v1/assessments/:id',
     //assessments: '/v1/assessments?includeDeleted=false',
     assmentsForSessions: '/v1/sessions/:sessionId/assessments',
     assessmentsShared: '/v1/sharedassessments/?includeDeleted=false',

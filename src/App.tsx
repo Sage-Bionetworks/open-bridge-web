@@ -1,22 +1,18 @@
-import {
-  CssBaseline,
-  ThemeProvider,
-  Typography
-} from '@material-ui/core'
-import React, { useEffect } from 'react'
-import { ErrorBoundary } from 'react-error-boundary'
-import { BrowserRouter as Router } from 'react-router-dom'
+import {CssBaseline, ThemeProvider, Typography} from '@material-ui/core'
+import React, {useEffect} from 'react'
+import {ErrorBoundary} from 'react-error-boundary'
+import {BrowserRouter as Router} from 'react-router-dom'
 import './App.css'
 import AuthenticatedApp from './AuthenticatedApp'
-import { ErrorFallback, ErrorHandler } from './components/widgets/ErrorHandler'
+import {ErrorFallback, ErrorHandler} from './components/widgets/ErrorHandler'
 import {
   useUserSessionDataDispatch,
-  useUserSessionDataState
+  useUserSessionDataState,
 } from './helpers/AuthContext'
-import { StudyInfoDataProvider } from './helpers/StudyInfoContext'
+import {StudyInfoDataProvider} from './helpers/StudyInfoContext'
 import UserService from './services/user.service'
-import { cssVariables, theme } from './style/theme'
-import { UserSessionData } from './types/types'
+import {cssVariables, theme} from './style/theme'
+import {UserSessionData} from './types/types'
 import UnauthenticatedApp from './UnauthenticatedApp'
 
 //const defaultTheme = createMuiTheme()
@@ -28,13 +24,13 @@ import UnauthenticatedApp from './UnauthenticatedApp'
 
 export const detectSSOCode = async (
   sessionUpdateFn: Function,
-  sessionData: UserSessionData,
+  sessionData: UserSessionData
 ) => {
   //const redirectURL = getRootURL()
   // 'code' handling (from SSO) should be preformed on the root page, and then redirect to original route.
   let code: URL | null | string = new URL(window.location.href)
   // in test environment the searchParams isn't defined
-  const { searchParams } = code
+  const {searchParams} = code
   if (!searchParams) {
     return
   }
@@ -46,7 +42,7 @@ export const detectSSOCode = async (
       const loggedIn = await UserService.loginOauth(
         code,
         env.redirect,
-        env.vendor,
+        env.vendor
       )
 
       sessionUpdateFn({
@@ -60,7 +56,7 @@ export const detectSSOCode = async (
           orgMembership: loggedIn.data.orgMembership,
           dataGroups: loggedIn.data.dataGroups,
           roles: loggedIn.data.roles,
-          id: loggedIn.data.id
+          id: loggedIn.data.id,
         },
       })
 
@@ -97,29 +93,28 @@ function App() {
     return () => {
       isSubscribed = false
     }
-  }, [token, sessionUpdateFn ])
+  }, [token, sessionUpdateFn])
   useEffect(() => {
     detectSSOCode(sessionUpdateFn, sessionData)
   }, [sessionData.token, sessionUpdateFn, sessionData])
 
   return (
-    <ThemeProvider theme={{ ...theme, ...cssVariables }}>
+    <ThemeProvider theme={{...theme, ...cssVariables}}>
       <Typography component={'div'}>
         <CssBaseline />
-          <Router basename={process.env.PUBLIC_URL}>
-            <ErrorBoundary
-              FallbackComponent={ErrorFallback}
-              onError={ErrorHandler}
-            >
-              {sessionData.token ? (
-                <StudyInfoDataProvider>
+        <Router basename={process.env.PUBLIC_URL}>
+          <ErrorBoundary
+            FallbackComponent={ErrorFallback}
+            onError={ErrorHandler}>
+            {sessionData.token ? (
+              <StudyInfoDataProvider>
                 <AuthenticatedApp sessionData={sessionData} />
-                </StudyInfoDataProvider>
-              ) : (
-                <UnauthenticatedApp />
-              )}
-            </ErrorBoundary>
-          </Router>
+              </StudyInfoDataProvider>
+            ) : (
+              <UnauthenticatedApp />
+            )}
+          </ErrorBoundary>
+        </Router>
       </Typography>
     </ThemeProvider>
   )

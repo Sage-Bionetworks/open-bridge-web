@@ -1,4 +1,4 @@
-import { cleanup, queryByAttribute, render } from '@testing-library/react'
+import {cleanup, queryByAttribute, render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import ParticipantSearch from '../../../../components/studies/participants/ParticipantSearch'
@@ -16,8 +16,7 @@ const renderParticipantSearchComponent = () => {
   participantSearch = render(
     <ParticipantSearch
       onReset={onReset}
-      onSearch={onSearch}
-    ></ParticipantSearch>,
+      onSearch={onSearch}></ParticipantSearch>
   ).container
 }
 
@@ -34,12 +33,12 @@ afterEach(() => {
 test('renders correctly', () => {
   const startSearchButton = getById(
     participantSearch as HTMLElement,
-    'start-searching-for-participant-button',
+    'start-searching-for-participant-button'
   )
   expect(startSearchButton).not.toEqual(null)
   const inputElement = getById(
     participantSearch as HTMLElement,
-    'participant-search-bar',
+    'participant-search-bar'
   )
   expect(inputElement).toEqual(null)
 })
@@ -47,12 +46,12 @@ test('renders correctly', () => {
 test('should initial search button press lead to appearing of input element', () => {
   const startSearchButton = getById(
     participantSearch as HTMLElement,
-    'start-searching-for-participant-button',
+    'start-searching-for-participant-button'
   )
   userEvent.click(startSearchButton!)
   const inputElement = getById(
     participantSearch as HTMLElement,
-    'participant-search-bar',
+    'participant-search-bar'
   )
   expect(inputElement).not.toEqual(null)
 })
@@ -60,17 +59,17 @@ test('should initial search button press lead to appearing of input element', ()
 test('search properties are passed correctly on search button pressed', () => {
   const startSearchButton = getById(
     participantSearch as HTMLElement,
-    'start-searching-for-participant-button',
+    'start-searching-for-participant-button'
   )
   userEvent.click(startSearchButton!)
   const inputElement = getById(
     participantSearch as HTMLElement,
-    'participant-search-bar',
+    'participant-search-bar'
   )
   userEvent.type(inputElement!, TESTING_TEXT)
   const searchbutton = getById(
     participantSearch as HTMLElement,
-    'search-participants-button',
+    'search-participants-button'
   )
   userEvent.click(searchbutton!)
   expect(onSearch).toHaveBeenLastCalledWith(TESTING_TEXT)
@@ -79,23 +78,23 @@ test('search properties are passed correctly on search button pressed', () => {
 test('content is correct when typing and is cleared correctly on x-button press', () => {
   const startSearchButton = getById(
     participantSearch as HTMLElement,
-    'start-searching-for-participant-button',
+    'start-searching-for-participant-button'
   )
   userEvent.click(startSearchButton!)
   const inputElement = getById(
     participantSearch as HTMLElement,
-    'participant-search-bar',
+    'participant-search-bar'
   )
   userEvent.type(inputElement!, TESTING_TEXT)
   expect(inputElement).toHaveValue(TESTING_TEXT)
   const searchbutton = getById(
     participantSearch as HTMLElement,
-    'search-participants-button',
+    'search-participants-button'
   )
   userEvent.click(searchbutton!)
   const clearTextButton = getById(
     participantSearch as HTMLInputElement,
-    'clear-participant-search-text-button',
+    'clear-participant-search-text-button'
   )
   expect(clearTextButton).not.toEqual(null)
   userEvent.click(clearTextButton!)
@@ -105,12 +104,12 @@ test('content is correct when typing and is cleared correctly on x-button press'
 test('search is executed on enter press', () => {
   const startSearchButton = getById(
     participantSearch as HTMLElement,
-    'start-searching-for-participant-button',
+    'start-searching-for-participant-button'
   )
   userEvent.click(startSearchButton!)
   const inputElement = getById(
     participantSearch as HTMLElement,
-    'participant-search-bar',
+    'participant-search-bar'
   )
   userEvent.type(inputElement!, TESTING_TEXT)
   userEvent.type(inputElement!, '{enter}')

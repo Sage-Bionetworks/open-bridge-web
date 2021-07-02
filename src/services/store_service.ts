@@ -2,7 +2,7 @@
 // This is very hacky...
 localStorage.removeItem('mtb-page')
 
-const actions =  {
+const actions = {
   set: function (key: string, value: any) {
     console.debug('[cache] Setting', key)
     localStorage.setItem(key, JSON.stringify(value))

@@ -1,5 +1,5 @@
-import { makeStyles } from '@material-ui/core'
-import React, { FunctionComponent, useEffect, useRef, useState } from 'react'
+import {makeStyles} from '@material-ui/core'
+import React, {FunctionComponent, useEffect, useRef, useState} from 'react'
 const useStyles = makeStyles(theme => ({
   wrapper: {
     marginRight: theme.spacing(2),
@@ -45,7 +45,7 @@ export const Editable: FunctionComponent<EditableProps> = ({
   }, [isEditing, childRef])
 
   const handleKeyDown = (event: React.KeyboardEvent, type: string) => {
-    const { key } = event
+    const {key} = event
     const keys = ['Escape', 'Tab']
     const enterKey = 'Enter'
     const allKeys = [...keys, enterKey]
@@ -68,13 +68,12 @@ export const Editable: FunctionComponent<EditableProps> = ({
       {isEditing ? (
         <div
           onBlur={() => setEditing(false)}
-          onKeyDown={e => handleKeyDown(e, type)}
-        >
+          onKeyDown={e => handleKeyDown(e, type)}>
           {children}
         </div>
       ) : (
         <div className={classes.wrapper} onClick={() => setEditing(true)}>
-          <WrapperElement style={{ margin: 0 }}>
+          <WrapperElement style={{margin: 0}}>
             {text || placeholder || ' '}
           </WrapperElement>
         </div>
@@ -106,15 +105,14 @@ const EditableTextbox: FunctionComponent<EditableTextboxProps> = ({
       onReset={() => setNewValue(initValue)}
       onTriggerUpdate={() => onTriggerUpdate(newValue)}
       type="input"
-      {...rest}
-    >
+      {...rest}>
       <input
         ref={inputRef}
         type="text"
         name="task"
         placeholder={initValue}
         value={newValue}
-        style={{ width: '100%', padding: '8px' }}
+        style={{width: '100%', padding: '8px'}}
         onBlur={e => {
           if (newValue) {
             onTriggerUpdate(newValue)

@@ -1,5 +1,5 @@
-import { Box, Button, Checkbox, Menu, MenuItem } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Box, Button, Checkbox, Menu, MenuItem} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import CheckIcon from '@material-ui/icons/Check'
 import clsx from 'clsx'
 import React from 'react'
@@ -138,26 +138,22 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
         className={clsx(classes.select, Boolean(menuAnchor) && classes.focused)}
         aria-controls="simple-menu"
         aria-haspopup="true"
-        onClick={handleMenuClick}
-      >
+        onClick={handleMenuClick}>
         <div
           className={clsx(
-            Boolean(menuAnchor) ? classes.arrowUp : classes.arrowDown,
-          )}
-        ></div>
+            Boolean(menuAnchor) ? classes.arrowUp : classes.arrowDown
+          )}></div>
       </Button>
       <Menu
         id="study-menu"
         anchorEl={menuAnchor}
         keepMounted
         open={Boolean(menuAnchor)}
-        onClose={handleMenuClose}
-      >
+        onClose={handleMenuClose}>
         {menuItems.map(item => (
           <MenuItem
             onClick={() => setSelect(item.value as SelectionType)}
-            key={item.value}
-          >
+            key={item.value}>
             <div className={classes.icon}>
               {selection == item.value && <CheckIcon />}
             </div>

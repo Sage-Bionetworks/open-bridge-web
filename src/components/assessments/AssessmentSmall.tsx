@@ -1,8 +1,8 @@
-import { Box, createStyles, Paper } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Box, createStyles, Paper} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { Assessment } from '../../types/types'
+import React, {FunctionComponent} from 'react'
+import {Assessment} from '../../types/types'
 import AssessmentImage from './AssessmentImage'
 
 const useStyles = makeStyles(theme =>
@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme =>
         border: 'none',
         '& $text $hoverImage': {
           display: 'none',
-        }
+        },
       },
     },
 
@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme =>
       display: 'flex',
       alignContent: 'space-around',
       justifyContent: 'space-around',
-      overflow:'hidden'
+      overflow: 'hidden',
     },
     title: {
       fontSize: '12px',
@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme =>
     hoverImage: {
       display: 'none',
     },
-  }),
+  })
 )
 
 type AssessmentSmallOwnProps = {
@@ -92,15 +92,13 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
       className={clsx(
         classes.root,
         !hasHover && 'no-hover',
-        isDragging && 'dragging',
-      )}
-    >
+        isDragging && 'dragging'
+      )}>
       <Box className={classes.card}>
         <AssessmentImage
           variant="small"
           resources={assessment.resources}
-          name={assessment.title}
-        ></AssessmentImage>
+          name={assessment.title}></AssessmentImage>
       </Box>
       <div className={classes.text}>
         <div className={classes.hoverImage}> &#9776;</div>

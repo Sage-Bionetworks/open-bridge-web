@@ -1,6 +1,6 @@
-import { Box, Container, makeStyles } from '@material-ui/core'
-import React, { FunctionComponent, ReactNode } from 'react'
-import { Assessment, StringDictionary } from '../../types/types'
+import {Box, Container, makeStyles} from '@material-ui/core'
+import React, {FunctionComponent, ReactNode} from 'react'
+import {Assessment, StringDictionary} from '../../types/types'
 import AssessmentLibraryFilter from './AssessmentLibraryFilter'
 
 type AssessmentLibraryWrapperOwnProps = {

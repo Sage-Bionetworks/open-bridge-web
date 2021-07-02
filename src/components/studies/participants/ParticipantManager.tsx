@@ -8,37 +8,37 @@ import {
   Tab,
   Tabs,
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { useErrorHandler } from 'react-error-boundary'
-import { jsonToCSV } from 'react-papaparse'
-import { RouteComponentProps } from 'react-router-dom'
-import { ReactComponent as CollapseIcon } from '../../../assets/collapse.svg'
+import React, {FunctionComponent} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import {jsonToCSV} from 'react-papaparse'
+import {RouteComponentProps} from 'react-router-dom'
+import {ReactComponent as CollapseIcon} from '../../../assets/collapse.svg'
 import LiveIcon from '../../../assets/live_study_icon.svg'
-import { ReactComponent as AddParticipantsIcon } from '../../../assets/participants/add_participants.svg'
-import { ReactComponent as AddTestParticipantsIcon } from '../../../assets/participants/add_test_participants.svg'
+import {ReactComponent as AddParticipantsIcon} from '../../../assets/participants/add_participants.svg'
+import {ReactComponent as AddTestParticipantsIcon} from '../../../assets/participants/add_test_participants.svg'
 import BatchEditIcon from '../../../assets/participants/batch_edit_icon.svg'
 import SMSPhoneImg from '../../../assets/participants/joined_phone_icon.svg'
 import ParticipantListFocusIcon from '../../../assets/participants/participant_list_focus_icon.svg'
 import ParticipantListUnfocusIcon from '../../../assets/participants/participant_list_unfocus_icon.svg'
-import { ReactComponent as PinkSendSMSIcon } from '../../../assets/participants/send_sms_link_pink_icon.svg'
+import {ReactComponent as PinkSendSMSIcon} from '../../../assets/participants/send_sms_link_pink_icon.svg'
 import TestAccountFocusIcon from '../../../assets/participants/test_account_focus_icon.svg'
 import TestAccountUnfocusIcon from '../../../assets/participants/test_account_unfocus_icon.svg'
 import WithdrawnParticipantsFocusIcon from '../../../assets/participants/withdrawn_participants_focus_icon.svg'
 import WithdrawnParticipantsUnfocusIcon from '../../../assets/participants/withdrawn_participants_unfocus_icon.svg'
-import { ReactComponent as DeleteIcon } from '../../../assets/trash.svg'
-import { useAsync } from '../../../helpers/AsyncHook'
-import { useUserSessionDataState } from '../../../helpers/AuthContext'
+import {ReactComponent as DeleteIcon} from '../../../assets/trash.svg'
+import {useAsync} from '../../../helpers/AsyncHook'
+import {useUserSessionDataState} from '../../../helpers/AuthContext'
 import {
   StudyInfoData,
   useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
-import { formatStudyId, isSignInById } from '../../../helpers/utility'
+import {formatStudyId, isSignInById} from '../../../helpers/utility'
 import ParticipantService, {
   ParticipantRelevantEvents,
 } from '../../../services/participants.service'
-import { latoFont, poppinsFont, theme } from '../../../style/theme'
+import {latoFont, poppinsFont, theme} from '../../../style/theme'
 import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
@@ -48,7 +48,7 @@ import {
 } from '../../../types/types'
 import CollapsibleLayout from '../../widgets/CollapsibleLayout'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
-import { MTBHeadingH3 } from '../../widgets/Headings'
+import {MTBHeadingH3} from '../../widgets/Headings'
 import HelpBox from '../../widgets/HelpBox'
 import {
   DialogButtonPrimary,
@@ -214,9 +214,9 @@ type SelectedParticipantIdsType = {
 }
 
 const TAB_DEFs = [
-  { type: 'ACTIVE', label: 'Participant List' },
-  { type: 'WITHDRAWN', label: 'Withdrawn Participants' },
-  { type: 'TEST', label: 'Test Accounts' },
+  {type: 'ACTIVE', label: 'Participant List'},
+  {type: 'WITHDRAWN', label: 'Withdrawn Participants'},
+  {type: 'TEST', label: 'Test Accounts'},
 ]
 
 const TAB_ICONS_FOCUS = [
@@ -236,7 +236,7 @@ const getCurrentPageFromPageNavigationArrowPressed = (
   type: string,
   currentPage: number,
   totalParticipants: number,
-  pageSize: number,
+  pageSize: number
 ): number => {
   // "FF" = forward to last page
   // "F" = forward to next pages
@@ -261,7 +261,7 @@ async function getParticipants(
   token: string,
   currentPage: number,
   pageSize: number, // set to 0 to get all the participants
-  tab: ParticipantActivityType,
+  tab: ParticipantActivityType
 ): Promise<ParticipantData> {
   const offset = (currentPage - 1) * pageSize
 
@@ -270,17 +270,16 @@ async function getParticipants(
     token!,
     tab,
     pageSize,
-    offset,
+    offset
   )
 
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
-  const eventsMap: StringDictionary<ParticipantRelevantEvents> =
-    await ParticipantService.getRelevantEventsForParticipants(
-      studyId,
-      token,
-      retrievedParticipants.map(p => p.id),
-    )
+  const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipants(
+    studyId,
+    token,
+    retrievedParticipants.map(p => p.id)
+  )
   const result = retrievedParticipants!.map(participant => {
     const id = participant.id as string
     const event = eventsMap[id]
@@ -293,7 +292,7 @@ async function getParticipants(
     return updatedParticipant
   })
   console.log('returning result')
-  return { items: result, total: numberOfParticipants }
+  return {items: result, total: numberOfParticipants}
 }
 
 /***  subcomponents  */
@@ -309,7 +308,7 @@ const AddTestParticipantsIconSC = () => {
 const HelpBoxSC: FunctionComponent<{
   numRows: number | undefined
   status: RequestStatus
-}> = ({ numRows, status }) => {
+}> = ({numRows, status}) => {
   return (
     <Box position="relative">
       {!numRows && status !== 'PENDING' && (
@@ -319,8 +318,7 @@ const HelpBoxSC: FunctionComponent<{
           arrowTailLength={150}
           helpTextTopOffset={40}
           helpTextLeftOffset={100}
-          arrowRotate={45}
-        >
+          arrowRotate={45}>
           <div>
             Currently there are no participants enrolled in this study. To add
             participants, switch to Edit mode.
@@ -336,8 +334,7 @@ const HelpBoxSC: FunctionComponent<{
           helpTextTopOffset={-70}
           helpTextLeftOffset={140}
           helpTextWidth={250}
-          arrowRotate={0}
-        >
+          arrowRotate={0}>
           <div>
             You can upload a .csv or enter each participant credentials one by
             one. When you are done, return to “View” mode to send them an SMS
@@ -363,8 +360,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const handleError = useErrorHandler()
   const classes = useStyles()
 
-  const { study }: StudyInfoData = useStudyInfoDataState()
-  const { token } = useUserSessionDataState()
+  const {study}: StudyInfoData = useStudyInfoDataState()
+  const {token} = useUserSessionDataState()
 
   // The current page in the particpant grid the user is viewing
   const [currentPage, setCurrentPage] = React.useState(1)
@@ -385,19 +382,23 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   })
 
   // True if the user is currently searching for a particpant using id
-  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] =
-    React.useState(false)
+  const [
+    isUserSearchingForParticipant,
+    setIsUserSearchingForParticipant,
+  ] = React.useState(false)
 
-  const [fileDownloadUrl, setFileDownloadUrl] =
-    React.useState<string | undefined>(undefined)
+  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
+    string | undefined
+  >(undefined)
 
   //user ids selectedForSction
-  const [selectedParticipantIds, setSelectedParticipantIds] =
-    React.useState<SelectedParticipantIdsType>({
-      ACTIVE: [],
-      TEST: [],
-      WITHDRAWN: [],
-    })
+  const [selectedParticipantIds, setSelectedParticipantIds] = React.useState<
+    SelectedParticipantIdsType
+  >({
+    ACTIVE: [],
+    TEST: [],
+    WITHDRAWN: [],
+  })
   const [isAllSelected, setIsAllSelected] = React.useState(false)
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
@@ -412,16 +413,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   >([])
 
   //trigger data refresh on updates
-  const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
-    React.useState(false)
+  const [
+    refreshParticipantsToggle,
+    setRefreshParticipantsToggle,
+  ] = React.useState(false)
 
-  const {
-    data,
-    status,
-    error,
-    run,
-    setData: setParticipantData,
-  } = useAsync<ParticipantData>({
+  const {data, status, error, run, setData: setParticipantData} = useAsync<
+    ParticipantData
+  >({
     status: 'PENDING',
     data: null,
   })
@@ -433,7 +432,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     const fn = async () => {
       console.log('getting data')
       const result: ParticipantData = await run(
-        getParticipants(study.identifier, token!, currentPage, pageSize, tab),
+        getParticipants(study.identifier, token!, currentPage, pageSize, tab)
       )
     }
     fn()
@@ -455,7 +454,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         [tab]: data?.items.map(p => p.id) || [],
       }))
     } else {
-      setSelectedParticipantIds(prev => ({ ...prev }))
+      setSelectedParticipantIds(prev => ({...prev}))
     }
   }, [data])
 
@@ -465,7 +464,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       study!.identifier,
       token!,
       participantId,
-      note,
+      note
     )
     setRefreshParticipantsToggle(prev => !prev)
   }
@@ -473,25 +472,25 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const updateParticipant = async (
     participantId: string,
     note: string,
-    clinicVisitDate?: Date,
+    clinicVisitDate?: Date
   ) => {
     await ParticipantService.updateParticipantNote(
       study!.identifier,
       token!,
       participantId,
-      note,
+      note
     )
     await ParticipantService.updateParticipantClinicVisit(
       study!.identifier,
       token!,
       participantId,
-      clinicVisitDate,
+      clinicVisitDate
     )
     setRefreshParticipantsToggle(prev => !prev)
   }
 
   const deleteSelectedParticipants = async () => {
-    setLoadingIndicators(_ => ({ isDeleting: true }))
+    setLoadingIndicators(_ => ({isDeleting: true}))
     setParticipantsWithError([])
     let isError = false
     for (let i = 0; i < selectedParticipantIds[tab].length; i++) {
@@ -499,21 +498,21 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         const x = await ParticipantService.deleteParticipant(
           study!.identifier,
           token!,
-          selectedParticipantIds[tab][i],
+          selectedParticipantIds[tab][i]
         )
       } catch (e) {
         isError = true
         const errorParticipant = data?.items.find(
-          p => p.id === selectedParticipantIds[tab][i],
+          p => p.id === selectedParticipantIds[tab][i]
         )
         if (errorParticipant) {
           setParticipantsWithError(prev => [...prev, errorParticipant])
         }
       }
     }
-    setLoadingIndicators(_ => ({ isDeleting: false }))
+    setLoadingIndicators(_ => ({isDeleting: false}))
     if (!isError) {
-      setDialogState({ dialogOpenRemove: false, dialogOpenSMS: false })
+      setDialogState({dialogOpenRemove: false, dialogOpenSMS: false})
       setRefreshParticipantsToggle(prev => !prev)
     }
   }
@@ -523,7 +522,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       study.identifier,
       token!,
       searchedValue,
-      tab,
+      tab
     )
     //tab === 'ACTIVE'
     /* ? await ParticipantService.getParticipantById(
@@ -540,12 +539,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     //  const realResult = result ? [result] : []
     // const totalParticipantsFound = result ? 1 : 0
     if (result) {
-      const eventsMap: StringDictionary<ParticipantRelevantEvents> =
-        await ParticipantService.getRelevantEventsForParticipants(
-          study.identifier,
-          token!,
-          [result.id],
-        )
+      const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipants(
+        study.identifier,
+        token!,
+        [result.id]
+      )
 
       const event = eventsMap[result.id]
       const updatedParticipant = {
@@ -554,21 +552,21 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         joinedDate: event.joinedDate,
         smsDate: event.smsDate,
       }
-      setParticipantData({ items: [updatedParticipant], total: 1 })
+      setParticipantData({items: [updatedParticipant], total: 1})
     } else {
-      setParticipantData({ items: [], total: 0 })
+      setParticipantData({items: [], total: 0})
     }
   }
 
   const handleResetSearch = async () => {
     const result = await run(
-      getParticipants(study!.identifier, token!, currentPage, pageSize, tab),
+      getParticipants(study!.identifier, token!, currentPage, pageSize, tab)
     )
-    setParticipantData({ items: result.items, total: result.total })
+    setParticipantData({items: result.items, total: result.total})
   }
 
   const downloadParticipants = async (selection: ParticipantDownloadType) => {
-    setLoadingIndicators({ isDownloading: true })
+    setLoadingIndicators({isDownloading: true})
 
     //if getting all participants
     const participantsData: ParticipantData =
@@ -577,7 +575,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         : {
             items:
               data?.items.filter(p =>
-                selectedParticipantIds[tab].includes(p.id),
+                selectedParticipantIds[tab].includes(p.id)
               ) || [],
             total: selectedParticipantIds[tab].length,
           }
@@ -594,7 +592,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           ? new Date(p.joinedDate).toLocaleDateString()
           : '',
         note: '',
-      }),
+      })
     )
 
     //csv and blob it
@@ -605,7 +603,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     // get the fake link
     const fileObjUrl = URL.createObjectURL(blob)
     setFileDownloadUrl(fileObjUrl)
-    setLoadingIndicators({ isDownloading: false })
+    setLoadingIndicators({isDownloading: false})
   }
 
   if (!study) {
@@ -624,7 +622,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             {' '}
             Study ID: {formatStudyId(study.identifier)}{' '}
           </MTBHeadingH3>
-          <img src={LiveIcon} style={{ height: '25px' }}></img>
+          <img src={LiveIcon} style={{height: '25px'}}></img>
         </Box>
 
         {tab === 'ACTIVE' && !isUserSearchingForParticipant && (
@@ -636,8 +634,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             value={tab}
             variant="standard"
             onChange={handleTabChange}
-            TabIndicatorProps={{ hidden: true }}
-          >
+            TabIndicatorProps={{hidden: true}}>
             {TAB_DEFs.map((tabDef, index) => (
               <Tab
                 value={tabDef.type}
@@ -645,8 +642,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   root: clsx(
                     classes.tab,
                     tab === tabDef.type && classes.selectedTab,
-                    tabDef.type === 'WITHDRAWN' &&
-                      classes.withdrawnParticipants,
+                    tabDef.type === 'WITHDRAWN' && classes.withdrawnParticipants
                   ),
                 }}
                 icon={
@@ -655,17 +651,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     flexDirection="row"
                     className={clsx(
                       classes.tab_icon,
-                      tab !== tabDef.type && classes.unactiveTabIcon,
-                    )}
-                  >
+                      tab !== tabDef.type && classes.unactiveTabIcon
+                    )}>
                     <img
                       src={
                         tab === tabDef.type
                           ? TAB_ICONS_FOCUS[index]
                           : TAB_ICONS_UNFOCUS[index]
                       }
-                      style={{ marginRight: '6px' }}
-                    ></img>
+                      style={{marginRight: '6px'}}></img>
                     <div>
                       {`${tabDef.label} ${
                         tab === tabDef.type
@@ -689,7 +683,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               collapseButton={
                 <CollapseIcon
                   className={clsx(
-                    tab === 'TEST' && classes.collapsedAddTestUser,
+                    tab === 'TEST' && classes.collapsedAddTestUser
                   )}
                 />
               }
@@ -707,8 +701,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 borderRadius: 0,
                 backgroundColor:
                   tab === 'ACTIVE' ? theme.palette.primary.dark : '#AEDCC9',
-              }}
-            >
+              }}>
               <>
                 <AddParticipants
                   study={study}
@@ -716,8 +709,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   onAdded={() => {
                     setRefreshParticipantsToggle(prev => !prev)
                   }}
-                  isTestAccount={tab === 'TEST'}
-                ></AddParticipants>
+                  isTestAccount={tab === 'TEST'}></AddParticipants>
               </>
               <div>
                 <Box className={classes.gridToolBar}>
@@ -733,16 +725,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           })
                         }}
                         className={classes.sendSMSButton}
-                        disabled={selectedParticipantIds[tab].length === 0}
-                      >
+                        disabled={selectedParticipantIds[tab].length === 0}>
                         <img
                           src={SMSPhoneImg}
                           className={clsx(
                             selectedParticipantIds[tab].length === 0 &&
                               classes.disabledImage,
-                            classes.topRowImage,
-                          )}
-                        ></img>
+                            classes.topRowImage
+                          )}></img>
                         Send SMS link
                       </Button>
                     )}
@@ -753,16 +743,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           setIsBatchEditOpen(true)
                         }}
                         className={classes.batchEditButton}
-                        disabled={selectedParticipantIds[tab].length <= 1}
-                      >
+                        disabled={selectedParticipantIds[tab].length <= 1}>
                         <img
                           className={clsx(
                             selectedParticipantIds[tab].length <= 1 &&
                               classes.disabledImage,
-                            classes.topRowImage,
+                            classes.topRowImage
                           )}
-                          src={BatchEditIcon}
-                        ></img>
+                          src={BatchEditIcon}></img>
                         Batch Edit
                       </Button>
                     )}
@@ -791,16 +779,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           })
                         }}
                         className={classes.deleteButtonParticipant}
-                        disabled={selectedParticipantIds[tab].length === 0}
-                      >
+                        disabled={selectedParticipantIds[tab].length === 0}>
                         <DeleteIcon
                           className={clsx(
                             selectedParticipantIds[tab].length === 0 &&
                               classes.disabledImage,
                             classes.topRowImage,
-                            classes.deleteIcon,
-                          )}
-                        ></DeleteIcon>
+                            classes.deleteIcon
+                          )}></DeleteIcon>
                         Remove from Study
                       </Button>
                     )}
@@ -825,8 +811,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   style={{
                     marginLeft:
                       !isAddOpen && tab !== 'WITHDRAWN' ? '-48px' : '0',
-                  }}
-                >
+                  }}>
                   <ParticipantTableGrid
                     rows={data?.items || []}
                     status={status}
@@ -837,19 +822,19 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     selectedParticipantIds={selectedParticipantIds[tab]}
                     onWithdrawParticipant={(
                       participantId: string,
-                      note: string,
+                      note: string
                     ) => withdrawParticipant(participantId, note)}
                     onUpdateParticipant={(
                       participantId: string,
                       note: string,
-                      clinicVisitDate?: Date,
+                      clinicVisitDate?: Date
                     ) =>
                       updateParticipant(participantId, note, clinicVisitDate)
                     }
                     isEnrolledById={isSignInById(study.signInTypes)}
                     onRowSelected={(
                       /*id: string, isSelected: boolean*/ selection,
-                      isAll,
+                      isAll
                     ) => {
                       if (isAll !== undefined) {
                         setIsAllSelected(isAll)
@@ -858,8 +843,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         ...prev,
                         [tab]: selection,
                       }))
-                    }}
-                  >
+                    }}>
                     <ParticipantTablePagination
                       totalParticipants={data?.total || 0}
                       onPageSelectedChanged={(pageSelected: number) => {
@@ -869,13 +853,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       pageSize={pageSize}
                       setPageSize={setPageSize}
                       handlePageNavigationArrowPressed={(button: string) => {
-                        const currPage =
-                          getCurrentPageFromPageNavigationArrowPressed(
-                            button,
-                            currentPage,
-                            data?.total || 0,
-                            pageSize,
-                          )
+                        const currPage = getCurrentPageFromPageNavigationArrowPressed(
+                          button,
+                          currentPage,
+                          data?.total || 0,
+                          pageSize
+                        )
                         setCurrentPage(currPage)
                       }}
                     />
@@ -899,40 +882,37 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           onToggleParticipantRefresh={() =>
             setRefreshParticipantsToggle(prev => !prev)
           }
-          isAllSelected={isAllSelected}
-        ></BatchEditForm>
+          isAllSelected={isAllSelected}></BatchEditForm>
         <Dialog
           open={dialogState.dialogOpenSMS || dialogState.dialogOpenRemove}
           maxWidth="xs"
           scroll="body"
-          aria-labelledby="Remove Participant"
-        >
+          aria-labelledby="Remove Participant">
           <DialogTitleWithClose
             onCancel={() => {
-              setDialogState({ dialogOpenRemove: false, dialogOpenSMS: false })
-            }}
-          >
+              setDialogState({dialogOpenRemove: false, dialogOpenSMS: false})
+            }}>
             <>
               {dialogState.dialogOpenRemove ? (
-                <DeleteIcon style={{ width: '25px' }}></DeleteIcon>
+                <DeleteIcon style={{width: '25px'}}></DeleteIcon>
               ) : (
-                <PinkSendSMSIcon style={{ width: '25px' }}></PinkSendSMSIcon>
+                <PinkSendSMSIcon style={{width: '25px'}}></PinkSendSMSIcon>
               )}
-              <span style={{ paddingLeft: '8px' }}>
+              <span style={{paddingLeft: '8px'}}>
                 {dialogState.dialogOpenRemove
                   ? 'Remove From Study'
                   : 'Sending SMS Download Link'}
               </span>
             </>
           </DialogTitleWithClose>
-          <DialogContent style={{ display: 'flex', justifyContent: 'center' }}>
+          <DialogContent style={{display: 'flex', justifyContent: 'center'}}>
             {(dialogState.dialogOpenRemove || dialogState.dialogOpenSMS) && (
               <DialogContents
                 participantsWithError={participantsWithError}
                 study={study}
                 selectedParticipants={
                   data?.items.filter(participant =>
-                    selectedParticipantIds[tab].includes(participant.id),
+                    selectedParticipantIds[tab].includes(participant.id)
                   ) || []
                 }
                 isProcessing={!!loadingIndicators.isDeleting}
@@ -953,16 +933,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     dialogOpenSMS: false,
                   })
                 }
-                style={{ height: '48px' }}
-              >
+                style={{height: '48px'}}>
                 Cancel
               </DialogButtonSecondary>
 
               <DialogButtonPrimary
                 onClick={() => deleteSelectedParticipants()}
                 autoFocus
-                className={classes.primaryDialogButton}
-              >
+                className={classes.primaryDialogButton}>
                 {dialogState.dialogOpenRemove
                   ? 'Permanently Remove'
                   : 'Yes, send SMS'}
@@ -980,8 +958,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     dialogOpenSMS: false,
                   })
                 }}
-                color="primary"
-              >
+                color="primary">
                 Done
               </DialogButtonPrimary>
             </DialogActions>

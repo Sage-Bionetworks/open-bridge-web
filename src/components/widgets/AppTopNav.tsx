@@ -7,18 +7,18 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Paper
+  Paper,
 } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
 import clsx from 'clsx'
-import React, { FunctionComponent, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import React, {FunctionComponent, useState} from 'react'
+import {NavLink} from 'react-router-dom'
 import Logo from '../../assets/logo_mtb.svg'
-import { latoFont } from '../../style/theme'
-import { UserSessionData } from '../../types/types'
+import {latoFont} from '../../style/theme'
+import {UserSessionData} from '../../types/types'
 import AccountLogin from '../account/AccountLogin'
 import Logout from '../account/Logout'
 import MobileDrawerMenuHeader from './MobileDrawerMenuHeader'
@@ -33,7 +33,7 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: theme.spacing(0, 3)
+    padding: theme.spacing(0, 3),
   },
 
   toolbar: {
@@ -164,7 +164,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type AppTopNavProps = {
-  routes: { name: string; path: string; isRhs?: boolean }[]
+  routes: {name: string; path: string; isRhs?: boolean}[]
   sessionData?: UserSessionData
 }
 
@@ -174,15 +174,14 @@ const MenuLinks: FunctionComponent<
     activeClassName: string
     setIsMobileOpen: Function
   }
-> = ({ routes, className, activeClassName, setIsMobileOpen }) => {
+> = ({routes, className, activeClassName, setIsMobileOpen}) => {
   let links = routes.map(route => (
     <NavLink
       to={route.path}
       key={route.name}
       className={className}
       activeClassName={activeClassName}
-      onClick={() => setIsMobileOpen(false)}
-    >
+      onClick={() => setIsMobileOpen(false)}>
       {route.name}
     </NavLink>
   ))
@@ -214,7 +213,7 @@ const MenuLinksRhs: FunctionComponent<
       return clsx(
         className,
         classes.drawerAuthOptions,
-        classes.createAccountLink,
+        classes.createAccountLink
       )
     }
     if (routeName === 'Edit Profile' || routeName === 'Settings') {
@@ -229,8 +228,7 @@ const MenuLinksRhs: FunctionComponent<
       key={`rhs_${route.name}`}
       className={getClassName(route.name, isRightHandSide || false)}
       activeClassName={activeClassName}
-      onClick={() => setIsMobileOpen(false)}
-    >
+      onClick={() => setIsMobileOpen(false)}>
       {route.name}
     </NavLink>
   ))
@@ -269,7 +267,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
     if (sessionData.firstName) {
       initial = `${sessionData.firstName.substr(
         0,
-        1,
+        1
       )}${sessionData.lastName?.substr(0, 1)}`
     }
     return initial?.toUpperCase() || '?'
@@ -284,8 +282,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
           aria-label="Open drawer"
           edge="end"
           onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className={classes.menuButton}
-        >
+          className={classes.menuButton}>
           <MenuIcon></MenuIcon>
         </IconButton>
       </Hidden>
@@ -301,8 +298,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             component="nav"
             variant="dense"
             disableGutters
-            className={classes.toolbar}
-          >
+            className={classes.toolbar}>
             <MenuLinks
               className={classes.toolbarLink}
               activeClassName={classes.selectedLink}
@@ -314,23 +310,20 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             component="nav"
             variant="dense"
             disableGutters
-            className={classes.toolbar}
-          >
+            className={classes.toolbar}>
             {!sessionData && (
               <MenuLinksRhs
                 className={classes.toolbarLink}
                 activeClassName={classes.selectedLink}
                 routes={routes.filter(route => route.name && route.isRhs)}
                 sessionData={sessionData}
-                setIsMobileOpen={setIsMobileOpen}
-              >
+                setIsMobileOpen={setIsMobileOpen}>
                 <></>
                 <div className={classes.login}>
                   <Button
                     variant="text"
                     className={classes.toolbarLink}
-                    onClick={() => setIsSignInOpen(true)}
-                  >
+                    onClick={() => setIsSignInOpen(true)}>
                     Sign in
                   </Button>
                 </div>
@@ -339,14 +332,12 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             {sessionData && (
               <div
                 onClick={event => setMenuAnchor(event.currentTarget)}
-                style={{ paddingLeft: '8px' }}
-              >
+                style={{paddingLeft: '8px'}}>
                 <div
                   className={clsx(
                     classes.userCircle,
-                    !!menuAnchor && classes.userCircleActive,
-                  )}
-                >
+                    !!menuAnchor && classes.userCircleActive
+                  )}>
                   {getInitials()}
                 </div>
               </div>
@@ -365,12 +356,12 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
           }}
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
-          }}
-        >
+          }}>
           <MobileDrawerMenuHeader
             setIsMobileOpen={setIsMobileOpen}
-            type={sessionData ? 'LOGGED_IN' : 'NOT_LOGGED_IN'}
-          ></MobileDrawerMenuHeader>
+            type={
+              sessionData ? 'LOGGED_IN' : 'NOT_LOGGED_IN'
+            }></MobileDrawerMenuHeader>
           <MenuLinks
             className={classes.drawerMenuItem}
             activeClassName={classes.drawerMenuSelectedLink}
@@ -384,29 +375,25 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             routes={routes.filter(route => route.name && route.isRhs)}
             sessionData={sessionData}
             isRightHandSide={true}
-            setIsMobileOpen={setIsMobileOpen}
-          >
+            setIsMobileOpen={setIsMobileOpen}>
             <Logout
               element={
                 <Button
                   variant="text"
                   className={clsx(
                     classes.drawerMenuItem,
-                    classes.drawerProfileOptions,
-                  )}
-                >
+                    classes.drawerProfileOptions
+                  )}>
                   Sign out
                 </Button>
-              }
-            ></Logout>
+              }></Logout>
             <Button
               variant="text"
               className={clsx(
                 classes.drawerAuthOptions,
-                classes.drawerMenuItem,
+                classes.drawerMenuItem
               )}
-              onClick={() => setIsSignInOpen(true)}
-            >
+              onClick={() => setIsSignInOpen(true)}>
               Login
             </Button>
           </MenuLinksRhs>
@@ -415,17 +402,15 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
       <Dialog
         open={isSignInOpen}
         onClose={() => setIsSignInOpen(false)}
-        aria-labelledby="form-dialog-title"
-      >
+        aria-labelledby="form-dialog-title">
         <DialogContent>
           <AccountLogin
             {...props}
-            callbackFn={() => setIsSignInOpen(false)}
-          ></AccountLogin>
+            callbackFn={() => setIsSignInOpen(false)}></AccountLogin>
         </DialogContent>
       </Dialog>
       <Menu
-        classes={{ list: classes.l }}
+        classes={{list: classes.l}}
         id="simple-menu"
         anchorEl={menuAnchor}
         keepMounted
@@ -439,8 +424,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
           horizontal: 'right',
         }}
         open={Boolean(menuAnchor)}
-        onClose={handleMenuClose}
-      >
+        onClose={handleMenuClose}>
         {routes
           .filter(r => r.isRhs)
           .map(route => (

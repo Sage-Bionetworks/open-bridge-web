@@ -14,7 +14,7 @@ import { isInvalidPhone } from '../../../helpers/utility'
 import { latoFont, poppinsFont } from '../../../style/theme'
 import { EditableParticipantData } from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
-import { MTBHeadingH3 } from '../../widgets/Headings'
+import {MTBHeadingH3} from '../../widgets/Headings'
 import TextMask from '../../widgets/MaskedInput'
 import {
   DialogButtonPrimary,
@@ -119,7 +119,7 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
           </FormControl>
         </FormGroup>
       </DialogContent>
-      <DialogActions style={{ justifyContent: 'space-between' }}>
+      <DialogActions style={{justifyContent: 'space-between'}}>
         {children && children}
         {!isLoading ? (
           <div>
@@ -147,7 +147,7 @@ export const WithdrawParticipantForm: FunctionComponent<{
   participant: EditableParticipantData
   onOK: Function
   onCancel: Function
-}> = ({ isEnrolledById, participant, onOK, onCancel }) => {
+}> = ({isEnrolledById, participant, onOK, onCancel}) => {
   const classes = useStyles()
   const [note, setNote] = React.useState('')
   return (
@@ -174,7 +174,7 @@ export const WithdrawParticipantForm: FunctionComponent<{
             <SimpleTextInput
               fullWidth
               rowsMax={5}
-              inputProps={{ maxLength: 256 }}
+              inputProps={{maxLength: 256}}
               placeholder="note"
               onChange={e => setNote(e.target.value)}
               id="note"
@@ -191,8 +191,7 @@ export const WithdrawParticipantForm: FunctionComponent<{
         <DialogButtonPrimary
           onClick={() => onOK(note)}
           color="primary"
-          autoFocus
-        >
+          autoFocus>
           Yes, withdraw participant
         </DialogButtonPrimary>
       </DialogActions>
@@ -212,7 +211,7 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
   })
 
   const handleDateChange = (date: Date | null) => {
-    onChange({ ...participant, clinicVisitDate: date || undefined })
+    onChange({...participant, clinicVisitDate: date || undefined})
   }
 
   const extId = (
@@ -256,7 +255,7 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
                   maskType: 'PHONE',
                   placeholder: '(xxx)xxx-xxx',
                   onAccept: (v: string) => {
-                    onChange({ ...participant, phoneNumber: v })
+                    onChange({...participant, phoneNumber: v})
                   },
                 }}
                 inputComponent={TextMask as any}
@@ -280,14 +279,13 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
           label="Clinic Visit 1"
           id="clinic-visit"
           value={participant.clinicVisitDate || null}
-          onChange={e => handleDateChange(e)}
-        ></DatePicker>
+          onChange={e => handleDateChange(e)}></DatePicker>
 
         <FormControl>
           <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
           <SimpleTextInput
             value={participant.note}
-            onChange={e => onChange({ ...participant, note: e.target.value })}
+            onChange={e => onChange({...participant, note: e.target.value})}
             placeholder="comments"
             id="note"
             multiline={true}

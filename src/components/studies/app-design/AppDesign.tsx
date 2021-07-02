@@ -1,28 +1,26 @@
-import { Box, Paper, Switch } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Box, Paper, Switch} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
-import _ from 'lodash'
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
-import { useErrorHandler } from 'react-error-boundary'
+import React, {ChangeEvent, useState} from 'react'
+import {HexColorPicker} from 'react-colorful'
+import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { ReactComponent as PhoneTopImgLeftHighlighted } from '../../../assets/appdesign/CustomizeAppTopbarLeft.svg'
-import { ReactComponent as PhoneTopImgRightHighlighted } from '../../../assets/appdesign/CustomizeAppTopbarRight.svg'
+import {ReactComponent as PhoneTopImgLeftHighlighted} from '../../../assets/appdesign/CustomizeAppTopbarLeft.svg'
+import {ReactComponent as PhoneTopImgRightHighlighted} from '../../../assets/appdesign/CustomizeAppTopbarRight.svg'
 import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
-import { ReactComponent as PhoneBottomImg } from '../../../assets/appdesign/phone_buttons.svg'
+import {ReactComponent as PhoneBottomImg} from '../../../assets/appdesign/phone_buttons.svg'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
-import { useUserSessionDataState } from '../../../helpers/AuthContext'
+import {useUserSessionDataState} from '../../../helpers/AuthContext'
 import StudyService from '../../../services/study.service'
-import { ThemeType } from '../../../style/theme'
+import {ThemeType} from '../../../style/theme'
 import {
   Contact,
   Study,
   StudyBuilderComponentProps,
   WelcomeScreenData,
-  FileRevision,
 } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
-import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
-import ColorPickerSection from './ColorPickerSection'
+import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
 import IrbBoardContactSection from './IrbBoardContactSection'
 import SectionIndicator from './SectionIndicator'
@@ -30,6 +28,7 @@ import StudyLeadInformationSection from './StudyLeadInformationSection'
 import StudyPageBottomPhoneContent from './StudyPageBottomPhoneContent'
 import StudyPageTopPhoneContent from './StudyPageTopPhoneContent'
 import StudySummarySection from './StudySummarySection'
+import Subsection from './Subsection'
 import UploadStudyLogoSection from './UploadStudyLogoSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
@@ -37,7 +36,7 @@ import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
 const imgHeight = 70
 
 const useStyles = makeStyles((theme: ThemeType) => ({
-  root: { counterReset: 'orderedlist' },
+  root: {counterReset: 'orderedlist'},
   section: {
     backgroundColor: '#fefefe',
     padding: theme.spacing(9, 9, 10, 17),
@@ -180,11 +179,13 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
 }))
 
-type UploadedFile = {
-  success: boolean
-  fileName: string
-  message: string
-}
+const SimpleTextInputStyles = {
+  fontSize: '15px',
+  width: '100%',
+  height: '44px',
+  paddingTop: '8px',
+  boxSizing: 'border-box',
+} as React.CSSProperties
 
 export type ContactType =
   | 'principal_investigator'
@@ -219,29 +220,53 @@ const PhoneTopBar: React.FunctionComponent<{
   color?: string
   isUsingDefaultMessage?: boolean
   studyLogoUrl?: string
-}> = ({ color = 'transparent', isUsingDefaultMessage, studyLogoUrl }) => {
+}> = ({color = 'transparent', isUsingDefaultMessage, studyLogoUrl}) => {
   const classes = useStyles()
   return (
     <div
       className={classes.phoneTopBar}
-      style={{ backgroundColor: isUsingDefaultMessage ? '#BCD5E4' : color }}
-    >
+      style={{backgroundColor: isUsingDefaultMessage ? '#BCD5E4' : color}}>
       {!isUsingDefaultMessage ? (
         studyLogoUrl && (
           <img
             src={studyLogoUrl}
-            style={{ height: `${imgHeight}px` }}
+            style={{height: `${imgHeight}px`}}
             alt="study-logo"
           />
         )
       ) : (
         <img
           src={DefaultLogo}
-          style={{ height: `${imgHeight - 16}px` }}
+          style={{height: `${imgHeight - 16}px`}}
           alt="study-logo"
         />
       )}
     </div>
+  )
+}
+
+function getContact(study: Study, role: ContactType): Contact | undefined {
+  let contacts = study.contacts
+  if (!contacts) {
+    return undefined
+  }
+  return contacts.find(el => el.role === role)
+}
+
+const formatPhoneNumber = (phoneNumber: string | undefined) => {
+  if (!phoneNumber) {
+    return ''
+  }
+  phoneNumber.replace('+1', '')
+  if (phoneNumber.length !== 10) {
+    return phoneNumber
+  }
+  return (
+    phoneNumber.slice(0, 3) +
+    '-' +
+    phoneNumber.slice(3, 6) +
+    '-' +
+    phoneNumber.slice(6)
   )
 }
 
@@ -254,36 +279,31 @@ const AppDesign: React.FunctionComponent<
   onUpdate,
   onSave,
   study,
+
   onError,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
-  const { token, orgMembership } = useUserSessionDataState()
+  const {token, orgMembership} = useUserSessionDataState()
 
   const classes = useStyles()
 
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [
-    irbNameSameAsInstitution,
-    setIrbNameSameAsInstitution,
-  ] = useState<boolean>(true)
-
-  const [appBackgroundColor, setAppBackgroundColor] = useState('#6040FF')
-
-  const SimpleTextInputStyles = {
-    fontSize: '15px',
-    width: '100%',
-    height: '44px',
-    paddingTop: '8px',
-    boxSizing: 'border-box',
-  } as React.CSSProperties
-
+  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] = useState<
+    boolean
+  >(
+    getContact(study, 'irb')?.name ===
+      getContact(study, 'principal_investigator')?.affiliation
+  )
   const [
     generalContactPhoneNumber,
     setGeneralContactPhoneNumber,
-  ] = React.useState('')
-  const [irbPhoneNumber, setIrbPhoneNumber] = React.useState('')
+  ] = React.useState(
+    formatPhoneNumber(getContact(study, 'study_support')?.phone?.number)
+  )
+  const [irbPhoneNumber, setIrbPhoneNumber] = React.useState(
+    formatPhoneNumber(getContact(study, 'irb')?.phone?.number)
+  )
 
   const [phoneNumberErrorState, setPhoneNumberErrorState] = React.useState({
     isGeneralContactPhoneNumberValid: true,
@@ -311,14 +331,14 @@ const AppDesign: React.FunctionComponent<
         previewForImage.name,
         previewForImage.body || '',
         file.type,
-        previewForImage.file,
+        previewForImage.file
       )
-      console.log('final response', uploadResponse)
       const updatedStudy: Study = {
         ...study,
         studyLogoUrl: uploadResponse.studyLogoUrl,
         version: uploadResponse.version,
       }
+
       onUpdate(updatedStudy)
     } catch (error) {
       onError(error)
@@ -337,11 +357,11 @@ const AppDesign: React.FunctionComponent<
     // This is a placeholder until Lynn finalizes what the error state will look like
     if (phoneNumberHasError || emailHasError) {
       alert(
-        'Please make sure that all fields are entered in the correct format.',
+        'Please make sure that all fields are entered in the correct format.'
       )
       return
     }
-    const updatedStudy = { ...study }
+    const updatedStudy = {...study}
     const irbContact = updatedStudy.contacts?.find(el => el.role === 'irb')
     // If a contact's email or phone is an empty string, then delete the field
     // from the contact object.
@@ -353,7 +373,7 @@ const AppDesign: React.FunctionComponent<
       delete irbContact!.phone
     }
     const generalContact = updatedStudy.contacts?.find(
-      el => el.role === 'study_support',
+      el => el.role === 'study_support'
     )
     if (generalContact?.email === '') {
       delete generalContact.email
@@ -362,77 +382,27 @@ const AppDesign: React.FunctionComponent<
     if (generalContactPhone === '' || generalContactPhone === '+1') {
       delete generalContact!.phone
     }
+
     onSave(updatedStudy)
   }
 
   // This is the method without useCallback or debounce.
-  const debouncedUpdateColor = (color: string, version: number) => {
-    const updatedStudy = { ...study }
-    console.log('color version', version)
+  const updateColor = (color: string) => {
+    console.log('changingColor to' + color)
+
+    const updatedStudy = {...study}
     updatedStudy.colorScheme = {
       ...updatedStudy.colorScheme,
       background: color,
     }
     onUpdate(updatedStudy)
   }
-  
-  // This is the original code
-  // const debouncedUpdateColor = useCallback(
-  //   _.debounce(color => {
-  //     const updatedStudy = { ...study }
-  //     updatedStudy.colorScheme = {
-  //       ...updatedStudy.colorScheme,
-  //       background: color,
-  //     }
-  //     onUpdate(updatedStudy)
-  //   }, 1000),
-  //   [],
-  // )
-
-  const formatPhoneNumber = (phoneNumber: string) => {
-    if (phoneNumber.length !== 10) {
-      return phoneNumber
-    }
-    return (
-      phoneNumber.slice(0, 3) +
-      '-' +
-      phoneNumber.slice(3, 6) +
-      '-' +
-      phoneNumber.slice(6)
-    )
-  }
-
-  useEffect(() => {
-    // When the component mounts, pull out the information from the study object
-    const contacts = study.contacts || []
-    const leadPrincipleInvestigatorContact = contacts.find(
-      el => el.role === 'principal_investigator',
-    )
-    const irbInfo = contacts.find(el => el.role === 'irb')
-    const studySupport = contacts.find(el => el.role === 'study_support')
-    if (studySupport?.phone) {
-      const phoneWithoutZipcode = studySupport.phone.number?.replace('+1', '')
-      const formattedPhone = formatPhoneNumber(phoneWithoutZipcode)
-      setGeneralContactPhoneNumber(formattedPhone)
-    }
-    if (irbInfo?.phone) {
-      const phoneWithoutZipcode = irbInfo.phone.number?.replace('+1', '')
-      const formattedPhone = formatPhoneNumber(phoneWithoutZipcode)
-      setIrbPhoneNumber(formattedPhone)
-    }
-    setIrbNameSameAsInstitution(
-      irbInfo?.name === leadPrincipleInvestigatorContact?.affiliation,
-    )
-    if (study.colorScheme?.background) {
-      setAppBackgroundColor(study.colorScheme?.background)
-    }
-  }, [])
 
   const updateContacts = (
     leadPrincipalInvestigator: Contact,
     funder: Contact,
     ethicsBoardContact: Contact,
-    contactLeadInfo: Contact,
+    contactLeadInfo: Contact
   ) => {
     const updatedContacts: Contact[] = []
     updatedContacts.push(ethicsBoardContact)
@@ -442,20 +412,17 @@ const AppDesign: React.FunctionComponent<
     return updatedContacts
   }
 
-  const getContactPersonObject = (type: ContactType) => {
-    if (!study.contacts) return { role: type, name: '' } as Contact
-    const contactObject = study.contacts.find(el => el.role === type)
-    if (contactObject === undefined) {
-      return { role: type, name: '' } as Contact
-    }
-    return { ...contactObject }
+  const getContactPersonObject = (type: ContactType): Contact => {
+    const contact = getContact(study, type)
+
+    return contact || {role: type, name: ''}
   }
 
   return (
     <>
       <Box className={classes.root}>
         <NavigationPrompt when={hasObjectChanged} key="prompt">
-          {({ onConfirm, onCancel }) => (
+          {({onConfirm, onCancel}) => (
             <ConfirmationDialog
               isOpen={hasObjectChanged}
               type={'NAVIGATE'}
@@ -486,7 +453,7 @@ const AppDesign: React.FunctionComponent<
                       ?.isUsingDefaultMessage || false
                   }
                   onChange={() => {
-                    const updatedStudy = { ...study }
+                    const updatedStudy = {...study}
                     let currentWelcomeScreenData
                     if (!study.clientData.welcomeScreenData) {
                       currentWelcomeScreenData = {
@@ -508,17 +475,15 @@ const AppDesign: React.FunctionComponent<
                     }
                     updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
                     onUpdate(updatedStudy)
-                  }}
-                ></Switch>
+                  }}></Switch>
               </Box>
               <Box ml={1.5}>Customize</Box>
             </div>
             <div
               className={clsx(
                 study.clientData.welcomeScreenData?.isUsingDefaultMessage &&
-                  classes.hideSection,
-              )}
-            >
+                  classes.hideSection
+              )}>
               <ol className={classes.steps}>
                 <UploadStudyLogoSection
                   handleFileChange={handleFileChange}
@@ -527,13 +492,20 @@ const AppDesign: React.FunctionComponent<
                   studyLogoUrl={study.studyLogoUrl}
                   isSettingStudyLogo={isSettingStudyLogo}
                 />
-                <ColorPickerSection
-                  appBackgroundColor={appBackgroundColor}
-                  setAppBackgroundColor={setAppBackgroundColor}
-                  debouncedUpdateColor={(color: string) =>
-                    debouncedUpdateColor(color, study.version)
-                  }
-                />
+
+                <Subsection heading="Select background color">
+                  <p>
+                    Select a background color that matches your institution or
+                    study to be seen beneath your logo.
+                  </p>
+                  <Box width="250px" height="230px" ml={-1.25}>
+                    <HexColorPicker
+                      color={study.colorScheme?.background || 'transparent'}
+                      onChange={updateColor}
+                    />
+                  </Box>
+                </Subsection>
+
                 <WelcomeScreenMessagingSection
                   saveLoader={saveLoader}
                   saveInfo={saveInfo}
@@ -543,7 +515,7 @@ const AppDesign: React.FunctionComponent<
                     welcomeScreenBody: string,
                     welcomeScreenSalutation: string,
                     welcomeScreenFromText: string,
-                    useOptionalDisclaimer: boolean,
+                    useOptionalDisclaimer: boolean
                   ) => {
                     const newWelcomeScreenData = {
                       welcomeScreenHeader: welcomeStringHeader,
@@ -555,7 +527,7 @@ const AppDesign: React.FunctionComponent<
                         study.clientData.welcomeScreenData
                           ?.isUsingDefaultMessage || false,
                     } as WelcomeScreenData
-                    const updatedStudy = { ...study }
+                    const updatedStudy = {...study}
                     updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
                     onUpdate(updatedStudy)
                   }}
@@ -607,7 +579,7 @@ const AppDesign: React.FunctionComponent<
                 />,
               ]}
               <PhoneTopBar
-                color={appBackgroundColor}
+                color={study.colorScheme?.background || 'transparent'}
                 isUsingDefaultMessage={
                   study.clientData.welcomeScreenData?.isUsingDefaultMessage ||
                   false
@@ -624,9 +596,8 @@ const AppDesign: React.FunctionComponent<
               <Box
                 className={clsx(
                   classes.phoneBottom,
-                  classes.optionalDisclaimerTextOnPhone,
-                )}
-              >
+                  classes.optionalDisclaimerTextOnPhone
+                )}>
                 {study.clientData.welcomeScreenData?.useOptionalDisclaimer
                   ? 'This is a research study and does not provide medical advice, diagnosis, or treatment'
                   : ''}
@@ -646,7 +617,7 @@ const AppDesign: React.FunctionComponent<
               <StudySummarySection
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 onUpdate={(studyTitle: string, studySummaryBody: string) => {
-                  const updatedStudy = { ...study }
+                  const updatedStudy = {...study}
                   updatedStudy.name = studyTitle
                   updatedStudy.details = studySummaryBody
                   onUpdate(updatedStudy)
@@ -663,20 +634,20 @@ const AppDesign: React.FunctionComponent<
                 onUpdate={(
                   leadPrincipalInvestigator: Contact,
                   funder: Contact,
-                  ethicsBoardContact: Contact,
+                  ethicsBoardContact: Contact
                 ) => {
                   const updatedContacts = updateContacts(
                     leadPrincipalInvestigator,
                     funder,
                     ethicsBoardContact,
-                    getContactPersonObject('study_support'),
+                    getContactPersonObject('study_support')
                   )
-                  const updatedStudy = { ...study }
+                  const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
                   onUpdate(updatedStudy)
                 }}
                 leadPrincipalInvestigator={getContactPersonObject(
-                  'principal_investigator',
+                  'principal_investigator'
                 )}
                 ethicsBoardContact={getContactPersonObject('irb')}
                 funder={getContactPersonObject('sponsor')}
@@ -696,9 +667,9 @@ const AppDesign: React.FunctionComponent<
                     getContactPersonObject('principal_investigator'),
                     getContactPersonObject('sponsor'),
                     getContactPersonObject('irb'),
-                    contactLead,
+                    contactLead
                   )
-                  const updatedStudy = { ...study }
+                  const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
                   onUpdate(updatedStudy)
                 }}
@@ -721,9 +692,9 @@ const AppDesign: React.FunctionComponent<
                     getContactPersonObject('principal_investigator'),
                     getContactPersonObject('sponsor'),
                     irbInfo,
-                    getContactPersonObject('study_support'),
+                    getContactPersonObject('study_support')
                   )
-                  const updatedStudy = { ...study }
+                  const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
                   updatedStudy.irbProtocolId = protocolId
                   onUpdate(updatedStudy)
@@ -737,8 +708,7 @@ const AppDesign: React.FunctionComponent<
             <MTBHeadingH1>What participants will see: </MTBHeadingH1>
             <Box className={classes.phone}>
               <Box
-                className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}
-              >
+                className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
                 <PhoneTopImgLeftHighlighted
                   title="phone top image"
                   width="312px"
@@ -751,9 +721,9 @@ const AppDesign: React.FunctionComponent<
                   false
                 }
                 imgHeight={imgHeight}
-                appColor={appBackgroundColor}
+                appColor={study.colorScheme?.background || 'transparent'}
                 leadInvestigator={getContactPersonObject(
-                  'principal_investigator',
+                  'principal_investigator'
                 )}
                 funder={getContactPersonObject('sponsor')}
                 studyTitle={study.name}
@@ -763,10 +733,9 @@ const AppDesign: React.FunctionComponent<
                 <PhoneBottomImg title="phone bottom image" />
               </Box>
             </Box>
-            <Box className={classes.phone} style={{ marginTop: '134px' }}>
+            <Box className={classes.phone} style={{marginTop: '134px'}}>
               <Box
-                className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}
-              >
+                className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
                 <PhoneTopImgRightHighlighted
                   title="phone top image"
                   width="312px"

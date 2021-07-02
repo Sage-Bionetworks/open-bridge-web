@@ -1,12 +1,12 @@
-import { Box, CircularProgress, Paper } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Box, CircularProgress, Paper} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
-import React, { useEffect } from 'react'
-import { isSignInById } from '../../../helpers/utility'
+import React, {useEffect} from 'react'
+import {isSignInById} from '../../../helpers/utility'
 import ParticipantService, {
   formatExternalId,
 } from '../../../services/participants.service'
-import { latoFont } from '../../../style/theme'
+import {latoFont} from '../../../style/theme'
 import {
   EnrolledAccountRecord,
   ParticipantAccountSummary,
@@ -61,7 +61,7 @@ type ParticipantDisplayType = {
 function formatIds(
   studyId: string,
   isEnrolledById: boolean,
-  participants: ParticipantDisplayType[],
+  participants: ParticipantDisplayType[]
 ): string[] {
   return participants.map((participant: ParticipantDisplayType) =>
     !isEnrolledById
@@ -70,7 +70,7 @@ function formatIds(
         : 'unknown'
       : participant.externalId
       ? formatExternalId(studyId, participant.externalId)
-      : 'unknown',
+      : 'unknown'
   )
 }
 
@@ -92,45 +92,42 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
 
   const setData = async () => {
     let finalResult: EnrolledAccountRecord[] = []
-    const resultEnrolled =
-      await ParticipantService.getAllParticipantsInEnrollmentType(
-        study.identifier,
-        token,
-        'enrolled',
-        false,
-      )
+    const resultEnrolled = await ParticipantService.getAllParticipantsInEnrollmentType(
+      study.identifier,
+      token,
+      'enrolled',
+      false
+    )
     const enrolledNonTestParticipants = resultEnrolled.items
     finalResult = enrolledNonTestParticipants
     if (tab === 'TEST') {
-      const resultAll =
-        await ParticipantService.getAllParticipantsInEnrollmentType(
-          study.identifier,
-          token,
-          'all',
-          true,
-        )
-      const resultWithdrawn =
-        await ParticipantService.getAllParticipantsInEnrollmentType(
-          study.identifier,
-          token,
-          'withdrawn',
-          false,
-        )
+      const resultAll = await ParticipantService.getAllParticipantsInEnrollmentType(
+        study.identifier,
+        token,
+        'all',
+        true
+      )
+      const resultWithdrawn = await ParticipantService.getAllParticipantsInEnrollmentType(
+        study.identifier,
+        token,
+        'withdrawn',
+        false
+      )
       const allParticipants = resultAll.items
       const withdrawnNonTestParticipants = resultWithdrawn.items
       let testParticipants = allParticipants.filter(
         el =>
           enrolledNonTestParticipants.find(
             participant =>
-              participant.participant.identifier === el.participant.identifier,
-          ) === undefined,
+              participant.participant.identifier === el.participant.identifier
+          ) === undefined
       )
       testParticipants = testParticipants.filter(
         el =>
           withdrawnNonTestParticipants.find(
             participant =>
-              participant.participant.identifier === el.participant.identifier,
-          ) === undefined,
+              participant.participant.identifier === el.participant.identifier
+          ) === undefined
       )
       finalResult = testParticipants
     }
@@ -186,13 +183,13 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
   const selectedIds = formatIds(
     study.identifier,
     isSignInById(study.signInTypes),
-    participantData,
+    participantData
   )
 
   const idsWithErrorsList = formatIds(
     study.identifier,
     isSignInById(study.signInTypes),
-    participantData,
+    participantData
   )
 
   if (participantsWithError.length === 0) {
@@ -211,10 +208,9 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
                 fontStyle="italic"
                 width="90%"
                 alignSelf="center"
-                mb={1}
-              >
+                mb={1}>
                 Welcome to Sleep & Cognition. Please get started by{' '}
-                <strong style={{ textDecoration: 'underline' }}>
+                <strong style={{textDecoration: 'underline'}}>
                   downloading the app here
                 </strong>{' '}
                 and enter the following{' '}
@@ -224,10 +220,9 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
             <Paper
               className={clsx(
                 classes.idList,
-                !isRemove && classes.smsIdListContainer,
+                !isRemove && classes.smsIdListContainer
               )}
-              elevation={0}
-            >
+              elevation={0}>
               {selectedIds.map(id => (
                 <span>{id}</span>
               ))}
@@ -248,9 +243,8 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
         <div
           className={clsx(
             classes.idList,
-            !isRemove && classes.smsIdListContainer,
-          )}
-        >
+            !isRemove && classes.smsIdListContainer
+          )}>
           {idsWithErrorsList.map(id => (
             <span>{id}</span>
           ))}

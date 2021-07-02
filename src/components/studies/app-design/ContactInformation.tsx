@@ -1,8 +1,8 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import PhoneIcon from '../../../assets/phone_icon.svg'
 import EmailIcon from '../../../assets/email_icon.svg'
-import { Box } from '@material-ui/core'
+import {Box} from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   container: {

@@ -1,13 +1,13 @@
-import { makeStyles } from '@material-ui/core'
+import {makeStyles} from '@material-ui/core'
 import CheckIcon from '@material-ui/icons/Check'
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab'
-import React, { FunctionComponent, useState } from 'react'
-import { useErrorHandler } from 'react-error-boundary'
-import { useAsync } from '../../../helpers/AsyncHook'
-import { useUserSessionDataState } from '../../../helpers/AuthContext'
+import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
+import React, {FunctionComponent, useState} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import {useAsync} from '../../../helpers/AsyncHook'
+import {useUserSessionDataState} from '../../../helpers/AuthContext'
 import AssessmentService from '../../../services/assessment.service'
-import { StudySession } from '../../../types/scheduling'
-import { Assessment, StringDictionary } from '../../../types/types'
+import {StudySession} from '../../../types/scheduling'
+import {Assessment, StringDictionary} from '../../../types/types'
 import AssessmentCard from '../../assessments/AssessmentCard'
 import AssessmentLibraryWrapper from '../../assessments/AssessmentLibraryWrapper'
 import Loader from '../../widgets/Loader'
@@ -86,7 +86,7 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
   selectedAssessments,
   onUpdateAssessments,
 }: AssessmentSelectorProps) => {
-  const { token } = useUserSessionDataState()
+  const {token} = useUserSessionDataState()
 
   const handleError = useErrorHandler()
   const classes = useStyles()
@@ -95,7 +95,7 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
     Assessment[] | undefined
   >(undefined)
 
-  const { data, status, error, run, setData } = useAsync<{
+  const {data, status, error, run, setData} = useAsync<{
     assessments: Assessment[]
     tags: StringDictionary<number>
   }>({
@@ -119,14 +119,14 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
 
   const isAssessmentInSession = (
     session: StudySession,
-    assessmentId: string,
+    assessmentId: string
   ): boolean =>
     session.assessments?.find(item => item.originGuid === assessmentId) !==
     undefined
 
   const toggleAssessment = (
     event: React.MouseEvent<HTMLElement>,
-    selectedAssessments: Assessment[],
+    selectedAssessments: Assessment[]
   ) => {
     onUpdateAssessments(selectedAssessments)
   }
@@ -138,15 +138,13 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
         onChangeTags={
           (assessments: Assessment[]) =>
             setFilteredAssessments(assessments) /*setFilterTags(tags)*/
-        }
-      >
+        }>
         {(filteredAssessments || data.assessments).map((a, index) => (
           <ToggleButtonGroup
             value={selectedAssessments}
             onChange={toggleAssessment}
             aria-label={a.title}
-            key={a.guid}
-          >
+            key={a.guid}>
             <ToggleButton
               aria-label="bold"
               value={a}
@@ -157,13 +155,11 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
                 root: classes.toggleA,
                 selected: classes.toggleASelected,
                 disabled: classes.toggleADisabled,
-              }}
-            >
+              }}>
               <AssessmentCard
                 index={index}
                 assessment={a}
-                key={a.guid}
-              ></AssessmentCard>
+                key={a.guid}></AssessmentCard>
               <div className={classes.overlay}>
                 <div className={classes.overlayBackdrop}></div>
                 <div className={classes.overlayBg}>

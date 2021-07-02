@@ -1,8 +1,8 @@
-import { Box, Button, CircularProgress } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Box, Button, CircularProgress} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
 import DownloadIcon from '../../../assets/participants/download_icon.svg'
-import { latoFont } from '../../../style/theme'
+import {latoFont} from '../../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   downloadButton: {
@@ -58,15 +58,13 @@ const ParticipantDownload: React.FunctionComponent<ParticipantDownloadProps> = (
       <Button
         disabled={!hasItems || selectedLength === 0}
         onClick={() => onDownload()}
-        style={{ fontFamily: latoFont, fontSize: '14px' }}
-      >
+        style={{fontFamily: latoFont, fontSize: '14px'}}>
         <img
           src={DownloadIcon}
           style={{
             marginRight: '6px',
             opacity: selectedLength === 0 ? 0.5 : 1,
-          }}
-        ></img>
+          }}></img>
         {!isProcessing ? 'Download.csv' : <CircularProgress size={24} />}
       </Button>
     </Box>

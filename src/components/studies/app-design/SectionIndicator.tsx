@@ -1,7 +1,7 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core'
-import { latoFont } from '../../../style/theme'
-import { Box } from '@material-ui/core'
+import {makeStyles} from '@material-ui/core'
+import {latoFont} from '../../../style/theme'
+import {Box} from '@material-ui/core'
 import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({

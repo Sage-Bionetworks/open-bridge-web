@@ -1,7 +1,7 @@
-import { callEndpoint } from '../helpers/utility'
+import {callEndpoint} from '../helpers/utility'
 import constants from '../types/constants'
-import { Assessment } from '../types/types'
-import { getItem, KEYS } from './lshelper'
+import {Assessment} from '../types/types'
+import {getItem, KEYS} from './lshelper'
 
 const AssessmentService = {
   getAssessments,
@@ -11,16 +11,14 @@ const AssessmentService = {
 }
 
 async function getAssessment(
-  guid: string,
- /* token?: string,*/
+  guid: string
+  /* token?: string,*/
 ): Promise<Assessment[]> {
-  const result = 
-     await callEndpoint<Assessment>(
-        `${constants.endpoints.assessmentShared.replace(':id', guid)}`,
-        'GET',
-        {},
-      )
-  
+  const result = await callEndpoint<Assessment>(
+    `${constants.endpoints.assessmentShared.replace(':id', guid)}`,
+    'GET',
+    {}
+  )
 
   return [result.data]
 }
@@ -43,11 +41,11 @@ async function importAssessmentIntoLocalContext(
 }*/
 
 async function getAssessments(): Promise<Assessment[]> {
-  const result = await callEndpoint<{ items: Assessment[] }>(
-        constants.endpoints.assessmentsShared,
-        'GET',
-        {},
-      )
+  const result = await callEndpoint<{items: Assessment[]}>(
+    constants.endpoints.assessmentsShared,
+    'GET',
+    {}
+  )
 
   return result.data.items
 }
@@ -55,41 +53,36 @@ async function getAssessments(): Promise<Assessment[]> {
 async function getResource(assessment: Assessment): Promise<Assessment> {
   const endPoint = constants.endpoints.assessmentsSharedResources.replace(
     ':identifier',
-    assessment.identifier,
+    assessment.identifier
   )
-  const response = await callEndpoint<{ items: any[] }>(endPoint, 'GET', {})
+  const response = await callEndpoint<{items: any[]}>(endPoint, 'GET', {})
   return {
     ...assessment,
-    resources: response.data.items
+    resources: response.data.items,
   }
 }
 
 async function getAssessmentsWithResources(
-  guid?: string,
-
-): Promise<{ assessments: Assessment[]; tags: string[] }> {
-
- /* const storedAssessments = await getItem<{ assessments: Assessment[]; tags: string[] }> (KEYS.ASSESSMENTS)
+  guid?: string
+): Promise<{assessments: Assessment[]; tags: string[]}> {
+  /* const storedAssessments = await getItem<{ assessments: Assessment[]; tags: string[] }> (KEYS.ASSESSMENTS)
   if (storedAssessments) {
     return Promise.resolve(storedAssessments)
   }*/
 
-  const assessments = guid
-    ? await getAssessment(guid)
-    : await getAssessments()
+  const assessments = guid ? await getAssessment(guid) : await getAssessments()
   const resourcePromises = assessments.map(async asmnt => getResource(asmnt))
   return Promise.allSettled(resourcePromises).then(items1 => {
-   
     const items = items1
       .filter(i => i.status === 'fulfilled')
-       //@ts-ignore
+      //@ts-ignore
       .map(i => i.value) as Assessment[]
 
-      const itemsFailed = items1
+    const itemsFailed = items1
       .filter(i => i.status === 'rejected')
-       //@ts-ignore
-      .map(i => i.reason) 
-      console.log(itemsFailed)
+      //@ts-ignore
+      .map(i => i.reason)
+    console.log(itemsFailed)
 
     const allTags = items.map(item => item.tags).flat()
     const tags = allTags.reduce((acc, curr) => {
@@ -102,7 +95,7 @@ async function getAssessmentsWithResources(
       return acc
     }, {} as any)
 
-    const result = { assessments: items, tags }
+    const result = {assessments: items, tags}
     localStorage.setItem('AR', JSON.stringify(result))
 
     return result
@@ -111,7 +104,7 @@ async function getAssessmentsWithResources(
 
 async function getAssessmentsForSession(
   sessionId: string,
-  token?: string,
+  token?: string
 ): Promise<Assessment[]> {
   // aling to do when api is ready
   /* const result =await callEndpoint<{ items: Assessment[] }>(
@@ -125,7 +118,7 @@ async function getAssessmentsForSession(
 
   return result*/
   const sessionAssessments = await getItem<
-    { sessionId: string; assessments: Assessment[] }[]
+    {sessionId: string; assessments: Assessment[]}[]
   >(KEYS.ASSESSMENTS)
   if (!sessionAssessments) {
     return []

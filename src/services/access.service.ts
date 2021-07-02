@@ -1,6 +1,6 @@
-import { callEndpoint } from '../helpers/utility'
+import {callEndpoint} from '../helpers/utility'
 import constants from '../types/constants'
-import { OrgUser, UserData } from '../types/types'
+import {OrgUser, UserData} from '../types/types'
 
 const AccessService = {
   createIndividualAccount,
@@ -13,22 +13,22 @@ const AccessService = {
 }
 
 async function getAliasFromSynapseByEmail(
-  synapseEmailAddress: string,
+  synapseEmailAddress: string
 ): Promise<any> {
   if (
     synapseEmailAddress.indexOf('@synapse.org') === -1 &&
     synapseEmailAddress.indexOf('@synapse.org') > -1
   ) {
-    return Promise.reject({ message: 'the email should be ...@synapse.org' })
+    return Promise.reject({message: 'the email should be ...@synapse.org'})
   }
 
   const alias = synapseEmailAddress.replace('@synapse.org', '').trim()
-  const principal = await callEndpoint<{ principalId: string }>(
+  const principal = await callEndpoint<{principalId: string}>(
     constants.endpoints.synapseGetAlias,
     'POST',
-    { alias: alias, type: 'USER_NAME' },
+    {alias: alias, type: 'USER_NAME'},
     undefined,
-    true,
+    true
   )
 
   const profile = await callEndpoint<{
@@ -39,12 +39,12 @@ async function getAliasFromSynapseByEmail(
   }>(
     constants.endpoints.synapseGetUserProfile.replace(
       ':id',
-      principal.data.principalId,
+      principal.data.principalId
     ),
     'GET',
-    { MASK: 0x1 },
+    {MASK: 0x1},
     undefined,
-    true,
+    true
   )
 
   return {
@@ -56,17 +56,17 @@ async function getAliasFromSynapseByEmail(
 
 async function getAccountsForOrg(
   token: string,
-  orgId: string,
+  orgId: string
 ): Promise<UserData[]> {
   const endpoint = constants.endpoints.getAccountsForOrg.replace(
     ':orgId',
-    orgId,
+    orgId
   )
-  const result = await callEndpoint<{ items: OrgUser[] }>(
+  const result = await callEndpoint<{items: OrgUser[]}>(
     endpoint,
     'POST',
     {},
-    token,
+    token
   )
 
   return result.data.items
@@ -74,7 +74,7 @@ async function getAccountsForOrg(
 
 async function getIndividualAccount(
   token: string,
-  userId: string,
+  userId: string
 ): Promise<OrgUser> {
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
   const result = await callEndpoint<OrgUser>(endpoint, 'GET', {}, token)
@@ -83,7 +83,7 @@ async function getIndividualAccount(
 
 async function getDetailedAccountsForOrg(
   token: string,
-  orgId: string,
+  orgId: string
 ): Promise<OrgUser[]> {
   const accounts = await AccessService.getAccountsForOrg(token!, orgId)
   const promises = accounts.map(async account => {
@@ -95,7 +95,7 @@ async function getDetailedAccountsForOrg(
 
 async function deleteIndividualAccount(
   token: string,
-  userId: string,
+  userId: string
 ): Promise<OrgUser> {
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
   const result = await callEndpoint<OrgUser>(endpoint, 'DELETE', {}, token)
@@ -109,7 +109,7 @@ async function createIndividualAccount(
   firstName: string,
   lastName: string,
   orgMembership: string,
-  role: string,
+  role: string
 ): Promise<any> {
   const postData = {
     appId: constants.constants.APP_ID,
@@ -130,12 +130,12 @@ async function createIndividualAccount(
 async function updateIndividualAccountRoles(
   token: string,
   userId: string,
-  roles: string[],
+  roles: string[]
 ): Promise<any> {
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
   const userResponse = await callEndpoint<OrgUser>(endpoint, 'GET', {}, token)
   const data = userResponse.data
-  const updatedUser = { ...data, roles }
+  const updatedUser = {...data, roles}
   const result = await callEndpoint<any>(endpoint, 'POST', updatedUser, token)
   return result.data
 }

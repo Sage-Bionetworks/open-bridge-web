@@ -1,12 +1,8 @@
-import {
-  IconButton,
-  makeStyles,
-  StandardTextFieldProps
-} from '@material-ui/core'
+import {IconButton, makeStyles, StandardTextFieldProps} from '@material-ui/core'
 import ClearIcon from '@material-ui/icons/HighlightOff'
 import moment from 'moment'
 import React from 'react'
-import { getEnumKeyByEnumValue } from '../../../helpers/utility'
+import {getEnumKeyByEnumValue} from '../../../helpers/utility'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import SmallTextBox from '../../widgets/SmallTextBox'
 
@@ -77,8 +73,8 @@ const Duration: React.FunctionComponent<
       setNum(value)
 
       if (!unit && unitDefault) {
-        const unitDefaultValue=getEnumKeyByEnumValue(unitData, unitDefault)
-        unit=unitDefaultValue
+        const unitDefaultValue = getEnumKeyByEnumValue(unitData, unitDefault)
+        unit = unitDefaultValue
         setUnit(unitDefaultValue)
       }
     }
@@ -93,7 +89,7 @@ const Duration: React.FunctionComponent<
     const p = `P${time}${value}${unit}`
     //console.log(p, 'set p')
 
-    onChange({ target: { value: p } })
+    onChange({target: {value: p}})
   }
 
   return (
@@ -107,8 +103,7 @@ const Duration: React.FunctionComponent<
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           changeValue(Number(e.target.value as string), unt)
         }}
-        inputWidth={isIntro ? 10 : undefined}
-      ></SmallTextBox>
+        inputWidth={isIntro ? 10 : undefined}></SmallTextBox>
 
       <SelectWithEnum
         aria-label={unitLabel}
@@ -119,12 +114,10 @@ const Duration: React.FunctionComponent<
         onChange={e =>
           changeValue(num, e.target.value as moment.unitOfTime.Base)
         }
-        style={isIntro ? { width: '100px' } : undefined}
-      ></SelectWithEnum>
+        style={isIntro ? {width: '100px'} : undefined}></SelectWithEnum>
       <IconButton
         className={classes.clear}
-        onClick={_e => onChange({ target: { value: undefined } })}
-      >
+        onClick={_e => onChange({target: {value: undefined}})}>
         <ClearIcon />
       </IconButton>
     </div>

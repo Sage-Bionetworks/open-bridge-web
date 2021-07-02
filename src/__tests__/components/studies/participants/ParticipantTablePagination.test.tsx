@@ -38,24 +38,25 @@ const renderParticipantTableGrid = () => {
       pageSize={pageSize}
       numberOfPages={numberOfPages}
       onPageSelectedChanged={onPageSelectedChanged}
-      handlePageNavigationArrowPressed={handlePageNavigationArrowPressed}
-    ></ParticipantTablePagination>,
+      handlePageNavigationArrowPressed={
+        handlePageNavigationArrowPressed
+      }></ParticipantTablePagination>
   )
   forward_to_end_button = getById(
     participantTablePagination.container as HTMLElement,
-    'forward-to-end-button',
+    'forward-to-end-button'
   )!
   forward_one_page_button = getById(
     participantTablePagination.container as HTMLElement,
-    'forward-one-page-button',
+    'forward-one-page-button'
   )!
   backward_to_beginning_button = getById(
     participantTablePagination.container as HTMLElement,
-    'back-to-beginning-button',
+    'back-to-beginning-button'
   )!
   backward_one_page_button = getById(
     participantTablePagination.container as HTMLElement,
-    'back-one-page-button',
+    'back-one-page-button'
   )!
 }
 
@@ -101,9 +102,10 @@ test('should be rendering without crashing', () => {
       pageSize={pageSize}
       numberOfPages={numberOfPages}
       onPageSelectedChanged={onPageSelectedChanged}
-      handlePageNavigationArrowPressed={handlePageNavigationArrowPressed}
-    ></ParticipantTablePagination>,
-    div,
+      handlePageNavigationArrowPressed={
+        handlePageNavigationArrowPressed
+      }></ParticipantTablePagination>,
+    div
   )
 })
 
@@ -119,7 +121,7 @@ test('should page forward and backward buttons function correctly', () => {
   userEvent.click(backward_to_beginning_button as HTMLElement)
   expect(handlePageNavigationArrowPressed).not.toHaveBeenCalled()
   handlePageNavigationArrowPressed.mockReset()
-  resetVariables({ currentPage: 2 })
+  resetVariables({currentPage: 2})
   renderParticipantTableGrid()
   // go back one page
   userEvent.click(backward_one_page_button as HTMLElement)
@@ -128,7 +130,7 @@ test('should page forward and backward buttons function correctly', () => {
   userEvent.click(forward_to_end_button as HTMLElement)
   expect(handlePageNavigationArrowPressed).toHaveBeenLastCalledWith('FF')
   //when you are on the last page  try to go to next page. nothing should happen
-  resetVariables({ currentPage: 4 })
+  resetVariables({currentPage: 4})
   renderParticipantTableGrid()
   handlePageNavigationArrowPressed.mockReset()
   userEvent.click(forward_one_page_button as HTMLElement)
@@ -140,7 +142,7 @@ test('should page forward and backward buttons function correctly', () => {
 // test to see if the page changes as expected when page number is clicked
 test('should page change when page number is clicked', () => {
   const btn = participantTablePagination.container.querySelector(
-    '#pagebox-button-3',
+    '#pagebox-button-3'
   )
   expect(btn!.textContent).toBe('4')
   userEvent.click(btn!)
@@ -151,7 +153,7 @@ test('should page change when page number is clicked', () => {
 test('should changing page size result in correct behavior', () => {
   const textField = getById(
     participantTablePagination.container as HTMLElement,
-    'page-selector',
+    'page-selector'
   )
   const selectNode = textField?.parentNode?.querySelector('[role=button]')
   userEvent.click(selectNode!)

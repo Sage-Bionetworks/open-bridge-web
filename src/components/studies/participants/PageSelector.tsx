@@ -4,8 +4,8 @@ import PreviousPageIcon from '../../../assets/ParticipantManagerPageSelector/pre
 import BackToBeginningIcon from '../../../assets/ParticipantManagerPageSelector/back_to_beginning_icon.svg'
 import ForwardToEndIcon from '../../../assets/ParticipantManagerPageSelector/forward_to_end_icon.svg'
 import PageBox from './PageBox'
-import { makeStyles } from '@material-ui/core/styles'
-import { Button } from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
+import {Button} from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -53,10 +53,9 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
     <div className={classes.container}>
       <Button
         onClick={() => handlePageNavigationArrowPressed('BB')}
-        classes={{ root: classes.button }}
+        classes={{root: classes.button}}
         disabled={rotateAndDisableBackIcons}
-        id="back-to-beginning-button"
-      >
+        id="back-to-beginning-button">
         <img
           src={
             rotateAndDisableBackIcons ? BackToBeginningIcon : ForwardToEndIcon
@@ -65,23 +64,20 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
           alt="back_to_beginning_icon"
           style={{
             transform: rotateAndDisableBackIcons ? '' : 'rotate(180deg)',
-          }}
-        ></img>
+          }}></img>
       </Button>
       <Button
         onClick={() => handlePageNavigationArrowPressed('B')}
-        classes={{ root: classes.button }}
+        classes={{root: classes.button}}
         disabled={rotateAndDisableBackIcons}
-        id="back-one-page-button"
-      >
+        id="back-one-page-button">
         <img
           src={rotateAndDisableBackIcons ? PreviousPageIcon : NextPageIcon}
           className={classes.image}
           alt="back_icon"
           style={{
             transform: rotateAndDisableBackIcons ? '' : 'rotate(180deg)',
-          }}
-        ></img>
+          }}></img>
       </Button>
 
       {pageNumbers.map((element, index) => (
@@ -96,27 +92,24 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
 
       <Button
         onClick={() => handlePageNavigationArrowPressed('F')}
-        classes={{ root: classes.button }}
+        classes={{root: classes.button}}
         disabled={rotateAndDisableForwardIcons}
-        id="forward-one-page-button"
-      >
+        id="forward-one-page-button">
         <img
           src={rotateAndDisableForwardIcons ? PreviousPageIcon : NextPageIcon}
           className={classes.image}
           alt="previous_page_icon"
           style={{
             transform: rotateAndDisableForwardIcons ? 'rotate(180deg)' : '',
-          }}
-        ></img>
+          }}></img>
       </Button>
       <Button
         onClick={() => {
           handlePageNavigationArrowPressed('FF')
         }}
-        classes={{ root: classes.button }}
+        classes={{root: classes.button}}
         disabled={rotateAndDisableForwardIcons}
-        id="forward-to-end-button"
-      >
+        id="forward-to-end-button">
         <img
           src={
             rotateAndDisableForwardIcons
@@ -127,8 +120,7 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
           alt="forward_to_end_icon"
           style={{
             transform: rotateAndDisableForwardIcons ? 'rotate(180deg)' : '',
-          }}
-        ></img>
+          }}></img>
       </Button>
     </div>
   )

@@ -4,7 +4,7 @@ import {
   AccordionSummary,
   Typography,
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
 
 const useStyles = makeStyles({
@@ -28,12 +28,11 @@ const ObjectDebug: React.FunctionComponent<ObjectDebugProps> = ({
         <AccordionSummary
           expandIcon={<div>+</div>}
           aria-controls="panel1a-content"
-          id="panel1a-header"
-        >
+          id="panel1a-header">
           <Typography>{label}</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography component="div" style={{ textAlign: 'left' }}>
+          <Typography component="div" style={{textAlign: 'left'}}>
             <pre>{JSON.stringify(data, null, 2)}</pre>
           </Typography>
         </AccordionDetails>

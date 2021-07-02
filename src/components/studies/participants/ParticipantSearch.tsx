@@ -1,10 +1,10 @@
-import { Button } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Button} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
 import BlackXIcon from '../../../assets/black_x_icon.svg'
 import SearchIcon from '../../../assets/search_icon.svg'
 import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
-import { latoFont } from '../../../style/theme'
+import {latoFont} from '../../../style/theme'
 
 const ENTER_KEY = 'Enter'
 
@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   },
   buttonImage: {
     marginRight: theme.spacing(0.75),
-    width: "14px"
+    width: '14px',
   },
   searchIconContainer: {
     width: '42px',
@@ -130,20 +130,17 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
         <Button
           className={classes.blackXIconButton}
           onClick={handleResetSearch}
-          id="clear-participant-search-text-button"
-        >
+          id="clear-participant-search-text-button">
           <img
             src={BlackXIcon}
             className={classes.blackXIcon}
-            alt="black-x-icon"
-          ></img>
+            alt="black-x-icon"></img>
         </Button>
       )}
       <Button
         className={classes.searchIconContainer}
         onClick={handleSearchParticipantRequest}
-        id="search-participants-button"
-      >
+        id="search-participants-button">
         <img src={WhiteSearchIcon} alt="white-search-icon"></img>
       </Button>
     </div>
@@ -153,13 +150,11 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
       onClick={() => {
         setIsSearchingForParticipant(true)
       }}
-      id="start-searching-for-participant-button"
-    >
+      id="start-searching-for-participant-button">
       <img
         src={SearchIcon}
         className={classes.buttonImage}
-        alt="seach-icon"
-      ></img>
+        alt="seach-icon"></img>
       Find Participant
     </Button>
   )
