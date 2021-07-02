@@ -1,8 +1,8 @@
 import { Box, Paper, Switch } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
-import _ from 'lodash'
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react'
+import React, { ChangeEvent, useState } from 'react'
+import { HexColorPicker } from 'react-colorful'
 import { useErrorHandler } from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import { ReactComponent as PhoneTopImgLeftHighlighted } from '../../../assets/appdesign/CustomizeAppTopbarLeft.svg'
@@ -18,11 +18,9 @@ import {
   Study,
   StudyBuilderComponentProps,
   WelcomeScreenData,
-  FileRevision,
 } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
-import ColorPickerSection from './ColorPickerSection'
 import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
 import IrbBoardContactSection from './IrbBoardContactSection'
 import SectionIndicator from './SectionIndicator'
@@ -30,6 +28,7 @@ import StudyLeadInformationSection from './StudyLeadInformationSection'
 import StudyPageBottomPhoneContent from './StudyPageBottomPhoneContent'
 import StudyPageTopPhoneContent from './StudyPageTopPhoneContent'
 import StudySummarySection from './StudySummarySection'
+import Subsection from './Subsection'
 import UploadStudyLogoSection from './UploadStudyLogoSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
@@ -180,11 +179,13 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
 }))
 
-type UploadedFile = {
-  success: boolean
-  fileName: string
-  message: string
-}
+const SimpleTextInputStyles = {
+  fontSize: '15px',
+  width: '100%',
+  height: '44px',
+  paddingTop: '8px',
+  boxSizing: 'border-box',
+} as React.CSSProperties
 
 export type ContactType =
   | 'principal_investigator'
@@ -245,6 +246,31 @@ const PhoneTopBar: React.FunctionComponent<{
   )
 }
 
+function getContact(study: Study, role: ContactType): Contact | undefined {
+  let contacts = study.contacts
+  if (!contacts) {
+    return undefined
+  }
+  return contacts.find(el => el.role === role)
+}
+
+const formatPhoneNumber = (phoneNumber: string | undefined) => {
+  if (!phoneNumber) {
+    return ''
+  }
+  phoneNumber.replace('+1', '')
+  if (phoneNumber.length !== 10) {
+    return phoneNumber
+  }
+  return (
+    phoneNumber.slice(0, 3) +
+    '-' +
+    phoneNumber.slice(3, 6) +
+    '-' +
+    phoneNumber.slice(6)
+  )
+}
+
 const AppDesign: React.FunctionComponent<
   AppDesignProps & StudyBuilderComponentProps
 > = ({
@@ -254,6 +280,7 @@ const AppDesign: React.FunctionComponent<
   onUpdate,
   onSave,
   study,
+
   onError,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
@@ -263,27 +290,18 @@ const AppDesign: React.FunctionComponent<
   const classes = useStyles()
 
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [
-    irbNameSameAsInstitution,
-    setIrbNameSameAsInstitution,
-  ] = useState<boolean>(true)
-
-  const [appBackgroundColor, setAppBackgroundColor] = useState('#6040FF')
-
-  const SimpleTextInputStyles = {
-    fontSize: '15px',
-    width: '100%',
-    height: '44px',
-    paddingTop: '8px',
-    boxSizing: 'border-box',
-  } as React.CSSProperties
-
-  const [
-    generalContactPhoneNumber,
-    setGeneralContactPhoneNumber,
-  ] = React.useState('')
-  const [irbPhoneNumber, setIrbPhoneNumber] = React.useState('')
+  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] =
+    useState<boolean>(
+      getContact(study, 'irb')?.name ===
+        getContact(study, 'principal_investigator')?.affiliation,
+    )
+  const [generalContactPhoneNumber, setGeneralContactPhoneNumber] =
+    React.useState(
+      formatPhoneNumber(getContact(study, 'study_support')?.phone?.number),
+    )
+  const [irbPhoneNumber, setIrbPhoneNumber] = React.useState(
+    formatPhoneNumber(getContact(study, 'irb')?.phone?.number),
+  )
 
   const [phoneNumberErrorState, setPhoneNumberErrorState] = React.useState({
     isGeneralContactPhoneNumberValid: true,
@@ -313,12 +331,12 @@ const AppDesign: React.FunctionComponent<
         file.type,
         previewForImage.file,
       )
-      console.log('final response', uploadResponse)
       const updatedStudy: Study = {
         ...study,
         studyLogoUrl: uploadResponse.studyLogoUrl,
         version: uploadResponse.version,
       }
+
       onUpdate(updatedStudy)
     } catch (error) {
       onError(error)
@@ -362,71 +380,21 @@ const AppDesign: React.FunctionComponent<
     if (generalContactPhone === '' || generalContactPhone === '+1') {
       delete generalContact!.phone
     }
+
     onSave(updatedStudy)
   }
 
   // This is the method without useCallback or debounce.
-  const debouncedUpdateColor = (color: string, version: number) => {
+  const updateColor = (color: string) => {
+    console.log('changingColor to' + color)
+
     const updatedStudy = { ...study }
-    console.log('color version', version)
     updatedStudy.colorScheme = {
       ...updatedStudy.colorScheme,
       background: color,
     }
     onUpdate(updatedStudy)
   }
-  
-  // This is the original code
-  // const debouncedUpdateColor = useCallback(
-  //   _.debounce(color => {
-  //     const updatedStudy = { ...study }
-  //     updatedStudy.colorScheme = {
-  //       ...updatedStudy.colorScheme,
-  //       background: color,
-  //     }
-  //     onUpdate(updatedStudy)
-  //   }, 1000),
-  //   [],
-  // )
-
-  const formatPhoneNumber = (phoneNumber: string) => {
-    if (phoneNumber.length !== 10) {
-      return phoneNumber
-    }
-    return (
-      phoneNumber.slice(0, 3) +
-      '-' +
-      phoneNumber.slice(3, 6) +
-      '-' +
-      phoneNumber.slice(6)
-    )
-  }
-
-  useEffect(() => {
-    // When the component mounts, pull out the information from the study object
-    const contacts = study.contacts || []
-    const leadPrincipleInvestigatorContact = contacts.find(
-      el => el.role === 'principal_investigator',
-    )
-    const irbInfo = contacts.find(el => el.role === 'irb')
-    const studySupport = contacts.find(el => el.role === 'study_support')
-    if (studySupport?.phone) {
-      const phoneWithoutZipcode = studySupport.phone.number?.replace('+1', '')
-      const formattedPhone = formatPhoneNumber(phoneWithoutZipcode)
-      setGeneralContactPhoneNumber(formattedPhone)
-    }
-    if (irbInfo?.phone) {
-      const phoneWithoutZipcode = irbInfo.phone.number?.replace('+1', '')
-      const formattedPhone = formatPhoneNumber(phoneWithoutZipcode)
-      setIrbPhoneNumber(formattedPhone)
-    }
-    setIrbNameSameAsInstitution(
-      irbInfo?.name === leadPrincipleInvestigatorContact?.affiliation,
-    )
-    if (study.colorScheme?.background) {
-      setAppBackgroundColor(study.colorScheme?.background)
-    }
-  }, [])
 
   const updateContacts = (
     leadPrincipalInvestigator: Contact,
@@ -442,13 +410,10 @@ const AppDesign: React.FunctionComponent<
     return updatedContacts
   }
 
-  const getContactPersonObject = (type: ContactType) => {
-    if (!study.contacts) return { role: type, name: '' } as Contact
-    const contactObject = study.contacts.find(el => el.role === type)
-    if (contactObject === undefined) {
-      return { role: type, name: '' } as Contact
-    }
-    return { ...contactObject }
+  const getContactPersonObject = (type: ContactType): Contact => {
+    const contact = getContact(study, type)
+
+    return contact || { role: type, name: '' }
   }
 
   return (
@@ -504,9 +469,11 @@ const AppDesign: React.FunctionComponent<
                     }
                     const newWelcomeScreenData = {
                       ...currentWelcomeScreenData,
-                      isUsingDefaultMessage: !currentWelcomeScreenData.isUsingDefaultMessage,
+                      isUsingDefaultMessage:
+                        !currentWelcomeScreenData.isUsingDefaultMessage,
                     }
-                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
+                    updatedStudy.clientData.welcomeScreenData =
+                      newWelcomeScreenData
                     onUpdate(updatedStudy)
                   }}
                 ></Switch>
@@ -527,13 +494,20 @@ const AppDesign: React.FunctionComponent<
                   studyLogoUrl={study.studyLogoUrl}
                   isSettingStudyLogo={isSettingStudyLogo}
                 />
-                <ColorPickerSection
-                  appBackgroundColor={appBackgroundColor}
-                  setAppBackgroundColor={setAppBackgroundColor}
-                  debouncedUpdateColor={(color: string) =>
-                    debouncedUpdateColor(color, study.version)
-                  }
-                />
+
+                <Subsection heading="Select background color">
+                  <p>
+                    Select a background color that matches your institution or
+                    study to be seen beneath your logo.
+                  </p>
+                  <Box width="250px" height="230px" ml={-1.25}>
+                    <HexColorPicker
+                      color={study.colorScheme?.background || 'transparent'}
+                      onChange={updateColor}
+                    />
+                  </Box>
+                </Subsection>
+
                 <WelcomeScreenMessagingSection
                   saveLoader={saveLoader}
                   saveInfo={saveInfo}
@@ -556,7 +530,8 @@ const AppDesign: React.FunctionComponent<
                           ?.isUsingDefaultMessage || false,
                     } as WelcomeScreenData
                     const updatedStudy = { ...study }
-                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
+                    updatedStudy.clientData.welcomeScreenData =
+                      newWelcomeScreenData
                     onUpdate(updatedStudy)
                   }}
                   welcomeScreenHeader={
@@ -607,7 +582,7 @@ const AppDesign: React.FunctionComponent<
                 />,
               ]}
               <PhoneTopBar
-                color={appBackgroundColor}
+                color={study.colorScheme?.background || 'transparent'}
                 isUsingDefaultMessage={
                   study.clientData.welcomeScreenData?.isUsingDefaultMessage ||
                   false
@@ -751,7 +726,7 @@ const AppDesign: React.FunctionComponent<
                   false
                 }
                 imgHeight={imgHeight}
-                appColor={appBackgroundColor}
+                appColor={study.colorScheme?.background || 'transparent'}
                 leadInvestigator={getContactPersonObject(
                   'principal_investigator',
                 )}

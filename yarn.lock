@@ -1774,19 +1774,6 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@super-effective/colorutils@^1.0.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@super-effective/colorutils/-/colorutils-1.1.1.tgz#53f926c569a2ceae674929bc3e96ea10f996a605"
-  integrity sha512-q8jaF8OhgZzGLKoxWgyJJ3Az3dLr/jxepJ+km6LxYzcPn/9oI3Mx2UG/XhFjomvVMZxcK2bGUi0n1+R7g42+Ig==
-
-"@super-effective/react-color-picker@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@super-effective/react-color-picker/-/react-color-picker-1.2.0.tgz#fd960a9c15c1deeec05af404c0a0c0c027e17ba0"
-  integrity sha512-tJr38s8t/qDhFF2xfsvkWBe40h9X4bJ8EiW9kFYeaHvf0kbSqJ4DrWXLfSjPqdLVus+WRyHfdsW510apEw391A==
-  dependencies:
-    "@super-effective/colorutils" "^1.0.1"
-    classnames "^2.2.6"
-
 "@surma/rollup-plugin-off-main-thread@^1.1.1":
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/@surma/rollup-plugin-off-main-thread/-/rollup-plugin-off-main-thread-1.4.2.tgz#e6786b6af5799f82f7ab3a82e53f6182d2b91a58"
@@ -3879,11 +3866,6 @@ class-utils@^0.3.5:
     define-property "^0.2.5"
     isobject "^3.0.0"
     static-extend "^0.1.1"
-
-classnames@^2.2.6:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.3.1.tgz#dfcfa3891e306ec1dad105d0e88f4417b8535e8e"
-  integrity sha512-OlQdbZ7gLfGarSqxesMesDa5uz7KFbID8Kpq/SxIoNGDqY8lSYs0D+hhtBXhcdB3rcbXArFr7vlHheLk1voeNA==
 
 clean-css@^4.2.3:
   version "4.2.3"
@@ -11506,6 +11488,11 @@ react-beautiful-dnd@^13.0.0:
     react-redux "^7.2.0"
     redux "^4.0.4"
     use-memo-one "^1.1.1"
+
+react-colorful@^5.2.3:
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/react-colorful/-/react-colorful-5.2.3.tgz#579faf42542e32645c5dee66c8530292b2d61646"
+  integrity sha512-lAge4syxosZg9SX8fJiwOLd9ZJSW3poPBtypnz1aMiFoHsRnK5G3+INGGx9DGtsrso4h5uFYbiFpjAfWyK3Kag==
 
 react-dev-utils@^11.0.1:
   version "11.0.4"
