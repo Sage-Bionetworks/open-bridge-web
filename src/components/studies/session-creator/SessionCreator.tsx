@@ -91,10 +91,8 @@ const SessionCreator: FunctionComponent<
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
 
-  const [
-    isAddingAssessmentToSession,
-    setIsAddingAssessmentToSession,
-  ] = useState(false)
+  const [isAddingAssessmentToSession, setIsAddingAssessmentToSession] =
+    useState(false)
   const [activeSession, setActiveSession] = React.useState(
     sessions.length > 0 ? sessions[0].guid : undefined
   )

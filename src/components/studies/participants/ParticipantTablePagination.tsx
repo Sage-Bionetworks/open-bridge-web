@@ -47,75 +47,76 @@ type ParticpantTablePaginationProps = {
   handlePageNavigationArrowPressed: Function
 }
 
-const ParticipantTablePagination: React.FunctionComponent<ParticpantTablePaginationProps> = ({
-  totalParticipants,
-  onPageSelectedChanged,
-  currentPage,
-  pageSize,
-  setPageSize,
+const ParticipantTablePagination: React.FunctionComponent<ParticpantTablePaginationProps> =
+  ({
+    totalParticipants,
+    onPageSelectedChanged,
+    currentPage,
+    pageSize,
+    setPageSize,
 
-  handlePageNavigationArrowPressed,
-}) => {
-  const classes = useStyles()
+    handlePageNavigationArrowPressed,
+  }) => {
+    const classes = useStyles()
 
-  const pageSizes = [
-    {
-      value: 25,
-      label: '25',
-    },
-    {
-      value: 50,
-      label: '50',
-    },
-    {
-      value: 100,
-      label: '100',
-    },
-  ]
+    const pageSizes = [
+      {
+        value: 25,
+        label: '25',
+      },
+      {
+        value: 50,
+        label: '50',
+      },
+      {
+        value: 100,
+        label: '100',
+      },
+    ]
 
-  let participantsShown = pageSize * currentPage
-  if (totalParticipants === 0) {
-    return <></>
-  }
-  return (
-    <div className={classes.footerWrapper}>
-      <div
-        id="participant_page_data"
-        className={classes.partitipantNumberText}>{`${
-        participantsShown > totalParticipants
-          ? totalParticipants
-          : participantsShown
-      }/${totalParticipants} participants`}</div>
-      <PageSelector
-        onPageSelected={onPageSelectedChanged}
-        currentPageSelected={currentPage}
-        numberOfPages={Math.ceil(totalParticipants / pageSize)}
-        handlePageNavigationArrowPressed={handlePageNavigationArrowPressed}
-      />
-      <div className={classes.pageSizeSelectorContainer}>
-        <div className={classes.showEntryText}>{'show entries: '}</div>
-        <TextField
-          id="page-selector"
-          select
-          value={pageSize}
-          onChange={event => {
-            onPageSelectedChanged(1)
-            setPageSize(event.target.value)
-          }}
-          classes={{
-            root: classes.rootStyles,
-          }}
-          InputProps={{disableUnderline: true}}
-          data-testid="button-select">
-          {pageSizes.map(pagesize => (
-            <MenuItem key={pagesize.value} value={pagesize.value}>
-              {pagesize.label}
-            </MenuItem>
-          ))}
-        </TextField>
+    let participantsShown = pageSize * currentPage
+    if (totalParticipants === 0) {
+      return <></>
+    }
+    return (
+      <div className={classes.footerWrapper}>
+        <div
+          id="participant_page_data"
+          className={classes.partitipantNumberText}>{`${
+          participantsShown > totalParticipants
+            ? totalParticipants
+            : participantsShown
+        }/${totalParticipants} participants`}</div>
+        <PageSelector
+          onPageSelected={onPageSelectedChanged}
+          currentPageSelected={currentPage}
+          numberOfPages={Math.ceil(totalParticipants / pageSize)}
+          handlePageNavigationArrowPressed={handlePageNavigationArrowPressed}
+        />
+        <div className={classes.pageSizeSelectorContainer}>
+          <div className={classes.showEntryText}>{'show entries: '}</div>
+          <TextField
+            id="page-selector"
+            select
+            value={pageSize}
+            onChange={event => {
+              onPageSelectedChanged(1)
+              setPageSize(event.target.value)
+            }}
+            classes={{
+              root: classes.rootStyles,
+            }}
+            InputProps={{disableUnderline: true}}
+            data-testid="button-select">
+            {pageSizes.map(pagesize => (
+              <MenuItem key={pagesize.value} value={pagesize.value}>
+                {pagesize.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
 
 export default ParticipantTablePagination

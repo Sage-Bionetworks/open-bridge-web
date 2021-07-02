@@ -56,149 +56,150 @@ type WelcomeScreenMessagingSectionProps = {
   useOptionalDisclaimer: boolean
 }
 
-const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessagingSectionProps> = ({
-  saveInfo,
-  saveLoader,
-  SimpleTextInputStyles,
-  onUpdate,
-  welcomeScreenHeader,
-  welcomeScreenBody,
-  welcomeScreenSalutation,
-  welcomeScreenFromText,
-  useOptionalDisclaimer,
-}) => {
-  const classes = useStyles()
+const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessagingSectionProps> =
+  ({
+    saveInfo,
+    saveLoader,
+    SimpleTextInputStyles,
+    onUpdate,
+    welcomeScreenHeader,
+    welcomeScreenBody,
+    welcomeScreenSalutation,
+    welcomeScreenFromText,
+    useOptionalDisclaimer,
+  }) => {
+    const classes = useStyles()
 
-  return (
-    <Subsection heading="Welcome screen messaging">
-      <FormGroupWrapper>
-        <FormControl className={classes.firstFormElement}>
-          <TextInputWrapper
-            SimpleTextInputStyles={
-              {fontSize: '24px', width: '100%'} as React.CSSProperties
-            }
-            id="headline-input"
-            placeholder="Welcome Headline"
-            value={welcomeScreenHeader}
-            onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-            ) => {
-              onUpdate(
-                e.target.value,
-                welcomeScreenBody,
-                welcomeScreenSalutation,
-                welcomeScreenFromText,
-                useOptionalDisclaimer
-              )
-            }}
-            multiline
-            rows={2}
-            rowsMax={4}
-            titleText="Main Header"
-            alternativeTextInputClassName={classes.headlineStyle}
-          />
-        </FormControl>
-        <FormControl>
-          <TextInputWrapper
-            SimpleTextInputStyles={{width: '100%'} as React.CSSProperties}
-            id="outlined-textarea"
-            value={welcomeScreenBody}
-            onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-            ) => {
-              onUpdate(
-                welcomeScreenHeader,
-                e.target.value,
-                welcomeScreenSalutation,
-                welcomeScreenFromText,
-                useOptionalDisclaimer
-              )
-            }}
-            multiline
-            rows={4}
-            rowsMax={6}
-            placeholder="What are the first things you want participants to know about the study."
-            titleText="Body Copy (maximum 250 characters)"
-            alternativeTextInputClassName={'none'}
-            maxWordCount={250}
-          />
-        </FormControl>
-        <FormControl>
-          <TextInputWrapper
-            SimpleTextInputStyles={SimpleTextInputStyles}
-            id="salutations"
-            value={welcomeScreenSalutation}
-            onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-            ) => {
-              onUpdate(
-                welcomeScreenHeader,
-                welcomeScreenBody,
-                e.target.value,
-                welcomeScreenFromText,
-                useOptionalDisclaimer
-              )
-            }}
-            placeholder="Thank you for your contribution"
-            titleText="Salutations"
-          />
-        </FormControl>
-        <FormControl>
-          <TextInputWrapper
-            SimpleTextInputStyles={SimpleTextInputStyles}
-            id="signature-textarea"
-            value={welcomeScreenFromText}
-            onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-            ) => {
-              onUpdate(
-                welcomeScreenHeader,
-                welcomeScreenBody,
-                welcomeScreenSalutation,
-                e.target.value,
-                useOptionalDisclaimer
-              )
-            }}
-            placeholder="Study team name"
-            titleText="From"
-          />
-        </FormControl>
-        <Box mt={2.5}>Add optional disclaimer:</Box>
-        <div className={classes.optionalDisclaimerRow}>
-          <Checkbox
-            checked={useOptionalDisclaimer}
-            inputProps={{'aria-label': 'primary checkbox'}}
-            className={classes.checkBox}
-            id="disclaimer-check-box"
-            onChange={() => {
-              onUpdate(
-                welcomeScreenHeader,
-                welcomeScreenBody,
-                welcomeScreenSalutation,
-                welcomeScreenFromText,
-                !useOptionalDisclaimer
-              )
-            }}></Checkbox>
-          <div className={classes.optionalDisclaimerText}>
-            This is a research study and does not provide medical advice,
-            diagnosis, or treatment.
+    return (
+      <Subsection heading="Welcome screen messaging">
+        <FormGroupWrapper>
+          <FormControl className={classes.firstFormElement}>
+            <TextInputWrapper
+              SimpleTextInputStyles={
+                {fontSize: '24px', width: '100%'} as React.CSSProperties
+              }
+              id="headline-input"
+              placeholder="Welcome Headline"
+              value={welcomeScreenHeader}
+              onChange={(
+                e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+              ) => {
+                onUpdate(
+                  e.target.value,
+                  welcomeScreenBody,
+                  welcomeScreenSalutation,
+                  welcomeScreenFromText,
+                  useOptionalDisclaimer
+                )
+              }}
+              multiline
+              rows={2}
+              rowsMax={4}
+              titleText="Main Header"
+              alternativeTextInputClassName={classes.headlineStyle}
+            />
+          </FormControl>
+          <FormControl>
+            <TextInputWrapper
+              SimpleTextInputStyles={{width: '100%'} as React.CSSProperties}
+              id="outlined-textarea"
+              value={welcomeScreenBody}
+              onChange={(
+                e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+              ) => {
+                onUpdate(
+                  welcomeScreenHeader,
+                  e.target.value,
+                  welcomeScreenSalutation,
+                  welcomeScreenFromText,
+                  useOptionalDisclaimer
+                )
+              }}
+              multiline
+              rows={4}
+              rowsMax={6}
+              placeholder="What are the first things you want participants to know about the study."
+              titleText="Body Copy (maximum 250 characters)"
+              alternativeTextInputClassName={'none'}
+              maxWordCount={250}
+            />
+          </FormControl>
+          <FormControl>
+            <TextInputWrapper
+              SimpleTextInputStyles={SimpleTextInputStyles}
+              id="salutations"
+              value={welcomeScreenSalutation}
+              onChange={(
+                e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+              ) => {
+                onUpdate(
+                  welcomeScreenHeader,
+                  welcomeScreenBody,
+                  e.target.value,
+                  welcomeScreenFromText,
+                  useOptionalDisclaimer
+                )
+              }}
+              placeholder="Thank you for your contribution"
+              titleText="Salutations"
+            />
+          </FormControl>
+          <FormControl>
+            <TextInputWrapper
+              SimpleTextInputStyles={SimpleTextInputStyles}
+              id="signature-textarea"
+              value={welcomeScreenFromText}
+              onChange={(
+                e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+              ) => {
+                onUpdate(
+                  welcomeScreenHeader,
+                  welcomeScreenBody,
+                  welcomeScreenSalutation,
+                  e.target.value,
+                  useOptionalDisclaimer
+                )
+              }}
+              placeholder="Study team name"
+              titleText="From"
+            />
+          </FormControl>
+          <Box mt={2.5}>Add optional disclaimer:</Box>
+          <div className={classes.optionalDisclaimerRow}>
+            <Checkbox
+              checked={useOptionalDisclaimer}
+              inputProps={{'aria-label': 'primary checkbox'}}
+              className={classes.checkBox}
+              id="disclaimer-check-box"
+              onChange={() => {
+                onUpdate(
+                  welcomeScreenHeader,
+                  welcomeScreenBody,
+                  welcomeScreenSalutation,
+                  welcomeScreenFromText,
+                  !useOptionalDisclaimer
+                )
+              }}></Checkbox>
+            <div className={classes.optionalDisclaimerText}>
+              This is a research study and does not provide medical advice,
+              diagnosis, or treatment.
+            </div>
           </div>
-        </div>
-      </FormGroupWrapper>
-      <Box textAlign="left">
-        {saveLoader ? (
-          <div className="text-center">
-            <CircularProgress color="primary" size={25}></CircularProgress>
-          </div>
-        ) : (
-          <SaveButton
-            onClick={() => saveInfo()}
-            id="save-button-study-builder-1"
-          />
-        )}
-      </Box>
-    </Subsection>
-  )
-}
+        </FormGroupWrapper>
+        <Box textAlign="left">
+          {saveLoader ? (
+            <div className="text-center">
+              <CircularProgress color="primary" size={25}></CircularProgress>
+            </div>
+          ) : (
+            <SaveButton
+              onClick={() => saveInfo()}
+              id="save-button-study-builder-1"
+            />
+          )}
+        </Box>
+      </Subsection>
+    )
+  }
 
 export default WelcomeScreenMessagingSection

@@ -85,12 +85,17 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
   const [dropdown, setDropdown] = React.useState(['Daily'])
-  const [currentZoomLevel, setCurrentZoomLevel] = React.useState<
-    TimelineZoomLevel
-  >('Monthly')
+  const [currentZoomLevel, setCurrentZoomLevel] =
+    React.useState<TimelineZoomLevel>('Monthly')
 
   const classes = useStyles()
-  const {data: timeline, status, error, run, setData} = useAsync<any>({
+  const {
+    data: timeline,
+    status,
+    error,
+    run,
+    setData,
+  } = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
