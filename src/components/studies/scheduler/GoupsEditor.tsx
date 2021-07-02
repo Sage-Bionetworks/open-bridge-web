@@ -1,9 +1,8 @@
-import { makeStyles } from '@material-ui/core'
-import { CSSProperties } from '@material-ui/core/styles/withStyles'
-import React, { FunctionComponent } from 'react'
-import { StudyArm } from '../../../types/types'
+import {makeStyles} from '@material-ui/core'
+import {CSSProperties} from '@material-ui/core/styles/withStyles'
+import React, {FunctionComponent} from 'react'
+import {StudyArm} from '../../../types/types'
 import TabsMtb from '../../widgets/TabsMtb'
-
 
 const useStyles = makeStyles({})
 
@@ -40,7 +39,7 @@ const StudyArmsEditor: FunctionComponent<
       }
     }
 
-    const getTabDataObjects = (): { label: string; id: string }[] => {
+    const getTabDataObjects = (): {label: string; id: string}[] => {
       const result = studyArms.map(studyArm => ({
         label: studyArm.name,
         id: studyArm.id,
@@ -65,13 +64,12 @@ const StudyArmsEditor: FunctionComponent<
             { label: 'Add StudyArm', fn: onAddStudyArm },
             { label: 'Copy Previous StudyArm', fn: onCopyStudyArm },
           ]*/
-          }
-        ></TabsMtb>
+          }></TabsMtb>
 
         {children}
       </div>
     )
-  },
+  }
 )
 
 export default StudyArmsEditor

@@ -20,8 +20,8 @@ export default [
     Component: StudyList,
     exact: true,
   },
-  { path: '/studies/builder/:id', name: '', Component: StudyBuilder },
-  { path: '/studies/builder/:id/:section', name: '', Component: StudyBuilder },
+  {path: '/studies/builder/:id', name: '', Component: StudyBuilder},
+  {path: '/studies/builder/:id/:section', name: '', Component: StudyBuilder},
   {
     path: '/studies/:id/study-live',
     name: '',

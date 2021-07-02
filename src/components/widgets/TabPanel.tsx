@@ -1,5 +1,5 @@
-import { Box, makeStyles, Paper } from '@material-ui/core'
-import React, { FunctionComponent } from 'react'
+import {Box, makeStyles, Paper} from '@material-ui/core'
+import React, {FunctionComponent} from 'react'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -42,8 +42,7 @@ const TabPanel: FunctionComponent<TabPanelProps> = ({
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
+      {...other}>
       {value === index && (
         <Box className={classes.root} position="relative">
           <>{children}</>

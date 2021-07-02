@@ -1,8 +1,8 @@
 import StudyService from '../../../services/study.service'
-import { StudySession } from '../../../types/scheduling'
-import { Assessment } from '../../../types/types'
+import {StudySession} from '../../../types/scheduling'
+import {Assessment} from '../../../types/types'
 
-type ActionMap<M extends { [index: string]: any }> = {
+type ActionMap<M extends {[index: string]: any}> = {
   [Key in keyof M]: M[Key] extends undefined
     ? {
         type: Key
@@ -45,14 +45,16 @@ export type ActionPayload = {
   }
 }
 
-export type SessionAction = ActionMap<ActionPayload>[keyof ActionMap<ActionPayload>]
+export type SessionAction = ActionMap<ActionPayload>[keyof ActionMap<
+  ActionPayload
+>]
 
 function addSession(
   sessions: StudySession[],
   name: string,
   assessments: Assessment[],
 
-  isActive: boolean = false,
+  isActive: boolean = false
 ): StudySession[] {
   /*const session: StudySession = {
     guid: getRandomId(),
@@ -61,8 +63,8 @@ function addSession(
     name,
   }*/
   const session = StudyService.createEmptyStudySession(
-    sessions.length? sessions[0].startEventId!: 'study_start_date',
-    name,
+    sessions.length ? sessions[0].startEventId! : 'study_start_date',
+    name
   )
 
   session.assessments = assessments
@@ -85,13 +87,13 @@ function addSession(
 function updateSessionName(
   sessions: StudySession[],
   sessionId: string,
-  sessionName: string,
+  sessionName: string
 ): StudySession[] {
   const result = sessions.map(session => {
     if (session.guid !== sessionId) {
       return session
     } else {
-      return { ...session, name: sessionName }
+      return {...session, name: sessionName}
     }
   })
 
@@ -100,23 +102,23 @@ function updateSessionName(
 
 function removeSession(
   sessions: StudySession[],
-  sessionId: string,
+  sessionId: string
 ): StudySession[] {
   return sessions
     .filter(session => session.guid !== sessionId)
-    .map((s, index) => ({ ...s, order: index }))
+    .map((s, index) => ({...s, order: index}))
 }
 
 function updateAssessments(
   sessions: StudySession[],
   sessionId: string,
-  assessments: Assessment[],
+  assessments: Assessment[]
 ): StudySession[] {
   const result = sessions.map(session => {
     if (session.guid !== sessionId) {
       return session
     } else {
-      return { ...session, assessments: assessments }
+      return {...session, assessments: assessments}
     }
   })
   return result
@@ -124,7 +126,7 @@ function updateAssessments(
 
 function actionsReducer(
   sessions: StudySession[],
-  action: SessionAction,
+  action: SessionAction
 ): StudySession[] {
   switch (action.type) {
     case Types.SetSessions: {
@@ -135,7 +137,7 @@ function actionsReducer(
       return addSession(
         sessions,
         action.payload.name,
-        action.payload.assessments,
+        action.payload.assessments
       )
     }
 
@@ -143,7 +145,7 @@ function actionsReducer(
       return updateSessionName(
         sessions,
         action.payload.sessionId,
-        action.payload.sessionName,
+        action.payload.sessionName
       )
     }
 
@@ -154,7 +156,7 @@ function actionsReducer(
       return updateAssessments(
         sessions,
         action.payload.sessionId,
-        action.payload.assessments,
+        action.payload.assessments
       )
     }
 

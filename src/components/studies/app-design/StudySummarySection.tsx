@@ -1,4 +1,4 @@
-import { FormControl, makeStyles } from '@material-ui/core'
+import {FormControl, makeStyles} from '@material-ui/core'
 import React from 'react'
 import FormGroupWrapper from './FormGroupWrapper'
 import Subsection from './Subsection'
@@ -37,7 +37,7 @@ const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = (
             placeholder="Headline"
             value={studyTitle}
             onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
             ) => {
               onUpdate(e.target.value, studySummaryBody)
             }}
@@ -47,11 +47,11 @@ const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = (
         </FormControl>
         <FormControl>
           <TextInputWrapper
-            SimpleTextInputStyles={{ width: '100%' } as React.CSSProperties}
+            SimpleTextInputStyles={{width: '100%'} as React.CSSProperties}
             id="study-body-text"
             value={studySummaryBody}
             onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
             ) => {
               onUpdate(studyTitle, e.target.value)
             }}

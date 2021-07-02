@@ -1,18 +1,18 @@
-import { Box } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Box} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import moment from 'moment'
 import React from 'react'
-import { useErrorHandler } from 'react-error-boundary'
+import {useErrorHandler} from 'react-error-boundary'
 import Pluralize from 'react-pluralize'
-import { ReactComponent as NotificationsIcon } from '../../../assets/scheduler/notifications_icon.svg'
-import { ReactComponent as TimerIcon } from '../../../assets/scheduler/timer_icon.svg'
-import { useAsync } from '../../../helpers/AsyncHook'
+import {ReactComponent as NotificationsIcon} from '../../../assets/scheduler/notifications_icon.svg'
+import {ReactComponent as TimerIcon} from '../../../assets/scheduler/timer_icon.svg'
+import {useAsync} from '../../../helpers/AsyncHook'
 import StudyService from '../../../services/study.service'
-import { latoFont } from '../../../style/theme'
-import { Schedule } from '../../../types/scheduling'
+import {latoFont} from '../../../style/theme'
+import {Schedule} from '../../../types/scheduling'
 import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
 import SessionIcon from '../../widgets/SessionIcon'
-import TimelineCustomPlot, { TimelineZoomLevel } from './TimelineCustomPlot'
+import TimelineCustomPlot, {TimelineZoomLevel} from './TimelineCustomPlot'
 import AssessmentImage from '../../assessments/AssessmentImage'
 import Tooltip from '@material-ui/core/Tooltip'
 
@@ -85,13 +85,12 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
   const [dropdown, setDropdown] = React.useState(['Daily'])
-  const [
-    currentZoomLevel,
-    setCurrentZoomLevel,
-  ] = React.useState<TimelineZoomLevel>('Monthly')
+  const [currentZoomLevel, setCurrentZoomLevel] = React.useState<
+    TimelineZoomLevel
+  >('Monthly')
 
   const classes = useStyles()
-  const { data: timeline, status, error, run, setData } = useAsync<any>({
+  const {data: timeline, status, error, run, setData} = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
@@ -100,7 +99,7 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   React.useEffect(() => {
     console.log('%c ---timeline getting--' + version, 'color: blue')
     return run(
-      StudyService.getStudyScheduleTimeline(schedFromDisplay.guid, token!),
+      StudyService.getStudyScheduleTimeline(schedFromDisplay.guid, token!)
     )
   }, [run, version, token])
 
@@ -132,7 +131,7 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
 
     if (timeline?.sessions) {
       console.log('updating info')
-      const { sessions, schedule } = timeline
+      const {sessions, schedule} = timeline
       setSessions(sessions)
       setSchedule(schedule)
       setZoomLevel(timeline.duration as string)
@@ -185,8 +184,7 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
                           smallVariantProperties={{
                             width: '100%',
                             backgroundColor: '#F6F6F6',
-                          }}
-                        ></AssessmentImage>
+                          }}></AssessmentImage>
                       </Box>
                     )
                   })}
@@ -196,9 +194,8 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
               classes={{
                 tooltip: classes.toolTip,
                 arrow: classes.arrow,
-              }}
-            >
-              <Box style={{ cursor: 'pointer' }}>
+              }}>
+              <Box style={{cursor: 'pointer'}}>
                 <SessionIcon index={index} key={s.guid}>
                   {getSession(s.guid!)?.label}
                 </SessionIcon>
@@ -213,17 +210,15 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
             setCurrentZoomLevel(e.target.value as TimelineZoomLevel)
           }}
           id="lead-investigator-drop-down"
-          dropdown={dropdown.map(item => ({ value: item, label: item }))}
-          emptyValueLabel="Select Zoom Level"
-        ></BlackBorderDropdown>
+          dropdown={dropdown.map(item => ({value: item, label: item}))}
+          emptyValueLabel="Select Zoom Level"></BlackBorderDropdown>
       </Box>
       {schedule && (
         <TimelineCustomPlot
           schedulingItems={schedule}
           scheduleLength={scheduleLength}
           sortedSessions={schedFromDisplay.sessions}
-          zoomLevel={currentZoomLevel}
-        ></TimelineCustomPlot>
+          zoomLevel={currentZoomLevel}></TimelineCustomPlot>
       )}
     </Box>
   )

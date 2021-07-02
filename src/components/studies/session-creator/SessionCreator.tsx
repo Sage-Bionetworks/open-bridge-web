@@ -12,17 +12,17 @@ import {
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import SaveIcon from '@material-ui/icons/Save'
-import React, { FunctionComponent, useState } from 'react'
-import { useErrorHandler } from 'react-error-boundary'
+import React, {FunctionComponent, useState} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import AssessmentService from '../../../services/assessment.service'
-import { StudySession } from '../../../types/scheduling'
-import { Assessment, StudyBuilderComponentProps } from '../../../types/types'
+import {StudySession} from '../../../types/scheduling'
+import {Assessment, StudyBuilderComponentProps} from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
-import { MTBHeadingH1 } from '../../widgets/Headings'
+import {MTBHeadingH1} from '../../widgets/Headings'
 import AssessmentSelector from './AssessmentSelector'
 import SessionActionButtons from './SessionActionButtons'
-import actionsReducer, { SessionAction, Types } from './sessionActions'
+import actionsReducer, {SessionAction, Types} from './sessionActions'
 import SingleSessionContainer from './SingleSessionContainer'
 
 const useStyles = makeStyles(theme => ({
@@ -87,14 +87,16 @@ const SessionCreator: FunctionComponent<
   const classes = useStyles()
 
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
-    [],
+    []
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
 
-  const [isAddingAssessmentToSession, setIsAddingAssessmentToSession] =
-    useState(false)
+  const [
+    isAddingAssessmentToSession,
+    setIsAddingAssessmentToSession,
+  ] = useState(false)
   const [activeSession, setActiveSession] = React.useState(
-    sessions.length > 0 ? sessions[0].guid : undefined,
+    sessions.length > 0 ? sessions[0].guid : undefined
   )
   const handleError = useErrorHandler()
 
@@ -110,25 +112,25 @@ const SessionCreator: FunctionComponent<
 
   const updateAssessmentList = (
     sessionId: string,
-    assessments: Assessment[],
+    assessments: Assessment[]
   ) => {
     sessionsUpdateFn({
       type: Types.UpdateAssessments,
-      payload: { sessionId, assessments },
+      payload: {sessionId, assessments},
     })
   }
 
   const updateAssessments = async (
     sessionId: string,
     previousAssessments: Assessment[] | undefined = [],
-    newAssessments: Assessment[],
+    newAssessments: Assessment[]
   ) => {
     const assessments: Assessment[] = [...previousAssessments]
 
     for (let i = 0; i < newAssessments.length; i++) {
       try {
         const assessmentWithResources = await AssessmentService.getResource(
-          newAssessments[i],
+          newAssessments[i]
         )
         assessments.push(assessmentWithResources)
       } catch (error) {
@@ -146,7 +148,7 @@ const SessionCreator: FunctionComponent<
   }
 
   const getActiveSession = (
-    sessions: StudySession[],
+    sessions: StudySession[]
   ): StudySession | undefined => {
     const session = sessions.find(session => session.guid === activeSession)
     return session
@@ -156,7 +158,7 @@ const SessionCreator: FunctionComponent<
     return (
       <>
         <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
-          {({ onConfirm, onCancel }) => (
+          {({onConfirm, onCancel}) => (
             <ConfirmationDialog
               isOpen={hasObjectChanged}
               type={'NAVIGATE'}
@@ -170,10 +172,9 @@ const SessionCreator: FunctionComponent<
             variant="contained"
             color="primary"
             key="saveButton"
-            style={{ marginBottom: '32px' }}
+            style={{marginBottom: '32px'}}
             onClick={() => onSave()}
-            startIcon={<SaveIcon />}
-          >
+            startIcon={<SaveIcon />}>
             Save changes
           </Button>
         )}
@@ -181,8 +182,7 @@ const SessionCreator: FunctionComponent<
           {sessions.map((session, index) => (
             <Paper
               className={classes.sessionContainer}
-              key={session.guid! + index}
-            >
+              key={session.guid! + index}>
               <SingleSessionContainer
                 key={session.guid}
                 sessionIndex={index}
@@ -194,18 +194,17 @@ const SessionCreator: FunctionComponent<
                 onRemoveSession={(sessionId: string) =>
                   sessionsUpdateFn({
                     type: Types.RemoveSession,
-                    payload: { sessionId },
+                    payload: {sessionId},
                   })
                 }
                 onUpdateSessionName={(sessionId: string, sessionName: string) =>
                   sessionsUpdateFn({
                     type: Types.UpdateSessionName,
-                    payload: { sessionId, sessionName },
+                    payload: {sessionId, sessionName},
                   })
                 }
                 onUpdateAssessmentList={updateAssessmentList}
-                numberOfSessions={sessions.length}
-              ></SingleSessionContainer>
+                numberOfSessions={sessions.length}></SingleSessionContainer>
             </Paper>
           ))}
         </Box>
@@ -216,7 +215,7 @@ const SessionCreator: FunctionComponent<
             onAddSession={(
               sessions: StudySession[],
               assessments: Assessment[],
-              name: string,
+              name: string
             ) =>
               sessionsUpdateFn({
                 type: Types.AddSession,
@@ -225,30 +224,27 @@ const SessionCreator: FunctionComponent<
                   assessments,
                 },
               })
-            }
-          ></SessionActionButtons>
+            }></SessionActionButtons>
         </Box>
         {children}
         <Dialog
           maxWidth="lg"
           open={isAssessmentDialogOpen}
           onClose={cancelAssessmentSelector}
-          aria-labelledby="form-dialog-title"
-        >
+          aria-labelledby="form-dialog-title">
           {isAddingAssessmentToSession && (
             <div className={classes.addingAssessmentsBackdrop}>
               <CircularProgress size={'5rem'} color="primary" />
             </div>
           )}
           <DialogTitle>
-            <MTBHeadingH1 style={{ marginTop: '32px', textAlign: 'center' }}>
+            <MTBHeadingH1 style={{marginTop: '32px', textAlign: 'center'}}>
               Select assessment(s) to add to session.
             </MTBHeadingH1>
             <IconButton
               aria-label="close"
               className={classes.closeButton}
-              onClick={cancelAssessmentSelector}
-            >
+              onClick={cancelAssessmentSelector}>
               <CloseIcon />
             </IconButton>
           </DialogTitle>
@@ -256,16 +252,14 @@ const SessionCreator: FunctionComponent<
             <AssessmentSelector
               selectedAssessments={selectedAssessments}
               onUpdateAssessments={setSelectedAssessments}
-              activeSession={getActiveSession(sessions)}
-            ></AssessmentSelector>
+              activeSession={getActiveSession(sessions)}></AssessmentSelector>
           </DialogContent>
           {!isAddingAssessmentToSession && (
             <DialogActions>
               <Button
                 onClick={cancelAssessmentSelector}
                 color="secondary"
-                variant="outlined"
-              >
+                variant="outlined">
                 Cancel
               </Button>
 
@@ -278,12 +272,11 @@ const SessionCreator: FunctionComponent<
                   await updateAssessments(
                     getActiveSession(sessions)!.guid!,
                     getActiveSession(sessions)!.assessments,
-                    selectedAssessments,
+                    selectedAssessments
                   )
                   setSelectedAssessments([])
                   setIsAddingAssessmentToSession(false)
-                }}
-              >
+                }}>
                 {!getActiveSession(sessions)
                   ? 'Please select group and session'
                   : `Add  to Session`}

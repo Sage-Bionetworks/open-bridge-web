@@ -1,12 +1,12 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core'
+import {makeStyles} from '@material-ui/core'
 import Subsection from './Subsection'
-import { FormControl } from '@material-ui/core'
-import { Contact } from '../../../types/types'
+import {FormControl} from '@material-ui/core'
+import {Contact} from '../../../types/types'
 import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
-import { ContactType } from './AppDesign'
+import {ContactType} from './AppDesign'
 
 const useStyles = makeStyles(theme => ({
   firstFormElement: {
@@ -32,7 +32,7 @@ type StudyLeadInformationSectionProps = {
   onUpdate: (
     leadPrincipalInvestigator: Contact,
     funder: Contact,
-    ethicsBoardContact: Contact,
+    ethicsBoardContact: Contact
   ) => void
 }
 
@@ -57,13 +57,14 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             token={token!}
             onChange={(investigatorSelected: string) => {
               const newStudyLeadObject = getContactPersonObject(
-                'principal_investigator',
+                'principal_investigator'
               )
               newStudyLeadObject.name = investigatorSelected
               onUpdate(newStudyLeadObject, funder, ethicsBoardContact)
             }}
-            currentInvestigatorSelected={leadPrincipalInvestigator?.name || ''}
-          ></LeadInvestigatorDropdown>
+            currentInvestigatorSelected={
+              leadPrincipalInvestigator?.name || ''
+            }></LeadInvestigatorDropdown>
           <p className={classes.principleInvestigatorsParagraph}>
             Principle Investigators are required to be part of the study as a
             “Study Administrator”.
@@ -85,10 +86,10 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             placeholder="Name of Institution"
             value={leadPrincipalInvestigator.affiliation || ''}
             onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
             ) => {
               const newStudyLeadObject = getContactPersonObject(
-                'principal_investigator',
+                'principal_investigator'
               )
               newStudyLeadObject.affiliation = e.target.value
               const newEthicsBoardObject = getContactPersonObject('irb')
@@ -107,14 +108,14 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             placeholder="Name of Funder(s)"
             value={funder?.name || ''}
             onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
             ) => {
               const newFunderObject = getContactPersonObject('sponsor')
               newFunderObject.name = e.target.value
               onUpdate(
                 leadPrincipalInvestigator,
                 newFunderObject,
-                ethicsBoardContact,
+                ethicsBoardContact
               )
             }}
             titleText="Funder*"

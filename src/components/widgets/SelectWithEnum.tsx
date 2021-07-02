@@ -1,17 +1,14 @@
 import {
   FormControl,
-  InputLabel, MenuItem, Select,
-
-
-
-  SelectProps
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectProps,
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React from 'react'
-import { getEnumKeys } from '../../helpers/utility'
-
-
+import {getEnumKeys} from '../../helpers/utility'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -56,7 +53,7 @@ const SelectWithEnum: React.FunctionComponent<
 
   const classes = useStyles()
 
-  const getDropdownItems= (data: Array<any> | object): JSX.Element[] => {
+  const getDropdownItems = (data: Array<any> | object): JSX.Element[] => {
     if (!Array.isArray(sourceData)) {
       const result = getEnumKeys(sourceData).map(item => (
         <MenuItem value={item} key={item as keyof typeof sourceData}>
@@ -79,12 +76,11 @@ const SelectWithEnum: React.FunctionComponent<
       {label && <InputLabel htmlFor={id}>{label}</InputLabel>}
       <Select
         variant={variant}
-        classes={{ select: clsx(size === 'small' && classes.small) }}
+        classes={{select: clsx(size === 'small' && classes.small)}}
         labelId={`${id}-label`}
         id={id}
         value={value || ''}
-        {...rest}
-      >
+        {...rest}>
         {getDropdownItems(sourceData)}
       </Select>
     </FormControl>

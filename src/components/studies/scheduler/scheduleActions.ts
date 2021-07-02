@@ -1,6 +1,6 @@
-import { SessionSchedule, StudySession } from '../../../types/scheduling'
+import {SessionSchedule, StudySession} from '../../../types/scheduling'
 
-type ActionMap<M extends { [index: string]: any }> = {
+type ActionMap<M extends {[index: string]: any}> = {
   [Key in keyof M]: M[Key] extends undefined
     ? {
         type: Key
@@ -22,18 +22,20 @@ export type ActionPayload = {
   }
 }
 
-export type SessionScheduleAction = ActionMap<ActionPayload>[keyof ActionMap<ActionPayload>]
+export type SessionScheduleAction = ActionMap<ActionPayload>[keyof ActionMap<
+  ActionPayload
+>]
 
 function updateSessionSchedule(
   sessions: StudySession[],
   sessionId: string,
-  updatedSession: SessionSchedule,
+  updatedSession: SessionSchedule
 ): StudySession[] {
   const result = sessions.map(session => {
     if (session.guid !== sessionId) {
       return session
     } else {
-      return { ...session, ...updatedSession }
+      return {...session, ...updatedSession}
     }
   })
   return result
@@ -41,14 +43,14 @@ function updateSessionSchedule(
 
 function actionsReducer(
   sessions: StudySession[],
-  action: SessionScheduleAction,
+  action: SessionScheduleAction
 ): StudySession[] {
   switch (action.type) {
     case ActionTypes.UpdateSessionSchedule: {
       return updateSessionSchedule(
         sessions,
         action.payload.sessionId,
-        action.payload.schedule,
+        action.payload.schedule
       )
     }
 

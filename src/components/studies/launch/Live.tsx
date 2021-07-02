@@ -1,7 +1,7 @@
-import { Button, Box } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Button, Box} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
-import { RouteComponentProps } from 'react-router'
+import {RouteComponentProps} from 'react-router'
 import confetti from '../../../assets/launch/confetti.svg'
 import {
   StudyInfoData,
@@ -13,7 +13,7 @@ import {
   latoFont,
   playfairDisplayFont,
 } from '../../../style/theme'
-import { MTBHeadingH1 } from '../../widgets/Headings'
+import {MTBHeadingH1} from '../../widgets/Headings'
 import LiveIcon from '../../../assets/live_study_icon.svg'
 import clsx from 'clsx'
 
@@ -83,13 +83,12 @@ const Live: React.FunctionComponent<RouteComponentProps> = ({}: RouteComponentPr
   return (
     <Box display="flex" justifyContent="center" alignItems="center">
       <div className={classes.root}>
-        <div style={{ marginLeft: '-50px' }}>
+        <div style={{marginLeft: '-50px'}}>
           <MTBHeadingH1 className={classes.congratsText}>
             Congratulations!
           </MTBHeadingH1>
           <MTBHeadingH1
-            className={clsx(classes.congratsText, classes.liveText)}
-          >
+            className={clsx(classes.congratsText, classes.liveText)}>
             {builderInfo.study.name} officially live!
           </MTBHeadingH1>
           <img src={LiveIcon} className={classes.liveButton}></img>
@@ -101,10 +100,9 @@ const Live: React.FunctionComponent<RouteComponentProps> = ({}: RouteComponentPr
             color="secondary"
             href={'/studies/:id/participant-manager'.replace(
               ':id',
-              builderInfo.study.identifier,
+              builderInfo.study.identifier
             )}
-            className={classes.enrollButton}
-          >
+            className={classes.enrollButton}>
             Enroll Participants
           </Button>
         </div>

@@ -4,17 +4,17 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
-  Theme
+  Theme,
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import moment from 'moment'
 import React from 'react'
-import { MHDsEnum, NotificationTimeAtEnum } from '../../../types/scheduling'
+import {MHDsEnum, NotificationTimeAtEnum} from '../../../types/scheduling'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import SmallTextBox from '../../widgets/SmallTextBox'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
-import { getDropdownTimeItems } from './utility'
+import {getDropdownTimeItems} from './utility'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: '2px 9px',
       marginTop: '2px',
     },
-  }),
+  })
 )
 
 export interface NotificationTimeProps {
@@ -47,10 +47,12 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
 }: NotificationTimeProps) => {
   const classes = useStyles()
   const [hasOffset, setHasOffset] = React.useState(offset !== undefined)
-  const [daysForMultidayOffset, setDaysForMultidayOffset] =
-    React.useState<number | undefined>()
-  const [timeForMultidayOffset, setTimeForMultidayOffset] =
-    React.useState<string | undefined>()
+  const [daysForMultidayOffset, setDaysForMultidayOffset] = React.useState<
+    number | undefined
+  >()
+  const [timeForMultidayOffset, setTimeForMultidayOffset] = React.useState<
+    string | undefined
+  >()
 
   function changeMultidayOffset({
     days,
@@ -100,7 +102,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
         `${parsedOffset
           .hours()
           .toString()
-          .padStart(2, '0')}:${roundedMinutes.padStart(2, '0')}`,
+          .padStart(2, '0')}:${roundedMinutes.padStart(2, '0')}`
       )
     }
   }, [])
@@ -108,7 +110,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
   //--- initial notification fns ----//
   const toggleOffsetForInitialNotification = (value: string) => {
     if (value === 'false') {
-      onChange({ notifyAt: 'after_window_start', offset: undefined })
+      onChange({notifyAt: 'after_window_start', offset: undefined})
       setHasOffset(false)
     } else {
       setHasOffset(true)
@@ -119,14 +121,12 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
     <SchedulingFormSection
       label={'Notify participant:'}
       variant="small"
-      border={false}
-    >
+      border={false}>
       <RadioGroup
         aria-label="Session Starts On"
         name="startDate"
         value={hasOffset}
-        onChange={e => toggleOffsetForInitialNotification(e.target.value)}
-      >
+        onChange={e => toggleOffsetForInitialNotification(e.target.value)}>
         <FormControlLabel
           value={false}
           control={<Radio />}
@@ -143,13 +143,12 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
                     notifyAt: 'after_window_start',
                   })
                 }}
-                onFocus={()=>toggleOffsetForInitialNotification('true')}
+                onFocus={() => toggleOffsetForInitialNotification('true')}
                 durationString={offset || ''}
                 unitLabel="Notification Offset"
                 numberLabel="notification offset"
                 unitDefault={MHDsEnum.M}
-                unitData={MHDsEnum}
-              ></Duration>
+                unitData={MHDsEnum}></Duration>
             </>
           }
           label="after start of window"
@@ -162,31 +161,28 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
     <SchedulingFormSection
       label={'Send a reminder notification:'}
       variant="small"
-      border={false}
-    >
+      border={false}>
       <Duration
         onChange={e => {
-          onChange({ notifyAt: notifyAt, offset: e.target.value })
+          onChange({notifyAt: notifyAt, offset: e.target.value})
         }}
         durationString={offset || ''}
         unitLabel="Repeat Every"
         numberLabel="frequency number"
         unitDefault={MHDsEnum.H}
-        unitData={MHDsEnum}
-      ></Duration>
+        unitData={MHDsEnum}></Duration>
 
       <RadioGroup
         aria-label="Notification Reminder"
         name="remindAtType"
-        style={{ marginTop: '5px', marginLeft: '8px' }}
+        style={{marginTop: '5px', marginLeft: '8px'}}
         value={notifyAt}
         onChange={e => {
           onChange({
             notifyAt: e.target.value as keyof typeof NotificationTimeAtEnum,
             offset: offset,
           })
-        }}
-      >
+        }}>
         <FormControlLabel
           value={'after_window_start'}
           control={<Radio size="small" className={classes.smallRadio} />}
@@ -205,8 +201,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
     <SchedulingFormSection
       label={'Send a reminder notification:'}
       variant="small"
-      border={false}
-    >
+      border={false}>
       <SmallTextBox
         type="number"
         isLessThanOneAllowed={false}
@@ -222,7 +217,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
       <Box mx={0.5}>day(s) after at:</Box>
       <SelectWithEnum
         value={timeForMultidayOffset}
-        style={{ marginLeft: 0 }}
+        style={{marginLeft: 0}}
         sourceData={getDropdownTimeItems()}
         id="from"
         onChange={e =>
@@ -230,8 +225,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
             days: daysForMultidayOffset,
             time: e.target.value as string,
           })
-        }
-      ></SelectWithEnum>
+        }></SelectWithEnum>
     </SchedulingFormSection>
   )
 

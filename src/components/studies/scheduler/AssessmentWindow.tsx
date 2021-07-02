@@ -4,19 +4,19 @@ import {
   FormControlLabel,
   IconButton,
   makeStyles,
-  Paper
+  Paper,
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Close'
 import clsx from 'clsx'
 import React from 'react'
 import {
   AssessmentWindow as AssessmentWindowType,
-  HDWMEnum
+  HDWMEnum,
 } from '../../../types/scheduling'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
-import { getDropdownTimeItems } from './utility'
+import {getDropdownTimeItems} from './utility'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -65,16 +65,14 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
   return (
     <Paper
       className={clsx(classes.root, errorText && classes.redBorder)}
-      elevation={2}
-    >
+      elevation={2}>
       <Box position="relative">
         <Box className={classes.windowNumber}>{index + 1}.</Box>
         <IconButton
-          style={{ position: 'absolute', top: '12px', right: '16px' }}
+          style={{position: 'absolute', top: '12px', right: '16px'}}
           edge="end"
           size="small"
-          onClick={() => onDelete()}
-        >
+          onClick={() => onDelete()}>
           <DeleteIcon></DeleteIcon>
         </IconButton>
       </Box>
@@ -83,11 +81,10 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
           label={'Start'}
           variant="small"
           border={false}
-          style={{ margin: '24px 0px 0px 0', paddingBottom: 0 }}
-        >
+          style={{margin: '24px 0px 0px 0', paddingBottom: 0}}>
           <SelectWithEnum
             value={window.startTime}
-            style={{ marginLeft: 0 }}
+            style={{marginLeft: 0}}
             sourceData={getDropdownTimeItems()}
             id="from"
             onChange={e =>
@@ -95,16 +92,14 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
                 ...window,
                 startTime: e.target.value as string,
               })
-            }
-          ></SelectWithEnum>
+            }></SelectWithEnum>
         </SchedulingFormSection>
 
         <SchedulingFormSection
           label={'Expire after'}
           variant="small"
           border={false}
-          style={{ margin: '0px 0px 16px 0px', paddingBottom: 0 }}
-        >
+          style={{margin: '0px 0px 16px 0px', paddingBottom: 0}}>
           <Box display="inline-flex" alignItems="center">
             <Duration
               onChange={e =>
@@ -117,8 +112,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
               unitDefault={HDWMEnum.H}
               unitLabel="Expire after"
               numberLabel="expiration"
-              unitData={HDWMEnum}
-            ></Duration>
+              unitData={HDWMEnum}></Duration>
           </Box>
         </SchedulingFormSection>
       </Box>

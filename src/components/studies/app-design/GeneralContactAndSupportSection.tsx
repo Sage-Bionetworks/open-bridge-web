@@ -1,14 +1,14 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core'
+import {makeStyles} from '@material-ui/core'
 import Subsection from './Subsection'
-import { FormControl, Box, FormHelperText } from '@material-ui/core'
-import { Contact } from '../../../types/types'
+import {FormControl, Box, FormHelperText} from '@material-ui/core'
+import {Contact} from '../../../types/types'
 import clsx from 'clsx'
-import { isInvalidPhone, isValidEmail } from '../../../helpers/utility'
-import { makePhone } from '../../../helpers/utility'
+import {isInvalidPhone, isValidEmail} from '../../../helpers/utility'
+import {makePhone} from '../../../helpers/utility'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
-import { ContactType } from './AppDesign'
+import {ContactType} from './AppDesign'
 
 const useStyles = makeStyles(theme => ({
   firstFormElement: {
@@ -58,8 +58,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
         mt={1.5}
         fontSize="15px"
         lineHeight="18px"
-        fontFamily="Lato"
-      >
+        fontFamily="Lato">
         For general questions about the study or to <strong>withdraw</strong>{' '}
         from the study, who should the participant contact?{' '}
       </Box>
@@ -71,10 +70,10 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             placeholder="First and Last name"
             value={contactLead.name || ''}
             onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
             ) => {
               const newContactLeadObject = getContactPersonObject(
-                'study_support',
+                'study_support'
               )
               newContactLeadObject.name = e.target.value
               onUpdate(newContactLeadObject)
@@ -89,10 +88,10 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             placeholder="Title of Position"
             value={contactLead.position || ''}
             onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
             ) => {
               const newContactLeadObject = getContactPersonObject(
-                'study_support',
+                'study_support'
               )
               newContactLeadObject.position = e.target.value
               onUpdate(newContactLeadObject)
@@ -102,16 +101,15 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
         </FormControl>
         <FormControl
           className={clsx(
-            !phoneNumberErrorState.isGeneralContactPhoneNumberValid && 'error',
-          )}
-        >
+            !phoneNumberErrorState.isGeneralContactPhoneNumberValid && 'error'
+          )}>
           <TextInputWrapper
             SimpleTextInputStyles={SimpleTextInputStyles}
             id="phone-number-contact-input"
             placeholder="xxx-xxx-xxxx"
             value={generalContactPhoneNumber}
             onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
             ) => {
               setGeneralContactPhoneNumber(e.target.value)
             }}
@@ -125,10 +123,10 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
                     ...prevState,
                     isGeneralContactPhoneNumberValid: !isInvalidPhoneNumber,
                   }
-                },
+                }
               )
               const newContactLeadObject = getContactPersonObject(
-                'study_support',
+                'study_support'
               )
               newContactLeadObject.phone = makePhone(generalContactPhoneNumber)
               onUpdate(newContactLeadObject)
@@ -138,27 +136,25 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
           {!phoneNumberErrorState.isGeneralContactPhoneNumberValid && (
             <FormHelperText
               id="general-contact-bad-phone-text"
-              className={classes.errorText}
-            >
+              className={classes.errorText}>
               phone should be in the format: xxx-xxx-xxxx
             </FormHelperText>
           )}
         </FormControl>
         <FormControl
           className={clsx(
-            !emailErrorState.isGeneralContactEmailValid && 'error',
-          )}
-        >
+            !emailErrorState.isGeneralContactEmailValid && 'error'
+          )}>
           <TextInputWrapper
             SimpleTextInputStyles={SimpleTextInputStyles}
             id="contact-email-input"
             placeholder="Institutional Email"
             value={contactLead?.email || ''}
             onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
             ) => {
               const newContactLeadObject = getContactPersonObject(
-                'study_support',
+                'study_support'
               )
               newContactLeadObject.email = e.target.value
               onUpdate(newContactLeadObject)
@@ -178,8 +174,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
           {!emailErrorState.isGeneralContactEmailValid && (
             <FormHelperText
               id="general-contact-bad-email-text"
-              className={classes.errorText}
-            >
+              className={classes.errorText}>
               email should be in a valid format such as: example@placeholder.com
             </FormHelperText>
           )}

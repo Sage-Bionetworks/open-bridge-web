@@ -10,15 +10,15 @@ import {
   makeStyles,
   Snackbar,
   TextField,
-  Typography
+  Typography,
 } from '@material-ui/core'
-import { Visibility, VisibilityOff } from '@material-ui/icons'
-import Alert, { AlertProps } from '@material-ui/lab/Alert'
-import React, { FunctionComponent, useState } from 'react'
-import { ReactComponent as SageLogo } from '../../assets/sage.svg'
+import {Visibility, VisibilityOff} from '@material-ui/icons'
+import Alert, {AlertProps} from '@material-ui/lab/Alert'
+import React, {FunctionComponent, useState} from 'react'
+import {ReactComponent as SageLogo} from '../../assets/sage.svg'
 import {
   useUserSessionDataDispatch,
-  useUserSessionDataState
+  useUserSessionDataState,
 } from '../../helpers/AuthContext'
 import storeService from '../../services/store_service'
 import UserService from '../../services/user.service'
@@ -85,13 +85,13 @@ const loginWithSynapse = (event: any) => {
   }*/
 }
 
-const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
+const AccountLogin: FunctionComponent<AccountLoginProps> = ({callbackFn}) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isForgotPassword, setIsForgotPassword] = useState(false)
   const [alertMsg, setAlertMsg] = useState<
-    { msg: string; type: AlertProps['severity'] } | undefined
+    {msg: string; type: AlertProps['severity']} | undefined
   >()
 
   const [isLoading, setIsLoading] = useState(false)
@@ -108,7 +108,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
     try {
       const loggedIn = await UserService.loginWithPassword(username, password)
       const consented = loggedIn.status !== 412
-      if (loggedIn.ok || !consented) {        
+      if (loggedIn.ok || !consented) {
         sessionUpdateFn({
           type: 'LOGIN',
           payload: {
@@ -120,7 +120,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
             userName: loggedIn.data.username,
             roles: loggedIn.data.roles,
             dataGroups: loggedIn.data.dataGroups,
-            id: loggedIn.data.id
+            id: loggedIn.data.id,
           },
         })
 
@@ -132,7 +132,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
         })
       }
     } catch (e) {
-      setAlertMsg({ type: 'error', msg: JSON.stringify(e, null, 2) })
+      setAlertMsg({type: 'error', msg: JSON.stringify(e, null, 2)})
     } finally {
       setIsLoading(false)
     }
@@ -143,9 +143,8 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
       <Snackbar
         open={alertMsg !== undefined}
         autoHideDuration={2000}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        onClose={() => setAlertMsg(undefined)}
-      >
+        anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+        onClose={() => setAlertMsg(undefined)}>
         <Alert onClose={() => setAlertMsg(undefined)} severity={alertMsg?.type}>
           {alertMsg?.msg}
         </Alert>
@@ -156,11 +155,13 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
             Sign in
           </Typography>
           <div className={classes.paper}>
-            <Button  variant = "contained" onClick={e => loginWithSynapse(e)}>
+            <Button variant="contained" onClick={e => loginWithSynapse(e)}>
               <SageLogo></SageLogo>
               &nbsp; &nbsp;Sign in with your Synapse account
             </Button>
-            <Typography component="h3" style={{marginTop:"16px"}} >OR </Typography>
+            <Typography component="h3" style={{marginTop: '16px'}}>
+              OR{' '}
+            </Typography>
 
             <form className={classes.form} noValidate onSubmit={e => signIn(e)}>
               <TextField
@@ -195,8 +196,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
                         aria-label="toggle password visibility"
                         onClick={() => setShowPassword(!showPassword)}
                         onMouseDown={e => e.preventDefault()}
-                        edge="end"
-                      >
+                        edge="end">
                         {showPassword ? <Visibility /> : <VisibilityOff />}
                       </IconButton>
                     </InputAdornment>
@@ -207,13 +207,15 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
                 control={<Checkbox value="remember" />}
                 label="Remember me"
               />
-              <Loader reqStatusLoading={isLoading} loaderSize="2rem" variant='small'>
+              <Loader
+                reqStatusLoading={isLoading}
+                loaderSize="2rem"
+                variant="small">
                 <Button
                   type="submit"
                   fullWidth
                   variant="contained"
-                  className={classes.submit}
-                >
+                  className={classes.submit}>
                   Sign In
                 </Button>
               </Loader>
@@ -221,8 +223,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
                 <Grid item xs>
                   <Button
                     onClick={() => setIsForgotPassword(true)}
-                    variant="text"
-                  >
+                    variant="text">
                     Forgot password?
                   </Button>
                 </Grid>
@@ -244,11 +245,10 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({ callbackFn }) => {
             setIsForgotPassword(false)
             setAlertMsg(
               message
-                ? { msg: message, type: success ? 'success' : 'error' }
-                : undefined,
+                ? {msg: message, type: success ? 'success' : 'error'}
+                : undefined
             )
-          }}
-        ></PasswordReset>
+          }}></PasswordReset>
       )}
     </>
   )

@@ -1,12 +1,12 @@
-import { Box, Button, Paper } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
-import React, { useState } from 'react'
-import { ReactComponent as ArrowIcon } from '../../../assets/arrow_long.svg'
-import { ReactComponent as LockIcon } from '../../../assets/launch/lock_icon.svg'
-import { StudyInfoData } from '../../../helpers/StudyInfoContext'
-import { ThemeType } from '../../../style/theme'
-import { Study, StudyBuilderComponentProps } from '../../../types/types'
-import { NextButton, PrevButton } from '../../widgets/StyledComponents'
+import {Box, Button, Paper} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
+import React, {useState} from 'react'
+import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
+import {ReactComponent as LockIcon} from '../../../assets/launch/lock_icon.svg'
+import {StudyInfoData} from '../../../helpers/StudyInfoContext'
+import {ThemeType} from '../../../style/theme'
+import {Study, StudyBuilderComponentProps} from '../../../types/types'
+import {NextButton, PrevButton} from '../../widgets/StyledComponents'
 import AboutStudy from './AboutStudy'
 import IrbDetails from './IrbDetails'
 import LaunchAlerts from './LaunchAlerts'
@@ -32,10 +32,10 @@ export interface LaunchProps {
 
 function getSteps() {
   return [
-    { label: 'Review Alerts' },
-    { label: 'About Study' },
-    { label: 'IRB Details' },
-    { label: 'Study is live' },
+    {label: 'Review Alerts'},
+    {label: 'About Study'},
+    {label: 'IRB Details'},
+    {label: 'Study is live'},
   ]
 }
 
@@ -101,7 +101,7 @@ const Launch: React.FunctionComponent<
 
   const handleNext = () => {
     const newSteps = steps.map((s, i) =>
-      i === activeStep ? { ...s, isComplete: true } : s,
+      i === activeStep ? {...s, isComplete: true} : s
     )
     setSteps(newSteps)
     setActiveStep(prevActiveStep => prevActiveStep + 1)
@@ -132,8 +132,7 @@ const Launch: React.FunctionComponent<
       <LaunchStepper
         steps={steps}
         activeStep={activeStep}
-        setActiveStepFn={handleStepClick}
-      ></LaunchStepper>
+        setActiveStepFn={handleStepClick}></LaunchStepper>
       <div>
         {activeStep === steps.length ? (
           <div>
@@ -167,8 +166,7 @@ const Launch: React.FunctionComponent<
                         <PrevButton
                           variant="outlined"
                           color="primary"
-                          onClick={handleBack}
-                        >
+                          onClick={handleBack}>
                           <ArrowIcon /> {steps[activeStep - 1].label}
                         </PrevButton>{' '}
                         &nbsp;&nbsp;
@@ -180,8 +178,7 @@ const Launch: React.FunctionComponent<
                         variant="contained"
                         color="primary"
                         onClick={handleNext}
-                        disabled={!isNextEnabled}
-                      >
+                        disabled={!isNextEnabled}>
                         {steps[activeStep + 1].label} <ArrowIcon />
                       </NextButton>
                     )}
@@ -191,10 +188,9 @@ const Launch: React.FunctionComponent<
                         variant="contained"
                         color="primary"
                         onClick={() => submitAndLock()}
-                        disabled={!isNextEnabled}
-                      >
+                        disabled={!isNextEnabled}>
                         {' '}
-                        <LockIcon style={{ marginRight: '4px' }} />
+                        <LockIcon style={{marginRight: '4px'}} />
                         Submit and lock the study
                       </Button>
                     )}

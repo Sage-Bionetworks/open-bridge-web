@@ -12,21 +12,21 @@ import {
 import CloseIcon from '@material-ui/icons/Close'
 import MailOutlineIcon from '@material-ui/icons/MailOutline'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { RouteComponentProps } from 'react-router-dom'
-import { ReactComponent as Delete } from '../../assets/trash.svg'
-import { useUserSessionDataState } from '../../helpers/AuthContext'
+import React, {FunctionComponent} from 'react'
+import {RouteComponentProps} from 'react-router-dom'
+import {ReactComponent as Delete} from '../../assets/trash.svg'
+import {useUserSessionDataState} from '../../helpers/AuthContext'
 import {
   StudyInfoData,
   useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
-import { isInAdminRole } from '../../helpers/utility'
+import {isInAdminRole} from '../../helpers/utility'
 import AccessService from '../../services/access.service'
-import { poppinsFont } from '../../style/theme'
-import { MTBHeadingH1 } from '../widgets/Headings'
-import { Access, NO_ACCESS } from './AccessGrid'
+import {poppinsFont} from '../../style/theme'
+import {MTBHeadingH1} from '../widgets/Headings'
+import {Access, NO_ACCESS} from './AccessGrid'
 import AccountListing from './AccountListing'
-import MemberInvite, { NewOrgAccount } from './MemberInvite'
+import MemberInvite, {NewOrgAccount} from './MemberInvite'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -113,15 +113,18 @@ async function createNewAccount(
   email: string,
   access: Access,
   token: string,
-  currentUserOrg: string,
+  currentUserOrg: string
 ) {
   const mapAccessToRole = (access: Access): string => {
     // if (access.ACCESS_SETTINGS.)
     return 'developer'
   }
   try {
-    const { principalId, firstName, lastName } =
-      await AccessService.getAliasFromSynapseByEmail(email)
+    const {
+      principalId,
+      firstName,
+      lastName,
+    } = await AccessService.getAliasFromSynapseByEmail(email)
 
     await AccessService.createIndividualAccount(
       token!,
@@ -130,16 +133,16 @@ async function createNewAccount(
       firstName,
       lastName,
       currentUserOrg,
-      mapAccessToRole(access),
+      mapAccessToRole(access)
     )
     return [true]
-  } catch (error: any) {
+  } catch (error) {
     return [false, error]
   }
 }
 function filterNewAccountsByAdded(
   accounts: NewOrgAccount[],
-  isAdded: boolean = true,
+  isAdded: boolean = true
 ) {
   const result = accounts.filter(acct => acct.isAdded === isAdded)
   return result
@@ -155,7 +158,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
   ])
 
   const sessionData = useUserSessionDataState()
-  const { token, orgMembership } = sessionData
+  const {token, orgMembership} = sessionData
   const [updateToggle, setUpdateToggle] = React.useState(false)
 
   const closeInviteDialog = () => {
@@ -172,27 +175,27 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
     setNewOrgAccounts(prev =>
       prev.map(acct => {
         return acct.id !== updatedNewAccount.id ? acct : updatedNewAccount
-      }),
+      })
     )
   }
 
   const inviteUsers = async (newAccounts: NewOrgAccount[]) => {
     for (const account of newAccounts.filter(a => !a.isAdded)) {
       if (!account.email) {
-        updateNewOrgAccount({ ...account, error: 'No email provided' })
+        updateNewOrgAccount({...account, error: 'No email provided'})
         return
       }
       const [success, error] = await createNewAccount(
         account.email,
         account.access,
         token!,
-        orgMembership!,
+        orgMembership!
       )
       if (success) {
-        updateNewOrgAccount({ ...account, isAdded: true })
+        updateNewOrgAccount({...account, isAdded: true})
       } else {
         const errorString = error.message || error.reason
-        updateNewOrgAccount({ ...account, error: errorString })
+        updateNewOrgAccount({...account, error: errorString})
       }
     }
     setUpdateToggle(prev => !prev)
@@ -206,18 +209,16 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
   return (
     <>
       <Container maxWidth="md" className={classes.root}>
-        <Paper elevation={2} style={{ width: '100%' }}>
+        <Paper elevation={2} style={{width: '100%'}}>
           <AccountListing
             sessionData={sessionData}
             updateToggle={updateToggle}
-            study={studyInfo.study}
-          >
+            study={studyInfo.study}>
             {userIsAdmin && (
               <Button
                 onClick={() => setIsOpenInvite(true)}
                 variant="contained"
-                className={classes.yellowButton}
-              >
+                className={classes.yellowButton}>
                 Invite a Member
               </Button>
             )}
@@ -228,10 +229,9 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
         open={isOpenInvite}
         maxWidth="md"
         fullWidth
-        aria-labelledby="form-dialog-title"
-      >
+        aria-labelledby="form-dialog-title">
         <DialogTitle className={classes.addNewDialogHeader} disableTypography>
-          <MailOutlineIcon style={{ width: '25px' }}></MailOutlineIcon>
+          <MailOutlineIcon style={{width: '25px'}}></MailOutlineIcon>
 
           <div className={classes.heading}>
             Invite Team Members to:
@@ -242,8 +242,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
             className={classes.iconButton}
             onClick={() => {
               closeInviteDialog()
-            }}
-          >
+            }}>
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -256,10 +255,9 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
             <>
               <Paper
                 elevation={2}
-                style={{ margin: '16px 0' }}
+                style={{margin: '16px 0'}}
                 key={'success'}
-                className={clsx(classes.newOrgAccount)}
-              >
+                className={clsx(classes.newOrgAccount)}>
                 <strong>Added Succesfully</strong>
                 <br /> <br />
                 {filterNewAccountsByAdded(newOrgAccounts)
@@ -275,16 +273,14 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
                 elevation={2}
                 className={clsx(
                   classes.newOrgAccount,
-                  newOrgAccount.error && classes.error,
+                  newOrgAccount.error && classes.error
                 )}
-                key={index + new Date().getTime()}
-              >
+                key={index + new Date().getTime()}>
                 {newOrgAccounts.length > 1 && (
                   <IconButton
                     aria-label="delete"
                     className={classes.iconButton}
-                    onClick={() => removeNewOrgAccount(newOrgAccount.id)}
-                  >
+                    onClick={() => removeNewOrgAccount(newOrgAccount.id)}>
                     <Delete></Delete>
                   </IconButton>
                 )}
@@ -296,7 +292,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
                   }
                 />
               </Paper>
-            ),
+            )
           )}
           <Button
             color="primary"
@@ -306,8 +302,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
                 ...prev,
                 CreateNewOrgAccountTemplate(),
               ])
-            }
-          >
+            }>
             + Add Another Member
           </Button>
           <Box className={classes.buttons}>
@@ -320,8 +315,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
                   filterNewAccountsByAdded(newOrgAccounts, false).length === 0
                     ? 'none'
                     : 'inherit',
-              }}
-            >
+              }}>
               Cancel
             </Button>
             <Button
@@ -333,8 +327,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
                   filterNewAccountsByAdded(newOrgAccounts, false).length === 0
                     ? 'none'
                     : 'inherit',
-              }}
-            >
+              }}>
               <MailOutlineIcon />
               &nbsp;Invite To Study
             </Button>
@@ -347,8 +340,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
                   filterNewAccountsByAdded(newOrgAccounts, false).length === 0
                     ? 'inherit'
                     : 'none',
-              }}
-            >
+              }}>
               Done
             </Button>
           </Box>

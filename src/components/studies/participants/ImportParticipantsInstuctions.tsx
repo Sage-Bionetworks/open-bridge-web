@@ -1,13 +1,13 @@
-import { Box, makeStyles } from '@material-ui/core'
-import React, { FunctionComponent } from 'react'
-import { ReactComponent as DownloadIcon } from '../../../assets/download.svg'
+import {Box, makeStyles} from '@material-ui/core'
+import React, {FunctionComponent} from 'react'
+import {ReactComponent as DownloadIcon} from '../../../assets/download.svg'
 //import { EnrollmentType } from '../../../types/types'
 
 const useStyles = makeStyles(theme => ({
   root: {},
   templateLink: {
     margin: theme.spacing(2, 'auto', 5, 'auto'),
-    display:'flex',
+    display: 'flex',
     justifyContent: 'center',
 
     '& a': {
@@ -22,50 +22,48 @@ const useStyles = makeStyles(theme => ({
 const ImportParticipantsInstructions: FunctionComponent<{
   isEnrolledById: boolean
   children: React.ReactNode
-}> = ({ children, isEnrolledById }) => {
+}> = ({children, isEnrolledById}) => {
   const classes = useStyles()
-  const template =
-  isEnrolledById ?  (
-      <a href="/participantImport_id_template.csv" download="Ids_Template.csv">
-        <strong>Ids_Template.csv</strong>
-      </a>
-    ): (
-      <a
-        href="/participantImport_phone_template.csv"
-        download="Phones_Template.csv"
-      >
-        <strong>Phones_Template.csv</strong>
-      </a>
-    ) 
+  const template = isEnrolledById ? (
+    <a href="/participantImport_id_template.csv" download="Ids_Template.csv">
+      <strong>Ids_Template.csv</strong>
+    </a>
+  ) : (
+    <a
+      href="/participantImport_phone_template.csv"
+      download="Phones_Template.csv">
+      <strong>Phones_Template.csv</strong>
+    </a>
+  )
 
-  const recList = isEnrolledById?  (
-      <ul>
-        <li>
-          <strong>ParticipantID* </strong>
-        </li>
-        <li>
-          <strong>Clinic Visit </strong>(can be updated later)
-        </li>
-        <li>
-          <strong>Note</strong> (for your reference)
-        </li>
-      </ul>
-    ): (
-      <ul>
-        <li>
-          <strong>Phone Number* </strong>
-        </li>
-        <li>
-          <strong>Clinic Visit </strong>(can be updated later)
-        </li>
-        <li>
-          <strong>Reference ID</strong> (Alternate ID for your reference)
-        </li>
-        <li>
-          <strong>Note</strong> (for your reference)
-        </li>
-      </ul>
-    ) 
+  const recList = isEnrolledById ? (
+    <ul>
+      <li>
+        <strong>ParticipantID* </strong>
+      </li>
+      <li>
+        <strong>Clinic Visit </strong>(can be updated later)
+      </li>
+      <li>
+        <strong>Note</strong> (for your reference)
+      </li>
+    </ul>
+  ) : (
+    <ul>
+      <li>
+        <strong>Phone Number* </strong>
+      </li>
+      <li>
+        <strong>Clinic Visit </strong>(can be updated later)
+      </li>
+      <li>
+        <strong>Reference ID</strong> (Alternate ID for your reference)
+      </li>
+      <li>
+        <strong>Note</strong> (for your reference)
+      </li>
+    </ul>
+  )
 
   return (
     <Box>
@@ -77,8 +75,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
       Please make sure that your .csv matches this template:
       <br />
       <Box className={classes.templateLink}>
-          
-        <DownloadIcon  width="20px"/>
+        <DownloadIcon width="20px" />
         {template}
       </Box>
       <Box mx="auto" my={2} textAlign="center">

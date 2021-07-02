@@ -1,8 +1,8 @@
-import { Button } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Button} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React from 'react'
-import { poppinsFont, ThemeType } from '../../style/theme'
+import {poppinsFont, ThemeType} from '../../style/theme'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {},
@@ -104,13 +104,11 @@ const SideBarListItem: React.FunctionComponent<SideBarListItemProps> = ({
         [classes.listItemDark]: variant === 'dark',
         [classes.listItemActive]: isActive,
         [classes.listItemCollapsed]: !isOpen,
-      })}
-    >
+      })}>
       <Button
         onClick={() => onClick()}
         className={clsx(classes.link, styleProps && styleProps)}
-        classes={{ label: classes.linkLabel }}
-      >
+        classes={{label: classes.linkLabel}}>
         {children}
       </Button>
     </li>

@@ -1,21 +1,21 @@
-import { Box, Button, Divider, FormControl, FormLabel } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
-import React, { ReactNode, useEffect } from 'react'
-import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
+import {Box, Button, Divider, FormControl, FormLabel} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
+import React, {ReactNode, useEffect} from 'react'
+import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
 import appStoreBtn from '../../../assets/preview/appStoreBtn.png'
 import googlePlayBtn from '../../../assets/preview/googlePlayBtn.png'
 import PhoneImg from '../../../assets/preview/preview_phone.svg'
-import { ReactComponent as PlayImg } from '../../../assets/preview/preview_play.svg'
+import {ReactComponent as PlayImg} from '../../../assets/preview/preview_play.svg'
 import SampleAssessmentDataImg from '../../../assets/preview/sample_assessment_data.svg'
 import ParticipantService from '../../../services/participants.service'
-import { latoFont, poppinsFont, ThemeType } from '../../../style/theme'
-import { StudySession } from '../../../types/scheduling'
-import { Assessment } from '../../../types/types'
+import {latoFont, poppinsFont, ThemeType} from '../../../style/theme'
+import {StudySession} from '../../../types/scheduling'
+import {Assessment} from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
-import { ErrorFallback, ErrorHandler } from '../../widgets/ErrorHandler'
-import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
-import { SimpleTextInput } from '../../widgets/StyledComponents'
-import { formatStudyId } from '../../../helpers/utility'
+import {ErrorFallback, ErrorHandler} from '../../widgets/ErrorHandler'
+import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
+import {SimpleTextInput} from '../../widgets/StyledComponents'
+import {formatStudyId} from '../../../helpers/utility'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -120,8 +120,7 @@ const Reminder: React.FunctionComponent = ({}) => {
         height="154px"
         borderRadius="50%"
         bgcolor="#ccc"
-        mb={2}
-      ></Box>
+        mb={2}></Box>
       <p>Key terms of agreemment summary goes here</p>
     </Box>
   )
@@ -180,13 +179,11 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
             </Box>
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
-              onError={ErrorHandler}
-            >
+              onError={ErrorHandler}>
               <Button
                 color="primary"
                 variant="contained"
-                onClick={() => getTestParticipantId()}
-              >
+                onClick={() => getTestParticipantId()}>
                 Generate Preview
               </Button>
             </ErrorBoundary>
@@ -237,8 +234,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                       multiline={false}
                       fullWidth={true}
                       value={formatStudyId(studyId)}
-                      readOnly
-                    ></SimpleTextInput>
+                      readOnly></SimpleTextInput>
                   </FormControl>
 
                   <FormControl component="div">
@@ -247,8 +243,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                       multiline={false}
                       fullWidth={true}
                       readOnly={true}
-                      value={testParticipantId}
-                    ></SimpleTextInput>
+                      value={testParticipantId}></SimpleTextInput>
                   </FormControl>
                 </div>
               </div>
@@ -258,13 +253,11 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
               width="100%"
               display="flex"
               flexDirection="row"
-              justifyContent="space-between"
-            >
+              justifyContent="space-between">
               <Box display="flex" flexDirection="row" alignItems="flex-start">
                 <img
                   src={SampleAssessmentDataImg}
-                  className={classes.assessmentImg}
-                ></img>
+                  className={classes.assessmentImg}></img>
                 <Box className={classes.sampleAssessmentDataText}>
                   Sample Assessment Data
                 </Box>

@@ -1,21 +1,21 @@
-import { Box, IconButton, TextField } from '@material-ui/core'
+import {Box, IconButton, TextField} from '@material-ui/core'
 import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import clsx from 'clsx'
 import moment from 'moment'
-import React, { FunctionComponent } from 'react'
+import React, {FunctionComponent} from 'react'
 import participants_icon from '../../assets/participants_icon.svg'
-import { ThemeType } from '../../style/theme'
-import { Study } from '../../types/types'
+import {ThemeType} from '../../style/theme'
+import {Study} from '../../types/types'
 import ParticipantService from '../../services/participants.service'
-import { useUserSessionDataState } from '../../helpers/AuthContext'
+import {useUserSessionDataState} from '../../helpers/AuthContext'
 import LiveIcon from '../../assets/live_study_icon.svg'
 import CompletedIcon from '../../assets/completed_study_icon.svg'
 import WithdrawnIcon from '../../assets/cancelled_study_icon.svg'
-import { formatStudyId } from '../../helpers/utility'
+import {formatStudyId} from '../../helpers/utility'
 
 const DraftIcon = () => {
   return (
@@ -24,15 +24,13 @@ const DraftIcon = () => {
       height="4px"
       borderRadius="5px"
       bgcolor="#C4C4C4"
-      position="relative"
-    >
+      position="relative">
       <Box
         width="20%"
         height="4px"
         borderRadius="5px 0 0 5px"
         bgcolor="#3E3030"
-        position="absolute"
-      ></Box>
+        position="absolute"></Box>
     </Box>
   )
 }
@@ -147,19 +145,19 @@ const getFormattedDate = (date: Date) => {
 
 const CardBottom: FunctionComponent<{
   study: Study
-}> = ({ study }: { study: Study }) => {
+}> = ({study}: {study: Study}) => {
   const classes = useStyles()
   const [numParticipants, setNumParticipants] = React.useState('--')
   const date = new Date(
-    study.phase === 'design' ? study.modifiedOn! : study.createdOn!,
+    study.phase === 'design' ? study.modifiedOn! : study.createdOn!
   )
-  const { token } = useUserSessionDataState()
+  const {token} = useUserSessionDataState()
 
   React.useEffect(() => {
     const getParticipantCount = async () => {
       const newParticipantNumber = await ParticipantService.getNumEnrolledParticipants(
         study.identifier,
-        token!,
+        token!
       )
       setNumParticipants('' + newParticipantNumber)
     }
@@ -174,8 +172,7 @@ const CardBottom: FunctionComponent<{
       position="absolute"
       bottom="8px"
       left="8px"
-      right="8px"
-    >
+      right="8px">
       <div className={classes.cardBottomContainer}>
         {study.phase === 'design' ? (
           <div className={classes.lastEditedTest}>Last edited:</div>
@@ -230,16 +227,14 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
           onClick={e => {
             cancelPropagation(e)
             onSetAnchor(e.currentTarget)
-          }}
-        >
+          }}>
           <Box
             className={classes.menuBox}
             style={
               isMenuOpen
-                ? { boxShadow: '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)' }
+                ? {boxShadow: '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)'}
                 : {}
-            }
-          >
+            }>
             <MoreVertIcon />
           </Box>
         </IconButton>
@@ -274,19 +269,19 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
   onRename,
   isNewlyAddedStudy,
   section,
-  isMenuOpen
+  isMenuOpen,
 }) => {
   const classes = useStyles()
   const input = React.createRef<HTMLInputElement>()
 
   const handleKeyDown = (
     event: React.KeyboardEvent,
-    name: string | undefined,
+    name: string | undefined
   ) => {
     if (!onRename) {
       return
     }
-    const { key } = event
+    const {key} = event
 
     const enterKey = 'Enter'
 
@@ -306,15 +301,13 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
           if (isRename) {
             cancelPropagation(e)
           }
-        }}
-      >
+        }}>
         <>
           <CardTop
             section={section}
             study={study}
             onSetAnchor={onSetAnchor}
-            isMenuOpen={isMenuOpen}
-          ></CardTop>
+            isMenuOpen={isMenuOpen}></CardTop>
         </>
         <CardContent>
           <div>
@@ -323,8 +316,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
                 variant="h6"
                 color="textSecondary"
                 className={classes.studyNameText}
-                gutterBottom={study.phase === 'design' ? true : false}
-              >
+                gutterBottom={study.phase === 'design' ? true : false}>
                 {study.name}
               </Typography>
             )}

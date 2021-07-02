@@ -1,6 +1,6 @@
 import React from 'react'
-import { MTBHeadingH4 } from '../../widgets/Headings'
-import { Box } from '@material-ui/core'
+import {MTBHeadingH4} from '../../widgets/Headings'
+import {Box} from '@material-ui/core'
 
 type StudySummaryRoleProps = {
   type: String
@@ -16,8 +16,7 @@ const StudySummaryRoles: React.FunctionComponent<StudySummaryRoleProps> = ({
   return (
     <Box
       className={className}
-      style={{ wordWrap: 'break-word', textAlign: 'left' }}
-    >
+      style={{wordWrap: 'break-word', textAlign: 'left'}}>
       <MTBHeadingH4>{name}</MTBHeadingH4>
       {type}
     </Box>

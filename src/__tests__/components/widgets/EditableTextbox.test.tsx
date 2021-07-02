@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import {render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import * as React from 'react'
 import EditableTextbox from '../../../components/widgets/EditableTextbox'
@@ -15,8 +15,7 @@ beforeEach(() => {
     <EditableTextbox
       component={DISPLAY_ELEMENT}
       initValue={DEFAULT_VALUE}
-      onTriggerUpdate={handleChange}
-    ></EditableTextbox>,
+      onTriggerUpdate={handleChange}></EditableTextbox>
   ).container
   text = container.querySelector(DISPLAY_ELEMENT)!
   input = container.querySelector('input')

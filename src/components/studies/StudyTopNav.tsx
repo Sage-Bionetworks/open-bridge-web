@@ -3,21 +3,21 @@ import {
   Drawer,
   Hidden,
   IconButton,
-  LinearProgress
+  LinearProgress,
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
 import PeopleIcon from '@material-ui/icons/People'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { NavLink } from 'react-router-dom'
+import React, {FunctionComponent} from 'react'
+import {NavLink} from 'react-router-dom'
 import PARTICIPANTS_ICON from '../../assets/group_participants_icon.svg'
 import Logo from '../../assets/logo_mtb.svg'
-import { useUserSessionDataState } from '../../helpers/AuthContext'
-import { useStudyInfoDataState } from '../../helpers/StudyInfoContext'
-import { isInAdminRole } from '../../helpers/utility'
-import { latoFont } from '../../style/theme'
+import {useUserSessionDataState} from '../../helpers/AuthContext'
+import {useStudyInfoDataState} from '../../helpers/StudyInfoContext'
+import {isInAdminRole} from '../../helpers/utility'
+import {latoFont} from '../../style/theme'
 import constants from '../../types/constants'
 import BreadCrumb from '../widgets/BreadCrumb'
 import HideWhen from '../widgets/HideWhen'
@@ -149,10 +149,26 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   currentSection,
 }: StudyTopNavProps) => {
   const links = [
-    { path: '/studies/builder/:id/session-creator', name: 'STUDY BUILDER', status: ['design'] },
-    { path: '/studies/:id/participant-manager', name: 'PARTICIPANT MANAGER' ,  status: ['live', 'legacy',  'recruitment', 'design'] },
-    { path: '/studies/:id/compliance', name: 'ADHERENCE DATA',  status: ['live', 'legacy'] },
-    { path: '/studies/:id/study-data', name: 'STUDY DATA',  status: ['live', 'legacy'] },
+    {
+      path: '/studies/builder/:id/session-creator',
+      name: 'STUDY BUILDER',
+      status: ['design'],
+    },
+    {
+      path: '/studies/:id/participant-manager',
+      name: 'PARTICIPANT MANAGER',
+      status: ['live', 'legacy', 'recruitment', 'design'],
+    },
+    {
+      path: '/studies/:id/compliance',
+      name: 'ADHERENCE DATA',
+      status: ['live', 'legacy'],
+    },
+    {
+      path: '/studies/:id/study-data',
+      name: 'STUDY DATA',
+      status: ['live', 'legacy'],
+    },
   ]
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
@@ -167,8 +183,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
           aria-label="Open drawer"
           edge="end"
           onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className={classes.menuButton}
-        >
+          className={classes.menuButton}>
           <MenuIcon></MenuIcon>
         </IconButton>
       </Hidden>
@@ -183,56 +198,58 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               marginTop: '48px',
               paddingTop: '0',
               alignItems: 'center',
-            }}
-          >
+            }}>
             <NavLink
               to={'/Studies'}
               key="home"
               className={classes.toolbarLink}
-              style={{ paddingBottom: '0' }}
-            >
+              style={{paddingBottom: '0'}}>
               <img src={Logo} key="img_home" alt="home" />
             </NavLink>
             <HideWhen hideWhen={studyData.study === undefined}>
               <BreadCrumb
-                links={[{ url: '/Studies', text: '' }]}
+                links={[{url: '/Studies', text: ''}]}
                 currentItem={
                   studyData.study?.name &&
                   studyData.study?.name !== constants.constants.NEW_STUDY_NAME
                     ? studyData.study?.name
                     : ''
-                }
-              ></BreadCrumb>
+                }></BreadCrumb>
 
-              <LinearProgress style={{ width: '50px' }} />
+              <LinearProgress style={{width: '50px'}} />
             </HideWhen>
           </Toolbar>
           <Toolbar className={classes.toolbar}>
             {links
               .filter(section => section.name)
-              .map(section => (
-                section.status.includes(studyData.study?.phase)?  <NavLink
-          
-                  to={section.path.replace(':id', studyId)}
-                  key={section.path}
-                  className={classes.toolbarLink}
-                  activeClassName={classes.selectedLink}
-                  
-                >
-                  {section.name}
-                </NavLink> :  <span   key={section.path} style={{opacity: .45}}
-                className={classes.toolbarLink}>{section.name}</span> 
-            ))}
+              .map(section =>
+                section.status.includes(studyData.study?.phase) ? (
+                  <NavLink
+                    to={section.path.replace(':id', studyId)}
+                    key={section.path}
+                    className={classes.toolbarLink}
+                    activeClassName={classes.selectedLink}>
+                    {section.name}
+                  </NavLink>
+                ) : (
+                  <span
+                    key={section.path}
+                    style={{opacity: 0.45}}
+                    className={classes.toolbarLink}>
+                    {section.name}
+                  </span>
+                )
+              )}
           </Toolbar>
-          <Toolbar className={classes.toolbar} style={{ width: '160px' }}>
-            {(isInAdminRole(sessionData.roles)|| true /* enable all aggess*/) && (
+          <Toolbar className={classes.toolbar} style={{width: '160px'}}>
+            {(isInAdminRole(sessionData.roles) ||
+              true) /* enable all aggess*/ && (
               <NavLink
                 to={'/studies/:id/access-settings'.replace(':id', studyId)}
                 key={'path-to-access-settings'}
                 className={classes.toolbarLink}
                 activeClassName={classes.selectedLink}
-                style={{ display: 'flex' }}
-              >
+                style={{display: 'flex'}}>
                 <PeopleIcon></PeopleIcon>&nbsp;&nbsp;Access settings
               </NavLink>
             )}
@@ -250,12 +267,10 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
           }}
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
-          }}
-        >
+          }}>
           <MobileDrawerMenuHeader
             setIsMobileOpen={setIsMobileOpen}
-            type="IN_STUDY"
-          ></MobileDrawerMenuHeader>
+            type="IN_STUDY"></MobileDrawerMenuHeader>
           {links
             .filter(section => section.name)
             .map(section => (
@@ -264,8 +279,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
                 key={section.path}
                 className={classes.mobileToolBarLink}
                 activeClassName={classes.mobileSelectedLink}
-                onClick={() => setIsMobileOpen(false)}
-              >
+                onClick={() => setIsMobileOpen(false)}>
                 {section.name}
               </NavLink>
             ))}
@@ -274,12 +288,11 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
             key={'path-to-access-settings'}
             className={clsx(
               classes.mobileToolBarLink,
-              classes.accessSettingsDrawerOption,
+              classes.accessSettingsDrawerOption
             )}
             activeClassName={classes.mobileSelectedLink}
-            onClick={() => setIsMobileOpen(false)}
-          >
-            <img src={PARTICIPANTS_ICON} style={{ marginRight: '20px' }}></img>
+            onClick={() => setIsMobileOpen(false)}>
+            <img src={PARTICIPANTS_ICON} style={{marginRight: '20px'}}></img>
             Access settings
           </NavLink>
         </Drawer>

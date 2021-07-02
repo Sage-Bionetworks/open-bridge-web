@@ -1,5 +1,5 @@
 import React from 'react'
-import { IMaskInput } from 'react-imask'
+import {IMaskInput} from 'react-imask'
 
 const MASKS = {
   PHONE: '(000)000-0000',

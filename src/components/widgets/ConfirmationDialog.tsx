@@ -1,4 +1,4 @@
-import { IconButton, makeStyles } from '@material-ui/core'
+import {IconButton, makeStyles} from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -6,9 +6,9 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import CloseIcon from '@material-ui/icons/Close'
-import React, { FunctionComponent } from 'react'
-import { ReactComponent as Delete } from '../../assets/trash.svg'
-import { latoFont, poppinsFont } from '../../style/theme'
+import React, {FunctionComponent} from 'react'
+import {ReactComponent as Delete} from '../../assets/trash.svg'
+import {latoFont, poppinsFont} from '../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {},
@@ -107,28 +107,23 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   )
   let body = type === 'NAVIGATE' ? navigateBody : children
 
-
   return (
     <Dialog
       open={isOpen}
       onClose={() => onCancel()}
       aria-labelledby={type}
-
       className={classes.dialogTitle}
-      classes={{ paper: classes.dialogPaper }}
-    >
+      classes={{paper: classes.dialogPaper}}>
       <DialogTitle
         id="alert-dialog-title"
         disableTypography={true}
-        className={classes.title}
-      >
+        className={classes.title}>
         {type === 'DELETE' && <Delete></Delete>}
         <div>{title}</div>
         <IconButton
           aria-label="close"
           className={classes.closeButton}
-          onClick={() => onCancel()}
-        >
+          onClick={() => onCancel()}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -142,17 +137,15 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
           onClick={() => onCancel()}
           color="default"
           variant="contained"
-          className={classes.cancelButton}
-        >
+          className={classes.cancelButton}>
           {cancelText}
         </Button>
         <Button
           onClick={() => onConfirm()}
           className={classes.confirmButton}
           variant="contained"
-          autoFocus
-        >
-          {type=== 'NAVIGATE'?  'Continue': actionText}
+          autoFocus>
+          {type === 'NAVIGATE' ? 'Continue' : actionText}
         </Button>
       </DialogActions>
     </Dialog>

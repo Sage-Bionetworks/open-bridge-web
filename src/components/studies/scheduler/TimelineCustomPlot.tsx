@@ -1,8 +1,8 @@
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import _ from 'lodash'
 import moment from 'moment'
 import React from 'react'
-import { StudySession } from '../../../types/scheduling'
+import {StudySession} from '../../../types/scheduling'
 import SessionIcon from '../../widgets/SessionIcon'
 
 const leftPad = 54
@@ -137,7 +137,7 @@ export interface SingleSessionLinePlotProps {
 
 function getTimesForSession(
   sessionGuid: string,
-  schedulingItems: TimelineScheduleItem[],
+  schedulingItems: TimelineScheduleItem[]
 ): number[] {
   return schedulingItems
     .filter(i => i.refGuid === sessionGuid)
@@ -147,13 +147,13 @@ function getTimesForSession(
 function getSingleSessionX(
   studySessionGuid: string,
 
-  schedulingItems: TimelineScheduleItem[],
+  schedulingItems: TimelineScheduleItem[]
 ): number[] {
   let result: number[] = []
 
   const grouppedStartDays = _.groupBy(
     getTimesForSession(studySessionGuid, schedulingItems),
-    Math.floor,
+    Math.floor
   )
   Object.values(grouppedStartDays).forEach(groupArray => {
     const fraction = 1 / groupArray.length
@@ -168,8 +168,8 @@ function getSingleSessionX(
 function getSingleSessionDayX(
   studySessionGuid: string,
   schedulingItems: TimelineScheduleItem[],
-  scheduleLength: number,
-): { day: number; startTime: number; expire: number }[] {
+  scheduleLength: number
+): {day: number; startTime: number; expire: number}[] {
   let result: number[] = []
 
   const times = schedulingItems
@@ -205,7 +205,7 @@ function getSingleSessionDayX(
       if (!i.expiration) {
         expire = expire - fractionOfDay
       }
-      return { day: i.startDay, startTime: fractionOfDay, expire: expire }
+      return {day: i.startDay, startTime: fractionOfDay, expire: expire}
     })
 
   return times
@@ -246,8 +246,7 @@ const DailyGridPlot: React.FunctionComponent<GridPlotProps> = ({
               index * unitPixelWidth[zoomLevel] +
               (unitPixelWidth[zoomLevel] / 24) * index2
             }px`,
-          }}
-        >
+          }}>
           {index + 1}
         </div>
       )}
@@ -262,15 +261,13 @@ const DailyGridPlot: React.FunctionComponent<GridPlotProps> = ({
           }px`,
 
           width: `${unitPixelWidth[zoomLevel] / 24}px`,
-        }}
-      >
+        }}>
         <div
           className={classes.tickNumberDisplay}
           style={{
             left: `${unitPixelWidth[zoomLevel] / -48}px`,
             width: `${unitPixelWidth[zoomLevel] / 24}px`,
-          }}
-        >
+          }}>
           {getHour(index2)}
         </div>
       </div>
@@ -297,9 +294,8 @@ const NonDailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
           top: `${graphSessionHeight * sessionIndex - 5}px`,
 
           left: `${i * unitPixelWidth[zoomLevel] - 10}px`,
-        }}
-      ></SessionIcon>
-    ),
+        }}></SessionIcon>
+    )
   )
   return <>{sessionGraph}</>
 }
@@ -333,8 +329,7 @@ const SessionLine: React.FunctionComponent<SingleSessionLinePlotProps> = ({
           left: '-33px',
           // width: `${width}px`,
           //left: `${data[sessionIndex][0] * unitPixelWidth[zoomLevel]}px`,
-        }}
-      >
+        }}>
         /
       </div>
       <div
@@ -346,8 +341,7 @@ const SessionLine: React.FunctionComponent<SingleSessionLinePlotProps> = ({
           left: '-30px',
           // width: `${width}px`,
           //left: `${data[sessionIndex][0] * unitPixelWidth[zoomLevel]}px`,
-        }}
-      ></div>
+        }}></div>
     </>
   )
   return result
@@ -364,7 +358,7 @@ const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   const singleSessionDayX = getSingleSessionDayX(
     sessionGuid,
     schedulingItems,
-    scheduleLength!,
+    scheduleLength!
   )
   const sessionGraph = singleSessionDayX.map((i, index) => (
     <div
@@ -374,8 +368,7 @@ const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
         width: `${i.expire * unitPixelWidth[zoomLevel]}px`,
         top: `${graphSessionHeight * sessionIndex}px`,
         left: `${(i.day + i.startTime) * unitPixelWidth[zoomLevel]}px`,
-      }}
-    >
+      }}>
       <div className={classes.dailyIntervalInner}>
         <SessionIcon
           index={sessionIndex}
@@ -389,8 +382,7 @@ const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
             // top: `${graphSessionHeight * sessionIndex - 5}px`,
 
             //left: `${i * unitPixelWidth[zoomLevel] - 10}px`,
-          }}
-        ></SessionIcon>
+          }}></SessionIcon>
       </div>
     </div>
   ))
@@ -413,23 +405,21 @@ const GridPlot: React.FunctionComponent<GridPlotProps> = ({
     <>
       {index === 0 && <div className={classes.gridUnit}>{unit}</div>}
       <div
-      key="gridLine"
+        key="gridLine"
         className={classes.gridLine}
         style={{
           height: `${numberSessions * graphSessionHeight}px`,
           left: `${index * unitPixelWidth[zoomLevel]}px`,
           width: `${unitPixelWidth[zoomLevel]}px`,
           boxSizing: 'content-box',
-        }}
-      >
+        }}>
         <div
-        key="gridLineUnit"
+          key="gridLineUnit"
           className={classes.tickNumberDisplay}
           style={{
             left: `${unitPixelWidth[zoomLevel] / -2}px`,
             width: `${unitPixelWidth[zoomLevel]}px`,
-          }}
-        >
+          }}>
           {zoomLevel === 'Quarterly' ? Math.round(index / 30) + 1 : index + 1}
         </div>
       </div>
@@ -474,20 +464,17 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
           className={classes.plotContainer}
           style={{
             width: `${getWidth(scheduleLength, zoomLevel) + leftPad}px`,
-          }}
-        >
+          }}>
           <div
             className={classes.whiteBg}
             style={{
               width: `${getWidth(scheduleLength, zoomLevel) + leftPad}px`,
-            }}
-          ></div>
+            }}></div>
           <div
             style={{
               height: `${sortedSessions.length * graphSessionHeight}px`,
               position: 'relative',
-            }}
-          >
+            }}>
             {[...Array(scheduleLength)].map((i, index) =>
               zoomLevel === 'Daily' ? (
                 <DailyGridPlot
@@ -503,9 +490,9 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
                   numberSessions={sortedSessions.length}
                   key={`${i}_${index}`}
                 />
-              ),
+              )
             )}
-            <div style={{ position: 'absolute', top: '30px' }}>
+            <div style={{position: 'absolute', top: '30px'}}>
               {sortedSessions.map((session, sIndex) => (
                 <div key={sIndex}>
                   <SessionLine

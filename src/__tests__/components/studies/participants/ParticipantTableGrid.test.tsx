@@ -1,16 +1,11 @@
-import {
-  cleanup,
-  queryByAttribute,
-  render,
-  within
-} from '@testing-library/react'
+import {cleanup, queryByAttribute, render, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import ParticipantTableGrid from '../../../../components/studies/participants/ParticipantTableGrid'
-import { UserSessionDataProvider } from '../../../../helpers/AuthContext'
+import {UserSessionDataProvider} from '../../../../helpers/AuthContext'
 import {
   ParticipantAccountSummary,
-  ParticipantActivityType
+  ParticipantActivityType,
 } from '../../../../types/types'
 
 let currentPage = 1
@@ -62,7 +57,7 @@ const generateSampleParticipantGridData = (total: number, offsetBy: number) => {
   for (let i = offsetBy + 1; i <= total + offsetBy; i++) {
     let obj: ParticipantAccountSummary = {
       createdOn: '2021-02-22T20:45:38.375Z',
-      externalIds: { testID: `test-id-${i}` },
+      externalIds: {testID: `test-id-${i}`},
       id: 'dRNO0ydUO3hAGD5rHOXx1Gmb' + i,
       status: 'unverified',
       firstName: '',
@@ -92,55 +87,54 @@ const renderParticipantTableGrid = async () => {
         onUpdateParticipant={(
           participantId: string,
           note: string,
-          clinicVisitDate?: Date,
+          clinicVisitDate?: Date
         ) => {}}
-        gridType={{} as ParticipantActivityType}
-      >
+        gridType={{} as ParticipantActivityType}>
         <></>
       </ParticipantTableGrid>
       ,
-    </UserSessionDataProvider>,
+    </UserSessionDataProvider>
   ).container
 
   forward_to_end_button = getById(
     participantTableGrid as HTMLElement,
-    'forward-to-end-button',
+    'forward-to-end-button'
   )!
   backward_one_page_button = getById(
     participantTableGrid as HTMLElement,
-    'back-one-page-button',
+    'back-one-page-button'
   )!
   forward_one_page_button = getById(
     participantTableGrid as HTMLElement,
-    'forward-one-page-button',
+    'forward-one-page-button'
   )!
   backward_to_beginning_button = getById(
     participantTableGrid as HTMLElement,
-    'back-to-beginning-button',
+    'back-to-beginning-button'
   )!
 }
 
 test('should render correctly', () => {
   const textField = getById(
     participantTableGrid as HTMLElement,
-    'page-selector',
+    'page-selector'
   )
   expect(textField?.textContent).toBe('25')
   expect(
-    getById(participantTableGrid as HTMLElement, 'pagebox-button-0'),
+    getById(participantTableGrid as HTMLElement, 'pagebox-button-0')
   ).not.toEqual(null)
   expect(
-    getById(participantTableGrid as HTMLElement, 'pagebox-button-1'),
+    getById(participantTableGrid as HTMLElement, 'pagebox-button-1')
   ).not.toEqual(null)
   expect(
-    getById(participantTableGrid as HTMLElement, 'pagebox-button-2'),
+    getById(participantTableGrid as HTMLElement, 'pagebox-button-2')
   ).not.toEqual(null)
   expect(
-    getById(participantTableGrid as HTMLElement, 'pagebox-button-3'),
+    getById(participantTableGrid as HTMLElement, 'pagebox-button-3')
   ).not.toEqual(null)
   const participantCountData = getById(
     participantTableGrid as HTMLElement,
-    'participant_page_data',
+    'participant_page_data'
   )
   expect(participantCountData?.textContent).toBe('25/100 participants')
 })
@@ -149,20 +143,20 @@ test('should render correctly', () => {
 test('data passed appropriately to onPageSelectedChanged method', async () => {
   userEvent.click(forward_to_end_button)
   expect(onPageSelectedChanged).toHaveBeenLastCalledWith(numberOfPages)
-  resetVariables({ currentPage: numberOfPages })
+  resetVariables({currentPage: numberOfPages})
   renderParticipantTableGrid()
   userEvent.click(backward_one_page_button)
   expect(onPageSelectedChanged).toHaveBeenLastCalledWith(numberOfPages - 1)
-  resetVariables({ currentPage: numberOfPages - 1 })
+  resetVariables({currentPage: numberOfPages - 1})
   renderParticipantTableGrid()
   userEvent.click(backward_to_beginning_button)
   expect(onPageSelectedChanged).toHaveBeenLastCalledWith(1)
-  resetVariables({ currentPage: 1 })
+  resetVariables({currentPage: 1})
   renderParticipantTableGrid()
   userEvent.click(forward_one_page_button)
   expect(onPageSelectedChanged).toHaveBeenLastCalledWith(2)
   onPageSelectedChanged.mockReset()
-  resetVariables({ currentPage: 1 })
+  resetVariables({currentPage: 1})
   renderParticipantTableGrid()
   userEvent.click(backward_one_page_button)
   expect(onPageSelectedChanged).not.toHaveBeenCalled()
@@ -172,7 +166,7 @@ test('data passed appropriately to onPageSelectedChanged method', async () => {
 test('data passed correctly on page box pressed', async () => {
   const textField = getById(
     participantTableGrid as HTMLElement,
-    'page-selector',
+    'page-selector'
   )
   const selectNode = textField?.parentNode?.querySelector('[role=button]')
   userEvent.click(selectNode!)
@@ -188,7 +182,7 @@ test('data passed correctly on page box pressed', async () => {
 test('data is passed correctly on page box click', () => {
   const pageBox = getById(
     participantTableGrid as HTMLElement,
-    `pagebox-button-1`,
+    `pagebox-button-1`
   )!
   userEvent.click(pageBox)
   expect(onPageSelectedChanged).toHaveBeenLastCalledWith(2)
@@ -196,9 +190,9 @@ test('data is passed correctly on page box click', () => {
 
 // test to see if the loading status appears when the status is pending
 test('should loading status appear when status is PENDING', () => {
-  resetVariables({ status: 'PENDING', currentParticipants: [] })
+  resetVariables({status: 'PENDING', currentParticipants: []})
   renderParticipantTableGrid()
   expect(
-    getById(participantTableGrid as HTMLElement, 'circular_progress'),
+    getById(participantTableGrid as HTMLElement, 'circular_progress')
   ).not.toEqual(null)
 })

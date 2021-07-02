@@ -1,13 +1,13 @@
 import React from 'react'
 import StudyService from '../services/study.service'
-import { StudyBuilderInfo } from '../types/types'
-import { useAsync } from './AsyncHook'
-import { useUserSessionDataState } from './AuthContext'
+import {StudyBuilderInfo} from '../types/types'
+import {useAsync} from './AsyncHook'
+import {useUserSessionDataState} from './AuthContext'
 
 export const useStudyBuilderInfo = (id: string | undefined) => {
-  const { token } = useUserSessionDataState()
+  const {token} = useUserSessionDataState()
 
-  const { data, status, error, run, setData } = useAsync<
+  const {data, status, error, run, setData} = useAsync<
     StudyBuilderInfo | undefined
   >({
     status: id ? 'PENDING' : 'IDLE',
@@ -24,7 +24,7 @@ export const useStudyBuilderInfo = (id: string | undefined) => {
       schedule = await StudyService.getStudySchedule(study.scheduleGuid, token!)
     }
 
-    return { schedule, study }
+    return {schedule, study}
   }
 
   React.useEffect(() => {

@@ -1,7 +1,7 @@
-import { rest } from 'msw'
-import { setupServer } from 'msw/node'
+import {rest} from 'msw'
+import {setupServer} from 'msw/node'
 import constants from '../../types/constants'
-import { ParticipantAccountSummary } from '../../types/types'
+import {ParticipantAccountSummary} from '../../types/types'
 
 type Search = {
   pageSize: number
@@ -9,11 +9,11 @@ type Search = {
 }
 const getAllAccountsEndpoint = constants.endpoints.getAccountsForOrg.replace(
   ':orgId',
-  'testMembership',
+  'testMembership'
 )
 const getIndividualAccountEndpoint = constants.endpoints.bridgeAccount.replace(
   ':id',
-  'testID',
+  'testID'
 )
 const server = setupServer(
   rest.post(`*${getAllAccountsEndpoint}`, async (req, res, ctx) => {
@@ -28,7 +28,7 @@ const server = setupServer(
       ctx.status(200),
       ctx.json({
         items: data,
-      }),
+      })
     )
   }),
 
@@ -52,7 +52,7 @@ const server = setupServer(
       for (let i = data.offsetBy + 1; i <= data.pageSize + data.offsetBy; i++) {
         let obj: ParticipantAccountSummary = {
           createdOn: '2021-02-22T20:45:38.375Z',
-          externalIds: { testID: `test-id-${i}` },
+          externalIds: {testID: `test-id-${i}`},
           id: 'dRNO0ydUO3hAGD5rHOXx1Gmb' + i,
           status: 'unverified',
           firstName: '',
@@ -66,9 +66,9 @@ const server = setupServer(
         ctx.json({
           items: expectedData,
           total: 100,
-        }),
+        })
       )
-    },
+    }
   ),
 
   rest.get(`*${constants.endpoints.events}`, async (req, res, ctx) => {
@@ -76,9 +76,9 @@ const server = setupServer(
       ctx.status(200),
       ctx.json({
         items: [],
-      }),
+      })
     )
-  }),
+  })
 )
 
 export default server

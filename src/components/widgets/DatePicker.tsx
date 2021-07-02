@@ -1,25 +1,13 @@
 // pick a date util library
 import MomentUtils from '@date-io/moment'
-import {
-
-
-
-  FormControl
-} from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
-import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider
-} from '@material-ui/pickers'
-import React, { FunctionComponent } from 'react'
-import { latoFont } from '../../style/theme'
-import {
-  SimpleTextLabel
-} from './StyledComponents'
-
+import {FormControl} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
+import {KeyboardDatePicker, MuiPickersUtilsProvider} from '@material-ui/pickers'
+import React, {FunctionComponent} from 'react'
+import {latoFont} from '../../style/theme'
+import {SimpleTextLabel} from './StyledComponents'
 
 const useStyles = makeStyles(theme => ({
-
   dateAdornment: {
     position: 'absolute',
     right: '0px',
@@ -69,23 +57,18 @@ const useStyles = makeStyles(theme => ({
         ' -webkit-box-shadow': '0 0 0 30px white inset !important',
       },
     },
-  }
-
+  },
 }))
 
-
-
 type DatePickerProps = {
-  onChange: (p: Date| null)=> void
-  label?: string,
+  onChange: (p: Date | null) => void
+  label?: string
   onFocus?: Function
   onBlur?: Function
-  value: Date |null
+  value: Date | null
   id: string
   disabled?: boolean
 }
-
-
 
 // -----------------  Add participant control
 const DatePicker: FunctionComponent<DatePickerProps> = ({
@@ -93,57 +76,48 @@ const DatePicker: FunctionComponent<DatePickerProps> = ({
   value,
   label,
   id,
-  disabled
+  disabled,
 }) => {
   const classes = useStyles()
   const [isDateControlFocused, setIsDateControlFocused] = React.useState(false)
- 
 
   const handleDateChange = (date: Date | null) => {
     onChange(date)
   }
 
   return (
-
-      <MuiPickersUtilsProvider utils={MomentUtils}>
-       
-          <FormControl>
-            <SimpleTextLabel
-              htmlFor={id}
-              className={isDateControlFocused ? 'Mui-focused' : ''}
-            >
-              {label}
-            </SimpleTextLabel>
-            <KeyboardDatePicker
-              className={classes.datePicker}
-              onFocus={_ => setIsDateControlFocused(true)}
-              onBlur={_ => setIsDateControlFocused(false)}
-              InputAdornmentProps={{
-                position: 'end',
-                className: classes.dateAdornment,
-              }}
-              clearable={true}
-              format="MM/DD/yyyy"
-              autoOk={true}
-              disableToolbar={true}
-              inputVariant="outlined"
-              margin="normal"
-              id={id}
-          
-              value={value}
-              onChange={e => handleDateChange(e?.toDate() || null)}
-              KeyboardButtonProps={{
-                'aria-label': 'change date',
-              }}
-              disabled={disabled}
-            />
-          </FormControl>
-
-       
-      </MuiPickersUtilsProvider>
-    
+    <MuiPickersUtilsProvider utils={MomentUtils}>
+      <FormControl>
+        <SimpleTextLabel
+          htmlFor={id}
+          className={isDateControlFocused ? 'Mui-focused' : ''}>
+          {label}
+        </SimpleTextLabel>
+        <KeyboardDatePicker
+          className={classes.datePicker}
+          onFocus={_ => setIsDateControlFocused(true)}
+          onBlur={_ => setIsDateControlFocused(false)}
+          InputAdornmentProps={{
+            position: 'end',
+            className: classes.dateAdornment,
+          }}
+          clearable={true}
+          format="MM/DD/yyyy"
+          autoOk={true}
+          disableToolbar={true}
+          inputVariant="outlined"
+          margin="normal"
+          id={id}
+          value={value}
+          onChange={e => handleDateChange(e?.toDate() || null)}
+          KeyboardButtonProps={{
+            'aria-label': 'change date',
+          }}
+          disabled={disabled}
+        />
+      </FormControl>
+    </MuiPickersUtilsProvider>
   )
 }
-
 
 export default DatePicker

@@ -1,4 +1,4 @@
-import { Box, makeStyles } from '@material-ui/core'
+import {Box, makeStyles} from '@material-ui/core'
 import Divider from '@material-ui/core/Divider'
 import Drawer from '@material-ui/core/Drawer'
 import IconButton from '@material-ui/core/IconButton'
@@ -6,22 +6,20 @@ import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
-import { useTheme } from '@material-ui/core/styles'
+import {useTheme} from '@material-ui/core/styles'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import SomeIcon from '@material-ui/icons/FaceOutlined'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { RouteComponentProps } from 'react-router-dom'
+import React, {FunctionComponent} from 'react'
+import {RouteComponentProps} from 'react-router-dom'
 import {
   MTBHeadingH1,
   MTBHeadingH2,
   MTBHeadingH3,
   MTBHeadingH4,
-  MTBHeadingH5
+  MTBHeadingH5,
 } from '../widgets/Headings'
-
-
 
 const drawerWidth = 212
 
@@ -124,8 +122,7 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
       paddingTop="16px"
       bgcolor="#997cbf29"
       display="flex"
-      position="relative"
-    >
+      position="relative">
       <Drawer
         variant="permanent"
         className={clsx(classes.drawer, {
@@ -137,8 +134,7 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
             [classes.drawerOpen]: open,
             [classes.drawerClose]: !open,
           }),
-        }}
-      >
+        }}>
         <div>
           <IconButton onClick={toggleDrawer}>
             {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
@@ -170,8 +166,7 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
           className={clsx(classes.mainArea, {
             [classes.mainAreaNormal]: open,
             [classes.mainAreaWide]: !open,
-          })}
-        >
+          })}>
           <MTBHeadingH1>H1_Playfair Display_italic_21 </MTBHeadingH1>
           <MTBHeadingH2>H2_Poppins_Semibold_18pt</MTBHeadingH2>
           <MTBHeadingH3>H3_Lato_Regular, 15pt, Top nav</MTBHeadingH3>
@@ -182,15 +177,13 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
             padding="8px"
             gridTemplateColumns="repeat(auto-fill,280px)"
             gridColumnGap="16px"
-            gridRowGap="16px"
-          >
+            gridRowGap="16px">
             {cards.map(card => (
               <Box
                 width="280px"
                 height="511px"
                 border="1px solid black"
-                bgcolor="#d5e5ec"
-              >
+                bgcolor="#d5e5ec">
                 card
               </Box>
             ))}

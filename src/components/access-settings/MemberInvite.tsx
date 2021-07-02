@@ -1,16 +1,17 @@
 import {
-  Box, Container,
+  Box,
+  Container,
   FormControlLabel,
   makeStyles,
   Switch,
-  TextField
+  TextField,
 } from '@material-ui/core'
-import React, { FunctionComponent } from 'react'
-import { useUserSessionDataState } from '../../helpers/AuthContext'
-import { isInAdminRole } from '../../helpers/utility'
-import { latoFont, poppinsFont } from '../../style/theme'
+import React, {FunctionComponent} from 'react'
+import {useUserSessionDataState} from '../../helpers/AuthContext'
+import {isInAdminRole} from '../../helpers/utility'
+import {latoFont, poppinsFont} from '../../style/theme'
 import ErrorDisplay from '../widgets/ErrorDisplay'
-import AccessGrid, { Access, getAccessFromRoles } from './AccessGrid'
+import AccessGrid, {Access, getAccessFromRoles} from './AccessGrid'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -63,12 +64,11 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
         fullWidth
         variant="outlined"
         onChange={e => setEmail(e.target.value)}
-        onBlur={e => onUpdate({ ...newOrgAccount, email: email })}
+        onBlur={e => onUpdate({...newOrgAccount, email: email})}
         color="secondary"
         value={email || ''}
         placeholder="email@synapse.org"
-        style={{ fontFamily: latoFont }}
-      ></TextField>
+        style={{fontFamily: latoFont}}></TextField>
       {newOrgAccount.error && (
         <ErrorDisplay>{newOrgAccount.error.toString()}</ErrorDisplay>
       )}
@@ -101,14 +101,13 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
       <AccessGrid
         access={access}
         onUpdate={(_access: Access) => {
-          setAccess({ ..._access })
+          setAccess({..._access})
           setCoadmin(false)
-          onUpdate({ ...newOrgAccount, access: _access })
+          onUpdate({...newOrgAccount, access: _access})
         }}
         isEdit={true}
         isCoadmin={coadmin}
-        currentUserIsAdmin={isInAdminRole(sessionData.roles)}
-      ></AccessGrid>
+        currentUserIsAdmin={isInAdminRole(sessionData.roles)}></AccessGrid>
     </Container>
   )
 }

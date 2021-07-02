@@ -1,15 +1,15 @@
-import { Box, Switch } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Box, Switch} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
 import motion from '../../../assets/passive-features/recorders_motion.svg'
 import noise from '../../../assets/passive-features/recorders_noise.svg'
 import weather from '../../../assets/passive-features/recorders_weather.svg'
-import { latoFont, ThemeType } from '../../../style/theme'
+import {latoFont, ThemeType} from '../../../style/theme'
 import {
   BackgroundRecorders,
-  StudyBuilderComponentProps
+  StudyBuilderComponentProps,
 } from '../../../types/types'
-import { MTBHeadingH3 } from '../../widgets/Headings'
+import {MTBHeadingH3} from '../../widgets/Headings'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -49,8 +49,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       fontWeight: 'bold',
     },
     '& td': {
-      verticalAlign: 'top'
-    }
+      verticalAlign: 'top',
+    },
   },
 
   toggle: {
@@ -135,7 +135,7 @@ const PassiveFeatures: React.FunctionComponent<
           <img
             src={sensors[recorderType]!.img}
             alt={sensors[recorderType]!.title}
-            style={{ marginRight: 'auto' }}
+            style={{marginRight: 'auto'}}
           />
 
           <span className={classes.featureHeading}>
@@ -145,8 +145,7 @@ const PassiveFeatures: React.FunctionComponent<
             <Switch
               color="primary"
               checked={value}
-              onChange={e => callbackFn(e.target.checked)}
-            ></Switch>
+              onChange={e => callbackFn(e.target.checked)}></Switch>
           </div>
         </Box>
         <table className={classes.featureTable}>
@@ -159,12 +158,10 @@ const PassiveFeatures: React.FunctionComponent<
           </thead>
           <tbody>
             <tr>
-              <td style={{ width: '40%'}}>
+              <td style={{width: '40%'}}>
                 {sensors[recorderType]!.description}
               </td>
-              <td style={{ width: '20%'}}>
-                {sensors[recorderType]!.frequency}
-              </td>
+              <td style={{width: '20%'}}>{sensors[recorderType]!.frequency}</td>
               <td>{sensors[recorderType]!.burden}</td>
             </tr>
           </tbody>
@@ -192,24 +189,21 @@ const PassiveFeatures: React.FunctionComponent<
           recorderType={'motion'}
           value={features?.motion}
           callbackFn={(e: boolean) => {
-            const result = { ...features, motion: e }
-            onUpdate({ ...features, motion: e })
-          }}
-        ></PFSection>
+            const result = {...features, motion: e}
+            onUpdate({...features, motion: e})
+          }}></PFSection>
         <PFSection
           recorderType={'microphone'}
           value={features?.microphone}
           callbackFn={(e: boolean) => {
-            onUpdate({ ...features, microphone: e })
-          }}
-        ></PFSection>
+            onUpdate({...features, microphone: e})
+          }}></PFSection>
         <PFSection
           recorderType={'weather'}
           value={features?.weather}
           callbackFn={(e: boolean) => {
-            onUpdate({ ...features, weather: e })
-          }}
-        ></PFSection>
+            onUpdate({...features, weather: e})
+          }}></PFSection>
       </div>
       {children}
     </>

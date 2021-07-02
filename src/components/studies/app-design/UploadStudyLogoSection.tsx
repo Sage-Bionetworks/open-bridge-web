@@ -1,8 +1,8 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { Box, Button, CircularProgress } from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
+import {Box, Button, CircularProgress} from '@material-ui/core'
 import Subsection from './Subsection'
-import { bytesToSize } from '../../../helpers/utility'
+import {bytesToSize} from '../../../helpers/utility'
 
 const useStyles = makeStyles(theme => ({
   uploadButton: {
@@ -44,12 +44,11 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = 
             width: '320px',
             height: `${imgHeight + 16}px`,
             border: '1px solid black',
-          }}
-        >
+          }}>
           {studyLogoUrl && (
             <img
               src={studyLogoUrl}
-              style={{ height: `${imgHeight}px`, width: '310px' }}
+              style={{height: `${imgHeight}px`, width: '310px'}}
             />
           )}
         </Box>
@@ -67,8 +66,7 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = 
           variant="contained"
           component="label"
           color="primary"
-          className={classes.uploadButton}
-        >
+          className={classes.uploadButton}>
           Upload
           <input
             accept="image/*,.pdf,.jpg,.png,.svg"
@@ -76,7 +74,7 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = 
             multiple={false}
             type="file"
             onChange={e => handleFileChange(e)}
-            style={{ display: 'none' }}
+            style={{display: 'none'}}
           />
         </Button>
       )}

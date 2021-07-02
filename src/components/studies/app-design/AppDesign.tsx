@@ -1,18 +1,18 @@
-import { Box, Paper, Switch } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Box, Paper, Switch} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
-import React, { ChangeEvent, useState } from 'react'
-import { HexColorPicker } from 'react-colorful'
-import { useErrorHandler } from 'react-error-boundary'
+import React, {ChangeEvent, useState} from 'react'
+import {HexColorPicker} from 'react-colorful'
+import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { ReactComponent as PhoneTopImgLeftHighlighted } from '../../../assets/appdesign/CustomizeAppTopbarLeft.svg'
-import { ReactComponent as PhoneTopImgRightHighlighted } from '../../../assets/appdesign/CustomizeAppTopbarRight.svg'
+import {ReactComponent as PhoneTopImgLeftHighlighted} from '../../../assets/appdesign/CustomizeAppTopbarLeft.svg'
+import {ReactComponent as PhoneTopImgRightHighlighted} from '../../../assets/appdesign/CustomizeAppTopbarRight.svg'
 import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
-import { ReactComponent as PhoneBottomImg } from '../../../assets/appdesign/phone_buttons.svg'
+import {ReactComponent as PhoneBottomImg} from '../../../assets/appdesign/phone_buttons.svg'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
-import { useUserSessionDataState } from '../../../helpers/AuthContext'
+import {useUserSessionDataState} from '../../../helpers/AuthContext'
 import StudyService from '../../../services/study.service'
-import { ThemeType } from '../../../style/theme'
+import {ThemeType} from '../../../style/theme'
 import {
   Contact,
   Study,
@@ -20,7 +20,7 @@ import {
   WelcomeScreenData,
 } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
-import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
+import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
 import IrbBoardContactSection from './IrbBoardContactSection'
 import SectionIndicator from './SectionIndicator'
@@ -36,7 +36,7 @@ import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
 const imgHeight = 70
 
 const useStyles = makeStyles((theme: ThemeType) => ({
-  root: { counterReset: 'orderedlist' },
+  root: {counterReset: 'orderedlist'},
   section: {
     backgroundColor: '#fefefe',
     padding: theme.spacing(9, 9, 10, 17),
@@ -220,25 +220,24 @@ const PhoneTopBar: React.FunctionComponent<{
   color?: string
   isUsingDefaultMessage?: boolean
   studyLogoUrl?: string
-}> = ({ color = 'transparent', isUsingDefaultMessage, studyLogoUrl }) => {
+}> = ({color = 'transparent', isUsingDefaultMessage, studyLogoUrl}) => {
   const classes = useStyles()
   return (
     <div
       className={classes.phoneTopBar}
-      style={{ backgroundColor: isUsingDefaultMessage ? '#BCD5E4' : color }}
-    >
+      style={{backgroundColor: isUsingDefaultMessage ? '#BCD5E4' : color}}>
       {!isUsingDefaultMessage ? (
         studyLogoUrl && (
           <img
             src={studyLogoUrl}
-            style={{ height: `${imgHeight}px` }}
+            style={{height: `${imgHeight}px`}}
             alt="study-logo"
           />
         )
       ) : (
         <img
           src={DefaultLogo}
-          style={{ height: `${imgHeight - 16}px` }}
+          style={{height: `${imgHeight - 16}px`}}
           alt="study-logo"
         />
       )}
@@ -285,22 +284,25 @@ const AppDesign: React.FunctionComponent<
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
-  const { token, orgMembership } = useUserSessionDataState()
+  const {token, orgMembership} = useUserSessionDataState()
 
   const classes = useStyles()
 
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
-  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] =
-    useState<boolean>(
-      getContact(study, 'irb')?.name ===
-        getContact(study, 'principal_investigator')?.affiliation,
-    )
-  const [generalContactPhoneNumber, setGeneralContactPhoneNumber] =
-    React.useState(
-      formatPhoneNumber(getContact(study, 'study_support')?.phone?.number),
-    )
+  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] = useState<
+    boolean
+  >(
+    getContact(study, 'irb')?.name ===
+      getContact(study, 'principal_investigator')?.affiliation
+  )
+  const [
+    generalContactPhoneNumber,
+    setGeneralContactPhoneNumber,
+  ] = React.useState(
+    formatPhoneNumber(getContact(study, 'study_support')?.phone?.number)
+  )
   const [irbPhoneNumber, setIrbPhoneNumber] = React.useState(
-    formatPhoneNumber(getContact(study, 'irb')?.phone?.number),
+    formatPhoneNumber(getContact(study, 'irb')?.phone?.number)
   )
 
   const [phoneNumberErrorState, setPhoneNumberErrorState] = React.useState({
@@ -329,7 +331,7 @@ const AppDesign: React.FunctionComponent<
         previewForImage.name,
         previewForImage.body || '',
         file.type,
-        previewForImage.file,
+        previewForImage.file
       )
       const updatedStudy: Study = {
         ...study,
@@ -355,11 +357,11 @@ const AppDesign: React.FunctionComponent<
     // This is a placeholder until Lynn finalizes what the error state will look like
     if (phoneNumberHasError || emailHasError) {
       alert(
-        'Please make sure that all fields are entered in the correct format.',
+        'Please make sure that all fields are entered in the correct format.'
       )
       return
     }
-    const updatedStudy = { ...study }
+    const updatedStudy = {...study}
     const irbContact = updatedStudy.contacts?.find(el => el.role === 'irb')
     // If a contact's email or phone is an empty string, then delete the field
     // from the contact object.
@@ -371,7 +373,7 @@ const AppDesign: React.FunctionComponent<
       delete irbContact!.phone
     }
     const generalContact = updatedStudy.contacts?.find(
-      el => el.role === 'study_support',
+      el => el.role === 'study_support'
     )
     if (generalContact?.email === '') {
       delete generalContact.email
@@ -388,7 +390,7 @@ const AppDesign: React.FunctionComponent<
   const updateColor = (color: string) => {
     console.log('changingColor to' + color)
 
-    const updatedStudy = { ...study }
+    const updatedStudy = {...study}
     updatedStudy.colorScheme = {
       ...updatedStudy.colorScheme,
       background: color,
@@ -400,7 +402,7 @@ const AppDesign: React.FunctionComponent<
     leadPrincipalInvestigator: Contact,
     funder: Contact,
     ethicsBoardContact: Contact,
-    contactLeadInfo: Contact,
+    contactLeadInfo: Contact
   ) => {
     const updatedContacts: Contact[] = []
     updatedContacts.push(ethicsBoardContact)
@@ -413,14 +415,14 @@ const AppDesign: React.FunctionComponent<
   const getContactPersonObject = (type: ContactType): Contact => {
     const contact = getContact(study, type)
 
-    return contact || { role: type, name: '' }
+    return contact || {role: type, name: ''}
   }
 
   return (
     <>
       <Box className={classes.root}>
         <NavigationPrompt when={hasObjectChanged} key="prompt">
-          {({ onConfirm, onCancel }) => (
+          {({onConfirm, onCancel}) => (
             <ConfirmationDialog
               isOpen={hasObjectChanged}
               type={'NAVIGATE'}
@@ -451,7 +453,7 @@ const AppDesign: React.FunctionComponent<
                       ?.isUsingDefaultMessage || false
                   }
                   onChange={() => {
-                    const updatedStudy = { ...study }
+                    const updatedStudy = {...study}
                     let currentWelcomeScreenData
                     if (!study.clientData.welcomeScreenData) {
                       currentWelcomeScreenData = {
@@ -469,23 +471,19 @@ const AppDesign: React.FunctionComponent<
                     }
                     const newWelcomeScreenData = {
                       ...currentWelcomeScreenData,
-                      isUsingDefaultMessage:
-                        !currentWelcomeScreenData.isUsingDefaultMessage,
+                      isUsingDefaultMessage: !currentWelcomeScreenData.isUsingDefaultMessage,
                     }
-                    updatedStudy.clientData.welcomeScreenData =
-                      newWelcomeScreenData
+                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
                     onUpdate(updatedStudy)
-                  }}
-                ></Switch>
+                  }}></Switch>
               </Box>
               <Box ml={1.5}>Customize</Box>
             </div>
             <div
               className={clsx(
                 study.clientData.welcomeScreenData?.isUsingDefaultMessage &&
-                  classes.hideSection,
-              )}
-            >
+                  classes.hideSection
+              )}>
               <ol className={classes.steps}>
                 <UploadStudyLogoSection
                   handleFileChange={handleFileChange}
@@ -517,7 +515,7 @@ const AppDesign: React.FunctionComponent<
                     welcomeScreenBody: string,
                     welcomeScreenSalutation: string,
                     welcomeScreenFromText: string,
-                    useOptionalDisclaimer: boolean,
+                    useOptionalDisclaimer: boolean
                   ) => {
                     const newWelcomeScreenData = {
                       welcomeScreenHeader: welcomeStringHeader,
@@ -529,9 +527,8 @@ const AppDesign: React.FunctionComponent<
                         study.clientData.welcomeScreenData
                           ?.isUsingDefaultMessage || false,
                     } as WelcomeScreenData
-                    const updatedStudy = { ...study }
-                    updatedStudy.clientData.welcomeScreenData =
-                      newWelcomeScreenData
+                    const updatedStudy = {...study}
+                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
                     onUpdate(updatedStudy)
                   }}
                   welcomeScreenHeader={
@@ -599,9 +596,8 @@ const AppDesign: React.FunctionComponent<
               <Box
                 className={clsx(
                   classes.phoneBottom,
-                  classes.optionalDisclaimerTextOnPhone,
-                )}
-              >
+                  classes.optionalDisclaimerTextOnPhone
+                )}>
                 {study.clientData.welcomeScreenData?.useOptionalDisclaimer
                   ? 'This is a research study and does not provide medical advice, diagnosis, or treatment'
                   : ''}
@@ -621,7 +617,7 @@ const AppDesign: React.FunctionComponent<
               <StudySummarySection
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 onUpdate={(studyTitle: string, studySummaryBody: string) => {
-                  const updatedStudy = { ...study }
+                  const updatedStudy = {...study}
                   updatedStudy.name = studyTitle
                   updatedStudy.details = studySummaryBody
                   onUpdate(updatedStudy)
@@ -638,20 +634,20 @@ const AppDesign: React.FunctionComponent<
                 onUpdate={(
                   leadPrincipalInvestigator: Contact,
                   funder: Contact,
-                  ethicsBoardContact: Contact,
+                  ethicsBoardContact: Contact
                 ) => {
                   const updatedContacts = updateContacts(
                     leadPrincipalInvestigator,
                     funder,
                     ethicsBoardContact,
-                    getContactPersonObject('study_support'),
+                    getContactPersonObject('study_support')
                   )
-                  const updatedStudy = { ...study }
+                  const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
                   onUpdate(updatedStudy)
                 }}
                 leadPrincipalInvestigator={getContactPersonObject(
-                  'principal_investigator',
+                  'principal_investigator'
                 )}
                 ethicsBoardContact={getContactPersonObject('irb')}
                 funder={getContactPersonObject('sponsor')}
@@ -671,9 +667,9 @@ const AppDesign: React.FunctionComponent<
                     getContactPersonObject('principal_investigator'),
                     getContactPersonObject('sponsor'),
                     getContactPersonObject('irb'),
-                    contactLead,
+                    contactLead
                   )
-                  const updatedStudy = { ...study }
+                  const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
                   onUpdate(updatedStudy)
                 }}
@@ -696,9 +692,9 @@ const AppDesign: React.FunctionComponent<
                     getContactPersonObject('principal_investigator'),
                     getContactPersonObject('sponsor'),
                     irbInfo,
-                    getContactPersonObject('study_support'),
+                    getContactPersonObject('study_support')
                   )
-                  const updatedStudy = { ...study }
+                  const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
                   updatedStudy.irbProtocolId = protocolId
                   onUpdate(updatedStudy)
@@ -712,8 +708,7 @@ const AppDesign: React.FunctionComponent<
             <MTBHeadingH1>What participants will see: </MTBHeadingH1>
             <Box className={classes.phone}>
               <Box
-                className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}
-              >
+                className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
                 <PhoneTopImgLeftHighlighted
                   title="phone top image"
                   width="312px"
@@ -728,7 +723,7 @@ const AppDesign: React.FunctionComponent<
                 imgHeight={imgHeight}
                 appColor={study.colorScheme?.background || 'transparent'}
                 leadInvestigator={getContactPersonObject(
-                  'principal_investigator',
+                  'principal_investigator'
                 )}
                 funder={getContactPersonObject('sponsor')}
                 studyTitle={study.name}
@@ -738,10 +733,9 @@ const AppDesign: React.FunctionComponent<
                 <PhoneBottomImg title="phone bottom image" />
               </Box>
             </Box>
-            <Box className={classes.phone} style={{ marginTop: '134px' }}>
+            <Box className={classes.phone} style={{marginTop: '134px'}}>
               <Box
-                className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}
-              >
+                className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
                 <PhoneTopImgRightHighlighted
                   title="phone top image"
                   width="312px"

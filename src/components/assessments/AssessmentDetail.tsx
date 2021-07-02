@@ -5,20 +5,20 @@ import {
   Divider,
   makeStyles,
   Paper,
-  Typography
+  Typography,
 } from '@material-ui/core'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { useErrorHandler } from 'react-error-boundary'
-import { RouteComponentProps, useParams } from 'react-router-dom'
+import React, {FunctionComponent} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import {RouteComponentProps, useParams} from 'react-router-dom'
 import ClockIcon from '../../assets/clock.svg'
 import OfficialMobileToolboxVersion from '../../assets/official_mobile_toolbox_icon.svg'
 import ScientificallyValidatedIcon from '../../assets/validated.svg'
-import { useAsync } from '../../helpers/AsyncHook'
-import { useUserSessionDataState } from '../../helpers/AuthContext'
+import {useAsync} from '../../helpers/AsyncHook'
+import {useUserSessionDataState} from '../../helpers/AuthContext'
 import AssessmentService from '../../services/assessment.service'
-import { playfairDisplayFont, poppinsFont } from '../../style/theme'
-import { Assessment } from '../../types/types'
+import {playfairDisplayFont, poppinsFont} from '../../style/theme'
+import {Assessment} from '../../types/types'
 import BreadCrumb from '../widgets/BreadCrumb'
 import AssessmentImage from './AssessmentImage'
 
@@ -100,7 +100,7 @@ const useStyles = makeStyles(theme =>
     imageTextRowValidatedIcon: {
       marginLeft: theme.spacing(-3.9),
     },
-  }),
+  })
 )
 
 type AssessmentDetailOwnProps = {}
@@ -108,22 +108,22 @@ type AssessmentDetailOwnProps = {}
 type AssessmentDetailProps = AssessmentDetailOwnProps & RouteComponentProps
 
 const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
-  const { token } = useUserSessionDataState()
+  const {token} = useUserSessionDataState()
   const classes = useStyles()
 
-  const links = [{ url: '/assessments', text: 'Assessments' }]
+  const links = [{url: '/assessments', text: 'Assessments'}]
 
-  let { id } = useParams<{ id: string }>()
+  let {id} = useParams<{id: string}>()
 
   const handleError = useErrorHandler()
 
-  const { data, status, error, run } = useAsync<Assessment>({
+  const {data, status, error, run} = useAsync<Assessment>({
     status: 'PENDING',
     data: null,
   })
 
   const correctResource = data?.resources?.find(
-    resource => resource.category === 'website',
+    resource => resource.category === 'website'
   )
 
   React.useEffect(() => {
@@ -138,7 +138,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
         } else {
           return assessments[0]
         }
-      })(id, token),
+      })(id, token)
     )
   }, [run, id, token])
   if (status === 'PENDING' || !data) {
@@ -154,16 +154,11 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
         <Container maxWidth="lg" className={classes.overallBackground}>
           <Paper className="classes.container">
             <Box display="flex" className={classes.informationBox}>
-              <Box
-                width="530px"
-                marginRight="32px"
-                style={{ textAlign: 'left' }}
-              >
+              <Box width="530px" marginRight="32px" style={{textAlign: 'left'}}>
                 <AssessmentImage
                   name={`${data.title}_img`}
                   resources={data.resources}
-                  variant="detail"
-                ></AssessmentImage>
+                  variant="detail"></AssessmentImage>
               </Box>
               <Box textAlign="left">
                 <Typography variant="subtitle2" className={classes.categories}>
@@ -175,14 +170,12 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                 <div
                   className={clsx(
                     classes.imageTextRow,
-                    classes.imageTextRowValidatedIcon,
-                  )}
-                >
+                    classes.imageTextRowValidatedIcon
+                  )}>
                   <img
                     className={classes.validatedIcon}
                     src={ScientificallyValidatedIcon}
-                    alt="scientifically_validated_icon"
-                  ></img>
+                    alt="scientifically_validated_icon"></img>
                   <div className={classes.informationTextInContainer}>
                     Scientifically Validated
                   </div>
@@ -191,8 +184,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                   <img
                     className={classes.icon}
                     src={OfficialMobileToolboxVersion}
-                    alt="official_mobile_toolbox_icon"
-                  ></img>
+                    alt="official_mobile_toolbox_icon"></img>
                   <div className={classes.informationTextInContainer}>
                     Official Mobile Toolbox version
                   </div>
@@ -201,15 +193,14 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                   <img
                     className={classes.icon}
                     src={ClockIcon}
-                    alt="clock_icon"
-                  ></img>
+                    alt="clock_icon"></img>
                   <div className={classes.informationTextInContainer}>
                     {data.minutesToComplete} min
                   </div>
                 </div>
                 <div className={classes.informationText}>[Age: 18 +]</div>
                 <div className={clsx(classes.informationText, classes.row)}>
-                  <div style={{ width: '100px' }}>Designed By:</div>
+                  <div style={{width: '100px'}}>Designed By:</div>
                   <div>
                     {correctResource && correctResource.creators
                       ? correctResource.creators.join(', ')

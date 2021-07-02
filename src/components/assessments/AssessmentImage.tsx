@@ -1,22 +1,22 @@
-import { CardMedia } from '@material-ui/core'
-import { createStyles, makeStyles } from '@material-ui/core/styles'
-import React, { FunctionComponent, ReactNode } from 'react'
+import {CardMedia} from '@material-ui/core'
+import {createStyles, makeStyles} from '@material-ui/core/styles'
+import React, {FunctionComponent, ReactNode} from 'react'
 import DefaultImg from '../../assets/sage.svg'
-import { AssessmentResource } from '../../types/types'
+import {AssessmentResource} from '../../types/types'
 
 const useStyles = makeStyles(theme =>
   createStyles({
     media: {
       height: 180,
       padding: `${theme.spacing(2)}px ${theme.spacing(2)}px 0 ${theme.spacing(
-        2,
+        2
       )}px`,
       backgroundPositionY: 'top',
       display: 'flex',
       flexShrink: 0,
       flexDirection: 'row',
     },
-  }),
+  })
 )
 
 type AssessmentImageProps = {
@@ -32,7 +32,7 @@ const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
   name,
   variant = 'normal',
   children = <></>,
-  smallVariantProperties
+  smallVariantProperties,
 }: AssessmentImageProps) => {
   const classes = useStyles()
 
@@ -42,17 +42,21 @@ const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
       !resource.deleted &&
       resource.upToDate &&
       resource.title.includes('_square') &&
-      resource.url,
+      resource.url
   )
 
   return variant === 'small' ? (
-    <img src={screen?.url || DefaultImg} alt={name} height="100%" style={smallVariantProperties}/>
+    <img
+      src={screen?.url || DefaultImg}
+      alt={name}
+      height="100%"
+      style={smallVariantProperties}
+    />
   ) : (
     <CardMedia
       className={classes.media}
       image={screen?.url || DefaultImg}
-      title={name}
-    >
+      title={name}>
       {children}
     </CardMedia>
   )

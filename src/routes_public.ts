@@ -6,7 +6,6 @@ import DevelopmentTeam from './components/static/DevelopmentTeam'
 import HowItWorks from './components/static/HowItWorks'
 import Plans from './components/static/Plans'
 
-
 export default [
   {
     path: '/how-it-works',

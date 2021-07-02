@@ -1,9 +1,9 @@
-import React, { Suspense } from 'react'
+import React, {Suspense} from 'react'
 import 'react-app-polyfill/ie11'
 import 'react-app-polyfill/stable'
 import ReactDOM from 'react-dom'
 import App from './App'
-import { UserSessionDataProvider } from './helpers/AuthContext'
+import {UserSessionDataProvider} from './helpers/AuthContext'
 import './index.css'
 
 function isDevelopment() {
@@ -15,7 +15,7 @@ function isDevelopment() {
     window.location.hostname.includes('staging') ||
     // 127.0.0.0/8 are considered localhost for IPv4.
     window.location.hostname.match(
-      /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/,
+      /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
     )
   )
 }
@@ -25,7 +25,7 @@ if (
   /*AGENDEL REDO!*/ isDevelopment()
 ) {
   console.log('development')
-  const { worker } = require('./mocks/browser')
+  const {worker} = require('./mocks/browser')
   worker.start()
 } else {
   console.log(process.env.NODE_ENV)
@@ -39,7 +39,7 @@ ReactDOM.render(
       </Suspense>
     </UserSessionDataProvider>
   </React.StrictMode>,
-  document.getElementById('root'),
+  document.getElementById('root')
 )
 
 // If you want your app to work offline and load faster, you can change

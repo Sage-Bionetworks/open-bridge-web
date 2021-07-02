@@ -3,24 +3,24 @@ import {
   Button,
   FormControlLabel,
   makeStyles,
-  Switch
+  Switch,
 } from '@material-ui/core'
 import ClockIcon from '@material-ui/icons/AccessTime'
 import AddIcon from '@material-ui/icons/Add'
 import ClearIcon from '@material-ui/icons/Clear'
 import DeleteIcon from '@material-ui/icons/Delete'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
+import React, {FunctionComponent} from 'react'
 import {
   DragDropContext,
   Draggable,
   DraggableLocation,
   Droppable,
-  DropResult
+  DropResult,
 } from 'react-beautiful-dnd'
-import { ThemeType } from '../../../style/theme'
-import { StudySession } from '../../../types/scheduling'
-import { Assessment } from '../../../types/types'
+import {ThemeType} from '../../../style/theme'
+import {StudySession} from '../../../types/scheduling'
+import {Assessment} from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import EditableTextbox from '../../widgets/EditableTextbox'
@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 const rearrangeList = (
   list: any[],
   source: DraggableLocation,
-  destination: DraggableLocation,
+  destination: DraggableLocation
 ) => {
   const startIndex = source.index
 
@@ -119,7 +119,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
   onSetActiveSession,
   onUpdateSessionName,
   onUpdateAssessmentList,
-  numberOfSessions
+  numberOfSessions,
 }: SingleSessionContainerProps) => {
   const classes = useStyles()
   const [isEditable, setIsEditable] = React.useState(false)
@@ -127,7 +127,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
 
   const rearrangeAssessments = (
     assessments: Assessment[] | undefined,
-    dropResult: DropResult,
+    dropResult: DropResult
   ) => {
     if (!dropResult.destination || !assessments) {
       return
@@ -135,7 +135,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
     const newAssessmentList = rearrangeList(
       assessments,
       dropResult.source,
-      dropResult.destination,
+      dropResult.destination
     )
     onUpdateAssessmentList(studySession.guid!, newAssessmentList)
   }
@@ -144,7 +144,9 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
     if (!studySession.assessments) {
       return
     }
-    const removeIndex = studySession.assessments.findIndex(a => a.guid===assessmentId)
+    const removeIndex = studySession.assessments.findIndex(
+      a => a.guid === assessmentId
+    )
     const result = [...studySession.assessments]
     result.splice(removeIndex, 1)
 
@@ -176,49 +178,43 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                 initValue={studySession.name}
                 onTriggerUpdate={(newValue: string) =>
                   onUpdateSessionName(studySession.guid!, newValue)
-                }
-              ></EditableTextbox>
+                }></EditableTextbox>
             </SessionIcon>
           </Box>
-          {numberOfSessions > 1 && 
-           <Button
-            variant="text"
-            className={classes.btnDeleteSession}
-            onClick={e => {
-              e.stopPropagation()
-              //onRemoveSession(studySession.guid!)
-              setIsConfirmDeleteOpen(true)
-            }}
-            >
+          {numberOfSessions > 1 && (
+            <Button
+              variant="text"
+              className={classes.btnDeleteSession}
+              onClick={e => {
+                e.stopPropagation()
+                //onRemoveSession(studySession.guid!)
+                setIsConfirmDeleteOpen(true)
+              }}>
               <ClearIcon fontSize="small"></ClearIcon>
             </Button>
-          }
+          )}
           <Box fontSize="12px" textAlign="right">
             {getTotalSessionTime(studySession.assessments) || 0} min.
             <ClockIcon
-              style={{ fontSize: '12px', verticalAlign: 'middle' }}
-            ></ClockIcon>
+              style={{fontSize: '12px', verticalAlign: 'middle'}}></ClockIcon>
           </Box>
         </Box>
 
         <DragDropContext
           onDragEnd={(dropResult: DropResult) =>
             rearrangeAssessments(studySession.assessments, dropResult)
-          }
-        >
+          }>
           <div className={classes.droppable}>
             <Droppable
               droppableId={studySession.guid + studySession.name}
-              type="ASSESSMENT"
-            >
+              type="ASSESSMENT">
               {(provided, snapshot) => (
                 <div
                   className={clsx({
                     dragging: snapshot.isDraggingOver,
                   })}
                   ref={provided.innerRef}
-                  {...provided.droppableProps}
-                >
+                  {...provided.droppableProps}>
                   {!studySession.assessments ||
                     (studySession.assessments.length === 0 && (
                       <Box marginTop={7} padding={2}>
@@ -230,30 +226,27 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                     <Draggable
                       draggableId={assessment.guid + index}
                       index={index}
-                      key={assessment.guid + index}
-                    >
+                      key={assessment.guid + index}>
                       {(provided, snapshot) => (
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
+                          {...provided.dragHandleProps}>
                           <AssessmentSmall
                             assessment={assessment}
-                            isDragging={snapshot.isDragging}
-                          >
-                            {isEditable && <Button
-                                  variant="text"
-                                  aria-label="delete assessment"
-                                  className={classes.btnDeleteAssessment}
-                                  onClick={e => {
-                                    e.stopPropagation()
-                                    removeAssessment(assessment.guid)
-                                  }}
-                                >
-                                  <DeleteIcon></DeleteIcon>
-                                </Button>
-                              }
+                            isDragging={snapshot.isDragging}>
+                            {isEditable && (
+                              <Button
+                                variant="text"
+                                aria-label="delete assessment"
+                                className={classes.btnDeleteAssessment}
+                                onClick={e => {
+                                  e.stopPropagation()
+                                  removeAssessment(assessment.guid)
+                                }}>
+                                <DeleteIcon></DeleteIcon>
+                              </Button>
+                            )}
                           </AssessmentSmall>
                         </div>
                       )}
@@ -272,8 +265,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
     <>
       <Box
         className={clsx(classes.root /*, studySession?.active && 'active')*/)}
-        onClick={() => onSetActiveSession(studySession.guid!)}
-      >
+        onClick={() => onSetActiveSession(studySession.guid!)}>
         {getInner(studySession, sessionIndex, numberOfSessions)}
 
         <Box className={classes.actions}>
@@ -290,8 +282,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
           <Button
             onClick={() => onShowAssessments()}
             variant="text"
-            style={{ padding: '0px', minWidth: 'auto' }}
-          >
+            style={{padding: '0px', minWidth: 'auto'}}>
             <AddIcon></AddIcon>
           </Button>
         </Box>
@@ -304,8 +295,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
         onConfirm={() => {
           setIsConfirmDeleteOpen(false)
           onRemoveSession(studySession.guid!)
-        }}
-      >
+        }}>
         <div>
           Are you sure you would like to permanently delete:{' '}
           <p>{studySession.name}</p>

@@ -1,4 +1,4 @@
-import { Typography, makeStyles } from '@material-ui/core'
+import {Typography, makeStyles} from '@material-ui/core'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs/Breadcrumbs'
 import Link from '@material-ui/core/Link'
 import BackIcon from '@material-ui/icons/KeyboardBackspace'
@@ -6,7 +6,7 @@ import React from 'react'
 import clsx from 'clsx'
 
 export interface BreadCrumbProps {
-  links: { url: string; text: string }[]
+  links: {url: string; text: string}[]
   currentItem?: string
 }
 
@@ -41,8 +41,7 @@ const BreadCrumb: React.FunctionComponent<BreadCrumbProps> = ({
           color="inherit"
           href={link.url}
           key={link.url}
-          className={classes.link}
-        >
+          className={classes.link}>
           {index === 0 && <BackIcon className={classes.backIcon} />}
           <div className={clsx(classes.text, classes.addMargin)}>
             {link.text}

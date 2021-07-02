@@ -1,11 +1,11 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { Box, Divider } from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
+import {Box, Divider} from '@material-ui/core'
 import ContactInformation from './ContactInformation'
 import StudySummaryRoles from './StudySummaryRoles'
 import SectionIndicator from './SectionIndicator'
-import { latoFont, poppinsFont } from '../../../style/theme'
-import { Contact } from '../../../types/types'
+import {latoFont, poppinsFont} from '../../../style/theme'
+import {Contact} from '../../../types/types'
 
 const useStyles = makeStyles(theme => ({
   bodyPhoneText: {
