@@ -289,15 +289,18 @@ const AppDesign: React.FunctionComponent<
   const classes = useStyles()
 
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
-  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] =
-    useState<boolean>(
-      getContact(study, 'irb')?.name ===
-        getContact(study, 'principal_investigator')?.affiliation
-    )
-  const [generalContactPhoneNumber, setGeneralContactPhoneNumber] =
-    React.useState(
-      formatPhoneNumber(getContact(study, 'study_support')?.phone?.number)
-    )
+  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] = useState<
+    boolean
+  >(
+    getContact(study, 'irb')?.name ===
+      getContact(study, 'principal_investigator')?.affiliation
+  )
+  const [
+    generalContactPhoneNumber,
+    setGeneralContactPhoneNumber,
+  ] = React.useState(
+    formatPhoneNumber(getContact(study, 'study_support')?.phone?.number)
+  )
   const [irbPhoneNumber, setIrbPhoneNumber] = React.useState(
     formatPhoneNumber(getContact(study, 'irb')?.phone?.number)
   )
@@ -468,11 +471,9 @@ const AppDesign: React.FunctionComponent<
                     }
                     const newWelcomeScreenData = {
                       ...currentWelcomeScreenData,
-                      isUsingDefaultMessage:
-                        !currentWelcomeScreenData.isUsingDefaultMessage,
+                      isUsingDefaultMessage: !currentWelcomeScreenData.isUsingDefaultMessage,
                     }
-                    updatedStudy.clientData.welcomeScreenData =
-                      newWelcomeScreenData
+                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
                     onUpdate(updatedStudy)
                   }}></Switch>
               </Box>
@@ -527,8 +528,7 @@ const AppDesign: React.FunctionComponent<
                           ?.isUsingDefaultMessage || false,
                     } as WelcomeScreenData
                     const updatedStudy = {...study}
-                    updatedStudy.clientData.welcomeScreenData =
-                      newWelcomeScreenData
+                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
                     onUpdate(updatedStudy)
                   }}
                   welcomeScreenHeader={

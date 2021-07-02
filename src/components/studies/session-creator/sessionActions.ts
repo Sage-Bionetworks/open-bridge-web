@@ -45,8 +45,9 @@ export type ActionPayload = {
   }
 }
 
-export type SessionAction =
-  ActionMap<ActionPayload>[keyof ActionMap<ActionPayload>]
+export type SessionAction = ActionMap<ActionPayload>[keyof ActionMap<
+  ActionPayload
+>]
 
 function addSession(
   sessions: StudySession[],

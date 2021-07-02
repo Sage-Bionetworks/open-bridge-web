@@ -22,65 +22,64 @@ type UploadStudyLogoSection = {
   isSettingStudyLogo: boolean
 }
 
-const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> =
-  ({
-    handleFileChange,
-    imgHeight,
-    saveLoader,
-    studyLogoUrl,
-    isSettingStudyLogo,
-  }) => {
-    const classes = useStyles()
-    return (
-      <Subsection heading="Upload Study Logo">
-        <Box>
-          <Box className={classes.studyLogoUploadText}>
-            All images will be compressed to: 320px x 80px
-          </Box>
-
-          <Box
-            style={{
-              padding: '8px 1px',
-              textAlign: 'center',
-              width: '320px',
-              height: `${imgHeight + 16}px`,
-              border: '1px solid black',
-            }}>
-            {studyLogoUrl && (
-              <img
-                src={studyLogoUrl}
-                style={{height: `${imgHeight}px`, width: '310px'}}
-              />
-            )}
-          </Box>
+const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = ({
+  handleFileChange,
+  imgHeight,
+  saveLoader,
+  studyLogoUrl,
+  isSettingStudyLogo,
+}) => {
+  const classes = useStyles()
+  return (
+    <Subsection heading="Upload Study Logo">
+      <Box>
+        <Box className={classes.studyLogoUploadText}>
+          All images will be compressed to: 320px x 80px
         </Box>
 
-        {saveLoader && (
-          <Box className="text-center">
-            <CircularProgress color="primary" />
-          </Box>
-        )}
-        {isSettingStudyLogo ? (
-          <CircularProgress color="primary" className={classes.uploadButton} />
-        ) : (
-          <Button
-            variant="contained"
-            component="label"
-            color="primary"
-            className={classes.uploadButton}>
-            Upload
-            <input
-              accept="image/*,.pdf,.jpg,.png,.svg"
-              id="file"
-              multiple={false}
-              type="file"
-              onChange={e => handleFileChange(e)}
-              style={{display: 'none'}}
+        <Box
+          style={{
+            padding: '8px 1px',
+            textAlign: 'center',
+            width: '320px',
+            height: `${imgHeight + 16}px`,
+            border: '1px solid black',
+          }}>
+          {studyLogoUrl && (
+            <img
+              src={studyLogoUrl}
+              style={{height: `${imgHeight}px`, width: '310px'}}
             />
-          </Button>
-        )}
-      </Subsection>
-    )
-  }
+          )}
+        </Box>
+      </Box>
+
+      {saveLoader && (
+        <Box className="text-center">
+          <CircularProgress color="primary" />
+        </Box>
+      )}
+      {isSettingStudyLogo ? (
+        <CircularProgress color="primary" className={classes.uploadButton} />
+      ) : (
+        <Button
+          variant="contained"
+          component="label"
+          color="primary"
+          className={classes.uploadButton}>
+          Upload
+          <input
+            accept="image/*,.pdf,.jpg,.png,.svg"
+            id="file"
+            multiple={false}
+            type="file"
+            onChange={e => handleFileChange(e)}
+            style={{display: 'none'}}
+          />
+        </Button>
+      )}
+    </Subsection>
+  )
+}
 
 export default UploadStudyLogoSection

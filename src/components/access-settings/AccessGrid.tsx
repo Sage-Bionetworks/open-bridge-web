@@ -119,61 +119,60 @@ type AccessGridRadioComponentsProps = {
   onUpdate: Function
   isEqualToCurrentValue: boolean
 }
-const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponentsProps> =
-  ({
-    restriction,
-    role_key,
-    isCoAdmin,
-    currentUserIsAdmin,
-    onUpdate,
-    isEqualToCurrentValue,
-  }) => {
-    const key = Object.keys(role_key)[0] as keyof Access
-    let checkboxChecked = false
-    if (!currentUserIsAdmin) {
-      if (!isEqualToCurrentValue) {
-        return null
-      }
+const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponentsProps> = ({
+  restriction,
+  role_key,
+  isCoAdmin,
+  currentUserIsAdmin,
+  onUpdate,
+  isEqualToCurrentValue,
+}) => {
+  const key = Object.keys(role_key)[0] as keyof Access
+  let checkboxChecked = false
+  if (!currentUserIsAdmin) {
+    if (!isEqualToCurrentValue) {
+      return null
+    }
+    return (
+      <Box
+        mt={-2.5}
+        height="40px"
+        display="flex"
+        justifyContent="center"
+        alignItems="center">
+        <CheckIcon style={{color: 'black'}} />
+      </Box>
+    )
+  }
+  if (key === 'ACCESS_SETTINGS') {
+    checkboxChecked = true
+    if (restriction === 'NO_ACCESS') {
+      return null
+    }
+    if (restriction === 'VIEWER' && isCoAdmin) {
+      return null
+    }
+    if (restriction === 'EDITOR' && !isCoAdmin) {
       return (
         <Box
+          fontSize="10px"
+          fontStyle="italic"
+          fontFamily={latoFont}
           mt={-2.5}
-          height="40px"
-          display="flex"
-          justifyContent="center"
-          alignItems="center">
-          <CheckIcon style={{color: 'black'}} />
+          fontWeight="normal">
+          Only available to Administrators
         </Box>
       )
     }
-    if (key === 'ACCESS_SETTINGS') {
-      checkboxChecked = true
-      if (restriction === 'NO_ACCESS') {
-        return null
-      }
-      if (restriction === 'VIEWER' && isCoAdmin) {
-        return null
-      }
-      if (restriction === 'EDITOR' && !isCoAdmin) {
-        return (
-          <Box
-            fontSize="10px"
-            fontStyle="italic"
-            fontFamily={latoFont}
-            mt={-2.5}
-            fontWeight="normal">
-            Only available to Administrators
-          </Box>
-        )
-      }
-    }
-    return (
-      <Radio
-        checked={checkboxChecked || isEqualToCurrentValue}
-        value={restriction}
-        onChange={e => onUpdate(e)}
-        radioGroup={'group_' + Object.keys(role_key)}></Radio>
-    )
   }
+  return (
+    <Radio
+      checked={checkboxChecked || isEqualToCurrentValue}
+      value={restriction}
+      onChange={e => onUpdate(e)}
+      radioGroup={'group_' + Object.keys(role_key)}></Radio>
+  )
+}
 
 const AccessGrid: FunctionComponent<AccessGridProps> = ({
   access,

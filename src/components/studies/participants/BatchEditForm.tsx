@@ -32,13 +32,12 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
     setIsLoading(true)
     let participantIds = selectedParticipants
     if (isAllSelected) {
-      const resultEnrolled =
-        await ParticipantService.getAllParticipantsInEnrollmentType(
-          studyId,
-          token,
-          'enrolled',
-          false
-        )
+      const resultEnrolled = await ParticipantService.getAllParticipantsInEnrollmentType(
+        studyId,
+        token,
+        'enrolled',
+        false
+      )
       const enrolledNonTestParticipants = resultEnrolled.items
       participantIds = enrolledNonTestParticipants.map(
         el => el.participant.identifier
