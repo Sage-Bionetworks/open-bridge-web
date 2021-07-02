@@ -92,27 +92,30 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
 
   const setData = async () => {
     let finalResult: EnrolledAccountRecord[] = []
-    const resultEnrolled = await ParticipantService.getAllParticipantsInEnrollmentType(
-      study.identifier,
-      token,
-      'enrolled',
-      false
-    )
+    const resultEnrolled =
+      await ParticipantService.getAllParticipantsInEnrollmentType(
+        study.identifier,
+        token,
+        'enrolled',
+        false
+      )
     const enrolledNonTestParticipants = resultEnrolled.items
     finalResult = enrolledNonTestParticipants
     if (tab === 'TEST') {
-      const resultAll = await ParticipantService.getAllParticipantsInEnrollmentType(
-        study.identifier,
-        token,
-        'all',
-        true
-      )
-      const resultWithdrawn = await ParticipantService.getAllParticipantsInEnrollmentType(
-        study.identifier,
-        token,
-        'withdrawn',
-        false
-      )
+      const resultAll =
+        await ParticipantService.getAllParticipantsInEnrollmentType(
+          study.identifier,
+          token,
+          'all',
+          true
+        )
+      const resultWithdrawn =
+        await ParticipantService.getAllParticipantsInEnrollmentType(
+          study.identifier,
+          token,
+          'withdrawn',
+          false
+        )
       const allParticipants = resultAll.items
       const withdrawnNonTestParticipants = resultWithdrawn.items
       let testParticipants = allParticipants.filter(

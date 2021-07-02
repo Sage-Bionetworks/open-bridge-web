@@ -53,9 +53,10 @@ const useStyles = makeStyles(theme => ({
       transition: theme.transitions.create(['border-color', 'box-shadow']),
       fontFamily: [latoFont, 'Roboto'].join(','),
 
-      '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active': {
-        ' -webkit-box-shadow': '0 0 0 30px white inset !important',
-      },
+      '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active':
+        {
+          ' -webkit-box-shadow': '0 0 0 30px white inset !important',
+        },
     },
   },
 }))

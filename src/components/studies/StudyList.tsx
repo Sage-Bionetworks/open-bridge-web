@@ -242,9 +242,13 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   let resetNewlyAddedStudyID: NodeJS.Timeout
 
-  const {data: studies, status, error, run, setData: setStudies} = useAsync<
-    Study[]
-  >({
+  const {
+    data: studies,
+    status,
+    error,
+    run,
+    setData: setStudies,
+  } = useAsync<Study[]>({
     status: 'PENDING',
     data: [],
   })

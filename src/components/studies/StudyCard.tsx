@@ -155,10 +155,11 @@ const CardBottom: FunctionComponent<{
 
   React.useEffect(() => {
     const getParticipantCount = async () => {
-      const newParticipantNumber = await ParticipantService.getNumEnrolledParticipants(
-        study.identifier,
-        token!
-      )
+      const newParticipantNumber =
+        await ParticipantService.getNumEnrolledParticipants(
+          study.identifier,
+          token!
+        )
       setNumParticipants('' + newParticipantNumber)
     }
     getParticipantCount()

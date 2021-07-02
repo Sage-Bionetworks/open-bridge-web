@@ -86,10 +86,8 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
   onSearch,
 }) => {
   const classes = useStyles()
-  const [
-    isSearchingForParticipant,
-    setIsSearchingForParticipant,
-  ] = React.useState(false)
+  const [isSearchingForParticipant, setIsSearchingForParticipant] =
+    React.useState(false)
 
   // True if the user is currently trying to search for a particular particpant
   const [isSearchingUsingId, setIsSearchingUsingID] = React.useState(false)

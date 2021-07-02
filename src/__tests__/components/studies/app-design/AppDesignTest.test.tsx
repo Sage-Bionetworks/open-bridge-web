@@ -107,9 +107,10 @@ test('should study lead information section behave correctly', async () => {
     appDesign as HTMLElement,
     'lead-investigator-drop-down'
   )
-  const selectNode = leadPrincipleInvestigatorDropDown?.parentNode?.querySelector(
-    '[role=button]'
-  )
+  const selectNode =
+    leadPrincipleInvestigatorDropDown?.parentNode?.querySelector(
+      '[role=button]'
+    )
   userEvent.click(selectNode!)
   const listbox = document.body.querySelector('ul[role=listbox]')
   await waitFor(() =>
@@ -182,7 +183,8 @@ test('should welcome screen messaging section behave correctly', async () => {
   const salutationsText = getById(appDesign as HTMLElement, 'salutations')
   userEvent.type(salutationsText!, TESTING_TEXT)
   userEvent.click(container)
-  studyObject.clientData.welcomeScreenData!.welcomeScreenSalutation = TESTING_TEXT
+  studyObject.clientData.welcomeScreenData!.welcomeScreenSalutation =
+    TESTING_TEXT
   expect(onUpdate).lastCalledWith(studyObject)
 
   const fromText = getById(appDesign as HTMLElement, 'signature-textarea')

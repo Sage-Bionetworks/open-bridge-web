@@ -9,10 +9,10 @@ import {
   CircularProgress,
 } from '@material-ui/core'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { isInvalidPhone } from '../../../helpers/utility'
-import { latoFont, poppinsFont } from '../../../style/theme'
-import { EditableParticipantData } from '../../../types/types'
+import React, {FunctionComponent} from 'react'
+import {isInvalidPhone} from '../../../helpers/utility'
+import {latoFont, poppinsFont} from '../../../style/theme'
+import {EditableParticipantData} from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import {MTBHeadingH3} from '../../widgets/Headings'
 import TextMask from '../../widgets/MaskedInput'
@@ -98,12 +98,11 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
             label="Clinic Visit 1"
             id="clinic-visit"
             value={clinicVisitDate || null}
-            onChange={e => handleDateChange(e)}
-          ></DatePicker>
+            onChange={e => handleDateChange(e)}></DatePicker>
           <SimpleTextLabel htmlFor="note">
             Participant Time Zone
           </SimpleTextLabel>
-          <Box style={{ width: '350px', marginBottom: '24px' }}>
+          <Box style={{width: '350px', marginBottom: '24px'}}>
             <TimezoneDropdown />
           </Box>
           <FormControl>
@@ -129,8 +128,7 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
             <DialogButtonPrimary
               onClick={() => onOK(note, clinicVisitDate)}
               color="primary"
-              autoFocus
-            >
+              autoFocus>
               Save Changes
             </DialogButtonPrimary>
           </div>

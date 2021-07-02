@@ -130,9 +130,8 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
     ///your async call
     return run(
       (async function (id, token) {
-        const {
-          assessments,
-        } = await AssessmentService.getAssessmentsWithResources(id)
+        const {assessments} =
+          await AssessmentService.getAssessmentsWithResources(id)
         if (assessments.length === 0) {
           throw new Error('no assessment found')
         } else {
