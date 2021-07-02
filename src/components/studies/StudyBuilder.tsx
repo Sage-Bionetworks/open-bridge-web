@@ -137,7 +137,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   const [open, setOpen] = React.useState(true)
 
   const setData = (builderInfo: StudyInfoData) => {
-    console.log('updating fn: ' + JSON.stringify(builderInfo))
     studyDataUpdateFn({
       type: 'SET_ALL',
       payload: builderInfo,
@@ -258,7 +257,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           )?.resources
         })
       })
-      console.log('studyVersion in SB', savedUpdatedSchedule.version)
       setData({
         ...builderInfo,
         schedule: savedUpdatedSchedule,
