@@ -28,8 +28,7 @@ const TimezoneDropdown: React.FunctionComponent<{}> = ({}) => {
       onChange={event => setCurrentTimeZone(event.target.value as string)}
       emptyValueLabel="Select a timezone"
       value={currentTimeZone}
-      itemHeight="44px"
-    ></SaveBlackBorderDropdown>
+      itemHeight="44px"></SaveBlackBorderDropdown>
   )
 }
 
