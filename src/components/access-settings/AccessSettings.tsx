@@ -120,8 +120,11 @@ async function createNewAccount(
     return 'developer'
   }
   try {
-    const {principalId, firstName, lastName} =
-      await AccessService.getAliasFromSynapseByEmail(email)
+    const {
+      principalId,
+      firstName,
+      lastName,
+    } = await AccessService.getAliasFromSynapseByEmail(email)
 
     await AccessService.createIndividualAccount(
       token!,

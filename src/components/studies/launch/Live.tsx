@@ -74,42 +74,41 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
 }))
 
-const Live: React.FunctionComponent<RouteComponentProps> =
-  ({}: RouteComponentProps) => {
-    const classes = useStyles()
-    const builderInfo: StudyInfoData = useStudyInfoDataState()
-    if (!builderInfo.study) {
-      return <></>
-    }
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center">
-        <div className={classes.root}>
-          <div style={{marginLeft: '-50px'}}>
-            <MTBHeadingH1 className={classes.congratsText}>
-              Congratulations!
-            </MTBHeadingH1>
-            <MTBHeadingH1
-              className={clsx(classes.congratsText, classes.liveText)}>
-              {builderInfo.study.name} officially live!
-            </MTBHeadingH1>
-            <img src={LiveIcon} className={classes.liveButton}></img>
-            <p className={classes.enrollmentText}>
-              You may now enroll <br />
-              participants to this study.
-            </p>
-            <Button
-              color="secondary"
-              href={'/studies/:id/participant-manager'.replace(
-                ':id',
-                builderInfo.study.identifier
-              )}
-              className={classes.enrollButton}>
-              Enroll Participants
-            </Button>
-          </div>
-        </div>
-      </Box>
-    )
+const Live: React.FunctionComponent<RouteComponentProps> = ({}: RouteComponentProps) => {
+  const classes = useStyles()
+  const builderInfo: StudyInfoData = useStudyInfoDataState()
+  if (!builderInfo.study) {
+    return <></>
   }
+  return (
+    <Box display="flex" justifyContent="center" alignItems="center">
+      <div className={classes.root}>
+        <div style={{marginLeft: '-50px'}}>
+          <MTBHeadingH1 className={classes.congratsText}>
+            Congratulations!
+          </MTBHeadingH1>
+          <MTBHeadingH1
+            className={clsx(classes.congratsText, classes.liveText)}>
+            {builderInfo.study.name} officially live!
+          </MTBHeadingH1>
+          <img src={LiveIcon} className={classes.liveButton}></img>
+          <p className={classes.enrollmentText}>
+            You may now enroll <br />
+            participants to this study.
+          </p>
+          <Button
+            color="secondary"
+            href={'/studies/:id/participant-manager'.replace(
+              ':id',
+              builderInfo.study.identifier
+            )}
+            className={classes.enrollButton}>
+            Enroll Participants
+          </Button>
+        </div>
+      </div>
+    </Box>
+  )
+}
 
 export default Live

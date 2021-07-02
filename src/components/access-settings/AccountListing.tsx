@@ -131,13 +131,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   const [isAccessLoading, setIsAccessLoading] = React.useState(true)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
 
-  const {
-    data: members,
-    status,
-    error,
-    run,
-    setData,
-  } = useAsync<any>({
+  const {data: members, status, error, run, setData} = useAsync<any>({
     status: 'PENDING',
     data: [],
   })

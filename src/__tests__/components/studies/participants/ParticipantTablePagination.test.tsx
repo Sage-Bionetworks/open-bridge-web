@@ -141,8 +141,9 @@ test('should page forward and backward buttons function correctly', () => {
 
 // test to see if the page changes as expected when page number is clicked
 test('should page change when page number is clicked', () => {
-  const btn =
-    participantTablePagination.container.querySelector('#pagebox-button-3')
+  const btn = participantTablePagination.container.querySelector(
+    '#pagebox-button-3'
+  )
   expect(btn!.textContent).toBe('4')
   userEvent.click(btn!)
   expect(onPageSelectedChanged).toHaveBeenLastCalledWith(4)
