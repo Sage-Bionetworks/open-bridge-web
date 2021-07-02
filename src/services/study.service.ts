@@ -1,4 +1,4 @@
-import { callEndpoint } from '../helpers/utility'
+import {callEndpoint} from '../helpers/utility'
 import constants from '../types/constants'
 import {
   AssessmentWindow,
@@ -7,7 +7,7 @@ import {
   StartEventId,
   StudySession,
 } from '../types/scheduling'
-import { Study, FileRevision } from '../types/types'
+import {Study, FileRevision} from '../types/types'
 import AssessmentService from './assessment.service'
 
 const StudyService = {
@@ -41,7 +41,7 @@ export const DEFAULT_NOTIFICATION: ScheduleNotification = {
 
 function createEmptyStudySession(
   startEventId: StartEventId,
-  name = 'Session1',
+  name = 'Session1'
 ) {
   const defaultTimeWindow: AssessmentWindow = {
     startTime: '08:00',
@@ -52,7 +52,7 @@ function createEmptyStudySession(
     timeWindows: [defaultTimeWindow],
     performanceOrder: 'participant_choice',
     assessments: [],
-    notifications: [{ ...DEFAULT_NOTIFICATION }],
+    notifications: [{...DEFAULT_NOTIFICATION}],
   }
   return studySession
 }
@@ -64,7 +64,7 @@ async function editStudyLogo(
   fileName: string,
   fileBody: string,
   mimeType: string,
-  file: File,
+  file: File
 ): Promise<Study> {
   try {
     // upload to the backend
@@ -79,7 +79,7 @@ async function editStudyLogo(
       uploadToBackendEndpoint,
       'POST',
       bodyForUploadBackendEndpoint,
-      token,
+      token
     )
     const uploadData = uploadResult.data
     // upload to aws
@@ -99,7 +99,7 @@ async function editStudyLogo(
       successfulUploadEndpoint,
       'POST',
       {},
-      token,
+      token
     )
     return successfulUploadResponse.data
   } catch (error) {
@@ -108,11 +108,11 @@ async function editStudyLogo(
 }
 
 async function getStudies(token: string): Promise<Study[]> {
-  const studies = await callEndpoint<{ items: Study[] }>(
+  const studies = await callEndpoint<{items: Study[]}>(
     constants.endpoints.studies,
     'GET',
     {},
-    token,
+    token
   )
 
   return studies.data.items
@@ -123,7 +123,7 @@ async function getStudy(id: string, token: string): Promise<Study | undefined> {
     constants.endpoints.study.replace(':id', id),
     'GET',
     {},
-    token,
+    token
   )
   const study = response.data
   if (!study.clientData) {
@@ -133,11 +133,11 @@ async function getStudy(id: string, token: string): Promise<Study | undefined> {
 }
 
 async function createStudy(study: Study, token: string): Promise<number> {
-  const newVersion = await callEndpoint<{ version: number }>(
+  const newVersion = await callEndpoint<{version: number}>(
     constants.endpoints.study.replace(':id', ''),
     'POST', // once we add things to the study -- we can change this to actual object
     study,
-    token,
+    token
   )
 
   return newVersion.data.version
@@ -146,13 +146,13 @@ async function createStudy(study: Study, token: string): Promise<number> {
 async function createStudySchedule(
   name: string,
 
-  token: string,
+  token: string
 ): Promise<string> {
   const result = await callEndpoint<string>(
     constants.endpoints.schedule.replace('/:id', ''),
     'POST', // once we add things to the study -- we can change this to actual object
-    { name },
-    token,
+    {name},
+    token
   )
   return result.data
 }
@@ -160,34 +160,34 @@ async function createStudySchedule(
 async function createNewStudySchedule(
   schedule: Schedule,
 
-  token: string,
+  token: string
 ): Promise<Schedule> {
   const result = await callEndpoint<Schedule>(
     constants.endpoints.schedule.replace('/:id', ''),
     'POST', // once we add things to the study -- we can change this to actual object
-    { ...schedule, guid: undefined },
-    token,
+    {...schedule, guid: undefined},
+    token
   )
 
   return result.data
 }
 
 async function updateStudy(study: Study, token: string): Promise<number> {
-  const result = await callEndpoint<{ version: number }>(
+  const result = await callEndpoint<{version: number}>(
     constants.endpoints.study.replace(':id', study.identifier),
     'POST',
     study,
-    token,
+    token
   )
   return result.data.version
 }
 
 async function removeStudy(studyId: string, token: string): Promise<Study[]> {
-  await callEndpoint<{ items: Study[] }>(
+  await callEndpoint<{items: Study[]}>(
     constants.endpoints.study.replace(':id', studyId),
     'DELETE',
     {},
-    token,
+    token
   )
   const data = await getStudies(token)
   return data
@@ -195,7 +195,7 @@ async function removeStudy(studyId: string, token: string): Promise<Study[]> {
 
 async function saveStudySchedule(
   schedule: Schedule,
-  token: string,
+  token: string
 ): Promise<Schedule> {
   const scheduleEndpoint = constants.endpoints.schedule
   try {
@@ -203,7 +203,7 @@ async function saveStudySchedule(
       scheduleEndpoint.replace(':id', schedule.guid),
       'POST',
       schedule,
-      token,
+      token
     )
     return response.data
   } catch (error) {
@@ -216,7 +216,7 @@ async function saveStudySchedule(
         scheduleEndpoint.replace(':id', schedule.guid),
         'POST',
         schedule,
-        token,
+        token
       )
       return response.data
     } else {
@@ -226,13 +226,13 @@ async function saveStudySchedule(
 }
 
 async function addAssessmentResourcesToSchedule(
-  schedule: Schedule,
+  schedule: Schedule
 ): Promise<Schedule> {
   const assessmentData = await AssessmentService.getAssessmentsWithResources()
   schedule.sessions.forEach(session => {
     const assmntWithResources = session.assessments?.map(assmnt => {
       assmnt.resources = assessmentData.assessments.find(
-        a => a.guid === assmnt.guid,
+        a => a.guid === assmnt.guid
       )?.resources
       return assmnt
     })
@@ -245,26 +245,26 @@ async function addAssessmentResourcesToSchedule(
 //returns scehdule and sessions
 async function getStudySchedule(
   scheduleId: string,
-  token: string,
+  token: string
 ): Promise<Schedule | undefined> {
   const schedule = await callEndpoint<Schedule>(
     constants.endpoints.schedule.replace(':id', scheduleId),
     'GET',
     {},
-    token,
+    token
   )
   return schedule ? addAssessmentResourcesToSchedule(schedule.data) : undefined
 }
 
 async function getStudyScheduleTimeline(
   scheduleId: string,
-  token: string,
+  token: string
 ): Promise<any | undefined> {
   const result = await callEndpoint<any>(
     constants.endpoints.scheduleTimeline.replace(':id', scheduleId),
     'GET',
     {},
-    token,
+    token
   )
   return result.data
 }

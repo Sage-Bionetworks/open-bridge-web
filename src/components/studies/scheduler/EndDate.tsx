@@ -1,7 +1,7 @@
-import { FormControlLabel, Radio, RadioGroup } from '@material-ui/core'
+import {FormControlLabel, Radio, RadioGroup} from '@material-ui/core'
 import React from 'react'
 import SmallTextBox from '../../widgets/SmallTextBox'
-import { FormControlLabelHidden } from '../../widgets/StyledComponents'
+import {FormControlLabelHidden} from '../../widgets/StyledComponents'
 import SchedulingFormSection from './SchedulingFormSection'
 
 export interface EndDateProps {
@@ -15,7 +15,7 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
   onChange,
 }: EndDateProps) => {
   const [endType, setEndType] = React.useState<SessionScheduleEndType>(
-    occurrences ? 'N_OCCURRENCES' : 'END_STUDY',
+    occurrences ? 'N_OCCURRENCES' : 'END_STUDY'
   )
 
   const changeEndDate = (type: SessionScheduleEndType) => {
@@ -33,8 +33,7 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
         aria-label="End after"
         name="endAfter"
         value={endType}
-        onChange={e => changeEndDate(e.target.value as SessionScheduleEndType)}
-      >
+        onChange={e => changeEndDate(e.target.value as SessionScheduleEndType)}>
         <FormControlLabel
           value={'END_STUDY'}
           control={<Radio />}
@@ -44,18 +43,21 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
         <FormControlLabel
           control={
             <>
-             <Radio value={'N_OCCURRENCES'} />{' '}
-             <FormControlLabelHidden  label="number of occurrences" control={
-              <SmallTextBox
-                onFocus={() => changeEndDate('N_OCCURRENCES')}
-                color="secondary"
-                id="occurrences"
-                isLessThanOneAllowed={false}
-                
-                style={{ marginRight: '10px' }}
-                onChange={e => onChange(e.target.value)}
-                value={occurrences || ''}
-              />}/>
+              <Radio value={'N_OCCURRENCES'} />{' '}
+              <FormControlLabelHidden
+                label="number of occurrences"
+                control={
+                  <SmallTextBox
+                    onFocus={() => changeEndDate('N_OCCURRENCES')}
+                    color="secondary"
+                    id="occurrences"
+                    isLessThanOneAllowed={false}
+                    style={{marginRight: '10px'}}
+                    onChange={e => onChange(e.target.value)}
+                    value={occurrences || ''}
+                  />
+                }
+              />
             </>
           }
           label="times"

@@ -1,17 +1,17 @@
-import { Box, Button, Container } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Box, Button, Container} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import _ from 'lodash'
 import React from 'react'
-import { ReactComponent as Alert_Icon } from '../../../assets/alert_icon.svg'
-import { ReactComponent as Preview_Icon } from '../../../assets/launch/preview_icon.svg'
-import { StudyInfoData } from '../../../helpers/StudyInfoContext'
-import { DEFAULT_NOTIFICATION } from '../../../services/study.service'
-import { latoFont, ThemeType } from '../../../style/theme'
-import { ScheduleNotification } from '../../../types/scheduling'
-import { Contact } from '../../../types/types'
-import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
-import { isSameAsDefaultSchedule } from '../scheduler/utility'
-import { normalNavIcons, SECTIONS, StudySection } from '../sections'
+import {ReactComponent as Alert_Icon} from '../../../assets/alert_icon.svg'
+import {ReactComponent as Preview_Icon} from '../../../assets/launch/preview_icon.svg'
+import {StudyInfoData} from '../../../helpers/StudyInfoContext'
+import {DEFAULT_NOTIFICATION} from '../../../services/study.service'
+import {latoFont, ThemeType} from '../../../style/theme'
+import {ScheduleNotification} from '../../../types/scheduling'
+import {Contact} from '../../../types/types'
+import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
+import {isSameAsDefaultSchedule} from '../scheduler/utility'
+import {normalNavIcons, SECTIONS, StudySection} from '../sections'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   /*root: {
@@ -117,7 +117,7 @@ const ALERTS: StudyAlertSection[] = [
         errorText: 'All study sessions need to have at least one assessment',
         validationFn: (s: StudyInfoData) => {
           const noAsseessments = s.schedule?.sessions.find(
-            s => !s.assessments || s.assessments.length === 0,
+            s => !s.assessments || s.assessments.length === 0
           )
           return !noAsseessments
         },
@@ -144,7 +144,7 @@ const ALERTS: StudyAlertSection[] = [
               _.get(n.messages, '0.message') ===
                 DEFAULT_NOTIFICATION.messages[0]!.message ||
               _.get(n.messages, '0.subject') ===
-                DEFAULT_NOTIFICATION.messages[0]!.subject,
+                DEFAULT_NOTIFICATION.messages[0]!.subject
           )
           return !!defaultNotifications
         },
@@ -266,12 +266,8 @@ export interface LaunchAlertsProps {
 }
 
 const StudyAlertComponent: React.FunctionComponent<
-  StudyAlertSection & { onIgnore: Function }
-> = ({
-  section,
-  errors,
-  onIgnore,
-}: StudyAlertSection & { onIgnore: Function }) => {
+  StudyAlertSection & {onIgnore: Function}
+> = ({section, errors, onIgnore}: StudyAlertSection & {onIgnore: Function}) => {
   const classes = useStyles()
 
   const sectionIndex = SECTIONS.findIndex(s => s.path === section)
@@ -288,7 +284,7 @@ const StudyAlertComponent: React.FunctionComponent<
       </div>
       {errors.map((error, errorIndex) => (
         <div className={classes.errorDescription}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{display: 'flex', alignItems: 'center'}}>
             {!error.isDismissable && (
               <Alert_Icon className={classes.alertIcon} />
             )}
@@ -301,8 +297,7 @@ const StudyAlertComponent: React.FunctionComponent<
               <Button
                 onClick={() =>
                   onIgnore(SECTIONS[sectionIndex].path, errorIndex)
-                }
-              >
+                }>
                 Ignore
               </Button>
             </Box>
@@ -311,8 +306,7 @@ const StudyAlertComponent: React.FunctionComponent<
             <Button
               variant="contained"
               className={classes.mustReviewButton}
-              href={SECTIONS[sectionIndex].path}
-            >
+              href={SECTIONS[sectionIndex].path}>
               Review Required
             </Button>
           )}
@@ -344,7 +338,7 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
         }
       })
       if (er.length > 0) {
-        alrts.push({ section: section, errors: er })
+        alrts.push({section: section, errors: er})
       }
     })
     onEnableNext(false)
@@ -380,11 +374,11 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
   return (
     <Container maxWidth="sm">
       <Box textAlign="left">
-        <MTBHeadingH1 style={{ marginBottom: '24px' }}>
+        <MTBHeadingH1 style={{marginBottom: '24px'}}>
           {studyInfo.study.name}
         </MTBHeadingH1>
         {alerts?.length > 0 && (
-          <MTBHeadingH2 style={{ marginBottom: '40px' }}>
+          <MTBHeadingH2 style={{marginBottom: '40px'}}>
             Please review the following alerts:{' '}
           </MTBHeadingH2>
         )}
@@ -394,8 +388,7 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
           {...alert}
           onIgnore={(sectionPath: string, index: number) => {
             ignore(sectionPath, index)
-          }}
-        ></StudyAlertComponent>
+          }}></StudyAlertComponent>
       ))}
 
       <div className={classes.previewBox}>

@@ -1,6 +1,6 @@
-import React, { FunctionComponent } from 'react'
+import React, {FunctionComponent} from 'react'
 
-import { RouteComponentProps } from 'react-router-dom'
+import {RouteComponentProps} from 'react-router-dom'
 
 type AccountSetupOwnProps = {
   title?: string

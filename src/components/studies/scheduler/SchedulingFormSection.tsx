@@ -1,8 +1,8 @@
-import { FormControl, FormLabel } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {FormControl, FormLabel} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
-import React, { ReactNode } from 'react'
-import { latoFont, poppinsFont } from '../../../style/theme'
+import React, {ReactNode} from 'react'
+import {latoFont, poppinsFont} from '../../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -76,54 +76,47 @@ export interface SchedulingFormSectionProps {
   justifyContent?: 'flex-start' | 'space-between'
 }
 
-const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps> =
-  ({
-    label,
-    style,
-    variant,
-    children,
-    isHideLabel,
-    altLabel,
-    isCollapseLabelSmall,
-    border = true,
-    justifyContent = 'flex-start',
-  }: SchedulingFormSectionProps) => {
-    const classes = useStyles()
+const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps> = ({
+  label,
+  style,
+  variant,
+  children,
+  isHideLabel,
+  altLabel,
+  isCollapseLabelSmall,
+  border = true,
+  justifyContent = 'flex-start',
+}: SchedulingFormSectionProps) => {
+  const classes = useStyles()
 
-    return (
-      <>
-        <section
-          className={clsx(
-            classes.root,
-            variant === 'small' && 'small',
-            border === false && 'no-border',
-          )}
-          style={style}
-          title={`section ${typeof label === 'string' ? label : altLabel}`}
-        >
-          <FormControl
-            component="div"
-            style={{ justifyContent: justifyContent }}
+  return (
+    <>
+      <section
+        className={clsx(
+          classes.root,
+          variant === 'small' && 'small',
+          border === false && 'no-border'
+        )}
+        style={style}
+        title={`section ${typeof label === 'string' ? label : altLabel}`}>
+        <FormControl
+          component="div"
+          style={{justifyContent: justifyContent}}
+          className={clsx(classes.formControl, variant === 'small' && 'small')}>
+          <FormLabel
+            component="label"
             className={clsx(
-              classes.formControl,
+              /*typeof label === 'string'*/ true && classes.label,
               variant === 'small' && 'small',
-            )}
-          >
-            <FormLabel
-              component="label"
-              className={clsx(
-                /*typeof label === 'string'*/ true && classes.label,
-                variant === 'small' && 'small',
-                isCollapseLabelSmall && 'collapseLabelSmall',
-              )}
-            >
-              {!isHideLabel ? label : ''}
-            </FormLabel>
-            {children}
-          </FormControl>
-        </section>
-      </>
-    )
-  }
+              isCollapseLabelSmall && 'collapseLabelSmall'
+            )}>
+            {!isHideLabel ? label : ''}
+          </FormLabel>
+          {children}
+        </FormControl>
+      </section>
+    </>
+  )
+}
 
 export default SchedulingFormSection

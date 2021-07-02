@@ -1,10 +1,10 @@
-import { Box, Drawer, IconButton } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Box, Drawer, IconButton} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { ThemeType } from '../../style/theme'
+import React, {FunctionComponent} from 'react'
+import {ThemeType} from '../../style/theme'
 
 interface StyleProps {
   maxWidth: string
@@ -150,18 +150,16 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
               [classes.drawerClose]: !isOpen,
             }),
           }}
-          style={isDrawerHidden ? { display: 'none' } : {}}
-        >
+          style={isDrawerHidden ? {display: 'none'} : {}}>
           <Box className={classes.drawerToolbar}>
             {children.length === 3 && isOpen && children[2]}
             <IconButton
               onClick={() => setIsOpen(prev => !prev)}
-              style={toggleStyle}
-            >
+              style={toggleStyle}>
               {isOpen ? closeIcon : openIcon}
             </IconButton>
           </Box>
-          <Box style={isOpen ? {} : { display: 'none' }}>{children[0]}</Box>
+          <Box style={isOpen ? {} : {display: 'none'}}>{children[0]}</Box>
         </Drawer>
         <Box className={classes.mainAreaWrapper}>
           <Box
@@ -170,8 +168,7 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
               [classes.mainAreaWider]: isOpen && isWide,
               [classes.mainAreaWide]: !isOpen,
             })}
-            style={isFullWidth ? { width: '100%' } : {}}
-          >
+            style={isFullWidth ? {width: '100%'} : {}}>
             {children[1]}
           </Box>
         </Box>

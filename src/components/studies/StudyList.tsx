@@ -8,21 +8,21 @@ import {
   MenuItem,
 } from '@material-ui/core'
 import Link from '@material-ui/core/Link'
-import React, { FunctionComponent, useEffect } from 'react'
-import { useErrorHandler } from 'react-error-boundary'
-import { RouteComponentProps } from 'react-router-dom'
-import { useAsync } from '../../helpers/AsyncHook'
-import { useUserSessionDataState } from '../../helpers/AuthContext'
-import { useStudyInfoDataDispatch } from '../../helpers/StudyInfoContext'
-import { generateNonambiguousCode } from '../../helpers/utility'
+import React, {FunctionComponent, useEffect} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import {RouteComponentProps} from 'react-router-dom'
+import {useAsync} from '../../helpers/AsyncHook'
+import {useUserSessionDataState} from '../../helpers/AuthContext'
+import {useStudyInfoDataDispatch} from '../../helpers/StudyInfoContext'
+import {generateNonambiguousCode} from '../../helpers/utility'
 import StudyService from '../../services/study.service'
 import constants from '../../types/constants'
-import { Study, StudyPhase } from '../../types/types'
+import {Study, StudyPhase} from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
-import { MTBHeading } from '../widgets/Headings'
+import {MTBHeading} from '../widgets/Headings'
 import Loader from '../widgets/Loader'
 import StudyCard from './StudyCard'
-import { latoFont } from '../../style/theme'
+import {latoFont} from '../../style/theme'
 
 type StudyListOwnProps = {}
 
@@ -155,7 +155,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   const classes = useStyles()
   const item = sections.find(section => section.sectionStatus === status)!
   const displayStudies = studies.filter(study =>
-    item.studyStatus.includes(study.phase),
+    item.studyStatus.includes(study.phase)
   )
   const studyLink =
     item.sectionStatus === 'DRAFT'
@@ -188,15 +188,14 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
       <Box className={classes.cardGrid}>
         {displayStudies.map((study, index) => (
           <Link
-            style={{ textDecoration: 'none' }}
+            style={{textDecoration: 'none'}}
             key={study.identifier || index}
             variant="body2"
-            href={studyLink.replace(':id', study.identifier)}
-          >
+            href={studyLink.replace(':id', study.identifier)}>
             <StudyCard
               study={study}
               onRename={(newName: string) => {
-                onAction({ ...study, name: newName }, 'RENAME')
+                onAction({...study, name: newName}, 'RENAME')
               }}
               isRename={renameStudyId === study.identifier}
               onSetAnchor={(e: HTMLElement) => {
@@ -204,8 +203,9 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
               }}
               isNewlyAddedStudy={highlightedStudyId === study.identifier}
               section={item.sectionStatus}
-              isMenuOpen={menuAnchor?.study?.identifier === study.identifier}
-            ></StudyCard>
+              isMenuOpen={
+                menuAnchor?.study?.identifier === study.identifier
+              }></StudyCard>
           </Link>
         ))}
       </Box>
@@ -217,7 +217,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const studyDataUpdateFn = useStudyInfoDataDispatch()
   const handleError = useErrorHandler()
 
-  const { token } = useUserSessionDataState()
+  const {token} = useUserSessionDataState()
   const [menuAnchor, setMenuAnchor] = React.useState<null | {
     study: Study
     anchorEl: HTMLElement
@@ -234,7 +234,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
 
   const [statusFilters, setStatusFilters] = React.useState<SectionStatus[]>(
-    sections.map(section => section.sectionStatus),
+    sections.map(section => section.sectionStatus)
   )
   const [highlightedStudyId, setHighlightedStudyId] = React.useState<
     string | null
@@ -242,7 +242,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   let resetNewlyAddedStudyID: NodeJS.Timeout
 
-  const { data: studies, status, error, run, setData: setStudies } = useAsync<
+  const {data: studies, status, error, run, setData: setStudies} = useAsync<
     Study[]
   >({
     status: 'PENDING',
@@ -281,24 +281,24 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       //if we are duplicating
       const studyFromServer = await StudyService.getStudy(
         study.identifier,
-        token!,
+        token!
       )
       if (studyFromServer?.scheduleGuid) {
         // need to duplicate the schedule
         const schedule = await StudyService.getStudySchedule(
           studyFromServer?.scheduleGuid,
-          token!,
+          token!
         )
         //@ts-ignore
         schedule!.guid = undefined
         const sched = await StudyService.createNewStudySchedule(
           schedule!,
-          token!,
+          token!
         )
         newStudy.scheduleGuid = sched.guid
         studyDataUpdateFn({
           type: 'SET_SCHEDULE',
-          payload: { study: newStudy, schedule: sched },
+          payload: {study: newStudy, schedule: sched},
         })
       }
     }
@@ -307,7 +307,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     newStudy.version = version
     studyDataUpdateFn({
       type: 'SET_STUDY',
-      payload: { study: newStudy },
+      payload: {study: newStudy},
     })
 
     //setStudies([...studies|| [], newStudy])
@@ -320,10 +320,10 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       if (newStudy) {
         studyDataUpdateFn({
           type: 'SET_STUDY',
-          payload: { study: newStudy },
+          payload: {study: newStudy},
         })
         window.location.replace(
-          `${window.location.origin}/studies/builder/${id}/session-creator`,
+          `${window.location.origin}/studies/builder/${id}/session-creator`
         )
       } else {
         handleError(new Error('Study was not created'))
@@ -341,18 +341,18 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       case 'RENAME':
         const singleStudy = await StudyService.getStudy(
           study?.identifier,
-          token,
+          token
         )
         const newVersion = await StudyService.updateStudy(
-          { ...singleStudy!, name: study.name },
-          token,
+          {...singleStudy!, name: study.name},
+          token
         )
         setStudies(
           studies!.map(s =>
             s.identifier !== study.identifier
               ? s
-              : { ...study, version: newVersion },
-          ),
+              : {...study, version: newVersion}
+          )
         )
 
         setRenameStudyId('')
@@ -422,8 +422,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                   color: 'inherit',
                   fontWeight: statusFilters.length > 1 ? 'bolder' : 'normal',
                   fontFamily: 'Poppins',
-                }}
-              >
+                }}>
                 All
               </Button>
             </li>
@@ -437,8 +436,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                       ? 'bolder'
                       : 'normal',
                     fontFamily: 'Poppins',
-                  }}
-                >
+                  }}>
                   {section.filterTitle}
                 </Button>
               </li>
@@ -447,8 +445,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           <Button
             variant="contained"
             onClick={() => createStudy()}
-            className={classes.createStudyButton}
-          >
+            className={classes.createStudyButton}>
             + Create New Study
           </Button>
         </Box>
@@ -456,17 +453,14 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
         {studies!.length > 0 &&
           statusFilters.map((status, index) => (
-            <Box
-              style={{ paddingBottom: index < 3 ? '24px' : '0' }}
-              key={status}
-            >
+            <Box style={{paddingBottom: index < 3 ? '24px' : '0'}} key={status}>
               <StudySublist
                 studies={studies!}
                 renameStudyId={renameStudyId}
                 status={status}
                 onAction={(s: Study, action: StudyAction, e: any) => {
                   action === 'ANCHOR'
-                    ? setMenuAnchor({ study: s, anchorEl: e })
+                    ? setMenuAnchor({study: s, anchorEl: e})
                     : onAction(s, action)
                 }}
                 highlightedStudyId={highlightedStudyId}
@@ -481,16 +475,14 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           keepMounted
           open={Boolean(menuAnchor?.anchorEl)}
           onClose={handleMenuClose}
-          classes={{ paper: classes.paper, list: classes.list }}
-        >
+          classes={{paper: classes.paper, list: classes.list}}>
           <MenuItem onClick={handleMenuClose}>View</MenuItem>
           {menuAnchor?.study.phase === 'design' && (
             <MenuItem
               onClick={() => {
                 setRenameStudyId(menuAnchor?.study.identifier)
                 handleMenuClose()
-              }}
-            >
+              }}>
               Rename
             </MenuItem>
           )}
@@ -512,8 +504,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           onConfirm={() => {
             closeConfirmationDialog()
             onAction(menuAnchor!.study, 'DELETE')
-          }}
-        >
+          }}>
           <div>
             Are you sure you would like to permanently delete:{' '}
             <p>{menuAnchor?.study.name}</p>

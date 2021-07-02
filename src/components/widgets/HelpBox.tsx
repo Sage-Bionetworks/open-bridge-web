@@ -1,7 +1,7 @@
-import { Box } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {Box} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
-import { latoFont, ThemeType } from '../../style/theme'
+import {latoFont, ThemeType} from '../../style/theme'
 
 interface StyleProps {
   helpTextWidth: number
@@ -96,10 +96,7 @@ const HelpBox: React.FunctionComponent<HelpBoxProps> = ({
 
   return (
     <Box zIndex="100" position="absolute" left={leftOffset} top={topOffset}>
-      <Box
-        style={{ transform: `rotate(${arrowRotate}deg)` }}
-        position="absolute"
-      >
+      <Box style={{transform: `rotate(${arrowRotate}deg)`}} position="absolute">
         <div className={classes.arrow}></div>
       </Box>
       <Box className={classes.helpText}>{children}</Box>

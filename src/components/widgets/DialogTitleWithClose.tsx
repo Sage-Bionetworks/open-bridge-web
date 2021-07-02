@@ -1,8 +1,8 @@
-import { IconButton, makeStyles } from '@material-ui/core'
+import {IconButton, makeStyles} from '@material-ui/core'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import CloseIcon from '@material-ui/icons/Close'
-import React, { FunctionComponent } from 'react'
-import { latoFont, poppinsFont } from '../../style/theme'
+import React, {FunctionComponent} from 'react'
+import {latoFont, poppinsFont} from '../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   closeButton: {
@@ -47,12 +47,9 @@ const useStyles = makeStyles(theme => ({
     width: '302px',
     height: '275px',
   },
-
-  
 }))
 
 type ConfirmationDialogProps = {
- 
   children?: JSX.Element
   onCancel: Function
 }
@@ -70,8 +67,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
       <IconButton
         aria-label="close"
         className={classes.closeButton}
-        onClick={() => onCancel()}
-      >
+        onClick={() => onCancel()}>
         <CloseIcon />
       </IconButton>
     </DialogTitle>

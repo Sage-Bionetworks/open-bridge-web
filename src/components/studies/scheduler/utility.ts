@@ -1,6 +1,6 @@
 import moment from 'moment'
-import { StringDictionary } from '../../../types/types'
-import { Schedule } from '../../../types/scheduling'
+import {StringDictionary} from '../../../types/types'
+import {Schedule} from '../../../types/scheduling'
 
 export function getDropdownTimeItems(): StringDictionary<string> {
   const menuItems: StringDictionary<string> = {}

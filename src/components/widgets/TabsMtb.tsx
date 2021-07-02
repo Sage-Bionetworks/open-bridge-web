@@ -1,4 +1,4 @@
-import React, { FunctionComponent, SyntheticEvent } from 'react'
+import React, {FunctionComponent, SyntheticEvent} from 'react'
 
 import {
   Tabs,
@@ -12,7 +12,7 @@ import {
 
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditableTextbox from './EditableTextbox'
-import { CSSProperties } from '@material-ui/core/styles/withStyles'
+import {CSSProperties} from '@material-ui/core/styles/withStyles'
 
 const useStyles = makeStyles({
   tabRoot: {
@@ -47,7 +47,7 @@ const useStyles = makeStyles({
 type TabProps = {
   handleChange: Function
   value: number
-  tabDataObjects: { label: string; id?: string }[]
+  tabDataObjects: {label: string; id?: string}[]
   addNewLabel?: string
   onDelete?: Function
   onRenameTab?: Function
@@ -71,7 +71,7 @@ const TabsMtb: FunctionComponent<TabProps & CSSProperties> = ({
   const classes = useStyles()
 
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
-    null,
+    null
   )
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
@@ -95,8 +95,7 @@ const TabsMtb: FunctionComponent<TabProps & CSSProperties> = ({
         anchorEl={menuAnchorEl}
         anchorOrigin={menuOrigin}
         open={Boolean(menuAnchorEl)}
-        onClose={() => setMenuAnchorEl(null)}
-      >
+        onClose={() => setMenuAnchorEl(null)}>
         {menuItems!.map((item, index) => (
           <MenuItem
             onClick={() => {
@@ -104,8 +103,7 @@ const TabsMtb: FunctionComponent<TabProps & CSSProperties> = ({
               item.fn()
             }}
             key={item.label}
-            className={classes.menuRoot}
-          >
+            className={classes.menuRoot}>
             {item.label}
           </MenuItem>
         ))}
@@ -123,8 +121,7 @@ const TabsMtb: FunctionComponent<TabProps & CSSProperties> = ({
         textColor="primary"
         variant="scrollable"
         scrollButtons="auto"
-        aria-label="disabled tabs example"
-      >
+        aria-label="disabled tabs example">
         {tabDataObjects.map((tab, index) => (
           <Tab
             key={tab.id}
@@ -138,16 +135,14 @@ const TabsMtb: FunctionComponent<TabProps & CSSProperties> = ({
                       onClick={(e: SyntheticEvent) => {
                         e.stopPropagation()
                         onDelete(tab.id)
-                      }}
-                    ></DeleteIcon>
+                      }}></DeleteIcon>
                   )}
                   <div className={classes.TabTitle}>
                     <EditableTextbox
                       initValue={tab.label}
                       onTriggerUpdate={(newText: string) =>
                         onRenameTab(tab.id, newText)
-                      }
-                    ></EditableTextbox>
+                      }></EditableTextbox>
                   </div>
                 </>
               ) : (

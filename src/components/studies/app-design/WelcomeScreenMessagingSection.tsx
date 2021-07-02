@@ -1,8 +1,8 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core'
+import {makeStyles} from '@material-ui/core'
 import Subsection from './Subsection'
-import { Box, CircularProgress, FormControl, Checkbox } from '@material-ui/core'
-import { playfairDisplayFont } from '../../../style/theme'
+import {Box, CircularProgress, FormControl, Checkbox} from '@material-ui/core'
+import {playfairDisplayFont} from '../../../style/theme'
 import SaveButton from '../../widgets/SaveButton'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
@@ -47,7 +47,7 @@ type WelcomeScreenMessagingSectionProps = {
     welcomeScreenBody: string,
     welcomeScreenSalutation: string,
     welcomeScreenFromText: string,
-    useOptionalDisclaimer: boolean,
+    useOptionalDisclaimer: boolean
   ) => void
   welcomeScreenHeader: string
   welcomeScreenBody: string
@@ -75,20 +75,20 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
         <FormControl className={classes.firstFormElement}>
           <TextInputWrapper
             SimpleTextInputStyles={
-              { fontSize: '24px', width: '100%' } as React.CSSProperties
+              {fontSize: '24px', width: '100%'} as React.CSSProperties
             }
             id="headline-input"
             placeholder="Welcome Headline"
             value={welcomeScreenHeader}
             onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
             ) => {
               onUpdate(
                 e.target.value,
                 welcomeScreenBody,
                 welcomeScreenSalutation,
                 welcomeScreenFromText,
-                useOptionalDisclaimer,
+                useOptionalDisclaimer
               )
             }}
             multiline
@@ -100,18 +100,18 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
         </FormControl>
         <FormControl>
           <TextInputWrapper
-            SimpleTextInputStyles={{ width: '100%' } as React.CSSProperties}
+            SimpleTextInputStyles={{width: '100%'} as React.CSSProperties}
             id="outlined-textarea"
             value={welcomeScreenBody}
             onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
             ) => {
               onUpdate(
                 welcomeScreenHeader,
                 e.target.value,
                 welcomeScreenSalutation,
                 welcomeScreenFromText,
-                useOptionalDisclaimer,
+                useOptionalDisclaimer
               )
             }}
             multiline
@@ -129,14 +129,14 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
             id="salutations"
             value={welcomeScreenSalutation}
             onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
             ) => {
               onUpdate(
                 welcomeScreenHeader,
                 welcomeScreenBody,
                 e.target.value,
                 welcomeScreenFromText,
-                useOptionalDisclaimer,
+                useOptionalDisclaimer
               )
             }}
             placeholder="Thank you for your contribution"
@@ -149,14 +149,14 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
             id="signature-textarea"
             value={welcomeScreenFromText}
             onChange={(
-              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
             ) => {
               onUpdate(
                 welcomeScreenHeader,
                 welcomeScreenBody,
                 welcomeScreenSalutation,
                 e.target.value,
-                useOptionalDisclaimer,
+                useOptionalDisclaimer
               )
             }}
             placeholder="Study team name"
@@ -167,7 +167,7 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
         <div className={classes.optionalDisclaimerRow}>
           <Checkbox
             checked={useOptionalDisclaimer}
-            inputProps={{ 'aria-label': 'primary checkbox' }}
+            inputProps={{'aria-label': 'primary checkbox'}}
             className={classes.checkBox}
             id="disclaimer-check-box"
             onChange={() => {
@@ -176,10 +176,9 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
                 welcomeScreenBody,
                 welcomeScreenSalutation,
                 welcomeScreenFromText,
-                !useOptionalDisclaimer,
+                !useOptionalDisclaimer
               )
-            }}
-          ></Checkbox>
+            }}></Checkbox>
           <div className={classes.optionalDisclaimerText}>
             This is a research study and does not provide medical advice,
             diagnosis, or treatment.

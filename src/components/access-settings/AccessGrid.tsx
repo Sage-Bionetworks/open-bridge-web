@@ -1,9 +1,9 @@
-import { Box, makeStyles, Radio } from '@material-ui/core'
+import {Box, makeStyles, Radio} from '@material-ui/core'
 import CheckIcon from '@material-ui/icons/Check'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { latoFont } from '../../style/theme'
-import { AdminRole } from '../../types/types'
+import React, {FunctionComponent} from 'react'
+import {latoFont} from '../../style/theme'
+import {AdminRole} from '../../types/types'
 
 const useStyles = makeStyles(theme => ({
   cell: {
@@ -51,11 +51,11 @@ export type Access = {
 }
 
 const roles: AccessLabel[] = [
-  { STUDY_BUILDER: 'STUDY BUILDER' },
-  { PARTICIPANT_MANAGER: 'PARTICIPANT MANAGER' },
-  { ADHERENCE_DATA: 'ADHERENCE DATA' },
-  { STUDY_DATA: 'STUDY DATA' },
-  { ACCESS_SETTINGS: 'ACCESS SETTINGS' },
+  {STUDY_BUILDER: 'STUDY BUILDER'},
+  {PARTICIPANT_MANAGER: 'PARTICIPANT MANAGER'},
+  {ADHERENCE_DATA: 'ADHERENCE DATA'},
+  {STUDY_DATA: 'STUDY DATA'},
+  {ACCESS_SETTINGS: 'ACCESS SETTINGS'},
 ]
 
 export const NO_ACCESS: Access = {
@@ -77,7 +77,7 @@ export function getRolesFromAccess(access: Access): AdminRole[] {
 }
 
 export function getAccessFromRoles(roles: AdminRole[]): Access {
-debugger
+  debugger
   if (roles.includes('org_admin')) {
     return {
       STUDY_BUILDER: 'EDITOR',
@@ -139,9 +139,8 @@ const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponen
         height="40px"
         display="flex"
         justifyContent="center"
-        alignItems="center"
-      >
-        <CheckIcon style={{ color: 'black' }} />
+        alignItems="center">
+        <CheckIcon style={{color: 'black'}} />
       </Box>
     )
   }
@@ -160,8 +159,7 @@ const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponen
           fontStyle="italic"
           fontFamily={latoFont}
           mt={-2.5}
-          fontWeight="normal"
-        >
+          fontWeight="normal">
           Only available to Administrators
         </Box>
       )
@@ -172,8 +170,7 @@ const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponen
       checked={checkboxChecked || isEqualToCurrentValue}
       value={restriction}
       onChange={e => onUpdate(e)}
-      radioGroup={'group_' + Object.keys(role_key)}
-    ></Radio>
+      radioGroup={'group_' + Object.keys(role_key)}></Radio>
   )
 }
 
@@ -188,7 +185,7 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
 
   const isEqualToCurrentValue = (
     restriction: string,
-    role_key: AccessLabel,
+    role_key: AccessLabel
   ): boolean => {
     const key = Object.keys(role_key)[0] as keyof Access
     return access[key] === restriction
@@ -199,7 +196,7 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
       return
     }
     const accessKey = Object.keys(accessObject)[0]
-    onUpdate({ ...access, [accessKey]: restriction })
+    onUpdate({...access, [accessKey]: restriction})
   }
 
   return (
@@ -218,16 +215,14 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
             <tr key={index}>
               <td
                 className={classes.cell}
-                key={Object.values(role_key)[0] + index}
-              >
+                key={Object.values(role_key)[0] + index}>
                 {Object.values(role_key)}
               </td>
 
               {AccessRestriction.map(restriction => (
                 <td
                   className={clsx(classes.cell, classes.data)}
-                  key={Object.values(role_key)[0] + restriction + index}
-                >
+                  key={Object.values(role_key)[0] + restriction + index}>
                   {!isEdit && isEqualToCurrentValue(restriction, role_key) ? (
                     <div className={classes.dot} />
                   ) : (
@@ -247,7 +242,7 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
                       }}
                       isEqualToCurrentValue={isEqualToCurrentValue(
                         restriction,
-                        role_key,
+                        role_key
                       )}
                     />
                   )}

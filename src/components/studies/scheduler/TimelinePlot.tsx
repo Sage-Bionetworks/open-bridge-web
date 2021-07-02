@@ -1,10 +1,10 @@
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import _ from 'lodash'
-import { Layout } from 'plotly.js'
+import {Layout} from 'plotly.js'
 import React from 'react'
 import PlotlyChart from 'react-plotlyjs-ts'
 import ClockIcon from '../../../assets/email_icon.svg'
-import { StudySession } from '../../../types/scheduling'
+import {StudySession} from '../../../types/scheduling'
 
 const useStyles = makeStyles(theme => ({
   scroll: {
@@ -67,7 +67,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   function getXY(
     studySessionGuid: string,
     sessionIndex: number,
-    sessionsNumber: number,
+    sessionsNumber: number
   ) {
     const times = getTimesForSession(studySessionGuid)
 
@@ -75,7 +75,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
 
     const grouppedStartDays = _.groupBy(
       getTimesForSession(studySessionGuid),
-      Math.floor,
+      Math.floor
     )
     Object.values(grouppedStartDays).forEach(groupArray => {
       const fraction = 1 / groupArray.length
@@ -86,7 +86,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
 
     const y = new Array(result.length).fill(sessionsNumber - sessionIndex + 1)
 
-    return { x: result, y: y }
+    return {x: result, y: y}
   }
   const markers = [
     0,
@@ -111,7 +111,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
     10,
   ]
   const data = sortedSessions.map((session, index) => {
-    const { x, y } = getXY(session.guid!, index + 1, sortedSessions.length)
+    const {x, y} = getXY(session.guid!, index + 1, sortedSessions.length)
 
     const m = {
       hoverinfo: 'skip',
@@ -220,25 +220,23 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
     ],*/
   }
 
-  const config = { scrollZoom: false, displayModeBar: false }
+  const config = {scrollZoom: false, displayModeBar: false}
 
   return (
     <>
       <div
-        style={{ overflow: 'scroll', width: '100%', position: 'relative' }}
-        className={classes.scroll}
-      >
+        style={{overflow: 'scroll', width: '100%', position: 'relative'}}
+        className={classes.scroll}>
         <div
           style={{
             position: 'absolute',
             top: '-4px',
             left: '3px',
             zIndex: 1000,
-          }}
-        >
+          }}>
           Day
         </div>
-        <div style={{ width: `${getWidth(scheduleLength, zoomLevel)}px` }}>
+        <div style={{width: `${getWidth(scheduleLength, zoomLevel)}px`}}>
           <PlotlyChart data={data} layout={layout} config={config} />
         </div>
         <div
@@ -246,14 +244,12 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
             backgroundColor: '#ccc',
             padding: '20px',
             width: `${getWidth(scheduleLength, zoomLevel)}px`,
-          }}
-        >
+          }}>
           <div
             style={{
               height: '400px',
               position: 'relative',
-            }}
-          >
+            }}>
             {[...Array(scheduleLength)].map((i, index) => (
               <div
                 style={{
@@ -263,16 +259,14 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                   borderLeft: '1px solid #D6D6D6',
                   left: `${index * 35}px`,
                   width: '35px',
-                }}
-              >
+                }}>
                 <div
                   style={{
                     marginLeft: `${-35}px`,
                     marginTop: '-20px',
                     fontSize: '10px',
                     textAlign: 'center',
-                  }}
-                >
+                  }}>
                   {index}
                 </div>
               </div>
@@ -286,15 +280,14 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                     height: '1px',
                     position: 'absolute',
 
-                    top: `${50 * sIndex+50}px`,
+                    top: `${50 * sIndex + 50}px`,
                     width: `${
                       data[sIndex].x[data[sIndex].x.length - 1] * 35 -
                       data[sIndex].x[0] * 35
                     }px`,
                     zIndex: 100,
                     left: `${data[sIndex].x[0] * 35}px`,
-                  }}
-                ></div>
+                  }}></div>
 
                 {data[sIndex].x.map((i, index) => (
                   <>
@@ -303,12 +296,11 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                       style={{
                         width: '20px',
                         position: 'absolute',
-                        top: `${50 * sIndex - 5+50}px`,
+                        top: `${50 * sIndex - 5 + 50}px`,
 
                         zIndex: 100,
                         left: `${i * 35 - 10}px`,
-                      }}
-                    ></img>
+                      }}></img>
                   </>
                 ))}
               </>

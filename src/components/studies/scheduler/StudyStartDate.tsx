@@ -4,11 +4,11 @@ import {
   FormControlLabel,
   makeStyles,
   Radio,
-  RadioGroup
+  RadioGroup,
 } from '@material-ui/core'
 import clsx from 'clsx'
-import React, { ReactNode } from 'react'
-import { StartEventId } from '../../../types/scheduling'
+import React, {ReactNode} from 'react'
+import {StartEventId} from '../../../types/scheduling'
 import SchedulingFormSection from './SchedulingFormSection'
 
 export interface StudyStartDateProps {
@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme =>
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'flex-start',
-      marginRight: '0'
+      marginRight: '0',
     },
     notInIntroRadioGroup: {
       maxWidth: '60%',
@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme =>
     inIntroRadioGroup: {
       width: '280px',
     },
-  }),
+  })
 )
 
 const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
@@ -66,8 +66,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
       altLabel={'Study Start Date'}
       border={false}
       justifyContent={isIntro ? 'space-between' : 'flex-start'}
-      style={{ ...style }}
-    >
+      style={{...style}}>
       <RadioGroup
         aria-label="Day 1"
         name="day1"
@@ -75,9 +74,8 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
         onChange={e => onChange(e.target.value as StartEventId)}
         className={clsx(
           isIntro && classes.inIntroRadioGroup,
-          !isIntro && classes.notInIntroRadioGroup,
-        )}
-      >
+          !isIntro && classes.notInIntroRadioGroup
+        )}>
         <FormControlLabel
           value={options[0]}
           control={<Radio />}
@@ -92,7 +90,6 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
           value={options[1]}
           control={<Radio />}
           className={classes.radioButtonAlignment}
-        
           label={
             isIntro ? (
               <Box marginTop="10px">

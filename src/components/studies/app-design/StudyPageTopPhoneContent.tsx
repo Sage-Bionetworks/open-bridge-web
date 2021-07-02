@@ -1,12 +1,12 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { Box, Divider } from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
+import {Box, Divider} from '@material-ui/core'
 import StudySummaryRoles from './StudySummaryRoles'
 import SectionIndicator from './SectionIndicator'
-import { Contact } from '../../../types/types'
-import { latoFont, playfairDisplayFont } from '../../../style/theme'
+import {Contact} from '../../../types/types'
+import {latoFont, playfairDisplayFont} from '../../../style/theme'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
-import { PreviewFile } from './AppDesign'
+import {PreviewFile} from './AppDesign'
 
 const useStyles = makeStyles(theme => ({
   sectionFourIndicatorPosition: {
@@ -99,20 +99,19 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         className={classes.studyLogoContainer}
         style={{
           backgroundColor: isUsingDefaultMessage ? '#BCD5E4' : appColor,
-        }}
-      >
+        }}>
         {!isUsingDefaultMessage ? (
           studyLogoUrl && (
             <img
               src={studyLogoUrl}
-              style={{ height: `${imgHeight}px` }}
+              style={{height: `${imgHeight}px`}}
               alt="study-logo"
             />
           )
         ) : (
           <img
             src={DefaultLogo}
-            style={{ height: `${imgHeight - 16}px` }}
+            style={{height: `${imgHeight - 16}px`}}
             alt="study-logo"
           />
         )}

@@ -1,11 +1,11 @@
-import { makeStyles } from '@material-ui/core'
-import React, { FunctionComponent, useState } from 'react'
-import { useErrorHandler } from 'react-error-boundary'
-import { Link, RouteComponentProps } from 'react-router-dom'
-import { useAsync } from '../../helpers/AsyncHook'
-import { useUserSessionDataState } from '../../helpers/AuthContext'
+import {makeStyles} from '@material-ui/core'
+import React, {FunctionComponent, useState} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import {Link, RouteComponentProps} from 'react-router-dom'
+import {useAsync} from '../../helpers/AsyncHook'
+import {useUserSessionDataState} from '../../helpers/AuthContext'
 import AssessmentService from '../../services/assessment.service'
-import { Assessment, StringDictionary } from '../../types/types'
+import {Assessment, StringDictionary} from '../../types/types'
 import Loader from '../widgets/Loader'
 import AssessmentCard from './AssessmentCard'
 import AssessmentLibraryWrapper from './AssessmentLibraryWrapper'
@@ -28,7 +28,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
 }: AssessmentLibraryProps) => {
   const classes = useStyles()
 
-  const { token } = useUserSessionDataState()
+  const {token} = useUserSessionDataState()
 
   const handleError = useErrorHandler()
 
@@ -36,7 +36,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
     Assessment[] | undefined
   >(undefined)
 
-  const { data, status, error, run } = useAsync<{
+  const {data, status, error, run} = useAsync<{
     assessments: Assessment[]
     tags: StringDictionary<number>
   }>({
@@ -66,19 +66,16 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
           onChangeTags={
             (assessments: Assessment[]) =>
               setFilteredAssessments(assessments) /*setFilterTags(tags)*/
-          }
-        >
+          }>
           {(filteredAssessments || data.assessments).map((a, index) => (
             <Link
               to={`${match.url}/${a.guid}`}
               className={classes.cardLink}
-              key={a.guid}
-            >
+              key={a.guid}>
               <AssessmentCard
                 index={index}
                 assessment={a}
-                key={a.guid}
-              ></AssessmentCard>
+                key={a.guid}></AssessmentCard>
             </Link>
           ))}
         </AssessmentLibraryWrapper>

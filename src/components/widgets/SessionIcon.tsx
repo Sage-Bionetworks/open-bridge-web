@@ -1,25 +1,25 @@
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
-import { ReactComponent as Session1 } from '../../assets/symbols/session1.svg'
-import { ReactComponent as Session10 } from '../../assets/symbols/session10.svg'
-import { ReactComponent as Session11 } from '../../assets/symbols/session11.svg'
-import { ReactComponent as Session12 } from '../../assets/symbols/session12.svg'
-import { ReactComponent as Session13 } from '../../assets/symbols/session13.svg'
-import { ReactComponent as Session14 } from '../../assets/symbols/session14.svg'
-import { ReactComponent as Session15 } from '../../assets/symbols/session15.svg'
-import { ReactComponent as Session16 } from '../../assets/symbols/session16.svg'
-import { ReactComponent as Session17 } from '../../assets/symbols/session17.svg'
-import { ReactComponent as Session18 } from '../../assets/symbols/session18.svg'
-import { ReactComponent as Session19 } from '../../assets/symbols/session19.svg'
-import { ReactComponent as Session2 } from '../../assets/symbols/session2.svg'
-import { ReactComponent as Session20 } from '../../assets/symbols/session20.svg'
-import { ReactComponent as Session3 } from '../../assets/symbols/session3.svg'
-import { ReactComponent as Session4 } from '../../assets/symbols/session4.svg'
-import { ReactComponent as Session5 } from '../../assets/symbols/session5.svg'
-import { ReactComponent as Session6 } from '../../assets/symbols/session6.svg'
-import { ReactComponent as Session7 } from '../../assets/symbols/session7.svg'
-import { ReactComponent as Session8 } from '../../assets/symbols/session8.svg'
-import { ReactComponent as Session9 } from '../../assets/symbols/session9.svg'
+import {ReactComponent as Session1} from '../../assets/symbols/session1.svg'
+import {ReactComponent as Session10} from '../../assets/symbols/session10.svg'
+import {ReactComponent as Session11} from '../../assets/symbols/session11.svg'
+import {ReactComponent as Session12} from '../../assets/symbols/session12.svg'
+import {ReactComponent as Session13} from '../../assets/symbols/session13.svg'
+import {ReactComponent as Session14} from '../../assets/symbols/session14.svg'
+import {ReactComponent as Session15} from '../../assets/symbols/session15.svg'
+import {ReactComponent as Session16} from '../../assets/symbols/session16.svg'
+import {ReactComponent as Session17} from '../../assets/symbols/session17.svg'
+import {ReactComponent as Session18} from '../../assets/symbols/session18.svg'
+import {ReactComponent as Session19} from '../../assets/symbols/session19.svg'
+import {ReactComponent as Session2} from '../../assets/symbols/session2.svg'
+import {ReactComponent as Session20} from '../../assets/symbols/session20.svg'
+import {ReactComponent as Session3} from '../../assets/symbols/session3.svg'
+import {ReactComponent as Session4} from '../../assets/symbols/session4.svg'
+import {ReactComponent as Session5} from '../../assets/symbols/session5.svg'
+import {ReactComponent as Session6} from '../../assets/symbols/session6.svg'
+import {ReactComponent as Session7} from '../../assets/symbols/session7.svg'
+import {ReactComponent as Session8} from '../../assets/symbols/session8.svg'
+import {ReactComponent as Session9} from '../../assets/symbols/session9.svg'
 
 const useStyles = makeStyles({
   root: {
@@ -76,12 +76,12 @@ export interface SessionImageProps {
 const SessionIcon: React.FunctionComponent<
   SessionIconProps & React.HTMLAttributes<HTMLElement>
 > = props => {
-  const { index = 0, children, ...rest } = props
+  const {index = 0, children, ...rest} = props
 
   const classes = useStyles()
   const imageProps = rest.style
-    ? { style: rest.style }
-    : { className: classes.icon }
+    ? {style: rest.style}
+    : {className: classes.icon}
 
   const el = React.cloneElement(elements[index], imageProps)
 

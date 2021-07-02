@@ -1,4 +1,4 @@
-import { Schedule, ScheduleNotification, StartEventId } from './scheduling'
+import {Schedule, ScheduleNotification, StartEventId} from './scheduling'
 
 /* *** General Types ********************************/
 export interface StringDictionary<T> {
@@ -13,7 +13,14 @@ export interface Response<T> {
 
 export type RequestStatus = 'IDLE' | 'PENDING' | 'RESOLVED' | 'REJECTED'
 
-export type StudyPhase = 'legacy'| 'design'| 'recruitment'| 'in_flight'|'analysis'|'completed'|'withdrawn'
+export type StudyPhase =
+  | 'legacy'
+  | 'design'
+  | 'recruitment'
+  | 'in_flight'
+  | 'analysis'
+  | 'completed'
+  | 'withdrawn'
 /*
 'legacy	If not set, the study is in the LEGACY phase, and no domain logic will be applied to the study, enrollments, etc.
 'design	Study is being designed and tested and has not begun. All accounts created in this phase are marked as test accounts, and schedules are still mutable. The study is not visible in public registries.
@@ -22,9 +29,6 @@ export type StudyPhase = 'legacy'| 'design'| 'recruitment'| 'in_flight'|'analysi
 'analysis	All participants have completed the study protocol, and the data is being analyzed. For IRBs, this study is still open and it should still be available in administrative UIs for reporting, but no mobile or desktop participant-facing client should be engaged with the study.
 'completed	Analysis has been completed and the study has been reported to the IRB. The study can now be logically deleted.
 'withdrawn'*/
-
-
-
 
 /* ***  User Types ********************************/
 
@@ -111,7 +115,7 @@ export type Assessment = {
 export type SignInType = 'phone_password' | 'external_id_password'
 //export type EnrollmentType = 'ID' | 'PHONE'
 //export type StudyStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'
-export type StudyDesignType='observation' | 'intervention'
+export type StudyDesignType = 'observation' | 'intervention'
 export type Study = {
   identifier: string
   phase: StudyPhase
@@ -130,16 +134,15 @@ export type Study = {
   contacts?: Contact[]
   studyDesignTypes?: StudyDesignType[]
   institutionId?: string
-  diseases?: string[],
-  keywords?: string,
-  signInTypes: SignInType []
+  diseases?: string[]
+  keywords?: string
+  signInTypes: SignInType[]
   clientData: {
-   // enrollmentType?: EnrollmentType
+    // enrollmentType?: EnrollmentType
     generateIds?: boolean
     backgroundRecorders?: BackgroundRecorders
     welcomeScreenData?: WelcomeScreenData
     notifications?: StringDictionary<ScheduleNotification[]>
- 
   }
   createdOn?: Date
   modifiedOn?: Date
@@ -170,7 +173,7 @@ export type FileRevision = {
   size?: number
   uploadURL?: string
   downloadURL?: string
-  status?: "pending" | "available"
+  status?: 'pending' | 'available'
   type?: string
 }
 
@@ -194,7 +197,6 @@ export type ColorScheme = {
 }
 
 export type BackgroundRecorders = {
-
   microphone?: boolean
   weather?: boolean
   motion?: boolean
@@ -212,7 +214,7 @@ export type StudyBuilderComponentProps = {
   saveLoader: boolean
 }
 
-export type ParticipantActivityType = 'ACTIVE' | 'WITHDRAWN'|'TEST'
+export type ParticipantActivityType = 'ACTIVE' | 'WITHDRAWN' | 'TEST'
 export type EditableParticipantData = {
   clinicVisitDate?: Date
   note?: string
@@ -235,7 +237,7 @@ export type ParticipantAccountSummary = {
   status?: 'unverified' | 'pending' | 'verified'
   createdOn?: string
   note?: string
-  dataGroups?:string[]
+  dataGroups?: string[]
 }
 
 export type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {

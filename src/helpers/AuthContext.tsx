@@ -1,13 +1,13 @@
 import * as React from 'react'
-import { UserSessionData } from '../types/types'
-import { clearSession, getSession, setSession } from './utility'
+import {UserSessionData} from '../types/types'
+import {clearSession, getSession, setSession} from './utility'
 
 type ActionType = 'LOGIN' | 'LOGOUT' | 'SET_ALERT' | 'CLEAR_ALERT'
 /*| 'CONSENT'
   | 'WITHDRAW'*/
-type Action = { type: ActionType; payload?: UserSessionData }
+type Action = {type: ActionType; payload?: UserSessionData}
 type Dispatch = (action: Action) => void
-type UserSessionDataProviderProps = { children: React.ReactNode }
+type UserSessionDataProviderProps = {children: React.ReactNode}
 
 const initialState = {
   token: undefined,
@@ -92,10 +92,10 @@ function countReducer(state: UserSessionData, action: Action): UserSessionData {
   }
 }
 
-function UserSessionDataProvider({ children }: UserSessionDataProviderProps) {
+function UserSessionDataProvider({children}: UserSessionDataProviderProps) {
   const [state, dispatch] = React.useReducer(
     countReducer,
-    getSession() || initialState,
+    getSession() || initialState
   )
   return (
     <UserSessionDataStateContext.Provider value={state}>
@@ -118,7 +118,7 @@ function useUserSessionDataDispatch() {
   const context = React.useContext(UserSessionDataDispatchContext)
   if (context === undefined) {
     throw new Error(
-      'useUserSessionDataDispatch must be used within a AuthContext',
+      'useUserSessionDataDispatch must be used within a AuthContext'
     )
   }
   return context

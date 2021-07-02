@@ -5,13 +5,13 @@ import {
   RadioGroup,
   TextField,
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import Autocomplete from '@material-ui/lab/Autocomplete/Autocomplete'
 import React from 'react'
-import { latoFont, ThemeType } from '../../../style/theme'
-import { Study } from '../../../types/types'
-import { MTBHeadingH2 } from '../../widgets/Headings'
-import { diseases } from './diseases'
+import {latoFont, ThemeType} from '../../../style/theme'
+import {Study} from '../../../types/types'
+import {MTBHeadingH2} from '../../widgets/Headings'
+import {diseases} from './diseases'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontFamily: latoFont,
     fontSize: '16px',
     lineHeight: '19px',
-    marginBottom: theme.spacing(0.5)
+    marginBottom: theme.spacing(0.5),
   },
 }))
 
@@ -79,15 +79,15 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
 
   React.useEffect(() => {
     onEnableNext(
-      study.diseases && study.keywords && study.studyDesignTypes?.length,
+      study.diseases && study.keywords && study.studyDesignTypes?.length
     )
   }, [study])
 
   const changeDiseases = (event: any, values: any) => {
-    onChange({ ...study, diseases: values })
+    onChange({...study, diseases: values})
   }
   const changeKeywords = (event: any, values: any) => {
-    onChange({ ...study, keywords: values.join(JOIN_TOKEN) })
+    onChange({...study, keywords: values.join(JOIN_TOKEN)})
   }
   const getSplitValue = (value: string | undefined) => {
     if (!value) {
@@ -105,12 +105,11 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
       <RadioGroup
         aria-label="Study Type"
         name="studyType"
-        classes={{ root: classes.studyType }}
+        classes={{root: classes.studyType}}
         value={study.studyDesignTypes ? study.studyDesignTypes[0] : ''}
         onChange={e =>
-          onChange({ ...study, studyDesignTypes: [e.target.value] })
-        }
-      >
+          onChange({...study, studyDesignTypes: [e.target.value]})
+        }>
         <FormControlLabel
           value="observation"
           control={<Radio />}
@@ -171,11 +170,7 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
         value={getSplitValue(study.keywords)}
         renderTags={(value: string[], getTagProps) =>
           value.map((option: string, index: number) => (
-            <Chip
-              variant="outlined"
-              label={option}
-              {...getTagProps({ index })}
-            />
+            <Chip variant="outlined" label={option} {...getTagProps({index})} />
           ))
         }
         renderInput={params => (

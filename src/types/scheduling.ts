@@ -1,11 +1,6 @@
-import { Assessment, StringDictionary } from './types'
-
-
-
-
+import {Assessment, StringDictionary} from './types'
 
 export enum DWsEnum {
-
   D = 'days',
   W = 'weeks',
 }
@@ -21,21 +16,17 @@ export enum HDsEnum {
   D = 'days',
 }
 
-
 export enum HDWMEnum {
   M = 'minutes',
   H = 'hours',
   D = 'days',
   W = 'weeks',
-
 }
 
 export enum NotificationTimeAtEnum {
   'after_window_start' = 'after start of window',
   'before_window_end' = 'before window expires',
- 
 }
-
 
 //export type ReminderIntervalType = 'before_window_end' | 'after_window_start'
 
@@ -59,9 +50,8 @@ export type AssessmentWindow = {
   persistent?: boolean
 }
 
-
 export type ScheduleNotification = {
-  notifyAt:  keyof typeof NotificationTimeAtEnum //notifyAt
+  notifyAt: keyof typeof NotificationTimeAtEnum //notifyAt
   offset?: string //ReminderIntervalType //remindAt
   interval?: string //reminderPeriod?
   allowSnooze: boolean //allowSnooze
@@ -81,7 +71,6 @@ export type SessionSchedule = {
   allowSnooze?: boolean //move to notification
   messages?: NotificationMessage[] //move to notification
   notifications?: ScheduleNotification[]
- 
 }
 
 export type StudySessionGeneral = {

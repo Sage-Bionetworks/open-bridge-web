@@ -6,8 +6,8 @@ import {
   Select,
 } from '@material-ui/core'
 import Alert from '@material-ui/lab/Alert'
-import { withStyles } from '@material-ui/core/styles'
-import { latoFont, poppinsFont } from '../../style/theme'
+import {withStyles} from '@material-ui/core/styles'
+import {latoFont, poppinsFont} from '../../style/theme'
 
 export const ButtonWithSelectButton = withStyles(theme => ({
   root: {
@@ -150,10 +150,9 @@ export const SimpleTextInput = withStyles(theme => ({
     padding: '10px 12px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     fontFamily: [latoFont, 'Roboto'].join(','),
-    '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active':
-      {
-        ' -webkit-box-shadow': '0 0 0 30px white inset !important',
-      },
+    '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active': {
+      ' -webkit-box-shadow': '0 0 0 30px white inset !important',
+    },
   },
 }))(InputBase)
 

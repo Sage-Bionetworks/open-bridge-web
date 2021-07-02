@@ -1,10 +1,10 @@
-import { Button } from '@material-ui/core'
-import { render, screen } from '@testing-library/react'
-import { createMemoryHistory } from 'history'
+import {Button} from '@material-ui/core'
+import {render, screen} from '@testing-library/react'
+import {createMemoryHistory} from 'history'
 import React from 'react'
-import { Router } from 'react-router-dom'
+import {Router} from 'react-router-dom'
 import Scheduler from '../../../../components/studies/scheduler/Scheduler'
-import { Schedule, SessionSchedule } from '../../../../types/scheduling'
+import {Schedule, SessionSchedule} from '../../../../types/scheduling'
 import scheduleMock from '../../../mocks/schedule.json'
 
 const saveStudyScheduleMock = jest.fn()
@@ -15,20 +15,20 @@ const schedule: Schedule = scheduleMock
 const renderScheduler = (
   overrides: Partial<Schedule>,
   index = 0,
-  sessionOverride?: Partial<SessionSchedule>,
+  sessionOverride?: Partial<SessionSchedule>
 ) => {
   let sessions
   if (sessionOverride) {
     sessions = schedule.sessions.map((s, i) =>
-      i !== index ? s : { ...s, sessionOverride },
+      i !== index ? s : {...s, sessionOverride}
     )
   }
-  let sched = { ...schedule, ...overrides }
+  let sched = {...schedule, ...overrides}
   if (sessions) {
     sched.sessions = sessions
   }
   const history = createMemoryHistory()
-  const { container, debug, rerender } = render(
+  const {container, debug, rerender} = render(
     <Router history={history}>
       <Scheduler
         id="123"
@@ -37,14 +37,13 @@ const renderScheduler = (
         hasObjectChanged={false}
         saveLoader={false}
         onSave={() => saveStudyScheduleMock}
-        onUpdate={onUpdateMock}
-      >
+        onUpdate={onUpdateMock}>
         <Button>prev</Button> <Button>Next</Button>
       </Scheduler>
-    </Router>,
+    </Router>
   )
 
-  return { container, debug, rerender }
+  return {container, debug, rerender}
 }
 
 beforeEach(() => {
@@ -88,10 +87,10 @@ test('when there is initial data it should work', async () => {
     sessions: [schedule.sessions[0], schedule.sessions[0]],
   }
 
-  let { container, debug, rerender } = renderScheduler({ ...sched })
+  let {container, debug, rerender} = renderScheduler({...sched})
   const sections = container.querySelectorAll('section')
   expect(sections.length).toBeGreaterThan(1)
   expect(sched.sessions.length).toBe(2)
-  const saveBtn = screen.findAllByRole('button', { name: /save/i })
+  const saveBtn = screen.findAllByRole('button', {name: /save/i})
   expect((await saveBtn).length).toBe(2)
 })

@@ -1,10 +1,10 @@
-import { Box, FormControlLabel, FormGroup, makeStyles } from '@material-ui/core'
+import {Box, FormControlLabel, FormGroup, makeStyles} from '@material-ui/core'
 import ClockIcon from '@material-ui/icons/AccessTime'
 import clsx from 'clsx'
 import React from 'react'
-import { ThemeType, poppinsFont } from '../../../style/theme'
-import { PerformanceOrder, StudySession } from '../../../types/scheduling'
-import { Assessment } from '../../../types/types'
+import {ThemeType, poppinsFont} from '../../../style/theme'
+import {PerformanceOrder, StudySession} from '../../../types/scheduling'
+import {Assessment} from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
 import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
 import SessionIcon from '../../widgets/SessionIcon'
@@ -71,12 +71,10 @@ const SessionHeader: React.FunctionComponent<SessionHeaderProps> = ({
         display="flex"
         flexDirection="row"
         alignItems="center"
-        justifyContent="flex-end"
-      >
+        justifyContent="flex-end">
         {totalTime} min &nbsp;&nbsp;
         <ClockIcon
-          style={{ fontSize: '18px', verticalAlign: 'middle' }}
-        ></ClockIcon>
+          style={{fontSize: '18px', verticalAlign: 'middle'}}></ClockIcon>
       </Box>
     </Box>
   )
@@ -99,7 +97,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   const classes = useStyles()
 
   const [isGroupAssessments, setIsGroupAssessments] = React.useState(
-    performanceOrder !== 'participant_choice',
+    performanceOrder !== 'participant_choice'
   )
 
   const [assessmentsToDisplay, setAssessentsToDisplay] = React.useState<
@@ -123,7 +121,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
       const shuffledAssesments = shuffle([...assessments])
       for (const assessmentInfo of assessments) {
         const newIndex = shuffledAssesments.findIndex(
-          el => el.assessmentIndex === assessmentInfo.assessmentIndex,
+          el => el.assessmentIndex === assessmentInfo.assessmentIndex
         )
         const indexChanged = newIndex - assessmentInfo.assessmentIndex
         assessmentInfo.translateY = indexChanged * 96 + indexChanged * 8
@@ -145,9 +143,9 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   }
 
   const performanceOrderList = [
-    { value: 'participant_choice', label: 'Participant Choice' },
-    { value: 'sequential', label: 'Fixed Order' },
-    { value: 'randomized', label: 'Random Fixed Order' },
+    {value: 'participant_choice', label: 'Participant Choice'},
+    {value: 'sequential', label: 'Fixed Order'},
+    {value: 'randomized', label: 'Random Fixed Order'},
   ]
 
   return (
@@ -155,14 +153,12 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
       <SessionHeader
         order={studySessionIndex}
         name={studySession.name}
-        assessments={studySession.assessments || []}
-      ></SessionHeader>
+        assessments={studySession.assessments || []}></SessionHeader>
 
       <div
         className={clsx({
           [classes.inner]: true,
-        })}
-      >
+        })}>
         {studySession.assessments &&
           assessmentsToDisplay.map((assessmentInfo, index) => (
             <Box
@@ -175,14 +171,12 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
                     : 1,
                 transform: `translateY(${assessmentInfo.translateY}px)`,
                 transitionDuration: '0.4s',
-              }}
-            >
+              }}>
               <AssessmentSmall
                 isHideDuration={false}
                 assessment={assessmentInfo.assessment}
                 hasHover={false}
-                isDragging={false}
-              ></AssessmentSmall>
+                isDragging={false}></AssessmentSmall>
             </Box>
           ))}
       </div>

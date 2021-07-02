@@ -1,13 +1,13 @@
-import { createStyles } from '@material-ui/core'
+import {createStyles} from '@material-ui/core'
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import React, { FunctionComponent } from 'react'
+import React, {FunctionComponent} from 'react'
 import validated from '../../assets/validated.svg'
-import { playfairDisplayFont, poppinsFont } from '../../style/theme'
-import { Assessment } from '../../types/types'
+import {playfairDisplayFont, poppinsFont} from '../../style/theme'
+import {Assessment} from '../../types/types'
 import AssessmentImage from './AssessmentImage'
 
 const useStyles = makeStyles(theme =>
@@ -62,7 +62,7 @@ const useStyles = makeStyles(theme =>
       alignItems: 'center',
       justifyContent: 'space-between',
     },
-  }),
+  })
 )
 
 type AssessmentCardOwnProps = {
@@ -81,7 +81,10 @@ const AssessmentCard: FunctionComponent<AssessmentCardProps> = ({
 
   return (
     <Card className={classes.root}>
-      <AssessmentImage resources={assessment.resources} variant='normal' name={assessment.title}>
+      <AssessmentImage
+        resources={assessment.resources}
+        variant="normal"
+        name={assessment.title}>
         <Typography variant="subtitle2" className={classes.tags}>
           {assessment.tags.join(', ')}
         </Typography>

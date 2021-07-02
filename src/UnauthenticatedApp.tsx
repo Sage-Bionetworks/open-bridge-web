@@ -1,8 +1,8 @@
 import React from 'react'
-import { Route, Switch } from 'react-router-dom'
+import {Route, Switch} from 'react-router-dom'
 import './App.css'
 import TopNav from './components/widgets/AppTopNav'
-import { setBodyClass } from './helpers/utility'
+import {setBodyClass} from './helpers/utility'
 import PublicRoutes from './routes_public'
 
 function UnauthenticatedApp() {
@@ -12,7 +12,7 @@ function UnauthenticatedApp() {
       <TopNav routes={PublicRoutes} />
       <main>
         <Switch>
-          {PublicRoutes.map(({ path, Component }, key) => (
+          {PublicRoutes.map(({path, Component}, key) => (
             <Route
               exact
               path={path}

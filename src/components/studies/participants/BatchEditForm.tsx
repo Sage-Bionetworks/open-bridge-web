@@ -1,7 +1,7 @@
 import React from 'react'
-import { Dialog } from '@material-ui/core'
-import { EditParticipantForm } from './ParticipantForms'
-import { EditDialogTitle } from './ParticipantTableGrid'
+import {Dialog} from '@material-ui/core'
+import {EditParticipantForm} from './ParticipantForms'
+import {EditDialogTitle} from './ParticipantTableGrid'
 import ParticipantService from '../../../services/participants.service'
 
 type BatchEditFormProps = {
@@ -36,11 +36,11 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
         studyId,
         token,
         'enrolled',
-        false,
+        false
       )
       const enrolledNonTestParticipants = resultEnrolled.items
       participantIds = enrolledNonTestParticipants.map(
-        el => el.participant.identifier,
+        el => el.participant.identifier
       )
     }
     if (note) {
@@ -49,7 +49,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
           studyId,
           token,
           selectedParticipantId,
-          note,
+          note
         )
       })
       await Promise.all(promises)
@@ -60,7 +60,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
           studyId,
           token,
           selectedParticipantId,
-          cvd,
+          cvd
         )
       })
       await Promise.all(promises)
@@ -75,8 +75,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
       open={isBatchEditOpen}
       maxWidth="sm"
       fullWidth
-      aria-labelledby="edit participant"
-    >
+      aria-labelledby="edit participant">
       <EditDialogTitle
         onCancel={() => {
           onSetIsBatchEditOpen(false)
@@ -92,8 +91,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
         onOK={(note: string, cvd?: Date) => updateParticipants(note, cvd)}
         participant={{}}
         isBatchEdit
-        isLoading={isLoading}
-      ></EditParticipantForm>
+        isLoading={isLoading}></EditParticipantForm>
     </Dialog>
   )
 }

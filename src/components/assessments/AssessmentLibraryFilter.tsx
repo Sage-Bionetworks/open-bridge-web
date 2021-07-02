@@ -1,11 +1,6 @@
-import {
-  Checkbox,
-  FormControlLabel,
-  makeStyles,
-  Paper
-} from '@material-ui/core'
-import React, { FunctionComponent } from 'react'
-import { Assessment, StringDictionary } from '../../types/types'
+import {Checkbox, FormControlLabel, makeStyles, Paper} from '@material-ui/core'
+import React, {FunctionComponent} from 'react'
+import {Assessment, StringDictionary} from '../../types/types'
 
 type AssessmentLibraryFilterProps = {
   assessments: Assessment[]
@@ -43,7 +38,7 @@ AssessmentLibraryFilterProps) => {
 
   const getFilteredAssessments = (
     assessments: Assessment[],
-    tags: string[],
+    tags: string[]
   ) => {
     if (!tags.length) {
       return assessments

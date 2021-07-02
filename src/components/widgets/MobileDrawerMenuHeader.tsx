@@ -1,9 +1,9 @@
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
 import RegularMTBLogo from '../../assets/logo_mtb.svg'
 import BlackXIcon from '../../assets/black_x_icon.svg'
 import WhiteMTBLogo from '../../assets/white_logo_mtb.svg'
-import { latoFont } from '../../style/theme'
+import {latoFont} from '../../style/theme'
 import Link from '@material-ui/core/Link'
 
 const useStyles = makeStyles(theme => ({
@@ -57,16 +57,14 @@ const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> = (
         color="inherit"
         href={'/Studies'}
         key="MY STUDIES"
-        className={classes.mobileToolBarLink}
-      >
+        className={classes.mobileToolBarLink}>
         {logo}
       </Link>
     ) : (
       <a
         target="_blank"
         href="https://www.mobiletoolbox.org"
-        className={classes.mobileToolBarLink}
-      >
+        className={classes.mobileToolBarLink}>
         {logo}
       </a>
     )
@@ -77,8 +75,7 @@ const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> = (
       <img
         src={BlackXIcon}
         onClick={() => setIsMobileOpen(false)}
-        className={classes.blackXIcon}
-      ></img>
+        className={classes.blackXIcon}></img>
     </div>
   )
 }

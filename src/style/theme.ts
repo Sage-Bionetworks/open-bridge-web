@@ -2,9 +2,9 @@
 /*ag*/
 import {
   Theme,
-  unstable_createMuiStrictModeTheme as createMuiTheme
+  unstable_createMuiStrictModeTheme as createMuiTheme,
 } from '@material-ui/core'
-import { CSSProperties } from '@material-ui/core/styles/withStyles'
+import {CSSProperties} from '@material-ui/core/styles/withStyles'
 
 type cssGlobalClasses = {
   [key: string]: CSSProperties
@@ -60,15 +60,14 @@ const globals: cssGlobalClasses = {
     flexWrap: 'wrap',
     overflowWrap: 'normal',
   },*/
-  'a': {
-    color: 'black'
+  a: {
+    color: 'black',
   },
   '.whiteBg': {
     backgroundColor: '#fff',
   },
   '.blackBg': {
     backgroundColor: '#000',
-
   },
   listReset: {
     margin: '0',
@@ -145,7 +144,6 @@ const theme: Theme = createMuiTheme({
           '& + $track': {
             opacity: 1,
             backgroundColor: '#7FC7F0',
-      
           },
         },
       },
@@ -190,11 +188,10 @@ const theme: Theme = createMuiTheme({
       },
     },
     MuiOutlinedInput: {
-      root: {borderRadius: 0, },
+      root: {borderRadius: 0},
       notchedOutline: {
-        borderColor:  '#6e6e6e'
-
-      }
+        borderColor: '#6e6e6e',
+      },
     },
     MuiDialogActions: {
       root: {
@@ -265,4 +262,4 @@ const theme: Theme = createMuiTheme({
   },
 })
 
-export { theme, globals, cssVariables }
+export {theme, globals, cssVariables}

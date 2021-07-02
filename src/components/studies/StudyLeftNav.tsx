@@ -1,9 +1,9 @@
-import { Box, Drawer, IconButton, makeStyles } from '@material-ui/core'
+import {Box, Drawer, IconButton, makeStyles} from '@material-ui/core'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { ThemeType } from '../../style/theme'
+import React, {FunctionComponent} from 'react'
+import {ThemeType} from '../../style/theme'
 import SideBarListItem from '../widgets/SideBarListItem'
 import {
   hoverNavIcons,
@@ -134,49 +134,43 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
           [classes.drawerOpen]: open,
           [classes.drawerClose]: !open,
         }),
-      }}
-    >
+      }}>
       <Box textAlign="right" height="48px" bgcolor="#FAFAFA">
         <IconButton
           onClick={toggleDrawer}
-          style={{ borderRadius: 0, width: '48px', height: '100%' }}
-        >
+          style={{borderRadius: 0, width: '48px', height: '100%'}}>
           {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
         </IconButton>
       </Box>
       <ul
         className={classes.list}
-        style={{ pointerEvents: disabled ? 'none' : 'all' }}
-      >
+        style={{pointerEvents: disabled ? 'none' : 'all'}}>
         {sectionLinks.map((sectionLink, index) => (
           <div
             onMouseOver={() => setCurrentHoveredElement(index)}
             onMouseOut={() => setCurrentHoveredElement(-1)}
-            key={sectionLink.path}
-          >
+            key={sectionLink.path}>
             <SideBarListItem
               key={sectionLink.path}
               isOpen={open}
               isActive={sectionLink.path === currentSection}
               onClick={() => onNavigate(sectionLink.path)}
               styleProps={classes.listItems}
-              inStudyBuilder={true}
-            >
+              inStudyBuilder={true}>
               <div
                 className={clsx(
                   classes.navIconImageContainer,
                   sectionLink.path === currentSection &&
                     !open &&
-                    classes.listItemCollapsed,
-                )}
-              >
+                    classes.listItemCollapsed
+                )}>
                 <img
                   src={typeOfIcon(index, sectionLink.path)[index]}
                   className={clsx(
                     classes.navIcon,
                     disabled &&
                       sectionLink.path !== 'session-creator' &&
-                      classes.disabledElement,
+                      classes.disabledElement
                   )}
                   alt={sectionLink.name}
                 />
@@ -184,9 +178,8 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
                   className={clsx(
                     disabled &&
                       sectionLink.path !== 'session-creator' &&
-                      classes.disabledElement,
-                  )}
-                >
+                      classes.disabledElement
+                  )}>
                   {sectionLink.name}
                 </span>
               </div>

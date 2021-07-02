@@ -1,6 +1,6 @@
-import { FormControlLabel, Radio, RadioGroup } from '@material-ui/core'
+import {FormControlLabel, Radio, RadioGroup} from '@material-ui/core'
 import React from 'react'
-import { HDWMEnum } from '../../../types/scheduling'
+import {HDWMEnum} from '../../../types/scheduling'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
 
@@ -17,7 +17,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
   sessionName,
 }: StartDateProps) => {
   const [startType, setStartType] = React.useState<SessionScheduleStartType>(
-    delay ? 'NDAYS_DAY1' : 'DAY1',
+    delay ? 'NDAYS_DAY1' : 'DAY1'
   )
 
   const changeStartDate = (type: SessionScheduleStartType) => {
@@ -36,8 +36,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
         value={startType}
         onChange={e =>
           changeStartDate(e.target.value as SessionScheduleStartType)
-        }
-      >
+        }>
         <FormControlLabel value={'DAY1'} control={<Radio />} label="Day 1" />
         <FormControlLabel
           control={
@@ -52,8 +51,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
                 unitLabel="Repeat Every"
                 numberLabel="frequency number"
                 unitDefault={HDWMEnum.D}
-                unitData={HDWMEnum}
-              ></Duration>
+                unitData={HDWMEnum}></Duration>
             </>
           }
           label="from Day 1"

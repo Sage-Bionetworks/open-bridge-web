@@ -1,10 +1,10 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { WelcomeScreenData } from '../../../types/types'
-import { Box } from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
+import {WelcomeScreenData} from '../../../types/types'
+import {Box} from '@material-ui/core'
 import SectionIndicator from './SectionIndicator'
 import clsx from 'clsx'
-import { latoFont, playfairDisplayFont } from '../../../style/theme'
+import {latoFont, playfairDisplayFont} from '../../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   phoneInner: {

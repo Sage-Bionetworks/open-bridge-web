@@ -1,7 +1,6 @@
-import { styled } from '@material-ui/core/styles'
-import Heading, { TypographyProps } from '@material-ui/core/Typography'
-import { latoFont, playfairDisplayFont, poppinsFont } from '../../style/theme'
-
+import {styled} from '@material-ui/core/styles'
+import Heading, {TypographyProps} from '@material-ui/core/Typography'
+import {latoFont, playfairDisplayFont, poppinsFont} from '../../style/theme'
 
 export const MTBHeading = styled(Heading)({
   fontFamily: playfairDisplayFont,

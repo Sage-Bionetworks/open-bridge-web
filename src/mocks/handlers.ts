@@ -1,4 +1,3 @@
-
 /*async function getStudies() {
   let studies = await getItem<Study[]>(KEYS.STUDIES)
   if (!studies) {
@@ -179,11 +178,9 @@ export const handlers = [
       }),
     )
   }),*/
-
   /* ****************************
    * THOSE ENDPOINTS EXIST. THEY ARE REPLACED FOR TESTING. COMMENT THEM OUT TO GET THE REAL RESPONSE
    *************************  */
-
   // These two endpoints below simulate fake data used to test the functionality of the
   // ParticpantManager component. Uncomment them when running tests
   /*
@@ -224,9 +221,7 @@ export const handlers = [
     )
   }),
   */
-
   //to get the error from synapse pass email w/ synapseErr to get error from bridge pass email w/ bridgeErr
-
   //get principal id from synapse
   /*
   rest.post(
@@ -298,7 +293,6 @@ export const handlers = [
       }),
     )
   }),*/
-
   //delete account
   /* rest.delete(
     `*${constants.endpoints.bridgeAccount}`,

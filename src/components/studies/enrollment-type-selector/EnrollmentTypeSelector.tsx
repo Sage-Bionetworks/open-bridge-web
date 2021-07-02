@@ -3,22 +3,22 @@ import {
   FormControlLabel,
   Paper,
   Radio,
-  RadioGroup
+  RadioGroup,
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import CheckIcon from '@material-ui/icons/Check'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { latoFont, poppinsFont, ThemeType } from '../../../style/theme'
+import {latoFont, poppinsFont, ThemeType} from '../../../style/theme'
 import {
   SignInType,
   Study,
-  StudyBuilderComponentProps
+  StudyBuilderComponentProps,
 } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
-import { MTBHeadingH1 } from '../../widgets/Headings'
+import {MTBHeadingH1} from '../../widgets/Headings'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -180,7 +180,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<
   return (
     <>
       <NavigationPrompt when={hasObjectChanged}>
-        {({ onConfirm, onCancel }) => (
+        {({onConfirm, onCancel}) => (
           <ConfirmationDialog
             isOpen={hasObjectChanged}
             type={'NAVIGATE'}
@@ -199,8 +199,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<
         <Box display="flex" mt={9} className={classes.container}>
           <Paper
             className={clsx(classes.column, classes.firstColumn)}
-            elevation={2}
-          >
+            elevation={2}>
             <div>
               <table width="100%" className={classes.table}>
                 <thead>
@@ -224,11 +223,10 @@ const EnrollmentTypeSelector: React.FunctionComponent<
               classes.notFirstColumn,
               study.signInTypes &&
                 study.signInTypes[0] === 'phone_password' &&
-                classes.selectedColumn,
+                classes.selectedColumn
             )}
             elevation={2}
-            onClick={() => updateStudy(['phone_password'] as SignInType[])}
-          >
+            onClick={() => updateStudy(['phone_password'] as SignInType[])}>
             <div>
               <table width="100%" className={classes.table}>
                 <thead>
@@ -241,8 +239,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<
                       </span>
                       <Box
                         className={classes.additionalInfo}
-                        hidden={!study.signInTypes.includes('phone_password')}
-                      >
+                        hidden={!study.signInTypes.includes('phone_password')}>
                         <Box px={0} py={2}>
                           In using phone numbers, I confirm that I have
                           participant consent to add their numbers.
@@ -273,30 +270,28 @@ const EnrollmentTypeSelector: React.FunctionComponent<
               classes.column,
               classes.notFirstColumn,
               study.signInTypes.includes('external_id_password') &&
-                classes.selectedColumn,
+                classes.selectedColumn
             )}
-            onClick={() => updateStudy(['external_id_password'])}
-          >
+            onClick={() => updateStudy(['external_id_password'])}>
             <div>
               <table width="100%" className={classes.table}>
                 <thead>
                   <tr>
-                    <th style={{ height: '186px' }}>
+                    <th style={{height: '186px'}}>
                       <span className={classes.heading}>
                         ENROLL WITH <br />
                         PARTICIPANT CODE
                       </span>
                       <Box
                         className={classes.additionalInfo}
-                        style={{ textAlign: 'left' }}
+                        style={{textAlign: 'left'}}
                         hidden={
                           !study.signInTypes.includes('external_id_password')
-                        }
-                      >
+                        }>
                         <RadioGroup
                           aria-label="How to generate Id"
                           name="generateIds"
-                          style={{ marginTop: '8px' }}
+                          style={{marginTop: '8px'}}
                           value={study.clientData.generateIds || false}
                           onClick={e => e.stopPropagation()}
                           onChange={e => {
@@ -305,10 +300,9 @@ const EnrollmentTypeSelector: React.FunctionComponent<
 
                             updateStudy(
                               study.signInTypes,
-                              e.target.value === 'true',
+                              e.target.value === 'true'
                             )
-                          }}
-                        >
+                          }}>
                           <FormControlLabel
                             value={false}
                             control={<Radio size="small" />}

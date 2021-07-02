@@ -3,33 +3,32 @@ import {
   createStyles,
   FormControlLabel,
   makeStyles,
-
-  Theme
+  Theme,
 } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
+import {Alert} from '@material-ui/lab'
 import _ from 'lodash'
-import React, { FunctionComponent } from 'react'
+import React, {FunctionComponent} from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import { poppinsFont, theme } from '../../../style/theme'
+import {poppinsFont, theme} from '../../../style/theme'
 import {
   DWsEnum,
   PerformanceOrder,
   Schedule,
   SessionSchedule,
   StartEventId,
-  StudySession
+  StudySession,
 } from '../../../types/scheduling'
-import { StudyBuilderComponentProps } from '../../../types/types'
+import {StudyBuilderComponentProps} from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
 import SaveButton from '../../widgets/SaveButton'
-import { SchedulerErrorType } from '../StudyBuilder'
+import {SchedulerErrorType} from '../StudyBuilder'
 import AssessmentList from './AssessmentList'
 import Duration from './Duration'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
-  SessionScheduleAction
+  SessionScheduleAction,
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import Timeline from './Timeline'
@@ -64,7 +63,7 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'center',
       alignItems: 'center',
     },
-  }),
+  })
 )
 
 type SchedulerProps = {
@@ -90,10 +89,9 @@ const Scheduler: FunctionComponent<
   schedulerErrors,
 }: SchedulerProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
-const[isErrorAlert, setIsErrorAlert]= React.useState(true)
-  const [schedule, setSchedule] = React.useState({ ..._schedule })
+  const [isErrorAlert, setIsErrorAlert] = React.useState(true)
+  const [schedule, setSchedule] = React.useState({..._schedule})
   console.log('%c ---scheduler update--' + version, 'color: red')
-
 
   const [schedulerErrorState, setSchedulerErrorState] = React.useState(
     new Map<
@@ -103,13 +101,13 @@ const[isErrorAlert, setIsErrorAlert]= React.useState(true)
         sessionWindowErrors: Map<number, string>
         notificationErrors: Map<number, string>
       }
-    >(),
+    >()
   )
 
   function parseErrors(_schedulerErrors: SchedulerErrorType[]) {
     const newErrorState = new Map()
     for (const error of _schedulerErrors) {
-      const { entity, errors } = error
+      const {entity, errors} = error
       const ks = Object.keys(errors)
       ks.forEach((key, index) => {
         const keyArr = key.split('.')
@@ -159,12 +157,12 @@ const[isErrorAlert, setIsErrorAlert]= React.useState(true)
         if (windowNumber) {
           currentErrorState?.sessionWindowErrors.set(
             windowNumber,
-            wholeErrorMessage,
+            wholeErrorMessage
           )
         } else if (notificationNumber) {
           currentErrorState?.notificationErrors.set(
             notificationNumber,
-            wholeErrorMessage,
+            wholeErrorMessage
           )
         } else {
           currentErrorState!.generalErrorMessage.push(wholeErrorMessage)
@@ -181,14 +179,14 @@ const[isErrorAlert, setIsErrorAlert]= React.useState(true)
   }, [schedulerErrors])
 
   const getStartEventIdFromSchedule = (
-    schedule: Schedule,
+    schedule: Schedule
   ): StartEventId | null => {
     if (_.isEmpty(schedule.sessions)) {
       return null
     }
     const eventIdArray = schedule.sessions.reduce(
       (acc, curr) => (curr.startEventId ? [...acc, curr.startEventId] : acc),
-      [] as StartEventId[],
+      [] as StartEventId[]
     )
 
     if (_.uniq(eventIdArray).length > 1) {
@@ -211,14 +209,14 @@ const[isErrorAlert, setIsErrorAlert]= React.useState(true)
   //updating the schedule part
   const updateSessionsWithStartEventId = (
     sessions: StudySession[],
-    startEventId: StartEventId,
+    startEventId: StartEventId
   ) => {
-    return sessions.map(s => ({ ...s, startEventId }))
+    return sessions.map(s => ({...s, startEventId}))
   }
 
   const scheduleUpdateFn = (action: SessionScheduleAction) => {
     const sessions = actionsReducer(schedule.sessions, action)
-    const newSchedule = { ...schedule, sessions }
+    const newSchedule = {...schedule, sessions}
     updateData(newSchedule)
   }
 
@@ -234,12 +232,26 @@ const[isErrorAlert, setIsErrorAlert]= React.useState(true)
 
   return (
     <Box>
-      {schedulerErrors.length > 0 && <Alert onClose={()=>setIsErrorAlert(false)}  severity="error" style={{backgroundColor: '#EE6070', color: 'black', position: 'fixed',top: 0, left: 0, right: 0, zIndex: 1000, textAlign:"center"}}>
+      {schedulerErrors.length > 0 && (
+        <Alert
+          onClose={() => setIsErrorAlert(false)}
+          severity="error"
+          style={{
+            backgroundColor: '#EE6070',
+            color: 'black',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1000,
+            textAlign: 'center',
+          }}>
           Please fix the errors below before continuing
-        </Alert>}
+        </Alert>
+      )}
 
       <NavigationPrompt when={hasObjectChanged} key="prompt">
-        {({ onConfirm, onCancel }) => (
+        {({onConfirm, onCancel}) => (
           <ConfirmationDialog
             isOpen={hasObjectChanged}
             type={'NAVIGATE'}
@@ -253,20 +265,19 @@ const[isErrorAlert, setIsErrorAlert]= React.useState(true)
         {/* <ObjectDebug data={timeline} label=""></ObjectDebug> */}
         <div className={classes.scheduleHeader} key="intro">
           <FormControlLabel
-            classes={{ label: classes.labelDuration }}
+            classes={{label: classes.labelDuration}}
             label="Study duration:"
-            style={{ fontSize: '14px' }}
+            style={{fontSize: '14px'}}
             labelPlacement="start"
             control={
               <Duration
                 onChange={e =>
-                  updateData({ ...schedule, duration: e.target.value })
+                  updateData({...schedule, duration: e.target.value})
                 }
                 durationString={schedule.duration || ''}
                 unitLabel="study duration unit"
                 numberLabel="study duration number"
-                unitData={DWsEnum}
-              ></Duration>
+                unitData={DWsEnum}></Duration>
             }
           />
           {hasObjectChanged && (
@@ -277,8 +288,7 @@ const[isErrorAlert, setIsErrorAlert]= React.useState(true)
           <Timeline
             token={token}
             version={version!}
-            schedule={schedule}
-          ></Timeline>
+            schedule={schedule}></Timeline>
           <div className={classes.studyStartDateContainer}>
             <StudyStartDate
               style={{
@@ -290,9 +300,9 @@ const[isErrorAlert, setIsErrorAlert]= React.useState(true)
               onChange={(startEventId: StartEventId) => {
                 const sessions = updateSessionsWithStartEventId(
                   schedule.sessions,
-                  startEventId,
+                  startEventId
                 )
-                updateData({ ...schedule, sessions })
+                updateData({...schedule, sessions})
               }}
             />
           </div>
@@ -305,20 +315,19 @@ const[isErrorAlert, setIsErrorAlert]= React.useState(true)
                 schedulerErrorState.get(`${session.name}-${index + 1}`)
                   ? `1px solid ${theme.palette.error.main}`
                   : ''
-              }
-            >
+              }>
               <Box className={classes.assessments}>
                 <AssessmentList
                   studySessionIndex={index}
                   studySession={session}
                   onChangePerformanceOrder={(
-                    performanceOrder: PerformanceOrder,
+                    performanceOrder: PerformanceOrder
                   ) => {
-                    const schedule = { ...session, performanceOrder }
+                    const schedule = {...session, performanceOrder}
 
                     scheduleUpdateFn({
                       type: ActionTypes.UpdateSessionSchedule,
-                      payload: { sessionId: session.guid!, schedule },
+                      payload: {sessionId: session.guid!, schedule},
                     })
                   }}
                   performanceOrder={session.performanceOrder || 'sequential'}
@@ -332,13 +341,12 @@ const[isErrorAlert, setIsErrorAlert]= React.useState(true)
                 onUpdateSessionSchedule={(schedule: SessionSchedule) => {
                   scheduleUpdateFn({
                     type: ActionTypes.UpdateSessionSchedule,
-                    payload: { sessionId: session.guid!, schedule },
+                    payload: {sessionId: session.guid!, schedule},
                   })
                 }}
                 sessionErrorState={schedulerErrorState.get(
-                  `${session.name}-${index + 1}`,
-                )}
-              ></SchedulableSingleSessionContainer>
+                  `${session.name}-${index + 1}`
+                )}></SchedulableSingleSessionContainer>
             </Box>
           ))}
         </Box>

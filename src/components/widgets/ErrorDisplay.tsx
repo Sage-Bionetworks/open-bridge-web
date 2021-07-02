@@ -1,8 +1,7 @@
-import { makeStyles } from '@material-ui/core'
+import {makeStyles} from '@material-ui/core'
 import WarningIcon from '@material-ui/icons/Warning'
-import React, { FunctionComponent, ReactNode } from 'react'
-import { ThemeType } from '../../style/theme'
-
+import React, {FunctionComponent, ReactNode} from 'react'
+import {ThemeType} from '../../style/theme'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -14,22 +13,23 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     '& span': {
       fontSize: '12px',
       paddingLeft: theme.spacing(1),
-      paddingTop: theme.spacing(.5)
-    }
-  }
+      paddingTop: theme.spacing(0.5),
+    },
+  },
 }))
 
 export type ErrorDisplayType = {
   children: ReactNode
 }
 
-const ErrorDisplay: FunctionComponent<ErrorDisplayType> = ({
-  children
-
-}) => {
+const ErrorDisplay: FunctionComponent<ErrorDisplayType> = ({children}) => {
   const classes = useStyles()
- return <div className={classes.root}><WarningIcon></WarningIcon><span>{children}</span></div>
-  
+  return (
+    <div className={classes.root}>
+      <WarningIcon></WarningIcon>
+      <span>{children}</span>
+    </div>
+  )
 }
 
 export default ErrorDisplay

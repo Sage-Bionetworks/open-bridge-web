@@ -9,16 +9,16 @@ import {
   RadioGroup,
   FormHelperText,
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
-import React, { useEffect } from 'react'
-import { NavLink } from 'react-router-dom'
-import { ReactComponent as ArrowIcon } from '../../../assets/arrow_long.svg'
-import { ReactComponent as EnvelopeImg } from '../../../assets/launch/envelope_icon.svg'
-import { useUserSessionDataState } from '../../../helpers/AuthContext'
-import { ThemeType } from '../../../style/theme'
-import { Contact, Study } from '../../../types/types'
+import {makeStyles} from '@material-ui/core/styles'
+import React, {useEffect} from 'react'
+import {NavLink} from 'react-router-dom'
+import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
+import {ReactComponent as EnvelopeImg} from '../../../assets/launch/envelope_icon.svg'
+import {useUserSessionDataState} from '../../../helpers/AuthContext'
+import {ThemeType} from '../../../style/theme'
+import {Contact, Study} from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
-import { MTBHeadingH1, MTBHeadingH2 } from '../../widgets/Headings'
+import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import {
   SimpleTextInput,
   SimpleTextLabel,
@@ -64,7 +64,7 @@ export interface IrbDetailsProps {
   onChange: Function
 }
 
-const LastScreen: React.FunctionComponent<{ study: Study }> = ({
+const LastScreen: React.FunctionComponent<{study: Study}> = ({
   study,
 }: {
   study: Study
@@ -73,7 +73,7 @@ const LastScreen: React.FunctionComponent<{ study: Study }> = ({
   return (
     <Box textAlign="center">
       <EnvelopeImg />
-      <MTBHeadingH1 style={{ margin: '24px 0', textDecoration: 'underline' }}>
+      <MTBHeadingH1 style={{margin: '24px 0', textDecoration: 'underline'}}>
         {' '}
         Almost there!{' '}
       </MTBHeadingH1>
@@ -88,8 +88,7 @@ const LastScreen: React.FunctionComponent<{ study: Study }> = ({
         href={'/studies/:id/study-live'.replace(':id', study.identifier)}
         variant="contained"
         className={classes.continueButton}
-        color="primary"
-      >
+        color="primary">
         {' '}
         Continue <ArrowIcon />
       </Button>
@@ -118,7 +117,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
   } as React.CSSProperties
 
   const classes = useStyles()
-  const { token, orgMembership } = useUserSessionDataState()
+  const {token, orgMembership} = useUserSessionDataState()
   const [
     irbRecordSameInstAffiliation,
     setIrbRecordSameInstAffiliation,
@@ -178,7 +177,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
   const updateContactsArray = (
     role: ContactRoleTypes,
     newContactObject: Contact,
-    currentContactsArray: Contact[],
+    currentContactsArray: Contact[]
   ) => {
     const contactIndex = currentContactsArray.findIndex(el => el.role === role)
     const newContactsArray = [...currentContactsArray]
@@ -297,7 +296,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                   const newContactsArray = updateContactsArray(
                     'principal_investigator',
                     newPrincipleInvestigator,
-                    study.contacts!,
+                    study.contacts!
                   )
                   const newStudy: Study = {
                     ...study,
@@ -320,16 +319,15 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                 <NavLink
                   to={'/studies/:id/access-settings'.replace(
                     ':id',
-                    study.identifier,
+                    study.identifier
                   )}
-                  key={'path-to-access-settings'}
-                >
+                  key={'path-to-access-settings'}>
                   Access Settings
                 </NavLink>
                 &nbsp; tab on the top right hand side.
               </Box>
             </Grid>
-            <Grid item xs={6} style={{ marginTop: '-32px' }}>
+            <Grid item xs={6} style={{marginTop: '-32px'}}>
               <FormControl fullWidth>
                 <SimpleTextLabel htmlFor="affiliation">
                   Institutional Affiliation*
@@ -348,7 +346,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     let newContactsArray = updateContactsArray(
                       'principal_investigator',
                       newPrincipleInvestigator,
-                      study.contacts!,
+                      study.contacts!
                     )
                     if (irbRecordSameInstAffiliation) {
                       const newIrbRecord = {
@@ -358,7 +356,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                       newContactsArray = updateContactsArray(
                         'irb',
                         newIrbRecord,
-                        newContactsArray,
+                        newContactsArray
                       )
                     }
                     const newStudy: Study = {
@@ -405,7 +403,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                         const newContactsArray = updateContactsArray(
                           'irb',
                           newIrbRecord,
-                          study.contacts!,
+                          study.contacts!
                         )
                         const newStudy: Study = {
                           ...study,
@@ -414,8 +412,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                         onChange(newStudy)
                       }
                       setIrbRecordSameInstAffiliation(isSameAsInstitution)
-                    }}
-                  >
+                    }}>
                     <FormControlLabel
                       control={<Radio />}
                       label="Same Institutional Affiliation"
@@ -440,7 +437,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                       const newContactsArray = updateContactsArray(
                         'irb',
                         newIrbRecord,
-                        study.contacts!,
+                        study.contacts!
                       )
                       const newStudy: Study = {
                         ...study,
@@ -451,7 +448,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     id="irbOfRecord"
                     rows={5}
                     className={classes.input}
-                    style={{ width: '100%', marginTop: '10px' }}
+                    style={{width: '100%', marginTop: '10px'}}
                     inputProps={{
                       style: inputStyles,
                     }}
@@ -484,7 +481,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
             </Grid>
             <Grid item xs={6}></Grid>
             <Grid item xs={6}>
-              <MTBHeadingH2 style={{ fontSize: '16px' }}>
+              <MTBHeadingH2 style={{fontSize: '16px'}}>
                 IRB Decision*:{' '}
               </MTBHeadingH2>
               <Box pl={3} mt={2}>
@@ -497,35 +494,33 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     }
                     onChange={e => {
                       const isApproved = e.target.value === 'irb_approved'
-                      const newStudy = { ...study }
+                      const newStudy = {...study}
                       newStudy.irbDecisionType = isApproved
                         ? 'approved'
                         : 'exempt'
                       onChange(newStudy)
-                    }}
-                  >
+                    }}>
                     <FormControlLabel
                       control={<Radio />}
                       label="Approved"
                       labelPlacement="end"
                       value="irb_approved"
                     />
-                    <Box style={{ display: 'flex', flexDirection: 'row' }}>
-                      <FormControl style={{ marginRight: '8px' }}>
+                    <Box style={{display: 'flex', flexDirection: 'row'}}>
+                      <FormControl style={{marginRight: '8px'}}>
                         <DatePicker
                           label="Date of IRB Approval"
                           id="approvalDate"
                           value={irbDecisionIsApproved ? irbDecisionDate : null}
                           onChange={e => {
-                            const updatedStudy = { ...study }
+                            const updatedStudy = {...study}
                             if (!updatedStudy.irbDecisionType) {
                               updatedStudy.irbDecisionType = 'approved'
                             }
                             updatedStudy.irbDecisionOn = getFormattedDate(e)
                             onChange(updatedStudy)
                           }}
-                          disabled={!irbDecisionIsApproved}
-                        ></DatePicker>
+                          disabled={!irbDecisionIsApproved}></DatePicker>
                       </FormControl>
                       <FormControl>
                         <DatePicker
@@ -535,22 +530,20 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                             irbDecisionIsApproved ? irbExpirationDate : null
                           }
                           onChange={e => {
-                            const updatedStudy = { ...study }
+                            const updatedStudy = {...study}
                             if (!updatedStudy.irbDecisionType) {
                               updatedStudy.irbDecisionType = 'approved'
                             }
                             updatedStudy.irbExpiresOn = getFormattedDate(e)
                             onChange(updatedStudy)
                           }}
-                          disabled={!irbDecisionIsApproved}
-                        ></DatePicker>
+                          disabled={!irbDecisionIsApproved}></DatePicker>
                       </FormControl>
                     </Box>
                     {displayApprovalDateError && (
                       <FormHelperText
                         id="approval-date-validation-error-text"
-                        className={classes.dateValidationErrorText}
-                      >
+                        className={classes.dateValidationErrorText}>
                         Please make sure that expiration date is the same or
                         after approval date.
                       </FormHelperText>
@@ -582,8 +575,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                           updatedStudy.irbDecisionOn = getFormattedDate(e)
                           onChange(updatedStudy)
                         }}
-                        disabled={irbDecisionIsApproved}
-                      ></DatePicker>
+                        disabled={irbDecisionIsApproved}></DatePicker>
                     </FormControl>
                   </RadioGroup>
                 </FormControl>
@@ -596,12 +588,10 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
               icon={
                 <img
                   src={Alert_Icon}
-                  style={{ height: '30px' }}
-                  alt={'study-warning'}
-                ></img>
+                  style={{height: '30px'}}
+                  alt={'study-warning'}></img>
               }
-              className={classes.alertText}
-            >
+              className={classes.alertText}>
               Please note that you will <strong>no longer</strong> be able to{' '}
               <strong>make changes</strong> to your study once you’ve{' '}
               <strong>submit</strong> the information from this page.

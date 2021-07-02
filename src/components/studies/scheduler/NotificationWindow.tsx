@@ -12,9 +12,9 @@ import DeleteIcon from '@material-ui/icons/Close'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React from 'react'
-import { ReactComponent as BellIcon } from '../../../assets/bell.svg'
-import { latoFont } from '../../../style/theme'
-import { ScheduleNotification } from '../../../types/scheduling'
+import {ReactComponent as BellIcon} from '../../../assets/bell.svg'
+import {latoFont} from '../../../style/theme'
+import {ScheduleNotification} from '../../../types/scheduling'
 import NotificationInterval from './NotificationInterval'
 import SchedulingFormSection from './SchedulingFormSection'
 
@@ -82,11 +82,11 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
   children,
   isError,
 }: NotificationWindowProps) => {
-  const updateMessage = (options: { subject?: string; message?: string }) => {
+  const updateMessage = (options: {subject?: string; message?: string}) => {
     const messages = notification.messages || []
     // ALINA we only have one message right now
-    let message = messages[0] || { lang: 'en', subject: '', message: '' }
-    message = { ...message, ...options }
+    let message = messages[0] || {lang: 'en', subject: '', message: ''}
+    message = {...message, ...options}
     onChange({
       ...notification,
       messages: [message],
@@ -96,22 +96,20 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
   return (
     <Paper
       className={clsx(classes.root, isError && classes.error)}
-      elevation={2}
-    >
+      elevation={2}>
       <Box position="relative">
         <Box className={classes.windowTitle}>
-          <BellIcon style={{ marginRight: '16px' }} />
+          <BellIcon style={{marginRight: '16px'}} />
           {`${index + 1}. ${
             index === 0 ? 'Initial Notification' : 'Follow-up Notification'
           }`}
         </Box>
         {index > 0 && (
           <IconButton
-            style={{ position: 'absolute', top: '12px', right: '16px' }}
+            style={{position: 'absolute', top: '12px', right: '16px'}}
             edge="end"
             size="small"
-            onClick={() => onDelete()}
-          >
+            onClick={() => onDelete()}>
             <DeleteIcon></DeleteIcon>
           </IconButton>
         )}
@@ -120,39 +118,35 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
         <SchedulingFormSection
           label={'Subject line:'}
           variant="small"
-          border={false}
-        >
+          border={false}>
           <TextField
             color="secondary"
             multiline={false}
             fullWidth={true}
             variant="outlined"
             defaultValue={_.first(notification.messages)?.subject || ''}
-            onBlur={e => updateMessage({ subject: e.target.value })}
+            onBlur={e => updateMessage({subject: e.target.value})}
             inputProps={{
               maxLength: 40,
-            }}
-          ></TextField>
+            }}></TextField>
         </SchedulingFormSection>
 
         <SchedulingFormSection
           label={'Body text (40 character limit)'}
           variant="small"
-          border={false}
-        >
+          border={false}>
           <TextField
             color="secondary"
             multiline={true}
             fullWidth={true}
             variant="outlined"
             rows="3"
-            classes={{ root: classes.multilineBodyText }}
+            classes={{root: classes.multilineBodyText}}
             defaultValue={_.first(notification.messages)?.message || ''}
-            onBlur={e => updateMessage({ message: e.target.value })}
+            onBlur={e => updateMessage({message: e.target.value})}
             inputProps={{
               maxLength: 40,
-            }}
-          ></TextField>
+            }}></TextField>
         </SchedulingFormSection>
         <Divider className={classes.divider} />
 
@@ -168,8 +162,7 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
                   ...notification,
                   interval: e,
                 })
-              }
-            ></NotificationInterval>
+              }></NotificationInterval>
           </>
         )}
         <Divider className={classes.divider} />
@@ -177,10 +170,9 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
           label="Allow to snooze"
           isHideLabel={true}
           variant="small"
-          border={false}
-        >
+          border={false}>
           <FormControlLabel
-            style={{ display: 'block' }}
+            style={{display: 'block'}}
             control={
               <Checkbox
                 value={notification.allowSnooze}

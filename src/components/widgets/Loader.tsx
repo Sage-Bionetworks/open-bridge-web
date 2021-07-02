@@ -1,9 +1,9 @@
-import { makeStyles } from '@material-ui/core'
+import {makeStyles} from '@material-ui/core'
 import CircularProgress from '@material-ui/core/CircularProgress/CircularProgress'
 import clsx from 'clsx'
 import React from 'react'
-import { ThemeType } from '../../style/theme'
-import { RequestStatus } from '../../types/types'
+import {ThemeType} from '../../style/theme'
+import {RequestStatus} from '../../types/types'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -14,7 +14,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   full: {
     height: '100vh',
-  
   },
 }))
 
@@ -37,8 +36,7 @@ const LoadingComponent = ({
   return reqStatusLoading === 'PENDING' || reqStatusLoading === true ? (
     <div
       className={clsx(classes.root, variant === 'full' && classes.full)}
-      style={{ ...style }}
-    >
+      style={{...style}}>
       <CircularProgress size={loaderSize} />
     </div>
   ) : (
