@@ -7,28 +7,39 @@ type TimezoneInfoType = {
   value: string
 }
 
-const TimezoneDropdown: React.FunctionComponent<{}> = ({}) => {
-  const [currentTimeZone, setCurrentTimeZone] = React.useState('')
-
+const TimezoneDropdown: React.FunctionComponent<{
+  currentValue: string
+  onValueChange: Function
+}> = ({currentValue, onValueChange}) => {
   function getAllTimezones() {
     const timezoneNames = moment.tz.names()
-    const timezoneInfoArray: TimezoneInfoType[] = timezoneNames.map(data => {
+    const filtered = timezoneNames.filter(
+      el => el.includes('America') || el.includes('Mexico')
+    )
+    const timezoneInfoArray: TimezoneInfoType[] = filtered.map(data => {
+      const utcOffset = moment().tz(data).format('Z')
+      const timezoneAbbreviation = moment().tz(data).format('z')
       return {
-        label: `UTC(${moment().tz(data).format('Z')}) ${data}`,
+        label: `UTC(${utcOffset}) ${data} ${
+          timezoneAbbreviation.startsWith('-') ? '' : timezoneAbbreviation
+        }`,
         value: data,
       }
     })
     return timezoneInfoArray
   }
+
   const timezones = React.useMemo(getAllTimezones, [])
+
   return (
     <SaveBlackBorderDropdown
       width="100%"
       dropdown={timezones}
-      onChange={event => setCurrentTimeZone(event.target.value as string)}
+      onChange={event => onValueChange(event.target.value as string)}
       emptyValueLabel="Select a timezone"
-      value={currentTimeZone}
-      itemHeight="44px"></SaveBlackBorderDropdown>
+      value={currentValue}
+      itemHeight="48px"
+    />
   )
 }
 

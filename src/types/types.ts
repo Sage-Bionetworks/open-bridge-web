@@ -221,6 +221,7 @@ export type EditableParticipantData = {
   externalId?: string
   phone?: Phone
   phoneNumber?: string
+  timeZone?: string
 }
 
 export type ParticipantAccountSummary = {

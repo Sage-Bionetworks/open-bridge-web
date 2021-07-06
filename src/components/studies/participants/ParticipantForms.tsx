@@ -23,6 +23,7 @@ import {
   SimpleTextLabel,
 } from '../../widgets/StyledComponents'
 import TimezoneDropdown from './TimezoneDropdown'
+import moment from 'moment-timezone'
 
 const useStyles = makeStyles(theme => ({
   addForm: {
@@ -69,12 +70,19 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
 }) => {
   const classes = useStyles()
   const [note, setNotes] = React.useState(participant.note)
+  const [currentTimeZone, setCurrentTimeZone] = React.useState('')
   const [clinicVisitDate, setClinicVisitDate] = React.useState<
     Date | undefined
   >(participant.clinicVisitDate)
 
   const handleDateChange = (date: Date | null) => {
     setClinicVisitDate(date ? date : undefined)
+  }
+
+  const handleTimezoneChange = (timezone: string) => {
+    setCurrentTimeZone(timezone)
+    const dateTime = moment.tz(timezone).format()
+    // onChange({...participant, timeZone: dateTime})
   }
 
   return (
@@ -103,7 +111,10 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
             Participant Time Zone
           </SimpleTextLabel>
           <Box style={{width: '350px', marginBottom: '24px'}}>
-            <TimezoneDropdown />
+            <TimezoneDropdown
+              currentValue={currentTimeZone}
+              onValueChange={handleTimezoneChange}
+            />
           </Box>
           <FormControl>
             <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
