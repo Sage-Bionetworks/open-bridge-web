@@ -101,11 +101,10 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
             id="clinic-visit"
             value={clinicVisitDate || null}
             onChange={e => handleDateChange(e)}></DatePicker>
-          <SimpleTextLabel>Participant Time Zone</SimpleTextLabel>
-          <Box width="350px" mb={3} mt={0.25}>
+          <Box width="375px" mb={3}>
             <TimezoneDropdown
               currentValue={currentTimeZone}
-              onValueChange={(timezone: string) => setCurrentTimeZone(timezone)}
+              onValueChange={setCurrentTimeZone}
             />
           </Box>
           <FormControl>

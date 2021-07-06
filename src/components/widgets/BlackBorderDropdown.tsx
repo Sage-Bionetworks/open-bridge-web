@@ -1,4 +1,12 @@
-import {makeStyles, MenuItem, Select, SelectProps} from '@material-ui/core'
+import {
+  makeStyles,
+  MenuItem,
+  Select,
+  SelectProps,
+  Box,
+  TextField,
+} from '@material-ui/core'
+import Autocomplete from '@material-ui/lab/Autocomplete'
 import React from 'react'
 import {ThemeType} from '../../style/theme'
 
@@ -57,6 +65,9 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
   listBorder: {
     borderRadius: '0px',
   },
+  input: {
+    backgroundColor: 'white',
+  },
 }))
 
 export interface BlackBorderDropdownStyleProps {
@@ -66,6 +77,8 @@ export interface BlackBorderDropdownStyleProps {
   onChange: Function
   dropdown: {value: string; label: string}[]
   emptyValueLabel: string
+  isSearchable?: boolean
+  searchableOnChange?: Function
 }
 
 const SaveBlackBorderDropdown: React.FunctionComponent<
@@ -78,11 +91,12 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
   emptyValueLabel,
   width,
   itemHeight = '30px',
+  isSearchable,
+  searchableOnChange,
   ...other
 }) => {
   const classes = useStyles({width, itemHeight})
-
-  return (
+  const selectMenu = (
     <Select
       labelId={id}
       className={classes.root}
@@ -121,6 +135,31 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
       ))}
     </Select>
   )
+
+  const searchableDropdown = (
+    <Autocomplete
+      id={id}
+      options={dropdown}
+      className={classes.root}
+      placeholder="hello"
+      renderInput={params => (
+        <TextField
+          className={classes.listPadding}
+          {...params}
+          label="Participant Time Zone"
+          variant="outlined"
+        />
+      )}
+      getOptionLabel={option => option.label}
+      classes={{paper: classes.listBorder, input: classes.input}}
+      onChange={(event, newValue) => {
+        if (!searchableOnChange) return
+        searchableOnChange(newValue?.value || '')
+      }}
+    />
+  )
+
+  return <Box>{isSearchable ? searchableDropdown : selectMenu}</Box>
 }
 
 export default SaveBlackBorderDropdown
