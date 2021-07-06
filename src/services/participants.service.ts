@@ -220,6 +220,7 @@ async function getActiveParticipantById(
       {},
       token
     )
+    console.log('inside', result.data)
     return {
       ...result.data,
       externalId: formatExternalId(
@@ -546,6 +547,29 @@ async function addTestParticipant(
   )
 }
 
+async function updateParticipantTimezone(
+  studyIdentifier: string,
+  token: string,
+  participantId: string,
+  timeZone?: string
+) {
+  const endpoint = constants.endpoints.events
+    .replace(':studyId', studyIdentifier)
+    .replace(':userId', participantId)
+  const data = {
+    timeZone: timeZone,
+  }
+  console.log('here')
+  const result = await callEndpoint<ParticipantAccountSummary>(
+    endpoint,
+    'POST',
+    data,
+    token
+  )
+  console.log(result.status, 'result')
+  return participantId
+}
+
 async function updateParticipantNote(
   studyIdentifier: string,
   token: string,
@@ -620,6 +644,7 @@ const ParticipantService = {
   updateParticipantNote,
   updateParticipantClinicVisit,
   withdrawParticipant,
+  updateParticipantTimezone,
 }
 
 export default ParticipantService

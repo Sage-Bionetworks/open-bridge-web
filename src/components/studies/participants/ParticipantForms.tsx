@@ -70,19 +70,13 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
 }) => {
   const classes = useStyles()
   const [note, setNotes] = React.useState(participant.note)
-  const [currentTimeZone, setCurrentTimeZone] = React.useState('')
+  const [currentTimeZone, setCurrentTimeZone] = React.useState<string>('')
   const [clinicVisitDate, setClinicVisitDate] = React.useState<
     Date | undefined
   >(participant.clinicVisitDate)
 
   const handleDateChange = (date: Date | null) => {
     setClinicVisitDate(date ? date : undefined)
-  }
-
-  const handleTimezoneChange = (timezone: string) => {
-    setCurrentTimeZone(timezone)
-    const dateTime = moment.tz(timezone).format()
-    // onChange({...participant, timeZone: dateTime})
   }
 
   return (
@@ -107,13 +101,11 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
             id="clinic-visit"
             value={clinicVisitDate || null}
             onChange={e => handleDateChange(e)}></DatePicker>
-          <SimpleTextLabel htmlFor="note">
-            Participant Time Zone
-          </SimpleTextLabel>
-          <Box style={{width: '350px', marginBottom: '24px'}}>
+          <SimpleTextLabel>Participant Time Zone</SimpleTextLabel>
+          <Box width="350px" mb={3} mt={0.25}>
             <TimezoneDropdown
               currentValue={currentTimeZone}
-              onValueChange={handleTimezoneChange}
+              onValueChange={(timezone: string) => setCurrentTimeZone(timezone)}
             />
           </Box>
           <FormControl>
@@ -137,7 +129,17 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
               Cancel
             </DialogButtonSecondary>
             <DialogButtonPrimary
-              onClick={() => onOK(note, clinicVisitDate)}
+              onClick={() =>
+                onOK(
+                  note,
+                  clinicVisitDate,
+                  currentTimeZone === ''
+                    ? undefined
+                    : new Date(
+                        moment.tz(currentTimeZone).format()
+                      ).toISOString()
+                )
+              }
               color="primary"
               autoFocus>
               Save Changes

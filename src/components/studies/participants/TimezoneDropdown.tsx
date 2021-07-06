@@ -13,6 +13,7 @@ const TimezoneDropdown: React.FunctionComponent<{
 }> = ({currentValue, onValueChange}) => {
   function getAllTimezones() {
     const timezoneNames = moment.tz.names()
+    // For now, only include timezones that are in the America and Mexico timezones.
     const filtered = timezoneNames.filter(
       el => el.includes('America') || el.includes('Mexico')
     )

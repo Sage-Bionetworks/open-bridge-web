@@ -239,6 +239,7 @@ export type ParticipantAccountSummary = {
   createdOn?: string
   note?: string
   dataGroups?: string[]
+  timeZone?: string
 }
 
 export type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {

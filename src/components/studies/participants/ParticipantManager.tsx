@@ -290,7 +290,7 @@ async function getParticipants(
     }
     return updatedParticipant
   })
-  console.log('returning result')
+  console.log('returning result', result)
   return {items: result, total: numberOfParticipants}
 }
 
@@ -391,9 +391,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   >(undefined)
 
   //user ids selectedForSction
-  const [selectedParticipantIds, setSelectedParticipantIds] = React.useState<
-    SelectedParticipantIdsType
-  >({
+  const [
+    selectedParticipantIds,
+    setSelectedParticipantIds,
+  ] = React.useState<SelectedParticipantIdsType>({
     ACTIVE: [],
     TEST: [],
     WITHDRAWN: [],
@@ -417,9 +418,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setRefreshParticipantsToggle,
   ] = React.useState(false)
 
-  const {data, status, error, run, setData: setParticipantData} = useAsync<
-    ParticipantData
-  >({
+  const {
+    data,
+    status,
+    error,
+    run,
+    setData: setParticipantData,
+  } = useAsync<ParticipantData>({
     status: 'PENDING',
     data: null,
   })
@@ -471,7 +476,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const updateParticipant = async (
     participantId: string,
     note: string,
-    clinicVisitDate?: Date
+    clinicVisitDate?: Date,
+    timeZone?: string
   ) => {
     await ParticipantService.updateParticipantNote(
       study!.identifier,
@@ -485,6 +491,16 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       participantId,
       clinicVisitDate
     )
+    if (timeZone) {
+      console.log(timeZone, "timezone")
+      await ParticipantService.updateParticipantTimezone(
+        study!.identifier,
+        token!,
+        participantId,
+        timeZone
+      )
+    }
+
     setRefreshParticipantsToggle(prev => !prev)
   }
 
@@ -826,9 +842,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     onUpdateParticipant={(
                       participantId: string,
                       note: string,
-                      clinicVisitDate?: Date
+                      clinicVisitDate?: Date,
+                      timeZone?: string
                     ) =>
-                      updateParticipant(participantId, note, clinicVisitDate)
+                      updateParticipant(
+                        participantId,
+                        note,
+                        clinicVisitDate,
+                        timeZone
+                      )
                     }
                     isEnrolledById={isSignInById(study.signInTypes)}
                     onRowSelected={(

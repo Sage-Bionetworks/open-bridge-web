@@ -45,6 +45,7 @@ import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import HideWhen from '../../widgets/HideWhen'
 import SelectAll, {SelectionType} from '../../widgets/SelectAll'
 import {EditParticipantForm, WithdrawParticipantForm} from './ParticipantForms'
+import moment from 'moment-timezone'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -246,6 +247,10 @@ function getDate(value: GridCellValue) {
   return value ? new Date(value as string).toLocaleDateString() : undefined
 }
 
+function getTimezone(value: GridCellValue) {
+  return value ? 'hello' : undefined
+}
+
 function getJoinedDateWithIcons(params: GridValueGetterParams) {
   const joinedDate = params.row.joinedDate
   const smsDate = params.row.smsDate
@@ -285,6 +290,12 @@ const ACTIVE_PARTICIPANT_COLUMNS: GridColDef[] = [
     field: 'clinicVisitDate',
     headerName: 'Clinic Visit',
     valueGetter: params => getDate(params.value) || ' ',
+    flex: 1,
+  },
+  {
+    field: 'timezone',
+    headerName: 'Time Zone',
+    valueGetter: params => getTimezone(params.value) || '',
     flex: 1,
   },
   {
@@ -371,7 +382,8 @@ export type ParticipantTableGridProps = {
   onUpdateParticipant: (
     pId: string,
     note: string,
-    clinicVisitDate?: Date
+    clinicVisitDate?: Date,
+    timeZone?: string
   ) => void
   onWithdrawParticipant: (participantId: string, note: string) => void
   children: React.ReactNode //paging control
@@ -542,8 +554,8 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
           <EditParticipantForm
             isEnrolledById={isEnrolledById}
             onCancel={() => setParticipantToEdit(undefined)}
-            onOK={(note: string, cvd?: Date) => {
-              onUpdateParticipant(participantToEdit?.id!, note, cvd)
+            onOK={(note: string, cvd?: Date, timeZone?: string) => {
+              onUpdateParticipant(participantToEdit?.id!, note, cvd, timeZone)
               setParticipantToEdit(undefined)
             }}
             participant={participantToEdit?.participant || {}}>
