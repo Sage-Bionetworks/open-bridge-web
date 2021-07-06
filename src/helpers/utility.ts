@@ -224,12 +224,16 @@ export const randomInteger = (min: number, max: number): number => {
 // generates external id
 export const generateNonambiguousCode = (
   length: number,
-  isAlpha?: boolean
+  mode: 'NUMERIC' | 'ALPHANUMERIC' | 'CONSONANTS' = 'NUMERIC'
 ): string => {
   let result = ''
-  const alpha = '23456789abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ'
-  const numeric = '0123456789'
-  const symbols = isAlpha ? alpha : numeric
+
+  const dictionary = {
+    NUMERIC: '0123456789',
+    ALPHANUMERIC: '23456789abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ',
+    CONSONANTS: 'bcdfghjkmnpqrstvwxz',
+  }
+  const symbols = dictionary[mode]
   const max_offset = symbols.length - 1
 
   for (let i = 0; i < length; i++) {
@@ -257,7 +261,8 @@ export const isInvalidPhone = (phone: string): boolean => {
   This function is taken from: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
 */
 export const isValidEmail = (email: string) => {
-  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  const re =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(String(email).toLowerCase())
 }
 

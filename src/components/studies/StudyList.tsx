@@ -16,13 +16,13 @@ import {useUserSessionDataState} from '../../helpers/AuthContext'
 import {useStudyInfoDataDispatch} from '../../helpers/StudyInfoContext'
 import {generateNonambiguousCode} from '../../helpers/utility'
 import StudyService from '../../services/study.service'
+import {latoFont} from '../../style/theme'
 import constants from '../../types/constants'
 import {Study, StudyPhase} from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import {MTBHeading} from '../widgets/Headings'
 import Loader from '../widgets/Loader'
 import StudyCard from './StudyCard'
-import {latoFont} from '../../style/theme'
 
 type StudyListOwnProps = {}
 
@@ -218,10 +218,11 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const handleError = useErrorHandler()
 
   const {token} = useUserSessionDataState()
-  const [menuAnchor, setMenuAnchor] = React.useState<null | {
-    study: Study
-    anchorEl: HTMLElement
-  }>(null)
+  const [menuAnchor, setMenuAnchor] =
+    React.useState<null | {
+      study: Study
+      anchorEl: HTMLElement
+    }>(null)
   const [renameStudyId, setRenameStudyId] = React.useState('')
   const classes = useStyles()
   const handleMenuClose = () => {
@@ -236,15 +237,18 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const [statusFilters, setStatusFilters] = React.useState<SectionStatus[]>(
     sections.map(section => section.sectionStatus)
   )
-  const [highlightedStudyId, setHighlightedStudyId] = React.useState<
-    string | null
-  >(null)
+  const [highlightedStudyId, setHighlightedStudyId] =
+    React.useState<string | null>(null)
 
   let resetNewlyAddedStudyID: NodeJS.Timeout
 
-  const {data: studies, status, error, run, setData: setStudies} = useAsync<
-    Study[]
-  >({
+  const {
+    data: studies,
+    status,
+    error,
+    run,
+    setData: setStudies,
+  } = useAsync<Study[]>({
     status: 'PENDING',
     data: [],
   })
@@ -254,7 +258,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   const createStudy = async (study?: Study) => {
     //if study is provided -- we are duplicating
-    const id = generateNonambiguousCode(6)
+    const id = generateNonambiguousCode(6, 'CONSONANTS')
 
     const newStudy: Study = study
       ? {
