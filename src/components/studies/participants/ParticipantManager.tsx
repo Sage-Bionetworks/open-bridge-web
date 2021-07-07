@@ -537,7 +537,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       ),
     ]
     const results = await Promise.all(promises)
-    console.log(results, 'results')
 
     let participants: ParticipantAccountSummary[] = []
     let total = 0
