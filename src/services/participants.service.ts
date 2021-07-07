@@ -446,25 +446,25 @@ async function participantSearch(
       ? 'withdrawn'
       : 'all'
   const noneOfGroups = []
-  const allofGroups = []
+  const allOfGroups = []
   if (participantType !== 'TEST') {
     noneOfGroups.push('test_user')
   } else {
-    allofGroups.push('test_user')
+    allOfGroups.push('test_user')
   }
   let body
   if (searchType === 'EXTERNAL_ID') {
     body = {
       enrollment: queryFilter,
       noneOfGroups: noneOfGroups,
-      allOfGroups: allofGroups,
+      allOfGroups: allOfGroups,
       externalIdFilter: queryValue,
     }
   } else {
     body = {
       enrollment: queryFilter,
       noneOfGroups: noneOfGroups,
-      allOfGroups: allofGroups,
+      allOfGroups: allOfGroups,
       phoneFilter: queryValue,
     }
   }
