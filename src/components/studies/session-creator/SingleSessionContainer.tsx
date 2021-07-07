@@ -80,12 +80,13 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       border: '2px solid #C4C4C4',
       boxShadow: '0px 5px 5px #0908f3;',
     },
-    // chrome + Safari
     '&::-webkit-scrollbar': {
-      display: 'none',
+      width: '4px',
     },
-    // firefox
-    scrollbarWidth: 'none',
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#C4C4C4',
+      borderRadius: '4px',
+    },
   },
 }))
 
