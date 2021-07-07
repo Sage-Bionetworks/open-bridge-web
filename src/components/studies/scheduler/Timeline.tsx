@@ -1,5 +1,6 @@
 import {Box} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import Tooltip from '@material-ui/core/Tooltip'
 import moment from 'moment'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
@@ -10,11 +11,10 @@ import {useAsync} from '../../../helpers/AsyncHook'
 import StudyService from '../../../services/study.service'
 import {latoFont} from '../../../style/theme'
 import {Schedule} from '../../../types/scheduling'
+import AssessmentImage from '../../assessments/AssessmentImage'
 import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
 import SessionIcon from '../../widgets/SessionIcon'
 import TimelineCustomPlot, {TimelineZoomLevel} from './TimelineCustomPlot'
-import AssessmentImage from '../../assessments/AssessmentImage'
-import Tooltip from '@material-ui/core/Tooltip'
 
 const useStyles = makeStyles(theme => ({
   stats: {
@@ -85,12 +85,17 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
   const [dropdown, setDropdown] = React.useState(['Daily'])
-  const [currentZoomLevel, setCurrentZoomLevel] = React.useState<
-    TimelineZoomLevel
-  >('Monthly')
+  const [currentZoomLevel, setCurrentZoomLevel] =
+    React.useState<TimelineZoomLevel>('Monthly')
 
   const classes = useStyles()
-  const {data: timeline, status, error, run, setData} = useAsync<any>({
+  const {
+    data: timeline,
+    status,
+    error,
+    run,
+    setData,
+  } = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
@@ -171,11 +176,14 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
         <Box className={classes.legend}>
           {schedFromDisplay?.sessions?.map((s, index) => (
             <Tooltip
+              key={`session_${s.guid}`}
               title={
                 <Box width="115px">
                   {s.assessments?.map((assessment, index) => {
                     return (
-                      <Box className={classes.assessmentBox}>
+                      <Box
+                        className={classes.assessmentBox}
+                        key={`assmnt_${assessment.guid}`}>
                         <AssessmentImage
                           resources={assessment.resources}
                           variant="small"
