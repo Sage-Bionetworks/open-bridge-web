@@ -428,11 +428,12 @@ async function getEnrollmentById(
   }
 }
 
-async function participantSearchUsingExternalId(
+async function participantSearch(
   studyIdentifier: string,
   token: string,
-  externalId: string,
-  participantType: ParticipantActivityType
+  queryValue: string,
+  participantType: ParticipantActivityType,
+  searchType: 'EXTERNAL_ID' | 'PHONE_NUMBER'
 ) {
   const endpoint = constants.endpoints.participantsSearch.replace(
     ':id',
@@ -451,47 +452,21 @@ async function participantSearchUsingExternalId(
   } else {
     allofGroups.push('test_user')
   }
-  const body = {
-    externalIdFilter: externalId,
-    enrollment: queryFilter,
-    noneOfGroups: noneOfGroups,
-    allOfGroups: allofGroups,
-  }
-  const result = await callEndpoint<{
-    items: ParticipantAccountSummary[]
-    total: number
-  }>(endpoint, 'POST', body, token)
-  return result.data
-}
-
-async function participantSearchUsingPhoneNumber(
-  studyIdentifier: string,
-  token: string,
-  phoneNumber: string,
-  participantType: ParticipantActivityType
-) {
-  const endpoint = constants.endpoints.participantsSearch.replace(
-    ':id',
-    studyIdentifier
-  )
-  const queryFilter =
-    participantType === 'ACTIVE'
-      ? 'enrolled'
-      : participantType === 'WITHDRAWN'
-      ? 'withdrawn'
-      : 'all'
-  const noneOfGroups = []
-  const allofGroups = []
-  if (participantType !== 'TEST') {
-    noneOfGroups.push('test_user')
+  let body
+  if (searchType === 'EXTERNAL_ID') {
+    body = {
+      enrollment: queryFilter,
+      noneOfGroups: noneOfGroups,
+      allOfGroups: allofGroups,
+      externalIdFilter: queryValue,
+    }
   } else {
-    allofGroups.push('test_user')
-  }
-  const body = {
-    phoneFilter: phoneNumber,
-    enrollment: queryFilter,
-    noneOfGroups: noneOfGroups,
-    allOfGroups: allofGroups,
+    body = {
+      enrollment: queryFilter,
+      noneOfGroups: noneOfGroups,
+      allOfGroups: allofGroups,
+      phoneFilter: queryValue,
+    }
   }
   const result = await callEndpoint<{
     items: ParticipantAccountSummary[]
@@ -687,8 +662,7 @@ const ParticipantService = {
   getEnrollmentById,
   getActiveParticipantById,
   getParticipants,
-  participantSearchUsingExternalId,
-  participantSearchUsingPhoneNumber,
+  participantSearch,
   getRequestInfoForParticipant,
   updateParticipantGroup,
   updateParticipantNote,

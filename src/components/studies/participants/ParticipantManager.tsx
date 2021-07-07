@@ -523,21 +523,23 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const handleSearchParticipantRequest = async (searchedValue: string) => {
     const promises = [
-      await ParticipantService.participantSearchUsingExternalId(
+      await ParticipantService.participantSearch(
         study.identifier,
         token!,
         searchedValue,
-        tab
+        tab,
+        'EXTERNAL_ID'
       ),
-      await ParticipantService.participantSearchUsingPhoneNumber(
+      await ParticipantService.participantSearch(
         study.identifier,
         token!,
         searchedValue,
-        tab
+        tab,
+        'PHONE_NUMBER'
       ),
     ]
     const results = await Promise.all(promises)
-    console.log(results, "results")
+    console.log(results, 'results')
 
     let participants: ParticipantAccountSummary[] = []
     let total = 0
