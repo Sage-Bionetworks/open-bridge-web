@@ -8,26 +8,13 @@ export default {
     NEW_STUDY_NAME: 'NEW_STUDY_UNNAMED',
   },
 
-  /* templateTitles: {
-    email_account_exists: 'Account already exists notification (email)',
-    email_app_install_link: 'Link to install app (email)',
-    email_reset_password: 'Reset password (email)',
-    email_sign_in: 'Sign in (via email)',
-    email_signed_consent: 'Consent agreement (email)',
-    email_verify_email: 'Verify email address',
-    sms_account_exists: 'Account already exists notification (SMS)',
-    sms_app_install_link: 'Link to install app (SMS)',
-    sms_phone_sign_in: 'Sign in (via SMS)',
-    sms_reset_password: 'Reset password (SMS)',
-    sms_signed_consent: 'Consent agreement (SMS)',
-    sms_verify_phone: 'Verify phone number',
-  },*/
   environments: [
     {value: 'local', label: 'Local'},
     {value: 'develop', label: 'Development'},
     {value: 'staging', label: 'Staging'},
     {value: 'production', label: 'Production'},
   ],
+  org_roles: ['org_admin', 'study_designer', 'study_coordinator'] as const,
   /*host: {
     local: 'http://localhost:9000',
     develop: 'https://ws-develop.sagebridge.org',
