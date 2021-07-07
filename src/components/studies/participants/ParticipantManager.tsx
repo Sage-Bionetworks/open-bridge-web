@@ -563,10 +563,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         eventsMapPromises
       )
       for (let i = 0; i < eventsMap.length; i++) {
-        const currenParticipant = participants[i]
-        const event = eventsMap[i][currenParticipant.id]
+        const currentParticipant = participants[i]
+        const event = eventsMap[i][currentParticipant.id]
         participantData.push({
-          ...currenParticipant,
+          ...currentParticipant,
           clinicVisitDate: event.clinicVisitDate,
           joinedDate: event.joinedDate,
           smsDate: event.smsDate,
