@@ -256,9 +256,7 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
             }
             label="MAKE CO-ADMINISTRATOR OF STUDY"
             style={{
-              marginBottom: getRolesFromAccess(access).includes('org_admin')
-                ? '12px'
-                : '42px',
+              marginBottom: hasCoadminAccess() ? '12px' : '42px',
               marginTop: '8px',
               fontFamily: latoFont,
             }}
@@ -301,7 +299,7 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
                     isEdit={isEdit}
                     restriction={restriction}
                     role_key={role_key}
-                    isCoAdmin={getRolesFromAccess(access).includes('org_admin')}
+                    isCoAdmin={hasCoadminAccess()}
                     currentUserIsAdmin={currentUserIsAdmin}
                     onUpdate={(e: React.ChangeEvent<HTMLInputElement>) => {
                       updateAccess(e.target.value, role_key)
