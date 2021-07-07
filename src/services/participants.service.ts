@@ -445,13 +445,17 @@ async function participantSearchUsingExternalId(
       ? 'withdrawn'
       : 'all'
   const noneOfGroups = []
+  const allofGroups = []
   if (participantType !== 'TEST') {
     noneOfGroups.push('test_user')
+  } else {
+    allofGroups.push('test_user')
   }
   const body = {
     externalIdFilter: externalId,
     enrollment: queryFilter,
     noneOfGroups: noneOfGroups,
+    allOfGroups: allofGroups,
   }
   const result = await callEndpoint<{
     items: ParticipantAccountSummary[]
@@ -477,13 +481,17 @@ async function participantSearchUsingPhoneNumber(
       ? 'withdrawn'
       : 'all'
   const noneOfGroups = []
+  const allofGroups = []
   if (participantType !== 'TEST') {
     noneOfGroups.push('test_user')
+  } else {
+    allofGroups.push('test_user')
   }
   const body = {
     phoneFilter: phoneNumber,
     enrollment: queryFilter,
     noneOfGroups: noneOfGroups,
+    allOfGroups: allofGroups,
   }
   const result = await callEndpoint<{
     items: ParticipantAccountSummary[]
