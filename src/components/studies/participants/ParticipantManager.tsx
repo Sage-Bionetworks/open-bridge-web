@@ -565,6 +565,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       for (let i = 0; i < eventsMap.length; i++) {
         const currentParticipant = participants[i]
         const event = eventsMap[i][currentParticipant.id]
+        if(currentParticipant.externalId ) {
+          currentParticipant.externalId = formatStudyId(currentParticipant.externalId.split(":")[0])
+        }
         participantData.push({
           ...currentParticipant,
           clinicVisitDate: event.clinicVisitDate,
