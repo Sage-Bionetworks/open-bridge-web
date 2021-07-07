@@ -1,3 +1,4 @@
+import constants from './constants'
 import {Schedule, ScheduleNotification, StartEventId} from './scheduling'
 
 /* *** General Types ********************************/
@@ -44,13 +45,7 @@ export type UserSessionData = {
   id: string
 }
 
-export type AdminRole =
-  | 'developer'
-  | 'researcher'
-  | 'study_coordinator'
-  | 'admin'
-  | 'org_admin'
-  | 'worker'
+export type AdminRole = typeof constants.org_roles[number]
 
 export interface UserData {
   username?: string
