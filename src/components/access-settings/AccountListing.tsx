@@ -3,7 +3,7 @@ import React, {FunctionComponent, ReactNode} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {ReactComponent as Delete} from '../../assets/trash.svg'
 import {useAsync} from '../../helpers/AsyncHook'
-import {isInAdminRole, formatStudyId} from '../../helpers/utility'
+import {formatStudyId, isInAdminRole} from '../../helpers/utility'
 import AccessService from '../../services/access.service'
 import {globals, poppinsFont} from '../../style/theme'
 import {OrgUser, Study, UserSessionData} from '../../types/types'
@@ -96,7 +96,7 @@ const NameDisplayDetail: React.FunctionComponent<{member: OrgUser}> = ({
 }) => {
   const classes = useStyles()
   return (
-    <Box style={{marginBottom: '80px', marginTop: '100px'}}>
+    <Box style={{marginBottom: '40px', marginTop: '80px'}}>
       <Box display="flex" alignItems="center">
         <Box className={classes.studyInfoNameText} fontWeight="bold">
           {getNameDisplay(member)}
@@ -125,13 +125,18 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
 
   const handleError = useErrorHandler()
 
-  const [currentMemberAccess, setCurrentMemberAccess] = React.useState<
-    {access: Access; member: OrgUser} | undefined
-  >()
+  const [currentMemberAccess, setCurrentMemberAccess] =
+    React.useState<{access: Access; member: OrgUser} | undefined>()
   const [isAccessLoading, setIsAccessLoading] = React.useState(true)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
 
-  const {data: members, status, error, run, setData} = useAsync<any>({
+  const {
+    data: members,
+    status,
+    error,
+    run,
+    setData,
+  } = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
@@ -264,8 +269,9 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                 })
               }
               isEdit={true}
+              isThisMe={currentMemberAccess.member.id === id}
               currentUserIsAdmin={isInAdminRole(myRoles)}></AccessGrid>
-            {myRoles.includes('admin') && (
+            {myRoles.includes('org_admin') && (
               <Box className={classes.buttons}>
                 <Button
                   aria-label="delete"

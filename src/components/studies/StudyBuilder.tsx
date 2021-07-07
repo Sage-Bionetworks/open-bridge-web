@@ -119,10 +119,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ...otherProps
 }) => {
   const classes = useStyles()
-  let {id, section: _section} = useParams<{
-    id: string
-    section: StudySection
-  }>()
+  let {id, section: _section} =
+    useParams<{
+      id: string
+      section: StudySection
+    }>()
   const [section, setSection] = React.useState(_section)
   const [error, setError] = React.useState<string[]>([])
   const [schedulerErrors, setSchedulerErrors] = React.useState<
@@ -508,7 +509,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           {navButtons}
                         </EnrollmentTypeSelector>
                       )}
-                      s
                       {section === 'customize' && (
                         <AppDesign
                           hasObjectChanged={hasObjectChanged}

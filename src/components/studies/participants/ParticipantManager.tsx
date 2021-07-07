@@ -274,11 +274,12 @@ async function getParticipants(
 
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
-  const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipants(
-    studyId,
-    token,
-    retrievedParticipants.map(p => p.id)
-  )
+  const eventsMap: StringDictionary<ParticipantRelevantEvents> =
+    await ParticipantService.getRelevantEventsForParticipants(
+      studyId,
+      token,
+      retrievedParticipants.map(p => p.id)
+    )
   const result = retrievedParticipants!.map(participant => {
     const id = participant.id as string
     const event = eventsMap[id]
@@ -381,14 +382,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   })
 
   // True if the user is currently searching for a particpant using id
-  const [
-    isUserSearchingForParticipant,
-    setIsUserSearchingForParticipant,
-  ] = React.useState(false)
+  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] =
+    React.useState(false)
 
-  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
-    string | undefined
-  >(undefined)
+  const [fileDownloadUrl, setFileDownloadUrl] =
+    React.useState<string | undefined>(undefined)
 
   //user ids selectedForSction
   const [
@@ -660,6 +658,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             TabIndicatorProps={{hidden: true}}>
             {TAB_DEFs.map((tabDef, index) => (
               <Tab
+                key={`tab_${tabDef.label}`}
                 value={tabDef.type}
                 classes={{
                   root: clsx(
@@ -876,12 +875,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       pageSize={pageSize}
                       setPageSize={setPageSize}
                       handlePageNavigationArrowPressed={(button: string) => {
-                        const currPage = getCurrentPageFromPageNavigationArrowPressed(
-                          button,
-                          currentPage,
-                          data?.total || 0,
-                          pageSize
-                        )
+                        const currPage =
+                          getCurrentPageFromPageNavigationArrowPressed(
+                            button,
+                            currentPage,
+                            data?.total || 0,
+                            pageSize
+                          )
                         setCurrentPage(currPage)
                       }}
                     />
