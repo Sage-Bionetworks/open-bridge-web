@@ -8,7 +8,6 @@ import {
 import ClockIcon from '@material-ui/icons/AccessTime'
 import AddIcon from '@material-ui/icons/Add'
 import ClearIcon from '@material-ui/icons/Clear'
-import DeleteIcon from '@material-ui/icons/Delete'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {
@@ -25,6 +24,7 @@ import AssessmentSmall from '../../assessments/AssessmentSmall'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import EditableTextbox from '../../widgets/EditableTextbox'
 import SessionIcon from '../../widgets/SessionIcon'
+import TrashIcon from '../../../assets/trash.svg'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -49,11 +49,16 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     top: '-3px',
   },
   btnDeleteAssessment: {
-    padding: '0',
+    padding: theme.spacing(1.25, 1.25),
     minWidth: 'auto',
     position: 'absolute',
-    top: '35px',
-    right: theme.spacing(1),
+    top: '28px',
+    right: theme.spacing(0),
+    backgroundColor: '#E8BEBE',
+    borderRadius: '0px',
+    '&:hover': {
+      backgroundColor: '#E8BEBE',
+    },
   },
   actions: {
     borderTop: '1px solid black',
@@ -244,7 +249,9 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                                   e.stopPropagation()
                                   removeAssessment(assessment.guid)
                                 }}>
-                                <DeleteIcon></DeleteIcon>
+                                <img
+                                  src={TrashIcon}
+                                  style={{width: '10px', height: '14px'}}></img>
                               </Button>
                             )}
                           </AssessmentSmall>
