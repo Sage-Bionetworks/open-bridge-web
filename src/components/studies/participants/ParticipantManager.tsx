@@ -391,9 +391,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   >(undefined)
 
   //user ids selectedForSction
-  const [selectedParticipantIds, setSelectedParticipantIds] = React.useState<
-    SelectedParticipantIdsType
-  >({
+  const [
+    selectedParticipantIds,
+    setSelectedParticipantIds,
+  ] = React.useState<SelectedParticipantIdsType>({
     ACTIVE: [],
     TEST: [],
     WITHDRAWN: [],
@@ -417,9 +418,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setRefreshParticipantsToggle,
   ] = React.useState(false)
 
-  const {data, status, error, run, setData: setParticipantData} = useAsync<
-    ParticipantData
-  >({
+  const {
+    data,
+    status,
+    error,
+    run,
+    setData: setParticipantData,
+  } = useAsync<ParticipantData>({
     status: 'PENDING',
     data: null,
   })
@@ -517,41 +522,58 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }
 
   const handleSearchParticipantRequest = async (searchedValue: string) => {
-    const result = await ParticipantService.getEnrollmentById(
-      study.identifier,
-      token!,
-      searchedValue,
-      tab
-    )
-    //tab === 'ACTIVE'
-    /* ? await ParticipantService.getParticipantById(
-            study.identifier,
-            token!,
-            searchedValue,
-            tab
-          )
-        : await ParticipantService.getEnrollmentsWithdrawnById(
-            study.identifier,
-            token!,
-            searchedValue,
-          )*/
-    //  const realResult = result ? [result] : []
-    // const totalParticipantsFound = result ? 1 : 0
-    if (result) {
-      const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipants(
+    const promises = [
+      await ParticipantService.participantSearchUsingExternalId(
         study.identifier,
         token!,
-        [result.id]
-      )
+        searchedValue,
+        tab
+      ),
+      await ParticipantService.participantSearchUsingPhoneNumber(
+        study.identifier,
+        token!,
+        searchedValue,
+        tab
+      ),
+    ]
+    const results = await Promise.all(promises)
+    console.log(results, "results")
 
-      const event = eventsMap[result.id]
-      const updatedParticipant = {
-        ...result,
-        clinicVisitDate: event.clinicVisitDate,
-        joinedDate: event.joinedDate,
-        smsDate: event.smsDate,
+    let participants: ParticipantAccountSummary[] = []
+    let total = 0
+    const seenIds = new Set<string>()
+    for (const result of results) {
+      for (const participant of result.items) {
+        if (seenIds.has(participant.id)) continue
+        seenIds.add(participant.id)
+        total++
+        participants.push(participant)
       }
-      setParticipantData({items: [updatedParticipant], total: 1})
+    }
+
+    if (total > 0) {
+      const participantData = []
+      const eventsMapPromises = participants.map(async participant => {
+        return await ParticipantService.getRelevantEventsForParticipants(
+          study.identifier,
+          token!,
+          [participant.id]
+        )
+      })
+      const eventsMap: StringDictionary<ParticipantRelevantEvents>[] = await Promise.all(
+        eventsMapPromises
+      )
+      for (let i = 0; i < eventsMap.length; i++) {
+        const currenParticipant = participants[i]
+        const event = eventsMap[i][currenParticipant.id]
+        participantData.push({
+          ...currenParticipant,
+          clinicVisitDate: event.clinicVisitDate,
+          joinedDate: event.joinedDate,
+          smsDate: event.smsDate,
+        })
+      }
+      setParticipantData({items: [...participantData], total: total})
     } else {
       setParticipantData({items: [], total: 0})
     }

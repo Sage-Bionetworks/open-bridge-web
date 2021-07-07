@@ -428,6 +428,70 @@ async function getEnrollmentById(
   }
 }
 
+async function participantSearchUsingExternalId(
+  studyIdentifier: string,
+  token: string,
+  externalId: string,
+  participantType: ParticipantActivityType
+) {
+  const endpoint = constants.endpoints.participantsSearch.replace(
+    ':id',
+    studyIdentifier
+  )
+  const queryFilter =
+    participantType === 'ACTIVE'
+      ? 'enrolled'
+      : participantType === 'WITHDRAWN'
+      ? 'withdrawn'
+      : 'all'
+  const noneOfGroups = []
+  if (participantType !== 'TEST') {
+    noneOfGroups.push('test_user')
+  }
+  const body = {
+    externalIdFilter: externalId,
+    enrollment: queryFilter,
+    noneOfGroups: noneOfGroups,
+  }
+  const result = await callEndpoint<{
+    items: ParticipantAccountSummary[]
+    total: number
+  }>(endpoint, 'POST', body, token)
+  return result.data
+}
+
+async function participantSearchUsingPhoneNumber(
+  studyIdentifier: string,
+  token: string,
+  phoneNumber: string,
+  participantType: ParticipantActivityType
+) {
+  const endpoint = constants.endpoints.participantsSearch.replace(
+    ':id',
+    studyIdentifier
+  )
+  const queryFilter =
+    participantType === 'ACTIVE'
+      ? 'enrolled'
+      : participantType === 'WITHDRAWN'
+      ? 'withdrawn'
+      : 'all'
+  const noneOfGroups = []
+  if (participantType !== 'TEST') {
+    noneOfGroups.push('test_user')
+  }
+  const body = {
+    phoneFilter: phoneNumber,
+    enrollment: queryFilter,
+    noneOfGroups: noneOfGroups,
+  }
+  const result = await callEndpoint<{
+    items: ParticipantAccountSummary[]
+    total: number
+  }>(endpoint, 'POST', body, token)
+  return result.data
+}
+
 //withdraws participant
 async function withdrawParticipant(
   studyIdentifier: string,
@@ -615,6 +679,8 @@ const ParticipantService = {
   getEnrollmentById,
   getActiveParticipantById,
   getParticipants,
+  participantSearchUsingExternalId,
+  participantSearchUsingPhoneNumber,
   getRequestInfoForParticipant,
   updateParticipantGroup,
   updateParticipantNote,
