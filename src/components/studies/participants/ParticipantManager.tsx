@@ -255,6 +255,40 @@ const getCurrentPageFromPageNavigationArrowPressed = (
   return currentPage //should not happen
 }
 
+async function getRelevantParticipantInfo(
+  studyId: string,
+  token: string,
+  participants: ExtendedParticipantAccountSummary[]
+) {
+  const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipants(
+    studyId,
+    token,
+    participants.map(p => p.id)
+  )
+  const result = participants!.map(participant => {
+    const id = participant.id as string
+    const event = eventsMap[id]
+    if (participant.externalId) {
+      const splitExternalId = participant.externalId.split(':')
+      let id = ''
+      if (splitExternalId.length === 1) {
+        id = splitExternalId[0]
+      } else {
+        id = splitExternalId[splitExternalId[0] === studyId ? 1 : 0]
+      }
+      participant.externalId = formatStudyId(id)
+    }
+    const updatedParticipant = {
+      ...participant,
+      clinicVisitDate: event.clinicVisitDate,
+      joinedDate: event.joinedDate,
+      smsDate: event.smsDate,
+    }
+    return updatedParticipant
+  })
+  return result
+}
+
 async function getParticipants(
   studyId: string,
   token: string,
@@ -274,24 +308,11 @@ async function getParticipants(
 
   const retrievedParticipants = participants ? participants.items : []
   const numberOfParticipants = participants ? participants.total : 0
-  const eventsMap: StringDictionary<ParticipantRelevantEvents> =
-    await ParticipantService.getRelevantEventsForParticipants(
-      studyId,
-      token,
-      retrievedParticipants.map(p => p.id)
-    )
-  const result = retrievedParticipants!.map(participant => {
-    const id = participant.id as string
-    const event = eventsMap[id]
-    const updatedParticipant = {
-      ...participant,
-      clinicVisitDate: event.clinicVisitDate,
-      joinedDate: event.joinedDate,
-      smsDate: event.smsDate,
-    }
-    return updatedParticipant
-  })
-  console.log('returning result')
+  const result = await getRelevantParticipantInfo(
+    studyId,
+    token,
+    retrievedParticipants
+  )
   return {items: result, total: numberOfParticipants}
 }
 
@@ -382,11 +403,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   })
 
   // True if the user is currently searching for a particpant using id
-  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] =
-    React.useState(false)
+  const [
+    isUserSearchingForParticipant,
+    setIsUserSearchingForParticipant,
+  ] = React.useState(false)
 
-  const [fileDownloadUrl, setFileDownloadUrl] =
-    React.useState<string | undefined>(undefined)
+  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
+    string | undefined
+  >(undefined)
 
   //user ids selectedForSction
   const [
@@ -542,39 +566,20 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     let total = 0
     for (const result of results) {
       for (const participant of result.items) {
-        const isInList = participants.find((el) => el.id === participant.id) !== undefined
+        const isInList =
+          participants.find(el => el.id === participant.id) !== undefined
         if (isInList) continue
         total++
         participants.push(participant)
       }
     }
-
     if (total > 0) {
-      const participantData = []
-      const eventsMapPromises = participants.map(async participant => {
-        return await ParticipantService.getRelevantEventsForParticipants(
-          study.identifier,
-          token!,
-          [participant.id]
-        )
-      })
-      const eventsMap: StringDictionary<ParticipantRelevantEvents>[] = await Promise.all(
-        eventsMapPromises
+      const result = await getRelevantParticipantInfo(
+        study.identifier,
+        token!,
+        participants
       )
-      for (let i = 0; i < eventsMap.length; i++) {
-        const currentParticipant = participants[i]
-        const event = eventsMap[i][currentParticipant.id]
-        if(currentParticipant.externalId ) {
-          currentParticipant.externalId = formatStudyId(currentParticipant.externalId.split(":")[0])
-        }
-        participantData.push({
-          ...currentParticipant,
-          clinicVisitDate: event.clinicVisitDate,
-          joinedDate: event.joinedDate,
-          smsDate: event.smsDate,
-        })
-      }
-      setParticipantData({items: [...participantData], total: total})
+      setParticipantData({items: result, total: total})
     } else {
       setParticipantData({items: [], total: 0})
     }
@@ -876,13 +881,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       pageSize={pageSize}
                       setPageSize={setPageSize}
                       handlePageNavigationArrowPressed={(button: string) => {
-                        const currPage =
-                          getCurrentPageFromPageNavigationArrowPressed(
-                            button,
-                            currentPage,
-                            data?.total || 0,
-                            pageSize
-                          )
+                        const currPage = getCurrentPageFromPageNavigationArrowPressed(
+                          button,
+                          currentPage,
+                          data?.total || 0,
+                          pageSize
+                        )
                         setCurrentPage(currPage)
                       }}
                     />

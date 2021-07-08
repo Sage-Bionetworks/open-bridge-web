@@ -468,6 +468,7 @@ async function participantSearch(
     items: ParticipantAccountSummary[]
     total: number
   }>(endpoint, 'POST', body, token)
+  
   return result.data
 }
 
