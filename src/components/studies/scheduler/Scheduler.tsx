@@ -280,8 +280,10 @@ const Scheduler: FunctionComponent<
                 unitData={DWsEnum}></Duration>
             }
           />
-          {hasObjectChanged && (
-            <SaveButton onClick={() => onSave()}>Save changes</SaveButton>
+          {hasObjectChanged && !saveLoader && (
+            <SaveButton isFloatingSave={true} onClick={() => onSave()}>
+              Save changes
+            </SaveButton>
           )}
         </div>
         <Box bgcolor="#fff" p={2} mt={3} key="scheduler">
