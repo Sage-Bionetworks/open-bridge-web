@@ -5,8 +5,15 @@ import SessionsLayout from './components/layouts/sessions'
 import DevelopmentTeam from './components/static/DevelopmentTeam'
 import HowItWorks from './components/static/HowItWorks'
 import Plans from './components/static/Plans'
+import DownloadAppLandingPage from './components/static/DownloadAppLandingPage'
 
 export default [
+  {
+    path: '/app-store-link',
+    name: 'App store',
+    Component: DownloadAppLandingPage,
+    exact: true,
+  },
   {
     path: '/how-it-works',
     name: 'HOW IT WORKS',
