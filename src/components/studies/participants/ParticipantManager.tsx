@@ -540,11 +540,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
     let participants: ParticipantAccountSummary[] = []
     let total = 0
-    const seenIds = new Set<string>()
     for (const result of results) {
       for (const participant of result.items) {
-        if (seenIds.has(participant.id)) continue
-        seenIds.add(participant.id)
+        const isInList = participants.find((el) => el.id === participant.id) !== undefined
+        if (isInList) continue
         total++
         participants.push(participant)
       }
