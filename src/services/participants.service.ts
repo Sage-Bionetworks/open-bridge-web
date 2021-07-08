@@ -370,25 +370,12 @@ async function getEnrollmentById(
   participantId: string,
   participantType: ParticipantActivityType
 ) {
-  const endpoint = constants.endpoints.enrollmentsForUser
-    .replace(':studyId', studyIdentifier)
-    .replace(':userId', participantId)
-    .trim()
   try {
-    const result = await callEndpoint<{items: EnrolledAccountRecord[]}>(
-      endpoint,
-      'GET',
-      {},
+    const participant = await getUserEnrollmentInfo(
+      studyIdentifier,
+      participantId,
       token
     )
-    const filteredRows = result.data.items.filter(
-      p => p.studyId === studyIdentifier
-    )
-
-    if (_.isEmpty(filteredRows)) {
-      return null
-    }
-    const participant = filteredRows[0]
     const recordFromParticipantApi = await getActiveParticipantById(
       studyIdentifier,
       token,
@@ -411,12 +398,12 @@ async function getEnrollmentById(
     }
 
     if (participant.withdrawnOn && participantType !== 'TEST') {
-      return mapWithdrawnParticipant(filteredRows[0], studyIdentifier)
+      return mapWithdrawnParticipant(participant, studyIdentifier)
     } else {
       return getActiveParticipantById(
         studyIdentifier,
         token,
-        filteredRows[0].participant.identifier
+        participant.participant.identifier
       )
     }
   } catch (e) {
@@ -426,6 +413,96 @@ async function getEnrollmentById(
     }
     throw new Error(e)
   }
+}
+
+async function getUserEnrollmentInfo(
+  studyIdentifier: string,
+  participantId: string,
+  token: string
+) {
+  const endpoint = constants.endpoints.enrollmentsForUser
+    .replace(':studyId', studyIdentifier)
+    .replace(':userId', participantId)
+  const result = await callEndpoint<{items: EnrolledAccountRecord[]}>(
+    endpoint,
+    'GET',
+    {},
+    token
+  )
+  const filteredRows = result.data.items.filter(
+    p => p.studyId === studyIdentifier
+  )
+
+  if (_.isEmpty(filteredRows)) {
+    return {} as EnrolledAccountRecord
+  }
+  return filteredRows[0]
+}
+
+async function participantSearch(
+  studyIdentifier: string,
+  token: string,
+  queryValue: string,
+  participantType: ParticipantActivityType,
+  searchType: 'EXTERNAL_ID' | 'PHONE_NUMBER'
+) {
+  const endpoint = constants.endpoints.participantsSearch.replace(
+    ':id',
+    studyIdentifier
+  )
+  const queryFilter =
+    participantType === 'ACTIVE'
+      ? 'enrolled'
+      : participantType === 'WITHDRAWN'
+      ? 'withdrawn'
+      : 'all'
+  const noneOfGroups = []
+  const allOfGroups = []
+  if (participantType !== 'TEST') {
+    noneOfGroups.push('test_user')
+  } else {
+    allOfGroups.push('test_user')
+  }
+  let body = {
+    enrollment: queryFilter,
+    noneOfGroups: noneOfGroups,
+    allOfGroups: allOfGroups,
+    externalIdFilter: queryValue || undefined,
+    phoneFilter: queryValue || undefined,
+  }
+  if (searchType === 'EXTERNAL_ID') {
+    delete body.phoneFilter
+  } else {
+    delete body.externalIdFilter
+  }
+  const participantAccountSummaryResult = await callEndpoint<{
+    items: ParticipantAccountSummary[]
+    total: number
+  }>(endpoint, 'POST', body, token)
+
+  // get withdrawn info if the participant is withdrawn, only get the note otherwise
+  let resultItems: ParticipantAccountSummary[] =
+    participantAccountSummaryResult.data.items
+  if (queryFilter === 'withdrawn') {
+    const participantEnrollmentPromises = participantAccountSummaryResult.data.items.map(
+      participant => {
+        return getUserEnrollmentInfo(studyIdentifier, participant.id, token)
+      }
+    )
+    const enrollments = await Promise.all(participantEnrollmentPromises)
+    resultItems = enrollments.map(p =>
+      mapWithdrawnParticipant(p, studyIdentifier)
+    )
+  } else if (queryFilter === 'enrolled') {
+    const participantPromises = participantAccountSummaryResult.data.items.map(
+      i => getActiveParticipantById(studyIdentifier, token, i.id)
+    )
+    const resolvedParticipants = await Promise.all(participantPromises)
+    resultItems = resolvedParticipants.filter(
+      p => p !== null
+    ) as ParticipantAccountSummary[]
+  }
+  return {items: resultItems, total: resultItems.length}
 }
 
 //withdraws participant
@@ -615,6 +692,7 @@ const ParticipantService = {
   getEnrollmentById,
   getActiveParticipantById,
   getParticipants,
+  participantSearch,
   getRequestInfoForParticipant,
   updateParticipantGroup,
   updateParticipantNote,
