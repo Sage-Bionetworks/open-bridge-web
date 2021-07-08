@@ -481,7 +481,8 @@ async function participantSearch(
   }>(endpoint, 'POST', body, token)
 
   // get withdrawn info if the participant is withdrawn, only get the note otherwise
-  let resultItems: ParticipantAccountSummary[] = []
+  let resultItems: ParticipantAccountSummary[] =
+    participantAccountSummaryResult.data.items
   if (queryFilter === 'withdrawn') {
     const participantEnrollmentPromises = participantAccountSummaryResult.data.items.map(
       participant => {
@@ -492,7 +493,7 @@ async function participantSearch(
     resultItems = enrollments.map(p =>
       mapWithdrawnParticipant(p, studyIdentifier)
     )
-  } else {
+  } else if (queryFilter === 'enrolled') {
     const participantPromises = participantAccountSummaryResult.data.items.map(
       i => getActiveParticipantById(studyIdentifier, token, i.id)
     )
