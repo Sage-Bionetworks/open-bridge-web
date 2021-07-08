@@ -4,7 +4,7 @@ import {Alert} from '@material-ui/lab'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
-import {ErrorBoundary} from 'react-error-boundary'
+import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import {useUserSessionDataState} from '../../helpers/AuthContext'
 import {
@@ -126,6 +126,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     }>()
   const [section, setSection] = React.useState(_section)
   const [error, setError] = React.useState<string[]>([])
+  const handleError = useErrorHandler()
   const [schedulerErrors, setSchedulerErrors] = React.useState<
     SchedulerErrorType[]
   >([])
@@ -205,7 +206,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       return updatedStudy
     } catch (e) {
       if (e.statusCode === 401) {
-        throw e
+        handleError(e)
       }
       setError(e.message)
       window.scrollTo({
@@ -265,7 +266,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       return savedUpdatedSchedule
     } catch (e) {
       if (e.statusCode === 401) {
-        throw e
+        handleError(e)
       }
       console.log(e, 'error')
       const entity = e.entity
