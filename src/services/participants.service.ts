@@ -452,21 +452,17 @@ async function participantSearch(
   } else {
     allOfGroups.push('test_user')
   }
-  let body
+  let body = {
+    enrollment: queryFilter,
+    noneOfGroups: noneOfGroups,
+    allOfGroups: allOfGroups,
+    externalIdFilter: queryValue || undefined,
+    phoneFilter: queryValue || undefined,
+  }
   if (searchType === 'EXTERNAL_ID') {
-    body = {
-      enrollment: queryFilter,
-      noneOfGroups: noneOfGroups,
-      allOfGroups: allOfGroups,
-      externalIdFilter: queryValue,
-    }
+    delete body.phoneFilter
   } else {
-    body = {
-      enrollment: queryFilter,
-      noneOfGroups: noneOfGroups,
-      allOfGroups: allOfGroups,
-      phoneFilter: queryValue,
-    }
+    delete body.externalIdFilter
   }
   const result = await callEndpoint<{
     items: ParticipantAccountSummary[]
