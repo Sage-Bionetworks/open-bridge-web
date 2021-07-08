@@ -7,7 +7,7 @@ import {
   StartEventId,
   StudySession,
 } from '../types/scheduling'
-import {Study, FileRevision} from '../types/types'
+import {FileRevision, Study} from '../types/types'
 import AssessmentService from './assessment.service'
 
 const StudyService = {
@@ -208,7 +208,7 @@ async function saveStudySchedule(
     return response.data
   } catch (error) {
     //we might need to retry if there is a verison mismatch
-    if (error.statusCode == 409) {
+    if (error.statusCode === 409) {
       const endPoint = scheduleEndpoint.replace(':id', schedule.guid)
       const sched = await callEndpoint<Schedule>(endPoint, 'GET', {}, token)
       schedule.version = sched.data.version
