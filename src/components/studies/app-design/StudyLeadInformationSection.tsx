@@ -118,7 +118,7 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
                 ethicsBoardContact
               )
             }}
-            titleText="Funder*"
+            titleText="Funder"
           />
         </FormControl>
       </FormGroupWrapper>

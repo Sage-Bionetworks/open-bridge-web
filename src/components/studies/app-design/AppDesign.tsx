@@ -1,7 +1,7 @@
 import {Box, Paper, Switch} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
-import React, {ChangeEvent, useState} from 'react'
+import React, {ChangeEvent, useEffect, useState} from 'react'
 import {HexColorPicker} from 'react-colorful'
 import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
@@ -289,9 +289,10 @@ const AppDesign: React.FunctionComponent<
   const classes = useStyles()
 
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
-  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] = useState<
-    boolean
-  >(
+  const [
+    irbNameSameAsInstitution,
+    setIrbNameSameAsInstitution,
+  ] = useState<boolean>(
     getContact(study, 'irb')?.name ===
       getContact(study, 'principal_investigator')?.affiliation
   )
@@ -418,6 +419,41 @@ const AppDesign: React.FunctionComponent<
     return contact || {role: type, name: ''}
   }
 
+  useEffect(() => {
+    // Set the use default message property to true by default
+    const {welcomeScreenData} = study.clientData
+    if (welcomeScreenData?.isUsingDefaultMessage === undefined) {
+      updateWelcomeScreenMessaging(
+        welcomeScreenData?.welcomeScreenHeader || '',
+        welcomeScreenData?.welcomeScreenBody || '',
+        welcomeScreenData?.welcomeScreenSalutation || '',
+        welcomeScreenData?.welcomeScreenFromText || '',
+        true
+      )
+    }
+  }, [])
+
+  const updateWelcomeScreenMessaging = (
+    welcomeScreenHeader: string,
+    welcomeScreenBody: string,
+    welcomeScreenSalutation: string,
+    welcomeScreenFromText: string,
+    useOptionalDisclaimer: boolean
+  ) => {
+    const newWelcomeScreenData = {
+      welcomeScreenHeader: welcomeScreenHeader,
+      welcomeScreenBody: welcomeScreenBody,
+      welcomeScreenFromText: welcomeScreenFromText,
+      welcomeScreenSalutation: welcomeScreenSalutation,
+      useOptionalDisclaimer: useOptionalDisclaimer,
+      isUsingDefaultMessage:
+        study.clientData.welcomeScreenData?.isUsingDefaultMessage || false,
+    } as WelcomeScreenData
+    const updatedStudy = {...study}
+    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
+    onUpdate(updatedStudy)
+  }
+
   return (
     <>
       <Box className={classes.root}>
@@ -510,27 +546,7 @@ const AppDesign: React.FunctionComponent<
                   saveLoader={saveLoader}
                   saveInfo={saveInfo}
                   SimpleTextInputStyles={SimpleTextInputStyles}
-                  onUpdate={(
-                    welcomeStringHeader: string,
-                    welcomeScreenBody: string,
-                    welcomeScreenSalutation: string,
-                    welcomeScreenFromText: string,
-                    useOptionalDisclaimer: boolean
-                  ) => {
-                    const newWelcomeScreenData = {
-                      welcomeScreenHeader: welcomeStringHeader,
-                      welcomeScreenBody: welcomeScreenBody,
-                      welcomeScreenFromText: welcomeScreenFromText,
-                      welcomeScreenSalutation: welcomeScreenSalutation,
-                      useOptionalDisclaimer: useOptionalDisclaimer,
-                      isUsingDefaultMessage:
-                        study.clientData.welcomeScreenData
-                          ?.isUsingDefaultMessage || false,
-                    } as WelcomeScreenData
-                    const updatedStudy = {...study}
-                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
-                    onUpdate(updatedStudy)
-                  }}
+                  onUpdate={updateWelcomeScreenMessaging}
                   welcomeScreenHeader={
                     study.clientData.welcomeScreenData?.welcomeScreenHeader ||
                     ''
