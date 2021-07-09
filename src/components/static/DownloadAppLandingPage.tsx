@@ -1,7 +1,7 @@
 import React from 'react'
 import MTBLogoLarge from '../../assets/mtb_logo_large.svg'
 import {makeStyles} from '@material-ui/core/styles'
-import {Box, Button} from '@material-ui/core'
+import {Box} from '@material-ui/core'
 import {latoFont, playfairDisplayFont} from '../../style/theme'
 import appStoreBtn from '../../assets/preview/appStoreBtn.png'
 import googlePlayBtn from '../../assets/preview/googlePlayBtn.png'
@@ -54,12 +54,12 @@ const DownloadAppLandingPage: React.FunctionComponent<{}> = ({}) => {
         Please select the store that works best on your smartphone:
       </p>
       <Box mt={3}>
-        <Button style={{marginRight: '24px'}} onClick={() => {}}>
+        <a style={{marginRight: '24px'}} href="" target="_blank">
           <img src={appStoreBtn} alt="ios app store button"></img>
-        </Button>
-        <Button onClick={() => {}}>
+        </a>
+        <a href="" target="_blank">
           <img src={googlePlayBtn} alt="google play store"></img>
-        </Button>
+        </a>
       </Box>
     </Box>
   )
