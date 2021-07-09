@@ -8,7 +8,12 @@ import PhoneImg from '../../../assets/preview/preview_phone.svg'
 import {ReactComponent as PlayImg} from '../../../assets/preview/preview_play.svg'
 import SampleAssessmentDataImg from '../../../assets/preview/sample_assessment_data.svg'
 import ParticipantService from '../../../services/participants.service'
-import {latoFont, poppinsFont, ThemeType} from '../../../style/theme'
+import {
+  latoFont,
+  poppinsFont,
+  ThemeType,
+  playfairDisplayFont,
+} from '../../../style/theme'
 import {StudySession} from '../../../types/scheduling'
 import {Assessment} from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
@@ -16,11 +21,14 @@ import {ErrorFallback, ErrorHandler} from '../../widgets/ErrorHandler'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import {SimpleTextInput} from '../../widgets/StyledComponents'
 import {formatStudyId} from '../../../helpers/utility'
+import MedicalIcon from '../../../assets/preview/reminder_of_use_medical_icon.svg'
+import AuthorizedIcon from '../../../assets/preview/reminder_of_use_authorization_icon.svg'
+import ProtectionIcon from '../../../assets/preview/reminder_of_use_protect_icon.svg'
+import ScheduleSessionsIcon from '../../../assets/preview/schedule_session_icon_no_padding.svg'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
     backgroundColor: '#fff',
-
     padding: theme.spacing(0, 6, 7, 6),
     textAlign: 'left',
   },
@@ -103,6 +111,45 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     width: '24px',
     marginTop: theme.spacing(0.75),
   },
+  reminderOfUseIcon: {
+    marginBottom: theme.spacing(2),
+    height: '100px',
+    width: '80px',
+  },
+  reminderOfUseText: {
+    fontFamily: latoFont,
+    fontSize: '15px',
+    lineHeight: '18px',
+  },
+  reminderOfUseHeader: {
+    fontFamily: playfairDisplayFont,
+    fontSize: '21px',
+    fontStyle: 'italic',
+  },
+  scheduleSessionReminderContainer: {
+    width: '415px',
+    height: '82px',
+    border: '2px solid black',
+    display: 'flex',
+    marginBottom: theme.spacing(4.5),
+    padding: theme.spacing(3, 4.25, 3, 4.25),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scheduleSessionsButton: {
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    padding: '0px',
+    textDecoration: 'underline',
+    '&:hover': {
+      backgroundColor: 'transparent',
+    },
+  },
+  scheduleSessionsIcon: {
+    height: '16px',
+    width: '16px',
+    marginBottom: theme.spacing(-0.25),
+  },
 }))
 
 export interface PreviewProps {
@@ -112,16 +159,15 @@ export interface PreviewProps {
   scheduleSessions: StudySession[]
 }
 
-const Reminder: React.FunctionComponent = ({}) => {
+const Reminder: React.FunctionComponent<{text: string; img: string}> = ({
+  text,
+  img,
+}) => {
+  const classes = useStyles()
   return (
-    <Box textAlign="center" width="154px">
-      <Box
-        width="154px"
-        height="154px"
-        borderRadius="50%"
-        bgcolor="#ccc"
-        mb={2}></Box>
-      <p>Key terms of agreemment summary goes here</p>
+    <Box textAlign="center" width="200px">
+      <img className={classes.reminderOfUseIcon} src={img}></img>
+      <p className={classes.reminderOfUseText}>{text}</p>
     </Box>
   )
 }
@@ -165,17 +211,51 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
     setUniqueAssessments(uniqueAssessments)
   }, [])
 
+  const text = [
+    'Only use the Mobile Toolbox for authorized purposes.',
+    'Respect and protect data, participant’s privacy and data confidentiality.',
+    'Not attempt to use or represent the use of Mobile Toolbox for medical care.',
+  ]
+
+  const icons = [AuthorizedIcon, ProtectionIcon, MedicalIcon]
+
   return (
     <>
       {!testParticipantId ? (
         <div className={classes.root}>
-          <Box textAlign="center">
-            <MTBHeadingH2> Preview your study on a mobile device</MTBHeadingH2>
-            <MTBHeadingH1>Reminder of use:</MTBHeadingH1>
-            <Box display="flex" justifyContent="space-between" mt={10} mb={8}>
-              {[...Array(4)].map((_i, index) => (
-                <Reminder key={index}></Reminder>
+          <Box
+            textAlign="center"
+            display="flex"
+            flexDirection="column"
+            alignItems="center">
+            <MTBHeadingH1 className={classes.reminderOfUseHeader}>
+              Reminder of use:
+            </MTBHeadingH1>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              mt={10}
+              mb={4}
+              alignItems="center"
+              width="100%">
+              {text.map((text, index) => (
+                <Reminder key={index} text={text} img={icons[index]}></Reminder>
               ))}
+            </Box>
+            <Box className={classes.scheduleSessionReminderContainer}>
+              <Box>
+                Please remember to customize your study schedule on&nbsp;
+                <img
+                  className={classes.scheduleSessionsIcon}
+                  src={ScheduleSessionsIcon}></img>
+                &nbsp;
+                <Button
+                  href="scheduler"
+                  className={classes.scheduleSessionsButton}>
+                  Schedule Sessions
+                </Button>
+                &nbsp; page before previewing your app.
+              </Box>
             </Box>
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
