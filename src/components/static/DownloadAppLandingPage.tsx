@@ -1,7 +1,7 @@
 import React from 'react'
 import MTBLogoLarge from '../../assets/mtb_logo_large.svg'
 import {makeStyles} from '@material-ui/core/styles'
-import {Box} from '@material-ui/core'
+import {Box, Button} from '@material-ui/core'
 import {latoFont, playfairDisplayFont} from '../../style/theme'
 import appStoreBtn from '../../assets/preview/appStoreBtn.png'
 import googlePlayBtn from '../../assets/preview/googlePlayBtn.png'
@@ -39,7 +39,11 @@ const DownloadAppLandingPage: React.FunctionComponent<{}> = ({}) => {
   const classes = useStyles()
   return (
     <Box className={classes.container}>
-      <img src={MTBLogoLarge} style={{width: '100px', height: '100px'}} />
+      <img
+        src={MTBLogoLarge}
+        alt="large mtb logo"
+        style={{width: '100px', height: '100px'}}
+      />
       <Box className={classes.downloadText}>
         Download the <strong>Mobile Toolbox App</strong>
       </Box>
@@ -50,8 +54,12 @@ const DownloadAppLandingPage: React.FunctionComponent<{}> = ({}) => {
         Please select the store that works best on your smartphone:
       </p>
       <Box mt={3}>
-        <img src={appStoreBtn} style={{marginRight: '24px'}}></img>
-        <img src={googlePlayBtn}></img>
+        <Button style={{marginRight: '24px'}} onClick={() => {}}>
+          <img src={appStoreBtn} alt="ios app store button"></img>
+        </Button>
+        <Button onClick={() => {}}>
+          <img src={googlePlayBtn} alt="google play store"></img>
+        </Button>
       </Box>
     </Box>
   )
