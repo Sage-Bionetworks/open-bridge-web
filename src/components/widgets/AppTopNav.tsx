@@ -272,7 +272,8 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
     }
     return initial?.toUpperCase() || '?'
   }
-
+  // Hide the app store download page from the nav.
+  routes = routes.filter(route => route.name !== 'APP STORE')
   return (
     <>
       {' '}

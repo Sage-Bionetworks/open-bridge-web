@@ -1,41 +1,49 @@
 import React from 'react'
 import MTBLogoLarge from '../../assets/mtb_logo_large.svg'
+import {makeStyles} from '@material-ui/core/styles'
 import {Box} from '@material-ui/core'
 import {latoFont, playfairDisplayFont} from '../../style/theme'
 import appStoreBtn from '../../assets/preview/appStoreBtn.png'
 import googlePlayBtn from '../../assets/preview/googlePlayBtn.png'
+
+const useStyles = makeStyles(theme => ({
+  container: {
+    width: '100%',
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    backgroundColor: '#F8F8F8',
+    paddingTop: theme.spacing(10),
+    textAlign: 'left',
+  },
+  downloadText: {
+    lineHeight: '28px',
+    fontSize: '21px',
+    fontStyle: 'italic',
+    fontFamily: playfairDisplayFont,
+    marginTop: theme.spacing(5),
+    maxWidth: '250px',
+    textAlign: 'center',
+  },
+  thankYouText: {
+    maxWidth: '260px',
+    fontFamily: latoFont,
+    fontSize: '15px',
+    lineHeight: '18px',
+    marginTop: theme.spacing(3),
+  },
+}))
+
 const DownloadAppLandingPage: React.FunctionComponent<{}> = ({}) => {
+  const classes = useStyles()
   return (
-    <Box
-      style={{
-        width: '100%',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        backgroundColor: '#F8F8F8',
-        paddingTop: '80px',
-        textAlign: 'left',
-      }}>
+    <Box className={classes.container}>
       <img src={MTBLogoLarge} style={{width: '100px', height: '100px'}} />
-      <Box
-        lineHeight="28px"
-        fontSize="21px"
-        fontStyle="italic"
-        fontFamily={playfairDisplayFont}
-        mt={5}
-        maxWidth="250px"
-        textAlign="center">
+      <Box className={classes.downloadText}>
         Download the <strong>Mobile Toolbox App</strong>
       </Box>
-      <p
-        style={{
-          maxWidth: '260px',
-          fontFamily: latoFont,
-          fontSize: '15px',
-          lineHeight: '18px',
-          marginTop: '24px',
-        }}>
+      <p className={classes.thankYouText}>
         Thank you for participating.
         <br></br>
         <br></br>

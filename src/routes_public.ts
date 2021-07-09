@@ -9,8 +9,8 @@ import DownloadAppLandingPage from './components/static/DownloadAppLandingPage'
 
 export default [
   {
-    path: '/app-store-link',
-    name: 'App store',
+    path: '/app-store-download-page',
+    name: 'APP STORE',
     Component: DownloadAppLandingPage,
     exact: true,
   },
