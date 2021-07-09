@@ -548,7 +548,7 @@ const AppDesign: React.FunctionComponent<
                   }
                   useOptionalDisclaimer={
                     study.clientData.welcomeScreenData?.useOptionalDisclaimer ||
-                    false
+                    true
                   }
                 />
               </ol>
