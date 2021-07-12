@@ -11,7 +11,6 @@ import {
   DataGrid,
   GridCellParams,
   GridCellValue,
-  GridClasses,
   GridColDef,
   GridColumnMenuContainer,
   GridColumnMenuProps,
@@ -509,7 +508,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     }
     return 'NONE'
   }
-  const x: GridClasses = {}
+
   return (
     <>
       <Paper elevation={0}>
@@ -529,11 +528,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                   model = selectionModel.filter(id => id != row.data.id)
                 }
 
-                onRowSelected(
-                  // rows.filter(row => model.includes(row.id)) || [],
-                  model,
-                  false
-                )
+                onRowSelected(model, false)
               }}
               selectionModel={selectionModel}
               components={{
