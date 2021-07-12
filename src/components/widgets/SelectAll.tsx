@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'left',
   },
   check: {
-    padding: theme.spacing(0.5, 0, 0.5, 2),
+    padding: theme.spacing(0.5, 0, 0.5, 1.25),
   },
   icon: {
     marginLeft: '-10px',

@@ -6,6 +6,10 @@ export interface StringDictionary<T> {
   [key: string]: T
 }
 
+export type PartialRecord<K extends keyof any, T> = {
+  [P in K]?: T
+}
+
 export interface Response<T> {
   status: number
   ok: boolean
