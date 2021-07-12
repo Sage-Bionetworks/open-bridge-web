@@ -79,17 +79,17 @@ const useStyles = makeStyles(theme => ({
 type ParticipantSearchProps = {
   onReset: Function
   onSearch: Function
+  isEnrolledById?: boolean
 }
 
 const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
   onReset,
   onSearch,
+  isEnrolledById,
 }) => {
   const classes = useStyles()
-  const [
-    isSearchingForParticipant,
-    setIsSearchingForParticipant,
-  ] = React.useState(false)
+  const [isSearchingForParticipant, setIsSearchingForParticipant] =
+    React.useState(false)
 
   // True if the user is currently trying to search for a particular particpant
   const [isSearchingUsingId, setIsSearchingUsingID] = React.useState(false)
@@ -113,7 +113,9 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
   return isSearchingForParticipant ? (
     <div className={classes.inputRow}>
       <input
-        placeholder="Participant IDs"
+        placeholder={
+          isEnrolledById ? "Participant's ID" : "Participant's Phone Number"
+        }
         onKeyDown={e => {
           if (e.key === ENTER_KEY) {
             handleSearchParticipantRequest()
