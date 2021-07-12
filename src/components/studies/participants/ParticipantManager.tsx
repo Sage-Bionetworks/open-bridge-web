@@ -260,11 +260,12 @@ async function getRelevantParticipantInfo(
   token: string,
   participants: ExtendedParticipantAccountSummary[]
 ) {
-  const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipants(
-    studyId,
-    token,
-    participants.map(p => p.id)
-  )
+  const eventsMap: StringDictionary<ParticipantRelevantEvents> =
+    await ParticipantService.getRelevantEventsForParticipants(
+      studyId,
+      token,
+      participants.map(p => p.id)
+    )
   const result = participants!.map(participant => {
     const id = participant.id as string
     const event = eventsMap[id]
@@ -403,24 +404,19 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   })
 
   // True if the user is currently searching for a particpant using id
-  const [
-    isUserSearchingForParticipant,
-    setIsUserSearchingForParticipant,
-  ] = React.useState(false)
+  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] =
+    React.useState(false)
 
-  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
-    string | undefined
-  >(undefined)
+  const [fileDownloadUrl, setFileDownloadUrl] =
+    React.useState<string | undefined>(undefined)
 
   //user ids selectedForSction
-  const [
-    selectedParticipantIds,
-    setSelectedParticipantIds,
-  ] = React.useState<SelectedParticipantIdsType>({
-    ACTIVE: [],
-    TEST: [],
-    WITHDRAWN: [],
-  })
+  const [selectedParticipantIds, setSelectedParticipantIds] =
+    React.useState<SelectedParticipantIdsType>({
+      ACTIVE: [],
+      TEST: [],
+      WITHDRAWN: [],
+    })
   const [isAllSelected, setIsAllSelected] = React.useState(false)
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
@@ -435,10 +431,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   >([])
 
   //trigger data refresh on updates
-  const [
-    refreshParticipantsToggle,
-    setRefreshParticipantsToggle,
-  ] = React.useState(false)
+  const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
+    React.useState(false)
 
   const {
     data,
@@ -543,49 +537,40 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     }
   }
 
-  const handleSearchParticipantRequest = async (searchedValue: string) => {
-    const promises = [
-      await ParticipantService.participantSearch(
-        study.identifier,
-        token!,
-        searchedValue,
-        tab,
-        'EXTERNAL_ID'
-      ),
-      await ParticipantService.participantSearch(
-        study.identifier,
-        token!,
-        searchedValue,
-        tab,
-        'PHONE_NUMBER'
-      ),
-    ]
-    const results = await Promise.all(promises)
+  const handleSearchParticipantRequest = async (
+    isEnrolledById: boolean,
+    searchedValue: string
+  ) => {
+    const {items, total} = isEnrolledById
+      ? await ParticipantService.participantSearch(
+          study.identifier,
+          token!,
+          searchedValue,
+          tab,
+          'EXTERNAL_ID'
+        )
+      : await ParticipantService.participantSearch(
+          study.identifier,
+          token!,
+          searchedValue,
+          tab,
+          'PHONE_NUMBER'
+        )
 
-    let participants: ParticipantAccountSummary[] = []
-    let total = 0
-    for (const result of results) {
-      for (const participant of result.items) {
-        const isInList =
-          participants.find(el => el.id === participant.id) !== undefined
-        if (isInList) continue
-        total++
-        participants.push(participant)
-      }
-    }
     if (total > 0) {
       const result = await getRelevantParticipantInfo(
         study.identifier,
         token!,
-        participants
+        items
       )
-      setParticipantData({items: result, total: total})
+      setParticipantData({items, total})
     } else {
       setParticipantData({items: [], total: 0})
     }
   }
 
   const handleResetSearch = async () => {
+    setIsUserSearchingForParticipant(false)
     const result = await run(
       getParticipants(study!.identifier, token!, currentPage, pageSize, tab)
     )
@@ -821,13 +806,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   </Box>
 
                   <ParticipantSearch
+                    isEnrolledById={isSignInById(study.signInTypes)}
                     onReset={() => {
-                      setIsUserSearchingForParticipant(false)
                       handleResetSearch()
                     }}
                     onSearch={(searchedValue: string) => {
+                      const isById = isSignInById(study.signInTypes)
                       setIsUserSearchingForParticipant(true)
-                      handleSearchParticipantRequest(searchedValue)
+                      handleSearchParticipantRequest(isById, searchedValue)
                     }}
                   />
                 </Box>
@@ -881,12 +867,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       pageSize={pageSize}
                       setPageSize={setPageSize}
                       handlePageNavigationArrowPressed={(button: string) => {
-                        const currPage = getCurrentPageFromPageNavigationArrowPressed(
-                          button,
-                          currentPage,
-                          data?.total || 0,
-                          pageSize
-                        )
+                        const currPage =
+                          getCurrentPageFromPageNavigationArrowPressed(
+                            button,
+                            currentPage,
+                            data?.total || 0,
+                            pageSize
+                          )
                         setCurrentPage(currPage)
                       }}
                     />

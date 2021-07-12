@@ -310,7 +310,8 @@ export const EditDialogTitle: FunctionComponent<{
 function getColumns(
   studyId: string,
   token: string,
-
+  gridType: ParticipantActivityType,
+  isEnrolledById: boolean,
   setParticipantToEdit: Function,
   isGloballyHidePhone: boolean,
   setIsGloballyHidePhone: Function
@@ -352,7 +353,7 @@ function getColumns(
     },
     {
       field: 'externalId',
-      headerName: 'Participant ID',
+      headerName: isEnrolledById ? 'Participant ID' : 'Reference ID',
       flex: 1,
     },
     {field: 'id', headerName: 'HealthCode', flex: 2},
@@ -396,7 +397,29 @@ function getColumns(
       ),
     },
   ]
-  return COLUMNS
+
+  let participantColumns = [...COLUMNS]
+  if (gridType === 'ACTIVE') {
+    participantColumns = _.filter(
+      participantColumns,
+      c => !_.includes(['dateWithdrawn', 'withdrawalNote'], c.field)
+    )
+  }
+  if (gridType === 'WITHDRAWN') {
+    participantColumns = _.filter(
+      participantColumns,
+      c => !_.includes(['note', 'edit'], c.field)
+    )
+  }
+
+  if (isEnrolledById) {
+    participantColumns = _.filter(
+      participantColumns,
+      c => !_.includes(['phone'], c.field)
+    )
+  }
+
+  return participantColumns
 }
 
 /************************** */
@@ -454,33 +477,15 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   ])
   const [isGloballyHidePhone, setIsGloballyHidePhone] = React.useState(true)
 
-  let participantColumns = getColumns(
+  const participantColumns = getColumns(
     studyId,
     token!,
+    gridType,
+    isEnrolledById,
     setParticipantToEdit,
     isGloballyHidePhone,
     setIsGloballyHidePhone
   )
-
-  if (gridType === 'ACTIVE') {
-    participantColumns = _.filter(
-      participantColumns,
-      c => !_.includes(['dateWithdrawn', 'withdrawalNote'], c.field)
-    )
-  }
-  if (gridType === 'WITHDRAWN') {
-    participantColumns = _.filter(
-      participantColumns,
-      c => !_.includes(['note', 'edit'], c.field)
-    )
-  }
-
-  if (isEnrolledById) {
-    participantColumns = _.filter(
-      participantColumns,
-      c => !_.includes(['phone'], c.field)
-    )
-  }
 
   participantColumns.forEach(c => {
     c.sortable = false
