@@ -11,6 +11,7 @@ import {
   DataGrid,
   GridCellParams,
   GridCellValue,
+  GridClasses,
   GridColDef,
   GridColumnMenuContainer,
   GridColumnMenuProps,
@@ -48,6 +49,11 @@ import {EditParticipantForm, WithdrawParticipantForm} from './ParticipantForms'
 
 const useStyles = makeStyles(theme => ({
   root: {},
+  gridHeader: {
+    '& .MuiDataGrid-columnSeparator': {
+      display: 'none',
+    },
+  },
   showEntryText: {
     fontFamily: latoFont,
     fontSize: '15px',
@@ -85,7 +91,7 @@ const PhoneCell: FunctionComponent<{
   }
 
   return params.formattedValue ? (
-    <div style={{textAlign: 'center', width: '100%'}}>
+    <div style={{textAlign: 'center', width: '115px'}}>
       {!isHidden && params.formattedValue}
       <Button
         onClick={onClick}
@@ -278,56 +284,6 @@ function renderColumnHeaderWithIcon(icon: string, headerName: string) {
   ) as ReactNode
 }
 
-const ACTIVE_PARTICIPANT_COLUMNS: GridColDef[] = [
-  {
-    field: 'externalId',
-    headerName: 'Participant ID',
-    flex: 2,
-  },
-  {field: 'id', headerName: 'HealthCode', flex: 2},
-  {
-    field: 'clinicVisitDate',
-    headerName: 'Clinic Visit',
-    valueGetter: params => getDate(params.value) || ' ',
-    flex: 1,
-  },
-  {
-    field: 'joinedDate',
-    renderHeader: () => renderColumnHeaderWithIcon(JoinedCheckSymbol, 'Joined'),
-    renderCell: getJoinedDateWithIcons,
-    flex: 1,
-  },
-  {field: 'note', headerName: 'Notes', flex: 1},
-]
-
-const WITHDRAWN_PARTICIPANT_COLUMNS: GridColDef[] = [
-  {
-    field: 'externalId',
-    headerName: 'Participant ID',
-    flex: 2,
-  },
-  {field: 'id', headerName: 'HealthCode', flex: 2},
-  {
-    field: 'clinicVisitDate',
-    headerName: 'Clinic Visit',
-    valueGetter: params => getDate(params.value) || ' ',
-    flex: 1,
-  },
-  {
-    field: 'joinedDate',
-    renderHeader: () => renderColumnHeaderWithIcon(JoinedCheckSymbol, 'Joined'),
-    renderCell: getJoinedDateWithIcons,
-    flex: 1,
-  },
-  {
-    field: 'dateWithdrawn',
-    headerName: 'Withdrawn',
-    valueGetter: params => getDate(params.value) || '-',
-    flex: 1,
-  },
-  {field: 'withdrawalNote', headerName: 'Withdrawal note', flex: 1},
-]
-
 export const EditDialogTitle: FunctionComponent<{
   onCancel: Function
   shouldWithdraw?: boolean
@@ -349,6 +305,102 @@ export const EditDialogTitle: FunctionComponent<{
     </DialogTitleWithClose>
   )
 }
+
+/*************** COLUMNS    ****** */
+
+function getColumns(
+  studyId: string,
+  token: string,
+
+  setParticipantToEdit: Function,
+  isGloballyHidePhone: boolean,
+  setIsGloballyHidePhone: Function
+) {
+  const COLUMNS: GridColDef[] = [
+    {
+      field: 'phone',
+      headerName: 'Phone Number',
+      flex: 1.5,
+      valueGetter: getPhone,
+
+      disableClickEventBubbling: true,
+
+      renderHeader: () => {
+        return (
+          <Box display="flex" flexDirection="row" alignItems="center">
+            Phone Number
+            <Button
+              onClick={() => setIsGloballyHidePhone(!isGloballyHidePhone)}
+              style={{
+                minWidth: 'auto',
+                margin: '0 auto 0 3px',
+                padding: '4px',
+                height: '20px',
+              }}>
+              {isGloballyHidePhone ? <ShowPhoneIcon /> : <HidePhoneIcon />}
+            </Button>
+          </Box>
+        ) as ReactNode
+      },
+
+      renderCell: (params: GridCellParams) => {
+        return (
+          <PhoneCell
+            params={params}
+            hidePhone={isGloballyHidePhone}></PhoneCell>
+        )
+      },
+    },
+    {
+      field: 'externalId',
+      headerName: 'Participant ID',
+      flex: 1,
+    },
+    {field: 'id', headerName: 'HealthCode', flex: 2},
+    {
+      field: 'clinicVisitDate',
+      headerName: 'Clinic Visit',
+      valueGetter: params => getDate(params.value) || ' ',
+      flex: 1,
+    },
+    {
+      field: 'joinedDate',
+      renderHeader: () =>
+        renderColumnHeaderWithIcon(JoinedCheckSymbol, 'Joined'),
+      renderCell: getJoinedDateWithIcons,
+      flex: 1,
+    },
+    {field: 'note', headerName: 'Notes', flex: 2},
+    {
+      field: 'dateWithdrawn',
+      headerName: 'Withdrawn',
+      valueGetter: params => getDate(params.value) || '-',
+      flex: 1,
+    },
+    {
+      field: 'withdrawalNote',
+      headerName: 'Withdrawal note',
+      flex: 2,
+    },
+    {
+      field: 'edit',
+      headerName: 'Action',
+      disableClickEventBubbling: true,
+
+      renderCell: (params: GridCellParams) => (
+        <EditCell
+          params={params}
+          studyId={studyId}
+          token={token!}
+          onSetParticipantToEdit={setParticipantToEdit}
+        />
+      ),
+    },
+  ]
+  return COLUMNS
+}
+
+/************************** */
 
 export type ParticipantTableGridProps = {
   isAllSelected: boolean
@@ -403,62 +455,32 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   ])
   const [isGloballyHidePhone, setIsGloballyHidePhone] = React.useState(true)
 
-  const editColumn = {
-    field: 'edit',
-    headerName: 'Action',
-    disableClickEventBubbling: true,
+  let participantColumns = getColumns(
+    studyId,
+    token!,
+    setParticipantToEdit,
+    isGloballyHidePhone,
+    setIsGloballyHidePhone
+  )
 
-    renderCell: (params: GridCellParams) => (
-      <EditCell
-        params={params}
-        studyId={studyId}
-        token={token!}
-        onSetParticipantToEdit={setParticipantToEdit}
-      />
-    ),
+  if (gridType === 'ACTIVE') {
+    participantColumns = _.filter(
+      participantColumns,
+      c => !_.includes(['dateWithdrawn', 'withdrawalNote'], c.field)
+    )
+  }
+  if (gridType === 'WITHDRAWN') {
+    participantColumns = _.filter(
+      participantColumns,
+      c => !_.includes(['note', 'edit'], c.field)
+    )
   }
 
-  const phoneColumn: GridColDef = {
-    field: 'phone',
-    headerName: 'Phone Number',
-    flex: 1,
-    valueGetter: getPhone,
-
-    disableClickEventBubbling: true,
-
-    renderHeader: () => {
-      return (
-        <Box display="flex" flexDirection="row">
-          Phone Number
-          <Button
-            onClick={() => setIsGloballyHidePhone(prev => !prev)}
-            style={{minWidth: 'auto', margin: '0 auto', padding: '4px'}}>
-            {isGloballyHidePhone ? <ShowPhoneIcon /> : <HidePhoneIcon />}
-          </Button>
-        </Box>
-      ) as ReactNode
-    },
-
-    renderCell: (params: GridCellParams) => {
-      return (
-        <PhoneCell params={params} hidePhone={isGloballyHidePhone}></PhoneCell>
-      )
-    },
-  }
-
-  const participantColumns =
-    gridType === 'ACTIVE'
-      ? [...ACTIVE_PARTICIPANT_COLUMNS]
-      : [...WITHDRAWN_PARTICIPANT_COLUMNS]
-
-  if (!isEnrolledById) {
-    if (!participantColumns.find(col => col.field === 'phone'))
-      participantColumns.splice(2, 0, phoneColumn)
-  }
-  if (gridType !== 'WITHDRAWN') {
-    if (!participantColumns.find(col => col.field === 'edit')) {
-      participantColumns.push(editColumn)
-    }
+  if (isEnrolledById) {
+    participantColumns = _.filter(
+      participantColumns,
+      c => !_.includes(['phone'], c.field)
+    )
   }
 
   participantColumns.forEach(c => {
@@ -487,7 +509,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     }
     return 'NONE'
   }
-
+  const x: GridClasses = {}
   return (
     <>
       <Paper elevation={0}>
@@ -495,6 +517,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
           <div style={{flexGrow: 1}}>
             <DataGrid
               rows={rows}
+              classes={{columnHeader: classes.gridHeader}}
               density="standard"
               columns={participantColumns}
               checkboxSelection
