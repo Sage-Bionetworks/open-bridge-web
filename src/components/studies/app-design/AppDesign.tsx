@@ -207,7 +207,6 @@ export interface AppDesignProps {
   onSave: Function
   study: Study
   onError: Function
-  errorMessage: string
 }
 
 function getPreviewForImage(file: File): PreviewFile {
@@ -283,7 +282,6 @@ const AppDesign: React.FunctionComponent<
   onUpdate,
   onSave,
   study,
-  errorMessage,
   onError,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()

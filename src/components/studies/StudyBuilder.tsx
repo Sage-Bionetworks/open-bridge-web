@@ -536,8 +536,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           }}
                           onError={(error: string) =>
                             setError(prev => [...prev, error])
-                          }
-                          errorMessage={error[0] || ''}>
+                          }>
                           {navButtons}
                         </AppDesign>
                       )}
