@@ -365,7 +365,7 @@ const AppDesign: React.FunctionComponent<
     if (!contactLead?.position) {
       updatedErrorState.contactLeadPositonHasError = true
     }
-    if (irbRecord?.name === DEFAULT_CONTACT_NAME) {
+    if (!irbRecord || irbRecord?.name === DEFAULT_CONTACT_NAME) {
       updatedErrorState.irbRecordNameHasError = true
     }
     if (!study.irbProtocolId) {
