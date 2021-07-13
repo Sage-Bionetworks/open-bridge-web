@@ -11,8 +11,6 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
   root: props => ({width: props.width}),
   select: props => ({
     height: props.itemHeight,
-
-    border: '1px solid black',
     backgroundColor: 'white',
     display: 'flex',
     flexDirection: 'row',
@@ -58,9 +56,11 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
   listBorder: {
     borderRadius: '0px',
   },
-  error: {
-    borderColor: theme.palette.error.main,
-    backgroundColor: 'black',
+  errorBorder: {
+    border: `1px solid ${theme.palette.error.main}`,
+  },
+  regularBorder: {
+    border: '1px solid black',
   },
 }))
 
@@ -92,17 +92,24 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
   return (
     <Select
       labelId={id}
-      className={clsx(classes.root, hasError && classes.error)}
+      className={classes.root}
       id={id}
       value={value}
       onChange={onChange}
       disableUnderline
       classes={{
         selectMenu: classes.selectMenu,
-        root: classes.select,
+        root: clsx(
+          hasError && classes.errorBorder,
+          !hasError && classes.regularBorder,
+          classes.select
+        ),
       }}
       MenuProps={{
-        classes: {list: classes.listPadding, paper: classes.listBorder},
+        classes: {
+          list: classes.listPadding,
+          paper: classes.listBorder,
+        },
         getContentAnchorEl: null,
         anchorOrigin: {
           vertical: 'bottom',
@@ -119,7 +126,7 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
       </MenuItem>
       {dropdown.map((el, index) => (
         <MenuItem
-          className={clsx(classes.optionClass, hasError && classes.error)}
+          className={classes.optionClass}
           key={index}
           value={el.value}
           id={`investigator-${index}`}>
