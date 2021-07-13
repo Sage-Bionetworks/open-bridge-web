@@ -56,6 +56,8 @@ type IrbBoardContactSectionProps = {
   irbInfo: Contact
   protocolId: string
   getContactName: Function
+  irbNameHasError: boolean
+  irbProtocolIdHasError: boolean
 }
 
 const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProps> = ({
@@ -75,6 +77,8 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
   protocolId,
   irbInfo,
   getContactName,
+  irbNameHasError,
+  irbProtocolIdHasError,
 }) => {
   const classes = useStyles()
   return (
@@ -148,6 +152,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
               }}
               titleText=""
               readOnly={irbNameSameAsInstitution}
+              hasError={irbNameHasError}
             />
           </FormControl>
         </Box>
@@ -236,6 +241,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
               onUpdate(irbInfo, e.target.value)
             }}
             titleText="IRB Protocol ID*"
+            hasError={irbProtocolIdHasError}
           />
         </FormControl>
       </FormGroupWrapper>

@@ -33,6 +33,7 @@ import UploadStudyLogoSection from './UploadStudyLogoSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
 import constants from '../../../types/constants'
+import {useQuery, isInvalidPhone, isValidEmail} from '../../../helpers/utility'
 
 const imgHeight = 70
 const DEFAULT_CONTACT_NAME = constants.constants.CONTACT_NAME_DEFAULT
@@ -287,6 +288,9 @@ const AppDesign: React.FunctionComponent<
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
+  let query = useQuery()
+  const showError = query.get('from') === 'launch'
+
   const {token, orgMembership} = useUserSessionDataState()
 
   const classes = useStyles()
@@ -320,21 +324,84 @@ const AppDesign: React.FunctionComponent<
   })
 
   const [errorState, setErrorState] = React.useState({
-    irbContactErrors: [] as string[],
-    funderErrors: [] as string[],
-    generalContactErrors: [] as string[],
-    leadPrincipalInvestigatorErrors: [] as string[],
-    studyNameErrors: [] as string[],
-    emailErrorState: {
-      isGeneralContactEmailValid: true,
-      isIrbEmailValid: true,
-    },
-    phoneNumberEmailState: {
-      isGeneralContactPhoneNumberValid: true,
-      isIrbPhoneNumberValid: true,
-    },
-    generalErrors: [] as string[],
+    studyTitleHasError: false,
+    studySummaryCopyHasError: false,
+    leadPINameHasError: false,
+    leadPIAffiliationHasError: false,
+    contactLeadNameHasError: false,
+    contactLeadPositonHasError: false,
+    contactLeadPhoneHasError: false,
+    contactLeadEmail: false,
+    irbRecordNameHasError: false,
+    irbRecordPhoneHasError: false,
+    irbRecordEmailHasError: false,
+    irbProtocolIdHasError: false,
   })
+
+  useEffect(() => {
+    if (!showError) return
+    const updatedErrorState = {
+      studyTitleHasError: false,
+      studySummaryCopyHasError: false,
+      leadPINameHasError: false,
+      leadPIAffiliationHasError: false,
+      contactLeadNameHasError: false,
+      contactLeadPositonHasError: false,
+      contactLeadPhoneHasError: false,
+      contactLeadEmail: false,
+      irbRecordNameHasError: false,
+      irbRecordPhoneHasError: false,
+      irbRecordEmailHasError: false,
+      irbProtocolIdHasError: false,
+    }
+    const contactLead = study.contacts?.find(el => el.role === 'study_support')
+    const principalInvestigator = study.contacts?.find(
+      c => c.role === 'principal_investigator'
+    )
+    const irbRecord = study.contacts?.find(el => el.role === 'irb')
+    if (study.details === '') updatedErrorState.studySummaryCopyHasError = true
+    if (
+      !principalInvestigator ||
+      principalInvestigator?.name === DEFAULT_CONTACT_NAME
+    ) {
+      updatedErrorState.leadPINameHasError = true
+    }
+    if (!principalInvestigator?.affiliation) {
+      updatedErrorState.leadPIAffiliationHasError = true
+    }
+    if (!contactLead || contactLead.name === DEFAULT_CONTACT_NAME) {
+      updatedErrorState.contactLeadNameHasError = true
+    }
+    if (!contactLead?.position) {
+      updatedErrorState.contactLeadPositonHasError = true
+    }
+    if (irbRecord?.name === DEFAULT_CONTACT_NAME) {
+      updatedErrorState.irbRecordNameHasError = true
+    }
+    if (!study.irbProtocolId) {
+      updatedErrorState.irbProtocolIdHasError = true
+    }
+    if (!study.name) {
+      updatedErrorState.studyTitleHasError = true
+    }
+    const generalContactPhoneNumberHasError =
+      !contactLead?.phone?.number || isInvalidPhone(generalContactPhoneNumber)
+    const irbRecordHasError =
+      !irbRecord?.phone?.number || isInvalidPhone(irbRecord.phone.number)
+    setPhoneNumberErrorState({
+      isGeneralContactPhoneNumberValid: !generalContactPhoneNumberHasError,
+      isIrbPhoneNumberValid: !irbRecordHasError,
+    })
+    const generalContactEmailHasError =
+      !contactLead?.email || !isValidEmail(contactLead.email)
+    const irbRecordEmailHasError =
+      !irbRecord?.email || !isValidEmail(irbRecord.email)
+    setEmailErrorState({
+      isGeneralContactEmailValid: !generalContactEmailHasError,
+      isIrbEmailValid: !irbRecordEmailHasError,
+    })
+    setErrorState(updatedErrorState)
+  }, [study])
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     event.persist()
@@ -450,63 +517,6 @@ const AppDesign: React.FunctionComponent<
     }
   }, [])
 
-  const resetErrorState = () => {
-    setErrorState({
-      irbContactErrors: [],
-      funderErrors: [],
-      generalContactErrors: [],
-      leadPrincipalInvestigatorErrors: [],
-      studyNameErrors: [],
-      emailErrorState: {
-        isGeneralContactEmailValid:
-          errorState.emailErrorState.isGeneralContactEmailValid,
-        isIrbEmailValid: errorState.emailErrorState.isIrbEmailValid,
-      },
-      phoneNumberEmailState: {
-        isGeneralContactPhoneNumberValid:
-          errorState.phoneNumberEmailState.isIrbPhoneNumberValid,
-        isIrbPhoneNumberValid:
-          errorState.phoneNumberEmailState.isIrbPhoneNumberValid,
-      },
-      generalErrors: [],
-    })
-  }
-
-  useEffect(() => {
-    if (errorMessage === '') {
-      resetErrorState()
-      return
-    }
-    try {
-      const newErrorState = {...errorState}
-      // remove the "Study is Invalid" part of the error message
-      const shortenedErrorMessage = errorMessage.substring(18)
-      const errorMessages = shortenedErrorMessage.split(';')
-      for (const error of errorMessages) {
-        const trimmedError = error.trimLeft()
-        if (trimmedError.startsWith('name')) {
-          newErrorState.studyNameErrors.push(trimmedError)
-        } else if (trimmedError.startsWith('contacts')) {
-          const contactIndex = parseInt(trimmedError.substring(9, 10))
-          if (contactIndex === 0) {
-            newErrorState.irbContactErrors.push(trimmedError)
-          } else if (contactIndex === 1) {
-            newErrorState.funderErrors.push(trimmedError)
-          } else if (contactIndex === 2) {
-            newErrorState.generalContactErrors.push(trimmedError)
-          } else if (contactIndex === 3) {
-            newErrorState.leadPrincipalInvestigatorErrors.push(trimmedError)
-          }
-        } else {
-          // general error
-          newErrorState.generalErrors.push(trimmedError)
-        }
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }, [errorMessage])
-
   const getContactName = (name: string | undefined) => {
     if (name === DEFAULT_CONTACT_NAME) return ''
     return name ? name : ''
@@ -532,15 +542,7 @@ const AppDesign: React.FunctionComponent<
     updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
     onUpdate(updatedStudy)
   }
-  // const isError = React.useMemo(() => {
-  //   return (
-  //     errorState.funderErrors.length > 0 ||
-  //     errorState.generalContactErrors.length > 0 ||
-  //     errorState.irbContactErrors.length > 0 ||
-  //     errorState.generalErrors.length > 0 ||
-  //     errorState.leadPrincipalInvestigatorErrors.length > 0
-  //   )
-  // }, [errorState, emailErrorState, phoneNumberErrorState])
+
   return (
     <>
       <Box className={classes.root}>
@@ -727,6 +729,10 @@ const AppDesign: React.FunctionComponent<
                 }}
                 studyTitle={study.name || ''}
                 studySummaryBody={study.details || ''}
+                studyTitleHasError={showError && errorState.studyTitleHasError}
+                studySummaryCopyHasError={
+                  showError && errorState.studySummaryCopyHasError
+                }
               />
               <StudyLeadInformationSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
@@ -755,6 +761,12 @@ const AppDesign: React.FunctionComponent<
                 ethicsBoardContact={getContactPersonObject('irb')}
                 funder={getContactPersonObject('sponsor')}
                 getContactName={getContactName}
+                principleInvestigatorNameHasError={
+                  showError && errorState.leadPINameHasError
+                }
+                principleInvestigatorAffiliationHasError={
+                  showError && errorState.leadPIAffiliationHasError
+                }
               />
               <GeneralContactAndSupportSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
@@ -778,6 +790,12 @@ const AppDesign: React.FunctionComponent<
                   onUpdate(updatedStudy)
                 }}
                 getContactName={getContactName}
+                contactLeadNameHasError={
+                  showError && errorState.contactLeadNameHasError
+                }
+                contactLeadPositionHasError={
+                  showError && errorState.contactLeadPositonHasError
+                }
               />
               <IrbBoardContactSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
@@ -807,6 +825,10 @@ const AppDesign: React.FunctionComponent<
                 irbInfo={getContactPersonObject('irb')}
                 protocolId={study.irbProtocolId || ''}
                 getContactName={getContactName}
+                irbNameHasError={showError && errorState.irbRecordNameHasError}
+                irbProtocolIdHasError={
+                  showError && errorState.irbProtocolIdHasError
+                }
               />
             </ol>
           </Box>

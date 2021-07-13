@@ -10,6 +10,7 @@ type LeadInvestigatorDropdownProps = {
   currentInvestigatorSelected: string
   token: string
   orgMembership: string
+  hasError?: boolean
 }
 
 type leadInvestigatorOption = {
@@ -21,6 +22,7 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
   currentInvestigatorSelected,
   token,
   orgMembership,
+  hasError,
 }) => {
   const [leadInvestigatorOptions, setLeadInvestigatorOptions] = useState<
     leadInvestigatorOption[]
@@ -68,6 +70,7 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
         onChange={e => {
           onChange(e.target.value)
         }}
+        hasError={!!hasError}
       />
     </div>
   )

@@ -1,6 +1,7 @@
 import {makeStyles, MenuItem, Select, SelectProps} from '@material-ui/core'
 import React from 'react'
 import {ThemeType} from '../../style/theme'
+import clsx from 'clsx'
 
 interface StyleProps {
   width: string //px or %
@@ -57,6 +58,10 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
   listBorder: {
     borderRadius: '0px',
   },
+  error: {
+    borderColor: theme.palette.error.main,
+    backgroundColor: 'black',
+  },
 }))
 
 export interface BlackBorderDropdownStyleProps {
@@ -66,6 +71,7 @@ export interface BlackBorderDropdownStyleProps {
   onChange: Function
   dropdown: {value: string; label: string}[]
   emptyValueLabel: string
+  hasError?: boolean
 }
 
 const SaveBlackBorderDropdown: React.FunctionComponent<
@@ -78,6 +84,7 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
   emptyValueLabel,
   width,
   itemHeight = '30px',
+  hasError,
   ...other
 }) => {
   const classes = useStyles({width, itemHeight})
@@ -85,7 +92,7 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
   return (
     <Select
       labelId={id}
-      className={classes.root}
+      className={clsx(classes.root, hasError && classes.error)}
       id={id}
       value={value}
       onChange={onChange}
@@ -112,7 +119,7 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
       </MenuItem>
       {dropdown.map((el, index) => (
         <MenuItem
-          className={classes.optionClass}
+          className={clsx(classes.optionClass, hasError && classes.error)}
           key={index}
           value={el.value}
           id={`investigator-${index}`}>

@@ -37,6 +37,8 @@ type GeneralContactAndSupportSectionProps = {
   onUpdate: (contactLead: Contact) => void
   contactLead: Contact
   getContactName: Function
+  contactLeadNameHasError: boolean
+  contactLeadPositionHasError: boolean
 }
 
 const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAndSupportSectionProps> = ({
@@ -51,6 +53,8 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
   onUpdate,
   contactLead,
   getContactName,
+  contactLeadNameHasError,
+  contactLeadPositionHasError,
 }) => {
   const classes = useStyles()
   return (
@@ -81,6 +85,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
               onUpdate(newContactLeadObject)
             }}
             titleText="Contact Lead*"
+            hasError={contactLeadNameHasError}
           />
         </FormControl>
         <FormControl>
@@ -99,6 +104,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
               onUpdate(newContactLeadObject)
             }}
             titleText="Role in the Study*"
+            hasError={contactLeadPositionHasError}
           />
         </FormControl>
         <FormControl

@@ -35,6 +35,8 @@ type StudyLeadInformationSectionProps = {
     funder: Contact,
     ethicsBoardContact: Contact
   ) => void
+  principleInvestigatorNameHasError: boolean
+  principleInvestigatorAffiliationHasError: boolean
 }
 
 const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationSectionProps> = ({
@@ -48,6 +50,8 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
   funder,
   onUpdate,
   getContactName,
+  principleInvestigatorNameHasError,
+  principleInvestigatorAffiliationHasError,
 }) => {
   const classes = useStyles()
   return (
@@ -55,6 +59,7 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
       <FormGroupWrapper>
         <FormControl className={classes.firstFormElement}>
           <LeadInvestigatorDropdown
+            hasError={principleInvestigatorNameHasError}
             orgMembership={orgMembership!}
             token={token!}
             onChange={(investigatorSelected: string) => {
@@ -101,6 +106,7 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
               onUpdate(newStudyLeadObject, funder, newEthicsBoardObject)
             }}
             titleText="Institutional Affiliation*"
+            hasError={principleInvestigatorAffiliationHasError}
           />
         </FormControl>
         <FormControl>
