@@ -328,11 +328,7 @@ const AppDesign: React.FunctionComponent<
     leadPIAffiliationHasError: false,
     contactLeadNameHasError: false,
     contactLeadPositonHasError: false,
-    contactLeadPhoneHasError: false,
-    contactLeadEmail: false,
     irbRecordNameHasError: false,
-    irbRecordPhoneHasError: false,
-    irbRecordEmailHasError: false,
     irbProtocolIdHasError: false,
   })
 
@@ -345,11 +341,7 @@ const AppDesign: React.FunctionComponent<
       leadPIAffiliationHasError: false,
       contactLeadNameHasError: false,
       contactLeadPositonHasError: false,
-      contactLeadPhoneHasError: false,
-      contactLeadEmail: false,
       irbRecordNameHasError: false,
-      irbRecordPhoneHasError: false,
-      irbRecordEmailHasError: false,
       irbProtocolIdHasError: false,
     }
     const contactLead = study.contacts?.find(el => el.role === 'study_support')
