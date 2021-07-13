@@ -32,8 +32,10 @@ import Subsection from './Subsection'
 import UploadStudyLogoSection from './UploadStudyLogoSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
+import constants from '../../../types/constants'
 
 const imgHeight = 70
+const DEFAULT_CONTACT_NAME = constants.constants.CONTACT_NAME_DEFAULT
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {counterReset: 'orderedlist'},
@@ -204,6 +206,7 @@ export interface AppDesignProps {
   onSave: Function
   study: Study
   onError: Function
+  errorMessage: string
 }
 
 function getPreviewForImage(file: File): PreviewFile {
@@ -279,7 +282,7 @@ const AppDesign: React.FunctionComponent<
   onUpdate,
   onSave,
   study,
-
+  errorMessage,
   onError,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
@@ -314,6 +317,23 @@ const AppDesign: React.FunctionComponent<
   const [emailErrorState, setEmailErrorState] = React.useState({
     isGeneralContactEmailValid: true,
     isIrbEmailValid: true,
+  })
+
+  const [errorState, setErrorState] = React.useState({
+    irbContactErrors: [] as string[],
+    funderErrors: [] as string[],
+    generalContactErrors: [] as string[],
+    leadPrincipalInvestigatorErrors: [] as string[],
+    studyNameErrors: [] as string[],
+    emailErrorState: {
+      isGeneralContactEmailValid: true,
+      isIrbEmailValid: true,
+    },
+    phoneNumberEmailState: {
+      isGeneralContactPhoneNumberValid: true,
+      isIrbPhoneNumberValid: true,
+    },
+    generalErrors: [] as string[],
   })
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -383,14 +403,11 @@ const AppDesign: React.FunctionComponent<
     if (generalContactPhone === '' || generalContactPhone === '+1') {
       delete generalContact!.phone
     }
-
     onSave(updatedStudy)
   }
 
   // This is the method without useCallback or debounce.
   const updateColor = (color: string) => {
-    console.log('changingColor to' + color)
-
     const updatedStudy = {...study}
     updatedStudy.colorScheme = {
       ...updatedStudy.colorScheme,
@@ -416,7 +433,7 @@ const AppDesign: React.FunctionComponent<
   const getContactPersonObject = (type: ContactType): Contact => {
     const contact = getContact(study, type)
 
-    return contact || {role: type, name: ''}
+    return contact || {role: type, name: DEFAULT_CONTACT_NAME}
   }
 
   useEffect(() => {
@@ -432,6 +449,68 @@ const AppDesign: React.FunctionComponent<
       )
     }
   }, [])
+
+  const resetErrorState = () => {
+    setErrorState({
+      irbContactErrors: [],
+      funderErrors: [],
+      generalContactErrors: [],
+      leadPrincipalInvestigatorErrors: [],
+      studyNameErrors: [],
+      emailErrorState: {
+        isGeneralContactEmailValid:
+          errorState.emailErrorState.isGeneralContactEmailValid,
+        isIrbEmailValid: errorState.emailErrorState.isIrbEmailValid,
+      },
+      phoneNumberEmailState: {
+        isGeneralContactPhoneNumberValid:
+          errorState.phoneNumberEmailState.isIrbPhoneNumberValid,
+        isIrbPhoneNumberValid:
+          errorState.phoneNumberEmailState.isIrbPhoneNumberValid,
+      },
+      generalErrors: [],
+    })
+  }
+
+  useEffect(() => {
+    if (errorMessage === '') {
+      resetErrorState()
+      return
+    }
+    try {
+      const newErrorState = {...errorState}
+      // remove the "Study is Invalid" part of the error message
+      const shortenedErrorMessage = errorMessage.substring(18)
+      const errorMessages = shortenedErrorMessage.split(';')
+      for (const error of errorMessages) {
+        const trimmedError = error.trimLeft()
+        if (trimmedError.startsWith('name')) {
+          newErrorState.studyNameErrors.push(trimmedError)
+        } else if (trimmedError.startsWith('contacts')) {
+          const contactIndex = parseInt(trimmedError.substring(9, 10))
+          if (contactIndex === 0) {
+            newErrorState.irbContactErrors.push(trimmedError)
+          } else if (contactIndex === 1) {
+            newErrorState.funderErrors.push(trimmedError)
+          } else if (contactIndex === 2) {
+            newErrorState.generalContactErrors.push(trimmedError)
+          } else if (contactIndex === 3) {
+            newErrorState.leadPrincipalInvestigatorErrors.push(trimmedError)
+          }
+        } else {
+          // general error
+          newErrorState.generalErrors.push(trimmedError)
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }, [errorMessage])
+
+  const getContactName = (name: string | undefined) => {
+    if (name === DEFAULT_CONTACT_NAME) return ''
+    return name ? name : ''
+  }
 
   const updateWelcomeScreenMessaging = (
     welcomeScreenHeader: string,
@@ -453,7 +532,15 @@ const AppDesign: React.FunctionComponent<
     updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
     onUpdate(updatedStudy)
   }
-
+  // const isError = React.useMemo(() => {
+  //   return (
+  //     errorState.funderErrors.length > 0 ||
+  //     errorState.generalContactErrors.length > 0 ||
+  //     errorState.irbContactErrors.length > 0 ||
+  //     errorState.generalErrors.length > 0 ||
+  //     errorState.leadPrincipalInvestigatorErrors.length > 0
+  //   )
+  // }, [errorState, emailErrorState, phoneNumberErrorState])
   return (
     <>
       <Box className={classes.root}>
@@ -667,6 +754,7 @@ const AppDesign: React.FunctionComponent<
                 )}
                 ethicsBoardContact={getContactPersonObject('irb')}
                 funder={getContactPersonObject('sponsor')}
+                getContactName={getContactName}
               />
               <GeneralContactAndSupportSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
@@ -689,6 +777,7 @@ const AppDesign: React.FunctionComponent<
                   updatedStudy.contacts = updatedContacts
                   onUpdate(updatedStudy)
                 }}
+                getContactName={getContactName}
               />
               <IrbBoardContactSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
@@ -717,6 +806,7 @@ const AppDesign: React.FunctionComponent<
                 }}
                 irbInfo={getContactPersonObject('irb')}
                 protocolId={study.irbProtocolId || ''}
+                getContactName={getContactName}
               />
             </ol>
           </Box>
@@ -744,6 +834,7 @@ const AppDesign: React.FunctionComponent<
                 funder={getContactPersonObject('sponsor')}
                 studyTitle={study.name}
                 studySummaryBody={study.details || ''}
+                getContactName={getContactName}
               />
               <Box className={classes.phoneBottom}>
                 <PhoneBottomImg title="phone bottom image" />
@@ -764,6 +855,7 @@ const AppDesign: React.FunctionComponent<
                 irbProtocolId={study.irbProtocolId || ''}
                 ethicsBoardInfo={getContactPersonObject('irb')}
                 contactLead={getContactPersonObject('study_support')}
+                getContactName={getContactName}
               />
               <div className={classes.phoneBottom}>
                 <PhoneBottomImg title="phone bottom image" />

@@ -29,6 +29,7 @@ type StudyLeadInformationSectionProps = {
   leadPrincipalInvestigator: Contact
   ethicsBoardContact: Contact
   funder: Contact
+  getContactName: Function
   onUpdate: (
     leadPrincipalInvestigator: Contact,
     funder: Contact,
@@ -46,6 +47,7 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
   ethicsBoardContact,
   funder,
   onUpdate,
+  getContactName,
 }) => {
   const classes = useStyles()
   return (
@@ -62,9 +64,9 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
               newStudyLeadObject.name = investigatorSelected
               onUpdate(newStudyLeadObject, funder, ethicsBoardContact)
             }}
-            currentInvestigatorSelected={
-              leadPrincipalInvestigator?.name || ''
-            }></LeadInvestigatorDropdown>
+            currentInvestigatorSelected={getContactName(
+              leadPrincipalInvestigator?.name
+            )}></LeadInvestigatorDropdown>
           <p className={classes.principleInvestigatorsParagraph}>
             Principle Investigators are required to be part of the study as a
             “Study Administrator”.
@@ -84,7 +86,7 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             SimpleTextInputStyles={SimpleTextInputStyles}
             id="institution-input"
             placeholder="Name of Institution"
-            value={leadPrincipalInvestigator.affiliation || ''}
+            value={getContactName(leadPrincipalInvestigator.affiliation)}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
             ) => {
@@ -106,7 +108,7 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             SimpleTextInputStyles={SimpleTextInputStyles}
             id="funder-input"
             placeholder="Name of Funder(s)"
-            value={funder?.name || ''}
+            value={getContactName(funder?.name)}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
             ) => {

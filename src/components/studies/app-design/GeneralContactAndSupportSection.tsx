@@ -36,6 +36,7 @@ type GeneralContactAndSupportSectionProps = {
   setPhoneNumberErrorState: Function
   onUpdate: (contactLead: Contact) => void
   contactLead: Contact
+  getContactName: Function
 }
 
 const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAndSupportSectionProps> = ({
@@ -49,6 +50,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
   setPhoneNumberErrorState,
   onUpdate,
   contactLead,
+  getContactName,
 }) => {
   const classes = useStyles()
   return (
@@ -68,7 +70,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             SimpleTextInputStyles={SimpleTextInputStyles}
             id="contact-lead-input"
             placeholder="First and Last name"
-            value={contactLead.name || ''}
+            value={getContactName(contactLead.name)}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
             ) => {

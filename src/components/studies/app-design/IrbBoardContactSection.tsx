@@ -55,6 +55,7 @@ type IrbBoardContactSectionProps = {
   onUpdate: (irbInfo: Contact, protocolId: string) => void
   irbInfo: Contact
   protocolId: string
+  getContactName: Function
 }
 
 const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProps> = ({
@@ -73,6 +74,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
   onUpdate,
   protocolId,
   irbInfo,
+  getContactName,
 }) => {
   const classes = useStyles()
   return (
@@ -136,7 +138,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
               }
               id="ethics-board-input"
               placeholder="Name IRB of record"
-              value={irbInfo.name || ''}
+              value={getContactName(irbInfo.name)}
               onChange={(
                 e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
               ) => {
