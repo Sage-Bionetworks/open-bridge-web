@@ -260,16 +260,16 @@ const formatPhoneNumber = (phoneNumber: string | undefined) => {
   if (!phoneNumber) {
     return ''
   }
-  phoneNumber.replace('+1', '')
-  if (phoneNumber.length !== 10) {
-    return phoneNumber
+  const updatedPhoneNumber = phoneNumber.replace('+1', '')
+  if (updatedPhoneNumber.length !== 10) {
+    return updatedPhoneNumber
   }
   return (
-    phoneNumber.slice(0, 3) +
+    updatedPhoneNumber.slice(0, 3) +
     '-' +
-    phoneNumber.slice(3, 6) +
+    updatedPhoneNumber.slice(3, 6) +
     '-' +
-    phoneNumber.slice(6)
+    updatedPhoneNumber.slice(6)
   )
 }
 
@@ -349,7 +349,9 @@ const AppDesign: React.FunctionComponent<
       c => c.role === 'principal_investigator'
     )
     const irbRecord = study.contacts?.find(el => el.role === 'irb')
-    if (study.details === '') updatedErrorState.studySummaryCopyHasError = true
+    if (!study.details?.trim()) {
+      updatedErrorState.studySummaryCopyHasError = true
+    }
     if (
       !principalInvestigator ||
       principalInvestigator?.name === DEFAULT_CONTACT_NAME
@@ -377,7 +379,7 @@ const AppDesign: React.FunctionComponent<
     const generalContactPhoneNumberHasError =
       !contactLead?.phone?.number || isInvalidPhone(generalContactPhoneNumber)
     const irbRecordHasError =
-      !irbRecord?.phone?.number || isInvalidPhone(irbRecord.phone.number)
+      !irbRecord?.phone?.number || isInvalidPhone(irbPhoneNumber)
     setPhoneNumberErrorState({
       isGeneralContactPhoneNumberValid: !generalContactPhoneNumberHasError,
       isIrbPhoneNumberValid: !irbRecordHasError,
