@@ -1,6 +1,6 @@
 import {Button} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
-import React from 'react'
+import React, {useEffect} from 'react'
 import BlackXIcon from '../../../assets/black_x_icon.svg'
 import SearchIcon from '../../../assets/search_icon.svg'
 import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
@@ -80,16 +80,20 @@ type ParticipantSearchProps = {
   onReset: Function
   onSearch: Function
   isEnrolledById?: boolean
+  forceSearchReset?: boolean
 }
 
 const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
   onReset,
   onSearch,
   isEnrolledById,
+  forceSearchReset,
 }) => {
   const classes = useStyles()
-  const [isSearchingForParticipant, setIsSearchingForParticipant] =
-    React.useState(false)
+  const [
+    isSearchingForParticipant,
+    setIsSearchingForParticipant,
+  ] = React.useState(false)
 
   // True if the user is currently trying to search for a particular particpant
   const [isSearchingUsingId, setIsSearchingUsingID] = React.useState(false)
@@ -109,6 +113,10 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
     setIsSearchingUsingID(false)
     onReset()
   }
+
+  useEffect(() => {
+    handleResetSearch()
+  }, [forceSearchReset])
 
   return isSearchingForParticipant ? (
     <div className={classes.inputRow}>
