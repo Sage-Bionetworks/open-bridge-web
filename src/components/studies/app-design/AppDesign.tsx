@@ -486,7 +486,6 @@ const AppDesign: React.FunctionComponent<
     if (generalContactPhone === '' || generalContactPhone === '+1') {
       delete generalContact!.phone
     }
-    console.log(updatedStudy, "updated study")
     return updatedStudy
   }
 
@@ -535,8 +534,7 @@ const AppDesign: React.FunctionComponent<
   }, [])
 
   const getContactName = (name: string | undefined) => {
-    if (name === DEFAULT_CONTACT_NAME) return ''
-    return name ? name : ''
+    return name && name !== DEFAULT_CONTACT_NAME ? name : ''
   }
 
   const updateWelcomeScreenMessaging = (
