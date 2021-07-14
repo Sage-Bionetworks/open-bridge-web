@@ -5,7 +5,6 @@ import {
   makeStyles,
   Theme,
 } from '@material-ui/core'
-import {Alert} from '@material-ui/lab'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
@@ -32,6 +31,7 @@ import actionsReducer, {
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import Timeline from './Timeline'
+import TopErrorBanner from '../../widgets/TopErrorBanner'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -232,23 +232,9 @@ const Scheduler: FunctionComponent<
 
   return (
     <Box>
-      {schedulerErrors.length > 0 && (
-        <Alert
-          onClose={() => setIsErrorAlert(false)}
-          severity="error"
-          style={{
-            backgroundColor: '#EE6070',
-            color: 'black',
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 1000,
-            textAlign: 'center',
-          }}>
-          Please fix the errors below before continuing
-        </Alert>
-      )}
+      <TopErrorBanner
+        type="error"
+        isVisible={schedulerErrors.length > 0}></TopErrorBanner>
 
       <NavigationPrompt when={hasObjectChanged} key="prompt">
         {({onConfirm, onCancel}) => (
