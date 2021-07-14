@@ -14,7 +14,7 @@ import {isSameAsDefaultSchedule} from '../scheduler/utility'
 import {normalNavIcons, SECTIONS, StudySection} from '../sections'
 import constants from '../../../types/constants'
 
-const DEFAULT_CONTACT_NAME = constants.constants.CONTACT_NAME_DEFAULT
+const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   /*root: {

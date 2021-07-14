@@ -36,7 +36,7 @@ import constants from '../../../types/constants'
 import {useQuery, isInvalidPhone, isValidEmail} from '../../../helpers/utility'
 
 const imgHeight = 70
-const DEFAULT_CONTACT_NAME = constants.constants.CONTACT_NAME_DEFAULT
+const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {counterReset: 'orderedlist'},
@@ -339,7 +339,7 @@ const AppDesign: React.FunctionComponent<
     if (formattedStudy.contacts) {
       for (const contact of formattedStudy.contacts) {
         if (contact.name === '') {
-          contact.name = constants.constants.CONTACT_NAME_DEFAULT
+          contact.name = DEFAULT_CONTACT_NAME
         }
       }
     }
