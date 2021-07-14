@@ -287,7 +287,7 @@ const AppDesign: React.FunctionComponent<
   const handleError = useErrorHandler()
 
   let query = useQuery()
-  const showError = query.get('from') === 'launch'
+  const showError = !!query.get('from')
 
   const {token, orgMembership} = useUserSessionDataState()
 
