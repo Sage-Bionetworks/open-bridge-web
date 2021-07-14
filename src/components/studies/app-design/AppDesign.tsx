@@ -558,6 +558,10 @@ const AppDesign: React.FunctionComponent<
     handleUpdate(updatedStudy)
   }
 
+  const hasError = (errorProperty: keyof ErrorStateType) => {
+    return showError && !!errorState[errorProperty]
+  }
+
   return (
     <>
       <Box className={classes.root}>
@@ -744,10 +748,8 @@ const AppDesign: React.FunctionComponent<
                 }}
                 studyTitle={study.name || ''}
                 studySummaryBody={study.details || ''}
-                studyTitleHasError={showError && errorState.studyTitleHasError}
-                studySummaryCopyHasError={
-                  showError && errorState.studySummaryCopyHasError
-                }
+                studyTitleHasError={hasError('studyTitleHasError')}
+                studySummaryCopyHasError={hasError('studySummaryCopyHasError')}
               />
               <StudyLeadInformationSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
@@ -776,12 +778,12 @@ const AppDesign: React.FunctionComponent<
                 ethicsBoardContact={getContactPersonObject('irb')}
                 funder={getContactPersonObject('sponsor')}
                 getContactName={getContactName}
-                principleInvestigatorNameHasError={
-                  showError && errorState.leadPINameHasError
-                }
-                principleInvestigatorAffiliationHasError={
-                  showError && errorState.leadPIAffiliationHasError
-                }
+                principleInvestigatorNameHasError={hasError(
+                  'leadPINameHasError'
+                )}
+                principleInvestigatorAffiliationHasError={hasError(
+                  'leadPIAffiliationHasError'
+                )}
               />
               <GeneralContactAndSupportSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
@@ -805,12 +807,10 @@ const AppDesign: React.FunctionComponent<
                   handleUpdate(updatedStudy)
                 }}
                 getContactName={getContactName}
-                contactLeadNameHasError={
-                  showError && errorState.contactLeadNameHasError
-                }
-                contactLeadPositionHasError={
-                  showError && errorState.contactLeadPositonHasError
-                }
+                contactLeadNameHasError={hasError('contactLeadNameHasError')}
+                contactLeadPositionHasError={hasError(
+                  'contactLeadPositonHasError'
+                )}
               />
               <IrbBoardContactSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
@@ -840,10 +840,8 @@ const AppDesign: React.FunctionComponent<
                 irbInfo={getContactPersonObject('irb')}
                 protocolId={study.irbProtocolId || ''}
                 getContactName={getContactName}
-                irbNameHasError={showError && errorState.irbRecordNameHasError}
-                irbProtocolIdHasError={
-                  showError && errorState.irbProtocolIdHasError
-                }
+                irbNameHasError={hasError('irbRecordNameHasError')}
+                irbProtocolIdHasError={hasError('irbProtocolIdHasError')}
               />
             </ol>
           </Box>

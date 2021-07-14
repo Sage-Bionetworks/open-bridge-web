@@ -304,12 +304,7 @@ const StudyAlertComponent: React.FunctionComponent<
           </div>
           {error.isDismissable && (
             <Box className={classes.reviewIgnoreButtons}>
-              <Button
-                href={
-                  SECTIONS[sectionIndex].path === 'customize'
-                    ? 'customize?from=launch'
-                    : SECTIONS[sectionIndex].path
-                }>
+              <Button href={`${SECTIONS[sectionIndex].path}?from=launch`}>
                 Review
               </Button>
               <Button
@@ -324,11 +319,7 @@ const StudyAlertComponent: React.FunctionComponent<
             <Button
               variant="contained"
               className={classes.mustReviewButton}
-              href={
-                SECTIONS[sectionIndex].path === 'customize'
-                  ? 'customize?from=launch'
-                  : SECTIONS[sectionIndex].path
-              }>
+              href={`${SECTIONS[sectionIndex].path}?from=launch`}>
               Review Required
             </Button>
           )}
