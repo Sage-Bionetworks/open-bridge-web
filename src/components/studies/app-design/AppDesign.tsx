@@ -209,6 +209,17 @@ export interface AppDesignProps {
   onError: Function
 }
 
+type ErrorStateType = {
+  studyTitleHasError?: boolean
+  studySummaryCopyHasError?: boolean
+  leadPINameHasError?: boolean
+  leadPIAffiliationHasError?: boolean
+  contactLeadNameHasError?: boolean
+  contactLeadPositonHasError?: boolean
+  irbRecordNameHasError?: boolean
+  irbProtocolIdHasError?: boolean
+}
+
 function getPreviewForImage(file: File): PreviewFile {
   const previewFileBody = URL.createObjectURL(file)
   return {
@@ -321,80 +332,32 @@ const AppDesign: React.FunctionComponent<
     isIrbEmailValid: true,
   })
 
-  const [errorState, setErrorState] = React.useState({
-    studyTitleHasError: false,
-    studySummaryCopyHasError: false,
-    leadPINameHasError: false,
-    leadPIAffiliationHasError: false,
-    contactLeadNameHasError: false,
-    contactLeadPositonHasError: false,
-    irbRecordNameHasError: false,
-    irbProtocolIdHasError: false,
-  })
+  const [errorState, setErrorState] = React.useState<ErrorStateType>({})
 
   const handleUpdate = (updatedStudy: Study) => {
-    if (updatedStudy.contacts) {
-      for (const contact of updatedStudy.contacts) {
+    const formattedStudy = formatStudy(updatedStudy)
+    if (formattedStudy.contacts) {
+      for (const contact of formattedStudy.contacts) {
         if (contact.name === '') {
           contact.name = constants.constants.CONTACT_NAME_DEFAULT
         }
       }
     }
-    onUpdate(updatedStudy)
+    onUpdate(formattedStudy)
   }
 
-  useEffect(() => {
-    if (!showError) return
-    const updatedErrorState = {
-      studyTitleHasError: false,
-      studySummaryCopyHasError: false,
-      leadPINameHasError: false,
-      leadPIAffiliationHasError: false,
-      contactLeadNameHasError: false,
-      contactLeadPositonHasError: false,
-      irbRecordNameHasError: false,
-      irbProtocolIdHasError: false,
-    }
-    const contactLead = study.contacts?.find(el => el.role === 'study_support')
-    const principalInvestigator = study.contacts?.find(
-      c => c.role === 'principal_investigator'
-    )
-    const irbRecord = study.contacts?.find(el => el.role === 'irb')
-    if (!study.details?.trim()) {
-      updatedErrorState.studySummaryCopyHasError = true
-    }
-    if (
-      !principalInvestigator ||
-      principalInvestigator?.name === DEFAULT_CONTACT_NAME
-    ) {
-      updatedErrorState.leadPINameHasError = true
-    }
-    if (!principalInvestigator?.affiliation) {
-      updatedErrorState.leadPIAffiliationHasError = true
-    }
-    if (!contactLead || contactLead.name === DEFAULT_CONTACT_NAME) {
-      updatedErrorState.contactLeadNameHasError = true
-    }
-    if (!contactLead?.position) {
-      updatedErrorState.contactLeadPositonHasError = true
-    }
-    if (!irbRecord || irbRecord?.name === DEFAULT_CONTACT_NAME) {
-      updatedErrorState.irbRecordNameHasError = true
-    }
-    if (!study.irbProtocolId) {
-      updatedErrorState.irbProtocolIdHasError = true
-    }
-    if (!study.name) {
-      updatedErrorState.studyTitleHasError = true
-    }
-    const generalContactPhoneNumberHasError =
+  const checkPhoneError = (contactLead?: Contact, irbRecord?: Contact) => {
+    const generalContactPhoneError =
       !contactLead?.phone?.number || isInvalidPhone(generalContactPhoneNumber)
     const irbRecordHasError =
       !irbRecord?.phone?.number || isInvalidPhone(irbPhoneNumber)
     setPhoneNumberErrorState({
-      isGeneralContactPhoneNumberValid: !generalContactPhoneNumberHasError,
+      isGeneralContactPhoneNumberValid: !generalContactPhoneError,
       isIrbPhoneNumberValid: !irbRecordHasError,
     })
+  }
+
+  const checkEmailError = (contactLead?: Contact, irbRecord?: Contact) => {
     const generalContactEmailHasError =
       !contactLead?.email || !isValidEmail(contactLead.email)
     const irbRecordEmailHasError =
@@ -403,6 +366,51 @@ const AppDesign: React.FunctionComponent<
       isGeneralContactEmailValid: !generalContactEmailHasError,
       isIrbEmailValid: !irbRecordEmailHasError,
     })
+  }
+
+  const isContactValid = (
+    contact: Contact | undefined,
+    property: keyof Contact
+  ) => {
+    return (
+      contact && contact[property] && contact[property] !== DEFAULT_CONTACT_NAME
+    )
+  }
+
+  useEffect(() => {
+    if (!showError) return
+    const updatedErrorState = {} as ErrorStateType
+    const contactLead = study.contacts?.find(el => el.role === 'study_support')
+    const principalInvestigator = study.contacts?.find(
+      c => c.role === 'principal_investigator'
+    )
+    const irbRecord = study.contacts?.find(el => el.role === 'irb')
+    if (!isContactValid(principalInvestigator, 'name')) {
+      updatedErrorState.leadPINameHasError = true
+    }
+    if (!isContactValid(principalInvestigator, 'affiliation')) {
+      updatedErrorState.leadPIAffiliationHasError = true
+    }
+    if (!isContactValid(contactLead, 'name')) {
+      updatedErrorState.contactLeadNameHasError = true
+    }
+    if (!isContactValid(contactLead, 'position')) {
+      updatedErrorState.contactLeadPositonHasError = true
+    }
+    if (!isContactValid(irbRecord, 'name')) {
+      updatedErrorState.irbRecordNameHasError = true
+    }
+    if (!study.irbProtocolId) {
+      updatedErrorState.irbProtocolIdHasError = true
+    }
+    if (!study.name) {
+      updatedErrorState.studyTitleHasError = true
+    }
+    if (!study.details?.trim()) {
+      updatedErrorState.studySummaryCopyHasError = true
+    }
+    checkPhoneError(contactLead, irbRecord)
+    checkEmailError(contactLead, irbRecord)
     setErrorState(updatedErrorState)
   }, [study])
 
@@ -452,7 +460,12 @@ const AppDesign: React.FunctionComponent<
       )
       return
     }
-    const updatedStudy = {...study}
+    const updatedStudy = formatStudy(study)
+    onSave(updatedStudy)
+  }
+
+  const formatStudy = (newStudy: Study) => {
+    const updatedStudy = {...newStudy}
     const irbContact = updatedStudy.contacts?.find(el => el.role === 'irb')
     // If a contact's email or phone is an empty string, then delete the field
     // from the contact object.
@@ -473,7 +486,8 @@ const AppDesign: React.FunctionComponent<
     if (generalContactPhone === '' || generalContactPhone === '+1') {
       delete generalContact!.phone
     }
-    onSave(updatedStudy)
+    console.log(updatedStudy, "updated study")
+    return updatedStudy
   }
 
   // This is the method without useCallback or debounce.
