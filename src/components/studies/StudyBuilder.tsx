@@ -521,14 +521,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           }}
                           onUpdate={(updatedStudy: Study) => {
                             setHasObjectChanged(true)
-                            if (updatedStudy.contacts) {
-                              for (const contact of updatedStudy.contacts) {
-                                if (contact.name === '') {
-                                  contact.name =
-                                    constants.constants.CONTACT_NAME_DEFAULT
-                                }
-                              }
-                            }
                             setData({
                               ...builderInfo,
                               study: updatedStudy,

@@ -332,6 +332,17 @@ const AppDesign: React.FunctionComponent<
     irbProtocolIdHasError: false,
   })
 
+  const handleUpdate = (updatedStudy: Study) => {
+    if (updatedStudy.contacts) {
+      for (const contact of updatedStudy.contacts) {
+        if (contact.name === '') {
+          contact.name = constants.constants.CONTACT_NAME_DEFAULT
+        }
+      }
+    }
+    onUpdate(updatedStudy)
+  }
+
   useEffect(() => {
     if (!showError) return
     const updatedErrorState = {
@@ -419,7 +430,7 @@ const AppDesign: React.FunctionComponent<
         version: uploadResponse.version,
       }
 
-      onUpdate(updatedStudy)
+      handleUpdate(updatedStudy)
     } catch (error) {
       onError(error)
     } finally {
@@ -472,7 +483,7 @@ const AppDesign: React.FunctionComponent<
       ...updatedStudy.colorScheme,
       background: color,
     }
-    onUpdate(updatedStudy)
+    handleUpdate(updatedStudy)
   }
 
   const updateContacts = (
@@ -532,7 +543,7 @@ const AppDesign: React.FunctionComponent<
     } as WelcomeScreenData
     const updatedStudy = {...study}
     updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
-    onUpdate(updatedStudy)
+    handleUpdate(updatedStudy)
   }
 
   return (
@@ -591,7 +602,7 @@ const AppDesign: React.FunctionComponent<
                       isUsingDefaultMessage: !currentWelcomeScreenData.isUsingDefaultMessage,
                     }
                     updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
-                    onUpdate(updatedStudy)
+                    handleUpdate(updatedStudy)
                   }}></Switch>
               </Box>
               <Box ml={1.5}>Customize</Box>
@@ -717,7 +728,7 @@ const AppDesign: React.FunctionComponent<
                   const updatedStudy = {...study}
                   updatedStudy.name = studyTitle
                   updatedStudy.details = studySummaryBody
-                  onUpdate(updatedStudy)
+                  handleUpdate(updatedStudy)
                 }}
                 studyTitle={study.name || ''}
                 studySummaryBody={study.details || ''}
@@ -745,7 +756,7 @@ const AppDesign: React.FunctionComponent<
                   )
                   const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
-                  onUpdate(updatedStudy)
+                  handleUpdate(updatedStudy)
                 }}
                 leadPrincipalInvestigator={getContactPersonObject(
                   'principal_investigator'
@@ -779,7 +790,7 @@ const AppDesign: React.FunctionComponent<
                   )
                   const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
-                  onUpdate(updatedStudy)
+                  handleUpdate(updatedStudy)
                 }}
                 getContactName={getContactName}
                 contactLeadNameHasError={
@@ -812,7 +823,7 @@ const AppDesign: React.FunctionComponent<
                   const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
                   updatedStudy.irbProtocolId = protocolId
-                  onUpdate(updatedStudy)
+                  handleUpdate(updatedStudy)
                 }}
                 irbInfo={getContactPersonObject('irb')}
                 protocolId={study.irbProtocolId || ''}
