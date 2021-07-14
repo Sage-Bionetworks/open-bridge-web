@@ -119,11 +119,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ...otherProps
 }) => {
   const classes = useStyles()
-  let {id, section: _section} =
-    useParams<{
-      id: string
-      section: StudySection
-    }>()
+  let {id, section: _section} = useParams<{
+    id: string
+    section: StudySection
+  }>()
   const [section, setSection] = React.useState(_section)
   const [error, setError] = React.useState<string[]>([])
   const handleError = useErrorHandler()
@@ -136,6 +135,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   const builderInfo: StudyInfoData = useStudyInfoDataState()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
   const [open, setOpen] = React.useState(true)
+  // This is used to toggle in order to show the success/error banner
+  const [studyHasBeenSaved, setStudyHasBeenSaved] = React.useState(false)
+  const [
+    studyScheduleHasBeenSaved,
+    setStudyScheduleHasBeenSaved,
+  ] = React.useState(false)
 
   const setData = (builderInfo: StudyInfoData) => {
     studyDataUpdateFn({
@@ -189,7 +194,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ): Promise<Study | undefined> => {
     setHasObjectChanged(true)
     setSaveLoader(true)
-
     try {
       const newVersion = await StudyService.updateStudy(study, token!)
       const updatedStudy = {
@@ -214,6 +218,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         behavior: 'smooth',
       })
     } finally {
+      setStudyHasBeenSaved(prev => !prev)
       setSaveLoader(false)
     }
   }
@@ -288,6 +293,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       return undefined
     } finally {
       setSaveLoader(false)
+      setStudyScheduleHasBeenSaved(prev => !prev)
     }
   }
 
@@ -463,6 +469,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                     <>
                       {section === 'scheduler' && (
                         <Scheduler
+                          studyScheduleHasBeenSaved={studyScheduleHasBeenSaved}
                           id={id}
                           token={token!}
                           schedule={builderInfo.schedule}
@@ -512,6 +519,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'customize' && (
                         <AppDesign
+                          isError={error.length > 0}
+                          studyHasBeenSaved={studyHasBeenSaved}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           study={builderInfo.study}

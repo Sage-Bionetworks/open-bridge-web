@@ -16,7 +16,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     zIndex: 1000,
     height: '88px',
     borderRadius: '0px',
-    color: 'white',
     fontSize: '16px',
     fontFamily: latoFont,
     display: 'flex',
@@ -29,13 +28,16 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   success: {
     backgroundColor: '#AEDCC9',
+    color: 'black',
   },
   error: {
     backgroundColor: '#EE6070',
+    color: 'white',
   },
 }))
 
 type TopErrorBannerProps = {
+  onClose: Function
   isVisible: boolean
   type: 'success' | 'error'
   displayText?: string
@@ -45,29 +47,25 @@ const TopErrorBanner: React.FunctionComponent<TopErrorBannerProps> = ({
   isVisible,
   type,
   displayText,
+  onClose,
 }) => {
   const classes = useStyles()
-  const [isClosed, setIsClosed] = React.useState(false)
-
-  React.useEffect(() => {
-    setIsClosed(false)
-  }, [isVisible])
 
   React.useEffect(() => {
     if (type === 'success') {
       setTimeout(() => {
-        setIsClosed(true)
-      }, 15000)
+        onClose()
+      }, 5000)
     }
-  }, [])
+  }, [isVisible, type])
 
   return (
     <Alert
-      onClose={() => setIsClosed(true)}
+      onClose={() => onClose()}
       severity="error"
       className={clsx(
         classes.container,
-        (!isVisible || isClosed) && classes.invisible,
+        !isVisible && classes.invisible,
         type === 'success' && classes.success,
         type === 'error' && classes.error
       )}
@@ -79,7 +77,9 @@ const TopErrorBanner: React.FunctionComponent<TopErrorBannerProps> = ({
       }>
       {displayText
         ? displayText
-        : 'Please fix the errors below before continuing'}
+        : type === 'error'
+        ? 'Please fix the errors below before continuing.'
+        : 'Page has been saved successfully.'}
     </Alert>
   )
 }

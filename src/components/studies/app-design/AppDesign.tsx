@@ -32,6 +32,8 @@ import Subsection from './Subsection'
 import UploadStudyLogoSection from './UploadStudyLogoSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
+import TopErrorBanner from '../../widgets/TopErrorBanner'
+import {useEffectSkipFirstRender} from '../../../helpers/utility'
 
 const imgHeight = 70
 
@@ -204,6 +206,8 @@ export interface AppDesignProps {
   onSave: Function
   study: Study
   onError: Function
+  isError: boolean
+  studyHasBeenSaved: boolean
 }
 
 function getPreviewForImage(file: File): PreviewFile {
@@ -279,8 +283,9 @@ const AppDesign: React.FunctionComponent<
   onUpdate,
   onSave,
   study,
-
   onError,
+  isError,
+  studyHasBeenSaved,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
@@ -316,6 +321,8 @@ const AppDesign: React.FunctionComponent<
     isIrbEmailValid: true,
   })
 
+  const [displayBanner, setDisplayBanner] = React.useState(false)
+
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     event.persist()
     if (!event.target.files) {
@@ -347,6 +354,10 @@ const AppDesign: React.FunctionComponent<
       setIsSettingStudyLogo(false)
     }
   }
+
+  useEffectSkipFirstRender(() => {
+    setDisplayBanner(true)
+  }, [studyHasBeenSaved])
 
   const saveInfo = () => {
     const phoneNumberHasError =
@@ -454,9 +465,22 @@ const AppDesign: React.FunctionComponent<
     onUpdate(updatedStudy)
   }
 
+  const displayError = React.useMemo(() => {
+    return (
+      isError ||
+      !phoneNumberErrorState.isGeneralContactPhoneNumberValid ||
+      !phoneNumberErrorState.isIrbPhoneNumberValid ||
+      !emailErrorState.isGeneralContactEmailValid ||
+      !emailErrorState.isIrbEmailValid
+    )
+  }, [isError])
   return (
     <>
       <Box className={classes.root}>
+        <TopErrorBanner
+          onClose={() => setDisplayBanner(false)}
+          isVisible={displayBanner}
+          type={displayError ? 'error' : 'success'}></TopErrorBanner>
         <NavigationPrompt when={hasObjectChanged} key="prompt">
           {({onConfirm, onCancel}) => (
             <ConfirmationDialog

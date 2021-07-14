@@ -6,7 +6,7 @@ import {
   Theme,
 } from '@material-ui/core'
 import _ from 'lodash'
-import React, {FunctionComponent} from 'react'
+import React, {FunctionComponent, useEffect} from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import {poppinsFont, theme} from '../../../style/theme'
 import {
@@ -32,6 +32,7 @@ import actionsReducer, {
 import StudyStartDate from './StudyStartDate'
 import Timeline from './Timeline'
 import TopErrorBanner from '../../widgets/TopErrorBanner'
+import {useEffectSkipFirstRender} from '../../../helpers/utility'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -73,6 +74,7 @@ type SchedulerProps = {
   token: string
   onSave: Function
   schedulerErrors: SchedulerErrorType[]
+  studyScheduleHasBeenSaved: boolean
 }
 
 const Scheduler: FunctionComponent<
@@ -87,10 +89,12 @@ const Scheduler: FunctionComponent<
   token,
   version,
   schedulerErrors,
+  studyScheduleHasBeenSaved,
 }: SchedulerProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
   const [isErrorAlert, setIsErrorAlert] = React.useState(true)
   const [schedule, setSchedule] = React.useState({..._schedule})
+  const [displayBanner, setDisplayBanner] = React.useState(false)
   console.log('%c ---scheduler update--' + version, 'color: red')
 
   const [schedulerErrorState, setSchedulerErrorState] = React.useState(
@@ -103,6 +107,10 @@ const Scheduler: FunctionComponent<
       }
     >()
   )
+
+  useEffectSkipFirstRender(() => {
+    setDisplayBanner(true)
+  }, [studyScheduleHasBeenSaved])
 
   function parseErrors(_schedulerErrors: SchedulerErrorType[]) {
     const newErrorState = new Map()
@@ -233,8 +241,9 @@ const Scheduler: FunctionComponent<
   return (
     <Box>
       <TopErrorBanner
-        type="error"
-        isVisible={schedulerErrors.length > 0}></TopErrorBanner>
+        onClose={() => setDisplayBanner(false)}
+        type={schedulerErrors.length > 0 ? 'error' : 'success'}
+        isVisible={displayBanner}></TopErrorBanner>
 
       <NavigationPrompt when={hasObjectChanged} key="prompt">
         {({onConfirm, onCancel}) => (
