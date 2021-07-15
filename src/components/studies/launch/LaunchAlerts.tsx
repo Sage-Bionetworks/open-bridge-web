@@ -7,12 +7,12 @@ import {ReactComponent as Preview_Icon} from '../../../assets/launch/preview_ico
 import {StudyInfoData} from '../../../helpers/StudyInfoContext'
 import {DEFAULT_NOTIFICATION} from '../../../services/study.service'
 import {latoFont, ThemeType} from '../../../style/theme'
+import constants from '../../../types/constants'
 import {ScheduleNotification} from '../../../types/scheduling'
 import {Contact} from '../../../types/types'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import {isSameAsDefaultSchedule} from '../scheduler/utility'
 import {normalNavIcons, SECTIONS, StudySection} from '../sections'
-import constants from '../../../types/constants'
 
 const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
 
@@ -182,6 +182,7 @@ const ALERTS: StudyAlertSection[] = [
         errorText: 'Please enter Study Summary copy',
         validationFn: (s: StudyInfoData) => !!s.study.details,
         isDismissable: false,
+        anchor: 'summary',
       },
       {
         errorText: 'Please enter Lead PI',
@@ -190,11 +191,13 @@ const ALERTS: StudyAlertSection[] = [
           return !!leadPI && leadPI.name !== DEFAULT_CONTACT_NAME
         },
         isDismissable: false,
+        anchor: 'leadPi',
       },
       {
         errorText: 'Please enter Institutional Affiliation',
         validationFn: (s: StudyInfoData) => !!getLeadPI(s)?.affiliation,
         isDismissable: false,
+        anchor: 'leadPi',
       },
 
       {
@@ -204,6 +207,7 @@ const ALERTS: StudyAlertSection[] = [
           return !!funder && funder.name !== DEFAULT_CONTACT_NAME
         },
         isDismissable: true,
+        anchor: 'leadPi',
       },
       {
         errorText: 'Please enter Contact Lead',
@@ -214,6 +218,7 @@ const ALERTS: StudyAlertSection[] = [
           )
         },
         isDismissable: false,
+        anchor: 'contactLead',
       },
       {
         errorText: 'Please enter Contact’s position',
@@ -221,6 +226,7 @@ const ALERTS: StudyAlertSection[] = [
           !!getStudySupportPerson(s)?.position,
 
         isDismissable: false,
+        anchor: 'contactLead',
       },
       {
         errorText: 'Please enter Phone # of Contact Lead',
@@ -231,6 +237,7 @@ const ALERTS: StudyAlertSection[] = [
         errorText: 'Please enter Email of Contact Lead',
         validationFn: (s: StudyInfoData) => !!getStudySupportPerson(s)?.email,
         isDismissable: false,
+        anchor: 'contactLead',
       },
       {
         errorText: 'Please enter IRB of Record Name',
@@ -239,16 +246,19 @@ const ALERTS: StudyAlertSection[] = [
           return !!irbContact && irbContact.name !== DEFAULT_CONTACT_NAME
         },
         isDismissable: false,
+        anchor: 'contactIrb',
       },
       {
         errorText: 'Please enter Phone # of IRB Contact',
         validationFn: (s: StudyInfoData) => !!getIrbContact(s)?.phone,
         isDismissable: false,
+        anchor: 'contactIrb',
       },
       {
         errorText: 'Please enter Email of IRB',
         validationFn: (s: StudyInfoData) => !!getIrbContact(s)?.email,
         isDismissable: false,
+        anchor: 'contactIrb',
       },
       {
         errorText: 'Please enter IRB Protocol ID',
@@ -256,6 +266,7 @@ const ALERTS: StudyAlertSection[] = [
           return !!s.study.irbProtocolId
         },
         isDismissable: false,
+        anchor: 'contactIrb',
       },
     ],
   },
@@ -266,6 +277,7 @@ type StudyAlert = {
   isDismissable: boolean
   validationFn: (s: StudyInfoData) => boolean
   section?: StudySection
+  anchor?: string
 }
 type StudyAlertSection = {
   section: StudySection
@@ -282,6 +294,7 @@ const StudyAlertComponent: React.FunctionComponent<
   const classes = useStyles()
 
   const sectionIndex = SECTIONS.findIndex(s => s.path === section)
+  const indexedSection = SECTIONS[sectionIndex]
 
   return (
     <div className={classes.section}>
@@ -289,9 +302,9 @@ const StudyAlertComponent: React.FunctionComponent<
         <img
           src={normalNavIcons[sectionIndex]}
           className={classes.navIcon}
-          alt={SECTIONS[sectionIndex].name}
+          alt={indexedSection.name}
         />
-        <span>{SECTIONS[sectionIndex].name}</span>
+        <span>{indexedSection.name}</span>
       </div>
       {errors.map((error, errorIndex) => (
         <div className={classes.errorDescription}>
@@ -304,13 +317,13 @@ const StudyAlertComponent: React.FunctionComponent<
           </div>
           {error.isDismissable && (
             <Box className={classes.reviewIgnoreButtons}>
-              <Button href={`${SECTIONS[sectionIndex].path}?from=launch`}>
+              <Button
+                href={`${indexedSection.path}?from=launch${
+                  error.anchor ? '#' + error.anchor : ''
+                }`}>
                 Review
               </Button>
-              <Button
-                onClick={() =>
-                  onIgnore(SECTIONS[sectionIndex].path, errorIndex)
-                }>
+              <Button onClick={() => onIgnore(indexedSection.path, errorIndex)}>
                 Ignore
               </Button>
             </Box>
@@ -319,7 +332,9 @@ const StudyAlertComponent: React.FunctionComponent<
             <Button
               variant="contained"
               className={classes.mustReviewButton}
-              href={`${SECTIONS[sectionIndex].path}?from=launch`}>
+              href={`${SECTIONS[sectionIndex].path}?from=launch${
+                error.anchor ? '&anchor=' + error.anchor : ''
+              }`}>
               Review Required
             </Button>
           )}
