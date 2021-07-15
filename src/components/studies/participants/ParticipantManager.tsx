@@ -419,10 +419,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     })
   const [isAllSelected, setIsAllSelected] = React.useState(false)
 
-  const [forceSearchReset, setForceSearchReset] = React.useState(false)
-
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
-    setForceSearchReset((prev) => !prev)
     setTab(newValue)
     setCurrentPage(1)
     setIsAllSelected(false)
@@ -818,7 +815,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       setIsUserSearchingForParticipant(true)
                       handleSearchParticipantRequest(isById, searchedValue)
                     }}
-                    forceSearchReset={forceSearchReset}
+                    tab={tab}
                   />
                 </Box>
                 <div

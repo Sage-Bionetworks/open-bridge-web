@@ -5,6 +5,7 @@ import BlackXIcon from '../../../assets/black_x_icon.svg'
 import SearchIcon from '../../../assets/search_icon.svg'
 import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
 import {latoFont} from '../../../style/theme'
+import {ParticipantActivityType} from '../../../types/types'
 
 const ENTER_KEY = 'Enter'
 
@@ -80,14 +81,14 @@ type ParticipantSearchProps = {
   onReset: Function
   onSearch: Function
   isEnrolledById?: boolean
-  forceSearchReset?: boolean
+  tab?: ParticipantActivityType
 }
 
 const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
   onReset,
   onSearch,
   isEnrolledById,
-  forceSearchReset,
+  tab,
 }) => {
   const classes = useStyles()
   const [
@@ -116,7 +117,7 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
 
   useEffect(() => {
     handleResetSearch()
-  }, [forceSearchReset])
+  }, [tab])
 
   return isSearchingForParticipant ? (
     <div className={classes.inputRow}>
