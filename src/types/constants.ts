@@ -6,6 +6,7 @@ export default {
     ENDPOINT: 'https://webservices.sagebridge.org',
     SYNAPSE_ENDPOINT: 'https://repo-prod.prod.sagebase.org',
     NEW_STUDY_NAME: 'NEW_STUDY_UNNAMED',
+    DEFAULT_PLACEHOLDER: "*UNDEFINED*"
   },
 
   environments: [

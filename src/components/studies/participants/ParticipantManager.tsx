@@ -815,6 +815,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       setIsUserSearchingForParticipant(true)
                       handleSearchParticipantRequest(isById, searchedValue)
                     }}
+                    tab={tab}
                   />
                 </Box>
                 <div

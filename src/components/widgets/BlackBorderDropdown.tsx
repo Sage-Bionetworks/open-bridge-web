@@ -1,6 +1,7 @@
 import {makeStyles, MenuItem, Select, SelectProps} from '@material-ui/core'
 import React from 'react'
 import {ThemeType} from '../../style/theme'
+import clsx from 'clsx'
 
 interface StyleProps {
   width: string //px or %
@@ -10,8 +11,6 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
   root: props => ({width: props.width}),
   select: props => ({
     height: props.itemHeight,
-
-    border: '1px solid black',
     backgroundColor: 'white',
     display: 'flex',
     flexDirection: 'row',
@@ -57,6 +56,12 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
   listBorder: {
     borderRadius: '0px',
   },
+  errorBorder: {
+    border: `1px solid ${theme.palette.error.main}`,
+  },
+  regularBorder: {
+    border: '1px solid black',
+  },
 }))
 
 export interface BlackBorderDropdownStyleProps {
@@ -66,6 +71,7 @@ export interface BlackBorderDropdownStyleProps {
   onChange: Function
   dropdown: {value: string; label: string}[]
   emptyValueLabel: string
+  hasError?: boolean
 }
 
 const SaveBlackBorderDropdown: React.FunctionComponent<
@@ -78,6 +84,7 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
   emptyValueLabel,
   width,
   itemHeight = '30px',
+  hasError,
   ...other
 }) => {
   const classes = useStyles({width, itemHeight})
@@ -92,10 +99,17 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
       disableUnderline
       classes={{
         selectMenu: classes.selectMenu,
-        root: classes.select,
+        root: clsx(
+          hasError && classes.errorBorder,
+          !hasError && classes.regularBorder,
+          classes.select
+        ),
       }}
       MenuProps={{
-        classes: {list: classes.listPadding, paper: classes.listBorder},
+        classes: {
+          list: classes.listPadding,
+          paper: classes.listBorder,
+        },
         getContentAnchorEl: null,
         anchorOrigin: {
           vertical: 'bottom',

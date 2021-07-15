@@ -8,6 +8,7 @@ import {
   StringDictionary,
   UserSessionData,
 } from '../types/types'
+import {useLocation} from 'react-router-dom'
 
 type RestMethod = 'POST' | 'GET' | 'DELETE'
 
@@ -306,4 +307,8 @@ export const useEffectSkipFirstRender = (
       callback()
     }
   }, [...dependencies])
+}
+
+export function useQuery() {
+  return new URLSearchParams(useLocation().search)
 }

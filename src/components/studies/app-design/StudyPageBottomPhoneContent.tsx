@@ -89,6 +89,7 @@ type StudyPageBottomPhoneContentProps = {
   ethicsBoardInfo: Contact
   contactLead: Contact
   irbProtocolId: string
+  getContactName: Function
 }
 
 const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneContentProps> = ({
@@ -98,6 +99,7 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
   ethicsBoardInfo,
   contactLead,
   irbProtocolId,
+  getContactName,
 }) => {
   const classes = useStyles()
   return (
@@ -115,7 +117,7 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
           />
           <StudySummaryRoles
             type={contactLead.position || 'Role in study'}
-            name={contactLead.name || 'Contact lead'}
+            name={getContactName(contactLead.name) || 'Contact lead'}
           />
         </Box>
         <ContactInformation
@@ -151,7 +153,7 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
           />
           <StudySummaryRoles
             type="IRB/Ethics Board of Record"
-            name={ethicsBoardInfo.name || 'IRB/Ethics Board'}
+            name={getContactName(ethicsBoardInfo.name) || 'IRB/Ethics Board'}
           />
         </Box>
         <ContactInformation

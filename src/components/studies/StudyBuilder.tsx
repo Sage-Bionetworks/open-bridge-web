@@ -36,6 +36,8 @@ import Scheduler from './scheduler/Scheduler'
 import {StudySection} from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
+import constants from '../../types/constants'
+
 const subtitles: StringDictionary<string> = {
   description: 'Description',
   'team-settings': 'Team Settings',
@@ -212,7 +214,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       if (e.statusCode === 401) {
         handleError(e)
       }
-      setError(e.message)
+      setError([e.message])
       window.scrollTo({
         top: 0,
         behavior: 'smooth',
@@ -533,7 +535,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                               ...builderInfo,
                               study: updatedStudy,
                             })
-                            builderInfo.study = updatedStudy
                           }}
                           onError={(error: string) =>
                             setError(prev => [...prev, error])
