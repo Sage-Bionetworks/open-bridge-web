@@ -380,35 +380,30 @@ const AppDesign: React.FunctionComponent<
   useEffect(() => {
     if (!showError) return
     const updatedErrorState = {} as ErrorStateType
-    const contactLead = study.contacts?.find(el => el.role === 'study_support')
-    const principalInvestigator = study.contacts?.find(
-      c => c.role === 'principal_investigator'
+    const contactLead = getContact(study, 'study_support')
+    const principalInvestigator = getContact(study, 'principal_investigator')
+    const irbRecord = getContact(study, 'irb')
+    updatedErrorState.leadPINameHasError = !isContactValid(
+      principalInvestigator,
+      'name'
     )
-    const irbRecord = study.contacts?.find(el => el.role === 'irb')
-    if (!isContactValid(principalInvestigator, 'name')) {
-      updatedErrorState.leadPINameHasError = true
-    }
-    if (!isContactValid(principalInvestigator, 'affiliation')) {
-      updatedErrorState.leadPIAffiliationHasError = true
-    }
-    if (!isContactValid(contactLead, 'name')) {
-      updatedErrorState.contactLeadNameHasError = true
-    }
-    if (!isContactValid(contactLead, 'position')) {
-      updatedErrorState.contactLeadPositonHasError = true
-    }
-    if (!isContactValid(irbRecord, 'name')) {
-      updatedErrorState.irbRecordNameHasError = true
-    }
-    if (!study.irbProtocolId) {
-      updatedErrorState.irbProtocolIdHasError = true
-    }
-    if (!study.name) {
-      updatedErrorState.studyTitleHasError = true
-    }
-    if (!study.details?.trim()) {
-      updatedErrorState.studySummaryCopyHasError = true
-    }
+    updatedErrorState.leadPIAffiliationHasError = !isContactValid(
+      principalInvestigator,
+      'affiliation'
+    )
+
+    updatedErrorState.contactLeadNameHasError = !isContactValid(
+      contactLead,
+      'name'
+    )
+    updatedErrorState.contactLeadPositonHasError = !isContactValid(
+      contactLead,
+      'position'
+    )
+    updatedErrorState.irbRecordNameHasError = !isContactValid(irbRecord, 'name')
+    updatedErrorState.irbProtocolIdHasError = !study.irbProtocolId
+    updatedErrorState.studyTitleHasError = !study.name
+    updatedErrorState.studySummaryCopyHasError = !study.details?.trim()
     checkPhoneError(contactLead, irbRecord)
     checkEmailError(contactLead, irbRecord)
     setErrorState(updatedErrorState)
