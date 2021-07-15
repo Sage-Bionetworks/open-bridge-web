@@ -9,6 +9,7 @@ import {makeStyles} from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
 import PeopleIcon from '@material-ui/icons/People'
+import {Alert} from '@material-ui/lab'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {NavLink} from 'react-router-dom'
@@ -16,9 +17,10 @@ import PARTICIPANTS_ICON from '../../assets/group_participants_icon.svg'
 import Logo from '../../assets/logo_mtb.svg'
 import {useUserSessionDataState} from '../../helpers/AuthContext'
 import {useStudyInfoDataState} from '../../helpers/StudyInfoContext'
-import {isInAdminRole} from '../../helpers/utility'
+import {isInAdminRole, isPathAllowed} from '../../helpers/utility'
 import {latoFont} from '../../style/theme'
 import constants from '../../types/constants'
+import {ExtendedError} from '../../types/types'
 import BreadCrumb from '../widgets/BreadCrumb'
 import HideWhen from '../widgets/HideWhen'
 import MobileDrawerMenuHeader from '../widgets/MobileDrawerMenuHeader'
@@ -140,32 +142,34 @@ type StudyTopNavProps = {
   //sections:? { name: string; path: string }[]
   studyId: string
   //studyName?: string
+  error?: ExtendedError | null
   currentSection?: string
 }
 
 const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   studyId,
-  //studyName,
-  currentSection,
+  error,
 }: StudyTopNavProps) => {
-  const links = [
+  const allLinks = [
     {
-      path: '/studies/builder/:id/session-creator',
+      path: `${constants.restrictedPaths.STUDY_BUILDER}/session-creator`,
       name: 'STUDY BUILDER',
       status: ['design'],
     },
     {
-      path: '/studies/:id/participant-manager',
+      path: constants.restrictedPaths.PARTICIPANT_MANAGER,
       name: 'PARTICIPANT MANAGER',
-      status: ['live', 'legacy', 'recruitment', 'design'],
+      status: constants.constants.IS_TEST_MODE
+        ? ['live', 'legacy', 'recruitment', 'design']
+        : ['live', 'recruitment'],
     },
     {
-      path: '/studies/:id/compliance',
+      path: constants.restrictedPaths.ADHERENCE_DATA,
       name: 'ADHERENCE DATA',
       status: ['live', 'legacy'],
     },
     {
-      path: '/studies/:id/study-data',
+      path: constants.restrictedPaths.STUDY_DATA,
       name: 'STUDY DATA',
       status: ['live', 'legacy'],
     },
@@ -174,6 +178,13 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   const classes = useStyles()
   const sessionData = useUserSessionDataState()
   const studyData = useStudyInfoDataState()
+
+  if (!studyData.study) {
+    return <></>
+  }
+  const links = allLinks.filter(link =>
+    isPathAllowed(studyData.study.identifier, sessionData.roles, link.path)
+  )
 
   return (
     <Box className={classes.rootStudyTopNav}>
@@ -206,7 +217,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               style={{paddingBottom: '0'}}>
               <img src={Logo} key="img_home" alt="home" />
             </NavLink>
-            <HideWhen hideWhen={studyData.study === undefined}>
+            <HideWhen hideWhen={studyData.study === undefined && !error}>
               <BreadCrumb
                 links={[{url: '/Studies', text: ''}]}
                 currentItem={
@@ -245,7 +256,10 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
             {(isInAdminRole(sessionData.roles) ||
               true) /* enable all aggess*/ && (
               <NavLink
-                to={'/studies/:id/access-settings'.replace(':id', studyId)}
+                to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
+                  ':id',
+                  studyId
+                )}
                 key={'path-to-access-settings'}
                 className={classes.toolbarLink}
                 activeClassName={classes.selectedLink}
@@ -284,7 +298,10 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               </NavLink>
             ))}
           <NavLink
-            to={'/studies/:id/access-settings'.replace(':id', studyId)}
+            to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
+              ':id',
+              studyId
+            )}
             key={'path-to-access-settings'}
             className={clsx(
               classes.mobileToolBarLink,
@@ -297,6 +314,20 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
           </NavLink>
         </Drawer>
       </nav>
+
+      {error && (
+        <Box mx="auto" textAlign="center">
+          <Alert
+            variant="outlined"
+            color="error"
+            style={{marginBottom: '10px'}}>
+            {' '}
+            {error.statusCode}
+            You do not have the permission to access this feature. Please
+            contact your study administrator
+          </Alert>
+        </Box>
+      )}
     </Box>
   )
 }

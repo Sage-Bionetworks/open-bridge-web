@@ -16,6 +16,10 @@ export interface Response<T> {
   data: T
 }
 
+export interface ExtendedError extends Error {
+  statusCode?: number
+}
+
 export type RequestStatus = 'IDLE' | 'PENDING' | 'RESOLVED' | 'REJECTED'
 
 export type StudyPhase =
