@@ -16,12 +16,10 @@ type StudyInfoProviderProps = {children: React.ReactNode}
 
 const initialState: StudyInfoData | {} = {}
 
-const StudyInfoStateContext = React.createContext<StudyInfoData | undefined>(
-  undefined
-)
-const StudyInfoDispatchContext = React.createContext<Dispatch | undefined>(
-  undefined
-)
+const StudyInfoStateContext =
+  React.createContext<StudyInfoData | undefined>(undefined)
+const StudyInfoDispatchContext =
+  React.createContext<Dispatch | undefined>(undefined)
 
 function studyInfoReducer(state: StudyInfoData, action: Action): StudyInfoData {
   switch (action.type) {
@@ -45,7 +43,6 @@ function studyInfoReducer(state: StudyInfoData, action: Action): StudyInfoData {
       return newState
     }
     case 'SET_SCHEDULE': {
-      console.log('setting schedule')
       const newState = {
         ...state,
 

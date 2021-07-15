@@ -13,8 +13,6 @@ const getParams = (pathname: string): {id?: string; section?: string} => {
   const path = `/studies/${
     pathname.includes('builder') ? 'builder/' : ''
   }:id/:section`
-
-  console.log(pathname)
   const matchProfile = matchPath(pathname, {
     path,
   })
@@ -28,15 +26,20 @@ const AuthenticatedApp: FunctionComponent<{sessionData: UserSessionData}> = ({
   const [studyId, setStudyId] = React.useState<string | undefined>()
   const [studySection, setStudySection] = React.useState<string | undefined>()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
-  const {data: builderInfo} = useStudyBuilderInfo(studyId)
+  const {data: builderInfo, error} = useStudyBuilderInfo(studyId)
+
   const history = useHistory()
 
   React.useEffect(() => {
-    console.log('datachange', builderInfo?.study)
-    if (builderInfo?.study) {
+    if (builderInfo?.schedule && builderInfo.study) {
       studyDataUpdateFn({type: 'SET_ALL', payload: builderInfo})
+    } else if (builderInfo?.study) {
+      studyDataUpdateFn({
+        type: 'SET_STUDY',
+        payload: {study: builderInfo.study},
+      })
     }
-  }, [builderInfo, studyDataUpdateFn])
+  }, [builderInfo, error, studyDataUpdateFn])
 
   //on routechange set body class
   React.useEffect(() => {
@@ -56,13 +59,13 @@ const AuthenticatedApp: FunctionComponent<{sessionData: UserSessionData}> = ({
 
   const {id, section} = getParams(window.location.pathname)
   setBodyClass(section)
-
   return (
     <>
       {!studyId && <TopNav routes={PrivateRoutes} sessionData={sessionData} />}
       {studyId && (
         <StudyTopNav
           studyId={studyId!}
+          error={error}
           currentSection={studySection}></StudyTopNav>
       )}
 
