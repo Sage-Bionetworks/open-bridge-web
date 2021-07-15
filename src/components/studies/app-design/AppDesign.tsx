@@ -32,8 +32,11 @@ import Subsection from './Subsection'
 import UploadStudyLogoSection from './UploadStudyLogoSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
+import constants from '../../../types/constants'
+import {useQuery, isInvalidPhone, isValidEmail} from '../../../helpers/utility'
 
 const imgHeight = 70
+const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {counterReset: 'orderedlist'},
@@ -206,6 +209,17 @@ export interface AppDesignProps {
   onError: Function
 }
 
+type ErrorStateType = {
+  studyTitleHasError?: boolean
+  studySummaryCopyHasError?: boolean
+  leadPINameHasError?: boolean
+  leadPIAffiliationHasError?: boolean
+  contactLeadNameHasError?: boolean
+  contactLeadPositonHasError?: boolean
+  irbRecordNameHasError?: boolean
+  irbProtocolIdHasError?: boolean
+}
+
 function getPreviewForImage(file: File): PreviewFile {
   const previewFileBody = URL.createObjectURL(file)
   return {
@@ -257,16 +271,16 @@ const formatPhoneNumber = (phoneNumber: string | undefined) => {
   if (!phoneNumber) {
     return ''
   }
-  phoneNumber.replace('+1', '')
-  if (phoneNumber.length !== 10) {
-    return phoneNumber
+  const updatedPhoneNumber = phoneNumber.replace('+1', '')
+  if (updatedPhoneNumber.length !== 10) {
+    return updatedPhoneNumber
   }
   return (
-    phoneNumber.slice(0, 3) +
+    updatedPhoneNumber.slice(0, 3) +
     '-' +
-    phoneNumber.slice(3, 6) +
+    updatedPhoneNumber.slice(3, 6) +
     '-' +
-    phoneNumber.slice(6)
+    updatedPhoneNumber.slice(6)
   )
 }
 
@@ -279,10 +293,12 @@ const AppDesign: React.FunctionComponent<
   onUpdate,
   onSave,
   study,
-
   onError,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
+
+  let query = useQuery()
+  const showError = !!query.get('from')
 
   const {token, orgMembership} = useUserSessionDataState()
 
@@ -316,6 +332,83 @@ const AppDesign: React.FunctionComponent<
     isIrbEmailValid: true,
   })
 
+  const [errorState, setErrorState] = React.useState<ErrorStateType>({})
+
+  const handleUpdate = (updatedStudy: Study) => {
+    const formattedStudy = formatStudy(updatedStudy)
+    if (formattedStudy.contacts) {
+      for (const contact of formattedStudy.contacts) {
+        if (contact.name === '') {
+          contact.name = DEFAULT_CONTACT_NAME
+        }
+      }
+    }
+    onUpdate(formattedStudy)
+  }
+
+  const checkPhoneError = (contactLead?: Contact, irbRecord?: Contact) => {
+    const generalContactPhoneError =
+      !contactLead?.phone?.number || isInvalidPhone(generalContactPhoneNumber)
+    const irbRecordHasError =
+      !irbRecord?.phone?.number || isInvalidPhone(irbPhoneNumber)
+    setPhoneNumberErrorState({
+      isGeneralContactPhoneNumberValid: !generalContactPhoneError,
+      isIrbPhoneNumberValid: !irbRecordHasError,
+    })
+  }
+
+  const checkEmailError = (contactLead?: Contact, irbRecord?: Contact) => {
+    const generalContactEmailHasError =
+      !contactLead?.email || !isValidEmail(contactLead.email)
+    const irbRecordEmailHasError =
+      !irbRecord?.email || !isValidEmail(irbRecord.email)
+    setEmailErrorState({
+      isGeneralContactEmailValid: !generalContactEmailHasError,
+      isIrbEmailValid: !irbRecordEmailHasError,
+    })
+  }
+
+  const isContactValid = (
+    contact: Contact | undefined,
+    property: keyof Contact
+  ) => {
+    return (
+      contact && contact[property] && contact[property] !== DEFAULT_CONTACT_NAME
+    )
+  }
+
+  useEffect(() => {
+    if (!showError) return
+    const updatedErrorState = {} as ErrorStateType
+    const contactLead = getContact(study, 'study_support')
+    const principalInvestigator = getContact(study, 'principal_investigator')
+    const irbRecord = getContact(study, 'irb')
+    updatedErrorState.leadPINameHasError = !isContactValid(
+      principalInvestigator,
+      'name'
+    )
+    updatedErrorState.leadPIAffiliationHasError = !isContactValid(
+      principalInvestigator,
+      'affiliation'
+    )
+
+    updatedErrorState.contactLeadNameHasError = !isContactValid(
+      contactLead,
+      'name'
+    )
+    updatedErrorState.contactLeadPositonHasError = !isContactValid(
+      contactLead,
+      'position'
+    )
+    updatedErrorState.irbRecordNameHasError = !isContactValid(irbRecord, 'name')
+    updatedErrorState.irbProtocolIdHasError = !study.irbProtocolId
+    updatedErrorState.studyTitleHasError = !study.name
+    updatedErrorState.studySummaryCopyHasError = !study.details?.trim()
+    checkPhoneError(contactLead, irbRecord)
+    checkEmailError(contactLead, irbRecord)
+    setErrorState(updatedErrorState)
+  }, [study])
+
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     event.persist()
     if (!event.target.files) {
@@ -340,7 +433,7 @@ const AppDesign: React.FunctionComponent<
         version: uploadResponse.version,
       }
 
-      onUpdate(updatedStudy)
+      handleUpdate(updatedStudy)
     } catch (error) {
       onError(error)
     } finally {
@@ -362,7 +455,12 @@ const AppDesign: React.FunctionComponent<
       )
       return
     }
-    const updatedStudy = {...study}
+    const updatedStudy = formatStudy(study)
+    onSave(updatedStudy)
+  }
+
+  const formatStudy = (newStudy: Study) => {
+    const updatedStudy = {...newStudy}
     const irbContact = updatedStudy.contacts?.find(el => el.role === 'irb')
     // If a contact's email or phone is an empty string, then delete the field
     // from the contact object.
@@ -383,20 +481,17 @@ const AppDesign: React.FunctionComponent<
     if (generalContactPhone === '' || generalContactPhone === '+1') {
       delete generalContact!.phone
     }
-
-    onSave(updatedStudy)
+    return updatedStudy
   }
 
   // This is the method without useCallback or debounce.
   const updateColor = (color: string) => {
-    console.log('changingColor to' + color)
-
     const updatedStudy = {...study}
     updatedStudy.colorScheme = {
       ...updatedStudy.colorScheme,
       background: color,
     }
-    onUpdate(updatedStudy)
+    handleUpdate(updatedStudy)
   }
 
   const updateContacts = (
@@ -416,7 +511,7 @@ const AppDesign: React.FunctionComponent<
   const getContactPersonObject = (type: ContactType): Contact => {
     const contact = getContact(study, type)
 
-    return contact || {role: type, name: ''}
+    return contact || {role: type, name: DEFAULT_CONTACT_NAME}
   }
 
   useEffect(() => {
@@ -432,6 +527,10 @@ const AppDesign: React.FunctionComponent<
       )
     }
   }, [])
+
+  const getContactName = (name: string | undefined) => {
+    return name && name !== DEFAULT_CONTACT_NAME ? name : ''
+  }
 
   const updateWelcomeScreenMessaging = (
     welcomeScreenHeader: string,
@@ -451,7 +550,11 @@ const AppDesign: React.FunctionComponent<
     } as WelcomeScreenData
     const updatedStudy = {...study}
     updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
-    onUpdate(updatedStudy)
+    handleUpdate(updatedStudy)
+  }
+
+  const hasError = (errorProperty: keyof ErrorStateType) => {
+    return showError && !!errorState[errorProperty]
   }
 
   return (
@@ -510,7 +613,7 @@ const AppDesign: React.FunctionComponent<
                       isUsingDefaultMessage: !currentWelcomeScreenData.isUsingDefaultMessage,
                     }
                     updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
-                    onUpdate(updatedStudy)
+                    handleUpdate(updatedStudy)
                   }}></Switch>
               </Box>
               <Box ml={1.5}>Customize</Box>
@@ -636,10 +739,12 @@ const AppDesign: React.FunctionComponent<
                   const updatedStudy = {...study}
                   updatedStudy.name = studyTitle
                   updatedStudy.details = studySummaryBody
-                  onUpdate(updatedStudy)
+                  handleUpdate(updatedStudy)
                 }}
                 studyTitle={study.name || ''}
                 studySummaryBody={study.details || ''}
+                studyTitleHasError={hasError('studyTitleHasError')}
+                studySummaryCopyHasError={hasError('studySummaryCopyHasError')}
               />
               <StudyLeadInformationSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
@@ -660,13 +765,20 @@ const AppDesign: React.FunctionComponent<
                   )
                   const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
-                  onUpdate(updatedStudy)
+                  handleUpdate(updatedStudy)
                 }}
                 leadPrincipalInvestigator={getContactPersonObject(
                   'principal_investigator'
                 )}
                 ethicsBoardContact={getContactPersonObject('irb')}
                 funder={getContactPersonObject('sponsor')}
+                getContactName={getContactName}
+                principleInvestigatorNameHasError={hasError(
+                  'leadPINameHasError'
+                )}
+                principleInvestigatorAffiliationHasError={hasError(
+                  'leadPIAffiliationHasError'
+                )}
               />
               <GeneralContactAndSupportSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
@@ -687,8 +799,13 @@ const AppDesign: React.FunctionComponent<
                   )
                   const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
-                  onUpdate(updatedStudy)
+                  handleUpdate(updatedStudy)
                 }}
+                getContactName={getContactName}
+                contactLeadNameHasError={hasError('contactLeadNameHasError')}
+                contactLeadPositionHasError={hasError(
+                  'contactLeadPositonHasError'
+                )}
               />
               <IrbBoardContactSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
@@ -713,10 +830,13 @@ const AppDesign: React.FunctionComponent<
                   const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
                   updatedStudy.irbProtocolId = protocolId
-                  onUpdate(updatedStudy)
+                  handleUpdate(updatedStudy)
                 }}
                 irbInfo={getContactPersonObject('irb')}
                 protocolId={study.irbProtocolId || ''}
+                getContactName={getContactName}
+                irbNameHasError={hasError('irbRecordNameHasError')}
+                irbProtocolIdHasError={hasError('irbProtocolIdHasError')}
               />
             </ol>
           </Box>
@@ -744,6 +864,7 @@ const AppDesign: React.FunctionComponent<
                 funder={getContactPersonObject('sponsor')}
                 studyTitle={study.name}
                 studySummaryBody={study.details || ''}
+                getContactName={getContactName}
               />
               <Box className={classes.phoneBottom}>
                 <PhoneBottomImg title="phone bottom image" />
@@ -764,6 +885,7 @@ const AppDesign: React.FunctionComponent<
                 irbProtocolId={study.irbProtocolId || ''}
                 ethicsBoardInfo={getContactPersonObject('irb')}
                 contactLead={getContactPersonObject('study_support')}
+                getContactName={getContactName}
               />
               <div className={classes.phoneBottom}>
                 <PhoneBottomImg title="phone bottom image" />

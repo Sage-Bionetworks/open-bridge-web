@@ -80,6 +80,7 @@ type StudyPageTopPhoneContentProps = {
   leadInvestigator: Contact
   funder: Contact
   studyLogoUrl?: string
+  getContactName: Function
 }
 
 const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContentProps> = ({
@@ -91,6 +92,7 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
   leadInvestigator,
   funder,
   studyLogoUrl,
+  getContactName,
 }) => {
   const classes = useStyles()
   return (
@@ -131,7 +133,7 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         <Divider className={classes.divider} />
         <StudySummaryRoles
           type="Lead Principal Investigator"
-          name={leadInvestigator.name || 'placeholder'}
+          name={getContactName(leadInvestigator.name) || 'placeholder'}
           className={classes.studySummaryRoles}
         />
         <SectionIndicator
@@ -146,7 +148,7 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         />
         <StudySummaryRoles
           type="Funder"
-          name={funder.name || 'placeholder'}
+          name={getContactName(funder.name) || 'placeholder'}
           className={classes.studySummaryRoles}
         />
       </Box>

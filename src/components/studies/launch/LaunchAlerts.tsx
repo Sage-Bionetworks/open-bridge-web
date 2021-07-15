@@ -12,6 +12,9 @@ import {Contact} from '../../../types/types'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import {isSameAsDefaultSchedule} from '../scheduler/utility'
 import {normalNavIcons, SECTIONS, StudySection} from '../sections'
+import constants from '../../../types/constants'
+
+const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   /*root: {
@@ -183,7 +186,8 @@ const ALERTS: StudyAlertSection[] = [
       {
         errorText: 'Please enter Lead PI',
         validationFn: (s: StudyInfoData) => {
-          return !!getLeadPI(s)
+          const leadPI = getLeadPI(s)
+          return !!leadPI && leadPI.name !== DEFAULT_CONTACT_NAME
         },
         isDismissable: false,
       },
@@ -197,13 +201,18 @@ const ALERTS: StudyAlertSection[] = [
         errorText: 'Please enter Funder',
         validationFn: (s: StudyInfoData) => {
           const funder = s.study.contacts?.find(el => el.role === 'sponsor')
-          return !!funder
+          return !!funder && funder.name !== DEFAULT_CONTACT_NAME
         },
         isDismissable: true,
       },
       {
         errorText: 'Please enter Contact Lead',
-        validationFn: (s: StudyInfoData) => !!getStudySupportPerson(s),
+        validationFn: (s: StudyInfoData) => {
+          const contactSupport = getStudySupportPerson(s)
+          return (
+            !!contactSupport && contactSupport.name !== DEFAULT_CONTACT_NAME
+          )
+        },
         isDismissable: false,
       },
       {
@@ -225,8 +234,10 @@ const ALERTS: StudyAlertSection[] = [
       },
       {
         errorText: 'Please enter IRB of Record Name',
-        validationFn: (s: StudyInfoData) => !!getIrbContact(s)?.name,
-
+        validationFn: (s: StudyInfoData) => {
+          const irbContact = getIrbContact(s)
+          return !!irbContact && irbContact.name !== DEFAULT_CONTACT_NAME
+        },
         isDismissable: false,
       },
       {
@@ -293,7 +304,9 @@ const StudyAlertComponent: React.FunctionComponent<
           </div>
           {error.isDismissable && (
             <Box className={classes.reviewIgnoreButtons}>
-              <Button href={SECTIONS[sectionIndex].path}>Review</Button>
+              <Button href={`${SECTIONS[sectionIndex].path}?from=launch`}>
+                Review
+              </Button>
               <Button
                 onClick={() =>
                   onIgnore(SECTIONS[sectionIndex].path, errorIndex)
@@ -306,7 +319,7 @@ const StudyAlertComponent: React.FunctionComponent<
             <Button
               variant="contained"
               className={classes.mustReviewButton}
-              href={SECTIONS[sectionIndex].path}>
+              href={`${SECTIONS[sectionIndex].path}?from=launch`}>
               Review Required
             </Button>
           )}

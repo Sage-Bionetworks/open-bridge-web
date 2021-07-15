@@ -8,6 +8,7 @@ import {
   StringDictionary,
   UserSessionData,
 } from '../types/types'
+import {useLocation} from 'react-router-dom'
 
 type RestMethod = 'POST' | 'GET' | 'DELETE'
 
@@ -261,8 +262,7 @@ export const isInvalidPhone = (phone: string): boolean => {
   This function is taken from: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
 */
 export const isValidEmail = (email: string) => {
-  const re =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(String(email).toLowerCase())
 }
 
@@ -292,4 +292,8 @@ export const setBodyClass = (next?: string) => {
 export const formatStudyId = (studyId: string) => {
   if (studyId.length !== 6) return studyId
   return studyId.substring(0, 3) + '-' + studyId.substring(3)
+}
+
+export function useQuery() {
+  return new URLSearchParams(useLocation().search)
 }
