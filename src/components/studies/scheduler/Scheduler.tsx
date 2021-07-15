@@ -74,7 +74,6 @@ type SchedulerProps = {
   token: string
   onSave: Function
   schedulerErrors: SchedulerErrorType[]
-  studyScheduleHasBeenSaved: boolean
 }
 
 const Scheduler: FunctionComponent<
@@ -89,12 +88,10 @@ const Scheduler: FunctionComponent<
   token,
   version,
   schedulerErrors,
-  studyScheduleHasBeenSaved,
 }: SchedulerProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
   const [isErrorAlert, setIsErrorAlert] = React.useState(true)
   const [schedule, setSchedule] = React.useState({..._schedule})
-  const [displayBanner, setDisplayBanner] = React.useState(false)
   console.log('%c ---scheduler update--' + version, 'color: red')
 
   const [schedulerErrorState, setSchedulerErrorState] = React.useState(
@@ -107,10 +104,6 @@ const Scheduler: FunctionComponent<
       }
     >()
   )
-
-  useEffectSkipFirstRender(() => {
-    setDisplayBanner(true)
-  }, [studyScheduleHasBeenSaved])
 
   function parseErrors(_schedulerErrors: SchedulerErrorType[]) {
     const newErrorState = new Map()
@@ -240,11 +233,6 @@ const Scheduler: FunctionComponent<
 
   return (
     <Box>
-      <TopErrorBanner
-        onClose={() => setDisplayBanner(false)}
-        type={schedulerErrors.length > 0 ? 'error' : 'success'}
-        isVisible={displayBanner}></TopErrorBanner>
-
       <NavigationPrompt when={hasObjectChanged} key="prompt">
         {({onConfirm, onCancel}) => (
           <ConfirmationDialog

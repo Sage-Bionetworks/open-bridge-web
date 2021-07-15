@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     top: theme.spacing(2),
     left: theme.spacing(2),
     right: theme.spacing(2),
-    zIndex: 1000,
+    zIndex: 15000,
     height: '88px',
     borderRadius: '0px',
     fontSize: '16px',
@@ -22,6 +22,11 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     flexDirection: 'row',
     alignItems: 'center',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+    animation: '$fade-in 0.5s ease',
+    '& svg': {
+      width: '28px',
+      height: '28px',
+    },
   },
   invisible: {
     display: 'none',
@@ -33,6 +38,14 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   error: {
     backgroundColor: '#EE6070',
     color: 'white',
+  },
+  '@keyframes fade-in': {
+    '0%': {
+      opacity: 0,
+    },
+    '100%': {
+      opacity: 1,
+    },
   },
 }))
 
@@ -50,14 +63,16 @@ const TopErrorBanner: React.FunctionComponent<TopErrorBannerProps> = ({
   onClose,
 }) => {
   const classes = useStyles()
+  let timeout: NodeJS.Timeout
 
   React.useEffect(() => {
+    clearTimeout(timeout)
     if (type === 'success') {
-      setTimeout(() => {
+      timeout = setTimeout(() => {
         onClose()
-      }, 5000)
+      }, 8000)
     }
-  }, [isVisible, type])
+  }, [type, isVisible])
 
   return (
     <Alert
@@ -72,7 +87,7 @@ const TopErrorBanner: React.FunctionComponent<TopErrorBannerProps> = ({
       icon={
         <img
           src={type === 'error' ? Alert_Icon : SaveIcon}
-          style={{height: '22px'}}
+          style={{height: '20px'}}
           alt={'error-message'}></img>
       }>
       {displayText

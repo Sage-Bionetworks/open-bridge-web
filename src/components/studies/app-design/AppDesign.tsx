@@ -210,7 +210,6 @@ export interface AppDesignProps {
   study: Study
   onError: Function
   isError: boolean
-  studyHasBeenSaved: boolean
 }
 
 type ErrorStateType = {
@@ -298,8 +297,6 @@ const AppDesign: React.FunctionComponent<
   onSave,
   study,
   onError,
-  isError,
-  studyHasBeenSaved,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
 
@@ -337,8 +334,6 @@ const AppDesign: React.FunctionComponent<
     isGeneralContactEmailValid: true,
     isIrbEmailValid: true,
   })
-
-  const [displayBanner, setDisplayBanner] = React.useState(false)
 
   const [errorState, setErrorState] = React.useState<ErrorStateType>({})
 
@@ -448,10 +443,6 @@ const AppDesign: React.FunctionComponent<
       setIsSettingStudyLogo(false)
     }
   }
-
-  useEffectSkipFirstRender(() => {
-    setDisplayBanner(true)
-  }, [studyHasBeenSaved])
 
   const saveInfo = () => {
     const phoneNumberHasError =
@@ -568,23 +559,9 @@ const AppDesign: React.FunctionComponent<
   const hasError = (errorProperty: keyof ErrorStateType) => {
     return showError && !!errorState[errorProperty]
   }
-
-  const displayError = React.useMemo(() => {
-    return (
-      isError ||
-      !phoneNumberErrorState.isGeneralContactPhoneNumberValid ||
-      !phoneNumberErrorState.isIrbPhoneNumberValid ||
-      !emailErrorState.isGeneralContactEmailValid ||
-      !emailErrorState.isIrbEmailValid
-    )
-  }, [isError])
   return (
     <>
       <Box className={classes.root}>
-        <TopErrorBanner
-          onClose={() => setDisplayBanner(false)}
-          isVisible={displayBanner}
-          type={displayError ? 'error' : 'success'}></TopErrorBanner>
         <NavigationPrompt when={hasObjectChanged} key="prompt">
           {({onConfirm, onCancel}) => (
             <ConfirmationDialog

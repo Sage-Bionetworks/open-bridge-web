@@ -36,6 +36,7 @@ import Scheduler from './scheduler/Scheduler'
 import {StudySection} from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
+import TopErrorBanner from '../widgets/TopErrorBanner'
 import constants from '../../types/constants'
 
 const subtitles: StringDictionary<string> = {
@@ -137,12 +138,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   const builderInfo: StudyInfoData = useStudyInfoDataState()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
   const [open, setOpen] = React.useState(true)
-  // This is used to toggle in order to show the success/error banner
-  const [studyHasBeenSaved, setStudyHasBeenSaved] = React.useState(false)
-  const [
-    studyScheduleHasBeenSaved,
-    setStudyScheduleHasBeenSaved,
-  ] = React.useState(false)
+  const [displayBanner, setDisplayBanner] = React.useState(false)
 
   const setData = (builderInfo: StudyInfoData) => {
     studyDataUpdateFn({
@@ -196,6 +192,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ): Promise<Study | undefined> => {
     setHasObjectChanged(true)
     setSaveLoader(true)
+    setDisplayBanner(false)
     try {
       const newVersion = await StudyService.updateStudy(study, token!)
       const updatedStudy = {
@@ -220,8 +217,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         behavior: 'smooth',
       })
     } finally {
-      setStudyHasBeenSaved(prev => !prev)
       setSaveLoader(false)
+      setDisplayBanner(true)
     }
   }
 
@@ -230,6 +227,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ): Promise<Schedule | undefined> => {
     setError([])
     setSchedulerErrors([])
+    setDisplayBanner(false)
     try {
       setSaveLoader(true)
       const schedule = updatedSchedule || builderInfo.schedule
@@ -295,7 +293,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       return undefined
     } finally {
       setSaveLoader(false)
-      setStudyScheduleHasBeenSaved(prev => !prev)
+      setDisplayBanner(true)
     }
   }
 
@@ -396,9 +394,18 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     })
   }
 
+  const getBannerType = () => {
+    const errors = section === 'scheduler' ? schedulerErrors : error
+    return errors.length > 0 ? 'error' : 'success'
+  }
+
   return (
     <>
       <Box display="flex" bgcolor="#f7f7f7">
+        <TopErrorBanner
+          onClose={() => setDisplayBanner(false)}
+          isVisible={displayBanner}
+          type={getBannerType()}></TopErrorBanner>
         <Box width={open ? 210 : 56} flexShrink={0}></Box>
         <Box className={getClasses()} pt={8} pl={2}>
           <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>
@@ -471,7 +478,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                     <>
                       {section === 'scheduler' && (
                         <Scheduler
-                          studyScheduleHasBeenSaved={studyScheduleHasBeenSaved}
                           id={id}
                           token={token!}
                           schedule={builderInfo.schedule}
@@ -522,7 +528,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       {section === 'customize' && (
                         <AppDesign
                           isError={error.length > 0}
-                          studyHasBeenSaved={studyHasBeenSaved}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           study={builderInfo.study}
