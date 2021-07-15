@@ -11,8 +11,14 @@ import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
 import {ReactComponent as PhoneBottomImg} from '../../../assets/appdesign/phone_buttons.svg'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
 import {useUserSessionDataState} from '../../../helpers/AuthContext'
+import {
+  getSearchParams,
+  isInvalidPhone,
+  isValidEmail,
+} from '../../../helpers/utility'
 import StudyService from '../../../services/study.service'
 import {ThemeType} from '../../../style/theme'
+import constants from '../../../types/constants'
 import {
   Contact,
   Study,
@@ -32,8 +38,6 @@ import Subsection from './Subsection'
 import UploadStudyLogoSection from './UploadStudyLogoSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
-import constants from '../../../types/constants'
-import {useQuery, isInvalidPhone, isValidEmail} from '../../../helpers/utility'
 
 const imgHeight = 70
 const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
@@ -296,28 +300,25 @@ const AppDesign: React.FunctionComponent<
   onError,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
-
-  let query = useQuery()
-  const showError = !!query.get('from')
+  const params = getSearchParams(window.location.search)
+  const showError = params.from !== undefined
+  console.log(showError, 'show')
+  console.log(window.location.search)
 
   const {token, orgMembership} = useUserSessionDataState()
 
   const classes = useStyles()
 
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
-  const [
-    irbNameSameAsInstitution,
-    setIrbNameSameAsInstitution,
-  ] = useState<boolean>(
-    getContact(study, 'irb')?.name ===
-      getContact(study, 'principal_investigator')?.affiliation
-  )
-  const [
-    generalContactPhoneNumber,
-    setGeneralContactPhoneNumber,
-  ] = React.useState(
-    formatPhoneNumber(getContact(study, 'study_support')?.phone?.number)
-  )
+  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] =
+    useState<boolean>(
+      getContact(study, 'irb')?.name ===
+        getContact(study, 'principal_investigator')?.affiliation
+    )
+  const [generalContactPhoneNumber, setGeneralContactPhoneNumber] =
+    React.useState(
+      formatPhoneNumber(getContact(study, 'study_support')?.phone?.number)
+    )
   const [irbPhoneNumber, setIrbPhoneNumber] = React.useState(
     formatPhoneNumber(getContact(study, 'irb')?.phone?.number)
   )
@@ -610,9 +611,11 @@ const AppDesign: React.FunctionComponent<
                     }
                     const newWelcomeScreenData = {
                       ...currentWelcomeScreenData,
-                      isUsingDefaultMessage: !currentWelcomeScreenData.isUsingDefaultMessage,
+                      isUsingDefaultMessage:
+                        !currentWelcomeScreenData.isUsingDefaultMessage,
                     }
-                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
+                    updatedStudy.clientData.welcomeScreenData =
+                      newWelcomeScreenData
                     handleUpdate(updatedStudy)
                   }}></Switch>
               </Box>
@@ -780,6 +783,8 @@ const AppDesign: React.FunctionComponent<
                   'leadPIAffiliationHasError'
                 )}
               />
+              <div id="contactLead">j</div>
+              <a id="contactLead" />
               <GeneralContactAndSupportSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 phoneNumberErrorState={phoneNumberErrorState}
@@ -807,6 +812,7 @@ const AppDesign: React.FunctionComponent<
                   'contactLeadPositonHasError'
                 )}
               />
+              <a id="contactIrb" />
               <IrbBoardContactSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 phoneNumberErrorState={phoneNumberErrorState}
