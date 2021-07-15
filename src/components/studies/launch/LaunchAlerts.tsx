@@ -191,13 +191,13 @@ const ALERTS: StudyAlertSection[] = [
           return !!leadPI && leadPI.name !== DEFAULT_CONTACT_NAME
         },
         isDismissable: false,
-        anchor: 'leadPi',
+        anchor: 'leadPI',
       },
       {
         errorText: 'Please enter Institutional Affiliation',
         validationFn: (s: StudyInfoData) => !!getLeadPI(s)?.affiliation,
         isDismissable: false,
-        anchor: 'leadPi',
+        anchor: 'leadPI',
       },
 
       {
@@ -207,7 +207,7 @@ const ALERTS: StudyAlertSection[] = [
           return !!funder && funder.name !== DEFAULT_CONTACT_NAME
         },
         isDismissable: true,
-        anchor: 'leadPi',
+        anchor: 'leadPI',
       },
       {
         errorText: 'Please enter Contact Lead',
@@ -232,6 +232,7 @@ const ALERTS: StudyAlertSection[] = [
         errorText: 'Please enter Phone # of Contact Lead',
         validationFn: (s: StudyInfoData) => !!getStudySupportPerson(s)?.phone,
         isDismissable: false,
+        anchor: 'contactLead',
       },
       {
         errorText: 'Please enter Email of Contact Lead',
@@ -319,7 +320,7 @@ const StudyAlertComponent: React.FunctionComponent<
             <Box className={classes.reviewIgnoreButtons}>
               <Button
                 href={`${indexedSection.path}?from=launch${
-                  error.anchor ? '#' + error.anchor : ''
+                  error.anchor ? '&anchor=' + error.anchor : ''
                 }`}>
                 Review
               </Button>
