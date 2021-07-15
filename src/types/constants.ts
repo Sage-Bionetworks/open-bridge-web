@@ -6,7 +6,16 @@ export default {
     ENDPOINT: 'https://webservices.sagebridge.org',
     SYNAPSE_ENDPOINT: 'https://repo-prod.prod.sagebase.org',
     NEW_STUDY_NAME: 'NEW_STUDY_UNNAMED',
-    DEFAULT_PLACEHOLDER: "*UNDEFINED*"
+    DEFAULT_PLACEHOLDER: '*UNDEFINED*',
+    IS_TEST_MODE: true,
+  },
+
+  restrictedPaths: {
+    ACCESS_SETTINGS: '/studies/:id/access-settings',
+    STUDY_BUILDER: '/studies/builder/:id',
+    PARTICIPANT_MANAGER: '/studies/:id/participant-manager',
+    ADHERENCE_DATA: '/studies/:id/compliance',
+    STUDY_DATA: '/studies/:id/study-data',
   },
 
   environments: [

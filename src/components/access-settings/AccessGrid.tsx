@@ -102,9 +102,9 @@ export function getAccessFromRoles(roles: AdminRole[]): Access {
   const access = {...NO_ACCESS}
   if (roles.includes('org_admin')) {
     access.ACCESS_SETTINGS = 'EDITOR'
-    access.STUDY_BUILDER = 'EDITOR'
-    access.PARTICIPANT_MANAGER = 'EDITOR'
-    access.ADHERENCE_DATA = 'EDITOR'
+    // access.STUDY_BUILDER = 'EDITOR'
+    // access.PARTICIPANT_MANAGER = 'EDITOR'
+    // access.ADHERENCE_DATA = 'EDITOR'
   }
 
   if (roles.includes('study_coordinator')) {

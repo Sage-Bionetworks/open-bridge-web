@@ -14,11 +14,11 @@ import {RouteComponentProps} from 'react-router-dom'
 import {useAsync} from '../../helpers/AsyncHook'
 import {useUserSessionDataState} from '../../helpers/AuthContext'
 import {useStudyInfoDataDispatch} from '../../helpers/StudyInfoContext'
-import {generateNonambiguousCode} from '../../helpers/utility'
+import {generateNonambiguousCode, isPathAllowed} from '../../helpers/utility'
 import StudyService from '../../services/study.service'
 import {latoFont} from '../../style/theme'
 import constants from '../../types/constants'
-import {Study, StudyPhase} from '../../types/types'
+import {AdminRole, Study, StudyPhase} from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import {MTBHeading} from '../widgets/Headings'
 import Loader from '../widgets/Loader'
@@ -30,6 +30,7 @@ type SectionStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'
 
 type StudySublistProps = {
   status: SectionStatus
+  userRoles: AdminRole[]
   studies: Study[]
   onAction: Function
   renameStudyId: string
@@ -151,16 +152,37 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   onAction,
   highlightedStudyId,
   menuAnchor,
+  userRoles,
 }: StudySublistProps) => {
   const classes = useStyles()
   const item = sections.find(section => section.sectionStatus === status)!
   const displayStudies = studies.filter(study =>
     item.studyStatus.includes(study.phase)
   )
-  const studyLink =
-    item.sectionStatus === 'DRAFT'
-      ? `/studies/builder/:id/session-creator`
-      : `/studies/:id/participant-manager`
+  const links = {
+    builder: `${constants.restrictedPaths.STUDY_BUILDER}/session-creator`,
+    participants: constants.restrictedPaths.PARTICIPANT_MANAGER,
+  }
+
+  function getStudyLink(
+    sectionStatus: SectionStatus,
+    studyId: string,
+    roles: AdminRole[]
+  ) {
+    let link = undefined
+    if (sectionStatus === 'DRAFT') {
+      link = isPathAllowed(studyId, roles, links.builder)
+        ? links.builder
+        : isPathAllowed(studyId, roles, links.participants)
+        ? links.participants
+        : undefined
+    } else {
+      link = isPathAllowed(studyId, roles, links.participants)
+        ? links.participants
+        : undefined
+    }
+    return link ? link.replace(':id', studyId) : '#'
+  }
 
   if (!displayStudies.length) {
     return <></>
@@ -191,7 +213,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
             style={{textDecoration: 'none'}}
             key={study.identifier || index}
             variant="body2"
-            href={studyLink.replace(':id', study.identifier)}>
+            href={getStudyLink(status, study.identifier, userRoles)}>
             <StudyCard
               study={study}
               onRename={(newName: string) => {
@@ -217,7 +239,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const studyDataUpdateFn = useStudyInfoDataDispatch()
   const handleError = useErrorHandler()
 
-  const {token} = useUserSessionDataState()
+  const {token, roles} = useUserSessionDataState()
   const [menuAnchor, setMenuAnchor] =
     React.useState<null | {
       study: Study
@@ -447,6 +469,13 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             ))}
           </ul>
           <Button
+            disabled={
+              !isPathAllowed(
+                'any',
+                roles,
+                constants.restrictedPaths.STUDY_BUILDER
+              )
+            }
             variant="contained"
             onClick={() => createStudy()}
             className={classes.createStudyButton}>
@@ -459,6 +488,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           statusFilters.map((status, index) => (
             <Box style={{paddingBottom: index < 3 ? '24px' : '0'}} key={status}>
               <StudySublist
+                userRoles={roles}
                 studies={studies!}
                 renameStudyId={renameStudyId}
                 status={status}

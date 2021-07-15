@@ -21,7 +21,14 @@ export const useStudyBuilderInfo = (id: string | undefined) => {
     }
     let schedule
     if (study.scheduleGuid) {
-      schedule = await StudyService.getStudySchedule(study.scheduleGuid, token!)
+      try {
+        schedule = await StudyService.getStudySchedule(
+          study.scheduleGuid,
+          token!
+        )
+      } catch (e) {
+        schedule = undefined
+      }
     }
 
     return {schedule, study}

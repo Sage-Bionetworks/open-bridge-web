@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import CONSTANTS from '../types/constants'
+import {default as constants, default as CONSTANTS} from '../types/constants'
 import {
   AdminRole,
   Phone,
@@ -266,7 +266,35 @@ export const isValidEmail = (email: string) => {
   return re.test(String(email).toLowerCase())
 }
 
-export const isInAdminRole = (roles: AdminRole[]) => roles.includes('org_admin')
+export const isInAdminRole = (userRoles: AdminRole[]) =>
+  userRoles.includes('org_admin')
+export const isPathAllowed = (
+  studyId: string,
+  userRoles: AdminRole[],
+  path: string
+) => {
+  const pathToCheck = path.replace(':id', studyId)
+  const access = {
+    org_admin: [constants.restrictedPaths.ACCESS_SETTINGS],
+    study_designer: [constants.restrictedPaths.STUDY_BUILDER],
+    study_coordinator: [
+      constants.restrictedPaths.PARTICIPANT_MANAGER,
+      constants.restrictedPaths.ADHERENCE_DATA,
+      constants.restrictedPaths.STUDY_DATA,
+    ],
+  }
+  const allowedPaths: string[] = []
+  userRoles.forEach(role => {
+    Array.prototype.push.apply(
+      allowedPaths,
+      (access[role] || []).map(link => link.replace(':id', studyId))
+    )
+  })
+  const hasPath = allowedPaths.find(allowedPath =>
+    pathToCheck.includes(allowedPath)
+  )
+  return !!hasPath
+}
 
 export const isSignInById = (signIn?: SignInType[]): boolean => {
   return !signIn || !signIn.includes('phone_password')
