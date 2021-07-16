@@ -9,8 +9,7 @@ import {makePhone} from '../../../helpers/utility'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
 import {ContactType} from './AppDesign'
-import {AlertWithText} from '../../widgets/StyledComponents'
-import Alert_Icon from '../../../assets/alert_icon.svg'
+import AlertWithTextWrapper from '../../widgets/AlertWithTextWrapper'
 
 const useStyles = makeStyles(theme => ({
   firstFormElement: {
@@ -149,17 +148,9 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             titleText="Phone Number*"
           />
           {!phoneNumberErrorState.isGeneralContactPhoneNumberValid && (
-            <AlertWithText
-              icon={
-                <img
-                  src={Alert_Icon}
-                  style={{height: '20px'}}
-                  alt={'error-icon'}></img>
-              }
-              severity="error"
-              className={classes.errorText}>
-              Format should be XXX-XXX-XXXX
-            </AlertWithText>
+            <AlertWithTextWrapper
+              text="Format should be XXX-XXX-XXXX"
+              className={classes.errorText}></AlertWithTextWrapper>
           )}
         </FormControl>
         <FormControl
@@ -193,17 +184,12 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             titleText="Email*"
           />
           {!emailErrorState.isGeneralContactEmailValid && (
-            <AlertWithText
-              icon={
-                <img
-                  src={Alert_Icon}
-                  style={{height: '20px'}}
-                  alt={'error-icon'}></img>
-              }
-              severity="error"
-              className={clsx(classes.errorText, classes.bottomEmailErrorText)}>
-              Email should be in a valid format such as: example@placeholder.com
-            </AlertWithText>
+            <AlertWithTextWrapper
+              text="Email should be in a valid format such as: example@placeholder.com"
+              className={clsx(
+                classes.errorText,
+                classes.bottomEmailErrorText
+              )}></AlertWithTextWrapper>
           )}
         </FormControl>
       </FormGroupWrapper>
