@@ -5,7 +5,6 @@ import {
   makeStyles,
   Theme,
 } from '@material-ui/core'
-import {Alert} from '@material-ui/lab'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
@@ -232,24 +231,6 @@ const Scheduler: FunctionComponent<
 
   return (
     <Box>
-      {schedulerErrors.length > 0 && (
-        <Alert
-          onClose={() => setIsErrorAlert(false)}
-          severity="error"
-          style={{
-            backgroundColor: '#EE6070',
-            color: 'black',
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 1000,
-            textAlign: 'center',
-          }}>
-          Please fix the errors below before continuing
-        </Alert>
-      )}
-
       <NavigationPrompt when={hasObjectChanged} key="prompt">
         {({onConfirm, onCancel}) => (
           <ConfirmationDialog
@@ -280,8 +261,11 @@ const Scheduler: FunctionComponent<
                 unitData={DWsEnum}></Duration>
             }
           />
-          {hasObjectChanged && !saveLoader && (
-            <SaveButton isFloatingSave={true} onClick={() => onSave()}>
+          {hasObjectChanged && (
+            <SaveButton
+              isFloatingSave={true}
+              onClick={() => onSave()}
+              isSaving={saveLoader}>
               Save changes
             </SaveButton>
           )}
@@ -339,7 +323,6 @@ const Scheduler: FunctionComponent<
               <SchedulableSingleSessionContainer
                 key={session.guid}
                 studySession={session}
-                onSaveSessionSchedule={() => saveSession(session.guid!)}
                 onUpdateSessionSchedule={(schedule: SessionSchedule) => {
                   scheduleUpdateFn({
                     type: ActionTypes.UpdateSessionSchedule,
