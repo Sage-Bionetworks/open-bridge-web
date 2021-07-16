@@ -17,6 +17,7 @@ const useStyles = makeStyles(theme => ({
     padding: '10px',
     fontFamily: latoFont,
     fontSize: '14px',
+    maxWidth: '200px',
   },
   data: {
     width: '100px',
@@ -51,32 +52,32 @@ export type AccessLabel = {
 
 export type Access = {
   STUDY_BUILDER: typeof AccessRestriction[number]
-  PARTICIPANT_MANAGER: typeof AccessRestriction[number]
-  ADHERENCE_DATA: typeof AccessRestriction[number]
+  PARTICIPANT_MANAGER_ADHERENCE: typeof AccessRestriction[number]
+  // ADHERENCE_DATA: typeof AccessRestriction[number]
   //STUDY_DATA: typeof AccessRestriction[number]
   ACCESS_SETTINGS: typeof AccessRestriction[number]
 }
 
 const roles: AccessLabel[] = [
   {STUDY_BUILDER: 'STUDY BUILDER'},
-  {PARTICIPANT_MANAGER: 'PARTICIPANT MANAGER'},
-  {ADHERENCE_DATA: 'ADHERENCE DATA'},
+  {PARTICIPANT_MANAGER_ADHERENCE: 'PARTICIPANT MANAGER & ADHERENCE DATA'},
+  // {ADHERENCE_DATA: 'ADHERENCE DATA'},
   // {STUDY_DATA: 'STUDY DATA'},
   {ACCESS_SETTINGS: 'ACCESS SETTINGS'},
 ]
 
 export const NO_ACCESS: Access = {
   STUDY_BUILDER: 'NO_ACCESS',
-  PARTICIPANT_MANAGER: 'NO_ACCESS',
-  ADHERENCE_DATA: 'NO_ACCESS',
+  PARTICIPANT_MANAGER_ADHERENCE: 'NO_ACCESS',
+  //ADHERENCE_DATA: 'NO_ACCESS',
   //STUDY_DATA: 'NO_ACCESS',
   ACCESS_SETTINGS: 'NO_ACCESS',
 }
 
 export const COADMIN_ACCESS: Access = {
   STUDY_BUILDER: 'EDITOR',
-  PARTICIPANT_MANAGER: 'EDITOR',
-  ADHERENCE_DATA: 'EDITOR',
+  PARTICIPANT_MANAGER_ADHERENCE: 'EDITOR',
+  // ADHERENCE_DATA: 'EDITOR',
   //STUDY_DATA: 'NO_ACCESS',
   ACCESS_SETTINGS: 'EDITOR',
 }
@@ -86,10 +87,7 @@ export function getRolesFromAccess(access: Access): AdminRole[] {
   if (access.STUDY_BUILDER === 'EDITOR') {
     roles.push('study_designer')
   }
-  if (
-    access.ADHERENCE_DATA === 'EDITOR' ||
-    access.PARTICIPANT_MANAGER === 'EDITOR'
-  ) {
+  if (access.PARTICIPANT_MANAGER_ADHERENCE === 'EDITOR') {
     roles.push('study_coordinator')
   }
   if (access.ACCESS_SETTINGS === 'EDITOR') {
@@ -108,8 +106,8 @@ export function getAccessFromRoles(roles: AdminRole[]): Access {
   }
 
   if (roles.includes('study_coordinator')) {
-    access.ADHERENCE_DATA = 'EDITOR'
-    access.PARTICIPANT_MANAGER = 'EDITOR'
+    //access.ADHERENCE_DATA = 'EDITOR'
+    access.PARTICIPANT_MANAGER_ADHERENCE = 'EDITOR'
   }
 
   if (roles.includes('study_designer')) {
@@ -215,11 +213,11 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
     }
     const accessKey = Object.keys(accessObject)[0]
     /* ALINA: this is not intuitive for me. If they are coadmin and they disable some settings -- all get disabled */
-    if (restriction !== 'EDITOR' && access.ACCESS_SETTINGS === 'EDITOR') {
-      onUpdate({...NO_ACCESS, ACCESS_SETTINGS: 'VIEWER'})
-    } else {
-      onUpdate({...access, [accessKey]: restriction})
-    }
+    /*  if (restriction !== 'EDITOR' && access.ACCESS_SETTINGS === 'EDITOR') {
+      onUpdate({...access, [accessKey]: restriction, ACCESS_SETTINGS: 'VIEWER'})
+    } else {*/
+    onUpdate({...access, [accessKey]: restriction})
+    //  }
   }
   const updateCoadminAccess = (hasAccess?: boolean) => {
     if (!onUpdate) {
@@ -227,7 +225,7 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
     }
     const result: Access = hasAccess
       ? {...COADMIN_ACCESS}
-      : {...NO_ACCESS, ACCESS_SETTINGS: 'VIEWER'}
+      : {...access, ACCESS_SETTINGS: 'VIEWER'}
 
     onUpdate(result)
   }
