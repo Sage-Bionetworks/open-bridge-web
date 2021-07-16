@@ -1,4 +1,4 @@
-import {useState, useRef, useEffect} from 'react'
+import {useState} from 'react'
 import {default as constants, default as CONSTANTS} from '../types/constants'
 import {
   AdminRole,
