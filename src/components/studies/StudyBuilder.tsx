@@ -188,7 +188,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }
 
   const saveStudy = async (
-    study: Study = builderInfo.study
+    study: Study = builderInfo.study,
+    saveButtonPressed?: boolean
   ): Promise<Study | undefined> => {
     setHasObjectChanged(true)
     setSaveLoader(true)
@@ -218,12 +219,13 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       })
     } finally {
       setSaveLoader(false)
-      setDisplayBanner(true)
+      if (saveButtonPressed) setDisplayBanner(true)
     }
   }
 
   const saveStudySchedule = async (
-    updatedSchedule?: Schedule
+    updatedSchedule?: Schedule,
+    saveButtonPressed?: boolean
   ): Promise<Schedule | undefined> => {
     setError([])
     setSchedulerErrors([])
@@ -293,7 +295,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       return undefined
     } finally {
       setSaveLoader(false)
-      setDisplayBanner(true)
+      if (saveButtonPressed) setDisplayBanner(true)
     }
   }
 
@@ -484,7 +486,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           version={builderInfo.schedule?.version}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
-                          onSave={() => saveStudySchedule()}
+                          onSave={() => saveStudySchedule(undefined, true)}
                           onUpdate={(schedule: Schedule) => {
                             setHasObjectChanged(true)
                             setData({
@@ -532,7 +534,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           saveLoader={saveLoader}
                           study={builderInfo.study}
                           onSave={() => {
-                            saveStudy(builderInfo.study)
+                            saveStudy(builderInfo.study, true)
                           }}
                           onUpdate={(updatedStudy: Study) => {
                             setHasObjectChanged(true)
