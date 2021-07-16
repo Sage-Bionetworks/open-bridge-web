@@ -240,7 +240,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
               }
               severity="error"
               className={clsx(classes.errorText)}>
-              email should be in a valid format such as: example@placeholder.com
+              Email should be in a valid format such as: example@placeholder.com
             </AlertWithText>
           )}
         </FormControl>

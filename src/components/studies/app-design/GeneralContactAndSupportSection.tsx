@@ -202,7 +202,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
               }
               severity="error"
               className={clsx(classes.errorText, classes.bottomEmailErrorText)}>
-              email should be in a valid format such as: example@placeholder.com
+              Email should be in a valid format such as: example@placeholder.com
             </AlertWithText>
           )}
         </FormControl>
