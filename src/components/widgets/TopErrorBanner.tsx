@@ -72,7 +72,7 @@ const TopErrorBanner: React.FunctionComponent<TopErrorBannerProps> = ({
         onClose()
       }, 8000)
     }
-  }, [type, isVisible])
+  }, [type])
 
   return (
     <Alert
@@ -93,7 +93,7 @@ const TopErrorBanner: React.FunctionComponent<TopErrorBannerProps> = ({
       {displayText
         ? displayText
         : type === 'error'
-        ? 'Please fix the errors below before continuing.'
+        ? 'The following fields are required to launch your study.'
         : 'Page has been saved successfully.'}
     </Alert>
   )

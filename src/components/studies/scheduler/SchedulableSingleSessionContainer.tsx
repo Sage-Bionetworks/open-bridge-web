@@ -54,7 +54,6 @@ export const defaultSchedule: SessionSchedule = {
 type SchedulableSingleSessionContainerProps = {
   studySession: StudySession
   onUpdateSessionSchedule: Function
-  onSaveSessionSchedule: Function
   sessionErrorState:
     | {
         generalErrorMessage: string[]
@@ -77,7 +76,6 @@ type notificationErrorArrayType = {
 const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSessionContainerProps> = ({
   studySession,
   onUpdateSessionSchedule,
-  onSaveSessionSchedule,
   sessionErrorState,
 }) => {
   const classes = useStyles()
@@ -85,9 +83,10 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     console.log('studySession', studySession)
   }
 
-  const [schedulableSession, setSchedulableSession] = React.useState<
-    SessionSchedule
-  >(studySession || defaultSchedule)
+  const [
+    schedulableSession,
+    setSchedulableSession,
+  ] = React.useState<SessionSchedule>(studySession || defaultSchedule)
 
   const [windowErrors, setWindowErrors] = React.useState<
     windowErrorArrayType[]
@@ -418,7 +417,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
             </Box>
           </SchedulingFormSection>
         </Box>
-        <SaveButton onClick={() => onSaveSessionSchedule()}></SaveButton>
       </form>
     </Box>
   )

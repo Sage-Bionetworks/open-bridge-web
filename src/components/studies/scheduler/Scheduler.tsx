@@ -1,5 +1,6 @@
 import {
   Box,
+  CircularProgress,
   createStyles,
   FormControlLabel,
   makeStyles,
@@ -263,8 +264,11 @@ const Scheduler: FunctionComponent<
                 unitData={DWsEnum}></Duration>
             }
           />
-          {hasObjectChanged && !saveLoader && (
-            <SaveButton isFloatingSave={true} onClick={() => onSave()}>
+          {hasObjectChanged && (
+            <SaveButton
+              isFloatingSave={true}
+              onClick={() => onSave()}
+              isSaving={saveLoader}>
               Save changes
             </SaveButton>
           )}
@@ -322,7 +326,6 @@ const Scheduler: FunctionComponent<
               <SchedulableSingleSessionContainer
                 key={session.guid}
                 studySession={session}
-                onSaveSessionSchedule={() => saveSession(session.guid!)}
                 onUpdateSessionSchedule={(schedule: SessionSchedule) => {
                   scheduleUpdateFn({
                     type: ActionTypes.UpdateSessionSchedule,
