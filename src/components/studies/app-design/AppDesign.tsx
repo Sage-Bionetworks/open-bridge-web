@@ -302,23 +302,26 @@ const AppDesign: React.FunctionComponent<
   const handleError = useErrorHandler()
   const params = getSearchParams(window.location.search)
   const showError = params.from !== undefined
-  console.log(showError, 'show')
-  console.log(window.location.search)
+  const anchor = params.anchor
 
   const {token, orgMembership} = useUserSessionDataState()
 
   const classes = useStyles()
 
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
-  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] =
-    useState<boolean>(
-      getContact(study, 'irb')?.name ===
-        getContact(study, 'principal_investigator')?.affiliation
-    )
-  const [generalContactPhoneNumber, setGeneralContactPhoneNumber] =
-    React.useState(
-      formatPhoneNumber(getContact(study, 'study_support')?.phone?.number)
-    )
+  const [
+    irbNameSameAsInstitution,
+    setIrbNameSameAsInstitution,
+  ] = useState<boolean>(
+    getContact(study, 'irb')?.name ===
+      getContact(study, 'principal_investigator')?.affiliation
+  )
+  const [
+    generalContactPhoneNumber,
+    setGeneralContactPhoneNumber,
+  ] = React.useState(
+    formatPhoneNumber(getContact(study, 'study_support')?.phone?.number)
+  )
   const [irbPhoneNumber, setIrbPhoneNumber] = React.useState(
     formatPhoneNumber(getContact(study, 'irb')?.phone?.number)
   )
@@ -334,6 +337,17 @@ const AppDesign: React.FunctionComponent<
   })
 
   const [errorState, setErrorState] = React.useState<ErrorStateType>({})
+
+  useEffect(() => {
+    setTimeout(() => {
+      const element = document.getElementById(anchor)
+      if (!element) return
+      window.scrollTo({
+        behavior: 'smooth',
+        top: element.offsetTop,
+      })
+    }, 100)
+  }, [anchor])
 
   const handleUpdate = (updatedStudy: Study) => {
     const formattedStudy = formatStudy(updatedStudy)
@@ -611,11 +625,9 @@ const AppDesign: React.FunctionComponent<
                     }
                     const newWelcomeScreenData = {
                       ...currentWelcomeScreenData,
-                      isUsingDefaultMessage:
-                        !currentWelcomeScreenData.isUsingDefaultMessage,
+                      isUsingDefaultMessage: !currentWelcomeScreenData.isUsingDefaultMessage,
                     }
-                    updatedStudy.clientData.welcomeScreenData =
-                      newWelcomeScreenData
+                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
                     handleUpdate(updatedStudy)
                   }}></Switch>
               </Box>
@@ -735,6 +747,7 @@ const AppDesign: React.FunctionComponent<
               describe your study further and list who to contact for
               participant support.
             </p>
+            <a id="summary" />
             <ol className={classes.steps}>
               <StudySummarySection
                 SimpleTextInputStyles={SimpleTextInputStyles}
@@ -749,6 +762,7 @@ const AppDesign: React.FunctionComponent<
                 studyTitleHasError={hasError('studyTitleHasError')}
                 studySummaryCopyHasError={hasError('studySummaryCopyHasError')}
               />
+              <a id="leadPI" />
               <StudyLeadInformationSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 orgMembership={orgMembership}
@@ -783,7 +797,6 @@ const AppDesign: React.FunctionComponent<
                   'leadPIAffiliationHasError'
                 )}
               />
-              <div id="contactLead">j</div>
               <a id="contactLead" />
               <GeneralContactAndSupportSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
