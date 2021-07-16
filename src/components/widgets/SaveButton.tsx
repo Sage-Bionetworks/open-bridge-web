@@ -1,4 +1,4 @@
-import {Button, ButtonProps, Box} from '@material-ui/core'
+import {Button, ButtonProps, Box, CircularProgress} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
 import {ReactComponent as SaveIcon} from '../../assets/save_icon.svg'
@@ -45,6 +45,7 @@ export interface ButtonStyleProps {
   inputWidth?: number
   id?: string
   isFloatingSave?: boolean
+  isSaving?: boolean
 }
 
 const SaveButton: React.FunctionComponent<ButtonProps & ButtonStyleProps> = ({
@@ -52,12 +53,19 @@ const SaveButton: React.FunctionComponent<ButtonProps & ButtonStyleProps> = ({
   onClick,
   id,
   isFloatingSave,
+  isSaving,
   ...other
 }) => {
   const classes = useStyles({width: inputWidth})
   const verticalIconAndText = (
     <Box className={classes.floatingSave}>
-      <FloatingSaveIcon style={{marginBottom: '4px'}} /> Save
+      {isSaving ? (
+        <CircularProgress color="primary" />
+      ) : (
+        <Box flexDirection="column" display="flex" alignItems="center">
+          <FloatingSaveIcon style={{marginBottom: '4px'}} /> {'Save'}
+        </Box>
+      )}
     </Box>
   )
   return (

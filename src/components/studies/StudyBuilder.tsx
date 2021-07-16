@@ -36,7 +36,7 @@ import Scheduler from './scheduler/Scheduler'
 import {StudySection} from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
-import constants from '../../types/constants'
+import TopErrorBanner from '../widgets/TopErrorBanner'
 
 const subtitles: StringDictionary<string> = {
   description: 'Description',
@@ -137,6 +137,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   const builderInfo: StudyInfoData = useStudyInfoDataState()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
   const [open, setOpen] = React.useState(true)
+  const [displayBanner, setDisplayBanner] = React.useState(false)
 
   const setData = (builderInfo: StudyInfoData) => {
     studyDataUpdateFn({
@@ -186,11 +187,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }
 
   const saveStudy = async (
-    study: Study = builderInfo.study
+    study: Study = builderInfo.study,
+    saveButtonPressed?: boolean
   ): Promise<Study | undefined> => {
     setHasObjectChanged(true)
     setSaveLoader(true)
-
+    setDisplayBanner(false)
     try {
       const newVersion = await StudyService.updateStudy(study, token!)
       const updatedStudy = {
@@ -216,14 +218,17 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       })
     } finally {
       setSaveLoader(false)
+      if (saveButtonPressed) setDisplayBanner(true)
     }
   }
 
   const saveStudySchedule = async (
-    updatedSchedule?: Schedule
+    updatedSchedule?: Schedule,
+    saveButtonPressed?: boolean
   ): Promise<Schedule | undefined> => {
     setError([])
     setSchedulerErrors([])
+    setDisplayBanner(false)
     try {
       setSaveLoader(true)
       const schedule = updatedSchedule || builderInfo.schedule
@@ -289,6 +294,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       return undefined
     } finally {
       setSaveLoader(false)
+      if (saveButtonPressed) setDisplayBanner(true)
     }
   }
 
@@ -389,9 +395,18 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     })
   }
 
+  const getBannerType = () => {
+    const errors = section === 'scheduler' ? schedulerErrors : error
+    return errors.length > 0 ? 'error' : 'success'
+  }
+
   return (
     <>
       <Box display="flex" bgcolor="#f7f7f7">
+        <TopErrorBanner
+          onClose={() => setDisplayBanner(false)}
+          isVisible={displayBanner}
+          type={getBannerType()}></TopErrorBanner>
         <Box width={open ? 210 : 56} flexShrink={0}></Box>
         <Box className={getClasses()} pt={8} pl={2}>
           <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>
@@ -470,7 +485,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           version={builderInfo.schedule?.version}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
-                          onSave={() => saveStudySchedule()}
+                          onSave={() => saveStudySchedule(undefined, true)}
                           onUpdate={(schedule: Schedule) => {
                             setHasObjectChanged(true)
                             setData({
@@ -517,7 +532,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           saveLoader={saveLoader}
                           study={builderInfo.study}
                           onSave={() => {
-                            saveStudy(builderInfo.study)
+                            saveStudy(builderInfo.study, true)
                           }}
                           onUpdate={(updatedStudy: Study) => {
                             setHasObjectChanged(true)

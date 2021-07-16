@@ -38,6 +38,7 @@ import Subsection from './Subsection'
 import UploadStudyLogoSection from './UploadStudyLogoSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
+import TopErrorBanner from '../../widgets/TopErrorBanner'
 
 const imgHeight = 70
 const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
@@ -302,8 +303,7 @@ const AppDesign: React.FunctionComponent<
   const handleError = useErrorHandler()
   const params = getSearchParams(window.location.search)
   const showError = params.from !== undefined
-  console.log(showError, 'show')
-  console.log(window.location.search)
+  const anchor = params.anchor
 
   const {token, orgMembership} = useUserSessionDataState()
 
@@ -338,6 +338,17 @@ const AppDesign: React.FunctionComponent<
   })
 
   const [errorState, setErrorState] = React.useState<ErrorStateType>({})
+
+  useEffect(() => {
+    setTimeout(() => {
+      const element = document.getElementById(anchor)
+      if (!element) return
+      window.scrollTo({
+        behavior: 'smooth',
+        top: element.offsetTop,
+      })
+    }, 100)
+  }, [anchor])
 
   const handleUpdate = (updatedStudy: Study) => {
     const formattedStudy = formatStudy(updatedStudy)
@@ -561,7 +572,6 @@ const AppDesign: React.FunctionComponent<
   const hasError = (errorProperty: keyof ErrorStateType) => {
     return showError && !!errorState[errorProperty]
   }
-
   return (
     <>
       <Box className={classes.root}>
@@ -737,6 +747,7 @@ const AppDesign: React.FunctionComponent<
               describe your study further and list who to contact for
               participant support.
             </p>
+            <a id="summary" />
             <ol className={classes.steps}>
               <StudySummarySection
                 SimpleTextInputStyles={SimpleTextInputStyles}
@@ -751,6 +762,7 @@ const AppDesign: React.FunctionComponent<
                 studyTitleHasError={hasError('studyTitleHasError')}
                 studySummaryCopyHasError={hasError('studySummaryCopyHasError')}
               />
+              <a id="leadPI" />
               <StudyLeadInformationSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 orgMembership={orgMembership}
@@ -785,7 +797,6 @@ const AppDesign: React.FunctionComponent<
                   'leadPIAffiliationHasError'
                 )}
               />
-              <div id="contactLead">j</div>
               <a id="contactLead" />
               <GeneralContactAndSupportSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
