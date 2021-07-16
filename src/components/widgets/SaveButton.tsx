@@ -60,7 +60,7 @@ const SaveButton: React.FunctionComponent<ButtonProps & ButtonStyleProps> = ({
   const verticalIconAndText = (
     <Box className={classes.floatingSave}>
       {isSaving ? (
-        <CircularProgress color="primary" style={{position: 'static'}} />
+        <CircularProgress color="primary" />
       ) : (
         <Box flexDirection="column" display="flex" alignItems="center">
           <FloatingSaveIcon style={{marginBottom: '4px'}} /> {'Save'}
