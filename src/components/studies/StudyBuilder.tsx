@@ -528,7 +528,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'customize' && (
                         <AppDesign
-                          isError={error.length > 0}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           study={builderInfo.study}

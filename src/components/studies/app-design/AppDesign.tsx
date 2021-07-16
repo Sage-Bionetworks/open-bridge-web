@@ -212,7 +212,6 @@ export interface AppDesignProps {
   onSave: Function
   study: Study
   onError: Function
-  isError: boolean
 }
 
 type ErrorStateType = {
