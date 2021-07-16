@@ -85,9 +85,10 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     console.log('studySession', studySession)
   }
 
-  const [schedulableSession, setSchedulableSession] = React.useState<
-    SessionSchedule
-  >(studySession || defaultSchedule)
+  const [
+    schedulableSession,
+    setSchedulableSession,
+  ] = React.useState<SessionSchedule>(studySession || defaultSchedule)
 
   const [windowErrors, setWindowErrors] = React.useState<
     windowErrorArrayType[]

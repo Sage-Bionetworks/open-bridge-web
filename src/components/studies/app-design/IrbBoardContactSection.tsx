@@ -18,6 +18,8 @@ import {makePhone} from '../../../helpers/utility'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
 import {ContactType} from './AppDesign'
+import {AlertWithText} from '../../widgets/StyledComponents'
+import Alert_Icon from '../../../assets/alert_icon.svg'
 
 const useStyles = makeStyles(theme => ({
   irbInputFormControl: {
@@ -29,7 +31,9 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(2),
   },
   errorText: {
-    marginTop: theme.spacing(-0.5),
+    marginTop: theme.spacing(-1.5),
+    marginLeft: theme.spacing(-2),
+    marginBottom: theme.spacing(-0.5),
   },
 }))
 
@@ -188,11 +192,17 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             titleText="Phone Number*"
           />
           {!phoneNumberErrorState.isIrbPhoneNumberValid && (
-            <FormHelperText
-              id="ethics-phone-bad-text"
+            <AlertWithText
+              icon={
+                <img
+                  src={Alert_Icon}
+                  style={{height: '20px'}}
+                  alt={'error-icon'}></img>
+              }
+              severity="error"
               className={classes.errorText}>
-              phone should be in the format: xxx-xxx-xxxx
-            </FormHelperText>
+              Format should be XXX-XXX-XXXX
+            </AlertWithText>
           )}
         </FormControl>
         <FormControl
@@ -222,11 +232,17 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             titleText="Email*"
           />
           {!emailErrorState.isIrbEmailValid && (
-            <FormHelperText
-              id="ethics-bad-email-text"
-              className={classes.errorText}>
+            <AlertWithText
+              icon={
+                <img
+                  src={Alert_Icon}
+                  style={{height: '20px'}}
+                  alt={'error-icon'}></img>
+              }
+              severity="error"
+              className={clsx(classes.errorText)}>
               email should be in a valid format such as: example@placeholder.com
-            </FormHelperText>
+            </AlertWithText>
           )}
         </FormControl>
         <FormControl>

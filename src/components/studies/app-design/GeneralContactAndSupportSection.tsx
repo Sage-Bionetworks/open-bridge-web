@@ -1,7 +1,7 @@
 import React from 'react'
 import {makeStyles} from '@material-ui/core'
 import Subsection from './Subsection'
-import {FormControl, Box, FormHelperText} from '@material-ui/core'
+import {FormControl, Box} from '@material-ui/core'
 import {Contact} from '../../../types/types'
 import clsx from 'clsx'
 import {isInvalidPhone, isValidEmail} from '../../../helpers/utility'
@@ -9,13 +9,20 @@ import {makePhone} from '../../../helpers/utility'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
 import {ContactType} from './AppDesign'
+import {AlertWithText} from '../../widgets/StyledComponents'
+import Alert_Icon from '../../../assets/alert_icon.svg'
 
 const useStyles = makeStyles(theme => ({
   firstFormElement: {
     marginTop: theme.spacing(2.5),
   },
   errorText: {
-    marginTop: theme.spacing(-0.5),
+    marginTop: theme.spacing(-1.5),
+    marginLeft: theme.spacing(-2),
+    marginBottom: theme.spacing(-0.5),
+  },
+  bottomEmailErrorText: {
+    marginBottom: theme.spacing(-6),
   },
 }))
 
@@ -142,11 +149,17 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             titleText="Phone Number*"
           />
           {!phoneNumberErrorState.isGeneralContactPhoneNumberValid && (
-            <FormHelperText
-              id="general-contact-bad-phone-text"
+            <AlertWithText
+              icon={
+                <img
+                  src={Alert_Icon}
+                  style={{height: '20px'}}
+                  alt={'error-icon'}></img>
+              }
+              severity="error"
               className={classes.errorText}>
-              phone should be in the format: xxx-xxx-xxxx
-            </FormHelperText>
+              Format should be XXX-XXX-XXXX
+            </AlertWithText>
           )}
         </FormControl>
         <FormControl
@@ -180,11 +193,17 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             titleText="Email*"
           />
           {!emailErrorState.isGeneralContactEmailValid && (
-            <FormHelperText
-              id="general-contact-bad-email-text"
-              className={classes.errorText}>
+            <AlertWithText
+              icon={
+                <img
+                  src={Alert_Icon}
+                  style={{height: '20px'}}
+                  alt={'error-icon'}></img>
+              }
+              severity="error"
+              className={clsx(classes.errorText, classes.bottomEmailErrorText)}>
               email should be in a valid format such as: example@placeholder.com
-            </FormHelperText>
+            </AlertWithText>
           )}
         </FormControl>
       </FormGroupWrapper>
