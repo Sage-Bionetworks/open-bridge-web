@@ -56,6 +56,8 @@ type TopErrorBannerProps = {
   displayText?: string
 }
 
+let timeout: NodeJS.Timeout
+
 const TopErrorBanner: React.FunctionComponent<TopErrorBannerProps> = ({
   isVisible,
   type,
@@ -63,7 +65,6 @@ const TopErrorBanner: React.FunctionComponent<TopErrorBannerProps> = ({
   onClose,
 }) => {
   const classes = useStyles()
-  let timeout: NodeJS.Timeout
 
   React.useEffect(() => {
     clearTimeout(timeout)
@@ -72,7 +73,7 @@ const TopErrorBanner: React.FunctionComponent<TopErrorBannerProps> = ({
         onClose()
       }, 8000)
     }
-  }, [type])
+  }, [type, isVisible])
 
   return (
     <Alert

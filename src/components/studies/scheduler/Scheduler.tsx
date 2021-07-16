@@ -1,13 +1,12 @@
 import {
   Box,
-  CircularProgress,
   createStyles,
   FormControlLabel,
   makeStyles,
   Theme,
 } from '@material-ui/core'
 import _ from 'lodash'
-import React, {FunctionComponent, useEffect} from 'react'
+import React, {FunctionComponent} from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import {poppinsFont, theme} from '../../../style/theme'
 import {
@@ -32,8 +31,6 @@ import actionsReducer, {
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import Timeline from './Timeline'
-import TopErrorBanner from '../../widgets/TopErrorBanner'
-import {useEffectSkipFirstRender} from '../../../helpers/utility'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

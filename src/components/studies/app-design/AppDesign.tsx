@@ -38,10 +38,7 @@ import Subsection from './Subsection'
 import UploadStudyLogoSection from './UploadStudyLogoSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
-import constants from '../../../types/constants'
-import {useQuery, isInvalidPhone, isValidEmail} from '../../../helpers/utility'
 import TopErrorBanner from '../../widgets/TopErrorBanner'
-import {useEffectSkipFirstRender} from '../../../helpers/utility'
 
 const imgHeight = 70
 const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
@@ -315,15 +312,19 @@ const AppDesign: React.FunctionComponent<
   const classes = useStyles()
 
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
-  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] =
-    useState<boolean>(
-      getContact(study, 'irb')?.name ===
-        getContact(study, 'principal_investigator')?.affiliation
-    )
-  const [generalContactPhoneNumber, setGeneralContactPhoneNumber] =
-    React.useState(
-      formatPhoneNumber(getContact(study, 'study_support')?.phone?.number)
-    )
+  const [
+    irbNameSameAsInstitution,
+    setIrbNameSameAsInstitution,
+  ] = useState<boolean>(
+    getContact(study, 'irb')?.name ===
+      getContact(study, 'principal_investigator')?.affiliation
+  )
+  const [
+    generalContactPhoneNumber,
+    setGeneralContactPhoneNumber,
+  ] = React.useState(
+    formatPhoneNumber(getContact(study, 'study_support')?.phone?.number)
+  )
   const [irbPhoneNumber, setIrbPhoneNumber] = React.useState(
     formatPhoneNumber(getContact(study, 'irb')?.phone?.number)
   )
@@ -615,11 +616,9 @@ const AppDesign: React.FunctionComponent<
                     }
                     const newWelcomeScreenData = {
                       ...currentWelcomeScreenData,
-                      isUsingDefaultMessage:
-                        !currentWelcomeScreenData.isUsingDefaultMessage,
+                      isUsingDefaultMessage: !currentWelcomeScreenData.isUsingDefaultMessage,
                     }
-                    updatedStudy.clientData.welcomeScreenData =
-                      newWelcomeScreenData
+                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
                     handleUpdate(updatedStudy)
                   }}></Switch>
               </Box>

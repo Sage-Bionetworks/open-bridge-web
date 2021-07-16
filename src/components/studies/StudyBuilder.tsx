@@ -37,7 +37,6 @@ import {StudySection} from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
 import TopErrorBanner from '../widgets/TopErrorBanner'
-import constants from '../../types/constants'
 
 const subtitles: StringDictionary<string> = {
   description: 'Description',
