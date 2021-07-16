@@ -8,7 +8,6 @@ import {
   Radio,
   RadioGroup,
   FormControlLabel,
-  FormHelperText,
 } from '@material-ui/core'
 import {Contact} from '../../../types/types'
 import {isInvalidPhone, isValidEmail} from '../../../helpers/utility'
