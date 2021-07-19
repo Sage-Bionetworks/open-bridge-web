@@ -7,15 +7,15 @@ import MoreVertIcon from '@material-ui/icons/MoreVert'
 import clsx from 'clsx'
 import moment from 'moment'
 import React, {FunctionComponent} from 'react'
+import WithdrawnIcon from '../../assets/cancelled_study_icon.svg'
+import CompletedIcon from '../../assets/completed_study_icon.svg'
+import LiveIcon from '../../assets/live_study_icon.svg'
 import participants_icon from '../../assets/participants_icon.svg'
+import {useUserSessionDataState} from '../../helpers/AuthContext'
+import {formatStudyId} from '../../helpers/utility'
+import ParticipantService from '../../services/participants.service'
 import {ThemeType} from '../../style/theme'
 import {Study} from '../../types/types'
-import ParticipantService from '../../services/participants.service'
-import {useUserSessionDataState} from '../../helpers/AuthContext'
-import LiveIcon from '../../assets/live_study_icon.svg'
-import CompletedIcon from '../../assets/completed_study_icon.svg'
-import WithdrawnIcon from '../../assets/cancelled_study_icon.svg'
-import {formatStudyId} from '../../helpers/utility'
 
 const DraftIcon = () => {
   return (
@@ -155,10 +155,11 @@ const CardBottom: FunctionComponent<{
 
   React.useEffect(() => {
     const getParticipantCount = async () => {
-      const newParticipantNumber = await ParticipantService.getNumEnrolledParticipants(
-        study.identifier,
-        token!
-      )
+      const newParticipantNumber =
+        await ParticipantService.getNumEnrolledParticipants(
+          study.identifier,
+          token!
+        )
       setNumParticipants('' + newParticipantNumber)
     }
     getParticipantCount()
@@ -193,7 +194,6 @@ const CardBottom: FunctionComponent<{
               ? `${getFormattedDate(date)}`
               : `Launched: ${getFormattedDate(date)}`}
           </div>
-          <div>[Lynn B.]</div>
         </div>
       </div>
     </Box>
