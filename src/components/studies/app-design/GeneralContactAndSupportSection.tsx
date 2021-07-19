@@ -15,11 +15,6 @@ const useStyles = makeStyles(theme => ({
   firstFormElement: {
     marginTop: theme.spacing(2.5),
   },
-  errorText: {
-    marginTop: theme.spacing(-1.5),
-    marginLeft: theme.spacing(-2),
-    marginBottom: theme.spacing(-0.5),
-  },
   bottomEmailErrorText: {
     marginBottom: theme.spacing(-6),
   },
@@ -148,9 +143,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             titleText="Phone Number*"
           />
           {!phoneNumberErrorState.isGeneralContactPhoneNumberValid && (
-            <AlertWithTextWrapper
-              text="Format should be XXX-XXX-XXXX"
-              className={classes.errorText}></AlertWithTextWrapper>
+            <AlertWithTextWrapper text="Format should be XXX-XXX-XXXX"></AlertWithTextWrapper>
           )}
         </FormControl>
         <FormControl
@@ -186,10 +179,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
           {!emailErrorState.isGeneralContactEmailValid && (
             <AlertWithTextWrapper
               text="Email should be in a valid format such as: example@placeholder.com"
-              className={clsx(
-                classes.errorText,
-                classes.bottomEmailErrorText
-              )}></AlertWithTextWrapper>
+              className={classes.bottomEmailErrorText}></AlertWithTextWrapper>
           )}
         </FormControl>
       </FormGroupWrapper>

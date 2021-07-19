@@ -28,11 +28,6 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     marginBottom: theme.spacing(2),
   },
-  errorText: {
-    marginTop: theme.spacing(-1.5),
-    marginLeft: theme.spacing(-2),
-    marginBottom: theme.spacing(-0.5),
-  },
 }))
 
 type IrbBoardContactSectionProps = {
@@ -190,9 +185,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             titleText="Phone Number*"
           />
           {!phoneNumberErrorState.isIrbPhoneNumberValid && (
-            <AlertWithTextWrapper
-              text="Format should be XXX-XXX-XXXX"
-              className={classes.errorText}></AlertWithTextWrapper>
+            <AlertWithTextWrapper text="Format should be XXX-XXX-XXXX"></AlertWithTextWrapper>
           )}
         </FormControl>
         <FormControl
@@ -222,9 +215,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             titleText="Email*"
           />
           {!emailErrorState.isIrbEmailValid && (
-            <AlertWithTextWrapper
-              text="Email should be in a valid format such as: example@placeholder.com"
-              className={classes.errorText}></AlertWithTextWrapper>
+            <AlertWithTextWrapper text="Email should be in a valid format such as: example@placeholder.com"></AlertWithTextWrapper>
           )}
         </FormControl>
         <FormControl>
