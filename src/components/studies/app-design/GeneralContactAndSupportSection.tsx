@@ -1,7 +1,7 @@
 import React from 'react'
 import {makeStyles} from '@material-ui/core'
 import Subsection from './Subsection'
-import {FormControl, Box, FormHelperText} from '@material-ui/core'
+import {FormControl, Box} from '@material-ui/core'
 import {Contact} from '../../../types/types'
 import clsx from 'clsx'
 import {isInvalidPhone, isValidEmail} from '../../../helpers/utility'
@@ -9,13 +9,14 @@ import {makePhone} from '../../../helpers/utility'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
 import {ContactType} from './AppDesign'
+import AlertWithTextWrapper from '../../widgets/AlertWithTextWrapper'
 
 const useStyles = makeStyles(theme => ({
   firstFormElement: {
     marginTop: theme.spacing(2.5),
   },
-  errorText: {
-    marginTop: theme.spacing(-0.5),
+  bottomEmailErrorText: {
+    marginBottom: theme.spacing(-6),
   },
 }))
 
@@ -142,11 +143,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             titleText="Phone Number*"
           />
           {!phoneNumberErrorState.isGeneralContactPhoneNumberValid && (
-            <FormHelperText
-              id="general-contact-bad-phone-text"
-              className={classes.errorText}>
-              phone should be in the format: xxx-xxx-xxxx
-            </FormHelperText>
+            <AlertWithTextWrapper text="Format should be XXX-XXX-XXXX"></AlertWithTextWrapper>
           )}
         </FormControl>
         <FormControl
@@ -180,11 +177,9 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             titleText="Email*"
           />
           {!emailErrorState.isGeneralContactEmailValid && (
-            <FormHelperText
-              id="general-contact-bad-email-text"
-              className={classes.errorText}>
-              email should be in a valid format such as: example@placeholder.com
-            </FormHelperText>
+            <AlertWithTextWrapper
+              text="Email should be in a valid format such as: example@placeholder.com"
+              className={classes.bottomEmailErrorText}></AlertWithTextWrapper>
           )}
         </FormControl>
       </FormGroupWrapper>

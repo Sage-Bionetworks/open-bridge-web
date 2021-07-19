@@ -8,7 +8,6 @@ import {
   Radio,
   RadioGroup,
   FormControlLabel,
-  FormHelperText,
 } from '@material-ui/core'
 import {Contact} from '../../../types/types'
 import {isInvalidPhone, isValidEmail} from '../../../helpers/utility'
@@ -18,6 +17,7 @@ import {makePhone} from '../../../helpers/utility'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
 import {ContactType} from './AppDesign'
+import AlertWithTextWrapper from '../../widgets/AlertWithTextWrapper'
 
 const useStyles = makeStyles(theme => ({
   irbInputFormControl: {
@@ -27,9 +27,6 @@ const useStyles = makeStyles(theme => ({
   irbInput: {
     width: '100%',
     marginBottom: theme.spacing(2),
-  },
-  errorText: {
-    marginTop: theme.spacing(-0.5),
   },
 }))
 
@@ -188,11 +185,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             titleText="Phone Number*"
           />
           {!phoneNumberErrorState.isIrbPhoneNumberValid && (
-            <FormHelperText
-              id="ethics-phone-bad-text"
-              className={classes.errorText}>
-              phone should be in the format: xxx-xxx-xxxx
-            </FormHelperText>
+            <AlertWithTextWrapper text="Format should be XXX-XXX-XXXX"></AlertWithTextWrapper>
           )}
         </FormControl>
         <FormControl
@@ -222,11 +215,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             titleText="Email*"
           />
           {!emailErrorState.isIrbEmailValid && (
-            <FormHelperText
-              id="ethics-bad-email-text"
-              className={classes.errorText}>
-              email should be in a valid format such as: example@placeholder.com
-            </FormHelperText>
+            <AlertWithTextWrapper text="Email should be in a valid format such as: example@placeholder.com"></AlertWithTextWrapper>
           )}
         </FormControl>
         <FormControl>
