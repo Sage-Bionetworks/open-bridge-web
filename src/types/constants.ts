@@ -1,7 +1,7 @@
 export default {
   constants: {
-    APP_ID: 'mtb-user-testing',
-    STUDY_ID: 'mtb-user-testing',
+    MTB_APP_ID: 'mtb-user-testing',
+    ARC_APP_ID: 'dian-validation',
     SESSION_NAME: 'bridge-session-mtb-user-testing',
     ENDPOINT: 'https://webservices.sagebridge.org',
     SYNAPSE_ENDPOINT: 'https://repo-prod.prod.sagebase.org',
@@ -33,15 +33,20 @@ export default {
   },*/
 
   oauth: {
-    local: {
+    local_mtb: {
       client: '100062',
       vendor: 'mtb',
       redirect: 'http://127.0.0.1:3000',
     },
-    staging: {
+    staging_mtb: {
       client: '100069',
       vendor: 'mtb-staging',
       redirect: 'https://staging.mobiletoolbox.org',
+    },
+    local_arc: {
+      client: '100104',
+      vendor: 'arc-dev',
+      redirect: 'http://127.0.0.1:3001',
     },
   },
   /* client: {

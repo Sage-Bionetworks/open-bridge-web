@@ -1,5 +1,9 @@
 import _ from 'lodash'
-import {callEndpoint, generateNonambiguousCode} from '../helpers/utility'
+import {
+  callEndpoint,
+  generateNonambiguousCode,
+  getAppId,
+} from '../helpers/utility'
 import constants from '../types/constants'
 import {
   EditableParticipantData,
@@ -383,9 +387,8 @@ async function getEnrollmentById(
     )
 
     const isWithdrawn = participant.withdrawnOn !== undefined
-    const isTestUser = recordFromParticipantApi?.dataGroups?.includes(
-      'test_user'
-    )
+    const isTestUser =
+      recordFromParticipantApi?.dataGroups?.includes('test_user')
     if (participantType === 'WITHDRAWN' && (!isWithdrawn || isTestUser)) {
       return null
     }
@@ -484,11 +487,10 @@ async function participantSearch(
   let resultItems: ParticipantAccountSummary[] =
     participantAccountSummaryResult.data.items
   if (queryFilter === 'withdrawn') {
-    const participantEnrollmentPromises = participantAccountSummaryResult.data.items.map(
-      participant => {
+    const participantEnrollmentPromises =
+      participantAccountSummaryResult.data.items.map(participant => {
         return getUserEnrollmentInfo(studyIdentifier, participant.id, token)
-      }
-    )
+      })
     const enrollments = await Promise.all(participantEnrollmentPromises)
     resultItems = enrollments.map(p =>
       mapWithdrawnParticipant(p, studyIdentifier)
@@ -566,7 +568,7 @@ async function addParticipant(
   )
 
   const data: StringDictionary<any> = {
-    appId: constants.constants.APP_ID,
+    appId: getAppId(),
   }
 
   //if (options.phone) {

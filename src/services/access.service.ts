@@ -1,4 +1,4 @@
-import {callEndpoint} from '../helpers/utility'
+import {callEndpoint, getAppId} from '../helpers/utility'
 import constants from '../types/constants'
 import {OrgUser, UserData} from '../types/types'
 
@@ -112,7 +112,7 @@ async function createIndividualAccount(
   role: string
 ): Promise<any> {
   const postData = {
-    appId: constants.constants.APP_ID,
+    appId: getAppId(),
     email,
     synapseUserId,
     dataGroups: ['test_user'],

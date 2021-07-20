@@ -165,6 +165,7 @@ const useStyles = makeStyles(theme => ({
 
 type AppTopNavProps = {
   routes: {name: string; path: string; isRhs?: boolean}[]
+  appId: string
   sessionData?: UserSessionData
 }
 
@@ -245,7 +246,7 @@ const MenuLinksRhs: FunctionComponent<
 
 const AppTopNav: FunctionComponent<AppTopNavProps> = ({
   routes,
-
+  appId,
   sessionData,
   ...props
 }: AppTopNavProps) => {
@@ -301,6 +302,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             disableGutters
             className={classes.toolbar}>
             <MenuLinks
+              appId={appId}
               className={classes.toolbarLink}
               activeClassName={classes.selectedLink}
               routes={routes.filter(route => route.name && !route.isRhs)}
@@ -314,6 +316,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             className={classes.toolbar}>
             {!sessionData && (
               <MenuLinksRhs
+                appId={appId}
                 className={classes.toolbarLink}
                 activeClassName={classes.selectedLink}
                 routes={routes.filter(route => route.name && route.isRhs)}
@@ -364,6 +367,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
               sessionData ? 'LOGGED_IN' : 'NOT_LOGGED_IN'
             }></MobileDrawerMenuHeader>
           <MenuLinks
+            appId={appId}
             className={classes.drawerMenuItem}
             activeClassName={classes.drawerMenuSelectedLink}
             routes={routes.filter(route => route.name && !route.isRhs)}
@@ -371,6 +375,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
           />
           {sessionData && <Divider className={classes.divider}></Divider>}
           <MenuLinksRhs
+            appId={appId}
             className={classes.drawerMenuItem}
             activeClassName={classes.drawerMenuSelectedLink}
             routes={routes.filter(route => route.name && route.isRhs)}
