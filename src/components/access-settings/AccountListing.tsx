@@ -121,7 +121,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   children,
 }: AccountListingProps) => {
   const classes = useStyles()
-  const {token, roles: myRoles, id, orgMembership} = sessionData
+  const {token, id, orgMembership} = sessionData
 
   const handleError = useErrorHandler()
 
@@ -270,8 +270,8 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
               }
               isEdit={true}
               isThisMe={currentMemberAccess.member.id === id}
-              currentUserIsAdmin={isInAdminRole(myRoles)}></AccessGrid>
-            {myRoles.includes('org_admin') && (
+              currentUserIsAdmin={isInAdminRole()}></AccessGrid>
+            {isInAdminRole() && (
               <Box className={classes.buttons}>
                 <Button
                   aria-label="delete"

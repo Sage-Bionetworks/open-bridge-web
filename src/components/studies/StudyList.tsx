@@ -164,20 +164,16 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
     participants: constants.restrictedPaths.PARTICIPANT_MANAGER,
   }
 
-  function getStudyLink(
-    sectionStatus: SectionStatus,
-    studyId: string,
-    roles: AdminRole[]
-  ) {
+  function getStudyLink(sectionStatus: SectionStatus, studyId: string) {
     let link = undefined
     if (sectionStatus === 'DRAFT') {
-      link = isPathAllowed(studyId, roles, links.builder)
+      link = isPathAllowed(studyId, links.builder)
         ? links.builder
-        : isPathAllowed(studyId, roles, links.participants)
+        : isPathAllowed(studyId, links.participants)
         ? links.participants
         : undefined
     } else {
-      link = isPathAllowed(studyId, roles, links.participants)
+      link = isPathAllowed(studyId, links.participants)
         ? links.participants
         : undefined
     }
@@ -213,7 +209,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
             style={{textDecoration: 'none'}}
             key={study.identifier || index}
             variant="body2"
-            href={getStudyLink(status, study.identifier, userRoles)}>
+            href={getStudyLink(status, study.identifier)}>
             <StudyCard
               study={study}
               onRename={(newName: string) => {
@@ -470,11 +466,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           </ul>
           <Button
             disabled={
-              !isPathAllowed(
-                'any',
-                roles,
-                constants.restrictedPaths.STUDY_BUILDER
-              )
+              !isPathAllowed('any', constants.restrictedPaths.STUDY_BUILDER)
             }
             variant="contained"
             onClick={() => createStudy()}
