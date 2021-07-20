@@ -6,7 +6,6 @@ import AccountLogin from './components/account/AccountLogin'
 import TopNav from './components/widgets/AppTopNav'
 import {setBodyClass} from './helpers/utility'
 import PublicRoutes from './routes_public'
-import {poppinsFont} from './style/theme'
 import constants from './types/constants'
 import ArcLogo from './assets/arc/arc_main_logo.svg'
 
