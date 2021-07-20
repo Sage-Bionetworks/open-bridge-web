@@ -600,10 +600,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         clinicVisitDate: p.clinicVisitDate
           ? new Date(p.clinicVisitDate).toLocaleDateString()
           : '-',
+        // LEON TODO: Revisit when we have smsDate
         joinedDate: p.joinedDate
           ? new Date(p.joinedDate).toLocaleDateString()
           : '',
-        note: '',
+        note: p.note || "",
       })
     )
 

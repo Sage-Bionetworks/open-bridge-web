@@ -223,8 +223,8 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
                 !isRemove && classes.smsIdListContainer
               )}
               elevation={0}>
-              {selectedIds.map(id => (
-                <span>{id}</span>
+              {selectedIds.map((id, index) => (
+                <span key={'selected-id' + index}>{id}</span>
               ))}
             </Paper>
             {isRemove ? (

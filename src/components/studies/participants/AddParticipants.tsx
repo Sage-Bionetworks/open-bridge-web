@@ -190,7 +190,10 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
 
   const handleOnDrop = async (rows: any) => {
     setImportError([])
-
+    if (!rows[0]?.data) {
+      setImportError([...importError, 'Please check the format of your file'])
+      return
+    }
     const keysString = Object.keys(rows[0]?.data).sort().join(',')
     const valid = isEnrolledById
       ? CSV_BY_ID_KEY.sort().join(',') === keysString
@@ -286,8 +289,8 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             {importError.length > 0 && (
               <Box my={1} color={theme.palette.error.main}>
                 <ul>
-                  {importError.map(error => (
-                    <li>{error}</li>
+                  {importError.map((error, index) => (
+                    <li key={'import-error' + index}>{error}</li>
                   ))}
                 </ul>
               </Box>
