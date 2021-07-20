@@ -150,6 +150,14 @@ export const getSearchParams = (search: string): Record<string, string> => {
   return searchParamsProps
 }
 
+export const getAppId = () => {
+  if (document.location.port === '3001') {
+    return constants.constants.ARC_APP_ID
+  } else {
+    return constants.constants.MTB_APP_ID
+  }
+}
+
 // function to use session storage (react hooks)
 export const useSessionStorage = (
   key: string,

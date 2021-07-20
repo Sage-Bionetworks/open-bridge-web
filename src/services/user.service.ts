@@ -1,4 +1,4 @@
-import {callEndpoint} from '../helpers/utility'
+import {callEndpoint, getAppId} from '../helpers/utility'
 import constants from '../types/constants'
 import {LoggedInUserData, Response} from '../types/types'
 
@@ -8,9 +8,14 @@ const getOathEnvironment = (): {
   redirect: string
 } => {
   if (document.location.origin.indexOf('127.0.0.1') > -1) {
-    return constants.oauth.local
+    if (document.location.port === '3000') {
+      return constants.oauth.local_mtb
+    }
+    if (document.location.port === '3001') {
+      return constants.oauth.local_arc
+    }
   } else if (document.location.origin.indexOf('staging') > -1) {
-    return constants.oauth.staging
+    return constants.oauth.staging_mtb
   }
   throw new Error('unknown')
 }
@@ -18,7 +23,7 @@ const getOathEnvironment = (): {
 const requestResetPassword = async (email: string): Promise<Response<{}>> => {
   const postData = {
     email,
-    appId: constants.constants.APP_ID,
+    appId: getAppId(),
   }
   return await callEndpoint<any>(
     constants.endpoints.requestResetPassword,
@@ -32,7 +37,7 @@ const loginWithPassword = async (
   password: string
 ): Promise<Response<LoggedInUserData>> => {
   const postData = {
-    appId: /*'sage-assessment-test', //*/ constants.constants.APP_ID,
+    appId: getAppId(),
     email,
     password,
   }
@@ -49,7 +54,7 @@ const loginOauth = async (
   vendorId: string
 ): Promise<Response<LoggedInUserData>> => {
   const postData = {
-    appId: constants.constants.APP_ID,
+    appId: getAppId(),
     vendorId,
     authToken,
     callbackUrl,

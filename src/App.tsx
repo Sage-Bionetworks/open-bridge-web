@@ -10,6 +10,7 @@ import {
   useUserSessionDataState,
 } from './helpers/AuthContext'
 import {StudyInfoDataProvider} from './helpers/StudyInfoContext'
+import {getAppId} from './helpers/utility'
 import UserService from './services/user.service'
 import {cssVariables, theme} from './style/theme'
 import {UserSessionData} from './types/types'
@@ -108,10 +109,13 @@ function App() {
             onError={ErrorHandler}>
             {sessionData.token ? (
               <StudyInfoDataProvider>
-                <AuthenticatedApp sessionData={sessionData} />
+                <AuthenticatedApp
+                  sessionData={sessionData}
+                  appId={getAppId()}
+                />
               </StudyInfoDataProvider>
             ) : (
-              <UnauthenticatedApp />
+              <UnauthenticatedApp appId={getAppId()} />
             )}
           </ErrorBoundary>
         </Router>

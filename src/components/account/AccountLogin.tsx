@@ -1,18 +1,10 @@
 import {
   Button,
-  Checkbox,
   Container,
-  FormControlLabel,
-  Grid,
-  IconButton,
-  InputAdornment,
-  Link,
   makeStyles,
   Snackbar,
-  TextField,
   Typography,
 } from '@material-ui/core'
-import {Visibility, VisibilityOff} from '@material-ui/icons'
 import Alert, {AlertProps} from '@material-ui/lab/Alert'
 import React, {FunctionComponent, useState} from 'react'
 import {ReactComponent as SageLogo} from '../../assets/sage.svg'
@@ -22,7 +14,6 @@ import {
 } from '../../helpers/AuthContext'
 import storeService from '../../services/store_service'
 import UserService from '../../services/user.service'
-import Loader from '../widgets/Loader'
 import PasswordReset from './PasswordReset'
 
 type AccountLoginOwnProps = {
@@ -90,9 +81,8 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({callbackFn}) => {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isForgotPassword, setIsForgotPassword] = useState(false)
-  const [alertMsg, setAlertMsg] = useState<
-    {msg: string; type: AlertProps['severity']} | undefined
-  >()
+  const [alertMsg, setAlertMsg] =
+    useState<{msg: string; type: AlertProps['severity']} | undefined>()
 
   const [isLoading, setIsLoading] = useState(false)
   const sessionData = useUserSessionDataState()
@@ -159,6 +149,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({callbackFn}) => {
               <SageLogo></SageLogo>
               &nbsp; &nbsp;Sign in with your Synapse account
             </Button>
+            {/*
             <Typography component="h3" style={{marginTop: '16px'}}>
               OR{' '}
             </Typography>
@@ -234,6 +225,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({callbackFn}) => {
                 </Grid>
               </Grid>
             </form>
+              */}{' '}
           </div>
         </Container>
       )}

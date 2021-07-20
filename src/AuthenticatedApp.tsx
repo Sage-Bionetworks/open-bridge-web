@@ -20,9 +20,10 @@ const getParams = (pathname: string): {id?: string; section?: string} => {
   return (matchProfile && matchProfile.params) || {}
 }
 
-const AuthenticatedApp: FunctionComponent<{sessionData: UserSessionData}> = ({
-  sessionData,
-}) => {
+const AuthenticatedApp: FunctionComponent<{
+  sessionData: UserSessionData
+  appId: string
+}> = ({sessionData, appId}) => {
   const [studyId, setStudyId] = React.useState<string | undefined>()
   const [studySection, setStudySection] = React.useState<string | undefined>()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
@@ -61,14 +62,19 @@ const AuthenticatedApp: FunctionComponent<{sessionData: UserSessionData}> = ({
   setBodyClass(section)
   return (
     <>
-      {!studyId && <TopNav routes={PrivateRoutes} sessionData={sessionData} />}
+      {!studyId && (
+        <TopNav
+          routes={PrivateRoutes}
+          sessionData={sessionData}
+          appId={appId}
+        />
+      )}
       {studyId && (
         <StudyTopNav
           studyId={studyId!}
           error={error}
           currentSection={studySection}></StudyTopNav>
       )}
-
       <main>
         <Switch>
           {PrivateRoutes.map(({path, Component}, key) => (
