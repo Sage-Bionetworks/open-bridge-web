@@ -62,7 +62,7 @@ const useStyles = makeStyles(theme => ({
   },
   text: {
     fontFamily: poppinsFont,
-    fontSize: '18px',
+    fontSize: '19px',
     lineHeight: '27px',
     maxWidth: '275px',
     marginBottom: theme.spacing(3),
