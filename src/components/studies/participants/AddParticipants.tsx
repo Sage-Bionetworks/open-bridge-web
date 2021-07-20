@@ -190,7 +190,10 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
 
   const handleOnDrop = async (rows: any) => {
     setImportError([])
-
+    if (!rows[0]?.data) {
+      setIsCsvProcessed(true)
+      return
+    }
     const keysString = Object.keys(rows[0]?.data).sort().join(',')
     const valid = isEnrolledById
       ? CSV_BY_ID_KEY.sort().join(',') === keysString

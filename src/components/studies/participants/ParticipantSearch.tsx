@@ -110,6 +110,7 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
   }
 
   const handleResetSearch = async () => {
+    if (!inputComponent.current) return
     inputComponent.current!.value = ''
     setIsSearchingUsingID(false)
     onReset()
