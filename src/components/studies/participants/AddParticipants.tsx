@@ -191,7 +191,10 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
   const handleOnDrop = async (rows: any) => {
     setImportError([])
     if (!rows[0]?.data) {
-      setIsCsvProcessed(true)
+      setImportError([
+        ...importError,
+        'Please make sure your file has appropriate column headers',
+      ])
       return
     }
     const keysString = Object.keys(rows[0]?.data).sort().join(',')
