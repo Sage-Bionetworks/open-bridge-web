@@ -603,7 +603,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         joinedDate: p.joinedDate
           ? new Date(p.joinedDate).toLocaleDateString()
           : '',
-        note: '',
+        note: p.note || "",
       })
     )
 
