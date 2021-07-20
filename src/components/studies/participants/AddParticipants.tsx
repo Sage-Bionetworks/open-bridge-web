@@ -289,8 +289,8 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             {importError.length > 0 && (
               <Box my={1} color={theme.palette.error.main}>
                 <ul>
-                  {importError.map(error => (
-                    <li>{error}</li>
+                  {importError.map((error, index) => (
+                    <li key={'import-error' + index}>{error}</li>
                   ))}
                 </ul>
               </Box>
