@@ -191,10 +191,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
   const handleOnDrop = async (rows: any) => {
     setImportError([])
     if (!rows[0]?.data) {
-      setImportError([
-        ...importError,
-        'Please make sure your file has appropriate column headers',
-      ])
+      setImportError([...importError, 'Please check the format of your file'])
       return
     }
     const keysString = Object.keys(rows[0]?.data).sort().join(',')
