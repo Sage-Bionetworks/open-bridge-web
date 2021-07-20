@@ -1,6 +1,5 @@
 import {Box, Container, makeStyles, TextField} from '@material-ui/core'
 import React, {FunctionComponent} from 'react'
-import {useUserSessionDataState} from '../../helpers/AuthContext'
 import {isInAdminRole} from '../../helpers/utility'
 import {latoFont, poppinsFont} from '../../style/theme'
 import ErrorDisplay from '../widgets/ErrorDisplay'
@@ -35,18 +34,6 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
   const classes = useStyles()
   const [email, setEmail] = React.useState(newOrgAccount.email)
   const [access, setAccess] = React.useState(newOrgAccount.access)
-  //const [coadmin, setCoadmin] = React.useState(false)
-  const sessionData = useUserSessionDataState()
-
-  /* const updateCoadmin = (isChecked: boolean) => {
-    setCoadmin(isChecked)
-    debugger
-    if (isChecked) {
-      debugger
-      setAccess(getAccessFromRoles(['org_admin']))
-      onUpdate({...newOrgAccount, access: access})
-    }
-  }*/
 
   return (
     <Container maxWidth="lg" className={classes.root}>
@@ -75,7 +62,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
         }}
         isEdit={true}
         // isCoadmin={coadmin}
-        currentUserIsAdmin={isInAdminRole(sessionData.roles)}></AccessGrid>
+        currentUserIsAdmin={isInAdminRole()}></AccessGrid>
     </Container>
   )
 }

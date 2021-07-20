@@ -15,7 +15,6 @@ import React, {FunctionComponent} from 'react'
 import {NavLink} from 'react-router-dom'
 import PARTICIPANTS_ICON from '../../assets/group_participants_icon.svg'
 import Logo from '../../assets/logo_mtb.svg'
-import {useUserSessionDataState} from '../../helpers/AuthContext'
 import {useStudyInfoDataState} from '../../helpers/StudyInfoContext'
 import {isInAdminRole, isPathAllowed} from '../../helpers/utility'
 import {latoFont} from '../../style/theme'
@@ -176,14 +175,13 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   ]
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
-  const sessionData = useUserSessionDataState()
   const studyData = useStudyInfoDataState()
 
   if (!studyData.study) {
     return <></>
   }
   const links = allLinks.filter(link =>
-    isPathAllowed(studyData.study.identifier, sessionData.roles, link.path)
+    isPathAllowed(studyData.study.identifier, link.path)
   )
 
   return (
@@ -253,8 +251,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               )}
           </Toolbar>
           <Toolbar className={classes.toolbar} style={{width: '160px'}}>
-            {(isInAdminRole(sessionData.roles) ||
-              true) /* enable all aggess*/ && (
+            {(isInAdminRole() || true) /* enable all aggess*/ && (
               <NavLink
                 to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
                   ':id',

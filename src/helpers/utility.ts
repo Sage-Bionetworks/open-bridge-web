@@ -274,13 +274,13 @@ export const isValidEmail = (email: string) => {
   return re.test(String(email).toLowerCase())
 }
 
-export const isInAdminRole = (userRoles: AdminRole[]) =>
-  userRoles.includes('org_admin')
-export const isPathAllowed = (
-  studyId: string,
-  userRoles: AdminRole[],
-  path: string
-) => {
+export const isInAdminRole = (roles?: AdminRole[]) => {
+  const userRoles = roles || getSession()?.roles || []
+  return userRoles.includes('org_admin')
+}
+
+export const isPathAllowed = (studyId: string, path: string) => {
+  const userRoles = getSession()?.roles || []
   const pathToCheck = path.replace(':id', studyId)
   const access = {
     org_admin: [constants.restrictedPaths.ACCESS_SETTINGS],

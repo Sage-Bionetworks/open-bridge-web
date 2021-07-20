@@ -203,7 +203,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
     return <></>
   }
 
-  const userIsAdmin = isInAdminRole(sessionData.roles)
+  const userIsAdmin = isInAdminRole()
   return (
     <>
       <Container maxWidth="md" className={classes.root}>
