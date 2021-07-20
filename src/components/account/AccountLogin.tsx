@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(3, 0, 2),
   },
   arcSubmitbutton: {
-    width: '190px',
+    width: '200px',
     height: '56px',
     backgroundColor: 'white',
     fontSize: '20px',
@@ -58,6 +58,7 @@ const useStyles = makeStyles(theme => ({
     },
     fontFamily: poppinsFont,
     boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.25)',
+    letterSpacing: '4px',
   },
   text: {
     fontFamily: poppinsFont,
@@ -190,7 +191,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({
               onClick={e => loginWithSynapse(e)}
               className={clsx(isArcSignIn && classes.arcSubmitbutton)}>
               <SageLogo></SageLogo>
-              &nbsp; &nbsp;
+              &nbsp;
               {isArcSignIn ? 'SYNAPSE' : 'Sign in with your Synapse account'}
             </Button>
             {/*
