@@ -7,7 +7,7 @@ import TopNav from './components/widgets/AppTopNav'
 import {setBodyClass} from './helpers/utility'
 import PublicRoutes from './routes_public'
 import constants from './types/constants'
-import ArcLogo from './assets/arc/arc_main_logo.svg'
+import ArcLogo from './assets/arc_main_logo.svg'
 
 const useStyles = makeStyles(theme => ({
   container: {
