@@ -23,7 +23,6 @@ import {
 import {isInAdminRole} from '../../helpers/utility'
 import AccessService from '../../services/access.service'
 import {poppinsFont} from '../../style/theme'
-import {AdminRole} from '../../types/types'
 import {MTBHeadingH1} from '../widgets/Headings'
 import {Access, NO_ACCESS, getRolesFromAccess} from './AccessGrid'
 import AccountListing from './AccountListing'
@@ -62,6 +61,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
   },
   addNewDialogHeader: {
     color: theme.palette.common.white,
@@ -252,14 +252,19 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
             <>
               <Paper
                 elevation={2}
-                style={{margin: '16px 0'}}
                 key={'success'}
                 className={clsx(classes.newOrgAccount)}>
-                <strong>Added Succesfully</strong>
-                <br /> <br />
-                {filterNewAccountsByAdded(newOrgAccounts)
-                  .map(acct => acct.email)
-                  .join(', ')}
+                <strong style={{marginRight: '16px'}}>
+                  Added Successfully:
+                </strong>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="center">
+                  {filterNewAccountsByAdded(newOrgAccounts).map(acct => (
+                    <Box>{acct.email}</Box>
+                  ))}
+                </Box>
               </Paper>
             </>
           )}
