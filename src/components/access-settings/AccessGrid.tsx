@@ -173,7 +173,6 @@ const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponen
             fontSize="10px"
             fontStyle="italic"
             fontFamily={latoFont}
-            mt={-2.5}
             fontWeight="normal">
             Only available to Administrators
           </Box>
