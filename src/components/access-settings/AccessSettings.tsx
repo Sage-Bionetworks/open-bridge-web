@@ -25,7 +25,7 @@ import AccessService from '../../services/access.service'
 import {poppinsFont} from '../../style/theme'
 import {AdminRole} from '../../types/types'
 import {MTBHeadingH1} from '../widgets/Headings'
-import {Access, NO_ACCESS} from './AccessGrid'
+import {Access, NO_ACCESS, getRolesFromAccess} from './AccessGrid'
 import AccountListing from './AccountListing'
 import MemberInvite, {NewOrgAccount} from './MemberInvite'
 
@@ -116,13 +116,12 @@ async function createNewAccount(
   token: string,
   currentUserOrg: string
 ) {
-  const mapAccessToRole = (access: Access): AdminRole => {
-    // if (access.ACCESS_SETTINGS.)
-    return 'study_coordinator'
-  }
   try {
-    const {principalId, firstName, lastName} =
-      await AccessService.getAliasFromSynapseByEmail(email)
+    const {
+      principalId,
+      firstName,
+      lastName,
+    } = await AccessService.getAliasFromSynapseByEmail(email)
 
     await AccessService.createIndividualAccount(
       token!,
@@ -131,7 +130,7 @@ async function createNewAccount(
       firstName,
       lastName,
       currentUserOrg,
-      mapAccessToRole(access)
+      getRolesFromAccess(access)
     )
     return [true]
   } catch (error) {
