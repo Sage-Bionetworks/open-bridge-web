@@ -1,4 +1,4 @@
-import {callEndpoint} from '../helpers/utility'
+import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {Assessment} from '../types/types'
 import {getItem, KEYS} from './lshelper'
@@ -14,7 +14,7 @@ async function getAssessment(
   guid: string
   /* token?: string,*/
 ): Promise<Assessment[]> {
-  const result = await callEndpoint<Assessment>(
+  const result = await Utility.callEndpoint<Assessment>(
     `${constants.endpoints.assessmentShared.replace(':id', guid)}`,
     'GET',
     {}
@@ -41,7 +41,7 @@ async function importAssessmentIntoLocalContext(
 }*/
 
 async function getAssessments(): Promise<Assessment[]> {
-  const result = await callEndpoint<{items: Assessment[]}>(
+  const result = await Utility.callEndpoint<{items: Assessment[]}>(
     constants.endpoints.assessmentsShared,
     'GET',
     {}
@@ -55,7 +55,11 @@ async function getResource(assessment: Assessment): Promise<Assessment> {
     ':identifier',
     assessment.identifier
   )
-  const response = await callEndpoint<{items: any[]}>(endPoint, 'GET', {})
+  const response = await Utility.callEndpoint<{items: any[]}>(
+    endPoint,
+    'GET',
+    {}
+  )
   return {
     ...assessment,
     resources: response.data.items,

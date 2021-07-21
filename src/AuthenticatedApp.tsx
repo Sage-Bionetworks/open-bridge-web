@@ -5,7 +5,7 @@ import StudyTopNav from './components/studies/StudyTopNav'
 import TopNav from './components/widgets/AppTopNav'
 import {useStudyBuilderInfo} from './helpers/hooks'
 import {useStudyInfoDataDispatch} from './helpers/StudyInfoContext'
-import {setBodyClass} from './helpers/utility'
+import Utility from './helpers/utility'
 import PrivateRoutes from './routes_private'
 import {UserSessionData} from './types/types'
 
@@ -46,20 +46,20 @@ const AuthenticatedApp: FunctionComponent<{
   React.useEffect(() => {
     return history.listen(location => {
       const {id, section} = getParams(window.location.pathname)
-      setBodyClass(section)
+      Utility.setBodyClass(section)
     })
   }, [history])
 
   React.useEffect(() => {
     const {id, section} = getParams(window.location.pathname)
 
-    setBodyClass(section)
+    Utility.setBodyClass(section)
     setStudyId(id)
     setStudySection(section)
   }, [studyDataUpdateFn])
 
   const {id, section} = getParams(window.location.pathname)
-  setBodyClass(section)
+  Utility.setBodyClass(section)
   return (
     <>
       {!studyId && (

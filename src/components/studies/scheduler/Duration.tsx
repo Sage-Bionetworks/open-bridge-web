@@ -2,7 +2,7 @@ import {IconButton, makeStyles, StandardTextFieldProps} from '@material-ui/core'
 import ClearIcon from '@material-ui/icons/HighlightOff'
 import moment from 'moment'
 import React from 'react'
-import {getEnumKeyByEnumValue} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import SmallTextBox from '../../widgets/SmallTextBox'
 
@@ -73,7 +73,7 @@ const Duration: React.FunctionComponent<
       setNum(value)
 
       if (!unit && unitDefault) {
-        const unitDefaultValue = getEnumKeyByEnumValue(unitData, unitDefault)
+        const unitDefaultValue = Utility.getEnumKeyByEnumValue(unitData, unitDefault)
         unit = unitDefaultValue
         setUnit(unitDefaultValue)
       }

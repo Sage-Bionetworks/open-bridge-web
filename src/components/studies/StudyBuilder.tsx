@@ -12,7 +12,7 @@ import {
   useStudyInfoDataDispatch,
   useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
-import {setBodyClass} from '../../helpers/utility'
+import Utility from '../../helpers/utility'
 import StudyService from '../../services/study.service'
 import {ThemeType} from '../../style/theme'
 import {Schedule, StartEventId, StudySession} from '../../types/scheduling'
@@ -352,7 +352,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     }
     if (updatedObject || !hasObjectChanged) {
       window.history.pushState(null, '', next)
-      setBodyClass(next)
+      Utility.setBodyClass(next)
       setSection(next)
     }
   }

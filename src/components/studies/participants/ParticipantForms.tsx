@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
-import {isInvalidPhone} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import {latoFont} from '../../../style/theme'
 import {EditableParticipantData} from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
@@ -57,82 +57,81 @@ export type EditParticipantFormProps = {
   isLoading?: boolean
 }
 
-export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> =
-  ({
-    participant,
-    isEnrolledById,
-    onOK,
-    onCancel,
-    children,
-    isBatchEdit,
-    isLoading,
-  }) => {
-    const classes = useStyles()
-    const [note, setNotes] = React.useState(participant.note)
-    const [clinicVisitDate, setClinicVisitDate] = React.useState<
-      Date | undefined
-    >(participant.clinicVisitDate)
+export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
+  participant,
+  isEnrolledById,
+  onOK,
+  onCancel,
+  children,
+  isBatchEdit,
+  isLoading,
+}) => {
+  const classes = useStyles()
+  const [note, setNotes] = React.useState(participant.note)
+  const [clinicVisitDate, setClinicVisitDate] = React.useState<
+    Date | undefined
+  >(participant.clinicVisitDate)
 
-    const handleDateChange = (date: Date | null) => {
-      setClinicVisitDate(date ? date : undefined)
-    }
-
-    return (
-      <>
-        <DialogContent>
-          <Box mt={0} mb={3}>
-            <MTBHeadingH3>
-              {!isBatchEdit ? (
-                isEnrolledById ? (
-                  <span>Reference ID: {participant.externalId}</span>
-                ) : (
-                  <span>Phone number: {participant.phoneNumber}</span>
-                )
-              ) : (
-                'Assign the same values to selected participants:'
-              )}
-            </MTBHeadingH3>
-          </Box>
-          <FormGroup className={classes.addForm}>
-            <DatePicker
-              label="Clinic Visit 1"
-              id="clinic-visit"
-              value={clinicVisitDate || null}
-              onChange={e => handleDateChange(e)}></DatePicker>
-            <FormControl>
-              <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
-              <SimpleTextInput
-                value={note}
-                placeholder="comments"
-                onChange={e => setNotes(e.target.value)}
-                id="note"
-                multiline={true}
-                rows={5}
-              />
-            </FormControl>
-          </FormGroup>
-        </DialogContent>
-        <DialogActions style={{justifyContent: 'space-between'}}>
-          {children && children}
-          {!isLoading ? (
-            <div>
-              <DialogButtonSecondary onClick={() => onCancel()} color="primary">
-                Cancel
-              </DialogButtonSecondary>
-              <DialogButtonPrimary
-                onClick={() => onOK(note, clinicVisitDate)}
-                color="primary"
-                autoFocus>
-                Save Changes
-              </DialogButtonPrimary>
-            </div>
-          ) : (
-            <CircularProgress color="primary" />
-          )}
-        </DialogActions>
-      </>
-    )
+  const handleDateChange = (date: Date | null) => {
+    setClinicVisitDate(date ? date : undefined)
   }
+
+  return (
+    <>
+      <DialogContent>
+        <Box mt={0} mb={3}>
+          <MTBHeadingH3>
+            {!isBatchEdit ? (
+              isEnrolledById ? (
+                <span>Reference ID: {participant.externalId}</span>
+              ) : (
+                <span>Phone number: {participant.phoneNumber}</span>
+              )
+            ) : (
+              'Assign the same values to selected participants:'
+            )}
+          </MTBHeadingH3>
+        </Box>
+        <FormGroup className={classes.addForm}>
+          <DatePicker
+            label="Clinic Visit 1"
+            id="clinic-visit"
+            value={clinicVisitDate || null}
+            onChange={e => handleDateChange(e)}></DatePicker>
+          <FormControl>
+            <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
+            <SimpleTextInput
+              value={note}
+              placeholder="comments"
+              onChange={e => setNotes(e.target.value)}
+              id="note"
+              multiline={true}
+              rows={5}
+            />
+          </FormControl>
+        </FormGroup>
+      </DialogContent>
+      <DialogActions style={{justifyContent: 'space-between'}}>
+        {children && children}
+        {!isLoading ? (
+          <div>
+            <DialogButtonSecondary onClick={() => onCancel()} color="primary">
+              Cancel
+            </DialogButtonSecondary>
+            <DialogButtonPrimary
+              onClick={() => onOK(note, clinicVisitDate)}
+              color="primary"
+              autoFocus>
+              Save Changes
+            </DialogButtonPrimary>
+          </div>
+        ) : (
+          <CircularProgress color="primary" />
+        )}
+      </DialogActions>
+    </>
+  )
+}
 
 export const WithdrawParticipantForm: FunctionComponent<{
   isEnrolledById: boolean
@@ -254,7 +253,9 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
                 onBlur={() =>
                   setValidationErrors(prev => ({
                     ...prev,
-                    phone: isInvalidPhone(participant.phoneNumber || ''),
+                    phone: Utility.isInvalidPhone(
+                      participant.phoneNumber || ''
+                    ),
                   }))
                 }
               />

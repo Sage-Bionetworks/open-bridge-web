@@ -34,7 +34,7 @@ import {
   StudyInfoData,
   useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
-import {formatStudyId, isSignInById} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import ParticipantService, {
   ParticipantRelevantEvents,
 } from '../../../services/participants.service'
@@ -260,12 +260,11 @@ async function getRelevantParticipantInfo(
   token: string,
   participants: ExtendedParticipantAccountSummary[]
 ) {
-  const eventsMap: StringDictionary<ParticipantRelevantEvents> =
-    await ParticipantService.getRelevantEventsForParticipants(
-      studyId,
-      token,
-      participants.map(p => p.id)
-    )
+  const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipants(
+    studyId,
+    token,
+    participants.map(p => p.id)
+  )
   const result = participants!.map(participant => {
     const id = participant.id as string
     const event = eventsMap[id]
@@ -277,7 +276,7 @@ async function getRelevantParticipantInfo(
       } else {
         id = splitExternalId[splitExternalId[0] === studyId ? 1 : 0]
       }
-      participant.externalId = formatStudyId(id)
+      participant.externalId = Utility.formatStudyId(id)
     }
     const updatedParticipant = {
       ...participant,
@@ -404,19 +403,24 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   })
 
   // True if the user is currently searching for a particpant using id
-  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] =
-    React.useState(false)
+  const [
+    isUserSearchingForParticipant,
+    setIsUserSearchingForParticipant,
+  ] = React.useState(false)
 
-  const [fileDownloadUrl, setFileDownloadUrl] =
-    React.useState<string | undefined>(undefined)
+  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
+    string | undefined
+  >(undefined)
 
   //user ids selectedForSction
-  const [selectedParticipantIds, setSelectedParticipantIds] =
-    React.useState<SelectedParticipantIdsType>({
-      ACTIVE: [],
-      TEST: [],
-      WITHDRAWN: [],
-    })
+  const [
+    selectedParticipantIds,
+    setSelectedParticipantIds,
+  ] = React.useState<SelectedParticipantIdsType>({
+    ACTIVE: [],
+    TEST: [],
+    WITHDRAWN: [],
+  })
   const [isAllSelected, setIsAllSelected] = React.useState(false)
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
@@ -431,8 +435,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   >([])
 
   //trigger data refresh on updates
-  const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
-    React.useState(false)
+  const [
+    refreshParticipantsToggle,
+    setRefreshParticipantsToggle,
+  ] = React.useState(false)
 
   const {
     data,
@@ -604,7 +610,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         joinedDate: p.joinedDate
           ? new Date(p.joinedDate).toLocaleDateString()
           : '',
-        note: p.note || "",
+        note: p.note || '',
       })
     )
 
@@ -633,7 +639,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         <Box px={3} py={2} display="flex" alignItems="center">
           <MTBHeadingH3 className={classes.studyId}>
             {' '}
-            Study ID: {formatStudyId(study.identifier)}{' '}
+            Study ID: {Utility.formatStudyId(study.identifier)}{' '}
           </MTBHeadingH3>
           <img src={LiveIcon} style={{height: '25px'}}></img>
         </Box>
@@ -728,7 +734,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               <div>
                 <Box className={classes.gridToolBar}>
                   <Box display="flex" flexDirection="row" alignItems="center">
-                    {tab !== 'WITHDRAWN' && !isSignInById(study.signInTypes) && (
+                    {tab !== 'WITHDRAWN' && !Utility.isSignInById(study.signInTypes) && (
                       <Button
                         aria-label="send-sms-text"
                         onClick={() => {
@@ -807,12 +813,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   </Box>
 
                   <ParticipantSearch
-                    isEnrolledById={isSignInById(study.signInTypes)}
+                    isEnrolledById={Utility.isSignInById(study.signInTypes)}
                     onReset={() => {
                       handleResetSearch()
                     }}
                     onSearch={(searchedValue: string) => {
-                      const isById = isSignInById(study.signInTypes)
+                      const isById = Utility.isSignInById(study.signInTypes)
                       setIsUserSearchingForParticipant(true)
                       handleSearchParticipantRequest(isById, searchedValue)
                     }}
@@ -847,7 +853,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     ) =>
                       updateParticipant(participantId, note, clinicVisitDate)
                     }
-                    isEnrolledById={isSignInById(study.signInTypes)}
+                    isEnrolledById={Utility.isSignInById(study.signInTypes)}
                     onRowSelected={(
                       /*id: string, isSelected: boolean*/ selection,
                       isAll
@@ -869,13 +875,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       pageSize={pageSize}
                       setPageSize={setPageSize}
                       handlePageNavigationArrowPressed={(button: string) => {
-                        const currPage =
-                          getCurrentPageFromPageNavigationArrowPressed(
-                            button,
-                            currentPage,
-                            data?.total || 0,
-                            pageSize
-                          )
+                        const currPage = getCurrentPageFromPageNavigationArrowPressed(
+                          button,
+                          currentPage,
+                          data?.total || 0,
+                          pageSize
+                        )
                         setCurrentPage(currPage)
                       }}
                     />
@@ -890,7 +895,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           </Box>
         </Box>
         <BatchEditForm
-          isEnrolledById={isSignInById(study.signInTypes)}
+          isEnrolledById={Utility.isSignInById(study.signInTypes)}
           isBatchEditOpen={isBatchEditOpen}
           onSetIsBatchEditOpen={setIsBatchEditOpen}
           selectedParticipants={selectedParticipantIds[tab]}

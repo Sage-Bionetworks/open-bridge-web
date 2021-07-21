@@ -20,7 +20,7 @@ import {
   StudyInfoData,
   useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
-import {isInAdminRole} from '../../helpers/utility'
+import Utility from '../../helpers/utility'
 import AccessService from '../../services/access.service'
 import {poppinsFont} from '../../style/theme'
 import {AdminRole} from '../../types/types'
@@ -203,7 +203,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
     return <></>
   }
 
-  const userIsAdmin = isInAdminRole()
+  const userIsAdmin = Utility.isInAdminRole()
   return (
     <>
       <Container maxWidth="md" className={classes.root}>

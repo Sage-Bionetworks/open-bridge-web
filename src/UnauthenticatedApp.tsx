@@ -4,14 +4,14 @@ import {Route, Switch} from 'react-router-dom'
 import './App.css'
 import AccountLogin from './components/account/AccountLogin'
 import TopNav from './components/widgets/AppTopNav'
-import {setBodyClass} from './helpers/utility'
+import Utility from './helpers/utility'
 import PublicRoutes from './routes_public'
 import constants from './types/constants'
 
 const UnauthenticatedApp: FunctionComponent<{
   appId: string
 }> = ({appId}) => {
-  setBodyClass()
+  Utility.setBodyClass()
   if (appId === constants.constants.ARC_APP_ID) {
     return (
       <Box>

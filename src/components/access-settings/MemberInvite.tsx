@@ -1,6 +1,6 @@
 import {Box, Container, makeStyles, TextField} from '@material-ui/core'
 import React, {FunctionComponent} from 'react'
-import {isInAdminRole} from '../../helpers/utility'
+import Utility from '../../helpers/utility'
 import {latoFont, poppinsFont} from '../../style/theme'
 import ErrorDisplay from '../widgets/ErrorDisplay'
 import AccessGrid, {Access} from './AccessGrid'
@@ -62,7 +62,7 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
         }}
         isEdit={true}
         // isCoadmin={coadmin}
-        currentUserIsAdmin={isInAdminRole()}></AccessGrid>
+        currentUserIsAdmin={Utility.isInAdminRole()}></AccessGrid>
     </Container>
   )
 }

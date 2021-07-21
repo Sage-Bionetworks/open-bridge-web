@@ -20,7 +20,7 @@ import AssessmentSmall from '../../assessments/AssessmentSmall'
 import {ErrorFallback, ErrorHandler} from '../../widgets/ErrorHandler'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import {SimpleTextInput} from '../../widgets/StyledComponents'
-import {formatStudyId} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import MedicalIcon from '../../../assets/preview/reminder_of_use_medical_icon.svg'
 import AuthorizedIcon from '../../../assets/preview/reminder_of_use_authorization_icon.svg'
 import ProtectionIcon from '../../../assets/preview/reminder_of_use_protect_icon.svg'
@@ -313,7 +313,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                     <SimpleTextInput
                       multiline={false}
                       fullWidth={true}
-                      value={formatStudyId(studyId)}
+                      value={Utility.formatStudyId(studyId)}
                       readOnly></SimpleTextInput>
                   </FormControl>
 

@@ -2,7 +2,7 @@ import {Box, FormControl, FormGroup, LinearProgress} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
 import React, {FunctionComponent} from 'react'
-import {generateNonambiguousCode} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import ParticipantService from '../../../services/participants.service'
 import HideWhen from '../../widgets/HideWhen'
 import {
@@ -47,7 +47,7 @@ const AddGeneratedParticipant: FunctionComponent<AddGeneratedParticipantProps> =
         await ParticipantService.addParticipant(
           studyIdentifier,
           token,
-          {externalId: generateNonambiguousCode(6)},
+          {externalId: Utility.generateNonambiguousCode(6)},
           isTestAccount
         )
       } catch (error) {

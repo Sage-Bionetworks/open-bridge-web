@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {UserSessionData} from '../types/types'
-import {clearSession, getSession, setSession} from './utility'
+import Utility from './utility'
 
 type ActionType = 'LOGIN' | 'LOGOUT' | 'SET_ALERT' | 'CLEAR_ALERT'
 /*| 'CONSENT'
@@ -31,7 +31,7 @@ function countReducer(state: UserSessionData, action: Action): UserSessionData {
         ...state,
         alert: action.payload!.alert!,
       }
-      setSession(newState)
+      Utility.setSession(newState)
       return newState
     }
 
@@ -40,7 +40,7 @@ function countReducer(state: UserSessionData, action: Action): UserSessionData {
         ...state,
         alert: undefined,
       }
-      setSession(newState)
+      Utility.setSession(newState)
       return newState
     }
     /* case 'CONSENT': {
@@ -74,11 +74,11 @@ function countReducer(state: UserSessionData, action: Action): UserSessionData {
         id: action.payload!.id,
       }
 
-      setSession(newState)
+      Utility.setSession(newState)
       return newState
 
     case 'LOGOUT':
-      clearSession()
+      Utility.clearSession()
       return {
         token: undefined,
         orgMembership: undefined,
@@ -95,7 +95,7 @@ function countReducer(state: UserSessionData, action: Action): UserSessionData {
 function UserSessionDataProvider({children}: UserSessionDataProviderProps) {
   const [state, dispatch] = React.useReducer(
     countReducer,
-    getSession() || initialState
+    Utility.getSession() || initialState
   )
   return (
     <UserSessionDataStateContext.Provider value={state}>

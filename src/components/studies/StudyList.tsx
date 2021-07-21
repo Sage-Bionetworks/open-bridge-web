@@ -14,7 +14,7 @@ import {RouteComponentProps} from 'react-router-dom'
 import {useAsync} from '../../helpers/AsyncHook'
 import {useUserSessionDataState} from '../../helpers/AuthContext'
 import {useStudyInfoDataDispatch} from '../../helpers/StudyInfoContext'
-import {generateNonambiguousCode, isPathAllowed} from '../../helpers/utility'
+import Utility from '../../helpers/utility'
 import StudyService from '../../services/study.service'
 import {latoFont} from '../../style/theme'
 import constants from '../../types/constants'
@@ -167,13 +167,13 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   function getStudyLink(sectionStatus: SectionStatus, studyId: string) {
     let link = undefined
     if (sectionStatus === 'DRAFT') {
-      link = isPathAllowed(studyId, links.builder)
+      link = Utility.isPathAllowed(studyId, links.builder)
         ? links.builder
-        : isPathAllowed(studyId, links.participants)
+        : Utility.isPathAllowed(studyId, links.participants)
         ? links.participants
         : undefined
     } else {
-      link = isPathAllowed(studyId, links.participants)
+      link = Utility.isPathAllowed(studyId, links.participants)
         ? links.participants
         : undefined
     }
@@ -276,7 +276,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   const createStudy = async (study?: Study) => {
     //if study is provided -- we are duplicating
-    const id = generateNonambiguousCode(6, 'CONSONANTS')
+    const id = Utility.generateNonambiguousCode(6, 'CONSONANTS')
 
     const newStudy: Study = study
       ? {
@@ -466,7 +466,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           </ul>
           <Button
             disabled={
-              !isPathAllowed('any', constants.restrictedPaths.STUDY_BUILDER)
+              !Utility.isPathAllowed('any', constants.restrictedPaths.STUDY_BUILDER)
             }
             variant="contained"
             onClick={() => createStudy()}

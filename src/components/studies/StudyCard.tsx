@@ -12,7 +12,7 @@ import CompletedIcon from '../../assets/completed_study_icon.svg'
 import LiveIcon from '../../assets/live_study_icon.svg'
 import participants_icon from '../../assets/participants_icon.svg'
 import {useUserSessionDataState} from '../../helpers/AuthContext'
-import {formatStudyId} from '../../helpers/utility'
+import Utility from '../../helpers/utility'
 import ParticipantService from '../../services/participants.service'
 import {ThemeType} from '../../style/theme'
 import {Study} from '../../types/types'
@@ -334,7 +334,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
             )}
           </div>
           <Typography className={classes.studyId} color="textSecondary">
-            Study ID: {formatStudyId(study.identifier)}
+            Study ID: {Utility.formatStudyId(study.identifier)}
           </Typography>
           {study.phase === 'design' && <DraftIcon />}
         </CardContent>
