@@ -37,6 +37,9 @@ const useStyles = makeStyles(theme => ({
   },
   mtbContainer: {
     height: 'calc(100vh - 104px)',
+    [theme.breakpoints.down('md')]: {
+      height: 'calc(100vh - 46px)',
+    },
   },
 }))
 
