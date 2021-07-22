@@ -7,10 +7,10 @@ import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
   container: {
-    height: '100vh',
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
+    height: '100vh',
   },
   leftContainer: {
     height: '100%',
@@ -35,16 +35,19 @@ const useStyles = makeStyles(theme => ({
   mtbAppBackground: {
     backgroundColor: '#F3EFE5',
   },
+  mtbContainer: {
+    height: 'calc(100vh - 104px)',
+  },
 }))
 
 type SignInPageProps = {
-  isARCApp: boolean
+  isARCApp?: boolean
 }
 
 const SignInPage: React.FunctionComponent<SignInPageProps> = ({isARCApp}) => {
   const classes = useStyles()
   return (
-    <Box className={classes.container}>
+    <Box className={clsx(classes.container, !isARCApp && classes.mtbContainer)}>
       <Box
         className={clsx(
           classes.leftContainer,

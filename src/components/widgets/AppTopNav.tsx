@@ -273,8 +273,10 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
     }
     return initial?.toUpperCase() || '?'
   }
-  // Hide the app store download page from the nav.
-  routes = routes.filter(route => route.name !== 'APP STORE')
+  // Hide the app store download page and also the sing in page from the nav.
+  routes = routes.filter(
+    route => route.name !== 'APP STORE' && route.name !== 'SIGN IN'
+  )
   return (
     <>
       {' '}
@@ -327,8 +329,9 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                   <Button
                     variant="text"
                     className={classes.toolbarLink}
-                    onClick={() => setIsSignInOpen(true)}>
-                    Sign in
+                    // onClick={() => setIsSignInOpen(true)}
+                    href={'/sign-in'}>
+                    LOG IN
                   </Button>
                 </div>
               </MenuLinksRhs>

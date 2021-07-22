@@ -71,6 +71,9 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
+  mtbText: {
+    maxWidth: '330px',
+  },
 }))
 
 const loginWithSynapse = (event: any) => {
@@ -175,15 +178,11 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({
           component="main"
           maxWidth="xs"
           className={classes.buttonContainer}>
-          {isArcSignIn ? (
-            <Box className={classes.text}>
-              Please sign in to ARC using your Synapse account.
-            </Box>
-          ) : (
-            <Typography component="h1" variant="h5">
-              Sign In
-            </Typography>
-          )}
+          <Box className={clsx(classes.text, !isArcSignIn && classes.mtbText)}>
+            {isArcSignIn
+              ? 'Please sign in to ARC using your Synapse account.'
+              : 'Please sign in to Mobile Toolbox using your Synapse account.'}
+          </Box>
           <div className={classes.paper}>
             <Button
               variant="contained"

@@ -8,7 +8,7 @@ import constants from './types/constants'
 import SignInPage from './SignInPage'
 
 const UnauthenticatedApp: FunctionComponent<{
-  appId: string
+  appId: string 
 }> = ({appId}) => {
   setBodyClass()
   if (appId === constants.constants.ARC_APP_ID) {
