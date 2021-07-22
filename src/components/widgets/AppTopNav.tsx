@@ -329,7 +329,6 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                   <Button
                     variant="text"
                     className={classes.toolbarLink}
-                    // onClick={() => setIsSignInOpen(true)}
                     href={'/sign-in'}>
                     LOG IN
                   </Button>
