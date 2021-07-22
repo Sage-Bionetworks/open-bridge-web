@@ -8,7 +8,6 @@ import {
 } from '@material-ui/core'
 import Alert, {AlertProps} from '@material-ui/lab/Alert'
 import React, {FunctionComponent, useState} from 'react'
-import {ReactComponent as SageLogo} from '../../assets/sage.svg'
 import {
   useUserSessionDataDispatch,
   useUserSessionDataState,
@@ -16,6 +15,7 @@ import {
 import storeService from '../../services/store_service'
 import UserService from '../../services/user.service'
 import PasswordReset from './PasswordReset'
+import {ReactComponent as SynapseLogo} from '../../assets/synapse_logo_blue.svg'
 import clsx from 'clsx'
 import {poppinsFont} from '../../style/theme'
 
@@ -52,13 +52,12 @@ const useStyles = makeStyles(theme => ({
     width: '200px',
     height: '56px',
     backgroundColor: 'white',
-    fontSize: '20px',
     '&:hover': {
       backgroundColor: 'white',
     },
     fontFamily: poppinsFont,
     boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.25)',
-    letterSpacing: '4px',
+    padding: theme.spacing(2, 3),
   },
   text: {
     fontFamily: poppinsFont,
@@ -189,10 +188,8 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({
             <Button
               variant="contained"
               onClick={e => loginWithSynapse(e)}
-              className={clsx(isArcSignIn && classes.arcSubmitbutton)}>
-              <SageLogo></SageLogo>
-              &nbsp;
-              {isArcSignIn ? 'SYNAPSE' : 'Sign in with your Synapse account'}
+              className={classes.arcSubmitbutton}>
+              <SynapseLogo />
             </Button>
             {/*
             <Typography component="h3" style={{marginTop: '16px'}}>

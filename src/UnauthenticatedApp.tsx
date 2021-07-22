@@ -1,8 +1,6 @@
-import {Box} from '@material-ui/core'
 import React, {FunctionComponent} from 'react'
 import {Route, Switch} from 'react-router-dom'
 import './App.css'
-import AccountLogin from './components/account/AccountLogin'
 import TopNav from './components/widgets/AppTopNav'
 import {setBodyClass} from './helpers/utility'
 import PublicRoutes from './routes_public'
