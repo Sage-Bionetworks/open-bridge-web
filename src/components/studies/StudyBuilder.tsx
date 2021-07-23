@@ -473,7 +473,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           icon={bannerTypes.get(bannerType)?.icon[0]!}
           isSelfClosing={bannerType === 'success'}
           displayBottomOfPage={
-            bannerType !== 'success' && bannerType != 'error'
+            bannerType !== 'success' && bannerType !== 'error'
           }
           displayText={
             bannerTypes.get(bannerType)?.displayText[0]!
