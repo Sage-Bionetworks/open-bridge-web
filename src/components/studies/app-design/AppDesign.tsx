@@ -38,7 +38,6 @@ import Subsection from './Subsection'
 import UploadStudyLogoSection from './UploadStudyLogoSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
-import TopErrorBanner from '../../widgets/TopErrorBanner'
 
 const imgHeight = 70
 const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER

@@ -37,6 +37,9 @@ import {StudySection} from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
 import TopErrorBanner from '../widgets/TopErrorBanner'
+import Alert_Icon from '../../assets/scheduler/white_alert_icon.svg'
+import SaveIcon from '../../assets/save_icon.svg'
+import NoEditIcon from '../../assets/no_edit_icon.svg'
 
 const subtitles: StringDictionary<string> = {
   description: 'Description',
@@ -138,6 +141,58 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   const studyDataUpdateFn = useStudyInfoDataDispatch()
   const [open, setOpen] = React.useState(true)
   const [displayBanner, setDisplayBanner] = React.useState(false)
+  const [bannerTypes, setBannerTypes] = React.useState(
+    new Map<
+      string,
+      {
+        bgColor: string
+        displayText: string[]
+        icon: string[]
+        textColor: string
+      }
+    >()
+  )
+
+  React.useEffect(() => {
+    const bannerMap = new Map()
+    bannerMap.set('error', {
+      bgColor: '#EE6070',
+      displayText: ['The following fields are required to launch your study.'],
+      icon: [Alert_Icon],
+      textColor: 'white',
+    })
+    bannerMap.set('success', {
+      bgColor: '#AEDCC9',
+      displayText: ['Page has been saved successfully.'],
+      icon: [SaveIcon],
+      textColor: 'black',
+    })
+    bannerMap.set('live', {
+      bgColor: '#2196F3',
+      displayText: [
+        'This page is view only. We currently don’t support scheduling related editing of lives studies. To make adjustments to your study, create a duplicate of this study and launch again.',
+        'You may edit this page.',
+      ],
+      icon: [NoEditIcon],
+      textColor: 'white',
+    })
+    bannerMap.set('completed', {
+      bgColor: '#EE6352',
+      displayText: ['The study is officially closed and cannot be edited.'],
+      icon: [NoEditIcon],
+      textColor: 'white',
+    })
+    bannerMap.set('withdrawn', {
+      bgColor: '#AA00FF',
+      displayText: ['The study was cancelled and cannot be edited.'],
+      icon: [NoEditIcon],
+      textColor: 'white',
+    })
+    setBannerTypes(bannerMap)
+    if (getBannerType() !== 'success' && getBannerType() !== 'error') {
+      setDisplayBanner(true)
+    }
+  }, [])
 
   const setData = (builderInfo: StudyInfoData) => {
     studyDataUpdateFn({
@@ -396,17 +451,33 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }
 
   const getBannerType = () => {
+    if (builderInfo?.study?.phase === 'in_flight') return 'live'
+    if (builderInfo?.study?.phase === 'withdrawn') return 'withdrawn'
+    if (
+      builderInfo?.study?.phase === 'completed' ||
+      builderInfo?.study?.phase === 'analysis'
+    )
+      return 'completed'
     const errors = section === 'scheduler' ? schedulerErrors : error
     return errors.length > 0 ? 'error' : 'success'
   }
-
+  const bannerType = getBannerType()
   return (
     <>
       <Box display="flex" bgcolor="#f7f7f7">
         <TopErrorBanner
+          backgroundColor={bannerTypes.get(bannerType)?.bgColor!}
+          textColor={bannerTypes.get(bannerType)?.textColor!}
           onClose={() => setDisplayBanner(false)}
           isVisible={displayBanner}
-          type={getBannerType()}></TopErrorBanner>
+          icon={bannerTypes.get(bannerType)?.icon[0]!}
+          isSelfClosing={bannerType === 'success'}
+          displayBottomOfPage={
+            bannerType !== 'success' && bannerType != 'error'
+          }
+          displayText={
+            bannerTypes.get(bannerType)?.displayText[0]!
+          }></TopErrorBanner>
         <Box width={open ? 210 : 56} flexShrink={0}></Box>
         <Box className={getClasses()} pt={8} pl={2}>
           <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>

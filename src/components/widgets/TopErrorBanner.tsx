@@ -2,15 +2,16 @@ import React from 'react'
 import {makeStyles} from '@material-ui/core'
 import {Alert} from '@material-ui/lab'
 import {latoFont, ThemeType} from '../../style/theme'
-import Alert_Icon from '../../assets/scheduler/white_alert_icon.svg'
-import SaveIcon from '../../assets/save_icon.svg'
-
 import clsx from 'clsx'
 
-const useStyles = makeStyles((theme: ThemeType) => ({
-  container: {
+type StyleProps = {
+  backgroundColor: string
+  textColor: string
+}
+
+const useStyles = makeStyles<ThemeType, StyleProps>((theme: ThemeType) => ({
+  container: props => ({
     position: 'fixed',
-    top: theme.spacing(2),
     left: theme.spacing(2),
     right: theme.spacing(2),
     zIndex: 15000,
@@ -18,26 +19,21 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     borderRadius: '0px',
     fontSize: '16px',
     fontFamily: latoFont,
-    display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-    animation: '$fade-in 0.5s ease',
     '& svg': {
       width: '28px',
       height: '28px',
     },
+    backgroundColor: props.backgroundColor,
+    color: props.textColor,
+  }),
+  animation: {
+    animation: '$fade-in 0.5s ease',
   },
   invisible: {
     display: 'none',
-  },
-  success: {
-    backgroundColor: '#AEDCC9',
-    color: 'black',
-  },
-  error: {
-    backgroundColor: '#EE6070',
-    color: 'white',
   },
   '@keyframes fade-in': {
     '0%': {
@@ -47,33 +43,50 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       opacity: 1,
     },
   },
+  topOfPagePosition: {
+    top: theme.spacing(2),
+  },
+  bottomOfPagePosition: {
+    bottom: theme.spacing(2),
+  },
 }))
 
 type TopErrorBannerProps = {
   onClose: Function
   isVisible: boolean
-  type: 'success' | 'error'
-  displayText?: string
+  displayText: string
+  displayBottomOfPage?: boolean
+  backgroundColor: string
+  textColor: string
+  icon: string
+  isSelfClosing?: boolean
 }
 
 let timeout: NodeJS.Timeout
 
 const TopErrorBanner: React.FunctionComponent<TopErrorBannerProps> = ({
   isVisible,
-  type,
   displayText,
   onClose,
+  displayBottomOfPage,
+  backgroundColor,
+  textColor,
+  icon,
+  isSelfClosing,
 }) => {
-  const classes = useStyles()
+  const classes = useStyles({
+    backgroundColor: backgroundColor,
+    textColor: textColor,
+  })
 
   React.useEffect(() => {
     clearTimeout(timeout)
-    if (type === 'success') {
+    if (isSelfClosing) {
       timeout = setTimeout(() => {
         onClose()
       }, 8000)
     }
-  }, [type, isVisible])
+  }, [isSelfClosing, isVisible])
 
   return (
     <Alert
@@ -81,21 +94,15 @@ const TopErrorBanner: React.FunctionComponent<TopErrorBannerProps> = ({
       severity="error"
       className={clsx(
         classes.container,
-        !isVisible && classes.invisible,
-        type === 'success' && classes.success,
-        type === 'error' && classes.error
+        classes.animation,
+        !displayBottomOfPage && classes.topOfPagePosition,
+        displayBottomOfPage && classes.bottomOfPagePosition,
+        !isVisible && classes.invisible
       )}
       icon={
-        <img
-          src={type === 'error' ? Alert_Icon : SaveIcon}
-          style={{height: '20px'}}
-          alt={'error-message'}></img>
+        <img src={icon} style={{height: '24px'}} alt={'error-message'}></img>
       }>
-      {displayText
-        ? displayText
-        : type === 'error'
-        ? 'The following fields are required to launch your study.'
-        : 'Page has been saved successfully.'}
+      {displayText}
     </Alert>
   )
 }
