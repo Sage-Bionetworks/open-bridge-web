@@ -17,7 +17,7 @@ import Alert_Icon from '../../../assets/alert_icon.svg'
 import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
 import {ReactComponent as EnvelopeImg} from '../../../assets/launch/envelope_icon.svg'
 import {useUserSessionDataState} from '../../../helpers/AuthContext'
-import {ThemeType} from '../../../style/theme'
+import {poppinsFont, ThemeType} from '../../../style/theme'
 import constants from '../../../types/constants'
 import {Contact, Study} from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
@@ -51,6 +51,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontSize: '18px',
     backgroundColor: 'transparent',
     color: 'black',
+    lineHeight: '27px',
   },
   dateValidationErrorText: {
     color: theme.palette.error.main,
@@ -119,17 +120,18 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
 
   const classes = useStyles()
   const {token, orgMembership} = useUserSessionDataState()
-  const [irbRecordSameInstAffiliation, setIrbRecordSameInstAffiliation] =
-    React.useState<boolean>(false)
+  const [
+    irbRecordSameInstAffiliation,
+    setIrbRecordSameInstAffiliation,
+  ] = React.useState<boolean>(false)
   const [certifyStatements, setCertifyStatement] = React.useState({
     isStudyProtocolReviewed: false,
     isStudyConsistentWithLaws: false,
   })
 
   useEffect(() => {
-    const institutionalAffiliation = getContactObject(
-      'principal_investigator'
-    )!.affiliation
+    const institutionalAffiliation = getContactObject('principal_investigator')!
+      .affiliation
     const nameOfIrbRecord = getContactObject('irb')!.name
     const irbRecordSameInstitutionalAffiliation =
       nameOfIrbRecord === institutionalAffiliation
@@ -224,8 +226,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     setCertifyStatement(prevState => {
                       return {
                         ...prevState,
-                        isStudyProtocolReviewed:
-                          !prevState.isStudyProtocolReviewed,
+                        isStudyProtocolReviewed: !prevState.isStudyProtocolReviewed,
                       }
                     })
                   }}
@@ -244,8 +245,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     setCertifyStatement(prevState => {
                       return {
                         ...prevState,
-                        isStudyConsistentWithLaws:
-                          !prevState.isStudyConsistentWithLaws,
+                        isStudyConsistentWithLaws: !prevState.isStudyConsistentWithLaws,
                       }
                     })
                   }}
@@ -594,9 +594,11 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                   alt={'study-warning'}></img>
               }
               className={classes.alertText}>
-              Please note that you will <strong>no longer</strong> be able to{' '}
-              <strong>make changes</strong> to your study once you’ve{' '}
-              <strong>submit</strong> the information from this page.
+              Once your study is submitted, everything related to
+              sessions/scheduling/enrollment will be <strong>locked</strong>
+              -only <strong>Customize App</strong> and{' '}
+              <strong>Study & IRB</strong> details will be{' '}
+              <strong>editable.</strong>
             </AlertWithText>
           </Box>
         </Box>
