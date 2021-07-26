@@ -2,7 +2,7 @@ import {Box, CircularProgress, Paper} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React, {useEffect} from 'react'
-import {isSignInById} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import ParticipantService, {
   formatExternalId,
 } from '../../../services/participants.service'
@@ -182,13 +182,13 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
 
   const selectedIds = formatIds(
     study.identifier,
-    isSignInById(study.signInTypes),
+    Utility.isSignInById(study.signInTypes),
     participantData
   )
 
   const idsWithErrorsList = formatIds(
     study.identifier,
-    isSignInById(study.signInTypes),
+    Utility.isSignInById(study.signInTypes),
     participantData
   )
 

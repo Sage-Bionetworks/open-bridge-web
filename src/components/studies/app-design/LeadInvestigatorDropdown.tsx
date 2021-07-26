@@ -1,7 +1,7 @@
 import {Box, makeStyles} from '@material-ui/core'
 import clsx from 'clsx'
 import React, {useEffect, useState} from 'react'
-import {isInAdminRole} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import AccessService from '../../../services/access.service'
 import {OrgUser} from '../../../types/types'
 import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
@@ -49,7 +49,9 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
         token!,
         orgMembership!
       )
-      const admins = accounts.filter(account => isInAdminRole(account.roles))
+      const admins = accounts.filter(account =>
+        Utility.isInAdminRole(account.roles)
+      )
       const leadInvestigatorArray = []
       for (let i = 0; i < admins.length; i++) {
         const currentAccount = admins[i]

@@ -10,10 +10,9 @@ import {
   FormControlLabel,
 } from '@material-ui/core'
 import {Contact} from '../../../types/types'
-import {isInvalidPhone, isValidEmail} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import clsx from 'clsx'
 import SaveButton from '../../widgets/SaveButton'
-import {makePhone} from '../../../helpers/utility'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
 import {ContactType} from './AppDesign'
@@ -169,7 +168,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             }}
             onBlur={() => {
               const isInvalidPhoneNumber =
-                isInvalidPhone(irbPhoneNumber) && irbPhoneNumber !== ''
+                Utility.isInvalidPhone(irbPhoneNumber) && irbPhoneNumber !== ''
               setPhoneNumberErrorState(
                 (prevState: typeof phoneNumberErrorState) => {
                   return {
@@ -179,7 +178,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
                 }
               )
               const newEthicsBoardObject = getContactPersonObject('irb')
-              newEthicsBoardObject.phone = makePhone(irbPhoneNumber)
+              newEthicsBoardObject.phone = Utility.makePhone(irbPhoneNumber)
               onUpdate(newEthicsBoardObject, protocolId)
             }}
             titleText="Phone Number*"
@@ -204,7 +203,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             }}
             onBlur={() => {
               const validEmail =
-                isValidEmail(irbInfo.email || '') || !irbInfo.email
+                Utility.isValidEmail(irbInfo.email || '') || !irbInfo.email
               setEmailErrorState((prevState: typeof emailErrorState) => {
                 return {
                   ...prevState,

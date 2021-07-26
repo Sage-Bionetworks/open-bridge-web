@@ -1,4 +1,4 @@
-import {callEndpoint} from '../helpers/utility'
+import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {
   AssessmentWindow,
@@ -75,7 +75,7 @@ async function editStudyLogo(
       size: fileSize,
       fileGuid: fileBody,
     }
-    const uploadResult = await callEndpoint<FileRevision>(
+    const uploadResult = await Utility.callEndpoint<FileRevision>(
       uploadToBackendEndpoint,
       'POST',
       bodyForUploadBackendEndpoint,
@@ -95,7 +95,7 @@ async function editStudyLogo(
     await fetch(uploadURL, config)
     // Tell the backend that we have successfully finished uploading file to aws
     const successfulUploadEndpoint = `${constants.endpoints.studies}/${studyId}/logo/${uploadData.createdOn}`
-    const successfulUploadResponse = await callEndpoint<Study>(
+    const successfulUploadResponse = await Utility.callEndpoint<Study>(
       successfulUploadEndpoint,
       'POST',
       {},
@@ -108,7 +108,7 @@ async function editStudyLogo(
 }
 
 async function getStudies(token: string): Promise<Study[]> {
-  const studies = await callEndpoint<{items: Study[]}>(
+  const studies = await Utility.callEndpoint<{items: Study[]}>(
     constants.endpoints.studies,
     'GET',
     {},
@@ -119,7 +119,7 @@ async function getStudies(token: string): Promise<Study[]> {
 }
 
 async function getStudy(id: string, token: string): Promise<Study | undefined> {
-  const response = await callEndpoint<Study>(
+  const response = await Utility.callEndpoint<Study>(
     constants.endpoints.study.replace(':id', id),
     'GET',
     {},
@@ -133,7 +133,7 @@ async function getStudy(id: string, token: string): Promise<Study | undefined> {
 }
 
 async function createStudy(study: Study, token: string): Promise<number> {
-  const newVersion = await callEndpoint<{version: number}>(
+  const newVersion = await Utility.callEndpoint<{version: number}>(
     constants.endpoints.study.replace(':id', ''),
     'POST', // once we add things to the study -- we can change this to actual object
     study,
@@ -148,7 +148,7 @@ async function createStudySchedule(
 
   token: string
 ): Promise<string> {
-  const result = await callEndpoint<string>(
+  const result = await Utility.callEndpoint<string>(
     constants.endpoints.schedule.replace('/:id', ''),
     'POST', // once we add things to the study -- we can change this to actual object
     {name},
@@ -162,7 +162,7 @@ async function createNewStudySchedule(
 
   token: string
 ): Promise<Schedule> {
-  const result = await callEndpoint<Schedule>(
+  const result = await Utility.callEndpoint<Schedule>(
     constants.endpoints.schedule.replace('/:id', ''),
     'POST', // once we add things to the study -- we can change this to actual object
     {...schedule, guid: undefined},
@@ -173,7 +173,7 @@ async function createNewStudySchedule(
 }
 
 async function updateStudy(study: Study, token: string): Promise<number> {
-  const result = await callEndpoint<{version: number}>(
+  const result = await Utility.callEndpoint<{version: number}>(
     constants.endpoints.study.replace(':id', study.identifier),
     'POST',
     study,
@@ -183,7 +183,7 @@ async function updateStudy(study: Study, token: string): Promise<number> {
 }
 
 async function removeStudy(studyId: string, token: string): Promise<Study[]> {
-  await callEndpoint<{items: Study[]}>(
+  await Utility.callEndpoint<{items: Study[]}>(
     constants.endpoints.study.replace(':id', studyId),
     'DELETE',
     {},
@@ -199,7 +199,7 @@ async function saveStudySchedule(
 ): Promise<Schedule> {
   const scheduleEndpoint = constants.endpoints.schedule
   try {
-    const response = await callEndpoint<Schedule>(
+    const response = await Utility.callEndpoint<Schedule>(
       scheduleEndpoint.replace(':id', schedule.guid),
       'POST',
       schedule,
@@ -210,9 +210,14 @@ async function saveStudySchedule(
     //we might need to retry if there is a verison mismatch
     if (error.statusCode === 409) {
       const endPoint = scheduleEndpoint.replace(':id', schedule.guid)
-      const sched = await callEndpoint<Schedule>(endPoint, 'GET', {}, token)
+      const sched = await Utility.callEndpoint<Schedule>(
+        endPoint,
+        'GET',
+        {},
+        token
+      )
       schedule.version = sched.data.version
-      const response = await callEndpoint<Schedule>(
+      const response = await Utility.callEndpoint<Schedule>(
         scheduleEndpoint.replace(':id', schedule.guid),
         'POST',
         schedule,
@@ -247,7 +252,7 @@ async function getStudySchedule(
   scheduleId: string,
   token: string
 ): Promise<Schedule | undefined> {
-  const schedule = await callEndpoint<Schedule>(
+  const schedule = await Utility.callEndpoint<Schedule>(
     constants.endpoints.schedule.replace(':id', scheduleId),
     'GET',
     {},
@@ -260,7 +265,7 @@ async function getStudyScheduleTimeline(
   scheduleId: string,
   token: string
 ): Promise<any | undefined> {
-  const result = await callEndpoint<any>(
+  const result = await Utility.callEndpoint<any>(
     constants.endpoints.scheduleTimeline.replace(':id', scheduleId),
     'GET',
     {},

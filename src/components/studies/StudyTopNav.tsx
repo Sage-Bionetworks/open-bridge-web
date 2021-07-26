@@ -16,7 +16,7 @@ import {NavLink} from 'react-router-dom'
 import PARTICIPANTS_ICON from '../../assets/group_participants_icon.svg'
 import Logo from '../../assets/logo_mtb.svg'
 import {useStudyInfoDataState} from '../../helpers/StudyInfoContext'
-import {isInAdminRole, isPathAllowed} from '../../helpers/utility'
+import Utility from '../../helpers/utility'
 import {latoFont} from '../../style/theme'
 import constants from '../../types/constants'
 import {ExtendedError} from '../../types/types'
@@ -181,7 +181,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
     return <></>
   }
   const links = allLinks.filter(link =>
-    isPathAllowed(studyData.study.identifier, link.path)
+    Utility.isPathAllowed(studyData.study.identifier, link.path)
   )
 
   return (
@@ -251,7 +251,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               )}
           </Toolbar>
           <Toolbar className={classes.toolbar} style={{width: '160px'}}>
-            {(isInAdminRole() || true) /* enable all aggess*/ && (
+            {(Utility.isInAdminRole() || true) /* enable all aggess*/ && (
               <NavLink
                 to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
                   ':id',

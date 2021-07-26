@@ -34,7 +34,7 @@ import {
   StudyInfoData,
   useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
-import {formatStudyId, isSignInById} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import ParticipantService, {
   ParticipantRelevantEvents,
 } from '../../../services/participants.service'
@@ -278,7 +278,7 @@ async function getRelevantParticipantInfo(
       } else {
         id = splitExternalId[splitExternalId[0] === studyId ? 1 : 0]
       }
-      participant.externalId = formatStudyId(id)
+      participant.externalId = Utility.formatStudyId(id)
     }
     const updatedParticipant = {
       ...participant,
@@ -612,7 +612,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         joinedDate: p.joinedDate
           ? new Date(p.joinedDate).toLocaleDateString()
           : '',
-        note: p.note || "",
+        note: p.note || '',
       })
     )
 
@@ -643,7 +643,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         <Box px={3} py={2} display="flex" alignItems="center">
           <MTBHeadingH3 className={classes.studyId}>
             {' '}
-            Study ID: {formatStudyId(study.identifier)}{' '}
+            Study ID: {Utility.formatStudyId(study.identifier)}{' '}
           </MTBHeadingH3>
           {!displayPlaceholderScreen && (
             <img src={LiveIcon} style={{height: '25px'}}></img>
@@ -656,7 +656,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             {tab === 'ACTIVE' && !isUserSearchingForParticipant && (
               <HelpBoxSC numRows={data?.items.length} status={status} />
             )}
-
             <Box py={0} pr={3} pl={2}>
               <Tabs
                 value={tab}
@@ -748,7 +747,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         flexDirection="row"
                         alignItems="center">
                         {tab !== 'WITHDRAWN' &&
-                          !isSignInById(study.signInTypes) && (
+                          !Utility.isSignInById(study.signInTypes) && (
                             <Button
                               aria-label="send-sms-text"
                               onClick={() => {
@@ -831,12 +830,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       </Box>
 
                       <ParticipantSearch
-                        isEnrolledById={isSignInById(study.signInTypes)}
+                        isEnrolledById={Utility.isSignInById(study.signInTypes)}
                         onReset={() => {
                           handleResetSearch()
                         }}
                         onSearch={(searchedValue: string) => {
-                          const isById = isSignInById(study.signInTypes)
+                          const isById = Utility.isSignInById(study.signInTypes)
                           setIsUserSearchingForParticipant(true)
                           handleSearchParticipantRequest(isById, searchedValue)
                         }}
@@ -875,7 +874,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                             clinicVisitDate
                           )
                         }
-                        isEnrolledById={isSignInById(study.signInTypes)}
+                        isEnrolledById={Utility.isSignInById(study.signInTypes)}
                         onRowSelected={(
                           /*id: string, isSelected: boolean*/ selection,
                           isAll
@@ -919,7 +918,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               </Box>
             </Box>
             <BatchEditForm
-              isEnrolledById={isSignInById(study.signInTypes)}
+              isEnrolledById={Utility.isSignInById(study.signInTypes)}
               isBatchEditOpen={isBatchEditOpen}
               onSetIsBatchEditOpen={setIsBatchEditOpen}
               selectedParticipants={selectedParticipantIds[tab]}

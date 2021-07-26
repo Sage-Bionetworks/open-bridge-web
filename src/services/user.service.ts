@@ -1,4 +1,4 @@
-import {callEndpoint, getAppId} from '../helpers/utility'
+import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {LoggedInUserData, Response} from '../types/types'
 
@@ -23,9 +23,9 @@ const getOathEnvironment = (): {
 const requestResetPassword = async (email: string): Promise<Response<{}>> => {
   const postData = {
     email,
-    appId: getAppId(),
+    appId: Utility.getAppId(),
   }
-  return await callEndpoint<any>(
+  return await Utility.callEndpoint<any>(
     constants.endpoints.requestResetPassword,
     'POST',
     postData
@@ -37,11 +37,11 @@ const loginWithPassword = async (
   password: string
 ): Promise<Response<LoggedInUserData>> => {
   const postData = {
-    appId: getAppId(),
+    appId: Utility.getAppId(),
     email,
     password,
   }
-  return await callEndpoint<LoggedInUserData>(
+  return await Utility.callEndpoint<LoggedInUserData>(
     constants.endpoints.signIn,
     'POST',
     postData
@@ -54,7 +54,7 @@ const loginOauth = async (
   vendorId: string
 ): Promise<Response<LoggedInUserData>> => {
   const postData = {
-    appId: getAppId(),
+    appId: Utility.getAppId(),
     vendorId,
     authToken,
     callbackUrl,
@@ -63,7 +63,7 @@ const loginOauth = async (
   /*DO NOt CHECK IN*/
   //return loginWithPassword('username', 'password')
 
-  const result = await callEndpoint<LoggedInUserData>(
+  const result = await Utility.callEndpoint<LoggedInUserData>(
     constants.endpoints.oauthSignIn,
     'POST',
     postData
@@ -73,7 +73,7 @@ const loginOauth = async (
 }
 
 async function getUserInfo(token: string): Promise<Response<LoggedInUserData>> {
-  const result = await callEndpoint<LoggedInUserData>(
+  const result = await Utility.callEndpoint<LoggedInUserData>(
     constants.endpoints.selfInfo,
     'GET',
     {},

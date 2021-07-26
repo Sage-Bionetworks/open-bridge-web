@@ -4,8 +4,7 @@ import Subsection from './Subsection'
 import {FormControl, Box} from '@material-ui/core'
 import {Contact} from '../../../types/types'
 import clsx from 'clsx'
-import {isInvalidPhone, isValidEmail} from '../../../helpers/utility'
-import {makePhone} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
 import {ContactType} from './AppDesign'
@@ -124,7 +123,7 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             }}
             onBlur={() => {
               const isInvalidPhoneNumber =
-                isInvalidPhone(generalContactPhoneNumber) &&
+                Utility.isInvalidPhone(generalContactPhoneNumber) &&
                 generalContactPhoneNumber !== ''
               setPhoneNumberErrorState(
                 (prevState: typeof phoneNumberErrorState) => {
@@ -137,7 +136,9 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
               const newContactLeadObject = getContactPersonObject(
                 'study_support'
               )
-              newContactLeadObject.phone = makePhone(generalContactPhoneNumber)
+              newContactLeadObject.phone = Utility.makePhone(
+                generalContactPhoneNumber
+              )
               onUpdate(newContactLeadObject)
             }}
             titleText="Phone Number*"
@@ -166,7 +167,8 @@ const GeneralContactAndSupportSection: React.FunctionComponent<GeneralContactAnd
             }}
             onBlur={() => {
               const validEmail =
-                isValidEmail(contactLead?.email || '') || !contactLead?.email
+                Utility.isValidEmail(contactLead?.email || '') ||
+                !contactLead?.email
               setEmailErrorState((prevState: typeof emailErrorState) => {
                 return {
                   ...prevState,

@@ -11,11 +11,7 @@ import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
 import {ReactComponent as PhoneBottomImg} from '../../../assets/appdesign/phone_buttons.svg'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
 import {useUserSessionDataState} from '../../../helpers/AuthContext'
-import {
-  getSearchParams,
-  isInvalidPhone,
-  isValidEmail,
-} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import StudyService from '../../../services/study.service'
 import {ThemeType} from '../../../style/theme'
 import constants from '../../../types/constants'
@@ -301,7 +297,7 @@ const AppDesign: React.FunctionComponent<
   onError,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
-  const params = getSearchParams(window.location.search)
+  const params = Utility.getSearchParams(window.location.search)
   const showError = params.from !== undefined
   const anchor = params.anchor
 
@@ -364,9 +360,9 @@ const AppDesign: React.FunctionComponent<
 
   const checkPhoneError = (contactLead?: Contact, irbRecord?: Contact) => {
     const generalContactPhoneError =
-      !contactLead?.phone?.number || isInvalidPhone(generalContactPhoneNumber)
+      !contactLead?.phone?.number || Utility.isInvalidPhone(generalContactPhoneNumber)
     const irbRecordHasError =
-      !irbRecord?.phone?.number || isInvalidPhone(irbPhoneNumber)
+      !irbRecord?.phone?.number || Utility.isInvalidPhone(irbPhoneNumber)
     setPhoneNumberErrorState({
       isGeneralContactPhoneNumberValid: !generalContactPhoneError,
       isIrbPhoneNumberValid: !irbRecordHasError,
@@ -375,9 +371,9 @@ const AppDesign: React.FunctionComponent<
 
   const checkEmailError = (contactLead?: Contact, irbRecord?: Contact) => {
     const generalContactEmailHasError =
-      !contactLead?.email || !isValidEmail(contactLead.email)
+      !contactLead?.email || !Utility.isValidEmail(contactLead.email)
     const irbRecordEmailHasError =
-      !irbRecord?.email || !isValidEmail(irbRecord.email)
+      !irbRecord?.email || !Utility.isValidEmail(irbRecord.email)
     setEmailErrorState({
       isGeneralContactEmailValid: !generalContactEmailHasError,
       isIrbEmailValid: !irbRecordEmailHasError,

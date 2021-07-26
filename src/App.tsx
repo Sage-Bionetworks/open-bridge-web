@@ -11,7 +11,7 @@ import {
   useUserSessionDataState,
 } from './helpers/AuthContext'
 import {StudyInfoDataProvider} from './helpers/StudyInfoContext'
-import {getAppId} from './helpers/utility'
+import Utility from './helpers/utility'
 import UserService from './services/user.service'
 import {cssVariables, theme} from './style/theme'
 import {UserSessionData} from './types/types'
@@ -113,12 +113,12 @@ function App() {
               <StudyInfoDataProvider>
                 <AuthenticatedApp
                   sessionData={sessionData}
-                  appId={getAppId()}
+                  appId={Utility.getAppId()}
                 />
               </StudyInfoDataProvider>
             ) : (
               <Loader reqStatusLoading={getCode() !== null}>
-                <UnauthenticatedApp appId={getAppId()} />
+                <UnauthenticatedApp appId={Utility.getAppId()} />
               </Loader>
             )}
           </ErrorBoundary>
