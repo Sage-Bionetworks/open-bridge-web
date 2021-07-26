@@ -21,6 +21,7 @@ import {
   BackgroundRecorders,
   StringDictionary,
   Study,
+  StudyPhase,
 } from '../../types/types'
 import {ErrorFallback, ErrorHandler} from '../widgets/ErrorHandler'
 import {MTBHeadingH1} from '../widgets/Headings'
@@ -37,7 +38,7 @@ import {StudySection} from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
 import TopErrorBanner from '../widgets/TopErrorBanner'
-import bannerInfo from './BannerInfo'
+import BannerInfo from './BannerInfo'
 
 const subtitles: StringDictionary<string> = {
   description: 'Description',
@@ -139,18 +140,25 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   const studyDataUpdateFn = useStudyInfoDataDispatch()
   const [open, setOpen] = React.useState(true)
   const [displayBanner, setDisplayBanner] = React.useState(false)
-  const [bannerType, setBannerType] = React.useState('')
+  const [bannerType, setBannerType] = React.useState<{
+    bgColor: string
+    displayText: string[]
+    icon: string[]
+    textColor: string
+    type: string
+  }>()
 
   React.useEffect(() => {
-    const banner = getBannerType()
-    setBannerType(banner)
+    const banner = getBannerType(builderInfo?.study?.phase, section)
+    const bannerType = BannerInfo.bannerMap.get(banner)
+    setBannerType(bannerType)
     if (banner !== 'success' && banner !== 'error') {
       setDisplayBanner(true)
     }
-  }, [builderInfo?.study?.phase])
+  }, [builderInfo?.study?.phase, schedulerErrors, error])
 
-  const getBannerType = () => {
-    switch (builderInfo?.study?.phase) {
+  const getBannerType = (phase: StudyPhase, currentSection: StudySection) => {
+    switch (phase) {
       case 'in_flight':
         return 'live'
       case 'withdrawn':
@@ -159,7 +167,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       case 'completed':
         return 'completed'
       default:
-        const errors = section === 'scheduler' ? schedulerErrors : error
+        const errors = currentSection === 'scheduler' ? schedulerErrors : error
         return errors.length > 0 ? 'error' : 'success'
     }
   }
@@ -424,18 +432,16 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     <>
       <Box display="flex" bgcolor="#f7f7f7">
         <TopErrorBanner
-          backgroundColor={bannerInfo.bannerMap.get(bannerType)?.bgColor!}
-          textColor={bannerInfo.bannerMap.get(bannerType)?.textColor!}
+          backgroundColor={bannerType?.bgColor!}
+          textColor={bannerType?.textColor!}
           onClose={() => setDisplayBanner(false)}
           isVisible={displayBanner}
-          icon={bannerInfo.bannerMap.get(bannerType)?.icon[0]!}
-          isSelfClosing={bannerType === 'success'}
+          icon={bannerType?.icon[0]!}
+          isSelfClosing={bannerType?.type === 'success'}
           displayBottomOfPage={
-            bannerType !== 'success' && bannerType !== 'error'
+            bannerType?.type !== 'success' && bannerType?.type !== 'error'
           }
-          displayText={
-            bannerInfo.bannerMap.get(bannerType)?.displayText[0]!
-          }></TopErrorBanner>
+          displayText={bannerType?.displayText[0]!}></TopErrorBanner>
         <Box width={open ? 210 : 56} flexShrink={0}></Box>
         <Box className={getClasses()} pt={8} pl={2}>
           <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>

@@ -9,6 +9,7 @@ const bannerMap = new Map<
     displayText: string[]
     icon: string[]
     textColor: string
+    type: string
   }
 >()
 
@@ -17,12 +18,14 @@ bannerMap.set('error', {
   displayText: ['The following fields are required to launch your study.'],
   icon: [Alert_Icon],
   textColor: 'white',
+  type: 'error',
 })
 bannerMap.set('success', {
   bgColor: '#AEDCC9',
   displayText: ['Page has been saved successfully.'],
   icon: [SaveIcon],
   textColor: 'black',
+  type: 'success',
 })
 bannerMap.set('live', {
   bgColor: '#2196F3',
@@ -32,18 +35,21 @@ bannerMap.set('live', {
   ],
   icon: [NoEditIcon],
   textColor: 'white',
+  type: 'live',
 })
 bannerMap.set('completed', {
   bgColor: '#EE6352',
   displayText: ['The study is officially closed and cannot be edited.'],
   icon: [NoEditIcon],
   textColor: 'white',
+  type: 'completed',
 })
 bannerMap.set('withdrawn', {
   bgColor: '#AA00FF',
   displayText: ['The study was cancelled and cannot be edited.'],
   icon: [NoEditIcon],
   textColor: 'white',
+  type: 'withdrawn',
 })
 
 const bannerInfo = {
