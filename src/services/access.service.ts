@@ -109,7 +109,7 @@ async function createIndividualAccount(
   firstName: string,
   lastName: string,
   orgMembership: string,
-  role: string
+  userRoles: string[]
 ): Promise<any> {
   const postData = {
     appId: getAppId(),
@@ -119,7 +119,7 @@ async function createIndividualAccount(
     firstName,
     lastName,
     orgMembership,
-    roles: [role],
+    roles: userRoles,
   }
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', '')
   const result = await callEndpoint<any>(endpoint, 'POST', postData, token)
