@@ -1,25 +1,18 @@
-import {Box} from '@material-ui/core'
 import React, {FunctionComponent} from 'react'
 import {Route, Switch} from 'react-router-dom'
 import './App.css'
-import AccountLogin from './components/account/AccountLogin'
 import TopNav from './components/widgets/AppTopNav'
 import Utility from './helpers/utility'
 import PublicRoutes from './routes_public'
 import constants from './types/constants'
+import SignInPage from './SignInPage'
 
 const UnauthenticatedApp: FunctionComponent<{
-  appId: string
+  appId: string 
 }> = ({appId}) => {
   Utility.setBodyClass()
   if (appId === constants.constants.ARC_APP_ID) {
-    return (
-      <Box>
-        {' '}
-        Arc homepage would go here
-        <AccountLogin callbackFn={() => {}}></AccountLogin>
-      </Box>
-    )
+    return <SignInPage isARCApp={true} />
   }
   return (
     <>

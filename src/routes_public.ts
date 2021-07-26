@@ -6,6 +6,7 @@ import DevelopmentTeam from './components/static/DevelopmentTeam'
 import HowItWorks from './components/static/HowItWorks'
 import Plans from './components/static/Plans'
 import DownloadAppLandingPage from './components/static/DownloadAppLandingPage'
+import SignInPage from './SignInPage'
 
 export default [
   {
@@ -44,7 +45,6 @@ export default [
     Component: SessionsLayout,
     exact: true,
   },
-
   {
     path: '/development-team',
     name: 'DEVELOPMENT TEAM',
@@ -54,6 +54,12 @@ export default [
     path: '/create-account',
     name: 'CREATE ACCOUNT',
     Component: AccountCreate,
+    isRhs: true,
+  },
+  {
+    path: '/sign-in',
+    name: 'SIGN IN',
+    Component: SignInPage,
     isRhs: true,
   },
 ]
