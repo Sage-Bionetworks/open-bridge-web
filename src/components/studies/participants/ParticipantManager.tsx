@@ -747,7 +747,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         flexDirection="row"
                         alignItems="center">
                         {tab !== 'WITHDRAWN' &&
-                          !isSignInById(study.signInTypes) && (
+                          !Utility.isSignInById(study.signInTypes) && (
                             <Button
                               aria-label="send-sms-text"
                               onClick={() => {
@@ -830,12 +830,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       </Box>
 
                       <ParticipantSearch
-                        isEnrolledById={isSignInById(study.signInTypes)}
+                        isEnrolledById={Utility.isSignInById(study.signInTypes)}
                         onReset={() => {
                           handleResetSearch()
                         }}
                         onSearch={(searchedValue: string) => {
-                          const isById = isSignInById(study.signInTypes)
+                          const isById = Utility.isSignInById(study.signInTypes)
                           setIsUserSearchingForParticipant(true)
                           handleSearchParticipantRequest(isById, searchedValue)
                         }}
@@ -874,7 +874,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                             clinicVisitDate
                           )
                         }
-                        isEnrolledById={isSignInById(study.signInTypes)}
+                        isEnrolledById={Utility.isSignInById(study.signInTypes)}
                         onRowSelected={(
                           /*id: string, isSelected: boolean*/ selection,
                           isAll
@@ -918,7 +918,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               </Box>
             </Box>
             <BatchEditForm
-              isEnrolledById={isSignInById(study.signInTypes)}
+              isEnrolledById={Utility.isSignInById(study.signInTypes)}
               isBatchEditOpen={isBatchEditOpen}
               onSetIsBatchEditOpen={setIsBatchEditOpen}
               selectedParticipants={selectedParticipantIds[tab]}
