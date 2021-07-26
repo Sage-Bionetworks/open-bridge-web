@@ -142,11 +142,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   const [bannerType, setBannerType] = React.useState('')
 
   React.useEffect(() => {
-    setBannerType(getBannerType())
-    if (getBannerType() !== 'success' && getBannerType() !== 'error') {
+    const banner = getBannerType()
+    setBannerType(banner)
+    if (banner !== 'success' && banner !== 'error') {
       setDisplayBanner(true)
     }
-  }, [])
+  }, [builderInfo?.study?.phase])
 
   const getBannerType = () => {
     switch (builderInfo?.study?.phase) {
