@@ -33,7 +33,10 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     '& div': {
       marginRight: theme.spacing(2),
+      marginBottom: theme.spacing(0.25),
     },
+    maxWidth: '90%',
+    flexWrap: 'wrap',
   },
   toolTip: {
     backgroundColor: theme.palette.primary.dark,
@@ -85,17 +88,13 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
   const [dropdown, setDropdown] = React.useState(['Daily'])
-  const [currentZoomLevel, setCurrentZoomLevel] =
-    React.useState<TimelineZoomLevel>('Monthly')
+  const [
+    currentZoomLevel,
+    setCurrentZoomLevel,
+  ] = React.useState<TimelineZoomLevel>('Monthly')
 
   const classes = useStyles()
-  const {
-    data: timeline,
-    status,
-    error,
-    run,
-    setData,
-  } = useAsync<any>({
+  const {data: timeline, status, error, run, setData} = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
