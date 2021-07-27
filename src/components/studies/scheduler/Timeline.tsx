@@ -88,13 +88,17 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
   const [dropdown, setDropdown] = React.useState(['Daily'])
-  const [
-    currentZoomLevel,
-    setCurrentZoomLevel,
-  ] = React.useState<TimelineZoomLevel>('Monthly')
+  const [currentZoomLevel, setCurrentZoomLevel] =
+    React.useState<TimelineZoomLevel>('Monthly')
 
   const classes = useStyles()
-  const {data: timeline, status, error, run, setData} = useAsync<any>({
+  const {
+    data: timeline,
+    status,
+    error,
+    run,
+    setData,
+  } = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
@@ -153,7 +157,7 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   }
 
   return (
-    <Box padding="30px">
+    <Box py={3} px={0}>
       {!timeline && (
         <>
           This timeline viewer will update to provide a visual summary of the
