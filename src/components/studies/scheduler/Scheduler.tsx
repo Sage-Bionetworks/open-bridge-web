@@ -34,6 +34,13 @@ import Timeline from './Timeline'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    sessionContainer: {
+      marginBottom: theme.spacing(2),
+      display: 'flex',
+      '&:last-child': {
+        marginBottom: 0,
+      },
+    },
     labelDuration: {
       paddingTop: theme.spacing(1),
       paddingRight: theme.spacing(2),
@@ -264,13 +271,13 @@ const Scheduler: FunctionComponent<
           {hasObjectChanged && (
             <SaveButton
               isFloatingSave={true}
-              onClick={() => onSave()}
+              onClick={() => onSave(true)}
               isSaving={saveLoader}>
               Save changes
             </SaveButton>
           )}
         </div>
-        <Box bgcolor="#fff" p={2} mt={3} key="scheduler">
+        <Box bgcolor="#fff" p={2} pb={0} mt={3} key="scheduler">
           <Timeline
             token={token}
             version={version!}
@@ -294,8 +301,7 @@ const Scheduler: FunctionComponent<
           </div>
           {schedule.sessions.map((session, index) => (
             <Box
-              mb={2}
-              display="flex"
+              className={classes.sessionContainer}
               key={session.guid}
               border={
                 schedulerErrorState.get(`${session.name}-${index + 1}`)
@@ -335,8 +341,6 @@ const Scheduler: FunctionComponent<
             </Box>
           ))}
         </Box>
-
-        {children}
       </Box>
     </Box>
   )
