@@ -9,10 +9,15 @@ export interface NavButtonsProps {
   id: string
   onNavigate: Function
   disabled?: boolean
+  isPrevOnly?: boolean
+  isNextOnly?: boolean
+  isAsArray?: boolean
 }
 
 const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
   currentSection,
+  isNextOnly,
+  isPrevOnly,
   id,
   onNavigate,
   disabled,
@@ -24,34 +29,42 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
       ? sectionLinks[currentIndex + 1]
       : undefined
 
-  const result = (
-    <Box py={2} textAlign="right">
-      {prev && (
-        <>
-          <PrevButton
-            variant="outlined"
-            color="primary"
-            onClick={() => onNavigate(prev.path)}>
-            <ArrowIcon /> {prev.name}
-          </PrevButton>{' '}
-          &nbsp;&nbsp;
-        </>
-      )}
+  const prevButton = prev ? (
+    <PrevButton
+      variant="outlined"
+      color="primary"
+      onClick={() => onNavigate(prev.path)}>
+      <ArrowIcon /> {prev.name}
+    </PrevButton>
+  ) : (
+    <></>
+  )
 
-      {next && (
-        <>
-          <NextButton
-            variant="contained"
-            color="primary"
-            onClick={() => onNavigate(next.path)}
-            disabled={disabled || false}>
-            {next.name} <ArrowIcon />
-          </NextButton>
-        </>
-      )}
+  const nextButton = next ? (
+    <NextButton
+      variant="contained"
+      color="primary"
+      onClick={() => onNavigate(next.path)}
+      disabled={disabled || false}>
+      {next.name} <ArrowIcon />
+    </NextButton>
+  ) : (
+    <></>
+  )
+
+  if (isNextOnly) {
+    return nextButton
+  }
+  if (isPrevOnly) {
+    return prevButton
+  }
+
+  return (
+    <Box py={2} textAlign="right">
+      {prev && <> {prevButton} &nbsp;&nbsp; </>}
+      {nextButton}
     </Box>
   )
-  return result
 }
 
 export default NavButtons
