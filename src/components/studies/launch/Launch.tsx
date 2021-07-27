@@ -133,73 +133,61 @@ const Launch: React.FunctionComponent<
         steps={steps}
         activeStep={activeStep}
         setActiveStepFn={handleStepClick}></LaunchStepper>
-      <div>
-        {activeStep === steps.length ? (
-          <div>
-            <div className={classes.instructions}>
-              All steps completed - you&apos;re finished
-            </div>
-            <Button onClick={handleReset} className={classes.button}>
-              Reset
-            </Button>
-          </div>
-        ) : (
-          <div>
-            <div className={classes.instructions}>
-              <StepContent
-                studyInfo={studyInfo}
-                step={activeStep}
-                isFinished={isFinished}
-                onEnableNext={(isEnabled: boolean) =>
-                  setIsNextEnabled(isEnabled)
-                }
-                onChange={(study: Study) => {
-                  console.log('onChange', study)
-                  onUpdate(study)
-                }}
-              />{' '}
-              <div>
-                {!isFinished && (
-                  <Box py={2} textAlign="left">
-                    {activeStep > 0 && activeStep < 3 && (
-                      <>
-                        <PrevButton
-                          variant="outlined"
-                          color="primary"
-                          onClick={handleBack}>
-                          <ArrowIcon /> {steps[activeStep - 1].label}
-                        </PrevButton>{' '}
-                        &nbsp;&nbsp;
-                      </>
-                    )}
 
-                    {activeStep < 2 && (
-                      <NextButton
-                        variant="contained"
-                        color="primary"
-                        onClick={handleNext}
-                        disabled={!isNextEnabled}>
-                        {steps[activeStep + 1].label} <ArrowIcon />
-                      </NextButton>
-                    )}
+      <div className={classes.instructions}>
+        <StepContent
+          studyInfo={studyInfo}
+          step={activeStep}
+          isFinished={isFinished}
+          onEnableNext={(isEnabled: boolean) => setIsNextEnabled(isEnabled)}
+          onChange={(study: Study) => {
+            console.log('onChange', study)
+            onUpdate(study)
+          }}
+        />{' '}
+        <div>
+          {!isFinished && (
+            <Box py={2} textAlign="right">
+              {activeStep < 3 && (
+                <>
+                  {activeStep === 0 ? (
+                    children
+                  ) : (
+                    <PrevButton
+                      variant="outlined"
+                      color="primary"
+                      onClick={handleBack}>
+                      <ArrowIcon /> {steps[activeStep - 1].label}
+                    </PrevButton>
+                  )}
+                  &nbsp;&nbsp;
+                </>
+              )}
 
-                    {activeStep == 2 && (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => submitAndLock()}
-                        disabled={!isNextEnabled}>
-                        {' '}
-                        <LockIcon style={{marginRight: '4px'}} />
-                        Submit and lock the study
-                      </Button>
-                    )}
-                  </Box>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
+              {activeStep < 2 && (
+                <NextButton
+                  variant="contained"
+                  color="primary"
+                  onClick={handleNext}
+                  disabled={!isNextEnabled}>
+                  {steps[activeStep + 1].label} <ArrowIcon />
+                </NextButton>
+              )}
+
+              {activeStep == 2 && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => submitAndLock()}
+                  disabled={!isNextEnabled}>
+                  {' '}
+                  <LockIcon style={{marginRight: '4px'}} />
+                  Submit and lock the study
+                </Button>
+              )}
+            </Box>
+          )}
+        </div>
       </div>
     </Paper>
   )
