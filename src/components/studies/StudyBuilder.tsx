@@ -26,7 +26,9 @@ import {
 import {ErrorFallback, ErrorHandler} from '../widgets/ErrorHandler'
 import {MTBHeadingH1} from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
+import TopErrorBanner from '../widgets/TopErrorBanner'
 import AppDesign from './app-design/AppDesign'
+import BannerInfo from './BannerInfo'
 import EnrollmentTypeSelector from './enrollment-type-selector/EnrollmentTypeSelector'
 import Launch from './launch/Launch'
 import NavButtons from './NavButtons'
@@ -37,8 +39,6 @@ import Scheduler from './scheduler/Scheduler'
 import {StudySection} from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
-import TopErrorBanner from '../widgets/TopErrorBanner'
-import BannerInfo from './BannerInfo'
 
 const subtitles: StringDictionary<string> = {
   description: 'Description',
@@ -123,10 +123,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ...otherProps
 }) => {
   const classes = useStyles()
-  let {id, section: _section} = useParams<{
-    id: string
-    section: StudySection
-  }>()
+  let {id, section: _section} =
+    useParams<{
+      id: string
+      section: StudySection
+    }>()
   const [section, setSection] = React.useState(_section)
   const [error, setError] = React.useState<string[]>([])
   const handleError = useErrorHandler()
@@ -140,13 +141,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   const studyDataUpdateFn = useStudyInfoDataDispatch()
   const [open, setOpen] = React.useState(true)
   const [displayBanner, setDisplayBanner] = React.useState(false)
-  const [bannerType, setBannerType] = React.useState<{
-    bgColor: string
-    displayText: string[]
-    icon: string[]
-    textColor: string
-    type: string
-  }>()
+  const [bannerType, setBannerType] =
+    React.useState<{
+      bgColor: string
+      displayText: string[]
+      icon: string[]
+      textColor: string
+      type: string
+    }>()
 
   React.useEffect(() => {
     const banner = getBannerType(builderInfo?.study?.phase, section)
@@ -397,6 +399,23 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       onNavigate={(section: StudySection) => changeSection(section)}
       disabled={!allSessionsHaveAssessments()}></NavButtons>
   )
+
+  const navButtonsArray = [
+    <NavButtons
+      id={id}
+      currentSection={section}
+      onNavigate={(section: StudySection) => changeSection(section)}
+      isPrevOnly={true}
+    />,
+    <NavButtons
+      id={id}
+      currentSection={section}
+      isNextOnly={true}
+      onNavigate={(section: StudySection) =>
+        changeSection(section)
+      }></NavButtons>,
+  ]
+
   if (builderInfo.study && !builderInfo.schedule) {
     return (
       <Box className={classes.introInfoContainer}>
@@ -520,7 +539,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           version={builderInfo.schedule?.version}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
-                          onSave={() => saveStudySchedule(undefined, true)}
+                          onSave={(isSavePressed: boolean) =>
+                            saveStudySchedule(undefined, isSavePressed)
+                          }
                           onUpdate={(schedule: Schedule) => {
                             setHasObjectChanged(true)
                             setData({
@@ -529,7 +550,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                             })
                           }}
                           schedulerErrors={schedulerErrors}>
-                          {navButtons}
+                          {navButtonsArray}
                         </Scheduler>
                       )}
                       {section === 'session-creator' && (
@@ -608,7 +629,16 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                               study: study,
                             })
                           }}>
-                          {navButtons}
+                          <NavButtons
+                            id={id}
+                            currentSection={section}
+                            isPrevOnly={true}
+                            onNavigate={(section: StudySection) =>
+                              changeSection(section)
+                            }
+                            disabled={
+                              !allSessionsHaveAssessments()
+                            }></NavButtons>
                         </Launch>
                       )}
                       {section === 'passive-features' && (
