@@ -35,7 +35,7 @@ import NavButtons from './NavButtons'
 import PassiveFeatures from './passive-features/PassiveFeatures'
 import Preview from './preview/Preview'
 import IntroInfo from './scheduler/IntroInfo'
-import SchedulerShell from './scheduler/SchedulerShell'
+import Scheduler from './scheduler/Scheduler'
 import {StudySection} from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
@@ -532,7 +532,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                   {builderInfo.schedule && builderInfo.study && (
                     <>
                       {section === 'scheduler' && (
-                        <SchedulerShell
+                        <Scheduler
                           id={id}
                           token={token!}
                           schedule={builderInfo.schedule}
@@ -551,7 +551,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           }}
                           schedulerErrors={schedulerErrors}>
                           {navButtonsArray}
-                        </SchedulerShell>
+                        </Scheduler>
                       )}
                       {section === 'session-creator' && (
                         <SessionCreator

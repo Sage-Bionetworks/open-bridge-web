@@ -1,9 +1,8 @@
 // import {Button} from '@material-ui/core'
 // import {render, screen} from '@testing-library/react'
 // import {createMemoryHistory} from 'history'
-import React from 'react'
 // import {Router} from 'react-router-dom'
-// import Scheduler from '../../../../components/studies/scheduler/Scheduler'
+// import Scheduler fro../../../../components/studies/scheduler/ScheduleSessionsler'
 // import {Schedule, SessionSchedule} from '../../../../types/scheduling'
 // import scheduleMock from '../../../mocks/schedule.json'
 
@@ -47,6 +46,7 @@ import React from 'react'
 // }
 
 test('placeholder', () => {})
+export {}
 
 // beforeEach(() => {
 //   saveStudyScheduleMock.mockReset()
