@@ -7,9 +7,10 @@ import {Schedule} from '../../../types/scheduling'
 import {Study, StudyBuilderComponentProps} from '../../../types/types'
 import {NextButton, PrevButton} from '../../widgets/StyledComponents'
 import {SchedulerErrorType} from '../StudyBuilder'
-import ScheduleCreator from './ScheduleCreator'
+import ConfigureBurstTab from './ConfigureBurstTab'
+import ScheduleCreatorTab from './ScheduleCreatorTab'
 import SchedulerStepper from './SchedulerStepper'
-import SessionStartPage from './SessionStartPage'
+import SessionStartTab from './SessionStartTab'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -57,17 +58,17 @@ const StepContent: React.FunctionComponent<
   switch (props.step) {
     case 0:
       return (
-        <SessionStartPage
+        <SessionStartTab
           schedule={props.schedule!}
           onUpdate={props.onChange}
           onSave={props.onChange}
         />
       )
     case 1:
-      return <ScheduleCreator {...props}></ScheduleCreator>
+      return <ScheduleCreatorTab {...props}></ScheduleCreatorTab>
 
-    case 3:
-      return <>'Study is live...'</>
+    case 2:
+      return <ConfigureBurstTab {...props}></ConfigureBurstTab>
 
     default:
       return <>'Unknown step'</>

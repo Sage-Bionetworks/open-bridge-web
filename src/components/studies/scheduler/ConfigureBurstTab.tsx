@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-type SessionStartPageProps = {
+type ConfigureBurstTabProps = {
   schedule: Schedule
   onUpdate: Function
   onSave: Function
@@ -27,13 +27,13 @@ type SessionStartPageProps = {
   //saveLoader: boolean
 }
 
-const SessionStartPage: FunctionComponent<SessionStartPageProps> = ({
+const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
   //hasObjectChanged,
   //saveLoader,
   onUpdate,
   schedule,
   onSave,
-}: SessionStartPageProps) => {
+}: ConfigureBurstTabProps) => {
   const classes = useStyles()
 
   const saveSession = async (sessionId: string) => {
@@ -73,10 +73,10 @@ const SessionStartPage: FunctionComponent<SessionStartPageProps> = ({
   return (
     <Box>
       <Box textAlign="left" key="content" bgcolor="#fff">
-        Session Start Page
+        Configure Burst
       </Box>
     </Box>
   )
 }
 
-export default SessionStartPage
+export default ConfigureBurstTab

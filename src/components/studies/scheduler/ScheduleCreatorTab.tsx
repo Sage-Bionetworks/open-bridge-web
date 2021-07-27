@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-type ScheduleCreatorProps = {
+type ScheduleCreatorTabProps = {
   id: string
   schedule: Schedule
   version?: number
@@ -81,8 +81,8 @@ type ScheduleCreatorProps = {
   schedulerErrors: SchedulerErrorType[]
 }
 
-const ScheduleCreator: FunctionComponent<
-  ScheduleCreatorProps & StudyBuilderComponentProps
+const ScheduleCreatorTab: FunctionComponent<
+  ScheduleCreatorTabProps & StudyBuilderComponentProps
 > = ({
   hasObjectChanged,
   saveLoader,
@@ -93,7 +93,7 @@ const ScheduleCreator: FunctionComponent<
   token,
   version,
   schedulerErrors,
-}: ScheduleCreatorProps & StudyBuilderComponentProps) => {
+}: ScheduleCreatorTabProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
   const [isErrorAlert, setIsErrorAlert] = React.useState(true)
   const [schedule, setSchedule] = React.useState({..._schedule})
@@ -346,4 +346,4 @@ const ScheduleCreator: FunctionComponent<
   )
 }
 
-export default ScheduleCreator
+export default ScheduleCreatorTab
