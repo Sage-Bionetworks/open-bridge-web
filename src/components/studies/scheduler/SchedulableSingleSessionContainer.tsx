@@ -297,24 +297,21 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
           <SchedulingFormSection label="Session Window:">
             <Box flexGrow={1}>
-              {schedulableSession.timeWindows?.map((window, index) => {
-                return (
-                  <AssessmentWindow
-                    index={index}
-                    key={`${index}${window.startTime}${window.expiration}`}
-                    onDelete={() => {
-                      deleteWindow(index)
-                    }}
-                    onChange={(window: AssessmentWindowType) =>
-                      updateWindow(window, index)
-                    }
-                    window={window}
-                    errorText={
-                      sessionErrorState?.sessionWindowErrors.get(index + 1) ||
-                      ''
-                    }></AssessmentWindow>
-                )
-              })}
+              {schedulableSession.timeWindows?.map((window, index) => (
+                <AssessmentWindow
+                  index={index}
+                  key={`${index}${window.startTime}${window.expiration}`}
+                  onDelete={() => {
+                    deleteWindow(index)
+                  }}
+                  onChange={(window: AssessmentWindowType) =>
+                    updateWindow(window, index)
+                  }
+                  window={window}
+                  errorText={
+                    sessionErrorState?.sessionWindowErrors.get(index + 1) || ''
+                  }></AssessmentWindow>
+              ))}
               {!hasWindowLongerThan24h() && (
                 <BlueButton onClick={addNewWindow} variant="contained">
                   +Add new window
@@ -364,47 +361,45 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               </>
             }>
             <Box flexGrow={1}>
-              {schedulableSession.notifications?.map((notification, index) => {
-                return (
-                  <NotificationWindow
-                    index={index}
-                    notification={notification}
+              {schedulableSession.notifications?.map((notification, index) => (
+                <NotificationWindow
+                  index={index}
+                  notification={notification}
+                  isMultiday={hasWindowLongerThan24h()}
+                  key={index}
+                  onDelete={() => {
+                    deleteNotification(index)
+                  }}
+                  onChange={(notification: ScheduleNotification) => {
+                    updateNotification(notification, index)
+                  }}
+                  isError={
+                    sessionErrorState?.notificationErrors.has(index + 1) ||
+                    false
+                  }>
+                  <NotificationTime
+                    notifyAt={notification.notifyAt}
+                    offset={notification.offset}
+                    isFollowUp={index > 0}
+                    windowStartTime={
+                      !_.isEmpty(schedulableSession.timeWindows)
+                        ? schedulableSession.timeWindows[0].startTime
+                        : undefined
+                    }
                     isMultiday={hasWindowLongerThan24h()}
-                    key={index}
-                    onDelete={() => {
-                      deleteNotification(index)
-                    }}
-                    onChange={(notification: ScheduleNotification) => {
-                      updateNotification(notification, index)
-                    }}
-                    isError={
-                      sessionErrorState?.notificationErrors.has(index + 1) ||
-                      false
-                    }>
-                    <NotificationTime
-                      notifyAt={notification.notifyAt}
-                      offset={notification.offset}
-                      isFollowUp={index > 0}
-                      windowStartTime={
-                        !_.isEmpty(schedulableSession.timeWindows)
-                          ? schedulableSession.timeWindows[0].startTime
-                          : undefined
-                      }
-                      isMultiday={hasWindowLongerThan24h()}
-                      onChange={e =>
-                        updateNotification(
-                          {
-                            ...notification,
-                            notifyAt: e.notifyAt,
-                            offset: e.offset,
-                          },
-                          index
-                        )
-                      }
-                    />
-                  </NotificationWindow>
-                )
-              })}
+                    onChange={e =>
+                      updateNotification(
+                        {
+                          ...notification,
+                          notifyAt: e.notifyAt,
+                          offset: e.offset,
+                        },
+                        index
+                      )
+                    }
+                  />
+                </NotificationWindow>
+              ))}
               {!schedulableSession.notifications && (
                 <BlueButton onClick={addNewNotification} variant="contained">
                   +Add new notification
