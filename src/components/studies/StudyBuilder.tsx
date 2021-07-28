@@ -493,7 +493,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                               schedule: schedule,
                             })
                           }}
-                          schedulerErrors={schedulerErrors}>
+                          schedulerErrors={schedulerErrors}
                           {navButtons}
                         </Scheduler>
                       )}

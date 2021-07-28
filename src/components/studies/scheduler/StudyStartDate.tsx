@@ -8,6 +8,7 @@ import {
 } from '@material-ui/core'
 import clsx from 'clsx'
 import React, {ReactNode} from 'react'
+import {poppinsFont} from '../../../style/theme'
 import {StartEventId} from '../../../types/scheduling'
 import SchedulingFormSection from './SchedulingFormSection'
 
@@ -17,6 +18,7 @@ export interface StudyStartDateProps {
   onChange: (n: StartEventId) => void
   style?: React.CSSProperties
   children?: ReactNode
+  isReadOnly?: boolean
 }
 
 const useStyles = makeStyles(theme =>
@@ -46,6 +48,13 @@ const useStyles = makeStyles(theme =>
     inIntroRadioGroup: {
       width: '280px',
     },
+    readOnlyText: {
+      fontFamily: poppinsFont,
+      fontSize: '18px',
+      lineHeight: '27px',
+      fontWeight: 'bold',
+      alignSelf: 'center',
+    },
   })
 )
 
@@ -55,6 +64,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
   isIntro,
   style,
   children,
+  isReadOnly,
 }: StudyStartDateProps) => {
   const options: StartEventId[] = ['timeline_retrieved', 'study_start_date']
   const classes = useStyles()
@@ -67,47 +77,55 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
       border={false}
       justifyContent={isIntro ? 'space-between' : 'flex-start'}
       style={{...style}}>
-      <RadioGroup
-        aria-label="Day 1"
-        name="day1"
-        value={startEventId}
-        onChange={e => onChange(e.target.value as StartEventId)}
-        className={clsx(
-          isIntro && classes.inIntroRadioGroup,
-          !isIntro && classes.notInIntroRadioGroup
-        )}>
-        <FormControlLabel
-          value={options[0]}
-          control={<Radio />}
-          label={
-            isIntro
-              ? 'After participant signs into the app'
-              : 'Right after completion of onboarding session'
-          }
-        />
+      {!isReadOnly ? (
+        <RadioGroup
+          aria-label="Day 1"
+          name="day1"
+          value={startEventId}
+          onChange={e => onChange(e.target.value as StartEventId)}
+          className={clsx(
+            isIntro && classes.inIntroRadioGroup,
+            !isIntro && classes.notInIntroRadioGroup
+          )}>
+          <FormControlLabel
+            value={options[0]}
+            control={<Radio />}
+            label={
+              isIntro
+                ? 'After participant signs into the app'
+                : 'Right after completion of onboarding session'
+            }
+          />
 
-        <FormControlLabel
-          value={options[1]}
-          control={<Radio />}
-          className={classes.radioButtonAlignment}
-          label={
-            isIntro ? (
-              <Box marginTop="10px">
-                <div>Clinic Visit 1</div>
-                <Box className={classes.descriptionText}>
-                  <i>
-                    By choosing this option, you can define a unique start date
-                    for each participant in the Participant Manager tab after
-                    your study has launched.
-                  </i>
+          <FormControlLabel
+            value={options[1]}
+            control={<Radio />}
+            className={classes.radioButtonAlignment}
+            label={
+              isIntro ? (
+                <Box marginTop="10px">
+                  <div>Clinic Visit 1</div>
+                  <Box className={classes.descriptionText}>
+                    <i>
+                      By choosing this option, you can define a unique start
+                      date for each participant in the Participant Manager tab
+                      after your study has launched.
+                    </i>
+                  </Box>
                 </Box>
-              </Box>
-            ) : (
-              'Start Date (usually clinic visit) to be defined in Participant Manager'
-            )
-          }
-        />
-      </RadioGroup>
+              ) : (
+                'Start Date (usually clinic visit) to be defined in Participant Manager'
+              )
+            }
+          />
+        </RadioGroup>
+      ) : (
+        <Box className={classes.readOnlyText}>
+          {startEventId !== 'study_start_date'
+            ? 'Right after completion of onboarding session'
+            : 'Start Date (usually clinic visit) to be defined in Participant Manager'}
+        </Box>
+      )}
     </SchedulingFormSection>
   )
 }

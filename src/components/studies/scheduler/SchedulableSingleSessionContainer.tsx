@@ -10,8 +10,9 @@ import {
   ScheduleNotification,
   SessionSchedule,
   StudySession,
+  NotificationTimeAtEnum,
+  HDWMEnum,
 } from '../../../types/scheduling'
-import SaveButton from '../../widgets/SaveButton'
 import {AlertWithText, BlueButton} from '../../widgets/StyledComponents'
 import AssessmentWindow from './AssessmentWindow'
 import EndDate from './EndDate'
@@ -20,6 +21,9 @@ import NotificationWindow from './NotificationWindow'
 import RepeatFrequency from './RepeatFrequency'
 import SchedulingFormSection from './SchedulingFormSection'
 import StartDate from './StartDate'
+import ReadOnlyAssessmentWindow from './read-only-pages/ReadOnlyAssessmentWindow'
+import ReadOnlyNotificationWindow from './read-only-pages/ReadOnlyNotificationWindow'
+import {getTimeExpiredAfter} from './utility'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   formSection: {
@@ -52,6 +56,7 @@ export const defaultSchedule: SessionSchedule = {
 }
 
 type SchedulableSingleSessionContainerProps = {
+  isReadOnly?: boolean
   studySession: StudySession
   onUpdateSessionSchedule: Function
   sessionErrorState:
@@ -77,6 +82,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   studySession,
   onUpdateSessionSchedule,
   sessionErrorState,
+  isReadOnly,
 }) => {
   const classes = useStyles()
   if (studySession.name === 'Session1') {
@@ -227,6 +233,26 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     updateSessionSchedule(newState)
   }
 
+  const getNotificationTimeText = (
+    notification: ScheduleNotification,
+    index: number
+  ): string => {
+    const offset = notification.offset
+    const endingText =
+      offset === undefined && index === 1
+        ? 'at start of window'
+        : NotificationTimeAtEnum[notification.notifyAt]
+    let offsetText = ''
+    if (offset) {
+      const numTime = getTimeExpiredAfter(offset)
+      const expireAfterTimeUnit = offset[
+        offset.length - 1
+      ] as keyof typeof HDWMEnum
+      offsetText = `${numTime} ${HDWMEnum[expireAfterTimeUnit]} `
+    }
+    return `${offsetText}${endingText}`
+  }
+
   return (
     <Box bgcolor="#F8F8F8" flexGrow="1" pb={2.5} pl={4}>
       {sessionErrorState && sessionErrorState.generalErrorMessage.length > 0 && (
@@ -251,6 +277,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
       <form noValidate autoComplete="off">
         <Box className={classes.formSection}>
           <StartDate
+            isReadOnly={isReadOnly}
             delay={schedulableSession.delay}
             sessionName={studySession.name}
             onChange={(delay: string | undefined) => {
@@ -259,6 +286,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         </Box>
         <Box className={classes.formSection}>
           <EndDate
+            isReadOnly={isReadOnly}
             occurrences={schedulableSession.occurrences}
             onChange={(occurrences: number | undefined) =>
               updateSessionSchedule({...schedulableSession, occurrences})
@@ -266,6 +294,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         </Box>
         <Box className={classes.formSection}>
           <RepeatFrequency
+            isReadOnly={isReadOnly}
             onChange={(interval: string | undefined) => {
               updateSessionSchedule({
                 ...schedulableSession,
@@ -298,22 +327,36 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
           <SchedulingFormSection label="Session Window:">
             <Box flexGrow={1}>
-              {schedulableSession.timeWindows?.map((window, index) => (
-                <AssessmentWindow
-                  index={index}
-                  key={`${index}${window.startTime}${window.expiration}`}
-                  onDelete={() => {
-                    deleteWindow(index)
-                  }}
-                  onChange={(window: AssessmentWindowType) =>
-                    updateWindow(window, index)
-                  }
-                  window={window}
-                  errorText={
-                    sessionErrorState?.sessionWindowErrors.get(index + 1) || ''
-                  }></AssessmentWindow>
-              ))}
-              {!hasWindowLongerThan24h() && (
+              {schedulableSession.timeWindows?.map((window, index) => {
+                return (
+                  <Box>
+                    {!isReadOnly ? (
+                      <AssessmentWindow
+                        index={index}
+                        key={`${index}${window.startTime}${window.expiration}`}
+                        onDelete={() => {
+                          deleteWindow(index)
+                        }}
+                        onChange={(window: AssessmentWindowType) =>
+                          updateWindow(window, index)
+                        }
+                        window={window}
+                        errorText={
+                          sessionErrorState?.sessionWindowErrors.get(
+                            index + 1
+                          ) || ''
+                        }></AssessmentWindow>
+                    ) : (
+                      <ReadOnlyAssessmentWindow
+                        startTime={window.startTime}
+                        index={index + 1}
+                        expireAfter={window.expiration || 'N/A'}
+                      />
+                    )}
+                  </Box>
+                )
+              })}
+              {!hasWindowLongerThan24h() && !isReadOnly && (
                 <BlueButton onClick={addNewWindow} variant="contained">
                   +Add new window
                 </BlueButton>
@@ -344,74 +387,98 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
             label={
               <>
                 <label>Session Notifications:</label>{' '}
-                <Box className={classes.notifySwitch}>
-                  <Switch
-                    color="primary"
-                    checked={!_.isEmpty(schedulableSession.notifications)}
-                    onChange={e => {
-                      if (e.target.checked) {
-                        addNewNotification()
-                      } else {
-                        deleteAllNotifications()
-                      }
-                    }}
-                    style={{marginLeft: 0, marginRight: '8px'}}></Switch>{' '}
-                  {!_.isEmpty(schedulableSession.notifications) ? 'On' : 'Off'}
-                </Box>
+                {!isReadOnly && (
+                  <Box className={classes.notifySwitch}>
+                    <Switch
+                      color="primary"
+                      checked={!_.isEmpty(schedulableSession.notifications)}
+                      onChange={e => {
+                        if (e.target.checked) {
+                          addNewNotification()
+                        } else {
+                          deleteAllNotifications()
+                        }
+                      }}
+                      style={{marginLeft: 0, marginRight: '8px'}}></Switch>
+
+                    {!_.isEmpty(schedulableSession.notifications)
+                      ? 'On'
+                      : 'Off'}
+                  </Box>
+                )}
               </>
             }>
             <Box flexGrow={1}>
-              {schedulableSession.notifications?.map((notification, index) => (
-                <NotificationWindow
-                  index={index}
-                  notification={notification}
-                  isMultiday={hasWindowLongerThan24h()}
-                  key={index}
-                  onDelete={() => {
-                    deleteNotification(index)
-                  }}
-                  onChange={(notification: ScheduleNotification) => {
-                    updateNotification(notification, index)
-                  }}
-                  isError={
-                    sessionErrorState?.notificationErrors.has(index + 1) ||
-                    false
-                  }
-                  //window={window}
-                >
-                  <NotificationTime
-                    notifyAt={notification.notifyAt}
-                    offset={notification.offset}
-                    isFollowUp={index > 0}
-                    windowStartTime={
-                      !_.isEmpty(schedulableSession.timeWindows)
-                        ? schedulableSession.timeWindows[0].startTime
-                        : undefined
-                    }
-                    isMultiday={hasWindowLongerThan24h()}
-                    onChange={e =>
-                      updateNotification(
-                        {
-                          ...notification,
-                          notifyAt: e.notifyAt,
-                          offset: e.offset,
-                        },
-                        index
-                      )
-                    }
-                  />
-                </NotificationWindow>
-              ))}
+              {schedulableSession.notifications?.map((notification, index) => {
+                return (
+                  <Box>
+                    {!isReadOnly ? (
+                      <NotificationWindow
+                        index={index}
+                        notification={notification}
+                        isMultiday={hasWindowLongerThan24h()}
+                        key={index}
+                        onDelete={() => {
+                          deleteNotification(index)
+                        }}
+                        onChange={(notification: ScheduleNotification) => {
+                          updateNotification(notification, index)
+                        }}
+                        isError={
+                          sessionErrorState?.notificationErrors.has(
+                            index + 1
+                          ) || false
+                        }>
+                        <NotificationTime
+                          notifyAt={notification.notifyAt}
+                          offset={notification.offset}
+                          isFollowUp={index > 0}
+                          windowStartTime={
+                            !_.isEmpty(schedulableSession.timeWindows)
+                              ? schedulableSession.timeWindows[0].startTime
+                              : undefined
+                          }
+                          isMultiday={hasWindowLongerThan24h()}
+                          onChange={e =>
+                            updateNotification(
+                              {
+                                ...notification,
+                                notifyAt: e.notifyAt,
+                                offset: e.offset,
+                              },
+                              index
+                            )
+                          }
+                        />
+                      </NotificationWindow>
+                    ) : (
+                      <ReadOnlyNotificationWindow
+                        index={index + 1}
+                        notificationHeader={
+                          _.first(notification.messages)?.subject || ''
+                        }
+                        notificationMessage={
+                          _.first(notification.messages)?.message || ''
+                        }
+                        notificationTimeText={getNotificationTimeText(
+                          notification,
+                          index + 1
+                        )}
+                      />
+                    )}{' '}
+                  </Box>
+                )
+              })}
 
-              {!schedulableSession.notifications && (
+              {!schedulableSession.notifications && !isReadOnly && (
                 <BlueButton onClick={addNewNotification} variant="contained">
                   +Add new notification
                 </BlueButton>
               )}
 
-              {schedulableSession.notifications?.length === 1 && (
+              {schedulableSession.notifications?.length === 1 && !isReadOnly && (
                 <BlueButton onClick={addNewNotification} variant="contained">
-                  +Add a reminder notification
+                  +Add a reminder notificationx
                 </BlueButton>
               )}
             </Box>

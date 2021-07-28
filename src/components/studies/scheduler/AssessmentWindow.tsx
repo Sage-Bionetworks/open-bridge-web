@@ -1,7 +1,5 @@
 import {
   Box,
-  Checkbox,
-  FormControlLabel,
   IconButton,
   makeStyles,
   Paper,

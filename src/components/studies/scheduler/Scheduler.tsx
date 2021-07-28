@@ -1,14 +1,8 @@
-import {
-  Box,
-  createStyles,
-  FormControlLabel,
-  makeStyles,
-  Theme,
-} from '@material-ui/core'
+import {Box, FormControlLabel} from '@material-ui/core'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import {poppinsFont, theme} from '../../../style/theme'
+import {theme} from '../../../style/theme'
 import {
   DWsEnum,
   PerformanceOrder,
@@ -21,7 +15,7 @@ import {StudyBuilderComponentProps} from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
 import SaveButton from '../../widgets/SaveButton'
-import {SchedulerErrorType} from '../StudyBuilder'
+import StudyBuilder, {SchedulerErrorType} from '../StudyBuilder'
 import AssessmentList from './AssessmentList'
 import Duration from './Duration'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
@@ -31,47 +25,37 @@ import actionsReducer, {
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import Timeline from './Timeline'
+import SchedulerStyles from './shared-styles/SchedulerStyles'
+import ReadOnlyScheduler from './read-only-pages/ReadOnlyScheduler'
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    labelDuration: {
-      paddingTop: theme.spacing(1),
-      paddingRight: theme.spacing(2),
-      fontFamily: poppinsFont,
-      fontSize: '18px',
-      fontStyle: 'normal',
-      fontWeight: 600,
-    },
-    assessments: {
-      width: '286px',
-      flexGrow: 0,
-      flexShrink: 0,
-      backgroundColor: '#BCD5E4',
-      padding: theme.spacing(1),
-    },
-    scheduleHeader: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingRight: theme.spacing(2),
-    },
-    studyStartDateContainer: {
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-  })
-)
+const useStyles = SchedulerStyles
 
-type SchedulerProps = {
+export type SchedulerProps = {
   id: string
   schedule: Schedule
   version?: number
   token: string
   onSave: Function
   schedulerErrors: SchedulerErrorType[]
+  readOnly?: boolean
+}
+
+export const getStartEventIdFromSchedule = (
+  schedule: Schedule
+): StartEventId | null => {
+  if (_.isEmpty(schedule.sessions)) {
+    return null
+  }
+  const eventIdArray = schedule.sessions.reduce(
+    (acc, curr) => (curr.startEventId ? [...acc, curr.startEventId] : acc),
+    [] as StartEventId[]
+  )
+
+  if (_.uniq(eventIdArray).length > 1) {
+    throw Error('startEventIds should be the same for all sessions')
+  } else {
+    return eventIdArray[0]
+  }
 }
 
 const Scheduler: FunctionComponent<
@@ -86,6 +70,7 @@ const Scheduler: FunctionComponent<
   token,
   version,
   schedulerErrors,
+  readOnly,
 }: SchedulerProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
   const [isErrorAlert, setIsErrorAlert] = React.useState(true)
@@ -177,24 +162,6 @@ const Scheduler: FunctionComponent<
     setSchedulerErrorState(newErrorState)
   }, [schedulerErrors])
 
-  const getStartEventIdFromSchedule = (
-    schedule: Schedule
-  ): StartEventId | null => {
-    if (_.isEmpty(schedule.sessions)) {
-      return null
-    }
-    const eventIdArray = schedule.sessions.reduce(
-      (acc, curr) => (curr.startEventId ? [...acc, curr.startEventId] : acc),
-      [] as StartEventId[]
-    )
-
-    if (_.uniq(eventIdArray).length > 1) {
-      throw Error('startEventIds should be the same for all sessions')
-    } else {
-      return eventIdArray[0]
-    }
-  }
-
   const saveSession = async (sessionId: string) => {
     onSave()
   }
@@ -217,6 +184,17 @@ const Scheduler: FunctionComponent<
     const sessions = actionsReducer(schedule.sessions, action)
     const newSchedule = {...schedule, sessions}
     updateData(newSchedule)
+  }
+
+  if (readOnly) {
+    return (
+      <ReadOnlyScheduler
+        token={token}
+        children={children}
+        schedule={schedule}
+        version={version}
+      />
+    )
   }
 
   if (_.isEmpty(schedule.sessions)) {

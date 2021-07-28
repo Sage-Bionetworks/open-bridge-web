@@ -2,7 +2,7 @@ import {Box, FormControlLabel, FormGroup, makeStyles} from '@material-ui/core'
 import ClockIcon from '@material-ui/icons/AccessTime'
 import clsx from 'clsx'
 import React from 'react'
-import {ThemeType, poppinsFont} from '../../../style/theme'
+import {ThemeType, poppinsFont, latoFont} from '../../../style/theme'
 import {PerformanceOrder, StudySession} from '../../../types/scheduling'
 import {Assessment} from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
@@ -45,6 +45,7 @@ export interface AssessmentListProps {
   studySession: StudySession
   performanceOrder: PerformanceOrder
   onChangePerformanceOrder: (p: PerformanceOrder) => void
+  isReadOnly?: boolean
 }
 
 export interface SessionHeaderProps {
@@ -61,7 +62,6 @@ const SessionHeader: React.FunctionComponent<SessionHeaderProps> = ({
     const time = curr.minutesToComplete
     return total + (time ? time : 0)
   }, 0)
-
   const result = (
     <Box mb={2}>
       <SessionIcon index={order}>
@@ -93,6 +93,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   performanceOrder,
   onChangePerformanceOrder,
   studySessionIndex,
+  isReadOnly,
 }: AssessmentListProps): JSX.Element => {
   const classes = useStyles()
 
@@ -148,8 +149,28 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
     {value: 'randomized', label: 'Random Fixed Order'},
   ]
 
+  const assessmentOrderElement = !isReadOnly ? (
+    <BlackBorderDropdown
+      width="180px"
+      value={performanceOrder}
+      onChange={e => {
+        onChangePerformanceOrder(e.target.value as PerformanceOrder)
+      }}
+      emptyValueLabel="select"
+      itemHeight="42px"
+      dropdown={performanceOrderList}
+    />
+  ) : (
+    <Box fontSize="14px" fontFamily={latoFont}>
+      {performanceOrderList.find(el => el.value === performanceOrder)?.label ||
+        ''}
+    </Box>
+  )
+
   return (
-    <Box m={0.5}>
+    <Box
+      m={0.5}
+      style={isReadOnly ? {backgroundColor: 'rgb(248, 248, 248)'} : {}}>
       <SessionHeader
         order={studySessionIndex}
         name={studySession.name}
@@ -166,7 +187,8 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
               style={{
                 opacity:
                   performanceOrder !== 'participant_choice' &&
-                  assessmentInfo.realIndex !== 0
+                  assessmentInfo.realIndex !== 0 &&
+                  !isReadOnly
                     ? 0.3
                     : 1,
                 transform: `translateY(${assessmentInfo.translateY}px)`,
@@ -185,18 +207,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
           <FormControlLabel
             labelPlacement="start"
             className={classes.order}
-            control={
-              <BlackBorderDropdown
-                width="180px"
-                value={performanceOrder}
-                onChange={e => {
-                  onChangePerformanceOrder(e.target.value as PerformanceOrder)
-                }}
-                emptyValueLabel="select"
-                itemHeight="42px"
-                dropdown={performanceOrderList}
-              />
-            }
+            control={assessmentOrderElement}
             label={
               <Box className={classes.assessmentOrderText}>
                 Assessment Order:
