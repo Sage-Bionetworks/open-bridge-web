@@ -3,8 +3,7 @@ import {Box, makeStyles} from '@material-ui/core'
 import {latoFont} from '../../../../style/theme'
 import ClockIcon from '../../../../assets/clock.svg'
 import moment from 'moment'
-import {HDWMEnum} from '../../../../types/scheduling'
-import {getTimeExpiredAfter} from '../utility'
+import {getTimeUnitFormatted} from '../utility'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -52,10 +51,6 @@ const ReadOnlyAssessmentWindow: React.FunctionComponent<ReadOnlyAssessmentWindow
 }) => {
   const classes = useStyles()
   const start = moment(startTime, 'HH:mm').format('h:mm a')
-  const numTime = getTimeExpiredAfter(expireAfter)
-  const expireAfterTimeUnit = expireAfter[
-    expireAfter.length - 1
-  ] as keyof typeof HDWMEnum
   return (
     <Box className={classes.container}>
       <Box className={classes.topLevel}>
@@ -68,7 +63,7 @@ const ReadOnlyAssessmentWindow: React.FunctionComponent<ReadOnlyAssessmentWindow
         </Box>
         <Box className={classes.row}>
           <Box>Expire After:</Box>{' '}
-          <strong>{`${numTime} ${HDWMEnum[expireAfterTimeUnit]}`}</strong>
+          <strong>{getTimeUnitFormatted(expireAfter)}</strong>
         </Box>
       </Box>
     </Box>

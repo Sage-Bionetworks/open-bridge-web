@@ -1,4 +1,4 @@
-import {FormControl, FormLabel, Box} from '@material-ui/core'
+import {FormControl, FormLabel} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React, {ReactNode} from 'react'

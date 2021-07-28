@@ -78,7 +78,6 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
         )}>
         <FormControlLabel
           value={options[0]}
-          style={{minWidth: '400px'}}
           control={<Radio />}
           label={
             isIntro
