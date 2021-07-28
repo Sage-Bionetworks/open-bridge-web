@@ -71,7 +71,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
       : 'until the end of study'
     let intervalString = ''
     if (interval) {
-      intervalString = getTimeUnitFormatted(interval)
+      intervalString = getTimeUnitFormatted(interval) + ' '
     }
     return `${intervalString}${label}`
   }
