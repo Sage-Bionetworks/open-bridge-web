@@ -1,6 +1,6 @@
 import React from 'react'
 import {Box, makeStyles} from '@material-ui/core'
-import NotifcationIcon from '../../../../assets/notification_bell_icon.svg'
+import NotifcationIcon from '../../../../assets/bell.svg'
 import {latoFont, poppinsFont} from '../../../../style/theme'
 import _ from 'lodash'
 
