@@ -168,9 +168,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   )
 
   return (
-    <Box
-      m={0.5}
-      style={isReadOnly ? {backgroundColor: 'rgb(248, 248, 248)'} : {}}>
+    <Box m={0.5} style={isReadOnly ? {backgroundColor: '#f8f8f8'} : {}}>
       <SessionHeader
         order={studySessionIndex}
         name={studySession.name}
