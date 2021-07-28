@@ -12,9 +12,9 @@ import ScheduleCreatorTab from './ScheduleCreatorTab'
 import SchedulerStepper from './SchedulerStepper'
 import SessionStartTab from './SessionStartTab'
 import ReadOnlyScheduler from './read-only-pages/ReadOnlyScheduler'
-import _ from "lodash"
+import _ from 'lodash'
 
-const useStyles = makeStyles((theme: ThemeType) => ({
+export const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
     padding: theme.spacing(3, 0, 2, 0),
     backgroundColor: 'transparent',
@@ -29,6 +29,25 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   readOnlyAssessmentContainer: {
     backgroundColor: '#f8f8f8',
+  },
+  scheduleHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingRight: theme.spacing(2),
+  },
+  studyStartDateContainer: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  assessments: {
+    width: '286px',
+    flexGrow: 0,
+    flexShrink: 0,
+    padding: theme.spacing(1),
   },
 }))
 
