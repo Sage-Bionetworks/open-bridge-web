@@ -1,19 +1,17 @@
 import React, {ReactNode} from 'react'
 import {Box, makeStyles} from '@material-ui/core'
 import {getStartEventIdFromSchedule} from '../Scheduler'
-import SchedulerStyles from '../shared-styles/SchedulerStyles'
+import {useStyles as sharedSchedulerStyles} from '../Scheduler'
 import {
   Schedule,
   StudySession,
-  HDWMEnum,
   NotificationTimeAtEnum,
   ScheduleNotification,
 } from '../../../../types/scheduling'
 import Timeline from '../Timeline'
 import AssessmentList from '../AssessmentList'
-import {getTimeUnitFormatted, getTimeExpiredAfter} from '../utility'
+import {getTimeUnitFormatted} from '../utility'
 import {poppinsFont} from '../../../../style/theme'
-import clsx from 'clsx'
 import SchedulingFormSection from '../SchedulingFormSection'
 import {
   useStyles as SchedulableSessionStyles,
@@ -22,7 +20,7 @@ import {
 import ReadOnlyAssessmentWindow from '../read-only-pages/ReadOnlyAssessmentWindow'
 import ReadOnlyNotificationWindow from '../read-only-pages/ReadOnlyNotificationWindow'
 import _ from 'lodash'
-const sharedSchedulerStyles = SchedulerStyles
+import clsx from 'clsx'
 
 type ReadOnlySchedulerProps = {
   children: ReactNode
@@ -47,6 +45,12 @@ const useStyles = makeStyles(theme => ({
     border: '1px solid #BBC3CD',
     padding: theme.spacing(3, 2),
   },
+  readOnlyTextCentering: {
+    marginTop: theme.spacing(1),
+  },
+  rowHeader: {
+    fontWeight: 'normal',
+  },
 }))
 
 const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
@@ -67,10 +71,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
       : 'until the end of study'
     let intervalString = ''
     if (interval) {
-      const time = getTimeExpiredAfter(interval)
-      const unit = interval[interval.length - 1] as keyof typeof HDWMEnum
-      const timeUnit = HDWMEnum[unit]
-      intervalString = `${time} ${timeUnit}`
+      intervalString = getTimeUnitFormatted(interval)
     }
     return `${intervalString}${label}`
   }
@@ -86,11 +87,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
         : NotificationTimeAtEnum[notification.notifyAt]
     let offsetText = ''
     if (offset) {
-      const numTime = getTimeExpiredAfter(offset)
-      const expireAfterTimeUnit = offset[
-        offset.length - 1
-      ] as keyof typeof HDWMEnum
-      offsetText = `${numTime} ${HDWMEnum[expireAfterTimeUnit]} `
+      offsetText = getTimeUnitFormatted(offset) + ' '
     }
     return `${offsetText}${endingText}`
   }
@@ -146,30 +143,27 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
                 <SchedulingFormSection
                   label={
                     <Box
-                      style={{
-                        fontWeight: 'normal',
-                      }}>{`${session.name} starts on:`}</Box>
+                      className={
+                        classes.rowHeader
+                      }>{`${session.name} starts on:`}</Box>
                   }>
                   <strong
-                    className={classes.readOnlyText}
-                    style={{marginTop: '8px'}}>
+                    className={clsx(
+                      classes.readOnlyText,
+                      classes.readOnlyTextCentering
+                    )}>
                     Placeholder
                   </strong>
                 </SchedulingFormSection>
               </Box>
               <Box className={sessionContainerClasses.formSection}>
                 <SchedulingFormSection
-                  label={
-                    <Box
-                      style={{
-                        fontWeight: 'normal',
-                      }}>
-                      End after:
-                    </Box>
-                  }>
+                  label={<Box className={classes.rowHeader}>End after:</Box>}>
                   <strong
-                    className={classes.readOnlyText}
-                    style={{marginTop: '8px'}}>
+                    className={clsx(
+                      classes.readOnlyText,
+                      classes.readOnlyTextCentering
+                    )}>
                     {`${
                       session.occurrences
                         ? session.occurrences + ' times'
@@ -190,19 +184,16 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
                     </Box>
                   }>
                   <strong
-                    className={classes.readOnlyText}
-                    style={{marginTop: '8px'}}>
+                    className={clsx(
+                      classes.readOnlyText,
+                      classes.readOnlyTextCentering
+                    )}>
                     {getSessionIntervalText(session)}
                   </strong>
                 </SchedulingFormSection>
                 <SchedulingFormSection
                   label={
-                    <Box
-                      style={{
-                        fontWeight: 'normal',
-                      }}>
-                      Session window:
-                    </Box>
+                    <Box className={classes.rowHeader}>Session window:</Box>
                   }>
                   <Box flexGrow={1}>
                     {(session || defaultSchedule).timeWindows?.map(
@@ -222,10 +213,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
                 </SchedulingFormSection>
                 <SchedulingFormSection
                   label={
-                    <Box
-                      style={{
-                        fontWeight: 'normal',
-                      }}>
+                    <Box className={classes.rowHeader}>
                       Session Notifications:
                     </Box>
                   }>

@@ -32,7 +32,7 @@ export default makeStyles((theme: Theme) =>
       alignItems: 'center',
     },
     readOnlyAssessmentContainer: {
-      backgroundColor: 'rgb(248, 248, 248)',
+      backgroundColor: '#f8f8f8',
     },
   })
 )
