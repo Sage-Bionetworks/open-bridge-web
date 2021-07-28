@@ -31,8 +31,9 @@ import actionsReducer, {
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import Timeline from './Timeline'
+import ReadOnlyScheduler from './read-only-pages/ReadOnlyScheduler'
 
-const useStyles = makeStyles((theme: Theme) =>
+export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     sessionContainer: {
       marginBottom: theme.spacing(2),
@@ -49,12 +50,12 @@ const useStyles = makeStyles((theme: Theme) =>
       fontStyle: 'normal',
       fontWeight: 600,
     },
-    assessments: {
+    readOnlyAssessmentContainer: {
       width: '286px',
       flexGrow: 0,
       flexShrink: 0,
-      backgroundColor: '#BCD5E4',
       padding: theme.spacing(1),
+      backgroundColor: '#f8f8f8',
     },
     scheduleHeader: {
       display: 'flex',
@@ -69,6 +70,13 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'center',
       alignItems: 'center',
     },
+    assessments: {
+      width: '286px',
+      flexGrow: 0,
+      flexShrink: 0,
+      padding: theme.spacing(1),
+      backgroundColor: '#BCD5E4',
+    },
   })
 )
 
@@ -79,6 +87,7 @@ type ScheduleCreatorTabProps = {
   token: string
   onSave: Function
   schedulerErrors: SchedulerErrorType[]
+  isReadOnly?: boolean
 }
 
 const ScheduleCreatorTab: FunctionComponent<
@@ -93,6 +102,7 @@ const ScheduleCreatorTab: FunctionComponent<
   token,
   version,
   schedulerErrors,
+  isReadOnly,
 }: ScheduleCreatorTabProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
   const [isErrorAlert, setIsErrorAlert] = React.useState(true)
@@ -233,6 +243,17 @@ const ScheduleCreatorTab: FunctionComponent<
           You need to create sessions before creating the schedule
         </ErrorDisplay>
       </Box>
+    )
+  }
+
+  if (isReadOnly) {
+    return (
+      <ReadOnlyScheduler
+        token={token}
+        children={children}
+        schedule={schedule}
+        version={version}
+      />
     )
   }
 

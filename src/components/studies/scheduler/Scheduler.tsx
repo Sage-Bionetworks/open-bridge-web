@@ -11,10 +11,9 @@ import ConfigureBurstTab from './ConfigureBurstTab'
 import ScheduleCreatorTab from './ScheduleCreatorTab'
 import SchedulerStepper from './SchedulerStepper'
 import SessionStartTab from './SessionStartTab'
-import ReadOnlyScheduler from './read-only-pages/ReadOnlyScheduler'
 import _ from 'lodash'
 
-export const useStyles = makeStyles((theme: ThemeType) => ({
+const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
     padding: theme.spacing(3, 0, 2, 0),
     backgroundColor: 'transparent',
@@ -27,28 +26,6 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     marginBottom: theme.spacing(1),
     // backgroundColor: theme.palette.common.white,
   },
-  readOnlyAssessmentContainer: {
-    backgroundColor: '#f8f8f8',
-  },
-  scheduleHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingRight: theme.spacing(2),
-  },
-  studyStartDateContainer: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  assessments: {
-    width: '286px',
-    flexGrow: 0,
-    flexShrink: 0,
-    padding: theme.spacing(1),
-  },
 }))
 
 export type SchedulerProps = {
@@ -58,7 +35,7 @@ export type SchedulerProps = {
   token: string
   onSave: Function
   schedulerErrors: SchedulerErrorType[]
-  readOnly?: boolean
+  isReadOnly?: boolean
 }
 
 export const getStartEventIdFromSchedule = (
@@ -160,17 +137,6 @@ const Scheduler: React.FunctionComponent<
 
   const handleReset = () => {
     setActiveStep(0)
-  }
-
-  if (props.readOnly) {
-    return (
-      <ReadOnlyScheduler
-        token={props.token}
-        children={props.children}
-        schedule={props.schedule}
-        version={props.version}
-      />
-    )
   }
 
   return (

@@ -1,7 +1,7 @@
 import React, {ReactNode} from 'react'
 import {Box, makeStyles} from '@material-ui/core'
 import {getStartEventIdFromSchedule} from '../Scheduler'
-import {useStyles as sharedSchedulerStyles} from '../Scheduler'
+import {useStyles as sharedSchedulerStyles} from '../ScheduleCreatorTab'
 import {
   Schedule,
   StudySession,
@@ -125,11 +125,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
         </div>
         {schedule.sessions.map((session, index) => (
           <Box mb={2} display="flex" key={session.guid}>
-            <Box
-              className={clsx(
-                schedulerClasses.assessments,
-                schedulerClasses.readOnlyAssessmentContainer
-              )}>
+            <Box className={clsx(schedulerClasses.readOnlyAssessmentContainer)}>
               <AssessmentList
                 isReadOnly={true}
                 studySessionIndex={index}
