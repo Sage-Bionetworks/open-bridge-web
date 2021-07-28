@@ -33,7 +33,10 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     '& div': {
       marginRight: theme.spacing(2),
+      marginBottom: theme.spacing(0.25),
     },
+    maxWidth: '90%',
+    flexWrap: 'wrap',
   },
   toolTip: {
     backgroundColor: theme.palette.primary.dark,
@@ -154,7 +157,7 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   }
 
   return (
-    <Box padding="30px">
+    <Box py={3} px={0}>
       {!timeline && (
         <>
           This timeline viewer will update to provide a visual summary of the
