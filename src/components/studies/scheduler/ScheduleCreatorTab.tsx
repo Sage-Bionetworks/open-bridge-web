@@ -80,6 +80,24 @@ export const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
+export const getStartEventIdFromSchedule = (
+  schedule: Schedule
+): StartEventId | null => {
+  if (_.isEmpty(schedule.sessions)) {
+    return null
+  }
+  const eventIdArray = schedule.sessions.reduce(
+    (acc, curr) => (curr.startEventId ? [...acc, curr.startEventId] : acc),
+    [] as StartEventId[]
+  )
+
+  if (_.uniq(eventIdArray).length > 1) {
+    throw Error('startEventIds should be the same for all sessions')
+  } else {
+    return eventIdArray[0]
+  }
+}
+
 type ScheduleCreatorTabProps = {
   id: string
   schedule: Schedule
@@ -193,24 +211,6 @@ const ScheduleCreatorTab: FunctionComponent<
     const newErrorState = parseErrors(schedulerErrors)
     setSchedulerErrorState(newErrorState)
   }, [schedulerErrors])
-
-  const getStartEventIdFromSchedule = (
-    schedule: Schedule
-  ): StartEventId | null => {
-    if (_.isEmpty(schedule.sessions)) {
-      return null
-    }
-    const eventIdArray = schedule.sessions.reduce(
-      (acc, curr) => (curr.startEventId ? [...acc, curr.startEventId] : acc),
-      [] as StartEventId[]
-    )
-
-    if (_.uniq(eventIdArray).length > 1) {
-      throw Error('startEventIds should be the same for all sessions')
-    } else {
-      return eventIdArray[0]
-    }
-  }
 
   const saveSession = async (sessionId: string) => {
     onSave()

@@ -1,6 +1,6 @@
 import React, {ReactNode} from 'react'
 import {Box, makeStyles} from '@material-ui/core'
-import {getStartEventIdFromSchedule} from '../Scheduler'
+import {getStartEventIdFromSchedule} from '../ScheduleCreatorTab'
 import {useStyles as sharedSchedulerStyles} from '../ScheduleCreatorTab'
 import {
   Schedule,
