@@ -186,7 +186,7 @@ const Scheduler: FunctionComponent<
     updateData(newSchedule)
   }
 
-  if (readOnly) {
+  if (!readOnly) {
     return (
       <ReadOnlyScheduler
         token={token}

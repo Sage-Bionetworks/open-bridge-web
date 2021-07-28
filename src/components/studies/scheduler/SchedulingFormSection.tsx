@@ -1,4 +1,4 @@
-import {FormControl, FormLabel} from '@material-ui/core'
+import {FormControl, FormLabel, Box} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React, {ReactNode} from 'react'
@@ -112,7 +112,9 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
             )}>
             {!isHideLabel ? label : ''}
           </FormLabel>
-          {children}
+          <Box width="100%" pt={1}>
+            {children}
+          </Box>
         </FormControl>
       </section>
     </>

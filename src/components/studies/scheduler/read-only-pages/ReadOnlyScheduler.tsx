@@ -9,9 +9,9 @@ import StudyStartDate from '../StudyStartDate'
 import AssessmentList from '../AssessmentList'
 import SchedulableSingleSessionContainer from '../SchedulableSingleSessionContainer'
 import clsx from 'clsx'
-const useStyles = SchedulerStyles
 import {useStyles as ScheduleDurationTextStyles} from '../StartDate'
 import {getTimeUnitFormatted} from '../utility'
+const useStyles = SchedulerStyles
 
 type ReadOnlySchedulerProps = {
   children: ReactNode
@@ -36,7 +36,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
           style={{fontSize: '14px'}}
           labelPlacement="start"
           control={
-            <Box className={ScheduleDurationTextStyles().timeFrameText}>
+            <Box mt={1} className={ScheduleDurationTextStyles().timeFrameText}>
               {schedule.duration
                 ? getTimeUnitFormatted(schedule.duration)
                 : 'No duration set'}

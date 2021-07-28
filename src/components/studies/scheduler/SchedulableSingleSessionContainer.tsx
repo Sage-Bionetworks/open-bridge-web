@@ -24,6 +24,7 @@ import StartDate from './StartDate'
 import ReadOnlyAssessmentWindow from './read-only-pages/ReadOnlyAssessmentWindow'
 import ReadOnlyNotificationWindow from './read-only-pages/ReadOnlyNotificationWindow'
 import {getTimeExpiredAfter} from './utility'
+import {useStyles as EmptyNotificationTextStyles} from './StartDate'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   formSection: {
@@ -469,7 +470,12 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   </Box>
                 )
               })}
-
+              {schedulableSession.notifications?.length === 0 && isReadOnly && (
+                <strong className={EmptyNotificationTextStyles().timeFrameText}>
+                  Participants will not receive any notification for this
+                  session.
+                </strong>
+              )}
               {!schedulableSession.notifications && !isReadOnly && (
                 <BlueButton onClick={addNewNotification} variant="contained">
                   +Add new notification
