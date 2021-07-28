@@ -8,7 +8,6 @@ import {
 } from '@material-ui/core'
 import clsx from 'clsx'
 import React, {ReactNode} from 'react'
-import {poppinsFont} from '../../../style/theme'
 import {StartEventId} from '../../../types/scheduling'
 import SchedulingFormSection from './SchedulingFormSection'
 
@@ -18,7 +17,6 @@ export interface StudyStartDateProps {
   onChange: (n: StartEventId) => void
   style?: React.CSSProperties
   children?: ReactNode
-  isReadOnly?: boolean
 }
 
 const useStyles = makeStyles(theme =>
@@ -57,7 +55,6 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
   isIntro,
   style,
   children,
-  isReadOnly,
 }: StudyStartDateProps) => {
   const options: StartEventId[] = ['timeline_retrieved', 'study_start_date']
   const classes = useStyles()
@@ -89,7 +86,6 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
               : 'Right after completion of onboarding session'
           }
         />
-
         <FormControlLabel
           value={options[1]}
           control={<Radio />}

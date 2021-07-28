@@ -61,15 +61,14 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
   const startEventId = getStartEventIdFromSchedule(schedule)
 
   function getSessionIntervalText(session: StudySession) {
-    const label = session.occurrences
-      ? ` for ${session.occurrences} times`
+    const {interval, occurrences} = session
+    const label = occurrences
+      ? ` for ${occurrences} times`
       : 'until the end of study'
     let intervalString = ''
-    if (session.interval) {
-      const time = getTimeExpiredAfter(session.interval)
-      const unit = session.interval[
-        session.interval.length - 1
-      ] as keyof typeof HDWMEnum
+    if (interval) {
+      const time = getTimeExpiredAfter(interval)
+      const unit = interval[interval.length - 1] as keyof typeof HDWMEnum
       const timeUnit = HDWMEnum[unit]
       intervalString = `${time} ${timeUnit}`
     }

@@ -10,8 +10,6 @@ import {
   ScheduleNotification,
   SessionSchedule,
   StudySession,
-  NotificationTimeAtEnum,
-  HDWMEnum,
 } from '../../../types/scheduling'
 import {AlertWithText, BlueButton} from '../../widgets/StyledComponents'
 import AssessmentWindow from './AssessmentWindow'
@@ -21,10 +19,6 @@ import NotificationWindow from './NotificationWindow'
 import RepeatFrequency from './RepeatFrequency'
 import SchedulingFormSection from './SchedulingFormSection'
 import StartDate from './StartDate'
-import ReadOnlyAssessmentWindow from './read-only-pages/ReadOnlyAssessmentWindow'
-import ReadOnlyNotificationWindow from './read-only-pages/ReadOnlyNotificationWindow'
-import {getTimeExpiredAfter} from './utility'
-import {useStyles as EmptyNotificationTextStyles} from './StartDate'
 
 export const useStyles = makeStyles((theme: ThemeType) => ({
   formSection: {
@@ -57,7 +51,6 @@ export const defaultSchedule: SessionSchedule = {
 }
 
 type SchedulableSingleSessionContainerProps = {
-  isReadOnly?: boolean
   studySession: StudySession
   onUpdateSessionSchedule: Function
   sessionErrorState:
@@ -83,7 +76,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
   studySession,
   onUpdateSessionSchedule,
   sessionErrorState,
-  isReadOnly,
 }) => {
   const classes = useStyles()
   if (studySession.name === 'Session1') {
@@ -266,7 +258,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         </Box>
         <Box className={classes.formSection}>
           <EndDate
-            isReadOnly={isReadOnly}
             occurrences={schedulableSession.occurrences}
             onChange={(occurrences: number | undefined) =>
               updateSessionSchedule({...schedulableSession, occurrences})
@@ -274,7 +265,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         </Box>
         <Box className={classes.formSection}>
           <RepeatFrequency
-            isReadOnly={isReadOnly}
             onChange={(interval: string | undefined) => {
               updateSessionSchedule({
                 ...schedulableSession,
@@ -310,33 +300,24 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               {schedulableSession.timeWindows?.map((window, index) => {
                 return (
                   <Box>
-                    {!isReadOnly ? (
-                      <AssessmentWindow
-                        index={index}
-                        key={`${index}${window.startTime}${window.expiration}`}
-                        onDelete={() => {
-                          deleteWindow(index)
-                        }}
-                        onChange={(window: AssessmentWindowType) =>
-                          updateWindow(window, index)
-                        }
-                        window={window}
-                        errorText={
-                          sessionErrorState?.sessionWindowErrors.get(
-                            index + 1
-                          ) || ''
-                        }></AssessmentWindow>
-                    ) : (
-                      <ReadOnlyAssessmentWindow
-                        startTime={window.startTime}
-                        index={index + 1}
-                        expireAfter={window.expiration || 'N/A'}
-                      />
-                    )}
+                    <AssessmentWindow
+                      index={index}
+                      key={`${index}${window.startTime}${window.expiration}`}
+                      onDelete={() => {
+                        deleteWindow(index)
+                      }}
+                      onChange={(window: AssessmentWindowType) =>
+                        updateWindow(window, index)
+                      }
+                      window={window}
+                      errorText={
+                        sessionErrorState?.sessionWindowErrors.get(index + 1) ||
+                        ''
+                      }></AssessmentWindow>
                   </Box>
                 )
               })}
-              {!hasWindowLongerThan24h() && !isReadOnly && (
+              {!hasWindowLongerThan24h() && (
                 <BlueButton onClick={addNewWindow} variant="contained">
                   +Add new window
                 </BlueButton>
@@ -367,25 +348,21 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
             label={
               <>
                 <label>Session Notifications:</label>{' '}
-                {!isReadOnly && (
-                  <Box className={classes.notifySwitch}>
-                    <Switch
-                      color="primary"
-                      checked={!_.isEmpty(schedulableSession.notifications)}
-                      onChange={e => {
-                        if (e.target.checked) {
-                          addNewNotification()
-                        } else {
-                          deleteAllNotifications()
-                        }
-                      }}
-                      style={{marginLeft: 0, marginRight: '8px'}}></Switch>
+                <Box className={classes.notifySwitch}>
+                  <Switch
+                    color="primary"
+                    checked={!_.isEmpty(schedulableSession.notifications)}
+                    onChange={e => {
+                      if (e.target.checked) {
+                        addNewNotification()
+                      } else {
+                        deleteAllNotifications()
+                      }
+                    }}
+                    style={{marginLeft: 0, marginRight: '8px'}}></Switch>
 
-                    {!_.isEmpty(schedulableSession.notifications)
-                      ? 'On'
-                      : 'Off'}
-                  </Box>
-                )}
+                  {!_.isEmpty(schedulableSession.notifications) ? 'On' : 'Off'}
+                </Box>
               </>
             }>
             <Box flexGrow={1}>

@@ -3,21 +3,17 @@ import React from 'react'
 import SmallTextBox from '../../widgets/SmallTextBox'
 import {FormControlLabelHidden} from '../../widgets/StyledComponents'
 import SchedulingFormSection from './SchedulingFormSection'
-import {useStyles} from './StartDate'
 
 export interface EndDateProps {
   occurrences?: number
   onChange: Function
-  isReadOnly?: boolean
 }
 export type SessionScheduleEndType = 'END_STUDY' | 'N_OCCURRENCES'
 
 const EndDate: React.FunctionComponent<EndDateProps> = ({
   occurrences,
   onChange,
-  isReadOnly,
 }: EndDateProps) => {
-  const classes = useStyles()
   const [endType, setEndType] = React.useState<SessionScheduleEndType>(
     occurrences ? 'N_OCCURRENCES' : 'END_STUDY'
   )

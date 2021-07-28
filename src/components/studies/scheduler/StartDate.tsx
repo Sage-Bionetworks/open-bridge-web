@@ -1,11 +1,5 @@
-import {
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  makeStyles,
-} from '@material-ui/core'
+import {FormControlLabel, Radio, RadioGroup} from '@material-ui/core'
 import React from 'react'
-import {poppinsFont} from '../../../style/theme'
 import {HDWMEnum} from '../../../types/scheduling'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
@@ -15,27 +9,13 @@ export interface StartDateProps {
   delay?: string //ISO6801
   sessionName: string
   onChange: Function
-  isReadOnly?: boolean
 }
-
-export const useStyles = makeStyles(theme => ({
-  timeFrameText: {
-    fontFamily: poppinsFont,
-    fontSize: '18px',
-    lineHeight: '27px',
-    justifySelf: 'center',
-    alignItems: 'center',
-  },
-}))
 
 const StartDate: React.FunctionComponent<StartDateProps> = ({
   delay,
   onChange,
   sessionName,
-  isReadOnly,
 }: StartDateProps) => {
-  const classes = useStyles()
-
   const [startType, setStartType] = React.useState<SessionScheduleStartType>(
     delay ? 'NDAYS_DAY1' : 'DAY1'
   )
