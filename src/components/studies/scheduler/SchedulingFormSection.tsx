@@ -112,9 +112,7 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
             )}>
             {!isHideLabel ? label : ''}
           </FormLabel>
-          <Box width="100%" pt={1}>
-            {children}
-          </Box>
+          {children}
         </FormControl>
       </section>
     </>

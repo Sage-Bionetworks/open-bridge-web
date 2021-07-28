@@ -33,50 +33,39 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
 
   return (
     <SchedulingFormSection label={'End after:'}>
-      {!isReadOnly ? (
-        <RadioGroup
-          aria-label="End after"
-          name="endAfter"
-          value={endType}
-          onChange={e =>
-            changeEndDate(e.target.value as SessionScheduleEndType)
-          }>
-          <FormControlLabel
-            value={'END_STUDY'}
-            control={<Radio />}
-            label="End of study "
-          />
-
-          <FormControlLabel
-            control={
-              <>
-                <Radio value={'N_OCCURRENCES'} />{' '}
-                <FormControlLabelHidden
-                  label="number of occurrences"
-                  control={
-                    <SmallTextBox
-                      onFocus={() => changeEndDate('N_OCCURRENCES')}
-                      color="secondary"
-                      id="occurrences"
-                      isLessThanOneAllowed={false}
-                      style={{marginRight: '10px'}}
-                      onChange={e => onChange(e.target.value)}
-                      value={occurrences || ''}
-                    />
-                  }
-                />
-              </>
-            }
-            label="times"
-          />
-        </RadioGroup>
-      ) : (
-        <strong className={classes.timeFrameText}>
-          {endType === 'END_STUDY'
-            ? 'End of study'
-            : `${occurrences || ''} times`}
-        </strong>
-      )}
+      <RadioGroup
+        aria-label="End after"
+        name="endAfter"
+        value={endType}
+        onChange={e => changeEndDate(e.target.value as SessionScheduleEndType)}>
+        <FormControlLabel
+          value={'END_STUDY'}
+          control={<Radio />}
+          label="End of study "
+        />
+        <FormControlLabel
+          control={
+            <>
+              <Radio value={'N_OCCURRENCES'} />{' '}
+              <FormControlLabelHidden
+                label="number of occurrences"
+                control={
+                  <SmallTextBox
+                    onFocus={() => changeEndDate('N_OCCURRENCES')}
+                    color="secondary"
+                    id="occurrences"
+                    isLessThanOneAllowed={false}
+                    style={{marginRight: '10px'}}
+                    onChange={e => onChange(e.target.value)}
+                    value={occurrences || ''}
+                  />
+                }
+              />
+            </>
+          }
+          label="times"
+        />
+      </RadioGroup>
     </SchedulingFormSection>
   )
 }

@@ -50,37 +50,33 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
 
   return (
     <SchedulingFormSection label={`${sessionName} starts on:`}>
-      {isReadOnly ? (
-        <strong className={classes.timeFrameText}>Placeholder</strong>
-      ) : (
-        <RadioGroup
-          aria-label="Session Starts On"
-          name="startDate"
-          value={startType}
-          onChange={e =>
-            changeStartDate(e.target.value as SessionScheduleStartType)
-          }>
-          <FormControlLabel value={'DAY1'} control={<Radio />} label="Day 1" />
-          <FormControlLabel
-            control={
-              <>
-                <Radio value={'NDAYS_DAY1'} />{' '}
-                <Duration
-                  onFocus={() => changeStartDate('NDAYS_DAY1')}
-                  onChange={e => {
-                    onChange(e.target.value)
-                  }}
-                  durationString={delay}
-                  unitLabel="Repeat Every"
-                  numberLabel="frequency number"
-                  unitDefault={HDWMEnum.D}
-                  unitData={HDWMEnum}></Duration>
-              </>
-            }
-            label="from Day 1"
-          />
-        </RadioGroup>
-      )}
+      <RadioGroup
+        aria-label="Session Starts On"
+        name="startDate"
+        value={startType}
+        onChange={e =>
+          changeStartDate(e.target.value as SessionScheduleStartType)
+        }>
+        <FormControlLabel value={'DAY1'} control={<Radio />} label="Day 1" />
+        <FormControlLabel
+          control={
+            <>
+              <Radio value={'NDAYS_DAY1'} />{' '}
+              <Duration
+                onFocus={() => changeStartDate('NDAYS_DAY1')}
+                onChange={e => {
+                  onChange(e.target.value)
+                }}
+                durationString={delay}
+                unitLabel="Repeat Every"
+                numberLabel="frequency number"
+                unitDefault={HDWMEnum.D}
+                unitData={HDWMEnum}></Duration>
+            </>
+          }
+          label="from Day 1"
+        />
+      </RadioGroup>
     </SchedulingFormSection>
   )
 }
