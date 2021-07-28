@@ -548,7 +548,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                             })
                           }}
                           schedulerErrors={schedulerErrors}
-                          isReadOnly={builderInfo.study.phase === 'design'}>
+                          isReadOnly={builderInfo.study.phase !== 'design'}>
                           {navButtonsArray}
                         </Scheduler>
                       )}
