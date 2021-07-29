@@ -182,7 +182,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
           <Box marginRight={2}>
             <SessionIcon index={sessionIndex}>
               <EditableTextbox
-                shouldLimitCharacters={true}
+                maxCharacters={18}
                 component="h4"
                 initValue={studySession.name}
                 onTriggerUpdate={(newValue: string) =>
