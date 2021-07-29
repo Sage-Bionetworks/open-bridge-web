@@ -1,10 +1,10 @@
-import {Button, ButtonProps, Box, CircularProgress} from '@material-ui/core'
+import {Box, Button, ButtonProps, CircularProgress} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import clsx from 'clsx'
 import React from 'react'
 import {ReactComponent as SaveIcon} from '../../assets/save_icon.svg'
-import {latoFont, ThemeType} from '../../style/theme'
 import {ReactComponent as FloatingSaveIcon} from '../../assets/scheduler/floating_save_icon.svg'
-import clsx from 'clsx'
+import {latoFont, ThemeType} from '../../style/theme'
 
 interface StyleProps {
   width: number
@@ -74,6 +74,7 @@ const SaveButton: React.FunctionComponent<ButtonProps & ButtonStyleProps> = ({
       variant="contained"
       color="primary"
       onClick={onClick}
+      style={other.style}
       startIcon={!isFloatingSave && <SaveIcon />}
       id={id}>
       {isFloatingSave ? verticalIconAndText : 'Save Changes'}

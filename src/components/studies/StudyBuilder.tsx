@@ -108,6 +108,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     minHeight: '100vh',
     paddingTop: theme.spacing(5),
   },
+  negativeTop: {
+    marginTop: '-38px',
+  },
 }))
 
 type StudyBuilderOwnProps = {}
@@ -400,13 +403,15 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
 
   const navButtonsArray = [
     <NavButtons
-      id={id}
+      id={`${id}_p_button`}
+      key={`${id}_p_button`}
       currentSection={section}
       onNavigate={(section: StudySection) => changeSection(section)}
       isPrevOnly={true}
     />,
     <NavButtons
-      id={id}
+      id={`${id}_n_button`}
+      key={`${id}_n_button`}
       currentSection={section}
       isNextOnly={true}
       onNavigate={(section: StudySection) =>
@@ -442,6 +447,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       [classes.mainAreaNoLeftNav]: !open,
       [classes.mainAreaWideNoLeftNav]:
         !open && ['customize', 'scheduler'].includes(section),
+
+      [classes.negativeTop]: ['scheduler'].includes(section),
     })
   }
 
@@ -470,7 +477,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           position: 'absolute',
           right: '0',
         }}>
-        {' '}
         {hasObjectChanged ? 'object changed' : 'no change'}
       </span>
       <Container
