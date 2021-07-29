@@ -86,11 +86,13 @@ type EditableTextboxProps = {
   initValue: string
   onTriggerUpdate: Function
   component?: React.ElementType
+  shouldLimitCharacters?: boolean
 }
 
 const EditableTextbox: FunctionComponent<EditableTextboxProps> = ({
   initValue,
   onTriggerUpdate,
+  shouldLimitCharacters,
   ...rest
 }) => {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -107,6 +109,7 @@ const EditableTextbox: FunctionComponent<EditableTextboxProps> = ({
       type="input"
       {...rest}>
       <input
+        maxLength={shouldLimitCharacters ? 18 : Infinity}
         ref={inputRef}
         type="text"
         name="task"
