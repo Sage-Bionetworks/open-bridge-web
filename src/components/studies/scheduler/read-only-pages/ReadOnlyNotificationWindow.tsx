@@ -2,6 +2,7 @@ import React from 'react'
 import {Box, makeStyles} from '@material-ui/core'
 import NotifcationIcon from '../../../../assets/bell.svg'
 import {latoFont, poppinsFont} from '../../../../style/theme'
+import {useStyles as SharedSchedulerStyles} from '../ScheduleCreatorTab'
 import _ from 'lodash'
 
 const useStyles = makeStyles(theme => ({
@@ -12,12 +13,6 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2, 3),
     fontSize: '16px',
     fontFamily: latoFont,
-  },
-  row: {
-    display: 'flex',
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-between',
   },
   colContainer: {
     flexDirection: 'column',
@@ -51,13 +46,14 @@ const ReadOnlyNotificationWindow: React.FunctionComponent<ReadOnlyNotificationWi
   notificationTimeText,
 }) => {
   const classes = useStyles()
+  const sharedSchedulerStyles = SharedSchedulerStyles()
   return (
     <Box className={classes.container}>
-      <Box className={classes.row}>
+      <Box className={sharedSchedulerStyles.row}>
         <Box>{index}.</Box>
         <img src={NotifcationIcon}></img>
       </Box>
-      <Box className={classes.row} mt={4}>
+      <Box className={sharedSchedulerStyles.row} mt={4}>
         <Box width="100px" mr={3}>
           Notification Message:
         </Box>
@@ -71,7 +67,7 @@ const ReadOnlyNotificationWindow: React.FunctionComponent<ReadOnlyNotificationWi
         </Box>
       </Box>
       <Box
-        className={classes.row}
+        className={sharedSchedulerStyles.row}
         style={{
           alignItems: 'center',
           justifyContent: 'normal',

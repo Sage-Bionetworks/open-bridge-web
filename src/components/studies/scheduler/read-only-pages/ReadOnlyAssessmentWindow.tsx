@@ -4,6 +4,7 @@ import {latoFont} from '../../../../style/theme'
 import ClockIcon from '../../../../assets/clock.svg'
 import moment from 'moment'
 import {getTimeUnitFormatted} from '../utility'
+import {useStyles as SharedSchedulerStyles} from '../ScheduleCreatorTab'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -30,12 +31,6 @@ const useStyles = makeStyles(theme => ({
     width: '190px',
     fontSize: '16px',
   },
-  row: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
 }))
 
 type ReadOnlyAssessmentWindowProps = {
@@ -50,6 +45,7 @@ const ReadOnlyAssessmentWindow: React.FunctionComponent<ReadOnlyAssessmentWindow
   expireAfter,
 }) => {
   const classes = useStyles()
+  const sharedSchedulerStyles = SharedSchedulerStyles()
   const start = moment(startTime, 'HH:mm').format('h:mm a')
   return (
     <Box className={classes.container}>
@@ -58,10 +54,10 @@ const ReadOnlyAssessmentWindow: React.FunctionComponent<ReadOnlyAssessmentWindow
         <img src={ClockIcon} style={{height: '22px', width: '22px'}}></img>
       </Box>
       <Box className={classes.timesContainer}>
-        <Box className={classes.row} mb={2}>
+        <Box className={sharedSchedulerStyles.row} mb={2}>
           <Box>Start:</Box> <strong>{start}</strong>
         </Box>
-        <Box className={classes.row}>
+        <Box className={sharedSchedulerStyles.row}>
           <Box>Expire After:</Box>{' '}
           <strong>{getTimeUnitFormatted(expireAfter)}</strong>
         </Box>

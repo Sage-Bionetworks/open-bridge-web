@@ -77,6 +77,12 @@ export const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(1),
       backgroundColor: '#BCD5E4',
     },
+    row: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
   })
 )
 
