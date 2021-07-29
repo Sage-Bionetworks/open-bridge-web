@@ -246,7 +246,7 @@ const ScheduleCreatorTab: FunctionComponent<
     )
   }
 
-  if (isReadOnly) {
+  if (!isReadOnly) {
     return (
       <ReadOnlyScheduler
         token={token}

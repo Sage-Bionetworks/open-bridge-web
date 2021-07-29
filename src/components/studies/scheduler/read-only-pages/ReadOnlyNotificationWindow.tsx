@@ -35,12 +35,6 @@ const useStyles = makeStyles(theme => ({
     lineHeight: '27px',
     justifySelf: 'flex-start',
   },
-  rowClose: {
-    display: 'flex',
-    flexDirection: 'row',
-    width: '100%',
-    alignItems: 'center',
-  },
 }))
 
 type ReadOnlyNotificationWindowProps = {
@@ -76,7 +70,13 @@ const ReadOnlyNotificationWindow: React.FunctionComponent<ReadOnlyNotificationWi
           </Box>
         </Box>
       </Box>
-      <Box className={classes.rowClose} mt={3}>
+      <Box
+        className={classes.row}
+        style={{
+          alignItems: 'center',
+          justifyContent: 'normal',
+          marginTop: '27px',
+        }}>
         <Box width="100px" mr={3}>
           Notify Participant:
         </Box>
