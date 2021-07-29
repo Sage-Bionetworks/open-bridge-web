@@ -31,8 +31,9 @@ import actionsReducer, {
 } from './scheduleActions'
 import StudyStartDate from './StudyStartDate'
 import Timeline from './Timeline'
+import ReadOnlyScheduler from './read-only-pages/ReadOnlyScheduler'
 
-const useStyles = makeStyles((theme: Theme) =>
+export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     sessionContainer: {
       marginBottom: theme.spacing(2),
@@ -49,13 +50,6 @@ const useStyles = makeStyles((theme: Theme) =>
       fontStyle: 'normal',
       fontWeight: 600,
     },
-    assessments: {
-      width: '286px',
-      flexGrow: 0,
-      flexShrink: 0,
-      backgroundColor: '#BCD5E4',
-      padding: theme.spacing(1),
-    },
     scheduleHeader: {
       display: 'flex',
       alignItems: 'center',
@@ -69,8 +63,39 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'center',
       alignItems: 'center',
     },
+    assessments: {
+      width: '286px',
+      flexGrow: 0,
+      flexShrink: 0,
+      padding: theme.spacing(1),
+      backgroundColor: '#BCD5E4',
+    },
+    row: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
   })
 )
+
+export const getStartEventIdFromSchedule = (
+  schedule: Schedule
+): StartEventId | null => {
+  if (_.isEmpty(schedule.sessions)) {
+    return null
+  }
+  const eventIdArray = schedule.sessions.reduce(
+    (acc, curr) => (curr.startEventId ? [...acc, curr.startEventId] : acc),
+    [] as StartEventId[]
+  )
+
+  if (_.uniq(eventIdArray).length > 1) {
+    throw Error('startEventIds should be the same for all sessions')
+  } else {
+    return eventIdArray[0]
+  }
+}
 
 type ScheduleCreatorTabProps = {
   id: string
@@ -79,6 +104,7 @@ type ScheduleCreatorTabProps = {
   token: string
   onSave: Function
   schedulerErrors: SchedulerErrorType[]
+  isReadOnly?: boolean
 }
 
 const ScheduleCreatorTab: FunctionComponent<
@@ -93,6 +119,7 @@ const ScheduleCreatorTab: FunctionComponent<
   token,
   version,
   schedulerErrors,
+  isReadOnly,
 }: ScheduleCreatorTabProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
   const [isErrorAlert, setIsErrorAlert] = React.useState(true)
@@ -184,24 +211,6 @@ const ScheduleCreatorTab: FunctionComponent<
     setSchedulerErrorState(newErrorState)
   }, [schedulerErrors])
 
-  const getStartEventIdFromSchedule = (
-    schedule: Schedule
-  ): StartEventId | null => {
-    if (_.isEmpty(schedule.sessions)) {
-      return null
-    }
-    const eventIdArray = schedule.sessions.reduce(
-      (acc, curr) => (curr.startEventId ? [...acc, curr.startEventId] : acc),
-      [] as StartEventId[]
-    )
-
-    if (_.uniq(eventIdArray).length > 1) {
-      throw Error('startEventIds should be the same for all sessions')
-    } else {
-      return eventIdArray[0]
-    }
-  }
-
   const saveSession = async (sessionId: string) => {
     onSave()
   }
@@ -233,6 +242,17 @@ const ScheduleCreatorTab: FunctionComponent<
           You need to create sessions before creating the schedule
         </ErrorDisplay>
       </Box>
+    )
+  }
+
+  if (isReadOnly) {
+    return (
+      <ReadOnlyScheduler
+        token={token}
+        children={children}
+        schedule={schedule}
+        version={version}
+      />
     )
   }
 

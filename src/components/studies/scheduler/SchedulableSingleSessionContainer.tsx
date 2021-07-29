@@ -20,7 +20,7 @@ import RepeatFrequency from './RepeatFrequency'
 import SchedulingFormSection from './SchedulingFormSection'
 import StartDate from './StartDate'
 
-const useStyles = makeStyles((theme: ThemeType) => ({
+export const useStyles = makeStyles((theme: ThemeType) => ({
   formSection: {
     padding: theme.spacing(2, 4, 0),
     textAlign: 'left',

@@ -39,7 +39,6 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
           control={<Radio />}
           label="End of study "
         />
-
         <FormControlLabel
           control={
             <>

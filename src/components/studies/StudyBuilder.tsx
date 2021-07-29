@@ -123,11 +123,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   ...otherProps
 }) => {
   const classes = useStyles()
-  let {id, section: _section} =
-    useParams<{
-      id: string
-      section: StudySection
-    }>()
+  let {id, section: _section} = useParams<{
+    id: string
+    section: StudySection
+  }>()
   const [section, setSection] = React.useState(_section)
   const [error, setError] = React.useState<string[]>([])
   const handleError = useErrorHandler()
@@ -141,14 +140,13 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   const studyDataUpdateFn = useStudyInfoDataDispatch()
   const [open, setOpen] = React.useState(true)
   const [displayBanner, setDisplayBanner] = React.useState(false)
-  const [bannerType, setBannerType] =
-    React.useState<{
-      bgColor: string
-      displayText: string[]
-      icon: string[]
-      textColor: string
-      type: string
-    }>()
+  const [bannerType, setBannerType] = React.useState<{
+    bgColor: string
+    displayText: string[]
+    icon: string[]
+    textColor: string
+    type: string
+  }>()
 
   React.useEffect(() => {
     const banner = getBannerType(builderInfo?.study?.phase, section)
@@ -549,7 +547,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                               schedule: schedule,
                             })
                           }}
-                          schedulerErrors={schedulerErrors}>
+                          schedulerErrors={schedulerErrors}
+                          isReadOnly={builderInfo.study.phase !== 'design'}>
                           {navButtonsArray}
                         </Scheduler>
                       )}

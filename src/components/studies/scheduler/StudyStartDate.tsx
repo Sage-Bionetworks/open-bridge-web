@@ -85,7 +85,6 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
               : 'Right after completion of onboarding session'
           }
         />
-
         <FormControlLabel
           value={options[1]}
           control={<Radio />}

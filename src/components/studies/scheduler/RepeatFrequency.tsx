@@ -15,6 +15,10 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
   occurrences,
   onChange,
 }: RepeatFrequencyProps) => {
+  const label = occurrences
+    ? ` for ${occurrences} times`
+    : 'until the end of study'
+
   return (
     <SchedulingFormSection label={'Run this session every:'}>
       <FormControlLabel
@@ -30,9 +34,7 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
             numberLabel="frequency number"
             unitData={DWsEnum}></Duration>
         }
-        label={
-          occurrences ? ` for ${occurrences} times` : 'until the end of study'
-        }
+        label={label}
       />
     </SchedulingFormSection>
   )
