@@ -125,7 +125,9 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
         </div>
         {schedule.sessions.map((session, index) => (
           <Box mb={2} display="flex" key={session.guid}>
-            <Box className={clsx(schedulerClasses.readOnlyAssessmentContainer)}>
+            <Box
+              className={clsx(schedulerClasses.assessments)}
+              style={{backgroundColor: '#f8f8f8'}}>
               <AssessmentList
                 isReadOnly={true}
                 studySessionIndex={index}

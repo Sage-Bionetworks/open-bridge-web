@@ -50,13 +50,6 @@ export const useStyles = makeStyles((theme: Theme) =>
       fontStyle: 'normal',
       fontWeight: 600,
     },
-    readOnlyAssessmentContainer: {
-      width: '286px',
-      flexGrow: 0,
-      flexShrink: 0,
-      padding: theme.spacing(1),
-      backgroundColor: '#f8f8f8',
-    },
     scheduleHeader: {
       display: 'flex',
       alignItems: 'center',
