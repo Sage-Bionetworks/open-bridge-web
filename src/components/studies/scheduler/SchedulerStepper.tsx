@@ -12,21 +12,20 @@ import {
 } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React from 'react'
-import {ReactComponent as IrbIcon} from '../../../assets/launch/irb_icon.svg'
-import {ReactComponent as ReviewIcon} from '../../../assets/launch/review_icon.svg'
-import {ReactComponent as RocketIcon} from '../../../assets/launch/rocket_icon.svg'
-import {ReactComponent as TagIcon} from '../../../assets/launch/tag_icon.svg'
-import {ReactComponent as TagIconInactive} from '../../../assets/launch/tag_icon_inactive.svg'
+import {ReactComponent as SessionStartIcon} from '../../../assets/scheduler/calendar_icon.svg'
+import {ReactComponent as EmaIcon} from '../../../assets/scheduler/ema_icon.svg'
+import {ReactComponent as ScheduleIcon} from '../../../assets/scheduler/schedule_icon.svg'
 
 const ColorlibConnector = withStyles({
   alternativeLabel: {
+    //maxWidth: '80px',
     top: 22,
   },
   active: {
     '& $line': {
       /*backgroundImage:
         'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)',*/
-      backgroundColor: '#FFE500',
+      backgroundColor: '#BCD5E4',
     },
   },
   completed: {
@@ -34,19 +33,19 @@ const ColorlibConnector = withStyles({
       /*
       backgroundImage:
         'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)',*/
-      backgroundColor: '#FFE500',
+      backgroundColor: '#BCD5E4',
     },
   },
   line: {
     height: 3,
     border: 0,
-    backgroundColor: '#E3E1D3',
+    backgroundColor: '#FFF',
     borderRadius: 1,
   },
 })(StepConnector)
 const useColorlibStepIconStyles = makeStyles({
   root: {
-    backgroundColor: '#E3E1D3',
+    backgroundColor: '#FFF',
     zIndex: 1,
     color: '#fff',
     width: 40,
@@ -57,10 +56,10 @@ const useColorlibStepIconStyles = makeStyles({
     alignItems: 'center',
   },
   active: {
-    backgroundColor: '#FFE500',
+    backgroundColor: '#BCD5E4',
   },
   completed: {
-    backgroundColor: '#FFE500',
+    backgroundColor: '#BCD5E4',
   },
 })
 
@@ -74,10 +73,9 @@ function ColorlibStepIcon(props: StepIconProps) {
       inactive: React.ReactElement
     }
   } = {
-    1: {active: <ReviewIcon />, inactive: <ReviewIcon />},
-    2: {active: <TagIcon />, inactive: <TagIconInactive />},
-    3: {active: <IrbIcon />, inactive: <IrbIcon />},
-    4: {active: <RocketIcon />, inactive: <RocketIcon />},
+    1: {active: <SessionStartIcon />, inactive: <SessionStartIcon />},
+    2: {active: <ScheduleIcon />, inactive: <ScheduleIcon />},
+    3: {active: <EmaIcon />, inactive: <EmaIcon />},
   }
   const iconNode = icons[String(props.icon)]
 
@@ -101,9 +99,12 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     stepperRoot: {
       backgroundColor: 'transparent',
-      position: 'absolute',
-      left: '-150px',
-      width: 'calc(100% + 300px)',
+      margin: '0 auto',
+      width: theme.spacing(98),
+      padding: 0,
+    },
+    stepLabel: {
+      maxWidth: theme.spacing(10),
     },
   })
 )
@@ -126,7 +127,9 @@ const SchedulerStepper: React.FunctionComponent<SchedulerStepperProps> = ({
       <Stepper
         alternativeLabel
         activeStep={activeStep}
-        classes={{root: classes.stepperRoot}}
+        classes={{
+          root: classes.stepperRoot,
+        }}
         connector={<ColorlibConnector />}>
         {steps.map((step, index) => (
           <Step key={step.label}>
@@ -134,7 +137,9 @@ const SchedulerStepper: React.FunctionComponent<SchedulerStepperProps> = ({
               onClick={() => setActiveStepFn(index)}
               completed={step.isComplete}
               disabled={!step.isComplete}>
-              <StepLabel StepIconComponent={ColorlibStepIcon}>
+              <StepLabel
+                className={classes.stepLabel}
+                StepIconComponent={ColorlibStepIcon}>
                 {step.label}
               </StepLabel>
             </StepButton>

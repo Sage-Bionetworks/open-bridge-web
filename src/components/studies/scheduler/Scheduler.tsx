@@ -14,7 +14,8 @@ import SessionStartTab from './SessionStartTab'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
-    padding: theme.spacing(3, 0, 2, 0),
+    padding: theme.spacing(0, 0, 2, 0),
+
     backgroundColor: 'transparent',
   },
   button: {
@@ -81,7 +82,7 @@ const Scheduler: React.FunctionComponent<
   const classes = useStyles()
 
   const [steps, setSteps] = useState(getSteps())
-  const [activeStep, setActiveStep] = React.useState(0)
+  const [activeStep, setActiveStep] = React.useState(2)
   const [isFinished, setIsFinished] = React.useState(false)
   const [isNextEnabled, setIsNextEnabled] = React.useState(true)
 
