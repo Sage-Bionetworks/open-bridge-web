@@ -5,7 +5,7 @@ import React from 'react'
 import Utility from '../../../helpers/utility'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import SmallTextBox from '../../widgets/SmallTextBox'
-import {getTimeExpiredAfter} from './utility'
+import {getAmountOfTimeFromString} from './utility'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -53,7 +53,7 @@ const Duration: React.FunctionComponent<
       }
 
       let unit = durationString[durationString.length - 1]
-      const n = getTimeExpiredAfter(durationString)
+      const n = getAmountOfTimeFromString(durationString)
 
       setUnit(unit)
       setNum(n)

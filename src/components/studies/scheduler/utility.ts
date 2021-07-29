@@ -2,7 +2,7 @@ import moment from 'moment'
 import {StringDictionary} from '../../../types/types'
 import {Schedule, HDWMEnum} from '../../../types/scheduling'
 
-export function getTimeExpiredAfter(durationString: string) {
+export function getAmountOfTimeFromString(durationString: string) {
   var numberPattern = /\d+/g
   const num = durationString.match(numberPattern)
   return num ? Number(num[0]) : 0
@@ -10,7 +10,7 @@ export function getTimeExpiredAfter(durationString: string) {
 
 // returns a string in the form "2 weeks", "7 days", ...
 export function getTimeUnitFormatted(durationString: string) {
-  const time = getTimeExpiredAfter(durationString)
+  const time = getAmountOfTimeFromString(durationString)
   const unit = durationString[
     durationString.length - 1
   ] as keyof typeof HDWMEnum
