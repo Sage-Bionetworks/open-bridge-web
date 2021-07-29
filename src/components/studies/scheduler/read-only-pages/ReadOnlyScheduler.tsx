@@ -195,13 +195,12 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
                     {(session || defaultSchedule).timeWindows?.map(
                       (window, index) => {
                         return (
-                          <Box>
-                            <ReadOnlyAssessmentWindow
-                              startTime={window.startTime}
-                              index={index + 1}
-                              expireAfter={window.expiration || 'N/A'}
-                            />
-                          </Box>
+                          <ReadOnlyAssessmentWindow
+                            key={'read-only-assessment-window-' + index}
+                            startTime={window.startTime}
+                            index={index + 1}
+                            expireAfter={window.expiration || 'N/A'}
+                          />
                         )
                       }
                     )}
@@ -218,6 +217,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
                       (notification, index) => {
                         return (
                           <ReadOnlyNotificationWindow
+                            key={'read-only-notification-window-' + index}
                             index={index + 1}
                             notificationHeader={
                               _.first(notification.messages)?.subject || ''
