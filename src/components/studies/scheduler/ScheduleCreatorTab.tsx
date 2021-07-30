@@ -24,14 +24,14 @@ import SaveButton from '../../widgets/SaveButton'
 import {SchedulerErrorType} from '../StudyBuilder'
 import AssessmentList from './AssessmentList'
 import Duration from './Duration'
+import ReadOnlyScheduler from './read-only-pages/ReadOnlyScheduler'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
   SessionScheduleAction,
 } from './scheduleActions'
+import Timeline from './ScheduleTimeline'
 import StudyStartDate from './StudyStartDate'
-import Timeline from './Timeline'
-import ReadOnlyScheduler from './read-only-pages/ReadOnlyScheduler'
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
