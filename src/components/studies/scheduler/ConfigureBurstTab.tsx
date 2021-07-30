@@ -18,7 +18,7 @@ import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
 import SessionIcon from '../../widgets/SessionIcon'
 import SmallTextBox from '../../widgets/SmallTextBox'
-import BurstTimeline from './BurstTimeline'
+import BurstTimeline from './timeline-plot/BurstTimeline'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

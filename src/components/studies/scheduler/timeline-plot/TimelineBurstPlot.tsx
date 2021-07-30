@@ -1,11 +1,8 @@
 import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
 import {StudySession} from '../../../../types/scheduling'
-import GridPlot, {DailyGridPlot} from './GridPlot'
-import NonDailySessionPlot, {
-  DailySessionPlot,
-  SessionLine,
-} from './SingleSessionPlot'
+import {SingleSessionGridPlot} from './GridPlot'
+import {SessionPlot} from './SingleSessionPlot'
 import {TimelineScheduleItem, TimelineZoomLevel} from './types'
 import Utility from './utility'
 
@@ -60,15 +57,6 @@ export interface TimelineBurstPlotProps {
   burstFrequency: number
 }
 
-export function getTimesForSession(
-  sessionGuid: string,
-  schedulingItems: TimelineScheduleItem[]
-): number[] {
-  return schedulingItems
-    .filter(i => i.refGuid === sessionGuid)
-    .map(i => i.startDay)
-}
-
 const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   schedulingItems,
   scheduleLength,
@@ -92,57 +80,38 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
           }}>
           <div
             style={{
-              height: `${sortedSessions.length * graphSessionHeight}px`,
+              height: `${/*graphSessionHeight*/ 25}px`,
               position: 'relative',
             }}>
-            {[...Array(scheduleLength)].map((i, index) =>
-              zoomLevel === 'Daily' ? (
-                <DailyGridPlot
-                  graphSessionHeight={graphSessionHeight}
-                  index={index}
-                  zoomLevel={zoomLevel}
-                  numberSessions={sortedSessions.length}
-                  key={`${i}_${index}`}
-                />
-              ) : (
-                <GridPlot
-                  graphSessionHeight={graphSessionHeight}
-                  index={index}
-                  zoomLevel={zoomLevel}
-                  numberSessions={sortedSessions.length}
-                  key={`${i}_${index}`}
-                />
-              )
-            )}
-            <div style={{position: 'absolute', top: '30px'}}>
-              {sortedSessions.map((session, sIndex) => (
-                <div key={sIndex}>
-                  <SessionLine
-                    sessionIndex={sIndex}
+            {[...Array(scheduleLength)].map((i, index) => (
+              <SingleSessionGridPlot
+                graphSessionHeight={graphSessionHeight}
+                index={index}
+                hideDays={false}
+                zoomLevel={zoomLevel}
+                numberSessions={1}
+                key={`${i}_${index}`}
+              />
+            ))}
+            <div style={{position: 'absolute', top: '0px'}}>
+              {[sortedSessions[1]].map((session, sIndex) => (
+                <div
+                  key={sortedSessions.findIndex(s => s.guid === session.guid)}>
+                  <SessionPlot
+                    sessionIndex={sortedSessions.findIndex(
+                      s => s.guid === session.guid
+                    )}
+                    hasSessionLines={false}
+                    displayIndex={sIndex}
                     scheduleLength={scheduleLength}
                     zoomLevel={zoomLevel}
+                    schedulingItems={schedulingItems}
+                    sessionGuid={session.guid!}
                     containerWidth={Utility.getContainerWidth(
                       scheduleLength,
                       zoomLevel
                     )}
                   />
-
-                  {zoomLevel === 'Daily' ? (
-                    <DailySessionPlot
-                      sessionIndex={sIndex}
-                      zoomLevel={zoomLevel}
-                      schedulingItems={schedulingItems}
-                      sessionGuid={session.guid!}
-                      scheduleLength={scheduleLength}
-                    />
-                  ) : (
-                    <NonDailySessionPlot
-                      sessionIndex={sIndex}
-                      zoomLevel={zoomLevel}
-                      schedulingItems={schedulingItems}
-                      sessionGuid={session.guid!}
-                    />
-                  )}
                 </div>
               ))}
             </div>

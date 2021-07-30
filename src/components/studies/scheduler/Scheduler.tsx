@@ -3,7 +3,7 @@ import {makeStyles} from '@material-ui/core/styles'
 import React, {useState} from 'react'
 import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
 import {ThemeType} from '../../../style/theme'
-import {Schedule, StartEventId} from '../../../types/scheduling'
+import {Schedule} from '../../../types/scheduling'
 import {Study, StudyBuilderComponentProps} from '../../../types/types'
 import {NextButton, PrevButton} from '../../widgets/StyledComponents'
 import {SchedulerErrorType} from '../StudyBuilder'
@@ -11,7 +11,6 @@ import ConfigureBurstTab from './ConfigureBurstTab'
 import ScheduleCreatorTab from './ScheduleCreatorTab'
 import SchedulerStepper from './SchedulerStepper'
 import SessionStartTab from './SessionStartTab'
-import _ from 'lodash'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {

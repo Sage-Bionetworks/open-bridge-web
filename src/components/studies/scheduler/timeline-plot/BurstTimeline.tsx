@@ -3,17 +3,14 @@ import {makeStyles} from '@material-ui/core/styles'
 import moment from 'moment'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import {useAsync} from '../../../helpers/AsyncHook'
-import StudyService from '../../../services/study.service'
-import {latoFont} from '../../../style/theme'
-import {Schedule} from '../../../types/scheduling'
-import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
-import TimelineBurstPlot from './timeline-plot/TimelineBurstPlot'
-import {
-  TimelineScheduleItem,
-  TimelineSession,
-  TimelineZoomLevel,
-} from './timeline-plot/types'
+import {useAsync} from '../../../../helpers/AsyncHook'
+import StudyService from '../../../../services/study.service'
+import {latoFont} from '../../../../style/theme'
+import {Schedule} from '../../../../types/scheduling'
+import BlackBorderDropdown from '../../../widgets/BlackBorderDropdown'
+import TimelineBurstPlot from './../timeline-plot/TimelineBurstPlot'
+import {TimelineScheduleItem, TimelineSession, TimelineZoomLevel} from './types'
+
 const useStyles = makeStyles(theme => ({
   stats: {
     fontFamily: latoFont,
@@ -102,8 +99,10 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
 
   const setZoomLevel = (scheduleDuration: string) => {
     const periods: TimelineZoomLevel[] = [
-      'Daily',
+      //'Daily',
+
       'Weekly',
+      'Bi-Weekly',
       'Monthly',
       'Quarterly',
     ]
@@ -119,7 +118,7 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
       periods.splice(3)
     }
     console.log(periods)
-    setCurrentZoomLevel(periods[periods.length - 1])
+    setCurrentZoomLevel(periods[0])
     setDropdown(periods)
   }
 

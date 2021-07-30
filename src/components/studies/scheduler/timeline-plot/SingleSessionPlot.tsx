@@ -35,6 +35,7 @@ export interface SingleSessionPlotProps {
   schedulingItems: TimelineScheduleItem[]
   scheduleLength?: number
   graphSessionHeight?: number
+  displayIndex: number
 }
 
 export interface SingleSessionLinePlotProps {
@@ -43,6 +44,7 @@ export interface SingleSessionLinePlotProps {
   scheduleLength: number
   zoomLevel: TimelineZoomLevel
   graphSessionHeight?: number
+  hasSessionLines?: boolean
 }
 
 export function getTimesForSession(
@@ -109,6 +111,7 @@ const NonDailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   sessionGuid,
   zoomLevel,
   sessionIndex,
+  displayIndex,
   graphSessionHeight = 50,
 }) => {
   const sessionGraph = getSingleSessionX(sessionGuid, schedulingItems).map(
@@ -120,8 +123,7 @@ const NonDailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
           width: '20px',
           position: 'absolute',
           zIndex: 100,
-          top: `${graphSessionHeight * sessionIndex - 5}px`,
-
+          top: `${graphSessionHeight * displayIndex - 5}px`,
           left: `${i * unitPixelWidth[zoomLevel] - 10}px`,
         }}></SessionIcon>
     )
@@ -130,9 +132,15 @@ const NonDailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
 }
 
 export const SessionLine: React.FunctionComponent<SingleSessionLinePlotProps> =
-  ({sessionIndex, zoomLevel, graphSessionHeight = 50, containerWidth}) => {
+  ({
+    sessionIndex,
+    zoomLevel,
+    graphSessionHeight = 50,
+    containerWidth,
+    hasSessionLines = true,
+  }) => {
     const classes = useStyles()
-    if (zoomLevel === 'Daily') {
+    if (zoomLevel === 'Daily' || !hasSessionLines) {
       return <></>
     }
 
@@ -168,6 +176,7 @@ export const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> =
     zoomLevel,
     sessionIndex,
     scheduleLength,
+    displayIndex,
     graphSessionHeight = 50,
   }) => {
     const classes = useStyles()
@@ -182,7 +191,7 @@ export const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> =
         key={`interval${index}`}
         style={{
           width: `${i.expire * unitPixelWidth[zoomLevel]}px`,
-          top: `${graphSessionHeight * sessionIndex}px`,
+          top: `${graphSessionHeight * displayIndex}px`,
           left: `${(i.day + i.startTime) * unitPixelWidth[zoomLevel]}px`,
         }}>
         <div className={classes.dailyIntervalInner}>
@@ -192,12 +201,6 @@ export const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> =
               width: '20px',
               display: 'block',
               margin: '-5px auto 0 auto',
-              //marginTop: '-5px',
-              //  position: 'absolute',
-              // zIndex: 100,
-              // top: `${graphSessionHeight * sessionIndex - 5}px`,
-
-              //left: `${i * unitPixelWidth[zoomLevel] - 10}px`,
             }}></SessionIcon>
         </div>
       </div>
@@ -207,4 +210,51 @@ export const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> =
     //return <>nothing</>
   }
 
-export default NonDailySessionPlot
+export const SessionPlot: React.FunctionComponent<
+  SingleSessionPlotProps & SingleSessionLinePlotProps
+> = ({
+  schedulingItems,
+  sessionGuid,
+  zoomLevel,
+  sessionIndex,
+  displayIndex,
+  containerWidth,
+  scheduleLength,
+  hasSessionLines = true,
+}) => {
+  const sPlot =
+    zoomLevel === 'Daily' ? (
+      <DailySessionPlot
+        sessionIndex={sessionIndex}
+        displayIndex={displayIndex}
+        zoomLevel={zoomLevel}
+        schedulingItems={schedulingItems}
+        sessionGuid={sessionGuid}
+        scheduleLength={scheduleLength}
+      />
+    ) : (
+      <NonDailySessionPlot
+        sessionIndex={sessionIndex}
+        displayIndex={displayIndex}
+        zoomLevel={zoomLevel}
+        schedulingItems={schedulingItems}
+        sessionGuid={sessionGuid}
+      />
+    )
+
+  return (
+    <>
+      {hasSessionLines && (
+        <SessionLine
+          sessionIndex={displayIndex}
+          scheduleLength={scheduleLength}
+          zoomLevel={zoomLevel}
+          containerWidth={containerWidth}
+        />
+      )}
+      {sPlot}
+    </>
+  )
+}
+
+export default SessionPlot

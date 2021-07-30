@@ -1,11 +1,8 @@
 import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
 import {StudySession} from '../../../../types/scheduling'
-import GridPlot, {DailyGridPlot} from './GridPlot'
-import NonDailySessionPlot, {
-  DailySessionPlot,
-  SessionLine,
-} from './SingleSessionPlot'
+import GridPlot from './GridPlot'
+import {SessionPlot} from './SingleSessionPlot'
 import {TimelineScheduleItem, TimelineZoomLevel} from './types'
 import Utility from './utility'
 
@@ -57,15 +54,6 @@ export interface TimelineCustomPlotProps {
   zoomLevel: TimelineZoomLevel
 }
 
-export function getTimesForSession(
-  sessionGuid: string,
-  schedulingItems: TimelineScheduleItem[]
-): number[] {
-  return schedulingItems
-    .filter(i => i.refGuid === sessionGuid)
-    .map(i => i.startDay)
-}
-
 const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
   schedulingItems,
   scheduleLength,
@@ -96,54 +84,31 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
               height: `${sortedSessions.length * graphSessionHeight}px`,
               position: 'relative',
             }}>
-            {[...Array(scheduleLength)].map((i, index) =>
-              zoomLevel === 'Daily' ? (
-                <DailyGridPlot
-                  graphSessionHeight={graphSessionHeight}
-                  index={index}
-                  zoomLevel={zoomLevel}
-                  numberSessions={sortedSessions.length}
-                  key={`${i}_${index}`}
-                />
-              ) : (
-                <GridPlot
-                  graphSessionHeight={graphSessionHeight}
-                  index={index}
-                  zoomLevel={zoomLevel}
-                  numberSessions={sortedSessions.length}
-                  key={`${i}_${index}`}
-                />
-              )
-            )}
+            {[...Array(scheduleLength)].map((i, index) => (
+              <GridPlot
+                graphSessionHeight={graphSessionHeight}
+                index={index}
+                zoomLevel={zoomLevel}
+                numberSessions={sortedSessions.length}
+                key={`${i}_${index}`}
+              />
+            ))}
+
             <div style={{position: 'absolute', top: '30px'}}>
               {sortedSessions.map((session, sIndex) => (
                 <div key={sIndex}>
-                  <SessionLine
+                  <SessionPlot
                     sessionIndex={sIndex}
+                    displayIndex={sIndex}
                     scheduleLength={scheduleLength}
                     zoomLevel={zoomLevel}
+                    schedulingItems={schedulingItems}
+                    sessionGuid={session.guid!}
                     containerWidth={Utility.getContainerWidth(
                       scheduleLength,
                       zoomLevel
                     )}
                   />
-
-                  {zoomLevel === 'Daily' ? (
-                    <DailySessionPlot
-                      sessionIndex={sIndex}
-                      zoomLevel={zoomLevel}
-                      schedulingItems={schedulingItems}
-                      sessionGuid={session.guid!}
-                      scheduleLength={scheduleLength}
-                    />
-                  ) : (
-                    <NonDailySessionPlot
-                      sessionIndex={sIndex}
-                      zoomLevel={zoomLevel}
-                      schedulingItems={schedulingItems}
-                      sessionGuid={session.guid!}
-                    />
-                  )}
                 </div>
               ))}
             </div>
