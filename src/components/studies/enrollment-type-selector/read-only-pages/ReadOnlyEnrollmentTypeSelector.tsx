@@ -2,6 +2,7 @@ import React from 'react'
 import {Box, makeStyles} from '@material-ui/core'
 import {poppinsFont} from '../../../../style/theme'
 import StudyEnrollmentAdditionIcon from '../../../../assets/study_enrollment_addition_icon.svg'
+import constants from '../../../../types/constants'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -24,10 +25,17 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const ReadOnlyEnrollmentTypeSelector: React.FunctionComponent<{
+type ReadOnlyEnrollmentTypeSelectorProps = {
   isPhoneNumberSignInType: boolean
   children: React.ReactNode
-}> = ({isPhoneNumberSignInType, children}) => {
+  studyId: string
+}
+
+const ReadOnlyEnrollmentTypeSelector: React.FunctionComponent<ReadOnlyEnrollmentTypeSelectorProps> = ({
+  isPhoneNumberSignInType,
+  children,
+  studyId,
+}) => {
   const classes = useStyles()
   return (
     <>
@@ -47,7 +55,11 @@ const ReadOnlyEnrollmentTypeSelector: React.FunctionComponent<{
           <br></br>
           If you haven’t already done so, you will need to enroll your
           participants to your study in the{' '}
-          <a>
+          <a
+            href={constants.restrictedPaths.PARTICIPANT_MANAGER.replace(
+              ':id',
+              studyId
+            )}>
             <u>Participant Manager.</u>
           </a>
           <br></br>

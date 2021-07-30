@@ -187,6 +187,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<
           study.signInTypes && study.signInTypes[0] === 'phone_password'
         }
         children={children}
+        studyId={study.identifier}
       />
     )
   }
