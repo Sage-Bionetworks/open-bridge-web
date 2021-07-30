@@ -648,6 +648,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'passive-features' && (
                         <PassiveFeatures
+                          isReadOnly={builderInfo.study.phase !== 'design'}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           features={
