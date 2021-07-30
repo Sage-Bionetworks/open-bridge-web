@@ -484,6 +484,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         style={{
           height: '100vh',
           padding: '0',
+          backgroundColor:
+            section === 'enrollment-type-selector' ? '#f7f7f7' : 'inherit',
         }}>
         <Box paddingTop={2} display="flex" position="relative">
           <StudyLeftNav
@@ -577,6 +579,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'enrollment-type-selector' && (
                         <EnrollmentTypeSelector
+                          isReadOnly={builderInfo.study.phase !== 'design'}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           study={builderInfo.study}

@@ -19,6 +19,7 @@ import {
 } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import {MTBHeadingH1} from '../../widgets/Headings'
+import ReadOnlyEnrollmentTypeSelector from './read-only-pages/ReadOnlyEnrollmentTypeSelector'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -144,6 +145,7 @@ const ID_SELECTIONS = [true, false, false, false, true]
 
 export interface EnrollmentTypeSelectorProps {
   study: Study
+  isReadOnly?: boolean
 }
 
 const EnrollmentTypeSelector: React.FunctionComponent<
@@ -153,6 +155,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<
   onUpdate,
   hasObjectChanged,
   saveLoader,
+  isReadOnly,
   children,
 }: EnrollmentTypeSelectorProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
@@ -175,6 +178,17 @@ const EnrollmentTypeSelector: React.FunctionComponent<
       clientData: studyClientData,
       signInTypes: signInTypes,
     })
+  }
+
+  if (isReadOnly) {
+    return (
+      <ReadOnlyEnrollmentTypeSelector
+        isPhoneNumberSignInType={
+          study.signInTypes && study.signInTypes[0] === 'phone_password'
+        }
+        children={children}
+      />
+    )
   }
 
   return (
