@@ -1,5 +1,5 @@
 import moment from 'moment'
-import {TimelineZoomLevel} from './types'
+import {TimelineZoomLevel, unitPixelWidth} from './types'
 
 function getZoomLevel(scheduleDuration: string): {
   lengthInDays: number
@@ -25,6 +25,11 @@ function getZoomLevel(scheduleDuration: string): {
   return {lengthInDays, periods}
 }
 
+function getContainerWidth(lengthInDays: number, zoomLevel: TimelineZoomLevel) {
+  return unitPixelWidth[zoomLevel] * lengthInDays
+}
+
 export default {
   getZoomLevel,
+  getContainerWidth,
 }

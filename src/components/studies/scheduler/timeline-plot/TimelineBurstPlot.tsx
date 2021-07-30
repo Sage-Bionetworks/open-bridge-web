@@ -50,11 +50,14 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export interface TimelineCustomPlotProps {
+export interface TimelineBurstPlotProps {
   schedulingItems: TimelineScheduleItem[]
   scheduleLength: number
   sortedSessions: StudySession[]
   zoomLevel: TimelineZoomLevel
+  burstSessionGuids: string[]
+  burstNumber: number
+  burstFrequency: number
 }
 
 export function getTimesForSession(
@@ -66,12 +69,15 @@ export function getTimesForSession(
     .map(i => i.startDay)
 }
 
-const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
+const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   schedulingItems,
   scheduleLength,
   sortedSessions,
   zoomLevel,
-}: TimelineCustomPlotProps) => {
+  burstNumber,
+  burstFrequency,
+  burstSessionGuids,
+}: TimelineBurstPlotProps) => {
   const classes = useStyles()
 
   return (
@@ -84,13 +90,6 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
               Utility.getContainerWidth(scheduleLength, zoomLevel) + leftPad
             }px`,
           }}>
-          <div
-            className={classes.whiteBg}
-            style={{
-              width: `${
-                Utility.getContainerWidth(scheduleLength, zoomLevel) + leftPad
-              }px`,
-            }}></div>
           <div
             style={{
               height: `${sortedSessions.length * graphSessionHeight}px`,
@@ -154,4 +153,4 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
   )
 }
 
-export default TimelineCustomPlot
+export default TimelineBurstPlot

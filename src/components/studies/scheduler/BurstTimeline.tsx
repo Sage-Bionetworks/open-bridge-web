@@ -8,8 +8,7 @@ import StudyService from '../../../services/study.service'
 import {latoFont} from '../../../style/theme'
 import {Schedule} from '../../../types/scheduling'
 import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
-import SessionIcon from '../../widgets/SessionIcon'
-import TimelineCustomPlot from './timeline-plot/TimelineCustomPlot'
+import TimelineBurstPlot from './timeline-plot/TimelineBurstPlot'
 import {
   TimelineScheduleItem,
   TimelineSession,
@@ -67,6 +66,7 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
   token,
   burstNumber,
   burstFrequency,
+  burstSessionGuids,
   schedule: schedFromDisplay,
 }: TimelineProps) => {
   const handleError = useErrorHandler()
@@ -155,15 +155,6 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
       )}
 
       <Box display="flex" justifyContent="space-between">
-        <Box className={classes.legend}>
-          {schedFromDisplay?.sessions?.map((s, index) => (
-            <Box style={{cursor: 'pointer'}}>
-              <SessionIcon index={index} key={s.guid}>
-                {getSession(s.guid!)?.label}
-              </SessionIcon>
-            </Box>
-          ))}
-        </Box>
         <BlackBorderDropdown
           width="100px"
           value={currentZoomLevel}
@@ -175,11 +166,14 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
           emptyValueLabel="Select Zoom Level"></BlackBorderDropdown>
       </Box>
       {schedule && (
-        <TimelineCustomPlot
+        <TimelineBurstPlot
           schedulingItems={schedule}
+          burstSessionGuids={burstSessionGuids}
+          burstNumber={burstNumber || 0}
+          burstFrequency={burstFrequency || 0}
           scheduleLength={scheduleLength}
           sortedSessions={schedFromDisplay.sessions}
-          zoomLevel={currentZoomLevel}></TimelineCustomPlot>
+          zoomLevel={currentZoomLevel}></TimelineBurstPlot>
       )}
     </Box>
   )

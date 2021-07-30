@@ -1,26 +1,28 @@
-import React, {ReactNode} from 'react'
 import {Box, makeStyles} from '@material-ui/core'
-import {getStartEventIdFromSchedule} from '../ScheduleCreatorTab'
-import {useStyles as sharedSchedulerStyles} from '../ScheduleCreatorTab'
-import {
-  Schedule,
-  StudySession,
-  NotificationTimeAtEnum,
-  ScheduleNotification,
-} from '../../../../types/scheduling'
-import Timeline from '../Timeline'
-import AssessmentList from '../AssessmentList'
-import {getTimeUnitFormatted} from '../utility'
+import clsx from 'clsx'
+import _ from 'lodash'
+import React, {ReactNode} from 'react'
 import {poppinsFont} from '../../../../style/theme'
-import SchedulingFormSection from '../SchedulingFormSection'
 import {
-  useStyles as SchedulableSessionStyles,
-  defaultSchedule,
-} from '../SchedulableSingleSessionContainer'
+  NotificationTimeAtEnum,
+  Schedule,
+  ScheduleNotification,
+  StudySession,
+} from '../../../../types/scheduling'
+import AssessmentList from '../AssessmentList'
 import ReadOnlyAssessmentWindow from '../read-only-pages/ReadOnlyAssessmentWindow'
 import ReadOnlyNotificationWindow from '../read-only-pages/ReadOnlyNotificationWindow'
-import _ from 'lodash'
-import clsx from 'clsx'
+import {
+  defaultSchedule,
+  useStyles as SchedulableSessionStyles,
+} from '../SchedulableSingleSessionContainer'
+import {
+  getStartEventIdFromSchedule,
+  useStyles as sharedSchedulerStyles,
+} from '../ScheduleCreatorTab'
+import Timeline from '../ScheduleTimeline'
+import SchedulingFormSection from '../SchedulingFormSection'
+import {getTimeUnitFormatted} from '../utility'
 
 type ReadOnlySchedulerProps = {
   children: ReactNode
