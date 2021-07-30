@@ -24,8 +24,9 @@ import AssessmentSelector from './AssessmentSelector'
 import SessionActionButtons from './SessionActionButtons'
 import actionsReducer, {SessionAction, Types} from './sessionActions'
 import SingleSessionContainer from './SingleSessionContainer'
+import ReadOnlySessionCreator from './read-only-pages/ReadOnlySessionCreator'
 
-const useStyles = makeStyles(theme => ({
+export const useStyles = makeStyles(theme => ({
   root: {
     display: 'grid',
     padding: theme.spacing(2),
@@ -71,11 +72,13 @@ type SessionCreatorProps = {
   id: string
   sessions: StudySession[]
   onSave: Function
+  isReadOnly?: boolean
 }
 
 const SessionCreator: FunctionComponent<
   SessionCreatorProps & StudyBuilderComponentProps
 > = ({
+  isReadOnly,
   sessions,
   id,
   onUpdate,
@@ -152,6 +155,10 @@ const SessionCreator: FunctionComponent<
   ): StudySession | undefined => {
     const session = sessions.find(session => session.guid === activeSession)
     return session
+  }
+
+  if (!isReadOnly) {
+    return <ReadOnlySessionCreator children={children} sessions={sessions} />
   }
 
   if (sessions) {
