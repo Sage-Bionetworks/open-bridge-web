@@ -19,6 +19,11 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
     top: '0px',
     borderLeft: '1px solid #D6D6D6',
   },
+  singleSessionGridLine: {
+    position: 'absolute',
+    top: '0px',
+    borderLeft: '1px solid #3a3a3a',
+  },
   tickNumberDisplay: {
     marginTop: '-20px',
     fontSize: '10px',
@@ -175,13 +180,16 @@ const GridPlot: React.FunctionComponent<GridPlotProps> = ({
   )
 }
 
-export const SingleSessionGridPlot: React.FunctionComponent<GridPlotProps> = ({
+export const SingleSessionGridPlot: React.FunctionComponent<
+  GridPlotProps & {top?: number}
+> = ({
   numberSessions,
   zoomLevel,
   index,
   graphSessionHeight = 50,
   leftPad = 54,
   hideDays = false,
+  top = 0,
 }) => {
   const classes = useStyles({leftPad: leftPad})
 
@@ -192,16 +200,19 @@ export const SingleSessionGridPlot: React.FunctionComponent<GridPlotProps> = ({
   const result = (
     <>
       {index === 0 && !hideDays && (
-        <div className={classes.gridUnit}>{unit}</div>
+        <div className={classes.gridUnit} style={{top: `${-34 + top}px`}}>
+          {unit}
+        </div>
       )}
       <div
         key="gridLine"
-        className={classes.gridLine}
+        className={classes.singleSessionGridLine}
         style={{
-          height: `${numberSessions * graphSessionHeight}px`,
+          height: `${numberSessions * graphSessionHeight + 5}px`,
           left: `${index * unitPixelWidth[zoomLevel]}px`,
           width: `${unitPixelWidth[zoomLevel]}px`,
           boxSizing: 'content-box',
+          top: hideDays ? `${top - 3}px` : `${top + 7}px`,
         }}>
         {!hideDays && (
           <div
@@ -210,6 +221,8 @@ export const SingleSessionGridPlot: React.FunctionComponent<GridPlotProps> = ({
             style={{
               left: `${unitPixelWidth[zoomLevel] / -2}px`,
               width: `${unitPixelWidth[zoomLevel]}px`,
+              top: '-36px',
+              marginTop: '0',
             }}>
             {zoomLevel === 'Quarterly' ? Math.round(index / 30) + 1 : index + 1}
           </div>

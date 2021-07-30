@@ -34,7 +34,7 @@ export interface SingleSessionPlotProps {
   sessionGuid: string
   schedulingItems: TimelineScheduleItem[]
   scheduleLength?: number
-  graphSessionHeight?: number
+  graphSessionHeight: number
   displayIndex: number
 }
 
@@ -43,7 +43,7 @@ export interface SingleSessionLinePlotProps {
   sessionIndex: number
   scheduleLength: number
   zoomLevel: TimelineZoomLevel
-  graphSessionHeight?: number
+  graphSessionHeight: number
   hasSessionLines?: boolean
 }
 
@@ -112,7 +112,7 @@ const NonDailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   zoomLevel,
   sessionIndex,
   displayIndex,
-  graphSessionHeight = 50,
+  graphSessionHeight,
 }) => {
   const sessionGraph = getSingleSessionX(sessionGuid, schedulingItems).map(
     i => (
@@ -123,7 +123,7 @@ const NonDailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
           width: '20px',
           position: 'absolute',
           zIndex: 100,
-          top: `${graphSessionHeight * displayIndex - 5}px`,
+          top: `${graphSessionHeight * displayIndex}px`,
           left: `${i * unitPixelWidth[zoomLevel] - 10}px`,
         }}></SessionIcon>
     )
@@ -135,7 +135,7 @@ export const SessionLine: React.FunctionComponent<SingleSessionLinePlotProps> =
   ({
     sessionIndex,
     zoomLevel,
-    graphSessionHeight = 50,
+    graphSessionHeight,
     containerWidth,
     hasSessionLines = true,
   }) => {
@@ -150,7 +150,7 @@ export const SessionLine: React.FunctionComponent<SingleSessionLinePlotProps> =
           key="slash"
           style={{
             position: 'absolute',
-            top: `${graphSessionHeight * sessionIndex - 10}px`,
+            top: `${graphSessionHeight * sessionIndex - 5}px`,
 
             left: '-33px',
           }}>
@@ -160,7 +160,7 @@ export const SessionLine: React.FunctionComponent<SingleSessionLinePlotProps> =
           className={classes.sessionLine}
           key="sessionLine"
           style={{
-            top: `${graphSessionHeight * sessionIndex}px`,
+            top: `${graphSessionHeight * sessionIndex + 5}px`,
             width: `${containerWidth + 30}px`,
             left: '-30px',
           }}></div>
@@ -177,7 +177,7 @@ export const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> =
     sessionIndex,
     scheduleLength,
     displayIndex,
-    graphSessionHeight = 50,
+    graphSessionHeight,
   }) => {
     const classes = useStyles()
     const singleSessionDayX = getSingleSessionDayX(
@@ -220,6 +220,7 @@ export const SessionPlot: React.FunctionComponent<
   displayIndex,
   containerWidth,
   scheduleLength,
+  graphSessionHeight,
   hasSessionLines = true,
 }) => {
   const sPlot =
@@ -230,6 +231,7 @@ export const SessionPlot: React.FunctionComponent<
         zoomLevel={zoomLevel}
         schedulingItems={schedulingItems}
         sessionGuid={sessionGuid}
+        graphSessionHeight={graphSessionHeight}
         scheduleLength={scheduleLength}
       />
     ) : (
@@ -238,22 +240,24 @@ export const SessionPlot: React.FunctionComponent<
         displayIndex={displayIndex}
         zoomLevel={zoomLevel}
         schedulingItems={schedulingItems}
+        graphSessionHeight={graphSessionHeight}
         sessionGuid={sessionGuid}
       />
     )
 
   return (
-    <>
+    <div>
       {hasSessionLines && (
         <SessionLine
           sessionIndex={displayIndex}
           scheduleLength={scheduleLength}
+          graphSessionHeight={graphSessionHeight}
           zoomLevel={zoomLevel}
           containerWidth={containerWidth}
         />
       )}
       {sPlot}
-    </>
+    </div>
   )
 }
 

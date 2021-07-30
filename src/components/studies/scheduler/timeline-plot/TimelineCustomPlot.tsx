@@ -99,6 +99,7 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
                 <div key={sIndex}>
                   <SessionPlot
                     sessionIndex={sIndex}
+                    graphSessionHeight={graphSessionHeight}
                     displayIndex={sIndex}
                     scheduleLength={scheduleLength}
                     zoomLevel={zoomLevel}
