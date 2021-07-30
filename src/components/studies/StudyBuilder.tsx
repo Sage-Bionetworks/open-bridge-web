@@ -589,6 +589,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'customize' && (
                         <AppDesign
+                          isReadOnly={
+                            builderInfo.study.phase !== 'design' &&
+                            builderInfo.study.phase !== 'in_flight'
+                          }
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           study={builderInfo.study}
