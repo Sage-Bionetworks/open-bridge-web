@@ -1,21 +1,20 @@
 import {Box} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
-import Tooltip from '@material-ui/core/Tooltip'
 import moment from 'moment'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import Pluralize from 'react-pluralize'
-import {ReactComponent as NotificationsIcon} from '../../../assets/scheduler/notifications_icon.svg'
-import {ReactComponent as TimerIcon} from '../../../assets/scheduler/timer_icon.svg'
 import {useAsync} from '../../../helpers/AsyncHook'
 import StudyService from '../../../services/study.service'
 import {latoFont} from '../../../style/theme'
 import {Schedule} from '../../../types/scheduling'
-import AssessmentImage from '../../assessments/AssessmentImage'
 import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
 import SessionIcon from '../../widgets/SessionIcon'
-import TimelineCustomPlot, {TimelineZoomLevel} from './TimelineCustomPlot'
-
+import TimelineCustomPlot from './timeline-plot/TimelineCustomPlot'
+import {
+  TimelineScheduleItem,
+  TimelineSession,
+  TimelineZoomLevel,
+} from './timeline-plot/types'
 const useStyles = makeStyles(theme => ({
   stats: {
     fontFamily: latoFont,
@@ -55,32 +54,19 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-type TimelineSession = {
-  guid: string
-  label: string
-  minutesToComplete: number
-}
-
-type TimelineScheduleItem = {
-  instanceGuid: 'JYvaSpcTPot8TwZnFFFcLQ'
-  startDay: number
-  endDay: number
-  startTime: string
-  delayTime: string
-  expiration: string
-  refGuid: string
-  assessments?: any[]
-}
-
 export interface TimelineProps {
   token: string
   schedule: Schedule
-  version: number
+  burstSessionGuids: string[]
+  burstNumber: number
+  burstFrequency: number
+  // version: number
 }
 
-const Timeline: React.FunctionComponent<TimelineProps> = ({
+const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
   token,
-  version,
+  burstNumber,
+  burstFrequency,
   schedule: schedFromDisplay,
 }: TimelineProps) => {
   const handleError = useErrorHandler()
@@ -105,11 +91,14 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   console.log('rerender')
 
   React.useEffect(() => {
-    console.log('%c ---timeline getting--' + version, 'color: blue')
+    console.log(
+      '%c ---timeline getting--' + schedFromDisplay.version,
+      'color: blue'
+    )
     return run(
       StudyService.getStudyScheduleTimeline(schedFromDisplay.guid, token!)
     )
-  }, [run, version, token])
+  }, [run, schedFromDisplay.version, token])
 
   const setZoomLevel = (scheduleDuration: string) => {
     const periods: TimelineZoomLevel[] = [
@@ -164,54 +153,15 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
           schedules you’ve defined below for each session!.{status}
         </>
       )}
-      {timeline && (
-        <div className={classes.stats}>
-          <NotificationsIcon />{' '}
-          <Pluralize
-            singular={'notification'}
-            count={timeline.totalNotifications}
-          />
-          <TimerIcon />{' '}
-          <Pluralize singular={'total minute'} count={timeline.totalMinutes} />
-        </div>
-      )}
+
       <Box display="flex" justifyContent="space-between">
         <Box className={classes.legend}>
           {schedFromDisplay?.sessions?.map((s, index) => (
-            <Tooltip
-              key={`session_${s.guid}`}
-              title={
-                <Box width="115px">
-                  {s.assessments?.map((assessment, index) => {
-                    return (
-                      <Box
-                        className={classes.assessmentBox}
-                        key={`assmnt_${assessment.guid}`}>
-                        <AssessmentImage
-                          resources={assessment.resources}
-                          variant="small"
-                          name={assessment.title}
-                          key={index}
-                          smallVariantProperties={{
-                            width: '100%',
-                            backgroundColor: '#F6F6F6',
-                          }}></AssessmentImage>
-                      </Box>
-                    )
-                  })}
-                </Box>
-              }
-              arrow
-              classes={{
-                tooltip: classes.toolTip,
-                arrow: classes.arrow,
-              }}>
-              <Box style={{cursor: 'pointer'}}>
-                <SessionIcon index={index} key={s.guid}>
-                  {getSession(s.guid!)?.label}
-                </SessionIcon>
-              </Box>
-            </Tooltip>
+            <Box style={{cursor: 'pointer'}}>
+              <SessionIcon index={index} key={s.guid}>
+                {getSession(s.guid!)?.label}
+              </SessionIcon>
+            </Box>
           ))}
         </Box>
         <BlackBorderDropdown
@@ -235,4 +185,4 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   )
 }
 
-export default Timeline
+export default BurstTimeline

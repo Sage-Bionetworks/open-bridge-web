@@ -10,12 +10,15 @@ import {
 } from '@material-ui/core'
 import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
 import React, {FunctionComponent} from 'react'
+import {useAsync} from '../../../helpers/AsyncHook'
+import StudyService from '../../../services/study.service'
 import {poppinsFont} from '../../../style/theme'
 import {Schedule} from '../../../types/scheduling'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
 import SessionIcon from '../../widgets/SessionIcon'
 import SmallTextBox from '../../widgets/SmallTextBox'
+import BurstTimeline from './BurstTimeline'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -82,6 +85,7 @@ type ConfigureBurstTabProps = {
   schedule: Schedule
   onUpdate: Function
   onSave: Function
+  token: string
   // hasObjectChanged: boolean
   //saveLoader: boolean
 }
@@ -92,14 +96,32 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
   onUpdate,
   schedule,
   onSave,
+  token,
 }: ConfigureBurstTabProps) => {
   const classes = useStyles()
 
-  const [hasBursts, setHasBursts] = React.useState(false)
+  const [hasBursts, setHasBursts] = React.useState(true)
   const [burstSessionGuids, setBurstSessionGuids] = React.useState<string[]>([])
   const [burstNumber, setBurstNumber] = React.useState<number | undefined>()
   const [burstFrequency, setBurstFrequency] =
     React.useState<number | undefined>()
+
+  const {
+    data: timeline,
+    status,
+    error,
+    run,
+    setData,
+  } = useAsync<any>({
+    status: 'PENDING',
+    data: [],
+  })
+  console.log('rerender')
+
+  React.useEffect(() => {
+    console.log('%c ---timeline getting--' + schedule.version, 'color: blue')
+    return run(StudyService.getStudyScheduleTimeline(schedule.guid, token!))
+  }, [run, schedule.version, token])
 
   //setting new state
   const updateData = (schedule: Schedule) => {
@@ -119,9 +141,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
         Example: Participants will take a session of 4 assessments everyday for
         a week. They redo this burst every 3 months for the next two years.
       </p>
-
       <MTBHeadingH2>Will your study include an EMA/Study Burst? </MTBHeadingH2>
-
       <ToggleButtonGroup
         value={hasBursts}
         exclusive
@@ -136,7 +156,6 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
           Yes
         </ToggleButton>
       </ToggleButtonGroup>
-
       {hasBursts && (
         <div className={classes.burstBox}>
           <div>
@@ -198,6 +217,14 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
             <SaveButton style={{margin: '0 auto 16px auto'}} />
           </div>
         </div>
+      )}
+      {schedule && (
+        <BurstTimeline
+          burstSessionGuids={burstSessionGuids}
+          burstNumber={burstNumber || 0}
+          burstFrequency={burstFrequency || 0}
+          schedule={schedule}
+          token={token}></BurstTimeline>
       )}
     </div>
   )
