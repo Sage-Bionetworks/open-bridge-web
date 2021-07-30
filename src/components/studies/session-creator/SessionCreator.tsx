@@ -157,7 +157,7 @@ const SessionCreator: FunctionComponent<
     return session
   }
 
-  if (!isReadOnly) {
+  if (isReadOnly) {
     return <ReadOnlySessionCreator children={children} sessions={sessions} />
   }
 
