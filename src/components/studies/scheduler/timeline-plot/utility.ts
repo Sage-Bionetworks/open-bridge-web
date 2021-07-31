@@ -29,7 +29,9 @@ function getContainerWidth(lengthInDays: number, zoomLevel: TimelineZoomLevel) {
   return unitPixelWidth[zoomLevel] * lengthInDays
 }
 
-export default {
+const Utility = {
   getZoomLevel,
   getContainerWidth,
 }
+
+export default Utility

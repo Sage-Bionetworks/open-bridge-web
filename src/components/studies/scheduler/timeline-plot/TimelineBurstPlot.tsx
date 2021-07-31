@@ -1,16 +1,63 @@
 import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
+import {ReactComponent as SessionStartIcon} from '../../../../assets/scheduler/calendar_icon.svg'
+import {latoFont} from '../../../../style/theme'
 import {StudySession} from '../../../../types/scheduling'
 import {SingleSessionGridPlot} from './GridPlot'
-import {SessionPlot} from './SingleSessionPlot'
-import {TimelineScheduleItem, TimelineZoomLevel} from './types'
+import SessionPlot from './SingleSessionPlot'
+import {TimelineScheduleItem, TimelineZoomLevel, unitPixelWidth} from './types'
 import Utility from './utility'
 
 const leftPad = 124
 const containerTopPad = 35
-const graphSessionHeight = 30
+const graphSessionHeight = 25
 
 const useStyles = makeStyles(theme => ({
+  graph: {
+    height: '37px',
+    display: 'flex',
+    overflowX: 'clip',
+  },
+  burstTitle: {
+    fontFamily: latoFont,
+    fontStyle: 'normal',
+    fontWeight: 'bold',
+    fontSize: '12px',
+    margin: '24px 0  12px 8px',
+    lineHeight: '12px',
+    color: '#282828',
+  },
+  frequencyBracket: {
+    display: 'flex',
+    position: 'absolute',
+    right: '-95px',
+    width: '80px',
+
+    height: '80px',
+    top: '-40px',
+    '&> div:first-child': {
+      width: '12px',
+      height: '80px',
+      border: '1px solid black',
+      borderLeft: 'none',
+    },
+    '&> div:not(first-child)': {
+      padding: '8px 0 0 8px',
+    },
+  },
+  frequencyText: {
+    display: 'block',
+    maxWidth: '50px',
+    fontFamily: latoFont,
+    fontSize: '12px',
+    fontStyle: 'normal',
+    marginLeft: '-4px',
+
+    lineHeight: '14px',
+    letterSpacing: '0em',
+    textAlign: 'left',
+  },
+
   root: {
     overflowX: 'scroll',
     width: '100%',
@@ -42,16 +89,19 @@ const useStyles = makeStyles(theme => ({
   },
   sessionName: {
     // backgroundColor: 'blue',
-    position: 'relative',
-    top: '-12px',
+    // position: 'relative',
+    // top: '-12px',
     fontSize: '12px',
-    backgroundColor: '#FFF509',
+    //  backgroundColor: '#FFF509',
     padding: '5px',
     width: `${leftPad}px`,
     display: 'block',
     lineHeight: `${graphSessionHeight}px`,
     height: `${graphSessionHeight}px`,
-    marginLeft: `${-leftPad}px`,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    // marginLeft: `${-leftPad}px`,
   },
   whiteBg: {
     height: `${containerTopPad}px`,
@@ -69,6 +119,21 @@ export interface TimelineBurstPlotProps {
   burstSessionGuids: string[]
   burstNumber: number
   burstFrequency: number
+}
+
+const FrequencyBracket: React.FunctionComponent<{frequency: number}> = ({
+  frequency,
+}) => {
+  const classes = useStyles()
+  return (
+    <div className={classes.frequencyBracket}>
+      <div />
+      <div>
+        <SessionStartIcon />
+        <span className={classes.frequencyText}>{frequency} weeks</span>
+      </div>
+    </div>
+  )
 }
 
 const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
@@ -95,7 +160,77 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   }, [burstSessionGuids])
 
   return (
-    <>
+    <div style={{paddingRight: '30px'}}>
+      <div className={classes.graph} style={{backgroundColor: '#EDEDED'}}>
+        <div className={classes.sessionName}>hi</div>
+        <div style={{position: 'relative', top: '10px'}}>
+          {' '}
+          {[...Array(scheduleLength)].map((i, index) => (
+            <SingleSessionGridPlot
+              graphSessionHeight={graphSessionHeight - 10}
+              unitPixelWidth={unitPixelWidth[zoomLevel]}
+              hideDays={false}
+              zoomLevel={zoomLevel}
+              numberSessions={1}
+              key={`${i}_${index}`}
+            />
+          ))}
+        </div>
+      </div>
+      {nonBurstSessions.map(session => (
+        <div className={classes.graph} style={{backgroundColor: '#EDEDED'}}>
+          <div className={classes.sessionName}>{session.name}</div>
+          <div>graph</div>
+        </div>
+      ))}
+      {[...Array(burstNumber)].map((i, burstIndex) => (
+        <div style={{position: 'relative'}}>
+          {burstIndex > 0 && <FrequencyBracket frequency={burstFrequency} />}
+          <div className={classes.burstTitle}>Burst {burstIndex + 1}</div>
+          <div>
+            {burstSessions.map((session, sIndex) => (
+              <div
+                className={classes.graph}
+                style={{
+                  backgroundColor: 'yellow',
+                }}>
+                <div className={classes.sessionName}>{session.name}</div>
+                <div style={{position: 'relative', top: '10px'}}>
+                  {[...Array(scheduleLength)].map((i, index) => (
+                    <SingleSessionGridPlot
+                      graphSessionHeight={graphSessionHeight - 10}
+                      unitPixelWidth={unitPixelWidth[zoomLevel]}
+                      index={index}
+                      hideDays={false}
+                      zoomLevel={zoomLevel}
+                      numberSessions={1}
+                      key={`${i}_${index}`}
+                    />
+                  ))}
+                  <SessionPlot
+                    sessionIndex={sortedSessions.findIndex(
+                      s => s.guid === session.guid
+                    )}
+                    hasSessionLines={false}
+                    displayIndex={0}
+                    unitPixelWidth={unitPixelWidth[zoomLevel]}
+                    scheduleLength={scheduleLength}
+                    zoomLevel={zoomLevel}
+                    schedulingItems={schedulingItems}
+                    sessionGuid={session.guid!}
+                    graphSessionHeight={graphSessionHeight}
+                    containerWidth={Utility.getContainerWidth(
+                      scheduleLength,
+                      zoomLevel
+                    )}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+      {/* <>
       <div
         className={classes.root}
         style={{
@@ -129,7 +264,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                 key={`${i}_${index}`}
               />
             ))*/}
-            <div
+      {/*  <div
               style={{
                 position: 'relative',
                 top: '13px',
@@ -225,7 +360,8 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
           </div>
         </div>
       </div>
-    </>
+                    </>*/}
+    </div>
   )
 }
 

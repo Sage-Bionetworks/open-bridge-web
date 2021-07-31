@@ -3,7 +3,7 @@ import React from 'react'
 import {StudySession} from '../../../../types/scheduling'
 import GridPlot from './GridPlot'
 import {SessionPlot} from './SingleSessionPlot'
-import {TimelineScheduleItem, TimelineZoomLevel} from './types'
+import {TimelineScheduleItem, TimelineZoomLevel, unitPixelWidth} from './types'
 import Utility from './utility'
 
 const leftPad = 54
@@ -84,15 +84,13 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
               height: `${sortedSessions.length * graphSessionHeight}px`,
               position: 'relative',
             }}>
-            {[...Array(scheduleLength)].map((i, index) => (
-              <GridPlot
-                graphSessionHeight={graphSessionHeight}
-                index={index}
-                zoomLevel={zoomLevel}
-                numberSessions={sortedSessions.length}
-                key={`${i}_${index}`}
-              />
-            ))}
+            <GridPlot
+              graphSessionHeight={graphSessionHeight}
+              zoomLevel={zoomLevel}
+              unitPixelWidth={unitPixelWidth[zoomLevel]}
+              numberSessions={sortedSessions.length}
+              scheduleLength={scheduleLength}
+            />
 
             <div style={{position: 'absolute', top: '30px'}}>
               {sortedSessions.map((session, sIndex) => (
@@ -100,6 +98,7 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
                   <SessionPlot
                     sessionIndex={sIndex}
                     graphSessionHeight={graphSessionHeight}
+                    unitPixelWidth={unitPixelWidth[zoomLevel]}
                     displayIndex={sIndex}
                     scheduleLength={scheduleLength}
                     zoomLevel={zoomLevel}

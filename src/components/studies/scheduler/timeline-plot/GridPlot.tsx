@@ -1,7 +1,7 @@
 import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
 import {ThemeType} from '../../../../style/theme'
-import {TimelineZoomLevel, unitPixelWidth} from './types'
+import {TimelineZoomLevel} from './types'
 
 interface StyleProps {
   leftPad: number
@@ -35,8 +35,9 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
 export interface GridPlotProps {
   numberSessions: number
   zoomLevel: TimelineZoomLevel
-  index: number
+  index?: number
   graphSessionHeight?: number
+  unitPixelWidth: number
   leftPad?: number
   containerTopPad?: number
   hideDays?: boolean
@@ -44,12 +45,13 @@ export interface GridPlotProps {
 
 export const DailyGridPlot: React.FunctionComponent<GridPlotProps> = ({
   numberSessions,
-  zoomLevel,
-  index,
+
+  index = 0,
   hideDays = false,
   graphSessionHeight = 50,
   leftPad = 54,
   containerTopPad = 35,
+  unitPixelWidth,
 }) => {
   const classes = useStyles({leftPad: leftPad})
   const getHour = (hour: number): string => {
@@ -74,8 +76,7 @@ export const DailyGridPlot: React.FunctionComponent<GridPlotProps> = ({
             position: 'absolute',
             top: `${-containerTopPad}px`,
             left: `${
-              index * unitPixelWidth[zoomLevel] +
-              (unitPixelWidth[zoomLevel] / 24) * index2
+              index * unitPixelWidth + (unitPixelWidth / 24) * index2
             }px`,
           }}>
           {index + 1}
@@ -86,18 +87,15 @@ export const DailyGridPlot: React.FunctionComponent<GridPlotProps> = ({
         className={classes.gridLine}
         style={{
           height: `${numberSessions * graphSessionHeight}px`,
-          left: `${
-            index * unitPixelWidth[zoomLevel] +
-            (unitPixelWidth[zoomLevel] / 24) * index2
-          }px`,
+          left: `${index * unitPixelWidth + (unitPixelWidth / 24) * index2}px`,
 
-          width: `${unitPixelWidth[zoomLevel] / 24}px`,
+          width: `${unitPixelWidth / 24}px`,
         }}>
         <div
           className={classes.tickNumberDisplay}
           style={{
-            left: `${unitPixelWidth[zoomLevel] / -48}px`,
-            width: `${unitPixelWidth[zoomLevel] / 24}px`,
+            left: `${unitPixelWidth / -48}px`,
+            width: `${unitPixelWidth / 24}px`,
           }}>
           {getHour(index2)}
         </div>
@@ -110,9 +108,10 @@ export const DailyGridPlot: React.FunctionComponent<GridPlotProps> = ({
 export const NonDailyGridPlot: React.FunctionComponent<GridPlotProps> = ({
   numberSessions,
   zoomLevel,
-  index,
+  index = 0,
   hideDays = false,
   graphSessionHeight = 50,
+  unitPixelWidth,
   leftPad = 54,
 }) => {
   const classes = useStyles({leftPad: leftPad})
@@ -129,8 +128,8 @@ export const NonDailyGridPlot: React.FunctionComponent<GridPlotProps> = ({
         className={classes.gridLine}
         style={{
           height: `${numberSessions * graphSessionHeight}px`,
-          left: `${index * unitPixelWidth[zoomLevel]}px`,
-          width: `${unitPixelWidth[zoomLevel]}px`,
+          left: `${index * unitPixelWidth}px`,
+          width: `${unitPixelWidth}px`,
           boxSizing: 'content-box',
         }}>
         {!hideDays && (
@@ -138,8 +137,8 @@ export const NonDailyGridPlot: React.FunctionComponent<GridPlotProps> = ({
             key="gridLineUnit"
             className={classes.tickNumberDisplay}
             style={{
-              left: `${unitPixelWidth[zoomLevel] / -2}px`,
-              width: `${unitPixelWidth[zoomLevel]}px`,
+              left: `${unitPixelWidth / -2}px`,
+              width: `${unitPixelWidth}px`,
             }}>
             {zoomLevel === 'Quarterly' ? Math.round(index / 30) + 1 : index + 1}
           </div>
@@ -151,33 +150,42 @@ export const NonDailyGridPlot: React.FunctionComponent<GridPlotProps> = ({
   return result
 }
 
-const GridPlot: React.FunctionComponent<GridPlotProps> = ({
+const GridPlot: React.FunctionComponent<
+  GridPlotProps & {scheduleLength: number}
+> = ({
   numberSessions,
   zoomLevel,
-  index,
+
   hideDays = false,
   graphSessionHeight = 50,
   leftPad = 54,
+  unitPixelWidth,
+  scheduleLength,
 }) => {
-  return zoomLevel === 'Daily' ? (
-    <DailyGridPlot
-      graphSessionHeight={graphSessionHeight}
-      index={index}
-      hideDays={hideDays}
-      leftPad={leftPad}
-      zoomLevel={zoomLevel}
-      numberSessions={numberSessions}
-    />
-  ) : (
-    <NonDailyGridPlot
-      graphSessionHeight={graphSessionHeight}
-      index={index}
-      hideDays={hideDays}
-      leftPad={leftPad}
-      zoomLevel={zoomLevel}
-      numberSessions={numberSessions}
-    />
+  const items = [...Array(scheduleLength)].map((i, index) =>
+    zoomLevel === 'Daily' ? (
+      <DailyGridPlot
+        graphSessionHeight={graphSessionHeight}
+        index={index}
+        hideDays={hideDays}
+        leftPad={leftPad}
+        zoomLevel={zoomLevel}
+        unitPixelWidth={unitPixelWidth}
+        numberSessions={numberSessions}
+      />
+    ) : (
+      <NonDailyGridPlot
+        graphSessionHeight={graphSessionHeight}
+        index={index}
+        hideDays={hideDays}
+        leftPad={leftPad}
+        zoomLevel={zoomLevel}
+        unitPixelWidth={unitPixelWidth}
+        numberSessions={numberSessions}
+      />
+    )
   )
+  return <>{items}</>
 }
 
 export const SingleSessionGridPlot: React.FunctionComponent<
@@ -185,9 +193,10 @@ export const SingleSessionGridPlot: React.FunctionComponent<
 > = ({
   numberSessions,
   zoomLevel,
-  index,
+  index = 0,
   graphSessionHeight = 50,
   leftPad = 54,
+  unitPixelWidth,
   hideDays = false,
   top = 0,
 }) => {
@@ -197,6 +206,7 @@ export const SingleSessionGridPlot: React.FunctionComponent<
   if (zoomLevel === 'Quarterly' && index % 30 > 0) {
     return <></>
   }
+
   const result = (
     <>
       {index === 0 && !hideDays && (
@@ -209,8 +219,8 @@ export const SingleSessionGridPlot: React.FunctionComponent<
         className={classes.singleSessionGridLine}
         style={{
           height: `${numberSessions * graphSessionHeight + 5}px`,
-          left: `${index * unitPixelWidth[zoomLevel]}px`,
-          width: `${unitPixelWidth[zoomLevel]}px`,
+          left: `${index * unitPixelWidth}px`,
+          width: `${unitPixelWidth}px`,
           boxSizing: 'content-box',
           top: hideDays ? `${top - 3}px` : `${top + 7}px`,
         }}>
@@ -219,8 +229,8 @@ export const SingleSessionGridPlot: React.FunctionComponent<
             key="gridLineUnit"
             className={classes.tickNumberDisplay}
             style={{
-              left: `${unitPixelWidth[zoomLevel] / -2}px`,
-              width: `${unitPixelWidth[zoomLevel]}px`,
+              left: `${unitPixelWidth / -2}px`,
+              width: `${unitPixelWidth}px`,
               top: '-36px',
               marginTop: '0',
             }}>
