@@ -30,6 +30,22 @@ export const unitPixelWidth: Record<TimelineZoomLevel, number> = {
   Quarterly: 11,
 }
 
+export const unitPixelWidthBurst: Record<TimelineZoomLevel, number> = {
+  Daily: 1020,
+  Monthly: 28,
+  'Bi-Weekly': 63,
+  Weekly: 137,
+  Quarterly: 9,
+}
+
+export const daysPage: Record<TimelineZoomLevel, number> = {
+  Daily: 1,
+  Monthly: 30,
+  'Bi-Weekly': 15,
+  Weekly: 7,
+  Quarterly: 90,
+}
+
 export type TimelineZoomLevel =
   | 'Daily'
   | 'Weekly'

@@ -97,6 +97,10 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
                 <div key={sIndex}>
                   <SessionPlot
                     sessionIndex={sIndex}
+                    xCoords={Utility.getDaysFractionForSingleSession(
+                      session.guid!,
+                      schedulingItems
+                    )}
                     graphSessionHeight={graphSessionHeight}
                     unitPixelWidth={unitPixelWidth[zoomLevel]}
                     displayIndex={sIndex}

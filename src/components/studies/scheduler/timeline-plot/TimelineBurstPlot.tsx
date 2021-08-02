@@ -1,3 +1,4 @@
+import {Button} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
 import {ReactComponent as SessionStartIcon} from '../../../../assets/scheduler/calendar_icon.svg'
@@ -5,7 +6,12 @@ import {latoFont} from '../../../../style/theme'
 import {StudySession} from '../../../../types/scheduling'
 import {SingleSessionGridPlot} from './GridPlot'
 import SessionPlot from './SingleSessionPlot'
-import {TimelineScheduleItem, TimelineZoomLevel, unitPixelWidth} from './types'
+import {
+  daysPage,
+  TimelineScheduleItem,
+  TimelineZoomLevel,
+  unitPixelWidthBurst,
+} from './types'
 import Utility from './utility'
 
 const leftPad = 124
@@ -146,6 +152,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   burstSessionGuids,
 }: TimelineBurstPlotProps) => {
   const classes = useStyles()
+  const [page, setPage] = React.useState(0)
   const [burstSessions, setBurstSessions] = React.useState<StudySession[]>([])
   const [nonBurstSessions, setNonBurstSessions] = React.useState<
     StudySession[]
@@ -159,28 +166,80 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     )
   }, [burstSessionGuids])
 
+  React.useEffect(() => {
+    setPage(0)
+  }, [zoomLevel])
+
+  const getInterval = (): {start: number; end: number} => {
+    return {
+      start: page * daysPage[zoomLevel],
+      end: (page + 1) * daysPage[zoomLevel],
+    }
+  }
+  const isLastPage = (): boolean => {
+    return scheduleLength < (page + 1) * daysPage[zoomLevel]
+  }
+
   return (
     <div style={{paddingRight: '30px'}}>
-      <div className={classes.graph} style={{backgroundColor: '#EDEDED'}}>
-        <div className={classes.sessionName}>hi</div>
+      <Button disabled={page == 0} onClick={e => setPage(prev => prev - 1)}>
+        PREV
+      </Button>
+      |
+      <Button disabled={isLastPage()} onClick={e => setPage(prev => prev + 1)}>
+        NEXT
+      </Button>
+      <div className={classes.graph} style={{height: '20px'}}>
+        <div className={classes.sessionName}>&nbsp;</div>
         <div style={{position: 'relative', top: '10px'}}>
           {' '}
-          {[...Array(scheduleLength)].map((i, index) => (
-            <SingleSessionGridPlot
-              graphSessionHeight={graphSessionHeight - 10}
-              unitPixelWidth={unitPixelWidth[zoomLevel]}
-              hideDays={false}
-              zoomLevel={zoomLevel}
-              numberSessions={1}
-              key={`${i}_${index}`}
-            />
-          ))}
+          <SingleSessionGridPlot
+            graphSessionHeight={graphSessionHeight - 10}
+            unitPixelWidth={unitPixelWidthBurst[zoomLevel]}
+            hideDays={false}
+            interval={{...getInterval()}}
+            zoomLevel={zoomLevel}
+            numberSessions={1}
+            scheduleLength={scheduleLength}
+          />
         </div>
       </div>
       {nonBurstSessions.map(session => (
         <div className={classes.graph} style={{backgroundColor: '#EDEDED'}}>
           <div className={classes.sessionName}>{session.name}</div>
-          <div>graph</div>
+          <div style={{position: 'relative', top: '10px'}}>
+            <SingleSessionGridPlot
+              graphSessionHeight={graphSessionHeight - 10}
+              unitPixelWidth={unitPixelWidthBurst[zoomLevel]}
+              hideDays={true}
+              zoomLevel={zoomLevel}
+              numberSessions={1}
+              scheduleLength={scheduleLength}
+            />
+
+            <SessionPlot
+              sessionIndex={sortedSessions.findIndex(
+                s => s.guid === session.guid
+              )}
+              xCoords={Utility.getDaysFractionForSingleSession(
+                session.guid!,
+                schedulingItems,
+                {...getInterval()}
+              )}
+              hasSessionLines={false}
+              displayIndex={0}
+              unitPixelWidth={unitPixelWidthBurst[zoomLevel]}
+              scheduleLength={scheduleLength}
+              zoomLevel={zoomLevel}
+              schedulingItems={schedulingItems}
+              sessionGuid={session.guid!}
+              graphSessionHeight={graphSessionHeight}
+              containerWidth={Utility.getContainerWidth(
+                scheduleLength,
+                zoomLevel
+              )}
+            />
+          </div>
         </div>
       ))}
       {[...Array(burstNumber)].map((i, burstIndex) => (
@@ -196,24 +255,27 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                 }}>
                 <div className={classes.sessionName}>{session.name}</div>
                 <div style={{position: 'relative', top: '10px'}}>
-                  {[...Array(scheduleLength)].map((i, index) => (
-                    <SingleSessionGridPlot
-                      graphSessionHeight={graphSessionHeight - 10}
-                      unitPixelWidth={unitPixelWidth[zoomLevel]}
-                      index={index}
-                      hideDays={false}
-                      zoomLevel={zoomLevel}
-                      numberSessions={1}
-                      key={`${i}_${index}`}
-                    />
-                  ))}
+                  <SingleSessionGridPlot
+                    graphSessionHeight={graphSessionHeight - 10}
+                    unitPixelWidth={unitPixelWidthBurst[zoomLevel]}
+                    hideDays={true}
+                    zoomLevel={zoomLevel}
+                    numberSessions={1}
+                    scheduleLength={scheduleLength}
+                  />
+
                   <SessionPlot
+                    xCoords={Utility.getDaysFractionForSingleSession(
+                      session.guid!,
+                      schedulingItems,
+                      {...getInterval()}
+                    )}
                     sessionIndex={sortedSessions.findIndex(
                       s => s.guid === session.guid
                     )}
                     hasSessionLines={false}
                     displayIndex={0}
-                    unitPixelWidth={unitPixelWidth[zoomLevel]}
+                    unitPixelWidth={unitPixelWidthBurst[zoomLevel]}
                     scheduleLength={scheduleLength}
                     zoomLevel={zoomLevel}
                     schedulingItems={schedulingItems}

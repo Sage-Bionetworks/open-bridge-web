@@ -19,10 +19,17 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
     top: '0px',
     borderLeft: '1px solid #D6D6D6',
   },
+  gridUnitSingleSessionGridLine: props => ({
+    position: 'absolute',
+    top: '-7px',
+    fontSize: '10px',
+    left: `-${props.leftPad}px`,
+    zIndex: 1000,
+  }),
   singleSessionGridLine: {
     position: 'absolute',
     top: '0px',
-    borderLeft: '1px solid #3a3a3a',
+    //borderLeft: '1px solid #3a3a3a',
   },
   tickNumberDisplay: {
     marginTop: '-20px',
@@ -189,59 +196,68 @@ const GridPlot: React.FunctionComponent<
 }
 
 export const SingleSessionGridPlot: React.FunctionComponent<
-  GridPlotProps & {top?: number}
+  GridPlotProps & {
+    top?: number
+    scheduleLength: number
+    interval?: {start: number; end: number}
+  }
 > = ({
   numberSessions,
   zoomLevel,
-  index = 0,
+  scheduleLength,
   graphSessionHeight = 50,
   leftPad = 54,
   unitPixelWidth,
   hideDays = false,
   top = 0,
+  interval,
 }) => {
   const classes = useStyles({leftPad: leftPad})
-
   const unit = zoomLevel === 'Quarterly' ? 'Month' : 'Day'
-  if (zoomLevel === 'Quarterly' && index % 30 > 0) {
-    return <></>
-  }
+  const length = interval ? interval.end - interval.start : scheduleLength
 
-  const result = (
-    <>
-      {index === 0 && !hideDays && (
-        <div className={classes.gridUnit} style={{top: `${-34 + top}px`}}>
-          {unit}
-        </div>
-      )}
-      <div
-        key="gridLine"
-        className={classes.singleSessionGridLine}
-        style={{
-          height: `${numberSessions * graphSessionHeight + 5}px`,
-          left: `${index * unitPixelWidth}px`,
-          width: `${unitPixelWidth}px`,
-          boxSizing: 'content-box',
-          top: hideDays ? `${top - 3}px` : `${top + 7}px`,
-        }}>
-        {!hideDays && (
-          <div
-            key="gridLineUnit"
-            className={classes.tickNumberDisplay}
-            style={{
-              left: `${unitPixelWidth / -2}px`,
-              width: `${unitPixelWidth}px`,
-              top: '-36px',
-              marginTop: '0',
-            }}>
-            {zoomLevel === 'Quarterly' ? Math.round(index / 30) + 1 : index + 1}
-          </div>
+  const result = [...Array(length)].map((i, index) => {
+    if (zoomLevel === 'Quarterly' && index % 30 > 0) {
+      return <></>
+    }
+
+    return (
+      <>
+        {index === 0 && !hideDays && (
+          <div className={classes.gridUnitSingleSessionGridLine}>{unit}</div>
         )}
-      </div>
-    </>
-  )
+        <div
+          key="gridLine"
+          className={classes.singleSessionGridLine}
+          style={{
+            height: `${numberSessions * graphSessionHeight + 5}px`,
+            left: `${index * unitPixelWidth}px`,
+            width: `${unitPixelWidth}px`,
+            boxSizing: 'content-box',
+            top: hideDays ? `${top - 3}px` : `-7px`,
+            borderLeft: `${hideDays ? '1px solid #3a3a3a' : 'none'}`,
+          }}>
+          {!hideDays && (
+            <div
+              key="gridLineUnit"
+              className={classes.tickNumberDisplay}
+              style={{
+                left: `${unitPixelWidth / -2}px`,
+                width: `${unitPixelWidth}px`,
+                top: '0px',
+                marginTop: '0',
+              }}>
+              {zoomLevel === 'Quarterly'
+                ? Math.round((index + +(interval?.start || 0)) / 30) + 1
+                : index + (interval?.start || 0) + 1}
+            </div>
+          )}
+        </div>
+      </>
+    )
+  })
 
-  return result
+  return <>{result}</>
 }
 
 export default GridPlot

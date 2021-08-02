@@ -153,7 +153,7 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
         </>
       )}
 
-      <Box display="flex" justifyContent="space-between">
+      <Box mb={4} pr={4} textAlign="right">
         <BlackBorderDropdown
           width="100px"
           value={currentZoomLevel}

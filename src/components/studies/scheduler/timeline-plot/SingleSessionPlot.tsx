@@ -1,5 +1,4 @@
 import {makeStyles} from '@material-ui/core/styles'
-import _ from 'lodash'
 import moment from 'moment'
 import React from 'react'
 import SessionIcon from '../../../widgets/SessionIcon'
@@ -37,6 +36,7 @@ export interface SingleSessionPlotProps {
   graphSessionHeight: number
   unitPixelWidth: number
   displayIndex: number
+  xCoords: number[]
 }
 
 export interface SingleSessionLinePlotProps {
@@ -49,19 +49,11 @@ export interface SingleSessionLinePlotProps {
   hasSessionLines?: boolean
 }
 
-export function getTimesForSession(
-  sessionGuid: string,
-  schedulingItems: TimelineScheduleItem[]
-): number[] {
-  return schedulingItems
-    .filter(i => i.refGuid === sessionGuid)
-    .map(i => i.startDay)
-}
-
-export function getSingleSessionX(
+/*export function getSingleSessionX(
   studySessionGuid: string,
 
-  schedulingItems: TimelineScheduleItem[]
+  schedulingItems: TimelineScheduleItem[],
+  interval?: {start: number; end: number}
 ): number[] {
   let result: number[] = []
 
@@ -69,7 +61,13 @@ export function getSingleSessionX(
     getTimesForSession(studySessionGuid, schedulingItems),
     Math.floor
   )
-  Object.values(grouppedStartDays).forEach(groupArray => {
+  const startDays = interval
+    ? _.pickBy(grouppedStartDays, function (value, key) {
+        return Number(key) >= interval.start && Number(key) < interval.end
+      })
+    : grouppedStartDays
+
+  Object.values(startDays).forEach(groupArray => {
     const fraction = 1 / groupArray.length
     groupArray.forEach((item, index) => {
       result.push(item + fraction * index)
@@ -77,7 +75,7 @@ export function getSingleSessionX(
   })
 
   return result
-}
+}*/
 
 export function getSingleSessionDayX(
   studySessionGuid: string,
@@ -109,28 +107,27 @@ export function getSingleSessionDayX(
 }
 
 const NonDailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
-  schedulingItems,
-  sessionGuid,
-  zoomLevel,
+  // schedulingItems,
+  // sessionGuid,
   sessionIndex,
   displayIndex,
   graphSessionHeight,
   unitPixelWidth,
+  xCoords,
 }) => {
-  const sessionGraph = getSingleSessionX(sessionGuid, schedulingItems).map(
-    i => (
+  const sessionGraph =
+    /*getSingleSessionX(sessionGuid, schedulingItems)*/ xCoords.map(i => (
       <SessionIcon
         key={`session${i}`}
         index={sessionIndex}
         style={{
-          width: '20px',
+          // width: '20px',
           position: 'absolute',
           zIndex: 100,
           top: `${graphSessionHeight * displayIndex}px`,
-          left: `${i * unitPixelWidth - 10}px`,
+          left: `${i * unitPixelWidth - 6}px`,
         }}></SessionIcon>
-    )
-  )
+    ))
   return <>{sessionGraph}</>
 }
 
@@ -182,6 +179,7 @@ export const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> =
     displayIndex,
     unitPixelWidth,
     graphSessionHeight,
+    xCoords,
   }) => {
     const classes = useStyles()
     const singleSessionDayX = getSingleSessionDayX(
@@ -202,7 +200,7 @@ export const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> =
           <SessionIcon
             index={sessionIndex}
             style={{
-              width: '20px',
+              // width: '20px',
               display: 'block',
               margin: '-5px auto 0 auto',
             }}></SessionIcon>
@@ -227,12 +225,14 @@ export const SessionPlot: React.FunctionComponent<
   graphSessionHeight,
   unitPixelWidth,
   hasSessionLines = true,
+  xCoords,
 }) => {
   const sPlot =
     zoomLevel === 'Daily' ? (
       <DailySessionPlot
         sessionIndex={sessionIndex}
         displayIndex={displayIndex}
+        xCoords={xCoords}
         zoomLevel={zoomLevel}
         schedulingItems={schedulingItems}
         sessionGuid={sessionGuid}
@@ -245,6 +245,7 @@ export const SessionPlot: React.FunctionComponent<
         sessionIndex={sessionIndex}
         displayIndex={displayIndex}
         zoomLevel={zoomLevel}
+        xCoords={xCoords}
         schedulingItems={schedulingItems}
         graphSessionHeight={graphSessionHeight}
         sessionGuid={sessionGuid}

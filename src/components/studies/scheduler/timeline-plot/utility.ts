@@ -1,5 +1,6 @@
+import _ from 'lodash'
 import moment from 'moment'
-import {TimelineZoomLevel, unitPixelWidth} from './types'
+import {TimelineScheduleItem, TimelineZoomLevel, unitPixelWidth} from './types'
 
 function getZoomLevel(scheduleDuration: string): {
   lengthInDays: number
@@ -32,6 +33,47 @@ function getContainerWidth(lengthInDays: number, zoomLevel: TimelineZoomLevel) {
 const Utility = {
   getZoomLevel,
   getContainerWidth,
+  getDaysFractionForSingleSession,
+}
+export function getTimesForSession(
+  sessionGuid: string,
+  schedulingItems: TimelineScheduleItem[]
+): number[] {
+  return schedulingItems
+    .filter(i => i.refGuid === sessionGuid)
+    .map(i => i.startDay)
+}
+
+function getDaysFractionForSingleSession(
+  studySessionGuid: string,
+
+  schedulingItems: TimelineScheduleItem[],
+  interval?: {start: number; end: number}
+): number[] {
+  let result: number[] = []
+
+  const grouppedStartDays = _.groupBy(
+    getTimesForSession(studySessionGuid, schedulingItems),
+    Math.floor
+  )
+  const startDays = interval
+    ? _.pickBy(grouppedStartDays, function (value, key) {
+        return Number(key) >= interval.start && Number(key) < interval.end
+      })
+    : grouppedStartDays
+
+  Object.values(startDays).forEach(groupArray => {
+    const fraction = 1 / groupArray.length
+    groupArray.forEach((item, index) => {
+      let val = item + fraction * index
+      if (interval) {
+        val = val - interval.start
+      }
+      result.push(val)
+    })
+  })
+
+  return result
 }
 
 export default Utility
