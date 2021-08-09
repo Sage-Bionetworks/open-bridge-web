@@ -18,7 +18,7 @@ import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
 import SessionIcon from '../../widgets/SessionIcon'
 import SmallTextBox from '../../widgets/SmallTextBox'
-import BurstTimeline from './BurstTimeline'
+import BurstTimeline from './timeline-plot/BurstTimeline'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -116,7 +116,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
     status: 'PENDING',
     data: [],
   })
-  console.log('rerender')
+  //console.log('rerender')
 
   React.useEffect(() => {
     console.log('%c ---timeline getting--' + schedule.version, 'color: blue')
@@ -197,7 +197,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
                   burst every:
                 </InputLabel>
                 <SmallTextBox
-                  value={burstFrequency}
+                  value={burstFrequency || ''}
                   isLessThanOneAllowed={false}
                   onChange={e => setBurstFrequency(Number(e.target.value))}
                 />
@@ -208,7 +208,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
                 <InputLabel htmlFor="burst-num">For:</InputLabel>
                 <SmallTextBox
                   isLessThanOneAllowed={false}
-                  value={burstNumber}
+                  value={burstNumber || ''}
                   onChange={e => setBurstNumber(Number(e.target.value))}
                 />
                 bursts
