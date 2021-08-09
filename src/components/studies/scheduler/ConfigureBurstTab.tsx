@@ -218,7 +218,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
           </div>
         </div>
       )}
-      {schedule && (
+      {schedule && hasBursts && (
         <BurstTimeline
           burstSessionGuids={burstSessionGuids}
           burstNumber={burstNumber || 0}
