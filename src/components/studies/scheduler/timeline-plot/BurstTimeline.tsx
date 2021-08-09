@@ -85,7 +85,7 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
     status: 'PENDING',
     data: [],
   })
-  console.log('rerender')
+  console.log('rerender3')
 
   React.useEffect(() => {
     console.log(

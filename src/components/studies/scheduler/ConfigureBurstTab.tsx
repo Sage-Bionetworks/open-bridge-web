@@ -116,7 +116,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
     status: 'PENDING',
     data: [],
   })
-  console.log('rerender')
+  //console.log('rerender')
 
   React.useEffect(() => {
     console.log('%c ---timeline getting--' + schedule.version, 'color: blue')

@@ -67,6 +67,7 @@ function getDaysFractionForSingleSession(
     groupArray.forEach((item, index) => {
       let val = item + fraction * index
       if (interval) {
+        val = val + 0.5 / groupArray.length
         val = val - interval.start
       }
       result.push(val)
