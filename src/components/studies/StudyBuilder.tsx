@@ -618,6 +618,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'launch' && (
                         <Launch
+                          isReadOnly={
+                            builderInfo.study.phase !== 'design' &&
+                            builderInfo.study.phase !== 'recruitment' &&
+                            builderInfo.study.phase !== 'in_flight'
+                          }
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           studyInfo={builderInfo}

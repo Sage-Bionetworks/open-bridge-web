@@ -28,9 +28,13 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 export interface LaunchProps {
   studyInfo: StudyInfoData
   onSave: Function
+  isReadOnly: boolean
 }
 
-function getSteps() {
+function getSteps(isLive: boolean) {
+  if (isLive) {
+    return [{label: 'About Study'}, {label: 'IRB Details'}]
+  }
   return [
     {label: 'Review Alerts'},
     {label: 'About Study'},
@@ -40,7 +44,7 @@ function getSteps() {
 }
 
 type StepContentProps = {
-  step: number
+  stepName: string
   studyInfo: StudyInfoData
   isFinished: boolean
   onChange: Function
@@ -48,16 +52,16 @@ type StepContentProps = {
 }
 
 const StepContent: React.FunctionComponent<StepContentProps> = ({
-  step,
+  stepName,
   studyInfo,
   isFinished,
   onChange,
   onEnableNext,
 }) => {
-  switch (step) {
-    case 0:
+  switch (stepName) {
+    case 'Review Alerts':
       return <LaunchAlerts studyInfo={studyInfo} onEnableNext={onEnableNext} />
-    case 1:
+    case 'About Study':
       return (
         <AboutStudy
           study={studyInfo.study}
@@ -65,7 +69,7 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
           onEnableNext={onEnableNext}
         />
       )
-    case 2:
+    case 'IRB Details':
       return (
         <IrbDetails
           study={studyInfo.study}
@@ -74,7 +78,7 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
           onEnableNext={onEnableNext}
         />
       )
-    case 3:
+    case 'Study is Live':
       return <>'Study is live...'</>
 
     default:
@@ -91,10 +95,11 @@ const Launch: React.FunctionComponent<
   hasObjectChanged,
   saveLoader,
   children,
+  isReadOnly,
 }: LaunchProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
-
-  const [steps, setSteps] = useState(getSteps())
+  const isStudyLive = studyInfo.study.phase === 'in_flight'
+  const [steps, setSteps] = useState(getSteps(isStudyLive))
   const [activeStep, setActiveStep] = React.useState(0)
   const [isFinished, setIsFinished] = React.useState(false)
   const [isNextEnabled, setIsNextEnabled] = React.useState(false)
@@ -103,6 +108,7 @@ const Launch: React.FunctionComponent<
     const newSteps = steps.map((s, i) =>
       i === activeStep ? {...s, isComplete: true} : s
     )
+    console.log('new steps', newSteps)
     setSteps(newSteps)
     setActiveStep(prevActiveStep => prevActiveStep + 1)
     onSave()
@@ -127,17 +133,21 @@ const Launch: React.FunctionComponent<
   const handleReset = () => {
     setActiveStep(0)
   }
+  const showNextButton =
+    (!isReadOnly && activeStep < 2) || (isStudyLive && activeStep === 0)
   return (
     <Paper className={classes.root} elevation={2} id="container">
-      <LaunchStepper
-        steps={steps}
-        activeStep={activeStep}
-        setActiveStepFn={handleStepClick}></LaunchStepper>
+      {!isReadOnly && (
+        <LaunchStepper
+          steps={steps}
+          activeStep={activeStep}
+          setActiveStepFn={handleStepClick}></LaunchStepper>
+      )}
 
       <div className={classes.instructions}>
         <StepContent
           studyInfo={studyInfo}
-          step={activeStep}
+          stepName={steps[activeStep].label}
           isFinished={isFinished}
           onEnableNext={(isEnabled: boolean) => setIsNextEnabled(isEnabled)}
           onChange={(study: Study) => {
@@ -164,13 +174,14 @@ const Launch: React.FunctionComponent<
                 </>
               )}
 
-              {activeStep < 2 && (
+              {showNextButton && (
                 <NextButton
                   variant="contained"
                   color="primary"
                   onClick={handleNext}
                   disabled={!isNextEnabled}>
-                  {steps[activeStep + 1].label} <ArrowIcon />
+                  {steps[activeStep + 1].label}
+                  <ArrowIcon />
                 </NextButton>
               )}
 
