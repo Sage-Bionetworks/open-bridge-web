@@ -197,7 +197,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
                   burst every:
                 </InputLabel>
                 <SmallTextBox
-                  value={burstFrequency}
+                  value={burstFrequency || ''}
                   isLessThanOneAllowed={false}
                   onChange={e => setBurstFrequency(Number(e.target.value))}
                 />
@@ -208,7 +208,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
                 <InputLabel htmlFor="burst-num">For:</InputLabel>
                 <SmallTextBox
                   isLessThanOneAllowed={false}
-                  value={burstNumber}
+                  value={burstNumber || ''}
                   onChange={e => setBurstNumber(Number(e.target.value))}
                 />
                 bursts

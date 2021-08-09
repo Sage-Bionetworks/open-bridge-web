@@ -83,7 +83,7 @@ const Scheduler: React.FunctionComponent<
   const classes = useStyles()
 
   const [steps, setSteps] = useState(getSteps())
-  const [activeStep, setActiveStep] = React.useState(2)
+  const [activeStep, setActiveStep] = React.useState(0)
   const [isFinished, setIsFinished] = React.useState(false)
   const [isNextEnabled, setIsNextEnabled] = React.useState(true)
 
