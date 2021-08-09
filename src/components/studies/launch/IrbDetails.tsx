@@ -102,6 +102,15 @@ type irbStudyDataType = {
   irbRecordSameInstitutionalAffiliation: boolean
 }
 
+export const getDateWithTimeZone = (date: Date) => {
+  // code from: https://stackoverflow.com/questions/7556591/is-the-javascript-date-object-always-one-day-off
+  return new Date(date.getTime() - date.getTimezoneOffset() * -60000)
+}
+
+export const getFormattedDate = (date: Date | null) => {
+  return date ? moment(date).format('YYYY-MM-DD') : ''
+}
+
 type ContactRoleTypes =
   | 'irb'
   | 'principal_investigator'
@@ -185,15 +194,6 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
     const newContactsArray = [...currentContactsArray]
     newContactsArray[contactIndex] = newContactObject
     return newContactsArray
-  }
-
-  const getDateWithTimeZone = (date: Date) => {
-    // code from: https://stackoverflow.com/questions/7556591/is-the-javascript-date-object-always-one-day-off
-    return new Date(date.getTime() - date.getTimezoneOffset() * -60000)
-  }
-
-  const getFormattedDate = (date: Date | null) => {
-    return date ? moment(date).format('YYYY-MM-DD') : ''
   }
 
   const displayApprovalDateError =
