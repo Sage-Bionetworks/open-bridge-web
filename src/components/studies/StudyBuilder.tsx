@@ -485,7 +485,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           height: '100vh',
           padding: '0',
         }}>
-        <Box paddingTop={2} display="flex" position="relative">
+        <Box
+          paddingTop={2}
+          display="flex"
+          position="relative"
+          bgcolor={section === 'launch' ? '#f7f7f7' : 'inherit'}>
           <StudyLeftNav
             open={open}
             onToggle={() => setOpen(prev => !prev)}
