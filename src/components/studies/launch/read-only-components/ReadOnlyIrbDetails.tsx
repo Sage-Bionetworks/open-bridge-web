@@ -28,6 +28,14 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontSize: '16px',
     lineHeight: '19px',
   },
+  blueWordContainer: {
+    fontSize: '15px',
+    fontFamily: latoFont,
+    padding: theme.spacing(1.25, 2.5),
+    borderRadius: '20px',
+    backgroundColor: '#87D2EA',
+    marginRight: theme.spacing(2),
+  },
 }))
 
 const ReadOnlyIrbDetails: React.FunctionComponent<{study: Study}> = ({
@@ -39,13 +47,37 @@ const ReadOnlyIrbDetails: React.FunctionComponent<{study: Study}> = ({
       <Box className={classes.container}>
         <Box className={classes.row}>
           <Box className={classes.text}>Study Type:</Box>&nbsp;&nbsp;&nbsp;
-          <strong className={classes.text}>{study.name}</strong>
+          <strong className={classes.text}>
+            {study.studyDesignTypes![0] === 'observation'
+              ? 'Observational/Natural History'
+              : 'Interventional/Experimental'}
+          </strong>
         </Box>
         <Box>
           <Box className={classes.text} mt={6}>
             Study conditions/diseases targets:
           </Box>
-          <Box>{}</Box>
+          <Box display="flex" pt={2} flexWrap="wrap">
+            {study.diseases?.map((disease, index) => {
+              return (
+                <Box key={index} className={classes.blueWordContainer}>
+                  {disease}
+                </Box>
+              )
+            })}
+          </Box>
+          <Box className={classes.text} mt={6}>
+            Keywords associated with study:
+          </Box>
+          <Box display="flex" pt={2} flexWrap="wrap">
+            {study.keywords?.split('*')?.map((keyword, index) => {
+              return (
+                <Box key={index} className={classes.blueWordContainer}>
+                  {keyword}
+                </Box>
+              )
+            })}
+          </Box>
         </Box>
       </Box>
       <Box className={classes.container} mt={5}>
