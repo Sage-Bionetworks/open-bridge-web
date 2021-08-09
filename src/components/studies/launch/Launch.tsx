@@ -109,7 +109,6 @@ const Launch: React.FunctionComponent<
     const newSteps = steps.map((s, i) =>
       i === activeStep ? {...s, isComplete: true} : s
     )
-    console.log('new steps', newSteps)
     setSteps(newSteps)
     setActiveStep(prevActiveStep => prevActiveStep + 1)
     onSave()
