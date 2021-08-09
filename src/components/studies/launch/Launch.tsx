@@ -11,6 +11,7 @@ import AboutStudy from './AboutStudy'
 import IrbDetails from './IrbDetails'
 import LaunchAlerts from './LaunchAlerts'
 import LaunchStepper from './LaunchStepper'
+import ReadOnlyIrbDetails from './read-only-components/ReadOnlyIrbDetails'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -133,6 +134,10 @@ const Launch: React.FunctionComponent<
   const handleReset = () => {
     setActiveStep(0)
   }
+
+  if (isReadOnly) {
+    return <ReadOnlyIrbDetails study={studyInfo.study} />
+  }
   const showNextButton =
     (!isReadOnly && activeStep < 2) || (isStudyLive && activeStep === 0)
   return (
@@ -191,7 +196,6 @@ const Launch: React.FunctionComponent<
                   color="primary"
                   onClick={() => submitAndLock()}
                   disabled={!isNextEnabled}>
-                  {' '}
                   <LockIcon style={{marginRight: '4px'}} />
                   Submit and lock the study
                 </Button>
