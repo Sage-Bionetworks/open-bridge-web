@@ -584,23 +584,25 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
               </Box>
             </Grid>
           </Grid>
-          <Box mt={2}>
-            <AlertWithText
-              severity="error"
-              icon={
-                <img
-                  src={Alert_Icon}
-                  style={{height: '30px'}}
-                  alt={'study-warning'}></img>
-              }
-              className={classes.alertText}>
-              Once your study is submitted, everything related to
-              sessions/scheduling/enrollment will be <strong>locked</strong>
-              -only <strong>Customize App</strong> and{' '}
-              <strong>Study & IRB</strong> details will be{' '}
-              <strong>editable.</strong>
-            </AlertWithText>
-          </Box>
+          {study.phase === 'in_flight' && (
+            <Box mt={2}>
+              <AlertWithText
+                severity="error"
+                icon={
+                  <img
+                    src={Alert_Icon}
+                    style={{height: '30px'}}
+                    alt={'study-warning'}></img>
+                }
+                className={classes.alertText}>
+                Once your study is submitted, everything related to
+                sessions/scheduling/enrollment will be <strong>locked</strong>
+                -only <strong>Customize App</strong> and{' '}
+                <strong>Study & IRB</strong> details will be{' '}
+                <strong>editable.</strong>
+              </AlertWithText>
+            </Box>
+          )}
         </Box>
       )}
       {isFinished && <LastScreen study={study}></LastScreen>}
