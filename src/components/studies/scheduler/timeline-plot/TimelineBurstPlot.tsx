@@ -195,9 +195,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   const getUnitWidth = (): number => {
     return ((plotWidth || 0) - 30 - 124) / daysPage[zoomLevel]
   }
-  if (!burstNumber || !burstFrequency) {
-    return <></>
-  }
 
   return (
     <div style={{paddingRight: '30px'}} ref={ref}>

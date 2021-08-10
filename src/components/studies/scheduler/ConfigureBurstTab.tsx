@@ -144,10 +144,12 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
       <MTBHeadingH2>Will your study include an EMA/Study Burst? </MTBHeadingH2>
       <ToggleButtonGroup
         value={hasBursts}
-        exclusive
-        onChange={(e: React.MouseEvent<HTMLElement>, val: boolean) =>
-          setHasBursts(val)
-        }
+        exclusive={true}
+        onChange={(e: React.MouseEvent<HTMLElement>, val: boolean) => {
+          if (val !== null) {
+            setHasBursts(val)
+          }
+        }}
         aria-label="study includes bursts">
         <ToggleButton value={false} aria-label="no">
           No

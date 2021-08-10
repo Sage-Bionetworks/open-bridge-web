@@ -85,13 +85,8 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
     status: 'PENDING',
     data: [],
   })
-  console.log('rerender3')
 
   React.useEffect(() => {
-    console.log(
-      '%c ---timeline getting--' + schedFromDisplay.version,
-      'color: blue'
-    )
     return run(
       StudyService.getStudyScheduleTimeline(schedFromDisplay.guid, token!)
     )
@@ -117,16 +112,12 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
     } else if (lengthInDays < 92) {
       periods.splice(3)
     }
-    console.log(periods)
     setCurrentZoomLevel(periods[0])
     setDropdown(periods)
   }
 
   React.useEffect(() => {
-    console.log('trying to update info')
-
     if (timeline?.sessions) {
-      console.log('updating info')
       const {sessions, schedule} = timeline
       setSessions(sessions)
       setSchedule(schedule)
@@ -137,7 +128,7 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
   const getSession = (sessionGuid: string): TimelineSession => {
     return sessions.find(s => s.guid === sessionGuid)!
   }
-  if (status === 'PENDING') {
+  if (status === 'PENDING' || !burstFrequency || !burstNumber) {
     return <></>
   }
   if (status === 'REJECTED') {
