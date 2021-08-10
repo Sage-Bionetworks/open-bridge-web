@@ -20,6 +20,7 @@ import SaveButton from '../../widgets/SaveButton'
 import SessionIcon from '../../widgets/SessionIcon'
 import SmallTextBox from '../../widgets/SmallTextBox'
 import BurstTimeline from './timeline-plot/BurstTimeline'
+import {TooltipHoverDisplay} from './ScheduleTimeline'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -250,9 +251,13 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
                     />
                   }
                   label={
-                    <SessionIcon index={index} key={s.guid}>
-                      {s.name}
-                    </SessionIcon>
+                    <TooltipHoverDisplay
+                      session={s}
+                      index={index}
+                      getSession={() => {
+                        return {label: s.name}
+                      }}
+                    />
                   }></FormControlLabel>
               ))}
             </FormGroup>
