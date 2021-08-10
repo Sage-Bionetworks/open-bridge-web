@@ -26,7 +26,7 @@ import EditableTextbox from '../../widgets/EditableTextbox'
 import SessionIcon from '../../widgets/SessionIcon'
 import TrashIcon from '../../../assets/trash.svg'
 
-const useStyles = makeStyles((theme: ThemeType) => ({
+export const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
@@ -108,6 +108,16 @@ const rearrangeList = (
   return result
 }
 
+export const getTotalSessionTime = (assessments?: Assessment[]): number => {
+  if (!assessments) {
+    return 0
+  }
+  const result = assessments.reduce((prev, curr, ndx) => {
+    return prev + (Number(curr.minutesToComplete) || 0)
+  }, 0)
+  return result
+}
+
 type SingleSessionContainerProps = {
   sessionIndex: number
   studySession: StudySession
@@ -159,16 +169,6 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
     result.splice(removeIndex, 1)
 
     onUpdateAssessmentList(studySession.guid!, result)
-  }
-
-  const getTotalSessionTime = (assessments?: Assessment[]): number => {
-    if (!assessments) {
-      return 0
-    }
-    const result = assessments.reduce((prev, curr, ndx) => {
-      return prev + Number(curr.minutesToComplete)
-    }, 0)
-    return result
   }
 
   const getInner = (

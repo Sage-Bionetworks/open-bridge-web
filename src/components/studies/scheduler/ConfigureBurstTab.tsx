@@ -18,7 +18,7 @@ import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
 import SessionIcon from '../../widgets/SessionIcon'
 import SmallTextBox from '../../widgets/SmallTextBox'
-import BurstTimeline from './BurstTimeline'
+import BurstTimeline from './timeline-plot/BurstTimeline'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -116,7 +116,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
     status: 'PENDING',
     data: [],
   })
-  console.log('rerender')
+  //console.log('rerender')
 
   React.useEffect(() => {
     console.log('%c ---timeline getting--' + schedule.version, 'color: blue')
@@ -144,10 +144,12 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
       <MTBHeadingH2>Will your study include an EMA/Study Burst? </MTBHeadingH2>
       <ToggleButtonGroup
         value={hasBursts}
-        exclusive
-        onChange={(e: React.MouseEvent<HTMLElement>, val: boolean) =>
-          setHasBursts(val)
-        }
+        exclusive={true}
+        onChange={(e: React.MouseEvent<HTMLElement>, val: boolean) => {
+          if (val !== null) {
+            setHasBursts(val)
+          }
+        }}
         aria-label="study includes bursts">
         <ToggleButton value={false} aria-label="no">
           No
@@ -197,7 +199,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
                   burst every:
                 </InputLabel>
                 <SmallTextBox
-                  value={burstFrequency}
+                  value={burstFrequency || ''}
                   isLessThanOneAllowed={false}
                   onChange={e => setBurstFrequency(Number(e.target.value))}
                 />
@@ -208,7 +210,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
                 <InputLabel htmlFor="burst-num">For:</InputLabel>
                 <SmallTextBox
                   isLessThanOneAllowed={false}
-                  value={burstNumber}
+                  value={burstNumber || ''}
                   onChange={e => setBurstNumber(Number(e.target.value))}
                 />
                 bursts
@@ -218,7 +220,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
           </div>
         </div>
       )}
-      {schedule && (
+      {schedule && hasBursts && (
         <BurstTimeline
           burstSessionGuids={burstSessionGuids}
           burstNumber={burstNumber || 0}

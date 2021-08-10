@@ -101,10 +101,11 @@ const useStyles = makeStyles(theme => ({
     flexShrink: 0,
 
     '&:first-child': {
-      paddingLeft: theme.spacing(0.5),
+      // paddingLeft: theme.spacing(0.5),
     },
     '&:last-child': {
       paddingRight: theme.spacing(0.5),
+      paddingLeft: theme.spacing(0.5),
     },
   },
   mobileToolBarLink: {
@@ -138,9 +139,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type StudyTopNavProps = {
-  //sections:? { name: string; path: string }[]
   studyId: string
-  //studyName?: string
   error?: ExtendedError | null
   currentSection?: string
 }
@@ -212,7 +211,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               to={'/Studies'}
               key="home"
               className={classes.toolbarLink}
-              style={{paddingBottom: '0'}}>
+              style={{paddingBottom: '0', paddingLeft: '4px'}}>
               <img src={Logo} key="img_home" alt="home" />
             </NavLink>
             <HideWhen hideWhen={studyData.study === undefined && !error}>

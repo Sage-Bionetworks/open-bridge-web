@@ -485,9 +485,16 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           height: '100vh',
           padding: '0',
           backgroundColor:
-            section === 'enrollment-type-selector' ? '#f7f7f7' : 'inherit',
+            section === 'session-creator' ||
+            section === 'enrollment-type-selector'
+              ? '#f7f7f7'
+              : 'inherit',
         }}>
-        <Box paddingTop={2} display="flex" position="relative">
+        <Box
+          paddingTop={2}
+          display="flex"
+          position="relative"
+          bgcolor={section === 'launch' ? '#f7f7f7' : 'inherit'}>
           <StudyLeftNav
             open={open}
             onToggle={() => setOpen(prev => !prev)}
@@ -562,6 +569,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'session-creator' && (
                         <SessionCreator
+                          isReadOnly={builderInfo.study.phase !== 'design'}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           id={id}
@@ -592,6 +600,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'customize' && (
                         <AppDesign
+                          isReadOnly={
+                            builderInfo.study.phase !== 'design' &&
+                            builderInfo.study.phase !== 'in_flight'
+                          }
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           study={builderInfo.study}
@@ -621,6 +633,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'launch' && (
                         <Launch
+                          isReadOnly={
+                            builderInfo.study.phase !== 'design' &&
+                            builderInfo.study.phase !== 'recruitment' &&
+                            builderInfo.study.phase !== 'in_flight'
+                          }
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           studyInfo={builderInfo}
@@ -651,6 +668,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'passive-features' && (
                         <PassiveFeatures
+                          isReadOnly={builderInfo.study.phase !== 'design'}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           features={

@@ -101,14 +101,16 @@ export default {
   masterschedule: '/v3/schedulerconfigs',
   metadata: '/v3/sharedmodules/metadata',*/
 
-    // assessment: '/v1/assessments/:id',
-    //assessments: '/v1/assessments?includeDeleted=false',
-    assmentsForSessions: '/v1/sessions/:sessionId/assessments',
-    assessmentsShared: '/v1/sharedassessments/?includeDeleted=false',
+    assessment: '/v1/assessments/:id',
+    assessments: '/v1/assessments?includeDeleted=false',
+
     assessmentShared: '/v1/sharedassessments/:id',
-    //assessmentResources: '/v1/assessments/identifier::identifier/resources', //'/v1/sharedassessments',
-    assessmentsSharedResources:
+    assessmentsShared: '/v1/sharedassessments/?includeDeleted=false',
+
+    assessmentResources: '/v1/assessments/identifier::identifier/resources', //'/v1/sharedassessments',
+    assessmentSharedResources:
       '/v1/sharedassessments/identifier::identifier/resources',
+    assmentsForSessions: '/v1/sessions/:sessionId/assessments',
     bridgeAccount: '/v1/accounts/:id',
     //  enrollments: '/v5/studies/{studyId}/enrollments',
     enrollments: '/v5/studies/:studyId/enrollments',

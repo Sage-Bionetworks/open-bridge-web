@@ -12,7 +12,8 @@ import LaunchStudyRegularIcon from '../../assets/study-builder-icons/normal/laun
 import PreviewStudyRegaularIcon from '../../assets/study-builder-icons/normal/preview_study_normal_icon.svg'
 import RecordersRegularIcon from '../../assets/study-builder-icons/normal/recorders_normal_icon.svg'
 import ScheduleSessionsRegularIcon from '../../assets/study-builder-icons/normal/schedule_sessions_normal_icon.svg'
-
+import Utility from '../../helpers/utility'
+import CONSTANTS from '../../types/constants'
 export type StudySection =
   | 'scheduler'
   | 'session-creator'
@@ -27,7 +28,11 @@ export type StudySection =
   | 'alerts'
   | 'launch'
 
-export const SECTIONS: {name: string; path: StudySection}[] = [
+const SECTIONS: {
+  name: string
+  path: StudySection
+  hideApps?: string[]
+}[] = [
   // { name: 'Set up Study', path: 'description' },
   {name: 'Create Sessions', path: 'session-creator'},
   {name: 'Schedule Sessions', path: 'scheduler'},
@@ -35,13 +40,22 @@ export const SECTIONS: {name: string; path: StudySection}[] = [
   {name: 'Customize App', path: 'customize'},
   // { name: 'Designate Groups', path: 'team-settings' },
 
-  {name: 'Optional Monitoring', path: 'passive-features'},
+  {
+    name: 'Optional Monitoring',
+    path: 'passive-features',
+    hideApps: [CONSTANTS.constants.ARC_APP_ID],
+  },
   {name: 'Preview Study', path: 'preview'},
   // { name: 'IRB Approval', path: 'irb' },
   // { name: 'Review Alerts', path: 'alerts' },
   {name: 'Launch Study', path: 'launch'},
 ]
 
+const appId = Utility.getAppId()
+
+export const getStudyBuilderSections = () => {
+  return SECTIONS.filter(section => !section.hideApps?.includes(appId))
+}
 export const normalNavIcons = [
   CreateSessionRegularIcon,
   ScheduleSessionsRegularIcon,

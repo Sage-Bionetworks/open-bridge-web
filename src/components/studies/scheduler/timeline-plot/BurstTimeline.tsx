@@ -3,17 +3,14 @@ import {makeStyles} from '@material-ui/core/styles'
 import moment from 'moment'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import {useAsync} from '../../../helpers/AsyncHook'
-import StudyService from '../../../services/study.service'
-import {latoFont} from '../../../style/theme'
-import {Schedule} from '../../../types/scheduling'
-import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
-import TimelineBurstPlot from './timeline-plot/TimelineBurstPlot'
-import {
-  TimelineScheduleItem,
-  TimelineSession,
-  TimelineZoomLevel,
-} from './timeline-plot/types'
+import {useAsync} from '../../../../helpers/AsyncHook'
+import StudyService from '../../../../services/study.service'
+import {latoFont} from '../../../../style/theme'
+import {Schedule} from '../../../../types/scheduling'
+import BlackBorderDropdown from '../../../widgets/BlackBorderDropdown'
+import TimelineBurstPlot from './../timeline-plot/TimelineBurstPlot'
+import {TimelineScheduleItem, TimelineSession, TimelineZoomLevel} from './types'
+
 const useStyles = makeStyles(theme => ({
   stats: {
     fontFamily: latoFont,
@@ -88,13 +85,8 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
     status: 'PENDING',
     data: [],
   })
-  console.log('rerender')
 
   React.useEffect(() => {
-    console.log(
-      '%c ---timeline getting--' + schedFromDisplay.version,
-      'color: blue'
-    )
     return run(
       StudyService.getStudyScheduleTimeline(schedFromDisplay.guid, token!)
     )
@@ -102,8 +94,10 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
 
   const setZoomLevel = (scheduleDuration: string) => {
     const periods: TimelineZoomLevel[] = [
-      'Daily',
+      //'Daily',
+
       'Weekly',
+      'Bi-Weekly',
       'Monthly',
       'Quarterly',
     ]
@@ -118,16 +112,12 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
     } else if (lengthInDays < 92) {
       periods.splice(3)
     }
-    console.log(periods)
-    setCurrentZoomLevel(periods[periods.length - 1])
+    setCurrentZoomLevel(periods[0])
     setDropdown(periods)
   }
 
   React.useEffect(() => {
-    console.log('trying to update info')
-
     if (timeline?.sessions) {
-      console.log('updating info')
       const {sessions, schedule} = timeline
       setSessions(sessions)
       setSchedule(schedule)
@@ -138,7 +128,7 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
   const getSession = (sessionGuid: string): TimelineSession => {
     return sessions.find(s => s.guid === sessionGuid)!
   }
-  if (status === 'PENDING') {
+  if (status === 'PENDING' || !burstFrequency || !burstNumber) {
     return <></>
   }
   if (status === 'REJECTED') {
@@ -154,7 +144,7 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
         </>
       )}
 
-      <Box display="flex" justifyContent="space-between">
+      <Box mb={4} pr={4} textAlign="right">
         <BlackBorderDropdown
           width="100px"
           value={currentZoomLevel}

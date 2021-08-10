@@ -22,8 +22,7 @@ const getParams = (pathname: string): {id?: string; section?: string} => {
 
 const AuthenticatedApp: FunctionComponent<{
   sessionData: UserSessionData
-  appId: string
-}> = ({sessionData, appId}) => {
+}> = ({sessionData}) => {
   const [studyId, setStudyId] = React.useState<string | undefined>()
   const [studySection, setStudySection] = React.useState<string | undefined>()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
@@ -66,7 +65,7 @@ const AuthenticatedApp: FunctionComponent<{
         <TopNav
           routes={PrivateRoutes}
           sessionData={sessionData}
-          appId={appId}
+          appId={sessionData.appId}
         />
       )}
       {studyId && (

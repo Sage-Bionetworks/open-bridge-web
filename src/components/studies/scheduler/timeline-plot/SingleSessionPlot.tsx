@@ -1,9 +1,8 @@
 import {makeStyles} from '@material-ui/core/styles'
-import _ from 'lodash'
 import moment from 'moment'
 import React from 'react'
 import SessionIcon from '../../../widgets/SessionIcon'
-import {TimelineScheduleItem, TimelineZoomLevel, unitPixelWidth} from './types'
+import {TimelineScheduleItem, TimelineZoomLevel} from './types'
 
 const useStyles = makeStyles(theme => ({
   sessionLine: {
@@ -34,7 +33,10 @@ export interface SingleSessionPlotProps {
   sessionGuid: string
   schedulingItems: TimelineScheduleItem[]
   scheduleLength?: number
-  graphSessionHeight?: number
+  graphSessionHeight: number
+  unitPixelWidth: number
+  displayIndex: number
+  xCoords: number[]
 }
 
 export interface SingleSessionLinePlotProps {
@@ -42,22 +44,16 @@ export interface SingleSessionLinePlotProps {
   sessionIndex: number
   scheduleLength: number
   zoomLevel: TimelineZoomLevel
-  graphSessionHeight?: number
+  graphSessionHeight: number
+  unitPixelWidth: number
+  hasSessionLines?: boolean
 }
 
-export function getTimesForSession(
-  sessionGuid: string,
-  schedulingItems: TimelineScheduleItem[]
-): number[] {
-  return schedulingItems
-    .filter(i => i.refGuid === sessionGuid)
-    .map(i => i.startDay)
-}
-
-export function getSingleSessionX(
+/*export function getSingleSessionX(
   studySessionGuid: string,
 
-  schedulingItems: TimelineScheduleItem[]
+  schedulingItems: TimelineScheduleItem[],
+  interval?: {start: number; end: number}
 ): number[] {
   let result: number[] = []
 
@@ -65,7 +61,13 @@ export function getSingleSessionX(
     getTimesForSession(studySessionGuid, schedulingItems),
     Math.floor
   )
-  Object.values(grouppedStartDays).forEach(groupArray => {
+  const startDays = interval
+    ? _.pickBy(grouppedStartDays, function (value, key) {
+        return Number(key) >= interval.start && Number(key) < interval.end
+      })
+    : grouppedStartDays
+
+  Object.values(startDays).forEach(groupArray => {
     const fraction = 1 / groupArray.length
     groupArray.forEach((item, index) => {
       result.push(item + fraction * index)
@@ -73,7 +75,7 @@ export function getSingleSessionX(
   })
 
   return result
-}
+}*/
 
 export function getSingleSessionDayX(
   studySessionGuid: string,
@@ -105,34 +107,40 @@ export function getSingleSessionDayX(
 }
 
 const NonDailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
-  schedulingItems,
-  sessionGuid,
-  zoomLevel,
+  // schedulingItems,
+  // sessionGuid,
   sessionIndex,
-  graphSessionHeight = 50,
+  displayIndex,
+  graphSessionHeight,
+  unitPixelWidth,
+  xCoords,
 }) => {
-  const sessionGraph = getSingleSessionX(sessionGuid, schedulingItems).map(
-    i => (
+  const sessionGraph =
+    /*getSingleSessionX(sessionGuid, schedulingItems)*/ xCoords.map(i => (
       <SessionIcon
         key={`session${i}`}
         index={sessionIndex}
         style={{
-          width: '20px',
+          // width: '20px',
           position: 'absolute',
           zIndex: 100,
-          top: `${graphSessionHeight * sessionIndex - 5}px`,
-
-          left: `${i * unitPixelWidth[zoomLevel] - 10}px`,
+          top: `${graphSessionHeight * displayIndex}px`,
+          left: `${i * unitPixelWidth - 6}px`,
         }}></SessionIcon>
-    )
-  )
+    ))
   return <>{sessionGraph}</>
 }
 
 export const SessionLine: React.FunctionComponent<SingleSessionLinePlotProps> =
-  ({sessionIndex, zoomLevel, graphSessionHeight = 50, containerWidth}) => {
+  ({
+    sessionIndex,
+    zoomLevel,
+    graphSessionHeight,
+    containerWidth,
+    hasSessionLines = true,
+  }) => {
     const classes = useStyles()
-    if (zoomLevel === 'Daily') {
+    if (zoomLevel === 'Daily' || !hasSessionLines) {
       return <></>
     }
 
@@ -142,7 +150,7 @@ export const SessionLine: React.FunctionComponent<SingleSessionLinePlotProps> =
           key="slash"
           style={{
             position: 'absolute',
-            top: `${graphSessionHeight * sessionIndex - 10}px`,
+            top: `${graphSessionHeight * sessionIndex - 5}px`,
 
             left: '-33px',
           }}>
@@ -152,7 +160,7 @@ export const SessionLine: React.FunctionComponent<SingleSessionLinePlotProps> =
           className={classes.sessionLine}
           key="sessionLine"
           style={{
-            top: `${graphSessionHeight * sessionIndex}px`,
+            top: `${graphSessionHeight * sessionIndex + 5}px`,
             width: `${containerWidth + 30}px`,
             left: '-30px',
           }}></div>
@@ -168,7 +176,10 @@ export const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> =
     zoomLevel,
     sessionIndex,
     scheduleLength,
-    graphSessionHeight = 50,
+    displayIndex,
+    unitPixelWidth,
+    graphSessionHeight,
+    xCoords,
   }) => {
     const classes = useStyles()
     const singleSessionDayX = getSingleSessionDayX(
@@ -181,23 +192,17 @@ export const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> =
         className={classes.dailyIntervalLine}
         key={`interval${index}`}
         style={{
-          width: `${i.expire * unitPixelWidth[zoomLevel]}px`,
-          top: `${graphSessionHeight * sessionIndex}px`,
-          left: `${(i.day + i.startTime) * unitPixelWidth[zoomLevel]}px`,
+          width: `${i.expire * unitPixelWidth}px`,
+          top: `${graphSessionHeight * displayIndex}px`,
+          left: `${(i.day + i.startTime) * unitPixelWidth}px`,
         }}>
         <div className={classes.dailyIntervalInner}>
           <SessionIcon
             index={sessionIndex}
             style={{
-              width: '20px',
+              // width: '20px',
               display: 'block',
               margin: '-5px auto 0 auto',
-              //marginTop: '-5px',
-              //  position: 'absolute',
-              // zIndex: 100,
-              // top: `${graphSessionHeight * sessionIndex - 5}px`,
-
-              //left: `${i * unitPixelWidth[zoomLevel] - 10}px`,
             }}></SessionIcon>
         </div>
       </div>
@@ -207,4 +212,62 @@ export const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> =
     //return <>nothing</>
   }
 
-export default NonDailySessionPlot
+export const SessionPlot: React.FunctionComponent<
+  SingleSessionPlotProps & SingleSessionLinePlotProps
+> = ({
+  schedulingItems,
+  sessionGuid,
+  zoomLevel,
+  sessionIndex,
+  displayIndex,
+  containerWidth,
+  scheduleLength,
+  graphSessionHeight,
+  unitPixelWidth,
+  hasSessionLines = true,
+  xCoords,
+}) => {
+  const sPlot =
+    zoomLevel === 'Daily' ? (
+      <DailySessionPlot
+        sessionIndex={sessionIndex}
+        displayIndex={displayIndex}
+        xCoords={xCoords}
+        zoomLevel={zoomLevel}
+        schedulingItems={schedulingItems}
+        sessionGuid={sessionGuid}
+        graphSessionHeight={graphSessionHeight}
+        unitPixelWidth={unitPixelWidth}
+        scheduleLength={scheduleLength}
+      />
+    ) : (
+      <NonDailySessionPlot
+        sessionIndex={sessionIndex}
+        displayIndex={displayIndex}
+        zoomLevel={zoomLevel}
+        xCoords={xCoords}
+        schedulingItems={schedulingItems}
+        graphSessionHeight={graphSessionHeight}
+        sessionGuid={sessionGuid}
+        unitPixelWidth={unitPixelWidth}
+      />
+    )
+
+  return (
+    <div>
+      {hasSessionLines && (
+        <SessionLine
+          sessionIndex={displayIndex}
+          scheduleLength={scheduleLength}
+          graphSessionHeight={graphSessionHeight}
+          zoomLevel={zoomLevel}
+          containerWidth={containerWidth}
+          unitPixelWidth={unitPixelWidth}
+        />
+      )}
+      {sPlot}
+    </div>
+  )
+}
+
+export default SessionPlot

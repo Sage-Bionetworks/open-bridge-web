@@ -6,7 +6,6 @@ import SectionIndicator from './SectionIndicator'
 import {Contact} from '../../../types/types'
 import {latoFont, playfairDisplayFont} from '../../../style/theme'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
-import {PreviewFile} from './AppDesign'
 
 const useStyles = makeStyles(theme => ({
   sectionFourIndicatorPosition: {
@@ -81,6 +80,7 @@ type StudyPageTopPhoneContentProps = {
   funder: Contact
   studyLogoUrl?: string
   getContactName: Function
+  isReadOnly?: boolean
 }
 
 const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContentProps> = ({
@@ -93,6 +93,7 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
   funder,
   studyLogoUrl,
   getContactName,
+  isReadOnly,
 }) => {
   const classes = useStyles()
   return (
@@ -119,10 +120,12 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         )}
       </Box>
       <Box className={classes.innerContainer}>
-        <SectionIndicator
-          index={4}
-          className={classes.sectionFourIndicatorPosition}
-        />
+        {!isReadOnly && (
+          <SectionIndicator
+            index={4}
+            className={classes.sectionFourIndicatorPosition}
+          />
+        )}
         <Box height="420px">
           <Box className={classes.headlineStyle}>
             {studyTitle || 'Title of study...'}
@@ -136,10 +139,12 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
           name={getContactName(leadInvestigator.name) || 'placeholder'}
           className={classes.studySummaryRoles}
         />
-        <SectionIndicator
-          index={5}
-          className={classes.sectionFiveIndicatorPosition}
-        />
+        {!isReadOnly && (
+          <SectionIndicator
+            index={5}
+            className={classes.sectionFiveIndicatorPosition}
+          />
+        )}
 
         <StudySummaryRoles
           type="Institution"
