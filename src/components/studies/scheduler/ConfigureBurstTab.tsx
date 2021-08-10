@@ -7,12 +7,13 @@ import {
   InputLabel,
   makeStyles,
   Theme,
+  Box,
 } from '@material-ui/core'
 import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
 import React, {FunctionComponent} from 'react'
 import {useAsync} from '../../../helpers/AsyncHook'
 import StudyService from '../../../services/study.service'
-import {poppinsFont} from '../../../style/theme'
+import {latoFont, playfairDisplayFont, poppinsFont} from '../../../style/theme'
 import {Schedule} from '../../../types/scheduling'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     burstBox: {
       display: 'flex',
-      padding: theme.spacing(3, 0),
+      padding: theme.spacing(8, 5),
       border: '1px solid black',
       margin: theme.spacing(8, 3),
 
@@ -78,6 +79,14 @@ const useStyles = makeStyles((theme: Theme) =>
         },
       },
     },
+    toggleButtonRoot: {
+      '& .Mui-selected': {
+        backgroundColor: '#BCD5E4',
+        '&:hover': {
+          backgroundColor: '#BCD5E4',
+        },
+      },
+    },
   })
 )
 
@@ -103,16 +112,11 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
   const [hasBursts, setHasBursts] = React.useState(true)
   const [burstSessionGuids, setBurstSessionGuids] = React.useState<string[]>([])
   const [burstNumber, setBurstNumber] = React.useState<number | undefined>()
-  const [burstFrequency, setBurstFrequency] =
-    React.useState<number | undefined>()
+  const [burstFrequency, setBurstFrequency] = React.useState<
+    number | undefined
+  >()
 
-  const {
-    data: timeline,
-    status,
-    error,
-    run,
-    setData,
-  } = useAsync<any>({
+  const {data: timeline, status, error, run, setData} = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
@@ -131,39 +135,102 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
 
   return (
     <div className={classes.root}>
-      <MTBHeadingH1>Multiple scheduling of the same events</MTBHeadingH1>
-      <p>
-        Ecological Momentary Assessment (EMA) provides a way to repeatedly
-        sample participant over time to better capture their ehaviors and
-        experiences in real time, also referred to as Study Bursts.
+      <MTBHeadingH1
+        style={{
+          fontStyle: playfairDisplayFont,
+          fontSize: '21px',
+          lineHeight: '28px',
+          marginBottom: '24px',
+        }}>
+        Burst Design
+      </MTBHeadingH1>
+      <p
+        style={{
+          maxWidth: '590px',
+          lineHeight: '18px',
+          fontSize: '15px',
+          fontFamily: latoFont,
+        }}>
+        A burst design involves repeating multiple study sessions that are
+        spaced out over time at regular intervals with long breaks. This is
+        intended to maximize longitudinal participation with minimal burden.
       </p>
-      <p>
-        Example: Participants will take a session of 4 assessments everyday for
-        a week. They redo this burst every 3 months for the next two years.
-      </p>
-      <MTBHeadingH2>Will your study include an EMA/Study Burst? </MTBHeadingH2>
-      <ToggleButtonGroup
-        value={hasBursts}
-        exclusive={true}
-        onChange={(e: React.MouseEvent<HTMLElement>, val: boolean) => {
-          if (val !== null) {
-            setHasBursts(val)
-          }
-        }}
-        aria-label="study includes bursts">
-        <ToggleButton value={false} aria-label="no">
-          No
-        </ToggleButton>
-        <ToggleButton value={true} aria-label="yes">
-          Yes
-        </ToggleButton>
-      </ToggleButtonGroup>
+      <Box
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          maxWidth: '380px',
+          marginTop: '40px',
+        }}>
+        <MTBHeadingH2
+          style={{
+            fontFamily: poppinsFont,
+            fontSize: '18px',
+            lineHeight: '27px',
+          }}>
+          Will your study include a Burst Design?
+        </MTBHeadingH2>
+        <ToggleButtonGroup
+          value={hasBursts}
+          exclusive={true}
+          classes={{root: classes.toggleButtonRoot}}
+          onChange={(e: React.MouseEvent<HTMLElement>, val: boolean) => {
+            if (val !== null) {
+              setHasBursts(val)
+            }
+          }}
+          aria-label="study includes bursts">
+          <ToggleButton
+            value={true}
+            aria-label="yes"
+            style={{
+              border: '1px solid black',
+              color: 'black',
+              borderRadius: '0px',
+              boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+            }}>
+            Yes
+          </ToggleButton>
+          <ToggleButton
+            value={false}
+            aria-label="no"
+            style={{
+              marginLeft: '16px',
+              border: '1px solid black',
+              color: 'black',
+              borderRadius: '0px',
+              boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+            }}>
+            No
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
+
       {hasBursts && (
         <div className={classes.burstBox}>
-          <div>
-            What scheduled session(s) in your study should be repeated as a
-            burst?
-            <FormGroup style={{alignItems: 'left'}}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+            }}>
+            <MTBHeadingH2
+              style={{
+                fontSize: '18px',
+                lineHeight: '27px',
+                fontStyle: poppinsFont,
+                width: '270px',
+              }}>
+              What scheduled session(s) in your study should be repeated as a
+              burst?
+            </MTBHeadingH2>
+
+            <FormGroup
+              style={{
+                alignItems: 'left',
+                marginTop: '24px',
+                marginLeft: '24px',
+              }}>
               {schedule.sessions.map((s, index) => (
                 <FormControlLabel
                   key={s.guid}
@@ -191,7 +258,16 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
             </FormGroup>
           </div>
           <div>
-            How often should this burst be scheduled to repeat?
+            <MTBHeadingH2
+              style={{
+                fontSize: '18px',
+                lineHeight: '27px',
+                fontStyle: poppinsFont,
+                width: '290px',
+                textAlign: 'left',
+              }}>
+              How often should this burst be scheduled to repeat?
+            </MTBHeadingH2>
             <FormGroup className={classes.burstSchedule}>
               <FormControl fullWidth>
                 <InputLabel htmlFor="burst-freq">
