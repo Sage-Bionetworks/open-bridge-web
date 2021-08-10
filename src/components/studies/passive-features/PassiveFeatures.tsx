@@ -104,6 +104,7 @@ const sensors: Partial<RecorderInfo> = {
 
 export interface PassiveFeaturesProps {
   features?: BackgroundRecorders
+  isReadOnly?: boolean
 }
 
 const PassiveFeatures: React.FunctionComponent<
@@ -111,7 +112,7 @@ const PassiveFeatures: React.FunctionComponent<
 > = ({
   features,
   onUpdate,
-
+  isReadOnly,
   children,
 }: PassiveFeaturesProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
@@ -141,12 +142,14 @@ const PassiveFeatures: React.FunctionComponent<
           <span className={classes.featureHeading}>
             {sensors[recorderType]!.title}
           </span>
-          <div className={classes.toggle}>
-            <Switch
-              color="primary"
-              checked={value}
-              onChange={e => callbackFn(e.target.checked)}></Switch>
-          </div>
+          {!isReadOnly && (
+            <div className={classes.toggle}>
+              <Switch
+                color="primary"
+                checked={value}
+                onChange={e => callbackFn(e.target.checked)}></Switch>
+            </div>
+          )}
         </Box>
         <table className={classes.featureTable}>
           <thead>
@@ -169,7 +172,10 @@ const PassiveFeatures: React.FunctionComponent<
       </div>
     )
   }
-
+  const displayMotionSection = !isReadOnly || (isReadOnly && features?.motion)
+  const displayMicrophoneSection =
+    !isReadOnly || (isReadOnly && features?.microphone)
+  const displayWeatherSection = !isReadOnly || (isReadOnly && features?.weather)
   return (
     <>
       <div className={classes.root}>
@@ -185,25 +191,31 @@ const PassiveFeatures: React.FunctionComponent<
         <MTBHeadingH3 className={classes.intro}>
           Participants can turn optional monitoring on/off at any time.
         </MTBHeadingH3>
-        <PFSection
-          recorderType={'motion'}
-          value={features?.motion}
-          callbackFn={(e: boolean) => {
-            const result = {...features, motion: e}
-            onUpdate({...features, motion: e})
-          }}></PFSection>
-        <PFSection
-          recorderType={'microphone'}
-          value={features?.microphone}
-          callbackFn={(e: boolean) => {
-            onUpdate({...features, microphone: e})
-          }}></PFSection>
-        <PFSection
-          recorderType={'weather'}
-          value={features?.weather}
-          callbackFn={(e: boolean) => {
-            onUpdate({...features, weather: e})
-          }}></PFSection>
+        {displayMotionSection && (
+          <PFSection
+            recorderType={'motion'}
+            value={features?.motion}
+            callbackFn={(e: boolean) => {
+              const result = {...features, motion: e}
+              onUpdate({...features, motion: e})
+            }}></PFSection>
+        )}
+        {displayMicrophoneSection && (
+          <PFSection
+            recorderType={'microphone'}
+            value={features?.microphone}
+            callbackFn={(e: boolean) => {
+              onUpdate({...features, microphone: e})
+            }}></PFSection>
+        )}
+        {displayWeatherSection && (
+          <PFSection
+            recorderType={'weather'}
+            value={features?.weather}
+            callbackFn={(e: boolean) => {
+              onUpdate({...features, weather: e})
+            }}></PFSection>
+        )}
       </div>
       {children}
     </>
