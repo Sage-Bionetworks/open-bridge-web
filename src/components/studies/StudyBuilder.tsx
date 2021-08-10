@@ -487,7 +487,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           backgroundColor:
             section === 'session-creator' ? '#f7f7f7' : 'inherit',
         }}>
-        <Box paddingTop={2} display="flex" position="relative">
+        <Box
+          paddingTop={2}
+          display="flex"
+          position="relative"
+          bgcolor={section === 'launch' ? '#f7f7f7' : 'inherit'}>
           <StudyLeftNav
             open={open}
             onToggle={() => setOpen(prev => !prev)}
@@ -625,6 +629,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'launch' && (
                         <Launch
+                          isReadOnly={
+                            builderInfo.study.phase !== 'design' &&
+                            builderInfo.study.phase !== 'recruitment' &&
+                            builderInfo.study.phase !== 'in_flight'
+                          }
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           studyInfo={builderInfo}
