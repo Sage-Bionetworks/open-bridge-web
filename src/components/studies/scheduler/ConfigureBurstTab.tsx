@@ -17,7 +17,6 @@ import {latoFont, playfairDisplayFont, poppinsFont} from '../../../style/theme'
 import {Schedule} from '../../../types/scheduling'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
-import SessionIcon from '../../widgets/SessionIcon'
 import SmallTextBox from '../../widgets/SmallTextBox'
 import BurstTimeline from './timeline-plot/BurstTimeline'
 import {TooltipHoverDisplay} from './ScheduleTimeline'
@@ -50,12 +49,13 @@ const useStyles = makeStyles((theme: Theme) =>
       '& .MuiSvgIcon-root': {
         fill: '#FFF509',
         backgroundColor: 'black',
+        clipPath: 'polygon(7% 8%, 95% 8%, 95% 94%, 7% 94%)',
       },
     },
     burstSchedule: {
       alignItems: 'flex-end',
       padding: theme.spacing(5, 0, 0, 5),
-      marginBottom: theme.spacing(15),
+      marginBottom: theme.spacing(7),
 
       '& .MuiFormControl-root': {
         flexDirection: 'row',
@@ -262,7 +262,12 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
               ))}
             </FormGroup>
           </div>
-          <div>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}>
             <MTBHeadingH2
               style={{
                 fontSize: '18px',
@@ -297,7 +302,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
                 bursts
               </FormControl>
             </FormGroup>
-            <SaveButton style={{margin: '0 auto 16px auto'}} />
+            <SaveButton />
           </div>
         </div>
       )}
