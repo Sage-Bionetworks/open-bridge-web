@@ -484,6 +484,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         style={{
           height: '100vh',
           padding: '0',
+          backgroundColor:
+            section === 'session-creator' ? '#f7f7f7' : 'inherit',
         }}>
         <Box paddingTop={2} display="flex" position="relative">
           <StudyLeftNav
@@ -560,6 +562,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'session-creator' && (
                         <SessionCreator
+                          isReadOnly={builderInfo.study.phase !== 'design'}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           id={id}
