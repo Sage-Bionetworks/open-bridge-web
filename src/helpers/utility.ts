@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import {default as constants, default as CONSTANTS} from '../types/constants'
+import CONSTANTS from '../types/constants'
 import {
   AdminRole,
   Phone,
@@ -82,8 +82,12 @@ const callEndpoint = async <T>(
   token?: string,
   isSynapseEndpoint?: boolean
 ): Promise<Response<T>> => {
+  /* 
+  Agendel: this is only used for e2e which we are doing doing here
   const ls = window.localStorage
   const isE2E = ls.getItem('crc_e2e')
+  */
+  const isE2E = false
   let url = isSynapseEndpoint
     ? `${CONSTANTS.constants.SYNAPSE_ENDPOINT}${endpoint}`
     : `${CONSTANTS.constants.ENDPOINT}${endpoint}`
@@ -152,9 +156,9 @@ const getSearchParams = (search: string): Record<string, string> => {
 
 const getAppId = () => {
   if (document.location.port === '3001') {
-    return constants.constants.ARC_APP_ID
+    return CONSTANTS.constants.ARC_APP_ID
   } else {
-    return constants.constants.MTB_APP_ID
+    return CONSTANTS.constants.MTB_APP_ID
   }
 }
 
@@ -269,7 +273,8 @@ const isInvalidPhone = (phone: string): boolean => {
   This function is taken from: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
 */
 const isValidEmail = (email: string) => {
-  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  const re =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(String(email).toLowerCase())
 }
 
@@ -282,12 +287,12 @@ const isPathAllowed = (studyId: string, path: string) => {
   const userRoles = getSession()?.roles || []
   const pathToCheck = path.replace(':id', studyId)
   const access = {
-    org_admin: [constants.restrictedPaths.ACCESS_SETTINGS],
-    study_designer: [constants.restrictedPaths.STUDY_BUILDER],
+    org_admin: [CONSTANTS.restrictedPaths.ACCESS_SETTINGS],
+    study_designer: [CONSTANTS.restrictedPaths.STUDY_BUILDER],
     study_coordinator: [
-      constants.restrictedPaths.PARTICIPANT_MANAGER,
-      constants.restrictedPaths.ADHERENCE_DATA,
-      constants.restrictedPaths.STUDY_DATA,
+      CONSTANTS.restrictedPaths.PARTICIPANT_MANAGER,
+      CONSTANTS.restrictedPaths.ADHERENCE_DATA,
+      CONSTANTS.restrictedPaths.STUDY_DATA,
     ],
   }
   const allowedPaths: string[] = []

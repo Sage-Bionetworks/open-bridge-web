@@ -12,7 +12,11 @@ import {ScheduleNotification} from '../../../types/scheduling'
 import {Contact} from '../../../types/types'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import {isSameAsDefaultSchedule} from '../scheduler/utility'
-import {normalNavIcons, SECTIONS, StudySection} from '../sections'
+import {
+  getStudyBuilderSections,
+  normalNavIcons,
+  StudySection,
+} from '../sections'
 
 const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
 
@@ -293,9 +297,9 @@ const StudyAlertComponent: React.FunctionComponent<
   StudyAlertSection & {onIgnore: Function}
 > = ({section, errors, onIgnore}: StudyAlertSection & {onIgnore: Function}) => {
   const classes = useStyles()
-
-  const sectionIndex = SECTIONS.findIndex(s => s.path === section)
-  const indexedSection = SECTIONS[sectionIndex]
+  const sections = getStudyBuilderSections()
+  const sectionIndex = sections.findIndex(s => s.path === section)
+  const indexedSection = sections[sectionIndex]
 
   return (
     <div className={classes.section}>
@@ -333,7 +337,7 @@ const StudyAlertComponent: React.FunctionComponent<
             <Button
               variant="contained"
               className={classes.mustReviewButton}
-              href={`${SECTIONS[sectionIndex].path}?from=launch${
+              href={`${sections[sectionIndex].path}?from=launch${
                 error.anchor ? '&anchor=' + error.anchor : ''
               }`}>
               Review Required

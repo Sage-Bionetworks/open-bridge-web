@@ -51,6 +51,7 @@ export type UserSessionData = {
   userName?: string
   alert?: string
   id: string
+  appId: string
 }
 
 export type AdminRole = typeof constants.org_roles[number]
