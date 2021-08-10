@@ -3,8 +3,7 @@ import {UserSessionData} from '../types/types'
 import Utility from './utility'
 
 type ActionType = 'LOGIN' | 'LOGOUT' | 'SET_ALERT' | 'CLEAR_ALERT'
-/*| 'CONSENT'
-  | 'WITHDRAW'*/
+
 type Action = {type: ActionType; payload?: UserSessionData}
 type Dispatch = (action: Action) => void
 type UserSessionDataProviderProps = {children: React.ReactNode}
@@ -15,16 +14,15 @@ const initialState = {
   dataGroups: [],
   roles: [],
   id: '',
+  appId: '',
 }
 
-const UserSessionDataStateContext = React.createContext<
-  UserSessionData | undefined
->(undefined)
-const UserSessionDataDispatchContext = React.createContext<
-  Dispatch | undefined
->(undefined)
+const UserSessionDataStateContext =
+  React.createContext<UserSessionData | undefined>(undefined)
+const UserSessionDataDispatchContext =
+  React.createContext<Dispatch | undefined>(undefined)
 
-function countReducer(state: UserSessionData, action: Action): UserSessionData {
+function userReducer(state: UserSessionData, action: Action): UserSessionData {
   switch (action.type) {
     case 'SET_ALERT': {
       const newState = {
@@ -43,29 +41,13 @@ function countReducer(state: UserSessionData, action: Action): UserSessionData {
       Utility.setSession(newState)
       return newState
     }
-    /* case 'CONSENT': {
-      const newState = {
-        ...state,
-        consented: true,
-        alert: undefined,
-      }
-      setSession(newState)
-      return newState
-    }
-    case 'WITHDRAW': {
-      const newState = {
-        ...state,
-        consented: false,
-      }
-      setSession(newState)
-      return newState
-    }*/
+
     case 'LOGIN':
       const newState = {
         ...state,
         token: action.payload!.token,
         orgMembership: action.payload!.orgMembership,
-        //consented: action.payload!.consented,
+        appId: action.payload!.appId,
         firstName: action.payload!.firstName,
         lastName: action.payload!.lastName,
         userName: action.payload!.userName,
@@ -80,11 +62,7 @@ function countReducer(state: UserSessionData, action: Action): UserSessionData {
     case 'LOGOUT':
       Utility.clearSession()
       return {
-        token: undefined,
-        orgMembership: undefined,
-        roles: [],
-        id: '',
-        dataGroups: [],
+        ...initialState,
       }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`)
@@ -94,7 +72,7 @@ function countReducer(state: UserSessionData, action: Action): UserSessionData {
 
 function UserSessionDataProvider({children}: UserSessionDataProviderProps) {
   const [state, dispatch] = React.useReducer(
-    countReducer,
+    userReducer,
     Utility.getSession() || initialState
   )
   return (

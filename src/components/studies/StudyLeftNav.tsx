@@ -6,9 +6,9 @@ import React, {FunctionComponent} from 'react'
 import {ThemeType} from '../../style/theme'
 import SideBarListItem from '../widgets/SideBarListItem'
 import {
+  getStudyBuilderSections,
   hoverNavIcons,
   normalNavIcons,
-  SECTIONS as sectionLinks,
   StudySection,
 } from './sections'
 
@@ -145,7 +145,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
       <ul
         className={classes.list}
         style={{pointerEvents: disabled ? 'none' : 'all'}}>
-        {sectionLinks.map((sectionLink, index) => (
+        {getStudyBuilderSections().map((sectionLink, index) => (
           <div
             onMouseOver={() => setCurrentHoveredElement(index)}
             onMouseOut={() => setCurrentHoveredElement(-1)}

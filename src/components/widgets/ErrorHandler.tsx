@@ -2,6 +2,8 @@ import {Box, Container} from '@material-ui/core'
 import Alert from '@material-ui/lab/Alert/Alert'
 import * as React from 'react'
 import {NavLink} from 'react-router-dom'
+import Utility from '../../helpers/utility'
+import CONSTANTS from '../../types/constants'
 import AccountLogin from '../account/AccountLogin'
 
 export function ErrorFallback(props: any) {
@@ -22,6 +24,7 @@ export function ErrorFallback(props: any) {
         <Box mx="auto" bgcolor="white" p={5} textAlign="center">
           <AccountLogin
             {...props}
+            isArcSignIn={Utility.getAppId() === CONSTANTS.constants.ARC_APP_ID}
             callbackFn={() => {
               window.location.replace('/')
             }}></AccountLogin>

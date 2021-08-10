@@ -60,6 +60,7 @@ const detectSSOCode = async (
           dataGroups: loggedIn.data.dataGroups,
           roles: loggedIn.data.roles,
           id: loggedIn.data.id,
+          appId: Utility.getAppId(),
         },
       })
 
@@ -111,10 +112,7 @@ function App() {
             onError={ErrorHandler}>
             {sessionData.token ? (
               <StudyInfoDataProvider>
-                <AuthenticatedApp
-                  sessionData={sessionData}
-                  appId={Utility.getAppId()}
-                />
+                <AuthenticatedApp sessionData={sessionData} />
               </StudyInfoDataProvider>
             ) : (
               <Loader reqStatusLoading={getCode() !== null}>
