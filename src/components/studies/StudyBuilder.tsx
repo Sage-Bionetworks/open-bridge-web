@@ -485,7 +485,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           height: '100vh',
           padding: '0',
           backgroundColor:
-            section === 'session-creator' ? '#f7f7f7' : 'inherit',
+            section === 'session-creator' ||
+            section === 'enrollment-type-selector'
+              ? '#f7f7f7'
+              : 'inherit',
         }}>
         <Box
           paddingTop={2}
@@ -584,6 +587,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'enrollment-type-selector' && (
                         <EnrollmentTypeSelector
+                          isReadOnly={builderInfo.study.phase !== 'design'}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           study={builderInfo.study}
