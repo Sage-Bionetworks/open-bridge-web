@@ -15,7 +15,7 @@ const bannerMap = new Map<
 
 bannerMap.set('error', {
   bgColor: '#EE6070',
-  displayText: ['The following fields are required to launch your study.'],
+  displayText: ['Please review the following errors before continuing.'],
   icon: [Alert_Icon],
   textColor: 'white',
   type: 'error',
