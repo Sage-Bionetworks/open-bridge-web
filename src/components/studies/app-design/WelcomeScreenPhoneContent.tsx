@@ -50,11 +50,13 @@ const useStyles = makeStyles(theme => ({
 type WelcomeScreenPhoneContentProps = {
   welcomeScreenContent: WelcomeScreenData
   studyTitle: string
+  isReadOnly?: boolean
 }
 
 const WelcomeScreenPhoneContent: React.FunctionComponent<WelcomeScreenPhoneContentProps> = ({
   welcomeScreenContent,
   studyTitle,
+  isReadOnly,
 }) => {
   const classes = useStyles()
   const defaultStudyBody =
@@ -64,7 +66,7 @@ const WelcomeScreenPhoneContent: React.FunctionComponent<WelcomeScreenPhoneConte
 
   return (
     <Box className={classes.phoneInner}>
-      {!welcomeScreenContent.isUsingDefaultMessage && (
+      {!welcomeScreenContent.isUsingDefaultMessage && !isReadOnly && (
         <SectionIndicator
           index={3}
           className={classes.sectionThreeIndicatorPosition}
