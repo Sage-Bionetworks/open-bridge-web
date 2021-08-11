@@ -13,7 +13,6 @@ import {Schedule, StudySession} from '../../../types/scheduling'
 import AssessmentImage from '../../assessments/AssessmentImage'
 import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
 import SessionIcon from '../../widgets/SessionIcon'
-import {StudySection} from '../sections'
 import TimelineCustomPlot from './timeline-plot/TimelineCustomPlot'
 import {
   TimelineScheduleItem,
