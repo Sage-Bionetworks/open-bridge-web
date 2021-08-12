@@ -602,6 +602,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         <AppDesign
                           isReadOnly={
                             builderInfo.study.phase !== 'design' &&
+                            builderInfo.study.phase !== 'recruitment' &&
                             builderInfo.study.phase !== 'in_flight'
                           }
                           hasObjectChanged={hasObjectChanged}

@@ -179,18 +179,26 @@ const PassiveFeatures: React.FunctionComponent<
   return (
     <>
       <div className={classes.root}>
-        <MTBHeadingH3 className={classes.intro}>
-          Mobile Toolbox lets you add optional contextual/sensor monitoring to
-          your study. This can be used to assess the impact of environmental
-          factors on test performance.
-        </MTBHeadingH3>
-        <MTBHeadingH3 className={classes.intro}>
-          When adding monitoring, please consider the impact on the
-          participant's experience and potential added burden.
-        </MTBHeadingH3>
-        <MTBHeadingH3 className={classes.intro}>
-          Participants can turn optional monitoring on/off at any time.
-        </MTBHeadingH3>
+        {isReadOnly ? (
+          <MTBHeadingH3 style={{marginBottom: '24px'}}>
+            You’ve added the following Optional Monitoring to your study:
+          </MTBHeadingH3>
+        ) : (
+          <Box>
+            <MTBHeadingH3 className={classes.intro}>
+              Mobile Toolbox lets you add optional contextual/sensor monitoring
+              to your study. This can be used to assess the impact of
+              environmental factors on test performance.
+            </MTBHeadingH3>
+            <MTBHeadingH3 className={classes.intro}>
+              When adding monitoring, please consider the impact on the
+              participant's experience and potential added burden.
+            </MTBHeadingH3>
+            <MTBHeadingH3 className={classes.intro}>
+              Participants can turn optional monitoring on/off at any time.
+            </MTBHeadingH3>
+          </Box>
+        )}
         {displayMotionSection && (
           <PFSection
             recorderType={'motion'}
