@@ -1,6 +1,4 @@
 import {Box, Drawer, IconButton, makeStyles} from '@material-ui/core'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {ThemeType} from '../../style/theme'
@@ -11,6 +9,8 @@ import {
   normalNavIcons,
   StudySection,
 } from './sections'
+import CloseIcon from '../../assets/study-builder-icons/left_nav_close_icon.svg'
+import OpenIcon from '../../assets/study-builder-icons/left_nav_open_icon.svg'
 
 const drawerWidth = 212
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -84,6 +84,14 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   disabledElement: {
     opacity: 0.3,
   },
+  drawerButton: {
+    borderRadius: 0,
+    width: '48px',
+    height: '100%',
+    '&:hover': {
+      backgroundColor: 'white',
+    },
+  },
 }))
 
 type StudyLeftNavOwnProps = {
@@ -135,11 +143,12 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
           [classes.drawerClose]: !open,
         }),
       }}>
-      <Box textAlign="right" height="48px" bgcolor="#FAFAFA">
-        <IconButton
-          onClick={toggleDrawer}
-          style={{borderRadius: 0, width: '48px', height: '100%'}}>
-          {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+      <Box textAlign="right" height="48px" bgcolor="#F2F2F2">
+        <IconButton onClick={toggleDrawer} className={classes.drawerButton}>
+          <img
+            style={{width: '12px', height: '22px'}}
+            src={open ? CloseIcon : OpenIcon}
+            alt="Close/Open Icon"></img>
         </IconButton>
       </Box>
       <ul
