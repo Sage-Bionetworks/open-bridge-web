@@ -1,4 +1,5 @@
 export const diseases = [
+  'Healthy Adults',
   'Atrial fibrillation (A fib)',
   'Abdominal aortic aneurysm',
   'Hyperhidrosis',
