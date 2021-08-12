@@ -746,7 +746,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         display="flex"
                         flexDirection="row"
                         alignItems="center">
-                        {tab !== 'WITHDRAWN' &&
+                        {tab === 'ACTIVE' &&
                           !Utility.isSignInById(study.signInTypes) && (
                             <Button
                               aria-label="send-sms-text"
