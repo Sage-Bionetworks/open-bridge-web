@@ -146,7 +146,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   const performanceOrderList = [
     {value: 'participant_choice', label: 'Participant Choice'},
     {value: 'sequential', label: 'Fixed Order'},
-    {value: 'randomized', label: 'Random Fixed Order'},
+    {value: 'randomized', label: 'Randomized Order'},
   ]
 
   const assessmentOrderElement = !isReadOnly ? (
