@@ -353,7 +353,9 @@ function getColumns(
     },
     {
       field: 'externalId',
-      headerName: isEnrolledById ? 'Participant ID' : 'Log in ID',
+      headerName: isEnrolledById
+        ? 'Participant ID'
+        : `${gridType === 'TEST' ? 'Log in' : 'Reference'} ID`,
       flex: 1,
     },
     {field: 'id', headerName: 'HealthCode', flex: 2},
