@@ -1,6 +1,6 @@
 export default {
   constants: {
-    MTB_APP_ID: 'mtb-user-testing',
+    MTB_APP_ID: 'mobile-toolbox',
     ARC_APP_ID: 'dian-validation',
     SESSION_NAME: 'bridge-session-mtb-user-testing',
     ENDPOINT: 'https://webservices.sagebridge.org',
