@@ -411,8 +411,10 @@ function getColumns(
       c => !_.includes(['note', 'edit'], c.field)
     )
   }
-  if(gridType === "TEST") {
-    participantColumns = participantColumns.filter(el => el.headerName !== "")
+  if (gridType === 'TEST') {
+    participantColumns = participantColumns.filter(
+      el => el.headerName !== 'Phone Number'
+    )
   }
 
   if (isEnrolledById) {
