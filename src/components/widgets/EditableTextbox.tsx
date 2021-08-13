@@ -2,7 +2,7 @@ import {makeStyles} from '@material-ui/core'
 import React, {FunctionComponent, useEffect, useRef, useState} from 'react'
 const useStyles = makeStyles(theme => ({
   wrapper: {
-    marginRight: theme.spacing(2),
+    marginRight: theme.spacing(1),
 
     borderRadius: '5px',
 

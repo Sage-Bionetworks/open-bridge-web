@@ -236,11 +236,10 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const handleError = useErrorHandler()
 
   const {token, roles} = useUserSessionDataState()
-  const [menuAnchor, setMenuAnchor] =
-    React.useState<null | {
-      study: Study
-      anchorEl: HTMLElement
-    }>(null)
+  const [menuAnchor, setMenuAnchor] = React.useState<null | {
+    study: Study
+    anchorEl: HTMLElement
+  }>(null)
   const [renameStudyId, setRenameStudyId] = React.useState('')
   const classes = useStyles()
   const handleMenuClose = () => {
@@ -255,8 +254,9 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const [statusFilters, setStatusFilters] = React.useState<SectionStatus[]>(
     sections.map(section => section.sectionStatus)
   )
-  const [highlightedStudyId, setHighlightedStudyId] =
-    React.useState<string | null>(null)
+  const [highlightedStudyId, setHighlightedStudyId] = React.useState<
+    string | null
+  >(null)
 
   let resetNewlyAddedStudyID: NodeJS.Timeout
 
@@ -305,22 +305,30 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         study.identifier,
         token!
       )
-      if (studyFromServer?.scheduleGuid) {
-        // need to duplicate the schedule
-        const schedule = await StudyService.getStudySchedule(
-          studyFromServer?.scheduleGuid,
+      if (!studyFromServer) {
+        throw Error('No matching study found')
+      }
+      //if (studyFromServer?.scheduleGuid) {
+      // need to duplicate the schedule\
+      let scheduleToCopy
+      try {
+        scheduleToCopy = await StudyService.getStudySchedule(
+          studyFromServer.identifier,
           token!
         )
-        //@ts-ignore
-        schedule!.guid = undefined
-        const sched = await StudyService.createNewStudySchedule(
-          schedule!,
+      } catch (error) {
+        console.log(error, 'no schedule')
+      } //dont' do anything . no shcedule
+      if (scheduleToCopy) {
+        const copiedSchedule = await StudyService.createStudySchedule(
+          study.identifier,
+          scheduleToCopy,
           token!
         )
-        newStudy.scheduleGuid = sched.guid
+
         studyDataUpdateFn({
           type: 'SET_SCHEDULE',
-          payload: {study: newStudy, schedule: sched},
+          payload: {study: newStudy, schedule: copiedSchedule},
         })
       }
     }
@@ -466,7 +474,10 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           </ul>
           <Button
             disabled={
-              !Utility.isPathAllowed('any', constants.restrictedPaths.STUDY_BUILDER)
+              !Utility.isPathAllowed(
+                'any',
+                constants.restrictedPaths.STUDY_BUILDER
+              )
             }
             variant="contained"
             onClick={() => createStudy()}

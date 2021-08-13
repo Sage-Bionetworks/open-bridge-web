@@ -1,6 +1,6 @@
 import {Box, Paper} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
-import React, {useState} from 'react'
+import React, {ReactElement, useState} from 'react'
 import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
 import {ThemeType} from '../../../style/theme'
 import {Schedule} from '../../../types/scheduling'
@@ -31,11 +31,12 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 export type SchedulerProps = {
   id: string
   schedule: Schedule
-  version?: number
+
   token: string
   onSave: Function
   schedulerErrors: SchedulerErrorType[]
   isReadOnly?: boolean
+  study: Study
 }
 
 function getSteps() {
@@ -46,35 +47,15 @@ function getSteps() {
   ]
 }
 
-type StepContentProps = {
+const StepContent: React.FunctionComponent<{
   step: number
-  schedule: Schedule
-  isFinished: boolean
-  onChange: Function
-  onEnableNext: Function
-}
-
-const StepContent: React.FunctionComponent<
-  StepContentProps & SchedulerProps & StudyBuilderComponentProps
-> = props => {
-  switch (props.step) {
-    case 0:
-      return (
-        <SessionStartTab
-          schedule={props.schedule!}
-          onUpdate={props.onChange}
-          onSave={props.onChange}
-        />
-      )
-    case 1:
-      return <ScheduleCreatorTab {...props}></ScheduleCreatorTab>
-
-    case 2:
-      return <ConfigureBurstTab {...props}></ConfigureBurstTab>
-
-    default:
-      return <>'Unknown step'</>
+  children: React.ReactFragment[]
+}> = ({step, children}) => {
+  const cntrl = children[step]
+  if (!cntrl) {
+    return <></>
   }
+  return cntrl as ReactElement
 }
 
 const Scheduler: React.FunctionComponent<
@@ -84,7 +65,7 @@ const Scheduler: React.FunctionComponent<
 
   const [steps, setSteps] = useState(getSteps())
   const [activeStep, setActiveStep] = React.useState(0)
-  const [isFinished, setIsFinished] = React.useState(false)
+  // const [isFinished, setIsFinished] = React.useState(false)
   const [isNextEnabled, setIsNextEnabled] = React.useState(true)
 
   if (!props.children) {
@@ -111,16 +92,6 @@ const Scheduler: React.FunctionComponent<
     props.onSave()
   }
 
-  const submitAndLock = () => {
-    props.onSave()
-    setIsFinished(true)
-    setIsFinished(true)
-  }
-
-  const handleReset = () => {
-    setActiveStep(0)
-  }
-
   return (
     <Paper className={classes.root} elevation={2} id="container">
       <SchedulerStepper
@@ -129,16 +100,11 @@ const Scheduler: React.FunctionComponent<
         setActiveStepFn={handleStepClick}></SchedulerStepper>
 
       <div className={classes.instructions}>
-        <StepContent
-          {...props}
-          step={activeStep}
-          isFinished={isFinished}
-          onEnableNext={(isEnabled: boolean) => setIsNextEnabled(isEnabled)}
-          onChange={(study: Study) => {
-            console.log('onChange', study)
-            props.onUpdate(study)
-          }}
-        />{' '}
+        <StepContent step={activeStep}>
+          <SessionStartTab {...props} />
+          <ScheduleCreatorTab {...props}></ScheduleCreatorTab>
+          <ConfigureBurstTab {...props}></ConfigureBurstTab>
+        </StepContent>
         <Box py={2} px={2} textAlign="right" bgcolor="#fff">
           <>
             {activeStep === 0 ? (

@@ -1,19 +1,21 @@
 import {
   Box,
-  Checkbox,
   createStyles,
   FormGroup,
+  IconButton,
   makeStyles,
   Theme,
 } from '@material-ui/core'
+import DeleteIcon from '@material-ui/icons/Close'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
-import {Schedule, StartEventId, StudySession} from '../../../types/scheduling'
+import UtilityObject from '../../../helpers/utility'
+import {Schedule, SchedulingEvent} from '../../../types/scheduling'
+import {Study} from '../../../types/types'
 import EditableTextbox from '../../widgets/EditableTextbox'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import {BlueButton} from '../../widgets/StyledComponents'
-import actionsReducer, {SessionScheduleAction} from './scheduleActions'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,6 +36,7 @@ type SessionStartTabProps = {
   schedule: Schedule
   onUpdate: Function
   onSave: Function
+  study: Study
   // hasObjectChanged: boolean
   //saveLoader: boolean
 }
@@ -44,9 +47,12 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
   onUpdate,
   schedule,
   onSave,
+  study,
 }: SessionStartTabProps) => {
   const classes = useStyles()
-
+  /* const [schedulingEvents, setSchedulingEvents] =
+    React.useState<SchedulingEvent[]>(events)*/
+  /*
   const saveSession = async (sessionId: string) => {
     onSave()
   }
@@ -69,6 +75,32 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
     const sessions = actionsReducer(schedule.sessions, action)
     const newSchedule = {...schedule, sessions}
     updateData(newSchedule)
+  }*/
+
+  const addEmptyEvent = () => {
+    const newEvent: SchedulingEvent = {
+      label: 'Untitled',
+      identifier: UtilityObject.generateNonambiguousCode(9, 'NUMERIC'),
+      updateType: 'mutable',
+    }
+
+    //  setSchedulingEvents(events => [...events, newEvent])
+    const newEvents = [...(study.clientData.events || []), newEvent]
+    onUpdate(undefined, newEvents)
+  }
+
+  const updateEvent = (event: SchedulingEvent, newLabel: string) => {
+    const newEvents = (study.clientData.events || []).map(e =>
+      e.identifier !== event.identifier ? e : {...e, label: newLabel}
+    )
+    onUpdate(undefined, newEvents)
+  }
+
+  const deleteEvent = (eventIdentifier: string) => {
+    const newEvents = (study.clientData.events || []).filter(
+      e => e.identifier !== eventIdentifier
+    )
+    onUpdate(undefined, newEvents)
   }
 
   if (_.isEmpty(schedule.sessions)) {
@@ -100,14 +132,35 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
         </p>
         <Box display="flex">
           <Box flexShrink={0} flexBasis={400} pl={8}>
-            <FormGroup row={true} style={{alignItems: 'center'}}>
-              <Checkbox checked={true} onChange={() => {}} name="checkedA" />
+            <>
+              Initial_Login
+              {(study.clientData.events || []).map(evt => (
+                <FormGroup
+                  row={true}
+                  style={{alignItems: 'center', marginTop: '21px'}}>
+                  {/*  <Checkbox checked={true} onChange={() => {}} name="checkedA" />*/}
 
-              <EditableTextbox
-                initValue={'test'}
-                onTriggerUpdate={() => {}}></EditableTextbox>
-            </FormGroup>
-            <BlueButton variant="contained">+ New Custom Event</BlueButton>
+                  <EditableTextbox
+                    initValue={evt.label}
+                    onTriggerUpdate={(newLabel: string) =>
+                      updateEvent(evt, newLabel)
+                    }></EditableTextbox>
+
+                  <IconButton
+                    edge="end"
+                    size="small"
+                    onClick={() => deleteEvent(evt.identifier)}>
+                    <DeleteIcon></DeleteIcon>
+                  </IconButton>
+                </FormGroup>
+              ))}
+            </>
+            <BlueButton
+              variant="contained"
+              onClick={addEmptyEvent}
+              style={{marginTop: '32px'}}>
+              + New Custom Event
+            </BlueButton>
           </Box>
           <Box>
             An example Clinical Study might require 3 unique calendar events:

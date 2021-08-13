@@ -29,6 +29,7 @@ type ReadOnlySchedulerProps = {
   token: string
   version?: number
   schedule: Schedule
+  studyId: string
 }
 
 const useStyles = makeStyles(theme => ({
@@ -60,6 +61,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
   children,
   token,
   version,
+  studyId,
 }) => {
   const schedulerClasses = sharedSchedulerStyles()
   const sessionContainerClasses = SchedulableSessionStyles()
@@ -112,6 +114,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
         <Timeline
           token={token}
           version={version!}
+          studyId={studyId}
           schedule={schedule}></Timeline>
         <div className={schedulerClasses.studyStartDateContainer}>
           <Box className={classes.row} mb={3}>
