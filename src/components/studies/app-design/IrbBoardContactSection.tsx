@@ -8,16 +8,15 @@ import {
   Radio,
   RadioGroup,
   FormControlLabel,
-  FormHelperText,
 } from '@material-ui/core'
 import {Contact} from '../../../types/types'
-import {isInvalidPhone, isValidEmail} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import clsx from 'clsx'
 import SaveButton from '../../widgets/SaveButton'
-import {makePhone} from '../../../helpers/utility'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
 import {ContactType} from './AppDesign'
+import AlertWithTextWrapper from '../../widgets/AlertWithTextWrapper'
 
 const useStyles = makeStyles(theme => ({
   irbInputFormControl: {
@@ -27,9 +26,6 @@ const useStyles = makeStyles(theme => ({
   irbInput: {
     width: '100%',
     marginBottom: theme.spacing(2),
-  },
-  errorText: {
-    marginTop: theme.spacing(-0.5),
   },
 }))
 
@@ -55,6 +51,9 @@ type IrbBoardContactSectionProps = {
   onUpdate: (irbInfo: Contact, protocolId: string) => void
   irbInfo: Contact
   protocolId: string
+  getContactName: Function
+  irbNameHasError: boolean
+  irbProtocolIdHasError: boolean
 }
 
 const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProps> = ({
@@ -73,6 +72,9 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
   onUpdate,
   protocolId,
   irbInfo,
+  getContactName,
+  irbNameHasError,
+  irbProtocolIdHasError,
 }) => {
   const classes = useStyles()
   return (
@@ -136,7 +138,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
               }
               id="ethics-board-input"
               placeholder="Name IRB of record"
-              value={irbInfo.name || ''}
+              value={getContactName(irbInfo.name)}
               onChange={(
                 e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
               ) => {
@@ -146,6 +148,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
               }}
               titleText=""
               readOnly={irbNameSameAsInstitution}
+              hasError={irbNameHasError}
             />
           </FormControl>
         </Box>
@@ -165,7 +168,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             }}
             onBlur={() => {
               const isInvalidPhoneNumber =
-                isInvalidPhone(irbPhoneNumber) && irbPhoneNumber !== ''
+                Utility.isInvalidPhone(irbPhoneNumber) && irbPhoneNumber !== ''
               setPhoneNumberErrorState(
                 (prevState: typeof phoneNumberErrorState) => {
                   return {
@@ -175,17 +178,13 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
                 }
               )
               const newEthicsBoardObject = getContactPersonObject('irb')
-              newEthicsBoardObject.phone = makePhone(irbPhoneNumber)
+              newEthicsBoardObject.phone = Utility.makePhone(irbPhoneNumber)
               onUpdate(newEthicsBoardObject, protocolId)
             }}
             titleText="Phone Number*"
           />
           {!phoneNumberErrorState.isIrbPhoneNumberValid && (
-            <FormHelperText
-              id="ethics-phone-bad-text"
-              className={classes.errorText}>
-              phone should be in the format: xxx-xxx-xxxx
-            </FormHelperText>
+            <AlertWithTextWrapper text="Format should be XXX-XXX-XXXX"></AlertWithTextWrapper>
           )}
         </FormControl>
         <FormControl
@@ -204,7 +203,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             }}
             onBlur={() => {
               const validEmail =
-                isValidEmail(irbInfo.email || '') || !irbInfo.email
+                Utility.isValidEmail(irbInfo.email || '') || !irbInfo.email
               setEmailErrorState((prevState: typeof emailErrorState) => {
                 return {
                   ...prevState,
@@ -215,11 +214,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
             titleText="Email*"
           />
           {!emailErrorState.isIrbEmailValid && (
-            <FormHelperText
-              id="ethics-bad-email-text"
-              className={classes.errorText}>
-              email should be in a valid format such as: example@placeholder.com
-            </FormHelperText>
+            <AlertWithTextWrapper text="Email should be in a valid format such as: example@placeholder.com"></AlertWithTextWrapper>
           )}
         </FormControl>
         <FormControl>
@@ -234,6 +229,7 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
               onUpdate(irbInfo, e.target.value)
             }}
             titleText="IRB Protocol ID*"
+            hasError={irbProtocolIdHasError}
           />
         </FormControl>
       </FormGroupWrapper>

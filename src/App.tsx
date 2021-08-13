@@ -5,11 +5,13 @@ import {BrowserRouter as Router} from 'react-router-dom'
 import './App.css'
 import AuthenticatedApp from './AuthenticatedApp'
 import {ErrorFallback, ErrorHandler} from './components/widgets/ErrorHandler'
+import Loader from './components/widgets/Loader'
 import {
   useUserSessionDataDispatch,
   useUserSessionDataState,
 } from './helpers/AuthContext'
 import {StudyInfoDataProvider} from './helpers/StudyInfoContext'
+import Utility from './helpers/utility'
 import UserService from './services/user.service'
 import {cssVariables, theme} from './style/theme'
 import {UserSessionData} from './types/types'
@@ -22,19 +24,20 @@ import UnauthenticatedApp from './UnauthenticatedApp'
   return `${window.location.protocol}//${window.location.hostname}${portString}/`
 }*/
 
-export const detectSSOCode = async (
-  sessionUpdateFn: Function,
-  sessionData: UserSessionData
-) => {
-  //const redirectURL = getRootURL()
+const getCode = (): string | null => {
   // 'code' handling (from SSO) should be preformed on the root page, and then redirect to original route.
   let code: URL | null | string = new URL(window.location.href)
   // in test environment the searchParams isn't defined
   const {searchParams} = code
-  if (!searchParams) {
-    return
-  }
-  code = searchParams.get('code')
+  return searchParams?.get('code')
+}
+
+const detectSSOCode = async (
+  sessionUpdateFn: Function,
+  sessionData: UserSessionData
+) => {
+  // 'code' handling (from SSO) should be preformed on the root page, and then redirect to original route.
+  const code = getCode()
   if (code && !sessionData.token) {
     try {
       console.log('trying to log in')
@@ -57,6 +60,7 @@ export const detectSSOCode = async (
           dataGroups: loggedIn.data.dataGroups,
           roles: loggedIn.data.roles,
           id: loggedIn.data.id,
+          appId: Utility.getAppId(),
         },
       })
 
@@ -111,7 +115,9 @@ function App() {
                 <AuthenticatedApp sessionData={sessionData} />
               </StudyInfoDataProvider>
             ) : (
-              <UnauthenticatedApp />
+              <Loader reqStatusLoading={getCode() !== null}>
+                <UnauthenticatedApp appId={Utility.getAppId()} />
+              </Loader>
             )}
           </ErrorBoundary>
         </Router>

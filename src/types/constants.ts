@@ -1,33 +1,30 @@
 export default {
   constants: {
-    APP_ID: 'mtb-user-testing',
-    STUDY_ID: 'mtb-user-testing',
+    MTB_APP_ID: 'mobile-toolbox',
+    ARC_APP_ID: 'dian-validation',
     SESSION_NAME: 'bridge-session-mtb-user-testing',
     ENDPOINT: 'https://webservices.sagebridge.org',
     SYNAPSE_ENDPOINT: 'https://repo-prod.prod.sagebase.org',
     NEW_STUDY_NAME: 'NEW_STUDY_UNNAMED',
+    DEFAULT_PLACEHOLDER: '*UNDEFINED*',
+    IS_TEST_MODE: true,
   },
 
-  /* templateTitles: {
-    email_account_exists: 'Account already exists notification (email)',
-    email_app_install_link: 'Link to install app (email)',
-    email_reset_password: 'Reset password (email)',
-    email_sign_in: 'Sign in (via email)',
-    email_signed_consent: 'Consent agreement (email)',
-    email_verify_email: 'Verify email address',
-    sms_account_exists: 'Account already exists notification (SMS)',
-    sms_app_install_link: 'Link to install app (SMS)',
-    sms_phone_sign_in: 'Sign in (via SMS)',
-    sms_reset_password: 'Reset password (SMS)',
-    sms_signed_consent: 'Consent agreement (SMS)',
-    sms_verify_phone: 'Verify phone number',
-  },*/
+  restrictedPaths: {
+    ACCESS_SETTINGS: '/studies/:id/access-settings',
+    STUDY_BUILDER: '/studies/builder/:id',
+    PARTICIPANT_MANAGER: '/studies/:id/participant-manager',
+    ADHERENCE_DATA: '/studies/:id/compliance',
+    STUDY_DATA: '/studies/:id/study-data',
+  },
+
   environments: [
     {value: 'local', label: 'Local'},
     {value: 'develop', label: 'Development'},
     {value: 'staging', label: 'Staging'},
     {value: 'production', label: 'Production'},
   ],
+  org_roles: ['org_admin', 'study_designer', 'study_coordinator'] as const,
   /*host: {
     local: 'http://localhost:9000',
     develop: 'https://ws-develop.sagebridge.org',
@@ -36,15 +33,20 @@ export default {
   },*/
 
   oauth: {
-    local: {
+    local_mtb: {
       client: '100062',
       vendor: 'mtb',
       redirect: 'http://127.0.0.1:3000',
     },
-    staging: {
+    staging_mtb: {
       client: '100069',
       vendor: 'mtb-staging',
       redirect: 'https://staging.mobiletoolbox.org',
+    },
+    local_arc: {
+      client: '100104',
+      vendor: 'arc-dev',
+      redirect: 'http://127.0.0.1:3001',
     },
   },
   /* client: {
@@ -99,14 +101,16 @@ export default {
   masterschedule: '/v3/schedulerconfigs',
   metadata: '/v3/sharedmodules/metadata',*/
 
-    // assessment: '/v1/assessments/:id',
-    //assessments: '/v1/assessments?includeDeleted=false',
-    assmentsForSessions: '/v1/sessions/:sessionId/assessments',
-    assessmentsShared: '/v1/sharedassessments/?includeDeleted=false',
+    assessment: '/v1/assessments/:id',
+    assessments: '/v1/assessments?includeDeleted=false',
+
     assessmentShared: '/v1/sharedassessments/:id',
-    //assessmentResources: '/v1/assessments/identifier::identifier/resources', //'/v1/sharedassessments',
-    assessmentsSharedResources:
+    assessmentsShared: '/v1/sharedassessments/?includeDeleted=false',
+
+    assessmentResources: '/v1/assessments/identifier::identifier/resources', //'/v1/sharedassessments',
+    assessmentSharedResources:
       '/v1/sharedassessments/identifier::identifier/resources',
+    assmentsForSessions: '/v1/sessions/:sessionId/assessments',
     bridgeAccount: '/v1/accounts/:id',
     //  enrollments: '/v5/studies/{studyId}/enrollments',
     enrollments: '/v5/studies/:studyId/enrollments',

@@ -1,6 +1,4 @@
 import {
-  Dialog,
-  DialogContent,
   Divider,
   Drawer,
   Hidden,
@@ -14,12 +12,11 @@ import {makeStyles} from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
 import clsx from 'clsx'
-import React, {FunctionComponent, useState} from 'react'
+import React, {FunctionComponent} from 'react'
 import {NavLink} from 'react-router-dom'
 import Logo from '../../assets/logo_mtb.svg'
 import {latoFont} from '../../style/theme'
 import {UserSessionData} from '../../types/types'
-import AccountLogin from '../account/AccountLogin'
 import Logout from '../account/Logout'
 import MobileDrawerMenuHeader from './MobileDrawerMenuHeader'
 
@@ -165,6 +162,7 @@ const useStyles = makeStyles(theme => ({
 
 type AppTopNavProps = {
   routes: {name: string; path: string; isRhs?: boolean}[]
+  appId: string
   sessionData?: UserSessionData
 }
 
@@ -245,13 +243,12 @@ const MenuLinksRhs: FunctionComponent<
 
 const AppTopNav: FunctionComponent<AppTopNavProps> = ({
   routes,
-
+  appId,
   sessionData,
   ...props
 }: AppTopNavProps) => {
   const classes = useStyles()
 
-  const [isSignInOpen, setIsSignInOpen] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null)
 
@@ -272,7 +269,10 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
     }
     return initial?.toUpperCase() || '?'
   }
-
+  // Hide the app store download page and also the sing in page from the nav.
+  routes = routes.filter(
+    route => route.name !== 'APP STORE' && route.name !== 'SIGN IN'
+  )
   return (
     <>
       {' '}
@@ -300,6 +300,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             disableGutters
             className={classes.toolbar}>
             <MenuLinks
+              appId={appId}
               className={classes.toolbarLink}
               activeClassName={classes.selectedLink}
               routes={routes.filter(route => route.name && !route.isRhs)}
@@ -313,6 +314,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
             className={classes.toolbar}>
             {!sessionData && (
               <MenuLinksRhs
+                appId={appId}
                 className={classes.toolbarLink}
                 activeClassName={classes.selectedLink}
                 routes={routes.filter(route => route.name && route.isRhs)}
@@ -323,8 +325,8 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                   <Button
                     variant="text"
                     className={classes.toolbarLink}
-                    onClick={() => setIsSignInOpen(true)}>
-                    Sign in
+                    href={'/sign-in'}>
+                    LOG IN
                   </Button>
                 </div>
               </MenuLinksRhs>
@@ -363,6 +365,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
               sessionData ? 'LOGGED_IN' : 'NOT_LOGGED_IN'
             }></MobileDrawerMenuHeader>
           <MenuLinks
+            appId={appId}
             className={classes.drawerMenuItem}
             activeClassName={classes.drawerMenuSelectedLink}
             routes={routes.filter(route => route.name && !route.isRhs)}
@@ -370,6 +373,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
           />
           {sessionData && <Divider className={classes.divider}></Divider>}
           <MenuLinksRhs
+            appId={appId}
             className={classes.drawerMenuItem}
             activeClassName={classes.drawerMenuSelectedLink}
             routes={routes.filter(route => route.name && route.isRhs)}
@@ -393,22 +397,12 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                 classes.drawerAuthOptions,
                 classes.drawerMenuItem
               )}
-              onClick={() => setIsSignInOpen(true)}>
+              href={'/sign-in'}>
               Login
             </Button>
           </MenuLinksRhs>
         </Drawer>
       </nav>
-      <Dialog
-        open={isSignInOpen}
-        onClose={() => setIsSignInOpen(false)}
-        aria-labelledby="form-dialog-title">
-        <DialogContent>
-          <AccountLogin
-            {...props}
-            callbackFn={() => setIsSignInOpen(false)}></AccountLogin>
-        </DialogContent>
-      </Dialog>
       <Menu
         classes={{list: classes.l}}
         id="simple-menu"

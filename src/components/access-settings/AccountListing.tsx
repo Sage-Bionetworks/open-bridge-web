@@ -3,7 +3,7 @@ import React, {FunctionComponent, ReactNode} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {ReactComponent as Delete} from '../../assets/trash.svg'
 import {useAsync} from '../../helpers/AsyncHook'
-import {isInAdminRole, formatStudyId} from '../../helpers/utility'
+import Utility from '../../helpers/utility'
 import AccessService from '../../services/access.service'
 import {globals, poppinsFont} from '../../style/theme'
 import {OrgUser, Study, UserSessionData} from '../../types/types'
@@ -72,7 +72,7 @@ const NameDisplay: FunctionComponent<any> = ({member, index}): JSX.Element => {
   if (index === 0) {
     name = name + ' (You)'
   }
-  admin = isInAdminRole(member.roles) ? <div>Study Admin</div> : <></>
+  admin = Utility.isInAdminRole(member.roles) ? <div>Study Admin</div> : <></>
 
   const firstLine = (
     <Box display="flex" justifyContent="space-between">
@@ -96,12 +96,12 @@ const NameDisplayDetail: React.FunctionComponent<{member: OrgUser}> = ({
 }) => {
   const classes = useStyles()
   return (
-    <Box style={{marginBottom: '80px', marginTop: '100px'}}>
+    <Box style={{marginBottom: '40px', marginTop: '80px'}}>
       <Box display="flex" alignItems="center">
         <Box className={classes.studyInfoNameText} fontWeight="bold">
           {getNameDisplay(member)}
         </Box>
-        {isInAdminRole(member.roles) && (
+        {Utility.isInAdminRole(member.roles) && (
           <Box className={classes.studyInfoNameText} fontWeight="normal">
             &#8287;{'| Study Admin'}
           </Box>
@@ -121,7 +121,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   children,
 }: AccountListingProps) => {
   const classes = useStyles()
-  const {token, roles: myRoles, id, orgMembership} = sessionData
+  const {token, id, orgMembership} = sessionData
 
   const handleError = useErrorHandler()
 
@@ -212,7 +212,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     <Box className={classes.root}>
       <Box className={classes.listing}>
         <MTBHeadingH6>
-          Study ID: {formatStudyId(study.identifier)}{' '}
+          Study ID: {Utility.formatStudyId(study.identifier)}{' '}
         </MTBHeadingH6>
         <MTBHeadingH1 style={{color: ' #FCFCFC'}}>{study.name}</MTBHeadingH1>
         {status === 'PENDING' && <Loader reqStatusLoading={true}></Loader>}{' '}
@@ -264,8 +264,9 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                 })
               }
               isEdit={true}
-              currentUserIsAdmin={isInAdminRole(myRoles)}></AccessGrid>
-            {myRoles.includes('admin') && (
+              isThisMe={currentMemberAccess.member.id === id}
+              currentUserIsAdmin={Utility.isInAdminRole()}></AccessGrid>
+            {Utility.isInAdminRole() && (
               <Box className={classes.buttons}>
                 <Button
                   aria-label="delete"

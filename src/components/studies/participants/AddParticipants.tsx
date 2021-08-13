@@ -18,7 +18,7 @@ import React, {FunctionComponent} from 'react'
 import {CSVReader} from 'react-papaparse'
 import {ReactComponent as PencilIcon} from '../../../assets/edit_pencil.svg'
 import {ReactComponent as UploadIcon} from '../../../assets/upload.svg'
-import {isInvalidPhone, isSignInById, makePhone} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import {poppinsFont, theme} from '../../../style/theme'
 import {EditableParticipantData, Study} from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
@@ -145,10 +145,10 @@ async function uploadCsvRow(
       result = await addParticipantById(studyIdentifier, token, options)
     }
   } else {
-    if (!data['Phone Number'] || isInvalidPhone(data['Phone Number'])) {
+    if (!data['Phone Number'] || Utility.isInvalidPhone(data['Phone Number'])) {
       throw new Error('need phone')
     } else {
-      const phone = makePhone(data['Phone Number'])
+      const phone = Utility.makePhone(data['Phone Number'])
       result = await addParticipantByPhone(
         studyIdentifier,
         token,
@@ -171,7 +171,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
 
   const classes = useStyles()
   const generateIds = study.clientData.generateIds
-  const isEnrolledById = isSignInById(study.signInTypes)
+  const isEnrolledById = Utility.isSignInById(study.signInTypes)
 
   const [isOpenUpload, setIsOpenUpload] = React.useState(false)
   const [isCsvUploaded, setIsCsvUploaded] = React.useState(false)
@@ -190,7 +190,10 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
 
   const handleOnDrop = async (rows: any) => {
     setImportError([])
-
+    if (!rows[0]?.data) {
+      setImportError([...importError, 'Please check the format of your file'])
+      return
+    }
     const keysString = Object.keys(rows[0]?.data).sort().join(',')
     const valid = isEnrolledById
       ? CSV_BY_ID_KEY.sort().join(',') === keysString
@@ -286,8 +289,8 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             {importError.length > 0 && (
               <Box my={1} color={theme.palette.error.main}>
                 <ul>
-                  {importError.map(error => (
-                    <li>{error}</li>
+                  {importError.map((error, index) => (
+                    <li key={'import-error' + index}>{error}</li>
                   ))}
                 </ul>
               </Box>

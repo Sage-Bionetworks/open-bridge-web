@@ -48,7 +48,7 @@ function makeRequest(
   })
 }
 
-export const callEndpointXHR = async <T>(
+const callEndpointXHR = async <T>(
   endpoint: string,
   method: RestMethod = 'POST',
   data: StringDictionary<any>,
@@ -75,15 +75,19 @@ export const callEndpointXHR = async <T>(
   )
 }
 
-export const callEndpoint = async <T>(
+const callEndpoint = async <T>(
   endpoint: string,
   method: RestMethod = 'POST',
   data: StringDictionary<any>,
   token?: string,
   isSynapseEndpoint?: boolean
 ): Promise<Response<T>> => {
+  /* 
+  Agendel: this is only used for e2e which we are doing doing here
   const ls = window.localStorage
   const isE2E = ls.getItem('crc_e2e')
+  */
+  const isE2E = false
   let url = isSynapseEndpoint
     ? `${CONSTANTS.constants.SYNAPSE_ENDPOINT}${endpoint}`
     : `${CONSTANTS.constants.ENDPOINT}${endpoint}`
@@ -121,7 +125,7 @@ export const callEndpoint = async <T>(
   return {status: response.status, data: result, ok: response.ok}
 }
 
-export const getSession = (): UserSessionData | undefined => {
+const getSession = (): UserSessionData | undefined => {
   const item = sessionStorage.getItem(CONSTANTS.constants.SESSION_NAME) || ''
   try {
     const json = JSON.parse(item)
@@ -131,16 +135,16 @@ export const getSession = (): UserSessionData | undefined => {
   }
 }
 
-export const clearSession = () => {
+const clearSession = () => {
   sessionStorage.removeItem(CONSTANTS.constants.SESSION_NAME)
   sessionStorage.clear()
 }
 
-export const setSession = (data: UserSessionData) => {
+const setSession = (data: UserSessionData) => {
   sessionStorage.setItem(CONSTANTS.constants.SESSION_NAME, JSON.stringify(data))
 }
 
-export const getSearchParams = (search: string): {[key: string]: string} => {
+const getSearchParams = (search: string): Record<string, string> => {
   const searchParamsProps: any = {}
   // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams -- needs polyfill for ie11
   const searchParams = new URLSearchParams(search)
@@ -150,8 +154,16 @@ export const getSearchParams = (search: string): {[key: string]: string} => {
   return searchParamsProps
 }
 
+const getAppId = () => {
+  if (document.location.port === '3001') {
+    return CONSTANTS.constants.ARC_APP_ID
+  } else {
+    return CONSTANTS.constants.MTB_APP_ID
+  }
+}
+
 // function to use session storage (react hooks)
-export const useSessionStorage = (
+const useSessionStorage = (
   key: string,
   initialValue: string | undefined
 ): [string | undefined, (value: string | undefined) => void] => {
@@ -187,14 +199,14 @@ export const useSessionStorage = (
   return [storedValue, setValue]
 }
 
-export const getRandomId = (): string => {
+const getRandomId = (): string => {
   return Date.now().toString(36) + Math.random().toString(36).substr(2)
 }
 
-export const getEnumKeys = <T>(enum1: T): (keyof T)[] =>
+const getEnumKeys = <T>(enum1: T): (keyof T)[] =>
   Object.keys(enum1) as (keyof T)[]
 
-export const getEnumKeyByEnumValue = (
+const getEnumKeyByEnumValue = (
   myEnum: any,
   enumValue: number | string
 ): string => {
@@ -204,7 +216,7 @@ export const getEnumKeyByEnumValue = (
   return result
 }
 
-export const bytesToSize = (bytes: number) => {
+const bytesToSize = (bytes: number) => {
   const sizes = ['bytes', 'kb', 'MB', 'GB', 'TB']
   if (bytes === 0) return 'n/a'
   const i = parseInt(
@@ -214,7 +226,7 @@ export const bytesToSize = (bytes: number) => {
   if (i === 0) return `${bytes} ${sizes[i]})`
   return `${(bytes / 1024 ** i).toFixed(1)}${sizes[i]}`
 }
-export const randomInteger = (min: number, max: number): number => {
+const randomInteger = (min: number, max: number): number => {
   min = Math.ceil(min)
   max = Math.floor(max)
   return Math.floor(Math.random() * (max - min + 1)) + min
@@ -222,14 +234,18 @@ export const randomInteger = (min: number, max: number): number => {
 
 //based on https://gist.github.com/lavoiesl/3223665
 // generates external id
-export const generateNonambiguousCode = (
+const generateNonambiguousCode = (
   length: number,
-  isAlpha?: boolean
+  mode: 'NUMERIC' | 'ALPHANUMERIC' | 'CONSONANTS' = 'NUMERIC'
 ): string => {
   let result = ''
-  const alpha = '23456789abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ'
-  const numeric = '0123456789'
-  const symbols = isAlpha ? alpha : numeric
+
+  const dictionary = {
+    NUMERIC: '0123456789',
+    ALPHANUMERIC: '23456789abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ',
+    CONSONANTS: 'bcdfghjkmnpqrstvwxz',
+  }
+  const symbols = dictionary[mode]
   const max_offset = symbols.length - 1
 
   for (let i = 0; i < length; i++) {
@@ -240,7 +256,7 @@ export const generateNonambiguousCode = (
   return result
 }
 
-export const makePhone = (phone: string): Phone => {
+const makePhone = (phone: string): Phone => {
   const number = phone?.includes('+1') ? phone : `+1${phone}`
   return {
     number: number,
@@ -248,7 +264,7 @@ export const makePhone = (phone: string): Phone => {
   }
 }
 
-export const isInvalidPhone = (phone: string): boolean => {
+const isInvalidPhone = (phone: string): boolean => {
   const phoneRegEx = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
   return phone.match(phoneRegEx) === null
 }
@@ -256,18 +272,47 @@ export const isInvalidPhone = (phone: string): boolean => {
 /*
   This function is taken from: https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
 */
-export const isValidEmail = (email: string) => {
-  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+const isValidEmail = (email: string) => {
+  const re =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(String(email).toLowerCase())
 }
 
-export const isInAdminRole = (roles: AdminRole[]) => roles.includes('org_admin')
+const isInAdminRole = (roles?: AdminRole[]) => {
+  const userRoles = roles || getSession()?.roles || []
+  return userRoles.includes('org_admin')
+}
 
-export const isSignInById = (signIn?: SignInType[]): boolean => {
+const isPathAllowed = (studyId: string, path: string) => {
+  const userRoles = getSession()?.roles || []
+  const pathToCheck = path.replace(':id', studyId)
+  const access = {
+    org_admin: [CONSTANTS.restrictedPaths.ACCESS_SETTINGS],
+    study_designer: [CONSTANTS.restrictedPaths.STUDY_BUILDER],
+    study_coordinator: [
+      CONSTANTS.restrictedPaths.PARTICIPANT_MANAGER,
+      CONSTANTS.restrictedPaths.ADHERENCE_DATA,
+      CONSTANTS.restrictedPaths.STUDY_DATA,
+    ],
+  }
+  const allowedPaths: string[] = []
+  userRoles.forEach(role => {
+    Array.prototype.push.apply(
+      allowedPaths,
+      (access[role] || []).map(link => link.replace(':id', studyId))
+    )
+  })
+  const hasPath = allowedPaths.find(allowedPath =>
+    pathToCheck.includes(allowedPath)
+  )
+  return !!hasPath
+}
+
+const isSignInById = (signIn?: SignInType[]): boolean => {
   return !signIn || !signIn.includes('phone_password')
 }
 
-export const setBodyClass = (next?: string) => {
+const setBodyClass = (next?: string) => {
   const whiteBgSections = [/*'launch',*/ 'preview']
   const blackBgSections = ['study-live']
 
@@ -284,7 +329,34 @@ export const setBodyClass = (next?: string) => {
 }
 
 // Format the studyId to take the form xxx-xxx
-export const formatStudyId = (studyId: string) => {
+const formatStudyId = (studyId: string) => {
   if (studyId.length !== 6) return studyId
   return studyId.substring(0, 3) + '-' + studyId.substring(3)
 }
+
+const UtilityObject = {
+  formatStudyId: formatStudyId,
+  setBodyClass: setBodyClass,
+  isSignInById: isSignInById,
+  isPathAllowed: isPathAllowed,
+  isInAdminRole: isInAdminRole,
+  isValidEmail: isValidEmail,
+  isInvalidPhone: isInvalidPhone,
+  makePhone: makePhone,
+  generateNonambiguousCode: generateNonambiguousCode,
+  randomInteger: randomInteger,
+  bytesToSize: bytesToSize,
+  getEnumKeyByEnumValue: getEnumKeyByEnumValue,
+  getEnumKeys: getEnumKeys,
+  getRandomId: getRandomId,
+  useSessionStorage: useSessionStorage,
+  getAppId: getAppId,
+  getSearchParams: getSearchParams,
+  setSession: setSession,
+  clearSession: clearSession,
+  getSession: getSession,
+  callEndpoint: callEndpoint,
+  callEndpointXHR: callEndpointXHR,
+}
+
+export default UtilityObject

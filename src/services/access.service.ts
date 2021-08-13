@@ -1,4 +1,4 @@
-import {callEndpoint} from '../helpers/utility'
+import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {OrgUser, UserData} from '../types/types'
 
@@ -23,7 +23,7 @@ async function getAliasFromSynapseByEmail(
   }
 
   const alias = synapseEmailAddress.replace('@synapse.org', '').trim()
-  const principal = await callEndpoint<{principalId: string}>(
+  const principal = await Utility.callEndpoint<{principalId: string}>(
     constants.endpoints.synapseGetAlias,
     'POST',
     {alias: alias, type: 'USER_NAME'},
@@ -31,7 +31,7 @@ async function getAliasFromSynapseByEmail(
     true
   )
 
-  const profile = await callEndpoint<{
+  const profile = await Utility.callEndpoint<{
     userProfile: {
       firstName: string
       lastName: string
@@ -62,7 +62,7 @@ async function getAccountsForOrg(
     ':orgId',
     orgId
   )
-  const result = await callEndpoint<{items: OrgUser[]}>(
+  const result = await Utility.callEndpoint<{items: OrgUser[]}>(
     endpoint,
     'POST',
     {},
@@ -77,7 +77,7 @@ async function getIndividualAccount(
   userId: string
 ): Promise<OrgUser> {
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
-  const result = await callEndpoint<OrgUser>(endpoint, 'GET', {}, token)
+  const result = await Utility.callEndpoint<OrgUser>(endpoint, 'GET', {}, token)
   return result.data
 }
 
@@ -98,7 +98,12 @@ async function deleteIndividualAccount(
   userId: string
 ): Promise<OrgUser> {
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
-  const result = await callEndpoint<OrgUser>(endpoint, 'DELETE', {}, token)
+  const result = await Utility.callEndpoint<OrgUser>(
+    endpoint,
+    'DELETE',
+    {},
+    token
+  )
   return result.data
 }
 
@@ -109,20 +114,25 @@ async function createIndividualAccount(
   firstName: string,
   lastName: string,
   orgMembership: string,
-  role: string
+  userRoles: string[]
 ): Promise<any> {
   const postData = {
-    appId: constants.constants.APP_ID,
+    appId: Utility.getAppId(),
     email,
     synapseUserId,
     dataGroups: ['test_user'],
     firstName,
     lastName,
     orgMembership,
-    roles: [role],
+    roles: userRoles,
   }
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', '')
-  const result = await callEndpoint<any>(endpoint, 'POST', postData, token)
+  const result = await Utility.callEndpoint<any>(
+    endpoint,
+    'POST',
+    postData,
+    token
+  )
 
   return result.ok
 }
@@ -133,10 +143,20 @@ async function updateIndividualAccountRoles(
   roles: string[]
 ): Promise<any> {
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
-  const userResponse = await callEndpoint<OrgUser>(endpoint, 'GET', {}, token)
+  const userResponse = await Utility.callEndpoint<OrgUser>(
+    endpoint,
+    'GET',
+    {},
+    token
+  )
   const data = userResponse.data
   const updatedUser = {...data, roles}
-  const result = await callEndpoint<any>(endpoint, 'POST', updatedUser, token)
+  const result = await Utility.callEndpoint<any>(
+    endpoint,
+    'POST',
+    updatedUser,
+    token
+  )
   return result.data
 }
 

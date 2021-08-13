@@ -8,7 +8,6 @@ import {
 import ClockIcon from '@material-ui/icons/AccessTime'
 import AddIcon from '@material-ui/icons/Add'
 import ClearIcon from '@material-ui/icons/Clear'
-import DeleteIcon from '@material-ui/icons/Delete'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {
@@ -25,8 +24,9 @@ import AssessmentSmall from '../../assessments/AssessmentSmall'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import EditableTextbox from '../../widgets/EditableTextbox'
 import SessionIcon from '../../widgets/SessionIcon'
+import TrashIcon from '../../../assets/trash.svg'
 
-const useStyles = makeStyles((theme: ThemeType) => ({
+export const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
@@ -49,11 +49,16 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     top: '-3px',
   },
   btnDeleteAssessment: {
-    padding: '0',
+    padding: theme.spacing(1.25, 1.25),
     minWidth: 'auto',
     position: 'absolute',
-    top: '35px',
-    right: theme.spacing(1),
+    top: '28px',
+    right: theme.spacing(0),
+    backgroundColor: '#E8BEBE',
+    borderRadius: '0px',
+    '&:hover': {
+      backgroundColor: '#E8BEBE',
+    },
   },
   actions: {
     borderTop: '1px solid black',
@@ -75,12 +80,15 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       border: '2px solid #C4C4C4',
       boxShadow: '0px 5px 5px #0908f3;',
     },
-    // chrome + Safari
     '&::-webkit-scrollbar': {
-      display: 'none',
+      width: '4px',
     },
-    // firefox
-    scrollbarWidth: 'none',
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#C4C4C4',
+      borderRadius: '4px',
+    },
+    paddingRight: theme.spacing(0.75),
+    margin: theme.spacing(0.75, 0),
   },
 }))
 
@@ -97,6 +105,16 @@ const rearrangeList = (
   const [removed] = result.splice(startIndex, 1)
   result.splice(endIndex, 0, removed)
 
+  return result
+}
+
+export const getTotalSessionTime = (assessments?: Assessment[]): number => {
+  if (!assessments) {
+    return 0
+  }
+  const result = assessments.reduce((prev, curr, ndx) => {
+    return prev + (Number(curr.minutesToComplete) || 0)
+  }, 0)
   return result
 }
 
@@ -153,16 +171,6 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
     onUpdateAssessmentList(studySession.guid!, result)
   }
 
-  const getTotalSessionTime = (assessments?: Assessment[]): number => {
-    if (!assessments) {
-      return 0
-    }
-    const result = assessments.reduce((prev, curr, ndx) => {
-      return prev + Number(curr.minutesToComplete)
-    }, 0)
-    return result
-  }
-
   const getInner = (
     studySession: StudySession,
     sessionIndex: number,
@@ -174,6 +182,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
           <Box marginRight={2}>
             <SessionIcon index={sessionIndex}>
               <EditableTextbox
+                maxCharacters={18}
                 component="h4"
                 initValue={studySession.name}
                 onTriggerUpdate={(newValue: string) =>
@@ -244,7 +253,9 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> = (
                                   e.stopPropagation()
                                   removeAssessment(assessment.guid)
                                 }}>
-                                <DeleteIcon></DeleteIcon>
+                                <img
+                                  src={TrashIcon}
+                                  style={{width: '10px', height: '14px'}}></img>
                               </Button>
                             )}
                           </AssessmentSmall>

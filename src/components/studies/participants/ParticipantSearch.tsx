@@ -1,10 +1,11 @@
 import {Button} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
-import React from 'react'
+import React, {useEffect} from 'react'
 import BlackXIcon from '../../../assets/black_x_icon.svg'
 import SearchIcon from '../../../assets/search_icon.svg'
 import WhiteSearchIcon from '../../../assets/white_search_icon.svg'
 import {latoFont} from '../../../style/theme'
+import {ParticipantActivityType} from '../../../types/types'
 
 const ENTER_KEY = 'Enter'
 
@@ -79,11 +80,15 @@ const useStyles = makeStyles(theme => ({
 type ParticipantSearchProps = {
   onReset: Function
   onSearch: Function
+  isEnrolledById?: boolean
+  tab?: ParticipantActivityType
 }
 
 const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
   onReset,
   onSearch,
+  isEnrolledById,
+  tab,
 }) => {
   const classes = useStyles()
   const [
@@ -105,15 +110,22 @@ const ParticipantSearch: React.FunctionComponent<ParticipantSearchProps> = ({
   }
 
   const handleResetSearch = async () => {
+    if (!inputComponent.current) return
     inputComponent.current!.value = ''
     setIsSearchingUsingID(false)
     onReset()
   }
 
+  useEffect(() => {
+    handleResetSearch()
+  }, [tab])
+
   return isSearchingForParticipant ? (
     <div className={classes.inputRow}>
       <input
-        placeholder="Participant IDs"
+        placeholder={
+          isEnrolledById ? "Participant's ID" : "Participant's Phone Number"
+        }
         onKeyDown={e => {
           if (e.key === ENTER_KEY) {
             handleSearchParticipantRequest()

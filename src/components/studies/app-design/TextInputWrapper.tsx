@@ -11,6 +11,12 @@ const useStyles = makeStyles(theme => ({
     fontSize: '15px',
     lineHeight: '18px',
   },
+  errorText: {
+    color: theme.palette.error.main,
+  },
+  errorInput: {
+    borderColor: theme.palette.error.main,
+  },
 }))
 
 type TextInputWrapperProps = {
@@ -28,6 +34,7 @@ type TextInputWrapperProps = {
   readOnly?: boolean
   maxWordCount?: number
   alternativeTextInputClassName?: string
+  hasError?: boolean
 }
 
 const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
@@ -45,16 +52,24 @@ const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
   readOnly,
   maxWordCount,
   alternativeTextInputClassName,
+  hasError,
 }) => {
   const classes = useStyles()
   return (
     <>
-      {titleText && <SimpleTextLabel htmlFor={id}>{titleText}</SimpleTextLabel>}
+      {titleText && (
+        <SimpleTextLabel
+          htmlFor={id}
+          className={clsx(hasError && classes.errorText)}>
+          {titleText}
+        </SimpleTextLabel>
+      )}
       <SimpleTextInput
         className={clsx(
           !alternativeTextInputClassName && classes.informationRowStyle,
           extraClassname && extraClassname,
-          alternativeTextInputClassName && alternativeTextInputClassName
+          alternativeTextInputClassName && alternativeTextInputClassName,
+          hasError && classes.errorInput
         )}
         id={id}
         placeholder={placeholder}

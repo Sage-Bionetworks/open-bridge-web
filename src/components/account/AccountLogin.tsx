@@ -1,32 +1,27 @@
 import {
   Button,
-  Checkbox,
   Container,
-  FormControlLabel,
-  Grid,
-  IconButton,
-  InputAdornment,
-  Link,
   makeStyles,
   Snackbar,
-  TextField,
   Typography,
+  Box,
 } from '@material-ui/core'
-import {Visibility, VisibilityOff} from '@material-ui/icons'
 import Alert, {AlertProps} from '@material-ui/lab/Alert'
 import React, {FunctionComponent, useState} from 'react'
-import {ReactComponent as SageLogo} from '../../assets/sage.svg'
 import {
   useUserSessionDataDispatch,
   useUserSessionDataState,
 } from '../../helpers/AuthContext'
 import storeService from '../../services/store_service'
 import UserService from '../../services/user.service'
-import Loader from '../widgets/Loader'
 import PasswordReset from './PasswordReset'
+import {ReactComponent as SynapseLogo} from '../../assets/synapse_logo_blue.svg'
+import clsx from 'clsx'
+import {poppinsFont} from '../../style/theme'
 
 type AccountLoginOwnProps = {
   callbackFn: Function
+  isArcSignIn?: boolean
 }
 
 type AccountLoginProps = AccountLoginOwnProps
@@ -52,6 +47,32 @@ const useStyles = makeStyles(theme => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+  },
+  arcSubmitbutton: {
+    width: '200px',
+    height: '56px',
+    backgroundColor: 'white',
+    '&:hover': {
+      backgroundColor: 'white',
+    },
+    fontFamily: poppinsFont,
+    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.25)',
+    padding: theme.spacing(2, 3),
+  },
+  text: {
+    fontFamily: poppinsFont,
+    fontSize: '19px',
+    lineHeight: '27px',
+    maxWidth: '275px',
+    marginBottom: theme.spacing(3),
+  },
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  mtbText: {
+    maxWidth: '330px',
   },
 }))
 
@@ -85,7 +106,10 @@ const loginWithSynapse = (event: any) => {
   }*/
 }
 
-const AccountLogin: FunctionComponent<AccountLoginProps> = ({callbackFn}) => {
+const AccountLogin: FunctionComponent<AccountLoginProps> = ({
+  callbackFn,
+  isArcSignIn,
+}) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -150,15 +174,23 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({callbackFn}) => {
         </Alert>
       </Snackbar>
       {!isForgotPassword && (
-        <Container component="main" maxWidth="xs">
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
+        <Container
+          component="main"
+          maxWidth="xs"
+          className={classes.buttonContainer}>
+          <Box className={clsx(classes.text, !isArcSignIn && classes.mtbText)}>
+            {isArcSignIn
+              ? 'Please sign in to ARC using your Synapse account.'
+              : 'Please sign in to Mobile Toolbox using your Synapse account.'}
+          </Box>
           <div className={classes.paper}>
-            <Button variant="contained" onClick={e => loginWithSynapse(e)}>
-              <SageLogo></SageLogo>
-              &nbsp; &nbsp;Sign in with your Synapse account
+            <Button
+              variant="contained"
+              onClick={e => loginWithSynapse(e)}
+              className={classes.arcSubmitbutton}>
+              <SynapseLogo />
             </Button>
+            {/*
             <Typography component="h3" style={{marginTop: '16px'}}>
               OR{' '}
             </Typography>
@@ -234,6 +266,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({callbackFn}) => {
                 </Grid>
               </Grid>
             </form>
+              */}{' '}
           </div>
         </Container>
       )}

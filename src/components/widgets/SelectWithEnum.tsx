@@ -8,7 +8,7 @@ import {
 import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React from 'react'
-import {getEnumKeys} from '../../helpers/utility'
+import Utility from '../../helpers/utility'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -55,7 +55,7 @@ const SelectWithEnum: React.FunctionComponent<
 
   const getDropdownItems = (data: Array<any> | object): JSX.Element[] => {
     if (!Array.isArray(sourceData)) {
-      const result = getEnumKeys(sourceData).map(item => (
+      const result = Utility.getEnumKeys(sourceData).map(item => (
         <MenuItem value={item} key={item as keyof typeof sourceData}>
           {sourceData[item]}
         </MenuItem>

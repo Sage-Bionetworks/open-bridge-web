@@ -6,6 +6,7 @@ import StudyLive from './components/studies/launch/Live'
 import ParticipantManager from './components/studies/participants/ParticipantManager'
 import StudyBuilder from './components/studies/StudyBuilder'
 import StudyList from './components/studies/StudyList'
+import constants from './types/constants'
 
 export default [
   /* {
@@ -20,8 +21,16 @@ export default [
     Component: StudyList,
     exact: true,
   },
-  {path: '/studies/builder/:id', name: '', Component: StudyBuilder},
-  {path: '/studies/builder/:id/:section', name: '', Component: StudyBuilder},
+  {
+    path: constants.restrictedPaths.STUDY_BUILDER,
+    name: '',
+    Component: StudyBuilder,
+  },
+  {
+    path: `${constants.restrictedPaths.STUDY_BUILDER}/:section`,
+    name: '',
+    Component: StudyBuilder,
+  },
   {
     path: '/studies/:id/study-live',
     name: '',
@@ -29,13 +38,13 @@ export default [
     Component: StudyLive,
   },
   {
-    path: '/studies/:id/participant-manager',
+    path: constants.restrictedPaths.PARTICIPANT_MANAGER,
     name: '',
     exact: false,
     Component: ParticipantManager,
   },
   {
-    path: '/studies/:id/access-settings',
+    path: constants.restrictedPaths.ACCESS_SETTINGS,
     name: '',
     Component: AccessSettings,
   },

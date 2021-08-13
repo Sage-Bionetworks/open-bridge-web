@@ -18,6 +18,8 @@ type StudySummarySectionProps = {
   onUpdate: (studyTitle: string, studySummaryBody: string) => void
   studyTitle: string
   studySummaryBody: string
+  studySummaryCopyHasError: boolean
+  studyTitleHasError: boolean
 }
 
 const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = ({
@@ -25,6 +27,8 @@ const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = (
   onUpdate,
   studyTitle,
   studySummaryBody,
+  studySummaryCopyHasError,
+  studyTitleHasError,
 }) => {
   const classes = useStyles()
   return (
@@ -43,6 +47,7 @@ const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = (
             }}
             titleText="Study Name*"
             extraClassname={classes.studyNameInput}
+            hasError={studyTitleHasError}
           />
         </FormControl>
         <FormControl>
@@ -61,6 +66,7 @@ const StudySummarySection: React.FunctionComponent<StudySummarySectionProps> = (
             placeholder="Body Copy"
             titleText="Body Copy (maximum 500 characters)*"
             maxWordCount={500}
+            hasError={studySummaryCopyHasError}
           />
         </FormControl>
       </FormGroupWrapper>

@@ -1,7 +1,7 @@
 import {Box, Paper, Switch} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
-import React, {ChangeEvent, useState} from 'react'
+import React, {ChangeEvent, useEffect, useState} from 'react'
 import {HexColorPicker} from 'react-colorful'
 import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
@@ -11,8 +11,10 @@ import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
 import {ReactComponent as PhoneBottomImg} from '../../../assets/appdesign/phone_buttons.svg'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
 import {useUserSessionDataState} from '../../../helpers/AuthContext'
+import Utility from '../../../helpers/utility'
 import StudyService from '../../../services/study.service'
 import {ThemeType} from '../../../style/theme'
+import constants from '../../../types/constants'
 import {
   Contact,
   Study,
@@ -32,10 +34,12 @@ import Subsection from './Subsection'
 import UploadStudyLogoSection from './UploadStudyLogoSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
+import ReadOnlyAppDesign from './read-only-pages/ReadOnlyAppDesign'
 
 const imgHeight = 70
+const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
 
-const useStyles = makeStyles((theme: ThemeType) => ({
+export const useStyles = makeStyles((theme: ThemeType) => ({
   root: {counterReset: 'orderedlist'},
   section: {
     backgroundColor: '#fefefe',
@@ -204,6 +208,18 @@ export interface AppDesignProps {
   onSave: Function
   study: Study
   onError: Function
+  isReadOnly: boolean
+}
+
+type ErrorStateType = {
+  studyTitleHasError?: boolean
+  studySummaryCopyHasError?: boolean
+  leadPINameHasError?: boolean
+  leadPIAffiliationHasError?: boolean
+  contactLeadNameHasError?: boolean
+  contactLeadPositonHasError?: boolean
+  irbRecordNameHasError?: boolean
+  irbProtocolIdHasError?: boolean
 }
 
 function getPreviewForImage(file: File): PreviewFile {
@@ -245,7 +261,133 @@ const PhoneTopBar: React.FunctionComponent<{
   )
 }
 
-function getContact(study: Study, role: ContactType): Contact | undefined {
+export const WelcomeScreenDisplay: React.FunctionComponent<{
+  study: Study
+  isReadOnly?: boolean
+}> = ({study, isReadOnly}) => {
+  const classes = useStyles()
+  return (
+    <>
+      <Box className={classes.phone}>
+        {!study.clientData.welcomeScreenData?.isUsingDefaultMessage &&
+          !isReadOnly && [
+            <SectionIndicator
+              index={1}
+              className={classes.sectionOneIndicatorPosition}
+              key={1}
+            />,
+            <SectionIndicator
+              index={2}
+              className={classes.sectionTwoIndicatorPosition}
+              key={2}
+            />,
+          ]}
+        <PhoneTopBar
+          color={study.colorScheme?.background || 'transparent'}
+          isUsingDefaultMessage={
+            study.clientData.welcomeScreenData?.isUsingDefaultMessage || false
+          }
+          studyLogoUrl={study.studyLogoUrl}
+        />
+        <WelcomeScreenPhoneContent
+          welcomeScreenContent={
+            study.clientData.welcomeScreenData || ({} as WelcomeScreenData)
+          }
+          studyTitle={study.name}
+          isReadOnly={isReadOnly || false}
+        />
+        <Box
+          className={clsx(
+            classes.phoneBottom,
+            classes.optionalDisclaimerTextOnPhone
+          )}>
+          {study.clientData.welcomeScreenData?.useOptionalDisclaimer
+            ? 'This is a research study and does not provide medical advice, diagnosis, or treatment'
+            : ''}
+        </Box>
+      </Box>
+    </>
+  )
+}
+
+export const StudyPageTopPhone: React.FunctionComponent<{
+  study: Study
+  getContactPersonObject: Function
+  isReadOnly?: boolean
+}> = ({study, getContactPersonObject, isReadOnly}) => {
+  const classes = useStyles()
+  return (
+    <>
+      <Box className={classes.phone}>
+        <Box className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
+          <PhoneTopImgLeftHighlighted title="phone top image" width="312px" />
+        </Box>
+        <StudyPageTopPhoneContent
+          studyLogoUrl={study.studyLogoUrl}
+          isUsingDefaultMessage={
+            study.clientData.welcomeScreenData?.isUsingDefaultMessage || false
+          }
+          imgHeight={imgHeight}
+          appColor={study.colorScheme?.background || 'transparent'}
+          leadInvestigator={getContactPersonObject('principal_investigator')}
+          funder={getContactPersonObject('sponsor')}
+          studyTitle={study.name}
+          studySummaryBody={study.details || ''}
+          getContactName={getContactName}
+          isReadOnly={isReadOnly || false}
+        />
+        <Box className={classes.phoneBottom}>
+          <PhoneBottomImg title="phone bottom image" />
+        </Box>
+      </Box>
+    </>
+  )
+}
+
+export const StudyPageBottomPhone: React.FunctionComponent<{
+  study: Study
+  generalContactPhoneNumber: string
+  irbPhoneNumber: string
+  getContactPersonObject: Function
+  isReadOnly?: boolean
+}> = ({
+  study,
+  generalContactPhoneNumber,
+  irbPhoneNumber,
+  getContactPersonObject,
+  isReadOnly,
+}) => {
+  const classes = useStyles()
+  return (
+    <>
+      <Box
+        className={classes.phone}
+        style={{marginTop: isReadOnly ? '30px' : '134px'}}>
+        <Box className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
+          <PhoneTopImgRightHighlighted title="phone top image" width="312px" />
+        </Box>
+        <StudyPageBottomPhoneContent
+          generalContactPhoneNumber={generalContactPhoneNumber}
+          irbPhoneNumber={irbPhoneNumber}
+          studyID={study.identifier}
+          irbProtocolId={study.irbProtocolId || ''}
+          ethicsBoardInfo={getContactPersonObject('irb')}
+          contactLead={getContactPersonObject('study_support')}
+          getContactName={getContactName}
+          isReadOnly={isReadOnly || false}
+        />
+        <div className={classes.phoneBottom}>
+          <PhoneBottomImg title="phone bottom image" />
+        </div>
+      </Box>
+    </>
+  )
+}
+
+export function getContact(
+  study: Study,
+  role: ContactType
+): Contact | undefined {
   let contacts = study.contacts
   if (!contacts) {
     return undefined
@@ -253,21 +395,25 @@ function getContact(study: Study, role: ContactType): Contact | undefined {
   return contacts.find(el => el.role === role)
 }
 
-const formatPhoneNumber = (phoneNumber: string | undefined) => {
+export const formatPhoneNumber = (phoneNumber: string | undefined) => {
   if (!phoneNumber) {
     return ''
   }
-  phoneNumber.replace('+1', '')
-  if (phoneNumber.length !== 10) {
-    return phoneNumber
+  const updatedPhoneNumber = phoneNumber.replace('+1', '')
+  if (updatedPhoneNumber.length !== 10) {
+    return updatedPhoneNumber
   }
   return (
-    phoneNumber.slice(0, 3) +
+    updatedPhoneNumber.slice(0, 3) +
     '-' +
-    phoneNumber.slice(3, 6) +
+    updatedPhoneNumber.slice(3, 6) +
     '-' +
-    phoneNumber.slice(6)
+    updatedPhoneNumber.slice(6)
   )
+}
+
+export const getContactName = (name: string | undefined) => {
+  return name && name !== DEFAULT_CONTACT_NAME ? name : ''
 }
 
 const AppDesign: React.FunctionComponent<
@@ -279,19 +425,23 @@ const AppDesign: React.FunctionComponent<
   onUpdate,
   onSave,
   study,
-
   onError,
+  isReadOnly,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
+  const params = Utility.getSearchParams(window.location.search)
+  const showError = params.from !== undefined
+  const anchor = params.anchor
 
   const {token, orgMembership} = useUserSessionDataState()
 
   const classes = useStyles()
 
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
-  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] = useState<
-    boolean
-  >(
+  const [
+    irbNameSameAsInstitution,
+    setIrbNameSameAsInstitution,
+  ] = useState<boolean>(
     getContact(study, 'irb')?.name ===
       getContact(study, 'principal_investigator')?.affiliation
   )
@@ -314,6 +464,95 @@ const AppDesign: React.FunctionComponent<
     isGeneralContactEmailValid: true,
     isIrbEmailValid: true,
   })
+
+  const [errorState, setErrorState] = React.useState<ErrorStateType>({})
+
+  useEffect(() => {
+    setTimeout(() => {
+      const element = document.getElementById(anchor)
+      if (!element) return
+      window.scrollTo({
+        behavior: 'smooth',
+        top: element.offsetTop,
+      })
+    }, 100)
+  }, [anchor])
+
+  const handleUpdate = (updatedStudy: Study) => {
+    const formattedStudy = formatStudy(updatedStudy)
+    if (formattedStudy.contacts) {
+      for (const contact of formattedStudy.contacts) {
+        if (contact.name === '') {
+          contact.name = DEFAULT_CONTACT_NAME
+        }
+      }
+    }
+    onUpdate(formattedStudy)
+  }
+
+  const checkPhoneError = (contactLead?: Contact, irbRecord?: Contact) => {
+    const generalContactPhoneError =
+      !contactLead?.phone?.number ||
+      Utility.isInvalidPhone(generalContactPhoneNumber)
+    const irbRecordHasError =
+      !irbRecord?.phone?.number || Utility.isInvalidPhone(irbPhoneNumber)
+    setPhoneNumberErrorState({
+      isGeneralContactPhoneNumberValid: !generalContactPhoneError,
+      isIrbPhoneNumberValid: !irbRecordHasError,
+    })
+  }
+
+  const checkEmailError = (contactLead?: Contact, irbRecord?: Contact) => {
+    const generalContactEmailHasError =
+      !contactLead?.email || !Utility.isValidEmail(contactLead.email)
+    const irbRecordEmailHasError =
+      !irbRecord?.email || !Utility.isValidEmail(irbRecord.email)
+    setEmailErrorState({
+      isGeneralContactEmailValid: !generalContactEmailHasError,
+      isIrbEmailValid: !irbRecordEmailHasError,
+    })
+  }
+
+  const isContactValid = (
+    contact: Contact | undefined,
+    property: keyof Contact
+  ) => {
+    return (
+      contact && contact[property] && contact[property] !== DEFAULT_CONTACT_NAME
+    )
+  }
+
+  useEffect(() => {
+    if (!showError) return
+    const updatedErrorState = {} as ErrorStateType
+    const contactLead = getContact(study, 'study_support')
+    const principalInvestigator = getContact(study, 'principal_investigator')
+    const irbRecord = getContact(study, 'irb')
+    updatedErrorState.leadPINameHasError = !isContactValid(
+      principalInvestigator,
+      'name'
+    )
+    updatedErrorState.leadPIAffiliationHasError = !isContactValid(
+      principalInvestigator,
+      'affiliation'
+    )
+
+    updatedErrorState.contactLeadNameHasError = !isContactValid(
+      contactLead,
+      'name'
+    )
+    updatedErrorState.contactLeadPositonHasError = !isContactValid(
+      contactLead,
+      'position'
+    )
+    updatedErrorState.irbRecordNameHasError = !isContactValid(irbRecord, 'name')
+    updatedErrorState.irbProtocolIdHasError = !study.irbProtocolId
+    updatedErrorState.studyTitleHasError = !study.name
+    updatedErrorState.studySummaryCopyHasError = !study.details?.trim()
+    checkPhoneError(contactLead, irbRecord)
+    checkEmailError(contactLead, irbRecord)
+    setErrorState(updatedErrorState)
+  }, [study])
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     event.persist()
@@ -339,7 +578,7 @@ const AppDesign: React.FunctionComponent<
         version: uploadResponse.version,
       }
 
-      onUpdate(updatedStudy)
+      handleUpdate(updatedStudy)
     } catch (error) {
       onError(error)
     } finally {
@@ -361,7 +600,12 @@ const AppDesign: React.FunctionComponent<
       )
       return
     }
-    const updatedStudy = {...study}
+    const updatedStudy = formatStudy(study)
+    onSave(updatedStudy)
+  }
+
+  const formatStudy = (newStudy: Study) => {
+    const updatedStudy = {...newStudy}
     const irbContact = updatedStudy.contacts?.find(el => el.role === 'irb')
     // If a contact's email or phone is an empty string, then delete the field
     // from the contact object.
@@ -382,20 +626,17 @@ const AppDesign: React.FunctionComponent<
     if (generalContactPhone === '' || generalContactPhone === '+1') {
       delete generalContact!.phone
     }
-
-    onSave(updatedStudy)
+    return updatedStudy
   }
 
   // This is the method without useCallback or debounce.
   const updateColor = (color: string) => {
-    console.log('changingColor to' + color)
-
     const updatedStudy = {...study}
     updatedStudy.colorScheme = {
       ...updatedStudy.colorScheme,
       background: color,
     }
-    onUpdate(updatedStudy)
+    handleUpdate(updatedStudy)
   }
 
   const updateContacts = (
@@ -412,10 +653,57 @@ const AppDesign: React.FunctionComponent<
     return updatedContacts
   }
 
+  useEffect(() => {
+    // Set the use default message property to true by default
+    const {welcomeScreenData} = study.clientData
+    if (welcomeScreenData?.isUsingDefaultMessage === undefined) {
+      updateWelcomeScreenMessaging(
+        welcomeScreenData?.welcomeScreenHeader || '',
+        welcomeScreenData?.welcomeScreenBody || '',
+        welcomeScreenData?.welcomeScreenSalutation || '',
+        welcomeScreenData?.welcomeScreenFromText || '',
+        true
+      )
+    }
+  }, [])
+
   const getContactPersonObject = (type: ContactType): Contact => {
     const contact = getContact(study, type)
+    return contact || {role: type, name: DEFAULT_CONTACT_NAME}
+  }
 
-    return contact || {role: type, name: ''}
+  const updateWelcomeScreenMessaging = (
+    welcomeScreenHeader: string,
+    welcomeScreenBody: string,
+    welcomeScreenSalutation: string,
+    welcomeScreenFromText: string,
+    useOptionalDisclaimer: boolean
+  ) => {
+    const newWelcomeScreenData = {
+      welcomeScreenHeader: welcomeScreenHeader,
+      welcomeScreenBody: welcomeScreenBody,
+      welcomeScreenFromText: welcomeScreenFromText,
+      welcomeScreenSalutation: welcomeScreenSalutation,
+      useOptionalDisclaimer: useOptionalDisclaimer,
+      isUsingDefaultMessage:
+        study.clientData.welcomeScreenData?.isUsingDefaultMessage || false,
+    } as WelcomeScreenData
+    const updatedStudy = {...study}
+    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
+    handleUpdate(updatedStudy)
+  }
+
+  const hasError = (errorProperty: keyof ErrorStateType) => {
+    return showError && !!errorState[errorProperty]
+  }
+  if (isReadOnly) {
+    return (
+      <ReadOnlyAppDesign
+        children={children}
+        study={study}
+        getContactPersonObject={getContactPersonObject}
+      />
+    )
   }
 
   return (
@@ -474,7 +762,7 @@ const AppDesign: React.FunctionComponent<
                       isUsingDefaultMessage: !currentWelcomeScreenData.isUsingDefaultMessage,
                     }
                     updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
-                    onUpdate(updatedStudy)
+                    handleUpdate(updatedStudy)
                   }}></Switch>
               </Box>
               <Box ml={1.5}>Customize</Box>
@@ -510,27 +798,7 @@ const AppDesign: React.FunctionComponent<
                   saveLoader={saveLoader}
                   saveInfo={saveInfo}
                   SimpleTextInputStyles={SimpleTextInputStyles}
-                  onUpdate={(
-                    welcomeStringHeader: string,
-                    welcomeScreenBody: string,
-                    welcomeScreenSalutation: string,
-                    welcomeScreenFromText: string,
-                    useOptionalDisclaimer: boolean
-                  ) => {
-                    const newWelcomeScreenData = {
-                      welcomeScreenHeader: welcomeStringHeader,
-                      welcomeScreenBody: welcomeScreenBody,
-                      welcomeScreenFromText: welcomeScreenFromText,
-                      welcomeScreenSalutation: welcomeScreenSalutation,
-                      useOptionalDisclaimer: useOptionalDisclaimer,
-                      isUsingDefaultMessage:
-                        study.clientData.welcomeScreenData
-                          ?.isUsingDefaultMessage || false,
-                    } as WelcomeScreenData
-                    const updatedStudy = {...study}
-                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
-                    onUpdate(updatedStudy)
-                  }}
+                  onUpdate={updateWelcomeScreenMessaging}
                   welcomeScreenHeader={
                     study.clientData.welcomeScreenData?.welcomeScreenHeader ||
                     ''
@@ -565,44 +833,7 @@ const AppDesign: React.FunctionComponent<
           </Box>
           <Box className={classes.phoneArea}>
             <MTBHeadingH1>What participants will see: </MTBHeadingH1>
-            <Box className={classes.phone}>
-              {!study.clientData.welcomeScreenData?.isUsingDefaultMessage && [
-                <SectionIndicator
-                  index={1}
-                  className={classes.sectionOneIndicatorPosition}
-                  key={1}
-                />,
-                <SectionIndicator
-                  index={2}
-                  className={classes.sectionTwoIndicatorPosition}
-                  key={2}
-                />,
-              ]}
-              <PhoneTopBar
-                color={study.colorScheme?.background || 'transparent'}
-                isUsingDefaultMessage={
-                  study.clientData.welcomeScreenData?.isUsingDefaultMessage ||
-                  false
-                }
-                studyLogoUrl={study.studyLogoUrl}
-              />
-              <WelcomeScreenPhoneContent
-                welcomeScreenContent={
-                  study.clientData.welcomeScreenData ||
-                  ({} as WelcomeScreenData)
-                }
-                studyTitle={study.name}
-              />
-              <Box
-                className={clsx(
-                  classes.phoneBottom,
-                  classes.optionalDisclaimerTextOnPhone
-                )}>
-                {study.clientData.welcomeScreenData?.useOptionalDisclaimer
-                  ? 'This is a research study and does not provide medical advice, diagnosis, or treatment'
-                  : ''}
-              </Box>
-            </Box>
+            <WelcomeScreenDisplay study={study} />
           </Box>
         </Paper>
         <Paper className={classes.section} elevation={2}>
@@ -613,6 +844,7 @@ const AppDesign: React.FunctionComponent<
               describe your study further and list who to contact for
               participant support.
             </p>
+            <a id="summary" />
             <ol className={classes.steps}>
               <StudySummarySection
                 SimpleTextInputStyles={SimpleTextInputStyles}
@@ -620,11 +852,14 @@ const AppDesign: React.FunctionComponent<
                   const updatedStudy = {...study}
                   updatedStudy.name = studyTitle
                   updatedStudy.details = studySummaryBody
-                  onUpdate(updatedStudy)
+                  handleUpdate(updatedStudy)
                 }}
                 studyTitle={study.name || ''}
                 studySummaryBody={study.details || ''}
+                studyTitleHasError={hasError('studyTitleHasError')}
+                studySummaryCopyHasError={hasError('studySummaryCopyHasError')}
               />
+              <a id="leadPI" />
               <StudyLeadInformationSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 orgMembership={orgMembership}
@@ -644,14 +879,22 @@ const AppDesign: React.FunctionComponent<
                   )
                   const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
-                  onUpdate(updatedStudy)
+                  handleUpdate(updatedStudy)
                 }}
                 leadPrincipalInvestigator={getContactPersonObject(
                   'principal_investigator'
                 )}
                 ethicsBoardContact={getContactPersonObject('irb')}
                 funder={getContactPersonObject('sponsor')}
+                getContactName={getContactName}
+                principleInvestigatorNameHasError={hasError(
+                  'leadPINameHasError'
+                )}
+                principleInvestigatorAffiliationHasError={hasError(
+                  'leadPIAffiliationHasError'
+                )}
               />
+              <a id="contactLead" />
               <GeneralContactAndSupportSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 phoneNumberErrorState={phoneNumberErrorState}
@@ -671,9 +914,15 @@ const AppDesign: React.FunctionComponent<
                   )
                   const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
-                  onUpdate(updatedStudy)
+                  handleUpdate(updatedStudy)
                 }}
+                getContactName={getContactName}
+                contactLeadNameHasError={hasError('contactLeadNameHasError')}
+                contactLeadPositionHasError={hasError(
+                  'contactLeadPositonHasError'
+                )}
               />
+              <a id="contactIrb" />
               <IrbBoardContactSection
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 phoneNumberErrorState={phoneNumberErrorState}
@@ -697,62 +946,28 @@ const AppDesign: React.FunctionComponent<
                   const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
                   updatedStudy.irbProtocolId = protocolId
-                  onUpdate(updatedStudy)
+                  handleUpdate(updatedStudy)
                 }}
                 irbInfo={getContactPersonObject('irb')}
                 protocolId={study.irbProtocolId || ''}
+                getContactName={getContactName}
+                irbNameHasError={hasError('irbRecordNameHasError')}
+                irbProtocolIdHasError={hasError('irbProtocolIdHasError')}
               />
             </ol>
           </Box>
           <Box className={classes.phoneArea}>
             <MTBHeadingH1>What participants will see: </MTBHeadingH1>
-            <Box className={classes.phone}>
-              <Box
-                className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
-                <PhoneTopImgLeftHighlighted
-                  title="phone top image"
-                  width="312px"
-                />
-              </Box>
-              <StudyPageTopPhoneContent
-                studyLogoUrl={study.studyLogoUrl}
-                isUsingDefaultMessage={
-                  study.clientData.welcomeScreenData?.isUsingDefaultMessage ||
-                  false
-                }
-                imgHeight={imgHeight}
-                appColor={study.colorScheme?.background || 'transparent'}
-                leadInvestigator={getContactPersonObject(
-                  'principal_investigator'
-                )}
-                funder={getContactPersonObject('sponsor')}
-                studyTitle={study.name}
-                studySummaryBody={study.details || ''}
-              />
-              <Box className={classes.phoneBottom}>
-                <PhoneBottomImg title="phone bottom image" />
-              </Box>
-            </Box>
-            <Box className={classes.phone} style={{marginTop: '134px'}}>
-              <Box
-                className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
-                <PhoneTopImgRightHighlighted
-                  title="phone top image"
-                  width="312px"
-                />
-              </Box>
-              <StudyPageBottomPhoneContent
-                generalContactPhoneNumber={generalContactPhoneNumber}
-                irbPhoneNumber={irbPhoneNumber}
-                studyID={study.identifier}
-                irbProtocolId={study.irbProtocolId || ''}
-                ethicsBoardInfo={getContactPersonObject('irb')}
-                contactLead={getContactPersonObject('study_support')}
-              />
-              <div className={classes.phoneBottom}>
-                <PhoneBottomImg title="phone bottom image" />
-              </div>
-            </Box>
+            <StudyPageTopPhone
+              study={study}
+              getContactPersonObject={getContactPersonObject}
+            />
+            <StudyPageBottomPhone
+              study={study}
+              getContactPersonObject={getContactPersonObject}
+              irbPhoneNumber={irbPhoneNumber}
+              generalContactPhoneNumber={generalContactPhoneNumber}
+            />
           </Box>
         </Paper>
       </Box>

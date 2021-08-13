@@ -4,29 +4,30 @@ import {
   Checkbox,
   FormControl,
   FormControlLabel,
+  FormHelperText,
   Grid,
   Radio,
   RadioGroup,
-  FormHelperText,
 } from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import moment from 'moment'
 import React, {useEffect} from 'react'
 import {NavLink} from 'react-router-dom'
+import Alert_Icon from '../../../assets/alert_icon.svg'
 import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
 import {ReactComponent as EnvelopeImg} from '../../../assets/launch/envelope_icon.svg'
 import {useUserSessionDataState} from '../../../helpers/AuthContext'
 import {ThemeType} from '../../../style/theme'
+import constants from '../../../types/constants'
 import {Contact, Study} from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import {
+  AlertWithText,
   SimpleTextInput,
   SimpleTextLabel,
-  AlertWithText,
 } from '../../widgets/StyledComponents'
 import LeadInvestigatorDropdown from '../app-design/LeadInvestigatorDropdown'
-import Alert_Icon from '../../../assets/alert_icon.svg'
-import moment from 'moment'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -50,6 +51,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontSize: '18px',
     backgroundColor: 'transparent',
     color: 'black',
+    lineHeight: '27px',
   },
   dateValidationErrorText: {
     color: theme.palette.error.main,
@@ -98,6 +100,15 @@ const LastScreen: React.FunctionComponent<{study: Study}> = ({
 
 type irbStudyDataType = {
   irbRecordSameInstitutionalAffiliation: boolean
+}
+
+export const getDateWithTimeZone = (date: Date) => {
+  // code from: https://stackoverflow.com/questions/7556591/is-the-javascript-date-object-always-one-day-off
+  return new Date(date.getTime() - date.getTimezoneOffset() * -60000)
+}
+
+export const getFormattedDate = (date: Date | null) => {
+  return date ? moment(date).format('YYYY-MM-DD') : ''
 }
 
 type ContactRoleTypes =
@@ -183,15 +194,6 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
     const newContactsArray = [...currentContactsArray]
     newContactsArray[contactIndex] = newContactObject
     return newContactsArray
-  }
-
-  const getDateWithTimeZone = (date: Date) => {
-    // code from: https://stackoverflow.com/questions/7556591/is-the-javascript-date-object-always-one-day-off
-    return new Date(date.getTime() - date.getTimezoneOffset() * -60000)
-  }
-
-  const getFormattedDate = (date: Date | null) => {
-    return date ? moment(date).format('YYYY-MM-DD') : ''
   }
 
   const displayApprovalDateError =
@@ -317,7 +319,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                 <strong>Co-Study Administrator</strong>
                 &nbsp;via the &nbsp;
                 <NavLink
-                  to={'/studies/:id/access-settings'.replace(
+                  to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
                     ':id',
                     study.identifier
                   )}
@@ -582,21 +584,25 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
               </Box>
             </Grid>
           </Grid>
-          <Box mt={2}>
-            <AlertWithText
-              severity="error"
-              icon={
-                <img
-                  src={Alert_Icon}
-                  style={{height: '30px'}}
-                  alt={'study-warning'}></img>
-              }
-              className={classes.alertText}>
-              Please note that you will <strong>no longer</strong> be able to{' '}
-              <strong>make changes</strong> to your study once you’ve{' '}
-              <strong>submit</strong> the information from this page.
-            </AlertWithText>
-          </Box>
+          {study.phase === 'in_flight' && (
+            <Box mt={2}>
+              <AlertWithText
+                severity="error"
+                icon={
+                  <img
+                    src={Alert_Icon}
+                    style={{height: '30px'}}
+                    alt={'study-warning'}></img>
+                }
+                className={classes.alertText}>
+                Once your study is submitted, everything related to
+                sessions/scheduling/enrollment will be <strong>locked</strong>
+                -only <strong>Customize App</strong> and{' '}
+                <strong>Study & IRB</strong> details will be{' '}
+                <strong>editable.</strong>
+              </AlertWithText>
+            </Box>
+          )}
         </Box>
       )}
       {isFinished && <LastScreen study={study}></LastScreen>}

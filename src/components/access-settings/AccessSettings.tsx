@@ -20,11 +20,11 @@ import {
   StudyInfoData,
   useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
-import {isInAdminRole} from '../../helpers/utility'
+import Utility from '../../helpers/utility'
 import AccessService from '../../services/access.service'
 import {poppinsFont} from '../../style/theme'
 import {MTBHeadingH1} from '../widgets/Headings'
-import {Access, NO_ACCESS} from './AccessGrid'
+import {Access, NO_ACCESS, getRolesFromAccess} from './AccessGrid'
 import AccountListing from './AccountListing'
 import MemberInvite, {NewOrgAccount} from './MemberInvite'
 
@@ -61,6 +61,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
   },
   addNewDialogHeader: {
     color: theme.palette.common.white,
@@ -115,10 +116,6 @@ async function createNewAccount(
   token: string,
   currentUserOrg: string
 ) {
-  const mapAccessToRole = (access: Access): string => {
-    // if (access.ACCESS_SETTINGS.)
-    return 'developer'
-  }
   try {
     const {
       principalId,
@@ -133,7 +130,7 @@ async function createNewAccount(
       firstName,
       lastName,
       currentUserOrg,
-      mapAccessToRole(access)
+      getRolesFromAccess(access)
     )
     return [true]
   } catch (error) {
@@ -205,7 +202,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
     return <></>
   }
 
-  const userIsAdmin = isInAdminRole(sessionData.roles)
+  const userIsAdmin = Utility.isInAdminRole()
   return (
     <>
       <Container maxWidth="md" className={classes.root}>
@@ -255,14 +252,19 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
             <>
               <Paper
                 elevation={2}
-                style={{margin: '16px 0'}}
                 key={'success'}
                 className={clsx(classes.newOrgAccount)}>
-                <strong>Added Succesfully</strong>
-                <br /> <br />
-                {filterNewAccountsByAdded(newOrgAccounts)
-                  .map(acct => acct.email)
-                  .join(', ')}
+                <strong style={{marginRight: '16px'}}>
+                  Added Successfully:
+                </strong>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="center">
+                  {filterNewAccountsByAdded(newOrgAccounts).map(acct => (
+                    <Box>{acct.email}</Box>
+                  ))}
+                </Box>
               </Paper>
             </>
           )}

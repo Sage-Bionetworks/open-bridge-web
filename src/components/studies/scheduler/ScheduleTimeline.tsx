@@ -1,6 +1,6 @@
 import {Box} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
-import moment from 'moment'
+import Tooltip from '@material-ui/core/Tooltip'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import Pluralize from 'react-pluralize'
@@ -10,11 +10,16 @@ import {useAsync} from '../../../helpers/AsyncHook'
 import StudyService from '../../../services/study.service'
 import {latoFont} from '../../../style/theme'
 import {Schedule} from '../../../types/scheduling'
+import AssessmentImage from '../../assessments/AssessmentImage'
 import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
 import SessionIcon from '../../widgets/SessionIcon'
-import TimelineCustomPlot, {TimelineZoomLevel} from './TimelineCustomPlot'
-import AssessmentImage from '../../assessments/AssessmentImage'
-import Tooltip from '@material-ui/core/Tooltip'
+import TimelineCustomPlot from './timeline-plot/TimelineCustomPlot'
+import {
+  TimelineScheduleItem,
+  TimelineSession,
+  TimelineZoomLevel,
+} from './timeline-plot/types'
+import Utility from './timeline-plot/utility'
 
 const useStyles = makeStyles(theme => ({
   stats: {
@@ -33,7 +38,10 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     '& div': {
       marginRight: theme.spacing(2),
+      marginBottom: theme.spacing(0.25),
     },
+    maxWidth: '90%',
+    flexWrap: 'wrap',
   },
   toolTip: {
     backgroundColor: theme.palette.primary.dark,
@@ -52,30 +60,13 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-type TimelineSession = {
-  guid: string
-  label: string
-  minutesToComplete: number
-}
-
-type TimelineScheduleItem = {
-  instanceGuid: 'JYvaSpcTPot8TwZnFFFcLQ'
-  startDay: number
-  endDay: number
-  startTime: string
-  delayTime: string
-  expiration: string
-  refGuid: string
-  assessments?: any[]
-}
-
 export interface TimelineProps {
   token: string
   schedule: Schedule
   version: number
 }
 
-const Timeline: React.FunctionComponent<TimelineProps> = ({
+const ScheduleTimeline: React.FunctionComponent<TimelineProps> = ({
   token,
   version,
   schedule: schedFromDisplay,
@@ -85,12 +76,17 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
   const [dropdown, setDropdown] = React.useState(['Daily'])
-  const [currentZoomLevel, setCurrentZoomLevel] = React.useState<
-    TimelineZoomLevel
-  >('Monthly')
+  const [currentZoomLevel, setCurrentZoomLevel] =
+    React.useState<TimelineZoomLevel>('Monthly')
 
   const classes = useStyles()
-  const {data: timeline, status, error, run, setData} = useAsync<any>({
+  const {
+    data: timeline,
+    status,
+    error,
+    run,
+    setData,
+  } = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
@@ -104,24 +100,8 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   }, [run, version, token])
 
   const setZoomLevel = (scheduleDuration: string) => {
-    const periods: TimelineZoomLevel[] = [
-      'Daily',
-      'Weekly',
-      'Monthly',
-      'Quarterly',
-    ]
-    const duration = moment.duration(scheduleDuration)
-
-    const lengthInDays = duration.asDays()
+    const {periods, lengthInDays} = Utility.getZoomLevel(scheduleDuration)
     setScheduleLength(lengthInDays)
-    if (lengthInDays < 8) {
-      periods.splice(1)
-    } else if (lengthInDays < 31) {
-      periods.splice(2)
-    } else if (lengthInDays < 92) {
-      periods.splice(3)
-    }
-    console.log(periods)
     setCurrentZoomLevel(periods[periods.length - 1])
     setDropdown(periods)
   }
@@ -149,7 +129,7 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   }
 
   return (
-    <Box padding="30px">
+    <Box py={3} px={0}>
       {!timeline && (
         <>
           This timeline viewer will update to provide a visual summary of the
@@ -171,11 +151,14 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
         <Box className={classes.legend}>
           {schedFromDisplay?.sessions?.map((s, index) => (
             <Tooltip
+              key={`session_${s.guid}`}
               title={
                 <Box width="115px">
                   {s.assessments?.map((assessment, index) => {
                     return (
-                      <Box className={classes.assessmentBox}>
+                      <Box
+                        className={classes.assessmentBox}
+                        key={`assmnt_${assessment.guid}`}>
                         <AssessmentImage
                           resources={assessment.resources}
                           variant="small"
@@ -224,4 +207,4 @@ const Timeline: React.FunctionComponent<TimelineProps> = ({
   )
 }
 
-export default Timeline
+export default ScheduleTimeline

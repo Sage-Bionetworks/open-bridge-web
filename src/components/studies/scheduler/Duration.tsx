@@ -2,9 +2,10 @@ import {IconButton, makeStyles, StandardTextFieldProps} from '@material-ui/core'
 import ClearIcon from '@material-ui/icons/HighlightOff'
 import moment from 'moment'
 import React from 'react'
-import {getEnumKeyByEnumValue} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import SelectWithEnum from '../../widgets/SelectWithEnum'
 import SmallTextBox from '../../widgets/SmallTextBox'
+import {getAmountOfTimeFromString} from './utility'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -52,10 +53,7 @@ const Duration: React.FunctionComponent<
       }
 
       let unit = durationString[durationString.length - 1]
-
-      var numberPattern = /\d+/g
-      const num = durationString.match(numberPattern)
-      const n = num ? Number(num[0]) : 0
+      const n = getAmountOfTimeFromString(durationString)
 
       setUnit(unit)
       setNum(n)
@@ -73,7 +71,10 @@ const Duration: React.FunctionComponent<
       setNum(value)
 
       if (!unit && unitDefault) {
-        const unitDefaultValue = getEnumKeyByEnumValue(unitData, unitDefault)
+        const unitDefaultValue = Utility.getEnumKeyByEnumValue(
+          unitData,
+          unitDefault
+        )
         unit = unitDefaultValue
         setUnit(unitDefaultValue)
       }

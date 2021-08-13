@@ -1,27 +1,38 @@
-import {Box} from '@material-ui/core'
+import {Box, makeStyles} from '@material-ui/core'
+import clsx from 'clsx'
 import React, {useEffect, useState} from 'react'
-import {isInAdminRole} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import AccessService from '../../../services/access.service'
 import {OrgUser} from '../../../types/types'
 import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
+import {ThemeType} from '../../../style/theme'
 
 type LeadInvestigatorDropdownProps = {
   onChange: Function
   currentInvestigatorSelected: string
   token: string
   orgMembership: string
+  hasError?: boolean
 }
 
 type leadInvestigatorOption = {
   name: string
 }
 
+const useStyles = makeStyles((theme: ThemeType) => ({
+  errorText: {
+    color: theme.palette.error.main,
+  },
+}))
+
 const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdownProps> = ({
   onChange,
   currentInvestigatorSelected,
   token,
   orgMembership,
+  hasError,
 }) => {
+  const classes = useStyles()
   const [leadInvestigatorOptions, setLeadInvestigatorOptions] = useState<
     leadInvestigatorOption[]
   >([])
@@ -38,7 +49,9 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
         token!,
         orgMembership!
       )
-      const admins = accounts.filter(account => isInAdminRole(account.roles))
+      const admins = accounts.filter(account =>
+        Utility.isInAdminRole(account.roles)
+      )
       const leadInvestigatorArray = []
       for (let i = 0; i < admins.length; i++) {
         const currentAccount = admins[i]
@@ -54,7 +67,9 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
 
   return (
     <div>
-      <Box ml={1}>Lead Principle Investigator*</Box>
+      <Box ml={1} className={clsx(hasError && classes.errorText)}>
+        Lead Principle Investigator*
+      </Box>
       <BlackBorderDropdown
         id="lead-investigator-drop-down"
         dropdown={leadInvestigatorOptions.map(item => ({
@@ -68,6 +83,7 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
         onChange={e => {
           onChange(e.target.value)
         }}
+        hasError={hasError}
       />
     </div>
   )

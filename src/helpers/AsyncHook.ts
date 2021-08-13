@@ -1,17 +1,16 @@
-import {RequestStatus} from '../types/types'
-
 import React from 'react'
+import {ExtendedError, RequestStatus} from '../types/types'
 
 interface AsyncAction<T> {
   type: RequestStatus
   data: T | null
-  error?: Error | null
+  error?: ExtendedError | null
 }
 
 interface AsyncReturnType<T> {
   setData: Function
   setError: Function
-  error?: Error | null | undefined
+  error?: ExtendedError | null | undefined
   status: RequestStatus
   data: T | null
   run: Function
@@ -20,7 +19,7 @@ interface AsyncReturnType<T> {
 type HookState<T> = {
   status: RequestStatus
   data: T | null
-  error?: Error | null | undefined
+  error?: ExtendedError | null | undefined
 }
 
 function useSafeDispatch<T>(dispatch: Function): Function {

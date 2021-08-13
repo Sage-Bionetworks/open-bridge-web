@@ -4,7 +4,7 @@ import {Alert} from '@material-ui/lab'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
-import {ErrorBoundary} from 'react-error-boundary'
+import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import {useUserSessionDataState} from '../../helpers/AuthContext'
 import {
@@ -12,7 +12,7 @@ import {
   useStudyInfoDataDispatch,
   useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
-import {setBodyClass} from '../../helpers/utility'
+import Utility from '../../helpers/utility'
 import StudyService from '../../services/study.service'
 import {ThemeType} from '../../style/theme'
 import {Schedule, StartEventId, StudySession} from '../../types/scheduling'
@@ -21,11 +21,14 @@ import {
   BackgroundRecorders,
   StringDictionary,
   Study,
+  StudyPhase,
 } from '../../types/types'
 import {ErrorFallback, ErrorHandler} from '../widgets/ErrorHandler'
 import {MTBHeadingH1} from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
+import TopErrorBanner from '../widgets/TopErrorBanner'
 import AppDesign from './app-design/AppDesign'
+import BannerInfo from './BannerInfo'
 import EnrollmentTypeSelector from './enrollment-type-selector/EnrollmentTypeSelector'
 import Launch from './launch/Launch'
 import NavButtons from './NavButtons'
@@ -36,6 +39,7 @@ import Scheduler from './scheduler/Scheduler'
 import {StudySection} from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
+
 const subtitles: StringDictionary<string> = {
   description: 'Description',
   'team-settings': 'Team Settings',
@@ -104,6 +108,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     minHeight: '100vh',
     paddingTop: theme.spacing(5),
   },
+  negativeTop: {
+    marginTop: '-38px',
+  },
 }))
 
 type StudyBuilderOwnProps = {}
@@ -125,6 +132,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }>()
   const [section, setSection] = React.useState(_section)
   const [error, setError] = React.useState<string[]>([])
+  const handleError = useErrorHandler()
   const [schedulerErrors, setSchedulerErrors] = React.useState<
     SchedulerErrorType[]
   >([])
@@ -134,6 +142,38 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   const builderInfo: StudyInfoData = useStudyInfoDataState()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
   const [open, setOpen] = React.useState(true)
+  const [displayBanner, setDisplayBanner] = React.useState(false)
+  const [bannerType, setBannerType] = React.useState<{
+    bgColor: string
+    displayText: string[]
+    icon: string[]
+    textColor: string
+    type: string
+  }>()
+
+  React.useEffect(() => {
+    const banner = getBannerType(builderInfo?.study?.phase, section)
+    const bannerType = BannerInfo.bannerMap.get(banner)
+    setBannerType(bannerType)
+    if (banner !== 'success' && banner !== 'error') {
+      setDisplayBanner(true)
+    }
+  }, [builderInfo?.study?.phase, schedulerErrors, error])
+
+  const getBannerType = (phase: StudyPhase, currentSection: StudySection) => {
+    switch (phase) {
+      case 'in_flight':
+        return 'live'
+      case 'withdrawn':
+        return 'withdrawn'
+      case 'analysis':
+      case 'completed':
+        return 'completed'
+      default:
+        const errors = currentSection === 'scheduler' ? schedulerErrors : error
+        return errors.length > 0 ? 'error' : 'success'
+    }
+  }
 
   const setData = (builderInfo: StudyInfoData) => {
     studyDataUpdateFn({
@@ -183,11 +223,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }
 
   const saveStudy = async (
-    study: Study = builderInfo.study
+    study: Study = builderInfo.study,
+    saveButtonPressed?: boolean
   ): Promise<Study | undefined> => {
     setHasObjectChanged(true)
     setSaveLoader(true)
-
+    setDisplayBanner(false)
     try {
       const newVersion = await StudyService.updateStudy(study, token!)
       const updatedStudy = {
@@ -204,23 +245,26 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       return updatedStudy
     } catch (e) {
       if (e.statusCode === 401) {
-        throw e
+        handleError(e)
       }
-      setError(e.message)
+      setError([e.message])
       window.scrollTo({
         top: 0,
         behavior: 'smooth',
       })
     } finally {
       setSaveLoader(false)
+      if (saveButtonPressed) setDisplayBanner(true)
     }
   }
 
   const saveStudySchedule = async (
-    updatedSchedule?: Schedule
+    updatedSchedule?: Schedule,
+    saveButtonPressed?: boolean
   ): Promise<Schedule | undefined> => {
     setError([])
     setSchedulerErrors([])
+    setDisplayBanner(false)
     try {
       setSaveLoader(true)
       const schedule = updatedSchedule || builderInfo.schedule
@@ -264,7 +308,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       return savedUpdatedSchedule
     } catch (e) {
       if (e.statusCode === 401) {
-        throw e
+        handleError(e)
       }
       console.log(e, 'error')
       const entity = e.entity
@@ -286,6 +330,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       return undefined
     } finally {
       setSaveLoader(false)
+      if (saveButtonPressed) setDisplayBanner(true)
     }
   }
 
@@ -343,7 +388,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     }
     if (updatedObject || !hasObjectChanged) {
       window.history.pushState(null, '', next)
-      setBodyClass(next)
+      Utility.setBodyClass(next)
       setSection(next)
     }
   }
@@ -355,6 +400,25 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       onNavigate={(section: StudySection) => changeSection(section)}
       disabled={!allSessionsHaveAssessments()}></NavButtons>
   )
+
+  const navButtonsArray = [
+    <NavButtons
+      id={`${id}_p_button`}
+      key={`${id}_p_button`}
+      currentSection={section}
+      onNavigate={(section: StudySection) => changeSection(section)}
+      isPrevOnly={true}
+    />,
+    <NavButtons
+      id={`${id}_n_button`}
+      key={`${id}_n_button`}
+      currentSection={section}
+      isNextOnly={true}
+      onNavigate={(section: StudySection) =>
+        changeSection(section)
+      }></NavButtons>,
+  ]
+
   if (builderInfo.study && !builderInfo.schedule) {
     return (
       <Box className={classes.introInfoContainer}>
@@ -383,12 +447,25 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       [classes.mainAreaNoLeftNav]: !open,
       [classes.mainAreaWideNoLeftNav]:
         !open && ['customize', 'scheduler'].includes(section),
+
+      [classes.negativeTop]: ['scheduler'].includes(section),
     })
   }
 
   return (
     <>
       <Box display="flex" bgcolor="#f7f7f7">
+        <TopErrorBanner
+          backgroundColor={bannerType?.bgColor!}
+          textColor={bannerType?.textColor!}
+          onClose={() => setDisplayBanner(false)}
+          isVisible={displayBanner}
+          icon={bannerType?.icon[0]!}
+          isSelfClosing={bannerType?.type === 'success'}
+          displayBottomOfPage={
+            bannerType?.type !== 'success' && bannerType?.type !== 'error'
+          }
+          displayText={bannerType?.displayText[0]!}></TopErrorBanner>
         <Box width={open ? 210 : 56} flexShrink={0}></Box>
         <Box className={getClasses()} pt={8} pl={2}>
           <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>
@@ -400,7 +477,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           position: 'absolute',
           right: '0',
         }}>
-        {' '}
         {hasObjectChanged ? 'object changed' : 'no change'}
       </span>
       <Container
@@ -408,8 +484,17 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         style={{
           height: '100vh',
           padding: '0',
+          backgroundColor:
+            section === 'session-creator' ||
+            section === 'enrollment-type-selector'
+              ? '#f7f7f7'
+              : 'inherit',
         }}>
-        <Box paddingTop={2} display="flex" position="relative">
+        <Box
+          paddingTop={2}
+          display="flex"
+          position="relative"
+          bgcolor={section === 'launch' ? '#f7f7f7' : 'inherit'}>
           <StudyLeftNav
             open={open}
             onToggle={() => setOpen(prev => !prev)}
@@ -467,7 +552,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           version={builderInfo.schedule?.version}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
-                          onSave={() => saveStudySchedule()}
+                          onSave={(isSavePressed: boolean) =>
+                            saveStudySchedule(undefined, isSavePressed)
+                          }
                           onUpdate={(schedule: Schedule) => {
                             setHasObjectChanged(true)
                             setData({
@@ -475,12 +562,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                               schedule: schedule,
                             })
                           }}
-                          schedulerErrors={schedulerErrors}>
-                          {navButtons}
+                          schedulerErrors={schedulerErrors}
+                          isReadOnly={builderInfo.study.phase !== 'design'}>
+                          {navButtonsArray}
                         </Scheduler>
                       )}
                       {section === 'session-creator' && (
                         <SessionCreator
+                          isReadOnly={builderInfo.study.phase !== 'design'}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           id={id}
@@ -498,6 +587,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'enrollment-type-selector' && (
                         <EnrollmentTypeSelector
+                          isReadOnly={builderInfo.study.phase !== 'design'}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           study={builderInfo.study}
@@ -508,14 +598,18 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           {navButtons}
                         </EnrollmentTypeSelector>
                       )}
-                      s
                       {section === 'customize' && (
                         <AppDesign
+                          isReadOnly={
+                            builderInfo.study.phase !== 'design' &&
+                            builderInfo.study.phase !== 'recruitment' &&
+                            builderInfo.study.phase !== 'in_flight'
+                          }
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           study={builderInfo.study}
                           onSave={() => {
-                            saveStudy(builderInfo.study)
+                            saveStudy(builderInfo.study, true)
                           }}
                           onUpdate={(updatedStudy: Study) => {
                             setHasObjectChanged(true)
@@ -523,7 +617,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                               ...builderInfo,
                               study: updatedStudy,
                             })
-                            builderInfo.study = updatedStudy
                           }}
                           onError={(error: string) =>
                             setError(prev => [...prev, error])
@@ -541,6 +634,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'launch' && (
                         <Launch
+                          isReadOnly={
+                            builderInfo.study.phase !== 'design' &&
+                            builderInfo.study.phase !== 'recruitment' &&
+                            builderInfo.study.phase !== 'in_flight'
+                          }
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           studyInfo={builderInfo}
@@ -557,11 +655,21 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                               study: study,
                             })
                           }}>
-                          {navButtons}
+                          <NavButtons
+                            id={id}
+                            currentSection={section}
+                            isPrevOnly={true}
+                            onNavigate={(section: StudySection) =>
+                              changeSection(section)
+                            }
+                            disabled={
+                              !allSessionsHaveAssessments()
+                            }></NavButtons>
                         </Launch>
                       )}
                       {section === 'passive-features' && (
                         <PassiveFeatures
+                          isReadOnly={builderInfo.study.phase !== 'design'}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           features={

@@ -2,7 +2,6 @@ import React from 'react'
 import {makeStyles} from '@material-ui/core/styles'
 import {Box, Button, CircularProgress} from '@material-ui/core'
 import Subsection from './Subsection'
-import {bytesToSize} from '../../../helpers/utility'
 
 const useStyles = makeStyles(theme => ({
   uploadButton: {

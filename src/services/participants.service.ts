@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {callEndpoint, generateNonambiguousCode} from '../helpers/utility'
+import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {
   EditableParticipantData,
@@ -65,7 +65,7 @@ async function getRelevantEventsForParticipants(
       .replace(':studyId', studyIdentifier)
       .replace(':userId', pId)
 
-    const apiCall = await callEndpoint<{items: any[]}>(
+    const apiCall = await Utility.callEndpoint<{items: any[]}>(
       endpoint,
       'GET',
       {},
@@ -148,7 +148,7 @@ async function getTestParticipants(
     allOfGroups: ['test_user'],
   }
 
-  const result = await callEndpoint<{
+  const result = await Utility.callEndpoint<{
     items: ParticipantAccountSummary[]
     total: number
   }>(endpoint, 'POST', data, token)
@@ -214,7 +214,7 @@ async function getActiveParticipantById(
     studyIdentifier
   )
   try {
-    const result = await callEndpoint<ParticipantAccountSummary>(
+    const result = await Utility.callEndpoint<ParticipantAccountSummary>(
       `${endpoint}/${participantId}`,
       'GET',
       {},
@@ -248,7 +248,7 @@ async function deleteParticipant(
     studyIdentifier
   )}/${participantId}`
 
-  const result = await callEndpoint<{identifier: string}>(
+  const result = await Utility.callEndpoint<{identifier: string}>(
     endpoint,
     'DELETE',
     {},
@@ -295,7 +295,7 @@ async function getParticipants(
   }
 
   const result = (
-    await callEndpoint<{
+    await Utility.callEndpoint<{
       items: EnrolledAccountRecord[]
       total: number
     }>(endpoint, 'GET', data, token)
@@ -341,7 +341,7 @@ async function getAllParticipantsInEnrollmentType(
     pageSize: pageSize,
     offsetBy: offsetBy ? offsetBy : 0,
   }
-  const result = await callEndpoint<{
+  const result = await Utility.callEndpoint<{
     items: EnrolledAccountRecord[]
     total: number
   }>(endpoint, 'GET', body, token)
@@ -356,7 +356,7 @@ async function getNumEnrolledParticipants(
   const body = {
     enrollmentFilter: 'enrolled',
   }
-  const result = await callEndpoint<{total: number}>(
+  const result = await Utility.callEndpoint<{total: number}>(
     endpoint,
     'GET',
     body,
@@ -371,25 +371,12 @@ async function getEnrollmentById(
   participantId: string,
   participantType: ParticipantActivityType
 ) {
-  const endpoint = constants.endpoints.enrollmentsForUser
-    .replace(':studyId', studyIdentifier)
-    .replace(':userId', participantId)
-    .trim()
   try {
-    const result = await callEndpoint<{items: EnrolledAccountRecord[]}>(
-      endpoint,
-      'GET',
-      {},
+    const participant = await getUserEnrollmentInfo(
+      studyIdentifier,
+      participantId,
       token
     )
-    const filteredRows = result.data.items.filter(
-      p => p.studyId === studyIdentifier
-    )
-
-    if (_.isEmpty(filteredRows)) {
-      return null
-    }
-    const participant = filteredRows[0]
     const recordFromParticipantApi = await getActiveParticipantById(
       studyIdentifier,
       token,
@@ -397,9 +384,8 @@ async function getEnrollmentById(
     )
 
     const isWithdrawn = participant.withdrawnOn !== undefined
-    const isTestUser = recordFromParticipantApi?.dataGroups?.includes(
-      'test_user'
-    )
+    const isTestUser =
+      recordFromParticipantApi?.dataGroups?.includes('test_user')
     if (participantType === 'WITHDRAWN' && (!isWithdrawn || isTestUser)) {
       return null
     }
@@ -412,12 +398,12 @@ async function getEnrollmentById(
     }
 
     if (participant.withdrawnOn && participantType !== 'TEST') {
-      return mapWithdrawnParticipant(filteredRows[0], studyIdentifier)
+      return mapWithdrawnParticipant(participant, studyIdentifier)
     } else {
       return getActiveParticipantById(
         studyIdentifier,
         token,
-        filteredRows[0].participant.identifier
+        participant.participant.identifier
       )
     }
   } catch (e) {
@@ -427,6 +413,95 @@ async function getEnrollmentById(
     }
     throw new Error(e)
   }
+}
+
+async function getUserEnrollmentInfo(
+  studyIdentifier: string,
+  participantId: string,
+  token: string
+) {
+  const endpoint = constants.endpoints.enrollmentsForUser
+    .replace(':studyId', studyIdentifier)
+    .replace(':userId', participantId)
+  const result = await Utility.callEndpoint<{items: EnrolledAccountRecord[]}>(
+    endpoint,
+    'GET',
+    {},
+    token
+  )
+  const filteredRows = result.data.items.filter(
+    p => p.studyId === studyIdentifier
+  )
+
+  if (_.isEmpty(filteredRows)) {
+    return {} as EnrolledAccountRecord
+  }
+  return filteredRows[0]
+}
+
+async function participantSearch(
+  studyIdentifier: string,
+  token: string,
+  queryValue: string,
+  participantType: ParticipantActivityType,
+  searchType: 'EXTERNAL_ID' | 'PHONE_NUMBER'
+) {
+  const endpoint = constants.endpoints.participantsSearch.replace(
+    ':id',
+    studyIdentifier
+  )
+  const queryFilter =
+    participantType === 'ACTIVE'
+      ? 'enrolled'
+      : participantType === 'WITHDRAWN'
+      ? 'withdrawn'
+      : 'all'
+  const noneOfGroups = []
+  const allOfGroups = []
+  if (participantType !== 'TEST') {
+    noneOfGroups.push('test_user')
+  } else {
+    allOfGroups.push('test_user')
+  }
+  let body = {
+    enrollment: queryFilter,
+    noneOfGroups: noneOfGroups,
+    allOfGroups: allOfGroups,
+    externalIdFilter: queryValue || undefined,
+    phoneFilter: queryValue || undefined,
+  }
+  if (searchType === 'EXTERNAL_ID') {
+    delete body.phoneFilter
+  } else {
+    delete body.externalIdFilter
+  }
+  const participantAccountSummaryResult = await Utility.callEndpoint<{
+    items: ParticipantAccountSummary[]
+    total: number
+  }>(endpoint, 'POST', body, token)
+
+  // get withdrawn info if the participant is withdrawn, only get the note otherwise
+  let resultItems: ParticipantAccountSummary[] =
+    participantAccountSummaryResult.data.items
+  if (queryFilter === 'withdrawn') {
+    const participantEnrollmentPromises =
+      participantAccountSummaryResult.data.items.map(participant => {
+        return getUserEnrollmentInfo(studyIdentifier, participant.id, token)
+      })
+    const enrollments = await Promise.all(participantEnrollmentPromises)
+    resultItems = enrollments.map(p =>
+      mapWithdrawnParticipant(p, studyIdentifier)
+    )
+  } else if (queryFilter === 'enrolled') {
+    const participantPromises = participantAccountSummaryResult.data.items.map(
+      i => getActiveParticipantById(studyIdentifier, token, i.id)
+    )
+    const resolvedParticipants = await Promise.all(participantPromises)
+    resultItems = resolvedParticipants.filter(
+      p => p !== null
+    ) as ParticipantAccountSummary[]
+  }
+  return {items: resultItems, total: resultItems.length}
 }
 
 //withdraws participant
@@ -443,7 +518,7 @@ async function withdrawParticipant(
     note ? '?withdrawalNote=' + encodeURIComponent(note) + '' : ''
   }`
 
-  const result = await callEndpoint<{identifier: string}>(
+  const result = await Utility.callEndpoint<{identifier: string}>(
     endpoint,
     'DELETE',
     {},
@@ -467,7 +542,7 @@ async function updateParticipantGroup(
     dataGroups: dataGroups,
   }
 
-  const result = await callEndpoint<{identifier: string}>(
+  const result = await Utility.callEndpoint<{identifier: string}>(
     endpoint,
     'POST',
     data,
@@ -490,7 +565,7 @@ async function addParticipant(
   )
 
   const data: StringDictionary<any> = {
-    appId: constants.constants.APP_ID,
+    appId: Utility.getAppId(),
   }
 
   //if (options.phone) {
@@ -510,7 +585,7 @@ async function addParticipant(
     data.password = backEndFormatExternalId
   }
 
-  const result = await callEndpoint<{identifier: string}>(
+  const result = await Utility.callEndpoint<{identifier: string}>(
     endpoint,
     'POST',
     data,
@@ -528,7 +603,7 @@ async function addParticipant(
       timestamp: new Date(options.clinicVisitDate).toISOString(),
     }
 
-    await callEndpoint<{identifier: string}>(endpoint, 'POST', data, token)
+    await Utility.callEndpoint<{identifier: string}>(endpoint, 'POST', data, token)
   }
 
   return userId
@@ -542,7 +617,7 @@ async function addTestParticipant(
   return addParticipant(
     studyIdentifier,
     token,
-    {externalId: generateNonambiguousCode(6)},
+    {externalId: Utility.generateNonambiguousCode(6)},
     true
   )
 }
@@ -584,7 +659,7 @@ async function updateParticipantNote(
   const data = {
     note: note,
   }
-  await callEndpoint<ParticipantAccountSummary>(endpoint, 'POST', data, token)
+  await Utility.callEndpoint<ParticipantAccountSummary>(endpoint, 'POST', data, token)
   return participantId
 }
 
@@ -605,11 +680,11 @@ async function updateParticipantClinicVisit(
       timestamp: new Date(clinicVisitDate).toISOString(),
     }
 
-    await callEndpoint<{identifier: string}>(eventEndpoint, 'POST', data, token)
+    await Utility.callEndpoint<{identifier: string}>(eventEndpoint, 'POST', data, token)
   } else {
     // if it is empty - delete it
     eventEndpoint = eventEndpoint + CLINIC_EVENT_ID
-    await callEndpoint<{identifier: string}>(eventEndpoint, 'DELETE', {}, token)
+    await Utility.callEndpoint<{identifier: string}>(eventEndpoint, 'DELETE', {}, token)
   }
   return participantId
 }
@@ -624,7 +699,7 @@ async function getRequestInfoForParticipant(
     .replace(':studyId', studyIdentifier)
     .replace(':userId', participantId)
 
-  const info = await callEndpoint<{signedInOn: any}>(endpoint, 'GET', {}, token)
+  const info = await Utility.callEndpoint<{signedInOn: any}>(endpoint, 'GET', {}, token)
   return info.data
 }
 
@@ -639,6 +714,7 @@ const ParticipantService = {
   getEnrollmentById,
   getActiveParticipantById,
   getParticipants,
+  participantSearch,
   getRequestInfoForParticipant,
   updateParticipantGroup,
   updateParticipantNote,

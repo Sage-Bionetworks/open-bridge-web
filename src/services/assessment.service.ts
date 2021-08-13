@@ -1,4 +1,4 @@
-import {callEndpoint} from '../helpers/utility'
+import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {Assessment} from '../types/types'
 import {getItem, KEYS} from './lshelper'
@@ -10,52 +10,57 @@ const AssessmentService = {
   getResource,
 }
 
+const isArcApp = (): {isArc: boolean; token?: string} => {
+  const sessionData = Utility.getSession()
+  return {
+    isArc: sessionData?.appId === constants.constants.ARC_APP_ID,
+    token: sessionData?.token,
+  }
+}
+
 async function getAssessment(
   guid: string
   /* token?: string,*/
 ): Promise<Assessment[]> {
-  const result = await callEndpoint<Assessment>(
-    `${constants.endpoints.assessmentShared.replace(':id', guid)}`,
+  const {isArc, token} = isArcApp()
+  let endPoint = isArc
+    ? constants.endpoints.assessment
+    : constants.endpoints.assessmentShared
+  const result = await Utility.callEndpoint<Assessment>(
+    `${endPoint.replace(':id', guid)}`,
     'GET',
-    {}
+    {},
+    token
   )
 
   return [result.data]
 }
 
-/* don't need this any more ALINA  3/4
-async function importAssessmentIntoLocalContext(
-  guid: string,
-  ownerId: string,
-  token: string,
-) {
-  const assessment = await callEndpoint<Assessment>(
-    `${constants.endpoints.assessmentShared.replace(':id', guid)}/import`,
-    `POST`,
-    {
-      ownerId: ownerId,
-    },
-    token,
-  )
-  return assessment.data
-}*/
-
 async function getAssessments(): Promise<Assessment[]> {
-  const result = await callEndpoint<{items: Assessment[]}>(
-    constants.endpoints.assessmentsShared,
+  const {isArc, token} = isArcApp()
+  const result = await Utility.callEndpoint<{items: Assessment[]}>(
+    isArc
+      ? constants.endpoints.assessments
+      : constants.endpoints.assessmentsShared,
     'GET',
-    {}
+    {},
+    token
   )
 
   return result.data.items
 }
 
 async function getResource(assessment: Assessment): Promise<Assessment> {
-  const endPoint = constants.endpoints.assessmentsSharedResources.replace(
-    ':identifier',
-    assessment.identifier
+  const {isArc, token} = isArcApp()
+  const endPoint = isArc
+    ? constants.endpoints.assessmentResources
+    : constants.endpoints.assessmentSharedResources
+  const response = await Utility.callEndpoint<{items: any[]}>(
+    endPoint.replace(':identifier', assessment.identifier),
+    'GET',
+    {},
+    token
   )
-  const response = await callEndpoint<{items: any[]}>(endPoint, 'GET', {})
   return {
     ...assessment,
     resources: response.data.items,
@@ -65,11 +70,6 @@ async function getResource(assessment: Assessment): Promise<Assessment> {
 async function getAssessmentsWithResources(
   guid?: string
 ): Promise<{assessments: Assessment[]; tags: string[]}> {
-  /* const storedAssessments = await getItem<{ assessments: Assessment[]; tags: string[] }> (KEYS.ASSESSMENTS)
-  if (storedAssessments) {
-    return Promise.resolve(storedAssessments)
-  }*/
-
   const assessments = guid ? await getAssessment(guid) : await getAssessments()
   const resourcePromises = assessments.map(async asmnt => getResource(asmnt))
   return Promise.allSettled(resourcePromises).then(items1 => {

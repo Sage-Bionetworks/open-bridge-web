@@ -10,10 +10,9 @@ import {
 import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
 import {poppinsFont, latoFont} from '../../../style/theme'
-import {DWsEnum, StartEventId} from '../../../types/scheduling'
-import {SimpleTextInput} from '../../widgets/StyledComponents'
+import {DWsEnum} from '../../../types/scheduling'
+import {SimpleTextInput, PrevButton} from '../../widgets/StyledComponents'
 import Duration from './Duration'
-import StudyStartDate from './StudyStartDate'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -21,8 +20,8 @@ const useStyles = makeStyles((theme: Theme) =>
       fontFamily: poppinsFont,
       fontSize: '18px',
       fontWeight: 600,
-
       textAlign: 'left',
+      alignSelf: 'start',
     },
     container: {
       backgroundColor: '#FAFAFA',
@@ -76,9 +75,15 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: theme.spacing(2.25),
       position: 'absolute',
       right: theme.spacing(-18.75),
-      marginTop: theme.spacing(5),
+      marginTop: theme.spacing(0.5),
       textAlign: 'left',
       listStyle: 'none',
+    },
+    continueButton: {
+      display: 'flex',
+      height: '45px',
+      marginTop: theme.spacing(8),
+      alignSelf: 'flex-start',
     },
   })
 )
@@ -93,9 +98,6 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
   const classes = useStyles()
   const [studyName, setStudyName] = React.useState<any>('')
   const [duration, setDuration] = React.useState<any>('')
-  const [startEventId, setstartEventId] = React.useState<
-    StartEventId | undefined
-  >(undefined)
 
   return (
     <Container maxWidth="sm" className={classes.container}>
@@ -117,7 +119,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
           <SimpleTextInput
             fullWidth
             onChange={e => setStudyName(e.target.value)}
-            style={{marginBottom: 0}}
+            style={{marginTop: '-20px'}}
           />
         }
       />
@@ -125,15 +127,10 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
       <Box className={classes.middleContainer}>
         <FormControlLabel
           classes={{labelPlacementStart: classes.labelDuration}}
-          style={
-            {
-              /*justifyContent: 'space-between'*/
-            }
-          }
           label={
             <Box width="210px" marginRight="40px">
               <strong className={classes.headerText}>
-                How long will the study run for?
+                How long is your study?
               </strong>
               <br /> <br />
               <div className={classes.description}>
@@ -145,16 +142,19 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
           className={classes.formControl}
           labelPlacement="start"
           control={
-            <Duration
-              onChange={e => setDuration(e.target.value)}
-              durationString={duration || ''}
-              unitLabel="study duration unit"
-              numberLabel="study duration number"
-              unitData={DWsEnum}
-              isIntro={true}></Duration>
+            <Box mt={-10}>
+              <Duration
+                onChange={e => setDuration(e.target.value)}
+                durationString={duration || ''}
+                unitLabel="study duration unit"
+                numberLabel="study duration number"
+                unitData={DWsEnum}
+                isIntro={true}></Duration>
+            </Box>
           }
         />
         <ul className={classes.weekInformation}>
+          <li>Example Conversions</li>
           <li>1 year = 52 weeks</li>
           <li>2 year = 104 weeks</li>
           <li>3 year = 156 weeks</li>
@@ -162,32 +162,13 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
           <li>5 year = 260 weeks</li>
         </ul>
       </Box>
-
-      <Divider className={classes.divider2}></Divider>
-      <StudyStartDate
-        isIntro={true}
-        onChange={(pseudonym: StartEventId) => setstartEventId(pseudonym)}
-        style={{
-          width: '100%',
-        }}>
-        <Box width="210px" marginRight="40px">
-          <strong className={classes.headerText}>
-            How would you define Day 1 of your study ?
-          </strong>
-          <br /> <br />
-          <div className={classes.description}>
-            Day 1 is when you want your participants to start taking the remote
-            assessments.
-          </div>
-        </Box>
-      </StudyStartDate>
       <Button
+        className={classes.continueButton}
         variant="contained"
         color="primary"
         key="saveButton"
-        onClick={e => onContinue(studyName, duration, startEventId)}
-        disabled={!(duration && startEventId && studyName)}
-        style={{marginTop: '24px'}}>
+        onClick={e => onContinue(studyName, duration, 'timeline_retrieved')}
+        disabled={!(duration && studyName)}>
         Continue
       </Button>
     </Container>

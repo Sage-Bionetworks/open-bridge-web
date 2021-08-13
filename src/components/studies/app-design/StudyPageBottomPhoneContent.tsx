@@ -89,6 +89,8 @@ type StudyPageBottomPhoneContentProps = {
   ethicsBoardInfo: Contact
   contactLead: Contact
   irbProtocolId: string
+  getContactName: Function
+  isReadOnly?: boolean
 }
 
 const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneContentProps> = ({
@@ -98,6 +100,8 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
   ethicsBoardInfo,
   contactLead,
   irbProtocolId,
+  getContactName,
+  isReadOnly,
 }) => {
   const classes = useStyles()
   return (
@@ -109,13 +113,15 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
           from the study, please contact:
         </p>
         <Box className={classes.summaryRoles}>
-          <SectionIndicator
-            index={6}
-            className={classes.sectionSixAndSevenIndicatorPosition}
-          />
+          {!isReadOnly && (
+            <SectionIndicator
+              index={6}
+              className={classes.sectionSixAndSevenIndicatorPosition}
+            />
+          )}
           <StudySummaryRoles
             type={contactLead.position || 'Role in study'}
-            name={contactLead.name || 'Contact lead'}
+            name={getContactName(contactLead.name) || 'Contact lead'}
           />
         </Box>
         <ContactInformation
@@ -145,13 +151,15 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
           contact :
         </p>
         <Box className={classes.summaryRoles}>
-          <SectionIndicator
-            index={7}
-            className={classes.sectionSixAndSevenIndicatorPosition}
-          />
+          {!isReadOnly && (
+            <SectionIndicator
+              index={7}
+              className={classes.sectionSixAndSevenIndicatorPosition}
+            />
+          )}
           <StudySummaryRoles
             type="IRB/Ethics Board of Record"
-            name={ethicsBoardInfo.name || 'IRB/Ethics Board'}
+            name={getContactName(ethicsBoardInfo.name) || 'IRB/Ethics Board'}
           />
         </Box>
         <ContactInformation

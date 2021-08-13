@@ -1,17 +1,17 @@
 import {
   Box,
+  CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
   FormGroup,
   FormHelperText,
   makeStyles,
-  CircularProgress,
 } from '@material-ui/core'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
-import {isInvalidPhone} from '../../../helpers/utility'
-import {latoFont, poppinsFont} from '../../../style/theme'
+import Utility from '../../../helpers/utility'
+import {latoFont} from '../../../style/theme'
 import {EditableParticipantData} from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import {MTBHeadingH3} from '../../widgets/Headings'
@@ -227,7 +227,7 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
   const extId = (
     <FormControl>
       <SimpleTextLabel htmlFor="participant-id">
-        {`Participant IDs${isEnrolledById ? '*' : ''}`}
+        {`${isEnrolledById ? 'Participant ID*' : 'Reference ID'}`}
       </SimpleTextLabel>
       <SimpleTextInput
         id="participant-id"
@@ -272,7 +272,9 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
                 onBlur={() =>
                   setValidationErrors(prev => ({
                     ...prev,
-                    phone: isInvalidPhone(participant.phoneNumber || ''),
+                    phone: Utility.isInvalidPhone(
+                      participant.phoneNumber || ''
+                    ),
                   }))
                 }
               />

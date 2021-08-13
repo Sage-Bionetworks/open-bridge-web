@@ -1,4 +1,10 @@
-import {Box, makeStyles, Radio} from '@material-ui/core'
+import {
+  Box,
+  FormControlLabel,
+  makeStyles,
+  Radio,
+  Switch,
+} from '@material-ui/core'
 import CheckIcon from '@material-ui/icons/Check'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
@@ -11,6 +17,7 @@ const useStyles = makeStyles(theme => ({
     padding: '10px',
     fontFamily: latoFont,
     fontSize: '14px',
+    maxWidth: '200px',
   },
   data: {
     width: '100px',
@@ -34,7 +41,8 @@ type AccessGridProps = {
   access: Access
   onUpdate?: Function
   isEdit?: boolean
-  isCoadmin?: boolean
+  isThisMe?: boolean
+  //isCoadmin?: boolean
   currentUserIsAdmin: boolean
 }
 
@@ -44,71 +52,69 @@ export type AccessLabel = {
 
 export type Access = {
   STUDY_BUILDER: typeof AccessRestriction[number]
-  PARTICIPANT_MANAGER: typeof AccessRestriction[number]
-  ADHERENCE_DATA: typeof AccessRestriction[number]
-  STUDY_DATA: typeof AccessRestriction[number]
+  PARTICIPANT_MANAGER_ADHERENCE: typeof AccessRestriction[number]
+  // ADHERENCE_DATA: typeof AccessRestriction[number]
+  //STUDY_DATA: typeof AccessRestriction[number]
   ACCESS_SETTINGS: typeof AccessRestriction[number]
 }
 
 const roles: AccessLabel[] = [
   {STUDY_BUILDER: 'STUDY BUILDER'},
-  {PARTICIPANT_MANAGER: 'PARTICIPANT MANAGER'},
-  {ADHERENCE_DATA: 'ADHERENCE DATA'},
-  {STUDY_DATA: 'STUDY DATA'},
+  {PARTICIPANT_MANAGER_ADHERENCE: 'PARTICIPANT MANAGER & ADHERENCE DATA'},
+  // {ADHERENCE_DATA: 'ADHERENCE DATA'},
+  // {STUDY_DATA: 'STUDY DATA'},
   {ACCESS_SETTINGS: 'ACCESS SETTINGS'},
 ]
 
 export const NO_ACCESS: Access = {
   STUDY_BUILDER: 'NO_ACCESS',
-  PARTICIPANT_MANAGER: 'NO_ACCESS',
-  ADHERENCE_DATA: 'NO_ACCESS',
-  STUDY_DATA: 'NO_ACCESS',
+  PARTICIPANT_MANAGER_ADHERENCE: 'NO_ACCESS',
+  //ADHERENCE_DATA: 'NO_ACCESS',
+  //STUDY_DATA: 'NO_ACCESS',
   ACCESS_SETTINGS: 'NO_ACCESS',
 }
 
+export const COADMIN_ACCESS: Access = {
+  STUDY_BUILDER: 'EDITOR',
+  PARTICIPANT_MANAGER_ADHERENCE: 'EDITOR',
+  // ADHERENCE_DATA: 'EDITOR',
+  //STUDY_DATA: 'NO_ACCESS',
+  ACCESS_SETTINGS: 'EDITOR',
+}
+
 export function getRolesFromAccess(access: Access): AdminRole[] {
+  const roles: AdminRole[] = []
   if (access.STUDY_BUILDER === 'EDITOR') {
-    return ['org_admin', 'admin', 'researcher', 'developer']
+    roles.push('study_designer')
   }
-  if (access.ADHERENCE_DATA === 'VIEWER') {
-    return ['researcher']
+  if (access.PARTICIPANT_MANAGER_ADHERENCE === 'EDITOR') {
+    roles.push('study_coordinator')
   }
-  return ['study_coordinator', 'developer']
+  if (access.ACCESS_SETTINGS === 'EDITOR') {
+    roles.push('org_admin')
+  }
+  return roles
 }
 
 export function getAccessFromRoles(roles: AdminRole[]): Access {
-  debugger
+  const access = {...NO_ACCESS}
   if (roles.includes('org_admin')) {
-    return {
-      STUDY_BUILDER: 'EDITOR',
-      PARTICIPANT_MANAGER: 'EDITOR',
-      ADHERENCE_DATA: 'EDITOR',
-      STUDY_DATA: 'EDITOR',
-      ACCESS_SETTINGS: 'EDITOR',
-    }
+    access.ACCESS_SETTINGS = 'EDITOR'
+    // access.STUDY_BUILDER = 'EDITOR'
+    // access.PARTICIPANT_MANAGER = 'EDITOR'
+    // access.ADHERENCE_DATA = 'EDITOR'
   }
 
-  if (roles.includes('researcher')) {
-    return {
-      STUDY_BUILDER: 'VIEWER',
-      PARTICIPANT_MANAGER: 'EDITOR',
-      ADHERENCE_DATA: 'EDITOR',
-      STUDY_DATA: 'VIEWER',
-      ACCESS_SETTINGS: 'VIEWER',
-    }
+  if (roles.includes('study_coordinator')) {
+    //access.ADHERENCE_DATA = 'EDITOR'
+    access.PARTICIPANT_MANAGER_ADHERENCE = 'EDITOR'
   }
 
-  if (roles.includes('developer')) {
-    return {
-      STUDY_BUILDER: 'EDITOR',
-      PARTICIPANT_MANAGER: 'VIEWER',
-      ADHERENCE_DATA: 'VIEWER',
-      STUDY_DATA: 'VIEWER',
-      ACCESS_SETTINGS: 'VIEWER',
-    }
+  if (roles.includes('study_designer')) {
+    access.STUDY_BUILDER = 'EDITOR'
   }
 
-  return NO_ACCESS
+  return access
 }
 
 type AccessGridRadioComponentsProps = {
@@ -117,73 +123,82 @@ type AccessGridRadioComponentsProps = {
   isCoAdmin: boolean
   currentUserIsAdmin: boolean
   onUpdate: Function
-  isEqualToCurrentValue: boolean
+  isAllowedAccess: boolean
+  isEdit?: boolean
 }
-const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponentsProps> = ({
-  restriction,
-  role_key,
-  isCoAdmin,
-  currentUserIsAdmin,
-  onUpdate,
-  isEqualToCurrentValue,
-}) => {
-  const key = Object.keys(role_key)[0] as keyof Access
-  let checkboxChecked = false
-  if (!currentUserIsAdmin) {
-    if (!isEqualToCurrentValue) {
-      return null
+const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponentsProps> =
+  ({
+    restriction,
+    role_key,
+    isCoAdmin,
+    currentUserIsAdmin,
+    onUpdate,
+    isEdit,
+    isAllowedAccess,
+  }) => {
+    const classes = useStyles()
+
+    if (!isEdit) {
+      return isAllowedAccess ? <div className={classes.dot} /> : <>&nbsp;</>
     }
-    return (
-      <Box
-        mt={-2.5}
-        height="40px"
-        display="flex"
-        justifyContent="center"
-        alignItems="center">
-        <CheckIcon style={{color: 'black'}} />
-      </Box>
-    )
-  }
-  if (key === 'ACCESS_SETTINGS') {
-    checkboxChecked = true
-    if (restriction === 'NO_ACCESS') {
-      return null
-    }
-    if (restriction === 'VIEWER' && isCoAdmin) {
-      return null
-    }
-    if (restriction === 'EDITOR' && !isCoAdmin) {
+
+    const key = Object.keys(role_key)[0] as keyof Access
+    let checkboxChecked = false
+    if (!currentUserIsAdmin) {
+      if (!isAllowedAccess) {
+        return null
+      }
       return (
         <Box
-          fontSize="10px"
-          fontStyle="italic"
-          fontFamily={latoFont}
           mt={-2.5}
-          fontWeight="normal">
-          Only available to Administrators
+          height="40px"
+          display="flex"
+          justifyContent="center"
+          alignItems="center">
+          <CheckIcon style={{color: 'black'}} />
         </Box>
       )
     }
+    if (key === 'ACCESS_SETTINGS') {
+      checkboxChecked = true
+      if (restriction === 'NO_ACCESS') {
+        return null
+      }
+      if (restriction === 'VIEWER' && isCoAdmin) {
+        return null
+      }
+      if (restriction === 'EDITOR' && !isCoAdmin) {
+        return (
+          <Box
+            fontSize="10px"
+            fontStyle="italic"
+            fontFamily={latoFont}
+            fontWeight="normal">
+            Only available to Administrators
+          </Box>
+        )
+      }
+    }
+    return (
+      <Radio
+        checked={checkboxChecked || isAllowedAccess}
+        disabled={restriction === 'VIEWER'}
+        value={restriction}
+        onChange={e => onUpdate(e)}
+        radioGroup={'group_' + Object.keys(role_key)}></Radio>
+    )
   }
-  return (
-    <Radio
-      checked={checkboxChecked || isEqualToCurrentValue}
-      value={restriction}
-      onChange={e => onUpdate(e)}
-      radioGroup={'group_' + Object.keys(role_key)}></Radio>
-  )
-}
 
 const AccessGrid: FunctionComponent<AccessGridProps> = ({
   access,
   onUpdate,
   isEdit,
-  isCoadmin,
+  isThisMe,
   currentUserIsAdmin,
 }: AccessGridProps) => {
   const classes = useStyles()
 
-  const isEqualToCurrentValue = (
+  const isAllowedAccess = (
     restriction: string,
     role_key: AccessLabel
   ): boolean => {
@@ -196,11 +211,65 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
       return
     }
     const accessKey = Object.keys(accessObject)[0]
+    /* ALINA: this is not intuitive for me. If they are coadmin and they disable some settings -- all get disabled */
+    /*  if (restriction !== 'EDITOR' && access.ACCESS_SETTINGS === 'EDITOR') {
+      onUpdate({...access, [accessKey]: restriction, ACCESS_SETTINGS: 'VIEWER'})
+    } else {*/
     onUpdate({...access, [accessKey]: restriction})
+    //  }
+  }
+  const updateCoadminAccess = (hasAccess?: boolean) => {
+    if (!onUpdate) {
+      return
+    }
+    const result: Access = hasAccess
+      ? {...COADMIN_ACCESS}
+      : {...access, ACCESS_SETTINGS: 'VIEWER'}
+
+    onUpdate(result)
+  }
+
+  const hasCoadminAccess = () => {
+    const accessKeys = Object.keys(access)
+
+    const nonAdmin = accessKeys.find(
+      key => access[key as keyof Access] !== 'EDITOR'
+    )
+    return nonAdmin === undefined
   }
 
   return (
     <Box>
+      {!isThisMe && (
+        <Box>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={hasCoadminAccess()}
+                onChange={e => updateCoadminAccess(e.target.checked)}
+                name="isCoadmin"
+                color="primary"
+              />
+            }
+            label="MAKE CO-ADMINISTRATOR OF STUDY"
+            style={{
+              marginBottom: hasCoadminAccess() ? '12px' : '42px',
+              marginTop: '8px',
+              fontFamily: latoFont,
+            }}
+          />
+          {hasCoadminAccess() && (
+            <Box mb={4} width={400}>
+              Administrators have full access to a study. They can add/delete
+              team members.
+              <br />
+              <br />
+              <strong>Principal Investigators</strong> are required to be part
+              of the study as a Study Administrator in order to launch a study.
+            </Box>
+          )}
+        </Box>
+      )}
       <table cellPadding="0" cellSpacing="0" width="100%">
         <thead>
           <tr>
@@ -223,29 +292,17 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
                 <td
                   className={clsx(classes.cell, classes.data)}
                   key={Object.values(role_key)[0] + restriction + index}>
-                  {!isEdit && isEqualToCurrentValue(restriction, role_key) ? (
-                    <div className={classes.dot} />
-                  ) : (
-                    <>&nbsp;</>
-                  )}
-                  {isEdit && (
-                    <AccessGridRadioComponents
-                      restriction={restriction}
-                      role_key={role_key}
-                      isCoAdmin={
-                        isCoadmin ||
-                        getRolesFromAccess(access).includes('org_admin')
-                      }
-                      currentUserIsAdmin={currentUserIsAdmin}
-                      onUpdate={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        updateAccess(e.target.value, role_key)
-                      }}
-                      isEqualToCurrentValue={isEqualToCurrentValue(
-                        restriction,
-                        role_key
-                      )}
-                    />
-                  )}
+                  <AccessGridRadioComponents
+                    isEdit={isEdit}
+                    restriction={restriction}
+                    role_key={role_key}
+                    isCoAdmin={hasCoadminAccess()}
+                    currentUserIsAdmin={currentUserIsAdmin}
+                    onUpdate={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      updateAccess(e.target.value, role_key)
+                    }}
+                    isAllowedAccess={isAllowedAccess(restriction, role_key)}
+                  />
                 </td>
               ))}
             </tr>

@@ -1,3 +1,4 @@
+import constants from './constants'
 import {Schedule, ScheduleNotification, StartEventId} from './scheduling'
 
 /* *** General Types ********************************/
@@ -5,10 +6,18 @@ export interface StringDictionary<T> {
   [key: string]: T
 }
 
+export type PartialRecord<K extends keyof any, T> = {
+  [P in K]?: T
+}
+
 export interface Response<T> {
   status: number
   ok: boolean
   data: T
+}
+
+export interface ExtendedError extends Error {
+  statusCode?: number
 }
 
 export type RequestStatus = 'IDLE' | 'PENDING' | 'RESOLVED' | 'REJECTED'
@@ -42,15 +51,10 @@ export type UserSessionData = {
   userName?: string
   alert?: string
   id: string
+  appId: string
 }
 
-export type AdminRole =
-  | 'developer'
-  | 'researcher'
-  | 'study_coordinator'
-  | 'admin'
-  | 'org_admin'
-  | 'worker'
+export type AdminRole = typeof constants.org_roles[number]
 
 export interface UserData {
   username?: string

@@ -6,7 +6,6 @@ import SectionIndicator from './SectionIndicator'
 import {Contact} from '../../../types/types'
 import {latoFont, playfairDisplayFont} from '../../../style/theme'
 import DefaultLogo from '../../../assets/logo_mtb.svg'
-import {PreviewFile} from './AppDesign'
 
 const useStyles = makeStyles(theme => ({
   sectionFourIndicatorPosition: {
@@ -80,6 +79,8 @@ type StudyPageTopPhoneContentProps = {
   leadInvestigator: Contact
   funder: Contact
   studyLogoUrl?: string
+  getContactName: Function
+  isReadOnly?: boolean
 }
 
 const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContentProps> = ({
@@ -91,6 +92,8 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
   leadInvestigator,
   funder,
   studyLogoUrl,
+  getContactName,
+  isReadOnly,
 }) => {
   const classes = useStyles()
   return (
@@ -117,10 +120,12 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         )}
       </Box>
       <Box className={classes.innerContainer}>
-        <SectionIndicator
-          index={4}
-          className={classes.sectionFourIndicatorPosition}
-        />
+        {!isReadOnly && (
+          <SectionIndicator
+            index={4}
+            className={classes.sectionFourIndicatorPosition}
+          />
+        )}
         <Box height="420px">
           <Box className={classes.headlineStyle}>
             {studyTitle || 'Title of study...'}
@@ -131,13 +136,15 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         <Divider className={classes.divider} />
         <StudySummaryRoles
           type="Lead Principal Investigator"
-          name={leadInvestigator.name || 'placeholder'}
+          name={getContactName(leadInvestigator.name) || 'placeholder'}
           className={classes.studySummaryRoles}
         />
-        <SectionIndicator
-          index={5}
-          className={classes.sectionFiveIndicatorPosition}
-        />
+        {!isReadOnly && (
+          <SectionIndicator
+            index={5}
+            className={classes.sectionFiveIndicatorPosition}
+          />
+        )}
 
         <StudySummaryRoles
           type="Institution"
@@ -146,7 +153,7 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         />
         <StudySummaryRoles
           type="Funder"
-          name={funder.name || 'placeholder'}
+          name={getContactName(funder.name) || 'placeholder'}
           className={classes.studySummaryRoles}
         />
       </Box>

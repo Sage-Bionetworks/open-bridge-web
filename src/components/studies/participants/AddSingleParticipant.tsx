@@ -4,7 +4,7 @@ import {Box, CircularProgress} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
 import React, {FunctionComponent} from 'react'
-import {isInvalidPhone, makePhone} from '../../../helpers/utility'
+import Utility from '../../../helpers/utility'
 import ParticipantService from '../../../services/participants.service'
 import {EditableParticipantData, Phone} from '../../../types/types'
 import {BlueButton} from '../../widgets/StyledComponents'
@@ -77,7 +77,7 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
         await addParticipantByPhone(
           studyIdentifier,
           token,
-          makePhone(participant.phoneNumber || ''),
+          Utility.makePhone(participant.phoneNumber || ''),
           options
         )
       } else {
@@ -97,7 +97,7 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
     return (
       (!isEnrolledById &&
         (!participant.phoneNumber ||
-          isInvalidPhone(participant.phoneNumber))) ||
+          Utility.isInvalidPhone(participant.phoneNumber))) ||
       (isEnrolledById && !participant.externalId)
     )
   }
