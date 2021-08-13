@@ -9,9 +9,10 @@ import {
 } from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
-import {poppinsFont, latoFont} from '../../../style/theme'
+import {latoFont, poppinsFont} from '../../../style/theme'
+import constants from '../../../types/constants'
 import {DWsEnum} from '../../../types/scheduling'
-import {SimpleTextInput, PrevButton} from '../../widgets/StyledComponents'
+import {SimpleTextInput} from '../../widgets/StyledComponents'
 import Duration from './Duration'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -90,13 +91,17 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export interface IntroInfoProps {
   onContinue: Function
+  studyName: string
 }
 
 const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
   onContinue,
+  studyName: name,
 }: IntroInfoProps) => {
   const classes = useStyles()
-  const [studyName, setStudyName] = React.useState<any>('')
+  const [studyName, setStudyName] = React.useState<any>(
+    name === constants.constants.NEW_STUDY_NAME ? '' : name
+  )
   const [duration, setDuration] = React.useState<any>('')
 
   return (
@@ -118,6 +123,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
         control={
           <SimpleTextInput
             fullWidth
+            value={studyName}
             onChange={e => setStudyName(e.target.value)}
             style={{marginTop: '-20px'}}
           />

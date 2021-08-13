@@ -64,11 +64,13 @@ export interface TimelineProps {
   token: string
   schedule: Schedule
   version: number
+  studyId: string
 }
 
 const ScheduleTimeline: React.FunctionComponent<TimelineProps> = ({
   token,
   version,
+  studyId,
   schedule: schedFromDisplay,
 }: TimelineProps) => {
   const handleError = useErrorHandler()
@@ -94,9 +96,7 @@ const ScheduleTimeline: React.FunctionComponent<TimelineProps> = ({
 
   React.useEffect(() => {
     console.log('%c ---timeline getting--' + version, 'color: blue')
-    return run(
-      StudyService.getStudyScheduleTimeline(schedFromDisplay.guid, token!)
-    )
+    return run(StudyService.getStudyScheduleTimeline(studyId, token!))
   }, [run, version, token])
 
   const setZoomLevel = (scheduleDuration: string) => {

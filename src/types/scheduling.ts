@@ -37,6 +37,12 @@ export type PerformanceOrder =
 
 export type StartEventId = 'timeline_retrieved' | 'study_start_date'
 
+export type SchedulingEvent = {
+  identifier: string
+  label: string
+  updateType: 'mutable' | 'immutable' | 'future_only'
+}
+
 export type NotificationMessage = {
   lang: string
   subject: string

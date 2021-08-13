@@ -135,7 +135,6 @@ export type Study = {
   details?: string
   subtitle?: string
   description?: string
-  scheduleGuid?: string
 
   studyLogoUrl?: string
   colorScheme?: ColorScheme
@@ -147,7 +146,6 @@ export type Study = {
   keywords?: string
   signInTypes: SignInType[]
   clientData: {
-    // enrollmentType?: EnrollmentType
     generateIds?: boolean
     backgroundRecorders?: BackgroundRecorders
     welcomeScreenData?: WelcomeScreenData
