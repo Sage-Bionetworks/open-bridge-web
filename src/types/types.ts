@@ -1,5 +1,10 @@
 import constants from './constants'
-import {Schedule, ScheduleNotification, StartEventId} from './scheduling'
+import {
+  Schedule,
+  ScheduleNotification,
+  SchedulingEvent,
+  StartEventId,
+} from './scheduling'
 
 /* *** General Types ********************************/
 export interface StringDictionary<T> {
@@ -147,6 +152,7 @@ export type Study = {
     backgroundRecorders?: BackgroundRecorders
     welcomeScreenData?: WelcomeScreenData
     notifications?: StringDictionary<ScheduleNotification[]>
+    events?: SchedulingEvent[]
   }
   createdOn?: Date
   modifiedOn?: Date
