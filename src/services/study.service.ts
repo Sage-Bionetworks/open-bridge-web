@@ -18,7 +18,6 @@ const StudyService = {
   removeStudy,
   updateStudy,
   createStudySchedule,
-  createNewStudySchedule,
   getStudySchedule,
   getStudyScheduleTimeline,
   saveStudySchedule,
@@ -144,26 +143,12 @@ async function createStudy(study: Study, token: string): Promise<number> {
 }
 
 async function createStudySchedule(
-  name: string,
-
-  token: string
-): Promise<string> {
-  const result = await Utility.callEndpoint<string>(
-    constants.endpoints.schedule.replace('/:id', ''),
-    'POST', // once we add things to the study -- we can change this to actual object
-    {name},
-    token
-  )
-  return result.data
-}
-
-async function createNewStudySchedule(
+  studyId: string,
   schedule: Schedule,
-
   token: string
 ): Promise<Schedule> {
   const result = await Utility.callEndpoint<Schedule>(
-    constants.endpoints.schedule.replace('/:id', ''),
+    constants.endpoints.schedule.replace(':studyId', studyId),
     'POST', // once we add things to the study -- we can change this to actual object
     {...schedule, guid: undefined},
     token
@@ -173,13 +158,28 @@ async function createNewStudySchedule(
 }
 
 async function updateStudy(study: Study, token: string): Promise<number> {
-  const result = await Utility.callEndpoint<{version: number}>(
-    constants.endpoints.study.replace(':id', study.identifier),
-    'POST',
-    study,
-    token
-  )
-  return result.data.version
+  try {
+    const result = await Utility.callEndpoint<{version: number}>(
+      constants.endpoints.study.replace(':id', study.identifier),
+      'POST',
+      study,
+      token
+    )
+    return result.data.version
+  } catch (error) {
+    //we might need to retry if there is a verison mismatch
+    if (error.statusCode === 409) {
+      console.log('409')
+      const updatedStudy = await getStudy(study.identifier, token)
+      if (!updatedStudy) {
+        throw 'No study'
+      }
+      study.version = updatedStudy.version
+      return updateStudy(study, token)
+    } else {
+      throw error
+    }
+  }
 }
 
 async function removeStudy(studyId: string, token: string): Promise<Study[]> {
@@ -194,13 +194,14 @@ async function removeStudy(studyId: string, token: string): Promise<Study[]> {
 }
 
 async function saveStudySchedule(
+  studyId: string,
   schedule: Schedule,
   token: string
 ): Promise<Schedule> {
   const scheduleEndpoint = constants.endpoints.schedule
   try {
     const response = await Utility.callEndpoint<Schedule>(
-      scheduleEndpoint.replace(':id', schedule.guid),
+      scheduleEndpoint.replace(':studyId', studyId),
       'POST',
       schedule,
       token
@@ -209,21 +210,15 @@ async function saveStudySchedule(
   } catch (error) {
     //we might need to retry if there is a verison mismatch
     if (error.statusCode === 409) {
-      const endPoint = scheduleEndpoint.replace(':id', schedule.guid)
-      const sched = await Utility.callEndpoint<Schedule>(
-        endPoint,
-        'GET',
-        {},
-        token
+      const updatedSchedule = await getStudySchedule(
+        schedule.guid,
+        token,
+        false
       )
-      schedule.version = sched.data.version
-      const response = await Utility.callEndpoint<Schedule>(
-        scheduleEndpoint.replace(':id', schedule.guid),
-        'POST',
-        schedule,
-        token
-      )
-      return response.data
+      if (!updatedSchedule) {
+        throw 'No schedule found'
+      }
+      return saveStudySchedule(studyId, schedule, token)
     } else {
       throw error
     }
@@ -249,24 +244,30 @@ async function addAssessmentResourcesToSchedule(
 
 //returns scehdule and sessions
 async function getStudySchedule(
-  scheduleId: string,
-  token: string
+  studyId: string,
+  token: string,
+  addResources = true
 ): Promise<Schedule | undefined> {
   const schedule = await Utility.callEndpoint<Schedule>(
-    constants.endpoints.schedule.replace(':id', scheduleId),
+    constants.endpoints.schedule.replace(':studyId', studyId),
     'GET',
     {},
     token
   )
-  return schedule ? addAssessmentResourcesToSchedule(schedule.data) : undefined
+  if (!schedule) {
+    return undefined
+  }
+  return addResources
+    ? addAssessmentResourcesToSchedule(schedule.data)
+    : schedule.data
 }
 
 async function getStudyScheduleTimeline(
-  scheduleId: string,
+  studyId: string,
   token: string
 ): Promise<any | undefined> {
   const result = await Utility.callEndpoint<any>(
-    constants.endpoints.scheduleTimeline.replace(':id', scheduleId),
+    constants.endpoints.scheduleTimeline.replace(':studyId', studyId),
     'GET',
     {},
     token

@@ -14,6 +14,7 @@ import {useAsync} from '../../../helpers/AsyncHook'
 import StudyService from '../../../services/study.service'
 import {poppinsFont} from '../../../style/theme'
 import {Schedule} from '../../../types/scheduling'
+import {Study} from '../../../types/types'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
 import SessionIcon from '../../widgets/SessionIcon'
@@ -86,6 +87,7 @@ type ConfigureBurstTabProps = {
   onUpdate: Function
   onSave: Function
   token: string
+  study: Study
   // hasObjectChanged: boolean
   //saveLoader: boolean
 }
@@ -93,18 +95,21 @@ type ConfigureBurstTabProps = {
 const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
   //hasObjectChanged,
   //saveLoader,
+
   onUpdate,
   schedule,
-  onSave,
+
   token,
+  study,
 }: ConfigureBurstTabProps) => {
   const classes = useStyles()
 
   const [hasBursts, setHasBursts] = React.useState(true)
   const [burstSessionGuids, setBurstSessionGuids] = React.useState<string[]>([])
   const [burstNumber, setBurstNumber] = React.useState<number | undefined>()
-  const [burstFrequency, setBurstFrequency] =
-    React.useState<number | undefined>()
+  const [burstFrequency, setBurstFrequency] = React.useState<
+    number | undefined
+  >()
 
   const {
     data: timeline,
@@ -120,7 +125,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
 
   React.useEffect(() => {
     console.log('%c ---timeline getting--' + schedule.version, 'color: blue')
-    return run(StudyService.getStudyScheduleTimeline(schedule.guid, token!))
+    return run(StudyService.getStudyScheduleTimeline(study.identifier, token!))
   }, [run, schedule.version, token])
 
   //setting new state
@@ -226,6 +231,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
           burstNumber={burstNumber || 0}
           burstFrequency={burstFrequency || 0}
           schedule={schedule}
+          studyId={study.identifier}
           token={token}></BurstTimeline>
       )}
     </div>

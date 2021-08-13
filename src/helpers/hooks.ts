@@ -19,16 +19,11 @@ export const useStudyBuilderInfo = (id: string | undefined) => {
     if (!study) {
       throw Error(`Study with an identifier ${id} can not be found`)
     }
-    let schedule
-    if (study.scheduleGuid) {
-      try {
-        schedule = await StudyService.getStudySchedule(
-          study.scheduleGuid,
-          token!
-        )
-      } catch (e) {
-        schedule = undefined
-      }
+    let schedule = undefined
+    try {
+      schedule = await StudyService.getStudySchedule(study.identifier, token!)
+    } catch (e) {
+      console.log('no schedule')
     }
 
     return {schedule, study}

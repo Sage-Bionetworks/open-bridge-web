@@ -15,7 +15,12 @@ import {
 import Utility from '../../helpers/utility'
 import StudyService from '../../services/study.service'
 import {ThemeType} from '../../style/theme'
-import {Schedule, StartEventId, StudySession} from '../../types/scheduling'
+import {
+  Schedule,
+  SchedulingEvent,
+  StartEventId,
+  StudySession,
+} from '../../types/scheduling'
 import {
   Assessment,
   BackgroundRecorders,
@@ -204,7 +209,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       duration,
       sessions: [studySession],
     }
-    const newSchedule = await StudyService.createNewStudySchedule(
+    const newSchedule = await StudyService.createStudySchedule(
+      studyId,
       schedule,
       token!
     )
@@ -265,6 +271,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     setError([])
     setSchedulerErrors([])
     setDisplayBanner(false)
+    if (!builderInfo.study) {
+      throw Error('You need to create a study before adding a schedule')
+    }
     try {
       setSaveLoader(true)
       const schedule = updatedSchedule || builderInfo.schedule
@@ -273,6 +282,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       }
 
       const savedUpdatedSchedule = await StudyService.saveStudySchedule(
+        builderInfo.study.identifier,
         schedule,
         token
       )
@@ -423,6 +433,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     return (
       <Box className={classes.introInfoContainer}>
         <IntroInfo
+          studyName={builderInfo.study.name}
           onContinue={(
             studyName: string,
             duration: string,
@@ -549,18 +560,32 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           id={id}
                           token={token!}
                           schedule={builderInfo.schedule}
-                          version={builderInfo.schedule?.version}
+                          study={builderInfo.study}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
-                          onSave={(isSavePressed: boolean) =>
-                            saveStudySchedule(undefined, isSavePressed)
-                          }
-                          onUpdate={(schedule: Schedule) => {
+                          onSave={(isSavePressed: boolean) => {
+                            saveStudy(undefined).then(() =>
+                              saveStudySchedule(undefined, isSavePressed)
+                            )
+                          }}
+                          onUpdate={(
+                            schedule?: Schedule,
+                            events?: SchedulingEvent[]
+                          ) => {
                             setHasObjectChanged(true)
-                            setData({
-                              ...builderInfo,
-                              schedule: schedule,
-                            })
+                            const newBuilderInfoObj = {...builderInfo}
+                            if (schedule) {
+                              newBuilderInfoObj.schedule = schedule
+                            }
+                            if (events) {
+                              const cData = newBuilderInfoObj.study.clientData
+                              cData.events = events
+                              newBuilderInfoObj.study = {
+                                ...newBuilderInfoObj.study,
+                                clientData: cData,
+                              }
+                            }
+                            setData(newBuilderInfoObj)
                           }}
                           schedulerErrors={schedulerErrors}
                           isReadOnly={builderInfo.study.phase !== 'design'}>

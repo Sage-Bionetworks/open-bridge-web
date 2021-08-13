@@ -56,7 +56,7 @@ export interface TimelineProps {
   burstSessionGuids: string[]
   burstNumber: number
   burstFrequency: number
-  // version: number
+  studyId: string
 }
 
 const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
@@ -65,6 +65,7 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
   burstFrequency,
   burstSessionGuids,
   schedule: schedFromDisplay,
+  studyId,
 }: TimelineProps) => {
   const handleError = useErrorHandler()
   const [sessions, setSessions] = React.useState<TimelineSession[]>([])
@@ -87,9 +88,7 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
   })
 
   React.useEffect(() => {
-    return run(
-      StudyService.getStudyScheduleTimeline(schedFromDisplay.guid, token!)
-    )
+    return run(StudyService.getStudyScheduleTimeline(studyId, token!))
   }, [run, schedFromDisplay.version, token])
 
   const setZoomLevel = (scheduleDuration: string) => {

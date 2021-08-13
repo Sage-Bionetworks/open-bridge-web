@@ -17,7 +17,7 @@ import {
   StartEventId,
   StudySession,
 } from '../../../types/scheduling'
-import {StudyBuilderComponentProps} from '../../../types/types'
+import {Study, StudyBuilderComponentProps} from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
 import SaveButton from '../../widgets/SaveButton'
@@ -104,6 +104,7 @@ type ScheduleCreatorTabProps = {
   token: string
   onSave: Function
   schedulerErrors: SchedulerErrorType[]
+  study: Study
   isReadOnly?: boolean
 }
 
@@ -118,6 +119,7 @@ const ScheduleCreatorTab: FunctionComponent<
   children,
   token,
   version,
+  study,
   schedulerErrors,
   isReadOnly,
 }: ScheduleCreatorTabProps & StudyBuilderComponentProps) => {
@@ -216,7 +218,7 @@ const ScheduleCreatorTab: FunctionComponent<
   }
 
   //setting new state
-  const updateData = (schedule: Schedule) => {
+  const updateScheduleData = (schedule: Schedule) => {
     setSchedule(schedule)
     onUpdate(schedule)
   }
@@ -232,7 +234,7 @@ const ScheduleCreatorTab: FunctionComponent<
   const scheduleUpdateFn = (action: SessionScheduleAction) => {
     const sessions = actionsReducer(schedule.sessions, action)
     const newSchedule = {...schedule, sessions}
-    updateData(newSchedule)
+    updateScheduleData(newSchedule)
   }
 
   if (_.isEmpty(schedule.sessions)) {
@@ -252,6 +254,7 @@ const ScheduleCreatorTab: FunctionComponent<
         children={children}
         schedule={schedule}
         version={version}
+        studyId={study.identifier}
       />
     )
   }
@@ -280,7 +283,7 @@ const ScheduleCreatorTab: FunctionComponent<
             control={
               <Duration
                 onChange={e =>
-                  updateData({...schedule, duration: e.target.value})
+                  updateScheduleData({...schedule, duration: e.target.value})
                 }
                 durationString={schedule.duration || ''}
                 unitLabel="study duration unit"
@@ -301,6 +304,7 @@ const ScheduleCreatorTab: FunctionComponent<
           <Timeline
             token={token}
             version={version!}
+            studyId={study.identifier}
             schedule={schedule}></Timeline>
           <div className={classes.studyStartDateContainer}>
             <StudyStartDate
@@ -315,7 +319,7 @@ const ScheduleCreatorTab: FunctionComponent<
                   schedule.sessions,
                   startEventId
                 )
-                updateData({...schedule, sessions})
+                updateScheduleData({...schedule, sessions})
               }}
             />
           </div>
