@@ -301,7 +301,8 @@ export const WelcomeScreenDisplay: React.FunctionComponent<{
             classes.phoneBottom,
             classes.optionalDisclaimerTextOnPhone
           )}>
-          {study.clientData.welcomeScreenData?.useOptionalDisclaimer
+          {!study.clientData.welcomeScreenData?.isUsingDefaultMessage &&
+          study.clientData.welcomeScreenData?.useOptionalDisclaimer
             ? 'This is a research study and does not provide medical advice, diagnosis, or treatment'
             : ''}
         </Box>
