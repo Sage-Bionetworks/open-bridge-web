@@ -1,5 +1,6 @@
 import React, {FunctionComponent} from 'react'
 import {matchPath, Route, Switch, useHistory} from 'react-router-dom'
+import {Box} from '@material-ui/core'
 import './App.css'
 import StudyTopNav from './components/studies/StudyTopNav'
 import TopNav from './components/widgets/AppTopNav'
@@ -60,7 +61,7 @@ const AuthenticatedApp: FunctionComponent<{
   const {id, section} = getParams(window.location.pathname)
   Utility.setBodyClass(section)
   return (
-    <>
+    <Box bgcolor="#F3EFE5" height="100vh">
       {!studyId && (
         <TopNav
           routes={PrivateRoutes}
@@ -86,7 +87,7 @@ const AuthenticatedApp: FunctionComponent<{
           ))}
         </Switch>
       </main>
-    </>
+    </Box>
   )
 }
 
