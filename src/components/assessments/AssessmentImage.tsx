@@ -16,6 +16,12 @@ const useStyles = makeStyles(theme =>
       flexShrink: 0,
       flexDirection: 'row',
     },
+    detailImageContainer: {
+      padding: theme.spacing(2),
+      '& img': {
+        width: '100%',
+      },
+    },
   })
 )
 
@@ -44,22 +50,45 @@ const AssessmentImage: FunctionComponent<AssessmentImageProps> = ({
       resource.title.includes('_square') &&
       resource.url
   )
+  let image
 
-  return variant === 'small' ? (
-    <img
-      src={screen?.url || DefaultImg}
-      alt={name}
-      height="100%"
-      style={smallVariantProperties}
-    />
-  ) : (
-    <CardMedia
-      className={classes.media}
-      image={screen?.url || DefaultImg}
-      title={name}>
-      {children}
-    </CardMedia>
-  )
+  switch (variant) {
+    case 'small': {
+      image = (
+        <img
+          src={screen?.url || DefaultImg}
+          alt={name}
+          height="100%"
+          style={smallVariantProperties}
+        />
+      )
+      break
+    }
+    case 'detail': {
+      image = (
+        <div className={classes.detailImageContainer}>
+          <img
+            src={screen?.url || DefaultImg}
+            alt={name}
+            height="100%"
+            style={smallVariantProperties}
+          />
+        </div>
+      )
+      break
+    }
+    default: {
+      image = (
+        <CardMedia
+          className={classes.media}
+          image={screen?.url || DefaultImg}
+          title={name}>
+          {children}
+        </CardMedia>
+      )
+    }
+  }
+  return image
 }
 
 export default AssessmentImage
