@@ -13,7 +13,7 @@ import {latoFont, ThemeType} from '../../../style/theme'
 import {Study} from '../../../types/types'
 import {MTBHeadingH2} from '../../widgets/Headings'
 import {diseases} from './diseases'
-import InfoCircleWithToolTop from '../../widgets/InfoCircleWithToolTip'
+import InfoCircleWithToolTip from '../../widgets/InfoCircleWithToolTip'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -105,7 +105,7 @@ const StudyTypeLabel: React.FunctionComponent<{
   return (
     <Box display="flex" alignItems="center" justifyContent="center">
       <Box mr={1}>{formLabelText}</Box>{' '}
-      <InfoCircleWithToolTop tooltipDescription={label} />
+      <InfoCircleWithToolTip tooltipDescription={label} />
     </Box>
   )
 }

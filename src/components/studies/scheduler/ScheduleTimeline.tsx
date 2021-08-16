@@ -21,7 +21,7 @@ import {
 } from './timeline-plot/types'
 import Utility from './timeline-plot/utility'
 
-export const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(theme => ({
   stats: {
     fontFamily: latoFont,
     fontWeight: 'bold',
