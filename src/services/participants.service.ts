@@ -635,7 +635,7 @@ async function updateParticipantTimezone(
     timeZone: timeZone,
   }
   console.log('here')
-  const result = await callEndpoint<ParticipantAccountSummary>(
+  const result = await Utility.callEndpoint<ParticipantAccountSummary>(
     endpoint,
     'POST',
     data,

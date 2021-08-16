@@ -16,7 +16,9 @@ interface StyleProps {
   itemHeight: string
 }
 const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
-  root: props => ({width: props.width}),
+  root: props => ({
+    width: props.width,
+  }),
   select: props => ({
     height: props.itemHeight,
     backgroundColor: 'white',
@@ -60,6 +62,9 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
 
   listPadding: {
     padding: theme.spacing(0),
+    '& .MuiInputBase-input': {
+      backgroundColor: 'inherit',
+    },
   },
   listBorder: {
     borderRadius: '0px',
@@ -80,6 +85,8 @@ export interface BlackBorderDropdownStyleProps {
   dropdown: {value: string; label: string}[]
   emptyValueLabel: string
   hasError?: boolean
+  searchableOnChange?: Function
+  isSearchable?: boolean
 }
 
 const SaveBlackBorderDropdown: React.FunctionComponent<
@@ -93,6 +100,8 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
   width,
   itemHeight = '30px',
   hasError,
+  searchableOnChange,
+  isSearchable,
   ...other
 }) => {
   const classes = useStyles({width, itemHeight})

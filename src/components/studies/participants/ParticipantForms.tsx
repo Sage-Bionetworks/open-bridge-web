@@ -96,28 +96,32 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = 
           </MTBHeadingH3>
         </Box>
         <FormGroup className={classes.addForm}>
-          <DatePicker
-            label="Clinic Visit 1"
-            id="clinic-visit"
-            value={clinicVisitDate || null}
-            onChange={e => handleDateChange(e)}></DatePicker>
+          {!isBatchEdit && (
+            <DatePicker
+              label="Clinic Visit 1"
+              id="clinic-visit"
+              value={clinicVisitDate || null}
+              onChange={e => handleDateChange(e)}></DatePicker>
+          )}
           <Box width="375px" mb={3}>
             <TimezoneDropdown
               currentValue={currentTimeZone}
               onValueChange={setCurrentTimeZone}
             />
           </Box>
-          <FormControl>
-            <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
-            <SimpleTextInput
-              value={note}
-              placeholder="comments"
-              onChange={e => setNotes(e.target.value)}
-              id="note"
-              multiline={true}
-              rows={5}
-            />
-          </FormControl>
+          {!isBatchEdit && (
+            <FormControl>
+              <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
+              <SimpleTextInput
+                value={note}
+                placeholder="comments"
+                onChange={e => setNotes(e.target.value)}
+                id="note"
+                multiline={true}
+                rows={5}
+              />
+            </FormControl>
+          )}
         </FormGroup>
       </DialogContent>
       <DialogActions style={{justifyContent: 'space-between'}}>
