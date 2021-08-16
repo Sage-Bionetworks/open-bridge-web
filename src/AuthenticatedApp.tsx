@@ -61,7 +61,7 @@ const AuthenticatedApp: FunctionComponent<{
   const {id, section} = getParams(window.location.pathname)
   Utility.setBodyClass(section)
   return (
-    <Box bgcolor="#F3EFE5" height="100vh">
+    <Box height="100vh" bgcolor={!section ? '#F3EFE5' : 'white'}>
       {!studyId && (
         <TopNav
           routes={PrivateRoutes}
