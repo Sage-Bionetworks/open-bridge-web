@@ -4,6 +4,7 @@ import {
   Radio,
   RadioGroup,
   TextField,
+  Box,
 } from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import Autocomplete from '@material-ui/lab/Autocomplete/Autocomplete'
@@ -12,6 +13,7 @@ import {latoFont, ThemeType} from '../../../style/theme'
 import {Study} from '../../../types/types'
 import {MTBHeadingH2} from '../../widgets/Headings'
 import {diseases} from './diseases'
+import InfoCircleWithToolTop from '../../widgets/InfoCircleWithToolTip'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -70,6 +72,44 @@ const suggestions = [
 ]
 
 const JOIN_TOKEN = '*'
+
+const StudyTypeLabel: React.FunctionComponent<{
+  type: 'observation' | 'validation' | 'intervention'
+  formLabelText: string
+}> = ({type, formLabelText}) => {
+  let label = (
+    <Box>
+      An <strong>Observational study</strong> is a study where you are trying to
+      study the effect of a risk factor, diagnostic test, treatment or other
+      intervention without trying to change who is or isn’t exposed to it
+      (example: cohort study, case-control study).
+    </Box>
+  )
+  if (type === 'intervention') {
+    label = (
+      <Box>
+        An <strong>Experimental study</strong> is a study where an intevention
+        is introduced and the effect of the intervention is studied (example:
+        randomized control trial).
+      </Box>
+    )
+  } else if (type === 'validation') {
+    label = (
+      <Box>
+        A <strong>Validation study</strong> is a type of study where a
+        comparison in accuracy of a measure is performed compared to a a gold
+        standard measure.
+      </Box>
+    )
+  }
+  return (
+    <Box display="flex" alignItems="center" justifyContent="center">
+      <Box mr={1}>{formLabelText}</Box>{' '}
+      <InfoCircleWithToolTop tooltipDescription={label} />
+    </Box>
+  )
+}
+
 const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
   study,
   onChange,
@@ -113,7 +153,12 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
         <FormControlLabel
           value="observation"
           control={<Radio />}
-          label="Observational/Natural History"
+          label={
+            <StudyTypeLabel
+              formLabelText="Observational/Natural History"
+              type="observation"
+            />
+          }
         />
         <FormControlLabel
           control={
@@ -121,7 +166,22 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
               <Radio value="intervention" />{' '}
             </>
           }
-          label="Interventional/Experimental"
+          label={
+            <StudyTypeLabel
+              formLabelText="Interventional/Experimental"
+              type="intervention"
+            />
+          }
+        />
+        <FormControlLabel
+          control={
+            <>
+              <Radio value="validate" />{' '}
+            </>
+          }
+          label={
+            <StudyTypeLabel formLabelText="Validation" type="validation" />
+          }
         />
       </RadioGroup>
 
