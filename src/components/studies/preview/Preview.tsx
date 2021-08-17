@@ -238,6 +238,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            height: '48px',
           }}
           variant="outlined"
           color="primary"
