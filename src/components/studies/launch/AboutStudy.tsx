@@ -111,7 +111,10 @@ const StudyTypeLabel: React.FunctionComponent<{
   return (
     <Box display="flex" alignItems="center" justifyContent="center">
       <Box mr={1}>{formLabelText}</Box>{' '}
-      <InfoCircleWithToolTip tooltipDescription={label} />
+      <InfoCircleWithToolTip
+        tooltipDescription={label}
+        backgroundColor="#8FD6FF"
+      />
     </Box>
   )
 }

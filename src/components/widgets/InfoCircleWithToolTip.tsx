@@ -1,9 +1,13 @@
 import React from 'react'
 import {Box, makeStyles, Tooltip} from '@material-ui/core'
 import ItalicI from '../../assets/italic_i_icon.svg'
-import {latoFont} from '../../style/theme'
+import {latoFont, ThemeType} from '../../style/theme'
 
-const useStyles = makeStyles(theme => ({
+interface StyleProps {
+  backgroundColor: string
+}
+
+const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
   container: {
     backgroundColor: '#8FD6FF',
     width: '18px',
@@ -15,10 +19,10 @@ const useStyles = makeStyles(theme => ({
     fontStyle: 'italic',
     boxShadow: '0 2px 2px rgb(0, 0, 0, 0.25)',
   },
-  toolTip: {
-    backgroundColor: '#8FD6FF',
+  toolTip: props => ({
+    backgroundColor: props.backgroundColor,
     boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.2)',
-  },
+  }),
   arrow: {
     backgroundColor: 'transparent',
     color: '#8FD6FF',
@@ -40,8 +44,9 @@ const useStyles = makeStyles(theme => ({
 
 const InfoCircleWithToolTip: React.FunctionComponent<{
   tooltipDescription: React.ReactNode
-}> = ({tooltipDescription}) => {
-  const classes = useStyles()
+  backgroundColor?: string
+}> = ({tooltipDescription, backgroundColor}) => {
+  const classes = useStyles({backgroundColor: backgroundColor || '#8FD6FF'})
   return (
     <Box>
       <Tooltip
