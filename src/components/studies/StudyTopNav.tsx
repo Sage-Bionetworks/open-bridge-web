@@ -186,16 +186,14 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   return (
     <Box className={classes.rootStudyTopNav}>
       <Hidden lgUp>
-        <Box style={{width: '100%', height: '100%', backgroundColor: 'red'}}>
-          <IconButton
-            color="inherit"
-            aria-label="Open drawer"
-            edge="end"
-            onClick={() => setIsMobileOpen(!isMobileOpen)}
-            className={classes.menuButton}>
-            <MenuIcon></MenuIcon>
-          </IconButton>
-        </Box>
+        <IconButton
+          color="inherit"
+          aria-label="Open drawer"
+          edge="end"
+          onClick={() => setIsMobileOpen(!isMobileOpen)}
+          className={classes.menuButton}>
+          <MenuIcon></MenuIcon>
+        </IconButton>
       </Hidden>
       <Hidden mdDown>
         <Box className={classes.toolbarStudyHeader}>
