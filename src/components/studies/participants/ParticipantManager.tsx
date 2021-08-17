@@ -746,6 +746,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         display="flex"
                         flexDirection="row"
                         alignItems="center">
+                        {/* This is here for now because the "Send SMS link" feature is not being included in the october release. */}
                         {false && !Utility.isSignInById(study.signInTypes) && (
                           <Button
                             aria-label="send-sms-text"
