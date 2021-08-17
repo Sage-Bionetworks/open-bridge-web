@@ -47,8 +47,14 @@ const studyCardWidth = '290'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
+    width: '100%',
+    alignItems: 'center',
+    backgroundColor: '#F3EFE5',
+    height: '100%',
+    minHeight: 'calc(100vh - 104px)',
+    [theme.breakpoints.down('md')]: {
+      minHeight: '100vh',
+    },
   },
   studyContainer: {
     padding: theme.spacing(1),
@@ -57,8 +63,8 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('sm')]: {
       maxWidth: '600px',
     },
+    height: '100%',
   },
-
   cardGrid: {
     //const cardWidth = 300
     display: 'grid',
@@ -260,13 +266,9 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   let resetNewlyAddedStudyID: NodeJS.Timeout
 
-  const {
-    data: studies,
-    status,
-    error,
-    run,
-    setData: setStudies,
-  } = useAsync<Study[]>({
+  const {data: studies, status, error, run, setData: setStudies} = useAsync<
+    Study[]
+  >({
     status: 'PENDING',
     data: [],
   })
@@ -441,113 +443,117 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   return (
     <Loader reqStatusLoading={status === 'PENDING' || !studies} variant="full">
-      <Container maxWidth="lg" className={classes.studyContainer}>
-        <Box display="flex" justifyContent="space-between">
-          <ul className={classes.filters} aria-label="filters">
-            <li className={classes.filterItem}>View by:</li>
-            <li className={classes.filterItem}>
-              <Button
-                onClick={resetStatusFilters}
-                style={{
-                  color: 'inherit',
-                  fontWeight: statusFilters.length > 1 ? 'bolder' : 'normal',
-                  fontFamily: 'Poppins',
-                }}>
-                All
-              </Button>
-            </li>
-            {sections.map(section => (
-              <li className={classes.filterItem} key={section.sectionStatus}>
+      <Box className={classes.root}>
+        <Container maxWidth="lg" className={classes.studyContainer}>
+          <Box display="flex" justifyContent="space-between">
+            <ul className={classes.filters} aria-label="filters">
+              <li className={classes.filterItem}>View by:</li>
+              <li className={classes.filterItem}>
                 <Button
-                  onClick={() => setStatusFilters([section.sectionStatus])}
+                  onClick={resetStatusFilters}
                   style={{
                     color: 'inherit',
-                    fontWeight: isSelectedFilter(section.sectionStatus)
-                      ? 'bolder'
-                      : 'normal',
+                    fontWeight: statusFilters.length > 1 ? 'bolder' : 'normal',
                     fontFamily: 'Poppins',
                   }}>
-                  {section.filterTitle}
+                  All
                 </Button>
               </li>
+              {sections.map(section => (
+                <li className={classes.filterItem} key={section.sectionStatus}>
+                  <Button
+                    onClick={() => setStatusFilters([section.sectionStatus])}
+                    style={{
+                      color: 'inherit',
+                      fontWeight: isSelectedFilter(section.sectionStatus)
+                        ? 'bolder'
+                        : 'normal',
+                      fontFamily: 'Poppins',
+                    }}>
+                    {section.filterTitle}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+            <Button
+              disabled={
+                !Utility.isPathAllowed(
+                  'any',
+                  constants.restrictedPaths.STUDY_BUILDER
+                )
+              }
+              variant="contained"
+              onClick={() => createStudy()}
+              className={classes.createStudyButton}>
+              + Create New Study
+            </Button>
+          </Box>
+          <Divider className={classes.divider}></Divider>
+
+          {studies!.length > 0 &&
+            statusFilters.map((status, index) => (
+              <Box
+                style={{paddingBottom: index < 3 ? '24px' : '0'}}
+                key={status}>
+                <StudySublist
+                  userRoles={roles}
+                  studies={studies!}
+                  renameStudyId={renameStudyId}
+                  status={status}
+                  onAction={(s: Study, action: StudyAction, e: any) => {
+                    action === 'ANCHOR'
+                      ? setMenuAnchor({study: s, anchorEl: e})
+                      : onAction(s, action)
+                  }}
+                  highlightedStudyId={highlightedStudyId}
+                  menuAnchor={menuAnchor}
+                />
+              </Box>
             ))}
-          </ul>
-          <Button
-            disabled={
-              !Utility.isPathAllowed(
-                'any',
-                constants.restrictedPaths.STUDY_BUILDER
-              )
-            }
-            variant="contained"
-            onClick={() => createStudy()}
-            className={classes.createStudyButton}>
-            + Create New Study
-          </Button>
-        </Box>
-        <Divider className={classes.divider}></Divider>
 
-        {studies!.length > 0 &&
-          statusFilters.map((status, index) => (
-            <Box style={{paddingBottom: index < 3 ? '24px' : '0'}} key={status}>
-              <StudySublist
-                userRoles={roles}
-                studies={studies!}
-                renameStudyId={renameStudyId}
-                status={status}
-                onAction={(s: Study, action: StudyAction, e: any) => {
-                  action === 'ANCHOR'
-                    ? setMenuAnchor({study: s, anchorEl: e})
-                    : onAction(s, action)
-                }}
-                highlightedStudyId={highlightedStudyId}
-                menuAnchor={menuAnchor}
-              />
-            </Box>
-          ))}
+          <Menu
+            id="study-menu"
+            anchorEl={menuAnchor?.anchorEl}
+            keepMounted
+            open={Boolean(menuAnchor?.anchorEl)}
+            onClose={handleMenuClose}
+            classes={{paper: classes.paper, list: classes.list}}>
+            <MenuItem onClick={handleMenuClose}>View</MenuItem>
+            {menuAnchor?.study.phase === 'design' && (
+              <MenuItem
+                onClick={() => {
+                  setRenameStudyId(menuAnchor?.study.identifier)
+                  handleMenuClose()
+                }}>
+                Rename
+              </MenuItem>
+            )}
 
-        <Menu
-          id="study-menu"
-          anchorEl={menuAnchor?.anchorEl}
-          keepMounted
-          open={Boolean(menuAnchor?.anchorEl)}
-          onClose={handleMenuClose}
-          classes={{paper: classes.paper, list: classes.list}}>
-          <MenuItem onClick={handleMenuClose}>View</MenuItem>
-          {menuAnchor?.study.phase === 'design' && (
-            <MenuItem
-              onClick={() => {
-                setRenameStudyId(menuAnchor?.study.identifier)
-                handleMenuClose()
-              }}>
-              Rename
+            <MenuItem onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>
+              Duplicate
             </MenuItem>
-          )}
 
-          <MenuItem onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>
-            Duplicate
-          </MenuItem>
+            <MenuItem onClick={() => setIsConfirmDeleteOpen(true)}>
+              Delete
+            </MenuItem>
+          </Menu>
 
-          <MenuItem onClick={() => setIsConfirmDeleteOpen(true)}>
-            Delete
-          </MenuItem>
-        </Menu>
-
-        <ConfirmationDialog
-          isOpen={isConfirmDeleteOpen}
-          title={'Delete Study'}
-          type={'DELETE'}
-          onCancel={closeConfirmationDialog}
-          onConfirm={() => {
-            closeConfirmationDialog()
-            onAction(menuAnchor!.study, 'DELETE')
-          }}>
-          <div>
-            Are you sure you would like to permanently delete:{' '}
-            <p>{menuAnchor?.study.name}</p>
-          </div>
-        </ConfirmationDialog>
-      </Container>
+          <ConfirmationDialog
+            isOpen={isConfirmDeleteOpen}
+            title={'Delete Study'}
+            type={'DELETE'}
+            onCancel={closeConfirmationDialog}
+            onConfirm={() => {
+              closeConfirmationDialog()
+              onAction(menuAnchor!.study, 'DELETE')
+            }}>
+            <div>
+              Are you sure you would like to permanently delete:{' '}
+              <p>{menuAnchor?.study.name}</p>
+            </div>
+          </ConfirmationDialog>
+        </Container>
+      </Box>
     </Loader>
   )
 }
