@@ -156,6 +156,28 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     width: '16px',
     marginBottom: theme.spacing(-0.25),
   },
+  tosContainer: {
+    position: 'absolute',
+    top: '-60px',
+    right: '100px',
+  },
+  tosButton: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '48px',
+  },
+  linkIcon: {
+    marginRight: theme.spacing(1.5),
+    color: 'black',
+    height: '22px',
+  },
+  tosText: {
+    fontFamily: latoFont,
+    fontSize: '16px',
+    marginTop: theme.spacing(-0.25),
+    fontWeight: 'bold',
+  },
 }))
 
 export interface PreviewProps {
@@ -227,38 +249,14 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
 
   return (
     <>
-      <Box
-        style={{
-          position: 'absolute',
-          top: '-60px',
-          right: '100px',
-        }}>
+      <Box className={classes.tosContainer}>
         <PrevButton
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '48px',
-          }}
+          className={classes.tosButton}
           variant="outlined"
           color="primary"
           onClick={() => {}}>
-          <img
-            style={{
-              marginRight: '12px',
-              color: 'black',
-              height: '22px',
-            }}
-            src={LinkIcon}></img>
-          <Box
-            style={{
-              fontFamily: latoFont,
-              fontSize: '16px',
-              marginTop: '-2px',
-              fontWeight: 'bold',
-            }}>
-            Full terms of service
-          </Box>
+          <img className={classes.linkIcon} src={LinkIcon}></img>
+          <Box className={classes.tosText}>Full terms of service</Box>
         </PrevButton>
       </Box>
       {!testParticipantId ? (
