@@ -25,10 +25,11 @@ import MedicalIcon from '../../../assets/preview/reminder_of_use_medical_icon.sv
 import AuthorizedIcon from '../../../assets/preview/reminder_of_use_authorization_icon.svg'
 import ProtectionIcon from '../../../assets/preview/reminder_of_use_protect_icon.svg'
 import ScheduleSessionsIcon from '../../../assets/preview/schedule_session_icon_no_padding.svg'
+import clsx from 'clsx'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
-    backgroundColor: '#fff',
+    backgroundColor: '#f7f7f7',
     padding: theme.spacing(0, 6, 7, 6),
     textAlign: 'left',
   },
@@ -127,7 +128,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontStyle: 'italic',
   },
   scheduleSessionReminderContainer: {
-    width: '415px',
+    width: '450px',
     height: '82px',
     border: '2px solid black',
     display: 'flex',
@@ -144,6 +145,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     '&:hover': {
       backgroundColor: 'transparent',
     },
+    fontSize: '15px',
+    fontFamily: latoFont,
+    marginTop: theme.spacing(-0.5),
   },
   scheduleSessionsIcon: {
     height: '16px',
@@ -242,7 +246,11 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                 <Reminder key={index} text={text} img={icons[index]}></Reminder>
               ))}
             </Box>
-            <Box className={classes.scheduleSessionReminderContainer}>
+            <Box
+              className={clsx(
+                classes.scheduleSessionReminderContainer,
+                classes.reminderOfUseText
+              )}>
               <Box>
                 Please remember to customize your study schedule on&nbsp;
                 <img
