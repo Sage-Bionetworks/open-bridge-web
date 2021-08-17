@@ -77,31 +77,37 @@ const StudyTypeLabel: React.FunctionComponent<{
   type: 'observation' | 'validation' | 'intervention'
   formLabelText: string
 }> = ({type, formLabelText}) => {
-  let label = (
-    <Box>
-      An <strong>Observational study</strong> is a study where you are trying to
-      study the effect of a risk factor, diagnostic test, treatment or other
-      intervention without trying to change who is or isn’t exposed to it
-      (example: cohort study, case-control study).
-    </Box>
-  )
-  if (type === 'intervention') {
-    label = (
-      <Box>
-        An <strong>Experimental study</strong> is a study where an intevention
-        is introduced and the effect of the intervention is studied (example:
-        randomized control trial).
-      </Box>
-    )
-  } else if (type === 'validation') {
-    label = (
-      <Box>
-        A <strong>Validation study</strong> is a type of study where a
-        comparison in accuracy of a measure is performed compared to a a gold
-        standard measure.
-      </Box>
-    )
+  let label
+  switch (type) {
+    case 'intervention':
+      label = (
+        <Box>
+          An <strong>Experimental study</strong> is a study where an intevention
+          is introduced and the effect of the intervention is studied (example:
+          randomized control trial).
+        </Box>
+      )
+      break
+    case 'validation':
+      label = (
+        <Box>
+          A <strong>Validation study</strong> is a type of study where a
+          comparison in accuracy of a measure is performed compared to a a gold
+          standard measure.
+        </Box>
+      )
+      break
+    default:
+      label = (
+        <Box>
+          An <strong>Observational study</strong> is a study where you are
+          trying to study the effect of a risk factor, diagnostic test,
+          treatment or other intervention without trying to change who is or
+          isn’t exposed to it (example: cohort study, case-control study).
+        </Box>
+      )
   }
+
   return (
     <Box display="flex" alignItems="center" justifyContent="center">
       <Box mr={1}>{formLabelText}</Box>{' '}
