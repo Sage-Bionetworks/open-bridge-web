@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(0.5),
     padding: theme.spacing(4),
     textAlign: 'left',
-    minHeight: `521px`,
+    minHeight: `475px`,
     paddingTop: theme.spacing(5.5),
   },
   sectionThreeIndicatorPosition: {
@@ -36,14 +36,15 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 'normal',
     fontSize: '15px',
     lineHeight: '18px',
-    marginTop: '25px',
+    marginTop: theme.spacing(3),
     whiteSpace: 'pre-line',
   },
   salutationText: {
-    marginTop: theme.spacing(2.5),
+    marginTop: theme.spacing(5),
   },
-  firstPhoneScreenBodyText: {
-    height: '325px',
+  disclaimerText: {
+    marginTop: theme.spacing(10),
+    fontStyle: 'italic',
   },
 }))
 
@@ -60,9 +61,9 @@ const WelcomeScreenPhoneContent: React.FunctionComponent<WelcomeScreenPhoneConte
 }) => {
   const classes = useStyles()
   const defaultStudyBody =
-    'We’re excited to have you help us in conduting this study! \n \n This is a research study and does not provide medical advice, diagnosis, or treatment.'
-  const defaultSalutations = 'Thank you for your contributions,'
-  const defaultFrom = 'Research Team X'
+    'We are excited that you will be participating. We hope that you find this study helpful.'
+  const defaultSalutations = 'Sincerely,'
+  const defaultFrom = `The ${studyTitle} team`
 
   return (
     <Box className={classes.phoneInner}>
@@ -74,10 +75,10 @@ const WelcomeScreenPhoneContent: React.FunctionComponent<WelcomeScreenPhoneConte
       )}
       <Box className={classes.headlineStyle}>
         {welcomeScreenContent.isUsingDefaultMessage
-          ? 'Thanks for joining \n' + studyTitle
+          ? 'Welcome to \n' + studyTitle + '!'
           : welcomeScreenContent.welcomeScreenHeader || 'Welcome Headline'}
       </Box>
-      <p className={clsx(classes.bodyText, classes.firstPhoneScreenBodyText)}>
+      <p className={clsx(classes.bodyText)}>
         {welcomeScreenContent.isUsingDefaultMessage
           ? defaultStudyBody
           : welcomeScreenContent.welcomeScreenBody || 'Body copy'}
@@ -93,6 +94,12 @@ const WelcomeScreenPhoneContent: React.FunctionComponent<WelcomeScreenPhoneConte
           ? defaultFrom
           : welcomeScreenContent.welcomeScreenFromText || 'from placeholder'}
       </Box>
+      {welcomeScreenContent.isUsingDefaultMessage && (
+        <Box className={clsx(classes.bodyText, classes.disclaimerText)}>
+          This is a research Study. It does not provide medical advice,
+          diagnosis, or treatment.
+        </Box>
+      )}
     </Box>
   )
 }
