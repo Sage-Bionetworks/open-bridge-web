@@ -19,12 +19,13 @@ import {Assessment} from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
 import {ErrorFallback, ErrorHandler} from '../../widgets/ErrorHandler'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
-import {SimpleTextInput} from '../../widgets/StyledComponents'
+import {SimpleTextInput, PrevButton} from '../../widgets/StyledComponents'
 import Utility from '../../../helpers/utility'
 import MedicalIcon from '../../../assets/preview/reminder_of_use_medical_icon.svg'
 import AuthorizedIcon from '../../../assets/preview/reminder_of_use_authorization_icon.svg'
 import ProtectionIcon from '../../../assets/preview/reminder_of_use_protect_icon.svg'
 import ScheduleSessionsIcon from '../../../assets/preview/schedule_session_icon_no_padding.svg'
+import LinkIcon from '../../../assets/link_icon.svg'
 import clsx from 'clsx'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -32,6 +33,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     backgroundColor: '#f7f7f7',
     padding: theme.spacing(0, 6, 7, 6),
     textAlign: 'left',
+    position: 'relative',
   },
   phone: {
     width: '145px',
@@ -225,6 +227,39 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
 
   return (
     <>
+      <Box
+        style={{
+          position: 'absolute',
+          top: '-60px',
+          right: '100px',
+        }}>
+        <PrevButton
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          variant="outlined"
+          color="primary"
+          onClick={() => {}}>
+          <img
+            style={{
+              marginRight: '12px',
+              color: 'black',
+              height: '22px',
+            }}
+            src={LinkIcon}></img>
+          <Box
+            style={{
+              fontFamily: latoFont,
+              fontSize: '16px',
+              marginTop: '-2px',
+              fontWeight: 'bold',
+            }}>
+            Full terms of service
+          </Box>
+        </PrevButton>
+      </Box>
       {!testParticipantId ? (
         <div className={classes.root}>
           <Box
