@@ -8,6 +8,7 @@ export default {
     NEW_STUDY_NAME: 'Untitled Study',
     DEFAULT_PLACEHOLDER: '*UNDEFINED*',
     IS_TEST_MODE: true,
+    CUSTOM_EVENT_PREFIX: 'custom:',
   },
 
   restrictedPaths: {
