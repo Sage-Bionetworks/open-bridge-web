@@ -126,68 +126,67 @@ type AccessGridRadioComponentsProps = {
   isAllowedAccess: boolean
   isEdit?: boolean
 }
-const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponentsProps> =
-  ({
-    restriction,
-    role_key,
-    isCoAdmin,
-    currentUserIsAdmin,
-    onUpdate,
-    isEdit,
-    isAllowedAccess,
-  }) => {
-    const classes = useStyles()
+const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponentsProps> = ({
+  restriction,
+  role_key,
+  isCoAdmin,
+  currentUserIsAdmin,
+  onUpdate,
+  isEdit,
+  isAllowedAccess,
+}) => {
+  const classes = useStyles()
 
-    if (!isEdit) {
-      return isAllowedAccess ? <div className={classes.dot} /> : <>&nbsp;</>
+  if (!isEdit) {
+    return isAllowedAccess ? <div className={classes.dot} /> : <>&nbsp;</>
+  }
+
+  const key = Object.keys(role_key)[0] as keyof Access
+  let checkboxChecked = false
+  if (!currentUserIsAdmin) {
+    if (!isAllowedAccess) {
+      return null
     }
-
-    const key = Object.keys(role_key)[0] as keyof Access
-    let checkboxChecked = false
-    if (!currentUserIsAdmin) {
-      if (!isAllowedAccess) {
-        return null
-      }
+    return (
+      <Box
+        mt={-2.5}
+        height="40px"
+        display="flex"
+        justifyContent="center"
+        alignItems="center">
+        <CheckIcon style={{color: 'black'}} />
+      </Box>
+    )
+  }
+  if (key === 'ACCESS_SETTINGS') {
+    checkboxChecked = true
+    if (restriction === 'NO_ACCESS') {
+      return null
+    }
+    if (restriction === 'VIEWER' && isCoAdmin) {
+      return null
+    }
+    if (restriction === 'EDITOR' && !isCoAdmin) {
       return (
         <Box
-          mt={-2.5}
-          height="40px"
-          display="flex"
-          justifyContent="center"
-          alignItems="center">
-          <CheckIcon style={{color: 'black'}} />
+          fontSize="10px"
+          fontStyle="italic"
+          fontFamily={latoFont}
+          fontWeight="normal">
+          Only available to Administrators
         </Box>
       )
     }
-    if (key === 'ACCESS_SETTINGS') {
-      checkboxChecked = true
-      if (restriction === 'NO_ACCESS') {
-        return null
-      }
-      if (restriction === 'VIEWER' && isCoAdmin) {
-        return null
-      }
-      if (restriction === 'EDITOR' && !isCoAdmin) {
-        return (
-          <Box
-            fontSize="10px"
-            fontStyle="italic"
-            fontFamily={latoFont}
-            fontWeight="normal">
-            Only available to Administrators
-          </Box>
-        )
-      }
-    }
-    return (
-      <Radio
-        checked={checkboxChecked || isAllowedAccess}
-        disabled={restriction === 'VIEWER'}
-        value={restriction}
-        onChange={e => onUpdate(e)}
-        radioGroup={'group_' + Object.keys(role_key)}></Radio>
-    )
   }
+  return (
+    <Radio
+      checked={checkboxChecked || isAllowedAccess}
+      disabled={restriction === 'VIEWER'}
+      value={restriction}
+      onChange={e => onUpdate(e)}
+      radioGroup={'group_' + Object.keys(role_key)}></Radio>
+  )
+}
 
 const AccessGrid: FunctionComponent<AccessGridProps> = ({
   access,
@@ -268,6 +267,20 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
               of the study as a Study Administrator in order to launch a study.
             </Box>
           )}
+        </Box>
+      )}
+      {isThisMe && hasCoadminAccess() && (
+        <Box maxWidth="512px" mb={3} fontFamily={latoFont} fontSize="16px">
+          As the Study Admin of this study, you have full view and editing
+          capability of the entire study and its members.
+          <br />
+          <br />
+          If you would like to transfer your responsibilities to another team
+          member, add them to your study as a <strong>Co-administrator.</strong>
+          <br />
+          <br />
+          <strong>Principal Investigators</strong> are required to be part of
+          the study as a Study Administrator in order to launch a study.
         </Box>
       )}
       <table cellPadding="0" cellSpacing="0" width="100%">
