@@ -464,7 +464,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
   }
 
   return (
-    <>
+    <Box bgcolor={section === 'scheduler' ? '#E5E5E5' : '#f7f7f7'}>
       <Box display="flex" bgcolor="#f7f7f7">
         <TopErrorBanner
           backgroundColor={bannerType?.bgColor!}
@@ -720,7 +720,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           </Box>
         </Box>
       </Container>
-    </>
+    </Box>
   )
 }
 
