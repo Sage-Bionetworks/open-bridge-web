@@ -328,10 +328,13 @@ const setBodyClass = (next?: string) => {
   }
 }
 
-// Format the studyId to take the form xxx-xxx
 const formatStudyId = (studyId: string) => {
-  if (studyId.length !== 6) return studyId
-  return studyId.substring(0, 3) + '-' + studyId.substring(3)
+  //AGENDEL: 8/18 we are just showing studyId without a dash
+  /*
+// Format the studyId to take the form xxx-xxx 
+if (studyId.length !== 6) return studyId
+  return studyId.substring(0, 3) + '-' + studyId.substring(3)*/
+  return studyId
 }
 
 const UtilityObject = {

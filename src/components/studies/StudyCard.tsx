@@ -154,6 +154,7 @@ const CardBottom: FunctionComponent<{
   const {token} = useUserSessionDataState()
 
   React.useEffect(() => {
+    //AGENDEL TODO: only for live studies
     const getParticipantCount = async () => {
       const newParticipantNumber =
         await ParticipantService.getNumEnrolledParticipants(

@@ -82,7 +82,7 @@ export const TooltipHoverDisplay: React.FunctionComponent<{
             return (
               <Box
                 className={classes.assessmentBox}
-                key={`assmnt_${assessment.guid}`}>
+                key={`assmnt_${assessment.guid}_${index}`}>
                 <AssessmentImage
                   resources={assessment.resources}
                   variant="small"
@@ -122,13 +122,17 @@ const ScheduleTimeline: React.FunctionComponent<TimelineProps> = ({
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
   const [dropdown, setDropdown] = React.useState(['Daily'])
-  const [
-    currentZoomLevel,
-    setCurrentZoomLevel,
-  ] = React.useState<TimelineZoomLevel>('Monthly')
+  const [currentZoomLevel, setCurrentZoomLevel] =
+    React.useState<TimelineZoomLevel>('Monthly')
 
   const classes = useStyles()
-  const {data: timeline, status, error, run, setData} = useAsync<any>({
+  const {
+    data: timeline,
+    status,
+    error,
+    run,
+    setData,
+  } = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
@@ -191,6 +195,7 @@ const ScheduleTimeline: React.FunctionComponent<TimelineProps> = ({
         <Box className={classes.legend}>
           {schedFromDisplay?.sessions?.map((s, index) => (
             <TooltipHoverDisplay
+              key={s.guid}
               session={s}
               index={index}
               getSession={getSession}

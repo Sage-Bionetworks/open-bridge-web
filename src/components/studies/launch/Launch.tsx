@@ -29,7 +29,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 export interface LaunchProps {
   studyInfo: StudyInfoData
   onSave: Function
-  isReadOnly: boolean
 }
 
 function getSteps(isLive: boolean) {

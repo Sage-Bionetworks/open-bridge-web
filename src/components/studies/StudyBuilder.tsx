@@ -310,9 +310,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           )?.resources
         })
       })
+      //updating schedule will update the study so bump the version.
+
       setData({
         ...builderInfo,
         schedule: savedUpdatedSchedule,
+        study: {...builderInfo.study, version: builderInfo.study.version + 1},
       })
       setHasObjectChanged(false)
       return savedUpdatedSchedule

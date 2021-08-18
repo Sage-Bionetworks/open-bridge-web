@@ -25,6 +25,7 @@ import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
 import IrbBoardContactSection from './IrbBoardContactSection'
+import ReadOnlyAppDesign from './read-only-pages/ReadOnlyAppDesign'
 import SectionIndicator from './SectionIndicator'
 import StudyLeadInformationSection from './StudyLeadInformationSection'
 import StudyPageBottomPhoneContent from './StudyPageBottomPhoneContent'
@@ -34,7 +35,6 @@ import Subsection from './Subsection'
 import UploadStudyLogoSection from './UploadStudyLogoSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
-import ReadOnlyAppDesign from './read-only-pages/ReadOnlyAppDesign'
 
 const imgHeight = 70
 const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
@@ -208,7 +208,6 @@ export interface AppDesignProps {
   onSave: Function
   study: Study
   onError: Function
-  isReadOnly: boolean
 }
 
 type ErrorStateType = {
@@ -439,19 +438,15 @@ const AppDesign: React.FunctionComponent<
   const classes = useStyles()
 
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
-  const [
-    irbNameSameAsInstitution,
-    setIrbNameSameAsInstitution,
-  ] = useState<boolean>(
-    getContact(study, 'irb')?.name ===
-      getContact(study, 'principal_investigator')?.affiliation
-  )
-  const [
-    generalContactPhoneNumber,
-    setGeneralContactPhoneNumber,
-  ] = React.useState(
-    formatPhoneNumber(getContact(study, 'study_support')?.phone?.number)
-  )
+  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] =
+    useState<boolean>(
+      getContact(study, 'irb')?.name ===
+        getContact(study, 'principal_investigator')?.affiliation
+    )
+  const [generalContactPhoneNumber, setGeneralContactPhoneNumber] =
+    React.useState(
+      formatPhoneNumber(getContact(study, 'study_support')?.phone?.number)
+    )
   const [irbPhoneNumber, setIrbPhoneNumber] = React.useState(
     formatPhoneNumber(getContact(study, 'irb')?.phone?.number)
   )
@@ -760,9 +755,11 @@ const AppDesign: React.FunctionComponent<
                     }
                     const newWelcomeScreenData = {
                       ...currentWelcomeScreenData,
-                      isUsingDefaultMessage: !currentWelcomeScreenData.isUsingDefaultMessage,
+                      isUsingDefaultMessage:
+                        !currentWelcomeScreenData.isUsingDefaultMessage,
                     }
-                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
+                    updatedStudy.clientData.welcomeScreenData =
+                      newWelcomeScreenData
                     handleUpdate(updatedStudy)
                   }}></Switch>
               </Box>

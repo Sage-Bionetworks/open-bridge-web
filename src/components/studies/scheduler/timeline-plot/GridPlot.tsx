@@ -78,7 +78,7 @@ export const DailyGridPlot: React.FunctionComponent<GridPlotProps> = ({
     <>
       {hourIndex === 0 && !hideDays && (
         <div
-          key={'hour'}
+          key={'hour_number'}
           style={{
             position: 'absolute',
             top: `${-containerTopPad}px`,
@@ -90,7 +90,7 @@ export const DailyGridPlot: React.FunctionComponent<GridPlotProps> = ({
         </div>
       )}
       <div
-        key={`hour${hourIndex}`}
+        key={`hour_${hourIndex}`}
         className={classes.gridLine}
         style={{
           height: `${numberSessions * graphSessionHeight}px`,
@@ -174,7 +174,7 @@ const GridPlot: React.FunctionComponent<
   const items = [...Array(scheduleLength)].map((i, index) =>
     zoomLevel === 'Daily' ? (
       <DailyGridPlot
-        key={`dailyPlot_${index}`}
+        key={`dailyPlot_${index}_${i}`}
         graphSessionHeight={graphSessionHeight}
         index={index}
         hideDays={hideDays}
@@ -185,7 +185,7 @@ const GridPlot: React.FunctionComponent<
       />
     ) : (
       <NonDailyGridPlot
-        key={`nonDailyPlot_${index}`}
+        key={`nonDailyPlot_${index}_${i}`}
         graphSessionHeight={graphSessionHeight}
         index={index}
         hideDays={hideDays}

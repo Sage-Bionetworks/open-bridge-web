@@ -124,13 +124,13 @@ const useStyles = makeStyles(theme => ({
 
 const sections = [
   {
-    studyStatus: ['design', 'recruitment'] as StudyPhase[],
+    studyStatus: ['design'] as StudyPhase[],
     title: 'Draft Studies',
     filterTitle: 'Design',
     sectionStatus: 'DRAFT' as SectionStatus,
   },
   {
-    studyStatus: ['in_flight'] as StudyPhase[],
+    studyStatus: ['in_flight', 'recruitment'] as StudyPhase[],
     title: 'Live Studies',
     filterTitle: 'Live',
     sectionStatus: 'LIVE' as SectionStatus,
@@ -266,9 +266,13 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   let resetNewlyAddedStudyID: NodeJS.Timeout
 
-  const {data: studies, status, error, run, setData: setStudies} = useAsync<
-    Study[]
-  >({
+  const {
+    data: studies,
+    status,
+    error,
+    run,
+    setData: setStudies,
+  } = useAsync<Study[]>({
     status: 'PENDING',
     data: [],
   })
