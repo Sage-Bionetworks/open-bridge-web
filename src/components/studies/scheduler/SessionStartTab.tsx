@@ -9,7 +9,6 @@ import {
 import DeleteIcon from '@material-ui/icons/Close'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
-import UtilityObject from '../../../helpers/utility'
 import {Schedule, SchedulingEvent} from '../../../types/scheduling'
 import {Study} from '../../../types/types'
 import EditableTextbox from '../../widgets/EditableTextbox'
@@ -22,12 +21,6 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       backgroundColor: '#fff',
       padding: theme.spacing(13, 7, 3, 7),
-
-      /* paddingRight: theme.spacing(2),
-      fontFamily: poppinsFont,
-      fontSize: '18px',
-      fontStyle: 'normal',
-      fontWeight: 600,*/
     },
   })
 )
@@ -35,63 +28,28 @@ const useStyles = makeStyles((theme: Theme) =>
 type SessionStartTabProps = {
   schedule: Schedule
   onUpdate: Function
-  onSave: Function
   study: Study
-  // hasObjectChanged: boolean
-  //saveLoader: boolean
 }
 
 const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
-  //hasObjectChanged,
-  //saveLoader,
   onUpdate,
   schedule,
-  onSave,
   study,
 }: SessionStartTabProps) => {
   const classes = useStyles()
-  /* const [schedulingEvents, setSchedulingEvents] =
-    React.useState<SchedulingEvent[]>(events)*/
-  /*
-  const saveSession = async (sessionId: string) => {
-    onSave()
-  }
-
-  //setting new state
-  const updateData = (schedule: Schedule) => {
-    // setSchedule(schedule)
-    onUpdate(schedule)
-  }
-
-  //updating the schedule part
-  const updateSessionsWithStartEventId = (
-    sessions: StudySession[],
-    startEventId: StartEventId
-  ) => {
-    return sessions.map(s => ({...s, startEventId}))
-  }
-
-  const scheduleUpdateFn = (action: SessionScheduleAction) => {
-    const sessions = actionsReducer(schedule.sessions, action)
-    const newSchedule = {...schedule, sessions}
-    updateData(newSchedule)
-  }*/
 
   const addEmptyEvent = () => {
     const newEvent: SchedulingEvent = {
-      label: 'Untitled',
-      identifier: UtilityObject.generateNonambiguousCode(9, 'NUMERIC'),
+      identifier: 'untitled',
       updateType: 'mutable',
     }
-
-    //  setSchedulingEvents(events => [...events, newEvent])
     const newEvents = [...(study.clientData.events || []), newEvent]
     onUpdate(undefined, newEvents)
   }
 
-  const updateEvent = (event: SchedulingEvent, newLabel: string) => {
+  const updateEvent = (event: SchedulingEvent, newIdentifier: string) => {
     const newEvents = (study.clientData.events || []).map(e =>
-      e.identifier !== event.identifier ? e : {...e, label: newLabel}
+      e.identifier !== event.identifier ? e : {...e, identifier: newIdentifier}
     )
     onUpdate(undefined, newEvents)
   }
@@ -137,11 +95,10 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
               {(study.clientData.events || []).map(evt => (
                 <FormGroup
                   row={true}
+                  key={evt.identifier}
                   style={{alignItems: 'center', marginTop: '21px'}}>
-                  {/*  <Checkbox checked={true} onChange={() => {}} name="checkedA" />*/}
-
                   <EditableTextbox
-                    initValue={evt.label}
+                    initValue={evt.identifier}
                     onTriggerUpdate={(newLabel: string) =>
                       updateEvent(evt, newLabel)
                     }></EditableTextbox>

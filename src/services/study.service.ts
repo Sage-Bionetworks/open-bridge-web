@@ -4,6 +4,7 @@ import {
   AssessmentWindow,
   Schedule,
   ScheduleNotification,
+  SchedulingEvent,
   StartEventId,
   StudySession,
 } from '../types/scheduling'
@@ -22,6 +23,12 @@ const StudyService = {
   getStudyScheduleTimeline,
   saveStudySchedule,
   createEmptyStudySession,
+  getEventsForSchedule,
+}
+
+export const TIMELINE_RETRIEVED_EVENT: SchedulingEvent = {
+  identifier: 'timeline_retrieved',
+  updateType: 'immutable',
 }
 
 export const DEFAULT_NOTIFICATION: ScheduleNotification = {
@@ -273,6 +280,27 @@ async function getStudyScheduleTimeline(
     token
   )
   return result.data
+}
+
+async function getEventsForSchedule(
+  studyId: string
+): Promise<SchedulingEvent[]> {
+  const token = Utility.getSession()?.token
+  const response = await Utility.callEndpoint<Study>(
+    constants.endpoints.study.replace(':id', studyId),
+    'GET',
+    {},
+    token
+  )
+
+  return (
+    response.data.clientData?.events?.map(e => ({
+      ...e,
+      identifier: e.identifier.includes(constants.constants.CUSTOM_EVENT_PREFIX)
+        ? e.identifier
+        : constants.constants.CUSTOM_EVENT_PREFIX + e.identifier,
+    })) || []
+  )
 }
 
 export default StudyService
