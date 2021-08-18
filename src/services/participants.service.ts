@@ -349,7 +349,11 @@ async function getAllParticipantsInEnrollmentType(
       [studyIdentifier, token, enrollmentType, includeTesters || false]
     )
   }
-  const endpoint = `${constants.endpoints.studies}/${studyIdentifier}/enrollments`
+
+  const endpoint = `${constants.endpoints.enrollments.replace(
+    ':studyId',
+    studyIdentifier
+  )}`
   const body = {
     enrollmentFilter: enrollmentType,
     includeTesters: includeTesters || false,
@@ -367,7 +371,10 @@ async function getNumEnrolledParticipants(
   studyIdentifier: string,
   token: string
 ) {
-  const endpoint = `${constants.endpoints.studies}/${studyIdentifier}/enrollments`
+  const endpoint = `${constants.endpoints.enrollments.replace(
+    ':studyId',
+    studyIdentifier
+  )}`
   const body = {
     enrollmentFilter: 'enrolled',
   }
@@ -634,16 +641,18 @@ async function addTestParticipant(
   studyIdentifier: string,
   token: string
 ): Promise<string> {
-  return addParticipant(
+  const participantId = Utility.generateNonambiguousCode(6)
+  await addParticipant(
     studyIdentifier,
     token,
     {
-      externalId: Utility.generateNonambiguousCode(6),
+      externalId: participantId,
       events: [],
     },
 
     true
   )
+  return participantId
 }
 
 async function updateParticipantNote(
