@@ -353,7 +353,9 @@ function getColumns(
     },
     {
       field: 'externalId',
-      headerName: isEnrolledById ? 'Participant ID' : 'Reference ID',
+      headerName: isEnrolledById
+        ? 'Participant ID'
+        : `${gridType === 'TEST' ? 'Log in' : 'Reference'} ID`,
       flex: 1,
     },
     {field: 'id', headerName: 'HealthCode', flex: 2},
@@ -411,6 +413,11 @@ function getColumns(
       c => !_.includes(['note', 'edit'], c.field)
     )
   }
+  if (gridType === 'TEST') {
+    participantColumns = participantColumns.filter(
+      el => el.headerName !== 'Phone Number'
+    )
+  }
 
   if (isEnrolledById) {
     participantColumns = _.filter(
@@ -461,16 +468,15 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   const {token} = useUserSessionDataState()
 
   //when we are editing the record this is where the info is stored
-  const [participantToEdit, setParticipantToEdit] =
-    React.useState<
-      | {
-          id: string
-          participant: EditableParticipantData
-          hasSignedIn: boolean
-          shouldWithdraw: boolean
-        }
-      | undefined
-    >(undefined)
+  const [participantToEdit, setParticipantToEdit] = React.useState<
+    | {
+        id: string
+        participant: EditableParticipantData
+        hasSignedIn: boolean
+        shouldWithdraw: boolean
+      }
+    | undefined
+  >(undefined)
 
   const [selectionModel, setSelectionModel] = React.useState<string[]>([
     ...selectedParticipantIds,

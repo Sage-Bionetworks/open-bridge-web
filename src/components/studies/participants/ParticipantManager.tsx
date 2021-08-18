@@ -746,31 +746,29 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         display="flex"
                         flexDirection="row"
                         alignItems="center">
-                        {tab !== 'WITHDRAWN' &&
-                          !Utility.isSignInById(study.signInTypes) && (
-                            <Button
-                              aria-label="send-sms-text"
-                              onClick={() => {
-                                setParticipantsWithError([])
-                                setDialogState({
-                                  dialogOpenRemove: false,
-                                  dialogOpenSMS: true,
-                                })
-                              }}
-                              className={classes.sendSMSButton}
-                              disabled={
-                                selectedParticipantIds[tab].length === 0
-                              }>
-                              <img
-                                src={SMSPhoneImg}
-                                className={clsx(
-                                  selectedParticipantIds[tab].length === 0 &&
-                                    classes.disabledImage,
-                                  classes.topRowImage
-                                )}></img>
-                              Send SMS link
-                            </Button>
-                          )}
+                        {/* This is here for now because the "Send SMS link" feature is not being included in the october release. */}
+                        {false && !Utility.isSignInById(study.signInTypes) && (
+                          <Button
+                            aria-label="send-sms-text"
+                            onClick={() => {
+                              setParticipantsWithError([])
+                              setDialogState({
+                                dialogOpenRemove: false,
+                                dialogOpenSMS: true,
+                              })
+                            }}
+                            className={classes.sendSMSButton}
+                            disabled={selectedParticipantIds[tab].length === 0}>
+                            <img
+                              src={SMSPhoneImg}
+                              className={clsx(
+                                selectedParticipantIds[tab].length === 0 &&
+                                  classes.disabledImage,
+                                classes.topRowImage
+                              )}></img>
+                            Send SMS link
+                          </Button>
+                        )}
                         {tab === 'ACTIVE' && (
                           <Button
                             aria-label="batch-edit"
