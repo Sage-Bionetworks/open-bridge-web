@@ -218,6 +218,7 @@ export type StudyBuilderInfo = {
 export type StudyBuilderComponentProps = {
   onUpdate: Function
   children?: React.ReactNode
+  isReadOnly?: boolean
   hasObjectChanged: boolean
   saveLoader: boolean
 }
