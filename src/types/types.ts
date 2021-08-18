@@ -223,8 +223,12 @@ export type StudyBuilderComponentProps = {
 }
 
 export type ParticipantActivityType = 'ACTIVE' | 'WITHDRAWN' | 'TEST'
+export type ParticipantEvent = {
+  eventId: string
+  timestamp?: Date
+}
 export type EditableParticipantData = {
-  clinicVisitDate?: Date
+  events?: ParticipantEvent[]
   note?: string
   externalId?: string
   phone?: Phone
@@ -249,9 +253,9 @@ export type ParticipantAccountSummary = {
 }
 
 export type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {
-  clinicVisitDate?: Date | string
+  events?: ParticipantEvent[]
   joinedDate?: Date | string
-  smsDate?: Date | string
+  // smsDate?: Date | string
   dateWithdrawn?: Date | string
   withdrawalNote?: string
   studyId?: string

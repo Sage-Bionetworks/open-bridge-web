@@ -11,8 +11,10 @@ import {
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import Utility from '../../../helpers/utility'
+import ParticipantService from '../../../services/participants.service'
 import {latoFont} from '../../../style/theme'
-import {EditableParticipantData} from '../../../types/types'
+import {SchedulingEvent} from '../../../types/scheduling'
+import {EditableParticipantData, ParticipantEvent} from '../../../types/types'
 import DatePicker from '../../widgets/DatePicker'
 import {MTBHeadingH3} from '../../widgets/Headings'
 import TextMask from '../../widgets/MaskedInput'
@@ -42,14 +44,16 @@ const useStyles = makeStyles(theme => ({
 
 type AddParticipantFormProps = {
   participant: EditableParticipantData
+  customStudyEvents: SchedulingEvent[]
   isEnrolledById: boolean
 
   onChange: (p: EditableParticipantData) => void
 }
 
 export type EditParticipantFormProps = {
-  isEnrolledById: boolean
   participant: EditableParticipantData
+  customStudyEvents: SchedulingEvent[]
+  isEnrolledById: boolean
   onOK: Function
   onCancel: Function
   children?: React.ReactNode
@@ -57,81 +61,126 @@ export type EditParticipantFormProps = {
   isLoading?: boolean
 }
 
-export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
-  participant,
-  isEnrolledById,
-  onOK,
-  onCancel,
-  children,
-  isBatchEdit,
-  isLoading,
-}) => {
-  const classes = useStyles()
-  const [note, setNotes] = React.useState(participant.note)
-  const [clinicVisitDate, setClinicVisitDate] = React.useState<
-    Date | undefined
-  >(participant.clinicVisitDate)
+export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> =
+  ({
+    participant,
+    isEnrolledById,
+    customStudyEvents,
+    onOK,
+    onCancel,
+    children,
+    isBatchEdit,
+    isLoading,
+  }) => {
+    const classes = useStyles()
+    const [note, setNotes] = React.useState(participant.note)
+    const [customParticipantEvents, setCustomParticipantEvents] =
+      React.useState<ParticipantEvent[]>([])
 
-  const handleDateChange = (date: Date | null) => {
-    setClinicVisitDate(date ? date : undefined)
-  }
+    React.useEffect(() => {
+      setCustomParticipantEvents(participant.events || [])
+    }, [])
 
-  return (
-    <>
-      <DialogContent>
-        <Box mt={0} mb={3}>
-          <MTBHeadingH3>
-            {!isBatchEdit ? (
-              isEnrolledById ? (
-                <span>Reference ID: {participant.externalId}</span>
+    const handleEventDateChange = (eventId: string, newDate: Date | null) => {
+      const newEvent: ParticipantEvent = {
+        eventId: eventId,
+        timestamp: newDate || undefined,
+      }
+      let events = [...customParticipantEvents]
+      const participantEventIndex = events.findIndex(e => e.eventId === eventId)
+      if (participantEventIndex > -1) {
+        events[participantEventIndex] = newEvent
+      } else {
+        events.push(newEvent)
+      }
+
+      setCustomParticipantEvents(prev => events)
+    }
+
+    const getEventDateValue = (
+      participantEvents: ParticipantEvent[] | undefined,
+      currentEvent: SchedulingEvent
+    ) => {
+      if (!participantEvents) {
+        return null
+      }
+      console.log(participantEvents, 'pevents')
+      const matchingParticipantEvent = participantEvents.find(
+        pEvt => pEvt.eventId === currentEvent.identifier
+      )
+      if (matchingParticipantEvent) {
+        console.log('found event')
+        return matchingParticipantEvent.timestamp || null
+      }
+      return null
+    }
+
+    return (
+      <>
+        <DialogContent>
+          <Box mt={0} mb={3}>
+            <MTBHeadingH3>
+              {!isBatchEdit ? (
+                isEnrolledById ? (
+                  <span>Reference ID: {participant.externalId}</span>
+                ) : (
+                  <span>Phone number: {participant.phoneNumber}</span>
+                )
               ) : (
-                <span>Phone number: {participant.phoneNumber}</span>
-              )
-            ) : (
-              'Assign the same values to selected participants:'
-            )}
-          </MTBHeadingH3>
-        </Box>
-        <FormGroup className={classes.addForm}>
-          <DatePicker
-            label="Clinic Visit 1"
-            id="clinic-visit"
-            value={clinicVisitDate || null}
-            onChange={e => handleDateChange(e)}></DatePicker>
-          <FormControl>
-            <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
-            <SimpleTextInput
-              value={note}
-              placeholder="comments"
-              onChange={e => setNotes(e.target.value)}
-              id="note"
-              multiline={true}
-              rows={5}
-            />
-          </FormControl>
-        </FormGroup>
-      </DialogContent>
-      <DialogActions style={{justifyContent: 'space-between'}}>
-        {children && children}
-        {!isLoading ? (
-          <div>
-            <DialogButtonSecondary onClick={() => onCancel()} color="primary">
-              Cancel
-            </DialogButtonSecondary>
-            <DialogButtonPrimary
-              onClick={() => onOK(note, clinicVisitDate)}
-              color="primary"
-              autoFocus>
-              Save Changes
-            </DialogButtonPrimary>
-          </div>
-        ) : (
-          <CircularProgress color="primary" />
-        )}
-      </DialogActions>
-    </>
-  )
-}
+                'Assign the same values to selected participants:'
+              )}
+            </MTBHeadingH3>
+          </Box>
+          <FormGroup className={classes.addForm}>
+            <>
+              {customStudyEvents.map(evt => (
+                <DatePicker
+                  key={evt.identifier}
+                  label={ParticipantService.formatCustomEventIdForDisplay(
+                    evt.identifier
+                  )}
+                  id={evt.identifier}
+                  value={getEventDateValue(customParticipantEvents, evt)}
+                  onChange={e =>
+                    handleEventDateChange(evt.identifier, e)
+                  }></DatePicker>
+              ))}
+            </>
+
+            <FormControl>
+              <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
+              <SimpleTextInput
+                value={note}
+                placeholder="comments"
+                onChange={e => setNotes(e.target.value)}
+                id="note"
+                multiline={true}
+                rows={5}
+              />
+            </FormControl>
+          </FormGroup>
+        </DialogContent>
+        <DialogActions style={{justifyContent: 'space-between'}}>
+          {children && children}
+          {!isLoading ? (
+            <div>
+              <DialogButtonSecondary onClick={() => onCancel()} color="primary">
+                Cancel
+              </DialogButtonSecondary>
+              <DialogButtonPrimary
+                onClick={() => onOK(note, customParticipantEvents)}
+                color="primary"
+                autoFocus>
+                Save Changes
+              </DialogButtonPrimary>
+            </div>
+          ) : (
+            <CircularProgress color="primary" />
+          )}
+        </DialogActions>
+      </>
+    )
+  }
 
 export const WithdrawParticipantForm: FunctionComponent<{
   isEnrolledById: boolean
@@ -193,6 +242,7 @@ export const WithdrawParticipantForm: FunctionComponent<{
 export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
   participant,
   isEnrolledById,
+  customStudyEvents,
   onChange,
 }) => {
   const classes = useStyles()
@@ -201,8 +251,21 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
     externalId: false,
   })
 
-  const handleDateChange = (date: Date | null) => {
-    onChange({...participant, clinicVisitDate: date || undefined})
+  const handleEventDateChange = (eventId: string, newDate: Date | null) => {
+    const newEvent: ParticipantEvent = {
+      eventId: eventId,
+      timestamp: newDate || undefined,
+    }
+    let events = participant.events ? [...participant.events] : []
+    const participantEventIndex = events.findIndex(e => e.eventId === eventId)
+
+    if (participantEventIndex > -1) {
+      events[participantEventIndex] = newEvent
+    } else {
+      events.push(newEvent)
+    }
+
+    onChange({...participant, events: events})
   }
 
   const extId = (
@@ -268,11 +331,24 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
             {extId}
           </>
         )}
-        <DatePicker
-          label="Clinic Visit 1"
-          id="clinic-visit"
-          value={participant.clinicVisitDate || null}
-          onChange={e => handleDateChange(e)}></DatePicker>
+        <>
+          {customStudyEvents.map(evt => (
+            <DatePicker
+              key={evt.identifier}
+              label={ParticipantService.formatCustomEventIdForDisplay(
+                evt.identifier
+              )}
+              id={evt.identifier}
+              value={
+                participant.events?.find(
+                  pEvt => pEvt.eventId === evt.identifier
+                )?.timestamp || null
+              }
+              onChange={e =>
+                handleEventDateChange(evt.identifier, e)
+              }></DatePicker>
+          ))}
+        </>
 
         <FormControl>
           <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>

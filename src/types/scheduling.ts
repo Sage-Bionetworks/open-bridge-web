@@ -28,8 +28,6 @@ export enum NotificationTimeAtEnum {
   'before_window_end' = 'before window expires',
 }
 
-//export type ReminderIntervalType = 'before_window_end' | 'after_window_start'
-
 export type PerformanceOrder =
   | 'sequential'
   | 'randomized'
@@ -39,8 +37,7 @@ export type StartEventId = 'timeline_retrieved' | 'study_start_date'
 
 export type SchedulingEvent = {
   identifier: string
-  label: string
-  updateType: 'mutable' | 'immutable' | 'future_only'
+  updateType?: 'mutable' | 'immutable' | 'future_only'
 }
 
 export type NotificationMessage = {

@@ -6,6 +6,7 @@ import Alert from '@material-ui/lab/Alert'
 import React, {FunctionComponent} from 'react'
 import Utility from '../../../helpers/utility'
 import ParticipantService from '../../../services/participants.service'
+import {SchedulingEvent} from '../../../types/scheduling'
 import {EditableParticipantData, Phone} from '../../../types/types'
 import {BlueButton} from '../../widgets/StyledComponents'
 import {AddParticipantForm} from './ParticipantForms'
@@ -17,6 +18,7 @@ const useStyles = makeStyles(theme => ({
 type AddSingleParticipantProps = {
   token: string
   isEnrolledById: boolean
+  customStudyEvents: SchedulingEvent[]
   onAdded: Function
   studyIdentifier: string
 }
@@ -50,7 +52,7 @@ export async function addParticipantByPhone(
 const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
   onAdded,
   isEnrolledById,
-
+  customStudyEvents,
   token,
   studyIdentifier,
 }) => {
@@ -68,7 +70,7 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
     setIsLoading(true)
     let options: EditableParticipantData = {
       externalId: participant.externalId,
-      clinicVisitDate: participant.clinicVisitDate,
+      events: participant.events,
       note: participant.note,
     }
 
@@ -109,6 +111,7 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
         {error && <Alert color="error">{error}</Alert>}
       </Box>
       <AddParticipantForm
+        customStudyEvents={customStudyEvents}
         isEnrolledById={isEnrolledById}
         participant={participant}
         onChange={participant => {

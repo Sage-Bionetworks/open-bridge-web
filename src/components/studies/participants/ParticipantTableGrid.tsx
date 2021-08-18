@@ -35,10 +35,12 @@ import ParticipantService, {
   EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING,
 } from '../../../services/participants.service'
 import {latoFont} from '../../../style/theme'
+import {SchedulingEvent} from '../../../types/scheduling'
 import {
   EditableParticipantData,
   ParticipantAccountSummary,
   ParticipantActivityType,
+  ParticipantEvent,
   RequestStatus,
 } from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
@@ -130,8 +132,13 @@ const EditCell: FunctionComponent<{
         return result?.replace('+1', '') || ''
       }
 
+      const getEvents = (column: string): ParticipantEvent[] => {
+        const result = params.getValue(params.id, column)
+        return result as ParticipantEvent[]
+      }
+
       const participant: EditableParticipantData = {
-        clinicVisitDate: getValDate('clinicVisitDate'),
+        events: getEvents('events'),
         note: getValString('note'),
         externalId: getValString('externalId'),
         phoneNumber: getValPhone('phone'),
@@ -257,9 +264,9 @@ function getDate(value: GridCellValue) {
 
 function getJoinedDateWithIcons(params: GridValueGetterParams) {
   const joinedDate = params.row.joinedDate
-  const smsDate = params.row.smsDate
+  // const smsDate = params.row.smsDate
 
-  const dateToDisplay = joinedDate || smsDate
+  const dateToDisplay = joinedDate //|| smsDate
   const formattedDate = getDate(dateToDisplay)
   const hasJoined = !!joinedDate
   return (
@@ -312,6 +319,7 @@ function getColumns(
   token: string,
   gridType: ParticipantActivityType,
   isEnrolledById: boolean,
+  customStudyEvents: SchedulingEvent[],
   setParticipantToEdit: Function,
   isGloballyHidePhone: boolean,
   setIsGloballyHidePhone: Function
@@ -359,12 +367,7 @@ function getColumns(
       flex: 1,
     },
     {field: 'id', headerName: 'HealthCode', flex: 2},
-    {
-      field: 'clinicVisitDate',
-      headerName: 'Clinic Visit',
-      valueGetter: params => getDate(params.value) || ' ',
-      flex: 1,
-    },
+
     {
       field: 'joinedDate',
       renderHeader: () =>
@@ -400,13 +403,36 @@ function getColumns(
     },
   ]
 
+  const customEventColumns = customStudyEvents.map(customEvent => {
+    const col: GridColDef = {
+      field: customEvent.identifier,
+      headerName: ParticipantService.formatCustomEventIdForDisplay(
+        customEvent.identifier
+      ),
+      valueGetter: params => {
+        const foundEvent = params.row.events.find(
+          (event: any) =>
+            event.eventId ===
+            ParticipantService.prefixCustomEventIdentifier(
+              customEvent.identifier
+            )
+        )
+        return foundEvent ? getDate(foundEvent.timestamp) : ' '
+      },
+      flex: 1,
+    }
+    return col
+  })
+
   let participantColumns = [...COLUMNS]
+  // for active participants -- don't need withdrawn date and note
   if (gridType === 'ACTIVE') {
     participantColumns = _.filter(
       participantColumns,
       c => !_.includes(['dateWithdrawn', 'withdrawalNote'], c.field)
     )
   }
+  //for withdrawn participants -- remove edit and note fileds
   if (gridType === 'WITHDRAWN') {
     participantColumns = _.filter(
       participantColumns,
@@ -419,6 +445,7 @@ function getColumns(
     )
   }
 
+  // if enrolled by ID -- dont' need phone
   if (isEnrolledById) {
     participantColumns = _.filter(
       participantColumns,
@@ -426,12 +453,18 @@ function getColumns(
     )
   }
 
+  const eventInsertionIndex = participantColumns.findIndex(
+    column => column.field === 'joinedDate'
+  )
+  participantColumns.splice(eventInsertionIndex, 0, ...customEventColumns)
+  //participantColumns = [...participantColumns, ...customEventColumns]
   return participantColumns
 }
 
 /************************** */
 
 export type ParticipantTableGridProps = {
+  customStudyEvents: SchedulingEvent[]
   isAllSelected: boolean
   rows: ParticipantAccountSummary[]
   selectedParticipantIds: string[]
@@ -443,7 +476,7 @@ export type ParticipantTableGridProps = {
   onUpdateParticipant: (
     pId: string,
     note: string,
-    clinicVisitDate?: Date
+    customEvents: ParticipantEvent[]
   ) => void
   onWithdrawParticipant: (participantId: string, note: string) => void
   children: React.ReactNode //paging control
@@ -452,6 +485,7 @@ export type ParticipantTableGridProps = {
 
 const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   rows,
+  customStudyEvents,
   studyId,
   totalParticipants,
   gridType,
@@ -488,6 +522,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     token!,
     gridType,
     isEnrolledById,
+    customStudyEvents,
     setParticipantToEdit,
     isGloballyHidePhone,
     setIsGloballyHidePhone
@@ -590,10 +625,15 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
         <HideWhen hideWhen={participantToEdit?.shouldWithdraw || false}>
           <EditParticipantForm
+            customStudyEvents={customStudyEvents}
             isEnrolledById={isEnrolledById}
             onCancel={() => setParticipantToEdit(undefined)}
-            onOK={(note: string, cvd?: Date) => {
-              onUpdateParticipant(participantToEdit?.id!, note, cvd)
+            onOK={(note: string, customEvents?: ParticipantEvent[]) => {
+              onUpdateParticipant(
+                participantToEdit?.id!,
+                note,
+                customEvents || []
+              )
               setParticipantToEdit(undefined)
             }}
             participant={participantToEdit?.participant || {}}>

@@ -7,8 +7,10 @@ import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
+  ParticipantEvent,
   StringDictionary,
 } from '../types/types'
+import StudyService from './study.service'
 
 export const CLINIC_EVENT_ID = 'clinic_visit'
 export const JOINED_EVENT_ID = 'first_sign_in'
@@ -16,9 +18,22 @@ export const LINK_SENT_EVENT_ID = 'install_link_sent'
 export const EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING = 'withdrawn'
 
 export type ParticipantRelevantEvents = {
-  clinicVisitDate: string
-  joinedDate: string
-  smsDate: string
+  /* clinicVisitDate: string
+  joinedDate: string*/
+  // smsDate: string
+
+  timeline_retrieved: Date | undefined
+  customEvents: ParticipantEvent[]
+}
+
+function prefixCustomEventIdentifier(eventIdentifier: string) {
+  return eventIdentifier.includes(constants.constants.CUSTOM_EVENT_PREFIX)
+    ? eventIdentifier
+    : constants.constants.CUSTOM_EVENT_PREFIX + eventIdentifier
+}
+
+function formatCustomEventIdForDisplay(eventIdentifier: string) {
+  return eventIdentifier.replace(constants.constants.CUSTOM_EVENT_PREFIX, '')
 }
 
 //formats participant in the format required by datagrid
@@ -32,6 +47,7 @@ function mapWithdrawnParticipant(
     id: p.participant.identifier,
     dateWithdrawn: p.withdrawnOn,
     withdrawalNote: p.withdrawalNote,
+    events: [],
     externalIds: {
       [studyIdentifier]: formatExternalId(studyIdentifier, p.externalId),
     },
@@ -60,6 +76,9 @@ async function getRelevantEventsForParticipants(
   participantId: string[]
 ): Promise<StringDictionary<ParticipantRelevantEvents>> {
   //transform ids into promises
+  const eventIdsForSchedule = await StudyService.getEventsForSchedule(
+    studyIdentifier
+  ).then(result => result.map(e => prefixCustomEventIdentifier(e.identifier)))
   const promises = participantId.map(async pId => {
     const endpoint = constants.endpoints.events
       .replace(':studyId', studyIdentifier)
@@ -77,24 +96,21 @@ async function getRelevantEventsForParticipants(
   //execute promises and reduce array to dictionary object
   return Promise.all(promises).then(result => {
     const items = result.reduce((acc, item) => {
-      //clinic visits
-      const clinicVisitDate = item.apiCall.data.items.find(
-        event => event.eventId === `custom:${CLINIC_EVENT_ID}`
-      )
-      //joinedDate eventIds will change
+      const relevantEvents = item.apiCall.data.items.filter(event => {
+        return eventIdsForSchedule.includes(event.eventId)
+      })
       let joinedDate = item.apiCall.data.items.find(
         event => event.eventId === `custom:${JOINED_EVENT_ID}` //TODO: this will not be custom
       )
 
-      let smsDate = item.apiCall.data.items.find(
-        event => event.eventId === `custom:${LINK_SENT_EVENT_ID}` //TODO: this will not be custom
-      )
+      // let smsDate = item.apiCall.data.items.find(
+      //  event => event.eventId === `custom:${LINK_SENT_EVENT_ID}` //TODO: this will not be custom
+      // )
       return {
         ...acc,
         [item.participantId]: {
-          clinicVisitDate: clinicVisitDate?.timestamp || '',
-          joinedDate: joinedDate?.timestamp || '',
-          smsDate: smsDate?.timestamp || '',
+          timeline_retrieved: joinedDate,
+          customEvents: relevantEvents,
         },
       }
     }, {})
@@ -567,11 +583,9 @@ async function addParticipant(
     appId: Utility.getAppId(),
   }
 
-  //if (options.phone) {
   data.phone = options.phone
   data.note = options.note
-  data.clinicVisitDate = options.clinicVisitDate
-  //}
+
   if (isTestUser) {
     data.dataGroups = ['test_user']
   }
@@ -592,17 +606,24 @@ async function addParticipant(
   )
 
   const userId = result.data.identifier
-
-  if (options.clinicVisitDate) {
+  //update custom evnts date
+  if (options.events) {
     const endpoint = constants.endpoints.events
       .replace(':studyId', studyIdentifier)
       .replace(':userId', userId)
-    const data = {
-      eventId: CLINIC_EVENT_ID,
-      timestamp: new Date(options.clinicVisitDate).toISOString(),
-    }
 
-    await Utility.callEndpoint<{identifier: string}>(endpoint, 'POST', data, token)
+    const updatePromises = options.events.map(e => {
+      const data = {
+        eventId: prefixCustomEventIdentifier(e.eventId),
+        timestamp: e.timestamp
+          ? new Date(e.timestamp).toISOString()
+          : undefined,
+      }
+      Utility.callEndpoint<{identifier: string}>(endpoint, 'POST', data, token)
+    })
+
+    const result = await Promise.all(updatePromises)
+    console.log(result.length)
   }
 
   return userId
@@ -616,7 +637,11 @@ async function addTestParticipant(
   return addParticipant(
     studyIdentifier,
     token,
-    {externalId: Utility.generateNonambiguousCode(6)},
+    {
+      externalId: Utility.generateNonambiguousCode(6),
+      events: [],
+    },
+
     true
   )
 }
@@ -635,33 +660,60 @@ async function updateParticipantNote(
   const data = {
     note: note,
   }
-  await Utility.callEndpoint<ParticipantAccountSummary>(endpoint, 'POST', data, token)
+  await Utility.callEndpoint<ParticipantAccountSummary>(
+    endpoint,
+    'POST',
+    data,
+    token
+  )
   return participantId
 }
 
-async function updateParticipantClinicVisit(
+async function updateParticipantCustomEvents(
   studyIdentifier: string,
   token: string,
   participantId: string,
-  clinicVisitDate?: Date
+  customEvents: ParticipantEvent[]
 ) {
   let eventEndpoint = constants.endpoints.events
     .replace(':studyId', studyIdentifier)
     .replace(':userId', participantId)
 
-  if (clinicVisitDate) {
-    // if we have clinicVisitDate - update it
+  // get Events for schedule  - we need this in order to possibly delete userEvents
+  const schedulingEvents = await StudyService.getEventsForSchedule(
+    studyIdentifier
+  )
+  const customEventWithDate = customEvents.filter(event => !!event.timestamp)
+
+  const eventsToDelete = schedulingEvents.filter(
+    event =>
+      !customEventWithDate.find(pEvent => event.identifier === pEvent.eventId)
+  )
+
+  const eventsToDeletePromises = eventsToDelete.map(event =>
+    Utility.callEndpoint<{identifier: string}>(
+      eventEndpoint + '/' + event.identifier,
+      'DELETE',
+      {},
+      token
+    )
+  )
+  const eventsToUpdatePromises = customEventWithDate.map(event => {
     const data = {
-      eventId: CLINIC_EVENT_ID,
-      timestamp: new Date(clinicVisitDate).toISOString(),
+      eventId: event.eventId,
+      timestamp: new Date(event.timestamp!).toISOString(),
     }
 
-    await Utility.callEndpoint<{identifier: string}>(eventEndpoint, 'POST', data, token)
-  } else {
-    // if it is empty - delete it
-    eventEndpoint = eventEndpoint + CLINIC_EVENT_ID
-    await Utility.callEndpoint<{identifier: string}>(eventEndpoint, 'DELETE', {}, token)
-  }
+    return Utility.callEndpoint<{identifier: string}>(
+      eventEndpoint,
+      'POST',
+      data,
+      token
+    )
+  })
+
+  await Promise.allSettled(eventsToDeletePromises)
+  await Promise.allSettled(eventsToUpdatePromises)
   return participantId
 }
 
@@ -675,7 +727,12 @@ async function getRequestInfoForParticipant(
     .replace(':studyId', studyIdentifier)
     .replace(':userId', participantId)
 
-  const info = await Utility.callEndpoint<{signedInOn: any}>(endpoint, 'GET', {}, token)
+  const info = await Utility.callEndpoint<{signedInOn: any}>(
+    endpoint,
+    'GET',
+    {},
+    token
+  )
   return info.data
 }
 
@@ -694,8 +751,10 @@ const ParticipantService = {
   getRequestInfoForParticipant,
   updateParticipantGroup,
   updateParticipantNote,
-  updateParticipantClinicVisit,
+  updateParticipantCustomEvents,
   withdrawParticipant,
+  prefixCustomEventIdentifier,
+  formatCustomEventIdForDisplay,
 }
 
 export default ParticipantService
