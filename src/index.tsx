@@ -24,9 +24,10 @@ if (
   process.env.NODE_ENV === 'development' ||
   /*AGENDEL REDO!*/ isDevelopment()
 ) {
-  console.log('development')
+  //AGENDEL: disablingservice workers
+  /*console.log('development')
   const {worker} = require('./mocks/browser')
-  worker.start()
+  worker.start()*/
 } else {
   console.log(process.env.NODE_ENV)
 }
