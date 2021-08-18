@@ -1,9 +1,9 @@
+import {Box, makeStyles} from '@material-ui/core'
+import clsx from 'clsx'
 import React from 'react'
-import {makeStyles, Box} from '@material-ui/core'
 import ArcLogo from './assets/arc_main_logo.svg'
 import MtbFinalLogo from './assets/mtb_final_logo.svg'
 import AccountLogin from './components/account/AccountLogin'
-import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -37,6 +37,7 @@ const useStyles = makeStyles(theme => ({
   },
   mtbContainer: {
     height: 'calc(100vh - 104px)',
+    minHeight: '200px',
     [theme.breakpoints.down('md')]: {
       height: 'calc(100vh - 46px)',
     },
