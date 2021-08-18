@@ -50,7 +50,7 @@ const useStyles = makeStyles(theme => ({
     borderRadius: '0px',
     fontFamily: latoFont,
     fontSize: '15px',
-    padding: theme.spacing(1.25, 2),
+    padding: theme.spacing(1, 2),
   },
   newOrgAccount: {
     position: 'relative',
