@@ -33,6 +33,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     ...globals.listReset,
     marginLeft: -theme.spacing(3.5),
     marginTop: theme.spacing(3),
+    '&::-webkit-scrollbar': {
+      width: '4px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#C4C4C4',
+      borderRadius: '4px',
+    },
+    overflowY: 'scroll',
+    maxHeight: '500px',
+    marginBottom: theme.spacing(2),
   },
   buttons: {
     display: 'flex',
@@ -76,7 +86,7 @@ const NameDisplay: FunctionComponent<any> = ({member, index}): JSX.Element => {
 
   const firstLine = (
     <Box display="flex" justifyContent="space-between">
-      <div>
+      <div style={{maxWidth: '90%', wordWrap: 'break-word'}}>
         <strong>{name}</strong>
       </div>
       {admin}
@@ -86,7 +96,7 @@ const NameDisplay: FunctionComponent<any> = ({member, index}): JSX.Element => {
   return (
     <Box style={{textTransform: 'none'}}>
       {firstLine}
-      <span>{member.email}</span>
+      <span style={{wordWrap: 'break-word'}}>{member.email}</span>
     </Box>
   )
 }
@@ -216,13 +226,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
         </MTBHeadingH6>
         <MTBHeadingH1 style={{color: ' #FCFCFC'}}>{study.name}</MTBHeadingH1>
         {status === 'PENDING' && <Loader reqStatusLoading={true}></Loader>}{' '}
-        <ul
-          className={classes.list}
-          style={{
-            maxHeight: '400px',
-            overflow: 'scroll',
-            marginBottom: '16px',
-          }}>
+        <ul className={classes.list}>
           {members &&
             members.map((member: any, index: number) => (
               <SideBarListItem
