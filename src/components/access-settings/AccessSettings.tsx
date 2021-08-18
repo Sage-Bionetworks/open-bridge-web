@@ -204,7 +204,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
 
   const userIsAdmin = Utility.isInAdminRole()
   return (
-    <>
+    <Box pb={8}>
       <Container maxWidth="md" className={classes.root}>
         <Paper elevation={2} style={{width: '100%'}}>
           <AccountListing
@@ -348,7 +348,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
           </Box>
         </DialogContent>
       </Dialog>
-    </>
+    </Box>
   )
 }
 
