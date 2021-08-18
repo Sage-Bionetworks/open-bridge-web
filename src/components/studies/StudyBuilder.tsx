@@ -497,15 +497,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
           padding: '0',
           backgroundColor:
             section === 'session-creator' ||
-            section === 'enrollment-type-selector'
+            section === 'enrollment-type-selector' ||
+            section === 'preview'
               ? '#f7f7f7'
               : 'inherit',
         }}>
-        <Box
-          paddingTop={2}
-          display="flex"
-          position="relative"
-          bgcolor={section === 'launch' ? '#f7f7f7' : 'inherit'}>
+        <Box paddingTop={2} display="flex" position="relative">
           <StudyLeftNav
             open={open}
             onToggle={() => setOpen(prev => !prev)}
