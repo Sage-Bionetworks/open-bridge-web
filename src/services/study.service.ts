@@ -217,11 +217,7 @@ async function saveStudySchedule(
   } catch (error) {
     //we might need to retry if there is a verison mismatch
     if (error.statusCode === 409) {
-      const updatedSchedule = await getStudySchedule(
-        schedule.guid,
-        token,
-        false
-      )
+      const updatedSchedule = await getStudySchedule(studyId, token, false)
       if (!updatedSchedule) {
         throw 'No schedule found'
       }
