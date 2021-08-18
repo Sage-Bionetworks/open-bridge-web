@@ -20,6 +20,7 @@ import {ReactComponent as PencilIcon} from '../../../assets/edit_pencil.svg'
 import {ReactComponent as UploadIcon} from '../../../assets/upload.svg'
 import Utility from '../../../helpers/utility'
 import {poppinsFont, theme} from '../../../style/theme'
+import {SchedulingEvent} from '../../../types/scheduling'
 import {EditableParticipantData, Study} from '../../../types/types'
 import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
 import {BlueButton} from '../../widgets/StyledComponents'
@@ -114,6 +115,7 @@ type AddParticipantsProps = {
   token: string
   study: Study
   onAdded: Function
+  customStudyEvents: SchedulingEvent[]
   isTestAccount: boolean
 }
 
@@ -134,7 +136,6 @@ async function uploadCsvRow(
 ) {
   const options: EditableParticipantData = {
     externalId: data['Participant ID'],
-    clinicVisitDate: data['Clinic Visit'],
     note: data['Note'],
   }
   let result
@@ -165,6 +166,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
   onAdded,
   study,
   token,
+  customStudyEvents,
   isTestAccount,
 }) => {
   const [tab, setTab] = React.useState(0)
@@ -358,6 +360,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             </TabPanel>
             <TabPanel value={tab} index={1}>
               <AddSingleParticipant
+                customStudyEvents={customStudyEvents}
                 isEnrolledById={isEnrolledById}
                 token={token}
                 studyIdentifier={study.identifier}

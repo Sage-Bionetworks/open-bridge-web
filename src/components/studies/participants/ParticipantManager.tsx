@@ -38,11 +38,15 @@ import Utility from '../../../helpers/utility'
 import ParticipantService, {
   ParticipantRelevantEvents,
 } from '../../../services/participants.service'
+import StudyService from '../../../services/study.service'
 import {latoFont, poppinsFont, theme} from '../../../style/theme'
+import constants from '../../../types/constants'
+import {SchedulingEvent} from '../../../types/scheduling'
 import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
+  ParticipantEvent,
   RequestStatus,
   StringDictionary,
 } from '../../../types/types'
@@ -60,11 +64,10 @@ import DialogContents from './DialogContents'
 import ParticipantDownload, {
   ParticipantDownloadType,
 } from './ParticipantDownload'
+import ParticipantManagerPlaceholder from './ParticipantManagerPlaceholder'
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantTableGrid from './ParticipantTableGrid'
 import ParticipantTablePagination from './ParticipantTablePagination'
-import constants from '../../../types/constants'
-import ParticipantManagerPlaceholder from './ParticipantManagerPlaceholder'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -262,14 +265,15 @@ async function getRelevantParticipantInfo(
   token: string,
   participants: ExtendedParticipantAccountSummary[]
 ) {
-  const eventsMap: StringDictionary<ParticipantRelevantEvents> = await ParticipantService.getRelevantEventsForParticipants(
-    studyId,
-    token,
-    participants.map(p => p.id)
-  )
+  const eventsMap: StringDictionary<ParticipantRelevantEvents> =
+    await ParticipantService.getRelevantEventsForParticipants(
+      studyId,
+      token,
+      participants.map(p => p.id)
+    )
   const result = participants!.map(participant => {
     const id = participant.id as string
-    const event = eventsMap[id]
+    const events = eventsMap[id]
     if (participant.externalId) {
       const splitExternalId = participant.externalId.split(':')
       let id = ''
@@ -282,9 +286,9 @@ async function getRelevantParticipantInfo(
     }
     const updatedParticipant = {
       ...participant,
-      clinicVisitDate: event.clinicVisitDate,
-      joinedDate: event.joinedDate,
-      smsDate: event.smsDate,
+      joinedDate: events.timeline_retrieved,
+      events: events.customEvents,
+      //   smsDate: event.smsDate,
     }
     return updatedParticipant
   })
@@ -319,11 +323,13 @@ async function getParticipants(
 }
 
 /***  subcomponents  */
-const AddTestParticipantsIconSC = () => {
+const AddTestParticipantsIconSC: FunctionComponent<{title: string}> = ({
+  title,
+}) => {
   const classes = useStyles()
   return (
     <div className={classes.addParticipantIcon}>
-      <AddTestParticipantsIcon />
+      <AddTestParticipantsIcon title={title} />
     </div>
   )
 }
@@ -331,25 +337,26 @@ const AddTestParticipantsIconSC = () => {
 const HelpBoxSC: FunctionComponent<{
   numRows: number | undefined
   status: RequestStatus
-}> = ({numRows, status}) => {
+  isAddOpen: boolean
+}> = ({numRows, status, isAddOpen}) => {
   return (
     <Box position="relative">
-      {!numRows && status !== 'PENDING' && (
+      {!numRows && !isAddOpen && status !== 'PENDING' && (
         <HelpBox
-          topOffset={40}
-          leftOffset={160}
-          arrowTailLength={150}
-          helpTextTopOffset={40}
-          helpTextLeftOffset={100}
-          arrowRotate={45}>
+          topOffset={90}
+          leftOffset={70}
+          arrowTailLength={110}
+          helpTextTopOffset={0}
+          helpTextLeftOffset={50}
+          arrowRotate={15}>
           <div>
             Currently there are no participants enrolled in this study. To add
-            participants, switch to Edit mode.
+            participants, click 'Add Participant'.
           </div>
         </HelpBox>
       )}
 
-      {!numRows && status === 'RESOLVED' && (
+      {!numRows && isAddOpen && status === 'RESOLVED' && (
         <HelpBox
           topOffset={340}
           leftOffset={250}
@@ -405,31 +412,21 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   })
 
   // True if the user is currently searching for a particpant using id
-  const [
-    isUserSearchingForParticipant,
-    setIsUserSearchingForParticipant,
-  ] = React.useState(false)
+  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] =
+    React.useState(false)
 
   const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
     string | undefined
   >(undefined)
 
   //user ids selectedForSction
-  const [
-    selectedParticipantIds,
-    setSelectedParticipantIds,
-  ] = React.useState<SelectedParticipantIdsType>({
-    ACTIVE: [],
-    TEST: [],
-    WITHDRAWN: [],
-  })
+  const [selectedParticipantIds, setSelectedParticipantIds] =
+    React.useState<SelectedParticipantIdsType>({
+      ACTIVE: [],
+      TEST: [],
+      WITHDRAWN: [],
+    })
   const [isAllSelected, setIsAllSelected] = React.useState(false)
-
-  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
-    setTab(newValue)
-    setCurrentPage(1)
-    setIsAllSelected(false)
-  }
 
   //List of participants errored out during operation - used for deltee
   const [participantsWithError, setParticipantsWithError] = React.useState<
@@ -437,10 +434,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   >([])
 
   //trigger data refresh on updates
-  const [
-    refreshParticipantsToggle,
-    setRefreshParticipantsToggle,
-  ] = React.useState(false)
+  const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
+    React.useState(false)
 
   const {
     data,
@@ -452,6 +447,22 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     status: 'PENDING',
     data: null,
   })
+
+  const {
+    data: studyEvents,
+    run: getEvents,
+    status: eventsStatus,
+  } = useAsync<SchedulingEvent[]>({
+    status: 'PENDING',
+    data: [],
+  })
+
+  React.useEffect(() => {
+    if (!study?.identifier) {
+      return
+    }
+    getEvents(StudyService.getEventsForSchedule(study.identifier))
+  }, [study?.identifier, getEvents])
 
   React.useEffect(() => {
     if (!study?.identifier) {
@@ -473,13 +484,18 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     tab,
   ])
 
+  const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
+    setTab(newValue)
+    setCurrentPage(1)
+    setIsAllSelected(false)
+  }
+
   React.useEffect(() => {
     console.log('data updated - resetting selected')
     if (isAllSelected) {
-      console.log('selected')
       setSelectedParticipantIds(prev => ({
         ...prev,
-        [tab]: data?.items.map(p => p.id) || [],
+        [tab]: data?.items?.map(p => p.id) || [],
       }))
     } else {
       setSelectedParticipantIds(prev => ({...prev}))
@@ -500,7 +516,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const updateParticipant = async (
     participantId: string,
     note: string,
-    clinicVisitDate?: Date
+    customEvents: ParticipantEvent[]
   ) => {
     await ParticipantService.updateParticipantNote(
       study!.identifier,
@@ -508,11 +524,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       participantId,
       note
     )
-    await ParticipantService.updateParticipantClinicVisit(
+    await ParticipantService.updateParticipantCustomEvents(
       study!.identifier,
       token!,
       participantId,
-      clinicVisitDate
+      customEvents
     )
     setRefreshParticipantsToggle(prev => !prev)
   }
@@ -530,7 +546,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         )
       } catch (e) {
         isError = true
-        const errorParticipant = data?.items.find(
+        const errorParticipant = data?.items?.find(
           p => p.id === selectedParticipantIds[tab][i]
         )
         if (errorParticipant) {
@@ -594,7 +610,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         ? await getParticipants(study.identifier, token!, 0, 0, tab)
         : {
             items:
-              data?.items.filter(p =>
+              data?.items?.filter(p =>
                 selectedParticipantIds[tab].includes(p.id)
               ) || [],
             total: selectedParticipantIds[tab].length,
@@ -605,9 +621,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         participantId: p.externalIds[study.identifier],
         healthCode: p.id,
         phoneNumber: p.phone?.nationalFormat,
-        clinicVisitDate: p.clinicVisitDate
+        /* clinicVisitDate: p.clinicVisitDate
           ? new Date(p.clinicVisitDate).toLocaleDateString()
-          : '-',
+          : '-',*/
+        events: p.events || [],
         // LEON TODO: Revisit when we have smsDate
         joinedDate: p.joinedDate
           ? new Date(p.joinedDate).toLocaleDateString()
@@ -629,7 +646,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const displayPlaceholderScreen =
     !constants.constants.IS_TEST_MODE && study.phase != 'in_flight'
-  if (!study) {
+  if (!study || eventsStatus === 'PENDING') {
     return (
       <Box mx="auto" my={5} textAlign="center">
         <CircularProgress />
@@ -654,7 +671,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         ) : (
           <>
             {tab === 'ACTIVE' && !isUserSearchingForParticipant && (
-              <HelpBoxSC numRows={data?.items.length} status={status} />
+              <HelpBoxSC
+                numRows={data?.items?.length}
+                status={status}
+                isAddOpen={isAddOpen}
+              />
             )}
             <Box py={0} pr={3} pl={2}>
               <Tabs
@@ -719,9 +740,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   onToggleClick={(open: boolean) => setIsAddOpen(open)}
                   expandButton={
                     tab === 'ACTIVE' ? (
-                      <AddParticipantsIcon />
+                      <AddParticipantsIcon title="Add Participant" />
                     ) : (
-                      <AddTestParticipantsIconSC />
+                      <AddTestParticipantsIconSC title="Add Test Participant" />
                     )
                   }
                   toggleButtonStyle={{
@@ -733,6 +754,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   }}>
                   <>
                     <AddParticipants
+                      customStudyEvents={studyEvents || []}
                       study={study}
                       token={token!}
                       onAdded={() => {
@@ -852,6 +874,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       <ParticipantTableGrid
                         rows={data?.items || []}
                         status={status}
+                        customStudyEvents={studyEvents || []}
                         studyId={study.identifier}
                         totalParticipants={data?.total || 0}
                         isAllSelected={isAllSelected}
@@ -864,12 +887,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         onUpdateParticipant={(
                           participantId: string,
                           note: string,
-                          clinicVisitDate?: Date
+                          customEvents?: ParticipantEvent[]
                         ) =>
                           updateParticipant(
                             participantId,
                             note,
-                            clinicVisitDate
+                            customEvents || []
                           )
                         }
                         isEnrolledById={Utility.isSignInById(study.signInTypes)}
@@ -896,12 +919,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           handlePageNavigationArrowPressed={(
                             button: string
                           ) => {
-                            const currPage = getCurrentPageFromPageNavigationArrowPressed(
-                              button,
-                              currentPage,
-                              data?.total || 0,
-                              pageSize
-                            )
+                            const currPage =
+                              getCurrentPageFromPageNavigationArrowPressed(
+                                button,
+                                currentPage,
+                                data?.total || 0,
+                                pageSize
+                              )
                             setCurrentPage(currPage)
                           }}
                         />
@@ -959,7 +983,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     participantsWithError={participantsWithError}
                     study={study}
                     selectedParticipants={
-                      data?.items.filter(participant =>
+                      data?.items?.filter(participant =>
                         selectedParticipantIds[tab].includes(participant.id)
                       ) || []
                     }
