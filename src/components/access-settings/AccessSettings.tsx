@@ -27,6 +27,7 @@ import {MTBHeadingH1} from '../widgets/Headings'
 import {Access, NO_ACCESS, getRolesFromAccess} from './AccessGrid'
 import AccountListing from './AccountListing'
 import MemberInvite, {NewOrgAccount} from './MemberInvite'
+import {latoFont} from '../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -46,7 +47,10 @@ const useStyles = makeStyles(theme => ({
   yellowButton: {
     marginTop: theme.spacing(2),
     backgroundColor: '#FFE500',
-    color: '#000',
+    borderRadius: '0px',
+    fontFamily: latoFont,
+    fontSize: '15px',
+    padding: theme.spacing(1, 2),
   },
   newOrgAccount: {
     position: 'relative',
@@ -216,7 +220,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
                 onClick={() => setIsOpenInvite(true)}
                 variant="contained"
                 className={classes.yellowButton}>
-                Invite a Member
+                + Invite a Member
               </Button>
             )}
           </AccountListing>
