@@ -221,7 +221,11 @@ async function saveStudySchedule(
       if (!updatedSchedule) {
         throw 'No schedule found'
       }
-      return saveStudySchedule(studyId, schedule, token)
+      return saveStudySchedule(
+        studyId,
+        {...schedule, version: updatedSchedule.version},
+        token
+      )
     } else {
       throw error
     }
