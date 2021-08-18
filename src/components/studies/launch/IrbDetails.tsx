@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   FormControl,
   FormControlLabel,
   FormHelperText,
@@ -12,11 +13,12 @@ import {
 import {makeStyles} from '@material-ui/core/styles'
 import moment from 'moment'
 import React, {useEffect} from 'react'
-import {NavLink} from 'react-router-dom'
+import {NavLink, Redirect} from 'react-router-dom'
 import Alert_Icon from '../../../assets/alert_icon.svg'
 import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
 import {ReactComponent as EnvelopeImg} from '../../../assets/launch/envelope_icon.svg'
 import {useUserSessionDataState} from '../../../helpers/AuthContext'
+import StudyService from '../../../services/study.service'
 import {ThemeType} from '../../../style/theme'
 import constants from '../../../types/constants'
 import {Contact, Study} from '../../../types/types'
@@ -72,6 +74,18 @@ const LastScreen: React.FunctionComponent<{study: Study}> = ({
   study: Study
 }) => {
   const classes = useStyles()
+  const {token} = useUserSessionDataState()
+  const [isLaunching, setIsLaunching] = React.useState(false)
+  const [isLaunched, setIsLaunched] = React.useState(false)
+
+  if (isLaunched) {
+    return <Redirect to={`/studies/${study.identifier}/study-live`} />
+  }
+  const launchStudy = async () => {
+    setIsLaunching(true)
+    await StudyService.launchStudy(study.identifier, token!)
+    setIsLaunched(true)
+  }
   return (
     <Box textAlign="center">
       <EnvelopeImg />
@@ -86,14 +100,17 @@ const LastScreen: React.FunctionComponent<{study: Study}> = ({
       <p>
         <a href="mailto:ACT@synapse.org">ACT@synapse.org</a>
       </p>
-      <Button
-        href={'/studies/:id/study-live'.replace(':id', study.identifier)}
-        variant="contained"
-        className={classes.continueButton}
-        color="primary">
-        {' '}
-        Continue <ArrowIcon />
-      </Button>
+      {isLaunching ? (
+        <CircularProgress color="primary" />
+      ) : (
+        <Button
+          onClick={launchStudy}
+          variant="contained"
+          className={classes.continueButton}
+          color="primary">
+          Continue <ArrowIcon />
+        </Button>
+      )}
     </Box>
   )
 }
@@ -129,18 +146,17 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
 
   const classes = useStyles()
   const {token, orgMembership} = useUserSessionDataState()
-  const [
-    irbRecordSameInstAffiliation,
-    setIrbRecordSameInstAffiliation,
-  ] = React.useState<boolean>(false)
+  const [irbRecordSameInstAffiliation, setIrbRecordSameInstAffiliation] =
+    React.useState<boolean>(false)
   const [certifyStatements, setCertifyStatement] = React.useState({
     isStudyProtocolReviewed: false,
     isStudyConsistentWithLaws: false,
   })
 
   useEffect(() => {
-    const institutionalAffiliation = getContactObject('principal_investigator')!
-      .affiliation
+    const institutionalAffiliation = getContactObject(
+      'principal_investigator'
+    )!.affiliation
     const nameOfIrbRecord = getContactObject('irb')!.name
     const irbRecordSameInstitutionalAffiliation =
       nameOfIrbRecord === institutionalAffiliation
@@ -226,7 +242,8 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     setCertifyStatement(prevState => {
                       return {
                         ...prevState,
-                        isStudyProtocolReviewed: !prevState.isStudyProtocolReviewed,
+                        isStudyProtocolReviewed:
+                          !prevState.isStudyProtocolReviewed,
                       }
                     })
                   }}
@@ -245,7 +262,8 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     setCertifyStatement(prevState => {
                       return {
                         ...prevState,
-                        isStudyConsistentWithLaws: !prevState.isStudyConsistentWithLaws,
+                        isStudyConsistentWithLaws:
+                          !prevState.isStudyConsistentWithLaws,
                       }
                     })
                   }}

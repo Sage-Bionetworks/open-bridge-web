@@ -16,6 +16,7 @@ const StudyService = {
   getStudies,
   getStudy,
   createStudy,
+  launchStudy,
   removeStudy,
   updateStudy,
   createStudySchedule,
@@ -197,6 +198,20 @@ async function removeStudy(studyId: string, token: string): Promise<Study[]> {
     token
   )
   const data = await getStudies(token)
+  return data
+}
+
+async function launchStudy(studyId: string, token: string): Promise<Study> {
+  await Utility.callEndpoint<{items: Study[]}>(
+    constants.endpoints.studyLaunch.replace(':id', studyId),
+    'POST',
+    {},
+    token
+  )
+  const data = await getStudy(studyId, token)
+  if (!data) {
+    throw Error('No study found')
+  }
   return data
 }
 

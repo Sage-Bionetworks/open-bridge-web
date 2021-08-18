@@ -76,6 +76,7 @@ export default {
     signIn: '/v3/auth/signIn',
     signOut: '/v3/auth/signOut',
     study: '/v5/studies/:id',
+    studyLaunch: '/v5/studies/:id/recruit',
     studies: '/v5/studies',
     synapseGetAlias: '/repo/v1/principal/alias',
     synapseGetUserProfile: '/repo/v1/user/:id/bundle',
