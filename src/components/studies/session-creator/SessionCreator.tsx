@@ -25,6 +25,8 @@ import SessionActionButtons from './SessionActionButtons'
 import actionsReducer, {SessionAction, Types} from './sessionActions'
 import SingleSessionContainer from './SingleSessionContainer'
 import ReadOnlySessionCreator from './read-only-pages/ReadOnlySessionCreator'
+import {PrevButton} from '../../widgets/StyledComponents'
+import {poppinsFont} from '../../../style/theme'
 
 export const useStyles = makeStyles(theme => ({
   root: {
@@ -65,6 +67,23 @@ export const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  selectAssessmentsHeading: {
+    marginTop: theme.spacing(3),
+    textAlign: 'center',
+    fontFamily: poppinsFont,
+    fontStyle: 'normal',
+    fontWeight: 'bold',
+    marginBottom: theme.spacing(2),
+  },
+  assessmentsContainer: {
+    padding: '0px',
+    '&::-webkit-scrollbar': {
+      width: '8px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#5D5D5D',
+    },
   },
 }))
 
@@ -245,7 +264,7 @@ const SessionCreator: FunctionComponent<
             </div>
           )}
           <DialogTitle>
-            <MTBHeadingH1 style={{marginTop: '32px', textAlign: 'center'}}>
+            <MTBHeadingH1 className={classes.selectAssessmentsHeading}>
               Select assessment(s) to add to session.
             </MTBHeadingH1>
             <IconButton
@@ -255,7 +274,7 @@ const SessionCreator: FunctionComponent<
               <CloseIcon />
             </IconButton>
           </DialogTitle>
-          <DialogContent>
+          <DialogContent className={classes.assessmentsContainer}>
             <AssessmentSelector
               selectedAssessments={selectedAssessments}
               onUpdateAssessments={setSelectedAssessments}
@@ -263,12 +282,12 @@ const SessionCreator: FunctionComponent<
           </DialogContent>
           {!isAddingAssessmentToSession && (
             <DialogActions>
-              <Button
+              <PrevButton
                 onClick={cancelAssessmentSelector}
-                color="secondary"
+                color="primary"
                 variant="outlined">
                 Cancel
-              </Button>
+              </PrevButton>
 
               <Button
                 variant="contained"
@@ -286,7 +305,7 @@ const SessionCreator: FunctionComponent<
                 }}>
                 {!getActiveSession(sessions)
                   ? 'Please select group and session'
-                  : `Add  to Session`}
+                  : `Add to Session`}
               </Button>
             </DialogActions>
           )}
