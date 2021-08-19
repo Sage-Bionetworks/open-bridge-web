@@ -319,7 +319,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       // need to duplicate the schedule\
       let scheduleToCopy
       try {
-        scheduleToCopy = await ScheduleService.getStudySchedule(
+        scheduleToCopy = await ScheduleService.getSchedule(
           studyFromServer.identifier,
           token!
         )
@@ -327,7 +327,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         console.log(error, 'no schedule')
       } //dont' do anything . no shcedule
       if (scheduleToCopy) {
-        const copiedSchedule = await ScheduleService.createStudySchedule(
+        const copiedSchedule = await ScheduleService.createSchedule(
           study.identifier,
           scheduleToCopy,
           token!

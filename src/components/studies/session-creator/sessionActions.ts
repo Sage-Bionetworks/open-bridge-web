@@ -55,7 +55,7 @@ function addSession(
 
   isActive: boolean = false
 ): StudySession[] {
-  const session = ScheduleService.createEmptyStudySession(
+  const session = ScheduleService.createEmptyScheduleSession(
     sessions.length ? sessions[0].startEventId! : 'study_start_date',
     name
   )

@@ -211,9 +211,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
 
   React.useEffect(() => {
     console.log('%c ---timeline getting--' + schedule.version, 'color: blue')
-    return run(
-      ScheduleService.getStudyScheduleTimeline(study.identifier, token!)
-    )
+    return run(ScheduleService.getScheduleTimeline(study.identifier, token!))
   }, [run, schedule.version, token])
 
   //setting new state

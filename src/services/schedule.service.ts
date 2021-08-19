@@ -12,11 +12,11 @@ import {Study} from '../types/types'
 import AssessmentService from './assessment.service'
 
 const ScheduleService = {
-  createStudySchedule,
-  getStudySchedule,
-  getStudyScheduleTimeline,
-  saveStudySchedule,
-  createEmptyStudySession,
+  createSchedule,
+  getSchedule,
+  getScheduleTimeline,
+  saveSchedule,
+  createEmptyScheduleSession,
   getEventsForSchedule,
 }
 
@@ -39,7 +39,7 @@ export const DEFAULT_NOTIFICATION: ScheduleNotification = {
   ],
 }
 
-function createEmptyStudySession(
+function createEmptyScheduleSession(
   startEventId: StartEventId,
   name = 'Session1'
 ) {
@@ -57,7 +57,7 @@ function createEmptyStudySession(
   return studySession
 }
 
-async function createStudySchedule(
+async function createSchedule(
   studyId: string,
   schedule: Schedule,
   token: string
@@ -72,7 +72,7 @@ async function createStudySchedule(
   return result.data
 }
 
-async function saveStudySchedule(
+async function saveSchedule(
   studyId: string,
   schedule: Schedule,
   token: string
@@ -89,11 +89,11 @@ async function saveStudySchedule(
   } catch (error) {
     //we might need to retry if there is a verison mismatch
     if (error.statusCode === 409) {
-      const updatedSchedule = await getStudySchedule(studyId, token, false)
+      const updatedSchedule = await getSchedule(studyId, token, false)
       if (!updatedSchedule) {
         throw 'No schedule found'
       }
-      return saveStudySchedule(
+      return saveSchedule(
         studyId,
         {...schedule, version: updatedSchedule.version},
         token
@@ -122,7 +122,7 @@ async function addAssessmentResourcesToSchedule(
 }
 
 //returns scehdule and sessions
-async function getStudySchedule(
+async function getSchedule(
   studyId: string,
   token: string,
   addResources = true
@@ -141,7 +141,7 @@ async function getStudySchedule(
     : schedule.data
 }
 
-async function getStudyScheduleTimeline(
+async function getScheduleTimeline(
   studyId: string,
   token: string
 ): Promise<any | undefined> {

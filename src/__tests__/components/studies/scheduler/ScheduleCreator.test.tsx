@@ -6,7 +6,7 @@
 // import {Schedule, SessionSchedule} from '../../../../types/scheduling'
 // import scheduleMock from '../../../mocks/schedule.json'
 
-// const saveStudyScheduleMock = jest.fn()
+// const saveScheduleMock = jest.fn()
 // const onUpdateMock = jest.fn()
 // //@ts-ignore
 // const schedule: Schedule = scheduleMock
@@ -35,7 +35,7 @@
 //         token={'123'}
 //         hasObjectChanged={false}
 //         saveLoader={false}
-//         onSave={() => saveStudyScheduleMock}
+//         onSave={() => saveScheduleMock}
 //         onUpdate={onUpdateMock}>
 //         <Button>prev</Button> <Button>Next</Button>
 //       </Scheduler>
@@ -49,7 +49,7 @@ test('placeholder', () => {})
 export {}
 
 // beforeEach(() => {
-//   saveStudyScheduleMock.mockReset()
+//   saveScheduleMock.mockReset()
 //   onUpdateMock.mockReset()
 // })
 

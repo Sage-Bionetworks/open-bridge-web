@@ -88,7 +88,7 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
   })
 
   React.useEffect(() => {
-    return run(ScheduleService.getStudyScheduleTimeline(studyId, token!))
+    return run(ScheduleService.getScheduleTimeline(studyId, token!))
   }, [run, schedFromDisplay.version, token])
 
   const setZoomLevel = (scheduleDuration: string) => {
