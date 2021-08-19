@@ -19,7 +19,12 @@ import ScheduleService from '../../services/schedule.service'
 import StudyService from '../../services/study.service'
 import {latoFont} from '../../style/theme'
 import constants from '../../types/constants'
-import {AdminRole, Study, StudyPhase} from '../../types/types'
+import {
+  AdminRole,
+  DisplayStudyPhase,
+  Study,
+  StudyPhase,
+} from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import {MTBHeading} from '../widgets/Headings'
 import Loader from '../widgets/Loader'
@@ -27,10 +32,8 @@ import StudyCard from './StudyCard'
 
 type StudyListOwnProps = {}
 
-type SectionStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'
-
 type StudySublistProps = {
-  status: SectionStatus
+  status: DisplayStudyPhase
   userRoles: AdminRole[]
   studies: Study[]
   onAction: Function
@@ -128,29 +131,50 @@ const sections = [
     studyStatus: ['design'] as StudyPhase[],
     title: 'Draft Studies',
     filterTitle: 'Design',
-    sectionStatus: 'DRAFT' as SectionStatus,
+    sectionStatus: 'DRAFT' as DisplayStudyPhase,
   },
   {
     studyStatus: ['in_flight', 'recruitment'] as StudyPhase[],
     title: 'Live Studies',
     filterTitle: 'Live',
-    sectionStatus: 'LIVE' as SectionStatus,
+    sectionStatus: 'LIVE' as DisplayStudyPhase,
   },
   {
     studyStatus: ['completed', 'analysis'] as StudyPhase[],
     title: 'Completed Studies',
     filterTitle: 'Completed',
-    sectionStatus: 'COMPLETED' as SectionStatus,
+    sectionStatus: 'COMPLETED' as DisplayStudyPhase,
   },
   {
     studyStatus: ['withdrawn'] as StudyPhase[],
     title: 'Withdrawn Studies',
     filterTitle: 'Withdrawn',
-    sectionStatus: 'WITHDRAWN' as SectionStatus,
+    sectionStatus: 'WITHDRAWN' as DisplayStudyPhase,
   },
 ]
 
 type StudyListProps = StudyListOwnProps & RouteComponentProps
+
+function getStudyLink(sectionStatus: DisplayStudyPhase, studyId: string) {
+  const links = {
+    builder: `${constants.restrictedPaths.STUDY_BUILDER}/session-creator`,
+    participants: constants.restrictedPaths.PARTICIPANT_MANAGER,
+  }
+
+  let link = undefined
+  if (sectionStatus === 'DRAFT') {
+    link = Utility.isPathAllowed(studyId, links.builder)
+      ? links.builder
+      : Utility.isPathAllowed(studyId, links.participants)
+      ? links.participants
+      : undefined
+  } else {
+    link = Utility.isPathAllowed(studyId, links.participants)
+      ? links.participants
+      : undefined
+  }
+  return link ? link.replace(':id', studyId) : '#'
+}
 
 const StudySublist: FunctionComponent<StudySublistProps> = ({
   studies,
@@ -159,33 +183,12 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   onAction,
   highlightedStudyId,
   menuAnchor,
-  userRoles,
 }: StudySublistProps) => {
   const classes = useStyles()
   const item = sections.find(section => section.sectionStatus === status)!
   const displayStudies = studies.filter(study =>
     item.studyStatus.includes(study.phase)
   )
-  const links = {
-    builder: `${constants.restrictedPaths.STUDY_BUILDER}/session-creator`,
-    participants: constants.restrictedPaths.PARTICIPANT_MANAGER,
-  }
-
-  function getStudyLink(sectionStatus: SectionStatus, studyId: string) {
-    let link = undefined
-    if (sectionStatus === 'DRAFT') {
-      link = Utility.isPathAllowed(studyId, links.builder)
-        ? links.builder
-        : Utility.isPathAllowed(studyId, links.participants)
-        ? links.participants
-        : undefined
-    } else {
-      link = Utility.isPathAllowed(studyId, links.participants)
-        ? links.participants
-        : undefined
-    }
-    return link ? link.replace(':id', studyId) : '#'
-  }
 
   if (!displayStudies.length) {
     return <></>
@@ -258,7 +261,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   }
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
 
-  const [statusFilters, setStatusFilters] = React.useState<SectionStatus[]>(
+  const [statusFilters, setStatusFilters] = React.useState<DisplayStudyPhase[]>(
     sections.map(section => section.sectionStatus)
   )
   const [highlightedStudyId, setHighlightedStudyId] = React.useState<
@@ -409,7 +412,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     }
   }
 
-  const isSelectedFilter = (filter: SectionStatus) =>
+  const isSelectedFilter = (filter: DisplayStudyPhase) =>
     statusFilters.indexOf(filter) > -1 && statusFilters.length === 1
 
   useEffect(() => {
@@ -523,7 +526,19 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             open={Boolean(menuAnchor?.anchorEl)}
             onClose={handleMenuClose}
             classes={{paper: classes.paper, list: classes.list}}>
-            <MenuItem onClick={handleMenuClose}>View</MenuItem>
+            <MenuItem
+              href={
+                menuAnchor?.study
+                  ? getStudyLink(
+                      StudyService.getDisplayStatusForStudyPhase(
+                        menuAnchor!.study.phase
+                      ),
+                      menuAnchor!.study.identifier
+                    )
+                  : '#'
+              }>
+              View
+            </MenuItem>
             {menuAnchor?.study.phase === 'design' && (
               <MenuItem
                 onClick={() => {

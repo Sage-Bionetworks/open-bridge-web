@@ -4,6 +4,7 @@ import React, {useState} from 'react'
 import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
 import {ReactComponent as LockIcon} from '../../../assets/launch/lock_icon.svg'
 import {StudyInfoData} from '../../../helpers/StudyInfoContext'
+import StudyService from '../../../services/study.service'
 import {ThemeType} from '../../../style/theme'
 import {Study, StudyBuilderComponentProps} from '../../../types/types'
 import {NextButton, PrevButton} from '../../widgets/StyledComponents'
@@ -99,8 +100,8 @@ const Launch: React.FunctionComponent<
 }: LaunchProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
   const isStudyLive =
-    studyInfo.study.phase === 'in_flight' ||
-    studyInfo.study.phase === 'recruitment'
+    StudyService.getDisplayStatusForStudyPhase(studyInfo.study.phase) === 'LIVE'
+
   const [steps, setSteps] = useState(getSteps(isStudyLive))
   const [activeStep, setActiveStep] = React.useState(0)
   const [isFinished, setIsFinished] = React.useState(false)
