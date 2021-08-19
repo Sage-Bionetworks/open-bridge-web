@@ -11,7 +11,7 @@ import {
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import Utility from '../../../helpers/utility'
-import ParticipantService from '../../../services/participants.service'
+import EventService from '../../../services/event.service'
 import {latoFont} from '../../../style/theme'
 import {SchedulingEvent} from '../../../types/scheduling'
 import {EditableParticipantData, ParticipantEvent} from '../../../types/types'
@@ -136,7 +136,7 @@ export const EditParticipantForm: FunctionComponent<EditParticipantFormProps> =
               {customStudyEvents.map(evt => (
                 <DatePicker
                   key={evt.identifier}
-                  label={ParticipantService.formatCustomEventIdForDisplay(
+                  label={EventService.formatCustomEventIdForDisplay(
                     evt.identifier
                   )}
                   id={evt.identifier}
@@ -335,9 +335,7 @@ export const AddParticipantForm: FunctionComponent<AddParticipantFormProps> = ({
           {customStudyEvents.map(evt => (
             <DatePicker
               key={evt.identifier}
-              label={ParticipantService.formatCustomEventIdForDisplay(
-                evt.identifier
-              )}
+              label={EventService.formatCustomEventIdForDisplay(evt.identifier)}
               id={evt.identifier}
               value={
                 participant.events?.find(
