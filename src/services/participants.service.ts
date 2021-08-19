@@ -10,7 +10,7 @@ import {
   ParticipantEvent,
   StringDictionary,
 } from '../types/types'
-import StudyService from './study.service'
+import ScheduleService from './schedule.service'
 
 export const CLINIC_EVENT_ID = 'clinic_visit'
 export const JOINED_EVENT_ID = 'first_sign_in'
@@ -76,7 +76,7 @@ async function getRelevantEventsForParticipants(
   participantId: string[]
 ): Promise<StringDictionary<ParticipantRelevantEvents>> {
   //transform ids into promises
-  const eventIdsForSchedule = await StudyService.getEventsForSchedule(
+  const eventIdsForSchedule = await ScheduleService.getEventsForSchedule(
     studyIdentifier
   ).then(result => result.map(e => prefixCustomEventIdentifier(e.identifier)))
   const promises = participantId.map(async pId => {
@@ -689,7 +689,7 @@ async function updateParticipantCustomEvents(
     .replace(':userId', participantId)
 
   // get Events for schedule  - we need this in order to possibly delete userEvents
-  const schedulingEvents = await StudyService.getEventsForSchedule(
+  const schedulingEvents = await ScheduleService.getEventsForSchedule(
     studyIdentifier
   )
   const customEventWithDate = customEvents.filter(event => !!event.timestamp)

@@ -7,7 +7,7 @@ import Pluralize from 'react-pluralize'
 import {ReactComponent as NotificationsIcon} from '../../../assets/scheduler/notifications_icon.svg'
 import {ReactComponent as TimerIcon} from '../../../assets/scheduler/timer_icon.svg'
 import {useAsync} from '../../../helpers/AsyncHook'
-import StudyService from '../../../services/study.service'
+import ScheduleService from '../../../services/schedule.service'
 import {latoFont} from '../../../style/theme'
 import {Schedule, StudySession} from '../../../types/scheduling'
 import AssessmentImage from '../../assessments/AssessmentImage'
@@ -140,7 +140,7 @@ const ScheduleTimeline: React.FunctionComponent<TimelineProps> = ({
 
   React.useEffect(() => {
     console.log('%c ---timeline getting--' + version, 'color: blue')
-    return run(StudyService.getStudyScheduleTimeline(studyId, token!))
+    return run(ScheduleService.getStudyScheduleTimeline(studyId, token!))
   }, [run, version, token])
 
   const setZoomLevel = (scheduleDuration: string) => {
