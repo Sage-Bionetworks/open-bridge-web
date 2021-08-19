@@ -204,7 +204,6 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
       </p>
       <Autocomplete
         multiple
-        limitTags={2}
         id="diseases"
         options={diseases}
         onChange={changeDiseases}
