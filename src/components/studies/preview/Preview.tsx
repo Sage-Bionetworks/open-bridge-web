@@ -250,14 +250,16 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
   return (
     <>
       <Box className={classes.tosContainer}>
-        <PrevButton
-          className={classes.tosButton}
-          variant="outlined"
-          color="primary"
-          onClick={() => {}}>
-          <img className={classes.linkIcon} src={LinkIcon}></img>
-          <Box className={classes.tosText}>Full terms of service</Box>
-        </PrevButton>
+        {!testParticipantId && (
+          <PrevButton
+            className={classes.tosButton}
+            variant="outlined"
+            color="primary"
+            onClick={() => {}}>
+            <img className={classes.linkIcon} src={LinkIcon}></img>
+            <Box className={classes.tosText}>Full terms of service</Box>
+          </PrevButton>
+        )}
       </Box>
       {!testParticipantId ? (
         <div className={classes.root}>
