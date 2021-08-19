@@ -5,6 +5,7 @@ import {
   IconButton,
   LinearProgress,
 } from '@material-ui/core'
+import Link from '@material-ui/core/Link'
 import {makeStyles} from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
@@ -207,13 +208,13 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               paddingTop: '0',
               alignItems: 'center',
             }}>
-            <NavLink
-              to={'/Studies'}
-              key="home"
+            <Link
+              href="/Studies"
+              key="/Studies"
               className={classes.toolbarLink}
               style={{paddingBottom: '0', paddingLeft: '4px'}}>
               <img src={Logo} key="img_home" alt="home" />
-            </NavLink>
+            </Link>
             <HideWhen hideWhen={studyData.study === undefined && !error}>
               <BreadCrumb
                 links={[{url: '/Studies', text: ''}]}
