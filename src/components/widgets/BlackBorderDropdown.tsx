@@ -8,7 +8,12 @@ interface StyleProps {
   itemHeight: string
 }
 const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
-  root: props => ({width: props.width}),
+  root: props => ({
+    width: props.width,
+    '& .MuiSelect-icon': {
+      marginRight: theme.spacing(1),
+    },
+  }),
   select: props => ({
     height: props.itemHeight,
     backgroundColor: 'white',
