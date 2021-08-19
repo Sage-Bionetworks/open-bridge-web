@@ -180,11 +180,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginTop: theme.spacing(-0.25),
     fontWeight: 'bold',
   },
-  regularText: {
-    fontFamily: latoFont,
-    fontSize: '15px',
-    lineHeight: '18px',
-  },
   idLabel: {
     fontWeight: 'bold',
   },
@@ -337,10 +332,10 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
               </div>
               <div>
                 <MTBHeadingH2>Preview your study</MTBHeadingH2>
-                <p className={classes.regularText}>
+                <p className={classes.reminderOfUseText}>
                   Your draft study has been generated.
                 </p>
-                <p className={classes.regularText}>
+                <p className={classes.reminderOfUseText}>
                   Please download and/or open the{' '}
                   <strong>Mobile Toolbox App</strong> and login with the
                   following credentials below.
@@ -353,7 +348,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                     <img src={googlePlayBtn} />
                   </Button>
                 </div>
-                <p className={classes.regularText}>
+                <p className={classes.reminderOfUseText}>
                   This is only for login purposes only.
                 </p>
                 <div className={classes.inputs}>
