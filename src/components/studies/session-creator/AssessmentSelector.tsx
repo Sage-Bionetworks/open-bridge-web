@@ -49,8 +49,8 @@ const useStyles = makeStyles({
     alignItems: 'center', // does vertically center the desired content
     justifyContent: 'center', // horizontally centers single line items
     textClign: 'center', // optional, but helps horizontally center text that breaks into multiple lines
-
     padding: '20px',
+    zIndex: 200,
   },
   overlayBackdrop: {
     position: 'absolute',

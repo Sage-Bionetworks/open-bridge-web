@@ -69,7 +69,7 @@ export const useStyles = makeStyles(theme => ({
     alignItems: 'center',
   },
   selectAssessmentsHeading: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(3),
     textAlign: 'center',
     fontFamily: poppinsFont,
     fontStyle: 'normal',
