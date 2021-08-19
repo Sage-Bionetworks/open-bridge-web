@@ -7,6 +7,7 @@ import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
 import {ContactType} from './AppDesign'
+import constants from '../../../types/constants'
 
 const useStyles = makeStyles(theme => ({
   firstFormElement: {
@@ -37,6 +38,7 @@ type StudyLeadInformationSectionProps = {
   ) => void
   principleInvestigatorNameHasError: boolean
   principleInvestigatorAffiliationHasError: boolean
+  studyIdentifier: string
 }
 
 const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationSectionProps> = ({
@@ -52,6 +54,7 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
   getContactName,
   principleInvestigatorNameHasError,
   principleInvestigatorAffiliationHasError,
+  studyIdentifier,
 }) => {
   const classes = useStyles()
   return (
@@ -80,9 +83,15 @@ const StudyLeadInformationSection: React.FunctionComponent<StudyLeadInformationS
             If your PI is not listed in the dropdown, please add them to the
             study and/or make them a <strong>Co-Study Administrator</strong> via
             the{' '}
-            <strong>
-              <u>Access Settings</u>
-            </strong>{' '}
+            <a
+              href={constants.restrictedPaths.ACCESS_SETTINGS.replace(
+                ':id',
+                studyIdentifier
+              )}>
+              <strong>
+                <u>Access Settings</u>
+              </strong>
+            </a>{' '}
             tab on the top right hand side.{' '}
           </p>
         </FormControl>
