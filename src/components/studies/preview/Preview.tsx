@@ -82,6 +82,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       width: theme.spacing(17),
       flexShrink: 0,
     },
+    marginTop: theme.spacing(-1.5),
   },
   storeButtons: {
     display: 'flex',
@@ -90,6 +91,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       padding: 0,
       marginRight: theme.spacing(2),
     },
+    marginBottom: theme.spacing(1),
   },
   divider: {
     width: '100%',
@@ -178,6 +180,9 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     marginTop: theme.spacing(-0.25),
     fontWeight: 'bold',
   },
+  idLabel: {
+    fontWeight: 'bold',
+  },
 }))
 
 export interface PreviewProps {
@@ -250,14 +255,16 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
   return (
     <>
       <Box className={classes.tosContainer}>
-        <PrevButton
-          className={classes.tosButton}
-          variant="outlined"
-          color="primary"
-          onClick={() => {}}>
-          <img className={classes.linkIcon} src={LinkIcon}></img>
-          <Box className={classes.tosText}>Full terms of service</Box>
-        </PrevButton>
+        {!testParticipantId && (
+          <PrevButton
+            className={classes.tosButton}
+            variant="outlined"
+            color="primary"
+            onClick={() => {}}>
+            <img className={classes.linkIcon} src={LinkIcon}></img>
+            <Box className={classes.tosText}>Full terms of service</Box>
+          </PrevButton>
+        )}
       </Box>
       {!testParticipantId ? (
         <div className={classes.root}>
@@ -324,22 +331,14 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                 <div className={classes.mtbApp}> Mobile Toolbox App</div>
               </div>
               <div>
-                <MTBHeadingH2>
-                  {' '}
-                  Preview your study on a mobile device
-                </MTBHeadingH2>
-                <p>Your draft study has been generated.</p>
-                <p>
-                  Please download and/or open the Mobile Toolbox App and login
-                  with the following credentials below.
+                <MTBHeadingH2>Preview your study</MTBHeadingH2>
+                <p className={classes.reminderOfUseText}>
+                  Your draft study has been generated.
                 </p>
-                <p>
-                  This login is only for preview purposes. There are no scores
-                  or data associated with this preview.
-                </p>
-                <p>
-                  To view a sample scoring for each assessment please view the
-                  Assessment Library.
+                <p className={classes.reminderOfUseText}>
+                  Please download and/or open the{' '}
+                  <strong>Mobile Toolbox App</strong> and login with the
+                  following credentials below.
                 </p>
                 <div className={classes.storeButtons}>
                   <Button>
@@ -349,9 +348,14 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                     <img src={googlePlayBtn} />
                   </Button>
                 </div>
+                <p className={classes.reminderOfUseText}>
+                  This is only for login purposes only.
+                </p>
                 <div className={classes.inputs}>
                   <FormControl component="div">
-                    <FormLabel component="label">Study ID:</FormLabel>
+                    <FormLabel component="label" className={classes.idLabel}>
+                      Study ID:
+                    </FormLabel>
                     <SimpleTextInput
                       multiline={false}
                       fullWidth={true}
@@ -360,7 +364,9 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                   </FormControl>
 
                   <FormControl component="div">
-                    <FormLabel component="label">Temporary ID:</FormLabel>
+                    <FormLabel component="label" className={classes.idLabel}>
+                      Preview ID:
+                    </FormLabel>
                     <SimpleTextInput
                       multiline={false}
                       fullWidth={true}
@@ -395,7 +401,11 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                 {uniqueAssessments.map((assessment, index) => {
                   return (
                     <Box onClick={() => {}} mb={2}>
-                      <AssessmentSmall assessment={assessment} key={index} />
+                      <AssessmentSmall
+                        hasHover={false}
+                        assessment={assessment}
+                        key={index}
+                      />
                     </Box>
                   )
                 })}
