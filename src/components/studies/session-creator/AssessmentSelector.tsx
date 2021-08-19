@@ -28,6 +28,7 @@ const useStyles = makeStyles({
 
     '& $overlay': {
       opacity: 1,
+      zIndex: 200,
     },
     '& $overlayBackdrop': {
       opacity: 0.8,
@@ -50,7 +51,6 @@ const useStyles = makeStyles({
     justifyContent: 'center', // horizontally centers single line items
     textClign: 'center', // optional, but helps horizontally center text that breaks into multiple lines
     padding: '20px',
-    zIndex: 200,
   },
   overlayBackdrop: {
     position: 'absolute',
