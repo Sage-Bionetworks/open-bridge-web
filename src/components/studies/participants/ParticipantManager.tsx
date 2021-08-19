@@ -35,9 +35,8 @@ import {
   useStudyInfoDataState,
 } from '../../../helpers/StudyInfoContext'
 import Utility from '../../../helpers/utility'
-import ParticipantService, {
-  ParticipantRelevantEvents,
-} from '../../../services/participants.service'
+import EventService from '../../../services/event.service'
+import ParticipantService from '../../../services/participants.service'
 import ScheduleService from '../../../services/schedule.service'
 import {latoFont, poppinsFont, theme} from '../../../style/theme'
 import constants from '../../../types/constants'
@@ -265,12 +264,14 @@ async function getRelevantParticipantInfo(
   token: string,
   participants: ExtendedParticipantAccountSummary[]
 ) {
-  const eventsMap: StringDictionary<ParticipantRelevantEvents> =
-    await ParticipantService.getRelevantEventsForParticipants(
-      studyId,
-      token,
-      participants.map(p => p.id)
-    )
+  const eventsMap: StringDictionary<{
+    timeline_retrieved: Date | undefined
+    customEvents: ParticipantEvent[]
+  }> = await EventService.getRelevantEventsForParticipants(
+    studyId,
+    token,
+    participants.map(p => p.id)
+  )
   const result = participants!.map(participant => {
     const id = participant.id as string
     const events = eventsMap[id]
@@ -524,7 +525,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       participantId,
       note
     )
-    await ParticipantService.updateParticipantCustomEvents(
+    await EventService.updateParticipantCustomEvents(
       study!.identifier,
       token!,
       participantId,

@@ -31,6 +31,7 @@ import {ReactComponent as HidePhoneIcon} from '../../../assets/participants/phon
 import {ReactComponent as ShowPhoneIcon} from '../../../assets/participants/phone_show_icon.svg'
 import {ReactComponent as WithdrawIcon} from '../../../assets/withdraw.svg'
 import {useUserSessionDataState} from '../../../helpers/AuthContext'
+import EventService from '../../../services/event.service'
 import ParticipantService, {
   EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING,
 } from '../../../services/participants.service'
@@ -406,16 +407,14 @@ function getColumns(
   const customEventColumns = customStudyEvents.map(customEvent => {
     const col: GridColDef = {
       field: customEvent.identifier,
-      headerName: ParticipantService.formatCustomEventIdForDisplay(
+      headerName: EventService.formatCustomEventIdForDisplay(
         customEvent.identifier
       ),
       valueGetter: params => {
         const foundEvent = params.row.events.find(
           (event: any) =>
             event.eventId ===
-            ParticipantService.prefixCustomEventIdentifier(
-              customEvent.identifier
-            )
+            EventService.prefixCustomEventIdentifier(customEvent.identifier)
         )
         return foundEvent ? getDate(foundEvent.timestamp) : ' '
       },
