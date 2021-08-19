@@ -1,4 +1,5 @@
 import React from 'react'
+import ScheduleService from '../services/schedule.service'
 import StudyService from '../services/study.service'
 import {StudyBuilderInfo} from '../types/types'
 import {useAsync} from './AsyncHook'
@@ -21,7 +22,10 @@ export const useStudyBuilderInfo = (id: string | undefined) => {
     }
     let schedule = undefined
     try {
-      schedule = await StudyService.getStudySchedule(study.identifier, token!)
+      schedule = await ScheduleService.getStudySchedule(
+        study.identifier,
+        token!
+      )
     } catch (e) {
       console.log('no schedule')
     }

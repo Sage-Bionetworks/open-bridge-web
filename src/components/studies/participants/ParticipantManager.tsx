@@ -38,7 +38,7 @@ import Utility from '../../../helpers/utility'
 import ParticipantService, {
   ParticipantRelevantEvents,
 } from '../../../services/participants.service'
-import StudyService from '../../../services/study.service'
+import ScheduleService from '../../../services/schedule.service'
 import {latoFont, poppinsFont, theme} from '../../../style/theme'
 import constants from '../../../types/constants'
 import {SchedulingEvent} from '../../../types/scheduling'
@@ -461,7 +461,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     if (!study?.identifier) {
       return
     }
-    getEvents(StudyService.getEventsForSchedule(study.identifier))
+    getEvents(ScheduleService.getEventsForSchedule(study.identifier))
   }, [study?.identifier, getEvents])
 
   React.useEffect(() => {
