@@ -4,12 +4,12 @@ import {Box, CircularProgress} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
 import React, {FunctionComponent} from 'react'
-import Utility from '../../../helpers/utility'
-import ParticipantService from '../../../services/participants.service'
-import {SchedulingEvent} from '../../../types/scheduling'
-import {EditableParticipantData, Phone} from '../../../types/types'
-import {BlueButton} from '../../widgets/StyledComponents'
-import {AddParticipantForm} from './ParticipantForms'
+import Utility from '../../../../helpers/utility'
+import ParticipantService from '../../../../services/participants.service'
+import {SchedulingEvent} from '../../../../types/scheduling'
+import {EditableParticipantData, Phone} from '../../../../types/types'
+import {BlueButton} from '../../../widgets/StyledComponents'
+import {AddParticipantForm} from '../ParticipantForms'
 
 const useStyles = makeStyles(theme => ({
   root: {},

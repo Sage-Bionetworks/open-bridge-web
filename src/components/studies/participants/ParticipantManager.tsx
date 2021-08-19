@@ -57,16 +57,16 @@ import {
   DialogButtonPrimary,
   DialogButtonSecondary,
 } from '../../widgets/StyledComponents'
-import AddParticipants from './AddParticipants'
+import AddParticipants from './add/AddParticipants'
 import BatchEditForm from './BatchEditForm'
 import DialogContents from './DialogContents'
+import ParticipantTableGrid from './grid/ParticipantTableGrid'
+import ParticipantTablePagination from './grid/ParticipantTablePagination'
 import ParticipantDownload, {
   ParticipantDownloadType,
 } from './ParticipantDownload'
 import ParticipantManagerPlaceholder from './ParticipantManagerPlaceholder'
 import ParticipantSearch from './ParticipantSearch'
-import ParticipantTableGrid from './ParticipantTableGrid'
-import ParticipantTablePagination from './ParticipantTablePagination'
 
 const useStyles = makeStyles(theme => ({
   root: {},

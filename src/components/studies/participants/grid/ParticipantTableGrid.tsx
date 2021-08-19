@@ -24,30 +24,30 @@ import {
 import _ from 'lodash'
 import React, {FunctionComponent, ReactNode} from 'react'
 import Pluralize from 'react-pluralize'
-import {ReactComponent as PencilIcon} from '../../../assets/edit_pencil.svg'
-import JoinedCheckSymbol from '../../../assets/participants/joined_check_mark.svg'
-import JoinedPhoneSymbol from '../../../assets/participants/joined_phone_icon.svg'
-import {ReactComponent as HidePhoneIcon} from '../../../assets/participants/phone_hide_icon.svg'
-import {ReactComponent as ShowPhoneIcon} from '../../../assets/participants/phone_show_icon.svg'
-import {ReactComponent as WithdrawIcon} from '../../../assets/withdraw.svg'
-import {useUserSessionDataState} from '../../../helpers/AuthContext'
-import EventService from '../../../services/event.service'
+import {ReactComponent as PencilIcon} from '../../../../assets/edit_pencil.svg'
+import JoinedCheckSymbol from '../../../../assets/participants/joined_check_mark.svg'
+import JoinedPhoneSymbol from '../../../../assets/participants/joined_phone_icon.svg'
+import {ReactComponent as HidePhoneIcon} from '../../../../assets/participants/phone_hide_icon.svg'
+import {ReactComponent as ShowPhoneIcon} from '../../../../assets/participants/phone_show_icon.svg'
+import {ReactComponent as WithdrawIcon} from '../../../../assets/withdraw.svg'
+import {useUserSessionDataState} from '../../../../helpers/AuthContext'
+import EventService from '../../../../services/event.service'
 import ParticipantService, {
   EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING,
-} from '../../../services/participants.service'
-import {latoFont} from '../../../style/theme'
-import {SchedulingEvent} from '../../../types/scheduling'
+} from '../../../../services/participants.service'
+import {latoFont} from '../../../../style/theme'
+import {SchedulingEvent} from '../../../../types/scheduling'
 import {
   EditableParticipantData,
   ParticipantAccountSummary,
   ParticipantActivityType,
   ParticipantEvent,
   RequestStatus,
-} from '../../../types/types'
-import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
-import HideWhen from '../../widgets/HideWhen'
-import SelectAll, {SelectionType} from '../../widgets/SelectAll'
-import {EditParticipantForm, WithdrawParticipantForm} from './ParticipantForms'
+} from '../../../../types/types'
+import DialogTitleWithClose from '../../../widgets/DialogTitleWithClose'
+import HideWhen from '../../../widgets/HideWhen'
+import SelectAll, {SelectionType} from '../../../widgets/SelectAll'
+import {EditParticipantForm, WithdrawParticipantForm} from '../ParticipantForms'
 
 const useStyles = makeStyles(theme => ({
   root: {},

@@ -1,6 +1,6 @@
 import {Box, makeStyles} from '@material-ui/core'
 import React, {FunctionComponent} from 'react'
-import {ReactComponent as DownloadIcon} from '../../../assets/download.svg'
+import {ReactComponent as DownloadIcon} from '../../../../assets/download.svg'
 //import { EnrollmentType } from '../../../types/types'
 
 const useStyles = makeStyles(theme => ({
