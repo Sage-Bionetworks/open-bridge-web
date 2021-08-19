@@ -723,8 +723,7 @@ const AppDesign: React.FunctionComponent<
       welcomeScreenSalutation: welcomeScreenSalutation,
       useOptionalDisclaimer: useOptionalDisclaimer,
       isUsingDefaultMessage:
-        study.clientData.welcomeScreenData?.isUsingDefaultMessage ||
-        false ||
+        !!study.clientData.welcomeScreenData?.isUsingDefaultMessage ||
         !!isUsingDefaultMessage,
     } as WelcomeScreenData
     const updatedStudy = {...study}
