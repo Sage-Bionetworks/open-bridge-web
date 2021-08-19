@@ -203,14 +203,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     duration: string,
     start: StartEventId
   ) => {
-    const studySession = ScheduleService.createEmptyStudySession(start)
+    const studySession = ScheduleService.createEmptyScheduleSession(start)
     let schedule: Schedule = {
       guid: '',
       name: studyId,
       duration,
       sessions: [studySession],
     }
-    const newSchedule = await ScheduleService.createStudySchedule(
+    const newSchedule = await ScheduleService.createSchedule(
       studyId,
       schedule,
       token!
@@ -265,7 +265,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     }
   }
 
-  const saveStudySchedule = async (
+  const saveSchedule = async (
     updatedSchedule?: Schedule,
     saveButtonPressed?: boolean
   ): Promise<Schedule | undefined> => {
@@ -282,7 +282,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         return undefined
       }
 
-      const savedUpdatedSchedule = await ScheduleService.saveStudySchedule(
+      const savedUpdatedSchedule = await ScheduleService.saveSchedule(
         builderInfo.study.identifier,
         schedule,
         token
@@ -357,11 +357,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     //where we are currently
     switch (section) {
       case 'scheduler': {
-        saveFn = saveStudySchedule
+        saveFn = saveSchedule
         break
       }
       case 'session-creator': {
-        saveFn = saveStudySchedule
+        saveFn = saveSchedule
         break
       }
       case 'launch': {
@@ -566,7 +566,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           saveLoader={saveLoader}
                           onSave={(isSavePressed: boolean) => {
                             saveStudy(undefined).then(() =>
-                              saveStudySchedule(undefined, isSavePressed)
+                              saveSchedule(undefined, isSavePressed)
                             )
                           }}
                           onUpdate={(
@@ -599,11 +599,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           id={id}
-                          onSave={() => saveStudySchedule()}
+                          onSave={() => saveSchedule()}
                           sessions={builderInfo.schedule?.sessions || []}
                           onUpdate={(data: StudySession[]) => {
                             setHasObjectChanged(true)
-                            saveStudySchedule({
+                            saveSchedule({
                               ...builderInfo.schedule!,
                               sessions: data,
                             })

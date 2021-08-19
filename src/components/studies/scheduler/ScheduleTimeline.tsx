@@ -140,7 +140,7 @@ const ScheduleTimeline: React.FunctionComponent<TimelineProps> = ({
 
   React.useEffect(() => {
     console.log('%c ---timeline getting--' + version, 'color: blue')
-    return run(ScheduleService.getStudyScheduleTimeline(studyId, token!))
+    return run(ScheduleService.getScheduleTimeline(studyId, token!))
   }, [run, version, token])
 
   const setZoomLevel = (scheduleDuration: string) => {
