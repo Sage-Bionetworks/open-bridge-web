@@ -17,6 +17,7 @@ import {
   normalNavIcons,
   StudySection,
 } from '../sections'
+import {isAppBackgroundColorValid} from '../app-design/AppDesign'
 
 const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
 
@@ -272,6 +273,13 @@ const ALERTS: StudyAlertSection[] = [
         },
         isDismissable: false,
         anchor: 'contactIrb',
+      },
+      {
+        errorText: 'Please enter a valid study color',
+        validationFn: (s: StudyInfoData) =>
+          isAppBackgroundColorValid(s.study.colorScheme?.background),
+        isDismissable: false,
+        anchor: 'hex-color-picker',
       },
     ],
   },

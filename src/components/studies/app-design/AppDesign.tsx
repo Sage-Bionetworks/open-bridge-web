@@ -13,7 +13,7 @@ import DefaultLogo from '../../../assets/logo_mtb.svg'
 import {useUserSessionDataState} from '../../../helpers/AuthContext'
 import Utility from '../../../helpers/utility'
 import StudyService from '../../../services/study.service'
-import {ThemeType} from '../../../style/theme'
+import {latoFont, ThemeType} from '../../../style/theme'
 import constants from '../../../types/constants'
 import {
   Contact,
@@ -180,6 +180,24 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
   },
   studyPageTopBar: {
     backgroundColor: '#F6F6F6',
+  },
+  hexcodeInput: {
+    marginLeft: theme.spacing(2),
+    width: '85px',
+    height: '30px',
+    padding: theme.spacing(0.5, 0.5),
+    fontSize: '15px',
+    fontFamily: latoFont,
+    '&:focus': {
+      outline: 'none',
+    },
+  },
+  hexcodeInputContainer: {
+    marginLeft: theme.spacing(-1),
+    marginTop: theme.spacing(-1.5),
+    display: 'flex',
+    fontSize: '15px',
+    alignItems: 'center',
   },
 }))
 
@@ -416,6 +434,13 @@ export const getContactName = (name: string | undefined) => {
   return name && name !== DEFAULT_CONTACT_NAME ? name : ''
 }
 
+export const isAppBackgroundColorValid = (currentColor: string | undefined) => {
+  if (!currentColor) return true
+  const s = new Option().style
+  s.color = currentColor || ''
+  return !!s.color
+}
+
 const AppDesign: React.FunctionComponent<
   AppDesignProps & StudyBuilderComponentProps
 > = ({
@@ -590,7 +615,11 @@ const AppDesign: React.FunctionComponent<
       !emailErrorState.isGeneralContactEmailValid ||
       !emailErrorState.isIrbEmailValid
     // This is a placeholder until Lynn finalizes what the error state will look like
-    if (phoneNumberHasError || emailHasError) {
+    if (
+      phoneNumberHasError ||
+      emailHasError ||
+      !isAppBackgroundColorValid(study.colorScheme?.background)
+    ) {
       alert(
         'Please make sure that all fields are entered in the correct format.'
       )
@@ -633,6 +662,12 @@ const AppDesign: React.FunctionComponent<
       background: color,
     }
     handleUpdate(updatedStudy)
+  }
+
+  const getColor = () => {
+    const color = study.colorScheme?.background
+    if (!color) return 'transparent'
+    return color === '#NaNNaNNaN' ? '' : color
   }
 
   const updateContacts = (
@@ -702,6 +737,7 @@ const AppDesign: React.FunctionComponent<
     )
   }
 
+  const color = getColor()
   return (
     <>
       <Box className={classes.root}>
@@ -778,17 +814,30 @@ const AppDesign: React.FunctionComponent<
                   studyLogoUrl={study.studyLogoUrl}
                   isSettingStudyLogo={isSettingStudyLogo}
                 />
-
+                <a id="hex-color-picker"></a>
                 <Subsection heading="Select background color">
                   <p>
                     Select a background color that matches your institution or
                     study to be seen beneath your logo.
                   </p>
                   <Box width="250px" height="230px" ml={-1.25}>
-                    <HexColorPicker
-                      color={study.colorScheme?.background || 'transparent'}
-                      onChange={updateColor}
-                    />
+                    <HexColorPicker color={color} onChange={updateColor} />
+                  </Box>
+                  <Box className={classes.hexcodeInputContainer}>
+                    Hexcode:
+                    <input
+                      className={classes.hexcodeInput}
+                      value={color === 'transparent' ? '' : color}
+                      onChange={event =>
+                        updateColor(event.target.value)
+                      }></input>
+                    {!isAppBackgroundColorValid(
+                      study.colorScheme?.background
+                    ) && (
+                      <Box ml={1.5} color="red">
+                        Please enter a valid hexcode
+                      </Box>
+                    )}
                   </Box>
                 </Subsection>
 
