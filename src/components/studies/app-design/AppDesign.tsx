@@ -908,6 +908,7 @@ const AppDesign: React.FunctionComponent<
               />
               <a id="leadPI" />
               <StudyLeadInformationSection
+                studyIdentifier={study.identifier}
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 orgMembership={orgMembership}
                 token={token}
