@@ -33,7 +33,7 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = 
     <Subsection heading="Upload Study Logo">
       <Box>
         <Box className={classes.studyLogoUploadText}>
-          All images will be compressed to: 320px x 80px
+          Recommended dimensions are 320px x 80px
         </Box>
 
         <Box
