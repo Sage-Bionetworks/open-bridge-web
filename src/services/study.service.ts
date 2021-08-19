@@ -36,7 +36,6 @@ export const DEFAULT_NOTIFICATION: ScheduleNotification = {
   notifyAt: 'after_window_start',
   offset: undefined,
   interval: undefined,
-  allowSnooze: true,
   messages: [
     {
       subject: 'New Activities are Live',
