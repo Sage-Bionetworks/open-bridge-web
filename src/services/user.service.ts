@@ -59,9 +59,6 @@ const loginOauth = async (
     authToken,
     callbackUrl,
   }
-  console.log('token:', authToken)
-  /*DO NOt CHECK IN*/
-  //return loginWithPassword('username', 'password')
 
   const result = await Utility.callEndpoint<LoggedInUserData>(
     constants.endpoints.oauthSignIn,
