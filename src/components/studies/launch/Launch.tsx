@@ -98,7 +98,9 @@ const Launch: React.FunctionComponent<
   isReadOnly,
 }: LaunchProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
-  const isStudyLive = studyInfo.study.phase === 'in_flight'
+  const isStudyLive =
+    studyInfo.study.phase === 'in_flight' ||
+    studyInfo.study.phase === 'recruitment'
   const [steps, setSteps] = useState(getSteps(isStudyLive))
   const [activeStep, setActiveStep] = React.useState(0)
   const [isFinished, setIsFinished] = React.useState(false)

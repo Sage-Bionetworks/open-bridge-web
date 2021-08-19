@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme =>
       width: theme.spacing(28),
       height: theme.spacing(47),
       textAlign: 'left',
-      border: '1px solid gray',
+      // border: '1px solid gray',
       padding: 0,
 
       display: 'flex',
@@ -28,9 +28,15 @@ const useStyles = makeStyles(theme =>
     },
 
     content: {
-      padding: theme.spacing(1, 2, 0, 2),
       height: theme.spacing(19),
-      overflow: 'scroll',
+      overflowY: 'scroll',
+      '&::-webkit-scrollbar': {
+        width: '6px',
+      },
+      '&::-webkit-scrollbar-thumb': {
+        backgroundColor: '#C4C4C4',
+      },
+      zIndex: 100,
     },
 
     title: {
@@ -74,7 +80,6 @@ type AssessmentCardProps = AssessmentCardOwnProps
 
 const AssessmentCard: FunctionComponent<AssessmentCardProps> = ({
   assessment,
-
   index,
 }) => {
   const classes = useStyles()
@@ -89,7 +94,7 @@ const AssessmentCard: FunctionComponent<AssessmentCardProps> = ({
           {assessment.tags.join(', ')}
         </Typography>
       </AssessmentImage>
-      <CardContent className={classes.content}>
+      <CardContent classes={{root: classes.content}}>
         <Typography gutterBottom className={classes.title}>
           {assessment.title}
         </Typography>

@@ -1,4 +1,5 @@
 import {
+  Box,
   Checkbox,
   createStyles,
   FormControl,
@@ -7,21 +8,20 @@ import {
   InputLabel,
   makeStyles,
   Theme,
-  Box,
 } from '@material-ui/core'
 import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
 import React, {FunctionComponent} from 'react'
+import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
 import {useAsync} from '../../../helpers/AsyncHook'
-import StudyService from '../../../services/study.service'
+import ScheduleService from '../../../services/schedule.service'
 import {latoFont, poppinsFont} from '../../../style/theme'
 import {Schedule} from '../../../types/scheduling'
 import {Study} from '../../../types/types'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
 import SmallTextBox from '../../widgets/SmallTextBox'
-import BurstTimeline from './timeline-plot/BurstTimeline'
 import {TooltipHoverDisplay} from './ScheduleTimeline'
-import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
+import BurstTimeline from './timeline-plot/BurstTimeline'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -197,7 +197,13 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
     number | undefined
   >()
 
-  const {data: timeline, status, error, run, setData} = useAsync<any>({
+  const {
+    data: timeline,
+    status,
+    error,
+    run,
+    setData,
+  } = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
@@ -205,7 +211,9 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
 
   React.useEffect(() => {
     console.log('%c ---timeline getting--' + schedule.version, 'color: blue')
-    return run(StudyService.getStudyScheduleTimeline(study.identifier, token!))
+    return run(
+      ScheduleService.getStudyScheduleTimeline(study.identifier, token!)
+    )
   }, [run, schedule.version, token])
 
   //setting new state

@@ -13,6 +13,7 @@ import {
   useStudyInfoDataState,
 } from '../../helpers/StudyInfoContext'
 import Utility from '../../helpers/utility'
+import ScheduleService from '../../services/schedule.service'
 import StudyService from '../../services/study.service'
 import {ThemeType} from '../../style/theme'
 import {
@@ -202,14 +203,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
     duration: string,
     start: StartEventId
   ) => {
-    const studySession = StudyService.createEmptyStudySession(start)
+    const studySession = ScheduleService.createEmptyStudySession(start)
     let schedule: Schedule = {
       guid: '',
       name: studyId,
       duration,
       sessions: [studySession],
     }
-    const newSchedule = await StudyService.createStudySchedule(
+    const newSchedule = await ScheduleService.createStudySchedule(
       studyId,
       schedule,
       token!
@@ -281,7 +282,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
         return undefined
       }
 
-      const savedUpdatedSchedule = await StudyService.saveStudySchedule(
+      const savedUpdatedSchedule = await ScheduleService.saveStudySchedule(
         builderInfo.study.identifier,
         schedule,
         token
