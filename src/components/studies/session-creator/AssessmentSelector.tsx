@@ -15,8 +15,8 @@ import Loader from '../../widgets/Loader'
 const useStyles = makeStyles({
   toggleA: {
     position: 'relative',
-    border: 'none',
     padding: '0',
+    border: '0px solid transparent',
   },
   toggleADisabled: {
     border: 'none',
