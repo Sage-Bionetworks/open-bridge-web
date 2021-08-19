@@ -1,15 +1,50 @@
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
-import {FileRevision, Study} from '../types/types'
+import {
+  DisplayStudyPhase,
+  FileRevision,
+  Study,
+  StudyPhase,
+} from '../types/types'
 
 const StudyService = {
   editStudyLogo,
+  getDisplayStatusForStudyPhase,
   getStudies,
   getStudy,
+  isStudyInDesign,
+  isStudyClosedToEdits,
   createStudy,
   launchStudy,
   removeStudy,
   updateStudy,
+}
+
+function getDisplayStatusForStudyPhase(phase: StudyPhase): DisplayStudyPhase {
+  switch (phase) {
+    case 'design':
+      return 'DRAFT'
+    case 'in_flight':
+    case 'recruitment':
+      return 'LIVE'
+    case 'completed':
+    case 'analysis':
+      return 'COMPLETED'
+    default:
+      return 'WITHDRAWN'
+  }
+}
+
+function isStudyInDesign(study: Study) {
+  return study.phase === 'design'
+}
+
+function isStudyClosedToEdits(study: Study) {
+  return (
+    study.phase !== 'design' &&
+    study.phase !== 'recruitment' &&
+    study.phase !== 'in_flight'
+  )
 }
 
 async function editStudyLogo(

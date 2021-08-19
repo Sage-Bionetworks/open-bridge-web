@@ -589,13 +589,17 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                             setData(newBuilderInfoObj)
                           }}
                           schedulerErrors={schedulerErrors}
-                          isReadOnly={builderInfo.study.phase !== 'design'}>
+                          isReadOnly={
+                            !StudyService.isStudyInDesign(builderInfo.study)
+                          }>
                           {navButtonsArray}
                         </Scheduler>
                       )}
                       {section === 'session-creator' && (
                         <SessionCreator
-                          isReadOnly={builderInfo.study.phase !== 'design'}
+                          isReadOnly={
+                            !StudyService.isStudyInDesign(builderInfo.study)
+                          }
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           id={id}
@@ -613,7 +617,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'enrollment-type-selector' && (
                         <EnrollmentTypeSelector
-                          isReadOnly={builderInfo.study.phase !== 'design'}
+                          isReadOnly={
+                            !StudyService.isStudyInDesign(builderInfo.study)
+                          }
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           study={builderInfo.study}
@@ -626,11 +632,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'customize' && (
                         <AppDesign
-                          isReadOnly={
-                            builderInfo.study.phase !== 'design' &&
-                            builderInfo.study.phase !== 'recruitment' &&
-                            builderInfo.study.phase !== 'in_flight'
-                          }
+                          isReadOnly={StudyService.isStudyClosedToEdits(
+                            builderInfo.study
+                          )}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           study={builderInfo.study}
@@ -660,11 +664,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'launch' && (
                         <Launch
-                          isReadOnly={
-                            builderInfo.study.phase !== 'design' &&
-                            builderInfo.study.phase !== 'recruitment' &&
-                            builderInfo.study.phase !== 'in_flight'
-                          }
+                          isReadOnly={StudyService.isStudyClosedToEdits(
+                            builderInfo.study
+                          )}
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           studyInfo={builderInfo}
@@ -695,7 +697,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                       )}
                       {section === 'passive-features' && (
                         <PassiveFeatures
-                          isReadOnly={builderInfo.study.phase !== 'design'}
+                          isReadOnly={
+                            !StudyService.isStudyInDesign(builderInfo.study)
+                          }
                           hasObjectChanged={hasObjectChanged}
                           saveLoader={saveLoader}
                           features={
