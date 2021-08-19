@@ -329,8 +329,9 @@ function getColumns(
     {
       field: 'phone',
       headerName: 'Phone Number',
-      flex: 1.5,
+      // flex: 1.5,
       valueGetter: getPhone,
+      width: 152,
 
       disableClickEventBubbling: true,
 
@@ -365,8 +366,9 @@ function getColumns(
       headerName: isEnrolledById
         ? 'Participant ID'
         : `${gridType === 'TEST' ? 'Log in' : 'Reference'} ID`,
-      flex: 1,
+      width: 120,
     },
+
     {field: 'id', headerName: 'HealthCode', flex: 2},
 
     {
@@ -388,21 +390,24 @@ function getColumns(
       headerName: 'Withdrawal note',
       flex: 2,
     },
-    {
-      field: 'edit',
-      headerName: 'Action',
-      disableClickEventBubbling: true,
-
-      renderCell: (params: GridCellParams) => (
-        <EditCell
-          params={params}
-          studyId={studyId}
-          token={token!}
-          onSetParticipantToEdit={setParticipantToEdit}
-        />
-      ),
-    },
   ]
+
+  const editColumn: GridColDef = {
+    field: 'edit',
+    headerName: 'Action',
+    disableClickEventBubbling: true,
+    disableColumnMenu: true,
+    width: 70,
+
+    renderCell: (params: GridCellParams) => (
+      <EditCell
+        params={params}
+        studyId={studyId}
+        token={token!}
+        onSetParticipantToEdit={setParticipantToEdit}
+      />
+    ),
+  }
 
   const customEventColumns = customStudyEvents.map(customEvent => {
     const col: GridColDef = {
@@ -451,6 +456,8 @@ function getColumns(
       c => !_.includes(['phone'], c.field)
     )
   }
+
+  participantColumns.splice(1, 0, editColumn)
 
   const eventInsertionIndex = participantColumns.findIndex(
     column => column.field === 'joinedDate'
