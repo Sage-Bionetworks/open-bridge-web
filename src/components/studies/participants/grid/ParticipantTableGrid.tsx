@@ -24,30 +24,30 @@ import {
 import _ from 'lodash'
 import React, {FunctionComponent, ReactNode} from 'react'
 import Pluralize from 'react-pluralize'
-import {ReactComponent as PencilIcon} from '../../../assets/edit_pencil.svg'
-import JoinedCheckSymbol from '../../../assets/participants/joined_check_mark.svg'
-import JoinedPhoneSymbol from '../../../assets/participants/joined_phone_icon.svg'
-import {ReactComponent as HidePhoneIcon} from '../../../assets/participants/phone_hide_icon.svg'
-import {ReactComponent as ShowPhoneIcon} from '../../../assets/participants/phone_show_icon.svg'
-import {ReactComponent as WithdrawIcon} from '../../../assets/withdraw.svg'
-import {useUserSessionDataState} from '../../../helpers/AuthContext'
-import EventService from '../../../services/event.service'
+import {ReactComponent as PencilIcon} from '../../../../assets/edit_pencil.svg'
+import JoinedCheckSymbol from '../../../../assets/participants/joined_check_mark.svg'
+import JoinedPhoneSymbol from '../../../../assets/participants/joined_phone_icon.svg'
+import {ReactComponent as HidePhoneIcon} from '../../../../assets/participants/phone_hide_icon.svg'
+import {ReactComponent as ShowPhoneIcon} from '../../../../assets/participants/phone_show_icon.svg'
+import {ReactComponent as WithdrawIcon} from '../../../../assets/withdraw.svg'
+import {useUserSessionDataState} from '../../../../helpers/AuthContext'
+import EventService from '../../../../services/event.service'
 import ParticipantService, {
   EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING,
-} from '../../../services/participants.service'
-import {latoFont} from '../../../style/theme'
-import {SchedulingEvent} from '../../../types/scheduling'
+} from '../../../../services/participants.service'
+import {latoFont} from '../../../../style/theme'
+import {SchedulingEvent} from '../../../../types/scheduling'
 import {
   EditableParticipantData,
   ParticipantAccountSummary,
   ParticipantActivityType,
   ParticipantEvent,
   RequestStatus,
-} from '../../../types/types'
-import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
-import HideWhen from '../../widgets/HideWhen'
-import SelectAll, {SelectionType} from '../../widgets/SelectAll'
-import {EditParticipantForm, WithdrawParticipantForm} from './ParticipantForms'
+} from '../../../../types/types'
+import DialogTitleWithClose from '../../../widgets/DialogTitleWithClose'
+import HideWhen from '../../../widgets/HideWhen'
+import SelectAll, {SelectionType} from '../../../widgets/SelectAll'
+import {EditParticipantForm, WithdrawParticipantForm} from '../ParticipantForms'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -329,8 +329,9 @@ function getColumns(
     {
       field: 'phone',
       headerName: 'Phone Number',
-      flex: 1.5,
+      // flex: 1.5,
       valueGetter: getPhone,
+      width: 152,
 
       disableClickEventBubbling: true,
 
@@ -365,8 +366,9 @@ function getColumns(
       headerName: isEnrolledById
         ? 'Participant ID'
         : `${gridType === 'TEST' ? 'Log in' : 'Reference'} ID`,
-      flex: 1,
+      width: 120,
     },
+
     {field: 'id', headerName: 'HealthCode', flex: 2},
 
     {
@@ -388,21 +390,24 @@ function getColumns(
       headerName: 'Withdrawal note',
       flex: 2,
     },
-    {
-      field: 'edit',
-      headerName: 'Action',
-      disableClickEventBubbling: true,
-
-      renderCell: (params: GridCellParams) => (
-        <EditCell
-          params={params}
-          studyId={studyId}
-          token={token!}
-          onSetParticipantToEdit={setParticipantToEdit}
-        />
-      ),
-    },
   ]
+
+  const editColumn: GridColDef = {
+    field: 'edit',
+    headerName: 'Action',
+    disableClickEventBubbling: true,
+    disableColumnMenu: true,
+    width: 70,
+
+    renderCell: (params: GridCellParams) => (
+      <EditCell
+        params={params}
+        studyId={studyId}
+        token={token!}
+        onSetParticipantToEdit={setParticipantToEdit}
+      />
+    ),
+  }
 
   const customEventColumns = customStudyEvents.map(customEvent => {
     const col: GridColDef = {
@@ -451,6 +456,8 @@ function getColumns(
       c => !_.includes(['phone'], c.field)
     )
   }
+
+  participantColumns.splice(1, 0, editColumn)
 
   const eventInsertionIndex = participantColumns.findIndex(
     column => column.field === 'joinedDate'

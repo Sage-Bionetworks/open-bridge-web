@@ -1,8 +1,8 @@
 import {Dialog} from '@material-ui/core'
 import React from 'react'
 import ParticipantService from '../../../services/participants.service'
+import {EditDialogTitle} from './grid/ParticipantTableGrid'
 import {EditParticipantForm} from './ParticipantForms'
-import {EditDialogTitle} from './ParticipantTableGrid'
 
 type BatchEditFormProps = {
   isEnrolledById: boolean
