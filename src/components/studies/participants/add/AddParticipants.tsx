@@ -344,7 +344,9 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             </Tabs>
 
             <TabPanel value={tab} index={0}>
-              <ImportParticipantsInstructions isEnrolledById={isEnrolledById}>
+              <ImportParticipantsInstructions
+                isEnrolledById={isEnrolledById}
+                studyEvents={customStudyEvents}>
                 <BlueButton
                   onClick={() => {
                     setIsCsvUploaded(false)

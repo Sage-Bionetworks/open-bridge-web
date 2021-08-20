@@ -1,8 +1,8 @@
+import EditDialogTitle from '@components/studies/participants/modify/EditDialogTitle'
 import {Dialog} from '@material-ui/core'
+import ParticipantService from '@services/participants.service'
 import React from 'react'
-import ParticipantService from '../../../services/participants.service'
-import {EditDialogTitle} from './grid/ParticipantTableGrid'
-import {EditParticipantForm} from './ParticipantForms'
+import EditParticipantForm from './EditParticipantForm'
 
 type BatchEditFormProps = {
   isEnrolledById: boolean

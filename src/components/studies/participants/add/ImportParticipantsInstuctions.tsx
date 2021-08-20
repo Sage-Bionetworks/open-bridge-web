@@ -1,6 +1,10 @@
 import {Box, makeStyles} from '@material-ui/core'
+import EventService from '@services/event.service'
+import {SchedulingEvent} from '@typedefs/scheduling'
 import React, {FunctionComponent} from 'react'
+import {jsonToCSV} from 'react-papaparse'
 import {ReactComponent as DownloadIcon} from '../../../../assets/download.svg'
+import ParticipantDownloadTrigger from '../download/ParticipantDownloadTrigger'
 //import { EnrollmentType } from '../../../types/types'
 
 const useStyles = makeStyles(theme => ({
@@ -22,8 +26,37 @@ const useStyles = makeStyles(theme => ({
 const ImportParticipantsInstructions: FunctionComponent<{
   isEnrolledById: boolean
   children: React.ReactNode
-}> = ({children, isEnrolledById}) => {
+  studyEvents: SchedulingEvent[]
+}> = ({children, isEnrolledById, studyEvents}) => {
   const classes = useStyles()
+  const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
+    string | undefined
+  >(undefined)
+
+  const createDownloadTemplate = async () => {
+    const templateData: Record<string, string> = {
+      note: '',
+      externalId: '',
+    }
+    studyEvents?.forEach(e => {
+      templateData[EventService.formatCustomEventIdForDisplay(e.identifier)] =
+        ''
+    })
+    if (!isEnrolledById) {
+      templateData['phoneNumber'] = ''
+    }
+
+    //csv and blob it
+    const csvData = jsonToCSV([templateData])
+    const blob = new Blob([csvData], {
+      type: 'text/csv;charset=utf8;',
+    })
+    // get the fake link
+    const fileObjUrl = URL.createObjectURL(blob)
+    setFileDownloadUrl(fileObjUrl)
+    // setLoadingIndicators({isDownloading: false})
+  }
+
   const template = isEnrolledById ? (
     <a href="/participantImport_id_template.csv" download="Ids_Template.csv">
       <strong>Ids_Template.csv</strong>
@@ -74,10 +107,20 @@ const ImportParticipantsInstructions: FunctionComponent<{
       {recList}
       Please make sure that your .csv matches this template:
       <br />
-      <Box className={classes.templateLink}>
+      <ParticipantDownloadTrigger
+        onDownload={() => createDownloadTemplate()}
+        fileDownloadUrl={fileDownloadUrl}
+        hasItems={true}
+        fileLabel={'ParticipantImportTemplate'}
+        onDone={() => {
+          URL.revokeObjectURL(fileDownloadUrl!)
+          setFileDownloadUrl(undefined)
+        }}>
+        <Box className={classes.templateLink}> </Box>
         <DownloadIcon width="20px" />
-        {template}
-      </Box>
+        &nbsp;
+        {'Participant Import Template'}{' '}
+      </ParticipantDownloadTrigger>
       <Box mx="auto" my={2} textAlign="center">
         {children}
       </Box>

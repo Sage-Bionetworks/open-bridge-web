@@ -1,11 +1,11 @@
+import StudyLive from '@components/studies/launch/Live'
+import StudyList from '@components/studies/StudyList'
 import AccessSettings from './components/access-settings/AccessSettings'
 import AccountSetup from './components/account/AccountSetup'
 import AssessmentDetail from './components/assessments/AssessmentDetail'
 import AssessmentLibrary from './components/assessments/AssessmentLibrary'
-import StudyLive from './components/studies/launch/Live'
 import ParticipantManager from './components/studies/participants/ParticipantManager'
 import StudyBuilder from './components/studies/StudyBuilder'
-import StudyList from './components/studies/StudyList'
 import constants from './types/constants'
 
 export default [

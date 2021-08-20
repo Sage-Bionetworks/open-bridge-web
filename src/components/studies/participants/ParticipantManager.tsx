@@ -1,3 +1,30 @@
+import {ReactComponent as CollapseIcon} from '@assets/collapse.svg'
+import LiveIcon from '@assets/live_study_icon.svg'
+import {ReactComponent as AddParticipantsIcon} from '@assets/participants/add_participants.svg'
+import {ReactComponent as AddTestParticipantsIcon} from '@assets/participants/add_test_participants.svg'
+import BatchEditIcon from '@assets/participants/batch_edit_icon.svg'
+import DownloadIcon from '@assets/participants/download_icon.svg'
+import SMSPhoneImg from '@assets/participants/joined_phone_icon.svg'
+import ParticipantListFocusIcon from '@assets/participants/participant_list_focus_icon.svg'
+import ParticipantListUnfocusIcon from '@assets/participants/participant_list_unfocus_icon.svg'
+import {ReactComponent as PinkSendSMSIcon} from '@assets/participants/send_sms_link_pink_icon.svg'
+import TestAccountFocusIcon from '@assets/participants/test_account_focus_icon.svg'
+import TestAccountUnfocusIcon from '@assets/participants/test_account_unfocus_icon.svg'
+import WithdrawnParticipantsFocusIcon from '@assets/participants/withdrawn_participants_focus_icon.svg'
+import WithdrawnParticipantsUnfocusIcon from '@assets/participants/withdrawn_participants_unfocus_icon.svg'
+import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
+import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
+import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
+import {MTBHeadingH3} from '@components/widgets/Headings'
+import HelpBox from '@components/widgets/HelpBox'
+import {
+  DialogButtonPrimary,
+  DialogButtonSecondary,
+} from '@components/widgets/StyledComponents'
+import {useAsync} from '@helpers/AsyncHook'
+import {useUserSessionDataState} from '@helpers/AuthContext'
+import {StudyInfoData, useStudyInfoDataState} from '@helpers/StudyInfoContext'
+import Utility from '@helpers/utility'
 import {
   Box,
   Button,
@@ -9,62 +36,32 @@ import {
   Tabs,
 } from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
-import clsx from 'clsx'
-import React, {FunctionComponent} from 'react'
-import {useErrorHandler} from 'react-error-boundary'
-import {jsonToCSV} from 'react-papaparse'
-import {RouteComponentProps} from 'react-router-dom'
-import {ReactComponent as CollapseIcon} from '../../../assets/collapse.svg'
-import LiveIcon from '../../../assets/live_study_icon.svg'
-import {ReactComponent as AddParticipantsIcon} from '../../../assets/participants/add_participants.svg'
-import {ReactComponent as AddTestParticipantsIcon} from '../../../assets/participants/add_test_participants.svg'
-import BatchEditIcon from '../../../assets/participants/batch_edit_icon.svg'
-import SMSPhoneImg from '../../../assets/participants/joined_phone_icon.svg'
-import ParticipantListFocusIcon from '../../../assets/participants/participant_list_focus_icon.svg'
-import ParticipantListUnfocusIcon from '../../../assets/participants/participant_list_unfocus_icon.svg'
-import {ReactComponent as PinkSendSMSIcon} from '../../../assets/participants/send_sms_link_pink_icon.svg'
-import TestAccountFocusIcon from '../../../assets/participants/test_account_focus_icon.svg'
-import TestAccountUnfocusIcon from '../../../assets/participants/test_account_unfocus_icon.svg'
-import WithdrawnParticipantsFocusIcon from '../../../assets/participants/withdrawn_participants_focus_icon.svg'
-import WithdrawnParticipantsUnfocusIcon from '../../../assets/participants/withdrawn_participants_unfocus_icon.svg'
-import {ReactComponent as DeleteIcon} from '../../../assets/trash.svg'
-import {useAsync} from '../../../helpers/AsyncHook'
-import {useUserSessionDataState} from '../../../helpers/AuthContext'
-import {
-  StudyInfoData,
-  useStudyInfoDataState,
-} from '../../../helpers/StudyInfoContext'
-import Utility from '../../../helpers/utility'
-import EventService from '../../../services/event.service'
-import ParticipantService from '../../../services/participants.service'
-import ScheduleService from '../../../services/schedule.service'
-import {latoFont, poppinsFont, theme} from '../../../style/theme'
-import constants from '../../../types/constants'
-import {SchedulingEvent} from '../../../types/scheduling'
+import EventService from '@services/event.service'
+import ParticipantService from '@services/participants.service'
+import ScheduleService from '@services/schedule.service'
+import {latoFont, poppinsFont, theme} from '@style/theme'
+import constants from '@typedefs/constants'
+import {SchedulingEvent} from '@typedefs/scheduling'
 import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
   ParticipantEvent,
   RequestStatus,
+  SelectionType,
   StringDictionary,
-} from '../../../types/types'
-import CollapsibleLayout from '../../widgets/CollapsibleLayout'
-import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
-import {MTBHeadingH3} from '../../widgets/Headings'
-import HelpBox from '../../widgets/HelpBox'
-import {
-  DialogButtonPrimary,
-  DialogButtonSecondary,
-} from '../../widgets/StyledComponents'
+} from '@typedefs/types'
+import clsx from 'clsx'
+import React, {FunctionComponent} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import {jsonToCSV} from 'react-papaparse'
+import {RouteComponentProps} from 'react-router-dom'
 import AddParticipants from './add/AddParticipants'
-import BatchEditForm from './BatchEditForm'
 import DialogContents from './DialogContents'
+import ParticipantDownloadTrigger from './download/ParticipantDownloadTrigger'
 import ParticipantTableGrid from './grid/ParticipantTableGrid'
 import ParticipantTablePagination from './grid/ParticipantTablePagination'
-import ParticipantDownload, {
-  ParticipantDownloadType,
-} from './ParticipantDownload'
+import BatchEditForm from './modify/BatchEditForm'
 import ParticipantManagerPlaceholder from './ParticipantManagerPlaceholder'
 import ParticipantSearch from './ParticipantSearch'
 
@@ -602,7 +599,31 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setParticipantData({items: result.items, total: result.total})
   }
 
-  const downloadParticipants = async (selection: ParticipantDownloadType) => {
+  const createDownloadTemplate = async () => {
+    const templateData: Record<string, string> = {
+      note: '',
+      externalId: '',
+    }
+    studyEvents?.forEach(e => {
+      templateData[EventService.formatCustomEventIdForDisplay(e.identifier)] =
+        ''
+    })
+    if (!Utility.isSignInById(study.signInTypes)) {
+      templateData['phoneNumber'] = ''
+    }
+
+    //csv and blob it
+    const csvData = jsonToCSV([templateData])
+    const blob = new Blob([csvData], {
+      type: 'text/csv;charset=utf8;',
+    })
+    // get the fake link
+    const fileObjUrl = URL.createObjectURL(blob)
+    setFileDownloadUrl(fileObjUrl)
+    setLoadingIndicators({isDownloading: false})
+  }
+
+  const downloadParticipants = async (selection: SelectionType) => {
     setLoadingIndicators({isDownloading: true})
 
     //if getting all participants
@@ -761,7 +782,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       onAdded={() => {
                         setRefreshParticipantsToggle(prev => !prev)
                       }}
-                      isTestAccount={tab === 'TEST'}></AddParticipants>
+                      isTestAccount={tab === 'TEST'}
+                    />
                   </>
                   <div>
                     <Box className={classes.gridToolBar}>
@@ -811,21 +833,37 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           </Button>
                         )}
 
-                        <ParticipantDownload
-                          isProcessing={loadingIndicators.isDownloading}
+                        <ParticipantDownloadTrigger
                           onDownload={() =>
-                            downloadParticipants(
-                              isAllSelected ? 'ALL' : 'SELECTED'
-                            )
+                            downloadParticipants(isAllSelected ? 'ALL' : 'SOME')
                           }
                           fileDownloadUrl={fileDownloadUrl}
-                          hasItems={!!data?.items?.length}
-                          selectedLength={selectedParticipantIds[tab].length}
+                          hasItems={
+                            !!data?.items?.length &&
+                            selectedParticipantIds[tab].length > 0
+                          }
                           onDone={() => {
                             URL.revokeObjectURL(fileDownloadUrl!)
                             setFileDownloadUrl(undefined)
-                          }}
-                        />
+                          }}>
+                          <>
+                            <img
+                              src={DownloadIcon}
+                              style={{
+                                marginRight: '6px',
+                                opacity:
+                                  selectedParticipantIds[tab].length === 0
+                                    ? 0.5
+                                    : 1,
+                              }}></img>
+                            {!loadingIndicators.isDownloading ? (
+                              'StudyParticipants.csv'
+                            ) : (
+                              <CircularProgress size={24} />
+                            )}
+                          </>
+                        </ParticipantDownloadTrigger>
+
                         {tab !== 'WITHDRAWN' && (
                           <Button
                             aria-label="delete"
