@@ -1,3 +1,4 @@
+import {ReactComponent as AddParticipantsIcon} from '@assets/participants/add_participants.svg'
 import {
   Box,
   Button,
@@ -16,7 +17,6 @@ import {jsonToCSV} from 'react-papaparse'
 import {RouteComponentProps} from 'react-router-dom'
 import {ReactComponent as CollapseIcon} from '../../../assets/collapse.svg'
 import LiveIcon from '../../../assets/live_study_icon.svg'
-import {ReactComponent as AddParticipantsIcon} from '../../../assets/participants/add_participants.svg'
 import {ReactComponent as AddTestParticipantsIcon} from '../../../assets/participants/add_test_participants.svg'
 import BatchEditIcon from '../../../assets/participants/batch_edit_icon.svg'
 import SMSPhoneImg from '../../../assets/participants/joined_phone_icon.svg'
