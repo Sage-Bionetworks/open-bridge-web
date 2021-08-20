@@ -20,7 +20,7 @@ import {useStudyInfoDataState} from '../../helpers/StudyInfoContext'
 import Utility from '../../helpers/utility'
 import {latoFont} from '../../style/theme'
 import constants from '../../types/constants'
-import {ExtendedError} from '../../types/types'
+import {ExtendedError, StudyPhase} from '../../types/types'
 import BreadCrumb from '../widgets/BreadCrumb'
 import HideWhen from '../widgets/HideWhen'
 import MobileDrawerMenuHeader from '../widgets/MobileDrawerMenuHeader'
@@ -149,28 +149,28 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   studyId,
   error,
 }: StudyTopNavProps) => {
-  const allLinks = [
+  const allLinks: {path: string; name: string; status: StudyPhase[]}[] = [
     {
       path: `${constants.restrictedPaths.STUDY_BUILDER}/session-creator`,
       name: 'STUDY BUILDER',
-      status: ['design'],
+      status: ['design', 'in_flight', 'recruitment'],
     },
     {
       path: constants.restrictedPaths.PARTICIPANT_MANAGER,
       name: 'PARTICIPANT MANAGER',
       status: constants.constants.IS_TEST_MODE
-        ? ['live', 'legacy', 'recruitment', 'design']
-        : ['live', 'recruitment'],
+        ? ['in_flight', 'legacy', 'recruitment', 'design']
+        : ['in_flight', 'recruitment'],
     },
     {
       path: constants.restrictedPaths.ADHERENCE_DATA,
       name: 'ADHERENCE DATA',
-      status: ['live', 'legacy'],
+      status: ['in_flight', 'legacy'],
     },
     {
       path: constants.restrictedPaths.STUDY_DATA,
       name: 'STUDY DATA',
-      status: ['live', 'legacy'],
+      status: ['in_flight', 'legacy'],
     },
   ]
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
