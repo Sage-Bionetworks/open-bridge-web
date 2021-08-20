@@ -96,6 +96,7 @@ const Duration: React.FunctionComponent<
   return (
     <div className={classes.root}>
       <SmallTextBox
+        style={{width: '60px'}}
         value={num || ''}
         aria-label={numberLabel}
         type="number"

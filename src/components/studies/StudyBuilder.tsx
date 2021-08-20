@@ -117,6 +117,11 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   negativeTop: {
     marginTop: '-38px',
   },
+  studyComponentContainer: {
+    minHeight: '100vh',
+    padding: '0',
+    height: '100%',
+  },
 }))
 
 type StudyBuilderOwnProps = {}
@@ -496,9 +501,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       </span>
       <Container
         maxWidth="xl"
+        className={classes.studyComponentContainer}
         style={{
-          height: '100vh',
-          padding: '0',
           backgroundColor:
             section === 'session-creator' ||
             section === 'enrollment-type-selector' ||
