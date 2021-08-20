@@ -1,4 +1,29 @@
+import {ReactComponent as CollapseIcon} from '@assets/collapse.svg'
+import LiveIcon from '@assets/live_study_icon.svg'
 import {ReactComponent as AddParticipantsIcon} from '@assets/participants/add_participants.svg'
+import {ReactComponent as AddTestParticipantsIcon} from '@assets/participants/add_test_participants.svg'
+import BatchEditIcon from '@assets/participants/batch_edit_icon.svg'
+import SMSPhoneImg from '@assets/participants/joined_phone_icon.svg'
+import ParticipantListFocusIcon from '@assets/participants/participant_list_focus_icon.svg'
+import ParticipantListUnfocusIcon from '@assets/participants/participant_list_unfocus_icon.svg'
+import {ReactComponent as PinkSendSMSIcon} from '@assets/participants/send_sms_link_pink_icon.svg'
+import TestAccountFocusIcon from '@assets/participants/test_account_focus_icon.svg'
+import TestAccountUnfocusIcon from '@assets/participants/test_account_unfocus_icon.svg'
+import WithdrawnParticipantsFocusIcon from '@assets/participants/withdrawn_participants_focus_icon.svg'
+import WithdrawnParticipantsUnfocusIcon from '@assets/participants/withdrawn_participants_unfocus_icon.svg'
+import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
+import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
+import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
+import {MTBHeadingH3} from '@components/widgets/Headings'
+import HelpBox from '@components/widgets/HelpBox'
+import {
+  DialogButtonPrimary,
+  DialogButtonSecondary,
+} from '@components/widgets/StyledComponents'
+import {useAsync} from '@helpers/AsyncHook'
+import {useUserSessionDataState} from '@helpers/AuthContext'
+import {StudyInfoData, useStudyInfoDataState} from '@helpers/StudyInfoContext'
+import Utility from '@helpers/utility'
 import {
   Box,
   Button,
@@ -10,37 +35,12 @@ import {
   Tabs,
 } from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
-import clsx from 'clsx'
-import React, {FunctionComponent} from 'react'
-import {useErrorHandler} from 'react-error-boundary'
-import {jsonToCSV} from 'react-papaparse'
-import {RouteComponentProps} from 'react-router-dom'
-import {ReactComponent as CollapseIcon} from '../../../assets/collapse.svg'
-import LiveIcon from '../../../assets/live_study_icon.svg'
-import {ReactComponent as AddTestParticipantsIcon} from '../../../assets/participants/add_test_participants.svg'
-import BatchEditIcon from '../../../assets/participants/batch_edit_icon.svg'
-import SMSPhoneImg from '../../../assets/participants/joined_phone_icon.svg'
-import ParticipantListFocusIcon from '../../../assets/participants/participant_list_focus_icon.svg'
-import ParticipantListUnfocusIcon from '../../../assets/participants/participant_list_unfocus_icon.svg'
-import {ReactComponent as PinkSendSMSIcon} from '../../../assets/participants/send_sms_link_pink_icon.svg'
-import TestAccountFocusIcon from '../../../assets/participants/test_account_focus_icon.svg'
-import TestAccountUnfocusIcon from '../../../assets/participants/test_account_unfocus_icon.svg'
-import WithdrawnParticipantsFocusIcon from '../../../assets/participants/withdrawn_participants_focus_icon.svg'
-import WithdrawnParticipantsUnfocusIcon from '../../../assets/participants/withdrawn_participants_unfocus_icon.svg'
-import {ReactComponent as DeleteIcon} from '../../../assets/trash.svg'
-import {useAsync} from '../../../helpers/AsyncHook'
-import {useUserSessionDataState} from '../../../helpers/AuthContext'
-import {
-  StudyInfoData,
-  useStudyInfoDataState,
-} from '../../../helpers/StudyInfoContext'
-import Utility from '../../../helpers/utility'
-import EventService from '../../../services/event.service'
-import ParticipantService from '../../../services/participants.service'
-import ScheduleService from '../../../services/schedule.service'
-import {latoFont, poppinsFont, theme} from '../../../style/theme'
-import constants from '../../../types/constants'
-import {SchedulingEvent} from '../../../types/scheduling'
+import EventService from '@services/event.service'
+import ParticipantService from '@services/participants.service'
+import ScheduleService from '@services/schedule.service'
+import {latoFont, poppinsFont, theme} from '@style/theme'
+import constants from '@typedefs/constants'
+import {SchedulingEvent} from '@typedefs/scheduling'
 import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
@@ -48,20 +48,17 @@ import {
   ParticipantEvent,
   RequestStatus,
   StringDictionary,
-} from '../../../types/types'
-import CollapsibleLayout from '../../widgets/CollapsibleLayout'
-import DialogTitleWithClose from '../../widgets/DialogTitleWithClose'
-import {MTBHeadingH3} from '../../widgets/Headings'
-import HelpBox from '../../widgets/HelpBox'
-import {
-  DialogButtonPrimary,
-  DialogButtonSecondary,
-} from '../../widgets/StyledComponents'
+} from '@typedefs/types'
+import clsx from 'clsx'
+import React, {FunctionComponent} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import {jsonToCSV} from 'react-papaparse'
+import {RouteComponentProps} from 'react-router-dom'
 import AddParticipants from './add/AddParticipants'
-import BatchEditForm from './BatchEditForm'
 import DialogContents from './DialogContents'
 import ParticipantTableGrid from './grid/ParticipantTableGrid'
 import ParticipantTablePagination from './grid/ParticipantTablePagination'
+import BatchEditForm from './modify/BatchEditForm'
 import ParticipantDownload, {
   ParticipantDownloadType,
 } from './ParticipantDownload'

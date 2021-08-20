@@ -1,15 +1,15 @@
 // pick a date util library
 
+import {BlueButton} from '@components/widgets/StyledComponents'
 import {Box, CircularProgress} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
+import {SchedulingEvent} from '@typedefs/scheduling'
+import {EditableParticipantData, Phone} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import Utility from '../../../../helpers/utility'
 import ParticipantService from '../../../../services/participants.service'
-import {SchedulingEvent} from '../../../../types/scheduling'
-import {EditableParticipantData, Phone} from '../../../../types/types'
-import {BlueButton} from '../../../widgets/StyledComponents'
-import {AddParticipantForm} from '../ParticipantForms'
+import AddSingleParticipantForm from './AddSingleParticipantForm'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -110,7 +110,7 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
         {isLoading && <CircularProgress size="2em" />}
         {error && <Alert color="error">{error}</Alert>}
       </Box>
-      <AddParticipantForm
+      <AddSingleParticipantForm
         customStudyEvents={customStudyEvents}
         isEnrolledById={isEnrolledById}
         participant={participant}

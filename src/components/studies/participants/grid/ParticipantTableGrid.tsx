@@ -1,3 +1,15 @@
+import {ReactComponent as PencilIcon} from '@assets/edit_pencil.svg'
+import JoinedCheckSymbol from '@assets/participants/joined_check_mark.svg'
+import JoinedPhoneSymbol from '@assets/participants/joined_phone_icon.svg'
+import {ReactComponent as HidePhoneIcon} from '@assets/participants/phone_hide_icon.svg'
+import {ReactComponent as ShowPhoneIcon} from '@assets/participants/phone_show_icon.svg'
+import {ReactComponent as WithdrawIcon} from '@assets/withdraw.svg'
+import EditDialogTitle from '@components/studies/participants/modify/EditDialogTitle'
+import EditParticipantForm from '@components/studies/participants/modify/EditParticipantForm'
+import WithdrawParticipantForm from '@components/studies/participants/modify/WithdrawParticipantForm'
+import HideWhen from '@components/widgets/HideWhen'
+import SelectAll, {SelectionType} from '@components/widgets/SelectAll'
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import {
   Box,
   Button,
@@ -21,33 +33,22 @@ import {
   GridValueGetterParams,
   HideGridColMenuItem,
 } from '@material-ui/data-grid'
-import _ from 'lodash'
-import React, {FunctionComponent, ReactNode} from 'react'
-import Pluralize from 'react-pluralize'
-import {ReactComponent as PencilIcon} from '../../../../assets/edit_pencil.svg'
-import JoinedCheckSymbol from '../../../../assets/participants/joined_check_mark.svg'
-import JoinedPhoneSymbol from '../../../../assets/participants/joined_phone_icon.svg'
-import {ReactComponent as HidePhoneIcon} from '../../../../assets/participants/phone_hide_icon.svg'
-import {ReactComponent as ShowPhoneIcon} from '../../../../assets/participants/phone_show_icon.svg'
-import {ReactComponent as WithdrawIcon} from '../../../../assets/withdraw.svg'
-import {useUserSessionDataState} from '../../../../helpers/AuthContext'
-import EventService from '../../../../services/event.service'
+import EventService from '@services/event.service'
 import ParticipantService, {
   EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING,
-} from '../../../../services/participants.service'
-import {latoFont} from '../../../../style/theme'
-import {SchedulingEvent} from '../../../../types/scheduling'
+} from '@services/participants.service'
+import {latoFont} from '@style/theme'
+import {SchedulingEvent} from '@typedefs/scheduling'
 import {
   EditableParticipantData,
   ParticipantAccountSummary,
   ParticipantActivityType,
   ParticipantEvent,
   RequestStatus,
-} from '../../../../types/types'
-import DialogTitleWithClose from '../../../widgets/DialogTitleWithClose'
-import HideWhen from '../../../widgets/HideWhen'
-import SelectAll, {SelectionType} from '../../../widgets/SelectAll'
-import {EditParticipantForm, WithdrawParticipantForm} from '../ParticipantForms'
+} from '@typedefs/types'
+import _ from 'lodash'
+import React, {FunctionComponent, ReactNode} from 'react'
+import Pluralize from 'react-pluralize'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -289,28 +290,6 @@ function renderColumnHeaderWithIcon(icon: string, headerName: string) {
       {headerName}
     </Box>
   ) as ReactNode
-}
-
-export const EditDialogTitle: FunctionComponent<{
-  onCancel: Function
-  shouldWithdraw?: boolean
-  batchEdit?: boolean
-}> = ({onCancel, shouldWithdraw, batchEdit}) => {
-  const title = shouldWithdraw
-    ? 'Withdraw'
-    : !batchEdit
-    ? 'Edit Participant Detail'
-    : 'Batch Edit Multiple Participant Details '
-  const Icon = shouldWithdraw ? WithdrawIcon : PencilIcon
-
-  return (
-    <DialogTitleWithClose onCancel={onCancel}>
-      <>
-        <Icon style={{width: '25px'}}></Icon>
-        <span style={{paddingLeft: '8px'}}>{title}</span>
-      </>
-    </DialogTitleWithClose>
-  )
 }
 
 /*************** COLUMNS    ****** */
