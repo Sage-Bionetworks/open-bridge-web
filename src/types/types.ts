@@ -222,6 +222,8 @@ export type StudyBuilderComponentProps = {
   saveLoader: boolean
 }
 
+export type SelectionType = 'ALL' | 'PAGE' | 'SOME' | 'NONE'
+
 export type ParticipantActivityType = 'ACTIVE' | 'WITHDRAWN' | 'TEST'
 export type ParticipantEvent = {
   eventId: string

@@ -8,7 +8,7 @@ import EditDialogTitle from '@components/studies/participants/modify/EditDialogT
 import EditParticipantForm from '@components/studies/participants/modify/EditParticipantForm'
 import WithdrawParticipantForm from '@components/studies/participants/modify/WithdrawParticipantForm'
 import HideWhen from '@components/widgets/HideWhen'
-import SelectAll, {SelectionType} from '@components/widgets/SelectAll'
+import SelectAll from '@components/widgets/SelectAll'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import {
   Box,
@@ -45,6 +45,7 @@ import {
   ParticipantActivityType,
   ParticipantEvent,
   RequestStatus,
+  SelectionType,
 } from '@typedefs/types'
 import _ from 'lodash'
 import React, {FunctionComponent, ReactNode} from 'react'
