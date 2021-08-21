@@ -35,17 +35,17 @@ const ImportParticipantsInstructions: FunctionComponent<{
 
   const createDownloadTemplate = async () => {
     const templateData: Record<string, string> = {
-      note: '',
       externalId: '',
     }
-    studyEvents?.forEach(e => {
-      templateData[EventService.formatCustomEventIdForDisplay(e.identifier)] =
-        ''
-    })
     if (!isEnrolledById) {
       templateData['phoneNumber'] = ''
     }
 
+    studyEvents?.forEach(e => {
+      templateData[EventService.formatCustomEventIdForDisplay(e.identifier)] =
+        ''
+    })
+    templateData['note'] = ''
     //csv and blob it
     const csvData = jsonToCSV([templateData])
     const blob = new Blob([csvData], {
