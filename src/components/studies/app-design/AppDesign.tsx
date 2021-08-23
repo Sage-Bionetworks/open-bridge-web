@@ -451,7 +451,6 @@ const AppDesign: React.FunctionComponent<
   onSave,
   study,
   onError,
-  isReadOnly,
 }: AppDesignProps & StudyBuilderComponentProps) => {
   const handleError = useErrorHandler()
   const params = Utility.getSearchParams(window.location.search)
@@ -734,7 +733,7 @@ const AppDesign: React.FunctionComponent<
   const hasError = (errorProperty: keyof ErrorStateType) => {
     return showError && !!errorState[errorProperty]
   }
-  if (isReadOnly) {
+  if (StudyService.isStudyClosedToEdits(study)) {
     return (
       <ReadOnlyAppDesign
         children={children}
