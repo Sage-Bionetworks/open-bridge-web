@@ -61,6 +61,7 @@ function userReducer(state: UserSessionData, action: Action): UserSessionData {
 
     case 'LOGOUT':
       Utility.clearSession()
+      window.location.href = "/sign-in"
       return {
         ...initialState,
       }
