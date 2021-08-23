@@ -1,9 +1,9 @@
+import {useStudyBuilderInfo} from '@helpers/hooks'
 import React, {FunctionComponent} from 'react'
 import {matchPath, Route, Switch, useHistory} from 'react-router-dom'
 import './App.css'
 import StudyTopNav from './components/studies/StudyTopNav'
 import TopNav from './components/widgets/AppTopNav'
-import {useStudyBuilderInfo} from './helpers/hooks'
 import {useStudyInfoDataDispatch} from './helpers/StudyInfoContext'
 import Utility from './helpers/utility'
 import PrivateRoutes from './routes_private'
@@ -26,20 +26,8 @@ const AuthenticatedApp: FunctionComponent<{
   const [studyId, setStudyId] = React.useState<string | undefined>()
   const [studySection, setStudySection] = React.useState<string | undefined>()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
-  const {data: builderInfo, error} = useStudyBuilderInfo(studyId)
-
   const history = useHistory()
-
-  React.useEffect(() => {
-    if (builderInfo?.schedule && builderInfo.study) {
-      studyDataUpdateFn({type: 'SET_ALL', payload: builderInfo})
-    } else if (builderInfo?.study) {
-      studyDataUpdateFn({
-        type: 'SET_STUDY',
-        payload: {study: builderInfo.study},
-      })
-    }
-  }, [builderInfo, error, studyDataUpdateFn])
+  const {studyError} = useStudyBuilderInfo(studyId, studyDataUpdateFn)
 
   //on routechange set body class
   React.useEffect(() => {
@@ -71,7 +59,7 @@ const AuthenticatedApp: FunctionComponent<{
       {studyId && (
         <StudyTopNav
           studyId={studyId!}
-          error={error}
+          error={studyError}
           currentSection={studySection}></StudyTopNav>
       )}
       <main>
