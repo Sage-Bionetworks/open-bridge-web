@@ -400,6 +400,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                 </Button>
               }></Logout>
             <Button
+              disabled={isLoginButtonDisabled}
               variant="text"
               className={clsx(
                 classes.drawerAuthOptions,
