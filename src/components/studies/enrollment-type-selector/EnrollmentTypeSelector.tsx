@@ -133,15 +133,14 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
 const ROW_HEADINGS = [
   'Anonymous enrollment',
-  'Participant receives SMS with link to download app',
   'Allows participant to enroll in multiple studies',
   'More secure method of verification',
   'Does not require PHI IRB approval',
 ]
 
-const PHONE_SELECTIONS = [false, true, true, true, false]
+const PHONE_SELECTIONS = [false, true, true, false]
 
-const ID_SELECTIONS = [true, false, false, false, true]
+const ID_SELECTIONS = [true, false, false, true]
 
 export interface EnrollmentTypeSelectorProps {
   study: Study
