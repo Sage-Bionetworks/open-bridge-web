@@ -1,3 +1,4 @@
+import {Schedule} from '@typedefs/scheduling'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {
@@ -6,6 +7,7 @@ import {
   Study,
   StudyPhase,
 } from '../types/types'
+import ScheduleService from './schedule.service'
 
 const StudyService = {
   editStudyLogo,
@@ -15,6 +17,7 @@ const StudyService = {
   isStudyInDesign,
   isStudyClosedToEdits,
   createStudy,
+  copyStudy,
   launchStudy,
   removeStudy,
   updateStudy,
@@ -131,6 +134,48 @@ async function createStudy(study: Study, token: string): Promise<number> {
   )
 
   return newVersion.data.version
+}
+
+async function copyStudy(
+  studyId: string,
+  token: string
+): Promise<{study: Study; schedule?: Schedule}> {
+  // get original study
+  const studyToCopy = await getStudy(studyId, token)
+  if (!studyToCopy) {
+    throw Error('No matching study found')
+  }
+
+  let scheduleToCopy = undefined
+  try {
+    scheduleToCopy = await ScheduleService.getSchedule(
+      studyToCopy.identifier,
+      token!
+    )
+  } catch (error) {
+    console.log(error, 'no schedule')
+  } //dont' do anything . no schedule
+  const newStudyId = Utility.generateNonambiguousCode(6, 'CONSONANTS')
+  const newStudy = {
+    ...studyToCopy,
+    identifier: newStudyId,
+    version: 1,
+    name: `Copy of ${studyToCopy.name}`,
+    phase: 'design' as StudyPhase,
+    createdOn: new Date(),
+    modifiedOn: new Date(),
+  }
+
+  await createStudy(newStudy, token)
+  let copiedSchedule
+  if (scheduleToCopy) {
+    copiedSchedule = await ScheduleService.createSchedule(
+      newStudyId,
+      scheduleToCopy,
+      token!
+    )
+  }
+  return {study: newStudy, schedule: copiedSchedule}
 }
 
 async function updateStudy(study: Study, token: string): Promise<number> {
