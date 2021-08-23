@@ -50,6 +50,7 @@ import {
 import _ from 'lodash'
 import React, {FunctionComponent, ReactNode} from 'react'
 import Pluralize from 'react-pluralize'
+import GridCellExpand from './GridCellExpand'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -293,6 +294,15 @@ function renderColumnHeaderWithIcon(icon: string, headerName: string) {
   ) as ReactNode
 }
 
+function renderCellExpand(params: GridCellParams) {
+  return (
+    <GridCellExpand
+      value={params.value ? params.value.toString() : ''}
+      width={params.colDef.computedWidth}
+    />
+  )
+}
+
 /*************** COLUMNS    ****** */
 
 function getColumns(
@@ -349,7 +359,12 @@ function getColumns(
       width: 120,
     },
 
-    {field: 'id', headerName: 'HealthCode', flex: 2},
+    {
+      field: 'id',
+      headerName: 'HealthCode',
+      renderCell: renderCellExpand,
+      flex: 2,
+    },
 
     {
       field: 'joinedDate',
@@ -389,9 +404,9 @@ function getColumns(
     ),
   }
 
-  const customEventColumns = customStudyEvents.map(customEvent => {
+  const customEventColumns = customStudyEvents.map((customEvent, index) => {
     const col: GridColDef = {
-      field: customEvent.identifier,
+      field: customEvent.identifier + index,
       headerName: EventService.formatCustomEventIdForDisplay(
         customEvent.identifier
       ),

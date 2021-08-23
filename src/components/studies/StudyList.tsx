@@ -15,7 +15,6 @@ import {useAsync} from '../../helpers/AsyncHook'
 import {useUserSessionDataState} from '../../helpers/AuthContext'
 import {useStudyInfoDataDispatch} from '../../helpers/StudyInfoContext'
 import Utility from '../../helpers/utility'
-import ScheduleService from '../../services/schedule.service'
 import StudyService from '../../services/study.service'
 import {latoFont} from '../../style/theme'
 import constants from '../../types/constants'
@@ -286,88 +285,40 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   const createStudy = async (study?: Study) => {
     //if study is provided -- we are duplicating
-    const id = Utility.generateNonambiguousCode(6, 'CONSONANTS')
-
-    const newStudy: Study = study
-      ? {
-          ...study!,
-          identifier: id,
-          version: 1,
-          name: `Copy of ${study!.name}`,
-          phase: 'design' as StudyPhase,
-          createdOn: new Date(),
-          modifiedOn: new Date(),
-        }
-      : {
-          identifier: id,
-          version: 1,
-          clientData: {},
-          phase: 'design' as StudyPhase,
-          name: constants.constants.NEW_STUDY_NAME,
-          signInTypes: [],
-          createdOn: new Date(),
-          modifiedOn: new Date(),
-        }
 
     if (study) {
-      //if we are duplicating
-      const studyFromServer = await StudyService.getStudy(
-        study.identifier,
+      const {study: newStudy} = await StudyService.copyStudy(
+        study.identifier!,
         token!
       )
-      if (!studyFromServer) {
-        throw Error('No matching study found')
-      }
-      //if (studyFromServer?.scheduleGuid) {
-      // need to duplicate the schedule\
-      let scheduleToCopy
-      try {
-        scheduleToCopy = await ScheduleService.getSchedule(
-          studyFromServer.identifier,
-          token!
-        )
-      } catch (error) {
-        console.log(error, 'no schedule')
-      } //dont' do anything . no shcedule
-      if (scheduleToCopy) {
-        const copiedSchedule = await ScheduleService.createSchedule(
-          study.identifier,
-          scheduleToCopy,
-          token!
-        )
 
-        studyDataUpdateFn({
-          type: 'SET_SCHEDULE',
-          payload: {study: newStudy, schedule: copiedSchedule},
-        })
-      }
-    }
-
-    const version = await StudyService.createStudy(newStudy, token!)
-    newStudy.version = version
-    studyDataUpdateFn({
-      type: 'SET_STUDY',
-      payload: {study: newStudy},
-    })
-
-    //setStudies([...studies|| [], newStudy])
-    if (study) {
-      setHighlightedStudyId(id)
+      setHighlightedStudyId(newStudy.identifier)
       resetNewlyAddedStudyID = setTimeout(() => {
         setHighlightedStudyId(null)
       }, 2000)
     } else {
-      if (newStudy) {
-        studyDataUpdateFn({
-          type: 'SET_STUDY',
-          payload: {study: newStudy},
-        })
-        window.location.replace(
-          `${window.location.origin}/studies/builder/${id}/session-creator`
-        )
-      } else {
-        handleError(new Error('Study was not created'))
+      const id = Utility.generateNonambiguousCode(6, 'CONSONANTS')
+      const newStudy = {
+        identifier: id,
+        version: 1,
+        clientData: {},
+        phase: 'design' as StudyPhase,
+        name: constants.constants.NEW_STUDY_NAME,
+        signInTypes: [],
+        createdOn: new Date(),
+        modifiedOn: new Date(),
       }
+
+      const version = await StudyService.createStudy(newStudy, token!)
+      newStudy.version = version
+      studyDataUpdateFn({
+        type: 'SET_STUDY',
+        payload: {study: newStudy},
+      })
+
+      window.location.replace(
+        `${window.location.origin}/studies/builder/${id}/session-creator`
+      )
     }
   }
 

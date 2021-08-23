@@ -92,10 +92,10 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
           <Box flexShrink={0} flexBasis={400} pl={8}>
             <>
               Initial_Login
-              {(study.clientData.events || []).map(evt => (
+              {(study.clientData.events || []).map((evt, index) => (
                 <FormGroup
                   row={true}
-                  key={evt.identifier}
+                  key={evt.identifier + index}
                   style={{alignItems: 'center', marginTop: '21px'}}>
                   <EditableTextbox
                     initValue={evt.identifier}
