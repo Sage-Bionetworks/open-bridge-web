@@ -269,7 +269,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
     }
     return initial?.toUpperCase() || '?'
   }
-  // Hide the app store download page and also the sing in page from the nav.
+  // Hide the app store download page and also the sign in page from the nav.
   routes = routes.filter(
     route => route.name !== 'APP STORE' && route.name !== 'SIGN IN'
   )
