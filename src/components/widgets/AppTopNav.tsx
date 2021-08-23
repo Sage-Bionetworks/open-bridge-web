@@ -19,6 +19,7 @@ import {latoFont} from '../../style/theme'
 import {UserSessionData} from '../../types/types'
 import Logout from '../account/Logout'
 import MobileDrawerMenuHeader from './MobileDrawerMenuHeader'
+import {useLocation} from 'react-router'
 
 const drawerWidth = '320px'
 
@@ -248,6 +249,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
   ...props
 }: AppTopNavProps) => {
   const classes = useStyles()
+  const location = useLocation()
 
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null)
@@ -273,6 +275,11 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
   routes = routes.filter(
     route => route.name !== 'APP STORE' && route.name !== 'SIGN IN'
   )
+
+  const isLoginButtonDisabled = React.useMemo(() => {
+    return location.pathname.endsWith('/sign-in')
+  }, [location])
+
   return (
     <>
       {' '}
@@ -323,6 +330,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                 <></>
                 <div className={classes.login}>
                   <Button
+                    disabled={isLoginButtonDisabled}
                     variant="text"
                     className={classes.toolbarLink}
                     href={'/sign-in'}>
