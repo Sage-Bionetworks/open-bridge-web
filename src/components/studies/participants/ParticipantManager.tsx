@@ -639,20 +639,31 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           }
     //massage data
     const transformedParticipantsData = participantsData.items.map(
-      (p: ExtendedParticipantAccountSummary) => ({
-        participantId: p.externalIds[study.identifier],
-        healthCode: p.id,
-        phoneNumber: p.phone?.nationalFormat,
-        /* clinicVisitDate: p.clinicVisitDate
+      (p: ExtendedParticipantAccountSummary) => {
+        const participant: Record<string, string | undefined> = {
+          participantId: p.externalIds[study.identifier],
+          healthCode: p.id,
+          phoneNumber: p.phone?.nationalFormat,
+          /* clinicVisitDate: p.clinicVisitDate
           ? new Date(p.clinicVisitDate).toLocaleDateString()
           : '-',*/
-        events: p.events || [],
-        // LEON TODO: Revisit when we have smsDate
-        joinedDate: p.joinedDate
-          ? new Date(p.joinedDate).toLocaleDateString()
-          : '',
-        note: p.note || '',
-      })
+          // events: p.events || [],
+          // LEON TODO: Revisit when we have smsDate
+          joinedDate: p.joinedDate
+            ? new Date(p.joinedDate).toLocaleDateString()
+            : '',
+          note: p.note || '',
+        }
+        studyEvents?.forEach(currentEvent => {
+          const matchingEvent = p.events?.find(
+            pEvt => pEvt.eventId === currentEvent.identifier
+          )
+          participant[currentEvent.identifier] = matchingEvent?.timestamp
+            ? new Date(matchingEvent?.timestamp).toDateString()
+            : ''
+        })
+        return participant
+      }
     )
 
     //csv and blob it
@@ -663,6 +674,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     // get the fake link
     const fileObjUrl = URL.createObjectURL(blob)
     setFileDownloadUrl(fileObjUrl)
+
     setLoadingIndicators({isDownloading: false})
   }
 

@@ -57,8 +57,8 @@ const ImportParticipantsInstructions: FunctionComponent<{
     // setLoadingIndicators({isDownloading: false})
   }
 
-  const instructionItems = studyEvents.map(evt => (
-    <li>
+  const instructionItems = studyEvents.map((evt, i) => (
+    <li key={i}>
       <strong>
         {EventService.formatCustomEventIdForDisplay(evt.identifier)}
       </strong>{' '}
