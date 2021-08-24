@@ -1,5 +1,9 @@
 // pick a date util library
 
+import {ReactComponent as PencilIcon} from '@assets/edit_pencil.svg'
+import {ReactComponent as UploadIcon} from '@assets/upload.svg'
+import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
+import Utility from '@helpers/utility'
 import {
   Box,
   Button,
@@ -13,16 +17,12 @@ import {
 } from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
+import {poppinsFont, theme} from '@style/theme'
+import {SchedulingEvent} from '@typedefs/scheduling'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {CSVReader} from 'react-papaparse'
-import {ReactComponent as PencilIcon} from '../../../../assets/edit_pencil.svg'
-import {ReactComponent as UploadIcon} from '../../../../assets/upload.svg'
-import Utility from '../../../../helpers/utility'
-import {poppinsFont, theme} from '../../../../style/theme'
-import {SchedulingEvent} from '../../../../types/scheduling'
 import {EditableParticipantData, Study} from '../../../../types/types'
-import DialogTitleWithClose from '../../../widgets/DialogTitleWithClose'
 import {BlueButton} from '../../../widgets/StyledComponents'
 import TabPanel from '../../../widgets/TabPanel'
 import AddGeneratedParticipant from './AddGeneratedParticipant'

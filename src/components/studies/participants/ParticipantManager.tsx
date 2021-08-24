@@ -49,12 +49,10 @@ import {
   ParticipantEvent,
   RequestStatus,
   SelectionType,
-  StringDictionary,
 } from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import {jsonToCSV} from 'react-papaparse'
 import {RouteComponentProps} from 'react-router-dom'
 import AddParticipants from './add/AddParticipants'
 import DialogContents from './DialogContents'
@@ -64,6 +62,7 @@ import ParticipantTablePagination from './grid/ParticipantTablePagination'
 import BatchEditForm from './modify/BatchEditForm'
 import ParticipantManagerPlaceholder from './ParticipantManagerPlaceholder'
 import ParticipantSearch from './ParticipantSearch'
+import ParticipantUtility from './participantUtility'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -256,70 +255,6 @@ const getCurrentPageFromPageNavigationArrowPressed = (
   return currentPage //should not happen
 }
 
-async function getRelevantParticipantInfo(
-  studyId: string,
-  token: string,
-  participants: ExtendedParticipantAccountSummary[]
-) {
-  const eventsMap: StringDictionary<{
-    timeline_retrieved: Date | undefined
-    customEvents: ParticipantEvent[]
-  }> = await EventService.getRelevantEventsForParticipants(
-    studyId,
-    token,
-    participants.map(p => p.id)
-  )
-  const result = participants!.map(participant => {
-    const id = participant.id as string
-    const events = eventsMap[id]
-    if (participant.externalId) {
-      const splitExternalId = participant.externalId.split(':')
-      let id = ''
-      if (splitExternalId.length === 1) {
-        id = splitExternalId[0]
-      } else {
-        id = splitExternalId[splitExternalId[0] === studyId ? 1 : 0]
-      }
-      participant.externalId = Utility.formatStudyId(id)
-    }
-    const updatedParticipant = {
-      ...participant,
-      joinedDate: events.timeline_retrieved,
-      events: events.customEvents,
-      //   smsDate: event.smsDate,
-    }
-    return updatedParticipant
-  })
-  return result
-}
-
-async function getParticipants(
-  studyId: string,
-  token: string,
-  currentPage: number,
-  pageSize: number, // set to 0 to get all the participants
-  tab: ParticipantActivityType
-): Promise<ParticipantData> {
-  const offset = (currentPage - 1) * pageSize
-
-  let participants: ParticipantData = await ParticipantService.getParticipants(
-    studyId,
-    token!,
-    tab,
-    pageSize,
-    offset
-  )
-
-  const retrievedParticipants = participants ? participants.items : []
-  const numberOfParticipants = participants ? participants.total : 0
-  const result = await getRelevantParticipantInfo(
-    studyId,
-    token,
-    retrievedParticipants
-  )
-  return {items: result, total: numberOfParticipants}
-}
-
 /***  subcomponents  */
 const AddTestParticipantsIconSC: FunctionComponent<{title: string}> = ({
   title,
@@ -469,18 +404,16 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     const fn = async () => {
       console.log('getting data')
       const result: ParticipantData = await run(
-        getParticipants(study.identifier, token!, currentPage, pageSize, tab)
+        ParticipantUtility.getParticipants(
+          study.identifier,
+          currentPage,
+          pageSize,
+          tab
+        )
       )
     }
     fn()
-  }, [
-    study?.identifier,
-    refreshParticipantsToggle,
-    currentPage,
-    pageSize,
-    token,
-    tab,
-  ])
+  }, [study?.identifier, refreshParticipantsToggle, currentPage, pageSize, tab])
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
@@ -594,42 +527,23 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const handleResetSearch = async () => {
     setIsUserSearchingForParticipant(false)
     const result = await run(
-      getParticipants(study!.identifier, token!, currentPage, pageSize, tab)
+      ParticipantUtility.getParticipants(
+        study!.identifier,
+        currentPage,
+        pageSize,
+        tab
+      )
     )
     setParticipantData({items: result.items, total: result.total})
   }
 
-  const createDownloadTemplate = async () => {
-    const templateData: Record<string, string> = {
-      note: '',
-      externalId: '',
-    }
-    studyEvents?.forEach(e => {
-      templateData[EventService.formatCustomEventIdForDisplay(e.identifier)] =
-        ''
-    })
-    if (!Utility.isSignInById(study.signInTypes)) {
-      templateData['phoneNumber'] = ''
-    }
-
-    //csv and blob it
-    const csvData = jsonToCSV([templateData])
-    const blob = new Blob([csvData], {
-      type: 'text/csv;charset=utf8;',
-    })
-    // get the fake link
-    const fileObjUrl = URL.createObjectURL(blob)
-    setFileDownloadUrl(fileObjUrl)
-    setLoadingIndicators({isDownloading: false})
-  }
-
-  const downloadParticipants = async (selection: SelectionType) => {
+  const downloadParticipants = async (selectionType: SelectionType) => {
     setLoadingIndicators({isDownloading: true})
 
     //if getting all participants
-    const participantsData: ParticipantData =
-      selection === 'ALL'
-        ? await getParticipants(study.identifier, token!, 0, 0, tab)
+    const participantsData: ParticipantData | undefined =
+      selectionType === 'ALL'
+        ? undefined
         : {
             items:
               data?.items?.filter(p =>
@@ -637,32 +551,20 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               ) || [],
             total: selectedParticipantIds[tab].length,
           }
-    //massage data
-    const transformedParticipantsData = participantsData.items.map(
-      (p: ExtendedParticipantAccountSummary) => ({
-        participantId: p.externalIds[study.identifier],
-        healthCode: p.id,
-        phoneNumber: p.phone?.nationalFormat,
-        /* clinicVisitDate: p.clinicVisitDate
-          ? new Date(p.clinicVisitDate).toLocaleDateString()
-          : '-',*/
-        events: p.events || [],
-        // LEON TODO: Revisit when we have smsDate
-        joinedDate: p.joinedDate
-          ? new Date(p.joinedDate).toLocaleDateString()
-          : '',
-        note: p.note || '',
-      })
-    )
+    const participantBlob =
+      await ParticipantUtility.getParticipantDataForDownload(
+        study.identifier,
+        tab,
+        studyEvents,
+        selectionType,
+        Utility.isSignInById(study.signInTypes),
+        participantsData
+      )
 
-    //csv and blob it
-    const csvData = jsonToCSV(transformedParticipantsData)
-    const blob = new Blob([csvData], {
-      type: 'text/csv;charset=utf8;',
-    })
     // get the fake link
-    const fileObjUrl = URL.createObjectURL(blob)
+    const fileObjUrl = URL.createObjectURL(participantBlob)
     setFileDownloadUrl(fileObjUrl)
+
     setLoadingIndicators({isDownloading: false})
   }
 
@@ -1083,3 +985,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   return <>bye</>
 }
 export default ParticipantManager
+function getRelevantParticipantInfo(
+  studyId: string,
+  token: string,
+  retrievedParticipants: ExtendedParticipantAccountSummary[]
+) {
+  throw new Error('Function not implemented.')
+}

@@ -7,19 +7,21 @@ export type StudyInfoData = {
   schedule?: Schedule
 }
 
-type ActionType = 'SET_ALL' | 'SET_STUDY' | 'SET_SCHEDULE'
+export type ActionType = 'SET_ALL' | 'SET_STUDY' | 'SET_SCHEDULE'
 
-type Action = {type: ActionType; payload: StudyInfoData}
+export type Action = {type: ActionType; payload: StudyInfoData}
 type Dispatch = (action: Action) => void
 
 type StudyInfoProviderProps = {children: React.ReactNode}
 
 const initialState: StudyInfoData | {} = {}
 
-const StudyInfoStateContext =
-  React.createContext<StudyInfoData | undefined>(undefined)
-const StudyInfoDispatchContext =
-  React.createContext<Dispatch | undefined>(undefined)
+const StudyInfoStateContext = React.createContext<StudyInfoData | undefined>(
+  undefined
+)
+const StudyInfoDispatchContext = React.createContext<Dispatch | undefined>(
+  undefined
+)
 
 function studyInfoReducer(state: StudyInfoData, action: Action): StudyInfoData {
   switch (action.type) {

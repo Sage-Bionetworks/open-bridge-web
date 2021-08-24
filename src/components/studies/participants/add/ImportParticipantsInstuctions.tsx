@@ -35,17 +35,17 @@ const ImportParticipantsInstructions: FunctionComponent<{
 
   const createDownloadTemplate = async () => {
     const templateData: Record<string, string> = {
-      note: '',
       externalId: '',
     }
-    studyEvents?.forEach(e => {
-      templateData[EventService.formatCustomEventIdForDisplay(e.identifier)] =
-        ''
-    })
     if (!isEnrolledById) {
       templateData['phoneNumber'] = ''
     }
 
+    studyEvents?.forEach(e => {
+      templateData[EventService.formatCustomEventIdForDisplay(e.identifier)] =
+        ''
+    })
+    templateData['note'] = ''
     //csv and blob it
     const csvData = jsonToCSV([templateData])
     const blob = new Blob([csvData], {
@@ -56,6 +56,15 @@ const ImportParticipantsInstructions: FunctionComponent<{
     setFileDownloadUrl(fileObjUrl)
     // setLoadingIndicators({isDownloading: false})
   }
+
+  const instructionItems = studyEvents.map((evt, i) => (
+    <li key={i}>
+      <strong>
+        {EventService.formatCustomEventIdForDisplay(evt.identifier)}
+      </strong>{' '}
+      (can be updated later)
+    </li>
+  ))
 
   const template = isEnrolledById ? (
     <a href="/participantImport_id_template.csv" download="Ids_Template.csv">
@@ -74,9 +83,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
       <li>
         <strong>ParticipantID* </strong>
       </li>
-      <li>
-        <strong>Clinic Visit </strong>(can be updated later)
-      </li>
+      {instructionItems.map(i => i)}
       <li>
         <strong>Note</strong> (for your reference)
       </li>
@@ -86,9 +93,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
       <li>
         <strong>Phone Number* </strong>
       </li>
-      <li>
-        <strong>Clinic Visit </strong>(can be updated later)
-      </li>
+      {instructionItems.map(i => i)}
       <li>
         <strong>Reference ID</strong> (Alternate ID for your reference)
       </li>

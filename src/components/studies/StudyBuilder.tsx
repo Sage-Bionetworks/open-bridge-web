@@ -438,27 +438,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
       }></NavButtons>,
   ]
 
-  if (builderInfo.study && !builderInfo.schedule) {
-    return (
-      <Box className={classes.introInfoContainer}>
-        <IntroInfo
-          studyName={builderInfo.study.name}
-          onContinue={(
-            studyName: string,
-            duration: string,
-            startEventId: StartEventId
-          ) => {
-            createScheduleAndNameStudy(
-              builderInfo.study.identifier,
-              studyName,
-              duration,
-              startEventId
-            )
-          }}></IntroInfo>
-      </Box>
-    )
-  }
-
   const getClasses = () => {
     return clsx(classes.mainArea, {
       [classes.mainAreaNormalWithLeftNav]: open,
@@ -557,156 +536,177 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
               <ErrorBoundary
                 FallbackComponent={ErrorFallback}
                 onError={ErrorHandler}>
-                <LoadingComponent reqStatusLoading={!builderInfo}>
-                  {builderInfo.schedule && builderInfo.study && (
-                    <>
-                      {section === 'scheduler' && (
-                        <Scheduler
-                          id={id}
-                          token={token!}
-                          schedule={builderInfo.schedule}
-                          study={builderInfo.study}
-                          hasObjectChanged={hasObjectChanged}
-                          saveLoader={saveLoader}
-                          onSave={(isSavePressed: boolean) => {
-                            saveStudy(undefined).then(() =>
-                              saveSchedule(undefined, isSavePressed)
-                            )
-                          }}
-                          onUpdate={(
-                            schedule?: Schedule,
-                            events?: SchedulingEvent[]
+                <LoadingComponent reqStatusLoading={!builderInfo.study}>
+                  {builderInfo.study &&
+                    (!builderInfo.schedule ? (
+                      <Box className={classes.introInfoContainer}>
+                        <IntroInfo
+                          studyName={builderInfo.study.name}
+                          onContinue={(
+                            studyName: string,
+                            duration: string,
+                            startEventId: StartEventId
                           ) => {
-                            setHasObjectChanged(true)
-                            const newBuilderInfoObj = {...builderInfo}
-                            if (schedule) {
-                              newBuilderInfoObj.schedule = schedule
-                            }
-                            if (events) {
-                              const cData = newBuilderInfoObj.study.clientData
-                              cData.events = events
-                              newBuilderInfoObj.study = {
-                                ...newBuilderInfoObj.study,
-                                clientData: cData,
-                              }
-                            }
-                            setData(newBuilderInfoObj)
-                          }}
-                          schedulerErrors={schedulerErrors}>
-                          {navButtonsArray}
-                        </Scheduler>
-                      )}
-                      {section === 'session-creator' && (
-                        <SessionCreator
-                          study={builderInfo.study}
-                          hasObjectChanged={hasObjectChanged}
-                          saveLoader={saveLoader}
-                          id={id}
-                          onSave={() => saveSchedule()}
-                          sessions={builderInfo.schedule?.sessions || []}
-                          onUpdate={(data: StudySession[]) => {
-                            setHasObjectChanged(true)
-                            saveSchedule({
-                              ...builderInfo.schedule!,
-                              sessions: data,
-                            })
-                          }}>
-                          {navButtons}
-                        </SessionCreator>
-                      )}
-                      {section === 'enrollment-type-selector' && (
-                        <EnrollmentTypeSelector
-                          hasObjectChanged={hasObjectChanged}
-                          saveLoader={saveLoader}
-                          study={builderInfo.study}
-                          onUpdate={(study: Study) => {
-                            setHasObjectChanged(true)
-                            saveStudy(study)
-                          }}>
-                          {navButtons}
-                        </EnrollmentTypeSelector>
-                      )}
-                      {section === 'customize' && (
-                        <AppDesign
-                          hasObjectChanged={hasObjectChanged}
-                          saveLoader={saveLoader}
-                          study={builderInfo.study}
-                          onSave={() => {
-                            saveStudy(builderInfo.study, true)
-                          }}
-                          onUpdate={(updatedStudy: Study) => {
-                            setHasObjectChanged(true)
-                            setData({
-                              ...builderInfo,
-                              study: updatedStudy,
-                            })
-                          }}
-                          onError={(error: string) =>
-                            setError(prev => [...prev, error])
-                          }>
-                          {navButtons}
-                        </AppDesign>
-                      )}
-                      {section === 'preview' && (
-                        <Preview
-                          studyId={builderInfo.study.identifier}
-                          token={token!}
-                          scheduleSessions={
-                            builderInfo.schedule.sessions
-                          }></Preview>
-                      )}
-                      {section === 'launch' && (
-                        <Launch
-                          hasObjectChanged={hasObjectChanged}
-                          saveLoader={saveLoader}
-                          studyInfo={builderInfo}
-                          onSave={() =>
-                            saveStudy({
-                              ...builderInfo.study,
-                              phase: 'recruitment',
-                            })
-                          }
-                          onUpdate={(study: Study) => {
-                            setHasObjectChanged(true)
-                            setData({
-                              ...builderInfo,
-                              study: study,
-                            })
-                          }}>
-                          <NavButtons
+                            createScheduleAndNameStudy(
+                              builderInfo.study.identifier,
+                              studyName,
+                              duration,
+                              startEventId
+                            )
+                          }}></IntroInfo>
+                      </Box>
+                    ) : (
+                      <>
+                        {section === 'scheduler' && (
+                          <Scheduler
                             id={id}
-                            currentSection={section}
-                            isPrevOnly={true}
-                            onNavigate={(section: StudySection) =>
-                              changeSection(section)
+                            token={token!}
+                            schedule={builderInfo.schedule}
+                            study={builderInfo.study}
+                            hasObjectChanged={hasObjectChanged}
+                            saveLoader={saveLoader}
+                            onSave={(isSavePressed: boolean) => {
+                              saveStudy(undefined).then(() =>
+                                saveSchedule(undefined, isSavePressed)
+                              )
+                            }}
+                            onUpdate={(
+                              schedule?: Schedule,
+                              events?: SchedulingEvent[]
+                            ) => {
+                              setHasObjectChanged(true)
+                              const newBuilderInfoObj = {...builderInfo}
+                              if (schedule) {
+                                newBuilderInfoObj.schedule = schedule
+                              }
+                              if (events) {
+                                const cData = newBuilderInfoObj.study.clientData
+                                cData.events = events
+                                newBuilderInfoObj.study = {
+                                  ...newBuilderInfoObj.study,
+                                  clientData: cData,
+                                }
+                              }
+                              setData(newBuilderInfoObj)
+                            }}
+                            schedulerErrors={schedulerErrors}
+                            isReadOnly={
+                              !StudyService.isStudyInDesign(builderInfo.study)
+                            }>
+                            {navButtonsArray}
+                          </Scheduler>
+                        )}
+                        {section === 'session-creator' && (
+                          <SessionCreator
+                            study={builderInfo.study}
+                            hasObjectChanged={hasObjectChanged}
+                            saveLoader={saveLoader}
+                            id={id}
+                            onSave={() => saveSchedule()}
+                            sessions={builderInfo.schedule?.sessions || []}
+                            onUpdate={(data: StudySession[]) => {
+                              setHasObjectChanged(true)
+                              saveSchedule({
+                                ...builderInfo.schedule!,
+                                sessions: data,
+                              })
+                            }}>
+                            {navButtons}
+                          </SessionCreator>
+                        )}
+                        {section === 'enrollment-type-selector' && (
+                          <EnrollmentTypeSelector
+                            hasObjectChanged={hasObjectChanged}
+                            saveLoader={saveLoader}
+                            study={builderInfo.study}
+                            onUpdate={(study: Study) => {
+                              setHasObjectChanged(true)
+                              saveStudy(study)
+                            }}>
+                            {navButtons}
+                          </EnrollmentTypeSelector>
+                        )}
+                        {section === 'customize' && (
+                          <AppDesign
+                            hasObjectChanged={hasObjectChanged}
+                            saveLoader={saveLoader}
+                            study={builderInfo.study}
+                            onSave={() => {
+                              saveStudy(builderInfo.study, true)
+                            }}
+                            onUpdate={(updatedStudy: Study) => {
+                              setHasObjectChanged(true)
+                              setData({
+                                ...builderInfo,
+                                study: updatedStudy,
+                              })
+                            }}
+                            onError={(error: string) =>
+                              setError(prev => [...prev, error])
+                            }>
+                            {navButtons}
+                          </AppDesign>
+                        )}
+                        {section === 'preview' && (
+                          <Preview
+                            studyId={builderInfo.study.identifier}
+                            token={token!}
+                            scheduleSessions={
+                              builderInfo.schedule.sessions
+                            }></Preview>
+                        )}
+                        {section === 'launch' && (
+                          <Launch
+                            hasObjectChanged={hasObjectChanged}
+                            saveLoader={saveLoader}
+                            studyInfo={builderInfo}
+                            onSave={() =>
+                              saveStudy({
+                                ...builderInfo.study,
+                                phase: 'recruitment',
+                              })
                             }
-                            disabled={
-                              !allSessionsHaveAssessments()
-                            }></NavButtons>
-                        </Launch>
-                      )}
-                      {section === 'passive-features' && (
-                        <PassiveFeatures
-                          study={builderInfo.study}
-                          hasObjectChanged={hasObjectChanged}
-                          saveLoader={saveLoader}
-                          features={
-                            builderInfo.study.clientData.backgroundRecorders
-                          }
-                          onUpdate={(data: BackgroundRecorders) => {
-                            setHasObjectChanged(true)
-                            const updatedStudy = {
-                              ...builderInfo.study,
+                            onUpdate={(study: Study) => {
+                              setHasObjectChanged(true)
+                              setData({
+                                ...builderInfo,
+                                study: study,
+                              })
+                            }}>
+                            <NavButtons
+                              id={id}
+                              currentSection={section}
+                              isPrevOnly={true}
+                              onNavigate={(section: StudySection) =>
+                                changeSection(section)
+                              }
+                              disabled={
+                                !allSessionsHaveAssessments()
+                              }></NavButtons>
+                          </Launch>
+                        )}
+                        {section === 'passive-features' && (
+                          <PassiveFeatures
+                            study={builderInfo.study}
+                            hasObjectChanged={hasObjectChanged}
+                            saveLoader={saveLoader}
+                            features={
+                              builderInfo.study.clientData.backgroundRecorders
                             }
-                            updatedStudy.clientData.backgroundRecorders = data
+                            onUpdate={(data: BackgroundRecorders) => {
+                              setHasObjectChanged(true)
+                              const updatedStudy = {
+                                ...builderInfo.study,
+                              }
+                              updatedStudy.clientData.backgroundRecorders = data
 
-                            saveStudy(updatedStudy)
-                          }}>
-                          {navButtons}
-                        </PassiveFeatures>
-                      )}
-                    </>
-                  )}
+                              saveStudy(updatedStudy)
+                            }}>
+                            {navButtons}
+                          </PassiveFeatures>
+                        )}
+                      </>
+                    ))}
                 </LoadingComponent>
               </ErrorBoundary>
             </Box>
