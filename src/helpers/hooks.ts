@@ -31,7 +31,7 @@ export const useStudyBuilderInfo = (
     error: scheduleError,
     status: scheduleStatus,
   } = useQuery<Schedule | undefined, Error>(
-    ['getSchedule', studyId, token],
+    ['getSchedule', studyId, token, shouldGetScheduleResources],
     () => {
       return ScheduleService.getSchedule(
         studyId!,
