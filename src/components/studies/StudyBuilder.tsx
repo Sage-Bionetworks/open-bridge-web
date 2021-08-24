@@ -598,9 +598,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         )}
                         {section === 'session-creator' && (
                           <SessionCreator
-                            isReadOnly={
-                              !StudyService.isStudyInDesign(builderInfo.study)
-                            }
+                            study={builderInfo.study}
                             hasObjectChanged={hasObjectChanged}
                             saveLoader={saveLoader}
                             id={id}
@@ -618,9 +616,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         )}
                         {section === 'enrollment-type-selector' && (
                           <EnrollmentTypeSelector
-                            isReadOnly={
-                              !StudyService.isStudyInDesign(builderInfo.study)
-                            }
                             hasObjectChanged={hasObjectChanged}
                             saveLoader={saveLoader}
                             study={builderInfo.study}
@@ -633,9 +628,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         )}
                         {section === 'customize' && (
                           <AppDesign
-                            isReadOnly={StudyService.isStudyClosedToEdits(
-                              builderInfo.study
-                            )}
                             hasObjectChanged={hasObjectChanged}
                             saveLoader={saveLoader}
                             study={builderInfo.study}
@@ -665,9 +657,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         )}
                         {section === 'launch' && (
                           <Launch
-                            isReadOnly={StudyService.isStudyClosedToEdits(
-                              builderInfo.study
-                            )}
                             hasObjectChanged={hasObjectChanged}
                             saveLoader={saveLoader}
                             studyInfo={builderInfo}
@@ -698,9 +687,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                         )}
                         {section === 'passive-features' && (
                           <PassiveFeatures
-                            isReadOnly={
-                              !StudyService.isStudyInDesign(builderInfo.study)
-                            }
+                            study={builderInfo.study}
                             hasObjectChanged={hasObjectChanged}
                             saveLoader={saveLoader}
                             features={

@@ -11,6 +11,7 @@ import ConfigureBurstTab from './ConfigureBurstTab'
 import ScheduleCreatorTab from './ScheduleCreatorTab'
 import SchedulerStepper from './SchedulerStepper'
 import SessionStartTab from './SessionStartTab'
+import StudyService from "@services/study.service"
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -35,7 +36,6 @@ export type SchedulerProps = {
   token: string
   onSave: Function
   schedulerErrors: SchedulerErrorType[]
-  isReadOnly?: boolean
   study: Study
 }
 
@@ -102,7 +102,9 @@ const Scheduler: React.FunctionComponent<
       <div className={classes.instructions}>
         <StepContent step={activeStep}>
           <SessionStartTab {...props} />
-          <ScheduleCreatorTab {...props}></ScheduleCreatorTab>
+          <ScheduleCreatorTab
+            isReadOnly={!StudyService.isStudyInDesign(props.study)}
+            {...props}></ScheduleCreatorTab>
           <ConfigureBurstTab {...props}></ConfigureBurstTab>
         </StepContent>
         <Box py={2} px={2} textAlign="right" bgcolor="#fff">

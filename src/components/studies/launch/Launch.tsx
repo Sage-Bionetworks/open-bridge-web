@@ -96,7 +96,6 @@ const Launch: React.FunctionComponent<
   hasObjectChanged,
   saveLoader,
   children,
-  isReadOnly,
 }: LaunchProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
   const isStudyLive =
@@ -135,7 +134,7 @@ const Launch: React.FunctionComponent<
   const handleReset = () => {
     setActiveStep(0)
   }
-
+  const isReadOnly = StudyService.isStudyClosedToEdits(studyInfo.study)
   if (isReadOnly) {
     return <ReadOnlyIrbDetails study={studyInfo.study} />
   }

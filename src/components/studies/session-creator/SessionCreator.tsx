@@ -17,7 +17,7 @@ import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import AssessmentService from '../../../services/assessment.service'
 import {StudySession} from '../../../types/scheduling'
-import {Assessment, StudyBuilderComponentProps} from '../../../types/types'
+import {Assessment, Study, StudyBuilderComponentProps} from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import {MTBHeadingH1} from '../../widgets/Headings'
 import AssessmentSelector from './AssessmentSelector'
@@ -27,6 +27,7 @@ import SingleSessionContainer from './SingleSessionContainer'
 import ReadOnlySessionCreator from './read-only-pages/ReadOnlySessionCreator'
 import {PrevButton} from '../../widgets/StyledComponents'
 import {poppinsFont} from '../../../style/theme'
+import StudyService from '@services/study.service'
 
 export const useStyles = makeStyles(theme => ({
   root: {
@@ -91,13 +92,12 @@ type SessionCreatorProps = {
   id: string
   sessions: StudySession[]
   onSave: Function
-  isReadOnly?: boolean
+  study: Study
 }
 
 const SessionCreator: FunctionComponent<
   SessionCreatorProps & StudyBuilderComponentProps
 > = ({
-  isReadOnly,
   sessions,
   id,
   onUpdate,
@@ -105,6 +105,7 @@ const SessionCreator: FunctionComponent<
   saveLoader,
   children,
   onSave,
+  study,
 }: SessionCreatorProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
 
@@ -113,10 +114,8 @@ const SessionCreator: FunctionComponent<
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
 
-  const [
-    isAddingAssessmentToSession,
-    setIsAddingAssessmentToSession,
-  ] = useState(false)
+  const [isAddingAssessmentToSession, setIsAddingAssessmentToSession] =
+    useState(false)
   const [activeSession, setActiveSession] = React.useState(
     sessions.length > 0 ? sessions[0].guid : undefined
   )
@@ -176,7 +175,7 @@ const SessionCreator: FunctionComponent<
     return session
   }
 
-  if (isReadOnly) {
+  if (!StudyService.isStudyInDesign(study)) {
     return <ReadOnlySessionCreator children={children} sessions={sessions} />
   }
 

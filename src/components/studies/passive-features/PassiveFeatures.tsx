@@ -8,8 +8,10 @@ import {latoFont, ThemeType} from '../../../style/theme'
 import {
   BackgroundRecorders,
   StudyBuilderComponentProps,
+  Study,
 } from '../../../types/types'
 import {MTBHeadingH3} from '../../widgets/Headings'
+import StudyService from '@services/study.service'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -104,7 +106,7 @@ const sensors: Partial<RecorderInfo> = {
 
 export interface PassiveFeaturesProps {
   features?: BackgroundRecorders
-  isReadOnly?: boolean
+  study: Study
 }
 
 const PassiveFeatures: React.FunctionComponent<
@@ -112,7 +114,7 @@ const PassiveFeatures: React.FunctionComponent<
 > = ({
   features,
   onUpdate,
-  isReadOnly,
+  study,
   children,
 }: PassiveFeaturesProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
@@ -172,6 +174,7 @@ const PassiveFeatures: React.FunctionComponent<
       </div>
     )
   }
+  const isReadOnly = !StudyService.isStudyInDesign(study)
   const displayMotionSection = !isReadOnly || (isReadOnly && features?.motion)
   const displayMicrophoneSection =
     !isReadOnly || (isReadOnly && features?.microphone)
