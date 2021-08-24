@@ -41,9 +41,11 @@ export function formatExternalId(studyId: string, externalId: string) {
     return EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING
   }
   let forDisplay = externalId.replace(`:${studyId}`, '')
-  return forDisplay.length !== 6
+  return forDisplay
+  //AGENDEL - we are not formatting external ids any more 8/24
+  /*return forDisplay.length !== 6
     ? forDisplay
-    : `${forDisplay.substr(0, 3)}-${forDisplay.substr(3, 3)}`
+    : `${forDisplay.substr(0, 3)}-${forDisplay.substr(3, 3)}`*/
 }
 
 async function getAllPages<T>(

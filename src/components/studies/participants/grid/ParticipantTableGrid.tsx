@@ -389,7 +389,7 @@ function getColumns(
 
   const editColumn: GridColDef = {
     field: 'edit',
-    headerName: 'Action',
+    headerName: 'Edit',
     disableClickEventBubbling: true,
     disableColumnMenu: true,
     width: 70,
