@@ -43,7 +43,7 @@ function getSteps() {
   return [
     {label: 'Define Session Start'},
     {label: 'Create Schedule'},
-    {label: 'Configure Optional EMA/Bursts'},
+    // {label: 'Configure Optional EMA/Bursts'},
   ]
 }
 
@@ -122,7 +122,7 @@ const Scheduler: React.FunctionComponent<
             &nbsp;&nbsp;
           </>
 
-          {activeStep < 2 ? (
+          {activeStep < 1 ? (
             <NextButton
               variant="contained"
               color="primary"
