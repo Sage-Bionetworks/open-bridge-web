@@ -57,6 +57,15 @@ const ImportParticipantsInstructions: FunctionComponent<{
     // setLoadingIndicators({isDownloading: false})
   }
 
+  const instructionItems = studyEvents.map((evt, i) => (
+    <li key={i}>
+      <strong>
+        {EventService.formatCustomEventIdForDisplay(evt.identifier)}
+      </strong>{' '}
+      (can be updated later)
+    </li>
+  ))
+
   const template = isEnrolledById ? (
     <a href="/participantImport_id_template.csv" download="Ids_Template.csv">
       <strong>Ids_Template.csv</strong>
@@ -74,9 +83,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
       <li>
         <strong>ParticipantID* </strong>
       </li>
-      <li>
-        <strong>Clinic Visit </strong>(can be updated later)
-      </li>
+      {instructionItems.map(i => i)}
       <li>
         <strong>Note</strong> (for your reference)
       </li>
@@ -86,9 +93,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
       <li>
         <strong>Phone Number* </strong>
       </li>
-      <li>
-        <strong>Clinic Visit </strong>(can be updated later)
-      </li>
+      {instructionItems.map(i => i)}
       <li>
         <strong>Reference ID</strong> (Alternate ID for your reference)
       </li>
