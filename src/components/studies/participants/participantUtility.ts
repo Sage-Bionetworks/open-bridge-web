@@ -56,10 +56,13 @@ async function getRelevantParticipantInfo(
 
 async function getParticipants(
   studyId: string,
-
   currentPage: number,
   pageSize: number, // set to 0 to get all the participants
-  tab: ParticipantActivityType
+  tab: ParticipantActivityType,
+  searchOptions?: {
+    searchParam: 'EXTERNAL_ID' | 'PHONE_NUMBER'
+    searchValue: string
+  }
 ): Promise<ParticipantData> {
   const offset = (currentPage - 1) * pageSize
   const token = Utility.getSession()?.token
@@ -67,22 +70,28 @@ async function getParticipants(
     throw Error('Need token')
   }
 
-  let participants: ParticipantData = await ParticipantService.getParticipants(
-    studyId,
-    token,
-    tab,
-    pageSize,
-    offset
-  )
+  const {items, total} = searchOptions?.searchValue
+    ? await ParticipantService.participantSearch(
+        studyId,
+        token,
+        searchOptions.searchValue,
+        tab,
+        searchOptions.searchParam
+      )
+    : await ParticipantService.getParticipants(
+        studyId,
+        token,
+        tab,
+        pageSize,
+        offset
+      )
 
-  const retrievedParticipants = participants ? participants.items : []
-  const numberOfParticipants = participants ? participants.total : 0
-  const result = await getRelevantParticipantInfo(
-    studyId,
-    token,
-    retrievedParticipants
-  )
-  return {items: result, total: numberOfParticipants}
+  if (items && total) {
+    const result = await getRelevantParticipantInfo(studyId, token, items)
+    return {items: result, total}
+  } else {
+    return {items: [], total: 0}
+  }
 }
 
 async function getParticipantDataForDownload(
@@ -141,7 +150,7 @@ async function getParticipantDataForDownload(
 
 const ParticipantUtility = {
   getParticipantDataForDownload,
-  getRelevantParticipantInfo,
+  // getRelevantParticipantInfo,
   getParticipants,
 }
 
