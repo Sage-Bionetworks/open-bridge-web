@@ -1,6 +1,12 @@
 import {useStudyBuilderInfo} from '@helpers/hooks'
 import React, {FunctionComponent} from 'react'
-import {matchPath, Route, Switch, useHistory} from 'react-router-dom'
+import {
+  matchPath,
+  Route,
+  Switch,
+  useHistory,
+  useLocation,
+} from 'react-router-dom'
 import './App.css'
 import StudyTopNav from './components/studies/StudyTopNav'
 import TopNav from './components/widgets/AppTopNav'
@@ -27,7 +33,14 @@ const AuthenticatedApp: FunctionComponent<{
   const [studySection, setStudySection] = React.useState<string | undefined>()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
   const history = useHistory()
-  const {studyError} = useStudyBuilderInfo(studyId, studyDataUpdateFn)
+  const userIsInParticipantManager = useLocation().pathname.endsWith(
+    '/participant-manager'
+  )
+  const {studyError} = useStudyBuilderInfo(
+    studyId,
+    studyDataUpdateFn,
+    !userIsInParticipantManager
+  )
 
   //on routechange set body class
   React.useEffect(() => {

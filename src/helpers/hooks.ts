@@ -9,7 +9,8 @@ import {Action} from './StudyInfoContext'
 
 export const useStudyBuilderInfo = (
   studyId: string | undefined,
-  studyDataUpdateFn: Dispatch<Action>
+  studyDataUpdateFn: Dispatch<Action>,
+  shouldGetScheduleResources: boolean = true
 ) => {
   const {token} = useUserSessionDataState()
 
@@ -30,8 +31,14 @@ export const useStudyBuilderInfo = (
     error: scheduleError,
     status: scheduleStatus,
   } = useQuery<Schedule | undefined, Error>(
-    ['getSchedule', studyId, token],
-    () => ScheduleService.getSchedule(studyId!, token!),
+    ['getSchedule', studyId, token, shouldGetScheduleResources],
+    () => {
+      return ScheduleService.getSchedule(
+        studyId!,
+        token!,
+        shouldGetScheduleResources
+      )
+    },
     {
       enabled: !!studyId,
       retry: false,
