@@ -513,12 +513,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         )
 
     if (total > 0) {
-      const result = await getRelevantParticipantInfo(
+      const result = await ParticipantUtility.getRelevantParticipantInfo(
         study.identifier,
         token!,
         items
       )
-      setParticipantData({items, total})
+      setParticipantData({items: result, total})
     } else {
       setParticipantData({items: [], total: 0})
     }
@@ -985,10 +985,3 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   return <>bye</>
 }
 export default ParticipantManager
-function getRelevantParticipantInfo(
-  studyId: string,
-  token: string,
-  retrievedParticipants: ExtendedParticipantAccountSummary[]
-) {
-  throw new Error('Function not implemented.')
-}
