@@ -174,7 +174,6 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
           launches, you can specify these dates for each participant in the{' '}
           <strong>Participant Manager tab.</strong>
         </p>
-
         <MTBHeadingH2>How will your session(s) start? </MTBHeadingH2>
         <p className={classes.paragraphText}>
           You can add additional calendar Events and{' '}

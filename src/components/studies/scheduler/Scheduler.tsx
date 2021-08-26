@@ -107,7 +107,7 @@ const Scheduler: React.FunctionComponent<
             {...props}></ScheduleCreatorTab>
           <ConfigureBurstTab {...props}></ConfigureBurstTab>
         </StepContent>
-        <Box py={2} px={2} textAlign="right" bgcolor="#fff">
+        <Box py={2} px={2} textAlign="right" bgcolor="inherit">
           <>
             {activeStep === 0 ? (
               firstPrevButton
