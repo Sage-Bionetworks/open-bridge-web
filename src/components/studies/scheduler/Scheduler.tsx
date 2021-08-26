@@ -11,7 +11,7 @@ import ConfigureBurstTab from './ConfigureBurstTab'
 import ScheduleCreatorTab from './ScheduleCreatorTab'
 import SchedulerStepper from './SchedulerStepper'
 import SessionStartTab from './SessionStartTab'
-import StudyService from "@services/study.service"
+import StudyService from '@services/study.service'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {

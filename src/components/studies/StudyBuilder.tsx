@@ -581,7 +581,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps> = ({
                               }
                               if (events) {
                                 const cData = newBuilderInfoObj.study.clientData
-                                cData.events = events
+                                cData.events = [...events]
                                 newBuilderInfoObj.study = {
                                   ...newBuilderInfoObj.study,
                                   clientData: cData,
