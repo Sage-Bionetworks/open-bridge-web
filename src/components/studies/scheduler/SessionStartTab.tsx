@@ -53,6 +53,10 @@ const useStyles = makeStyles((theme: Theme) =>
         outline: 'none',
       },
     },
+    newEventButton: {
+      marginTop: theme.spacing(4),
+      marginLeft: theme.spacing(0),
+    },
   })
 )
 
@@ -159,7 +163,6 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
           <Box flexShrink={0} minWidth="200px" mr={2}>
             <>
               <Box className={classes.intialLoginContainer}>Initial_Login</Box>
-
               {localEventIdentifiers.map((evt, index) => (
                 <FormGroup
                   row={true}
@@ -167,7 +170,7 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
                   style={{alignItems: 'center', marginTop: '21px'}}>
                   <input
                     key={index}
-                    value={localEventIdentifiers[index]?.identifier}
+                    value={evt.identifier}
                     onChange={e => {
                       const newIdentifiers = [...localEventIdentifiers]
                       newIdentifiers[index] = {
@@ -179,7 +182,7 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
                     onBlur={updateEvent}
                     style={{
                       border: `1px solid ${getBorderColor(
-                        localEventIdentifiers[index]?.identifier,
+                        evt.identifier,
                         index
                       )}`,
                     }}
@@ -191,10 +194,7 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
                     onClick={() => deleteEvent(evt.identifier)}>
                     <DeleteIcon
                       style={{
-                        color: getBorderColor(
-                          localEventIdentifiers[index]?.identifier,
-                          index
-                        ),
+                        color: getBorderColor(evt.identifier, index),
                       }}></DeleteIcon>
                   </IconButton>
                 </FormGroup>
@@ -203,10 +203,7 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
             <BlueButton
               variant="contained"
               onClick={addEmptyEvent}
-              style={{
-                marginTop: '32px',
-                marginLeft: '0px',
-              }}>
+              className={classes.newEventButton}>
               + New Custom Event
             </BlueButton>
           </Box>
