@@ -15,6 +15,7 @@ import {Study} from '../../../types/types'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
 import {MTBHeadingH2} from '../../widgets/Headings'
 import {BlueButton} from '../../widgets/StyledComponents'
+import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -57,6 +58,17 @@ const useStyles = makeStyles((theme: Theme) =>
       marginTop: theme.spacing(4),
       marginLeft: theme.spacing(0),
     },
+    errorText: {
+      color: 'red',
+      fontFamily: latoFont,
+      fontSize: '14px',
+      marginTop: theme.spacing(0.75),
+    },
+    calendarIcon: {
+      marginRight: theme.spacing(1),
+      width: '20px',
+      height: '20px',
+    },
   })
 )
 
@@ -81,16 +93,19 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
 
   useEffect(() => {
     if (!study.clientData?.events) return
-    checkForDuplicateEventNames()
     setLocalEventIdentifiers([...study.clientData.events])
   }, [study.clientData.events])
+
+  useEffect(() => {
+    checkForDuplicateEventNames()
+  }, [localEventIdentifiers])
 
   const addEmptyEvent = () => {
     const newEvent: SchedulingEvent = {
       identifier: 'untitled',
       updateType: 'mutable',
     }
-    const newEvents = [...(study.clientData.events || []), newEvent]
+    const newEvents = [...localEventIdentifiers, newEvent]
     onUpdate(undefined, newEvents)
   }
 
@@ -116,10 +131,17 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
     return errorState.size > 0
   }
 
-  const deleteEvent = (eventIdentifier: string) => {
-    const newEvents = (study.clientData.events || []).filter(
-      e => e.identifier !== eventIdentifier
-    )
+  const deleteEvent = (eventIdentifier: string, index: number) => {
+    const newEvents: SchedulingEvent[] = []
+    const eventToDelete = `${eventIdentifier}-${index}`
+    for (let i = 0; i < localEventIdentifiers.length; i++) {
+      const currentEvent = localEventIdentifiers[i]
+      if (eventToDelete === `${currentEvent.identifier}-${i}`) {
+        continue
+      }
+      newEvents.push(currentEvent)
+    }
+    setLocalEventIdentifiers(newEvents)
     onUpdate(undefined, newEvents)
   }
 
@@ -138,7 +160,9 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
       ? 'red'
       : 'black'
   }
-
+  const calendarIcon = (
+    <img src={CalendarIcon} className={classes.calendarIcon}></img>
+  )
   return (
     <Box className={classes.root}>
       <Box width="600px" mx="auto" textAlign="left">
@@ -164,43 +188,53 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
             <>
               <Box className={classes.intialLoginContainer}>Initial_Login</Box>
               {localEventIdentifiers.map((evt, index) => (
-                <FormGroup
-                  row={true}
-                  key={index}
-                  style={{alignItems: 'center', marginTop: '21px'}}>
-                  <input
+                <Box display="block">
+                  <FormGroup
+                    row={true}
                     key={index}
-                    value={evt.identifier}
-                    onChange={e => {
-                      const newIdentifiers = [...localEventIdentifiers]
-                      newIdentifiers[index] = {
-                        ...newIdentifiers[index],
-                        identifier: e.target.value,
-                      }
-                      setLocalEventIdentifiers(newIdentifiers)
-                    }}
-                    onBlur={updateEvent}
-                    style={{
-                      border: `1px solid ${getBorderColor(
-                        evt.identifier,
-                        index
-                      )}`,
-                    }}
-                    className={classes.input}></input>
-                  <IconButton
-                    style={{marginLeft: '4px'}}
-                    edge="end"
-                    size="small"
-                    onClick={() => deleteEvent(evt.identifier)}>
-                    <DeleteIcon
+                    style={{alignItems: 'center', marginTop: '21px'}}>
+                    <input
+                      key={index}
+                      value={evt.identifier}
+                      onChange={e => {
+                        const newIdentifiers = [...localEventIdentifiers]
+                        newIdentifiers[index] = {
+                          ...newIdentifiers[index],
+                          identifier: e.target.value,
+                        }
+                        setLocalEventIdentifiers(newIdentifiers)
+                      }}
+                      onBlur={updateEvent}
                       style={{
-                        color: getBorderColor(evt.identifier, index),
-                      }}></DeleteIcon>
-                  </IconButton>
-                </FormGroup>
+                        border: `1px solid ${getBorderColor(
+                          evt.identifier,
+                          index
+                        )}`,
+                      }}
+                      className={classes.input}></input>
+                    <IconButton
+                      style={{marginLeft: '4px'}}
+                      edge="end"
+                      size="small"
+                      onClick={() => deleteEvent(evt.identifier, index)}>
+                      <DeleteIcon
+                        style={{
+                          color: getBorderColor(evt.identifier, index),
+                        }}></DeleteIcon>
+                    </IconButton>
+                  </FormGroup>
+                  {editableTextboxErrorState.has(
+                    evt.identifier + '-' + index
+                  ) && (
+                    <Box className={classes.errorText}>
+                      Duplicate event identifier.
+                    </Box>
+                  )}
+                </Box>
               ))}
             </>
             <BlueButton
+              disabled={editableTextboxErrorState.size > 0}
               variant="contained"
               onClick={addEmptyEvent}
               className={classes.newEventButton}>
@@ -211,9 +245,14 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
             <Box mb={2}>
               An example Clinical Study might require 3 unique calendar events:
             </Box>
-            <Box mb={1}>Event 1 = Baseline Visit</Box>
-            <Box mb={1}>Event 2 = Follow-up Visit</Box>
-            <Box> Event 3 = Final Visit</Box>
+            <Box mb={1} display="flex" mr={0.5}>
+              {calendarIcon}Event 1 = Baseline Visit
+            </Box>
+            <Box mb={1} display="flex" mr={0.5}>
+              {' '}
+              {calendarIcon}Event 2 = Follow-up Visit
+            </Box>
+            <Box display="flex"> {calendarIcon}Event 3 = Final Visit</Box>
           </Box>
         </Box>
       </Box>
