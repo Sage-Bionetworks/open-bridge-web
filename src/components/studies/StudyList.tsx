@@ -1,3 +1,4 @@
+import {useStudies, useUpdateStudy} from '@helpers/hooks'
 import {
   Box,
   Button,
@@ -8,10 +9,9 @@ import {
   MenuItem,
 } from '@material-ui/core'
 import Link from '@material-ui/core/Link'
-import React, {FunctionComponent, useEffect} from 'react'
+import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps} from 'react-router-dom'
-import {useAsync} from '../../helpers/AsyncHook'
 import {useUserSessionDataState} from '../../helpers/AuthContext'
 import {useStudyInfoDataDispatch} from '../../helpers/StudyInfoContext'
 import Utility from '../../helpers/utility'
@@ -269,16 +269,9 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   let resetNewlyAddedStudyID: NodeJS.Timeout
 
-  const {
-    data: studies,
-    status,
-    error,
-    run,
-    setData: setStudies,
-  } = useAsync<Study[]>({
-    status: 'PENDING',
-    data: [],
-  })
+  const {data: studies} = useStudies()
+
+  const {mutate, isSuccess, isError, mutateAsync, data} = useUpdateStudy()
 
   const resetStatusFilters = () =>
     setStatusFilters(sections.map(section => section.sectionStatus))
@@ -287,15 +280,18 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     //if study is provided -- we are duplicating
 
     if (study) {
-      const {study: newStudy} = await StudyService.copyStudy(
-        study.identifier!,
-        token!
-      )
-
-      setHighlightedStudyId(newStudy.identifier)
-      resetNewlyAddedStudyID = setTimeout(() => {
-        setHighlightedStudyId(null)
-      }, 2000)
+      mutateAsync({study, action: 'COPY'}).then(e => {
+        //@ts-ignore
+        const newStudy = e.study
+        //@ts-ignore
+        if (e.study) {
+          setHighlightedStudyId(newStudy.identifier)
+          resetNewlyAddedStudyID = setTimeout(() => {
+            setHighlightedStudyId(null)
+          }, 2000)
+        }
+        /* */
+      })
     } else {
       const id = Utility.generateNonambiguousCode(6, 'CONSONANTS')
       const newStudy = {
@@ -330,33 +326,17 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     let result
     switch (type) {
       case 'RENAME':
-        const singleStudy = await StudyService.getStudy(
-          study?.identifier,
-          token
-        )
-        const newVersion = await StudyService.updateStudy(
-          {...singleStudy!, name: study.name},
-          token
-        )
-        setStudies(
-          studies!.map(s =>
-            s.identifier !== study.identifier
-              ? s
-              : {...study, version: newVersion}
-          )
-        )
-
+        await mutate({action: 'UPDATE', study: {...study, name: study.name}})
         setRenameStudyId('')
 
         return
 
       case 'DELETE':
-        result = await StudyService.removeStudy(study.identifier, token)
-        setStudies(result)
+        await mutate({action: 'DELETE', study: {...study, name: study.name}})
         return
 
       case 'DUPLICATE':
-        createStudy(study)
+        await createStudy(study)
         return
       default: {
       }
@@ -365,29 +345,6 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   const isSelectedFilter = (filter: DisplayStudyPhase) =>
     statusFilters.indexOf(filter) > -1 && statusFilters.length === 1
-
-  useEffect(() => {
-    let isSubscribed = true
-    const getInfo = async () => {
-      if (isSubscribed) {
-        try {
-          //setIsLoading(true)
-          const studies = await StudyService.getStudies(token!)
-          if (isSubscribed) {
-            setStudies(studies)
-          }
-        } catch (e) {
-          handleError(e)
-        }
-      }
-    }
-
-    getInfo()
-
-    return () => {
-      isSubscribed = false
-    }
-  }, [token, highlightedStudyId])
 
   if (!studies && status === 'RESOLVED') {
     return (
@@ -449,7 +406,8 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           </Box>
           <Divider className={classes.divider}></Divider>
 
-          {studies!.length > 0 &&
+          {studies &&
+            studies.length > 0 &&
             statusFilters.map((status, index) => (
               <Box
                 style={{paddingBottom: index < 3 ? '24px' : '0'}}
