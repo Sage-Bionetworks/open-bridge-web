@@ -493,48 +493,32 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }
 
   const handleSearchParticipantRequest = async (
-    isEnrolledById: boolean,
-    searchedValue: string
+    searchValue: string | undefined
   ) => {
-    const {items, total} = isEnrolledById
-      ? await ParticipantService.participantSearch(
-          study.identifier,
-          token!,
-          searchedValue,
-          tab,
-          'EXTERNAL_ID'
-        )
-      : await ParticipantService.participantSearch(
-          study.identifier,
-          token!,
-          searchedValue,
-          tab,
-          'PHONE_NUMBER'
-        )
-
-    if (total > 0) {
-      const result = await ParticipantUtility.getRelevantParticipantInfo(
-        study.identifier,
-        token!,
-        items
-      )
-      setParticipantData({items: result, total})
+    let searchOptions:
+      | {searchParam: 'EXTERNAL_ID' | 'PHONE_NUMBER'; searchValue: string}
+      | undefined = undefined
+    if (searchValue) {
+      setIsUserSearchingForParticipant(true)
+      const isById = Utility.isSignInById(study.signInTypes)
+      const searchParam = isById ? 'EXTERNAL_ID' : 'PHONE_NUMBER'
+      searchOptions = {
+        searchParam,
+        searchValue,
+      }
     } else {
-      setParticipantData({items: [], total: 0})
+      setIsUserSearchingForParticipant(false)
     }
-  }
-
-  const handleResetSearch = async () => {
-    setIsUserSearchingForParticipant(false)
-    const result = await run(
+    const {items, total} = await run(
       ParticipantUtility.getParticipants(
-        study!.identifier,
-        currentPage,
+        study.identifier,
+        0,
         pageSize,
-        tab
+        tab,
+        searchOptions
       )
     )
-    setParticipantData({items: result.items, total: result.total})
+    setParticipantData({items, total})
   }
 
   const downloadParticipants = async (selectionType: SelectionType) => {
@@ -793,12 +777,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       <ParticipantSearch
                         isEnrolledById={Utility.isSignInById(study.signInTypes)}
                         onReset={() => {
-                          handleResetSearch()
+                          handleSearchParticipantRequest(undefined)
                         }}
                         onSearch={(searchedValue: string) => {
-                          const isById = Utility.isSignInById(study.signInTypes)
-                          setIsUserSearchingForParticipant(true)
-                          handleSearchParticipantRequest(isById, searchedValue)
+                          handleSearchParticipantRequest(searchedValue)
                         }}
                         tab={tab}
                       />

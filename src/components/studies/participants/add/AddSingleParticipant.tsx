@@ -37,11 +37,6 @@ export async function addParticipantByPhone(
   phone: Phone,
   options: EditableParticipantData
 ) {
-  /*if (!externalId) {
-    const studyPrefix = studyIdentifier.substr(0, 3)
-    externalId = `${generateNonambiguousCode(6)}-${studyPrefix}`
-  }*/
-
   await ParticipantService.addParticipant(studyIdentifier, token, {
     ...options,
     phone,
