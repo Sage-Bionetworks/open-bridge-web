@@ -60,7 +60,7 @@ export const useUpdateStudy = () => {
     }
   }
 
-  const x = useMutation(update, {
+  const mutation = useMutation(update, {
     onMutate: async props => {
       queryClient.cancelQueries([KEYS.studies])
       queryClient.cancelQueries(KEYS.study)
@@ -134,7 +134,7 @@ export const useUpdateStudy = () => {
     },
   })
 
-  return x
+  return mutation
 }
 
 export const useSchedule = (studyId: string | undefined) => {
