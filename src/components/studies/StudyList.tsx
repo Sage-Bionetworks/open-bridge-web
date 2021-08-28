@@ -1,4 +1,4 @@
-import {useStudies, useUpdateStudy} from '@helpers/hooks'
+import {useStudies, useUpdateStudyInList} from '@helpers/hooks'
 import {
   Box,
   Button,
@@ -269,9 +269,17 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   let resetNewlyAddedStudyID: NodeJS.Timeout
 
-  const {data: studies} = useStudies()
+  const {
+    data: studies,
+    error: studyError,
+    isLoading: isStudyLoading,
+  } = useStudies()
 
-  const {mutate, isSuccess, isError, mutateAsync, data} = useUpdateStudy()
+  const {mutate, isSuccess, isError, mutateAsync, data} = useUpdateStudyInList()
+
+  if (studyError) {
+    handleError(studyError)
+  }
 
   const resetStatusFilters = () =>
     setStatusFilters(sections.map(section => section.sectionStatus))
@@ -346,11 +354,9 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const isSelectedFilter = (filter: DisplayStudyPhase) =>
     statusFilters.indexOf(filter) > -1 && statusFilters.length === 1
 
-  if (!studies && status === 'RESOLVED') {
+  if (!studies && !isStudyLoading) {
     return (
       <div>
-        {' '}
-        {status}
         You currently have no studies created. To begin, please click on Create
         New Study.
       </div>
@@ -358,7 +364,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   }
 
   return (
-    <Loader reqStatusLoading={status === 'PENDING' || !studies} variant="full">
+    <Loader reqStatusLoading={isStudyLoading || !studies} variant="full">
       <Box className={classes.root}>
         <Container maxWidth="lg" className={classes.studyContainer}>
           <Box display="flex" justifyContent="space-between">
