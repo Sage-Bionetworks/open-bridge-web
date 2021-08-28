@@ -148,8 +148,27 @@ async function getParticipantDataForDownload(
   return blob
 }
 
+const getDownloadTemplateRow = (
+  isEnrolledById: boolean,
+  studyEvents: SchedulingEvent[]
+): Record<string, string> => {
+  const templateData: Record<string, string> = {
+    externalId: '',
+  }
+  if (!isEnrolledById) {
+    templateData['phoneNumber'] = ''
+  }
+
+  studyEvents?.forEach(e => {
+    templateData[EventService.formatCustomEventIdForDisplay(e.identifier)] = ''
+  })
+  templateData['note'] = ''
+  return templateData
+}
+
 const ParticipantUtility = {
   getParticipantDataForDownload,
+  getDownloadTemplateRow,
   // getRelevantParticipantInfo,
   getParticipants,
 }

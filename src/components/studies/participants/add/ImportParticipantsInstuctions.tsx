@@ -5,6 +5,7 @@ import React, {FunctionComponent} from 'react'
 import {jsonToCSV} from 'react-papaparse'
 import {ReactComponent as DownloadIcon} from '../../../../assets/download.svg'
 import ParticipantDownloadTrigger from '../download/ParticipantDownloadTrigger'
+import ParticipantUtility from '../participantUtility'
 //import { EnrollmentType } from '../../../types/types'
 
 const useStyles = makeStyles(theme => ({
@@ -34,18 +35,10 @@ const ImportParticipantsInstructions: FunctionComponent<{
   >(undefined)
 
   const createDownloadTemplate = async () => {
-    const templateData: Record<string, string> = {
-      externalId: '',
-    }
-    if (!isEnrolledById) {
-      templateData['phoneNumber'] = ''
-    }
-
-    studyEvents?.forEach(e => {
-      templateData[EventService.formatCustomEventIdForDisplay(e.identifier)] =
-        ''
-    })
-    templateData['note'] = ''
+    const templateData = ParticipantUtility.getDownloadTemplateRow(
+      isEnrolledById,
+      studyEvents
+    )
     //csv and blob it
     const csvData = jsonToCSV([templateData])
     const blob = new Blob([csvData], {
