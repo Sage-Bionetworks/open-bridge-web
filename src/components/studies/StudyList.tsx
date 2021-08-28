@@ -436,16 +436,18 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             onClose={handleMenuClose}
             classes={{paper: classes.paper, list: classes.list}}>
             <MenuItem
-              href={
-                menuAnchor?.study
-                  ? getStudyLink(
+              onClick={() => {
+                if (menuAnchor?.study) {
+                  window.location.replace(
+                    getStudyLink(
                       StudyService.getDisplayStatusForStudyPhase(
                         menuAnchor!.study.phase
                       ),
                       menuAnchor!.study.identifier
                     )
-                  : '#'
-              }>
+                  )
+                }
+              }}>
               View
             </MenuItem>
             {menuAnchor?.study.phase === 'design' && (
