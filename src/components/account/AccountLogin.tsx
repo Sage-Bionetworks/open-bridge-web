@@ -1,10 +1,10 @@
+import {ReactComponent as SynapseLogo} from '@assets/synapse_logo_blue.svg'
+import Utility from '@helpers/utility'
 import {Box, Button, Container, makeStyles, Snackbar} from '@material-ui/core'
 import Alert, {AlertProps} from '@material-ui/lab/Alert'
+import {poppinsFont} from '@style/theme'
 import clsx from 'clsx'
 import React, {FunctionComponent, useState} from 'react'
-import {ReactComponent as SynapseLogo} from '../../assets/synapse_logo_blue.svg'
-import UserService from '../../services/user.service'
-import {poppinsFont} from '../../style/theme'
 
 type AccountLoginOwnProps = {
   callbackFn: Function
@@ -53,19 +53,6 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const loginWithSynapse = (event: any) => {
-  let state = new Date().getTime().toString(32)
-
-  let array = []
-  array.push('response_type=code')
-  array.push('client_id=' + UserService.getOathEnvironment().client)
-  array.push('scope=openid')
-  array.push('state=' + encodeURIComponent(state))
-  array.push('redirect_uri=' + encodeURIComponent(document.location.origin))
-  array.push('claims=' + encodeURIComponent('{"id_token":{"userid":null}}'))
-  window.location.replace('https://signin.synapse.org/?' + array.join('&'))
-}
-
 const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn}) => {
   const [alertMsg, setAlertMsg] = useState<
     {msg: string; type: AlertProps['severity']} | undefined
@@ -97,7 +84,7 @@ const AccountLogin: FunctionComponent<AccountLoginProps> = ({isArcSignIn}) => {
         <div className={classes.paper}>
           <Button
             variant="contained"
-            onClick={e => loginWithSynapse(e)}
+            onClick={e => Utility.redirectToSynapseLogin()}
             className={classes.arcSubmitbutton}>
             <SynapseLogo />
           </Button>

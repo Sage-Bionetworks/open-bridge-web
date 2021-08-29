@@ -59,13 +59,14 @@ async function getParticipants(
   currentPage: number,
   pageSize: number, // set to 0 to get all the participants
   tab: ParticipantActivityType,
+  token: string,
   searchOptions?: {
     searchParam: 'EXTERNAL_ID' | 'PHONE_NUMBER'
     searchValue: string
   }
 ): Promise<ParticipantData> {
   const offset = (currentPage - 1) * pageSize
-  const token = Utility.getSession()?.token
+  //const token = Utility.getSession()?.token
   if (!token) {
     throw Error('Need token')
   }
@@ -96,6 +97,7 @@ async function getParticipants(
 
 async function getParticipantDataForDownload(
   studyId: string,
+  token: string,
   tab: ParticipantActivityType,
   studyEvents: SchedulingEvent[] | null,
   selectionType: SelectionType,
@@ -105,7 +107,7 @@ async function getParticipantDataForDownload(
   //if getting all participants
   const participantsData: ParticipantData =
     selectionType === 'ALL'
-      ? await getParticipants(studyId, 0, 0, tab)
+      ? await getParticipants(studyId, 0, 0, tab, token)
       : selectedParticipantData
   //massage data
   const transformedParticipantsData = participantsData.items.map(

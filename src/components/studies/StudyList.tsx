@@ -11,7 +11,7 @@ import {
 import Link from '@material-ui/core/Link'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import {RouteComponentProps} from 'react-router-dom'
+import {Redirect, RouteComponentProps} from 'react-router-dom'
 import {useUserSessionDataState} from '../../helpers/AuthContext'
 import {useStudyInfoDataDispatch} from '../../helpers/StudyInfoContext'
 import Utility from '../../helpers/utility'
@@ -35,7 +35,7 @@ type StudySublistProps = {
   status: DisplayStudyPhase
   userRoles: AdminRole[]
   studies: Study[]
-  onAction: Function
+  onStudyCardClick: Function
   renameStudyId: string
   highlightedStudyId: string | null
   menuAnchor: {
@@ -44,7 +44,7 @@ type StudySublistProps = {
   } | null
 }
 
-type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME'
+type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME' | 'VIEW'
 
 const studyCardWidth = '290'
 
@@ -179,7 +179,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   studies,
   status,
   renameStudyId,
-  onAction,
+  onStudyCardClick,
   highlightedStudyId,
   menuAnchor,
 }: StudySublistProps) => {
@@ -218,15 +218,15 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
             style={{textDecoration: 'none'}}
             key={study.identifier || index}
             variant="body2"
-            href={getStudyLink(status, study.identifier)}>
+            onClick={() => onStudyCardClick({...study}, 'VIEW')}>
             <StudyCard
               study={study}
               onRename={(newName: string) => {
-                onAction({...study, name: newName}, 'RENAME')
+                onStudyCardClick({...study, name: newName}, 'RENAME')
               }}
               isRename={renameStudyId === study.identifier}
               onSetAnchor={(e: HTMLElement) => {
-                onAction(study, 'ANCHOR', e)
+                onStudyCardClick(study, 'ANCHOR', e)
               }}
               isNewlyAddedStudy={highlightedStudyId === study.identifier}
               section={item.sectionStatus}
@@ -266,6 +266,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   const [highlightedStudyId, setHighlightedStudyId] = React.useState<
     string | null
   >(null)
+  const [redirectLink, setRedirectLink] = React.useState('')
 
   let resetNewlyAddedStudyID: NodeJS.Timeout
 
@@ -298,7 +299,6 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             setHighlightedStudyId(null)
           }, 2000)
         }
-        /* */
       })
     } else {
       const id = Utility.generateNonambiguousCode(6, 'CONSONANTS')
@@ -315,21 +315,26 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
       const version = await StudyService.createStudy(newStudy, token!)
       newStudy.version = version
+      navigateToStudy(newStudy)
+    }
+  }
+
+  const navigateToStudy = (study?: Study) => {
+    if (study) {
+      const l = getStudyLink(
+        StudyService.getDisplayStatusForStudyPhase(study.phase),
+        study.identifier
+      )
       studyDataUpdateFn({
         type: 'SET_STUDY',
-        payload: {study: newStudy},
+        payload: {study: study},
       })
 
-      window.location.replace(
-        `${window.location.origin}/studies/builder/${id}/session-creator`
-      )
+      setRedirectLink(l)
     }
   }
 
   const onAction = async (study: Study, type: StudyAction) => {
-    if (!token) {
-      return
-    }
     handleMenuClose()
     let result
     switch (type) {
@@ -347,12 +352,17 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         await createStudy(study)
         return
       default: {
+        console.log('unknow study acgtion')
       }
     }
   }
 
   const isSelectedFilter = (filter: DisplayStudyPhase) =>
     statusFilters.indexOf(filter) > -1 && statusFilters.length === 1
+
+  if (redirectLink) {
+    return <Redirect to={redirectLink} />
+  }
 
   if (!studies && !isStudyLoading) {
     return (
@@ -368,8 +378,10 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       <Box className={classes.root}>
         <Container maxWidth="lg" className={classes.studyContainer}>
           <Box display="flex" justifyContent="space-between">
+            token: {token}
             <ul className={classes.filters} aria-label="filters">
               <li className={classes.filterItem}>View by:</li>
+
               <li className={classes.filterItem}>
                 <Button
                   onClick={resetStatusFilters}
@@ -423,10 +435,21 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                   studies={studies!}
                   renameStudyId={renameStudyId}
                   status={status}
-                  onAction={(s: Study, action: StudyAction, e: any) => {
-                    action === 'ANCHOR'
-                      ? setMenuAnchor({study: s, anchorEl: e})
-                      : onAction(s, action)
+                  onStudyCardClick={(s: Study, action: StudyAction, e: any) => {
+                    switch (action) {
+                      case 'ANCHOR':
+                        setMenuAnchor({study: s, anchorEl: e})
+                        break
+                      case 'VIEW':
+                        handleMenuClose()
+                        navigateToStudy(s)
+                        break
+                      case 'RENAME':
+                        onAction(s, 'RENAME')
+                        break
+                      default:
+                        console.log('unknown study action')
+                    }
                   }}
                   highlightedStudyId={highlightedStudyId}
                   menuAnchor={menuAnchor}
@@ -441,19 +464,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             open={Boolean(menuAnchor?.anchorEl)}
             onClose={handleMenuClose}
             classes={{paper: classes.paper, list: classes.list}}>
-            <MenuItem
-              onClick={() => {
-                if (menuAnchor?.study) {
-                  window.location.replace(
-                    getStudyLink(
-                      StudyService.getDisplayStatusForStudyPhase(
-                        menuAnchor!.study.phase
-                      ),
-                      menuAnchor!.study.identifier
-                    )
-                  )
-                }
-              }}>
+            <MenuItem onClick={() => navigateToStudy(menuAnchor?.study)}>
               View
             </MenuItem>
             {menuAnchor?.study.phase === 'design' && (

@@ -1,9 +1,9 @@
-import {Typography, makeStyles} from '@material-ui/core'
+import {makeStyles, Typography} from '@material-ui/core'
 import Breadcrumbs from '@material-ui/core/Breadcrumbs/Breadcrumbs'
-import Link from '@material-ui/core/Link'
 import BackIcon from '@material-ui/icons/KeyboardBackspace'
-import React from 'react'
 import clsx from 'clsx'
+import React from 'react'
+import {NavLink} from 'react-router-dom'
 
 export interface BreadCrumbProps {
   links: {url: string; text: string}[]
@@ -37,16 +37,12 @@ const BreadCrumb: React.FunctionComponent<BreadCrumbProps> = ({
   return (
     <Breadcrumbs aria-label="breadcrumb">
       {links.map((link, index) => (
-        <Link
-          color="inherit"
-          href={link.url}
-          key={link.url}
-          className={classes.link}>
+        <NavLink to={link.url} key={link.url} className={classes.link}>
           {index === 0 && <BackIcon className={classes.backIcon} />}
           <div className={clsx(classes.text, classes.addMargin)}>
             {link.text}
           </div>
-        </Link>
+        </NavLink>
       ))}
 
       <Typography className={classes.text} color="textPrimary">

@@ -1,4 +1,5 @@
 import {StudySection} from '@components/studies/sections'
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import {useStudy} from '@helpers/hooks'
 import {useStudyInfoDataDispatch} from '@helpers/StudyInfoContext'
 import React, {FunctionComponent, ReactNode} from 'react'
@@ -76,6 +77,11 @@ const Wrapper: FunctionComponent<
 const AuthenticatedApp: FunctionComponent<{
   sessionData: UserSessionData
 }> = ({sessionData}) => {
+  const {token, orgMembership} = useUserSessionDataState()
+
+  if (!token) {
+    Utility.redirectToSynapseLogin()
+  }
   return (
     <>
       <Switch>

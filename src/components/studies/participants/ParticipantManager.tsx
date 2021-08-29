@@ -402,7 +402,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     if (!study?.identifier) {
       return
     }
-    getEvents(ScheduleService.getEventsForSchedule(study.identifier))
+    getEvents(ScheduleService.getEventsForSchedule(study.identifier, token!))
   }, [study?.identifier, getEvents])
 
   React.useEffect(() => {
@@ -416,7 +416,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           study.identifier,
           currentPage,
           pageSize,
-          tab
+          tab,
+          token!
         )
       )
     }
@@ -533,6 +534,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         0,
         pageSize,
         tab,
+        token!,
         searchOptions
       )
     )
@@ -556,6 +558,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     const participantBlob =
       await ParticipantUtility.getParticipantDataForDownload(
         study.identifier,
+        token!,
         tab,
         studyEvents,
         selectionType,
