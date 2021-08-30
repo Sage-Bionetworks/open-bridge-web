@@ -18,14 +18,24 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
   const label = occurrences
     ? ` for ${occurrences} times`
     : 'until the end of study'
-
+  const disabled = occurrences == 1
   return (
-    <SchedulingFormSection label={'Run this session every:'}>
+    <SchedulingFormSection
+      label={'Run this session every:'}
+      style={{
+        opacity: disabled ? 0.4 : 1,
+        pointerEvents: disabled ? 'none' : 'all',
+      }}>
       <FormControlLabel
-        style={{marginLeft: '0'}}
+        style={{
+          marginLeft: '0',
+          opacity: disabled ? 0.4 : 1,
+          pointerEvents: disabled ? 'none' : 'all',
+        }}
         control={
           <Duration
             onChange={e => {
+              if (disabled) return
               onChange(e.target.value)
             }}
             durationString={interval || ''}
