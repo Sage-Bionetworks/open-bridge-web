@@ -220,14 +220,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
           return errors.length > 0 ? 'error' : 'success'
       }
     }
-
-    /* const setData = (builderInfo: StudyInfoData) => {
-      studyDataUpdateFn({
-        type: 'SET_ALL',
-        payload: builderInfo,
-      })
-    }*/
-
     const allSessionsHaveAssessments = () => {
       return (
         !_.isEmpty(schedule?.sessions) &&
@@ -698,7 +690,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                             <Launch
                               hasObjectChanged={hasObjectChanged}
                               saveLoader={saveLoader}
-                              studyInfo={{study, schedule}}
+                              study={study}
+                              schedule={schedule}
                               onSave={() =>
                                 saveStudy({
                                   ...study,

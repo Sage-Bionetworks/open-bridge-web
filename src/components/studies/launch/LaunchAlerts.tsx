@@ -4,20 +4,24 @@ import _ from 'lodash'
 import React from 'react'
 import {ReactComponent as Alert_Icon} from '../../../assets/alert_icon.svg'
 import {ReactComponent as Preview_Icon} from '../../../assets/launch/preview_icon.svg'
-import {StudyInfoData} from '../../../helpers/StudyInfoContext'
 import {DEFAULT_NOTIFICATION} from '../../../services/schedule.service'
 import {latoFont, ThemeType} from '../../../style/theme'
 import constants from '../../../types/constants'
-import {ScheduleNotification} from '../../../types/scheduling'
-import {Contact} from '../../../types/types'
+import {Schedule, ScheduleNotification} from '../../../types/scheduling'
+import {Contact, Study} from '../../../types/types'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
+import {isAppBackgroundColorValid} from '../app-design/AppDesign'
 import {isSameAsDefaultSchedule} from '../scheduler/utility'
 import {
   getStudyBuilderSections,
   normalNavIcons,
   StudySection,
 } from '../sections'
-import {isAppBackgroundColorValid} from '../app-design/AppDesign'
+
+type DataToValidate = {
+  study: Study
+  schedule: Schedule
+}
 
 const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
 
@@ -100,16 +104,16 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
 }))
 
-function getStudySupportPerson(s: StudyInfoData): Contact | undefined {
-  return s.study.contacts?.find(el => el.role === 'study_support')
+function getStudySupportPerson(study: Study): Contact | undefined {
+  return study.contacts?.find(el => el.role === 'study_support')
 }
 
-function getLeadPI(s: StudyInfoData): Contact | undefined {
-  return s.study.contacts?.find(c => c.role === 'principal_investigator')
+function getLeadPI(study: Study): Contact | undefined {
+  return study.contacts?.find(c => c.role === 'principal_investigator')
 }
 
-function getIrbContact(s: StudyInfoData): Contact | undefined {
-  return s.study.contacts?.find(el => el.role === 'irb')
+function getIrbContact(study: Study): Contact | undefined {
+  return study.contacts?.find(el => el.role === 'irb')
 }
 
 const ALERTS: StudyAlertSection[] = [
@@ -118,13 +122,13 @@ const ALERTS: StudyAlertSection[] = [
     errors: [
       {
         errorText: 'Please create a schedule and select assessments',
-        validationFn: (s: StudyInfoData) => !!s.schedule,
+        validationFn: (args: DataToValidate) => !!args.schedule,
         isDismissable: false,
       },
       {
         errorText: 'All study sessions need to have at least one assessment',
-        validationFn: (s: StudyInfoData) => {
-          const noAsseessments = s.schedule?.sessions.find(
+        validationFn: (args: DataToValidate) => {
+          const noAsseessments = args.schedule.sessions.find(
             s => !s.assessments || s.assessments.length === 0
           )
           return !noAsseessments
@@ -139,14 +143,16 @@ const ALERTS: StudyAlertSection[] = [
     errors: [
       {
         errorText: 'Do you want to keep the default notification text?',
-        validationFn: (s: StudyInfoData) => {
-          const schedule = s.schedule
-          if (!schedule) {
+        validationFn: (args: DataToValidate) => {
+          if (!args.schedule) {
             return false
           }
-          const allNotifications = schedule.sessions.reduce((prev, curr) => {
-            return [...prev, ...(curr.notifications || [])]
-          }, [] as ScheduleNotification[])
+          const allNotifications = args.schedule.sessions.reduce(
+            (prev, curr) => {
+              return [...prev, ...(curr.notifications || [])]
+            },
+            [] as ScheduleNotification[]
+          )
           const defaultNotifications = allNotifications.find(
             n =>
               _.get(n.messages, '0.message') ===
@@ -161,10 +167,9 @@ const ALERTS: StudyAlertSection[] = [
       {
         errorText:
           'Please make sure to edit schedule through the "Schedule Sessions" tab',
-        validationFn: (s: StudyInfoData) => {
-          const schedule = s.schedule
-          if (!schedule) return false
-          return !isSameAsDefaultSchedule(schedule)
+        validationFn: (args: DataToValidate) => {
+          if (!args.schedule) return false
+          return !isSameAsDefaultSchedule(args.schedule)
         },
         isDismissable: true,
       },
@@ -175,7 +180,8 @@ const ALERTS: StudyAlertSection[] = [
     errors: [
       {
         errorText: 'Please select enrollment type',
-        validationFn: (s: StudyInfoData) => !_.isEmpty(s.study.signInTypes),
+        validationFn: (args: DataToValidate) =>
+          !_.isEmpty(args.study.signInTypes),
         isDismissable: false,
       },
     ],
@@ -185,14 +191,14 @@ const ALERTS: StudyAlertSection[] = [
     errors: [
       {
         errorText: 'Please enter Study Summary copy',
-        validationFn: (s: StudyInfoData) => !!s.study.details,
+        validationFn: (args: DataToValidate) => !!args.study.details,
         isDismissable: false,
         anchor: 'summary',
       },
       {
         errorText: 'Please enter Lead PI',
-        validationFn: (s: StudyInfoData) => {
-          const leadPI = getLeadPI(s)
+        validationFn: (args: DataToValidate) => {
+          const leadPI = getLeadPI(args.study)
           return !!leadPI && leadPI.name !== DEFAULT_CONTACT_NAME
         },
         isDismissable: false,
@@ -200,15 +206,16 @@ const ALERTS: StudyAlertSection[] = [
       },
       {
         errorText: 'Please enter Institutional Affiliation',
-        validationFn: (s: StudyInfoData) => !!getLeadPI(s)?.affiliation,
+        validationFn: (args: DataToValidate) =>
+          !!getLeadPI(args.study)?.affiliation,
         isDismissable: false,
         anchor: 'leadPI',
       },
 
       {
         errorText: 'Please enter Funder',
-        validationFn: (s: StudyInfoData) => {
-          const funder = s.study.contacts?.find(el => el.role === 'sponsor')
+        validationFn: (args: DataToValidate) => {
+          const funder = args.study.contacts?.find(el => el.role === 'sponsor')
           return !!funder && funder.name !== DEFAULT_CONTACT_NAME
         },
         isDismissable: true,
@@ -216,8 +223,8 @@ const ALERTS: StudyAlertSection[] = [
       },
       {
         errorText: 'Please enter Contact Lead',
-        validationFn: (s: StudyInfoData) => {
-          const contactSupport = getStudySupportPerson(s)
+        validationFn: (args: DataToValidate) => {
+          const contactSupport = getStudySupportPerson(args.study)
           return (
             !!contactSupport && contactSupport.name !== DEFAULT_CONTACT_NAME
           )
@@ -227,28 +234,30 @@ const ALERTS: StudyAlertSection[] = [
       },
       {
         errorText: 'Please enter Contact’s position',
-        validationFn: (s: StudyInfoData) =>
-          !!getStudySupportPerson(s)?.position,
+        validationFn: (args: DataToValidate) =>
+          !!getStudySupportPerson(args.study)?.position,
 
         isDismissable: false,
         anchor: 'contactLead',
       },
       {
         errorText: 'Please enter Phone # of Contact Lead',
-        validationFn: (s: StudyInfoData) => !!getStudySupportPerson(s)?.phone,
+        validationFn: (args: DataToValidate) =>
+          !!getStudySupportPerson(args.study)?.phone,
         isDismissable: false,
         anchor: 'contactLead',
       },
       {
         errorText: 'Please enter Email of Contact Lead',
-        validationFn: (s: StudyInfoData) => !!getStudySupportPerson(s)?.email,
+        validationFn: (args: DataToValidate) =>
+          !!getStudySupportPerson(args.study)?.email,
         isDismissable: false,
         anchor: 'contactLead',
       },
       {
         errorText: 'Please enter IRB of Record Name',
-        validationFn: (s: StudyInfoData) => {
-          const irbContact = getIrbContact(s)
+        validationFn: (args: DataToValidate) => {
+          const irbContact = getIrbContact(args.study)
           return !!irbContact && irbContact.name !== DEFAULT_CONTACT_NAME
         },
         isDismissable: false,
@@ -256,28 +265,30 @@ const ALERTS: StudyAlertSection[] = [
       },
       {
         errorText: 'Please enter Phone # of IRB Contact',
-        validationFn: (s: StudyInfoData) => !!getIrbContact(s)?.phone,
+        validationFn: (args: DataToValidate) =>
+          !!getIrbContact(args.study)?.phone,
         isDismissable: false,
         anchor: 'contactIrb',
       },
       {
         errorText: 'Please enter Email of IRB',
-        validationFn: (s: StudyInfoData) => !!getIrbContact(s)?.email,
+        validationFn: (args: DataToValidate) =>
+          !!getIrbContact(args.study)?.email,
         isDismissable: false,
         anchor: 'contactIrb',
       },
       {
         errorText: 'Please enter IRB Protocol ID',
-        validationFn: (s: StudyInfoData) => {
-          return !!s.study.irbProtocolId
+        validationFn: (args: DataToValidate) => {
+          return !!args.study.irbProtocolId
         },
         isDismissable: false,
         anchor: 'contactIrb',
       },
       {
         errorText: 'Please enter a valid study color',
-        validationFn: (s: StudyInfoData) =>
-          isAppBackgroundColorValid(s.study.colorScheme?.background),
+        validationFn: (args: DataToValidate) =>
+          isAppBackgroundColorValid(args.study.colorScheme?.background),
         isDismissable: false,
         anchor: 'hex-color-picker',
       },
@@ -288,7 +299,7 @@ const ALERTS: StudyAlertSection[] = [
 type StudyAlert = {
   errorText: string
   isDismissable: boolean
-  validationFn: (s: StudyInfoData) => boolean
+  validationFn: (args: DataToValidate) => boolean
   section?: StudySection
   anchor?: string
 }
@@ -297,7 +308,8 @@ type StudyAlertSection = {
   errors: StudyAlert[]
 }
 export interface LaunchAlertsProps {
-  studyInfo: StudyInfoData
+  study: Study
+  schedule: Schedule
   onEnableNext: Function
 }
 
@@ -358,7 +370,8 @@ const StudyAlertComponent: React.FunctionComponent<
 }
 
 const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
-  studyInfo,
+  study,
+  schedule,
   onEnableNext,
 }: LaunchAlertsProps) => {
   const classes = useStyles()
@@ -367,14 +380,14 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
 
   React.useEffect(() => {
     const alrts: StudyAlertSection[] = []
-    if (!studyInfo) {
+    if (!study || !schedule) {
       return
     }
     ALERTS.forEach(alert => {
       const section = alert.section
       const er: StudyAlert[] = []
       alert.errors.forEach(e => {
-        if (!e.validationFn(studyInfo)) {
+        if (!e.validationFn({study, schedule})) {
           er.push(e)
         }
       })
@@ -388,7 +401,7 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
       alert.errors.find(error => !error.isDismissable),
     )*/
     onEnableNext(alrts.length === 0)
-  }, [studyInfo])
+  }, [study, schedule])
 
   const ignore = (sectionPath: string, index: number) => {
     const sectionAlertsIndex = alerts.findIndex(a => a.section === sectionPath)
@@ -415,9 +428,7 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
   return (
     <Container maxWidth="sm">
       <Box textAlign="left">
-        <MTBHeadingH1 style={{marginBottom: '24px'}}>
-          {studyInfo.study.name}
-        </MTBHeadingH1>
+        <MTBHeadingH1 style={{marginBottom: '24px'}}>{study.name}</MTBHeadingH1>
         {alerts?.length > 0 && (
           <MTBHeadingH2 style={{marginBottom: '40px'}}>
             Please review the following alerts:{' '}
