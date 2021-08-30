@@ -1,17 +1,9 @@
-import {Schedule} from '@typedefs/scheduling'
+import {useUserSessionDataState} from '@helpers/AuthContext'
+import StudyService from '@services/study.service'
+import {Study} from '@typedefs/types'
 import {useMutation, useQuery, useQueryClient} from 'react-query'
-import ScheduleService from '../services/schedule.service'
-import StudyService from '../services/study.service'
-import {Study} from '../types/types'
-import {useUserSessionDataState} from './AuthContext'
 
-/*export const KEYS = {
-  study: 'study',
-  schedule: 'schedule',
-  studies: 'studies',
-}*/
-
-const STUDY_KEYS = {
+export const STUDY_KEYS = {
   all: ['studies'] as const,
   list: () => [...STUDY_KEYS.all, 'list'] as const,
   // list: (filters: string) => [...todoKeys.lists(), { filters }] as const,
@@ -19,18 +11,7 @@ const STUDY_KEYS = {
   detail: (id: string | undefined) => [...STUDY_KEYS.details(), id] as const,
 }
 
-const SCHEDULE_KEYS = {
-  all: ['schedules'] as const,
-  list: () => [...SCHEDULE_KEYS.all, 'list'] as const,
-  // list: (filters: string) => [...todoKeys.lists(), { filters }] as const,
-  details: () => [...SCHEDULE_KEYS.all, 'detail'] as const,
-  detail: (id: string | undefined) => [...SCHEDULE_KEYS.details(), id] as const,
-}
-
-export const useStudy = (
-  studyId: string | undefined
-  // studyDataUpdateFn: Dispatch<Action>
-) => {
+export const useStudy = (studyId: string | undefined) => {
   const {token} = useUserSessionDataState()
 
   return useQuery<Study | undefined, Error>(
@@ -78,7 +59,7 @@ export const useUpdateStudyInList = () => {
         )
         return [{...props.study, version: newVersion}]
       case 'COPY':
-        const {study: newStudy, schedule} = await StudyService.copyStudy(
+        const {study: newStudy} = await StudyService.copyStudy(
           study.identifier!,
           token!
         )
@@ -166,21 +147,17 @@ export const useUpdateStudyDetail = () => {
 
   const update = async (props: {
     study: Study
-    action: 'UPDATE'
+
     isPassive?: boolean
   }): Promise<Study> => {
-    const {study, action, isPassive} = props
+    const {study, isPassive} = props
     let newVersion = 0
     if (isPassive) {
-      //  return Promise.resolve(study)
       return new Promise((resolve, reject) => {
         resolve(study)
       })
     } else {
-      newVersion = await StudyService.updateStudy(
-        {...props.study /*, version: originalStudy!.version*/},
-        token!
-      )
+      newVersion = await StudyService.updateStudy({...props.study}, token!)
       return {...props.study, version: newVersion}
     }
   }
@@ -191,7 +168,7 @@ export const useUpdateStudyDetail = () => {
 
       console.log('starting update')
       // Snapshot the previous value
-      const {study, action, isPassive} = props
+      const {study} = props
       const previousStudy = queryClient.getQueryData<Study>(
         STUDY_KEYS.detail(props.study.identifier)
       )
@@ -221,139 +198,3 @@ export const useUpdateStudyDetail = () => {
 
   return mutation
 }
-
-export const useSchedule = (studyId: string | undefined) => {
-  const {token} = useUserSessionDataState()
-
-  return useQuery<Schedule | undefined, Error>(
-    SCHEDULE_KEYS.detail(studyId),
-    () => ScheduleService.getSchedule(studyId!, token!),
-    {
-      enabled: !!studyId,
-      retry: false,
-    }
-  )
-}
-export const useUpdateSchedule = () => {
-  const {token} = useUserSessionDataState()
-  const queryClient = useQueryClient()
-
-  const update = async (props: {
-    studyId: string
-    schedule: Schedule
-    isPassive?: boolean
-
-    action: 'UPDATE' | 'CREATE'
-  }): Promise<Schedule> => {
-    const {studyId, schedule, action, isPassive} = props
-    if (isPassive) {
-      //  return Promise.resolve(study)
-      return new Promise((resolve, reject) => {
-        resolve(schedule)
-      })
-    }
-    if (action === 'UPDATE') {
-      return ScheduleService.saveSchedule(studyId, schedule, token!)
-    } else {
-      return ScheduleService.createSchedule(studyId, schedule, token!)
-    }
-  }
-
-  const mutation = useMutation(update, {
-    onMutate: async props => {
-      queryClient.cancelQueries(SCHEDULE_KEYS.detail(props.studyId))
-      queryClient.cancelQueries(STUDY_KEYS.detail(props.studyId))
-
-      console.log('starting update')
-      // Snapshot the previous value
-      const {studyId, schedule, action} = props
-      const previousSchedule = queryClient.getQueryData<Schedule>(
-        SCHEDULE_KEYS.detail(studyId)
-      )
-
-      queryClient.setQueryData<Schedule>(SCHEDULE_KEYS.detail(studyId), {
-        ...schedule,
-      })
-
-      return {previousSchedule}
-    },
-    onError: (err, variables, context) => {
-      alert('error')
-      console.log(err, variables, context)
-      /* if (context?.previousStudies) {
-          queryClient.setQueryData<Study[]>(KEYS.studies, context.previousStudies)
-        }*/
-    },
-    onSettled: async (data, error, args) => {
-      if (!args.isPassive) {
-        queryClient.invalidateQueries(SCHEDULE_KEYS.detail(args.studyId))
-        queryClient.invalidateQueries(STUDY_KEYS.detail(args.studyId))
-      }
-    },
-  })
-
-  return mutation
-}
-
-/*export const useStudyBuilderInfo = (
-  studyId: string | undefined,
-  studyDataUpdateFn: Dispatch<Action>,
-  shouldGetScheduleResources: boolean = true
-) => {
-  const {token} = useUserSessionDataState()
-
-  const {
-    data: studyData,
-    error: studyError,
-    status: studyStatus,
-  } = useQuery<Study | undefined, Error>(
-    ['getStudy', studyId, token],
-    () => StudyService.getStudy(studyId!, token!),
-    {
-      enabled: !!studyId,
-    }
-  )
-
-  const {
-    data: scheduleData,
-    error: scheduleError,
-    status: scheduleStatus,
-  } = useQuery<Schedule | undefined, Error>(
-    ['getSchedule', studyId, token, shouldGetScheduleResources],
-    () => {
-      return ScheduleService.getSchedule(
-        studyId!,
-        token!,
-        shouldGetScheduleResources
-      )
-    },
-    {
-      enabled: !!studyId,
-      retry: false,
-    }
-  )
-
-  React.useEffect(() => {
-    if (
-      studyStatus === 'success' &&
-      (scheduleStatus === 'success' || scheduleStatus === 'error')
-    ) {
-      studyDataUpdateFn({
-        type: 'SET_ALL',
-        payload: {study: studyData!, schedule: scheduleData},
-      })
-    }
-  }, [
-    scheduleData,
-    scheduleError,
-    scheduleStatus,
-    studyStatus,
-    studyData,
-    studyError,
-    studyDataUpdateFn,
-  ])
-  const isLoading = studyStatus === 'loading' || scheduleStatus === 'loading'
-
-  return {studyError, isLoading, study: studyData, schedule: scheduleData}
-}
-*/

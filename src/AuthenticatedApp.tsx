@@ -1,6 +1,6 @@
 import {StudySection} from '@components/studies/sections'
+import {useStudy} from '@components/studies/studyHooks'
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import {useStudy} from '@helpers/hooks'
 import {useStudyInfoDataDispatch} from '@helpers/StudyInfoContext'
 import React, {FunctionComponent, ReactNode} from 'react'
 import {useErrorHandler} from 'react-error-boundary'

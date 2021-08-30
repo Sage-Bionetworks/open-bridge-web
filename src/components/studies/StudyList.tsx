@@ -1,4 +1,4 @@
-import {useStudies, useUpdateStudyInList} from '@helpers/hooks'
+import {useStudies, useUpdateStudyInList} from '@components/studies/studyHooks'
 import {
   Box,
   Button,
@@ -378,7 +378,6 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       <Box className={classes.root}>
         <Container maxWidth="lg" className={classes.studyContainer}>
           <Box display="flex" justifyContent="space-between">
-            token: {token}
             <ul className={classes.filters} aria-label="filters">
               <li className={classes.filterItem}>View by:</li>
 
