@@ -17,14 +17,20 @@ import {
 } from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
+import EventService from '@services/event.service'
 import {poppinsFont, theme} from '@style/theme'
 import {SchedulingEvent} from '@typedefs/scheduling'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {CSVReader} from 'react-papaparse'
-import {EditableParticipantData, Study} from '../../../../types/types'
+import {
+  EditableParticipantData,
+  ParticipantEvent,
+  Study,
+} from '../../../../types/types'
 import {BlueButton} from '../../../widgets/StyledComponents'
 import TabPanel from '../../../widgets/TabPanel'
+import ParticipantUtility from '../participantUtility'
 import AddGeneratedParticipant from './AddGeneratedParticipant'
 import AddSingleParticipant, {
   addParticipantById,
@@ -118,25 +124,34 @@ type AddParticipantsProps = {
   isTestAccount: boolean
 }
 
-const CSV_BY_ID_KEY = ['Participant ID', 'Clinic Visit', 'Note']
+/*const CSV_BY_ID_KEY = ['Participant ID', 'Clinic Visit', 'Note']
 
 const CSV_BY_PHONE_KEY = [
   'Phone Number',
   'Participant ID',
   'Clinic Visit',
   'Note',
-]
+]*/
 
 async function uploadCsvRow(
   data: any,
+  customParticipantEvents: ParticipantEvent[],
   isEnrolledById: boolean,
+
   studyIdentifier: string,
   token: string
 ) {
+  const pEvents = customParticipantEvents.map(e => ({
+    ...e,
+    timestamp: data[e.eventId],
+  }))
+
   const options: EditableParticipantData = {
-    externalId: data['Participant ID'],
-    note: data['Note'],
+    externalId: data['externalId'],
+    note: data['note'],
+    events: pEvents,
   }
+
   let result
   if (isEnrolledById) {
     if (!options.externalId) {
@@ -145,10 +160,10 @@ async function uploadCsvRow(
       result = await addParticipantById(studyIdentifier, token, options)
     }
   } else {
-    if (!data['Phone Number'] || Utility.isInvalidPhone(data['Phone Number'])) {
+    if (!data['phoneNumber'] || Utility.isInvalidPhone(data['phoneNumber'])) {
       throw new Error('need phone')
     } else {
-      const phone = Utility.makePhone(data['Phone Number'])
+      const phone = Utility.makePhone(data['phoneNumber'])
       result = await addParticipantByPhone(
         studyIdentifier,
         token,
@@ -195,10 +210,28 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       setImportError([...importError, 'Please check the format of your file'])
       return
     }
-    const keysString = Object.keys(rows[0]?.data).sort().join(',')
-    const valid = isEnrolledById
-      ? CSV_BY_ID_KEY.sort().join(',') === keysString
-      : CSV_BY_PHONE_KEY.sort().join(',') === keysString
+
+    const customParticipantEvents: ParticipantEvent[] = customStudyEvents.map(
+      e => ({
+        eventId: EventService.formatCustomEventIdForDisplay(e.identifier),
+      })
+    )
+
+    //expected columns
+    const templateKeys = Object.keys(
+      ParticipantUtility.getDownloadTemplateRow(
+        isEnrolledById,
+        customStudyEvents
+      )
+    )
+      .sort()
+      .join(',')
+    //real columns - remove empty
+    const keysString = Object.keys(rows[0]?.data)
+      .sort()
+      .filter(v => !!v)
+      .join(',')
+    const valid = templateKeys === keysString
     if (!valid) {
       setImportError([...importError, 'Please check the format of your file'])
       return
@@ -210,14 +243,21 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       console.log(progress)
       const data = row.data
       try {
-        await uploadCsvRow(data, isEnrolledById, study.identifier, token)
+        await uploadCsvRow(
+          data,
+          customParticipantEvents,
+          isEnrolledById,
+          study.identifier,
+          token
+        )
         setProgress(prev => prev + progressTick)
       } catch (error) {
         console.log('error', importError.length)
         console.log(importError)
-        const key = isEnrolledById
+        /*const key = isEnrolledById
           ? data['Participant ID']
-          : data['Phone Number']
+          : data['Phone Number']*/
+        const key = data[0]
         setImportError(prev => [...prev, `${key}: ${error.message || error}`])
       }
     }

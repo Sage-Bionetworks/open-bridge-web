@@ -1,17 +1,17 @@
+import motion from '@assets/passive-features/recorders_motion.svg'
+import noise from '@assets/passive-features/recorders_noise.svg'
+import weather from '@assets/passive-features/recorders_weather.svg'
+import {MTBHeadingH3} from '@components/widgets/Headings'
 import {Box, Switch} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
-import React from 'react'
-import motion from '../../../assets/passive-features/recorders_motion.svg'
-import noise from '../../../assets/passive-features/recorders_noise.svg'
-import weather from '../../../assets/passive-features/recorders_weather.svg'
-import {latoFont, ThemeType} from '../../../style/theme'
+import StudyService from '@services/study.service'
+import {latoFont, ThemeType} from '@style/theme'
 import {
   BackgroundRecorders,
-  StudyBuilderComponentProps,
   Study,
-} from '../../../types/types'
-import {MTBHeadingH3} from '../../widgets/Headings'
-import StudyService from '@services/study.service'
+  StudyBuilderComponentProps,
+} from '@typedefs/types'
+import React from 'react'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -105,19 +105,21 @@ const sensors: Partial<RecorderInfo> = {
 }
 
 export interface PassiveFeaturesProps {
-  features?: BackgroundRecorders
+  //features?: BackgroundRecorders
   study: Study
 }
 
 const PassiveFeatures: React.FunctionComponent<
   PassiveFeaturesProps & StudyBuilderComponentProps
 > = ({
-  features,
+  // features,
   onUpdate,
   study,
   children,
 }: PassiveFeaturesProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
+  const features: BackgroundRecorders =
+    study.clientData.backgroundRecorders || {}
 
   const PFSection = ({
     recorderType,
@@ -177,7 +179,7 @@ const PassiveFeatures: React.FunctionComponent<
   const isReadOnly = !StudyService.isStudyInDesign(study)
   const displayMotionSection = !isReadOnly || (isReadOnly && features?.motion)
   const displayMicrophoneSection =
-    !isReadOnly || (isReadOnly && features?.microphone)
+    !isReadOnly || (isReadOnly && features.microphone)
   const displayWeatherSection = !isReadOnly || (isReadOnly && features?.weather)
   return (
     <>

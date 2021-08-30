@@ -56,37 +56,48 @@ async function getRelevantParticipantInfo(
 
 async function getParticipants(
   studyId: string,
-
   currentPage: number,
   pageSize: number, // set to 0 to get all the participants
-  tab: ParticipantActivityType
+  tab: ParticipantActivityType,
+  token: string,
+  searchOptions?: {
+    searchParam: 'EXTERNAL_ID' | 'PHONE_NUMBER'
+    searchValue: string
+  }
 ): Promise<ParticipantData> {
   const offset = (currentPage - 1) * pageSize
-  const token = Utility.getSession()?.token
+  //const token = Utility.getSession()?.token
   if (!token) {
     throw Error('Need token')
   }
 
-  let participants: ParticipantData = await ParticipantService.getParticipants(
-    studyId,
-    token,
-    tab,
-    pageSize,
-    offset
-  )
+  const {items, total} = searchOptions?.searchValue
+    ? await ParticipantService.participantSearch(
+        studyId,
+        token,
+        searchOptions.searchValue,
+        tab,
+        searchOptions.searchParam
+      )
+    : await ParticipantService.getParticipants(
+        studyId,
+        token,
+        tab,
+        pageSize,
+        offset
+      )
 
-  const retrievedParticipants = participants ? participants.items : []
-  const numberOfParticipants = participants ? participants.total : 0
-  const result = await getRelevantParticipantInfo(
-    studyId,
-    token,
-    retrievedParticipants
-  )
-  return {items: result, total: numberOfParticipants}
+  if (items && total) {
+    const result = await getRelevantParticipantInfo(studyId, token, items)
+    return {items: result, total}
+  } else {
+    return {items: [], total: 0}
+  }
 }
 
 async function getParticipantDataForDownload(
   studyId: string,
+  token: string,
   tab: ParticipantActivityType,
   studyEvents: SchedulingEvent[] | null,
   selectionType: SelectionType,
@@ -96,7 +107,7 @@ async function getParticipantDataForDownload(
   //if getting all participants
   const participantsData: ParticipantData =
     selectionType === 'ALL'
-      ? await getParticipants(studyId, 0, 0, tab)
+      ? await getParticipants(studyId, 0, 0, tab, token)
       : selectedParticipantData
   //massage data
   const transformedParticipantsData = participantsData.items.map(
@@ -139,9 +150,28 @@ async function getParticipantDataForDownload(
   return blob
 }
 
+const getDownloadTemplateRow = (
+  isEnrolledById: boolean,
+  studyEvents: SchedulingEvent[]
+): Record<string, string> => {
+  const templateData: Record<string, string> = {
+    externalId: '',
+  }
+  if (!isEnrolledById) {
+    templateData['phoneNumber'] = ''
+  }
+
+  studyEvents?.forEach(e => {
+    templateData[EventService.formatCustomEventIdForDisplay(e.identifier)] = ''
+  })
+  templateData['note'] = ''
+  return templateData
+}
+
 const ParticipantUtility = {
   getParticipantDataForDownload,
-  getRelevantParticipantInfo,
+  getDownloadTemplateRow,
+  // getRelevantParticipantInfo,
   getParticipants,
 }
 

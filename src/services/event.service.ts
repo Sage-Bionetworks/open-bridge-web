@@ -31,7 +31,8 @@ async function getRelevantEventsForParticipants(
 > {
   //transform ids into promises
   const eventIdsForSchedule = await ScheduleService.getEventsForSchedule(
-    studyIdentifier
+    studyIdentifier,
+    token
   ).then(result => result.map(e => prefixCustomEventIdentifier(e.identifier)))
   const promises = participantId.map(async pId => {
     const endpoint = constants.endpoints.events
@@ -84,7 +85,8 @@ async function updateParticipantCustomEvents(
 
   // get Events for schedule  - we need this in order to possibly delete userEvents
   const schedulingEvents = await ScheduleService.getEventsForSchedule(
-    studyIdentifier
+    studyIdentifier,
+    token
   )
   const customEventWithDate = customEvents.filter(event => !!event.timestamp)
 
