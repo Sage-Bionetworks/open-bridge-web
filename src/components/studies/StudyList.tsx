@@ -1,4 +1,4 @@
-import {useStudies, useUpdateStudyInList} from '@helpers/hooks'
+import {useStudies, useUpdateStudyInList} from '@components/studies/studyHooks'
 import {
   Box,
   Button,

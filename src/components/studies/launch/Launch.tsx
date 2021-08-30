@@ -144,7 +144,7 @@ const Launch: React.FunctionComponent<
   const handleReset = () => {
     setActiveStep(0)
   }
-  const isReadOnly = StudyService.isStudyClosedToEdits(studyInfo.study)
+  const isReadOnly = StudyService.isStudyClosedToEdits(study)
   if (isReadOnly) {
     return <ReadOnlyIrbDetails study={study} />
   }

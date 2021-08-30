@@ -1,10 +1,6 @@
+import {useSchedule, useUpdateSchedule} from '@components/studies/scheduleHooks'
+import {useStudy, useUpdateStudyDetail} from '@components/studies/studyHooks'
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import {
-  useSchedule,
-  useStudy,
-  useUpdateSchedule,
-  useUpdateStudyDetail,
-} from '@helpers/hooks'
 import Utility from '@helpers/utility'
 import {Box, Container} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
@@ -255,7 +251,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
         action: 'CREATE',
       }).then(s => console.log('schedule created'))
 
-      mutateStudy({study: updatedStudy, action: 'UPDATE'}).then(e => {
+      mutateStudy({study: updatedStudy}).then(e => {
         console.log('study updated')
         alert(e.name)
       })
@@ -271,8 +267,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
       try {
         const updatedStudy = await mutateStudy({
           study: passedStudy,
-          action: 'UPDATE',
-          isPassive: false,
         })
         console.log('us', updatedStudy)
         setError([])
@@ -614,7 +608,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                                   }
                                   mutateStudy({
                                     study: studyUpdate,
-                                    action: 'UPDATE',
                                     isPassive: true,
                                   })
                                 }
@@ -666,13 +659,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                                 setHasObjectChanged(true)
                                 mutateStudy({
                                   study: updatedStudy,
-                                  action: 'UPDATE',
+
                                   isPassive: true,
                                 })
-                                /* setData({
-                                  ...builderInfo,
-                                  study: updatedStudy,
-                                })*/
                               }}
                               onError={(error: string) =>
                                 setError(prev => [...prev, error])
@@ -702,7 +691,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                                 setHasObjectChanged(true)
                                 mutateStudy({
                                   study,
-                                  action: 'UPDATE',
+
                                   isPassive: true,
                                 })
                               }}>
