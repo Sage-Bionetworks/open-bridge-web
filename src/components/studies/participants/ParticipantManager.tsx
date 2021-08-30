@@ -13,6 +13,7 @@ import TestAccountUnfocusIcon from '@assets/participants/test_account_unfocus_ic
 import WithdrawnParticipantsFocusIcon from '@assets/participants/withdrawn_participants_focus_icon.svg'
 import WithdrawnParticipantsUnfocusIcon from '@assets/participants/withdrawn_participants_unfocus_icon.svg'
 import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
+import {useStudy} from '@components/studies/studyHooks'
 import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import {MTBHeadingH3} from '@components/widgets/Headings'
@@ -23,7 +24,6 @@ import {
 } from '@components/widgets/StyledComponents'
 import {useAsync} from '@helpers/AsyncHook'
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import {useStudy} from '@helpers/hooks'
 import Utility from '@helpers/utility'
 import {
   Box,
