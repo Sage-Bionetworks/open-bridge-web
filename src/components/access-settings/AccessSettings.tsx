@@ -1,3 +1,4 @@
+import {useStudy} from '@helpers/hooks'
 import {
   Box,
   Button,
@@ -13,21 +14,16 @@ import CloseIcon from '@material-ui/icons/Close'
 import MailOutlineIcon from '@material-ui/icons/MailOutline'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
-import {RouteComponentProps} from 'react-router-dom'
+import {RouteComponentProps, useParams} from 'react-router-dom'
 import {ReactComponent as Delete} from '../../assets/trash.svg'
 import {useUserSessionDataState} from '../../helpers/AuthContext'
-import {
-  StudyInfoData,
-  useStudyInfoDataState,
-} from '../../helpers/StudyInfoContext'
 import Utility from '../../helpers/utility'
 import AccessService from '../../services/access.service'
-import {poppinsFont} from '../../style/theme'
+import {latoFont, poppinsFont} from '../../style/theme'
 import {MTBHeadingH1} from '../widgets/Headings'
-import {Access, NO_ACCESS, getRolesFromAccess} from './AccessGrid'
+import {Access, getRolesFromAccess, NO_ACCESS} from './AccessGrid'
 import AccountListing from './AccountListing'
 import MemberInvite, {NewOrgAccount} from './MemberInvite'
-import {latoFont} from '../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -121,11 +117,8 @@ async function createNewAccount(
   currentUserOrg: string
 ) {
   try {
-    const {
-      principalId,
-      firstName,
-      lastName,
-    } = await AccessService.getAliasFromSynapseByEmail(email)
+    const {principalId, firstName, lastName} =
+      await AccessService.getAliasFromSynapseByEmail(email)
 
     await AccessService.createIndividualAccount(
       token!,
@@ -149,8 +142,15 @@ function filterNewAccountsByAdded(
   return result
 }
 
-const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
-  const studyInfo: StudyInfoData = useStudyInfoDataState()
+const AccessSettings: FunctionComponent<
+  AccessSettingsProps & RouteComponentProps
+> = () => {
+  let {id} = useParams<{
+    id: string
+  }>()
+
+  const {data: study, error: studyError} = useStudy(id)
+
   const classes = useStyles()
 
   const [isOpenInvite, setIsOpenInvite] = React.useState(false)
@@ -202,7 +202,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
     setUpdateToggle(prev => !prev)
   }
 
-  if (!studyInfo.study) {
+  if (!study) {
     return <></>
   }
 
@@ -214,7 +214,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
           <AccountListing
             sessionData={sessionData}
             updateToggle={updateToggle}
-            study={studyInfo.study}>
+            study={study}>
             {userIsAdmin && (
               <Button
                 onClick={() => setIsOpenInvite(true)}
@@ -236,7 +236,7 @@ const AccessSettings: FunctionComponent<AccessSettingsProps> = () => {
 
           <div className={classes.heading}>
             Invite Team Members to:
-            <MTBHeadingH1>{studyInfo.study?.name || ''}</MTBHeadingH1>
+            <MTBHeadingH1>{study.name || ''}</MTBHeadingH1>
           </div>
           <IconButton
             aria-label="close"

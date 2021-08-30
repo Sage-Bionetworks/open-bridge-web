@@ -154,9 +154,9 @@ async function getScheduleTimeline(
 }
 
 async function getEventsForSchedule(
-  studyId: string
+  studyId: string,
+  token: string
 ): Promise<SchedulingEvent[]> {
-  const token = Utility.getSession()?.token
   const response = await Utility.callEndpoint<Study>(
     constants.endpoints.study.replace(':id', studyId),
     'GET',

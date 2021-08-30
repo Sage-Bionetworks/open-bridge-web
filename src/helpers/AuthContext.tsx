@@ -17,10 +17,12 @@ const initialState = {
   appId: '',
 }
 
-const UserSessionDataStateContext =
-  React.createContext<UserSessionData | undefined>(undefined)
-const UserSessionDataDispatchContext =
-  React.createContext<Dispatch | undefined>(undefined)
+const UserSessionDataStateContext = React.createContext<
+  UserSessionData | undefined
+>(undefined)
+const UserSessionDataDispatchContext = React.createContext<
+  Dispatch | undefined
+>(undefined)
 
 function userReducer(state: UserSessionData, action: Action): UserSessionData {
   switch (action.type) {
@@ -56,7 +58,7 @@ function userReducer(state: UserSessionData, action: Action): UserSessionData {
         id: action.payload!.id,
       }
 
-      Utility.setSession(newState)
+      Utility.setSession({...newState, token: undefined})
       return newState
 
     case 'LOGOUT':

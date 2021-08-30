@@ -1,9 +1,9 @@
 import {Box, Button, Paper} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import {Schedule} from '@typedefs/scheduling'
 import React, {useState} from 'react'
 import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
 import {ReactComponent as LockIcon} from '../../../assets/launch/lock_icon.svg'
-import {StudyInfoData} from '../../../helpers/StudyInfoContext'
 import StudyService from '../../../services/study.service'
 import {ThemeType} from '../../../style/theme'
 import {Study, StudyBuilderComponentProps} from '../../../types/types'
@@ -28,7 +28,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 }))
 
 export interface LaunchProps {
-  studyInfo: StudyInfoData
+  study: Study
+  schedule: Schedule
   onSave: Function
 }
 
@@ -46,7 +47,8 @@ function getSteps(isLive: boolean) {
 
 type StepContentProps = {
   stepName: string
-  studyInfo: StudyInfoData
+  study: Study
+  schedule: Schedule
   isFinished: boolean
   onChange: Function
   onEnableNext: Function
@@ -54,18 +56,25 @@ type StepContentProps = {
 
 const StepContent: React.FunctionComponent<StepContentProps> = ({
   stepName,
-  studyInfo,
+  study,
+  schedule,
   isFinished,
   onChange,
   onEnableNext,
 }) => {
   switch (stepName) {
     case 'Review Alerts':
-      return <LaunchAlerts studyInfo={studyInfo} onEnableNext={onEnableNext} />
+      return (
+        <LaunchAlerts
+          study={study}
+          schedule={schedule}
+          onEnableNext={onEnableNext}
+        />
+      )
     case 'About Study':
       return (
         <AboutStudy
-          study={studyInfo.study}
+          study={study}
           onChange={onChange}
           onEnableNext={onEnableNext}
         />
@@ -73,7 +82,7 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
     case 'IRB Details':
       return (
         <IrbDetails
-          study={studyInfo.study}
+          study={study}
           onChange={onChange}
           isFinished={isFinished}
           onEnableNext={onEnableNext}
@@ -90,7 +99,8 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
 const Launch: React.FunctionComponent<
   LaunchProps & StudyBuilderComponentProps
 > = ({
-  studyInfo,
+  study,
+  schedule,
   onUpdate,
   onSave,
   hasObjectChanged,
@@ -99,7 +109,7 @@ const Launch: React.FunctionComponent<
 }: LaunchProps & StudyBuilderComponentProps) => {
   const classes = useStyles()
   const isStudyLive =
-    StudyService.getDisplayStatusForStudyPhase(studyInfo.study.phase) === 'LIVE'
+    StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE'
 
   const [steps, setSteps] = useState(getSteps(isStudyLive))
   const [activeStep, setActiveStep] = React.useState(0)
@@ -136,7 +146,7 @@ const Launch: React.FunctionComponent<
   }
   const isReadOnly = StudyService.isStudyClosedToEdits(studyInfo.study)
   if (isReadOnly) {
-    return <ReadOnlyIrbDetails study={studyInfo.study} />
+    return <ReadOnlyIrbDetails study={study} />
   }
   const showNextButton =
     (!isReadOnly && activeStep < 2) || (isStudyLive && activeStep === 0)
@@ -151,7 +161,8 @@ const Launch: React.FunctionComponent<
 
       <div className={classes.instructions}>
         <StepContent
-          studyInfo={studyInfo}
+          study={study}
+          schedule={schedule}
           stepName={steps[activeStep].label}
           isFinished={isFinished}
           onEnableNext={(isEnabled: boolean) => setIsNextEnabled(isEnabled)}

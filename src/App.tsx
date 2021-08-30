@@ -121,7 +121,7 @@ function App() {
               FallbackComponent={ErrorFallback}
               onError={ErrorHandler}>
               {isRedirect && <Redirect to={`/studies`}></Redirect>}
-              {sessionData.token ? (
+              {sessionData.id ? (
                 <StudyInfoDataProvider>
                   <AuthenticatedApp sessionData={sessionData} />
                 </StudyInfoDataProvider>
