@@ -11,7 +11,7 @@ import ConfigureBurstTab from './ConfigureBurstTab'
 import ScheduleCreatorTab from './ScheduleCreatorTab'
 import SchedulerStepper from './SchedulerStepper'
 import SessionStartTab from './SessionStartTab'
-import StudyService from "@services/study.service"
+import StudyService from '@services/study.service'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -43,7 +43,7 @@ function getSteps() {
   return [
     {label: 'Define Session Start'},
     {label: 'Create Schedule'},
-    {label: 'Configure Optional EMA/Bursts'},
+    // {label: 'Configure Optional EMA/Bursts'},
   ]
 }
 
@@ -107,7 +107,7 @@ const Scheduler: React.FunctionComponent<
             {...props}></ScheduleCreatorTab>
           <ConfigureBurstTab {...props}></ConfigureBurstTab>
         </StepContent>
-        <Box py={2} px={2} textAlign="right" bgcolor="#fff">
+        <Box py={2} px={2} textAlign="right" bgcolor="inherit">
           <>
             {activeStep === 0 ? (
               firstPrevButton
@@ -122,7 +122,7 @@ const Scheduler: React.FunctionComponent<
             &nbsp;&nbsp;
           </>
 
-          {activeStep < 2 ? (
+          {activeStep < 1 ? (
             <NextButton
               variant="contained"
               color="primary"
