@@ -213,7 +213,7 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
                 <Box display="block">
                   <FormGroup
                     row={true}
-                    key={index}
+                    key={evt.key}
                     style={{alignItems: 'center', marginTop: '21px'}}>
                     <input
                       key={evt.key}
