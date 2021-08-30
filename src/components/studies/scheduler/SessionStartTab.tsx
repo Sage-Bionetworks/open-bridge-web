@@ -16,6 +16,8 @@ import ErrorDisplay from '../../widgets/ErrorDisplay'
 import {MTBHeadingH2} from '../../widgets/Headings'
 import {BlueButton} from '../../widgets/StyledComponents'
 import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
+import Utility from '@helpers/utility'
+import clsx from 'clsx'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,8 +27,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     intialLoginContainer: {
       backgroundColor: 'white',
-      width: '166px',
       padding: theme.spacing(1.75, 1),
+      maxWidth: '166px',
     },
     paragraphText: {
       fontFamily: latoFont,
@@ -53,6 +55,7 @@ const useStyles = makeStyles((theme: Theme) =>
       '&:focus': {
         outline: 'none',
       },
+      outline: 'none',
     },
     newEventButton: {
       marginTop: theme.spacing(4),
@@ -69,6 +72,9 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '20px',
       height: '20px',
     },
+    errorTextbox: {
+      border: '1px solid red',
+    },
   })
 )
 
@@ -78,71 +84,89 @@ type SessionStartTabProps = {
   study: Study
 }
 
+type LocalEventObject = SchedulingEvent & {
+  hasError: boolean
+  key: string
+}
+
 const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
   onUpdate,
   schedule,
   study,
 }: SessionStartTabProps) => {
   const classes = useStyles()
-  const [editableTextboxErrorState, setEditableTextboxErrorState] =
-    React.useState(new Set<string>())
 
-  const [localEventIdentifiers, setLocalEventIdentifiers] = React.useState<
-    SchedulingEvent[]
+  const [localEventObjects, setLocalEventObjects] = React.useState<
+    LocalEventObject[]
   >([])
 
   useEffect(() => {
     if (!study.clientData?.events) return
-    setLocalEventIdentifiers([...study.clientData.events])
+    const localEvents = study.clientData.events!.map(element => {
+      return {
+        ...element,
+        hasError: false,
+        key: Utility.generateNonambiguousCode(8, 'NUMERIC'),
+      }
+    })
+    checkForDuplicateEventNames(localEvents)
   }, [study.clientData.events])
-
-  useEffect(() => {
-    checkForDuplicateEventNames()
-  }, [localEventIdentifiers])
 
   const addEmptyEvent = () => {
     const newEvent: SchedulingEvent = {
       identifier: 'untitled',
       updateType: 'mutable',
     }
-    const newEvents = [...localEventIdentifiers, newEvent]
+    const newEvents = [...transformLocalEventObjects(), newEvent]
     onUpdate(undefined, newEvents)
+  }
+
+  const transformLocalEventObjects = () => {
+    return localEventObjects.map(element => {
+      return {
+        identifier: element.identifier,
+        updateType: element.updateType,
+      }
+    })
   }
 
   const updateEvent = () => {
     if (checkForDuplicateEventNames()) return
-    onUpdate(undefined, localEventIdentifiers)
+    onUpdate(undefined, transformLocalEventObjects())
   }
 
-  const checkForDuplicateEventNames = () => {
+  const checkForDuplicateEventNames = (arr?: LocalEventObject[]) => {
     if (!study.clientData?.events) return false
-    const seenIdentifiers = new Map<string, string>()
-    const errorState = new Set<string>()
-    for (let i = 0; i < localEventIdentifiers.length; i++) {
-      const identifier = localEventIdentifiers[i].identifier
+    const seenIdentifiers = new Map<string, LocalEventObject>()
+    const currentLocalEventObjects = [...(arr || localEventObjects)]
+    let foundError = false
+    for (let i = 0; i < currentLocalEventObjects.length; i++) {
+      const identifier = currentLocalEventObjects[i].identifier
       if (seenIdentifiers.has(identifier)) {
-        errorState.add(identifier + '-' + i)
-        errorState.add(seenIdentifiers.get(identifier)!)
+        foundError = true
+        currentLocalEventObjects[i].hasError = true
+        seenIdentifiers.get(identifier)!.hasError = true
         continue
       }
-      seenIdentifiers.set(identifier, identifier + '-' + i)
+      seenIdentifiers.set(identifier, currentLocalEventObjects[i])
     }
-    setEditableTextboxErrorState(errorState)
-    return errorState.size > 0
+    setLocalEventObjects(currentLocalEventObjects)
+    return foundError
   }
 
-  const deleteEvent = (eventIdentifier: string, index: number) => {
-    const newEvents: SchedulingEvent[] = []
-    const eventToDelete = `${eventIdentifier}-${index}`
-    for (let i = 0; i < localEventIdentifiers.length; i++) {
-      const currentEvent = localEventIdentifiers[i]
-      if (eventToDelete === `${currentEvent.identifier}-${i}`) {
-        continue
-      }
-      newEvents.push(currentEvent)
-    }
-    setLocalEventIdentifiers(newEvents)
-    onUpdate(undefined, newEvents)
+  const deleteEvent = (index: number) => {
+    const newEvents: LocalEventObject[] = [...localEventObjects]
+    newEvents.splice(index, 1)
+    if (checkForDuplicateEventNames(newEvents)) return
+    onUpdate(
+      undefined,
+      newEvents.map(el => {
+        return {
+          identifier: el.identifier,
+          updateType: el.updateType,
+        }
+      })
+    )
   }
 
   if (_.isEmpty(schedule.sessions)) {
@@ -155,11 +179,10 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
     )
   }
 
-  const getBorderColor = (identifier: string, index: number) => {
-    return editableTextboxErrorState.has(identifier + '-' + index)
-      ? 'red'
-      : 'black'
+  const isErrorPresent = () => {
+    return localEventObjects.findIndex(el => el.hasError) >= 0
   }
+
   const calendarIcon = (
     <img src={CalendarIcon} className={classes.calendarIcon}></img>
   )
@@ -186,45 +209,40 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
           <Box flexShrink={0} minWidth="200px" mr={2}>
             <>
               <Box className={classes.intialLoginContainer}>Initial_Login</Box>
-              {localEventIdentifiers.map((evt, index) => (
+              {localEventObjects.map((evt, index) => (
                 <Box display="block">
                   <FormGroup
                     row={true}
                     key={index}
                     style={{alignItems: 'center', marginTop: '21px'}}>
                     <input
-                      key={index}
+                      key={evt.key}
                       value={evt.identifier}
                       onChange={e => {
-                        const newIdentifiers = [...localEventIdentifiers]
+                        const newIdentifiers = [...localEventObjects]
                         newIdentifiers[index] = {
                           ...newIdentifiers[index],
                           identifier: e.target.value,
                         }
-                        setLocalEventIdentifiers(newIdentifiers)
+                        setLocalEventObjects(newIdentifiers)
                       }}
                       onBlur={updateEvent}
-                      style={{
-                        border: `1px solid ${getBorderColor(
-                          evt.identifier,
-                          index
-                        )}`,
-                      }}
-                      className={classes.input}></input>
+                      className={clsx(
+                        classes.input,
+                        evt.hasError && classes.errorTextbox
+                      )}></input>
                     <IconButton
                       style={{marginLeft: '4px'}}
                       edge="end"
                       size="small"
-                      onClick={() => deleteEvent(evt.identifier, index)}>
+                      onClick={() => deleteEvent(index)}>
                       <DeleteIcon
                         style={{
-                          color: getBorderColor(evt.identifier, index),
+                          color: evt.hasError ? 'red' : 'black',
                         }}></DeleteIcon>
                     </IconButton>
                   </FormGroup>
-                  {editableTextboxErrorState.has(
-                    evt.identifier + '-' + index
-                  ) && (
+                  {evt.hasError && (
                     <Box className={classes.errorText}>
                       Duplicate event identifier.
                     </Box>
@@ -233,7 +251,7 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
               ))}
             </>
             <BlueButton
-              disabled={editableTextboxErrorState.size > 0}
+              disabled={isErrorPresent()}
               variant="contained"
               onClick={addEmptyEvent}
               className={classes.newEventButton}>

@@ -141,7 +141,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
       id: string
       section: StudySection
     }>()
-    console.log('builder', id, _section)
+    // console.log('builder', id, _section)
     const [section, setSection] = React.useState(_section)
     const {
       data: schedule,
@@ -391,7 +391,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
       //where we are currently
       switch (section) {
         case 'scheduler': {
-          saveFn = saveSchedule
+          saveFn = async () => {
+            await saveStudy(undefined)
+            return await saveSchedule(undefined)
+          }
           break
         }
         case 'session-creator': {
