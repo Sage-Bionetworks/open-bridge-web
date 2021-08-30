@@ -1,37 +1,37 @@
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import {
   useSchedule,
   useStudy,
   useUpdateSchedule,
-  useUpdateStudyDetail
+  useUpdateStudyDetail,
 } from '@helpers/hooks'
-import { Box, Container } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
-import { Alert } from '@material-ui/lab'
+import Utility from '@helpers/utility'
+import {Box, Container} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
+import {Alert} from '@material-ui/lab'
+import ScheduleService from '@services/schedule.service'
+import StudyService from '@services/study.service'
+import {ThemeType} from '@style/theme'
 import clsx from 'clsx'
 import _ from 'lodash'
-import React, { FunctionComponent } from 'react'
-import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
-import { RouteComponentProps, useParams } from 'react-router-dom'
-import { useUserSessionDataState } from '../../helpers/AuthContext'
-import Utility from '../../helpers/utility'
-import ScheduleService from '../../services/schedule.service'
-import StudyService from '../../services/study.service'
-import { ThemeType } from '../../style/theme'
+import React, {FunctionComponent} from 'react'
+import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
+import {RouteComponentProps, useParams} from 'react-router-dom'
 import {
   Schedule,
   SchedulingEvent,
   StartEventId,
-  StudySession
+  StudySession,
 } from '../../types/scheduling'
 import {
   Assessment,
   BackgroundRecorders,
   StringDictionary,
   Study,
-  StudyPhase
+  StudyPhase,
 } from '../../types/types'
-import { ErrorFallback, ErrorHandler } from '../widgets/ErrorHandler'
-import { MTBHeadingH1 } from '../widgets/Headings'
+import {ErrorFallback, ErrorHandler} from '../widgets/ErrorHandler'
+import {MTBHeadingH1} from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
 import TopErrorBanner from '../widgets/TopErrorBanner'
 import AppDesign from './app-design/AppDesign'
@@ -43,7 +43,7 @@ import PassiveFeatures from './passive-features/PassiveFeatures'
 import Preview from './preview/Preview'
 import IntroInfo from './scheduler/IntroInfo'
 import Scheduler from './scheduler/Scheduler'
-import { StudySection } from './sections'
+import {StudySection} from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
 
@@ -723,7 +723,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                               study={study}
                               hasObjectChanged={hasObjectChanged}
                               saveLoader={saveLoader}
-                              features={study.clientData.backgroundRecorders}
                               onUpdate={(data: BackgroundRecorders) => {
                                 setHasObjectChanged(true)
                                 const updatedStudy = {
