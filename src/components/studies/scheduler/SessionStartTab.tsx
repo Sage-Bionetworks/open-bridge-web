@@ -1,3 +1,4 @@
+import Utility from '@helpers/utility'
 import {
   Box,
   createStyles,
@@ -8,16 +9,15 @@ import {
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Close'
 import {latoFont} from '@style/theme'
+import clsx from 'clsx'
 import _ from 'lodash'
 import React, {FunctionComponent, useEffect} from 'react'
+import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
 import {Schedule, SchedulingEvent} from '../../../types/scheduling'
 import {Study} from '../../../types/types'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
 import {MTBHeadingH2} from '../../widgets/Headings'
 import {BlueButton} from '../../widgets/StyledComponents'
-import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
-import Utility from '@helpers/utility'
-import clsx from 'clsx'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -210,7 +210,7 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
             <>
               <Box className={classes.intialLoginContainer}>Initial_Login</Box>
               {localEventObjects.map((evt, index) => (
-                <Box display="block">
+                <Box display="block" key={evt.identifier}>
                   <FormGroup
                     row={true}
                     key={evt.key}
