@@ -70,7 +70,6 @@ async function getParticipants(
   if (!token) {
     throw Error('Need token')
   }
-
   const {items, total} = searchOptions?.searchValue
     ? await ParticipantService.participantSearch(
         studyId,
@@ -84,9 +83,8 @@ async function getParticipants(
         token,
         tab,
         pageSize,
-        offset
+        offset < 0 ? 0 : offset
       )
-
   if (items && total) {
     const result = await getRelevantParticipantInfo(studyId, token, items)
     return {items: result, total}
