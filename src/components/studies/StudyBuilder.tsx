@@ -1,7 +1,6 @@
 import {useSchedule, useUpdateSchedule} from '@components/studies/scheduleHooks'
 import {useStudy, useUpdateStudyDetail} from '@components/studies/studyHooks'
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import Utility from '@helpers/utility'
 import {Box, Container} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import {Alert} from '@material-ui/lab'
@@ -12,7 +11,13 @@ import clsx from 'clsx'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
 import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
-import {RouteComponentProps, useParams} from 'react-router-dom'
+import {
+  Route,
+  RouteComponentProps,
+  Switch,
+  useParams,
+  useRouteMatch,
+} from 'react-router-dom'
 import {
   Schedule,
   SchedulingEvent,
@@ -133,18 +138,22 @@ export type SchedulerErrorType = {
 const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
   ({...otherProps}) => {
     const classes = useStyles()
-    let {id, section: _section} = useParams<{
+    const {url, path} = useRouteMatch()
+    console.log(`${url}`)
+    console.log(`${path}`)
+    let {id, section} = useParams<{
       id: string
       section: StudySection
     }>()
-    // console.log('builder', id, _section)
-    const [section, setSection] = React.useState(_section)
+
     const {
-      data: schedule,
+      data: scheduleSource,
       error: scheduleError,
       isLoading: isScheduleLoading,
     } = useSchedule(id)
-    const {data: study, error: studyError} = useStudy(id)
+    const {data: studySource, error: studyError} = useStudy(id)
+    const [study, setStudy] = React.useState<Study | undefined>()
+    const [schedule, setSchedule] = React.useState<Schedule | undefined>()
     const {
       isSuccess: scheduleUpdateSuccess,
       isError: scheduleUpdateError,
@@ -177,6 +186,19 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
     }>()
 
     React.useEffect(() => {
+      console.log('source change')
+      if (!study) {
+        setStudy(studySource)
+      }
+    }, [studySource])
+
+    React.useEffect(() => {
+      if (!schedule) {
+        setSchedule(scheduleSource)
+      }
+    }, [scheduleSource])
+
+    React.useEffect(() => {
       if (study) {
         const banner = getBannerType(study.phase, section)
         const bannerType = BannerInfo.bannerMap.get(banner)
@@ -191,7 +213,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
       return <>no study</>
     }
 
-    console.log('studyId', id)
+    // console.log('studyId', id)
 
     if (studyError || scheduleError) {
       //alert(studyError)
@@ -295,6 +317,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
       setError([])
       setSchedulerErrors([])
       setDisplayBanner(false)
+      console.log('START UPDATE')
       if (!study) {
         throw Error('You need to create a study before adding a schedule')
       }
@@ -346,6 +369,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
           schedule: savedUpdatedSchedule,
           study: {...builderInfo.study, version: builderInfo.study.version + 1},
         })*/
+        console.log('END UPDATE')
         setHasObjectChanged(false)
         return savedUpdatedSchedule
       } catch (e) {
@@ -377,6 +401,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
     }
 
     const changeSection = async (next: StudySection) => {
+      ;`/studies/builder/${id}/scheduler`
+
+      /*
       if (section === next || !allSessionsHaveAssessments()) {
         return
       }
@@ -427,33 +454,29 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
         window.history.pushState(null, '', next)
         Utility.setBodyClass(next)
         setSection(next)
-      }
+      }*/
     }
 
     const navButtons = (
       <NavButtons
         id={id}
+        key={`${id}_nav_button`}
         currentSection={section}
-        onNavigate={(section: StudySection) => changeSection(section)}
         disabled={!allSessionsHaveAssessments()}></NavButtons>
     )
 
     const navButtonsArray = [
       <NavButtons
-        id={`${id}_p_button`}
+        id={id}
         key={`${id}_p_button`}
         currentSection={section}
-        onNavigate={(section: StudySection) => changeSection(section)}
         isPrevOnly={true}
       />,
       <NavButtons
-        id={`${id}_n_button`}
+        id={id}
         key={`${id}_n_button`}
         currentSection={section}
-        isNextOnly={true}
-        onNavigate={(section: StudySection) =>
-          changeSection(section)
-        }></NavButtons>,
+        isNextOnly={true}></NavButtons>,
     ]
 
     const getClasses = () => {
@@ -574,8 +597,26 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                     ) : (
                       study &&
                       schedule && (
-                        <>
-                          {section === 'scheduler' && (
+                        <Switch>
+                          <Route path={`/studies/builder/:id/session-creator`}>
+                            <SessionCreator
+                              study={study}
+                              hasObjectChanged={hasObjectChanged}
+                              saveLoader={saveLoader}
+                              id={id}
+                              onSave={() => saveSchedule()}
+                              sessions={schedule?.sessions || []}
+                              onUpdate={(data: StudySession[]) => {
+                                setHasObjectChanged(true)
+                                saveSchedule({
+                                  ...schedule!,
+                                  sessions: data,
+                                })
+                              }}>
+                              {navButtons}
+                            </SessionCreator>
+                          </Route>
+                          <Route path={`/studies/builder/:id/scheduler`}>
                             <Scheduler
                               id={id}
                               token={token!}
@@ -595,12 +636,13 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                                 setHasObjectChanged(true)
 
                                 if (schedule) {
-                                  mutateSchedule({
+                                  /*mutateSchedule({
                                     studyId: study.identifier,
                                     action: 'UPDATE',
                                     schedule,
                                     isPassive: true,
-                                  })
+                                  })()*/
+                                  setSchedule(schedule)
                                 }
                                 if (events) {
                                   const cData = study.clientData
@@ -609,36 +651,20 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                                     ...study,
                                     clientData: cData,
                                   }
-                                  mutateStudy({
+                                  /* mutateStudy({
                                     study: studyUpdate,
                                     isPassive: true,
-                                  })
+                                  })*/
+                                  setStudy(studyUpdate)
                                 }
                               }}
                               schedulerErrors={schedulerErrors}
                               isReadOnly={!StudyService.isStudyInDesign(study)}>
                               {navButtonsArray}
                             </Scheduler>
-                          )}
-                          {section === 'session-creator' && (
-                            <SessionCreator
-                              study={study}
-                              hasObjectChanged={hasObjectChanged}
-                              saveLoader={saveLoader}
-                              id={id}
-                              onSave={() => saveSchedule()}
-                              sessions={schedule?.sessions || []}
-                              onUpdate={(data: StudySession[]) => {
-                                setHasObjectChanged(true)
-                                saveSchedule({
-                                  ...schedule!,
-                                  sessions: data,
-                                })
-                              }}>
-                              {navButtons}
-                            </SessionCreator>
-                          )}
-                          {section === 'enrollment-type-selector' && (
+                          </Route>
+                          <Route
+                            path={`/studies/builder/:id/enrollment-type-selector`}>
                             <EnrollmentTypeSelector
                               hasObjectChanged={hasObjectChanged}
                               saveLoader={saveLoader}
@@ -649,8 +675,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                               }}>
                               {navButtons}
                             </EnrollmentTypeSelector>
-                          )}
-                          {section === 'customize' && (
+                          </Route>
+                          <Route path={`/studies/builder/:id/customize`}>
                             <AppDesign
                               hasObjectChanged={hasObjectChanged}
                               saveLoader={saveLoader}
@@ -660,25 +686,27 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                               }}
                               onUpdate={(updatedStudy: Study) => {
                                 setHasObjectChanged(true)
-                                mutateStudy({
+                                setStudy({...updatedStudy})
+                                /*mutateStudy({
                                   study: updatedStudy,
 
                                   isPassive: true,
-                                })
+                                })*/
                               }}
                               onError={(error: string) =>
                                 setError(prev => [...prev, error])
                               }>
                               {navButtons}
                             </AppDesign>
-                          )}
-                          {section === 'preview' && (
+                          </Route>
+
+                          <Route path={`/studies/builder/:id/preview`}>
                             <Preview
                               studyId={study.identifier}
                               token={token!}
                               scheduleSessions={schedule.sessions}></Preview>
-                          )}
-                          {section === 'launch' && (
+                          </Route>
+                          <Route path={`/studies/builder/:id/launch`}>
                             <Launch
                               hasObjectChanged={hasObjectChanged}
                               saveLoader={saveLoader}
@@ -702,15 +730,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                                 id={id}
                                 currentSection={section}
                                 isPrevOnly={true}
-                                onNavigate={(section: StudySection) =>
-                                  changeSection(section)
-                                }
                                 disabled={
                                   !allSessionsHaveAssessments()
                                 }></NavButtons>
                             </Launch>
-                          )}
-                          {section === 'passive-features' && (
+                          </Route>
+                          <Route path={`/studies/builder/:id/passive-features`}>
                             <PassiveFeatures
                               study={study}
                               hasObjectChanged={hasObjectChanged}
@@ -727,8 +752,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                               }}>
                               {navButtons}
                             </PassiveFeatures>
-                          )}
-                        </>
+                          </Route>
+                        </Switch>
                       )
                     )}
                   </LoadingComponent>

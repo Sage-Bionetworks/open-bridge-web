@@ -96,6 +96,11 @@ const SideBarListItem: React.FunctionComponent<SideBarListItemProps> = ({
   inStudyBuilder,
 }: SideBarListItemProps) => {
   const classes = useStyles()
+  const handleClick = () => {
+    if (!inStudyBuilder) {
+      onClick()
+    }
+  }
   return (
     <li
       className={clsx({
@@ -106,11 +111,12 @@ const SideBarListItem: React.FunctionComponent<SideBarListItemProps> = ({
         [classes.listItemCollapsed]: !isOpen,
       })}>
       <Button
-        onClick={() => onClick()}
+        onClick={handleClick}
         className={clsx(classes.link, styleProps && styleProps)}
         classes={{label: classes.linkLabel}}>
         {children}
       </Button>
+      )
     </li>
   )
 }
