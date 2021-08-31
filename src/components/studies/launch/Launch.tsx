@@ -151,7 +151,14 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
       if (!study) {
         return
       }
-      console.log('starting update from passive eatures')
+      const missingIrbInfo =
+        !study.irbDecisionType || !study.irbDecisionOn || !study.irbExpiresOn
+      if (missingIrbInfo) {
+        delete study.irbDecisionOn
+        delete study.irbExpiresOn
+        delete study.irbDecisionType
+      }
+      console.log('starting update from launch')
       const updatedStudy = {
         ...study,
         phase: 'recruitment' as StudyPhase,
@@ -198,9 +205,6 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
     setIsFinished(true)
   }
 
-  const handleReset = () => {
-    setActiveStep(0)
-  }
   const isReadOnly = StudyService.isStudyClosedToEdits(study)
   if (isReadOnly) {
     return <ReadOnlyIrbDetails study={study} />

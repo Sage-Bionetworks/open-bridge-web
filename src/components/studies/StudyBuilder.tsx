@@ -18,12 +18,7 @@ import {
   useRouteMatch,
 } from 'react-router-dom'
 import {Schedule, StartEventId} from '../../types/scheduling'
-import {
-  Assessment,
-  StringDictionary,
-  Study,
-  StudyPhase,
-} from '../../types/types'
+import {StringDictionary, Study, StudyPhase} from '../../types/types'
 import {ErrorFallback, ErrorHandler} from '../widgets/ErrorHandler'
 import {MTBHeadingH1} from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
@@ -209,7 +204,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
     // console.log('studyId', id)
 
     if (studyError || scheduleError) {
-      //alert(studyError)
       //@ts-ignore
       if (studyError || (scheduleError && scheduleError.statusCode !== 404)) {
         handleError(studyError)
@@ -273,184 +267,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
         alert(e.name)
       })
     }
-
-    const saveStudy = async (
-      passedStudy: Study = study!,
-      saveButtonPressed?: boolean
-    ): Promise<Study | undefined> => {
-      setHasObjectChanged(true)
-      setSaveLoader(true)
-      setDisplayBanner(false)
-      try {
-        const updatedStudy = await mutateStudy({
-          study: passedStudy,
-        })
-        console.log('us', updatedStudy)
-        setError([])
-
-        setHasObjectChanged(false)
-        return updatedStudy
-      } catch (e) {
-        if (e.statusCode === 401) {
-          handleError(e)
-        }
-        setError([e.message])
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth',
-        })
-      } finally {
-        setSaveLoader(false)
-        if (saveButtonPressed) setDisplayBanner(true)
-      }
-    }
-
-    const saveSchedule = async (
-      _updatedSchedule?: Schedule,
-      saveButtonPressed?: boolean
-    ): Promise<Schedule | undefined> => {
-      setError([])
-      setSchedulerErrors([])
-      setDisplayBanner(false)
-      console.log('START UPDATE')
-      if (!study) {
-        throw Error('You need to create a study before adding a schedule')
-      }
-      try {
-        setSaveLoader(true)
-        const updatedSchedule = _updatedSchedule || schedule
-        if (!updatedSchedule || !token) {
-          return undefined
-        }
-        /*
-        const savedUpdatedSchedule = await ScheduleService.saveSchedule(
-          study.identifier,
-          updatedSchedule,
-          token
-        )*/
-        const savedUpdatedSchedule = await mutateSchedule({
-          studyId: study.identifier,
-          schedule: updatedSchedule,
-          action: 'UPDATE',
-        })
-        //we have the issue that scheduler comes back from the server without assessment resources
-        //so we need to copy the resources back to the new schedule object before updating.
-        //the reason why we want the updated object is that sessions ids get assigned by the server.
-        //potentially we might just want to do it in that case, but this seems to be performane
-
-        const oldSessionAssessments = updatedSchedule.sessions.reduce(function (
-          prev,
-          curr
-        ) {
-          if (curr.assessments) {
-            return [...prev, ...curr.assessments]
-          } else {
-            return prev
-          }
-        },
-        [] as Assessment[])
-
-        savedUpdatedSchedule.sessions.forEach(session => {
-          session.assessments?.forEach(assessment => {
-            assessment.resources = oldSessionAssessments.find(
-              oa => oa.guid === assessment.guid
-            )?.resources
-          })
-        })
-        //updating schedule will update the study so bump the version.
-
-        /*  setData({
-          ...builderInfo,
-          schedule: savedUpdatedSchedule,
-          study: {...builderInfo.study, version: builderInfo.study.version + 1},
-        })*/
-        console.log('END UPDATE')
-        setHasObjectChanged(false)
-        return savedUpdatedSchedule
-      } catch (e) {
-        if (e.statusCode === 401) {
-          handleError(e)
-        }
-        console.log(e, 'error')
-        const entity = e.entity
-        const errors = e.errors
-        // This can occur when a request fails due to reasons besides bad user input.
-        if (!errors || !entity) {
-          window.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-          })
-          setError(prev => [...prev, e.message])
-          return undefined
-        }
-        const errorObject = {
-          entity: entity,
-          errors: errors,
-        }
-        setSchedulerErrors(prev => [...prev, errorObject])
-        return undefined
-      } finally {
-        setSaveLoader(false)
-        if (saveButtonPressed) setDisplayBanner(true)
-      }
-    }
-
-    /* const changeSection = async (next: StudySection) => {
-      ;`/studies/builder/${id}/scheduler`
-
-     
-      if (section === next || !allSessionsHaveAssessments()) {
-        return
-      }
-
-      let saveFn: Function | undefined = undefined
-      //where we are currently
-      switch (section) {
-        case 'scheduler': {
-          saveFn = async () => {
-            await saveStudy(undefined)
-            return await saveSchedule(undefined)
-          }
-          break
-        }
-        case 'session-creator': {
-          saveFn = saveSchedule
-          break
-        }
-        case 'launch': {
-          const missingIrbInfo =
-            !study.irbDecisionType ||
-            !study.irbDecisionOn ||
-            !study.irbExpiresOn
-          if (missingIrbInfo) {
-            delete study.irbDecisionOn
-            delete study.irbExpiresOn
-            delete study.irbDecisionType
-          }
-          saveFn = saveStudy
-          break
-        }
-
-        case 'customize': {
-          saveFn = saveStudy
-          break
-        }
-
-        default: {
-          saveFn = saveStudy
-        }
-      }
-
-      let updatedObject: Study | Schedule | undefined
-      if (saveFn && hasObjectChanged) {
-        updatedObject = await saveFn()
-      }
-      if (updatedObject || !hasObjectChanged) {
-        window.history.pushState(null, '', next)
-        Utility.setBodyClass(next)
-        setSection(next)
-      }
-    }*/
 
     const navButtons = (
       <NavButtons
@@ -613,21 +429,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                           </Route>
                           <Route path={`/studies/builder/:id/customize`}>
                             <AppDesign
-                              hasObjectChanged={hasObjectChanged}
-                              saveLoader={saveLoader}
-                              study={study}
-                              onSave={() => {
-                                saveStudy(study, true)
-                              }}
-                              onUpdate={(updatedStudy: Study) => {
-                                setHasObjectChanged(true)
-                                setStudy({...updatedStudy})
-                                /*mutateStudy({
-                                  study: updatedStudy,
-
-                                  isPassive: true,
-                                })*/
-                              }}
+                              id={id}
                               onError={(error: string) =>
                                 setError(prev => [...prev, error])
                               }>
@@ -636,10 +438,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                           </Route>
 
                           <Route path={`/studies/builder/:id/preview`}>
-                            <Preview
-                              studyId={study.identifier}
-                              token={token!}
-                              scheduleSessions={schedule.sessions}></Preview>
+                            <Preview id={study.identifier}></Preview>
                           </Route>
                           <Route path={`/studies/builder/:id/launch`}>
                             <Launch id={id}>{navButtons}</Launch>
