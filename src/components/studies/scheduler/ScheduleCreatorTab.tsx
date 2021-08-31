@@ -282,6 +282,7 @@ const ScheduleCreatorTab: FunctionComponent<
             labelPlacement="start"
             control={
               <Duration
+                inputDurationCapInWeeks={104}
                 onChange={e =>
                   updateScheduleData({...schedule, duration: e.target.value})
                 }

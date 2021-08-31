@@ -28,6 +28,7 @@ export interface DurationProps {
   numberLabel: string
   isIntro?: boolean
   unitDefault?: any
+  inputDurationCapInWeeks?: number
 }
 
 const Duration: React.FunctionComponent<
@@ -40,6 +41,7 @@ const Duration: React.FunctionComponent<
   numberLabel,
   isIntro,
   unitDefault,
+  inputDurationCapInWeeks,
   ...props
 }: DurationProps) => {
   const classes = useStyles()
@@ -103,6 +105,15 @@ const Duration: React.FunctionComponent<
         {...props}
         id={numberLabel.replace(' ', '')}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          if (inputDurationCapInWeeks !== undefined) {
+            const newValue = Number(e.target.value as string)
+            const isOverScheduleDurationLimit =
+              (newValue > inputDurationCapInWeeks && unt === 'W') ||
+              (newValue > inputDurationCapInWeeks * 7 && unt === 'D')
+            if (isOverScheduleDurationLimit) {
+              return
+            }
+          }
           changeValue(Number(e.target.value as string), unt)
         }}
         inputWidth={isIntro ? 10 : undefined}></SmallTextBox>
@@ -113,9 +124,16 @@ const Duration: React.FunctionComponent<
         value={unt}
         sourceData={unitData}
         id={unitLabel.replace(' ', '')}
-        onChange={e =>
-          changeValue(num, e.target.value as moment.unitOfTime.Base)
-        }
+        onChange={e => {
+          const daysNumTooLarge =
+            inputDurationCapInWeeks !== undefined &&
+            e.target.value === 'W' &&
+            (num || 0) > inputDurationCapInWeeks
+          changeValue(
+            daysNumTooLarge ? inputDurationCapInWeeks : num,
+            e.target.value as moment.unitOfTime.Base
+          )
+        }}
         style={isIntro ? {width: '100px'} : undefined}></SelectWithEnum>
       <IconButton
         className={classes.clear}
