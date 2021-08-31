@@ -101,7 +101,6 @@ type StudyLeftNavOwnProps = {
   id?: string
   open: boolean
   onToggle: Function
-  onNavigate: Function
   disabled: boolean
 }
 
@@ -111,7 +110,6 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
   id,
   open,
   onToggle,
-  onNavigate,
   currentSection = 'sessions-creator',
   disabled,
 }) => {
