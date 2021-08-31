@@ -133,8 +133,10 @@ export const useUpdateStudyInList = () => {
         }*/
     },
     onSettled: async (data, error, props) => {
-      queryClient.invalidateQueries(STUDY_KEYS.detail(props.study.identifier))
-      queryClient.invalidateQueries(STUDY_KEYS.list())
+      if (!props.isPassive) {
+        queryClient.invalidateQueries(STUDY_KEYS.detail(props.study.identifier))
+        queryClient.invalidateQueries(STUDY_KEYS.list())
+      }
     },
   })
 
