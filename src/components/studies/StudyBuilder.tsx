@@ -5,7 +5,6 @@ import {Box, Container} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import {Alert} from '@material-ui/lab'
 import ScheduleService from '@services/schedule.service'
-import StudyService from '@services/study.service'
 import {ThemeType} from '@style/theme'
 import clsx from 'clsx'
 import _ from 'lodash'
@@ -18,10 +17,9 @@ import {
   useParams,
   useRouteMatch,
 } from 'react-router-dom'
-import {Schedule, SchedulingEvent, StartEventId} from '../../types/scheduling'
+import {Schedule, StartEventId} from '../../types/scheduling'
 import {
   Assessment,
-  BackgroundRecorders,
   StringDictionary,
   Study,
   StudyPhase,
@@ -181,7 +179,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
     }>()
 
     React.useEffect(() => {
-      console.log('source change')
+      console.log('rerendering builder')
       if (!study) {
         setStudy(studySource)
       }
@@ -459,6 +457,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
         id={id}
         key={`${id}_nav_button`}
         currentSection={section}
+        isPrevOnly={section === 'launch'}
         disabled={!allSessionsHaveAssessments()}></NavButtons>
     )
 
@@ -593,65 +592,16 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                       schedule && (
                         <Switch>
                           <Route path={`/studies/builder/:id/session-creator`}>
-                            <SessionCreator
-                              id={id}
-                              /* onSave={() => saveSchedule()}
-                              sessions={schedule?.sessions || []}
-                              onUpdate={(data: StudySession[]) => {
-                                setHasObjectChanged(true)
-                                saveSchedule({
-                                  ...schedule!,
-                                  sessions: data,
-                                })
-                              }}*/
-                            >
+                            <SessionCreator id={id}>
                               {navButtons}
                             </SessionCreator>
                           </Route>
                           <Route path={`/studies/builder/:id/scheduler`}>
                             <Scheduler
                               id={id}
-                              token={token!}
-                              schedule={schedule!}
-                              study={study}
-                              hasObjectChanged={hasObjectChanged}
-                              saveLoader={saveLoader}
                               onSave={(isSavePressed: boolean) => {
-                                saveStudy(undefined).then(() =>
-                                  saveSchedule(undefined, isSavePressed)
-                                )
-                              }}
-                              onUpdate={(
-                                schedule?: Schedule,
-                                events?: SchedulingEvent[]
-                              ) => {
-                                setHasObjectChanged(true)
-
-                                if (schedule) {
-                                  /*mutateSchedule({
-                                    studyId: study.identifier,
-                                    action: 'UPDATE',
-                                    schedule,
-                                    isPassive: true,
-                                  })()*/
-                                  setSchedule(schedule)
-                                }
-                                if (events) {
-                                  const cData = study.clientData
-                                  cData.events = events
-                                  let studyUpdate = {
-                                    ...study,
-                                    clientData: cData,
-                                  }
-                                  /* mutateStudy({
-                                    study: studyUpdate,
-                                    isPassive: true,
-                                  })*/
-                                  setStudy(studyUpdate)
-                                }
-                              }}
-                              schedulerErrors={schedulerErrors}
-                              isReadOnly={!StudyService.isStudyInDesign(study)}>
+                                alert('alina to do')
+                              }}>
                               {navButtonsArray}
                             </Scheduler>
                           </Route>
@@ -692,49 +642,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                               scheduleSessions={schedule.sessions}></Preview>
                           </Route>
                           <Route path={`/studies/builder/:id/launch`}>
-                            <Launch
-                              hasObjectChanged={hasObjectChanged}
-                              saveLoader={saveLoader}
-                              study={study}
-                              schedule={schedule}
-                              onSave={() =>
-                                saveStudy({
-                                  ...study,
-                                  phase: 'recruitment',
-                                })
-                              }
-                              onUpdate={(study: Study) => {
-                                setHasObjectChanged(true)
-                                mutateStudy({
-                                  study,
-
-                                  isPassive: true,
-                                })
-                              }}>
-                              <NavButtons
-                                id={id}
-                                currentSection={section}
-                                isPrevOnly={true}
-                                disabled={
-                                  !allSessionsHaveAssessments()
-                                }></NavButtons>
-                            </Launch>
+                            <Launch id={id}>{navButtons}</Launch>
                           </Route>
                           <Route path={`/studies/builder/:id/passive-features`}>
-                            <PassiveFeatures
-                              study={study}
-                              hasObjectChanged={hasObjectChanged}
-                              saveLoader={saveLoader}
-                              onUpdate={(data: BackgroundRecorders) => {
-                                setHasObjectChanged(true)
-                                const updatedStudy = {
-                                  ...study,
-                                }
-                                updatedStudy.clientData.backgroundRecorders =
-                                  data
-
-                                saveStudy(updatedStudy)
-                              }}>
+                            <PassiveFeatures id={id}>
                               {navButtons}
                             </PassiveFeatures>
                           </Route>

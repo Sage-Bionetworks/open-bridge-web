@@ -3,15 +3,10 @@ import {makeStyles} from '@material-ui/core/styles'
 import React, {ReactElement, useState} from 'react'
 import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
 import {ThemeType} from '../../../style/theme'
-import {Schedule} from '../../../types/scheduling'
-import {Study, StudyBuilderComponentProps} from '../../../types/types'
 import {NextButton, PrevButton} from '../../widgets/StyledComponents'
-import {SchedulerErrorType} from '../StudyBuilder'
-import ConfigureBurstTab from './ConfigureBurstTab'
 import ScheduleCreatorTab from './ScheduleCreatorTab'
 import SchedulerStepper from './SchedulerStepper'
 import SessionStartTab from './SessionStartTab'
-import StudyService from '@services/study.service'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -31,12 +26,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
 export type SchedulerProps = {
   id: string
-  schedule: Schedule
-
-  token: string
+  children: React.ReactNode
   onSave: Function
-  schedulerErrors: SchedulerErrorType[]
-  study: Study
 }
 
 function getSteps() {
@@ -58,9 +49,9 @@ const StepContent: React.FunctionComponent<{
   return cntrl as ReactElement
 }
 
-const Scheduler: React.FunctionComponent<
-  SchedulerProps & StudyBuilderComponentProps
-> = (props: SchedulerProps & StudyBuilderComponentProps) => {
+const Scheduler: React.FunctionComponent<SchedulerProps> = (
+  props: SchedulerProps
+) => {
   const classes = useStyles()
 
   const [steps, setSteps] = useState(getSteps())
@@ -101,11 +92,10 @@ const Scheduler: React.FunctionComponent<
 
       <div className={classes.instructions}>
         <StepContent step={activeStep}>
-          <SessionStartTab {...props} />
+          <SessionStartTab id={props.id} />
           <ScheduleCreatorTab
-            isReadOnly={!StudyService.isStudyInDesign(props.study)}
-            {...props}></ScheduleCreatorTab>
-          <ConfigureBurstTab {...props}></ConfigureBurstTab>
+            id={props.id}
+            children={props.children}></ScheduleCreatorTab>
         </StepContent>
         <Box py={2} px={2} textAlign="right" bgcolor="inherit">
           <>

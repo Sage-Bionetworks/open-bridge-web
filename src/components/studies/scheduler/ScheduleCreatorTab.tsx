@@ -5,8 +5,10 @@ import {
   makeStyles,
   Theme,
 } from '@material-ui/core'
+import StudyService from '@services/study.service'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import {poppinsFont, theme} from '../../../style/theme'
 import {
@@ -17,11 +19,11 @@ import {
   StartEventId,
   StudySession,
 } from '../../../types/scheduling'
-import {Study, StudyBuilderComponentProps} from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
 import SaveButton from '../../widgets/SaveButton'
-import {SchedulerErrorType} from '../StudyBuilder'
+import {useSchedule, useUpdateSchedule} from '../scheduleHooks'
+import {useStudy} from '../studyHooks'
 import AssessmentList from './AssessmentList'
 import Duration from './Duration'
 import ReadOnlyScheduler from './read-only-pages/ReadOnlyScheduler'
@@ -97,36 +99,58 @@ export const getStartEventIdFromSchedule = (
   }
 }
 
+export type SchedulerErrorType = {
+  errors: any
+  entity: any
+}
 type ScheduleCreatorTabProps = {
   id: string
-  schedule: Schedule
-  version?: number
-  token: string
-  onSave: Function
-  schedulerErrors: SchedulerErrorType[]
-  study: Study
-  isReadOnly?: boolean
+  children: React.ReactNode
+  //schedule: Schedule
+  //  version?: number
+  // token: string
+  //onSave: Function
+  // schedulerErrors: SchedulerErrorType[]
+  // study: Study
+  //isReadOnly?: boolean
 }
 
-const ScheduleCreatorTab: FunctionComponent<
-  ScheduleCreatorTabProps & StudyBuilderComponentProps
-> = ({
-  hasObjectChanged,
-  saveLoader,
-  onUpdate,
-  schedule: _schedule,
-  onSave,
+const ScheduleCreatorTab: FunctionComponent<ScheduleCreatorTabProps> = ({
+  id,
+  //hasObjectChanged,
+  //saveLoader,
+  // onUpdate,
+  // schedule: _schedule,
+  // onSave,
   children,
-  token,
-  version,
-  study,
-  schedulerErrors,
-  isReadOnly,
-}: ScheduleCreatorTabProps & StudyBuilderComponentProps) => {
+}: //token,
+//version,
+//study,
+//schedulerErrors,
+// isReadOnly,
+ScheduleCreatorTabProps) => {
   const classes = useStyles()
   const [isErrorAlert, setIsErrorAlert] = React.useState(true)
-  const [schedule, setSchedule] = React.useState({..._schedule})
-  console.log('%c ---scheduler update--' + version, 'color: red')
+  const {data: study, error, isLoading} = useStudy(id)
+  const {data: _schedule} = useSchedule(id)
+
+  const {
+    isSuccess: scheduleUpdateSuccess,
+    isError: scheduleUpdateError,
+    mutateAsync: mutateSchedule,
+    data,
+  } = useUpdateSchedule()
+
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
+  const [schedulerErrors, setScheduleErrors] = React.useState<
+    SchedulerErrorType[]
+  >([]) //ALINA TODO
+  const [isReadOnly, setIsReadOnly] = React.useState(true)
+  const handleError = useErrorHandler()
+  const [saveLoader, setSaveLoader] = React.useState(false)
+
+  const [schedule, setSchedule] = React.useState<Schedule | undefined>()
+  console.log('%c ---scheduler update--' + study?.version, 'color: red')
 
   const [schedulerErrorState, setSchedulerErrorState] = React.useState(
     new Map<
@@ -138,6 +162,70 @@ const ScheduleCreatorTab: FunctionComponent<
       }
     >()
   )
+
+  React.useEffect(() => {
+    const newErrorState = parseErrors(schedulerErrors)
+    setSchedulerErrorState(newErrorState)
+  }, [schedulerErrors])
+
+  React.useEffect(() => {
+    if (study) {
+      setIsReadOnly(!StudyService.isStudyInDesign(study))
+    }
+  }, [study])
+
+  React.useEffect(() => {
+    if (_schedule) {
+      console.log('----setting schedule----')
+
+      setSchedule(_schedule)
+    }
+  }, [_schedule])
+
+  if (!schedule?.sessions) {
+    return <>...loading</>
+  }
+
+  const onSave = async (isButtonPressed?: boolean) => {
+    console.log('starting save')
+    setSaveLoader(true)
+    try {
+      const result = await mutateSchedule({
+        studyId: id,
+        schedule,
+        action: 'UPDATE',
+      })
+      setHasObjectChanged(false)
+    } catch (e) {
+      console.log('ERROR IN SCHEDULER', e)
+
+      if (e.statusCode === 401) {
+        handleError(e)
+      }
+      console.log(e, 'error')
+      const entity = e.entity
+      const errors = e.errors
+      // This can occur when a request fails due to reasons besides bad user input.
+      if (!errors || !entity) {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth',
+        })
+        // alina todo
+        console.log('todo')
+        // setError(prev => [...prev, e.message])
+        return undefined
+      }
+      const errorObject = {
+        entity: entity,
+        errors: errors,
+      }
+      setScheduleErrors(prev => [...prev, errorObject])
+    } finally {
+      setSaveLoader(false)
+      console.log('ending save')
+    }
+  }
 
   function parseErrors(_schedulerErrors: SchedulerErrorType[]) {
     const newErrorState = new Map()
@@ -208,19 +296,12 @@ const ScheduleCreatorTab: FunctionComponent<
     return newErrorState
   }
 
-  React.useEffect(() => {
-    const newErrorState = parseErrors(schedulerErrors)
-    setSchedulerErrorState(newErrorState)
-  }, [schedulerErrors])
-
-  const saveSession = async (sessionId: string) => {
-    onSave()
-  }
-
   //setting new state
   const updateScheduleData = (schedule: Schedule) => {
     setSchedule(schedule)
-    onUpdate(schedule)
+    console.log('updated')
+    setHasObjectChanged(true)
+    //ALINA TODO onUpdate(schedule)
   }
 
   //updating the schedule part
@@ -232,7 +313,7 @@ const ScheduleCreatorTab: FunctionComponent<
   }
 
   const scheduleUpdateFn = (action: SessionScheduleAction) => {
-    const sessions = actionsReducer(schedule.sessions, action)
+    const sessions = actionsReducer(schedule.sessions!, action)
     const newSchedule = {...schedule, sessions}
     updateScheduleData(newSchedule)
   }
@@ -250,11 +331,10 @@ const ScheduleCreatorTab: FunctionComponent<
   if (isReadOnly) {
     return (
       <ReadOnlyScheduler
-        token={token}
         children={children}
         schedule={schedule}
-        version={version}
-        studyId={study.identifier}
+        version={study?.version}
+        studyId={id}
       />
     )
   }
@@ -302,9 +382,8 @@ const ScheduleCreatorTab: FunctionComponent<
         </div>
         <Box bgcolor="#fff" p={2} pb={0} mt={3} key="scheduler">
           <Timeline
-            token={token}
-            version={version!}
-            studyId={study.identifier}
+            version={study?.version || 0}
+            studyId={id}
             schedule={schedule}></Timeline>
           <div className={classes.studyStartDateContainer}>
             <StudyStartDate
