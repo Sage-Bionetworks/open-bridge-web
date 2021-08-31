@@ -23,17 +23,16 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
     <SchedulingFormSection
       label={'Run this session every:'}
       style={{
-        opacity: disabled ? 0.4 : 1,
+        opacity: disabled ? 0.3 : 1,
         pointerEvents: disabled ? 'none' : 'all',
       }}>
       <FormControlLabel
         style={{
           marginLeft: '0',
-          opacity: disabled ? 0.4 : 1,
-          pointerEvents: disabled ? 'none' : 'all',
         }}
         control={
           <Duration
+            disabled={disabled}
             onChange={e => {
               if (disabled) return
               onChange(e.target.value)

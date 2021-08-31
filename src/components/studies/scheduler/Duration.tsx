@@ -28,6 +28,7 @@ export interface DurationProps {
   numberLabel: string
   isIntro?: boolean
   unitDefault?: any
+  disabled?: boolean
 }
 
 const Duration: React.FunctionComponent<
@@ -40,6 +41,7 @@ const Duration: React.FunctionComponent<
   numberLabel,
   isIntro,
   unitDefault,
+  disabled,
   ...props
 }: DurationProps) => {
   const classes = useStyles()
@@ -96,6 +98,7 @@ const Duration: React.FunctionComponent<
   return (
     <div className={classes.root}>
       <SmallTextBox
+        disabled={!!disabled}
         style={{width: '60px'}}
         value={num || ''}
         aria-label={numberLabel}
@@ -108,6 +111,7 @@ const Duration: React.FunctionComponent<
         inputWidth={isIntro ? 10 : undefined}></SmallTextBox>
 
       <SelectWithEnum
+        disabled={!!disabled}
         aria-label={unitLabel}
         {...props}
         value={unt}
