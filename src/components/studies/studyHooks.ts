@@ -20,6 +20,7 @@ export const useStudy = (studyId: string | undefined) => {
     {
       enabled: !!studyId,
       retry: 1,
+      refetchOnWindowFocus: false,
     }
   )
 }
@@ -126,7 +127,6 @@ export const useUpdateStudyInList = () => {
       return {previousStudies}
     },
     onError: (err, variables, context) => {
-      alert('error')
       console.log(err, variables, context)
       /* if (context?.previousStudies) {
           queryClient.setQueryData<Study[]>(KEYS.studies, context.previousStudies)
@@ -183,7 +183,6 @@ export const useUpdateStudyDetail = () => {
       return {previousStudy}
     },
     onError: (err, variables, context) => {
-      alert('error')
       console.log(err, variables, context)
       /* if (context?.previousStudies) {
           queryClient.setQueryData<Study[]>(KEYS.studies, context.previousStudies)
