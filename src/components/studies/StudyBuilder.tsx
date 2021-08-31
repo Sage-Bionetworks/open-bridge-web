@@ -18,12 +18,7 @@ import {
   useParams,
   useRouteMatch,
 } from 'react-router-dom'
-import {
-  Schedule,
-  SchedulingEvent,
-  StartEventId,
-  StudySession,
-} from '../../types/scheduling'
+import {Schedule, SchedulingEvent, StartEventId} from '../../types/scheduling'
 import {
   Assessment,
   BackgroundRecorders,
@@ -240,8 +235,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
     }
     const allSessionsHaveAssessments = () => {
       return (
-        !_.isEmpty(schedule?.sessions) &&
-        !schedule?.sessions!.find(session => _.isEmpty(session.assessments))
+        !_.isEmpty(scheduleSource?.sessions) &&
+        !scheduleSource?.sessions!.find(session =>
+          _.isEmpty(session.assessments)
+        )
       )
     }
 
@@ -400,10 +397,10 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
       }
     }
 
-    const changeSection = async (next: StudySection) => {
+    /* const changeSection = async (next: StudySection) => {
       ;`/studies/builder/${id}/scheduler`
 
-      /*
+     
       if (section === next || !allSessionsHaveAssessments()) {
         return
       }
@@ -454,8 +451,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
         window.history.pushState(null, '', next)
         Utility.setBodyClass(next)
         setSection(next)
-      }*/
-    }
+      }
+    }*/
 
     const navButtons = (
       <NavButtons
@@ -535,9 +532,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
               open={open}
               onToggle={() => setOpen(prev => !prev)}
               currentSection={section}
-              onNavigate={(section: StudySection) => {
-                changeSection(section)
-              }}
               id={id}
               disabled={!allSessionsHaveAssessments()}></StudyLeftNav>
             <Box className={classes.mainAreaWrapper}>
@@ -600,11 +594,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                         <Switch>
                           <Route path={`/studies/builder/:id/session-creator`}>
                             <SessionCreator
-                              study={study}
-                              hasObjectChanged={hasObjectChanged}
-                              saveLoader={saveLoader}
                               id={id}
-                              onSave={() => saveSchedule()}
+                              /* onSave={() => saveSchedule()}
                               sessions={schedule?.sessions || []}
                               onUpdate={(data: StudySession[]) => {
                                 setHasObjectChanged(true)
@@ -612,7 +603,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                                   ...schedule!,
                                   sessions: data,
                                 })
-                              }}>
+                              }}*/
+                            >
                               {navButtons}
                             </SessionCreator>
                           </Route>
@@ -665,14 +657,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                           </Route>
                           <Route
                             path={`/studies/builder/:id/enrollment-type-selector`}>
-                            <EnrollmentTypeSelector
-                              hasObjectChanged={hasObjectChanged}
-                              saveLoader={saveLoader}
-                              study={study}
-                              onUpdate={(study: Study) => {
-                                setHasObjectChanged(true)
-                                saveStudy(study)
-                              }}>
+                            <EnrollmentTypeSelector id={id}>
                               {navButtons}
                             </EnrollmentTypeSelector>
                           </Route>
