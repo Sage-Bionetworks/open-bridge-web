@@ -27,7 +27,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 export type SchedulerProps = {
   id: string
   children: React.ReactNode
-  onSave: Function
 }
 
 function getSteps() {
@@ -49,9 +48,10 @@ const StepContent: React.FunctionComponent<{
   return cntrl as ReactElement
 }
 
-const Scheduler: React.FunctionComponent<SchedulerProps> = (
-  props: SchedulerProps
-) => {
+const Scheduler: React.FunctionComponent<SchedulerProps> = ({
+  id,
+  children,
+}: SchedulerProps) => {
   const classes = useStyles()
 
   const [steps, setSteps] = useState(getSteps())
@@ -63,11 +63,11 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = (
   type CountdownHandle2 = React.ElementRef<typeof ScheduleCreatorTab>
   const ref2 = React.useRef<CountdownHandle2>(null) // assign null makes it compatible with elements.
 
-  if (!props.children) {
+  if (!children) {
     return <>error. Please provide nav buttons</>
   }
-  const firstPrevButton = (props.children as any)[0]
-  const lastNextButton = (props.children as any)[1]
+  const firstPrevButton = (children as any)[0]
+  const lastNextButton = (children as any)[1]
   const handleNext = () => {
     const nextStep = activeStep + 1
     ref1.current?.save(nextStep)
@@ -75,21 +75,16 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = (
       i === activeStep ? {...s, isComplete: true} : s
     )
     setSteps(newSteps)
-    setActiveStep(prevActiveStep => prevActiveStep + 1)
-    props.onSave()
   }
 
   const handleStepClick = (index: number) => {
-    setActiveStep(index)
-    props.onSave()
+    ref1.current?.save(index)
+    ref2.current?.save(index)
   }
 
   const handleBack = () => {
     const nextStep = activeStep - 1
     ref2.current?.save(nextStep)
-    setActiveStep(prevActiveStep => prevActiveStep - 1)
-
-    props.onSave()
   }
 
   const handleNavigate = (step: number) => {
@@ -105,16 +100,12 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = (
 
       <div className={classes.instructions}>
         <StepContent step={activeStep}>
-          <SessionStartTab
-            id={props.id}
-            ref={ref1}
-            onNavigate={handleNavigate}
-          />
+          <SessionStartTab id={id} ref={ref1} onNavigate={handleNavigate} />
           <ScheduleCreatorTab
-            id={props.id}
+            id={id}
             ref={ref2}
             onNavigate={handleNavigate}
-            children={props.children}></ScheduleCreatorTab>
+            children={children}></ScheduleCreatorTab>
         </StepContent>
         <Box py={2} px={2} textAlign="right" bgcolor="inherit">
           <>

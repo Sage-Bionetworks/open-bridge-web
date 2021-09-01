@@ -127,7 +127,10 @@ const SchedulerStepper: React.FunctionComponent<SchedulerStepperProps> = ({
         connector={<ColorlibConnector />}>
         {steps.map((step, index) => (
           <Step key={step.label}>
-            <StepButton completed={step.isComplete} disabled={!step.isComplete}>
+            <StepButton
+              onClick={() => setActiveStepFn(index)}
+              completed={step.isComplete}
+              disabled={!step.isComplete}>
               <StepLabel
                 className={classes.stepLabel}
                 StepIconComponent={ColorlibStepIcon}>
