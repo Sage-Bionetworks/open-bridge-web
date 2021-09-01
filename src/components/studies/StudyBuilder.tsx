@@ -1,10 +1,8 @@
-import {useSchedule, useUpdateSchedule} from '@components/studies/scheduleHooks'
-import {useStudy, useUpdateStudyDetail} from '@components/studies/studyHooks'
-import {useUserSessionDataState} from '@helpers/AuthContext'
+import {useSchedule} from '@components/studies/scheduleHooks'
+import {useStudy} from '@components/studies/studyHooks'
 import {Box, Container} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import {Alert} from '@material-ui/lab'
-import ScheduleService from '@services/schedule.service'
 import {ThemeType} from '@style/theme'
 import clsx from 'clsx'
 import _ from 'lodash'
@@ -17,7 +15,7 @@ import {
   useParams,
   useRouteMatch,
 } from 'react-router-dom'
-import {Schedule, StartEventId} from '../../types/scheduling'
+import {Schedule} from '../../types/scheduling'
 import {StringDictionary, Study, StudyPhase} from '../../types/types'
 import {ErrorFallback, ErrorHandler} from '../widgets/ErrorHandler'
 import {MTBHeadingH1} from '../widgets/Headings'
@@ -142,29 +140,17 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
     const {data: studySource, error: studyError} = useStudy(id)
     const [study, setStudy] = React.useState<Study | undefined>()
     const [schedule, setSchedule] = React.useState<Schedule | undefined>()
-    const {
-      isSuccess: scheduleUpdateSuccess,
-      isError: scheduleUpdateError,
-      mutateAsync: mutateSchedule,
-      data,
-    } = useUpdateSchedule()
 
-    const {
-      isSuccess: studyUpdateSuccess,
-      isError: studyUpdateError,
-      mutateAsync: mutateStudy,
-    } = useUpdateStudyDetail()
     const [error, setError] = React.useState<string[]>([])
     const handleError = useErrorHandler()
     const [schedulerErrors, setSchedulerErrors] = React.useState<
       SchedulerErrorType[]
     >([])
-    const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
+
     const [saveLoader, setSaveLoader] = React.useState(false)
-    const {token} = useUserSessionDataState()
 
     const [open, setOpen] = React.useState(true)
-    const [displayBanner, setDisplayBanner] = React.useState(false)
+    const [displayBanner, setDisplayBanner] = React.useState(true)
     const [bannerType, setBannerType] = React.useState<{
       bgColor: string
       displayText: string[]
@@ -234,40 +220,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
       )
     }
 
-    //Sets up the data from the intro page
-    const createScheduleAndNameStudy = async (
-      studyId: string,
-      studyName: string,
-      duration: string,
-      start: StartEventId
-    ) => {
-      const studySession = ScheduleService.createEmptyScheduleSession(start)
-      let schedule: Schedule = {
-        guid: '',
-        name: studyId,
-        duration,
-        sessions: [studySession],
-      }
-      const newSchedule = await ScheduleService.createSchedule(
-        studyId,
-        schedule,
-        token!
-      )
-
-      const updatedStudy: Study = {...study!, name: studyName}
-
-      mutateSchedule({
-        studyId: studyId,
-        schedule: newSchedule,
-        action: 'CREATE',
-      }).then(s => console.log('schedule created'))
-
-      mutateStudy({study: updatedStudy}).then(e => {
-        console.log('study updated')
-        alert(e.name)
-      })
-    }
-
     const navButtons = (
       <NavButtons
         id={id}
@@ -323,14 +275,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
             <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>
           </Box>
         </Box>
-        <span
-          style={{
-            fontSize: '9px',
-            position: 'absolute',
-            right: '0',
-          }}>
-          {hasObjectChanged ? 'object changed' : 'no change'}
-        </span>
+
         <Container
           maxWidth="xl"
           className={classes.studyComponentContainer}
@@ -388,20 +333,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                   <LoadingComponent reqStatusLoading={!study}>
                     {study && !schedule && !isScheduleLoading ? (
                       <Box className={classes.introInfoContainer}>
-                        <IntroInfo
-                          studyName={study.name}
-                          onContinue={(
-                            studyName: string,
-                            duration: string,
-                            startEventId: StartEventId
-                          ) => {
-                            createScheduleAndNameStudy(
-                              study.identifier,
-                              studyName,
-                              duration,
-                              startEventId
-                            )
-                          }}></IntroInfo>
+                        <IntroInfo studyName={study.name} id={id}></IntroInfo>
                       </Box>
                     ) : (
                       study &&
