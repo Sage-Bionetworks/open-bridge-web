@@ -21,6 +21,7 @@ export const useSchedule = (studyId: string | undefined) => {
     {
       enabled: !!studyId,
       retry: false,
+      refetchOnWindowFocus: false,
     }
   )
 }
@@ -66,7 +67,6 @@ export const useUpdateSchedule = () => {
       return {previousSchedule}
     },
     onError: (err, variables, context) => {
-      alert('error')
       console.log(err, variables, context)
       /* if (context?.previousStudies) {
           queryClient.setQueryData<Study[]>(KEYS.studies, context.previousStudies)

@@ -1,3 +1,4 @@
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import {Box} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import Tooltip from '@material-ui/core/Tooltip'
@@ -61,7 +62,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export interface TimelineProps {
-  token: string
   schedule: Schedule
   version: number
   studyId: string
@@ -112,12 +112,12 @@ export const TooltipHoverDisplay: React.FunctionComponent<{
 }
 
 const ScheduleTimeline: React.FunctionComponent<TimelineProps> = ({
-  token,
   version,
   studyId,
   schedule: schedFromDisplay,
 }: TimelineProps) => {
   const handleError = useErrorHandler()
+  const {token} = useUserSessionDataState()
   const [sessions, setSessions] = React.useState<TimelineSession[]>([])
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)

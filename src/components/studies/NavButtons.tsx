@@ -1,5 +1,6 @@
 import {Box} from '@material-ui/core'
 import React from 'react'
+import {NavLink} from 'react-router-dom'
 import {ReactComponent as ArrowIcon} from '../../assets/arrow_long.svg'
 import {NextButton, PrevButton} from '../widgets/StyledComponents'
 import {getStudyBuilderSections, StudySection} from './sections'
@@ -7,7 +8,7 @@ import {getStudyBuilderSections, StudySection} from './sections'
 export interface NavButtonsProps {
   currentSection: StudySection
   id: string
-  onNavigate: Function
+
   disabled?: boolean
   isPrevOnly?: boolean
   isNextOnly?: boolean
@@ -19,7 +20,7 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
   isNextOnly,
   isPrevOnly,
   id,
-  onNavigate,
+
   disabled,
 }: NavButtonsProps) => {
   const sectionLinks = getStudyBuilderSections()
@@ -31,24 +32,28 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
       : undefined
 
   const prevButton = prev ? (
-    <PrevButton
-      variant="outlined"
-      color="primary"
-      onClick={() => onNavigate(prev.path)}>
-      <ArrowIcon /> {prev.name}
-    </PrevButton>
+    <NavLink
+      to={`/studies/builder/${id}/${prev.path}`}
+      style={{textDecoration: 'none'}}>
+      <PrevButton variant="outlined" color="primary">
+        <ArrowIcon /> {prev.name}
+      </PrevButton>
+    </NavLink>
   ) : (
     <></>
   )
 
   const nextButton = next ? (
-    <NextButton
-      variant="contained"
-      color="primary"
-      onClick={() => onNavigate(next.path)}
-      disabled={disabled || false}>
-      {next.name} <ArrowIcon />
-    </NextButton>
+    <NavLink
+      to={`/studies/builder/${id}/${next.path}`}
+      style={{textDecoration: 'none'}}>
+      <NextButton
+        variant="contained"
+        color="primary"
+        disabled={disabled || false}>
+        {next.name} <ArrowIcon />
+      </NextButton>
+    </NavLink>
   ) : (
     <></>
   )

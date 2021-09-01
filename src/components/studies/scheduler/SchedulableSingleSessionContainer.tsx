@@ -75,9 +75,6 @@ type notificationErrorArrayType = {
 const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSessionContainerProps> =
   ({studySession, onUpdateSessionSchedule, sessionErrorState}) => {
     const classes = useStyles()
-    if (studySession.name === 'Session1') {
-      console.log('studySession', studySession)
-    }
 
     const [schedulableSession, setSchedulableSession] =
       React.useState<SessionSchedule>(studySession || defaultSchedule)

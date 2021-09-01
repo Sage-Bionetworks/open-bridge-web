@@ -1,3 +1,4 @@
+import Utility from '@helpers/utility'
 import {
   Box,
   createStyles,
@@ -8,16 +9,17 @@ import {
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Close'
 import {latoFont} from '@style/theme'
+import clsx from 'clsx'
 import _ from 'lodash'
-import React, {FunctionComponent, useEffect} from 'react'
-import {Schedule, SchedulingEvent} from '../../../types/scheduling'
-import {Study} from '../../../types/types'
+import React, {useEffect} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
+import {SchedulingEvent} from '../../../types/scheduling'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
 import {MTBHeadingH2} from '../../widgets/Headings'
 import {BlueButton} from '../../widgets/StyledComponents'
-import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
-import Utility from '@helpers/utility'
-import clsx from 'clsx'
+import {useSchedule} from '../scheduleHooks'
+import {useStudy, useUpdateStudyDetail} from '../studyHooks'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -79,9 +81,11 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 type SessionStartTabProps = {
-  schedule: Schedule
-  onUpdate: Function
-  study: Study
+  // schedule: Schedule
+
+  // study: Study
+  onNavigate: Function
+  id: string
 }
 
 type LocalEventObject = SchedulingEvent & {
@@ -89,20 +93,60 @@ type LocalEventObject = SchedulingEvent & {
   key: string
 }
 
-const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
-  onUpdate,
-  schedule,
-  study,
-}: SessionStartTabProps) => {
+type SaveHandle = {
+  save: (a: number) => void
+}
+
+const SessionStartTab: React.ForwardRefRenderFunction<
+  SaveHandle,
+  SessionStartTabProps
+> = ({id, onNavigate}: SessionStartTabProps, ref) => {
   const classes = useStyles()
+
+  React.useImperativeHandle(ref, () => ({
+    save(step: number) {
+      onNavigate(step)
+    },
+  }))
+
+  const {data: study, error, isLoading} = useStudy(id)
+  const {data: schedule} = useSchedule(id)
+
+  const {
+    isSuccess: scheduleUpdateSuccess,
+    isError: scheduleUpdateError,
+    mutateAsync: mutateStudy,
+    data,
+  } = useUpdateStudyDetail()
+
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
+
+  const handleError = useErrorHandler()
+  const [saveLoader, setSaveLoader] = React.useState(false)
+
+  const onUpdate = async (events: SchedulingEvent[]) => {
+    if (!study) {
+      return
+    }
+    const cData = study.clientData
+    cData.events = events
+    let updatedStudy = {
+      ...study,
+      clientData: cData,
+    }
+    console.log('updating')
+    const x = await mutateStudy({study: updatedStudy})
+    console.log('studyUpdated')
+  }
 
   const [localEventObjects, setLocalEventObjects] = React.useState<
     LocalEventObject[]
   >([])
 
   useEffect(() => {
-    if (!study.clientData?.events) return
-    const localEvents = study.clientData.events!.map(element => {
+    console.log('upd')
+    if (!study?.clientData?.events) return
+    const localEvents = study?.clientData.events!.map(element => {
       return {
         ...element,
         hasError: false,
@@ -110,7 +154,11 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
       }
     })
     checkForDuplicateEventNames(localEvents)
-  }, [study.clientData.events])
+  }, [study?.clientData.events])
+
+  if (!study) {
+    return <></>
+  }
 
   const addEmptyEvent = () => {
     const newEvent: SchedulingEvent = {
@@ -118,7 +166,7 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
       updateType: 'mutable',
     }
     const newEvents = [...transformLocalEventObjects(), newEvent]
-    onUpdate(undefined, newEvents)
+    onUpdate(newEvents)
   }
 
   const transformLocalEventObjects = () => {
@@ -132,7 +180,7 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
 
   const updateEvent = () => {
     if (checkForDuplicateEventNames()) return
-    onUpdate(undefined, transformLocalEventObjects())
+    onUpdate(transformLocalEventObjects())
   }
 
   const checkForDuplicateEventNames = (arr?: LocalEventObject[]) => {
@@ -159,7 +207,6 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
     newEvents.splice(index, 1)
     if (checkForDuplicateEventNames(newEvents)) return
     onUpdate(
-      undefined,
       newEvents.map(el => {
         return {
           identifier: el.identifier,
@@ -169,7 +216,7 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
     )
   }
 
-  if (_.isEmpty(schedule.sessions)) {
+  if (_.isEmpty(schedule?.sessions)) {
     return (
       <Box textAlign="center" mx="auto">
         <ErrorDisplay>
@@ -210,7 +257,7 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
             <>
               <Box className={classes.intialLoginContainer}>Initial_Login</Box>
               {localEventObjects.map((evt, index) => (
-                <Box display="block">
+                <Box display="block" key={evt.key}>
                   <FormGroup
                     row={true}
                     key={evt.key}
@@ -277,4 +324,4 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
   )
 }
 
-export default SessionStartTab
+export default React.forwardRef(SessionStartTab)

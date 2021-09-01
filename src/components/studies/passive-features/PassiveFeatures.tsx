@@ -6,12 +6,10 @@ import {Box, Switch} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import StudyService from '@services/study.service'
 import {latoFont, ThemeType} from '@style/theme'
-import {
-  BackgroundRecorders,
-  Study,
-  StudyBuilderComponentProps,
-} from '@typedefs/types'
+import {BackgroundRecorders} from '@typedefs/types'
 import React from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import {useStudy, useUpdateStudyDetail} from '../studyHooks'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -105,19 +103,52 @@ const sensors: Partial<RecorderInfo> = {
 }
 
 export interface PassiveFeaturesProps {
-  //features?: BackgroundRecorders
-  study: Study
+  id: string
+  children: React.ReactNode
 }
 
-const PassiveFeatures: React.FunctionComponent<
-  PassiveFeaturesProps & StudyBuilderComponentProps
-> = ({
-  // features,
-  onUpdate,
-  study,
+const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
+  id,
   children,
-}: PassiveFeaturesProps & StudyBuilderComponentProps) => {
+}) => {
   const classes = useStyles()
+  const {data: study, error, isLoading} = useStudy(id)
+
+  const {
+    isSuccess: scheduleUpdateSuccess,
+    isError: scheduleUpdateError,
+    mutateAsync: mutateStudy,
+    data,
+  } = useUpdateStudyDetail()
+
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
+
+  const handleError = useErrorHandler()
+  const [saveLoader, setSaveLoader] = React.useState(false)
+
+  const onUpdate = async (recorders: BackgroundRecorders) => {
+    if (!study) {
+      return
+    }
+    console.log('starting update from passive eatures')
+    const updatedStudy = {
+      ...study,
+    }
+
+    updatedStudy.clientData.backgroundRecorders = recorders
+    try {
+      const result = await mutateStudy({study: updatedStudy})
+    } catch (e) {
+      alert(e)
+    } finally {
+      console.log('finishing update')
+    }
+  }
+
+  if (!study) {
+    return <>...</>
+  }
+
   const features: BackgroundRecorders =
     study.clientData.backgroundRecorders || {}
 
