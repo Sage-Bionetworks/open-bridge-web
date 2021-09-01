@@ -58,6 +58,10 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = (
   const [activeStep, setActiveStep] = React.useState(0)
   // const [isFinished, setIsFinished] = React.useState(false)
   const [isNextEnabled, setIsNextEnabled] = React.useState(true)
+  type CountdownHandle = React.ElementRef<typeof SessionStartTab>
+  const ref1 = React.useRef<CountdownHandle>(null) // assign null makes it compatible with elements.
+  type CountdownHandle2 = React.ElementRef<typeof ScheduleCreatorTab>
+  const ref2 = React.useRef<CountdownHandle2>(null) // assign null makes it compatible with elements.
 
   if (!props.children) {
     return <>error. Please provide nav buttons</>
@@ -65,6 +69,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = (
   const firstPrevButton = (props.children as any)[0]
   const lastNextButton = (props.children as any)[1]
   const handleNext = () => {
+    const nextStep = activeStep + 1
+    ref1.current?.save(nextStep)
     const newSteps = steps.map((s, i) =>
       i === activeStep ? {...s, isComplete: true} : s
     )
@@ -79,8 +85,15 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = (
   }
 
   const handleBack = () => {
+    const nextStep = activeStep - 1
+    ref2.current?.save(nextStep)
     setActiveStep(prevActiveStep => prevActiveStep - 1)
+
     props.onSave()
+  }
+
+  const handleNavigate = (step: number) => {
+    setActiveStep(step)
   }
 
   return (
@@ -92,9 +105,15 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = (
 
       <div className={classes.instructions}>
         <StepContent step={activeStep}>
-          <SessionStartTab id={props.id} />
+          <SessionStartTab
+            id={props.id}
+            ref={ref1}
+            onNavigate={handleNavigate}
+          />
           <ScheduleCreatorTab
             id={props.id}
+            ref={ref2}
+            onNavigate={handleNavigate}
             children={props.children}></ScheduleCreatorTab>
         </StepContent>
         <Box py={2} px={2} textAlign="right" bgcolor="inherit">

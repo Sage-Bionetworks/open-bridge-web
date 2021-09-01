@@ -11,7 +11,7 @@ import DeleteIcon from '@material-ui/icons/Close'
 import {latoFont} from '@style/theme'
 import clsx from 'clsx'
 import _ from 'lodash'
-import React, {FunctionComponent, useEffect} from 'react'
+import React, {useEffect} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
 import {SchedulingEvent} from '../../../types/scheduling'
@@ -84,6 +84,7 @@ type SessionStartTabProps = {
   // schedule: Schedule
 
   // study: Study
+  onNavigate: Function
   id: string
 }
 
@@ -92,10 +93,21 @@ type LocalEventObject = SchedulingEvent & {
   key: string
 }
 
-const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
-  id,
-}: SessionStartTabProps) => {
+type SaveHandle = {
+  save: (a: number) => void
+}
+
+const SessionStartTab: React.ForwardRefRenderFunction<
+  SaveHandle,
+  SessionStartTabProps
+> = ({id, onNavigate}: SessionStartTabProps, ref) => {
   const classes = useStyles()
+
+  React.useImperativeHandle(ref, () => ({
+    save(step: number) {
+      onNavigate(step)
+    },
+  }))
 
   const {data: study, error, isLoading} = useStudy(id)
   const {data: schedule} = useSchedule(id)
@@ -312,4 +324,4 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
   )
 }
 
-export default SessionStartTab
+export default React.forwardRef(SessionStartTab)

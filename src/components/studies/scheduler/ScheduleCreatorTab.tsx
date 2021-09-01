@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core'
 import StudyService from '@services/study.service'
 import _ from 'lodash'
-import React, {FunctionComponent} from 'react'
+import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import {poppinsFont, theme} from '../../../style/theme'
@@ -105,30 +105,18 @@ export type SchedulerErrorType = {
 }
 type ScheduleCreatorTabProps = {
   id: string
+  onNavigate: Function
   children: React.ReactNode
-  //schedule: Schedule
-  //  version?: number
-  // token: string
-  //onSave: Function
-  // schedulerErrors: SchedulerErrorType[]
-  // study: Study
-  //isReadOnly?: boolean
 }
 
-const ScheduleCreatorTab: FunctionComponent<ScheduleCreatorTabProps> = ({
-  id,
-  //hasObjectChanged,
-  //saveLoader,
-  // onUpdate,
-  // schedule: _schedule,
-  // onSave,
-  children,
-}: //token,
-//version,
-//study,
-//schedulerErrors,
-// isReadOnly,
-ScheduleCreatorTabProps) => {
+type SaveHandle = {
+  save: (a: number) => void
+}
+
+const ScheduleCreatorTab: React.ForwardRefRenderFunction<
+  SaveHandle,
+  ScheduleCreatorTabProps
+> = ({id, onNavigate, children}: ScheduleCreatorTabProps, ref) => {
   const classes = useStyles()
   const [isErrorAlert, setIsErrorAlert] = React.useState(true)
   const {data: study, error, isLoading} = useStudy(id)
@@ -163,6 +151,11 @@ ScheduleCreatorTabProps) => {
     >()
   )
 
+  React.useImperativeHandle(ref, () => ({
+    save(step: number) {
+      onSave().then(x => onNavigate(step))
+    },
+  }))
   React.useEffect(() => {
     const newErrorState = parseErrors(schedulerErrors)
     setSchedulerErrorState(newErrorState)
@@ -449,4 +442,4 @@ ScheduleCreatorTabProps) => {
   )
 }
 
-export default ScheduleCreatorTab
+export default React.forwardRef(ScheduleCreatorTab)
