@@ -107,6 +107,7 @@ type ScheduleCreatorTabProps = {
   id: string
   onNavigate: Function
   children: React.ReactNode
+  onShowFeedback: Function
 }
 
 type SaveHandle = {
@@ -116,7 +117,10 @@ type SaveHandle = {
 const ScheduleCreatorTab: React.ForwardRefRenderFunction<
   SaveHandle,
   ScheduleCreatorTabProps
-> = ({id, onNavigate, children}: ScheduleCreatorTabProps, ref) => {
+> = (
+  {id, onNavigate, children, onShowFeedback}: ScheduleCreatorTabProps,
+  ref
+) => {
   const classes = useStyles()
   const [isErrorAlert, setIsErrorAlert] = React.useState(true)
   const {data: study, error, isLoading} = useStudy(id)
@@ -181,7 +185,9 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
 
   const onSave = async (isButtonPressed?: boolean) => {
     console.log('starting save')
+    setScheduleErrors([])
     setSaveLoader(true)
+    let error: Error | undefined = undefined
     try {
       const result = await mutateSchedule({
         studyId: id,
@@ -195,7 +201,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
       if (e.statusCode === 401) {
         handleError(e)
       }
-      console.log(e, 'error')
+
       const entity = e.entity
       const errors = e.errors
       // This can occur when a request fails due to reasons besides bad user input.
@@ -207,16 +213,20 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
         // alina todo
         console.log('todo')
         // setError(prev => [...prev, e.message])
-        return undefined
+        error = e
+      } else {
+        const errorObject = {
+          entity: entity,
+          errors: errors,
+        }
+        error = new Error('!')
+        setScheduleErrors(prev => [...prev, errorObject])
       }
-      const errorObject = {
-        entity: entity,
-        errors: errors,
-      }
-      setScheduleErrors(prev => [...prev, errorObject])
     } finally {
       setSaveLoader(false)
-      console.log('ending save')
+      if (isButtonPressed) {
+        onShowFeedback(error)
+      }
     }
   }
 

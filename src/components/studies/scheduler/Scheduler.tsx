@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 export type SchedulerProps = {
   id: string
   children: React.ReactNode
+  onShowFeedback: Function
 }
 
 function getSteps() {
@@ -50,6 +51,7 @@ const StepContent: React.FunctionComponent<{
 
 const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   id,
+  onShowFeedback,
   children,
 }: SchedulerProps) => {
   const classes = useStyles()
@@ -105,6 +107,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
             id={id}
             ref={ref2}
             onNavigate={handleNavigate}
+            onShowFeedback={onShowFeedback}
             children={children}></ScheduleCreatorTab>
         </StepContent>
         <Box py={2} px={2} textAlign="right" bgcolor="inherit">

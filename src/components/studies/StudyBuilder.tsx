@@ -3,6 +3,7 @@ import {useStudy} from '@components/studies/studyHooks'
 import {Box, Container} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import {Alert} from '@material-ui/lab'
+import StudyService from '@services/study.service'
 import {ThemeType} from '@style/theme'
 import clsx from 'clsx'
 import _ from 'lodash'
@@ -16,7 +17,12 @@ import {
   useRouteMatch,
 } from 'react-router-dom'
 import {Schedule} from '../../types/scheduling'
-import {StringDictionary, Study, StudyPhase} from '../../types/types'
+import {
+  ExtendedError,
+  StringDictionary,
+  Study,
+  StudyPhase,
+} from '../../types/types'
 import {ErrorFallback, ErrorHandler} from '../widgets/ErrorHandler'
 import {MTBHeadingH1} from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
@@ -141,16 +147,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
     const [study, setStudy] = React.useState<Study | undefined>()
     const [schedule, setSchedule] = React.useState<Schedule | undefined>()
 
-    const [error, setError] = React.useState<string[]>([])
+    const [error, setError] = React.useState<string>()
     const handleError = useErrorHandler()
-    const [schedulerErrors, setSchedulerErrors] = React.useState<
-      SchedulerErrorType[]
-    >([])
 
     const [saveLoader, setSaveLoader] = React.useState(false)
 
     const [open, setOpen] = React.useState(true)
-    const [displayBanner, setDisplayBanner] = React.useState(true)
+    const [displayBanner, setDisplayBanner] = React.useState(false)
+    const [cancelBanner, setCancelBanner] = React.useState(false)
     const [bannerType, setBannerType] = React.useState<{
       bgColor: string
       displayText: string[]
@@ -174,14 +178,15 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
 
     React.useEffect(() => {
       if (study) {
-        const banner = getBannerType(study.phase, section)
+        const banner = getBannerType(study.phase, !!error)
         const bannerType = BannerInfo.bannerMap.get(banner)
         setBannerType(bannerType)
-        if (banner !== 'success' && banner !== 'error') {
+
+        if (banner !== 'success' && banner !== 'error' && !cancelBanner) {
           setDisplayBanner(true)
         }
       }
-    }, [study?.phase, schedulerErrors, error])
+    }, [study?.phase, section, error, cancelBanner])
 
     if (!study) {
       return <>no study</>
@@ -196,20 +201,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
       }
     }
 
-    const getBannerType = (phase: StudyPhase, currentSection: StudySection) => {
-      switch (phase) {
-        case 'in_flight':
-          return 'live'
-        case 'withdrawn':
-          return 'withdrawn'
-        case 'analysis':
-        case 'completed':
-          return 'completed'
-        default:
-          const errors =
-            currentSection === 'scheduler' ? schedulerErrors : error
-          return errors.length > 0 ? 'error' : 'success'
+    const getBannerType = (phase: StudyPhase, hasError: boolean) => {
+      const displayPhase = StudyService.getDisplayStatusForStudyPhase(phase)
+      if (displayPhase !== 'DRAFT') {
+        return displayPhase
       }
+      return hasError ? 'error' : 'success'
     }
     const allSessionsHaveAssessments = () => {
       return (
@@ -256,13 +253,33 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
       })
     }
 
+    const showFeedback = (e?: ExtendedError) => {
+      if (e) {
+        if (e.statusCode === 401) {
+          handleError(e)
+        } else {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+          })
+          setError(e.message)
+        }
+      } else {
+        setError(undefined)
+      }
+      setDisplayBanner(true)
+    }
+
     return (
       <Box bgcolor={section === 'scheduler' ? '#E5E5E5' : '#f7f7f7'}>
         <Box display="flex" bgcolor="#f7f7f7">
           <TopErrorBanner
             backgroundColor={bannerType?.bgColor!}
             textColor={bannerType?.textColor!}
-            onClose={() => setDisplayBanner(false)}
+            onClose={() => {
+              setCancelBanner(true)
+              setDisplayBanner(false)
+            }}
             isVisible={displayBanner}
             icon={bannerType?.icon[0]!}
             isSelfClosing={bannerType?.type === 'success'}
@@ -306,27 +323,28 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                     top: '30px',
                     left: '50%',
                   }}></LoadingComponent>
-                {!_.isEmpty(error) && (
-                  <Alert variant="outlined" color="error">
-                    {Array.isArray(error) ? (
-                      error.map(e => (
+                {!_.isEmpty(error) &&
+                  (Array.isArray(error) || (!!error && error.length > 1)) && (
+                    <Alert variant="outlined" color="error">
+                      {Array.isArray(error) ? (
+                        error.map(e => (
+                          <div
+                            style={{
+                              textAlign: 'left',
+                            }}>
+                            {e}
+                          </div>
+                        ))
+                      ) : (
                         <div
                           style={{
                             textAlign: 'left',
                           }}>
-                          {e}
+                          {error}
                         </div>
-                      ))
-                    ) : (
-                      <div
-                        style={{
-                          textAlign: 'left',
-                        }}>
-                        {error}
-                      </div>
-                    )}
-                  </Alert>
-                )}
+                      )}
+                    </Alert>
+                  )}
                 <ErrorBoundary
                   FallbackComponent={ErrorFallback}
                   onError={ErrorHandler}>
@@ -345,11 +363,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                             </SessionCreator>
                           </Route>
                           <Route path={`/studies/builder/:id/scheduler`}>
-                            <Scheduler
-                              id={id}
-                              onSave={(isSavePressed: boolean) => {
-                                alert('alina to do')
-                              }}>
+                            <Scheduler id={id} onShowFeedback={showFeedback}>
                               {navButtonsArray}
                             </Scheduler>
                           </Route>
@@ -363,14 +377,14 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                             <AppDesign
                               id={id}
                               onError={(error: string) =>
-                                setError(prev => [...prev, error])
+                                showFeedback({message: error, name: error})
                               }>
                               {navButtons}
                             </AppDesign>
                           </Route>
 
                           <Route path={`/studies/builder/:id/preview`}>
-                            <Preview id={study.identifier}></Preview>
+                            <Preview id={id}></Preview>
                           </Route>
                           <Route path={`/studies/builder/:id/launch`}>
                             <Launch id={id}>{navButtons}</Launch>
