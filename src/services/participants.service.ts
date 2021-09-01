@@ -585,11 +585,13 @@ async function addTestParticipant(
   return participantId
 }
 
-async function updateParticipantNote(
+async function updateParticipant(
   studyIdentifier: string,
   token: string,
   participantId: string,
-  note?: string
+  updatedFields: {
+    [Property in keyof ParticipantAccountSummary]?: ParticipantAccountSummary[Property]
+  }
 ) {
   const getParticipantEndpoint = `${constants.endpoints.participant.replace(
     ':id',
@@ -604,7 +606,7 @@ async function updateParticipantNote(
   // updated participant object
   const data = {
     ...participantInfo.data,
-    note: note,
+    ...updatedFields,
   }
   const updateParticipantEndpoint = `${constants.endpoints.participant.replace(
     ':id',
@@ -652,7 +654,7 @@ const ParticipantService = {
   participantSearch,
   getRequestInfoForParticipant,
   updateParticipantGroup,
-  updateParticipantNote,
+  updateParticipant,
   // updateParticipantCustomEvents,
   withdrawParticipant,
   //prefixCustomEventIdentifier,

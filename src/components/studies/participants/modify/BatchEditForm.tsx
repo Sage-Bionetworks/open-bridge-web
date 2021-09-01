@@ -46,11 +46,11 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
     }
     /* if (note) {
       const promises = participantIds.map(async selectedParticipantId => {
-        return await ParticipantService.updateParticipantNote(
+        return await ParticipantService.updateParticipant(
           studyId,
           token,
           selectedParticipantId,
-          note
+          {note: note}
         )
       })
       await Promise.all(promises)

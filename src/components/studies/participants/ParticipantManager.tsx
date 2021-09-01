@@ -458,11 +458,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     note: string,
     customEvents: ParticipantEvent[]
   ) => {
-    await ParticipantService.updateParticipantNote(
+    await ParticipantService.updateParticipant(
       study!.identifier,
       token!,
       participantId,
-      note
+      {note: note}
     )
     await EventService.updateParticipantCustomEvents(
       study!.identifier,
