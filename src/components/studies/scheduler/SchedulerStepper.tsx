@@ -18,21 +18,15 @@ import {ReactComponent as ScheduleIcon} from '../../../assets/scheduler/schedule
 
 const ColorlibConnector = withStyles({
   alternativeLabel: {
-    //maxWidth: '80px',
     top: 22,
   },
   active: {
     '& $line': {
-      /*backgroundImage:
-        'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)',*/
       backgroundColor: '#BCD5E4',
     },
   },
   completed: {
     '& $line': {
-      /*
-      backgroundImage:
-        'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)',*/
       backgroundColor: '#BCD5E4',
     },
   },

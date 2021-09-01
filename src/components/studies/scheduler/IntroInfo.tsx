@@ -1,3 +1,4 @@
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import {
   Box,
   Button,
@@ -8,11 +9,15 @@ import {
   Theme,
 } from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import ScheduleService from '@services/schedule.service'
+import {Study} from '@typedefs/types'
 import React from 'react'
 import {latoFont, poppinsFont} from '../../../style/theme'
 import constants from '../../../types/constants'
-import {DWsEnum} from '../../../types/scheduling'
+import {DWsEnum, Schedule, StartEventId} from '../../../types/scheduling'
 import {SimpleTextInput} from '../../widgets/StyledComponents'
+import {useUpdateSchedule} from '../scheduleHooks'
+import {useStudy, useUpdateStudyDetail} from '../studyHooks'
 import Duration from './Duration'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -90,19 +95,66 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 export interface IntroInfoProps {
-  onContinue: Function
   studyName: string
+  id: string
 }
 
 const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
-  onContinue,
   studyName: name,
+  id: studyId,
 }: IntroInfoProps) => {
   const classes = useStyles()
+  const {token} = useUserSessionDataState()
   const [studyName, setStudyName] = React.useState<any>(
     name === constants.constants.NEW_STUDY_NAME ? '' : name
   )
   const [duration, setDuration] = React.useState<any>('')
+  const {data: study, error: studyError} = useStudy(studyId)
+  const {
+    isSuccess: scheduleUpdateSuccess,
+    isError: scheduleUpdateError,
+    mutateAsync: mutateSchedule,
+    data,
+  } = useUpdateSchedule()
+
+  const {
+    isSuccess: studyUpdateSuccess,
+    isError: studyUpdateError,
+    mutateAsync: mutateStudy,
+  } = useUpdateStudyDetail()
+
+  const createScheduleAndNameStudy = async (
+    studyId: string,
+    studyName: string,
+    duration: string,
+    start: StartEventId
+  ) => {
+    const studySession = ScheduleService.createEmptyScheduleSession(start)
+    let schedule: Schedule = {
+      guid: '',
+      name: studyId,
+      duration,
+      sessions: [studySession],
+    }
+    const newSchedule = await ScheduleService.createSchedule(
+      studyId,
+      schedule,
+      token!
+    )
+
+    const updatedStudy: Study = {...study!, name: studyName}
+
+    mutateSchedule({
+      studyId: studyId,
+      schedule: newSchedule,
+      action: 'CREATE',
+    }).then(s => console.log('schedule created'))
+
+    mutateStudy({study: updatedStudy}).then(e => {
+      console.log('study updated')
+      alert(e.name)
+    })
+  }
 
   return (
     <Container maxWidth="sm" className={classes.container}>
@@ -173,7 +225,15 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
         variant="contained"
         color="primary"
         key="saveButton"
-        onClick={e => onContinue(studyName, duration, 'timeline_retrieved')}
+        onClick={e =>
+          createScheduleAndNameStudy(
+            studyId,
+
+            studyName,
+            duration,
+            'timeline_retrieved'
+          )
+        }
         disabled={!(duration && studyName)}>
         Continue
       </Button>

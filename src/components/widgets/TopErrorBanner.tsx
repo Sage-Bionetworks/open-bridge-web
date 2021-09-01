@@ -1,8 +1,8 @@
-import React from 'react'
 import {makeStyles} from '@material-ui/core'
 import {Alert} from '@material-ui/lab'
-import {latoFont, ThemeType} from '../../style/theme'
 import clsx from 'clsx'
+import React from 'react'
+import {latoFont, ThemeType} from '../../style/theme'
 
 type StyleProps = {
   backgroundColor: string
@@ -99,9 +99,7 @@ const TopErrorBanner: React.FunctionComponent<TopErrorBannerProps> = ({
         displayBottomOfPage && classes.bottomOfPagePosition,
         !isVisible && classes.invisible
       )}
-      icon={
-        <img src={icon} style={{height: '24px'}} alt={'error-message'}></img>
-      }>
+      icon={<img src={icon} style={{height: '24px'}} alt={'message'}></img>}>
       {displayText}
     </Alert>
   )

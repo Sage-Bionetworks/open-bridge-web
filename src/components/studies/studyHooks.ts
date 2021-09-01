@@ -20,6 +20,7 @@ export const useStudy = (studyId: string | undefined) => {
     {
       enabled: !!studyId,
       retry: 1,
+      refetchOnWindowFocus: false,
     }
   )
 }
@@ -76,7 +77,7 @@ export const useUpdateStudyInList = () => {
     onMutate: async props => {
       queryClient.cancelQueries(STUDY_KEYS.all)
 
-      console.log('starting update')
+      console.log('starting update in study hook')
       // Snapshot the previous value
       const {study, action} = props
       const previousStudies = queryClient.getQueryData<Study[]>(
@@ -126,15 +127,16 @@ export const useUpdateStudyInList = () => {
       return {previousStudies}
     },
     onError: (err, variables, context) => {
-      alert('error')
       console.log(err, variables, context)
       /* if (context?.previousStudies) {
           queryClient.setQueryData<Study[]>(KEYS.studies, context.previousStudies)
         }*/
     },
     onSettled: async (data, error, props) => {
-      queryClient.invalidateQueries(STUDY_KEYS.detail(props.study.identifier))
-      queryClient.invalidateQueries(STUDY_KEYS.list())
+      if (!props.isPassive) {
+        queryClient.invalidateQueries(STUDY_KEYS.detail(props.study.identifier))
+        queryClient.invalidateQueries(STUDY_KEYS.list())
+      }
     },
   })
 
@@ -183,7 +185,6 @@ export const useUpdateStudyDetail = () => {
       return {previousStudy}
     },
     onError: (err, variables, context) => {
-      alert('error')
       console.log(err, variables, context)
       /* if (context?.previousStudies) {
           queryClient.setQueryData<Study[]>(KEYS.studies, context.previousStudies)

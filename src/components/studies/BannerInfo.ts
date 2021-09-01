@@ -1,15 +1,16 @@
-import Alert_Icon from '../../assets/scheduler/white_alert_icon.svg'
-import SaveIcon from '../../assets/save_icon.svg'
+import {DisplayStudyPhase} from '@typedefs/types'
 import NoEditIcon from '../../assets/no_edit_icon.svg'
+import SaveIcon from '../../assets/save_icon.svg'
+import Alert_Icon from '../../assets/scheduler/white_alert_icon.svg'
 
 const bannerMap = new Map<
-  string,
+  DisplayStudyPhase | 'success' | 'error',
   {
     bgColor: string
     displayText: string[]
     icon: string[]
     textColor: string
-    type: string
+    type: DisplayStudyPhase | 'success' | 'error'
   }
 >()
 
@@ -27,7 +28,7 @@ bannerMap.set('success', {
   textColor: 'black',
   type: 'success',
 })
-bannerMap.set('live', {
+bannerMap.set('LIVE', {
   bgColor: '#2196F3',
   displayText: [
     'This page is view only. We currently don’t support scheduling related editing of lives studies. To make adjustments to your study, create a duplicate of this study and launch again.',
@@ -35,21 +36,21 @@ bannerMap.set('live', {
   ],
   icon: [NoEditIcon],
   textColor: 'white',
-  type: 'live',
+  type: 'LIVE',
 })
-bannerMap.set('completed', {
+bannerMap.set('COMPLETED', {
   bgColor: '#EE6352',
   displayText: ['The study is officially closed and cannot be edited.'],
   icon: [NoEditIcon],
   textColor: 'white',
-  type: 'completed',
+  type: 'COMPLETED',
 })
-bannerMap.set('withdrawn', {
+bannerMap.set('WITHDRAWN', {
   bgColor: '#AA00FF',
   displayText: ['The study was cancelled and cannot be edited.'],
   icon: [NoEditIcon],
   textColor: 'white',
-  type: 'withdrawn',
+  type: 'WITHDRAWN',
 })
 
 const bannerInfo = {
