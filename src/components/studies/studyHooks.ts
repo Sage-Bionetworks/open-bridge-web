@@ -42,13 +42,9 @@ export const useUpdateStudyInList = () => {
   const update = async (props: {
     study: Study
     action: 'UPDATE' | 'DELETE' | 'COPY' | 'CREATE'
-    isPassive?: false
   }): Promise<Study[]> => {
-    const {study, action, isPassive} = props
+    const {study, action} = props
     let newVersion = 0
-    if (isPassive) {
-      return Promise.resolve([study])
-    }
 
     switch (action) {
       case 'DELETE':
@@ -133,10 +129,8 @@ export const useUpdateStudyInList = () => {
         }*/
     },
     onSettled: async (data, error, props) => {
-      if (!props.isPassive) {
-        queryClient.invalidateQueries(STUDY_KEYS.detail(props.study.identifier))
-        queryClient.invalidateQueries(STUDY_KEYS.list())
-      }
+      queryClient.invalidateQueries(STUDY_KEYS.detail(props.study.identifier))
+      queryClient.invalidateQueries(STUDY_KEYS.list())
     },
   })
 
@@ -147,21 +141,12 @@ export const useUpdateStudyDetail = () => {
   const {token} = useUserSessionDataState()
   const queryClient = useQueryClient()
 
-  const update = async (props: {
-    study: Study
-
-    isPassive?: boolean
-  }): Promise<Study> => {
-    const {study, isPassive} = props
+  const update = async (props: {study: Study}): Promise<Study> => {
+    const {study} = props
     let newVersion = 0
-    if (isPassive) {
-      return new Promise((resolve, reject) => {
-        resolve(study)
-      })
-    } else {
-      newVersion = await StudyService.updateStudy({...props.study}, token!)
-      return {...props.study, version: newVersion}
-    }
+
+    newVersion = await StudyService.updateStudy({...props.study}, token!)
+    return {...props.study, version: newVersion}
   }
 
   const mutation = useMutation(update, {
@@ -191,9 +176,7 @@ export const useUpdateStudyDetail = () => {
         }*/
     },
     onSettled: async (data, error, props) => {
-      if (!props.isPassive) {
-        queryClient.invalidateQueries(STUDY_KEYS.detail(props.study.identifier))
-      }
+      queryClient.invalidateQueries(STUDY_KEYS.detail(props.study.identifier))
     },
   })
 

@@ -456,14 +456,10 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   } = useUpdateStudyDetail()
 
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
-
   const [saveLoader, setSaveLoader] = React.useState(false)
-
   const showError = params.from !== undefined
   const anchor = params.anchor
-
   const {token, orgMembership} = useUserSessionDataState()
-
   const classes = useStyles()
 
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
