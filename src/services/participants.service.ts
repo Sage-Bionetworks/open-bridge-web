@@ -480,29 +480,6 @@ async function withdrawParticipant(
   return result.data.identifier
 }
 
-async function updateParticipantGroup(
-  studyIdentifier: string,
-  token: string,
-  participantId: string,
-  dataGroups: string[]
-): Promise<string> {
-  const endpoint = `${constants.endpoints.participant.replace(
-    ':id',
-    studyIdentifier
-  )}/${participantId}`
-  const data = {
-    dataGroups: dataGroups,
-  }
-
-  const result = await Utility.callEndpoint<{identifier: string}>(
-    endpoint,
-    'POST',
-    data,
-    token
-  )
-  return result.data.identifier
-}
-
 //adds a participant
 
 async function addParticipant(
@@ -653,7 +630,6 @@ const ParticipantService = {
   getParticipants,
   participantSearch,
   getRequestInfoForParticipant,
-  updateParticipantGroup,
   updateParticipant,
   // updateParticipantCustomEvents,
   withdrawParticipant,
