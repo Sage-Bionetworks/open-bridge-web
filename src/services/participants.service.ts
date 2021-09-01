@@ -591,16 +591,27 @@ async function updateParticipantNote(
   participantId: string,
   note?: string
 ) {
-  // update note
-  const endpoint = `${constants.endpoints.participant.replace(
+  const getParticipantEndpoint = `${constants.endpoints.participant.replace(
     ':id',
     studyIdentifier
   )}/${participantId}`
+  const participantInfo = await Utility.callEndpoint<ParticipantAccountSummary>(
+    getParticipantEndpoint,
+    'GET',
+    {},
+    token
+  )
+  // updated participant object
   const data = {
+    ...participantInfo.data,
     note: note,
   }
+  const updateParticipantEndpoint = `${constants.endpoints.participant.replace(
+    ':id',
+    studyIdentifier
+  )}/${participantId}`
   await Utility.callEndpoint<ParticipantAccountSummary>(
-    endpoint,
+    updateParticipantEndpoint,
     'POST',
     data,
     token
