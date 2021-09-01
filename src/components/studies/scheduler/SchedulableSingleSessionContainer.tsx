@@ -257,9 +257,16 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
           <Box className={classes.formSection}>
             <EndDate
               occurrences={schedulableSession.occurrences}
-              onChange={(occurrences: number | undefined) =>
-                updateSessionSchedule({...schedulableSession, occurrences})
-              }></EndDate>
+              onChange={(occurrences: number | undefined) => {
+                const newSessionSchedule = {
+                  ...schedulableSession,
+                  occurrences: occurrences,
+                }
+                if (occurrences == 1) {
+                  newSessionSchedule.interval = undefined
+                }
+                updateSessionSchedule(newSessionSchedule)
+              }}></EndDate>
           </Box>
           <Box className={classes.formSection}>
             <RepeatFrequency

@@ -43,7 +43,7 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
             numberLabel="frequency number"
             unitData={DWsEnum}></Duration>
         }
-        label={label}
+        label={disabled ? '' : label}
       />
     </SchedulingFormSection>
   )
