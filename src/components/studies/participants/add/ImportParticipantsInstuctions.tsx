@@ -59,18 +59,6 @@ const ImportParticipantsInstructions: FunctionComponent<{
     </li>
   ))
 
-  const template = isEnrolledById ? (
-    <a href="/participantImport_id_template.csv" download="Ids_Template.csv">
-      <strong>Ids_Template.csv</strong>
-    </a>
-  ) : (
-    <a
-      href="/participantImport_phone_template.csv"
-      download="Phones_Template.csv">
-      <strong>Phones_Template.csv</strong>
-    </a>
-  )
-
   const recList = isEnrolledById ? (
     <ul>
       <li>
@@ -103,7 +91,8 @@ const ImportParticipantsInstructions: FunctionComponent<{
         following information by columns:
       </p>
       {recList}
-      Please make sure that your .csv matches this template:
+      Please include only new participants in the .csv. Your file should match
+      this template:
       <br />
       <ParticipantDownloadTrigger
         onDownload={() => createDownloadTemplate()}
