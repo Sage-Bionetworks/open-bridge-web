@@ -481,29 +481,6 @@ async function withdrawParticipant(
   return result.data.identifier
 }
 
-async function updateParticipantGroup(
-  studyIdentifier: string,
-  token: string,
-  participantId: string,
-  dataGroups: string[]
-): Promise<string> {
-  const endpoint = `${constants.endpoints.participant.replace(
-    ':id',
-    studyIdentifier
-  )}/${participantId}`
-  const data = {
-    dataGroups: dataGroups,
-  }
-
-  const result = await Utility.callEndpoint<{identifier: string}>(
-    endpoint,
-    'POST',
-    data,
-    token
-  )
-  return result.data.identifier
-}
-
 //adds a participant
 
 async function addParticipant(
@@ -586,45 +563,35 @@ async function addTestParticipant(
   return participantId
 }
 
-async function updateParticipantTimezone(
+async function updateParticipant(
   studyIdentifier: string,
   token: string,
   participantId: string,
-  timeZone?: string
-) {
-  const endpoint = constants.endpoints.events
-    .replace(':studyId', studyIdentifier)
-    .replace(':userId', participantId)
-  const data = {
-    timeZone: timeZone,
+  updatedFields: {
+    [Property in keyof ParticipantAccountSummary]?: ParticipantAccountSummary[Property]
   }
-  console.log('here')
-  const result = await Utility.callEndpoint<ParticipantAccountSummary>(
-    endpoint,
-    'POST',
-    data,
-    token
-  )
-  console.log(result.status, 'result')
-  return participantId
-}
-
-async function updateParticipantNote(
-  studyIdentifier: string,
-  token: string,
-  participantId: string,
-  note?: string
 ) {
-  // update note
-  const endpoint = `${constants.endpoints.participant.replace(
+  const getParticipantEndpoint = `${constants.endpoints.participant.replace(
     ':id',
     studyIdentifier
   )}/${participantId}`
+  const participantInfo = await Utility.callEndpoint<ParticipantAccountSummary>(
+    getParticipantEndpoint,
+    'GET',
+    {},
+    token
+  )
+  // updated participant object
   const data = {
-    note: note,
+    ...participantInfo.data,
+    ...updatedFields,
   }
+  const updateParticipantEndpoint = `${constants.endpoints.participant.replace(
+    ':id',
+    studyIdentifier
+  )}/${participantId}`
   await Utility.callEndpoint<ParticipantAccountSummary>(
-    endpoint,
+    updateParticipantEndpoint,
     'POST',
     data,
     token
@@ -664,8 +631,7 @@ const ParticipantService = {
   getParticipants,
   participantSearch,
   getRequestInfoForParticipant,
-  updateParticipantGroup,
-  updateParticipantNote,
+  updateParticipant,
   // updateParticipantCustomEvents,
   withdrawParticipant,
   //prefixCustomEventIdentifier,
