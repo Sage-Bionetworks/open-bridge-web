@@ -1,6 +1,7 @@
 import {Box, Button, Checkbox, Menu, MenuItem} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import CheckIcon from '@material-ui/icons/Check'
+import {SelectionType} from '@typedefs/types'
 import clsx from 'clsx'
 import React from 'react'
 
@@ -54,8 +55,6 @@ const useStyles = makeStyles(theme => ({
   },
   focused: {},
 }))
-
-export type SelectionType = 'ALL' | 'PAGE' | 'SOME' | 'NONE'
 
 export interface SelectAllProps {
   allText: string

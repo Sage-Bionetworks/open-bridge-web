@@ -28,8 +28,6 @@ export enum NotificationTimeAtEnum {
   'before_window_end' = 'before window expires',
 }
 
-//export type ReminderIntervalType = 'before_window_end' | 'after_window_start'
-
 export type PerformanceOrder =
   | 'sequential'
   | 'randomized'
@@ -39,8 +37,7 @@ export type StartEventId = 'timeline_retrieved' | 'study_start_date'
 
 export type SchedulingEvent = {
   identifier: string
-  label: string
-  updateType: 'mutable' | 'immutable' | 'future_only'
+  updateType?: 'mutable' | 'immutable' | 'future_only'
 }
 
 export type NotificationMessage = {
@@ -60,7 +57,6 @@ export type ScheduleNotification = {
   notifyAt: keyof typeof NotificationTimeAtEnum //notifyAt
   offset?: string //ReminderIntervalType //remindAt
   interval?: string //reminderPeriod?
-  allowSnooze: boolean //allowSnooze
   messages: NotificationMessage[] //messages
 }
 
@@ -74,7 +70,6 @@ export type SessionSchedule = {
   notifyAt?: keyof typeof NotificationTimeAtEnum //move to notification
   //remindAt?: ReminderIntervalType //move to notification
   reminderPeriod?: string //PT10M //move to notification
-  allowSnooze?: boolean //move to notification
   messages?: NotificationMessage[] //move to notification
   notifications?: ScheduleNotification[]
 }

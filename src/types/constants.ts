@@ -5,9 +5,10 @@ export default {
     SESSION_NAME: 'bridge-session-mtb-user-testing',
     ENDPOINT: 'https://webservices.sagebridge.org',
     SYNAPSE_ENDPOINT: 'https://repo-prod.prod.sagebase.org',
-    NEW_STUDY_NAME: 'NEW_STUDY_UNNAMED',
+    NEW_STUDY_NAME: 'Untitled Study',
     DEFAULT_PLACEHOLDER: '*UNDEFINED*',
     IS_TEST_MODE: true,
+    CUSTOM_EVENT_PREFIX: 'custom:',
   },
 
   restrictedPaths: {
@@ -75,6 +76,7 @@ export default {
     signIn: '/v3/auth/signIn',
     signOut: '/v3/auth/signOut',
     study: '/v5/studies/:id',
+    studyLaunch: '/v5/studies/:id/recruit',
     studies: '/v5/studies',
     synapseGetAlias: '/repo/v1/principal/alias',
     synapseGetUserProfile: '/repo/v1/user/:id/bundle',

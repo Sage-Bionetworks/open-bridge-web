@@ -1,4 +1,4 @@
-import StudyService from '../../../services/study.service'
+import ScheduleService from '../../../services/schedule.service'
 import {StudySession} from '../../../types/scheduling'
 import {Assessment} from '../../../types/types'
 
@@ -45,9 +45,8 @@ export type ActionPayload = {
   }
 }
 
-export type SessionAction = ActionMap<ActionPayload>[keyof ActionMap<
-  ActionPayload
->]
+export type SessionAction =
+  ActionMap<ActionPayload>[keyof ActionMap<ActionPayload>]
 
 function addSession(
   sessions: StudySession[],
@@ -56,13 +55,7 @@ function addSession(
 
   isActive: boolean = false
 ): StudySession[] {
-  /*const session: StudySession = {
-    guid: getRandomId(),
-    assessments,
-    performanceOrder: 'participant_choice',
-    name,
-  }*/
-  const session = StudyService.createEmptyStudySession(
+  const session = ScheduleService.createEmptyScheduleSession(
     sessions.length ? sessions[0].startEventId! : 'study_start_date',
     name
   )

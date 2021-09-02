@@ -1,38 +1,29 @@
 import * as React from 'react'
-import {Schedule} from '../types/scheduling'
-import {Study} from '../types/types'
+import {Assessment, Study} from '../types/types'
 
 export type StudyInfoData = {
   study: Study
-  schedule?: Schedule
+  assessments?: Assessment[]
 }
 
-type ActionType = 'SET_ALL' | 'SET_STUDY' | 'SET_SCHEDULE'
+export type ActionType = 'SET_STUDY' | 'SET_ASSESSMENTS'
 
-type Action = {type: ActionType; payload: StudyInfoData}
+export type Action = {type: ActionType; payload: StudyInfoData}
 type Dispatch = (action: Action) => void
 
 type StudyInfoProviderProps = {children: React.ReactNode}
 
 const initialState: StudyInfoData | {} = {}
 
-const StudyInfoStateContext =
-  React.createContext<StudyInfoData | undefined>(undefined)
-const StudyInfoDispatchContext =
-  React.createContext<Dispatch | undefined>(undefined)
+const StudyInfoStateContext = React.createContext<StudyInfoData | undefined>(
+  undefined
+)
+const StudyInfoDispatchContext = React.createContext<Dispatch | undefined>(
+  undefined
+)
 
 function studyInfoReducer(state: StudyInfoData, action: Action): StudyInfoData {
   switch (action.type) {
-    case 'SET_ALL': {
-      // console.log('setting all')
-      const newState = {
-        ...state,
-        schedule: action.payload.schedule,
-        study: action.payload.study,
-      }
-      // console.log(JSON.stringify(newState))
-      return newState
-    }
     case 'SET_STUDY': {
       const newState = {
         ...state,
@@ -42,11 +33,11 @@ function studyInfoReducer(state: StudyInfoData, action: Action): StudyInfoData {
 
       return newState
     }
-    case 'SET_SCHEDULE': {
+    case 'SET_ASSESSMENTS': {
       const newState = {
         ...state,
 
-        schedule: action.payload.schedule,
+        assessments: action.payload.assessments,
       }
 
       return newState

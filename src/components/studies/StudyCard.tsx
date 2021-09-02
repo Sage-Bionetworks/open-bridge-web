@@ -154,6 +154,7 @@ const CardBottom: FunctionComponent<{
   const {token} = useUserSessionDataState()
 
   React.useEffect(() => {
+    //AGENDEL TODO: only for live studies
     const getParticipantCount = async () => {
       const newParticipantNumber =
         await ParticipantService.getNumEnrolledParticipants(
@@ -336,7 +337,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
           <Typography className={classes.studyId} color="textSecondary">
             Study ID: {Utility.formatStudyId(study.identifier)}
           </Typography>
-          {study.phase === 'design' && <DraftIcon />}
+          {false && <DraftIcon />}
         </CardContent>
         <CardBottom study={study}></CardBottom>
       </Card>

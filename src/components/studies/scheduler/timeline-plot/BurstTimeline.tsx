@@ -4,7 +4,7 @@ import moment from 'moment'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {useAsync} from '../../../../helpers/AsyncHook'
-import StudyService from '../../../../services/study.service'
+import ScheduleService from '../../../../services/schedule.service'
 import {latoFont} from '../../../../style/theme'
 import {Schedule} from '../../../../types/scheduling'
 import BlackBorderDropdown from '../../../widgets/BlackBorderDropdown'
@@ -88,7 +88,7 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
   })
 
   React.useEffect(() => {
-    return run(StudyService.getStudyScheduleTimeline(studyId, token!))
+    return run(ScheduleService.getScheduleTimeline(studyId, token!))
   }, [run, schedFromDisplay.version, token])
 
   const setZoomLevel = (scheduleDuration: string) => {

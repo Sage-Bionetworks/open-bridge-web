@@ -1,12 +1,18 @@
+import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import {Box, Button, Paper} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import {Schedule} from '@typedefs/scheduling'
 import React, {useState} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import NavigationPrompt from 'react-router-navigation-prompt'
 import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
 import {ReactComponent as LockIcon} from '../../../assets/launch/lock_icon.svg'
-import {StudyInfoData} from '../../../helpers/StudyInfoContext'
+import StudyService from '../../../services/study.service'
 import {ThemeType} from '../../../style/theme'
-import {Study, StudyBuilderComponentProps} from '../../../types/types'
+import {Study, StudyPhase} from '../../../types/types'
 import {NextButton, PrevButton} from '../../widgets/StyledComponents'
+import {useSchedule} from '../scheduleHooks'
+import {useStudy, useUpdateStudyDetail} from '../studyHooks'
 import AboutStudy from './AboutStudy'
 import IrbDetails from './IrbDetails'
 import LaunchAlerts from './LaunchAlerts'
@@ -27,9 +33,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 }))
 
 export interface LaunchProps {
-  studyInfo: StudyInfoData
-  onSave: Function
-  isReadOnly: boolean
+  id: string
+  children: React.ReactNode
 }
 
 function getSteps(isLive: boolean) {
@@ -46,7 +51,8 @@ function getSteps(isLive: boolean) {
 
 type StepContentProps = {
   stepName: string
-  studyInfo: StudyInfoData
+  study: Study
+  schedule: Schedule
   isFinished: boolean
   onChange: Function
   onEnableNext: Function
@@ -54,18 +60,25 @@ type StepContentProps = {
 
 const StepContent: React.FunctionComponent<StepContentProps> = ({
   stepName,
-  studyInfo,
+  study,
+  schedule,
   isFinished,
   onChange,
   onEnableNext,
 }) => {
   switch (stepName) {
     case 'Review Alerts':
-      return <LaunchAlerts studyInfo={studyInfo} onEnableNext={onEnableNext} />
+      return (
+        <LaunchAlerts
+          study={study}
+          schedule={schedule}
+          onEnableNext={onEnableNext}
+        />
+      )
     case 'About Study':
       return (
         <AboutStudy
-          study={studyInfo.study}
+          study={study}
           onChange={onChange}
           onEnableNext={onEnableNext}
         />
@@ -73,7 +86,7 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
     case 'IRB Details':
       return (
         <IrbDetails
-          study={studyInfo.study}
+          study={study}
           onChange={onChange}
           isFinished={isFinished}
           onEnableNext={onEnableNext}
@@ -87,23 +100,85 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
   }
 }
 
-const Launch: React.FunctionComponent<
-  LaunchProps & StudyBuilderComponentProps
-> = ({
-  studyInfo,
-  onUpdate,
-  onSave,
-  hasObjectChanged,
-  saveLoader,
+const Launch: React.FunctionComponent<LaunchProps> = ({
+  id,
   children,
-  isReadOnly,
-}: LaunchProps & StudyBuilderComponentProps) => {
+}: LaunchProps) => {
   const classes = useStyles()
-  const isStudyLive = studyInfo.study.phase === 'in_flight'
-  const [steps, setSteps] = useState(getSteps(isStudyLive))
+  const {data: sourceStudy, error, isLoading} = useStudy(id)
+  const {
+    data: schedule,
+    error: scheduleError,
+    isLoading: scheduleLoading,
+  } = useSchedule(id)
+  const [study, setStudy] = React.useState<Study>()
+
+  const {
+    isSuccess: scheduleUpdateSuccess,
+    isError: scheduleUpdateError,
+    mutateAsync: mutateStudy,
+    data,
+  } = useUpdateStudyDetail()
+
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
+
+  const handleError = useErrorHandler()
+  //const [isStudyLive, setIsStudyLive] = React.useState(false)
+  const [saveLoader, setSaveLoader] = React.useState(false)
+  const [isStudyLive, setIsStudyLive] = React.useState(false)
+
+  const [steps, setSteps] = useState<{label: string}[]>(getSteps(false))
   const [activeStep, setActiveStep] = React.useState(0)
   const [isFinished, setIsFinished] = React.useState(false)
   const [isNextEnabled, setIsNextEnabled] = React.useState(false)
+
+  React.useEffect(() => {
+    setStudy(sourceStudy)
+    if (sourceStudy) {
+      const isLive =
+        StudyService.getDisplayStatusForStudyPhase(sourceStudy.phase) === 'LIVE'
+      setIsStudyLive(isLive)
+      getSteps(isLive)
+    }
+  }, [sourceStudy])
+
+  if (!study || !schedule) {
+    return <></>
+  }
+
+  const onSave = async () => {
+    {
+      if (!study) {
+        return
+      }
+      const missingIrbInfo =
+        !study.irbDecisionType || !study.irbDecisionOn || !study.irbExpiresOn
+      if (missingIrbInfo) {
+        delete study.irbDecisionOn
+        delete study.irbExpiresOn
+        delete study.irbDecisionType
+      }
+      console.log('starting update from launch')
+      const updatedStudy = {
+        ...study,
+        phase: 'recruitment' as StudyPhase,
+      }
+
+      try {
+        const result = await mutateStudy({study: updatedStudy})
+        setHasObjectChanged(false)
+      } catch (e) {
+        alert(e)
+      } finally {
+        console.log('finishing update')
+      }
+    }
+  }
+
+  const onUpdate = (study: Study) => {
+    setHasObjectChanged(true)
+    setStudy(study)
+  }
 
   const handleNext = () => {
     const newSteps = steps.map((s, i) =>
@@ -130,17 +205,24 @@ const Launch: React.FunctionComponent<
     setIsFinished(true)
   }
 
-  const handleReset = () => {
-    setActiveStep(0)
-  }
-
+  const isReadOnly = StudyService.isStudyClosedToEdits(study)
   if (isReadOnly) {
-    return <ReadOnlyIrbDetails study={studyInfo.study} />
+    return <ReadOnlyIrbDetails study={study} />
   }
   const showNextButton =
     (!isReadOnly && activeStep < 2) || (isStudyLive && activeStep === 0)
   return (
     <Paper className={classes.root} elevation={2} id="container">
+      <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
+        {({onConfirm, onCancel}) => (
+          <ConfirmationDialog
+            isOpen={hasObjectChanged}
+            type={'NAVIGATE'}
+            onCancel={onCancel}
+            onConfirm={onConfirm}
+          />
+        )}
+      </NavigationPrompt>
       {!isReadOnly && (
         <LaunchStepper
           steps={steps}
@@ -150,7 +232,8 @@ const Launch: React.FunctionComponent<
 
       <div className={classes.instructions}>
         <StepContent
-          studyInfo={studyInfo}
+          study={study}
+          schedule={schedule}
           stepName={steps[activeStep].label}
           isFinished={isFinished}
           onEnableNext={(isEnabled: boolean) => setIsNextEnabled(isEnabled)}

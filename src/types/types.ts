@@ -27,14 +27,6 @@ export interface ExtendedError extends Error {
 
 export type RequestStatus = 'IDLE' | 'PENDING' | 'RESOLVED' | 'REJECTED'
 
-export type StudyPhase =
-  | 'legacy'
-  | 'design'
-  | 'recruitment'
-  | 'in_flight'
-  | 'analysis'
-  | 'completed'
-  | 'withdrawn'
 /*
 'legacy	If not set, the study is in the LEGACY phase, and no domain logic will be applied to the study, enrollments, etc.
 'design	Study is being designed and tested and has not begun. All accounts created in this phase are marked as test accounts, and schedules are still mutable. The study is not visible in public registries.
@@ -122,8 +114,15 @@ export type Assessment = {
 
 /* *** Study ********************************/
 export type SignInType = 'phone_password' | 'external_id_password'
-//export type EnrollmentType = 'ID' | 'PHONE'
-//export type StudyStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'
+export type StudyPhase =
+  | 'legacy'
+  | 'design'
+  | 'recruitment'
+  | 'in_flight'
+  | 'analysis'
+  | 'completed'
+  | 'withdrawn'
+export type DisplayStudyPhase = 'DRAFT' | 'LIVE' | 'COMPLETED' | 'WITHDRAWN'
 export type StudyDesignType = 'observation' | 'intervention'
 export type Study = {
   identifier: string
@@ -218,13 +217,20 @@ export type StudyBuilderInfo = {
 export type StudyBuilderComponentProps = {
   onUpdate: Function
   children?: React.ReactNode
+  isReadOnly?: boolean
   hasObjectChanged: boolean
   saveLoader: boolean
 }
 
+export type SelectionType = 'ALL' | 'PAGE' | 'SOME' | 'NONE'
+
 export type ParticipantActivityType = 'ACTIVE' | 'WITHDRAWN' | 'TEST'
+export type ParticipantEvent = {
+  eventId: string
+  timestamp?: Date
+}
 export type EditableParticipantData = {
-  clinicVisitDate?: Date
+  events?: ParticipantEvent[]
   note?: string
   externalId?: string
   phone?: Phone
@@ -251,9 +257,9 @@ export type ParticipantAccountSummary = {
 }
 
 export type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {
-  clinicVisitDate?: Date | string
+  events?: ParticipantEvent[]
   joinedDate?: Date | string
-  smsDate?: Date | string
+  // smsDate?: Date | string
   dateWithdrawn?: Date | string
   withdrawalNote?: string
   studyId?: string

@@ -165,29 +165,6 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
               }></NotificationInterval>
           </>
         )}
-        <Divider className={classes.divider} />
-        <SchedulingFormSection
-          label="Allow to snooze"
-          isHideLabel={true}
-          variant="small"
-          border={false}>
-          <FormControlLabel
-            style={{display: 'block'}}
-            control={
-              <Checkbox
-                value={notification.allowSnooze}
-                checked={notification.allowSnooze}
-                onChange={e =>
-                  onChange({
-                    ...notification,
-                    allowSnooze: e.target.checked,
-                  })
-                }
-              />
-            }
-            label="Allow participant to snooze"
-          />
-        </SchedulingFormSection>
       </Box>
     </Paper>
   )

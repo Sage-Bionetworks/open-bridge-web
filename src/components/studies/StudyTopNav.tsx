@@ -5,6 +5,7 @@ import {
   IconButton,
   LinearProgress,
 } from '@material-ui/core'
+import Link from '@material-ui/core/Link'
 import {makeStyles} from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
@@ -15,11 +16,10 @@ import React, {FunctionComponent} from 'react'
 import {NavLink} from 'react-router-dom'
 import PARTICIPANTS_ICON from '../../assets/group_participants_icon.svg'
 import Logo from '../../assets/logo_mtb.svg'
-import {useStudyInfoDataState} from '../../helpers/StudyInfoContext'
 import Utility from '../../helpers/utility'
 import {latoFont} from '../../style/theme'
 import constants from '../../types/constants'
-import {ExtendedError} from '../../types/types'
+import {ExtendedError, Study, StudyPhase} from '../../types/types'
 import BreadCrumb from '../widgets/BreadCrumb'
 import HideWhen from '../widgets/HideWhen'
 import MobileDrawerMenuHeader from '../widgets/MobileDrawerMenuHeader'
@@ -139,48 +139,48 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type StudyTopNavProps = {
-  studyId: string
+  study: Study
   error?: ExtendedError | null
   currentSection?: string
 }
 
 const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
-  studyId,
+  study,
   error,
 }: StudyTopNavProps) => {
-  const allLinks = [
+  const allLinks: {path: string; name: string; status: StudyPhase[]}[] = [
     {
       path: `${constants.restrictedPaths.STUDY_BUILDER}/session-creator`,
       name: 'STUDY BUILDER',
-      status: ['design'],
+      status: ['design', 'in_flight', 'recruitment'],
     },
     {
       path: constants.restrictedPaths.PARTICIPANT_MANAGER,
       name: 'PARTICIPANT MANAGER',
       status: constants.constants.IS_TEST_MODE
-        ? ['live', 'legacy', 'recruitment', 'design']
-        : ['live', 'recruitment'],
+        ? ['in_flight', 'legacy', 'recruitment', 'design']
+        : ['in_flight', 'recruitment'],
     },
     {
       path: constants.restrictedPaths.ADHERENCE_DATA,
       name: 'ADHERENCE DATA',
-      status: ['live', 'legacy'],
+      status: ['in_flight', 'legacy'],
     },
     {
       path: constants.restrictedPaths.STUDY_DATA,
       name: 'STUDY DATA',
-      status: ['live', 'legacy'],
+      status: ['in_flight', 'legacy'],
     },
   ]
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
-  const studyData = useStudyInfoDataState()
+  // const studyData = useStudyInfoDataState()
 
-  if (!studyData.study) {
-    return <></>
-  }
+  // if (!studyData.study) {
+  // return <></>
+  //}
   const links = allLinks.filter(link =>
-    Utility.isPathAllowed(studyData.study.identifier, link.path)
+    Utility.isPathAllowed(study.identifier, link.path)
   )
 
   return (
@@ -207,20 +207,20 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               paddingTop: '0',
               alignItems: 'center',
             }}>
-            <NavLink
-              to={'/Studies'}
-              key="home"
+            <Link
+              href="/Studies"
+              key="/Studies"
               className={classes.toolbarLink}
               style={{paddingBottom: '0', paddingLeft: '4px'}}>
               <img src={Logo} key="img_home" alt="home" />
-            </NavLink>
-            <HideWhen hideWhen={studyData.study === undefined && !error}>
+            </Link>
+            <HideWhen hideWhen={study === undefined && !error}>
               <BreadCrumb
                 links={[{url: '/Studies', text: ''}]}
                 currentItem={
-                  studyData.study?.name &&
-                  studyData.study?.name !== constants.constants.NEW_STUDY_NAME
-                    ? studyData.study?.name
+                  study?.name &&
+                  study?.name !== constants.constants.NEW_STUDY_NAME
+                    ? study?.name
                     : ''
                 }></BreadCrumb>
 
@@ -231,9 +231,9 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
             {links
               .filter(section => section.name)
               .map(section =>
-                section.status.includes(studyData.study?.phase) ? (
+                section.status.includes(study?.phase) ? (
                   <NavLink
-                    to={section.path.replace(':id', studyId)}
+                    to={section.path.replace(':id', study.identifier)}
                     key={section.path}
                     className={classes.toolbarLink}
                     activeClassName={classes.selectedLink}>
@@ -254,7 +254,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               <NavLink
                 to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
                   ':id',
-                  studyId
+                  study.identifier
                 )}
                 key={'path-to-access-settings'}
                 className={classes.toolbarLink}
@@ -285,7 +285,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
             .filter(section => section.name)
             .map(section => (
               <NavLink
-                to={section.path.replace(':id', studyId)}
+                to={section.path.replace(':id', study.identifier)}
                 key={section.path}
                 className={classes.mobileToolBarLink}
                 activeClassName={classes.mobileSelectedLink}
@@ -296,7 +296,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
           <NavLink
             to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
               ':id',
-              studyId
+              study.identifier
             )}
             key={'path-to-access-settings'}
             className={clsx(

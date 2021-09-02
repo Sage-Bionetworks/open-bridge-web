@@ -1,4 +1,5 @@
 import {
+  Box,
   Checkbox,
   createStyles,
   FormControl,
@@ -10,27 +11,31 @@ import {
 } from '@material-ui/core'
 import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
 import React, {FunctionComponent} from 'react'
+import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
 import {useAsync} from '../../../helpers/AsyncHook'
-import StudyService from '../../../services/study.service'
-import {poppinsFont} from '../../../style/theme'
+import ScheduleService from '../../../services/schedule.service'
+import {latoFont, poppinsFont} from '../../../style/theme'
 import {Schedule} from '../../../types/scheduling'
 import {Study} from '../../../types/types'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
-import SessionIcon from '../../widgets/SessionIcon'
 import SmallTextBox from '../../widgets/SmallTextBox'
+import {TooltipHoverDisplay} from './ScheduleTimeline'
 import BurstTimeline from './timeline-plot/BurstTimeline'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       backgroundColor: '#fff',
-      padding: theme.spacing(13, 7, 3, 7),
+      padding: theme.spacing(13, 12, 3, 14),
       textAlign: 'left',
+      [theme.breakpoints.down('md')]: {
+        padding: theme.spacing(13, 3, 3, 3),
+      },
     },
     burstBox: {
       display: 'flex',
-      padding: theme.spacing(3, 0),
+      padding: theme.spacing(8, 5),
       border: '1px solid black',
       margin: theme.spacing(8, 3),
 
@@ -43,19 +48,22 @@ const useStyles = makeStyles((theme: Theme) =>
           borderRight: '1px solid black',
         },
       },
+      [theme.breakpoints.down('md')]: {
+        padding: theme.spacing(8, 0),
+      },
     },
     checked: {
       color: '#FFF509',
       '& .MuiSvgIcon-root': {
         fill: '#FFF509',
         backgroundColor: 'black',
+        clipPath: 'polygon(7% 6%, 95% 6%, 95% 95%, 7% 95%)',
       },
     },
     burstSchedule: {
       alignItems: 'flex-end',
-      padding: theme.spacing(5, 0, 0, 5),
-      marginBottom: theme.spacing(15),
-
+      padding: theme.spacing(5, 0, 0, 1),
+      marginBottom: theme.spacing(7),
       '& .MuiFormControl-root': {
         flexDirection: 'row',
         marginBottom: theme.spacing(1),
@@ -78,6 +86,84 @@ const useStyles = makeStyles((theme: Theme) =>
           marginRight: theme.spacing(2),
         },
       },
+      [theme.breakpoints.down('md')]: {
+        padding: theme.spacing(5, 0, 0, 0),
+      },
+    },
+    toggleButtonRoot: {
+      '& .Mui-selected': {
+        backgroundColor: '#BCD5E4',
+        '&:hover': {
+          backgroundColor: '#BCD5E4',
+        },
+      },
+    },
+    checkBoxStyling: {
+      alignItems: 'left',
+      marginTop: theme.spacing(3),
+      marginLeft: theme.spacing(3),
+    },
+    paragraph: {
+      maxWidth: '590px',
+      lineHeight: '18px',
+      fontSize: '15px',
+      fontFamily: latoFont,
+    },
+    burstSummaryContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      maxWidth: '380px',
+      marginTop: theme.spacing(5),
+    },
+    buttons: {
+      border: '1px solid black',
+      color: 'black',
+      borderRadius: '0px',
+      boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+      '&:last-child': {
+        marginLeft: theme.spacing(2),
+        // the left border disappears if this is not added
+        border: '1px solid black',
+      },
+    },
+    burstsInfoText: {
+      height: '100px',
+      width: '100%',
+      justifyContent: 'center',
+      alignSelf: 'center',
+      display: 'flex',
+    },
+    calendarIcon: {
+      width: '20px',
+      height: '20px',
+      marginRight: theme.spacing(2.5),
+    },
+    burstDesignHeading: {
+      fontFamily: poppinsFont,
+      fontSize: '18px',
+      lineHeight: '27px',
+    },
+    setBurstInfoContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+    },
+    assignBurstText: {
+      fontFamily: poppinsFont,
+      fontSize: '14px',
+      lineHeight: '21px',
+      marginRight: theme.spacing(2.5),
+    },
+    row: {
+      display: 'flex',
+      alignItems: 'center',
+    },
+    burstInfoTextContainer: {
+      maxWidth: '390px',
+      fontFamily: poppinsFont,
+      fontSize: '14px',
+      lineHeight: '21px',
     },
   })
 )
@@ -104,7 +190,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
 }: ConfigureBurstTabProps) => {
   const classes = useStyles()
 
-  const [hasBursts, setHasBursts] = React.useState(true)
+  const [hasBursts, setHasBursts] = React.useState(false)
   const [burstSessionGuids, setBurstSessionGuids] = React.useState<string[]>([])
   const [burstNumber, setBurstNumber] = React.useState<number | undefined>()
   const [burstFrequency, setBurstFrequency] = React.useState<
@@ -125,7 +211,7 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
 
   React.useEffect(() => {
     console.log('%c ---timeline getting--' + schedule.version, 'color: blue')
-    return run(StudyService.getStudyScheduleTimeline(study.identifier, token!))
+    return run(ScheduleService.getScheduleTimeline(study.identifier, token!))
   }, [run, schedule.version, token])
 
   //setting new state
@@ -134,41 +220,56 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
     onUpdate(schedule)
   }
 
+  const displayBurstInfoText =
+    schedule && hasBursts && (burstNumber || 0) > 0 && (burstFrequency || 0) > 0
   return (
     <div className={classes.root}>
-      <MTBHeadingH1>Multiple scheduling of the same events</MTBHeadingH1>
-      <p>
-        Ecological Momentary Assessment (EMA) provides a way to repeatedly
-        sample participant over time to better capture their ehaviors and
-        experiences in real time, also referred to as Study Bursts.
+      <MTBHeadingH1 style={{marginBottom: '24px'}}>Burst Design</MTBHeadingH1>
+      <p className={classes.paragraph}>
+        A burst design involves repeating multiple study sessions that are
+        spaced out over time at regular intervals with long breaks. This is
+        intended to maximize longitudinal participation with minimal burden.
       </p>
-      <p>
-        Example: Participants will take a session of 4 assessments everyday for
-        a week. They redo this burst every 3 months for the next two years.
-      </p>
-      <MTBHeadingH2>Will your study include an EMA/Study Burst? </MTBHeadingH2>
-      <ToggleButtonGroup
-        value={hasBursts}
-        exclusive={true}
-        onChange={(e: React.MouseEvent<HTMLElement>, val: boolean) => {
-          if (val !== null) {
-            setHasBursts(val)
-          }
-        }}
-        aria-label="study includes bursts">
-        <ToggleButton value={false} aria-label="no">
-          No
-        </ToggleButton>
-        <ToggleButton value={true} aria-label="yes">
-          Yes
-        </ToggleButton>
-      </ToggleButtonGroup>
+      <Box className={classes.burstSummaryContainer}>
+        <MTBHeadingH2 style={{marginBottom: '24px'}}>
+          Will your study include a Burst Design?
+        </MTBHeadingH2>
+        <ToggleButtonGroup
+          value={hasBursts}
+          exclusive={true}
+          classes={{root: classes.toggleButtonRoot}}
+          onChange={(e: React.MouseEvent<HTMLElement>, val: boolean) => {
+            if (val !== null) {
+              setHasBursts(val)
+            }
+          }}
+          aria-label="study includes bursts">
+          <ToggleButton
+            value={true}
+            aria-label="yes"
+            className={classes.buttons}>
+            Yes
+          </ToggleButton>
+          <ToggleButton
+            value={false}
+            aria-label="no"
+            className={classes.buttons}>
+            No
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
       {hasBursts && (
         <div className={classes.burstBox}>
-          <div>
-            What scheduled session(s) in your study should be repeated as a
-            burst?
-            <FormGroup style={{alignItems: 'left'}}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+            }}>
+            <MTBHeadingH2 style={{maxWidth: '290px'}}>
+              What scheduled session(s) in your study should be repeated as a
+              burst?
+            </MTBHeadingH2>
+            <FormGroup className={classes.checkBoxStyling}>
               {schedule.sessions.map((s, index) => (
                 <FormControlLabel
                   key={s.guid}
@@ -188,20 +289,27 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
                     />
                   }
                   label={
-                    <SessionIcon index={index} key={s.guid}>
-                      {s.name}
-                    </SessionIcon>
+                    <TooltipHoverDisplay
+                      session={s}
+                      index={index}
+                      getSession={() => {
+                        return {label: s.name}
+                      }}
+                    />
                   }></FormControlLabel>
               ))}
             </FormGroup>
           </div>
-          <div>
-            How often should this burst be scheduled to repeat?
+          <div className={classes.setBurstInfoContainer}>
+            <MTBHeadingH2 style={{textAlign: 'left', maxWidth: '300px'}}>
+              How often should this burst be scheduled to repeat?
+            </MTBHeadingH2>
             <FormGroup className={classes.burstSchedule}>
-              <FormControl fullWidth>
-                <InputLabel htmlFor="burst-freq">
-                  Assign a new <br />
-                  burst every:
+              <FormControl className={classes.row}>
+                <InputLabel
+                  htmlFor="burst-freq"
+                  className={classes.assignBurstText}>
+                  Assign a new burst every:
                 </InputLabel>
                 <SmallTextBox
                   value={burstFrequency || ''}
@@ -210,9 +318,10 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
                 />
                 weeks
               </FormControl>
-
-              <FormControl fullWidth>
-                <InputLabel htmlFor="burst-num">For:</InputLabel>
+              <FormControl fullWidth className={classes.row}>
+                <InputLabel htmlFor="burst-num" style={{marginRight: '24px'}}>
+                  For:
+                </InputLabel>
                 <SmallTextBox
                   isLessThanOneAllowed={false}
                   value={burstNumber || ''}
@@ -221,9 +330,26 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
                 bursts
               </FormControl>
             </FormGroup>
-            <SaveButton style={{margin: '0 auto 16px auto'}} />
+            <SaveButton />
           </div>
         </div>
+      )}
+      {displayBurstInfoText && (
+        <Box className={classes.burstsInfoText}>
+          <Box className={classes.row}>
+            <img className={classes.calendarIcon} src={CalendarIcon}></img>
+            <Box className={classes.burstInfoTextContainer}>
+              Your
+              <strong style={{backgroundColor: '#FFF509'}}>
+                {' '}
+                {burstNumber} burst(s)
+              </strong>{' '}
+              will be scheduled <strong>{burstFrequency} week(s)</strong> apart.
+              Bursts can be rescheduled in the Participant Manager to accomodate
+              a participant’s availability.
+            </Box>
+          </Box>
+        </Box>
       )}
       {schedule && hasBursts && (
         <BurstTimeline

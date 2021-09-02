@@ -1,6 +1,10 @@
 import {Box, Drawer, IconButton, makeStyles} from '@material-ui/core'
 import clsx from 'clsx'
+import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
+import {NavLink} from 'react-router-dom'
+import CloseIcon from '../../assets/study-builder-icons/left_nav_close_icon.svg'
+import OpenIcon from '../../assets/study-builder-icons/left_nav_open_icon.svg'
 import {ThemeType} from '../../style/theme'
 import SideBarListItem from '../widgets/SideBarListItem'
 import {
@@ -9,8 +13,6 @@ import {
   normalNavIcons,
   StudySection,
 } from './sections'
-import CloseIcon from '../../assets/study-builder-icons/left_nav_close_icon.svg'
-import OpenIcon from '../../assets/study-builder-icons/left_nav_open_icon.svg'
 
 const drawerWidth = 212
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -99,7 +101,6 @@ type StudyLeftNavOwnProps = {
   id?: string
   open: boolean
   onToggle: Function
-  onNavigate: Function
   disabled: boolean
 }
 
@@ -109,7 +110,6 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
   id,
   open,
   onToggle,
-  onNavigate,
   currentSection = 'sessions-creator',
   disabled,
 }) => {
@@ -159,40 +159,46 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
             onMouseOver={() => setCurrentHoveredElement(index)}
             onMouseOut={() => setCurrentHoveredElement(-1)}
             key={sectionLink.path}>
-            <SideBarListItem
-              key={sectionLink.path}
-              isOpen={open}
-              isActive={sectionLink.path === currentSection}
-              onClick={() => onNavigate(sectionLink.path)}
-              styleProps={classes.listItems}
-              inStudyBuilder={true}>
-              <div
-                className={clsx(
-                  classes.navIconImageContainer,
-                  sectionLink.path === currentSection &&
-                    !open &&
-                    classes.listItemCollapsed
-                )}>
-                <img
-                  src={typeOfIcon(index, sectionLink.path)[index]}
+            <NavLink
+              to={`/studies/builder/${id}/${sectionLink.path}`}
+              style={{textDecoration: 'none'}}>
+              <SideBarListItem
+                key={sectionLink.path}
+                isOpen={open}
+                onClick={_.noop}
+                isActive={sectionLink.path === currentSection}
+                styleProps={classes.listItems}
+                inStudyBuilder={true}>
+                <div
+                  style={{display: 'flex', textDecoration: 'none'}}
                   className={clsx(
-                    classes.navIcon,
-                    disabled &&
-                      sectionLink.path !== 'session-creator' &&
-                      classes.disabledElement
-                  )}
-                  alt={sectionLink.name}
-                />
-                <span
-                  className={clsx(
-                    disabled &&
-                      sectionLink.path !== 'session-creator' &&
-                      classes.disabledElement
+                    classes.navIconImageContainer,
+                    sectionLink.path === currentSection &&
+                      !open &&
+                      classes.listItemCollapsed
                   )}>
-                  {sectionLink.name}
-                </span>
-              </div>
-            </SideBarListItem>
+                  <img
+                    src={typeOfIcon(index, sectionLink.path)[index]}
+                    className={clsx(
+                      classes.navIcon,
+                      disabled &&
+                        sectionLink.path !== 'session-creator' &&
+                        classes.disabledElement
+                    )}
+                    alt={sectionLink.name}
+                  />
+                  <span
+                    style={{textDecoration: 'none'}}
+                    className={clsx(
+                      disabled &&
+                        sectionLink.path !== 'session-creator' &&
+                        classes.disabledElement
+                    )}>
+                    {sectionLink.name}
+                  </span>
+                </div>
+              </SideBarListItem>
+            </NavLink>
           </div>
         ))}
       </ul>

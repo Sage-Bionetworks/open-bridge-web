@@ -1,6 +1,6 @@
 import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
-import RegularMTBLogo from '../../assets/logo_mtb.svg'
+import RegularMTBLogo from '../../assets/black_mtb_logo.svg'
 import BlackXIcon from '../../assets/black_x_icon.svg'
 import WhiteMTBLogo from '../../assets/white_logo_mtb.svg'
 import {latoFont} from '../../style/theme'

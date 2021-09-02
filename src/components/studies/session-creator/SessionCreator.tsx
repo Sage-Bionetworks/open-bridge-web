@@ -11,20 +11,24 @@ import {
   Paper,
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
-import SaveIcon from '@material-ui/icons/Save'
+import StudyService from '@services/study.service'
 import React, {FunctionComponent, useState} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import AssessmentService from '../../../services/assessment.service'
+import {poppinsFont} from '../../../style/theme'
 import {StudySession} from '../../../types/scheduling'
-import {Assessment, StudyBuilderComponentProps} from '../../../types/types'
+import {Assessment} from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import {MTBHeadingH1} from '../../widgets/Headings'
+import {PrevButton} from '../../widgets/StyledComponents'
+import {useSchedule, useUpdateSchedule} from '../scheduleHooks'
+import {useStudy} from '../studyHooks'
 import AssessmentSelector from './AssessmentSelector'
+import ReadOnlySessionCreator from './read-only-pages/ReadOnlySessionCreator'
 import SessionActionButtons from './SessionActionButtons'
 import actionsReducer, {SessionAction, Types} from './sessionActions'
 import SingleSessionContainer from './SingleSessionContainer'
-import ReadOnlySessionCreator from './read-only-pages/ReadOnlySessionCreator'
 
 export const useStyles = makeStyles(theme => ({
   root: {
@@ -66,51 +70,106 @@ export const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  selectAssessmentsHeading: {
+    marginTop: theme.spacing(3),
+    textAlign: 'center',
+    fontFamily: poppinsFont,
+    fontStyle: 'normal',
+    fontWeight: 'bold',
+    marginBottom: theme.spacing(2),
+  },
+  assessmentsContainer: {
+    padding: '0px',
+    '&::-webkit-scrollbar': {
+      width: '8px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#5D5D5D',
+    },
+  },
 }))
 
 type SessionCreatorProps = {
   id: string
-  sessions: StudySession[]
-  onSave: Function
-  isReadOnly?: boolean
+  children: React.ReactNode
+  // sessions: StudySession[]
+  // onSave: Function
+  // study: Study
 }
 
-const SessionCreator: FunctionComponent<
-  SessionCreatorProps & StudyBuilderComponentProps
-> = ({
-  isReadOnly,
-  sessions,
+const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   id,
+  children,
+}: /*sessions,
+
   onUpdate,
   hasObjectChanged,
   saveLoader,
-  children,
+
   onSave,
-}: SessionCreatorProps & StudyBuilderComponentProps) => {
+  study,*/
+SessionCreatorProps) => {
   const classes = useStyles()
+
+  const {
+    data: schedule,
+    error: scheduleError,
+    isLoading: isScheduleLoading,
+  } = useSchedule(id)
+
+  const {data: study, error, isLoading} = useStudy(id)
+
+  const {
+    isSuccess: scheduleUpdateSuccess,
+    isError: scheduleUpdateError,
+    mutateAsync: mutateSchedule,
+    data,
+  } = useUpdateSchedule()
+
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
+
+  const handleError = useErrorHandler()
+  const [saveLoader, setSaveLoader] = React.useState(false)
 
   const [selectedAssessments, setSelectedAssessments] = useState<Assessment[]>(
     []
   )
   const [isAssessmentDialogOpen, setIsAssessmentDialogOpen] = useState(false)
 
-  const [
-    isAddingAssessmentToSession,
-    setIsAddingAssessmentToSession,
-  ] = useState(false)
-  const [activeSession, setActiveSession] = React.useState(
-    sessions.length > 0 ? sessions[0].guid : undefined
-  )
-  const handleError = useErrorHandler()
+  const [isAddingAssessmentToSession, setIsAddingAssessmentToSession] =
+    useState(false)
+  const [activeSession, setActiveSession] = React.useState<string | undefined>()
 
-  const sessionsUpdateFn = (action: SessionAction) => {
-    const newState = actionsReducer(sessions, action)
-    onUpdate(newState)
+  const onUpdate = async (newState: StudySession[]) => {
+    const updatedSchedule = {...schedule!, sessions: newState}
+    setSaveLoader(true)
+    const savedUpdatedSchedule = await mutateSchedule({
+      studyId: id,
+      schedule: updatedSchedule,
+      action: 'UPDATE',
+    })
+    setSaveLoader(false)
   }
+
+  React.useEffect(() => {
+    if (schedule?.sessions) {
+      setActiveSession(
+        schedule.sessions.length > 0 ? schedule.sessions[0].guid : undefined
+      )
+    }
+  }, [])
 
   const cancelAssessmentSelector = () => {
     setIsAssessmentDialogOpen(false)
     setSelectedAssessments([])
+  }
+
+  const sessionsUpdateFn = (action: SessionAction) => {
+    if (schedule) {
+      const newState = actionsReducer(schedule.sessions, action)
+
+      onUpdate(newState)
+    }
   }
 
   const updateAssessmentList = (
@@ -157,11 +216,20 @@ const SessionCreator: FunctionComponent<
     return session
   }
 
-  if (isReadOnly) {
-    return <ReadOnlySessionCreator children={children} sessions={sessions} />
+  if (!study || !schedule) {
+    return <></>
   }
 
-  if (sessions) {
+  if (!StudyService.isStudyInDesign(study)) {
+    return (
+      <ReadOnlySessionCreator
+        children={children}
+        sessions={schedule.sessions}
+      />
+    )
+  }
+
+  if (schedule?.sessions) {
     return (
       <>
         <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
@@ -174,7 +242,7 @@ const SessionCreator: FunctionComponent<
             />
           )}
         </NavigationPrompt>
-        {hasObjectChanged && !saveLoader && (
+        {/*hasObjectChanged && !saveLoader && (
           <Button
             variant="contained"
             color="primary"
@@ -184,9 +252,9 @@ const SessionCreator: FunctionComponent<
             startIcon={<SaveIcon />}>
             Save changes
           </Button>
-        )}
+        )*/}
         <Box className={classes.root} key="sessions">
-          {sessions.map((session, index) => (
+          {schedule.sessions.map((session, index) => (
             <Paper
               className={classes.sessionContainer}
               key={session.guid! + index}>
@@ -211,14 +279,16 @@ const SessionCreator: FunctionComponent<
                   })
                 }
                 onUpdateAssessmentList={updateAssessmentList}
-                numberOfSessions={sessions.length}></SingleSessionContainer>
+                numberOfSessions={
+                  schedule.sessions.length
+                }></SingleSessionContainer>
             </Paper>
           ))}
         </Box>
         <Box className={classes.actionButtons} key="actionButtons">
           <SessionActionButtons
             key={'new_session'}
-            sessions={sessions}
+            sessions={schedule.sessions}
             onAddSession={(
               sessions: StudySession[],
               assessments: Assessment[],
@@ -245,7 +315,7 @@ const SessionCreator: FunctionComponent<
             </div>
           )}
           <DialogTitle>
-            <MTBHeadingH1 style={{marginTop: '32px', textAlign: 'center'}}>
+            <MTBHeadingH1 className={classes.selectAssessmentsHeading}>
               Select assessment(s) to add to session.
             </MTBHeadingH1>
             <IconButton
@@ -255,20 +325,22 @@ const SessionCreator: FunctionComponent<
               <CloseIcon />
             </IconButton>
           </DialogTitle>
-          <DialogContent>
+          <DialogContent className={classes.assessmentsContainer}>
             <AssessmentSelector
               selectedAssessments={selectedAssessments}
               onUpdateAssessments={setSelectedAssessments}
-              activeSession={getActiveSession(sessions)}></AssessmentSelector>
+              activeSession={getActiveSession(
+                schedule.sessions
+              )}></AssessmentSelector>
           </DialogContent>
           {!isAddingAssessmentToSession && (
             <DialogActions>
-              <Button
+              <PrevButton
                 onClick={cancelAssessmentSelector}
-                color="secondary"
+                color="primary"
                 variant="outlined">
                 Cancel
-              </Button>
+              </PrevButton>
 
               <Button
                 variant="contained"
@@ -277,16 +349,16 @@ const SessionCreator: FunctionComponent<
                   setIsAddingAssessmentToSession(true)
 
                   await updateAssessments(
-                    getActiveSession(sessions)!.guid!,
-                    getActiveSession(sessions)!.assessments,
+                    getActiveSession(schedule.sessions)!.guid!,
+                    getActiveSession(schedule.sessions)!.assessments,
                     selectedAssessments
                   )
                   setSelectedAssessments([])
                   setIsAddingAssessmentToSession(false)
                 }}>
-                {!getActiveSession(sessions)
+                {!getActiveSession(schedule.sessions)
                   ? 'Please select group and session'
-                  : `Add  to Session`}
+                  : `Add to Session`}
               </Button>
             </DialogActions>
           )}

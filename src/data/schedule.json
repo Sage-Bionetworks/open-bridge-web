@@ -54,7 +54,6 @@
         "notifyAt": "participant_choice",
         "remindAt": "after_window_start",
         "reminderPeriod": "PT10M",
-        "allowSnooze": false,
         "messages": [
           {
             "lang": "string",

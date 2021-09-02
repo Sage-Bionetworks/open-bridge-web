@@ -3,11 +3,7 @@ import {makeStyles} from '@material-ui/core/styles'
 import React, {ReactElement, useState} from 'react'
 import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
 import {ThemeType} from '../../../style/theme'
-import {Schedule} from '../../../types/scheduling'
-import {Study, StudyBuilderComponentProps} from '../../../types/types'
 import {NextButton, PrevButton} from '../../widgets/StyledComponents'
-import {SchedulerErrorType} from '../StudyBuilder'
-import ConfigureBurstTab from './ConfigureBurstTab'
 import ScheduleCreatorTab from './ScheduleCreatorTab'
 import SchedulerStepper from './SchedulerStepper'
 import SessionStartTab from './SessionStartTab'
@@ -30,20 +26,15 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
 export type SchedulerProps = {
   id: string
-  schedule: Schedule
-
-  token: string
-  onSave: Function
-  schedulerErrors: SchedulerErrorType[]
-  isReadOnly?: boolean
-  study: Study
+  children: React.ReactNode
+  onShowFeedback: Function
 }
 
 function getSteps() {
   return [
     {label: 'Define Session Start'},
     {label: 'Create Schedule'},
-    {label: 'Configure Optional EMA/Bursts'},
+    // {label: 'Configure Optional EMA/Bursts'},
   ]
 }
 
@@ -58,38 +49,48 @@ const StepContent: React.FunctionComponent<{
   return cntrl as ReactElement
 }
 
-const Scheduler: React.FunctionComponent<
-  SchedulerProps & StudyBuilderComponentProps
-> = (props: SchedulerProps & StudyBuilderComponentProps) => {
+const Scheduler: React.FunctionComponent<SchedulerProps> = ({
+  id,
+  onShowFeedback,
+  children,
+}: SchedulerProps) => {
   const classes = useStyles()
 
   const [steps, setSteps] = useState(getSteps())
   const [activeStep, setActiveStep] = React.useState(0)
   // const [isFinished, setIsFinished] = React.useState(false)
   const [isNextEnabled, setIsNextEnabled] = React.useState(true)
+  type CountdownHandle = React.ElementRef<typeof SessionStartTab>
+  const ref1 = React.useRef<CountdownHandle>(null) // assign null makes it compatible with elements.
+  type CountdownHandle2 = React.ElementRef<typeof ScheduleCreatorTab>
+  const ref2 = React.useRef<CountdownHandle2>(null) // assign null makes it compatible with elements.
 
-  if (!props.children) {
+  if (!children) {
     return <>error. Please provide nav buttons</>
   }
-  const firstPrevButton = (props.children as any)[0]
-  const lastNextButton = (props.children as any)[1]
+  const firstPrevButton = (children as any)[0]
+  const lastNextButton = (children as any)[1]
   const handleNext = () => {
+    const nextStep = activeStep + 1
+    ref1.current?.save(nextStep)
     const newSteps = steps.map((s, i) =>
       i === activeStep ? {...s, isComplete: true} : s
     )
     setSteps(newSteps)
-    setActiveStep(prevActiveStep => prevActiveStep + 1)
-    props.onSave()
   }
 
   const handleStepClick = (index: number) => {
-    setActiveStep(index)
-    props.onSave()
+    ref1.current?.save(index)
+    ref2.current?.save(index)
   }
 
   const handleBack = () => {
-    setActiveStep(prevActiveStep => prevActiveStep - 1)
-    props.onSave()
+    const nextStep = activeStep - 1
+    ref2.current?.save(nextStep)
+  }
+
+  const handleNavigate = (step: number) => {
+    setActiveStep(step)
   }
 
   return (
@@ -101,11 +102,15 @@ const Scheduler: React.FunctionComponent<
 
       <div className={classes.instructions}>
         <StepContent step={activeStep}>
-          <SessionStartTab {...props} />
-          <ScheduleCreatorTab {...props}></ScheduleCreatorTab>
-          <ConfigureBurstTab {...props}></ConfigureBurstTab>
+          <SessionStartTab id={id} ref={ref1} onNavigate={handleNavigate} />
+          <ScheduleCreatorTab
+            id={id}
+            ref={ref2}
+            onNavigate={handleNavigate}
+            onShowFeedback={onShowFeedback}
+            children={children}></ScheduleCreatorTab>
         </StepContent>
-        <Box py={2} px={2} textAlign="right" bgcolor="#fff">
+        <Box py={2} px={2} textAlign="right" bgcolor="inherit">
           <>
             {activeStep === 0 ? (
               firstPrevButton
@@ -120,7 +125,7 @@ const Scheduler: React.FunctionComponent<
             &nbsp;&nbsp;
           </>
 
-          {activeStep < 2 ? (
+          {activeStep < 1 ? (
             <NextButton
               variant="contained"
               color="primary"

@@ -1,3 +1,4 @@
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import {Box} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import Tooltip from '@material-ui/core/Tooltip'
@@ -7,9 +8,9 @@ import Pluralize from 'react-pluralize'
 import {ReactComponent as NotificationsIcon} from '../../../assets/scheduler/notifications_icon.svg'
 import {ReactComponent as TimerIcon} from '../../../assets/scheduler/timer_icon.svg'
 import {useAsync} from '../../../helpers/AsyncHook'
-import StudyService from '../../../services/study.service'
+import ScheduleService from '../../../services/schedule.service'
 import {latoFont} from '../../../style/theme'
-import {Schedule} from '../../../types/scheduling'
+import {Schedule, StudySession} from '../../../types/scheduling'
 import AssessmentImage from '../../assessments/AssessmentImage'
 import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
 import SessionIcon from '../../widgets/SessionIcon'
@@ -61,19 +62,62 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export interface TimelineProps {
-  token: string
   schedule: Schedule
   version: number
   studyId: string
 }
 
+export const TooltipHoverDisplay: React.FunctionComponent<{
+  session: StudySession
+  index: number
+  getSession: Function
+}> = ({session, index, getSession}) => {
+  const classes = useStyles()
+  return (
+    <Tooltip
+      key={`session_${session.guid}`}
+      title={
+        <Box width="115px">
+          {session.assessments?.map((assessment, index) => {
+            return (
+              <Box
+                className={classes.assessmentBox}
+                key={`assmnt_${assessment.guid}_${index}`}>
+                <AssessmentImage
+                  resources={assessment.resources}
+                  variant="small"
+                  name={assessment.title}
+                  key={index}
+                  smallVariantProperties={{
+                    width: '100%',
+                    backgroundColor: '#F6F6F6',
+                  }}></AssessmentImage>
+              </Box>
+            )
+          })}
+        </Box>
+      }
+      arrow
+      classes={{
+        tooltip: classes.toolTip,
+        arrow: classes.arrow,
+      }}>
+      <Box style={{cursor: 'pointer'}}>
+        <SessionIcon index={index} key={session.guid}>
+          {getSession(session.guid!)?.label}
+        </SessionIcon>
+      </Box>
+    </Tooltip>
+  )
+}
+
 const ScheduleTimeline: React.FunctionComponent<TimelineProps> = ({
-  token,
   version,
   studyId,
   schedule: schedFromDisplay,
 }: TimelineProps) => {
   const handleError = useErrorHandler()
+  const {token} = useUserSessionDataState()
   const [sessions, setSessions] = React.useState<TimelineSession[]>([])
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
@@ -96,7 +140,7 @@ const ScheduleTimeline: React.FunctionComponent<TimelineProps> = ({
 
   React.useEffect(() => {
     console.log('%c ---timeline getting--' + version, 'color: blue')
-    return run(StudyService.getStudyScheduleTimeline(studyId, token!))
+    return run(ScheduleService.getScheduleTimeline(studyId, token!))
   }, [run, version, token])
 
   const setZoomLevel = (scheduleDuration: string) => {
@@ -150,40 +194,12 @@ const ScheduleTimeline: React.FunctionComponent<TimelineProps> = ({
       <Box display="flex" justifyContent="space-between">
         <Box className={classes.legend}>
           {schedFromDisplay?.sessions?.map((s, index) => (
-            <Tooltip
-              key={`session_${s.guid}`}
-              title={
-                <Box width="115px">
-                  {s.assessments?.map((assessment, index) => {
-                    return (
-                      <Box
-                        className={classes.assessmentBox}
-                        key={`assmnt_${assessment.guid}`}>
-                        <AssessmentImage
-                          resources={assessment.resources}
-                          variant="small"
-                          name={assessment.title}
-                          key={index}
-                          smallVariantProperties={{
-                            width: '100%',
-                            backgroundColor: '#F6F6F6',
-                          }}></AssessmentImage>
-                      </Box>
-                    )
-                  })}
-                </Box>
-              }
-              arrow
-              classes={{
-                tooltip: classes.toolTip,
-                arrow: classes.arrow,
-              }}>
-              <Box style={{cursor: 'pointer'}}>
-                <SessionIcon index={index} key={s.guid}>
-                  {getSession(s.guid!)?.label}
-                </SessionIcon>
-              </Box>
-            </Tooltip>
+            <TooltipHoverDisplay
+              key={s.guid}
+              session={s}
+              index={index}
+              getSession={getSession}
+            />
           ))}
         </Box>
         <BlackBorderDropdown

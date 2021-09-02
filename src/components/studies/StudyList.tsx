@@ -1,3 +1,4 @@
+import {useStudies, useUpdateStudyInList} from '@components/studies/studyHooks'
 import {
   Box,
   Button,
@@ -8,17 +9,21 @@ import {
   MenuItem,
 } from '@material-ui/core'
 import Link from '@material-ui/core/Link'
-import React, {FunctionComponent, useEffect} from 'react'
+import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import {RouteComponentProps} from 'react-router-dom'
-import {useAsync} from '../../helpers/AsyncHook'
+import {Redirect, RouteComponentProps} from 'react-router-dom'
 import {useUserSessionDataState} from '../../helpers/AuthContext'
 import {useStudyInfoDataDispatch} from '../../helpers/StudyInfoContext'
 import Utility from '../../helpers/utility'
 import StudyService from '../../services/study.service'
 import {latoFont} from '../../style/theme'
 import constants from '../../types/constants'
-import {AdminRole, Study, StudyPhase} from '../../types/types'
+import {
+  AdminRole,
+  DisplayStudyPhase,
+  Study,
+  StudyPhase,
+} from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import {MTBHeading} from '../widgets/Headings'
 import Loader from '../widgets/Loader'
@@ -26,13 +31,11 @@ import StudyCard from './StudyCard'
 
 type StudyListOwnProps = {}
 
-type SectionStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED'
-
 type StudySublistProps = {
-  status: SectionStatus
+  status: DisplayStudyPhase
   userRoles: AdminRole[]
   studies: Study[]
-  onAction: Function
+  onStudyCardClick: Function
   renameStudyId: string
   highlightedStudyId: string | null
   menuAnchor: {
@@ -41,14 +44,20 @@ type StudySublistProps = {
   } | null
 }
 
-type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME'
+type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME' | 'VIEW'
 
 const studyCardWidth = '290'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
+    width: '100%',
+    alignItems: 'center',
+    backgroundColor: '#F3EFE5',
+    height: '100%',
+    minHeight: 'calc(100vh - 104px)',
+    [theme.breakpoints.down('md')]: {
+      minHeight: '100vh',
+    },
   },
   studyContainer: {
     padding: theme.spacing(1),
@@ -57,8 +66,8 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('sm')]: {
       maxWidth: '600px',
     },
+    height: '100%',
   },
-
   cardGrid: {
     //const cardWidth = 300
     display: 'grid',
@@ -118,67 +127,67 @@ const useStyles = makeStyles(theme => ({
 
 const sections = [
   {
-    studyStatus: ['design', 'recruitment'] as StudyPhase[],
+    studyStatus: ['design'] as StudyPhase[],
     title: 'Draft Studies',
     filterTitle: 'Design',
-    sectionStatus: 'DRAFT' as SectionStatus,
+    sectionStatus: 'DRAFT' as DisplayStudyPhase,
   },
   {
-    studyStatus: ['in_flight'] as StudyPhase[],
+    studyStatus: ['in_flight', 'recruitment'] as StudyPhase[],
     title: 'Live Studies',
     filterTitle: 'Live',
-    sectionStatus: 'LIVE' as SectionStatus,
+    sectionStatus: 'LIVE' as DisplayStudyPhase,
   },
   {
     studyStatus: ['completed', 'analysis'] as StudyPhase[],
     title: 'Completed Studies',
     filterTitle: 'Completed',
-    sectionStatus: 'COMPLETED' as SectionStatus,
+    sectionStatus: 'COMPLETED' as DisplayStudyPhase,
   },
   {
     studyStatus: ['withdrawn'] as StudyPhase[],
     title: 'Withdrawn Studies',
     filterTitle: 'Withdrawn',
-    sectionStatus: 'WITHDRAWN' as SectionStatus,
+    sectionStatus: 'WITHDRAWN' as DisplayStudyPhase,
   },
 ]
 
 type StudyListProps = StudyListOwnProps & RouteComponentProps
 
+function getStudyLink(sectionStatus: DisplayStudyPhase, studyId: string) {
+  const links = {
+    builder: `${constants.restrictedPaths.STUDY_BUILDER}/session-creator`,
+    participants: constants.restrictedPaths.PARTICIPANT_MANAGER,
+  }
+
+  let link = undefined
+  if (sectionStatus === 'DRAFT') {
+    link = Utility.isPathAllowed(studyId, links.builder)
+      ? links.builder
+      : Utility.isPathAllowed(studyId, links.participants)
+      ? links.participants
+      : undefined
+  } else {
+    link = Utility.isPathAllowed(studyId, links.participants)
+      ? links.participants
+      : undefined
+  }
+  return link ? link.replace(':id', studyId) : '#'
+}
+
 const StudySublist: FunctionComponent<StudySublistProps> = ({
   studies,
   status,
   renameStudyId,
-  onAction,
+  onStudyCardClick,
   highlightedStudyId,
   menuAnchor,
-  userRoles,
 }: StudySublistProps) => {
   const classes = useStyles()
   const item = sections.find(section => section.sectionStatus === status)!
   const displayStudies = studies.filter(study =>
     item.studyStatus.includes(study.phase)
   )
-  const links = {
-    builder: `${constants.restrictedPaths.STUDY_BUILDER}/session-creator`,
-    participants: constants.restrictedPaths.PARTICIPANT_MANAGER,
-  }
-
-  function getStudyLink(sectionStatus: SectionStatus, studyId: string) {
-    let link = undefined
-    if (sectionStatus === 'DRAFT') {
-      link = Utility.isPathAllowed(studyId, links.builder)
-        ? links.builder
-        : Utility.isPathAllowed(studyId, links.participants)
-        ? links.participants
-        : undefined
-    } else {
-      link = Utility.isPathAllowed(studyId, links.participants)
-        ? links.participants
-        : undefined
-    }
-    return link ? link.replace(':id', studyId) : '#'
-  }
 
   if (!displayStudies.length) {
     return <></>
@@ -209,15 +218,15 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
             style={{textDecoration: 'none'}}
             key={study.identifier || index}
             variant="body2"
-            href={getStudyLink(status, study.identifier)}>
+            onClick={() => onStudyCardClick({...study}, 'VIEW')}>
             <StudyCard
               study={study}
               onRename={(newName: string) => {
-                onAction({...study, name: newName}, 'RENAME')
+                onStudyCardClick({...study, name: newName}, 'RENAME')
               }}
               isRename={renameStudyId === study.identifier}
               onSetAnchor={(e: HTMLElement) => {
-                onAction(study, 'ANCHOR', e)
+                onStudyCardClick(study, 'ANCHOR', e)
               }}
               isNewlyAddedStudy={highlightedStudyId === study.identifier}
               section={item.sectionStatus}
@@ -251,188 +260,113 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   }
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
 
-  const [statusFilters, setStatusFilters] = React.useState<SectionStatus[]>(
+  const [statusFilters, setStatusFilters] = React.useState<DisplayStudyPhase[]>(
     sections.map(section => section.sectionStatus)
   )
   const [highlightedStudyId, setHighlightedStudyId] = React.useState<
     string | null
   >(null)
+  const [redirectLink, setRedirectLink] = React.useState('')
 
   let resetNewlyAddedStudyID: NodeJS.Timeout
 
   const {
     data: studies,
-    status,
-    error,
-    run,
-    setData: setStudies,
-  } = useAsync<Study[]>({
-    status: 'PENDING',
-    data: [],
-  })
+    error: studyError,
+    isLoading: isStudyLoading,
+  } = useStudies()
+
+  const {mutate, isSuccess, isError, mutateAsync, data} = useUpdateStudyInList()
+
+  if (studyError) {
+    handleError(studyError)
+  }
 
   const resetStatusFilters = () =>
     setStatusFilters(sections.map(section => section.sectionStatus))
 
   const createStudy = async (study?: Study) => {
     //if study is provided -- we are duplicating
-    const id = Utility.generateNonambiguousCode(6, 'CONSONANTS')
-
-    const newStudy: Study = study
-      ? {
-          ...study!,
-          identifier: id,
-          version: 1,
-          name: `Copy of ${study!.name}`,
-          phase: 'design' as StudyPhase,
-          createdOn: new Date(),
-          modifiedOn: new Date(),
-        }
-      : {
-          identifier: id,
-          version: 1,
-          clientData: {},
-          phase: 'design' as StudyPhase,
-          name: constants.constants.NEW_STUDY_NAME,
-          signInTypes: [],
-          createdOn: new Date(),
-          modifiedOn: new Date(),
-        }
 
     if (study) {
-      //if we are duplicating
-      const studyFromServer = await StudyService.getStudy(
-        study.identifier,
-        token!
-      )
-      if (!studyFromServer) {
-        throw Error('No matching study found')
-      }
-      //if (studyFromServer?.scheduleGuid) {
-      // need to duplicate the schedule\
-      let scheduleToCopy
-      try {
-        scheduleToCopy = await StudyService.getStudySchedule(
-          studyFromServer.identifier,
-          token!
-        )
-      } catch (error) {
-        console.log(error, 'no schedule')
-      } //dont' do anything . no shcedule
-      if (scheduleToCopy) {
-        const copiedSchedule = await StudyService.createStudySchedule(
-          study.identifier,
-          scheduleToCopy,
-          token!
-        )
-
-        studyDataUpdateFn({
-          type: 'SET_SCHEDULE',
-          payload: {study: newStudy, schedule: copiedSchedule},
-        })
-      }
-    }
-
-    const version = await StudyService.createStudy(newStudy, token!)
-    newStudy.version = version
-    studyDataUpdateFn({
-      type: 'SET_STUDY',
-      payload: {study: newStudy},
-    })
-
-    //setStudies([...studies|| [], newStudy])
-    if (study) {
-      setHighlightedStudyId(id)
-      resetNewlyAddedStudyID = setTimeout(() => {
-        setHighlightedStudyId(null)
-      }, 2000)
+      mutateAsync({study, action: 'COPY'}).then(e => {
+        //@ts-ignore
+        const newStudy = e.study
+        //@ts-ignore
+        if (e.study) {
+          setHighlightedStudyId(newStudy.identifier)
+          resetNewlyAddedStudyID = setTimeout(() => {
+            setHighlightedStudyId(null)
+          }, 2000)
+        }
+      })
     } else {
-      if (newStudy) {
-        studyDataUpdateFn({
-          type: 'SET_STUDY',
-          payload: {study: newStudy},
-        })
-        window.location.replace(
-          `${window.location.origin}/studies/builder/${id}/session-creator`
-        )
-      } else {
-        handleError(new Error('Study was not created'))
+      const id = Utility.generateNonambiguousCode(6, 'CONSONANTS')
+      const newStudy = {
+        identifier: id,
+        version: 1,
+        clientData: {},
+        phase: 'design' as StudyPhase,
+        name: constants.constants.NEW_STUDY_NAME,
+        signInTypes: [],
+        createdOn: new Date(),
+        modifiedOn: new Date(),
       }
+
+      const version = await StudyService.createStudy(newStudy, token!)
+      newStudy.version = version
+      navigateToStudy(newStudy)
+    }
+  }
+
+  const navigateToStudy = (study?: Study) => {
+    if (study) {
+      const l = getStudyLink(
+        StudyService.getDisplayStatusForStudyPhase(study.phase),
+        study.identifier
+      )
+      studyDataUpdateFn({
+        type: 'SET_STUDY',
+        payload: {study: study},
+      })
+
+      setRedirectLink(l)
     }
   }
 
   const onAction = async (study: Study, type: StudyAction) => {
-    if (!token) {
-      return
-    }
     handleMenuClose()
     let result
     switch (type) {
       case 'RENAME':
-        const singleStudy = await StudyService.getStudy(
-          study?.identifier,
-          token
-        )
-        const newVersion = await StudyService.updateStudy(
-          {...singleStudy!, name: study.name},
-          token
-        )
-        setStudies(
-          studies!.map(s =>
-            s.identifier !== study.identifier
-              ? s
-              : {...study, version: newVersion}
-          )
-        )
-
+        await mutate({action: 'UPDATE', study: {...study, name: study.name}})
         setRenameStudyId('')
 
         return
 
       case 'DELETE':
-        result = await StudyService.removeStudy(study.identifier, token)
-        setStudies(result)
+        await mutate({action: 'DELETE', study: {...study, name: study.name}})
         return
 
       case 'DUPLICATE':
-        createStudy(study)
+        await createStudy(study)
         return
       default: {
+        console.log('unknow study acgtion')
       }
     }
   }
 
-  const isSelectedFilter = (filter: SectionStatus) =>
+  const isSelectedFilter = (filter: DisplayStudyPhase) =>
     statusFilters.indexOf(filter) > -1 && statusFilters.length === 1
 
-  useEffect(() => {
-    let isSubscribed = true
-    const getInfo = async () => {
-      if (isSubscribed) {
-        try {
-          //setIsLoading(true)
-          const studies = await StudyService.getStudies(token!)
-          if (isSubscribed) {
-            setStudies(studies)
-          }
-        } catch (e) {
-          handleError(e)
-        }
-      }
-    }
+  if (redirectLink) {
+    return <Redirect to={redirectLink} />
+  }
 
-    getInfo()
-
-    return () => {
-      isSubscribed = false
-    }
-  }, [token, highlightedStudyId])
-
-  if (!studies && status === 'RESOLVED') {
+  if (!studies && !isStudyLoading) {
     return (
       <div>
-        {' '}
-        {status}
         You currently have no studies created. To begin, please click on Create
         New Study.
       </div>
@@ -440,114 +374,133 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
   }
 
   return (
-    <Loader reqStatusLoading={status === 'PENDING' || !studies} variant="full">
-      <Container maxWidth="lg" className={classes.studyContainer}>
-        <Box display="flex" justifyContent="space-between">
-          <ul className={classes.filters} aria-label="filters">
-            <li className={classes.filterItem}>View by:</li>
-            <li className={classes.filterItem}>
-              <Button
-                onClick={resetStatusFilters}
-                style={{
-                  color: 'inherit',
-                  fontWeight: statusFilters.length > 1 ? 'bolder' : 'normal',
-                  fontFamily: 'Poppins',
-                }}>
-                All
-              </Button>
-            </li>
-            {sections.map(section => (
-              <li className={classes.filterItem} key={section.sectionStatus}>
+    <Loader reqStatusLoading={isStudyLoading || !studies} variant="full">
+      <Box className={classes.root}>
+        <Container maxWidth="lg" className={classes.studyContainer}>
+          <Box display="flex" justifyContent="space-between">
+            <ul className={classes.filters} aria-label="filters">
+              <li className={classes.filterItem}>View by:</li>
+
+              <li className={classes.filterItem}>
                 <Button
-                  onClick={() => setStatusFilters([section.sectionStatus])}
+                  onClick={resetStatusFilters}
                   style={{
                     color: 'inherit',
-                    fontWeight: isSelectedFilter(section.sectionStatus)
-                      ? 'bolder'
-                      : 'normal',
+                    fontWeight: statusFilters.length > 1 ? 'bolder' : 'normal',
                     fontFamily: 'Poppins',
                   }}>
-                  {section.filterTitle}
+                  All
                 </Button>
               </li>
+              {sections.map(section => (
+                <li className={classes.filterItem} key={section.sectionStatus}>
+                  <Button
+                    onClick={() => setStatusFilters([section.sectionStatus])}
+                    style={{
+                      color: 'inherit',
+                      fontWeight: isSelectedFilter(section.sectionStatus)
+                        ? 'bolder'
+                        : 'normal',
+                      fontFamily: 'Poppins',
+                    }}>
+                    {section.filterTitle}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+            <Button
+              disabled={
+                !Utility.isPathAllowed(
+                  'any',
+                  constants.restrictedPaths.STUDY_BUILDER
+                )
+              }
+              variant="contained"
+              onClick={() => createStudy()}
+              className={classes.createStudyButton}>
+              + Create New Study
+            </Button>
+          </Box>
+          <Divider className={classes.divider}></Divider>
+
+          {studies &&
+            studies.length > 0 &&
+            statusFilters.map((status, index) => (
+              <Box
+                style={{paddingBottom: index < 3 ? '24px' : '0'}}
+                key={status}>
+                <StudySublist
+                  userRoles={roles}
+                  studies={studies!}
+                  renameStudyId={renameStudyId}
+                  status={status}
+                  onStudyCardClick={(s: Study, action: StudyAction, e: any) => {
+                    switch (action) {
+                      case 'ANCHOR':
+                        setMenuAnchor({study: s, anchorEl: e})
+                        break
+                      case 'VIEW':
+                        handleMenuClose()
+                        navigateToStudy(s)
+                        break
+                      case 'RENAME':
+                        onAction(s, 'RENAME')
+                        break
+                      default:
+                        console.log('unknown study action')
+                    }
+                  }}
+                  highlightedStudyId={highlightedStudyId}
+                  menuAnchor={menuAnchor}
+                />
+              </Box>
             ))}
-          </ul>
-          <Button
-            disabled={
-              !Utility.isPathAllowed(
-                'any',
-                constants.restrictedPaths.STUDY_BUILDER
-              )
-            }
-            variant="contained"
-            onClick={() => createStudy()}
-            className={classes.createStudyButton}>
-            + Create New Study
-          </Button>
-        </Box>
-        <Divider className={classes.divider}></Divider>
 
-        {studies!.length > 0 &&
-          statusFilters.map((status, index) => (
-            <Box style={{paddingBottom: index < 3 ? '24px' : '0'}} key={status}>
-              <StudySublist
-                userRoles={roles}
-                studies={studies!}
-                renameStudyId={renameStudyId}
-                status={status}
-                onAction={(s: Study, action: StudyAction, e: any) => {
-                  action === 'ANCHOR'
-                    ? setMenuAnchor({study: s, anchorEl: e})
-                    : onAction(s, action)
-                }}
-                highlightedStudyId={highlightedStudyId}
-                menuAnchor={menuAnchor}
-              />
-            </Box>
-          ))}
-
-        <Menu
-          id="study-menu"
-          anchorEl={menuAnchor?.anchorEl}
-          keepMounted
-          open={Boolean(menuAnchor?.anchorEl)}
-          onClose={handleMenuClose}
-          classes={{paper: classes.paper, list: classes.list}}>
-          <MenuItem onClick={handleMenuClose}>View</MenuItem>
-          {menuAnchor?.study.phase === 'design' && (
-            <MenuItem
-              onClick={() => {
-                setRenameStudyId(menuAnchor?.study.identifier)
-                handleMenuClose()
-              }}>
-              Rename
+          <Menu
+            id="study-menu"
+            anchorEl={menuAnchor?.anchorEl}
+            keepMounted
+            open={Boolean(menuAnchor?.anchorEl)}
+            onClose={handleMenuClose}
+            classes={{paper: classes.paper, list: classes.list}}>
+            <MenuItem onClick={() => navigateToStudy(menuAnchor?.study)}>
+              View
             </MenuItem>
-          )}
+            {menuAnchor?.study.phase === 'design' && (
+              <MenuItem
+                onClick={() => {
+                  setRenameStudyId(menuAnchor?.study.identifier)
+                  handleMenuClose()
+                }}>
+                Rename
+              </MenuItem>
+            )}
 
-          <MenuItem onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>
-            Duplicate
-          </MenuItem>
+            <MenuItem onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>
+              Duplicate
+            </MenuItem>
 
-          <MenuItem onClick={() => setIsConfirmDeleteOpen(true)}>
-            Delete
-          </MenuItem>
-        </Menu>
+            <MenuItem onClick={() => setIsConfirmDeleteOpen(true)}>
+              Delete
+            </MenuItem>
+          </Menu>
 
-        <ConfirmationDialog
-          isOpen={isConfirmDeleteOpen}
-          title={'Delete Study'}
-          type={'DELETE'}
-          onCancel={closeConfirmationDialog}
-          onConfirm={() => {
-            closeConfirmationDialog()
-            onAction(menuAnchor!.study, 'DELETE')
-          }}>
-          <div>
-            Are you sure you would like to permanently delete:{' '}
-            <p>{menuAnchor?.study.name}</p>
-          </div>
-        </ConfirmationDialog>
-      </Container>
+          <ConfirmationDialog
+            isOpen={isConfirmDeleteOpen}
+            title={'Delete Study'}
+            type={'DELETE'}
+            onCancel={closeConfirmationDialog}
+            onConfirm={() => {
+              closeConfirmationDialog()
+              onAction(menuAnchor!.study, 'DELETE')
+            }}>
+            <div>
+              Are you sure you would like to permanently delete:{' '}
+              <p>{menuAnchor?.study.name}</p>
+            </div>
+          </ConfirmationDialog>
+        </Container>
+      </Box>
     </Loader>
   )
 }

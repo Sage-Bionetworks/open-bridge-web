@@ -1,3 +1,4 @@
+import Utility from '@helpers/utility'
 import {
   Box,
   createStyles,
@@ -7,103 +8,215 @@ import {
   Theme,
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Close'
+import {latoFont} from '@style/theme'
+import clsx from 'clsx'
 import _ from 'lodash'
-import React, {FunctionComponent} from 'react'
-import UtilityObject from '../../../helpers/utility'
-import {Schedule, SchedulingEvent} from '../../../types/scheduling'
-import {Study} from '../../../types/types'
-import EditableTextbox from '../../widgets/EditableTextbox'
+import React, {useEffect} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
+import {SchedulingEvent} from '../../../types/scheduling'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
-import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
+import {MTBHeadingH2} from '../../widgets/Headings'
 import {BlueButton} from '../../widgets/StyledComponents'
+import {useSchedule} from '../scheduleHooks'
+import {useStudy, useUpdateStudyDetail} from '../studyHooks'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      backgroundColor: '#fff',
-      padding: theme.spacing(13, 7, 3, 7),
-
-      /* paddingRight: theme.spacing(2),
-      fontFamily: poppinsFont,
-      fontSize: '18px',
-      fontStyle: 'normal',
-      fontWeight: 600,*/
+      backgroundColor: '#E5E5E5',
+      padding: theme.spacing(6, 7, 3, 7),
+    },
+    intialLoginContainer: {
+      backgroundColor: 'white',
+      padding: theme.spacing(1.75, 1),
+      maxWidth: '166px',
+    },
+    paragraphText: {
+      fontFamily: latoFont,
+      fontSize: '15px',
+      lineHeight: '18px',
+      '&:first-child': {
+        marginBottom: theme.spacing(4),
+      },
+      '&:last-child': {
+        fontStyle: 'italic',
+      },
+    },
+    exampleText: {
+      fontStyle: 'italic',
+      fontFamily: latoFont,
+      fontSize: '15px',
+      lineHeight: '18px',
+      maxWidth: '240px',
+      marginTop: theme.spacing(-0.5),
+    },
+    input: {
+      backgroundColor: 'white',
+      padding: theme.spacing(2, 1.25),
+      '&:focus': {
+        outline: 'none',
+      },
+      outline: 'none',
+    },
+    newEventButton: {
+      marginTop: theme.spacing(4),
+      marginLeft: theme.spacing(0),
+    },
+    errorText: {
+      color: 'red',
+      fontFamily: latoFont,
+      fontSize: '14px',
+      marginTop: theme.spacing(0.75),
+    },
+    calendarIcon: {
+      marginRight: theme.spacing(1),
+      width: '20px',
+      height: '20px',
+    },
+    errorTextbox: {
+      border: '1px solid red',
     },
   })
 )
 
 type SessionStartTabProps = {
-  schedule: Schedule
-  onUpdate: Function
-  onSave: Function
-  study: Study
-  // hasObjectChanged: boolean
-  //saveLoader: boolean
+  // schedule: Schedule
+
+  // study: Study
+  onNavigate: Function
+  id: string
 }
 
-const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
-  //hasObjectChanged,
-  //saveLoader,
-  onUpdate,
-  schedule,
-  onSave,
-  study,
-}: SessionStartTabProps) => {
+type LocalEventObject = SchedulingEvent & {
+  hasError: boolean
+  key: string
+}
+
+type SaveHandle = {
+  save: (a: number) => void
+}
+
+const SessionStartTab: React.ForwardRefRenderFunction<
+  SaveHandle,
+  SessionStartTabProps
+> = ({id, onNavigate}: SessionStartTabProps, ref) => {
   const classes = useStyles()
-  /* const [schedulingEvents, setSchedulingEvents] =
-    React.useState<SchedulingEvent[]>(events)*/
-  /*
-  const saveSession = async (sessionId: string) => {
-    onSave()
+
+  React.useImperativeHandle(ref, () => ({
+    save(step: number) {
+      onNavigate(step)
+    },
+  }))
+
+  const {data: study, error, isLoading} = useStudy(id)
+  const {data: schedule} = useSchedule(id)
+
+  const {
+    isSuccess: scheduleUpdateSuccess,
+    isError: scheduleUpdateError,
+    mutateAsync: mutateStudy,
+    data,
+  } = useUpdateStudyDetail()
+
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
+
+  const handleError = useErrorHandler()
+  const [saveLoader, setSaveLoader] = React.useState(false)
+
+  const onUpdate = async (events: SchedulingEvent[]) => {
+    if (!study) {
+      return
+    }
+    const cData = study.clientData
+    cData.events = events
+    let updatedStudy = {
+      ...study,
+      clientData: cData,
+    }
+    console.log('updating')
+    const x = await mutateStudy({study: updatedStudy})
+    console.log('studyUpdated')
   }
 
-  //setting new state
-  const updateData = (schedule: Schedule) => {
-    // setSchedule(schedule)
-    onUpdate(schedule)
-  }
+  const [localEventObjects, setLocalEventObjects] = React.useState<
+    LocalEventObject[]
+  >([])
 
-  //updating the schedule part
-  const updateSessionsWithStartEventId = (
-    sessions: StudySession[],
-    startEventId: StartEventId
-  ) => {
-    return sessions.map(s => ({...s, startEventId}))
-  }
+  useEffect(() => {
+    console.log('upd')
+    if (!study?.clientData?.events) return
+    const localEvents = study?.clientData.events!.map(element => {
+      return {
+        ...element,
+        hasError: false,
+        key: Utility.generateNonambiguousCode(8, 'NUMERIC'),
+      }
+    })
+    checkForDuplicateEventNames(localEvents)
+  }, [study?.clientData.events])
 
-  const scheduleUpdateFn = (action: SessionScheduleAction) => {
-    const sessions = actionsReducer(schedule.sessions, action)
-    const newSchedule = {...schedule, sessions}
-    updateData(newSchedule)
-  }*/
+  if (!study) {
+    return <></>
+  }
 
   const addEmptyEvent = () => {
     const newEvent: SchedulingEvent = {
-      label: 'Untitled',
-      identifier: UtilityObject.generateNonambiguousCode(9, 'NUMERIC'),
+      identifier: 'untitled',
       updateType: 'mutable',
     }
-
-    //  setSchedulingEvents(events => [...events, newEvent])
-    const newEvents = [...(study.clientData.events || []), newEvent]
-    onUpdate(undefined, newEvents)
+    const newEvents = [...transformLocalEventObjects(), newEvent]
+    onUpdate(newEvents)
   }
 
-  const updateEvent = (event: SchedulingEvent, newLabel: string) => {
-    const newEvents = (study.clientData.events || []).map(e =>
-      e.identifier !== event.identifier ? e : {...e, label: newLabel}
+  const transformLocalEventObjects = () => {
+    return localEventObjects.map(element => {
+      return {
+        identifier: element.identifier,
+        updateType: element.updateType,
+      }
+    })
+  }
+
+  const updateEvent = () => {
+    if (checkForDuplicateEventNames()) return
+    onUpdate(transformLocalEventObjects())
+  }
+
+  const checkForDuplicateEventNames = (arr?: LocalEventObject[]) => {
+    if (!study.clientData?.events) return false
+    const seenIdentifiers = new Map<string, LocalEventObject>()
+    const currentLocalEventObjects = [...(arr || localEventObjects)]
+    let foundError = false
+    for (let i = 0; i < currentLocalEventObjects.length; i++) {
+      const identifier = currentLocalEventObjects[i].identifier
+      if (seenIdentifiers.has(identifier)) {
+        foundError = true
+        currentLocalEventObjects[i].hasError = true
+        seenIdentifiers.get(identifier)!.hasError = true
+        continue
+      }
+      seenIdentifiers.set(identifier, currentLocalEventObjects[i])
+    }
+    setLocalEventObjects(currentLocalEventObjects)
+    return foundError
+  }
+
+  const deleteEvent = (index: number) => {
+    const newEvents: LocalEventObject[] = [...localEventObjects]
+    newEvents.splice(index, 1)
+    if (checkForDuplicateEventNames(newEvents)) return
+    onUpdate(
+      newEvents.map(el => {
+        return {
+          identifier: el.identifier,
+          updateType: el.updateType,
+        }
+      })
     )
-    onUpdate(undefined, newEvents)
   }
 
-  const deleteEvent = (eventIdentifier: string) => {
-    const newEvents = (study.clientData.events || []).filter(
-      e => e.identifier !== eventIdentifier
-    )
-    onUpdate(undefined, newEvents)
-  }
-
-  if (_.isEmpty(schedule.sessions)) {
+  if (_.isEmpty(schedule?.sessions)) {
     return (
       <Box textAlign="center" mx="auto">
         <ErrorDisplay>
@@ -113,62 +226,97 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
     )
   }
 
+  const isErrorPresent = () => {
+    return localEventObjects.findIndex(el => el.hasError) >= 0
+  }
+
+  const calendarIcon = (
+    <img src={CalendarIcon} className={classes.calendarIcon}></img>
+  )
   return (
     <Box className={classes.root}>
       <Box width="600px" mx="auto" textAlign="left">
-        <MTBHeadingH1>Session Start Dates</MTBHeadingH1>
-        <p>
-          Sessions in a study can be scheduled to start after a participant logs
-          into the study for the first time known as “Initial Log in” or by a
-          calendar date known as “Event” that are unique to each participant.
-          Once your study launches, you can specify these dates for each
-          participant in the Participant Manager tab.
+        <p className={classes.paragraphText}>
+          Sessions in a study can be scheduled to start{' '}
+          <strong>after a participant logs into the study</strong> for the first
+          time known as “Initial Log in” or by a <strong>calendar date</strong>{' '}
+          known as “Event” that are unique to each participant. Once your study
+          launches, you can specify these dates for each participant in the{' '}
+          <strong>Participant Manager tab.</strong>
         </p>
-
         <MTBHeadingH2>How will your session(s) start? </MTBHeadingH2>
-        <p>
-          You can add additional calendar Events and relabel <br />
-          them to make it easier to reference later.
+        <p className={classes.paragraphText}>
+          You can add additional calendar Events and{' '}
+          <strong>
+            relabel <br />
+            them to make it easier to reference later.
+          </strong>
         </p>
-        <Box display="flex">
-          <Box flexShrink={0} flexBasis={400} pl={8}>
+        <Box display="flex" justifyContent="flex-start" mt={3}>
+          <Box flexShrink={0} minWidth="200px" mr={2}>
             <>
-              Initial_Login
-              {(study.clientData.events || []).map(evt => (
-                <FormGroup
-                  row={true}
-                  style={{alignItems: 'center', marginTop: '21px'}}>
-                  {/*  <Checkbox checked={true} onChange={() => {}} name="checkedA" />*/}
-
-                  <EditableTextbox
-                    initValue={evt.label}
-                    onTriggerUpdate={(newLabel: string) =>
-                      updateEvent(evt, newLabel)
-                    }></EditableTextbox>
-
-                  <IconButton
-                    edge="end"
-                    size="small"
-                    onClick={() => deleteEvent(evt.identifier)}>
-                    <DeleteIcon></DeleteIcon>
-                  </IconButton>
-                </FormGroup>
+              <Box className={classes.intialLoginContainer}>Initial_Login</Box>
+              {localEventObjects.map((evt, index) => (
+                <Box display="block" key={evt.key}>
+                  <FormGroup
+                    row={true}
+                    key={evt.key}
+                    style={{alignItems: 'center', marginTop: '21px'}}>
+                    <input
+                      key={evt.key}
+                      value={evt.identifier}
+                      onChange={e => {
+                        const newIdentifiers = [...localEventObjects]
+                        newIdentifiers[index] = {
+                          ...newIdentifiers[index],
+                          identifier: e.target.value,
+                        }
+                        setLocalEventObjects(newIdentifiers)
+                      }}
+                      onBlur={updateEvent}
+                      className={clsx(
+                        classes.input,
+                        evt.hasError && classes.errorTextbox
+                      )}></input>
+                    <IconButton
+                      style={{marginLeft: '4px'}}
+                      edge="end"
+                      size="small"
+                      onClick={() => deleteEvent(index)}>
+                      <DeleteIcon
+                        style={{
+                          color: evt.hasError ? 'red' : 'black',
+                        }}></DeleteIcon>
+                    </IconButton>
+                  </FormGroup>
+                  {evt.hasError && (
+                    <Box className={classes.errorText}>
+                      Duplicate event identifier.
+                    </Box>
+                  )}
+                </Box>
               ))}
             </>
             <BlueButton
+              disabled={isErrorPresent()}
               variant="contained"
               onClick={addEmptyEvent}
-              style={{marginTop: '32px'}}>
+              className={classes.newEventButton}>
               + New Custom Event
             </BlueButton>
           </Box>
-          <Box>
-            An example Clinical Study might require 3 unique calendar events:
-            Event 1 = Baseline Visit
-            <br />
-            Event 2 = Follow-up Visit
-            <br />
-            Event 3 = Final Visit
+          <Box className={classes.exampleText}>
+            <Box mb={2}>
+              An example Clinical Study might require 3 unique calendar events:
+            </Box>
+            <Box mb={1} display="flex" mr={0.5}>
+              {calendarIcon}Event 1 = Baseline Visit
+            </Box>
+            <Box mb={1} display="flex" mr={0.5}>
+              {' '}
+              {calendarIcon}Event 2 = Follow-up Visit
+            </Box>
+            <Box display="flex"> {calendarIcon}Event 3 = Final Visit</Box>
           </Box>
         </Box>
       </Box>
@@ -176,4 +324,4 @@ const SessionStartTab: FunctionComponent<SessionStartTabProps> = ({
   )
 }
 
-export default SessionStartTab
+export default React.forwardRef(SessionStartTab)

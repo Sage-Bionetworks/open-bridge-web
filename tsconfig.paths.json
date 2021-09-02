@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "paths": {
+            "@components/*": [
+                "./components/*"
+            ],
+            "@assets/*": [
+                "./assets/*"
+            ],
+            "@helpers/*": [
+                "./helpers/*"
+            ],
+            "@services/*": [
+                "./services/*"
+            ],
+            "@typedefs/*": [
+                "./types/*"
+            ],
+            "@style/*": [
+                "./style/*"
+            ]
+        },
+        "baseUrl": "src",
+    },
+    "include": [
+        "src"
+    ]
+}

@@ -3,7 +3,7 @@ import _ from 'lodash'
 import moment from 'moment'
 import React, {FunctionComponent} from 'react'
 import Alert_Icon from '../../../assets/alert_icon.svg'
-import {DEFAULT_NOTIFICATION} from '../../../services/study.service'
+import {DEFAULT_NOTIFICATION} from '../../../services/schedule.service'
 import {latoFont, ThemeType} from '../../../style/theme'
 import {
   AssessmentWindow as AssessmentWindowType,
@@ -75,9 +75,6 @@ type notificationErrorArrayType = {
 const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSessionContainerProps> =
   ({studySession, onUpdateSessionSchedule, sessionErrorState}) => {
     const classes = useStyles()
-    if (studySession.name === 'Session1') {
-      console.log('studySession', studySession)
-    }
 
     const [schedulableSession, setSchedulableSession] =
       React.useState<SessionSchedule>(studySession || defaultSchedule)

@@ -13,18 +13,15 @@ import DefaultLogo from '../../../assets/logo_mtb.svg'
 import {useUserSessionDataState} from '../../../helpers/AuthContext'
 import Utility from '../../../helpers/utility'
 import StudyService from '../../../services/study.service'
-import {ThemeType} from '../../../style/theme'
+import {latoFont, ThemeType} from '../../../style/theme'
 import constants from '../../../types/constants'
-import {
-  Contact,
-  Study,
-  StudyBuilderComponentProps,
-  WelcomeScreenData,
-} from '../../../types/types'
+import {Contact, Study, WelcomeScreenData} from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
+import {useStudy, useUpdateStudyDetail} from '../studyHooks'
 import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
 import IrbBoardContactSection from './IrbBoardContactSection'
+import ReadOnlyAppDesign from './read-only-pages/ReadOnlyAppDesign'
 import SectionIndicator from './SectionIndicator'
 import StudyLeadInformationSection from './StudyLeadInformationSection'
 import StudyPageBottomPhoneContent from './StudyPageBottomPhoneContent'
@@ -34,7 +31,6 @@ import Subsection from './Subsection'
 import UploadStudyLogoSection from './UploadStudyLogoSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
-import ReadOnlyAppDesign from './read-only-pages/ReadOnlyAppDesign'
 
 const imgHeight = 70
 const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
@@ -181,6 +177,24 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
   studyPageTopBar: {
     backgroundColor: '#F6F6F6',
   },
+  hexcodeInput: {
+    marginLeft: theme.spacing(2),
+    width: '85px',
+    height: '30px',
+    padding: theme.spacing(0.5, 0.5),
+    fontSize: '15px',
+    fontFamily: latoFont,
+    '&:focus': {
+      outline: 'none',
+    },
+  },
+  hexcodeInputContainer: {
+    marginLeft: theme.spacing(-1),
+    marginTop: theme.spacing(-1.5),
+    display: 'flex',
+    fontSize: '15px',
+    alignItems: 'center',
+  },
 }))
 
 const SimpleTextInputStyles = {
@@ -205,10 +219,9 @@ export type PreviewFile = {
 }
 
 export interface AppDesignProps {
-  onSave: Function
-  study: Study
+  id: string
   onError: Function
-  isReadOnly: boolean
+  children: React.ReactNode
 }
 
 type ErrorStateType = {
@@ -301,7 +314,8 @@ export const WelcomeScreenDisplay: React.FunctionComponent<{
             classes.phoneBottom,
             classes.optionalDisclaimerTextOnPhone
           )}>
-          {study.clientData.welcomeScreenData?.useOptionalDisclaimer
+          {!study.clientData.welcomeScreenData?.isUsingDefaultMessage &&
+          study.clientData.welcomeScreenData?.useOptionalDisclaimer
             ? 'This is a research study and does not provide medical advice, diagnosis, or treatment'
             : ''}
         </Box>
@@ -416,20 +430,35 @@ export const getContactName = (name: string | undefined) => {
   return name && name !== DEFAULT_CONTACT_NAME ? name : ''
 }
 
-const AppDesign: React.FunctionComponent<
-  AppDesignProps & StudyBuilderComponentProps
-> = ({
-  hasObjectChanged,
-  saveLoader,
+export const isAppBackgroundColorValid = (currentColor: string | undefined) => {
+  if (!currentColor) return true
+  const s = new Option().style
+  s.color = currentColor || ''
+  return !!s.color
+}
+
+const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   children,
-  onUpdate,
-  onSave,
-  study,
   onError,
-  isReadOnly,
-}: AppDesignProps & StudyBuilderComponentProps) => {
+  id,
+}: AppDesignProps) => {
   const handleError = useErrorHandler()
   const params = Utility.getSearchParams(window.location.search)
+  const [study, setStudy] = React.useState<Study>()
+
+  const {data: sourceStudy, error, isLoading} = useStudy(id)
+
+  const {
+    isSuccess: scheduleUpdateSuccess,
+    isError: scheduleUpdateError,
+    mutateAsync: mutateStudy,
+    data,
+  } = useUpdateStudyDetail()
+
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
+
+  const [saveLoader, setSaveLoader] = React.useState(false)
+
   const showError = params.from !== undefined
   const anchor = params.anchor
 
@@ -438,22 +467,11 @@ const AppDesign: React.FunctionComponent<
   const classes = useStyles()
 
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
-  const [
-    irbNameSameAsInstitution,
-    setIrbNameSameAsInstitution,
-  ] = useState<boolean>(
-    getContact(study, 'irb')?.name ===
-      getContact(study, 'principal_investigator')?.affiliation
-  )
-  const [
-    generalContactPhoneNumber,
-    setGeneralContactPhoneNumber,
-  ] = React.useState(
-    formatPhoneNumber(getContact(study, 'study_support')?.phone?.number)
-  )
-  const [irbPhoneNumber, setIrbPhoneNumber] = React.useState(
-    formatPhoneNumber(getContact(study, 'irb')?.phone?.number)
-  )
+  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] =
+    useState<boolean>(false)
+  const [generalContactPhoneNumber, setGeneralContactPhoneNumber] =
+    React.useState('')
+  const [irbPhoneNumber, setIrbPhoneNumber] = React.useState('')
 
   const [phoneNumberErrorState, setPhoneNumberErrorState] = React.useState({
     isGeneralContactPhoneNumberValid: true,
@@ -466,6 +484,38 @@ const AppDesign: React.FunctionComponent<
   })
 
   const [errorState, setErrorState] = React.useState<ErrorStateType>({})
+
+  useEffect(() => {
+    setStudy(sourceStudy)
+    if (sourceStudy) {
+      setIrbNameSameAsInstitution(
+        getContact(sourceStudy, 'irb')?.name ===
+          getContact(sourceStudy, 'principal_investigator')?.affiliation
+      )
+      setGeneralContactPhoneNumber(
+        formatPhoneNumber(
+          getContact(sourceStudy, 'study_support')?.phone?.number
+        )
+      )
+
+      setIrbPhoneNumber(
+        formatPhoneNumber(getContact(sourceStudy, 'irb')?.phone?.number)
+      )
+
+      // Set the use default message property to true by default
+      const {welcomeScreenData} = sourceStudy.clientData
+      if (welcomeScreenData?.isUsingDefaultMessage === undefined) {
+        updateWelcomeScreenMessaging(
+          welcomeScreenData?.welcomeScreenHeader || '',
+          welcomeScreenData?.welcomeScreenBody || '',
+          welcomeScreenData?.welcomeScreenSalutation || '',
+          welcomeScreenData?.welcomeScreenFromText || '',
+          true,
+          true
+        )
+      }
+    }
+  }, [sourceStudy])
 
   useEffect(() => {
     setTimeout(() => {
@@ -522,8 +572,13 @@ const AppDesign: React.FunctionComponent<
     )
   }
 
+  const onUpdate = (updatedStudy: Study) => {
+    setHasObjectChanged(true)
+    setStudy({...updatedStudy})
+  }
+
   useEffect(() => {
-    if (!showError) return
+    if (!showError || !study) return
     const updatedErrorState = {} as ErrorStateType
     const contactLead = getContact(study, 'study_support')
     const principalInvestigator = getContact(study, 'principal_investigator')
@@ -552,16 +607,17 @@ const AppDesign: React.FunctionComponent<
     checkPhoneError(contactLead, irbRecord)
     checkEmailError(contactLead, irbRecord)
     setErrorState(updatedErrorState)
-  }, [study])
+  }, [study, showError])
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     event.persist()
-    if (!event.target.files) {
+    if (!event.target.files || !study) {
       return
     }
     setIsSettingStudyLogo(true)
     const file = event.target.files[0]
     const previewForImage = getPreviewForImage(file)
+
     try {
       const uploadResponse = await StudyService.editStudyLogo(
         study.identifier,
@@ -586,6 +642,21 @@ const AppDesign: React.FunctionComponent<
     }
   }
 
+  const onSave = async (study: Study) => {
+    console.log('start update from app resign')
+    try {
+      setSaveLoader(true)
+      await mutateStudy({
+        study: study,
+      })
+      setHasObjectChanged(false)
+    } catch (e) {
+      onError(e)
+    } finally {
+      setSaveLoader(false)
+    }
+  }
+
   const saveInfo = () => {
     const phoneNumberHasError =
       !phoneNumberErrorState.isGeneralContactPhoneNumberValid ||
@@ -594,14 +665,20 @@ const AppDesign: React.FunctionComponent<
       !emailErrorState.isGeneralContactEmailValid ||
       !emailErrorState.isIrbEmailValid
     // This is a placeholder until Lynn finalizes what the error state will look like
-    if (phoneNumberHasError || emailHasError) {
+    if (
+      phoneNumberHasError ||
+      emailHasError ||
+      !isAppBackgroundColorValid(study?.colorScheme?.background)
+    ) {
       alert(
         'Please make sure that all fields are entered in the correct format.'
       )
       return
     }
-    const updatedStudy = formatStudy(study)
-    onSave(updatedStudy)
+    if (study) {
+      const updatedStudy = formatStudy(study)
+      onSave(updatedStudy)
+    }
   }
 
   const formatStudy = (newStudy: Study) => {
@@ -631,12 +708,21 @@ const AppDesign: React.FunctionComponent<
 
   // This is the method without useCallback or debounce.
   const updateColor = (color: string) => {
+    if (!study) {
+      return
+    }
     const updatedStudy = {...study}
     updatedStudy.colorScheme = {
       ...updatedStudy.colorScheme,
       background: color,
     }
     handleUpdate(updatedStudy)
+  }
+
+  const getColor = () => {
+    const color = study?.colorScheme?.background
+    if (!color) return 'transparent'
+    return color === '#NaNNaNNaN' ? '' : color
   }
 
   const updateContacts = (
@@ -653,23 +739,13 @@ const AppDesign: React.FunctionComponent<
     return updatedContacts
   }
 
-  useEffect(() => {
-    // Set the use default message property to true by default
-    const {welcomeScreenData} = study.clientData
-    if (welcomeScreenData?.isUsingDefaultMessage === undefined) {
-      updateWelcomeScreenMessaging(
-        welcomeScreenData?.welcomeScreenHeader || '',
-        welcomeScreenData?.welcomeScreenBody || '',
-        welcomeScreenData?.welcomeScreenSalutation || '',
-        welcomeScreenData?.welcomeScreenFromText || '',
-        true
-      )
-    }
-  }, [])
-
   const getContactPersonObject = (type: ContactType): Contact => {
+    const defaultPerson = {role: type, name: DEFAULT_CONTACT_NAME}
+    if (!study) {
+      return defaultPerson
+    }
     const contact = getContact(study, type)
-    return contact || {role: type, name: DEFAULT_CONTACT_NAME}
+    return contact || defaultPerson
   }
 
   const updateWelcomeScreenMessaging = (
@@ -677,7 +753,8 @@ const AppDesign: React.FunctionComponent<
     welcomeScreenBody: string,
     welcomeScreenSalutation: string,
     welcomeScreenFromText: string,
-    useOptionalDisclaimer: boolean
+    useOptionalDisclaimer: boolean,
+    isUsingDefaultMessage?: boolean
   ) => {
     const newWelcomeScreenData = {
       welcomeScreenHeader: welcomeScreenHeader,
@@ -686,17 +763,24 @@ const AppDesign: React.FunctionComponent<
       welcomeScreenSalutation: welcomeScreenSalutation,
       useOptionalDisclaimer: useOptionalDisclaimer,
       isUsingDefaultMessage:
-        study.clientData.welcomeScreenData?.isUsingDefaultMessage || false,
+        !!study?.clientData.welcomeScreenData?.isUsingDefaultMessage ||
+        !!isUsingDefaultMessage,
     } as WelcomeScreenData
-    const updatedStudy = {...study}
-    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
-    handleUpdate(updatedStudy)
+    if (study) {
+      const updatedStudy = {...study}
+      updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
+      handleUpdate(updatedStudy)
+    }
   }
 
   const hasError = (errorProperty: keyof ErrorStateType) => {
     return showError && !!errorState[errorProperty]
   }
-  if (isReadOnly) {
+
+  if (!study) {
+    return <></>
+  }
+  if (StudyService.isStudyClosedToEdits(study)) {
     return (
       <ReadOnlyAppDesign
         children={children}
@@ -705,6 +789,8 @@ const AppDesign: React.FunctionComponent<
       />
     )
   }
+
+  const color = getColor()
 
   return (
     <>
@@ -759,9 +845,11 @@ const AppDesign: React.FunctionComponent<
                     }
                     const newWelcomeScreenData = {
                       ...currentWelcomeScreenData,
-                      isUsingDefaultMessage: !currentWelcomeScreenData.isUsingDefaultMessage,
+                      isUsingDefaultMessage:
+                        !currentWelcomeScreenData.isUsingDefaultMessage,
                     }
-                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
+                    updatedStudy.clientData.welcomeScreenData =
+                      newWelcomeScreenData
                     handleUpdate(updatedStudy)
                   }}></Switch>
               </Box>
@@ -780,17 +868,30 @@ const AppDesign: React.FunctionComponent<
                   studyLogoUrl={study.studyLogoUrl}
                   isSettingStudyLogo={isSettingStudyLogo}
                 />
-
+                <a id="hex-color-picker"></a>
                 <Subsection heading="Select background color">
                   <p>
                     Select a background color that matches your institution or
                     study to be seen beneath your logo.
                   </p>
                   <Box width="250px" height="230px" ml={-1.25}>
-                    <HexColorPicker
-                      color={study.colorScheme?.background || 'transparent'}
-                      onChange={updateColor}
-                    />
+                    <HexColorPicker color={color} onChange={updateColor} />
+                  </Box>
+                  <Box className={classes.hexcodeInputContainer}>
+                    Hexcode:
+                    <input
+                      className={classes.hexcodeInput}
+                      value={color === 'transparent' ? '' : color}
+                      onChange={event =>
+                        updateColor(event.target.value)
+                      }></input>
+                    {!isAppBackgroundColorValid(
+                      study.colorScheme?.background
+                    ) && (
+                      <Box ml={1.5} color="red">
+                        Please enter a valid hexcode
+                      </Box>
+                    )}
                   </Box>
                 </Subsection>
 
@@ -861,6 +962,7 @@ const AppDesign: React.FunctionComponent<
               />
               <a id="leadPI" />
               <StudyLeadInformationSection
+                studyIdentifier={study.identifier}
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 orgMembership={orgMembership}
                 token={token}

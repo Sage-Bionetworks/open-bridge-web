@@ -1,36 +1,40 @@
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import {Box, Button, Divider, FormControl, FormLabel} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
-import React, {ReactNode, useEffect} from 'react'
+import clsx from 'clsx'
+import React, {useEffect} from 'react'
 import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
+import LinkIcon from '../../../assets/link_icon.svg'
 import appStoreBtn from '../../../assets/preview/appStoreBtn.png'
 import googlePlayBtn from '../../../assets/preview/googlePlayBtn.png'
 import PhoneImg from '../../../assets/preview/preview_phone.svg'
 import {ReactComponent as PlayImg} from '../../../assets/preview/preview_play.svg'
+import AuthorizedIcon from '../../../assets/preview/reminder_of_use_authorization_icon.svg'
+import MedicalIcon from '../../../assets/preview/reminder_of_use_medical_icon.svg'
+import ProtectionIcon from '../../../assets/preview/reminder_of_use_protect_icon.svg'
 import SampleAssessmentDataImg from '../../../assets/preview/sample_assessment_data.svg'
+import ScheduleSessionsIcon from '../../../assets/preview/schedule_session_icon_no_padding.svg'
+import Utility from '../../../helpers/utility'
 import ParticipantService from '../../../services/participants.service'
 import {
   latoFont,
+  playfairDisplayFont,
   poppinsFont,
   ThemeType,
-  playfairDisplayFont,
 } from '../../../style/theme'
-import {StudySession} from '../../../types/scheduling'
 import {Assessment} from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
 import {ErrorFallback, ErrorHandler} from '../../widgets/ErrorHandler'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
-import {SimpleTextInput} from '../../widgets/StyledComponents'
-import Utility from '../../../helpers/utility'
-import MedicalIcon from '../../../assets/preview/reminder_of_use_medical_icon.svg'
-import AuthorizedIcon from '../../../assets/preview/reminder_of_use_authorization_icon.svg'
-import ProtectionIcon from '../../../assets/preview/reminder_of_use_protect_icon.svg'
-import ScheduleSessionsIcon from '../../../assets/preview/schedule_session_icon_no_padding.svg'
+import {PrevButton, SimpleTextInput} from '../../widgets/StyledComponents'
+import {useSchedule} from '../scheduleHooks'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
-    backgroundColor: '#fff',
+    backgroundColor: '#f7f7f7',
     padding: theme.spacing(0, 6, 7, 6),
     textAlign: 'left',
+    position: 'relative',
   },
   phone: {
     width: '145px',
@@ -79,6 +83,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       width: theme.spacing(17),
       flexShrink: 0,
     },
+    marginTop: theme.spacing(-1.5),
   },
   storeButtons: {
     display: 'flex',
@@ -87,6 +92,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       padding: 0,
       marginRight: theme.spacing(2),
     },
+    marginBottom: theme.spacing(1),
   },
   divider: {
     width: '100%',
@@ -127,7 +133,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     fontStyle: 'italic',
   },
   scheduleSessionReminderContainer: {
-    width: '415px',
+    width: '450px',
     height: '82px',
     border: '2px solid black',
     display: 'flex',
@@ -144,19 +150,44 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     '&:hover': {
       backgroundColor: 'transparent',
     },
+    fontSize: '15px',
+    fontFamily: latoFont,
+    marginTop: theme.spacing(-0.5),
   },
   scheduleSessionsIcon: {
     height: '16px',
     width: '16px',
     marginBottom: theme.spacing(-0.25),
   },
+  tosContainer: {
+    position: 'absolute',
+    top: '-60px',
+    right: '100px',
+  },
+  tosButton: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '48px',
+  },
+  linkIcon: {
+    marginRight: theme.spacing(1.5),
+    color: 'black',
+    height: '22px',
+  },
+  tosText: {
+    fontFamily: latoFont,
+    fontSize: '16px',
+    marginTop: theme.spacing(-0.25),
+    fontWeight: 'bold',
+  },
+  idLabel: {
+    fontWeight: 'bold',
+  },
 }))
 
 export interface PreviewProps {
-  children?: ReactNode
-  studyId: string
-  token: string
-  scheduleSessions: StudySession[]
+  id: string
 }
 
 const Reminder: React.FunctionComponent<{text: string; img: string}> = ({
@@ -172,13 +203,14 @@ const Reminder: React.FunctionComponent<{text: string; img: string}> = ({
   )
 }
 
-const Preview: React.FunctionComponent<PreviewProps> = ({
-  children,
-  studyId,
-  token,
-  scheduleSessions,
-}: PreviewProps) => {
+const Preview: React.FunctionComponent<PreviewProps> = ({id}: PreviewProps) => {
   const classes = useStyles()
+  const {token} = useUserSessionDataState()
+  const {
+    data: schedule,
+    error: scheduleError,
+    isLoading: isScheduleLoading,
+  } = useSchedule(id)
   const [testParticipantId, setTestParticipantId] = React.useState('')
 
   const [uniqueAssessments, setUniqueAssessments] = React.useState<
@@ -189,7 +221,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
 
   const getTestParticipantId = async () => {
     try {
-      const testId = await ParticipantService.addTestParticipant(studyId, token)
+      const testId = await ParticipantService.addTestParticipant(id, token!)
       setTestParticipantId(testId)
     } catch (e) {
       handleError(e!)
@@ -198,7 +230,10 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
 
   useEffect(() => {
     let allAssessments: Assessment[] = []
-    for (const session of scheduleSessions) {
+    if (!schedule) {
+      return
+    }
+    for (const session of schedule.sessions) {
       if (!session.assessments) continue
       allAssessments = allAssessments.concat(session.assessments)
     }
@@ -209,7 +244,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
       return [...arr, assessment]
     }, [] as Assessment[])
     setUniqueAssessments(uniqueAssessments)
-  }, [])
+  }, [schedule])
 
   const text = [
     'Only use the Mobile Toolbox for authorized purposes.',
@@ -221,6 +256,18 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
 
   return (
     <>
+      <Box className={classes.tosContainer}>
+        {!testParticipantId && (
+          <PrevButton
+            className={classes.tosButton}
+            variant="outlined"
+            color="primary"
+            onClick={() => {}}>
+            <img className={classes.linkIcon} src={LinkIcon}></img>
+            <Box className={classes.tosText}>Full terms of service</Box>
+          </PrevButton>
+        )}
+      </Box>
       {!testParticipantId ? (
         <div className={classes.root}>
           <Box
@@ -242,7 +289,11 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                 <Reminder key={index} text={text} img={icons[index]}></Reminder>
               ))}
             </Box>
-            <Box className={classes.scheduleSessionReminderContainer}>
+            <Box
+              className={clsx(
+                classes.scheduleSessionReminderContainer,
+                classes.reminderOfUseText
+              )}>
               <Box>
                 Please remember to customize your study schedule on&nbsp;
                 <img
@@ -282,22 +333,14 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                 <div className={classes.mtbApp}> Mobile Toolbox App</div>
               </div>
               <div>
-                <MTBHeadingH2>
-                  {' '}
-                  Preview your study on a mobile device
-                </MTBHeadingH2>
-                <p>Your draft study has been generated.</p>
-                <p>
-                  Please download and/or open the Mobile Toolbox App and login
-                  with the following credentials below.
+                <MTBHeadingH2>Preview your study</MTBHeadingH2>
+                <p className={classes.reminderOfUseText}>
+                  Your draft study has been generated.
                 </p>
-                <p>
-                  This login is only for preview purposes. There are no scores
-                  or data associated with this preview.
-                </p>
-                <p>
-                  To view a sample scoring for each assessment please view the
-                  Assessment Library.
+                <p className={classes.reminderOfUseText}>
+                  Please download and/or open the{' '}
+                  <strong>Mobile Toolbox App</strong> and login with the
+                  following credentials below.
                 </p>
                 <div className={classes.storeButtons}>
                   <Button>
@@ -307,18 +350,25 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                     <img src={googlePlayBtn} />
                   </Button>
                 </div>
+                <p className={classes.reminderOfUseText}>
+                  This is only for login purposes only.
+                </p>
                 <div className={classes.inputs}>
                   <FormControl component="div">
-                    <FormLabel component="label">Study ID:</FormLabel>
+                    <FormLabel component="label" className={classes.idLabel}>
+                      Study ID:
+                    </FormLabel>
                     <SimpleTextInput
                       multiline={false}
                       fullWidth={true}
-                      value={Utility.formatStudyId(studyId)}
+                      value={Utility.formatStudyId(id)}
                       readOnly></SimpleTextInput>
                   </FormControl>
 
                   <FormControl component="div">
-                    <FormLabel component="label">Temporary ID:</FormLabel>
+                    <FormLabel component="label" className={classes.idLabel}>
+                      Preview ID:
+                    </FormLabel>
                     <SimpleTextInput
                       multiline={false}
                       fullWidth={true}
@@ -353,7 +403,11 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                 {uniqueAssessments.map((assessment, index) => {
                   return (
                     <Box onClick={() => {}} mb={2}>
-                      <AssessmentSmall assessment={assessment} key={index} />
+                      <AssessmentSmall
+                        hasHover={false}
+                        assessment={assessment}
+                        key={index}
+                      />
                     </Box>
                   )
                 })}

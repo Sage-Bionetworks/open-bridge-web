@@ -1,15 +1,15 @@
+import motion from '@assets/passive-features/recorders_motion.svg'
+import noise from '@assets/passive-features/recorders_noise.svg'
+import weather from '@assets/passive-features/recorders_weather.svg'
+import {MTBHeadingH3} from '@components/widgets/Headings'
 import {Box, Switch} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import StudyService from '@services/study.service'
+import {latoFont, ThemeType} from '@style/theme'
+import {BackgroundRecorders} from '@typedefs/types'
 import React from 'react'
-import motion from '../../../assets/passive-features/recorders_motion.svg'
-import noise from '../../../assets/passive-features/recorders_noise.svg'
-import weather from '../../../assets/passive-features/recorders_weather.svg'
-import {latoFont, ThemeType} from '../../../style/theme'
-import {
-  BackgroundRecorders,
-  StudyBuilderComponentProps,
-} from '../../../types/types'
-import {MTBHeadingH3} from '../../widgets/Headings'
+import {useErrorHandler} from 'react-error-boundary'
+import {useStudy, useUpdateStudyDetail} from '../studyHooks'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -103,19 +103,54 @@ const sensors: Partial<RecorderInfo> = {
 }
 
 export interface PassiveFeaturesProps {
-  features?: BackgroundRecorders
-  isReadOnly?: boolean
+  id: string
+  children: React.ReactNode
 }
 
-const PassiveFeatures: React.FunctionComponent<
-  PassiveFeaturesProps & StudyBuilderComponentProps
-> = ({
-  features,
-  onUpdate,
-  isReadOnly,
+const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
+  id,
   children,
-}: PassiveFeaturesProps & StudyBuilderComponentProps) => {
+}) => {
   const classes = useStyles()
+  const {data: study, error, isLoading} = useStudy(id)
+
+  const {
+    isSuccess: scheduleUpdateSuccess,
+    isError: scheduleUpdateError,
+    mutateAsync: mutateStudy,
+    data,
+  } = useUpdateStudyDetail()
+
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
+
+  const handleError = useErrorHandler()
+  const [saveLoader, setSaveLoader] = React.useState(false)
+
+  const onUpdate = async (recorders: BackgroundRecorders) => {
+    if (!study) {
+      return
+    }
+    console.log('starting update from passive eatures')
+    const updatedStudy = {
+      ...study,
+    }
+
+    updatedStudy.clientData.backgroundRecorders = recorders
+    try {
+      const result = await mutateStudy({study: updatedStudy})
+    } catch (e) {
+      alert(e)
+    } finally {
+      console.log('finishing update')
+    }
+  }
+
+  if (!study) {
+    return <>...</>
+  }
+
+  const features: BackgroundRecorders =
+    study.clientData.backgroundRecorders || {}
 
   const PFSection = ({
     recorderType,
@@ -172,9 +207,10 @@ const PassiveFeatures: React.FunctionComponent<
       </div>
     )
   }
+  const isReadOnly = !StudyService.isStudyInDesign(study)
   const displayMotionSection = !isReadOnly || (isReadOnly && features?.motion)
   const displayMicrophoneSection =
-    !isReadOnly || (isReadOnly && features?.microphone)
+    !isReadOnly || (isReadOnly && features.microphone)
   const displayWeatherSection = !isReadOnly || (isReadOnly && features?.weather)
   return (
     <>

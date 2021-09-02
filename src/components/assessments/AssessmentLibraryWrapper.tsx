@@ -16,6 +16,14 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.default,
     /*paddingTop: theme.spacing(4),*/
     // margin: `0 ${theme.spacing(4)}px`,
+    minWidth: '1000px',
+    [theme.breakpoints.down('md')]: {
+      minWidth: '750px',
+    },
+    [theme.breakpoints.down('sm')]: {
+      maxWidth: '400px',
+    },
+    paddingTop: theme.spacing(3),
   },
   assessmentContainer: {
     padding: theme.spacing(1),
@@ -38,7 +46,6 @@ const useStyles = makeStyles(theme => ({
       justifyContent: 'center',
       gridRowGap: theme.spacing(4),
     },
-
     //   style={{ maxWidth: `${(300 + 8) * 5}px`, margin: '0 auto' }}
   },
 }))
@@ -55,11 +62,12 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
 
   return (
     <Box className={classes.root}>
-      <AssessmentLibraryFilter
+      {/* Filtering will not be present in the october release */}
+      {/* <AssessmentLibraryFilter
         tags={tags}
         assessments={assessments}
         onChangeTags={(tags: string[]) => onChangeTags(tags)}
-      />
+      /> */}
       <Container className={classes.assessmentContainer} maxWidth="xl">
         <Box className={classes.cardGrid}>{children}</Box>
       </Container>

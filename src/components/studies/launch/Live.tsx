@@ -1,14 +1,12 @@
+import {useStudy} from '@components/studies/studyHooks'
 import {Box, Button} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React from 'react'
 import {RouteComponentProps} from 'react-router'
+import {useParams} from 'react-router-dom'
 import confetti from '../../../assets/launch/confetti.svg'
 import LiveIcon from '../../../assets/live_study_icon.svg'
-import {
-  StudyInfoData,
-  useStudyInfoDataState,
-} from '../../../helpers/StudyInfoContext'
 import {
   latoFont,
   playfairDisplayFont,
@@ -78,8 +76,12 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 const Live: React.FunctionComponent<RouteComponentProps> =
   ({}: RouteComponentProps) => {
     const classes = useStyles()
-    const builderInfo: StudyInfoData = useStudyInfoDataState()
-    if (!builderInfo.study) {
+    let {id} = useParams<{
+      id: string
+    }>()
+
+    const {data: study, error: studyError} = useStudy(id)
+    if (!study) {
       return <></>
     }
     return (
@@ -91,7 +93,7 @@ const Live: React.FunctionComponent<RouteComponentProps> =
             </MTBHeadingH1>
             <MTBHeadingH1
               className={clsx(classes.congratsText, classes.liveText)}>
-              {builderInfo.study.name} officially live!
+              {study.name} officially live!
             </MTBHeadingH1>
             <img src={LiveIcon} className={classes.liveButton}></img>
             <p className={classes.enrollmentText}>
@@ -102,7 +104,7 @@ const Live: React.FunctionComponent<RouteComponentProps> =
               color="secondary"
               href={constants.restrictedPaths.PARTICIPANT_MANAGER.replace(
                 ':id',
-                builderInfo.study.identifier
+                study.identifier
               )}
               className={classes.enrollButton}>
               Enroll Participants

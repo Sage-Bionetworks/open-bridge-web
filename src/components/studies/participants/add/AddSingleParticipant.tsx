@@ -1,14 +1,15 @@
 // pick a date util library
 
+import {BlueButton} from '@components/widgets/StyledComponents'
 import {Box, CircularProgress} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
+import {SchedulingEvent} from '@typedefs/scheduling'
+import {EditableParticipantData, Phone} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
-import Utility from '../../../helpers/utility'
-import ParticipantService from '../../../services/participants.service'
-import {EditableParticipantData, Phone} from '../../../types/types'
-import {BlueButton} from '../../widgets/StyledComponents'
-import {AddParticipantForm} from './ParticipantForms'
+import Utility from '../../../../helpers/utility'
+import ParticipantService from '../../../../services/participants.service'
+import AddSingleParticipantForm from './AddSingleParticipantForm'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -17,6 +18,7 @@ const useStyles = makeStyles(theme => ({
 type AddSingleParticipantProps = {
   token: string
   isEnrolledById: boolean
+  customStudyEvents: SchedulingEvent[]
   onAdded: Function
   studyIdentifier: string
 }
@@ -35,11 +37,6 @@ export async function addParticipantByPhone(
   phone: Phone,
   options: EditableParticipantData
 ) {
-  /*if (!externalId) {
-    const studyPrefix = studyIdentifier.substr(0, 3)
-    externalId = `${generateNonambiguousCode(6)}-${studyPrefix}`
-  }*/
-
   await ParticipantService.addParticipant(studyIdentifier, token, {
     ...options,
     phone,
@@ -50,7 +47,7 @@ export async function addParticipantByPhone(
 const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
   onAdded,
   isEnrolledById,
-
+  customStudyEvents,
   token,
   studyIdentifier,
 }) => {
@@ -68,7 +65,7 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
     setIsLoading(true)
     let options: EditableParticipantData = {
       externalId: participant.externalId,
-      clinicVisitDate: participant.clinicVisitDate,
+      events: participant.events,
       note: participant.note,
     }
 
@@ -108,7 +105,8 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
         {isLoading && <CircularProgress size="2em" />}
         {error && <Alert color="error">{error}</Alert>}
       </Box>
-      <AddParticipantForm
+      <AddSingleParticipantForm
+        customStudyEvents={customStudyEvents}
         isEnrolledById={isEnrolledById}
         participant={participant}
         onChange={participant => {

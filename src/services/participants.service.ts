@@ -9,17 +9,9 @@ import {
   ParticipantActivityType,
   StringDictionary,
 } from '../types/types'
+import EventService from './event.service'
 
-export const CLINIC_EVENT_ID = 'clinic_visit'
-export const JOINED_EVENT_ID = 'first_sign_in'
-export const LINK_SENT_EVENT_ID = 'install_link_sent'
 export const EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING = 'withdrawn'
-
-export type ParticipantRelevantEvents = {
-  clinicVisitDate: string
-  joinedDate: string
-  smsDate: string
-}
 
 //formats participant in the format required by datagrid
 function mapWithdrawnParticipant(
@@ -32,6 +24,7 @@ function mapWithdrawnParticipant(
     id: p.participant.identifier,
     dateWithdrawn: p.withdrawnOn,
     withdrawalNote: p.withdrawalNote,
+    events: [],
     externalIds: {
       [studyIdentifier]: formatExternalId(studyIdentifier, p.externalId),
     },
@@ -48,58 +41,11 @@ export function formatExternalId(studyId: string, externalId: string) {
     return EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING
   }
   let forDisplay = externalId.replace(`:${studyId}`, '')
-  return forDisplay.length !== 6
+  return forDisplay
+  //AGENDEL - we are not formatting external ids any more 8/24
+  /*return forDisplay.length !== 6
     ? forDisplay
-    : `${forDisplay.substr(0, 3)}-${forDisplay.substr(3, 3)}`
-}
-
-// gets clinic visits and join events for participants with the specified ids
-async function getRelevantEventsForParticipants(
-  studyIdentifier: string,
-  token: string,
-  participantId: string[]
-): Promise<StringDictionary<ParticipantRelevantEvents>> {
-  //transform ids into promises
-  const promises = participantId.map(async pId => {
-    const endpoint = constants.endpoints.events
-      .replace(':studyId', studyIdentifier)
-      .replace(':userId', pId)
-
-    const apiCall = await Utility.callEndpoint<{items: any[]}>(
-      endpoint,
-      'GET',
-      {},
-      token
-    )
-    return {participantId: pId, apiCall: apiCall}
-  })
-
-  //execute promises and reduce array to dictionary object
-  return Promise.all(promises).then(result => {
-    const items = result.reduce((acc, item) => {
-      //clinic visits
-      const clinicVisitDate = item.apiCall.data.items.find(
-        event => event.eventId === `custom:${CLINIC_EVENT_ID}`
-      )
-      //joinedDate eventIds will change
-      let joinedDate = item.apiCall.data.items.find(
-        event => event.eventId === `custom:${JOINED_EVENT_ID}` //TODO: this will not be custom
-      )
-
-      let smsDate = item.apiCall.data.items.find(
-        event => event.eventId === `custom:${LINK_SENT_EVENT_ID}` //TODO: this will not be custom
-      )
-      return {
-        ...acc,
-        [item.participantId]: {
-          clinicVisitDate: clinicVisitDate?.timestamp || '',
-          joinedDate: joinedDate?.timestamp || '',
-          smsDate: smsDate?.timestamp || '',
-        },
-      }
-    }, {})
-    return items
-  })
+    : `${forDisplay.substr(0, 3)}-${forDisplay.substr(3, 3)}`*/
 }
 
 async function getAllPages<T>(
@@ -334,7 +280,11 @@ async function getAllParticipantsInEnrollmentType(
       [studyIdentifier, token, enrollmentType, includeTesters || false]
     )
   }
-  const endpoint = `${constants.endpoints.studies}/${studyIdentifier}/enrollments`
+
+  const endpoint = `${constants.endpoints.enrollments.replace(
+    ':studyId',
+    studyIdentifier
+  )}`
   const body = {
     enrollmentFilter: enrollmentType,
     includeTesters: includeTesters || false,
@@ -352,7 +302,10 @@ async function getNumEnrolledParticipants(
   studyIdentifier: string,
   token: string
 ) {
-  const endpoint = `${constants.endpoints.studies}/${studyIdentifier}/enrollments`
+  const endpoint = `${constants.endpoints.enrollments.replace(
+    ':studyId',
+    studyIdentifier
+  )}`
   const body = {
     enrollmentFilter: 'enrolled',
   }
@@ -568,11 +521,9 @@ async function addParticipant(
     appId: Utility.getAppId(),
   }
 
-  //if (options.phone) {
   data.phone = options.phone
   data.note = options.note
-  data.clinicVisitDate = options.clinicVisitDate
-  //}
+
   if (isTestUser) {
     data.dataGroups = ['test_user']
   }
@@ -593,17 +544,24 @@ async function addParticipant(
   )
 
   const userId = result.data.identifier
-
-  if (options.clinicVisitDate) {
+  //update custom evnts date
+  if (options.events) {
     const endpoint = constants.endpoints.events
       .replace(':studyId', studyIdentifier)
       .replace(':userId', userId)
-    const data = {
-      eventId: CLINIC_EVENT_ID,
-      timestamp: new Date(options.clinicVisitDate).toISOString(),
-    }
 
-    await Utility.callEndpoint<{identifier: string}>(endpoint, 'POST', data, token)
+    const updatePromises = options.events.map(e => {
+      const data = {
+        eventId: EventService.prefixCustomEventIdentifier(e.eventId),
+        timestamp: e.timestamp
+          ? new Date(e.timestamp).toISOString()
+          : undefined,
+      }
+      Utility.callEndpoint<{identifier: string}>(endpoint, 'POST', data, token)
+    })
+
+    const result = await Promise.all(updatePromises)
+    console.log(result.length)
   }
 
   return userId
@@ -614,12 +572,18 @@ async function addTestParticipant(
   studyIdentifier: string,
   token: string
 ): Promise<string> {
-  return addParticipant(
+  const participantId = Utility.generateNonambiguousCode(6)
+  await addParticipant(
     studyIdentifier,
     token,
-    {externalId: Utility.generateNonambiguousCode(6)},
+    {
+      externalId: participantId,
+      events: [],
+    },
+
     true
   )
+  return participantId
 }
 
 async function updateParticipantTimezone(
@@ -659,33 +623,12 @@ async function updateParticipantNote(
   const data = {
     note: note,
   }
-  await Utility.callEndpoint<ParticipantAccountSummary>(endpoint, 'POST', data, token)
-  return participantId
-}
-
-async function updateParticipantClinicVisit(
-  studyIdentifier: string,
-  token: string,
-  participantId: string,
-  clinicVisitDate?: Date
-) {
-  let eventEndpoint = constants.endpoints.events
-    .replace(':studyId', studyIdentifier)
-    .replace(':userId', participantId)
-
-  if (clinicVisitDate) {
-    // if we have clinicVisitDate - update it
-    const data = {
-      eventId: CLINIC_EVENT_ID,
-      timestamp: new Date(clinicVisitDate).toISOString(),
-    }
-
-    await Utility.callEndpoint<{identifier: string}>(eventEndpoint, 'POST', data, token)
-  } else {
-    // if it is empty - delete it
-    eventEndpoint = eventEndpoint + CLINIC_EVENT_ID
-    await Utility.callEndpoint<{identifier: string}>(eventEndpoint, 'DELETE', {}, token)
-  }
+  await Utility.callEndpoint<ParticipantAccountSummary>(
+    endpoint,
+    'POST',
+    data,
+    token
+  )
   return participantId
 }
 
@@ -699,7 +642,12 @@ async function getRequestInfoForParticipant(
     .replace(':studyId', studyIdentifier)
     .replace(':userId', participantId)
 
-  const info = await Utility.callEndpoint<{signedInOn: any}>(endpoint, 'GET', {}, token)
+  const info = await Utility.callEndpoint<{signedInOn: any}>(
+    endpoint,
+    'GET',
+    {},
+    token
+  )
   return info.data
 }
 
@@ -708,7 +656,7 @@ const ParticipantService = {
   addTestParticipant,
   deleteParticipant,
   formatExternalId,
-  getRelevantEventsForParticipants,
+  // getRelevantEventsForParticipants,
   getNumEnrolledParticipants,
   getAllParticipantsInEnrollmentType,
   getEnrollmentById,
@@ -718,9 +666,10 @@ const ParticipantService = {
   getRequestInfoForParticipant,
   updateParticipantGroup,
   updateParticipantNote,
-  updateParticipantClinicVisit,
+  // updateParticipantCustomEvents,
   withdrawParticipant,
-  updateParticipantTimezone,
+  //prefixCustomEventIdentifier,
+  //formatCustomEventIdForDisplay,
 }
 
 export default ParticipantService

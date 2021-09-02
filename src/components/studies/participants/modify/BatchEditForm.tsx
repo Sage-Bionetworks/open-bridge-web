@@ -1,8 +1,8 @@
-import React from 'react'
+import EditDialogTitle from '@components/studies/participants/modify/EditDialogTitle'
 import {Dialog} from '@material-ui/core'
-import {EditParticipantForm} from './ParticipantForms'
-import {EditDialogTitle} from './ParticipantTableGrid'
-import ParticipantService from '../../../services/participants.service'
+import ParticipantService from '@services/participants.service'
+import React from 'react'
+import EditParticipantForm from './EditParticipantForm'
 
 type BatchEditFormProps = {
   isEnrolledById: boolean
@@ -32,18 +32,19 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
     setIsLoading(true)
     let participantIds = selectedParticipants
     if (isAllSelected) {
-      const resultEnrolled = await ParticipantService.getAllParticipantsInEnrollmentType(
-        studyId,
-        token,
-        'enrolled',
-        false
-      )
+      const resultEnrolled =
+        await ParticipantService.getAllParticipantsInEnrollmentType(
+          studyId,
+          token,
+          'enrolled',
+          false
+        )
       const enrolledNonTestParticipants = resultEnrolled.items
       participantIds = enrolledNonTestParticipants.map(
         el => el.participant.identifier
       )
     }
-    if (note) {
+    /* if (note) {
       const promises = participantIds.map(async selectedParticipantId => {
         return await ParticipantService.updateParticipantNote(
           studyId,
@@ -64,7 +65,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
         )
       })
       await Promise.all(promises)
-    }
+    }*/
     onSetIsBatchEditOpen(false)
     setIsLoading(false)
     onToggleParticipantRefresh()
@@ -84,6 +85,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
         batchEdit
       />
       <EditParticipantForm
+        customStudyEvents={[]}
         isEnrolledById={isEnrolledById}
         onCancel={() => {
           onSetIsBatchEditOpen(false)

@@ -1,59 +1,53 @@
+import {Schedule} from '@typedefs/scheduling'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {
-  AssessmentWindow,
-  Schedule,
-  ScheduleNotification,
-  StartEventId,
-  StudySession,
-} from '../types/scheduling'
-import {FileRevision, Study} from '../types/types'
-import AssessmentService from './assessment.service'
+  DisplayStudyPhase,
+  FileRevision,
+  Study,
+  StudyPhase,
+} from '../types/types'
+import ScheduleService from './schedule.service'
 
 const StudyService = {
   editStudyLogo,
+  getDisplayStatusForStudyPhase,
   getStudies,
   getStudy,
+  isStudyInDesign,
+  isStudyClosedToEdits,
   createStudy,
+  copyStudy,
+  launchStudy,
   removeStudy,
   updateStudy,
-  createStudySchedule,
-  getStudySchedule,
-  getStudyScheduleTimeline,
-  saveStudySchedule,
-  createEmptyStudySession,
 }
 
-export const DEFAULT_NOTIFICATION: ScheduleNotification = {
-  notifyAt: 'after_window_start',
-  offset: undefined,
-  interval: undefined,
-  allowSnooze: true,
-  messages: [
-    {
-      subject: 'New Activities are Live',
-      message: 'Please complete',
-      lang: 'en',
-    },
-  ],
+function getDisplayStatusForStudyPhase(phase: StudyPhase): DisplayStudyPhase {
+  switch (phase) {
+    case 'design':
+      return 'DRAFT'
+    case 'in_flight':
+    case 'recruitment':
+      return 'LIVE'
+    case 'completed':
+    case 'analysis':
+      return 'COMPLETED'
+    default:
+      return 'WITHDRAWN'
+  }
 }
 
-function createEmptyStudySession(
-  startEventId: StartEventId,
-  name = 'Session1'
-) {
-  const defaultTimeWindow: AssessmentWindow = {
-    startTime: '08:00',
-  }
-  const studySession: StudySession = {
-    name: name,
-    startEventId,
-    timeWindows: [defaultTimeWindow],
-    performanceOrder: 'participant_choice',
-    assessments: [],
-    notifications: [{...DEFAULT_NOTIFICATION}],
-  }
-  return studySession
+function isStudyInDesign(study: Study) {
+  return study.phase === 'design'
+}
+
+function isStudyClosedToEdits(study: Study) {
+  return (
+    study.phase !== 'design' &&
+    study.phase !== 'recruitment' &&
+    study.phase !== 'in_flight'
+  )
 }
 
 async function editStudyLogo(
@@ -142,19 +136,46 @@ async function createStudy(study: Study, token: string): Promise<number> {
   return newVersion.data.version
 }
 
-async function createStudySchedule(
+async function copyStudy(
   studyId: string,
-  schedule: Schedule,
   token: string
-): Promise<Schedule> {
-  const result = await Utility.callEndpoint<Schedule>(
-    constants.endpoints.schedule.replace(':studyId', studyId),
-    'POST', // once we add things to the study -- we can change this to actual object
-    {...schedule, guid: undefined},
-    token
-  )
+): Promise<{study: Study; schedule?: Schedule}> {
+  // get original study
+  const studyToCopy = await getStudy(studyId, token)
+  if (!studyToCopy) {
+    throw Error('No matching study found')
+  }
 
-  return result.data
+  let scheduleToCopy = undefined
+  try {
+    scheduleToCopy = await ScheduleService.getSchedule(
+      studyToCopy.identifier,
+      token!
+    )
+  } catch (error) {
+    console.log(error, 'no schedule')
+  } //dont' do anything . no schedule
+  const newStudyId = Utility.generateNonambiguousCode(6, 'CONSONANTS')
+  const newStudy = {
+    ...studyToCopy,
+    identifier: newStudyId,
+    version: 1,
+    name: `Copy of ${studyToCopy.name}`,
+    phase: 'design' as StudyPhase,
+    createdOn: new Date(),
+    modifiedOn: new Date(),
+  }
+
+  await createStudy(newStudy, token)
+  let copiedSchedule
+  if (scheduleToCopy) {
+    copiedSchedule = await ScheduleService.createSchedule(
+      newStudyId,
+      scheduleToCopy,
+      token!
+    )
+  }
+  return {study: newStudy, schedule: copiedSchedule}
 }
 
 async function updateStudy(study: Study, token: string): Promise<number> {
@@ -193,86 +214,17 @@ async function removeStudy(studyId: string, token: string): Promise<Study[]> {
   return data
 }
 
-async function saveStudySchedule(
-  studyId: string,
-  schedule: Schedule,
-  token: string
-): Promise<Schedule> {
-  const scheduleEndpoint = constants.endpoints.schedule
-  try {
-    const response = await Utility.callEndpoint<Schedule>(
-      scheduleEndpoint.replace(':studyId', studyId),
-      'POST',
-      schedule,
-      token
-    )
-    return response.data
-  } catch (error) {
-    //we might need to retry if there is a verison mismatch
-    if (error.statusCode === 409) {
-      const updatedSchedule = await getStudySchedule(
-        schedule.guid,
-        token,
-        false
-      )
-      if (!updatedSchedule) {
-        throw 'No schedule found'
-      }
-      return saveStudySchedule(studyId, schedule, token)
-    } else {
-      throw error
-    }
-  }
-}
-
-async function addAssessmentResourcesToSchedule(
-  schedule: Schedule
-): Promise<Schedule> {
-  const assessmentData = await AssessmentService.getAssessmentsWithResources()
-  schedule.sessions.forEach(session => {
-    const assmntWithResources = session.assessments?.map(assmnt => {
-      assmnt.resources = assessmentData.assessments.find(
-        a => a.guid === assmnt.guid
-      )?.resources
-      return assmnt
-    })
-    session.assessments = assmntWithResources ? [...assmntWithResources] : []
-  })
-
-  return schedule
-}
-
-//returns scehdule and sessions
-async function getStudySchedule(
-  studyId: string,
-  token: string,
-  addResources = true
-): Promise<Schedule | undefined> {
-  const schedule = await Utility.callEndpoint<Schedule>(
-    constants.endpoints.schedule.replace(':studyId', studyId),
-    'GET',
+async function launchStudy(studyId: string, token: string): Promise<Study> {
+  await Utility.callEndpoint<{items: Study[]}>(
+    constants.endpoints.studyLaunch.replace(':id', studyId),
+    'POST',
     {},
     token
   )
-  if (!schedule) {
-    return undefined
+  const data = await getStudy(studyId, token)
+  if (!data) {
+    throw Error('No study found')
   }
-  return addResources
-    ? addAssessmentResourcesToSchedule(schedule.data)
-    : schedule.data
+  return data
 }
-
-async function getStudyScheduleTimeline(
-  studyId: string,
-  token: string
-): Promise<any | undefined> {
-  const result = await Utility.callEndpoint<any>(
-    constants.endpoints.scheduleTimeline.replace(':studyId', studyId),
-    'GET',
-    {},
-    token
-  )
-  return result.data
-}
-
 export default StudyService

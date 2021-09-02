@@ -1,7 +1,8 @@
 import {CssBaseline, ThemeProvider, Typography} from '@material-ui/core'
 import React, {useEffect} from 'react'
 import {ErrorBoundary} from 'react-error-boundary'
-import {BrowserRouter as Router} from 'react-router-dom'
+import {QueryClient, QueryClientProvider} from 'react-query'
+import {BrowserRouter as Router, Redirect} from 'react-router-dom'
 import './App.css'
 import AuthenticatedApp from './AuthenticatedApp'
 import {ErrorFallback, ErrorHandler} from './components/widgets/ErrorHandler'
@@ -63,18 +64,22 @@ const detectSSOCode = async (
           appId: Utility.getAppId(),
         },
       })
-
-      window.location.replace(`${window.location.origin}/studies`)
+      return true
+      // window.location.replace(`${window.location.origin}/studies`)
       // window.location.replace(env.redirect+'/study-editor')
     } catch (e) {
       alert(e.message)
+      return false
     }
   }
 }
 
+const queryClient = new QueryClient()
+
 function App() {
   const sessionData = useUserSessionDataState()
   const sessionUpdateFn = useUserSessionDataDispatch()
+  const [isRedirect, setIsRedirect] = React.useState(false)
   const token = sessionData.token
   useEffect(() => {
     let isSubscribed = true
@@ -99,7 +104,11 @@ function App() {
     }
   }, [token, sessionUpdateFn])
   useEffect(() => {
-    detectSSOCode(sessionUpdateFn, sessionData)
+    detectSSOCode(sessionUpdateFn, sessionData).then(result => {
+      if (result !== undefined) {
+        setIsRedirect(result)
+      }
+    })
   }, [sessionData.token, sessionUpdateFn, sessionData])
 
   return (
@@ -107,19 +116,22 @@ function App() {
       <Typography component={'div'}>
         <CssBaseline />
         <Router basename={process.env.PUBLIC_URL}>
-          <ErrorBoundary
-            FallbackComponent={ErrorFallback}
-            onError={ErrorHandler}>
-            {sessionData.token ? (
-              <StudyInfoDataProvider>
-                <AuthenticatedApp sessionData={sessionData} />
-              </StudyInfoDataProvider>
-            ) : (
-              <Loader reqStatusLoading={getCode() !== null}>
-                <UnauthenticatedApp appId={Utility.getAppId()} />
-              </Loader>
-            )}
-          </ErrorBoundary>
+          <QueryClientProvider client={queryClient}>
+            <ErrorBoundary
+              FallbackComponent={ErrorFallback}
+              onError={ErrorHandler}>
+              {isRedirect && <Redirect to={`/studies`}></Redirect>}
+              {sessionData.id ? (
+                <StudyInfoDataProvider>
+                  <AuthenticatedApp sessionData={sessionData} />
+                </StudyInfoDataProvider>
+              ) : (
+                <Loader reqStatusLoading={getCode() !== null}>
+                  <UnauthenticatedApp appId={Utility.getAppId()} />
+                </Loader>
+              )}
+            </ErrorBoundary>
+          </QueryClientProvider>
         </Router>
       </Typography>
     </ThemeProvider>

@@ -1,3 +1,4 @@
+import UserService from '@services/user.service'
 import {useState} from 'react'
 import CONSTANTS from '../types/constants'
 import {
@@ -159,6 +160,28 @@ const getAppId = () => {
     return CONSTANTS.constants.ARC_APP_ID
   } else {
     return CONSTANTS.constants.MTB_APP_ID
+  }
+}
+
+const redirectToSynapseLogin = () => {
+  // 'code' handling (from SSO) should be preformed on the root page, and then redirect to original route.
+  let code: URL | null | string = new URL(window.location.href)
+  // in test environment the searchParams isn't defined
+  const {searchParams} = code
+
+  if (!searchParams?.get('code')) {
+    let state = new Date().getTime().toString(32)
+
+    let array = []
+    array.push('response_type=code')
+    array.push('client_id=' + UserService.getOathEnvironment().client)
+    array.push('scope=openid')
+    array.push('state=' + encodeURIComponent(state))
+    array.push('redirect_uri=' + encodeURIComponent(document.location.origin))
+    array.push('claims=' + encodeURIComponent('{"id_token":{"userid":null}}'))
+    window.location.replace('https://signin.synapse.org/?' + array.join('&'))
+  } else {
+    console.log('has code')
   }
 }
 
@@ -328,35 +351,38 @@ const setBodyClass = (next?: string) => {
   }
 }
 
-// Format the studyId to take the form xxx-xxx
 const formatStudyId = (studyId: string) => {
-  if (studyId.length !== 6) return studyId
-  return studyId.substring(0, 3) + '-' + studyId.substring(3)
+  //AGENDEL: 8/18 we are just showing studyId without a dash
+  /*
+// Format the studyId to take the form xxx-xxx 
+if (studyId.length !== 6) return studyId
+  return studyId.substring(0, 3) + '-' + studyId.substring(3)*/
+  return studyId
 }
 
 const UtilityObject = {
-  formatStudyId: formatStudyId,
-  setBodyClass: setBodyClass,
-  isSignInById: isSignInById,
-  isPathAllowed: isPathAllowed,
-  isInAdminRole: isInAdminRole,
-  isValidEmail: isValidEmail,
-  isInvalidPhone: isInvalidPhone,
-  makePhone: makePhone,
-  generateNonambiguousCode: generateNonambiguousCode,
-  randomInteger: randomInteger,
-  bytesToSize: bytesToSize,
-  getEnumKeyByEnumValue: getEnumKeyByEnumValue,
-  getEnumKeys: getEnumKeys,
-  getRandomId: getRandomId,
-  useSessionStorage: useSessionStorage,
-  getAppId: getAppId,
-  getSearchParams: getSearchParams,
-  setSession: setSession,
-  clearSession: clearSession,
-  getSession: getSession,
-  callEndpoint: callEndpoint,
-  callEndpointXHR: callEndpointXHR,
+  formatStudyId,
+  setBodyClass,
+  isSignInById,
+  isPathAllowed,
+  isInAdminRole,
+  isValidEmail,
+  isInvalidPhone,
+  makePhone,
+  generateNonambiguousCode,
+  bytesToSize,
+  getEnumKeyByEnumValue,
+  getEnumKeys,
+  getRandomId,
+  useSessionStorage,
+  getAppId,
+  getSearchParams,
+  setSession,
+  clearSession,
+  getSession,
+  callEndpoint,
+  callEndpointXHR,
+  redirectToSynapseLogin,
 }
 
 export default UtilityObject
