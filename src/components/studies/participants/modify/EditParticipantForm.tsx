@@ -19,6 +19,7 @@ import EventService from '@services/event.service'
 import {SchedulingEvent} from '@typedefs/scheduling'
 import {EditableParticipantData, ParticipantEvent} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
+import TimezoneDropdown from '../TimezoneDropdown'
 
 const useStyles = makeStyles(theme => ({
   editForm: {
@@ -54,6 +55,9 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
   const [customParticipantEvents, setCustomParticipantEvents] = React.useState<
     ParticipantEvent[]
   >([])
+  const [currentTimeZone, setCurrentTimeZone] = React.useState(
+    participant.clientTimeZone || ''
+  )
 
   React.useEffect(() => {
     setCustomParticipantEvents(participant.events || [])
@@ -123,7 +127,12 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
                 }></DatePicker>
             ))}
           </>
-
+          <Box width="375px" mb={3}>
+            <TimezoneDropdown
+              currentValue={currentTimeZone}
+              onValueChange={setCurrentTimeZone}
+            />
+          </Box>
           <FormControl>
             <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
             <SimpleTextInput

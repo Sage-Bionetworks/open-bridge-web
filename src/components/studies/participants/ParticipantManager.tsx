@@ -456,8 +456,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const updateParticipant = async (
     participantId: string,
     note: string,
-    customEvents: ParticipantEvent[],
-    timeZone?: string
+    clientTimeZone: string,
+    customEvents: ParticipantEvent[]
   ) => {
     await ParticipantService.updateParticipantNote(
       study!.identifier,
@@ -471,16 +471,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       participantId,
       customEvents
     )
-    if (timeZone) {
-      console.log(timeZone, 'timezone')
-      // await ParticipantService.updateParticipantTimezone(
-      //   study!.identifier,
-      //   token!,
-      //   participantId
-      //   // timeZone
-      // )
-    }
-
     setRefreshParticipantsToggle(prev => !prev)
   }
 
@@ -831,11 +821,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       onUpdateParticipant={(
                         participantId: string,
                         note: string,
+                        clientTimeZone: string,
                         customEvents?: ParticipantEvent[]
                       ) =>
                         updateParticipant(
                           participantId,
                           note,
+                          clientTimeZone,
                           customEvents || []
                         )
                       }

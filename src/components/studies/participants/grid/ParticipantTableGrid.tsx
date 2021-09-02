@@ -481,8 +481,8 @@ export type ParticipantTableGridProps = {
   onUpdateParticipant: (
     pId: string,
     note: string,
-    customEvents: ParticipantEvent[],
-    timeZone?: string
+    clientTimeZone: string,
+    customEvents: ParticipantEvent[]
   ) => void
   onWithdrawParticipant: (participantId: string, note: string) => void
   children: React.ReactNode //paging control
@@ -634,10 +634,15 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             customStudyEvents={customStudyEvents}
             isEnrolledById={isEnrolledById}
             onCancel={() => setParticipantToEdit(undefined)}
-            onOK={(note: string, customEvents?: ParticipantEvent[]) => {
+            onOK={(
+              note: string,
+              clientTimeZone: string,
+              customEvents?: ParticipantEvent[]
+            ) => {
               onUpdateParticipant(
                 participantToEdit?.id!,
                 note,
+                clientTimeZone,
                 customEvents || []
               )
               setParticipantToEdit(undefined)
