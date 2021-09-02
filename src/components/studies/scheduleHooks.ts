@@ -32,17 +32,10 @@ export const useUpdateSchedule = () => {
   const update = async (props: {
     studyId: string
     schedule: Schedule
-    isPassive?: boolean
 
     action: 'UPDATE' | 'CREATE'
   }): Promise<Schedule> => {
-    const {studyId, schedule, action, isPassive} = props
-    if (isPassive) {
-      //  return Promise.resolve(study)
-      return new Promise((resolve, reject) => {
-        resolve(schedule)
-      })
-    }
+    const {studyId, schedule, action} = props
     if (action === 'UPDATE') {
       return ScheduleService.saveSchedule(studyId, schedule, token!)
     } else {
@@ -73,10 +66,8 @@ export const useUpdateSchedule = () => {
         }*/
     },
     onSettled: async (data, error, args) => {
-      if (!args.isPassive) {
-        queryClient.invalidateQueries(SCHEDULE_KEYS.detail(args.studyId))
-        queryClient.invalidateQueries(STUDY_KEYS.detail(args.studyId))
-      }
+      queryClient.invalidateQueries(SCHEDULE_KEYS.detail(args.studyId))
+      queryClient.invalidateQueries(STUDY_KEYS.detail(args.studyId))
     },
   })
 

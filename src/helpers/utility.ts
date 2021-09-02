@@ -145,16 +145,6 @@ const setSession = (data: UserSessionData) => {
   sessionStorage.setItem(CONSTANTS.constants.SESSION_NAME, JSON.stringify(data))
 }
 
-const getSearchParams = (search: string): Record<string, string> => {
-  const searchParamsProps: any = {}
-  // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams -- needs polyfill for ie11
-  const searchParams = new URLSearchParams(search)
-  searchParams.forEach((value, key) => {
-    searchParamsProps[key] = value
-  })
-  return searchParamsProps
-}
-
 const getAppId = () => {
   if (document.location.port === '3001') {
     return CONSTANTS.constants.ARC_APP_ID
@@ -376,7 +366,6 @@ const UtilityObject = {
   getRandomId,
   useSessionStorage,
   getAppId,
-  getSearchParams,
   setSession,
   clearSession,
   getSession,

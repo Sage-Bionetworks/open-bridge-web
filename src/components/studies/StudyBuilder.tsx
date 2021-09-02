@@ -128,12 +128,12 @@ export type SchedulerErrorType = {
 }
 
 const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
-  ({...otherProps}) => {
+  () => {
     const classes = useStyles()
     const {url, path} = useRouteMatch()
     console.log(`${url}`)
     console.log(`${path}`)
-    let {id, section} = useParams<{
+    let {id, section = 'session-creator'} = useParams<{
       id: string
       section: StudySection
     }>()
@@ -357,11 +357,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                       study &&
                       schedule && (
                         <Switch>
-                          <Route path={`/studies/builder/:id/session-creator`}>
-                            <SessionCreator id={id}>
-                              {navButtons}
-                            </SessionCreator>
-                          </Route>
                           <Route path={`/studies/builder/:id/scheduler`}>
                             <Scheduler id={id} onShowFeedback={showFeedback}>
                               {navButtonsArray}
@@ -393,6 +388,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                             <PassiveFeatures id={id}>
                               {navButtons}
                             </PassiveFeatures>
+                          </Route>
+                          <Route>
+                            <SessionCreator id={id}>
+                              {navButtons}
+                            </SessionCreator>
                           </Route>
                         </Switch>
                       )
