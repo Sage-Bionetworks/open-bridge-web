@@ -156,9 +156,11 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
               Cancel
             </DialogButtonSecondary>
             <DialogButtonPrimary
-              onClick={() =>
-                onOK(note, currentTimeZone, customParticipantEvents)
-              }
+              onClick={() => {
+                isBatchEdit
+                  ? onOK(currentTimeZone)
+                  : onOK(note, currentTimeZone, customParticipantEvents)
+              }}
               color="primary"
               autoFocus>
               Save Changes

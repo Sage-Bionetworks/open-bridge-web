@@ -166,7 +166,6 @@ async function getActiveParticipantById(
       {},
       token
     )
-    console.log('inside', result.data)
     return {
       ...result.data,
       externalId: formatExternalId(
