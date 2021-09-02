@@ -141,11 +141,16 @@ const EditCell: FunctionComponent<{
         return result as ParticipantEvent[]
       }
 
+      const getClientTimeZone = (column: string) => {
+        return params.getValue(params.id, column)?.toString() || ''
+      }
+
       const participant: EditableParticipantData = {
         events: getEvents('events'),
         note: getValString('note'),
         externalId: getValString('externalId'),
         phoneNumber: getValPhone('phone'),
+        clientTimeZone: getClientTimeZone('clientTimeZone'),
       }
 
       const event = await ParticipantService.getRequestInfoForParticipant(
@@ -267,7 +272,7 @@ function getDate(value: GridCellValue) {
 }
 
 function getTimezone(value: GridCellValue) {
-  return value ? 'hello' : undefined
+  return value ? value : ''
 }
 
 function getJoinedDateWithIcons(params: GridValueGetterParams) {
@@ -369,7 +374,12 @@ function getColumns(
       renderCell: renderCellExpand,
       flex: 2,
     },
-
+    {
+      field: 'clientTimeZone',
+      headerName: 'Time Zone',
+      valueGetter: params => getTimezone(params.value) || '-',
+      flex: 1,
+    },
     {
       field: 'joinedDate',
       renderHeader: () =>
@@ -459,7 +469,7 @@ function getColumns(
   participantColumns.splice(1, 0, editColumn)
 
   const eventInsertionIndex = participantColumns.findIndex(
-    column => column.field === 'joinedDate'
+    column => column.field === 'clientTimeZone'
   )
   participantColumns.splice(eventInsertionIndex, 0, ...customEventColumns)
   //participantColumns = [...participantColumns, ...customEventColumns]
@@ -481,8 +491,8 @@ export type ParticipantTableGridProps = {
   onUpdateParticipant: (
     pId: string,
     note: string,
-    clientTimeZone: string,
-    customEvents: ParticipantEvent[]
+    customEvents: ParticipantEvent[],
+    clientTimeZone?: string
   ) => void
   onWithdrawParticipant: (participantId: string, note: string) => void
   children: React.ReactNode //paging control
@@ -636,14 +646,14 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             onCancel={() => setParticipantToEdit(undefined)}
             onOK={(
               note: string,
-              clientTimeZone: string,
+              clientTimeZone?: string,
               customEvents?: ParticipantEvent[]
             ) => {
               onUpdateParticipant(
                 participantToEdit?.id!,
                 note,
-                clientTimeZone,
-                customEvents || []
+                customEvents || [],
+                clientTimeZone
               )
               setParticipantToEdit(undefined)
             }}

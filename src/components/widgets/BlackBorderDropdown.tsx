@@ -8,7 +8,7 @@ import {
 } from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import React from 'react'
-import {ThemeType} from '../../style/theme'
+import {poppinsFont, ThemeType} from '../../style/theme'
 import clsx from 'clsx'
 
 interface StyleProps {
@@ -156,26 +156,32 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
   )
 
   const searchableDropdown = (
-    <Autocomplete
-      id={id}
-      options={dropdown}
-      className={classes.root}
-      placeholder="hello"
-      renderInput={params => (
-        <TextField
-          className={classes.listPadding}
-          {...params}
-          label="Participant Time Zone"
-          variant="outlined"
-        />
-      )}
-      getOptionLabel={option => option.label}
-      classes={{paper: classes.listBorder, input: classes.input}}
-      onChange={(event, newValue) => {
-        if (!searchableOnChange) return
-        searchableOnChange(newValue?.value || '')
-      }}
-    />
+    <Box>
+      <Box style={{fontSize: '14px', fontFamily: poppinsFont}}>
+        Participant Time Zone
+      </Box>
+      <Autocomplete
+        value={{value: value, label: value}}
+        id={id}
+        options={dropdown}
+        className={classes.root}
+        placeholder="Time Zones"
+        renderInput={params => (
+          <TextField
+            className={classes.listPadding}
+            {...params}
+            label=""
+            variant="outlined"
+          />
+        )}
+        getOptionLabel={option => option.label}
+        classes={{paper: classes.listBorder, input: classes.input}}
+        onChange={(event, newValue) => {
+          if (!searchableOnChange) return
+          searchableOnChange(newValue?.value || '')
+        }}
+      />
+    </Box>
   )
 
   return <Box>{isSearchable ? searchableDropdown : selectMenu}</Box>

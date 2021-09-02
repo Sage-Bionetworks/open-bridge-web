@@ -23,14 +23,13 @@ const TimezoneDropdown: React.FunctionComponent<{
     return timezoneInfoArray
   }
   const timezones = React.useMemo(getAllTimezones, [])
-
   return (
     <SaveBlackBorderDropdown
       width="100%"
       dropdown={timezones}
       searchableOnChange={(event: string) => onValueChange(event)}
       emptyValueLabel="Select a timezone"
-      value={currentValue}
+      value={currentValue === '-' ? '' : currentValue}
       itemHeight="48px"
       isSearchable={true}
       onChange={() => {}}
