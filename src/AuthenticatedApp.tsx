@@ -5,11 +5,11 @@ import {useStudyInfoDataDispatch} from '@helpers/StudyInfoContext'
 import React, {FunctionComponent, ReactNode} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {
-  matchPath,
   Route,
   RouteComponentProps,
   Switch,
   useParams,
+  withRouter,
 } from 'react-router-dom'
 import './App.css'
 import StudyTopNav from './components/studies/StudyTopNav'
@@ -17,17 +17,6 @@ import TopNav from './components/widgets/AppTopNav'
 import Utility from './helpers/utility'
 import PrivateRoutes from './routes_private'
 import {UserSessionData} from './types/types'
-
-const getParams = (pathname: string): {id?: string; section?: string} => {
-  const path = `/studies/${
-    pathname.includes('builder') ? 'builder/' : ''
-  }:id/:section`
-  const matchProfile = matchPath(pathname, {
-    path,
-  })
-
-  return (matchProfile && matchProfile.params) || {}
-}
 
 const Wrapper: FunctionComponent<
   RouteComponentProps & {sessionData: UserSessionData; children: ReactNode}
@@ -45,7 +34,6 @@ const Wrapper: FunctionComponent<
   }
 
   React.useEffect(() => {
-    console.log('section change detected')
     Utility.setBodyClass(studySection)
   }, [studySection])
   React.useEffect(() => {
@@ -74,12 +62,18 @@ const Wrapper: FunctionComponent<
   )
 }
 
-const AuthenticatedApp: FunctionComponent<{
-  sessionData: UserSessionData
-}> = ({sessionData}) => {
-  const {token, orgMembership} = useUserSessionDataState()
+const AuthenticatedApp: FunctionComponent<
+  {
+    sessionData: UserSessionData
+  } & RouteComponentProps
+> = ({sessionData, location, match}) => {
+  const {token} = useUserSessionDataState()
 
   if (!token) {
+    //save location and redirect
+    if (location.pathname !== '/') {
+      sessionStorage.setItem('location', location.pathname)
+    }
     Utility.redirectToSynapseLogin()
   }
   return (
@@ -102,4 +96,4 @@ const AuthenticatedApp: FunctionComponent<{
   )
 }
 
-export default AuthenticatedApp
+export default withRouter(AuthenticatedApp)

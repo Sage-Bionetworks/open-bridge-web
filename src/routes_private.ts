@@ -25,7 +25,7 @@ export default [
     path: constants.restrictedPaths.STUDY_BUILDER,
     name: '',
     Component: StudyBuilder,
-    exact: true,
+    //exact: true,
   },
   {
     path: `${constants.restrictedPaths.STUDY_BUILDER}/:section`,

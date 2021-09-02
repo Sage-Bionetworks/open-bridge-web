@@ -150,7 +150,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
 }: StudyTopNavProps) => {
   const allLinks: {path: string; name: string; status: StudyPhase[]}[] = [
     {
-      path: `${constants.restrictedPaths.STUDY_BUILDER}/session-creator`,
+      path: `${constants.restrictedPaths.STUDY_BUILDER}`,
       name: 'STUDY BUILDER',
       status: ['design', 'in_flight', 'recruitment'],
     },
