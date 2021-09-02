@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     '&:hover': {
       backgroundColor: '#f7f7f7',
     },
+    height: '48px',
   },
   studyBuilderListItem: {
     color: theme.palette.action.active,
@@ -116,7 +117,6 @@ const SideBarListItem: React.FunctionComponent<SideBarListItemProps> = ({
         classes={{label: classes.linkLabel}}>
         {children}
       </Button>
-      )
     </li>
   )
 }
