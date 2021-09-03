@@ -147,8 +147,8 @@ async function uploadCsvRow(
   }))
 
   const options: EditableParticipantData = {
-    externalId: data['externalId'],
-    note: data['note'],
+    externalId: data['externalId']?.toString(),
+    note: data['note']?.toString(),
     events: pEvents,
   }
 
@@ -160,10 +160,14 @@ async function uploadCsvRow(
       result = await addParticipantById(studyIdentifier, token, options)
     }
   } else {
-    if (!data['phoneNumber'] || Utility.isInvalidPhone(data['phoneNumber'])) {
+    const phoneNumber = data['phoneNumber']?.toString()
+    if (!phoneNumber) {
       throw new Error('need phone')
+    }
+    if (Utility.isInvalidPhone(phoneNumber)) {
+      throw new Error('phone is in invalid format')
     } else {
-      const phone = Utility.makePhone(data['phoneNumber'])
+      const phone = Utility.makePhone(phoneNumber)
       result = await addParticipantByPhone(
         studyIdentifier,
         token,

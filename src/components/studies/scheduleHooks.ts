@@ -1,6 +1,7 @@
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import ScheduleService from '@services/schedule.service'
 import {Schedule} from '@typedefs/scheduling'
+import {ExtendedError} from '@typedefs/types'
 import {useMutation, useQuery, useQueryClient} from 'react-query'
 import {STUDY_KEYS} from './studyHooks'
 
@@ -15,7 +16,7 @@ const SCHEDULE_KEYS = {
 export const useSchedule = (studyId: string | undefined) => {
   const {token} = useUserSessionDataState()
 
-  return useQuery<Schedule | undefined, Error>(
+  return useQuery<Schedule | undefined, ExtendedError>(
     SCHEDULE_KEYS.detail(studyId),
     () => ScheduleService.getSchedule(studyId!, token!),
     {
