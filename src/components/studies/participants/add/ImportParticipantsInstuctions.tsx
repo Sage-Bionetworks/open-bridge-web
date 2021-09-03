@@ -1,11 +1,11 @@
+import {ReactComponent as DownloadIcon} from '@assets/download.svg'
 import {Box, makeStyles} from '@material-ui/core'
 import EventService from '@services/event.service'
 import {SchedulingEvent} from '@typedefs/scheduling'
 import React, {FunctionComponent} from 'react'
 import {jsonToCSV} from 'react-papaparse'
-import {ReactComponent as DownloadIcon} from '../../../../assets/download.svg'
-import ParticipantDownloadTrigger from '../download/ParticipantDownloadTrigger'
-import ParticipantUtility from '../participantUtility'
+import CsvUtility from '../csv/csvUtility'
+import ParticipantDownloadTrigger from '../csv/ParticipantDownloadTrigger'
 //import { EnrollmentType } from '../../../types/types'
 
 const useStyles = makeStyles(theme => ({
@@ -35,7 +35,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
   >(undefined)
 
   const createDownloadTemplate = async () => {
-    const templateData = ParticipantUtility.getDownloadTemplateRow(
+    const templateData = CsvUtility.getDownloadTemplateRow(
       isEnrolledById,
       studyEvents
     )
@@ -47,7 +47,6 @@ const ImportParticipantsInstructions: FunctionComponent<{
     // get the fake link
     const fileObjUrl = URL.createObjectURL(blob)
     setFileDownloadUrl(fileObjUrl)
-    // setLoadingIndicators({isDownloading: false})
   }
 
   const instructionItems = studyEvents.map((evt, i) => (
