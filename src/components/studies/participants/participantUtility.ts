@@ -96,8 +96,6 @@ async function getParticipants(
 }
 
 const ParticipantUtility = {
-  // getParticipantDataForDownload,
-
   getParticipants,
 }
 
