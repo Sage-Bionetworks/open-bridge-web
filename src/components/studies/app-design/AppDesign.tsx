@@ -459,7 +459,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
 
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [saveLoader, setSaveLoader] = React.useState(false)
-  const showError = params.get('from') !== undefined
+  const showError = params.get('from') !== null
   const anchor = params.get('anchor') || ''
   const {token, orgMembership} = useUserSessionDataState()
   const classes = useStyles()
