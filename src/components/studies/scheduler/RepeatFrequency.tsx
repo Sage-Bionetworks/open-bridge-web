@@ -22,10 +22,7 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
   return (
     <SchedulingFormSection
       label={'Run this session every:'}
-      style={{
-        opacity: disabled ? 0.3 : 1,
-        pointerEvents: disabled ? 'none' : 'all',
-      }}>
+      disabled={disabled}>
       <FormControlLabel
         style={{
           marginLeft: '0',
