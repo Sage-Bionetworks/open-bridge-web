@@ -141,16 +141,12 @@ const EditCell: FunctionComponent<{
         return result as ParticipantEvent[]
       }
 
-      const getClientTimeZone = (column: string) => {
-        return params.getValue(params.id, column)?.toString() || ''
-      }
-
       const participant: EditableParticipantData = {
         events: getEvents('events'),
         note: getValString('note'),
         externalId: getValString('externalId'),
         phoneNumber: getValPhone('phone'),
-        clientTimeZone: getClientTimeZone('clientTimeZone'),
+        clientTimeZone: getValString('clientTimeZone'),
       }
 
       const event = await ParticipantService.getRequestInfoForParticipant(
