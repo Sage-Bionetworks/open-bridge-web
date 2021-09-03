@@ -224,6 +224,17 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
       updateSessionSchedule(newState)
     }
 
+    const handleEndDateChange = (occurrences: number | undefined) => {
+      const newSessionSchedule = {
+        ...schedulableSession,
+        occurrences: occurrences,
+      }
+      if (occurrences == 1) {
+        newSessionSchedule.interval = undefined
+      }
+      updateSessionSchedule(newSessionSchedule)
+    }
+
     return (
       <Box bgcolor="#F8F8F8" flexGrow="1" pb={0} pl={4}>
         {sessionErrorState && sessionErrorState.generalErrorMessage.length > 0 && (
@@ -257,16 +268,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
           <Box className={classes.formSection}>
             <EndDate
               occurrences={schedulableSession.occurrences}
-              onChange={(occurrences: number | undefined) => {
-                const newSessionSchedule = {
-                  ...schedulableSession,
-                  occurrences: occurrences,
-                }
-                if (occurrences == 1) {
-                  newSessionSchedule.interval = undefined
-                }
-                updateSessionSchedule(newSessionSchedule)
-              }}></EndDate>
+              onChange={handleEndDateChange}></EndDate>
           </Box>
           <Box className={classes.formSection}>
             <RepeatFrequency
