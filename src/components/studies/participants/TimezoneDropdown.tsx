@@ -33,6 +33,7 @@ const TimezoneDropdown: React.FunctionComponent<{
       itemHeight="48px"
       isSearchable={true}
       onChange={() => {}}
+      searchableDescription={'Participant Time Zone'}
     />
   )
 }

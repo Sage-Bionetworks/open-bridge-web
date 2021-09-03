@@ -90,6 +90,7 @@ export interface BlackBorderDropdownStyleProps {
   hasError?: boolean
   searchableOnChange?: Function
   isSearchable?: boolean
+  searchableDescription?: string
 }
 
 const SaveBlackBorderDropdown: React.FunctionComponent<
@@ -105,6 +106,7 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
   hasError,
   searchableOnChange,
   isSearchable,
+  searchableDescription,
   ...other
 }) => {
   const classes = useStyles({width, itemHeight})
@@ -158,7 +160,7 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
   const searchableDropdown = (
     <Box>
       <Box style={{fontSize: '14px', fontFamily: poppinsFont}}>
-        Participant Time Zone
+        {searchableDescription || ''}
       </Box>
       <Autocomplete
         value={{value: value, label: value}}
