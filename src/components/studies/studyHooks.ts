@@ -1,6 +1,6 @@
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import StudyService from '@services/study.service'
-import {Study} from '@typedefs/types'
+import {ExtendedError, Study} from '@typedefs/types'
 import {useMutation, useQuery, useQueryClient} from 'react-query'
 
 export const STUDY_KEYS = {
@@ -14,7 +14,7 @@ export const STUDY_KEYS = {
 export const useStudy = (studyId: string | undefined) => {
   const {token} = useUserSessionDataState()
 
-  return useQuery<Study | undefined, Error>(
+  return useQuery<Study | undefined, ExtendedError>(
     STUDY_KEYS.detail(studyId),
     () => StudyService.getStudy(studyId!, token!),
     {
@@ -28,7 +28,7 @@ export const useStudy = (studyId: string | undefined) => {
 export const useStudies = () => {
   const {token} = useUserSessionDataState()
 
-  return useQuery<Study[], Error>(
+  return useQuery<Study[], ExtendedError>(
     STUDY_KEYS.list(),
     () => StudyService.getStudies(token!),
     {retry: 1}
