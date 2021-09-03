@@ -466,7 +466,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     if (!clientTimeZone) {
       delete updatedData.clientTimeZone
     }
-    console.log('updated data', updatedData)
     await ParticipantService.updateParticipant(
       study!.identifier,
       token!,
