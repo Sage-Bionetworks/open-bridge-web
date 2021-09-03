@@ -267,10 +267,6 @@ function getDate(value: GridCellValue) {
   return value ? new Date(value as string).toLocaleDateString() : undefined
 }
 
-function getTimezone(value: GridCellValue) {
-  return value ? value : ''
-}
-
 function getJoinedDateWithIcons(params: GridValueGetterParams) {
   const joinedDate = params.row.joinedDate
   // const smsDate = params.row.smsDate
@@ -373,7 +369,7 @@ function getColumns(
     {
       field: 'clientTimeZone',
       headerName: 'Time Zone',
-      valueGetter: params => getTimezone(params.value) || '-',
+      valueGetter: params => params.value || '-',
       flex: 1,
     },
     {
