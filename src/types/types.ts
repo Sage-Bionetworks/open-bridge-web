@@ -236,7 +236,9 @@ export type EditableParticipantData = {
   phone?: Phone
   phoneNumber?: string
   clientTimeZone?: string
+  timeZone?: string
 }
+
 
 export type ParticipantAccountSummary = {
   // isSelected?: boolean
