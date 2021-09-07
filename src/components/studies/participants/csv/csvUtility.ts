@@ -1,0 +1,218 @@
+// pick a date util library
+
+import Utility from '@helpers/utility'
+import EventService from '@services/event.service'
+import ParticipantService from '@services/participants.service'
+import {SchedulingEvent} from '@typedefs/scheduling'
+import {
+  EditableParticipantData,
+  ExtendedParticipantAccountSummary,
+  ParticipantActivityType,
+  ParticipantEvent,
+  SelectionType,
+} from '@typedefs/types'
+import moment from 'moment'
+import {jsonToCSV} from 'react-papaparse'
+import {
+  addParticipantById,
+  addParticipantByPhone,
+} from '../add/AddSingleParticipant'
+import ParticipantUtility, {ParticipantData} from '../participantUtility'
+
+const CSV_BY_ID_IMPORT_KEY: Map<keyof EditableParticipantData, string> =
+  new Map([
+    ['externalId', 'Participant ID'],
+    ['timeZone', 'Time Zone'],
+    ['note', 'Notes'],
+  ])
+
+const CSV_BY_PHONE_IMPORT_KEY: Map<keyof EditableParticipantData, string> =
+  new Map([
+    ['phoneNumber', 'Phone#'],
+    ['timeZone', 'Time Zone'],
+    ['externalId', 'Reference ID'],
+    ['note', 'Notes'],
+  ])
+
+const CSV_EXPORT_ADDITIONAL_KEYS: Map<
+  keyof ExtendedParticipantAccountSummary,
+  string
+> = new Map([
+  ['id', 'Health Code'],
+  ['joinedDate', 'Joined'],
+  ['dateWithdrawn', 'Withdrew'],
+  ['withdrawalNote', 'Withdrawal Note'],
+])
+
+const getImportColumns = (isEnrolledById: boolean) => {
+  const columns = isEnrolledById
+    ? CSV_BY_ID_IMPORT_KEY
+    : CSV_BY_PHONE_IMPORT_KEY
+  return columns
+}
+
+const getExportColumns = (isEnrolledById: boolean) => {
+  const columns = isEnrolledById
+    ? CSV_BY_ID_IMPORT_KEY
+    : CSV_BY_PHONE_IMPORT_KEY
+  return new Map([...columns, ...CSV_EXPORT_ADDITIONAL_KEYS])
+}
+
+function getDownloadTemplateRow(
+  isEnrolledById: boolean,
+  studyEvents: SchedulingEvent[]
+): Record<string, string> {
+  const columns = getImportColumns(isEnrolledById)
+  let templateData: {[key: string]: string}[] = []
+  columns.forEach((v, k) => {
+    templateData.push({[v]: ''})
+  })
+  studyEvents?.forEach((e, index) => {
+    templateData.splice(1 + index, 0, {
+      [EventService.formatCustomEventIdForDisplay(e.identifier)]: '',
+    })
+  })
+  return Object.assign({}, ...templateData)
+}
+
+function isImportFileValid(
+  isEnrolledById: boolean,
+  customStudyEvents: SchedulingEvent[],
+  firstRow: object
+): boolean {
+  //expected columns
+  const templateKeys = Object.keys(
+    getDownloadTemplateRow(isEnrolledById, customStudyEvents)
+  )
+    .sort()
+    .join(',')
+  //real columns - remove empty
+  const keysString = Object.keys(firstRow)
+    .sort()
+    .filter(v => !!v)
+    .join(',')
+  const isValid = templateKeys === keysString
+  return isValid
+}
+
+async function uploadCsvRow(
+  data: Record<string, string>,
+  customParticipantEvents: ParticipantEvent[],
+  isEnrolledById: boolean,
+  studyIdentifier: string,
+  token: string
+) {
+  const pEvents = customParticipantEvents
+    .map(e => ({
+      ...e,
+      timestamp: data[e.eventId] ? new Date(data[e.eventId]) : undefined,
+    }))
+    .filter(e => e.timestamp)
+  const columns = getImportColumns(isEnrolledById)
+
+  const options: EditableParticipantData = {
+    externalId: data[columns.get('externalId')!],
+    note: data[columns.get('note')!],
+    events: pEvents,
+  }
+  let result
+  if (isEnrolledById) {
+    if (!options.externalId) {
+      throw new Error('no id')
+    } else {
+      result = await addParticipantById(studyIdentifier, token, options)
+    }
+  } else {
+    const phoneNumber = data[columns.get('phoneNumber')!]?.toString()
+    if (!phoneNumber) {
+      throw new Error('need phone')
+    }
+    if (Utility.isInvalidPhone(phoneNumber)) {
+      throw new Error('phone is in invalid format')
+    } else {
+      const phone = Utility.makePhone(phoneNumber)
+      result = await addParticipantByPhone(
+        studyIdentifier,
+        token,
+        phone,
+        options
+      )
+    }
+  }
+  return result
+}
+
+async function getParticipantDataForDownload(
+  studyId: string,
+  token: string,
+  tab: ParticipantActivityType,
+  studyEvents: SchedulingEvent[] | null,
+  selectionType: SelectionType,
+  isEnrolledById: boolean,
+  selectedParticipantData: ParticipantData = {items: [], total: 0}
+): Promise<Blob> {
+  //if getting all participants
+  const participantsData: ParticipantData =
+    selectionType === 'ALL'
+      ? await ParticipantUtility.getParticipants(studyId, 0, 0, tab, token)
+      : selectedParticipantData
+  //massage data
+  const columns = getExportColumns(isEnrolledById)
+  const dateToString = (d?: Date | string): string =>
+    d ? new Date(d).toLocaleDateString() : ''
+  const transformedParticipantsData = participantsData.items.map(
+    (p: ExtendedParticipantAccountSummary) => {
+      const participant: Record<string, string | undefined> = {
+        [columns.get('externalId')!]: ParticipantService.formatExternalId(
+          studyId,
+          p.externalIds[studyId] || ''
+        ),
+        [columns.get('id')!]: p.id,
+
+        // LEON TODO: Revisit when we have smsDate
+        [columns.get('joinedDate')!]: dateToString(p.joinedDate),
+
+        [columns.get('note')!]:
+          tab !== 'WITHDRAWN' ? p.note || '' : p.withdrawalNote,
+      }
+
+      if (tab === 'WITHDRAWN') {
+        participant[columns.get('dateWithdrawn')!] = dateToString(
+          p.dateWithdrawn
+        )
+      }
+      if (columns.get('phoneNumber')) {
+        participant[columns.get('phoneNumber')!] = p.phone?.nationalFormat
+      }
+
+      studyEvents?.forEach(currentEvent => {
+        const matchingEvent = p.events?.find(
+          pEvt => pEvt.eventId === currentEvent.identifier
+        )
+        participant[
+          EventService.formatCustomEventIdForDisplay(currentEvent.identifier)
+        ] = matchingEvent?.timestamp
+          ? moment(matchingEvent?.timestamp).format('l')
+          : ''
+      })
+
+      return participant
+    }
+  )
+
+  //csv and blob it
+  const csvData = jsonToCSV(transformedParticipantsData)
+  const blob = new Blob([csvData], {
+    type: 'text/csv;charset=utf8;',
+  })
+  return blob
+}
+
+const CsvUtility = {
+  getDownloadTemplateRow,
+  isImportFileValid,
+  uploadCsvRow,
+  getParticipantDataForDownload,
+}
+
+export default CsvUtility

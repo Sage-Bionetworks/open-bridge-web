@@ -4,6 +4,7 @@ import clsx from 'clsx'
 import React, {ChangeEvent, useEffect, useState} from 'react'
 import {HexColorPicker} from 'react-colorful'
 import {useErrorHandler} from 'react-error-boundary'
+import {useLocation} from 'react-router-dom'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import {ReactComponent as PhoneTopImgLeftHighlighted} from '../../../assets/appdesign/CustomizeAppTopbarLeft.svg'
 import {ReactComponent as PhoneTopImgRightHighlighted} from '../../../assets/appdesign/CustomizeAppTopbarRight.svg'
@@ -15,14 +16,10 @@ import Utility from '../../../helpers/utility'
 import StudyService from '../../../services/study.service'
 import {latoFont, ThemeType} from '../../../style/theme'
 import constants from '../../../types/constants'
-import {
-  Contact,
-  Study,
-  StudyBuilderComponentProps,
-  WelcomeScreenData,
-} from '../../../types/types'
+import {Contact, Study, WelcomeScreenData} from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
+import {useStudy, useUpdateStudyDetail} from '../studyHooks'
 import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
 import IrbBoardContactSection from './IrbBoardContactSection'
 import ReadOnlyAppDesign from './read-only-pages/ReadOnlyAppDesign'
@@ -223,9 +220,9 @@ export type PreviewFile = {
 }
 
 export interface AppDesignProps {
-  onSave: Function
-  study: Study
+  id: string
   onError: Function
+  children: React.ReactNode
 }
 
 type ErrorStateType = {
@@ -441,43 +438,38 @@ export const isAppBackgroundColorValid = (currentColor: string | undefined) => {
   return !!s.color
 }
 
-const AppDesign: React.FunctionComponent<
-  AppDesignProps & StudyBuilderComponentProps
-> = ({
-  hasObjectChanged,
-  saveLoader,
+const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   children,
-  onUpdate,
-  onSave,
-  study,
   onError,
-}: AppDesignProps & StudyBuilderComponentProps) => {
+  id,
+}) => {
   const handleError = useErrorHandler()
-  const params = Utility.getSearchParams(window.location.search)
-  const showError = params.from !== undefined
-  const anchor = params.anchor
+  const params = new URLSearchParams(useLocation().search)
 
+  const [study, setStudy] = React.useState<Study>()
+
+  const {data: sourceStudy, error, isLoading} = useStudy(id)
+
+  const {
+    isSuccess: scheduleUpdateSuccess,
+    isError: scheduleUpdateError,
+    mutateAsync: mutateStudy,
+    data,
+  } = useUpdateStudyDetail()
+
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
+  const [saveLoader, setSaveLoader] = React.useState(false)
+  const showError = params.get('from') !== null
+  const anchor = params.get('anchor') || ''
   const {token, orgMembership} = useUserSessionDataState()
-
   const classes = useStyles()
 
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
-  const [
-    irbNameSameAsInstitution,
-    setIrbNameSameAsInstitution,
-  ] = useState<boolean>(
-    getContact(study, 'irb')?.name ===
-      getContact(study, 'principal_investigator')?.affiliation
-  )
-  const [
-    generalContactPhoneNumber,
-    setGeneralContactPhoneNumber,
-  ] = React.useState(
-    formatPhoneNumber(getContact(study, 'study_support')?.phone?.number)
-  )
-  const [irbPhoneNumber, setIrbPhoneNumber] = React.useState(
-    formatPhoneNumber(getContact(study, 'irb')?.phone?.number)
-  )
+  const [irbNameSameAsInstitution, setIrbNameSameAsInstitution] =
+    useState<boolean>(false)
+  const [generalContactPhoneNumber, setGeneralContactPhoneNumber] =
+    React.useState('')
+  const [irbPhoneNumber, setIrbPhoneNumber] = React.useState('')
 
   const [phoneNumberErrorState, setPhoneNumberErrorState] = React.useState({
     isGeneralContactPhoneNumberValid: true,
@@ -490,6 +482,38 @@ const AppDesign: React.FunctionComponent<
   })
 
   const [errorState, setErrorState] = React.useState<ErrorStateType>({})
+
+  useEffect(() => {
+    setStudy(sourceStudy)
+    if (sourceStudy) {
+      setIrbNameSameAsInstitution(
+        getContact(sourceStudy, 'irb')?.name ===
+          getContact(sourceStudy, 'principal_investigator')?.affiliation
+      )
+      setGeneralContactPhoneNumber(
+        formatPhoneNumber(
+          getContact(sourceStudy, 'study_support')?.phone?.number
+        )
+      )
+
+      setIrbPhoneNumber(
+        formatPhoneNumber(getContact(sourceStudy, 'irb')?.phone?.number)
+      )
+
+      // Set the use default message property to true by default
+      const {welcomeScreenData} = sourceStudy.clientData
+      if (welcomeScreenData?.isUsingDefaultMessage === undefined) {
+        updateWelcomeScreenMessaging(
+          welcomeScreenData?.welcomeScreenHeader || '',
+          welcomeScreenData?.welcomeScreenBody || '',
+          welcomeScreenData?.welcomeScreenSalutation || '',
+          welcomeScreenData?.welcomeScreenFromText || '',
+          true,
+          true
+        )
+      }
+    }
+  }, [sourceStudy])
 
   useEffect(() => {
     setTimeout(() => {
@@ -546,8 +570,13 @@ const AppDesign: React.FunctionComponent<
     )
   }
 
+  const onUpdate = (updatedStudy: Study) => {
+    setHasObjectChanged(true)
+    setStudy({...updatedStudy})
+  }
+
   useEffect(() => {
-    if (!showError) return
+    if (!showError || !study) return
     const updatedErrorState = {} as ErrorStateType
     const contactLead = getContact(study, 'study_support')
     const principalInvestigator = getContact(study, 'principal_investigator')
@@ -576,16 +605,17 @@ const AppDesign: React.FunctionComponent<
     checkPhoneError(contactLead, irbRecord)
     checkEmailError(contactLead, irbRecord)
     setErrorState(updatedErrorState)
-  }, [study])
+  }, [study, showError])
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     event.persist()
-    if (!event.target.files) {
+    if (!event.target.files || !study) {
       return
     }
     setIsSettingStudyLogo(true)
     const file = event.target.files[0]
     const previewForImage = getPreviewForImage(file)
+
     try {
       const uploadResponse = await StudyService.editStudyLogo(
         study.identifier,
@@ -610,6 +640,21 @@ const AppDesign: React.FunctionComponent<
     }
   }
 
+  const onSave = async (study: Study) => {
+    console.log('start update from app resign')
+    try {
+      setSaveLoader(true)
+      await mutateStudy({
+        study: study,
+      })
+      setHasObjectChanged(false)
+    } catch (e) {
+      onError(e)
+    } finally {
+      setSaveLoader(false)
+    }
+  }
+
   const saveInfo = () => {
     const phoneNumberHasError =
       !phoneNumberErrorState.isGeneralContactPhoneNumberValid ||
@@ -621,15 +666,17 @@ const AppDesign: React.FunctionComponent<
     if (
       phoneNumberHasError ||
       emailHasError ||
-      !isAppBackgroundColorValid(study.colorScheme?.background)
+      !isAppBackgroundColorValid(study?.colorScheme?.background)
     ) {
       alert(
         'Please make sure that all fields are entered in the correct format.'
       )
       return
     }
-    const updatedStudy = formatStudy(study)
-    onSave(updatedStudy)
+    if (study) {
+      const updatedStudy = formatStudy(study)
+      onSave(updatedStudy)
+    }
   }
 
   const formatStudy = (newStudy: Study) => {
@@ -659,6 +706,9 @@ const AppDesign: React.FunctionComponent<
 
   // This is the method without useCallback or debounce.
   const updateColor = (color: string) => {
+    if (!study) {
+      return
+    }
     const updatedStudy = {...study}
     updatedStudy.colorScheme = {
       ...updatedStudy.colorScheme,
@@ -668,7 +718,7 @@ const AppDesign: React.FunctionComponent<
   }
 
   const getColor = () => {
-    const color = study.colorScheme?.background
+    const color = study?.colorScheme?.background
     if (!color) return 'transparent'
     return color === '#NaNNaNNaN' ? '' : color
   }
@@ -687,24 +737,13 @@ const AppDesign: React.FunctionComponent<
     return updatedContacts
   }
 
-  useEffect(() => {
-    // Set the use default message property to true by default
-    const {welcomeScreenData} = study.clientData
-    if (welcomeScreenData?.isUsingDefaultMessage === undefined) {
-      updateWelcomeScreenMessaging(
-        welcomeScreenData?.welcomeScreenHeader || '',
-        welcomeScreenData?.welcomeScreenBody || '',
-        welcomeScreenData?.welcomeScreenSalutation || '',
-        welcomeScreenData?.welcomeScreenFromText || '',
-        true,
-        true
-      )
-    }
-  }, [])
-
   const getContactPersonObject = (type: ContactType): Contact => {
+    const defaultPerson = {role: type, name: DEFAULT_CONTACT_NAME}
+    if (!study) {
+      return defaultPerson
+    }
     const contact = getContact(study, type)
-    return contact || {role: type, name: DEFAULT_CONTACT_NAME}
+    return contact || defaultPerson
   }
 
   const updateWelcomeScreenMessaging = (
@@ -722,16 +761,22 @@ const AppDesign: React.FunctionComponent<
       welcomeScreenSalutation: welcomeScreenSalutation,
       useOptionalDisclaimer: useOptionalDisclaimer,
       isUsingDefaultMessage:
-        !!study.clientData.welcomeScreenData?.isUsingDefaultMessage ||
+        !!study?.clientData.welcomeScreenData?.isUsingDefaultMessage ||
         !!isUsingDefaultMessage,
     } as WelcomeScreenData
-    const updatedStudy = {...study}
-    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
-    handleUpdate(updatedStudy)
+    if (study) {
+      const updatedStudy = {...study}
+      updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
+      handleUpdate(updatedStudy)
+    }
   }
 
   const hasError = (errorProperty: keyof ErrorStateType) => {
     return showError && !!errorState[errorProperty]
+  }
+
+  if (!study) {
+    return <></>
   }
   if (StudyService.isStudyClosedToEdits(study)) {
     return (
@@ -744,6 +789,7 @@ const AppDesign: React.FunctionComponent<
   }
 
   const color = getColor()
+
   return (
     <>
       <Box className={classes.root}>
@@ -797,9 +843,11 @@ const AppDesign: React.FunctionComponent<
                     }
                     const newWelcomeScreenData = {
                       ...currentWelcomeScreenData,
-                      isUsingDefaultMessage: !currentWelcomeScreenData.isUsingDefaultMessage,
+                      isUsingDefaultMessage:
+                        !currentWelcomeScreenData.isUsingDefaultMessage,
                     }
-                    updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
+                    updatedStudy.clientData.welcomeScreenData =
+                      newWelcomeScreenData
                     handleUpdate(updatedStudy)
                   }}></Switch>
               </Box>

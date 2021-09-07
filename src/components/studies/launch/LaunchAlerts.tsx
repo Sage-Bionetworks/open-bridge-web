@@ -2,6 +2,7 @@ import {Box, Button, Container} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import _ from 'lodash'
 import React from 'react'
+import {NavLink} from 'react-router-dom'
 import {ReactComponent as Alert_Icon} from '../../../assets/alert_icon.svg'
 import {ReactComponent as Preview_Icon} from '../../../assets/launch/preview_icon.svg'
 import {DEFAULT_NOTIFICATION} from '../../../services/schedule.service'
@@ -342,26 +343,29 @@ const StudyAlertComponent: React.FunctionComponent<
           </div>
           {error.isDismissable && (
             <Box className={classes.reviewIgnoreButtons}>
-              <Button
-                href={`${indexedSection.path}?from=launch${
+              <NavLink
+                style={{textDecoration: 'none'}}
+                to={`${indexedSection.path}?from=launch${
                   error.anchor ? '&anchor=' + error.anchor : ''
                 }`}>
-                Review
-              </Button>
+                <Button>Review</Button>
+              </NavLink>
+
               <Button onClick={() => onIgnore(indexedSection.path, errorIndex)}>
                 Ignore
               </Button>
             </Box>
           )}
           {!error.isDismissable && (
-            <Button
-              variant="contained"
-              className={classes.mustReviewButton}
-              href={`${sections[sectionIndex].path}?from=launch${
+            <NavLink
+              style={{textDecoration: 'none'}}
+              to={`${sections[sectionIndex].path}?from=launch${
                 error.anchor ? '&anchor=' + error.anchor : ''
               }`}>
-              Review Required
-            </Button>
+              <Button variant="contained" className={classes.mustReviewButton}>
+                Review Required
+              </Button>
+            </NavLink>
           )}
         </div>
       ))}

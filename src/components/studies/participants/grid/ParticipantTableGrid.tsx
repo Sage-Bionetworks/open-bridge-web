@@ -431,6 +431,9 @@ function getColumns(
       c => !_.includes(['dateWithdrawn', 'withdrawalNote'], c.field)
     )
   }
+
+  participantColumns.splice(1, 0, editColumn)
+
   //for withdrawn participants -- remove edit and note fileds
   if (gridType === 'WITHDRAWN') {
     participantColumns = _.filter(
@@ -451,8 +454,6 @@ function getColumns(
       c => !_.includes(['phone'], c.field)
     )
   }
-
-  participantColumns.splice(1, 0, editColumn)
 
   const eventInsertionIndex = participantColumns.findIndex(
     column => column.field === 'joinedDate'

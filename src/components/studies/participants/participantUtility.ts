@@ -1,16 +1,18 @@
 import Utility from '@helpers/utility'
 import EventService from '@services/event.service'
 import ParticipantService from '@services/participants.service'
-import {SchedulingEvent} from '@typedefs/scheduling'
 import {
   ExtendedParticipantAccountSummary,
   ParticipantActivityType,
   ParticipantEvent,
-  SelectionType,
   StringDictionary,
 } from '@typedefs/types'
-import moment from 'moment'
-import {jsonToCSV} from 'react-papaparse'
+
+//[database, column header]
+const TEMPLATE_FIELDS = {
+  phone: ['phoneNumber', 'Phone Number'],
+  healthCode: ['healthCode', 'Health Code'],
+}
 
 export type ParticipantData = {
   items: ExtendedParticipantAccountSummary[]
@@ -70,7 +72,6 @@ async function getParticipants(
   if (!token) {
     throw Error('Need token')
   }
-
   const {items, total} = searchOptions?.searchValue
     ? await ParticipantService.participantSearch(
         studyId,
@@ -84,9 +85,8 @@ async function getParticipants(
         token,
         tab,
         pageSize,
-        offset
+        offset < 0 ? 0 : offset
       )
-
   if (items && total) {
     const result = await getRelevantParticipantInfo(studyId, token, items)
     return {items: result, total}
@@ -95,83 +95,7 @@ async function getParticipants(
   }
 }
 
-async function getParticipantDataForDownload(
-  studyId: string,
-  token: string,
-  tab: ParticipantActivityType,
-  studyEvents: SchedulingEvent[] | null,
-  selectionType: SelectionType,
-  isEnrolledById: boolean,
-  selectedParticipantData: ParticipantData = {items: [], total: 0}
-): Promise<Blob> {
-  //if getting all participants
-  const participantsData: ParticipantData =
-    selectionType === 'ALL'
-      ? await getParticipants(studyId, 0, 0, tab, token)
-      : selectedParticipantData
-  //massage data
-  const transformedParticipantsData = participantsData.items.map(
-    (p: ExtendedParticipantAccountSummary) => {
-      const participant: Record<string, string | undefined> = {
-        participantId: ParticipantService.formatExternalId(
-          studyId,
-          p.externalIds[studyId] || ''
-        ),
-        healthCode: p.id,
-        phoneNumber: p.phone?.nationalFormat,
-        // LEON TODO: Revisit when we have smsDate
-        joinedDate: p.joinedDate
-          ? new Date(p.joinedDate).toLocaleDateString()
-          : '',
-        note: p.note || '',
-      }
-      studyEvents?.forEach(currentEvent => {
-        const matchingEvent = p.events?.find(
-          pEvt => pEvt.eventId === currentEvent.identifier
-        )
-        participant[
-          EventService.formatCustomEventIdForDisplay(currentEvent.identifier)
-        ] = matchingEvent?.timestamp
-          ? moment(matchingEvent?.timestamp).format('l')
-          : ''
-      })
-      if (isEnrolledById) {
-        delete participant.phoneNumber
-      }
-      return participant
-    }
-  )
-
-  //csv and blob it
-  const csvData = jsonToCSV(transformedParticipantsData)
-  const blob = new Blob([csvData], {
-    type: 'text/csv;charset=utf8;',
-  })
-  return blob
-}
-
-const getDownloadTemplateRow = (
-  isEnrolledById: boolean,
-  studyEvents: SchedulingEvent[]
-): Record<string, string> => {
-  const templateData: Record<string, string> = {
-    externalId: '',
-  }
-  if (!isEnrolledById) {
-    templateData['phoneNumber'] = ''
-  }
-
-  studyEvents?.forEach(e => {
-    templateData[EventService.formatCustomEventIdForDisplay(e.identifier)] = ''
-  })
-  templateData['note'] = ''
-  return templateData
-}
-
 const ParticipantUtility = {
-  getParticipantDataForDownload,
-  getDownloadTemplateRow,
-  // getRelevantParticipantInfo,
   getParticipants,
 }
 

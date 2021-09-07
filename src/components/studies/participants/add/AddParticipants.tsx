@@ -23,19 +23,12 @@ import {SchedulingEvent} from '@typedefs/scheduling'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {CSVReader} from 'react-papaparse'
-import {
-  EditableParticipantData,
-  ParticipantEvent,
-  Study,
-} from '../../../../types/types'
+import {ParticipantEvent, Study} from '../../../../types/types'
 import {BlueButton} from '../../../widgets/StyledComponents'
 import TabPanel from '../../../widgets/TabPanel'
-import ParticipantUtility from '../participantUtility'
+import CsvUtility from '../csv/csvUtility'
 import AddGeneratedParticipant from './AddGeneratedParticipant'
-import AddSingleParticipant, {
-  addParticipantById,
-  addParticipantByPhone,
-} from './AddSingleParticipant'
+import AddSingleParticipant from './AddSingleParticipant'
 import ImportParticipantsInstructions from './ImportParticipantsInstuctions'
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -124,58 +117,6 @@ type AddParticipantsProps = {
   isTestAccount: boolean
 }
 
-/*const CSV_BY_ID_KEY = ['Participant ID', 'Clinic Visit', 'Note']
-
-const CSV_BY_PHONE_KEY = [
-  'Phone Number',
-  'Participant ID',
-  'Clinic Visit',
-  'Note',
-]*/
-
-async function uploadCsvRow(
-  data: any,
-  customParticipantEvents: ParticipantEvent[],
-  isEnrolledById: boolean,
-
-  studyIdentifier: string,
-  token: string
-) {
-  const pEvents = customParticipantEvents.map(e => ({
-    ...e,
-    timestamp: data[e.eventId],
-  }))
-
-  const options: EditableParticipantData = {
-    externalId: data['externalId'],
-    note: data['note'],
-    events: pEvents,
-  }
-
-  let result
-  if (isEnrolledById) {
-    if (!options.externalId) {
-      throw new Error('no id')
-    } else {
-      result = await addParticipantById(studyIdentifier, token, options)
-    }
-  } else {
-    if (!data['phoneNumber'] || Utility.isInvalidPhone(data['phoneNumber'])) {
-      throw new Error('need phone')
-    } else {
-      const phone = Utility.makePhone(data['phoneNumber'])
-      result = await addParticipantByPhone(
-        studyIdentifier,
-        token,
-        phone,
-        options
-      )
-    }
-  }
-  return result
-  //return objects
-}
-
 const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
   onAdded,
   study,
@@ -217,22 +158,12 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       })
     )
 
-    //expected columns
-    const templateKeys = Object.keys(
-      ParticipantUtility.getDownloadTemplateRow(
-        isEnrolledById,
-        customStudyEvents
-      )
+    const isValid = CsvUtility.isImportFileValid(
+      isEnrolledById,
+      customStudyEvents,
+      rows[0].data
     )
-      .sort()
-      .join(',')
-    //real columns - remove empty
-    const keysString = Object.keys(rows[0]?.data)
-      .sort()
-      .filter(v => !!v)
-      .join(',')
-    const valid = templateKeys === keysString
-    if (!valid) {
+    if (!isValid) {
       setImportError([...importError, 'Please check the format of your file'])
       return
     }
@@ -243,7 +174,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       console.log(progress)
       const data = row.data
       try {
-        await uploadCsvRow(
+        await CsvUtility.uploadCsvRow(
           data,
           customParticipantEvents,
           isEnrolledById,
@@ -254,9 +185,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       } catch (error) {
         console.log('error', importError.length)
         console.log(importError)
-        /*const key = isEnrolledById
-          ? data['Participant ID']
-          : data['Phone Number']*/
+
         const key = data[0]
         setImportError(prev => [...prev, `${key}: ${error.message || error}`])
       }

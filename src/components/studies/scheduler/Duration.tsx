@@ -29,6 +29,7 @@ export interface DurationProps {
   isIntro?: boolean
   unitDefault?: any
   inputDurationCapInWeeks?: number
+  disabled?: boolean
 }
 
 const Duration: React.FunctionComponent<
@@ -42,6 +43,7 @@ const Duration: React.FunctionComponent<
   isIntro,
   unitDefault,
   inputDurationCapInWeeks,
+  disabled,
   ...props
 }: DurationProps) => {
   const classes = useStyles()
@@ -69,7 +71,7 @@ const Duration: React.FunctionComponent<
     if (unit) {
       setUnit(unit)
     }
-    if (value) {
+    if (value !== undefined) {
       setNum(value)
 
       if (!unit && unitDefault) {
@@ -81,23 +83,22 @@ const Duration: React.FunctionComponent<
         setUnit(unitDefaultValue)
       }
     }
-    if (!unit || !value) {
+    if (!unit || value === undefined) {
       return
     }
-    //dont' use that since it will change the units
-    //const convertedDuraion = moment.duration({ [unit]: value }).toISOString()
-    //compose a perdio
-    // const durationUnit = Object.keys(units).find(key => units[key] === unit)!
-    const time = unit === 'H' || unit === 'M' ? 'T' : ''
-    const p = `P${time}${value}${unit}`
-    //console.log(p, 'set p')
+  }
+
+  const triggerChange = (e: any) => {
+    const time = unt === 'H' || unt === 'M' ? 'T' : ''
+    const p = `P${time}${num}${unt}`
 
     onChange({target: {value: p}})
   }
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} onBlur={triggerChange}>
       <SmallTextBox
+        disabled={!!disabled}
         style={{width: '60px'}}
         value={num || ''}
         aria-label={numberLabel}
@@ -119,6 +120,7 @@ const Duration: React.FunctionComponent<
         inputWidth={isIntro ? 10 : undefined}></SmallTextBox>
 
       <SelectWithEnum
+        disabled={!!disabled}
         aria-label={unitLabel}
         {...props}
         value={unt}

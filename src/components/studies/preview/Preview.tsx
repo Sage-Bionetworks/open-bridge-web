@@ -1,32 +1,34 @@
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import {Box, Button, Divider, FormControl, FormLabel} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
-import React, {ReactNode, useEffect} from 'react'
+import clsx from 'clsx'
+import React, {useEffect} from 'react'
 import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
+import {NavLink} from 'react-router-dom'
+import LinkIcon from '../../../assets/link_icon.svg'
 import appStoreBtn from '../../../assets/preview/appStoreBtn.png'
 import googlePlayBtn from '../../../assets/preview/googlePlayBtn.png'
 import PhoneImg from '../../../assets/preview/preview_phone.svg'
 import {ReactComponent as PlayImg} from '../../../assets/preview/preview_play.svg'
+import AuthorizedIcon from '../../../assets/preview/reminder_of_use_authorization_icon.svg'
+import MedicalIcon from '../../../assets/preview/reminder_of_use_medical_icon.svg'
+import ProtectionIcon from '../../../assets/preview/reminder_of_use_protect_icon.svg'
 import SampleAssessmentDataImg from '../../../assets/preview/sample_assessment_data.svg'
+import ScheduleSessionsIcon from '../../../assets/preview/schedule_session_icon_no_padding.svg'
+import Utility from '../../../helpers/utility'
 import ParticipantService from '../../../services/participants.service'
 import {
   latoFont,
+  playfairDisplayFont,
   poppinsFont,
   ThemeType,
-  playfairDisplayFont,
 } from '../../../style/theme'
-import {StudySession} from '../../../types/scheduling'
 import {Assessment} from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
 import {ErrorFallback, ErrorHandler} from '../../widgets/ErrorHandler'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
-import {SimpleTextInput, PrevButton} from '../../widgets/StyledComponents'
-import Utility from '../../../helpers/utility'
-import MedicalIcon from '../../../assets/preview/reminder_of_use_medical_icon.svg'
-import AuthorizedIcon from '../../../assets/preview/reminder_of_use_authorization_icon.svg'
-import ProtectionIcon from '../../../assets/preview/reminder_of_use_protect_icon.svg'
-import ScheduleSessionsIcon from '../../../assets/preview/schedule_session_icon_no_padding.svg'
-import LinkIcon from '../../../assets/link_icon.svg'
-import clsx from 'clsx'
+import {PrevButton, SimpleTextInput} from '../../widgets/StyledComponents'
+import {useSchedule} from '../scheduleHooks'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -186,10 +188,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 }))
 
 export interface PreviewProps {
-  children?: ReactNode
-  studyId: string
-  token: string
-  scheduleSessions: StudySession[]
+  id: string
 }
 
 const Reminder: React.FunctionComponent<{text: string; img: string}> = ({
@@ -205,13 +204,14 @@ const Reminder: React.FunctionComponent<{text: string; img: string}> = ({
   )
 }
 
-const Preview: React.FunctionComponent<PreviewProps> = ({
-  children,
-  studyId,
-  token,
-  scheduleSessions,
-}: PreviewProps) => {
+const Preview: React.FunctionComponent<PreviewProps> = ({id}: PreviewProps) => {
   const classes = useStyles()
+  const {token} = useUserSessionDataState()
+  const {
+    data: schedule,
+    error: scheduleError,
+    isLoading: isScheduleLoading,
+  } = useSchedule(id)
   const [testParticipantId, setTestParticipantId] = React.useState('')
 
   const [uniqueAssessments, setUniqueAssessments] = React.useState<
@@ -222,7 +222,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
 
   const getTestParticipantId = async () => {
     try {
-      const testId = await ParticipantService.addTestParticipant(studyId, token)
+      const testId = await ParticipantService.addTestParticipant(id, token!)
       setTestParticipantId(testId)
     } catch (e) {
       handleError(e!)
@@ -231,7 +231,10 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
 
   useEffect(() => {
     let allAssessments: Assessment[] = []
-    for (const session of scheduleSessions) {
+    if (!schedule) {
+      return
+    }
+    for (const session of schedule.sessions) {
       if (!session.assessments) continue
       allAssessments = allAssessments.concat(session.assessments)
     }
@@ -242,7 +245,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
       return [...arr, assessment]
     }, [] as Assessment[])
     setUniqueAssessments(uniqueAssessments)
-  }, [])
+  }, [schedule])
 
   const text = [
     'Only use the Mobile Toolbox for authorized purposes.',
@@ -298,11 +301,11 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                   className={classes.scheduleSessionsIcon}
                   src={ScheduleSessionsIcon}></img>
                 &nbsp;
-                <Button
-                  href="scheduler"
+                <NavLink
+                  to={'scheduler'}
                   className={classes.scheduleSessionsButton}>
                   Schedule Sessions
-                </Button>
+                </NavLink>
                 &nbsp; page before previewing your app.
               </Box>
             </Box>
@@ -359,7 +362,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
                     <SimpleTextInput
                       multiline={false}
                       fullWidth={true}
-                      value={Utility.formatStudyId(studyId)}
+                      value={Utility.formatStudyId(id)}
                       readOnly></SimpleTextInput>
                   </FormControl>
 

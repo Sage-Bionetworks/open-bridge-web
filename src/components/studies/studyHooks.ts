@@ -1,6 +1,6 @@
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import StudyService from '@services/study.service'
-import {Study} from '@typedefs/types'
+import {ExtendedError, Study} from '@typedefs/types'
 import {useMutation, useQuery, useQueryClient} from 'react-query'
 
 export const STUDY_KEYS = {
@@ -14,12 +14,13 @@ export const STUDY_KEYS = {
 export const useStudy = (studyId: string | undefined) => {
   const {token} = useUserSessionDataState()
 
-  return useQuery<Study | undefined, Error>(
+  return useQuery<Study | undefined, ExtendedError>(
     STUDY_KEYS.detail(studyId),
     () => StudyService.getStudy(studyId!, token!),
     {
       enabled: !!studyId,
       retry: 1,
+      refetchOnWindowFocus: false,
     }
   )
 }
@@ -27,7 +28,7 @@ export const useStudy = (studyId: string | undefined) => {
 export const useStudies = () => {
   const {token} = useUserSessionDataState()
 
-  return useQuery<Study[], Error>(
+  return useQuery<Study[], ExtendedError>(
     STUDY_KEYS.list(),
     () => StudyService.getStudies(token!),
     {retry: 1}
@@ -41,13 +42,9 @@ export const useUpdateStudyInList = () => {
   const update = async (props: {
     study: Study
     action: 'UPDATE' | 'DELETE' | 'COPY' | 'CREATE'
-    isPassive?: false
   }): Promise<Study[]> => {
-    const {study, action, isPassive} = props
+    const {study, action} = props
     let newVersion = 0
-    if (isPassive) {
-      return Promise.resolve([study])
-    }
 
     switch (action) {
       case 'DELETE':
@@ -76,7 +73,7 @@ export const useUpdateStudyInList = () => {
     onMutate: async props => {
       queryClient.cancelQueries(STUDY_KEYS.all)
 
-      console.log('starting update')
+      console.log('starting update in study hook')
       // Snapshot the previous value
       const {study, action} = props
       const previousStudies = queryClient.getQueryData<Study[]>(
@@ -126,7 +123,6 @@ export const useUpdateStudyInList = () => {
       return {previousStudies}
     },
     onError: (err, variables, context) => {
-      alert('error')
       console.log(err, variables, context)
       /* if (context?.previousStudies) {
           queryClient.setQueryData<Study[]>(KEYS.studies, context.previousStudies)
@@ -145,21 +141,12 @@ export const useUpdateStudyDetail = () => {
   const {token} = useUserSessionDataState()
   const queryClient = useQueryClient()
 
-  const update = async (props: {
-    study: Study
-
-    isPassive?: boolean
-  }): Promise<Study> => {
-    const {study, isPassive} = props
+  const update = async (props: {study: Study}): Promise<Study> => {
+    const {study} = props
     let newVersion = 0
-    if (isPassive) {
-      return new Promise((resolve, reject) => {
-        resolve(study)
-      })
-    } else {
-      newVersion = await StudyService.updateStudy({...props.study}, token!)
-      return {...props.study, version: newVersion}
-    }
+
+    newVersion = await StudyService.updateStudy({...props.study}, token!)
+    return {...props.study, version: newVersion}
   }
 
   const mutation = useMutation(update, {
@@ -183,16 +170,13 @@ export const useUpdateStudyDetail = () => {
       return {previousStudy}
     },
     onError: (err, variables, context) => {
-      alert('error')
       console.log(err, variables, context)
       /* if (context?.previousStudies) {
           queryClient.setQueryData<Study[]>(KEYS.studies, context.previousStudies)
         }*/
     },
     onSettled: async (data, error, props) => {
-      if (!props.isPassive) {
-        queryClient.invalidateQueries(STUDY_KEYS.detail(props.study.identifier))
-      }
+      queryClient.invalidateQueries(STUDY_KEYS.detail(props.study.identifier))
     },
   })
 

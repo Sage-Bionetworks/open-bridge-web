@@ -79,7 +79,7 @@ const queryClient = new QueryClient()
 function App() {
   const sessionData = useUserSessionDataState()
   const sessionUpdateFn = useUserSessionDataDispatch()
-  const [isRedirect, setIsRedirect] = React.useState(false)
+  const [redirect, setRedirect] = React.useState<string | undefined>()
   const token = sessionData.token
   useEffect(() => {
     let isSubscribed = true
@@ -106,7 +106,13 @@ function App() {
   useEffect(() => {
     detectSSOCode(sessionUpdateFn, sessionData).then(result => {
       if (result !== undefined) {
-        setIsRedirect(result)
+        const savedLocation = sessionStorage.getItem('location')
+        if (savedLocation) {
+          sessionStorage.removeItem('location')
+          setRedirect(savedLocation)
+        } else {
+          setRedirect('/studies')
+        }
       }
     })
   }, [sessionData.token, sessionUpdateFn, sessionData])
@@ -120,7 +126,7 @@ function App() {
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
               onError={ErrorHandler}>
-              {isRedirect && <Redirect to={`/studies`}></Redirect>}
+              {redirect && <Redirect to={redirect}></Redirect>}
               {sessionData.id ? (
                 <StudyInfoDataProvider>
                   <AuthenticatedApp sessionData={sessionData} />

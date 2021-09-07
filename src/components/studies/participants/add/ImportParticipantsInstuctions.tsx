@@ -1,11 +1,11 @@
+import {ReactComponent as DownloadIcon} from '@assets/download.svg'
 import {Box, makeStyles} from '@material-ui/core'
 import EventService from '@services/event.service'
 import {SchedulingEvent} from '@typedefs/scheduling'
 import React, {FunctionComponent} from 'react'
 import {jsonToCSV} from 'react-papaparse'
-import {ReactComponent as DownloadIcon} from '../../../../assets/download.svg'
-import ParticipantDownloadTrigger from '../download/ParticipantDownloadTrigger'
-import ParticipantUtility from '../participantUtility'
+import CsvUtility from '../csv/csvUtility'
+import ParticipantDownloadTrigger from '../csv/ParticipantDownloadTrigger'
 //import { EnrollmentType } from '../../../types/types'
 
 const useStyles = makeStyles(theme => ({
@@ -35,7 +35,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
   >(undefined)
 
   const createDownloadTemplate = async () => {
-    const templateData = ParticipantUtility.getDownloadTemplateRow(
+    const templateData = CsvUtility.getDownloadTemplateRow(
       isEnrolledById,
       studyEvents
     )
@@ -47,7 +47,6 @@ const ImportParticipantsInstructions: FunctionComponent<{
     // get the fake link
     const fileObjUrl = URL.createObjectURL(blob)
     setFileDownloadUrl(fileObjUrl)
-    // setLoadingIndicators({isDownloading: false})
   }
 
   const instructionItems = studyEvents.map((evt, i) => (
@@ -58,18 +57,6 @@ const ImportParticipantsInstructions: FunctionComponent<{
       (can be updated later)
     </li>
   ))
-
-  const template = isEnrolledById ? (
-    <a href="/participantImport_id_template.csv" download="Ids_Template.csv">
-      <strong>Ids_Template.csv</strong>
-    </a>
-  ) : (
-    <a
-      href="/participantImport_phone_template.csv"
-      download="Phones_Template.csv">
-      <strong>Phones_Template.csv</strong>
-    </a>
-  )
 
   const recList = isEnrolledById ? (
     <ul>
@@ -103,7 +90,8 @@ const ImportParticipantsInstructions: FunctionComponent<{
         following information by columns:
       </p>
       {recList}
-      Please make sure that your .csv matches this template:
+      Please include only new participants in the .csv. Your file should match
+      this template:
       <br />
       <ParticipantDownloadTrigger
         onDownload={() => createDownloadTemplate()}
