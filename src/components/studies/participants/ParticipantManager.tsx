@@ -455,22 +455,16 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const updateParticipant = async (
     participantId: string,
-    note: string,
-    customEvents: ParticipantEvent[],
-    clientTimeZone?: string
+    updatedFields: {
+      [Property in keyof ParticipantAccountSummary]?: ParticipantAccountSummary[Property]
+    },
+    customEvents: ParticipantEvent[]
   ) => {
-    const updatedData = {
-      note: note,
-      clientTimeZone: clientTimeZone,
-    }
-    if (!clientTimeZone) {
-      delete updatedData.clientTimeZone
-    }
     await ParticipantService.updateParticipant(
       study!.identifier,
       token!,
       participantId,
-      updatedData
+      updatedFields
     )
     await EventService.updateParticipantCustomEvents(
       study!.identifier,
@@ -829,14 +823,20 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         note: string,
                         customEvents?: ParticipantEvent[],
                         clientTimeZone?: string
-                      ) =>
+                      ) => {
+                        const data = {
+                          note: note,
+                          clientTimeZone: clientTimeZone,
+                        }
+                        if (!clientTimeZone) {
+                          delete data.clientTimeZone
+                        }
                         updateParticipant(
                           participantId,
-                          note,
-                          customEvents || [],
-                          clientTimeZone
+                          data,
+                          customEvents || []
                         )
-                      }
+                      }}
                       isEnrolledById={Utility.isSignInById(study.signInTypes)}
                       onRowSelected={(
                         /*id: string, isSelected: boolean*/ selection,

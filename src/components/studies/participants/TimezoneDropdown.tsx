@@ -27,7 +27,7 @@ const TimezoneDropdown: React.FunctionComponent<{
     <SaveBlackBorderDropdown
       width="100%"
       dropdown={timezones}
-      searchableOnChange={(event: string) => onValueChange(event)}
+      searchableOnChange={onValueChange}
       emptyValueLabel="Select a timezone"
       value={currentValue === '-' ? '' : currentValue}
       itemHeight="48px"
