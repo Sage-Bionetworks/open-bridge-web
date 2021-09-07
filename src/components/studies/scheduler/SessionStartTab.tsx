@@ -1,3 +1,4 @@
+import LoadingComponent from '@components/widgets/Loader'
 import Utility from '@helpers/utility'
 import {
   Box,
@@ -81,9 +82,6 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 type SessionStartTabProps = {
-  // schedule: Schedule
-
-  // study: Study
   onNavigate: Function
   id: string
 }
@@ -119,8 +117,6 @@ const SessionStartTab: React.ForwardRefRenderFunction<
     data,
   } = useUpdateStudyDetail()
 
-  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
-
   const handleError = useErrorHandler()
   const [saveLoader, setSaveLoader] = React.useState(false)
 
@@ -134,9 +130,8 @@ const SessionStartTab: React.ForwardRefRenderFunction<
       ...study,
       clientData: cData,
     }
-    console.log('updating')
-    const x = await mutateStudy({study: updatedStudy})
-    console.log('studyUpdated')
+
+    await mutateStudy({study: updatedStudy})
   }
 
   const [localEventObjects, setLocalEventObjects] = React.useState<
@@ -144,7 +139,6 @@ const SessionStartTab: React.ForwardRefRenderFunction<
   >([])
 
   useEffect(() => {
-    console.log('upd')
     if (!study?.clientData?.events) return
     const localEvents = study?.clientData.events!.map(element => {
       return {
@@ -235,6 +229,12 @@ const SessionStartTab: React.ForwardRefRenderFunction<
   )
   return (
     <Box className={classes.root}>
+      <LoadingComponent
+        reqStatusLoading={saveLoader || isLoading}
+        loaderSize="2rem"
+        style={{marginTop: '-30px'}}
+        variant={'small'}
+      />
       <Box width="600px" mx="auto" textAlign="left">
         <p className={classes.paragraphText}>
           Sessions in a study can be scheduled to start{' '}

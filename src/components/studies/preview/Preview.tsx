@@ -4,6 +4,7 @@ import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React, {useEffect} from 'react'
 import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
+import {NavLink} from 'react-router-dom'
 import LinkIcon from '../../../assets/link_icon.svg'
 import appStoreBtn from '../../../assets/preview/appStoreBtn.png'
 import googlePlayBtn from '../../../assets/preview/googlePlayBtn.png'
@@ -300,11 +301,11 @@ const Preview: React.FunctionComponent<PreviewProps> = ({id}: PreviewProps) => {
                   className={classes.scheduleSessionsIcon}
                   src={ScheduleSessionsIcon}></img>
                 &nbsp;
-                <Button
-                  href="scheduler"
+                <NavLink
+                  to={'scheduler'}
                   className={classes.scheduleSessionsButton}>
                   Schedule Sessions
-                </Button>
+                </NavLink>
                 &nbsp; page before previewing your app.
               </Box>
             </Box>

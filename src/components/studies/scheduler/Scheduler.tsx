@@ -1,3 +1,4 @@
+import LoadingComponent from '@components/widgets/Loader'
 import {Box, Paper} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import React, {ReactElement, useState} from 'react'
@@ -58,7 +59,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
 
   const [steps, setSteps] = useState(getSteps())
   const [activeStep, setActiveStep] = React.useState(0)
-  // const [isFinished, setIsFinished] = React.useState(false)
+  const [saveLoader, setSaveLoader] = React.useState(false)
   const [isNextEnabled, setIsNextEnabled] = React.useState(true)
   type CountdownHandle = React.ElementRef<typeof SessionStartTab>
   const ref1 = React.useRef<CountdownHandle>(null) // assign null makes it compatible with elements.
@@ -71,6 +72,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   const firstPrevButton = (children as any)[0]
   const lastNextButton = (children as any)[1]
   const handleNext = () => {
+    setSaveLoader(true)
     const nextStep = activeStep + 1
     ref1.current?.save(nextStep)
     const newSteps = steps.map((s, i) =>
@@ -80,17 +82,20 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   }
 
   const handleStepClick = (index: number) => {
+    setSaveLoader(true)
     ref1.current?.save(index)
     ref2.current?.save(index)
   }
 
   const handleBack = () => {
+    setSaveLoader(true)
     const nextStep = activeStep - 1
     ref2.current?.save(nextStep)
   }
 
   const handleNavigate = (step: number) => {
     setActiveStep(step)
+    setSaveLoader(false)
   }
 
   return (
@@ -101,6 +106,11 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
         setActiveStepFn={handleStepClick}></SchedulerStepper>
 
       <div className={classes.instructions}>
+        <LoadingComponent
+          reqStatusLoading={saveLoader}
+          loaderSize="2rem"
+          variant={'small'}
+        />
         <StepContent step={activeStep}>
           <SessionStartTab id={id} ref={ref1} onNavigate={handleNavigate} />
           <ScheduleCreatorTab

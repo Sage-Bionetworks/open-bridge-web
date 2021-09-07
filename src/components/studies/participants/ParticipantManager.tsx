@@ -55,8 +55,9 @@ import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import AddParticipants from './add/AddParticipants'
+import CsvUtility from './csv/csvUtility'
+import ParticipantDownloadTrigger from './csv/ParticipantDownloadTrigger'
 import DialogContents from './DialogContents'
-import ParticipantDownloadTrigger from './download/ParticipantDownloadTrigger'
 import ParticipantTableGrid from './grid/ParticipantTableGrid'
 import ParticipantTablePagination from './grid/ParticipantTablePagination'
 import BatchEditForm from './modify/BatchEditForm'
@@ -557,16 +558,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               ) || [],
             total: selectedParticipantIds[tab].length,
           }
-    const participantBlob =
-      await ParticipantUtility.getParticipantDataForDownload(
-        study.identifier,
-        token!,
-        tab,
-        studyEvents,
-        selectionType,
-        Utility.isSignInById(study.signInTypes),
-        participantsData
-      )
+    const participantBlob = await CsvUtility.getParticipantDataForDownload(
+      study.identifier,
+      token!,
+      tab,
+      studyEvents,
+      selectionType,
+      Utility.isSignInById(study.signInTypes),
+      participantsData
+    )
 
     // get the fake link
     const fileObjUrl = URL.createObjectURL(participantBlob)

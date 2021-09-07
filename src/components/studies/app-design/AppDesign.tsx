@@ -4,6 +4,7 @@ import clsx from 'clsx'
 import React, {ChangeEvent, useEffect, useState} from 'react'
 import {HexColorPicker} from 'react-colorful'
 import {useErrorHandler} from 'react-error-boundary'
+import {useLocation} from 'react-router-dom'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import {ReactComponent as PhoneTopImgLeftHighlighted} from '../../../assets/appdesign/CustomizeAppTopbarLeft.svg'
 import {ReactComponent as PhoneTopImgRightHighlighted} from '../../../assets/appdesign/CustomizeAppTopbarRight.svg'
@@ -441,9 +442,10 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   children,
   onError,
   id,
-}: AppDesignProps) => {
+}) => {
   const handleError = useErrorHandler()
-  const params = Utility.getSearchParams(window.location.search)
+  const params = new URLSearchParams(useLocation().search)
+
   const [study, setStudy] = React.useState<Study>()
 
   const {data: sourceStudy, error, isLoading} = useStudy(id)
@@ -456,14 +458,10 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   } = useUpdateStudyDetail()
 
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
-
   const [saveLoader, setSaveLoader] = React.useState(false)
-
-  const showError = params.from !== undefined
-  const anchor = params.anchor
-
+  const showError = params.get('from') !== null
+  const anchor = params.get('anchor') || ''
   const {token, orgMembership} = useUserSessionDataState()
-
   const classes = useStyles()
 
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)

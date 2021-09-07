@@ -128,12 +128,10 @@ export type SchedulerErrorType = {
 }
 
 const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
-  ({...otherProps}) => {
+  () => {
     const classes = useStyles()
     const {url, path} = useRouteMatch()
-    console.log(`${url}`)
-    console.log(`${path}`)
-    let {id, section} = useParams<{
+    let {id, section = 'session-creator'} = useParams<{
       id: string
       section: StudySection
     }>()
@@ -143,15 +141,15 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
       error: scheduleError,
       isLoading: isScheduleLoading,
     } = useSchedule(id)
-    const {data: studySource, error: studyError} = useStudy(id)
+    const {
+      data: studySource,
+      error: studyError,
+      isLoading: isStudyLoading,
+    } = useStudy(id)
     const [study, setStudy] = React.useState<Study | undefined>()
     const [schedule, setSchedule] = React.useState<Schedule | undefined>()
-
     const [error, setError] = React.useState<string>()
     const handleError = useErrorHandler()
-
-    const [saveLoader, setSaveLoader] = React.useState(false)
-
     const [open, setOpen] = React.useState(true)
     const [displayBanner, setDisplayBanner] = React.useState(false)
     const [cancelBanner, setCancelBanner] = React.useState(false)
@@ -164,7 +162,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
     }>()
 
     React.useEffect(() => {
-      console.log('rerendering builder')
       if (!study) {
         setStudy(studySource)
       }
@@ -188,14 +185,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
       }
     }, [study?.phase, section, error, cancelBanner])
 
-    if (!study) {
-      return <>no study</>
-    }
-
-    // console.log('studyId', id)
-
     if (studyError || scheduleError) {
-      //@ts-ignore
       if (studyError || (scheduleError && scheduleError.statusCode !== 404)) {
         handleError(studyError)
       }
@@ -314,7 +304,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
             <Box className={classes.mainAreaWrapper}>
               <Box className={getClasses()}>
                 <LoadingComponent
-                  reqStatusLoading={saveLoader}
+                  reqStatusLoading={isStudyLoading || isScheduleLoading}
                   variant="small"
                   loaderSize="2rem"
                   style={{
@@ -357,11 +347,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                       study &&
                       schedule && (
                         <Switch>
-                          <Route path={`/studies/builder/:id/session-creator`}>
-                            <SessionCreator id={id}>
-                              {navButtons}
-                            </SessionCreator>
-                          </Route>
                           <Route path={`/studies/builder/:id/scheduler`}>
                             <Scheduler id={id} onShowFeedback={showFeedback}>
                               {navButtonsArray}
@@ -393,6 +378,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                             <PassiveFeatures id={id}>
                               {navButtons}
                             </PassiveFeatures>
+                          </Route>
+                          <Route>
+                            <SessionCreator id={id}>
+                              {navButtons}
+                            </SessionCreator>
                           </Route>
                         </Switch>
                       )

@@ -1,6 +1,7 @@
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import ScheduleService from '@services/schedule.service'
 import {Schedule} from '@typedefs/scheduling'
+import {ExtendedError} from '@typedefs/types'
 import {useMutation, useQuery, useQueryClient} from 'react-query'
 import {STUDY_KEYS} from './studyHooks'
 
@@ -15,7 +16,7 @@ const SCHEDULE_KEYS = {
 export const useSchedule = (studyId: string | undefined) => {
   const {token} = useUserSessionDataState()
 
-  return useQuery<Schedule | undefined, Error>(
+  return useQuery<Schedule | undefined, ExtendedError>(
     SCHEDULE_KEYS.detail(studyId),
     () => ScheduleService.getSchedule(studyId!, token!),
     {
@@ -32,17 +33,10 @@ export const useUpdateSchedule = () => {
   const update = async (props: {
     studyId: string
     schedule: Schedule
-    isPassive?: boolean
 
     action: 'UPDATE' | 'CREATE'
   }): Promise<Schedule> => {
-    const {studyId, schedule, action, isPassive} = props
-    if (isPassive) {
-      //  return Promise.resolve(study)
-      return new Promise((resolve, reject) => {
-        resolve(schedule)
-      })
-    }
+    const {studyId, schedule, action} = props
     if (action === 'UPDATE') {
       return ScheduleService.saveSchedule(studyId, schedule, token!)
     } else {
@@ -73,10 +67,8 @@ export const useUpdateSchedule = () => {
         }*/
     },
     onSettled: async (data, error, args) => {
-      if (!args.isPassive) {
-        queryClient.invalidateQueries(SCHEDULE_KEYS.detail(args.studyId))
-        queryClient.invalidateQueries(STUDY_KEYS.detail(args.studyId))
-      }
+      queryClient.invalidateQueries(SCHEDULE_KEYS.detail(args.studyId))
+      queryClient.invalidateQueries(STUDY_KEYS.detail(args.studyId))
     },
   })
 
