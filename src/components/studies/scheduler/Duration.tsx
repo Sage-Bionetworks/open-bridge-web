@@ -68,6 +68,15 @@ const Duration: React.FunctionComponent<
   }, [durationString])
 
   const changeValue = (value?: number, unit?: string) => {
+    if (!unit || value === undefined) {
+      return
+    }
+    if (inputDurationCapInWeeks !== undefined) {
+      const isOverScheduleDurationLimit =
+        (value > inputDurationCapInWeeks && unt === 'W') ||
+        (value > inputDurationCapInWeeks * 7 && unt === 'D')
+      if (isOverScheduleDurationLimit) return
+    }
     if (unit) {
       setUnit(unit)
     }
@@ -82,9 +91,6 @@ const Duration: React.FunctionComponent<
         unit = unitDefaultValue
         setUnit(unitDefaultValue)
       }
-    }
-    if (!unit || value === undefined) {
-      return
     }
   }
 
@@ -106,15 +112,6 @@ const Duration: React.FunctionComponent<
         {...props}
         id={numberLabel.replace(' ', '')}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          if (inputDurationCapInWeeks !== undefined) {
-            const newValue = Number(e.target.value as string)
-            const isOverScheduleDurationLimit =
-              (newValue > inputDurationCapInWeeks && unt === 'W') ||
-              (newValue > inputDurationCapInWeeks * 7 && unt === 'D')
-            if (isOverScheduleDurationLimit) {
-              return
-            }
-          }
           changeValue(Number(e.target.value as string), unt)
         }}
         inputWidth={isIntro ? 10 : undefined}></SmallTextBox>
