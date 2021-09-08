@@ -51,9 +51,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
 
   const instructionItems = studyEvents.map((evt, i) => (
     <li key={i}>
-      <strong>
-        {EventService.formatCustomEventIdForDisplay(evt.identifier)}
-      </strong>{' '}
+      <strong>{EventService.formatCustomEventIdForDisplay(evt.eventId)}</strong>{' '}
       (can be updated later)
     </li>
   ))

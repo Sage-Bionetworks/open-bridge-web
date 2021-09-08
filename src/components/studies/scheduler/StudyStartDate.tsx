@@ -8,13 +8,12 @@ import {
 } from '@material-ui/core'
 import clsx from 'clsx'
 import React, {ReactNode} from 'react'
-import {StartEventId} from '../../../types/scheduling'
 import SchedulingFormSection from './SchedulingFormSection'
 
 export interface StudyStartDateProps {
   isIntro?: boolean
-  startEventId?: StartEventId
-  onChange: (n: StartEventId) => void
+  startEventId?: string
+  onChange: (n: string) => void
   style?: React.CSSProperties
   children?: ReactNode
 }
@@ -56,7 +55,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
   style,
   children,
 }: StudyStartDateProps) => {
-  const options: StartEventId[] = ['timeline_retrieved', 'study_start_date']
+  const options: string[] = ['timeline_retrieved', 'study_start_date']
   const classes = useStyles()
   const label = isIntro && children ? children : 'Define Day 1 of the study'
 
@@ -71,7 +70,7 @@ const StudyStartDate: React.FunctionComponent<StudyStartDateProps> = ({
         aria-label="Day 1"
         name="day1"
         value={startEventId}
-        onChange={e => onChange(e.target.value as StartEventId)}
+        onChange={e => onChange(e.target.value as string)}
         className={clsx(
           isIntro && classes.inIntroRadioGroup,
           !isIntro && classes.notInIntroRadioGroup

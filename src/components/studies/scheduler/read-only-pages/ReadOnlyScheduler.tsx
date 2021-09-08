@@ -16,10 +16,7 @@ import {
   defaultSchedule,
   useStyles as SchedulableSessionStyles,
 } from '../SchedulableSingleSessionContainer'
-import {
-  getStartEventIdFromSchedule,
-  useStyles as sharedSchedulerStyles,
-} from '../ScheduleCreatorTab'
+import {useStyles as sharedSchedulerStyles} from '../ScheduleCreatorTab'
 import Timeline from '../ScheduleTimeline'
 import SchedulingFormSection from '../SchedulingFormSection'
 import {getTimeUnitFormatted} from '../utility'
@@ -66,7 +63,6 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
   const schedulerClasses = sharedSchedulerStyles()
   const sessionContainerClasses = SchedulableSessionStyles()
   const classes = useStyles()
-  const startEventId = getStartEventIdFromSchedule(schedule)
 
   function getSessionIntervalText(session: StudySession) {
     const {interval, occurrences} = session
@@ -115,18 +111,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
           version={version!}
           studyId={studyId}
           schedule={schedule}></Timeline>
-        <div className={schedulerClasses.studyStartDateContainer}>
-          <Box className={classes.row} mb={3}>
-            <Box className={classes.readOnlyText} maxWidth="160px" mr={3}>
-              Define Day 1 of the study:
-            </Box>
-            <strong className={classes.readOnlyText}>
-              {startEventId !== 'study_start_date'
-                ? 'Right after completion of onboarding session'
-                : 'Start Date (usually clinic visit) to be defined in Participant Manager'}
-            </strong>
-          </Box>
-        </div>
+
         {schedule.sessions.map((session, index) => (
           <Box mb={2} display="flex" key={session.guid}>
             <Box

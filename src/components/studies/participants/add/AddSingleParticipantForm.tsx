@@ -121,18 +121,15 @@ const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps>
           <>
             {customStudyEvents.map(evt => (
               <DatePicker
-                key={evt.identifier}
-                label={EventService.formatCustomEventIdForDisplay(
-                  evt.identifier
-                )}
-                id={evt.identifier}
+                key={evt.eventId}
+                label={EventService.formatCustomEventIdForDisplay(evt.eventId)}
+                id={evt.eventId}
                 value={
-                  participant.events?.find(
-                    pEvt => pEvt.eventId === evt.identifier
-                  )?.timestamp || null
+                  participant.events?.find(pEvt => pEvt.eventId === evt.eventId)
+                    ?.timestamp || null
                 }
                 onChange={e =>
-                  handleEventDateChange(evt.identifier, e)
+                  handleEventDateChange(evt.eventId, e)
                 }></DatePicker>
             ))}
           </>

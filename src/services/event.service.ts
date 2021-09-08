@@ -1,10 +1,9 @@
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
-import {StartEventId} from '../types/scheduling'
 import {ParticipantEvent, StringDictionary} from '../types/types'
 import ScheduleService from './schedule.service'
 
-export const JOINED_EVENT_ID: StartEventId = 'timeline_retrieved'
+export const JOINED_EVENT_ID = 'timeline_retrieved'
 export const LINK_SENT_EVENT_ID = 'install_link_sent'
 export const EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING = 'withdrawn'
 
@@ -33,7 +32,7 @@ async function getRelevantEventsForParticipants(
   const eventIdsForSchedule = await ScheduleService.getEventsForSchedule(
     studyIdentifier,
     token
-  ).then(result => result.map(e => prefixCustomEventIdentifier(e.identifier)))
+  ).then(result => result.map(e => prefixCustomEventIdentifier(e.eventId)))
   const promises = participantId.map(async pId => {
     const endpoint = constants.endpoints.events
       .replace(':studyId', studyIdentifier)
@@ -92,12 +91,12 @@ async function updateParticipantCustomEvents(
 
   const eventsToDelete = schedulingEvents.filter(
     event =>
-      !customEventWithDate.find(pEvent => event.identifier === pEvent.eventId)
+      !customEventWithDate.find(pEvent => event.eventId === pEvent.eventId)
   )
 
   const eventsToDeletePromises = eventsToDelete.map(event =>
     Utility.callEndpoint<{identifier: string}>(
-      eventEndpoint + '/' + event.identifier,
+      eventEndpoint + '/' + event.eventId,
       'DELETE',
       {},
       token

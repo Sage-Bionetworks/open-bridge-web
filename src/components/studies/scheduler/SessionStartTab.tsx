@@ -120,15 +120,13 @@ const SessionStartTab: React.ForwardRefRenderFunction<
   const handleError = useErrorHandler()
   const [saveLoader, setSaveLoader] = React.useState(false)
 
-  const onUpdate = async (events: SchedulingEvent[]) => {
+  const onUpdate = async (customEvents: SchedulingEvent[]) => {
     if (!study) {
       return
     }
-    const cData = study.clientData
-    cData.events = events
     let updatedStudy = {
       ...study,
-      clientData: cData,
+      customEvents,
     }
 
     await mutateStudy({study: updatedStudy})
@@ -139,8 +137,8 @@ const SessionStartTab: React.ForwardRefRenderFunction<
   >([])
 
   useEffect(() => {
-    if (!study?.clientData?.events) return
-    const localEvents = study?.clientData.events!.map(element => {
+    if (!study?.customEvents) return
+    const localEvents = study?.customEvents!.map(element => {
       return {
         ...element,
         hasError: false,
@@ -148,7 +146,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
       }
     })
     checkForDuplicateEventNames(localEvents)
-  }, [study?.clientData.events])
+  }, [study?.customEvents])
 
   if (!study) {
     return <></>
@@ -156,7 +154,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
 
   const addEmptyEvent = () => {
     const newEvent: SchedulingEvent = {
-      identifier: 'untitled',
+      eventId: 'untitled',
       updateType: 'mutable',
     }
     const newEvents = [...transformLocalEventObjects(), newEvent]
@@ -166,7 +164,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
   const transformLocalEventObjects = () => {
     return localEventObjects.map(element => {
       return {
-        identifier: element.identifier,
+        eventId: element.eventId,
         updateType: element.updateType,
       }
     })
@@ -178,12 +176,12 @@ const SessionStartTab: React.ForwardRefRenderFunction<
   }
 
   const checkForDuplicateEventNames = (arr?: LocalEventObject[]) => {
-    if (!study.clientData?.events) return false
+    if (!study.customEvents) return false
     const seenIdentifiers = new Map<string, LocalEventObject>()
     const currentLocalEventObjects = [...(arr || localEventObjects)]
     let foundError = false
     for (let i = 0; i < currentLocalEventObjects.length; i++) {
-      const identifier = currentLocalEventObjects[i].identifier
+      const identifier = currentLocalEventObjects[i].eventId
       if (seenIdentifiers.has(identifier)) {
         foundError = true
         currentLocalEventObjects[i].hasError = true
@@ -203,7 +201,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
     onUpdate(
       newEvents.map(el => {
         return {
-          identifier: el.identifier,
+          eventId: el.eventId,
           updateType: el.updateType,
         }
       })
@@ -264,12 +262,12 @@ const SessionStartTab: React.ForwardRefRenderFunction<
                     style={{alignItems: 'center', marginTop: '21px'}}>
                     <input
                       key={evt.key}
-                      value={evt.identifier}
+                      value={evt.eventId}
                       onChange={e => {
                         const newIdentifiers = [...localEventObjects]
                         newIdentifiers[index] = {
                           ...newIdentifiers[index],
-                          identifier: e.target.value,
+                          eventId: e.target.value,
                         }
                         setLocalEventObjects(newIdentifiers)
                       }}

@@ -69,7 +69,7 @@ function getDownloadTemplateRow(
   })
   studyEvents?.forEach((e, index) => {
     templateData.splice(1 + index, 0, {
-      [EventService.formatCustomEventIdForDisplay(e.identifier)]: '',
+      [EventService.formatCustomEventIdForDisplay(e.eventId)]: '',
     })
   })
   return Object.assign({}, ...templateData)
@@ -187,10 +187,10 @@ async function getParticipantDataForDownload(
 
       studyEvents?.forEach(currentEvent => {
         const matchingEvent = p.events?.find(
-          pEvt => pEvt.eventId === currentEvent.identifier
+          pEvt => pEvt.eventId === currentEvent.eventId
         )
         participant[
-          EventService.formatCustomEventIdForDisplay(currentEvent.identifier)
+          EventService.formatCustomEventIdForDisplay(currentEvent.eventId)
         ] = matchingEvent?.timestamp
           ? moment(matchingEvent?.timestamp).format('l')
           : ''

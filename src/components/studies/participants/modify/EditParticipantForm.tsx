@@ -87,7 +87,7 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
       return null
     }
     const matchingParticipantEvent = participantEvents.find(
-      pEvt => pEvt.eventId === currentEvent.identifier
+      pEvt => pEvt.eventId === currentEvent.eventId
     )
     if (matchingParticipantEvent) {
       console.log('found event')
@@ -116,14 +116,12 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
           <>
             {customStudyEvents.map(evt => (
               <DatePicker
-                key={evt.identifier}
-                label={EventService.formatCustomEventIdForDisplay(
-                  evt.identifier
-                )}
-                id={evt.identifier}
+                key={evt.eventId}
+                label={EventService.formatCustomEventIdForDisplay(evt.eventId)}
+                id={evt.eventId}
                 value={getEventDateValue(customParticipantEvents, evt)}
                 onChange={e =>
-                  handleEventDateChange(evt.identifier, e)
+                  handleEventDateChange(evt.eventId, e)
                 }></DatePicker>
             ))}
           </>
