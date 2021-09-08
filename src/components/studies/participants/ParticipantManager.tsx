@@ -456,14 +456,16 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const updateParticipant = async (
     participantId: string,
-    note: string,
+    updatedFields: {
+      [Property in keyof ParticipantAccountSummary]?: ParticipantAccountSummary[Property]
+    },
     customEvents: ParticipantEvent[]
   ) => {
     await ParticipantService.updateParticipant(
       study!.identifier,
       token!,
       participantId,
-      {note: note}
+      updatedFields
     )
     await EventService.updateParticipantCustomEvents(
       study!.identifier,
@@ -575,7 +577,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const displayPlaceholderScreen =
     !constants.constants.IS_TEST_MODE && study.phase != 'in_flight'
-
   return (
     <Box bgcolor="#F8F8F8">
       <Box px={3} py={2} display="flex" alignItems="center">
@@ -820,14 +821,22 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       onUpdateParticipant={(
                         participantId: string,
                         note: string,
-                        customEvents?: ParticipantEvent[]
-                      ) =>
+                        customEvents?: ParticipantEvent[],
+                        clientTimeZone?: string
+                      ) => {
+                        const data = {
+                          note: note,
+                          clientTimeZone: clientTimeZone,
+                        }
+                        if (!clientTimeZone) {
+                          delete data.clientTimeZone
+                        }
                         updateParticipant(
                           participantId,
-                          note,
+                          data,
                           customEvents || []
                         )
-                      }
+                      }}
                       isEnrolledById={Utility.isSignInById(study.signInTypes)}
                       onRowSelected={(
                         /*id: string, isSelected: boolean*/ selection,

@@ -27,8 +27,8 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
 }) => {
   const [isLoading, setIsLoading] = React.useState(false)
 
-  const updateParticipants = async (note: string, cvd?: Date) => {
-    if (!note && !cvd) return
+  const updateParticipants = async (clientTimeZone?: string) => {
+    if (!clientTimeZone) return
     setIsLoading(true)
     let participantIds = selectedParticipants
     if (isAllSelected) {
@@ -44,28 +44,15 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
         el => el.participant.identifier
       )
     }
-    /* if (note) {
-      const promises = participantIds.map(async selectedParticipantId => {
-        return await ParticipantService.updateParticipant(
-          studyId,
-          token,
-          selectedParticipantId,
-          {note: note}
-        )
-      })
-      await Promise.all(promises)
-    }
-    if (cvd) {
-      const promises = participantIds.map(async selectedParticipantId => {
-        return await ParticipantService.updateParticipantClinicVisit(
-          studyId,
-          token,
-          selectedParticipantId,
-          cvd
-        )
-      })
-      await Promise.all(promises)
-    }*/
+    const promises = participantIds.map(async selectedParticipantID => {
+      return ParticipantService.updateParticipant(
+        studyId,
+        token,
+        selectedParticipantID,
+        {clientTimeZone: clientTimeZone}
+      )
+    })
+    await Promise.all(promises)
     onSetIsBatchEditOpen(false)
     setIsLoading(false)
     onToggleParticipantRefresh()
@@ -90,7 +77,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
         onCancel={() => {
           onSetIsBatchEditOpen(false)
         }}
-        onOK={(note: string, cvd?: Date) => updateParticipants(note, cvd)}
+        onOK={(clientTimeZone?: string) => updateParticipants(clientTimeZone)}
         participant={{}}
         isBatchEdit
         isLoading={isLoading}></EditParticipantForm>

@@ -19,6 +19,7 @@ import EventService from '@services/event.service'
 import {SchedulingEvent} from '@typedefs/scheduling'
 import {EditableParticipantData, ParticipantEvent} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
+import TimezoneDropdown from '../TimezoneDropdown'
 
 const useStyles = makeStyles(theme => ({
   editForm: {
@@ -54,6 +55,9 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
   const [customParticipantEvents, setCustomParticipantEvents] = React.useState<
     ParticipantEvent[]
   >([])
+  const [currentTimeZone, setCurrentTimeZone] = React.useState(
+    participant.clientTimeZone || ''
+  )
 
   React.useEffect(() => {
     setCustomParticipantEvents(participant.events || [])
@@ -123,18 +127,25 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
                 }></DatePicker>
             ))}
           </>
-
-          <FormControl>
-            <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
-            <SimpleTextInput
-              value={note}
-              placeholder="comments"
-              onChange={e => setNotes(e.target.value)}
-              id="note"
-              multiline={true}
-              rows={5}
+          <Box width="375px" mb={3}>
+            <TimezoneDropdown
+              currentValue={currentTimeZone}
+              onValueChange={setCurrentTimeZone}
             />
-          </FormControl>
+          </Box>
+          {!isBatchEdit && (
+            <FormControl>
+              <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
+              <SimpleTextInput
+                value={note}
+                placeholder="comments"
+                onChange={e => setNotes(e.target.value)}
+                id="note"
+                multiline={true}
+                rows={5}
+              />
+            </FormControl>
+          )}
         </FormGroup>
       </DialogContent>
       <DialogActions style={{justifyContent: 'space-between'}}>
@@ -145,7 +156,11 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
               Cancel
             </DialogButtonSecondary>
             <DialogButtonPrimary
-              onClick={() => onOK(note, customParticipantEvents)}
+              onClick={() => {
+                isBatchEdit
+                  ? onOK(currentTimeZone)
+                  : onOK(note, currentTimeZone, customParticipantEvents)
+              }}
               color="primary"
               autoFocus>
               Save Changes

@@ -146,6 +146,7 @@ const EditCell: FunctionComponent<{
         note: getValString('note'),
         externalId: getValString('externalId'),
         phoneNumber: getValPhone('phone'),
+        clientTimeZone: getValString('clientTimeZone'),
       }
 
       const event = await ParticipantService.getRequestInfoForParticipant(
@@ -365,7 +366,12 @@ function getColumns(
       renderCell: renderCellExpand,
       flex: 2,
     },
-
+    {
+      field: 'clientTimeZone',
+      headerName: 'Time Zone',
+      valueGetter: params => params.value || '-',
+      flex: 1,
+    },
     {
       field: 'joinedDate',
       renderHeader: () =>
@@ -456,7 +462,7 @@ function getColumns(
   }
 
   const eventInsertionIndex = participantColumns.findIndex(
-    column => column.field === 'joinedDate'
+    column => column.field === 'clientTimeZone'
   )
   participantColumns.splice(eventInsertionIndex, 0, ...customEventColumns)
   //participantColumns = [...participantColumns, ...customEventColumns]
@@ -478,7 +484,8 @@ export type ParticipantTableGridProps = {
   onUpdateParticipant: (
     pId: string,
     note: string,
-    customEvents: ParticipantEvent[]
+    customEvents: ParticipantEvent[],
+    clientTimeZone?: string
   ) => void
   onWithdrawParticipant: (participantId: string, note: string) => void
   children: React.ReactNode //paging control
@@ -630,11 +637,16 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             customStudyEvents={customStudyEvents}
             isEnrolledById={isEnrolledById}
             onCancel={() => setParticipantToEdit(undefined)}
-            onOK={(note: string, customEvents?: ParticipantEvent[]) => {
+            onOK={(
+              note: string,
+              clientTimeZone?: string,
+              customEvents?: ParticipantEvent[]
+            ) => {
               onUpdateParticipant(
                 participantToEdit?.id!,
                 note,
-                customEvents || []
+                customEvents || [],
+                clientTimeZone
               )
               setParticipantToEdit(undefined)
             }}
