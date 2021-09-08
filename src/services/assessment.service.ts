@@ -96,7 +96,9 @@ async function getAssessmentsWithResources(
     }, {} as any)
 
     const result = {assessments: items, tags}
-    localStorage.setItem('AR', JSON.stringify(result))
+    if (!guid) {
+      sessionStorage.setItem('AssessmentResources', JSON.stringify(result))
+    }
 
     return result
   })

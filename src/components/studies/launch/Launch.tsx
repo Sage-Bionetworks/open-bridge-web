@@ -110,7 +110,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
     data: schedule,
     error: scheduleError,
     isLoading: scheduleLoading,
-  } = useSchedule(id)
+  } = useSchedule(id, false)
   const [study, setStudy] = React.useState<Study>()
 
   const {

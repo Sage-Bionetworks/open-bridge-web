@@ -11,14 +11,19 @@ const SCHEDULE_KEYS = {
   // list: (filters: string) => [...todoKeys.lists(), { filters }] as const,
   details: () => [...SCHEDULE_KEYS.all, 'detail'] as const,
   detail: (id: string | undefined) => [...SCHEDULE_KEYS.details(), id] as const,
+  detail_noresources: (id: string | undefined) =>
+    [...SCHEDULE_KEYS.details(), id, 'no_resources'] as const,
 }
 
-export const useSchedule = (studyId: string | undefined) => {
+export const useSchedule = (
+  studyId: string | undefined,
+  withResources: boolean = true
+) => {
   const {token} = useUserSessionDataState()
 
   return useQuery<Schedule | undefined, ExtendedError>(
     SCHEDULE_KEYS.detail(studyId),
-    () => ScheduleService.getSchedule(studyId!, token!),
+    () => ScheduleService.getSchedule(studyId!, token!, withResources),
     {
       enabled: !!studyId,
       retry: false,
@@ -61,7 +66,7 @@ export const useUpdateSchedule = () => {
       return {previousSchedule}
     },
     onError: (err, variables, context) => {
-      console.log(err, variables, context)
+      console.log('%c ' + err, 'color: red')
       /* if (context?.previousStudies) {
           queryClient.setQueryData<Study[]>(KEYS.studies, context.previousStudies)
         }*/
