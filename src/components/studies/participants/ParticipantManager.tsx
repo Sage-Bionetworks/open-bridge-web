@@ -12,12 +12,14 @@ import TestAccountFocusIcon from '@assets/participants/test_account_focus_icon.s
 import TestAccountUnfocusIcon from '@assets/participants/test_account_unfocus_icon.svg'
 import WithdrawnParticipantsFocusIcon from '@assets/participants/withdrawn_participants_focus_icon.svg'
 import WithdrawnParticipantsUnfocusIcon from '@assets/participants/withdrawn_participants_unfocus_icon.svg'
+import EditParticipantImage from '@assets/participants/edit_participant_details_image.svg'
 import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
 import {useStudy} from '@components/studies/studyHooks'
 import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import {MTBHeadingH3} from '@components/widgets/Headings'
 import HelpBox from '@components/widgets/HelpBox'
+import JoinedCheckSymbol from '@assets/participants/joined_check_mark.svg'
 import {
   DialogButtonPrimary,
   DialogButtonSecondary,
@@ -199,6 +201,17 @@ const useStyles = makeStyles(theme => ({
     height: '48px',
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
+  },
+  noParticipantsText: {
+    '& p': {
+      fontFamily: latoFont,
+    },
+    padding: theme.spacing(7.5, 7.5),
+    display: 'flex',
+    fontSize: '16px',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: theme.spacing(8),
   },
 }))
 
@@ -576,6 +589,46 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const displayPlaceholderScreen =
     !constants.constants.IS_TEST_MODE && study.phase != 'in_flight'
 
+  const displayNoParticipantsPage =
+    status !== 'PENDING' && data?.items.length == 0 && tab === 'WITHDRAWN'
+
+  const WithdrawnTabNoParticipantsPage = (
+    <Box className={classes.noParticipantsText}>
+      <Box maxWidth="400px" textAlign="left" mr={8}>
+        <Box mb={3} fontWeight="bold" fontFamily={poppinsFont}>
+          Withdrawing Participants From the Study
+        </Box>
+        <p>
+          Once a participant signs into the app, they are considered enrolled in
+          your study.
+        </p>
+        <p>
+          A{' '}
+          <img
+            src={JoinedCheckSymbol}
+            alt="Check Icon"
+            style={{marginBottom: '-4px'}}></img>{' '}
+          and timestamp will appear on the Joined column of the Particpant List.
+        </p>
+        <p>
+          To withdraw a participant from a study: on the Participant List tab,
+          click on the{' '}
+          <img
+            src={BatchEditIcon}
+            alt="Pencil Icon"
+            style={{marginBottom: '-4px'}}></img>{' '}
+          icon to Edit Participant Details. Click on Withdraw from study in the
+          bottom left corner.
+        </p>
+        <p>
+          Participants who are withdrawn will appear on this Withdrawn
+          Participant tab for your study records.
+        </p>
+      </Box>
+      <img src={EditParticipantImage}></img>
+    </Box>
+  )
+
   return (
     <Box bgcolor="#F8F8F8">
       <Box px={3} py={2} display="flex" alignItems="center">
@@ -598,7 +651,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               isAddOpen={isAddOpen}
             />
           )}
-          <Box py={0} pr={3} pl={2}>
+          <Box py={0} pr={3} pl={2} minHeight="calc(100vh - 150px)">
             <Tabs
               value={tab}
               variant="standard"
@@ -710,7 +763,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           Send SMS link
                         </Button>
                       )}
-                      {tab === 'ACTIVE' && (
+                      {tab === 'ACTIVE' && !displayNoParticipantsPage && (
                         <Button
                           aria-label="batch-edit"
                           onClick={() => {
@@ -729,38 +782,40 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         </Button>
                       )}
 
-                      <ParticipantDownloadTrigger
-                        onDownload={() =>
-                          downloadParticipants(isAllSelected ? 'ALL' : 'SOME')
-                        }
-                        fileDownloadUrl={fileDownloadUrl}
-                        hasItems={
-                          !!data?.items?.length &&
-                          selectedParticipantIds[tab].length > 0
-                        }
-                        onDone={() => {
-                          URL.revokeObjectURL(fileDownloadUrl!)
-                          setFileDownloadUrl(undefined)
-                        }}>
-                        <>
-                          <img
-                            src={DownloadIcon}
-                            style={{
-                              marginRight: '6px',
-                              opacity:
-                                selectedParticipantIds[tab].length === 0
-                                  ? 0.5
-                                  : 1,
-                            }}></img>
-                          {!loadingIndicators.isDownloading ? (
-                            'StudyParticipants.csv'
-                          ) : (
-                            <CircularProgress size={24} />
-                          )}
-                        </>
-                      </ParticipantDownloadTrigger>
+                      {!displayNoParticipantsPage && (
+                        <ParticipantDownloadTrigger
+                          onDownload={() =>
+                            downloadParticipants(isAllSelected ? 'ALL' : 'SOME')
+                          }
+                          fileDownloadUrl={fileDownloadUrl}
+                          hasItems={
+                            !!data?.items?.length &&
+                            selectedParticipantIds[tab].length > 0
+                          }
+                          onDone={() => {
+                            URL.revokeObjectURL(fileDownloadUrl!)
+                            setFileDownloadUrl(undefined)
+                          }}>
+                          <>
+                            <img
+                              src={DownloadIcon}
+                              style={{
+                                marginRight: '6px',
+                                opacity:
+                                  selectedParticipantIds[tab].length === 0
+                                    ? 0.5
+                                    : 1,
+                              }}></img>
+                            {!loadingIndicators.isDownloading ? (
+                              'StudyParticipants.csv'
+                            ) : (
+                              <CircularProgress size={24} />
+                            )}
+                          </>
+                        </ParticipantDownloadTrigger>
+                      )}
 
-                      {tab !== 'WITHDRAWN' && (
+                      {tab !== 'WITHDRAWN' && !displayNoParticipantsPage && (
                         <Button
                           aria-label="delete"
                           onClick={() => {
@@ -784,16 +839,18 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       )}
                     </Box>
 
-                    <ParticipantSearch
-                      isEnrolledById={Utility.isSignInById(study.signInTypes)}
-                      onReset={() => {
-                        handleSearchParticipantRequest(undefined)
-                      }}
-                      onSearch={(searchedValue: string) => {
-                        handleSearchParticipantRequest(searchedValue)
-                      }}
-                      tab={tab}
-                    />
+                    {!displayNoParticipantsPage && (
+                      <ParticipantSearch
+                        isEnrolledById={Utility.isSignInById(study.signInTypes)}
+                        onReset={() => {
+                          handleSearchParticipantRequest(undefined)
+                        }}
+                        onSearch={(searchedValue: string) => {
+                          handleSearchParticipantRequest(searchedValue)
+                        }}
+                        tab={tab}
+                      />
+                    )}
                   </Box>
                   <div
                     role="tabpanel"
@@ -804,63 +861,69 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       marginLeft:
                         !isAddOpen && tab !== 'WITHDRAWN' ? '-48px' : '0',
                     }}>
-                    <ParticipantTableGrid
-                      rows={data?.items || []}
-                      status={status}
-                      customStudyEvents={studyEvents || []}
-                      studyId={study.identifier}
-                      totalParticipants={data?.total || 0}
-                      isAllSelected={isAllSelected}
-                      gridType={tab}
-                      selectedParticipantIds={selectedParticipantIds[tab]}
-                      onWithdrawParticipant={(
-                        participantId: string,
-                        note: string
-                      ) => withdrawParticipant(participantId, note)}
-                      onUpdateParticipant={(
-                        participantId: string,
-                        note: string,
-                        customEvents?: ParticipantEvent[]
-                      ) =>
-                        updateParticipant(
-                          participantId,
-                          note,
-                          customEvents || []
-                        )
-                      }
-                      isEnrolledById={Utility.isSignInById(study.signInTypes)}
-                      onRowSelected={(
-                        /*id: string, isSelected: boolean*/ selection,
-                        isAll
-                      ) => {
-                        if (isAll !== undefined) {
-                          setIsAllSelected(isAll)
-                        }
-                        setSelectedParticipantIds(prev => ({
-                          ...prev,
-                          [tab]: selection,
-                        }))
-                      }}>
-                      <ParticipantTablePagination
+                    {displayNoParticipantsPage ? (
+                      WithdrawnTabNoParticipantsPage
+                    ) : (
+                      <ParticipantTableGrid
+                        rows={data?.items || []}
+                        status={status}
+                        customStudyEvents={studyEvents || []}
+                        studyId={study.identifier}
                         totalParticipants={data?.total || 0}
-                        onPageSelectedChanged={(pageSelected: number) => {
-                          setCurrentPage(pageSelected)
-                        }}
-                        currentPage={currentPage}
-                        pageSize={pageSize}
-                        setPageSize={setPageSize}
-                        handlePageNavigationArrowPressed={(button: string) => {
-                          const currPage =
-                            getCurrentPageFromPageNavigationArrowPressed(
-                              button,
-                              currentPage,
-                              data?.total || 0,
-                              pageSize
-                            )
-                          setCurrentPage(currPage)
-                        }}
-                      />
-                    </ParticipantTableGrid>
+                        isAllSelected={isAllSelected}
+                        gridType={tab}
+                        selectedParticipantIds={selectedParticipantIds[tab]}
+                        onWithdrawParticipant={(
+                          participantId: string,
+                          note: string
+                        ) => withdrawParticipant(participantId, note)}
+                        onUpdateParticipant={(
+                          participantId: string,
+                          note: string,
+                          customEvents?: ParticipantEvent[]
+                        ) =>
+                          updateParticipant(
+                            participantId,
+                            note,
+                            customEvents || []
+                          )
+                        }
+                        isEnrolledById={Utility.isSignInById(study.signInTypes)}
+                        onRowSelected={(
+                          /*id: string, isSelected: boolean*/ selection,
+                          isAll
+                        ) => {
+                          if (isAll !== undefined) {
+                            setIsAllSelected(isAll)
+                          }
+                          setSelectedParticipantIds(prev => ({
+                            ...prev,
+                            [tab]: selection,
+                          }))
+                        }}>
+                        <ParticipantTablePagination
+                          totalParticipants={data?.total || 0}
+                          onPageSelectedChanged={(pageSelected: number) => {
+                            setCurrentPage(pageSelected)
+                          }}
+                          currentPage={currentPage}
+                          pageSize={pageSize}
+                          setPageSize={setPageSize}
+                          handlePageNavigationArrowPressed={(
+                            button: string
+                          ) => {
+                            const currPage =
+                              getCurrentPageFromPageNavigationArrowPressed(
+                                button,
+                                currentPage,
+                                data?.total || 0,
+                                pageSize
+                              )
+                            setCurrentPage(currPage)
+                          }}
+                        />
+                      </ParticipantTableGrid>
+                    )}
                   </div>
                 </div>
 
