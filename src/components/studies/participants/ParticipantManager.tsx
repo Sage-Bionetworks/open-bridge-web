@@ -12,14 +12,12 @@ import TestAccountFocusIcon from '@assets/participants/test_account_focus_icon.s
 import TestAccountUnfocusIcon from '@assets/participants/test_account_unfocus_icon.svg'
 import WithdrawnParticipantsFocusIcon from '@assets/participants/withdrawn_participants_focus_icon.svg'
 import WithdrawnParticipantsUnfocusIcon from '@assets/participants/withdrawn_participants_unfocus_icon.svg'
-import EditParticipantImage from '@assets/participants/edit_participant_details_image.svg'
 import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
 import {useStudy} from '@components/studies/studyHooks'
 import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import {MTBHeadingH3} from '@components/widgets/Headings'
 import HelpBox from '@components/widgets/HelpBox'
-import JoinedCheckSymbol from '@assets/participants/joined_check_mark.svg'
 import {
   DialogButtonPrimary,
   DialogButtonSecondary,
@@ -63,9 +61,11 @@ import DialogContents from './DialogContents'
 import ParticipantTableGrid from './grid/ParticipantTableGrid'
 import ParticipantTablePagination from './grid/ParticipantTablePagination'
 import BatchEditForm from './modify/BatchEditForm'
+import WithdrawParticipantForm from './modify/WithdrawParticipantForm'
 import ParticipantManagerPlaceholder from './ParticipantManagerPlaceholder'
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantUtility from './participantUtility'
+import WithdrawnTabNoParticipantsPage from './WithdrawnTabNoParticipantsPage'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -201,17 +201,6 @@ const useStyles = makeStyles(theme => ({
     height: '48px',
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
-  },
-  noParticipantsText: {
-    '& p': {
-      fontFamily: latoFont,
-    },
-    padding: theme.spacing(7.5, 7.5),
-    display: 'flex',
-    fontSize: '16px',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: theme.spacing(8),
   },
 }))
 
@@ -592,43 +581,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const displayNoParticipantsPage =
     status !== 'PENDING' && data?.items.length == 0 && tab === 'WITHDRAWN'
 
-  const WithdrawnTabNoParticipantsPage = (
-    <Box className={classes.noParticipantsText}>
-      <Box maxWidth="400px" textAlign="left" mr={8}>
-        <Box mb={3} fontWeight="bold" fontFamily={poppinsFont}>
-          Withdrawing Participants From the Study
-        </Box>
-        <p>
-          Once a participant signs into the app, they are considered enrolled in
-          your study.
-        </p>
-        <p>
-          A{' '}
-          <img
-            src={JoinedCheckSymbol}
-            alt="Check Icon"
-            style={{marginBottom: '-4px'}}></img>{' '}
-          and timestamp will appear on the Joined column of the Particpant List.
-        </p>
-        <p>
-          To withdraw a participant from a study: on the Participant List tab,
-          click on the{' '}
-          <img
-            src={BatchEditIcon}
-            alt="Pencil Icon"
-            style={{marginBottom: '-4px'}}></img>{' '}
-          icon to Edit Participant Details. Click on Withdraw from study in the
-          bottom left corner.
-        </p>
-        <p>
-          Participants who are withdrawn will appear on this Withdrawn
-          Participant tab for your study records.
-        </p>
-      </Box>
-      <img src={EditParticipantImage}></img>
-    </Box>
-  )
-
   return (
     <Box bgcolor="#F8F8F8">
       <Box px={3} py={2} display="flex" alignItems="center">
@@ -862,7 +814,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         !isAddOpen && tab !== 'WITHDRAWN' ? '-48px' : '0',
                     }}>
                     {displayNoParticipantsPage ? (
-                      WithdrawnTabNoParticipantsPage
+                      <WithdrawnTabNoParticipantsPage />
                     ) : (
                       <ParticipantTableGrid
                         rows={data?.items || []}
