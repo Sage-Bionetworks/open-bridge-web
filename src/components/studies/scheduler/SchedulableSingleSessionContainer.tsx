@@ -132,6 +132,9 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
       if (!windows || windows.length == 0) {
         return false
       }
+      if(windows.length == 1 && !windows[0].expiration) {
+        return false
+      }
       const over24 = windows.find(window => {
         if (!window.expiration) {
           return true
