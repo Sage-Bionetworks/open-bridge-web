@@ -691,8 +691,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     isTestAccount={tab === 'TEST'}
                   />
                 </>
-                <div>
-                  {!displayNoParticipantsPage && (
+                {displayNoParticipantsPage ? (
+                  <WithdrawnTabNoParticipantsPage />
+                ) : (
+                  <div>
                     <Box className={classes.gridToolBar}>
                       <Box
                         display="flex"
@@ -805,19 +807,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         tab={tab}
                       />
                     </Box>
-                  )}
-                  <div
-                    role="tabpanel"
-                    hidden={false}
-                    id={`active-participants`}
-                    className={classes.tabPanel}
-                    style={{
-                      marginLeft:
-                        !isAddOpen && tab !== 'WITHDRAWN' ? '-48px' : '0',
-                    }}>
-                    {displayNoParticipantsPage ? (
-                      <WithdrawnTabNoParticipantsPage />
-                    ) : (
+                    <div
+                      role="tabpanel"
+                      hidden={false}
+                      id={`active-participants`}
+                      className={classes.tabPanel}
+                      style={{
+                        marginLeft:
+                          !isAddOpen && tab !== 'WITHDRAWN' ? '-48px' : '0',
+                      }}>
                       <ParticipantTableGrid
                         rows={data?.items || []}
                         status={status}
@@ -885,9 +883,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           }}
                         />
                       </ParticipantTableGrid>
-                    )}
+                    </div>
                   </div>
-                </div>
+                )}
                 <Box textAlign="center" pl={2}>
                   {tab !== 'TEST' ? 'ADD A PARTICIPANT' : 'ADD TEST USER'}
                 </Box>
