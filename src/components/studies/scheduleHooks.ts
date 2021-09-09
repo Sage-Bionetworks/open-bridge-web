@@ -1,6 +1,6 @@
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import ScheduleService from '@services/schedule.service'
-import {Schedule} from '@typedefs/scheduling'
+import {Schedule, ScheduleTimeline} from '@typedefs/scheduling'
 import {ExtendedError} from '@typedefs/types'
 import {useMutation, useQuery, useQueryClient} from 'react-query'
 import {STUDY_KEYS} from './studyHooks'
@@ -11,8 +11,9 @@ const SCHEDULE_KEYS = {
   // list: (filters: string) => [...todoKeys.lists(), { filters }] as const,
   details: () => [...SCHEDULE_KEYS.all, 'detail'] as const,
   detail: (id: string | undefined) => [...SCHEDULE_KEYS.details(), id] as const,
+  timeline: (id: string) => [...SCHEDULE_KEYS.detail(id), 'timeline'] as const,
   detail_noresources: (id: string | undefined) =>
-    [...SCHEDULE_KEYS.details(), id, 'no_resources'] as const,
+    [...SCHEDULE_KEYS.detail(id), 'no_resources'] as const,
 }
 
 export const useSchedule = (
@@ -78,4 +79,17 @@ export const useUpdateSchedule = () => {
   })
 
   return mutation
+}
+
+export const useTimeline = (studyId: string) => {
+  const {token} = useUserSessionDataState()
+
+  return useQuery<ScheduleTimeline | undefined, ExtendedError>(
+    SCHEDULE_KEYS.timeline(studyId),
+    () => ScheduleService.getScheduleTimeline(studyId, token!),
+    {
+      enabled: !!studyId,
+      refetchOnWindowFocus: true,
+    }
+  )
 }
