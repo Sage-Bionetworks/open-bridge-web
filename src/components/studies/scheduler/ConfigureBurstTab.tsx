@@ -20,7 +20,7 @@ import {Study} from '../../../types/types'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
 import SmallTextBox from '../../widgets/SmallTextBox'
-import {TooltipHoverDisplay} from './ScheduleTimeline'
+import {TooltipHoverDisplay} from './ScheduleTimelineDisplay'
 import BurstTimeline from './timeline-plot/BurstTimeline'
 
 const useStyles = makeStyles((theme: Theme) =>

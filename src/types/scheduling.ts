@@ -79,6 +79,7 @@ export type StudySessionGeneral = {
   labels?: StringDictionary<string>[]
   guid?: string
   startEventId?: string
+  minutesToComplete?: number
 }
 
 export type StudySession = StudySessionGeneral & SessionSchedule
@@ -91,4 +92,23 @@ export type Schedule = {
   duration?: string //iso
   version?: number
   clientData?: any
+}
+
+export type ScheduleTimeline = {
+  duration: string //iso
+  schedule: TimelineScheduleItem[]
+  assessments: Assessment[]
+  sessions: StudySessionGeneral[]
+  totalMinutes: number
+  totalNotifications: number
+}
+
+export type TimelineScheduleItem = {
+  startDay: number
+  endDay: number
+  startTime: string
+  delayTime: string
+  expiration: string
+  refGuid: string
+  assessments?: any[]
 }

@@ -1,9 +1,9 @@
 import {makeStyles} from '@material-ui/core/styles'
+import {StudySession, TimelineScheduleItem} from '@typedefs/scheduling'
 import React from 'react'
-import {StudySession} from '../../../../types/scheduling'
 import GridPlot from './GridPlot'
 import {SessionPlot} from './SingleSessionPlot'
-import {TimelineScheduleItem, TimelineZoomLevel, unitPixelWidth} from './types'
+import {TimelineZoomLevel, unitPixelWidth} from './types'
 import Utility from './utility'
 
 const leftPad = 54

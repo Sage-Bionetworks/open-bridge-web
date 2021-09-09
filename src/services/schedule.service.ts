@@ -4,6 +4,7 @@ import {
   AssessmentWindow,
   Schedule,
   ScheduleNotification,
+  ScheduleTimeline,
   SchedulingEvent,
   StudySession,
 } from '../types/scheduling'
@@ -144,7 +145,7 @@ async function getSchedule(
 async function getScheduleTimeline(
   studyId: string,
   token: string
-): Promise<any | undefined> {
+): Promise<ScheduleTimeline | undefined> {
   const result = await Utility.callEndpoint<any>(
     constants.endpoints.scheduleTimeline.replace(':studyId', studyId),
     'GET',

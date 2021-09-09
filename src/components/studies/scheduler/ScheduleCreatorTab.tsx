@@ -30,7 +30,7 @@ import actionsReducer, {
   ActionTypes,
   SessionScheduleAction,
 } from './scheduleActions'
-import Timeline from './ScheduleTimeline'
+import ScheduleTimelineDisplay from './ScheduleTimelineDisplay'
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -356,10 +356,9 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
           )}
         </div>
         <Box bgcolor="#fff" p={2} pb={0} mt={3} key="scheduler">
-          <Timeline
-            version={study?.version || 0}
+          <ScheduleTimelineDisplay
             studyId={id}
-            schedule={schedule}></Timeline>
+            schedule={schedule}></ScheduleTimelineDisplay>
 
           {schedule.sessions.map((session, index) => (
             <Box
