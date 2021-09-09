@@ -17,7 +17,7 @@ import {
   useStyles as SchedulableSessionStyles,
 } from '../SchedulableSingleSessionContainer'
 import {useStyles as sharedSchedulerStyles} from '../ScheduleCreatorTab'
-import Timeline from '../ScheduleTimeline'
+import ScheduleTimelineDisplay from '../ScheduleTimelineDisplay'
 import SchedulingFormSection from '../SchedulingFormSection'
 import {getTimeUnitFormatted} from '../utility'
 
@@ -107,10 +107,9 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
         </Box>
       </div>
       <Box bgcolor="#fff" p={2} mt={3} key="scheduler">
-        <Timeline
-          version={version!}
+        <ScheduleTimelineDisplay
           studyId={studyId}
-          schedule={schedule}></Timeline>
+          schedule={schedule}></ScheduleTimelineDisplay>
 
         {schedule.sessions.map((session, index) => (
           <Box mb={2} display="flex" key={session.guid}>
