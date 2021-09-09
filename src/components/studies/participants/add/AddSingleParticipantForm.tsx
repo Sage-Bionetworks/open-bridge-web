@@ -64,17 +64,12 @@ const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps>
           id="participant-id"
           fullWidth={true}
           value={participant.externalId}
-          inputProps={{
-            maskType: 'ID',
-            placeholder: 'xxx-xxx',
-            onAccept: (v: string) => {
-              onChange({
-                ...participant,
-                externalId: v,
-              })
-            },
-          }}
-          inputComponent={TextMask as any}
+          onChange={e =>
+            onChange({
+              ...participant,
+              externalId: e.target.value,
+            })
+          }
         />
       </FormControl>
     )
