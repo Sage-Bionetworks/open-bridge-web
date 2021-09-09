@@ -613,7 +613,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                     {status === 'PENDING' ? (
                       <CircularProgress id="circular_progress"></CircularProgress>
                     ) : (
-                      'No Participants'
+                      <Box bgcolor="white" height="100%" width="100%"></Box>
                     )}
                   </GridOverlay>
                 ),
