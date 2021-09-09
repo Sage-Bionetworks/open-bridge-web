@@ -458,14 +458,16 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const updateParticipant = async (
     participantId: string,
-    note: string,
+    updatedFields: {
+      [Property in keyof ParticipantAccountSummary]?: ParticipantAccountSummary[Property]
+    },
     customEvents: ParticipantEvent[]
   ) => {
     await ParticipantService.updateParticipant(
       study!.identifier,
       token!,
       participantId,
-      {note: note}
+      updatedFields
     )
     await EventService.updateParticipantCustomEvents(
       study!.identifier,
@@ -596,14 +598,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         <ParticipantManagerPlaceholder />
       ) : (
         <>
-          {tab === 'ACTIVE' && !isUserSearchingForParticipant && (
+          {/* {tab === 'ACTIVE' && !isUserSearchingForParticipant && (
             <HelpBoxSC
               numRows={data?.items?.length}
               status={status}
               isAddOpen={isAddOpen}
             />
-          )}
-          <Box py={0} pr={3} pl={2} minHeight="calc(100vh - 150px)">
+          )} */}
+          <Box py={0} pr={3} pl={2}>
             <Tabs
               value={tab}
               variant="standard"
@@ -832,14 +834,22 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         onUpdateParticipant={(
                           participantId: string,
                           note: string,
-                          customEvents?: ParticipantEvent[]
-                        ) =>
+                          customEvents?: ParticipantEvent[],
+                          clientTimeZone?: string
+                        ) => {
+                          const data = {
+                            note: note,
+                            clientTimeZone: clientTimeZone,
+                          }
+                          if (!clientTimeZone) {
+                            delete data.clientTimeZone
+                          }
                           updateParticipant(
                             participantId,
-                            note,
+                            data,
                             customEvents || []
                           )
-                        }
+                        }}
                         isEnrolledById={Utility.isSignInById(study.signInTypes)}
                         onRowSelected={(
                           /*id: string, isSelected: boolean*/ selection,
@@ -878,7 +888,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     )}
                   </div>
                 </div>
-
                 <Box textAlign="center" pl={2}>
                   {tab !== 'TEST' ? 'ADD A PARTICIPANT' : 'ADD TEST USER'}
                 </Box>

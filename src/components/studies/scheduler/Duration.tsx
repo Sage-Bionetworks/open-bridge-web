@@ -28,6 +28,8 @@ export interface DurationProps {
   numberLabel: string
   isIntro?: boolean
   unitDefault?: any
+  inputDurationCapInWeeks?: number
+  disabled?: boolean
 }
 
 const Duration: React.FunctionComponent<
@@ -40,6 +42,8 @@ const Duration: React.FunctionComponent<
   numberLabel,
   isIntro,
   unitDefault,
+  inputDurationCapInWeeks,
+  disabled,
   ...props
 }: DurationProps) => {
   const classes = useStyles()
@@ -64,6 +68,15 @@ const Duration: React.FunctionComponent<
   }, [durationString])
 
   const changeValue = (value?: number, unit?: string) => {
+    if (!unit || value === undefined) {
+      return
+    }
+    if (inputDurationCapInWeeks !== undefined) {
+      const isOverScheduleDurationLimit =
+        (value > inputDurationCapInWeeks && unt === 'W') ||
+        (value > inputDurationCapInWeeks * 7 && unt === 'D')
+      if (isOverScheduleDurationLimit) return
+    }
     if (unit) {
       setUnit(unit)
     }
@@ -79,9 +92,6 @@ const Duration: React.FunctionComponent<
         setUnit(unitDefaultValue)
       }
     }
-    if (!unit || value === undefined) {
-      return
-    }
   }
 
   const triggerChange = (e: any) => {
@@ -94,6 +104,7 @@ const Duration: React.FunctionComponent<
   return (
     <div className={classes.root} onBlur={triggerChange}>
       <SmallTextBox
+        disabled={!!disabled}
         style={{width: '60px'}}
         value={num || ''}
         aria-label={numberLabel}
@@ -106,14 +117,22 @@ const Duration: React.FunctionComponent<
         inputWidth={isIntro ? 10 : undefined}></SmallTextBox>
 
       <SelectWithEnum
+        disabled={!!disabled}
         aria-label={unitLabel}
         {...props}
         value={unt}
         sourceData={unitData}
         id={unitLabel.replace(' ', '')}
-        onChange={e =>
-          changeValue(num, e.target.value as moment.unitOfTime.Base)
-        }
+        onChange={e => {
+          const daysNumTooLarge =
+            inputDurationCapInWeeks !== undefined &&
+            e.target.value === 'W' &&
+            (num || 0) > inputDurationCapInWeeks
+          changeValue(
+            daysNumTooLarge ? inputDurationCapInWeeks : num,
+            e.target.value as moment.unitOfTime.Base
+          )
+        }}
         style={isIntro ? {width: '100px'} : undefined}></SelectWithEnum>
       <IconButton
         className={classes.clear}

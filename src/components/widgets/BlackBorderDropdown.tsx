@@ -1,6 +1,14 @@
-import {makeStyles, MenuItem, Select, SelectProps} from '@material-ui/core'
+import {
+  makeStyles,
+  MenuItem,
+  Select,
+  SelectProps,
+  Box,
+  TextField,
+} from '@material-ui/core'
+import Autocomplete from '@material-ui/lab/Autocomplete'
 import React from 'react'
-import {ThemeType} from '../../style/theme'
+import {poppinsFont, ThemeType} from '../../style/theme'
 import clsx from 'clsx'
 
 interface StyleProps {
@@ -57,6 +65,9 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
 
   listPadding: {
     padding: theme.spacing(0),
+    '& .MuiInputBase-input': {
+      backgroundColor: 'inherit',
+    },
   },
   listBorder: {
     borderRadius: '0px',
@@ -77,6 +88,9 @@ export interface BlackBorderDropdownStyleProps {
   dropdown: {value: string; label: string}[]
   emptyValueLabel: string
   hasError?: boolean
+  searchableOnChange?: Function
+  isSearchable?: boolean
+  searchableDescription?: string
 }
 
 const SaveBlackBorderDropdown: React.FunctionComponent<
@@ -90,11 +104,13 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
   width,
   itemHeight = '30px',
   hasError,
+  searchableOnChange,
+  isSearchable,
+  searchableDescription,
   ...other
 }) => {
   const classes = useStyles({width, itemHeight})
-
-  return (
+  const selectMenu = (
     <Select
       labelId={id}
       className={classes.root}
@@ -140,6 +156,37 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
       ))}
     </Select>
   )
+
+  const searchableDropdown = (
+    <Box>
+      <Box style={{fontSize: '14px', fontFamily: poppinsFont}}>
+        {searchableDescription || ''}
+      </Box>
+      <Autocomplete
+        value={{value: value, label: value}}
+        id={id}
+        options={dropdown}
+        className={classes.root}
+        placeholder="Time Zones"
+        renderInput={params => (
+          <TextField
+            className={classes.listPadding}
+            {...params}
+            label=""
+            variant="outlined"
+          />
+        )}
+        getOptionLabel={option => option.label}
+        classes={{paper: classes.listBorder, input: classes.input}}
+        onChange={(event, newValue) => {
+          if (!searchableOnChange) return
+          searchableOnChange(newValue?.value || '')
+        }}
+      />
+    </Box>
+  )
+
+  return <Box>{isSearchable ? searchableDropdown : selectMenu}</Box>
 }
 
 export default SaveBlackBorderDropdown

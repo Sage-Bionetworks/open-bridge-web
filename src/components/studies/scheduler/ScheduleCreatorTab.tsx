@@ -10,7 +10,7 @@ import _ from 'lodash'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import {poppinsFont, theme} from '../../../style/theme'
+import {latoFont, poppinsFont, theme} from '../../../style/theme'
 import {
   DWsEnum,
   PerformanceOrder,
@@ -358,22 +358,29 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
       <Box textAlign="left" key="content">
         {/* <ObjectDebug data={timeline} label=""></ObjectDebug> */}
         <div className={classes.scheduleHeader} key="intro">
-          <FormControlLabel
-            classes={{label: classes.labelDuration}}
-            label="Study duration:"
-            style={{fontSize: '14px'}}
-            labelPlacement="start"
-            control={
-              <Duration
-                onChange={e =>
-                  updateScheduleData({...schedule, duration: e.target.value})
-                }
-                durationString={schedule.duration || ''}
-                unitLabel="study duration unit"
-                numberLabel="study duration number"
-                unitData={DWsEnum}></Duration>
-            }
-          />
+          <Box>
+            <FormControlLabel
+              classes={{label: classes.labelDuration}}
+              label="Study duration:"
+              style={{fontSize: '14px'}}
+              labelPlacement="start"
+              control={
+                <Duration
+                  inputDurationCapInWeeks={260}
+                  onChange={e =>
+                    updateScheduleData({...schedule, duration: e.target.value})
+                  }
+                  durationString={schedule.duration || ''}
+                  unitLabel="study duration unit"
+                  numberLabel="study duration number"
+                  unitData={DWsEnum}></Duration>
+              }
+            />
+            <Box fontSize="12px" ml={2} fontFamily={latoFont} fontWeight="bold">
+              The study duration must be shorter than 5 years.
+            </Box>
+          </Box>
+
           {hasObjectChanged && (
             <SaveButton
               isFloatingSave={true}

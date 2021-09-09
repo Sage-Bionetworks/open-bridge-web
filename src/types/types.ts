@@ -235,8 +235,10 @@ export type EditableParticipantData = {
   externalId?: string
   phone?: Phone
   phoneNumber?: string
+  clientTimeZone?: string
   timeZone?: string
 }
+
 
 export type ParticipantAccountSummary = {
   // isSelected?: boolean
@@ -253,6 +255,7 @@ export type ParticipantAccountSummary = {
   createdOn?: string
   note?: string
   dataGroups?: string[]
+  clientTimeZone?: string
 }
 
 export type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {
