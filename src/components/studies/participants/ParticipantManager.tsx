@@ -592,13 +592,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         <ParticipantManagerPlaceholder />
       ) : (
         <>
-          {tab === 'ACTIVE' && !isUserSearchingForParticipant && (
+          {/* {tab === 'ACTIVE' && !isUserSearchingForParticipant && (
             <HelpBoxSC
               numRows={data?.items?.length}
               status={status}
               isAddOpen={isAddOpen}
             />
-          )}
+          )} */}
           <Box py={0} pr={3} pl={2}>
             <Tabs
               value={tab}
