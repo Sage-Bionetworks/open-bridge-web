@@ -8,6 +8,7 @@ import {latoFont, ThemeType} from '../../../style/theme'
 import {
   AssessmentWindow as AssessmentWindowType,
   ScheduleNotification,
+  SchedulingEvent,
   SessionSchedule,
   StudySession,
 } from '../../../types/scheduling'
@@ -53,6 +54,7 @@ export const defaultSchedule: SessionSchedule = {
 type SchedulableSingleSessionContainerProps = {
   studySession: StudySession
   onUpdateSessionSchedule: Function
+  customEvents?: SchedulingEvent[]
   sessionErrorState:
     | {
         generalErrorMessage: string[]
@@ -73,11 +75,16 @@ type notificationErrorArrayType = {
 }
 
 const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSessionContainerProps> =
-  ({studySession, onUpdateSessionSchedule, sessionErrorState}) => {
+  ({
+    studySession,
+    onUpdateSessionSchedule,
+    sessionErrorState,
+    customEvents,
+  }) => {
     const classes = useStyles()
 
     const [schedulableSession, setSchedulableSession] =
-      React.useState<SessionSchedule>(studySession || defaultSchedule)
+      React.useState<StudySession>(studySession || defaultSchedule)
 
     const [windowErrors, setWindowErrors] = React.useState<
       windowErrorArrayType[]
@@ -146,7 +153,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
       return over24 !== undefined
     }
 
-    const updateSessionSchedule = (newSession: SessionSchedule) => {
+    const updateSessionSchedule = (newSession: StudySession) => {
       onUpdateSessionSchedule(newSession)
     }
 
@@ -262,9 +269,17 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         <form noValidate autoComplete="off">
           <Box className={classes.formSection}>
             <StartDate
+              startEventId={schedulableSession.startEventId!}
               delay={schedulableSession.delay}
+              customEvents={customEvents}
               sessionName={studySession.name}
-              onChange={(delay: string | undefined) => {
+              onChangeStartEventId={(startEventId: string) => {
+                updateSessionSchedule({
+                  ...schedulableSession,
+                  startEventId,
+                })
+              }}
+              onChangeDelay={(delay: string | undefined) => {
                 updateSessionSchedule({...schedulableSession, delay})
               }}></StartDate>
           </Box>

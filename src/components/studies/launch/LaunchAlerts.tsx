@@ -333,7 +333,9 @@ const StudyAlertComponent: React.FunctionComponent<
         <span>{indexedSection.name}</span>
       </div>
       {errors.map((error, errorIndex) => (
-        <div className={classes.errorDescription}>
+        <div
+          className={classes.errorDescription}
+          key={error.errorText + errorIndex}>
           <div style={{display: 'flex', alignItems: 'center'}}>
             {!error.isDismissable && (
               <Alert_Icon className={classes.alertIcon} />
@@ -439,8 +441,9 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
           </MTBHeadingH2>
         )}
       </Box>
-      {alerts.map(alert => (
+      {alerts.map((alert, index) => (
         <StudyAlertComponent
+          key={index}
           {...alert}
           onIgnore={(sectionPath: string, index: number) => {
             ignore(sectionPath, index)

@@ -30,6 +30,7 @@ export interface DurationProps {
   unitDefault?: any
   inputDurationCapInWeeks?: number
   disabled?: boolean
+  isShowClear?: boolean
 }
 
 const Duration: React.FunctionComponent<
@@ -44,6 +45,7 @@ const Duration: React.FunctionComponent<
   unitDefault,
   inputDurationCapInWeeks,
   disabled,
+  isShowClear = true,
   ...props
 }: DurationProps) => {
   const classes = useStyles()
@@ -68,10 +70,7 @@ const Duration: React.FunctionComponent<
   }, [durationString])
 
   const changeValue = (value?: number, unit?: string) => {
-    if (!unit || value === undefined) {
-      return
-    }
-    if (inputDurationCapInWeeks !== undefined) {
+    if (inputDurationCapInWeeks !== undefined && value) {
       const isOverScheduleDurationLimit =
         (value > inputDurationCapInWeeks && unt === 'W') ||
         (value > inputDurationCapInWeeks * 7 && unt === 'D')
@@ -134,11 +133,13 @@ const Duration: React.FunctionComponent<
           )
         }}
         style={isIntro ? {width: '100px'} : undefined}></SelectWithEnum>
-      <IconButton
-        className={classes.clear}
-        onClick={_e => onChange({target: {value: undefined}})}>
-        <ClearIcon />
-      </IconButton>
+      {isShowClear && (
+        <IconButton
+          className={classes.clear}
+          onClick={_e => onChange({target: {value: undefined}})}>
+          <ClearIcon />
+        </IconButton>
+      )}
     </div>
   )
 }

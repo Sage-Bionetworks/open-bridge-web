@@ -14,7 +14,7 @@ import {Study} from '@typedefs/types'
 import React from 'react'
 import {latoFont, poppinsFont} from '../../../style/theme'
 import constants from '../../../types/constants'
-import {DWsEnum, Schedule, StartEventId} from '../../../types/scheduling'
+import {DWsEnum, Schedule} from '../../../types/scheduling'
 import {SimpleTextInput} from '../../widgets/StyledComponents'
 import {useUpdateSchedule} from '../scheduleHooks'
 import {useStudy, useUpdateStudyDetail} from '../studyHooks'
@@ -127,7 +127,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
     studyId: string,
     studyName: string,
     duration: string,
-    start: StartEventId
+    start: string
   ) => {
     const studySession = ScheduleService.createEmptyScheduleSession(start)
     let schedule: Schedule = {

@@ -61,7 +61,6 @@ import DialogContents from './DialogContents'
 import ParticipantTableGrid from './grid/ParticipantTableGrid'
 import ParticipantTablePagination from './grid/ParticipantTablePagination'
 import BatchEditForm from './modify/BatchEditForm'
-import WithdrawParticipantForm from './modify/WithdrawParticipantForm'
 import ParticipantManagerPlaceholder from './ParticipantManagerPlaceholder'
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantUtility from './participantUtility'
@@ -773,7 +772,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           </>
                         </ParticipantDownloadTrigger>
 
-                        {tab !== 'WITHDRAWN' && (
+                        {tab === 'TEST' && (
                           <Button
                             aria-label="delete"
                             onClick={() => {

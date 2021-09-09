@@ -1,10 +1,5 @@
 import constants from './constants'
-import {
-  Schedule,
-  ScheduleNotification,
-  SchedulingEvent,
-  StartEventId,
-} from './scheduling'
+import {Schedule, ScheduleNotification, SchedulingEvent} from './scheduling'
 
 /* *** General Types ********************************/
 export interface StringDictionary<T> {
@@ -134,7 +129,7 @@ export type Study = {
   details?: string
   subtitle?: string
   description?: string
-
+  customEvents?: SchedulingEvent[]
   studyLogoUrl?: string
   colorScheme?: ColorScheme
   irbProtocolId?: string
@@ -149,7 +144,6 @@ export type Study = {
     backgroundRecorders?: BackgroundRecorders
     welcomeScreenData?: WelcomeScreenData
     notifications?: StringDictionary<ScheduleNotification[]>
-    events?: SchedulingEvent[]
   }
   createdOn?: Date
   modifiedOn?: Date
@@ -293,7 +287,7 @@ export type StudyArm = {
   id: string
   name: string
   studyId: string
-  startEventId?: StartEventId
+  startEventId?: string
   schedule?: Schedule
   active?: boolean
 }

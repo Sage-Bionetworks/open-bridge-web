@@ -1,4 +1,3 @@
-import {FormControl, FormLabel} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React, {ReactNode} from 'react'
@@ -107,24 +106,22 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
           )}
           style={style}
           title={`section ${typeof label === 'string' ? label : altLabel}`}>
-          <FormControl
-            component="div"
+          <div
             style={{justifyContent: justifyContent}}
             className={clsx(
               classes.formControl,
               variant === 'small' && 'small'
             )}>
-            <FormLabel
-              component="label"
+            <label
               className={clsx(
                 /*typeof label === 'string'*/ true && classes.label,
                 variant === 'small' && 'small',
                 isCollapseLabelSmall && 'collapseLabelSmall'
               )}>
               {!isHideLabel ? label : ''}
-            </FormLabel>
+            </label>
             {children}
-          </FormControl>
+          </div>
         </section>
       </>
     )

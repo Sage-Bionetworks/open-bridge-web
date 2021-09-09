@@ -1,31 +1,78 @@
-import {FormControlLabel, Radio, RadioGroup} from '@material-ui/core'
+import {
+  FormControl,
+  FormGroup,
+  makeStyles,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  Select,
+} from '@material-ui/core'
+import {JOINED_EVENT_ID} from '@services/event.service'
 import React from 'react'
-import {HDWMEnum} from '../../../types/scheduling'
+import {HDWMEnum, SchedulingEvent} from '../../../types/scheduling'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
 
-export type SessionScheduleStartType = 'DAY1' | 'NDAYS_DAY1'
+const useStyles = makeStyles(theme => ({
+  select: {padding: theme.spacing(1, 4, 1, 1), width: '150px'},
+  formControl: {
+    margin: theme.spacing(1, 0, 1, 0),
+  },
+}))
 export interface StartDateProps {
   delay?: string //ISO6801
+  startEventId: string
   sessionName: string
-  onChange: Function
+  customEvents?: SchedulingEvent[]
+  onChangeDelay: Function
+  onChangeStartEventId: Function
 }
 
 const StartDate: React.FunctionComponent<StartDateProps> = ({
   delay,
-  onChange,
+  startEventId,
+  customEvents,
+  onChangeDelay,
+  onChangeStartEventId,
   sessionName,
 }: StartDateProps) => {
-  const [startType, setStartType] = React.useState<SessionScheduleStartType>(
-    delay ? 'NDAYS_DAY1' : 'DAY1'
-  )
+  const classes = useStyles()
+  const [hasDelay, setHasDelay] = React.useState<boolean>(delay ? true : false)
+  const eventDropdownValues = [
+    ...[{eventId: JOINED_EVENT_ID}],
+    ...(customEvents || []),
+  ].map(e => ({value: e.eventId, label: e.eventId}))
 
-  const changeStartDate = (type: SessionScheduleStartType) => {
-    setStartType(type)
+  const changeStartDelayType = (_hasDelay: boolean) => {
+    setHasDelay(_hasDelay)
 
-    if (type === 'DAY1') {
-      onChange(undefined)
+    if (!hasDelay) {
+      onChangeDelay(undefined)
     }
+  }
+
+  const SelectEventId: React.FunctionComponent<{
+    disabled: boolean
+    value: string
+    onChangeFn: Function
+  }> = ({disabled, value, onChangeFn}) => {
+    return (
+      <FormControl className={classes.formControl}>
+        <Select
+          variant="outlined"
+          disabled={disabled}
+          classes={{root: classes.select}}
+          onChange={e => onChangeFn(e.target.value)}
+          id={'id'}
+          value={value}>
+          {eventDropdownValues.map(item => (
+            <MenuItem value={item.value} key={item.value}>
+              {item.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    )
   }
 
   return (
@@ -33,29 +80,34 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
       <RadioGroup
         aria-label="Session Starts On"
         name="startDate"
-        value={startType}
-        onChange={e =>
-          changeStartDate(e.target.value as SessionScheduleStartType)
-        }>
-        <FormControlLabel value={'DAY1'} control={<Radio />} label="Day 1" />
-        <FormControlLabel
-          control={
-            <>
-              <Radio value={'NDAYS_DAY1'} />{' '}
-              <Duration
-                onFocus={() => changeStartDate('NDAYS_DAY1')}
-                onChange={e => {
-                  onChange(e.target.value)
-                }}
-                durationString={delay}
-                unitLabel="Repeat Every"
-                numberLabel="frequency number"
-                unitDefault={HDWMEnum.D}
-                unitData={HDWMEnum}></Duration>
-            </>
-          }
-          label="from Day 1"
-        />
+        value={hasDelay}
+        onChange={e => changeStartDelayType(e.target.value === 'true')}>
+        <FormGroup row={true}>
+          <Radio value={false} />
+          <SelectEventId
+            disabled={hasDelay}
+            value={!hasDelay ? startEventId : ''}
+            onChangeFn={(e: string) => onChangeStartEventId(e)}></SelectEventId>
+        </FormGroup>
+        <FormGroup row={true} style={{alignItems: 'center'}}>
+          <Radio value={true} />{' '}
+          <Duration
+            onChange={e => {
+              onChangeDelay(e.target.value)
+            }}
+            durationString={delay}
+            unitLabel="Repeat Every"
+            numberLabel="frequency number"
+            unitDefault={HDWMEnum.D}
+            unitData={HDWMEnum}
+            disabled={!hasDelay}
+            isShowClear={false}></Duration>
+          <span>from:&nbsp;</span>
+          <SelectEventId
+            disabled={!hasDelay}
+            value={hasDelay ? startEventId : ''}
+            onChangeFn={(e: string) => onChangeStartEventId(e)}></SelectEventId>
+        </FormGroup>
       </RadioGroup>
     </SchedulingFormSection>
   )

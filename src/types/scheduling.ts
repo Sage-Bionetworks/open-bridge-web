@@ -33,10 +33,10 @@ export type PerformanceOrder =
   | 'randomized'
   | 'participant_choice' //done
 
-export type StartEventId = 'timeline_retrieved' | 'study_start_date'
+//export type StartEventId = 'timeline_retrieved' | 'study_start_date'
 
 export type SchedulingEvent = {
-  identifier: string
+  eventId: string
   updateType?: 'mutable' | 'immutable' | 'future_only'
 }
 
@@ -78,7 +78,7 @@ export type StudySessionGeneral = {
   name: string
   labels?: StringDictionary<string>[]
   guid?: string
-  startEventId?: StartEventId
+  startEventId?: string
 }
 
 export type StudySession = StudySessionGeneral & SessionSchedule

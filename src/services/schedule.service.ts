@@ -5,10 +5,9 @@ import {
   Schedule,
   ScheduleNotification,
   SchedulingEvent,
-  StartEventId,
   StudySession,
 } from '../types/scheduling'
-import {Study} from '../types/types'
+import {Assessment, Study} from '../types/types'
 import AssessmentService from './assessment.service'
 
 const ScheduleService = {
@@ -21,7 +20,7 @@ const ScheduleService = {
 }
 
 export const TIMELINE_RETRIEVED_EVENT: SchedulingEvent = {
-  identifier: 'timeline_retrieved',
+  eventId: 'timeline_retrieved',
   updateType: 'immutable',
 }
 
@@ -38,10 +37,7 @@ export const DEFAULT_NOTIFICATION: ScheduleNotification = {
   ],
 }
 
-function createEmptyScheduleSession(
-  startEventId: StartEventId,
-  name = 'Session1'
-) {
+function createEmptyScheduleSession(startEventId: string, name = 'Session1') {
   const defaultTimeWindow: AssessmentWindow = {
     startTime: '08:00',
   }
@@ -106,7 +102,12 @@ async function saveSchedule(
 async function addAssessmentResourcesToSchedule(
   schedule: Schedule
 ): Promise<Schedule> {
-  const assessmentData = await AssessmentService.getAssessmentsWithResources()
+  //try from storage first
+  const localA = sessionStorage.getItem('AssessmentResources')
+
+  const assessmentData = localA
+    ? (JSON.parse(localA) as {assessments: Assessment[]; tags: string[]})
+    : await AssessmentService.getAssessmentsWithResources()
   schedule.sessions.forEach(session => {
     const assmntWithResources = session.assessments?.map(assmnt => {
       assmnt.resources = assessmentData.assessments.find(
@@ -165,11 +166,11 @@ async function getEventsForSchedule(
   )
 
   return (
-    response.data.clientData?.events?.map(e => ({
+    response.data.customEvents?.map(e => ({
       ...e,
-      identifier: e.identifier.includes(constants.constants.CUSTOM_EVENT_PREFIX)
-        ? e.identifier
-        : constants.constants.CUSTOM_EVENT_PREFIX + e.identifier,
+      identifier: e.eventId.includes(constants.constants.CUSTOM_EVENT_PREFIX)
+        ? e.eventId
+        : constants.constants.CUSTOM_EVENT_PREFIX + e.eventId,
     })) || []
   )
 }

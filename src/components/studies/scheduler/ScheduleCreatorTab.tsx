@@ -16,8 +16,6 @@ import {
   PerformanceOrder,
   Schedule,
   SessionSchedule,
-  StartEventId,
-  StudySession,
 } from '../../../types/scheduling'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
@@ -33,7 +31,6 @@ import actionsReducer, {
   SessionScheduleAction,
 } from './scheduleActions'
 import Timeline from './ScheduleTimeline'
-import StudyStartDate from './StudyStartDate'
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -58,13 +55,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'space-between',
       paddingRight: theme.spacing(2),
     },
-    studyStartDateContainer: {
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
+
     assessments: {
       width: '286px',
       flexGrow: 0,
@@ -80,24 +71,6 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
   })
 )
-
-export const getStartEventIdFromSchedule = (
-  schedule: Schedule
-): StartEventId | null => {
-  if (_.isEmpty(schedule.sessions)) {
-    return null
-  }
-  const eventIdArray = schedule.sessions.reduce(
-    (acc, curr) => (curr.startEventId ? [...acc, curr.startEventId] : acc),
-    [] as StartEventId[]
-  )
-
-  if (_.uniq(eventIdArray).length > 1) {
-    throw Error('startEventIds should be the same for all sessions')
-  } else {
-    return eventIdArray[0]
-  }
-}
 
 export type SchedulerErrorType = {
   errors: any
@@ -307,14 +280,6 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
     //ALINA TODO onUpdate(schedule)
   }
 
-  //updating the schedule part
-  const updateSessionsWithStartEventId = (
-    sessions: StudySession[],
-    startEventId: StartEventId
-  ) => {
-    return sessions.map(s => ({...s, startEventId}))
-  }
-
   const scheduleUpdateFn = (action: SessionScheduleAction) => {
     const sessions = actionsReducer(schedule.sessions!, action)
     const newSchedule = {...schedule, sessions}
@@ -395,23 +360,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
             version={study?.version || 0}
             studyId={id}
             schedule={schedule}></Timeline>
-          <div className={classes.studyStartDateContainer}>
-            <StudyStartDate
-              style={{
-                marginTop: '16px',
-              }}
-              startEventId={
-                getStartEventIdFromSchedule(schedule) as StartEventId
-              }
-              onChange={(startEventId: StartEventId) => {
-                const sessions = updateSessionsWithStartEventId(
-                  schedule.sessions,
-                  startEventId
-                )
-                updateScheduleData({...schedule, sessions})
-              }}
-            />
-          </div>
+
           {schedule.sessions.map((session, index) => (
             <Box
               className={classes.sessionContainer}
@@ -441,6 +390,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
               {/* This is what is being displayed as the card */}
               <SchedulableSingleSessionContainer
                 key={session.guid}
+                customEvents={study?.customEvents}
                 studySession={session}
                 onUpdateSessionSchedule={(schedule: SessionSchedule) => {
                   scheduleUpdateFn({

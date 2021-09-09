@@ -412,15 +412,15 @@ function getColumns(
 
   const customEventColumns = customStudyEvents.map((customEvent, index) => {
     const col: GridColDef = {
-      field: customEvent.identifier + index,
+      field: customEvent.eventId + index,
       headerName: EventService.formatCustomEventIdForDisplay(
-        customEvent.identifier
+        customEvent.eventId
       ),
       valueGetter: params => {
         const foundEvent = params.row.events.find(
           (event: any) =>
             event.eventId ===
-            EventService.prefixCustomEventIdentifier(customEvent.identifier)
+            EventService.prefixCustomEventIdentifier(customEvent.eventId)
         )
         return foundEvent ? getDate(foundEvent.timestamp) : ' '
       },
