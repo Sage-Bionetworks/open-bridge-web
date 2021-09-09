@@ -690,51 +690,54 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   />
                 </>
                 <div>
-                  <Box className={classes.gridToolBar}>
-                    <Box display="flex" flexDirection="row" alignItems="center">
-                      {/* This is here for now because the "Send SMS link" feature is not being included in the october release. */}
-                      {false && !Utility.isSignInById(study!.signInTypes) && (
-                        <Button
-                          aria-label="send-sms-text"
-                          onClick={() => {
-                            setParticipantsWithError([])
-                            setDialogState({
-                              dialogOpenRemove: false,
-                              dialogOpenSMS: true,
-                            })
-                          }}
-                          className={classes.sendSMSButton}
-                          disabled={selectedParticipantIds[tab].length === 0}>
-                          <img
-                            src={SMSPhoneImg}
-                            className={clsx(
-                              selectedParticipantIds[tab].length === 0 &&
-                                classes.disabledImage,
-                              classes.topRowImage
-                            )}></img>
-                          Send SMS link
-                        </Button>
-                      )}
-                      {tab === 'ACTIVE' && !displayNoParticipantsPage && (
-                        <Button
-                          aria-label="batch-edit"
-                          onClick={() => {
-                            setIsBatchEditOpen(true)
-                          }}
-                          className={classes.batchEditButton}
-                          disabled={selectedParticipantIds[tab].length <= 1}>
-                          <img
-                            className={clsx(
-                              selectedParticipantIds[tab].length <= 1 &&
-                                classes.disabledImage,
-                              classes.topRowImage
-                            )}
-                            src={BatchEditIcon}></img>
-                          Batch Edit
-                        </Button>
-                      )}
+                  {!displayNoParticipantsPage && (
+                    <Box className={classes.gridToolBar}>
+                      <Box
+                        display="flex"
+                        flexDirection="row"
+                        alignItems="center">
+                        {/* This is here for now because the "Send SMS link" feature is not being included in the october release. */}
+                        {false && !Utility.isSignInById(study!.signInTypes) && (
+                          <Button
+                            aria-label="send-sms-text"
+                            onClick={() => {
+                              setParticipantsWithError([])
+                              setDialogState({
+                                dialogOpenRemove: false,
+                                dialogOpenSMS: true,
+                              })
+                            }}
+                            className={classes.sendSMSButton}
+                            disabled={selectedParticipantIds[tab].length === 0}>
+                            <img
+                              src={SMSPhoneImg}
+                              className={clsx(
+                                selectedParticipantIds[tab].length === 0 &&
+                                  classes.disabledImage,
+                                classes.topRowImage
+                              )}></img>
+                            Send SMS link
+                          </Button>
+                        )}
+                        {tab === 'ACTIVE' && (
+                          <Button
+                            aria-label="batch-edit"
+                            onClick={() => {
+                              setIsBatchEditOpen(true)
+                            }}
+                            className={classes.batchEditButton}
+                            disabled={selectedParticipantIds[tab].length <= 1}>
+                            <img
+                              className={clsx(
+                                selectedParticipantIds[tab].length <= 1 &&
+                                  classes.disabledImage,
+                                classes.topRowImage
+                              )}
+                              src={BatchEditIcon}></img>
+                            Batch Edit
+                          </Button>
+                        )}
 
-                      {!displayNoParticipantsPage && (
                         <ParticipantDownloadTrigger
                           onDownload={() =>
                             downloadParticipants(isAllSelected ? 'ALL' : 'SOME')
@@ -765,33 +768,30 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                             )}
                           </>
                         </ParticipantDownloadTrigger>
-                      )}
 
-                      {tab !== 'WITHDRAWN' && !displayNoParticipantsPage && (
-                        <Button
-                          aria-label="delete"
-                          onClick={() => {
-                            setParticipantsWithError([])
-                            setDialogState({
-                              dialogOpenRemove: true,
-                              dialogOpenSMS: false,
-                            })
-                          }}
-                          className={classes.deleteButtonParticipant}
-                          disabled={selectedParticipantIds[tab].length === 0}>
-                          <DeleteIcon
-                            className={clsx(
-                              selectedParticipantIds[tab].length === 0 &&
-                                classes.disabledImage,
-                              classes.topRowImage,
-                              classes.deleteIcon
-                            )}></DeleteIcon>
-                          Remove from Study
-                        </Button>
-                      )}
-                    </Box>
-
-                    {!displayNoParticipantsPage && (
+                        {tab !== 'WITHDRAWN' && (
+                          <Button
+                            aria-label="delete"
+                            onClick={() => {
+                              setParticipantsWithError([])
+                              setDialogState({
+                                dialogOpenRemove: true,
+                                dialogOpenSMS: false,
+                              })
+                            }}
+                            className={classes.deleteButtonParticipant}
+                            disabled={selectedParticipantIds[tab].length === 0}>
+                            <DeleteIcon
+                              className={clsx(
+                                selectedParticipantIds[tab].length === 0 &&
+                                  classes.disabledImage,
+                                classes.topRowImage,
+                                classes.deleteIcon
+                              )}></DeleteIcon>
+                            Remove from Study
+                          </Button>
+                        )}
+                      </Box>
                       <ParticipantSearch
                         isEnrolledById={Utility.isSignInById(study.signInTypes)}
                         onReset={() => {
@@ -802,8 +802,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         }}
                         tab={tab}
                       />
-                    )}
-                  </Box>
+                    </Box>
+                  )}
                   <div
                     role="tabpanel"
                     hidden={false}
