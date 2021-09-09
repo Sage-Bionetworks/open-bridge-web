@@ -70,10 +70,7 @@ const Duration: React.FunctionComponent<
   }, [durationString])
 
   const changeValue = (value?: number, unit?: string) => {
-    if (!unit || value === undefined) {
-      return
-    }
-    if (inputDurationCapInWeeks !== undefined) {
+    if (inputDurationCapInWeeks !== undefined && value) {
       const isOverScheduleDurationLimit =
         (value > inputDurationCapInWeeks && unt === 'W') ||
         (value > inputDurationCapInWeeks * 7 && unt === 'D')
