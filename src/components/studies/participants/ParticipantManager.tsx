@@ -772,7 +772,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           </>
                         </ParticipantDownloadTrigger>
 
-                        {tab !== 'WITHDRAWN' && (
+                        {tab === 'TEST' && (
                           <Button
                             aria-label="delete"
                             onClick={() => {
