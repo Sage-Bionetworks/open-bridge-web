@@ -23,8 +23,6 @@ import {getTimeUnitFormatted} from '../utility'
 
 type ReadOnlySchedulerProps = {
   children: ReactNode
-
-  version?: number
   schedule: Schedule
   studyId: string
 }
@@ -56,8 +54,6 @@ const useStyles = makeStyles(theme => ({
 const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
   schedule,
   children,
-
-  version,
   studyId,
 }) => {
   const schedulerClasses = sharedSchedulerStyles()
