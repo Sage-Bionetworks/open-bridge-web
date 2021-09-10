@@ -331,7 +331,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
               labelPlacement="start"
               control={
                 <Duration
-                  inputDurationCapInWeeks={260}
+                  maxDurationDays={1825}
                   onChange={e =>
                     updateScheduleData({...schedule, duration: e.target.value})
                   }

@@ -28,7 +28,7 @@ export interface DurationProps {
   numberLabel: string
   isIntro?: boolean
   unitDefault?: any
-  inputDurationCapInWeeks?: number
+  maxDurationDays?: number
   disabled?: boolean
   isShowClear?: boolean
 }
@@ -43,7 +43,7 @@ const Duration: React.FunctionComponent<
   numberLabel,
   isIntro,
   unitDefault,
-  inputDurationCapInWeeks,
+  maxDurationDays,
   disabled,
   isShowClear = true,
   ...props
@@ -51,6 +51,8 @@ const Duration: React.FunctionComponent<
   const classes = useStyles()
   const [unt, setUnit] = React.useState<string | undefined>(undefined)
   const [num, setNum] = React.useState<number | undefined>(undefined)
+
+  const unitDefaultValue = Utility.getEnumKeyByEnumValue(unitData, unitDefault)
 
   React.useEffect(() => {
     try {
@@ -69,26 +71,27 @@ const Duration: React.FunctionComponent<
     }
   }, [durationString])
 
-  const changeValue = (value?: number, unit?: string) => {
-    if (inputDurationCapInWeeks !== undefined && value) {
-      const isOverScheduleDurationLimit =
-        (value > inputDurationCapInWeeks && unt === 'W') ||
-        (value > inputDurationCapInWeeks * 7 && unt === 'D')
-      if (isOverScheduleDurationLimit) return
+  const validate = (value: number, unit: string) => {
+    if (!maxDurationDays) {
+      return true
     }
+    const days = unit === 'W' ? value * 7 : value
+    return days <= maxDurationDays
+  }
+
+  const changeValue = (value?: number, unit?: string) => {
     if (unit) {
-      setUnit(unit)
+      if (validate(value || num || 0, unit)) {
+        setUnit(unit)
+      }
     }
     if (value !== undefined) {
-      setNum(value)
-
-      if (!unit && unitDefault) {
-        const unitDefaultValue = Utility.getEnumKeyByEnumValue(
-          unitData,
-          unitDefault
-        )
-        unit = unitDefaultValue
-        setUnit(unitDefaultValue)
+      if (validate(value, unit || unitDefaultValue || 'D')) {
+        setNum(value)
+        if (!unit && unitDefault) {
+          unit = unitDefaultValue
+          setUnit(unitDefaultValue)
+        }
       }
     }
   }
@@ -122,16 +125,9 @@ const Duration: React.FunctionComponent<
         value={unt}
         sourceData={unitData}
         id={unitLabel.replace(' ', '')}
-        onChange={e => {
-          const daysNumTooLarge =
-            inputDurationCapInWeeks !== undefined &&
-            e.target.value === 'W' &&
-            (num || 0) > inputDurationCapInWeeks
-          changeValue(
-            daysNumTooLarge ? inputDurationCapInWeeks : num,
-            e.target.value as moment.unitOfTime.Base
-          )
-        }}
+        onChange={e =>
+          changeValue(num, e.target.value as moment.unitOfTime.Base)
+        }
         style={isIntro ? {width: '100px'} : undefined}></SelectWithEnum>
       {isShowClear && (
         <IconButton
