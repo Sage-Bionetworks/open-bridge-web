@@ -85,6 +85,12 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: 'left',
       listStyle: 'none',
     },
+    hint: {
+      fontStyle: 'italic',
+      fontFamily: latoFont,
+      fontSize: '11px',
+      fontWeight: 'bold',
+    },
     continueButton: {
       display: 'flex',
       height: '45px',
@@ -206,8 +212,14 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
                 durationString={duration || ''}
                 unitLabel="study duration unit"
                 numberLabel="study duration number"
+                maxDurationDays={1825}
                 unitData={DWsEnum}
                 isIntro={true}></Duration>
+              <span className={classes.hint}>
+                <strong>
+                  The study duration must be shorter than 5 years.
+                </strong>
+              </span>
             </Box>
           }
         />
