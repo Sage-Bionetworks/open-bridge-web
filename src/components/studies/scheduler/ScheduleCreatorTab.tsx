@@ -5,7 +5,6 @@ import {
   makeStyles,
   Theme,
 } from '@material-ui/core'
-import StudyService from '@services/study.service'
 import _ from 'lodash'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
@@ -24,7 +23,6 @@ import {useSchedule, useUpdateSchedule} from '../scheduleHooks'
 import {useStudy} from '../studyHooks'
 import AssessmentList from './AssessmentList'
 import Duration from './Duration'
-import ReadOnlyScheduler from './read-only-pages/ReadOnlyScheduler'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
@@ -110,7 +108,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
   const [schedulerErrors, setScheduleErrors] = React.useState<
     SchedulerErrorType[]
   >([]) //ALINA TODO
-  const [isReadOnly, setIsReadOnly] = React.useState(true)
+
   const handleError = useErrorHandler()
   const [saveLoader, setSaveLoader] = React.useState(false)
 
@@ -137,12 +135,6 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
     const newErrorState = parseErrors(schedulerErrors)
     setSchedulerErrorState(newErrorState)
   }, [schedulerErrors])
-
-  React.useEffect(() => {
-    if (study) {
-      setIsReadOnly(!StudyService.isStudyInDesign(study))
-    }
-  }, [study])
 
   React.useEffect(() => {
     if (_schedule) {
@@ -293,17 +285,6 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
           You need to create sessions before creating the schedule
         </ErrorDisplay>
       </Box>
-    )
-  }
-
-  if (isReadOnly) {
-    return (
-      <ReadOnlyScheduler
-        children={children}
-        schedule={schedule}
-        version={study?.version}
-        studyId={id}
-      />
     )
   }
 
