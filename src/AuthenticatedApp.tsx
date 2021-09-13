@@ -8,6 +8,7 @@ import {
   Route,
   RouteComponentProps,
   Switch,
+  useLocation,
   useParams,
   withRouter,
 } from 'react-router-dom'
@@ -25,8 +26,9 @@ const Wrapper: FunctionComponent<
     id: string
     section: StudySection
   }>()
-
-  const {data: study, error} = useStudy(studyId)
+  //only use studyId in study builder or
+  const notStudyId = useLocation().pathname.includes(`/assessments/${studyId}`)
+  const {data: study, error} = useStudy(notStudyId ? undefined : studyId)
   const handleError = useErrorHandler()
   const studyDataUpdateFn = useStudyInfoDataDispatch()
   if (error) {
