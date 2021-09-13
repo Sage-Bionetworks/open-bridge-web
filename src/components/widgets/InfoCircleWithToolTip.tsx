@@ -1,15 +1,19 @@
-import React from 'react'
 import {Box, makeStyles, Tooltip} from '@material-ui/core'
+import React, {CSSProperties} from 'react'
 import ItalicI from '../../assets/italic_i_icon.svg'
 import {latoFont, ThemeType} from '../../style/theme'
 
+enum VariantEnum {
+  info = '#8FD6FF',
+  warning = '#8FD6FF',
+}
 interface StyleProps {
-  backgroundColor: string
+  variant: keyof typeof VariantEnum
 }
 
 const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
-  container: {
-    backgroundColor: '#8FD6FF',
+  container: props => ({
+    backgroundColor: VariantEnum[props.variant],
     width: '18px',
     height: '18px',
     borderRadius: '9px',
@@ -18,18 +22,18 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
     alignItems: 'center',
     fontStyle: 'italic',
     boxShadow: '0 2px 2px rgb(0, 0, 0, 0.25)',
-  },
+  }),
   toolTip: props => ({
-    backgroundColor: props.backgroundColor,
+    backgroundColor: VariantEnum[props.variant],
     boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.2)',
   }),
-  arrow: {
+  arrow: props => ({
     backgroundColor: 'transparent',
-    color: '#8FD6FF',
+    color: VariantEnum[props.variant],
     fontSize: '15px',
-  },
-  descriptionContainer: {
-    backgroundColor: '#8FD6FF',
+  }),
+  descriptionContainer: props => ({
+    backgroundColor: VariantEnum[props.variant],
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -39,16 +43,19 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
     fontSize: '15px',
     lineHeight: '18px',
     padding: theme.spacing(1.25, 1.25),
-  },
+  }),
 }))
 
-const InfoCircleWithToolTip: React.FunctionComponent<{
-  tooltipDescription: React.ReactNode
-  backgroundColor?: string
-}> = ({tooltipDescription, backgroundColor}) => {
-  const classes = useStyles({backgroundColor: backgroundColor || '#8FD6FF'})
+const InfoCircleWithToolTip: React.FunctionComponent<
+  {
+    tooltipDescription: React.ReactNode
+
+    style?: CSSProperties
+  } & StyleProps
+> = ({tooltipDescription, style, variant = 'info'}) => {
+  const classes = useStyles({variant: 'info'})
   return (
-    <Box>
+    <Box style={style}>
       <Tooltip
         placement="right"
         arrow
