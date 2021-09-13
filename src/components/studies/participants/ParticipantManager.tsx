@@ -41,7 +41,6 @@ import ParticipantService from '@services/participants.service'
 import ScheduleService from '@services/schedule.service'
 import {latoFont, poppinsFont, theme} from '@style/theme'
 import constants from '@typedefs/constants'
-import {SchedulingEvent} from '@typedefs/scheduling'
 import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
@@ -392,10 +391,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   })
 
   const {
-    data: studyEvents,
+    data: scheduleEventIds,
     run: getEvents,
     status: eventsStatus,
-  } = useAsync<SchedulingEvent[]>({
+  } = useAsync<string[]>({
     status: 'PENDING',
     data: [],
   })
@@ -404,7 +403,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     if (!study?.identifier) {
       return
     }
-    getEvents(ScheduleService.getEventsForSchedule(study.identifier, token!))
+    getEvents(
+      ScheduleService.getEventIdsForScheduleByStudyId(study.identifier, token!)
+    )
   }, [study?.identifier, getEvents])
 
   React.useEffect(() => {
@@ -563,7 +564,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       study.identifier,
       token!,
       tab,
-      studyEvents,
+      scheduleEventIds,
       selectionType,
       Utility.isSignInById(study.signInTypes),
       participantsData
@@ -681,7 +682,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 }}>
                 <>
                   <AddParticipants
-                    customStudyEvents={studyEvents || []}
+                    scheduleEventIds={scheduleEventIds || []}
                     study={study}
                     token={token!}
                     onAdded={() => {
@@ -818,7 +819,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       <ParticipantTableGrid
                         rows={data?.items || []}
                         status={status}
-                        customStudyEvents={studyEvents || []}
+                        scheduleEventIds={scheduleEventIds || []}
                         studyId={study.identifier}
                         totalParticipants={data?.total || 0}
                         isAllSelected={isAllSelected}

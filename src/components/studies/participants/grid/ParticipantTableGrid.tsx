@@ -38,7 +38,6 @@ import ParticipantService, {
   EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING,
 } from '@services/participants.service'
 import {latoFont} from '@style/theme'
-import {SchedulingEvent} from '@typedefs/scheduling'
 import {
   EditableParticipantData,
   ParticipantAccountSummary,
@@ -311,7 +310,7 @@ function getColumns(
   token: string,
   gridType: ParticipantActivityType,
   isEnrolledById: boolean,
-  customStudyEvents: SchedulingEvent[],
+  scheduleEventIds: string[],
   setParticipantToEdit: Function,
   isGloballyHidePhone: boolean,
   setIsGloballyHidePhone: Function
@@ -410,17 +409,14 @@ function getColumns(
     ),
   }
 
-  const customEventColumns = customStudyEvents.map((customEvent, index) => {
+  const customEventColumns = scheduleEventIds.map((eventId, index) => {
     const col: GridColDef = {
-      field: customEvent.eventId + index,
-      headerName: EventService.formatCustomEventIdForDisplay(
-        customEvent.eventId
-      ),
+      field: eventId + index,
+      headerName: EventService.formatCustomEventIdForDisplay(eventId),
       valueGetter: params => {
         const foundEvent = params.row.events.find(
           (event: any) =>
-            event.eventId ===
-            EventService.prefixCustomEventIdentifier(customEvent.eventId)
+            event.eventId === EventService.prefixCustomEventIdentifier(eventId)
         )
         return foundEvent ? getDate(foundEvent.timestamp) : ' '
       },
@@ -472,7 +468,7 @@ function getColumns(
 /************************** */
 
 export type ParticipantTableGridProps = {
-  customStudyEvents: SchedulingEvent[]
+  scheduleEventIds: string[]
   isAllSelected: boolean
   rows: ParticipantAccountSummary[]
   selectedParticipantIds: string[]
@@ -494,7 +490,7 @@ export type ParticipantTableGridProps = {
 
 const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   rows,
-  customStudyEvents,
+  scheduleEventIds,
   studyId,
   totalParticipants,
   gridType,
@@ -531,7 +527,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     token!,
     gridType,
     isEnrolledById,
-    customStudyEvents,
+    scheduleEventIds,
     setParticipantToEdit,
     isGloballyHidePhone,
     setIsGloballyHidePhone
@@ -634,7 +630,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
         <HideWhen hideWhen={participantToEdit?.shouldWithdraw || false}>
           <EditParticipantForm
-            customStudyEvents={customStudyEvents}
+            scheduleEventIds={scheduleEventIds}
             isEnrolledById={isEnrolledById}
             onCancel={() => setParticipantToEdit(undefined)}
             onOK={(

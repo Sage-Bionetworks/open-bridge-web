@@ -4,7 +4,6 @@ import {BlueButton} from '@components/widgets/StyledComponents'
 import {Box, CircularProgress} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
-import {SchedulingEvent} from '@typedefs/scheduling'
 import {EditableParticipantData, Phone} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import Utility from '../../../../helpers/utility'
@@ -18,7 +17,7 @@ const useStyles = makeStyles(theme => ({
 type AddSingleParticipantProps = {
   token: string
   isEnrolledById: boolean
-  customStudyEvents: SchedulingEvent[]
+  scheduleEventIds: string[]
   onAdded: Function
   studyIdentifier: string
 }
@@ -47,7 +46,7 @@ export async function addParticipantByPhone(
 const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
   onAdded,
   isEnrolledById,
-  customStudyEvents,
+  scheduleEventIds,
   token,
   studyIdentifier,
 }) => {
@@ -106,7 +105,7 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
         {error && <Alert color="error">{error}</Alert>}
       </Box>
       <AddSingleParticipantForm
-        customStudyEvents={customStudyEvents}
+        scheduleEventIds={scheduleEventIds}
         isEnrolledById={isEnrolledById}
         participant={participant}
         onChange={participant => {

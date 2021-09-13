@@ -3,7 +3,6 @@
 import Utility from '@helpers/utility'
 import EventService from '@services/event.service'
 import ParticipantService from '@services/participants.service'
-import {SchedulingEvent} from '@typedefs/scheduling'
 import {
   EditableParticipantData,
   ExtendedParticipantAccountSummary,
@@ -60,16 +59,16 @@ const getExportColumns = (isEnrolledById: boolean) => {
 
 function getDownloadTemplateRow(
   isEnrolledById: boolean,
-  studyEvents: SchedulingEvent[]
+  scheduleEventIds: string[]
 ): Record<string, string> {
   const columns = getImportColumns(isEnrolledById)
   let templateData: {[key: string]: string}[] = []
   columns.forEach((v, k) => {
     templateData.push({[v]: ''})
   })
-  studyEvents?.forEach((e, index) => {
+  scheduleEventIds?.forEach((eventId, index) => {
     templateData.splice(1 + index, 0, {
-      [EventService.formatCustomEventIdForDisplay(e.eventId)]: '',
+      [EventService.formatCustomEventIdForDisplay(eventId)]: '',
     })
   })
   return Object.assign({}, ...templateData)
@@ -77,12 +76,12 @@ function getDownloadTemplateRow(
 
 function isImportFileValid(
   isEnrolledById: boolean,
-  customStudyEvents: SchedulingEvent[],
+  scheduleEventIds: string[],
   firstRow: object
 ): boolean {
   //expected columns
   const templateKeys = Object.keys(
-    getDownloadTemplateRow(isEnrolledById, customStudyEvents)
+    getDownloadTemplateRow(isEnrolledById, scheduleEventIds)
   )
     .sort()
     .join(',')
@@ -146,7 +145,7 @@ async function getParticipantDataForDownload(
   studyId: string,
   token: string,
   tab: ParticipantActivityType,
-  studyEvents: SchedulingEvent[] | null,
+  scheduleEventIds: string[] | null,
   selectionType: SelectionType,
   isEnrolledById: boolean,
   selectedParticipantData: ParticipantData = {items: [], total: 0}
@@ -185,15 +184,12 @@ async function getParticipantDataForDownload(
         participant[columns.get('phoneNumber')!] = p.phone?.nationalFormat
       }
 
-      studyEvents?.forEach(currentEvent => {
-        const matchingEvent = p.events?.find(
-          pEvt => pEvt.eventId === currentEvent.eventId
-        )
-        participant[
-          EventService.formatCustomEventIdForDisplay(currentEvent.eventId)
-        ] = matchingEvent?.timestamp
-          ? moment(matchingEvent?.timestamp).format('l')
-          : ''
+      scheduleEventIds?.forEach(eventId => {
+        const matchingEvent = p.events?.find(pEvt => pEvt.eventId === eventId)
+        participant[EventService.formatCustomEventIdForDisplay(eventId)] =
+          matchingEvent?.timestamp
+            ? moment(matchingEvent?.timestamp).format('l')
+            : ''
       })
 
       return participant

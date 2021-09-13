@@ -29,10 +29,13 @@ async function getRelevantEventsForParticipants(
   }>
 > {
   //transform ids into promises
-  const eventIdsForSchedule = await ScheduleService.getEventsForSchedule(
-    studyIdentifier,
-    token
-  ).then(result => result.map(e => prefixCustomEventIdentifier(e.eventId)))
+  const eventIdsForSchedule =
+    await ScheduleService.getEventIdsForScheduleByStudyId(
+      studyIdentifier,
+      token
+    ).then(result =>
+      result.map(eventId => prefixCustomEventIdentifier(eventId))
+    )
   const promises = participantId.map(async pId => {
     const endpoint = constants.endpoints.events
       .replace(':studyId', studyIdentifier)
@@ -83,20 +86,20 @@ async function updateParticipantCustomEvents(
     .replace(':userId', participantId)
 
   // get Events for schedule  - we need this in order to possibly delete userEvents
-  const schedulingEvents = await ScheduleService.getEventsForSchedule(
-    studyIdentifier,
-    token
-  )
+  const schedulingEventIds =
+    await ScheduleService.getEventIdsForScheduleByStudyId(
+      studyIdentifier,
+      token
+    )
   const customEventWithDate = customEvents.filter(event => !!event.timestamp)
 
-  const eventsToDelete = schedulingEvents.filter(
-    event =>
-      !customEventWithDate.find(pEvent => event.eventId === pEvent.eventId)
+  const eventsToDelete = schedulingEventIds.filter(
+    eventId => !customEventWithDate.find(pEvent => eventId === pEvent.eventId)
   )
 
-  const eventsToDeletePromises = eventsToDelete.map(event =>
+  const eventsToDeletePromises = eventsToDelete.map(eventId =>
     Utility.callEndpoint<{identifier: string}>(
-      eventEndpoint + '/' + event.eventId,
+      eventEndpoint + '/' + eventId,
       'DELETE',
       {},
       token

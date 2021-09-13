@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {
@@ -8,7 +9,7 @@ import {
   SchedulingEvent,
   StudySession,
 } from '../types/scheduling'
-import {Assessment, Study} from '../types/types'
+import {Assessment} from '../types/types'
 import AssessmentService from './assessment.service'
 
 const ScheduleService = {
@@ -17,7 +18,8 @@ const ScheduleService = {
   getScheduleTimeline,
   saveSchedule,
   createEmptyScheduleSession,
-  getEventsForSchedule,
+  getEventIdsForSchedule,
+  getEventIdsForScheduleByStudyId,
 }
 
 export const TIMELINE_RETRIEVED_EVENT: SchedulingEvent = {
@@ -155,25 +157,22 @@ async function getScheduleTimeline(
   return result.data
 }
 
-async function getEventsForSchedule(
+function getEventIdsForSchedule(schedule: Schedule): string[] {
+  const eventIds = schedule.sessions
+    .filter(session => !!session.startEventId)
+    .map(e => e.startEventId!)
+  return _.uniq(eventIds)
+}
+
+async function getEventIdsForScheduleByStudyId(
   studyId: string,
   token: string
-): Promise<SchedulingEvent[]> {
-  const response = await Utility.callEndpoint<Study>(
-    constants.endpoints.study.replace(':id', studyId),
-    'GET',
-    {},
-    token
-  )
-
-  return (
-    response.data.customEvents?.map(e => ({
-      ...e,
-      identifier: e.eventId.includes(constants.constants.CUSTOM_EVENT_PREFIX)
-        ? e.eventId
-        : constants.constants.CUSTOM_EVENT_PREFIX + e.eventId,
-    })) || []
-  )
+): Promise<string[]> {
+  const schedule = await getSchedule(studyId, token, false)
+  if (!schedule) {
+    throw Error('Schedule not found')
+  }
+  return getEventIdsForSchedule(schedule)
 }
 
 export default ScheduleService

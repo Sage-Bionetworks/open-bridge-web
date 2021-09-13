@@ -72,7 +72,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
         batchEdit
       />
       <EditParticipantForm
-        customStudyEvents={[]}
+        scheduleEventIds={[]}
         isEnrolledById={isEnrolledById}
         onCancel={() => {
           onSetIsBatchEditOpen(false)

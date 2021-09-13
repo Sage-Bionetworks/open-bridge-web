@@ -16,7 +16,6 @@ import {
   makeStyles,
 } from '@material-ui/core'
 import EventService from '@services/event.service'
-import {SchedulingEvent} from '@typedefs/scheduling'
 import {EditableParticipantData, ParticipantEvent} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import TimezoneDropdown from '../TimezoneDropdown'
@@ -31,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 
 type EditParticipantFormProps = {
   participant: EditableParticipantData
-  customStudyEvents: SchedulingEvent[]
+  scheduleEventIds: string[]
   isEnrolledById: boolean
   onOK: Function
   onCancel: Function
@@ -43,7 +42,7 @@ type EditParticipantFormProps = {
 const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
   participant,
   isEnrolledById,
-  customStudyEvents,
+  scheduleEventIds,
   onOK,
   onCancel,
   children,
@@ -81,13 +80,13 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
 
   const getEventDateValue = (
     participantEvents: ParticipantEvent[] | undefined,
-    currentEvent: SchedulingEvent
+    currentEventId: string
   ) => {
     if (!participantEvents) {
       return null
     }
     const matchingParticipantEvent = participantEvents.find(
-      pEvt => pEvt.eventId === currentEvent.eventId
+      pEvt => pEvt.eventId === currentEventId
     )
     if (matchingParticipantEvent) {
       console.log('found event')
@@ -114,15 +113,13 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
         </Box>
         <FormGroup className={classes.editForm}>
           <>
-            {customStudyEvents.map(evt => (
+            {scheduleEventIds.map(eventId => (
               <DatePicker
-                key={evt.eventId}
-                label={EventService.formatCustomEventIdForDisplay(evt.eventId)}
-                id={evt.eventId}
-                value={getEventDateValue(customParticipantEvents, evt)}
-                onChange={e =>
-                  handleEventDateChange(evt.eventId, e)
-                }></DatePicker>
+                key={eventId}
+                label={EventService.formatCustomEventIdForDisplay(eventId)}
+                id={eventId}
+                value={getEventDateValue(customParticipantEvents, eventId)}
+                onChange={e => handleEventDateChange(eventId, e)}></DatePicker>
             ))}
           </>
           <Box width="375px" mb={3}>

@@ -1,3 +1,4 @@
+import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
 import LoadingComponent from '@components/widgets/Loader'
 import Utility from '@helpers/utility'
 import {
@@ -9,6 +10,8 @@ import {
   Theme,
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Close'
+import EventService from '@services/event.service'
+import ScheduleService from '@services/schedule.service'
 import {latoFont} from '@style/theme'
 import clsx from 'clsx'
 import _ from 'lodash'
@@ -54,9 +57,13 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     input: {
       backgroundColor: 'white',
+      marginRight: theme.spacing(0.5),
       padding: theme.spacing(2, 1.25),
       '&:focus': {
         outline: 'none',
+      },
+      '&:disabled': {
+        border: 'none',
       },
       outline: 'none',
     },
@@ -119,6 +126,9 @@ const SessionStartTab: React.ForwardRefRenderFunction<
 
   const handleError = useErrorHandler()
   const [saveLoader, setSaveLoader] = React.useState(false)
+  const [eventIdsInSchedule, setEventIdsInSchedule] = React.useState<string[]>(
+    []
+  )
 
   const onUpdate = async (customEvents: SchedulingEvent[]) => {
     if (!study) {
@@ -148,8 +158,18 @@ const SessionStartTab: React.ForwardRefRenderFunction<
     checkForDuplicateEventNames(localEvents)
   }, [study?.customEvents])
 
+  useEffect(() => {
+    if (schedule) {
+      setEventIdsInSchedule(
+        ScheduleService.getEventIdsForSchedule(schedule).map(e =>
+          EventService.formatCustomEventIdForDisplay(e)
+        )
+      )
+    }
+  }, [schedule?.sessions])
+
   if (!study) {
-    return <></>
+    return <>...loading</>
   }
 
   const addEmptyEvent = () => {
@@ -225,6 +245,10 @@ const SessionStartTab: React.ForwardRefRenderFunction<
   const calendarIcon = (
     <img src={CalendarIcon} className={classes.calendarIcon}></img>
   )
+
+  const canEdit = (eventId: string): boolean =>
+    !eventIdsInSchedule.includes(eventId)
+
   return (
     <Box className={classes.root}>
       <LoadingComponent
@@ -254,6 +278,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
           <Box flexShrink={0} minWidth="200px" mr={2}>
             <>
               <Box className={classes.intialLoginContainer}>Initial_Login</Box>
+
               {localEventObjects.map((evt, index) => (
                 <Box display="block" key={evt.key}>
                   <FormGroup
@@ -263,6 +288,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
                     <input
                       key={evt.key}
                       value={evt.eventId}
+                      disabled={!canEdit(evt.eventId)}
                       onChange={e => {
                         const newIdentifiers = [...localEventObjects]
                         newIdentifiers[index] = {
@@ -276,16 +302,30 @@ const SessionStartTab: React.ForwardRefRenderFunction<
                         classes.input,
                         evt.hasError && classes.errorTextbox
                       )}></input>
-                    <IconButton
-                      style={{marginLeft: '4px'}}
-                      edge="end"
-                      size="small"
-                      onClick={() => deleteEvent(index)}>
-                      <DeleteIcon
-                        style={{
-                          color: evt.hasError ? 'red' : 'black',
-                        }}></DeleteIcon>
-                    </IconButton>
+                    {canEdit(evt.eventId) ? (
+                      <IconButton
+                        edge="end"
+                        size="small"
+                        onClick={() => deleteEvent(index)}>
+                        <DeleteIcon
+                          style={{
+                            color: evt.hasError ? 'red' : 'black',
+                          }}></DeleteIcon>
+                      </IconButton>
+                    ) : (
+                      <InfoCircleWithToolTip
+                        style={{marginLeft: '2px'}}
+                        tooltipDescription={
+                          <span>
+                            &nbsp;To <strong>rename or delete</strong> this
+                            Event, please unselect it from the Session Start
+                            that is currently mapped to it in the Create
+                            Scheduler step.
+                          </span>
+                        }
+                        variant="info"
+                      />
+                    )}
                   </FormGroup>
                   {evt.hasError && (
                     <Box className={classes.errorText}>

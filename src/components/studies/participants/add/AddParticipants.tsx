@@ -19,7 +19,6 @@ import {makeStyles} from '@material-ui/core/styles'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import EventService from '@services/event.service'
 import {poppinsFont, theme} from '@style/theme'
-import {SchedulingEvent} from '@typedefs/scheduling'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {CSVReader} from 'react-papaparse'
@@ -113,7 +112,7 @@ type AddParticipantsProps = {
   token: string
   study: Study
   onAdded: Function
-  customStudyEvents: SchedulingEvent[]
+  scheduleEventIds: string[]
   isTestAccount: boolean
 }
 
@@ -121,7 +120,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
   onAdded,
   study,
   token,
-  customStudyEvents,
+  scheduleEventIds,
   isTestAccount,
 }) => {
   const [tab, setTab] = React.useState(0)
@@ -152,15 +151,15 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       return
     }
 
-    const customParticipantEvents: ParticipantEvent[] = customStudyEvents.map(
-      e => ({
-        eventId: EventService.formatCustomEventIdForDisplay(e.eventId),
+    const customParticipantEvents: ParticipantEvent[] = scheduleEventIds.map(
+      eventId => ({
+        eventId: EventService.formatCustomEventIdForDisplay(eventId),
       })
     )
 
     const isValid = CsvUtility.isImportFileValid(
       isEnrolledById,
-      customStudyEvents,
+      scheduleEventIds,
       rows[0].data
     )
     if (!isValid) {
@@ -315,7 +314,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             <TabPanel value={tab} index={0}>
               <ImportParticipantsInstructions
                 isEnrolledById={isEnrolledById}
-                studyEvents={customStudyEvents}>
+                scheduleEventIds={scheduleEventIds}>
                 <BlueButton
                   onClick={() => {
                     setIsCsvUploaded(false)
@@ -330,7 +329,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             </TabPanel>
             <TabPanel value={tab} index={1}>
               <AddSingleParticipant
-                customStudyEvents={customStudyEvents}
+                scheduleEventIds={scheduleEventIds}
                 isEnrolledById={isEnrolledById}
                 token={token}
                 studyIdentifier={study.identifier}

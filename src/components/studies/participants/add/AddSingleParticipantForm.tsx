@@ -9,7 +9,6 @@ import {FormHelperText, makeStyles} from '@material-ui/core'
 import FormControl from '@material-ui/core/FormControl'
 import FormGroup from '@material-ui/core/FormGroup'
 import EventService from '@services/event.service'
-import {SchedulingEvent} from '@typedefs/scheduling'
 import {EditableParticipantData, ParticipantEvent} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
@@ -24,14 +23,14 @@ const useStyles = makeStyles(theme => ({
 
 type AddSingleParticipantFormProps = {
   participant: EditableParticipantData
-  customStudyEvents: SchedulingEvent[]
+  scheduleEventIds: string[]
   isEnrolledById: boolean
 
   onChange: (p: EditableParticipantData) => void
 }
 
 const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps> =
-  ({participant, isEnrolledById, customStudyEvents, onChange}) => {
+  ({participant, isEnrolledById, scheduleEventIds, onChange}) => {
     const classes = useStyles()
     const [validationErrors, setValidationErrors] = React.useState({
       phone: false,
@@ -114,18 +113,16 @@ const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps>
             </>
           )}
           <>
-            {customStudyEvents.map(evt => (
+            {scheduleEventIds.map(eventId => (
               <DatePicker
-                key={evt.eventId}
-                label={EventService.formatCustomEventIdForDisplay(evt.eventId)}
-                id={evt.eventId}
+                key={eventId}
+                label={EventService.formatCustomEventIdForDisplay(eventId)}
+                id={eventId}
                 value={
-                  participant.events?.find(pEvt => pEvt.eventId === evt.eventId)
+                  participant.events?.find(pEvt => pEvt.eventId === eventId)
                     ?.timestamp || null
                 }
-                onChange={e =>
-                  handleEventDateChange(evt.eventId, e)
-                }></DatePicker>
+                onChange={e => handleEventDateChange(eventId, e)}></DatePicker>
             ))}
           </>
 
