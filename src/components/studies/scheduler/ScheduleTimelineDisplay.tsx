@@ -3,6 +3,7 @@ import {ReactComponent as TimerIcon} from '@assets/scheduler/timer_icon.svg'
 import AssessmentImage from '@components/assessments/AssessmentImage'
 import {useTimeline} from '@components/studies/scheduleHooks'
 import BlackBorderDropdown from '@components/widgets/BlackBorderDropdown'
+import LoadingComponent from '@components/widgets/Loader'
 import SessionIcon from '@components/widgets/SessionIcon'
 import {Box} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
@@ -138,7 +139,7 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
     return timeline?.sessions.find(s => s.guid === sessionGuid)!
   }
   if (isLoading) {
-    return <></>
+    return <LoadingComponent reqStatusLoading={true} variant="small" />
   }
   if (error) {
     handleError(error!)

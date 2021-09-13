@@ -8,6 +8,7 @@ import {
   Select,
 } from '@material-ui/core'
 import {JOINED_EVENT_ID} from '@services/event.service'
+import constants from '@typedefs/constants'
 import React from 'react'
 import {HDWMEnum, SchedulingEvent} from '../../../types/scheduling'
 import Duration from './Duration'
@@ -38,10 +39,21 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
 }: StartDateProps) => {
   const classes = useStyles()
   const [hasDelay, setHasDelay] = React.useState<boolean>(delay ? true : false)
-  const eventDropdownValues = [
+  const eventDropdownValues2 = [
     ...[{eventId: JOINED_EVENT_ID}],
     ...(customEvents || []),
-  ].map(e => ({value: e.eventId, label: e.eventId}))
+  ].map(e => ({
+    value: constants.constants.CUSTOM_EVENT_PREFIX + e.eventId,
+    label: e.eventId,
+  }))
+
+  const eventDropdownValues = [
+    ...[{value: JOINED_EVENT_ID, label: JOINED_EVENT_ID}],
+    ...(customEvents || []).map(e => ({
+      value: constants.constants.CUSTOM_EVENT_PREFIX + e.eventId,
+      label: e.eventId,
+    })),
+  ]
 
   const changeStartDelayType = (_hasDelay: boolean) => {
     setHasDelay(_hasDelay)

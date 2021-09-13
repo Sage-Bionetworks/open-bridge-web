@@ -1,10 +1,10 @@
 import {
+  Box,
   Chip,
   FormControlLabel,
   Radio,
   RadioGroup,
   TextField,
-  Box,
 } from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import Autocomplete from '@material-ui/lab/Autocomplete/Autocomplete'
@@ -12,8 +12,8 @@ import React from 'react'
 import {latoFont, ThemeType} from '../../../style/theme'
 import {Study} from '../../../types/types'
 import {MTBHeadingH2} from '../../widgets/Headings'
-import {diseases} from './diseases'
 import InfoCircleWithToolTip from '../../widgets/InfoCircleWithToolTip'
+import {diseases} from './diseases'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -111,10 +111,7 @@ const StudyTypeLabel: React.FunctionComponent<{
   return (
     <Box display="flex" alignItems="center" justifyContent="center">
       <Box mr={1}>{formLabelText}</Box>{' '}
-      <InfoCircleWithToolTip
-        tooltipDescription={label}
-        backgroundColor="#8FD6FF"
-      />
+      <InfoCircleWithToolTip tooltipDescription={label} variant="info" />
     </Box>
   )
 }

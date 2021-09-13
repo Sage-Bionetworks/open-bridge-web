@@ -1,7 +1,6 @@
 import {ReactComponent as DownloadIcon} from '@assets/download.svg'
 import {Box, makeStyles} from '@material-ui/core'
 import EventService from '@services/event.service'
-import {SchedulingEvent} from '@typedefs/scheduling'
 import React, {FunctionComponent} from 'react'
 import {jsonToCSV} from 'react-papaparse'
 import CsvUtility from '../csv/csvUtility'
@@ -27,8 +26,8 @@ const useStyles = makeStyles(theme => ({
 const ImportParticipantsInstructions: FunctionComponent<{
   isEnrolledById: boolean
   children: React.ReactNode
-  studyEvents: SchedulingEvent[]
-}> = ({children, isEnrolledById, studyEvents}) => {
+  scheduleEventIds: string[]
+}> = ({children, isEnrolledById, scheduleEventIds}) => {
   const classes = useStyles()
   const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
     string | undefined
@@ -37,7 +36,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
   const createDownloadTemplate = async () => {
     const templateData = CsvUtility.getDownloadTemplateRow(
       isEnrolledById,
-      studyEvents
+      scheduleEventIds
     )
     //csv and blob it
     const csvData = jsonToCSV([templateData])
@@ -49,9 +48,9 @@ const ImportParticipantsInstructions: FunctionComponent<{
     setFileDownloadUrl(fileObjUrl)
   }
 
-  const instructionItems = studyEvents.map((evt, i) => (
+  const instructionItems = scheduleEventIds.map((eventId, i) => (
     <li key={i}>
-      <strong>{EventService.formatCustomEventIdForDisplay(evt.eventId)}</strong>{' '}
+      <strong>{EventService.formatCustomEventIdForDisplay(eventId)}</strong>{' '}
       (can be updated later)
     </li>
   ))
