@@ -36,9 +36,13 @@ function makeBackendExternalId(studyId: string, externalId: string) {
   return `${externalId}:${studyId}`
 }
 
-export function formatExternalId(studyId: string, externalId: string) {
+export function formatExternalId(
+  studyId: string,
+  externalId: string,
+  isKeepBlank?: boolean
+) {
   if (!externalId) {
-    return EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING
+    return isKeepBlank ? '' : EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING
   }
   let forDisplay = externalId.replace(`:${studyId}`, '')
   return forDisplay
@@ -170,7 +174,8 @@ async function getActiveParticipantById(
       ...result.data,
       externalId: formatExternalId(
         studyIdentifier,
-        result.data.externalIds[studyIdentifier]
+        result.data.externalIds[studyIdentifier],
+        true
       ),
     }
   } catch (e) {
