@@ -70,6 +70,7 @@ const AddGeneratedParticipant: FunctionComponent<AddGeneratedParticipantProps> =
               </SimpleTextLabel>
               <SimpleTextInput
                 id="generate"
+                inputProps={{min: 1}}
                 style={{width: '150px', margin: '40px auto 32px auto'}}
                 type="number"
                 value={numOfIds}
