@@ -1,7 +1,7 @@
+import {DialogButtonSecondary} from '@components/widgets/StyledComponents'
 import {Box, Container, makeStyles} from '@material-ui/core'
 import React, {FunctionComponent, ReactNode} from 'react'
 import {Assessment, StringDictionary} from '../../types/types'
-import AssessmentLibraryFilter from './AssessmentLibraryFilter'
 
 type AssessmentLibraryWrapperOwnProps = {
   assessments: Assessment[]
@@ -52,27 +52,31 @@ const useStyles = makeStyles(theme => ({
 
 type AssessmentLibraryWrapperProps = AssessmentLibraryWrapperOwnProps
 
-const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps> = ({
-  children,
-  tags,
-  assessments,
-  onChangeTags,
-}: AssessmentLibraryWrapperProps) => {
-  const classes = useStyles()
+const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps> =
+  ({
+    children,
+    tags,
+    assessments,
+    onChangeTags,
+  }: AssessmentLibraryWrapperProps) => {
+    const classes = useStyles()
 
-  return (
-    <Box className={classes.root}>
-      {/* Filtering will not be present in the october release */}
-      {/* <AssessmentLibraryFilter
+    return (
+      <Box className={classes.root}>
+        {/* Filtering will not be present in the october release */}
+        {/* <AssessmentLibraryFilter
         tags={tags}
         assessments={assessments}
         onChangeTags={(tags: string[]) => onChangeTags(tags)}
       /> */}
-      <Container className={classes.assessmentContainer} maxWidth="xl">
-        <Box className={classes.cardGrid}>{children}</Box>
-      </Container>
-    </Box>
-  )
-}
+        <Container className={classes.assessmentContainer} maxWidth="xl">
+          <DialogButtonSecondary variant="contained">
+            DENO
+          </DialogButtonSecondary>
+          <Box className={classes.cardGrid}>{children}</Box>
+        </Container>
+      </Box>
+    )
+  }
 
 export default AssessmentLibraryWrapper

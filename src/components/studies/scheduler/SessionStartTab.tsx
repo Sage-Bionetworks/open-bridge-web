@@ -94,7 +94,7 @@ type SessionStartTabProps = {
 }
 
 type LocalEventObject = SchedulingEvent & {
-  hasError: boolean
+  hasError: 'duplicate' | 'word' | undefined
   key: string
 }
 
@@ -151,11 +151,11 @@ const SessionStartTab: React.ForwardRefRenderFunction<
     const localEvents = study?.customEvents!.map(element => {
       return {
         ...element,
-        hasError: false,
+        hasError: undefined,
         key: Utility.generateNonambiguousCode(8, 'NUMERIC'),
       }
     })
-    checkForDuplicateEventNames(localEvents)
+    checkForErrors(localEvents)
   }, [study?.customEvents])
 
   useEffect(() => {
@@ -191,21 +191,25 @@ const SessionStartTab: React.ForwardRefRenderFunction<
   }
 
   const updateEvent = () => {
-    if (checkForDuplicateEventNames()) return
+    if (checkForErrors()) return
+
     onUpdate(transformLocalEventObjects())
   }
 
-  const checkForDuplicateEventNames = (arr?: LocalEventObject[]) => {
+  const checkForErrors = (arr?: LocalEventObject[]): boolean => {
     if (!study.customEvents) return false
     const seenIdentifiers = new Map<string, LocalEventObject>()
     const currentLocalEventObjects = [...(arr || localEventObjects)]
     let foundError = false
     for (let i = 0; i < currentLocalEventObjects.length; i++) {
       const identifier = currentLocalEventObjects[i].eventId
-      if (seenIdentifiers.has(identifier)) {
+      if (identifier !== identifier.replace(/ /gi, '')) {
         foundError = true
-        currentLocalEventObjects[i].hasError = true
-        seenIdentifiers.get(identifier)!.hasError = true
+        currentLocalEventObjects[i].hasError = 'word'
+      } else if (seenIdentifiers.has(identifier)) {
+        foundError = true
+        currentLocalEventObjects[i].hasError = 'duplicate'
+        seenIdentifiers.get(identifier)!.hasError = 'duplicate'
         continue
       }
       seenIdentifiers.set(identifier, currentLocalEventObjects[i])
@@ -217,7 +221,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
   const deleteEvent = (index: number) => {
     const newEvents: LocalEventObject[] = [...localEventObjects]
     newEvents.splice(index, 1)
-    if (checkForDuplicateEventNames(newEvents)) return
+    if (checkForErrors(newEvents)) return
     onUpdate(
       newEvents.map(el => {
         return {
@@ -329,7 +333,9 @@ const SessionStartTab: React.ForwardRefRenderFunction<
                   </FormGroup>
                   {evt.hasError && (
                     <Box className={classes.errorText}>
-                      Duplicate event identifier.
+                      {evt.hasError === 'duplicate'
+                        ? 'Duplicate event identifier.'
+                        : 'Event name has blank spaces'}
                     </Box>
                   )}
                 </Box>
