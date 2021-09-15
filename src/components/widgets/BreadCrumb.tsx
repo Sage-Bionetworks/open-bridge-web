@@ -35,7 +35,7 @@ const BreadCrumb: React.FunctionComponent<BreadCrumbProps> = ({
 }: BreadCrumbProps) => {
   const classes = useStyles()
   return (
-    <Breadcrumbs aria-label="breadcrumb">
+    <Breadcrumbs aria-label="breadcrumb" separator={currentItem ? '/' : ''}>
       {links.map((link, index) => (
         <NavLink to={link.url} key={link.url} className={classes.link}>
           {index === 0 && <BackIcon className={classes.backIcon} />}

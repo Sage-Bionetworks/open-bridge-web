@@ -5,8 +5,8 @@ import {
   InputLabel,
   Select,
 } from '@material-ui/core'
-import Alert from '@material-ui/lab/Alert'
 import {withStyles} from '@material-ui/core/styles'
+import Alert from '@material-ui/lab/Alert'
 import {latoFont, poppinsFont} from '../../style/theme'
 
 export const ButtonWithSelectButton = withStyles(theme => ({
@@ -59,6 +59,21 @@ export const BlueButton = withStyles(theme => ({
     '&:hover': {
       fontWeight: 'bolder',
       backgroundColor: theme.palette.primary.dark,
+    },
+    fontFamily: 'Lato',
+  },
+}))(Button)
+
+export const WhiteButton = withStyles(theme => ({
+  root: {
+    borderRadius: '0px',
+    height: '48px',
+    color: 'black',
+    backgroundColor: '#fff',
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+    '&:hover': {
+      fontWeight: 'bolder',
+      backgroundColor: '#fff',
     },
     fontFamily: 'Lato',
   },
@@ -150,9 +165,10 @@ export const SimpleTextInput = withStyles(theme => ({
     padding: '10px 12px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     fontFamily: [latoFont, 'Roboto'].join(','),
-    '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active': {
-      ' -webkit-box-shadow': '0 0 0 30px white inset !important',
-    },
+    '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active':
+      {
+        ' -webkit-box-shadow': '0 0 0 30px white inset !important',
+      },
   },
 }))(InputBase)
 

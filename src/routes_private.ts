@@ -4,6 +4,7 @@ import AccessSettings from './components/access-settings/AccessSettings'
 import AccountSetup from './components/account/AccountSetup'
 import AssessmentDetail from './components/assessments/AssessmentDetail'
 import AssessmentLibrary from './components/assessments/AssessmentLibrary'
+import AssessmentsPreview from './components/assessments/AssessmentsPreview'
 import ParticipantManager from './components/studies/participants/ParticipantManager'
 import StudyBuilder from './components/studies/StudyBuilder'
 import constants from './types/constants'
@@ -54,7 +55,13 @@ export default [
     path: '/assessments',
     name: 'ASSESSMENT LIBRARY',
     Component: AssessmentLibrary,
-    exact: false,
+    exact: true,
+  },
+  {
+    path: '/assessments/preview',
+    name: '',
+    Component: AssessmentsPreview,
+    exact: true,
   },
   {
     path: '/assessments/:id',

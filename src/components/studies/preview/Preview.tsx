@@ -36,6 +36,10 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     padding: theme.spacing(0, 6, 7, 6),
     textAlign: 'left',
     position: 'relative',
+
+    '&$assessmentDemo': {
+      backgroundColor: 'inherit',
+    },
   },
   phone: {
     width: '145px',
@@ -185,10 +189,12 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   idLabel: {
     fontWeight: 'bold',
   },
+  assessmentDemo: {},
 }))
 
 export interface PreviewProps {
   id: string
+  isAssessmentDemo?: boolean
 }
 
 const Reminder: React.FunctionComponent<{text: string; img: string}> = ({
@@ -204,7 +210,10 @@ const Reminder: React.FunctionComponent<{text: string; img: string}> = ({
   )
 }
 
-const Preview: React.FunctionComponent<PreviewProps> = ({id}: PreviewProps) => {
+const Preview: React.FunctionComponent<PreviewProps> = ({
+  id,
+  isAssessmentDemo,
+}: PreviewProps) => {
   const classes = useStyles()
   const {token} = useUserSessionDataState()
   const {
@@ -270,7 +279,11 @@ const Preview: React.FunctionComponent<PreviewProps> = ({id}: PreviewProps) => {
         )}
       </Box>
       {!testParticipantId ? (
-        <div className={classes.root}>
+        <div
+          className={clsx(
+            classes.root,
+            isAssessmentDemo && classes.assessmentDemo
+          )}>
           <Box
             textAlign="center"
             display="flex"
@@ -290,25 +303,27 @@ const Preview: React.FunctionComponent<PreviewProps> = ({id}: PreviewProps) => {
                 <Reminder key={index} text={text} img={icons[index]}></Reminder>
               ))}
             </Box>
-            <Box
-              className={clsx(
-                classes.scheduleSessionReminderContainer,
-                classes.reminderOfUseText
-              )}>
-              <Box>
-                Please remember to customize your study schedule on&nbsp;
-                <img
-                  className={classes.scheduleSessionsIcon}
-                  src={ScheduleSessionsIcon}></img>
-                &nbsp;
-                <NavLink
-                  to={'scheduler'}
-                  className={classes.scheduleSessionsButton}>
-                  Schedule Sessions
-                </NavLink>
-                &nbsp; page before previewing your app.
+            {!isAssessmentDemo && (
+              <Box
+                className={clsx(
+                  classes.scheduleSessionReminderContainer,
+                  classes.reminderOfUseText
+                )}>
+                <Box>
+                  Please remember to customize your study schedule on&nbsp;
+                  <img
+                    className={classes.scheduleSessionsIcon}
+                    src={ScheduleSessionsIcon}></img>
+                  &nbsp;
+                  <NavLink
+                    to={'scheduler'}
+                    className={classes.scheduleSessionsButton}>
+                    Schedule Sessions
+                  </NavLink>
+                  &nbsp; page before previewing your app.
+                </Box>
               </Box>
-            </Box>
+            )}
             <ErrorBoundary
               FallbackComponent={ErrorFallback}
               onError={ErrorHandler}>
@@ -322,7 +337,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({id}: PreviewProps) => {
           </Box>
         </div>
       ) : (
-        <div className={classes.root}>
+        <div className={clsx(classes.root)}>
           <Box width="548px" mx="auto">
             <Box display="flex" width="100%">
               <div className={classes.phone}>
