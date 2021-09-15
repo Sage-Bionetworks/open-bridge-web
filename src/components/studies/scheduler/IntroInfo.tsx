@@ -1,4 +1,4 @@
-import {useUserSessionDataState} from '@helpers/AuthContext'
+import { useUserSessionDataState } from '@helpers/AuthContext'
 import {
   Box,
   Button,
@@ -6,18 +6,18 @@ import {
   createStyles,
   Divider,
   FormControlLabel,
-  Theme,
+  Theme
 } from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import ScheduleService from '@services/schedule.service'
-import {Study} from '@typedefs/types'
+import { Study } from '@typedefs/types'
 import React from 'react'
-import {latoFont, poppinsFont} from '../../../style/theme'
+import { latoFont, poppinsFont } from '../../../style/theme'
 import constants from '../../../types/constants'
-import {DWsEnum, Schedule} from '../../../types/scheduling'
-import {SimpleTextInput} from '../../widgets/StyledComponents'
-import {useUpdateSchedule} from '../scheduleHooks'
-import {useStudy, useUpdateStudyDetail} from '../studyHooks'
+import { DWsEnum, Schedule } from '../../../types/scheduling'
+import { SimpleTextInput } from '../../widgets/StyledComponents'
+import { useUpdateSchedule } from '../scheduleHooks'
+import { useStudy, useUpdateStudyDetail } from '../studyHooks'
 import Duration from './Duration'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -158,7 +158,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
 
     mutateStudy({study: updatedStudy}).then(e => {
       console.log('study updated')
-      alert(e.name)
+  
     })
   }
 
