@@ -67,7 +67,7 @@ export const BlueButton = withStyles(theme => ({
 export const WhiteButton = withStyles(theme => ({
   root: {
     borderRadius: '0px',
-    height: '48px',
+    padding: theme.spacing(1.5),
     color: 'black',
     backgroundColor: '#fff',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
@@ -76,6 +76,10 @@ export const WhiteButton = withStyles(theme => ({
       backgroundColor: '#fff',
     },
     fontFamily: 'Lato',
+
+    '& svg': {
+      marginRight: theme.spacing(1.5),
+    },
   },
 }))(Button)
 

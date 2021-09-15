@@ -1,7 +1,9 @@
-import {DialogButtonSecondary} from '@components/widgets/StyledComponents'
+import {ReactComponent as DemoPhone} from '@assets/preview/demo_phone.svg'
+import {WhiteButton} from '@components/widgets/StyledComponents'
 import {Box, Container, makeStyles} from '@material-ui/core'
+import {Assessment, StringDictionary} from '@typedefs/types'
 import React, {FunctionComponent, ReactNode} from 'react'
-import {Assessment, StringDictionary} from '../../types/types'
+import {NavLink} from 'react-router-dom'
 
 type AssessmentLibraryWrapperOwnProps = {
   assessments: Assessment[]
@@ -23,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down('sm')]: {
       maxWidth: '400px',
     },
-    paddingTop: theme.spacing(3),
+    paddingTop: theme.spacing(1),
   },
   assessmentContainer: {
     padding: theme.spacing(1),
@@ -70,9 +72,16 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
         onChangeTags={(tags: string[]) => onChangeTags(tags)}
       /> */}
         <Container className={classes.assessmentContainer} maxWidth="xl">
-          <DialogButtonSecondary variant="contained">
-            DENO
-          </DialogButtonSecondary>
+          <Box textAlign="right" mx={3.5} mb={6}>
+            <NavLink
+              to={'assessments/preview'}
+              style={{textDecoration: 'none'}}>
+              <WhiteButton variant="contained" style={{fontSize: '15px'}}>
+                <DemoPhone />
+                Demo all assessments
+              </WhiteButton>
+            </NavLink>
+          </Box>
           <Box className={classes.cardGrid}>{children}</Box>
         </Container>
       </Box>

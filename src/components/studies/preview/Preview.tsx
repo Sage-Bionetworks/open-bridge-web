@@ -7,9 +7,10 @@ import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
 import {NavLink} from 'react-router-dom'
 import LinkIcon from '../../../assets/link_icon.svg'
 import appStoreBtn from '../../../assets/preview/appStoreBtn.png'
+import {ReactComponent as DemoAssessmentPlayImg} from '../../../assets/preview/assessment_preview_play.svg'
 import googlePlayBtn from '../../../assets/preview/googlePlayBtn.png'
 import PhoneImg from '../../../assets/preview/preview_phone.svg'
-import {ReactComponent as PlayImg} from '../../../assets/preview/preview_play.svg'
+import {ReactComponent as DemoStudyPlayImg} from '../../../assets/preview/preview_play.svg'
 import AuthorizedIcon from '../../../assets/preview/reminder_of_use_authorization_icon.svg'
 import MedicalIcon from '../../../assets/preview/reminder_of_use_medical_icon.svg'
 import ProtectionIcon from '../../../assets/preview/reminder_of_use_protect_icon.svg'
@@ -40,6 +41,13 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     '&$assessmentDemo': {
       backgroundColor: 'inherit',
     },
+  },
+  phoneAssessmentDemo: {
+    width: '145px',
+    height: '275px',
+    marginRight: '64px',
+    textAlign: 'left',
+    flexShrink: 0,
   },
   phone: {
     width: '145px',
@@ -164,9 +172,14 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     width: '16px',
     marginBottom: theme.spacing(-0.25),
   },
-  tosContainer: {
+  tosContainerStudyDemo: {
     position: 'absolute',
     top: '-60px',
+    right: '100px',
+  },
+  tosContainerAssessment: {
+    position: 'absolute',
+    top: '8px',
     right: '100px',
   },
   tosButton: {
@@ -207,6 +220,148 @@ const Reminder: React.FunctionComponent<{text: string; img: string}> = ({
       <img className={classes.reminderOfUseIcon} src={img}></img>
       <p className={classes.reminderOfUseText}>{text}</p>
     </Box>
+  )
+}
+
+const PreviewAssessments: React.FunctionComponent<{
+  uniqueAssessments: Assessment[]
+}> = ({uniqueAssessments}) => {
+  const classes = useStyles()
+  return (
+    <>
+      <Divider className={classes.divider} />
+      <Box
+        width="100%"
+        display="flex"
+        flexDirection="row"
+        justifyContent="space-between">
+        <Box display="flex" flexDirection="row" alignItems="flex-start">
+          <img
+            src={SampleAssessmentDataImg}
+            className={classes.assessmentImg}></img>
+          <Box className={classes.sampleAssessmentDataText}>
+            Sample Assessment Data
+          </Box>
+        </Box>
+        <Box width="300px">
+          <p className={classes.assessmentsText}>
+            There are no scores or data associated with this preview.
+            <br />
+            <br />
+            To view sample data from the assessments in your study, click on the
+            assessments below:{' '}
+          </p>
+          {uniqueAssessments.map((assessment, index) => {
+            return (
+              <Box onClick={() => {}} mb={2}>
+                <AssessmentSmall
+                  hasHover={false}
+                  assessment={assessment}
+                  key={index}
+                />
+              </Box>
+            )
+          })}
+        </Box>
+      </Box>
+    </>
+  )
+}
+
+const PreviewIdGenerated: React.FunctionComponent<{
+  testParticipantId: string
+  studyId: string
+  isAssessmentDemo?: boolean
+  children?: React.ReactNode
+}> = ({testParticipantId, studyId, isAssessmentDemo, children}) => {
+  const classes = useStyles()
+  const studyDemoIntro = (
+    <>
+      <MTBHeadingH2>Preview your study</MTBHeadingH2>
+      <p className={classes.reminderOfUseText}>
+        Your draft study has been generated.
+      </p>
+      <p className={classes.reminderOfUseText}>
+        Please download and/or open the <strong>Mobile Toolbox App</strong> and
+        login with the following credentials below.
+      </p>
+    </>
+  )
+
+  const assessmentDemoIntro = (
+    <>
+      <MTBHeadingH1>Mobile Toolbox Assessment Demo</MTBHeadingH1>
+      <p className={classes.reminderOfUseText}>
+        To try out our assessments from our library, please download the{' '}
+        <strong>Mobile Toolbox App</strong> and enter your personalized codes
+        below to log in.
+      </p>{' '}
+    </>
+  )
+
+  return (
+    <div
+      className={clsx(
+        classes.root,
+        isAssessmentDemo && classes.assessmentDemo
+      )}>
+      <Box width="548px" mx="auto">
+        <Box display="flex" width="100%">
+          {isAssessmentDemo ? (
+            <div className={classes.phoneAssessmentDemo}>
+              <DemoAssessmentPlayImg />
+            </div>
+          ) : (
+            <div className={classes.phone}>
+              <div>
+                <div>
+                  <DemoStudyPlayImg />
+                </div>
+              </div>
+              <div className={classes.mtbApp}> Mobile Toolbox App</div>
+            </div>
+          )}
+          <div>
+            {isAssessmentDemo ? assessmentDemoIntro : studyDemoIntro}
+            <div className={classes.storeButtons}>
+              <Button>
+                <img src={appStoreBtn} />
+              </Button>
+              <Button>
+                <img src={googlePlayBtn} />
+              </Button>
+            </div>
+            <p className={classes.reminderOfUseText}>
+              This is only for login purposes only.
+            </p>
+            <div className={classes.inputs}>
+              <FormControl component="div">
+                <FormLabel component="label" className={classes.idLabel}>
+                  Study ID:
+                </FormLabel>
+                <SimpleTextInput
+                  multiline={false}
+                  fullWidth={true}
+                  value={Utility.formatStudyId(studyId)}
+                  readOnly></SimpleTextInput>
+              </FormControl>
+
+              <FormControl component="div">
+                <FormLabel component="label" className={classes.idLabel}>
+                  Preview ID:
+                </FormLabel>
+                <SimpleTextInput
+                  multiline={false}
+                  fullWidth={true}
+                  readOnly={true}
+                  value={testParticipantId}></SimpleTextInput>
+              </FormControl>
+            </div>
+          </div>
+        </Box>
+        {children && children}
+      </Box>
+    </div>
   )
 }
 
@@ -266,7 +421,12 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
 
   return (
     <>
-      <Box className={classes.tosContainer}>
+      <Box
+        className={clsx(
+          isAssessmentDemo
+            ? classes.tosContainerAssessment
+            : classes.tosContainerStudyDemo
+        )}>
         {!testParticipantId && (
           <PrevButton
             className={classes.tosButton}
@@ -337,100 +497,14 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
           </Box>
         </div>
       ) : (
-        <div className={clsx(classes.root)}>
-          <Box width="548px" mx="auto">
-            <Box display="flex" width="100%">
-              <div className={classes.phone}>
-                <div>
-                  <div>
-                    <PlayImg />
-                  </div>
-                </div>
-                <div className={classes.mtbApp}> Mobile Toolbox App</div>
-              </div>
-              <div>
-                <MTBHeadingH2>Preview your study</MTBHeadingH2>
-                <p className={classes.reminderOfUseText}>
-                  Your draft study has been generated.
-                </p>
-                <p className={classes.reminderOfUseText}>
-                  Please download and/or open the{' '}
-                  <strong>Mobile Toolbox App</strong> and login with the
-                  following credentials below.
-                </p>
-                <div className={classes.storeButtons}>
-                  <Button>
-                    <img src={appStoreBtn} />
-                  </Button>
-                  <Button>
-                    <img src={googlePlayBtn} />
-                  </Button>
-                </div>
-                <p className={classes.reminderOfUseText}>
-                  This is only for login purposes only.
-                </p>
-                <div className={classes.inputs}>
-                  <FormControl component="div">
-                    <FormLabel component="label" className={classes.idLabel}>
-                      Study ID:
-                    </FormLabel>
-                    <SimpleTextInput
-                      multiline={false}
-                      fullWidth={true}
-                      value={Utility.formatStudyId(id)}
-                      readOnly></SimpleTextInput>
-                  </FormControl>
-
-                  <FormControl component="div">
-                    <FormLabel component="label" className={classes.idLabel}>
-                      Preview ID:
-                    </FormLabel>
-                    <SimpleTextInput
-                      multiline={false}
-                      fullWidth={true}
-                      readOnly={true}
-                      value={testParticipantId}></SimpleTextInput>
-                  </FormControl>
-                </div>
-              </div>
-            </Box>
-            <Divider className={classes.divider} />
-            <Box
-              width="100%"
-              display="flex"
-              flexDirection="row"
-              justifyContent="space-between">
-              <Box display="flex" flexDirection="row" alignItems="flex-start">
-                <img
-                  src={SampleAssessmentDataImg}
-                  className={classes.assessmentImg}></img>
-                <Box className={classes.sampleAssessmentDataText}>
-                  Sample Assessment Data
-                </Box>
-              </Box>
-              <Box width="300px">
-                <p className={classes.assessmentsText}>
-                  There are no scores or data associated with this preview.
-                  <br />
-                  <br />
-                  To view sample data from the assessments in your study, click
-                  on the assessments below:{' '}
-                </p>
-                {uniqueAssessments.map((assessment, index) => {
-                  return (
-                    <Box onClick={() => {}} mb={2}>
-                      <AssessmentSmall
-                        hasHover={false}
-                        assessment={assessment}
-                        key={index}
-                      />
-                    </Box>
-                  )
-                })}
-              </Box>
-            </Box>
-          </Box>
-        </div>
+        <PreviewIdGenerated
+          isAssessmentDemo={isAssessmentDemo}
+          testParticipantId={testParticipantId}
+          studyId={id}>
+          {!isAssessmentDemo && (
+            <PreviewAssessments uniqueAssessments={uniqueAssessments} />
+          )}
+        </PreviewIdGenerated>
       )}
     </>
   )

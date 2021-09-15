@@ -1,6 +1,6 @@
 import Preview from '@components/studies/preview/Preview'
 import BreadCrumb from '@components/widgets/BreadCrumb'
-import {Container} from '@material-ui/core'
+import {Box, Container} from '@material-ui/core'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps} from 'react-router-dom'
 
@@ -17,8 +17,10 @@ const AssessmentsPreview: FunctionComponent<AssessmentsPreviewProps> = ({
 }) => {
   const links = [{url: '/assessments', text: 'Assessments'}]
   return (
-    <Container maxWidth="xl">
-      <BreadCrumb links={links} />
+    <Container maxWidth="xl" style={{position: 'relative'}}>
+      <Box mt={2} mb={8}>
+        <BreadCrumb links={links} />
+      </Box>
 
       <Preview id={'demo'} isAssessmentDemo={true} />
     </Container>
