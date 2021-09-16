@@ -454,7 +454,10 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
         <Preview_Icon />
         <span>
           Please remember to&nbsp;
-          <a href="preview">Preview Your Study</a> before launching.
+          <NavLink to={`/studies/builder/${study.identifier}/preview`}>
+            Preview Your Study
+          </NavLink>{' '}
+          before launching.
         </span>
       </div>
     </Container>
