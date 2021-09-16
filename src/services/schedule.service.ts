@@ -46,7 +46,7 @@ function createEmptyScheduleSession(startEventId: string, name = 'Session1') {
   }
   const studySession: StudySession = {
     name: name,
-    startEventId,
+    startEventIds: [startEventId],
     timeWindows: [defaultTimeWindow],
     performanceOrder: 'participant_choice',
     assessments: [],
@@ -158,9 +158,17 @@ async function getScheduleTimeline(
 }
 
 function getEventIdsForSchedule(schedule: Schedule): string[] {
-  const eventIds = schedule.sessions
-    .filter(session => !!session.startEventId)
-    .map(e => e.startEventId!)
+  const sessions = schedule.sessions.filter(
+    session => !_.isEmpty(session.startEventIds)
+  )
+  if (!sessions) {
+    return []
+  }
+  const eventIds = sessions.reduce(
+    (p: string[], c) => [...p, ...c.startEventIds],
+    []
+  )
+
   return _.uniq(eventIds)
 }
 

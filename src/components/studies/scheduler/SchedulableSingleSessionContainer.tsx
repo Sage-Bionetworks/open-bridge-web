@@ -139,7 +139,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
       if (!windows || windows.length == 0) {
         return false
       }
-      if(windows.length == 1 && !windows[0].expiration) {
+      if (windows.length == 1 && !windows[0].expiration) {
         return false
       }
       const over24 = windows.find(window => {
@@ -269,14 +269,14 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         <form noValidate autoComplete="off">
           <Box className={classes.formSection}>
             <StartDate
-              startEventId={schedulableSession.startEventId!}
+              startEventId={_.first(schedulableSession.startEventIds)!}
               delay={schedulableSession.delay}
               customEvents={customEvents}
               sessionName={studySession.name}
               onChangeStartEventId={(startEventId: string) => {
                 updateSessionSchedule({
                   ...schedulableSession,
-                  startEventId,
+                  startEventIds: [startEventId],
                 })
               }}
               onChangeDelay={(delay: string | undefined) => {
