@@ -53,9 +53,7 @@ export type SessionAction =
 function addSession(
   sessions: StudySession[],
   name: string,
-  assessments: Assessment[],
-
-  isActive: boolean = false
+  assessments: Assessment[]
 ): StudySession[] {
   const session = ScheduleService.createEmptyScheduleSession(
     sessions.length ? _.first(sessions[0].startEventIds)! : JOINED_EVENT_ID,
