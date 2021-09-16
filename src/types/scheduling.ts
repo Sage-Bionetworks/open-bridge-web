@@ -78,7 +78,7 @@ export type StudySessionGeneral = {
   name: string
   labels?: StringDictionary<string>[]
   guid?: string
-  startEventId?: string
+  startEventIds: string[]
   minutesToComplete?: number
 }
 

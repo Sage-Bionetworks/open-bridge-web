@@ -1,3 +1,5 @@
+import {JOINED_EVENT_ID} from '@services/event.service'
+import _ from 'lodash'
 import ScheduleService from '../../../services/schedule.service'
 import {StudySession} from '../../../types/scheduling'
 import {Assessment} from '../../../types/types'
@@ -56,7 +58,7 @@ function addSession(
   isActive: boolean = false
 ): StudySession[] {
   const session = ScheduleService.createEmptyScheduleSession(
-    sessions.length ? sessions[0].startEventId! : 'study_start_date',
+    sessions.length ? _.first(sessions[0].startEventIds)! : JOINED_EVENT_ID,
     name
   )
 
