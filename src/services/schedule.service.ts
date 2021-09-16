@@ -174,13 +174,17 @@ function getEventIdsForSchedule(schedule: Schedule): string[] {
 
 async function getEventIdsForScheduleByStudyId(
   studyId: string,
-  token: string
+  token: string,
+  isCustom = true
 ): Promise<string[]> {
   const schedule = await getSchedule(studyId, token, false)
   if (!schedule) {
     throw Error('Schedule not found')
   }
-  return getEventIdsForSchedule(schedule)
+  const events = getEventIdsForSchedule(schedule)
+  return isCustom
+    ? events.filter(e => e !== TIMELINE_RETRIEVED_EVENT.eventId)
+    : events
 }
 
 export default ScheduleService

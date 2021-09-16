@@ -223,6 +223,7 @@ export interface AppDesignProps {
   id: string
   onError: Function
   children: React.ReactNode
+  onShowFeedback: Function
 }
 
 type ErrorStateType = {
@@ -442,6 +443,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   children,
   onError,
   id,
+  onShowFeedback,
 }) => {
   const handleError = useErrorHandler()
   const params = new URLSearchParams(useLocation().search)
@@ -655,7 +657,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     }
   }
 
-  const saveInfo = () => {
+  const saveInfo = async () => {
     const phoneNumberHasError =
       !phoneNumberErrorState.isGeneralContactPhoneNumberValid ||
       !phoneNumberErrorState.isIrbPhoneNumberValid
@@ -675,7 +677,9 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     }
     if (study) {
       const updatedStudy = formatStudy(study)
-      onSave(updatedStudy)
+      await onSave(updatedStudy)
+
+      onShowFeedback()
     }
   }
 

@@ -134,6 +134,7 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
     <div>
       <AssessmentLibraryWrapper
         tags={data.tags}
+        isAssessmentLibrary={false}
         assessments={data.assessments}
         onChangeTags={
           (assessments: Assessment[]) =>

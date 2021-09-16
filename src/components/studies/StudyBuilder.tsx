@@ -375,7 +375,8 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                               id={id}
                               onError={(error: string) =>
                                 showFeedback({message: error, name: error})
-                              }>
+                              }
+                              onShowFeedback={showFeedback}>
                               {navButtons}
                             </AppDesign>
                           </Route>

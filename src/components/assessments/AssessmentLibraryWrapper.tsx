@@ -10,6 +10,7 @@ type AssessmentLibraryWrapperOwnProps = {
   tags: StringDictionary<number>
   children: ReactNode[]
   onChangeTags: Function
+  isAssessmentLibrary?: boolean
 }
 
 const useStyles = makeStyles(theme => ({
@@ -57,6 +58,7 @@ type AssessmentLibraryWrapperProps = AssessmentLibraryWrapperOwnProps
 const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps> =
   ({
     children,
+    isAssessmentLibrary = true,
     tags,
     assessments,
     onChangeTags,
@@ -72,16 +74,18 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
         onChangeTags={(tags: string[]) => onChangeTags(tags)}
       /> */}
         <Container className={classes.assessmentContainer} maxWidth="xl">
-          <Box textAlign="right" mx={3.5} mb={6}>
-            <NavLink
-              to={'assessments/preview'}
-              style={{textDecoration: 'none'}}>
-              <WhiteButton variant="contained" style={{fontSize: '15px'}}>
-                <DemoPhone />
-                Demo all assessments
-              </WhiteButton>
-            </NavLink>
-          </Box>
+          {isAssessmentLibrary && (
+            <Box textAlign="right" mx={3.5} mb={6}>
+              <NavLink
+                to={'assessments/preview'}
+                style={{textDecoration: 'none'}}>
+                <WhiteButton variant="contained" style={{fontSize: '15px'}}>
+                  <DemoPhone />
+                  Demo all assessments
+                </WhiteButton>
+              </NavLink>
+            </Box>
+          )}
           <Box className={classes.cardGrid}>{children}</Box>
         </Container>
       </Box>
