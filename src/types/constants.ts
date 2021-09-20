@@ -9,6 +9,7 @@ export default {
     DEFAULT_PLACEHOLDER: '*UNDEFINED*',
     IS_TEST_MODE: true,
     CUSTOM_EVENT_PREFIX: 'custom:',
+    ASSESSMENT_DEMO_STUDY_ID: 'demo',
   },
 
   restrictedPaths: {
@@ -75,6 +76,7 @@ export default {
     selfInfo: '/v3/participants/self',
     signIn: '/v3/auth/signIn',
     signOut: '/v3/auth/signOut',
+    signUp: '/v3/auth/signUp',
     study: '/v5/studies/:id',
     studyLaunch: '/v5/studies/:id/recruit',
     studies: '/v5/studies',

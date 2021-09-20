@@ -485,8 +485,33 @@ async function withdrawParticipant(
   return result.data.identifier
 }
 
-//adds a participant
+//signsup researcher as participant for assessmentdemostudy
+async function signUpForAssessmentDemoStudy(token: string): Promise<string> {
+  const studyIdentifier = constants.constants.ASSESSMENT_DEMO_STUDY_ID
+  const participantId = Utility.generateNonambiguousCode(6)
+  const endpoint = constants.endpoints.signUp
 
+  const backEndFormatExternalId = makeBackendExternalId(
+    studyIdentifier,
+    participantId
+  )
+
+  const data: StringDictionary<any> = {
+    appId: Utility.getAppId(),
+    externalIds: {[studyIdentifier]: backEndFormatExternalId},
+    password: backEndFormatExternalId,
+    dataGroups: ['test_user'],
+  }
+
+  const result = await Utility.callEndpoint<any>(endpoint, 'POST', data, token)
+  if (result.ok) {
+    return backEndFormatExternalId
+  } else {
+    throw result.status
+  }
+}
+
+//adds a participant
 async function addParticipant(
   studyIdentifier: string,
   token: string,
@@ -635,6 +660,7 @@ const ParticipantService = {
   getParticipants,
   participantSearch,
   getRequestInfoForParticipant,
+  signUpForAssessmentDemoStudy,
   updateParticipant,
   // updateParticipantCustomEvents,
   withdrawParticipant,

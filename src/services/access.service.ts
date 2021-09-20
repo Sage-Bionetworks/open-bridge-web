@@ -114,17 +114,19 @@ async function createIndividualAccount(
   firstName: string,
   lastName: string,
   orgMembership: string,
+  clientData: object,
   userRoles: string[]
 ): Promise<any> {
   const postData = {
     appId: Utility.getAppId(),
     email,
     synapseUserId,
-    dataGroups: ['test_user'],
+    // dataGroups: ['test_user'],
     firstName,
     lastName,
     orgMembership,
     roles: userRoles,
+    clientData,
   }
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', '')
   const result = await Utility.callEndpoint<any>(
