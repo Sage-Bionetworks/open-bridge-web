@@ -77,6 +77,14 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: '14px',
       marginTop: theme.spacing(0.75),
     },
+    eventInput: {
+      alignItems: 'center',
+      marginTop: '21px',
+      '& $calendarIcon': {
+        marginLeft: '-28px',
+      },
+    },
+
     calendarIcon: {
       marginRight: theme.spacing(1),
       width: '20px',
@@ -101,6 +109,11 @@ type LocalEventObject = SchedulingEvent & {
 type SaveHandle = {
   save: (a: number) => void
 }
+
+const CalendarIconControl: React.FunctionComponent<any> = React.memo(() => {
+  const classes = useStyles()
+  return <img src={CalendarIcon} className={classes.calendarIcon}></img>
+})
 
 const SessionStartTab: React.ForwardRefRenderFunction<
   SaveHandle,
@@ -246,10 +259,6 @@ const SessionStartTab: React.ForwardRefRenderFunction<
     return localEventObjects.findIndex(el => el.hasError) >= 0
   }
 
-  const calendarIcon = (
-    <img src={CalendarIcon} className={classes.calendarIcon}></img>
-  )
-
   const canEdit = (eventId: string): boolean =>
     !eventIdsInSchedule.includes(eventId)
 
@@ -275,7 +284,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
           You can add additional calendar Events and{' '}
           <strong>
             relabel <br />
-            them to make it easier to reference later.
+            them to make it easier to reference later. Spaces are not allowed.
           </strong>
         </p>
         <Box display="flex" justifyContent="flex-start" mt={3}>
@@ -288,7 +297,9 @@ const SessionStartTab: React.ForwardRefRenderFunction<
                   <FormGroup
                     row={true}
                     key={evt.key}
+                    className={classes.eventInput}
                     style={{alignItems: 'center', marginTop: '21px'}}>
+                    <CalendarIconControl />
                     <input
                       key={evt.key}
                       value={evt.eventId}
@@ -354,13 +365,19 @@ const SessionStartTab: React.ForwardRefRenderFunction<
               An example Clinical Study might require 3 unique calendar events:
             </Box>
             <Box mb={1} display="flex" mr={0.5}>
-              {calendarIcon}Event 1 = Baseline Visit
+              <CalendarIconControl />
+              Event 1 = BaselineVisit
             </Box>
             <Box mb={1} display="flex" mr={0.5}>
               {' '}
-              {calendarIcon}Event 2 = Follow-up Visit
+              <CalendarIconControl />
+              Event 2 = Follow-upVisit
             </Box>
-            <Box display="flex"> {calendarIcon}Event 3 = Final Visit</Box>
+            <Box display="flex">
+              {' '}
+              <CalendarIconControl />
+              Event 3 = FinalVisit
+            </Box>
           </Box>
         </Box>
       </Box>
