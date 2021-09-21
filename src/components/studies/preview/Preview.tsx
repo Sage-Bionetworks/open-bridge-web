@@ -224,9 +224,37 @@ const Reminder: React.FunctionComponent<{text: string; img: string}> = ({
 }
 
 const PreviewAssessments: React.FunctionComponent<{
-  uniqueAssessments: Assessment[]
-}> = ({uniqueAssessments}) => {
+  studyId: string
+}> = ({studyId}) => {
   const classes = useStyles()
+  const {
+    data: schedule,
+    error: scheduleError,
+    isLoading: isScheduleLoading,
+  } = useSchedule(studyId)
+
+  const [uniqueAssessments, setUniqueAssessments] = React.useState<
+    Assessment[]
+  >([])
+
+  useEffect(() => {
+    let allAssessments: Assessment[] = []
+    if (!schedule) {
+      return
+    }
+    for (const session of schedule.sessions) {
+      if (!session.assessments) continue
+      allAssessments = allAssessments.concat(session.assessments)
+    }
+    const uniqueAssessments = allAssessments.reduce((arr, assessment) => {
+      const assessmentExists =
+        arr.find(el => el.title === assessment.title) !== undefined
+      if (assessmentExists) return arr
+      return [...arr, assessment]
+    }, [] as Assessment[])
+    setUniqueAssessments(uniqueAssessments)
+  }, [schedule])
+
   return (
     <>
       <Divider className={classes.divider} />
@@ -365,51 +393,12 @@ const PreviewIdGenerated: React.FunctionComponent<{
   )
 }
 
-const Preview: React.FunctionComponent<PreviewProps> = ({
-  id,
-  isAssessmentDemo,
-}: PreviewProps) => {
+const PreviewIntroScreen: React.FunctionComponent<{
+  isAssessmentDemo?: boolean
+  onGetParticipantId: Function
+}> = ({onGetParticipantId, isAssessmentDemo}) => {
   const classes = useStyles()
   const {token} = useUserSessionDataState()
-  const {
-    data: schedule,
-    error: scheduleError,
-    isLoading: isScheduleLoading,
-  } = useSchedule(id)
-  const [testParticipantId, setTestParticipantId] = React.useState('')
-
-  const [uniqueAssessments, setUniqueAssessments] = React.useState<
-    Assessment[]
-  >([])
-
-  const handleError = useErrorHandler()
-
-  const getTestParticipantId = async () => {
-    try {
-      const testId = await ParticipantService.addTestParticipant(id, token!)
-      setTestParticipantId(testId)
-    } catch (e) {
-      handleError(e!)
-    }
-  }
-
-  useEffect(() => {
-    let allAssessments: Assessment[] = []
-    if (!schedule) {
-      return
-    }
-    for (const session of schedule.sessions) {
-      if (!session.assessments) continue
-      allAssessments = allAssessments.concat(session.assessments)
-    }
-    const uniqueAssessments = allAssessments.reduce((arr, assessment) => {
-      const assessmentExists =
-        arr.find(el => el.title === assessment.title) !== undefined
-      if (assessmentExists) return arr
-      return [...arr, assessment]
-    }, [] as Assessment[])
-    setUniqueAssessments(uniqueAssessments)
-  }, [schedule])
 
   const text = [
     'Only use the Mobile Toolbox for authorized purposes.',
@@ -427,83 +416,121 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
             ? classes.tosContainerAssessment
             : classes.tosContainerStudyDemo
         )}>
-        {!testParticipantId && (
-          <PrevButton
-            className={classes.tosButton}
-            variant="outlined"
-            color="primary"
-            onClick={() => {}}>
-            <img className={classes.linkIcon} src={LinkIcon}></img>
-            <Box className={classes.tosText}>Full terms of service</Box>
-          </PrevButton>
-        )}
+        <PrevButton
+          className={classes.tosButton}
+          variant="outlined"
+          color="primary"
+          onClick={() => {}}>
+          <img className={classes.linkIcon} src={LinkIcon}></img>
+          <Box className={classes.tosText}>Full terms of service</Box>
+        </PrevButton>
       </Box>
-      {!testParticipantId ? (
-        <div
-          className={clsx(
-            classes.root,
-            isAssessmentDemo && classes.assessmentDemo
-          )}>
+
+      <div
+        className={clsx(
+          classes.root,
+          isAssessmentDemo && classes.assessmentDemo
+        )}>
+        <Box
+          textAlign="center"
+          display="flex"
+          flexDirection="column"
+          alignItems="center">
+          <MTBHeadingH1 className={classes.reminderOfUseHeader}>
+            Reminder of use:
+          </MTBHeadingH1>
           <Box
-            textAlign="center"
             display="flex"
-            flexDirection="column"
-            alignItems="center">
-            <MTBHeadingH1 className={classes.reminderOfUseHeader}>
-              Reminder of use:
-            </MTBHeadingH1>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              mt={10}
-              mb={4}
-              alignItems="center"
-              width="100%">
-              {text.map((text, index) => (
-                <Reminder key={index} text={text} img={icons[index]}></Reminder>
-              ))}
-            </Box>
-            {!isAssessmentDemo && (
-              <Box
-                className={clsx(
-                  classes.scheduleSessionReminderContainer,
-                  classes.reminderOfUseText
-                )}>
-                <Box>
-                  Please remember to customize your study schedule on&nbsp;
-                  <img
-                    className={classes.scheduleSessionsIcon}
-                    src={ScheduleSessionsIcon}></img>
-                  &nbsp;
-                  <NavLink
-                    to={'scheduler'}
-                    className={classes.scheduleSessionsButton}>
-                    Schedule Sessions
-                  </NavLink>
-                  &nbsp; page before previewing your app.
-                </Box>
-              </Box>
-            )}
-            <ErrorBoundary
-              FallbackComponent={ErrorFallback}
-              onError={ErrorHandler}>
-              <Button
-                color="primary"
-                variant="contained"
-                onClick={() => getTestParticipantId()}>
-                Generate Preview
-              </Button>
-            </ErrorBoundary>
+            justifyContent="space-between"
+            mt={10}
+            mb={4}
+            alignItems="center"
+            width="100%">
+            {text.map((text, index) => (
+              <Reminder key={index} text={text} img={icons[index]}></Reminder>
+            ))}
           </Box>
-        </div>
-      ) : (
+          {!isAssessmentDemo && (
+            <Box
+              className={clsx(
+                classes.scheduleSessionReminderContainer,
+                classes.reminderOfUseText
+              )}>
+              <Box>
+                Please remember to customize your study schedule on&nbsp;
+                <img
+                  className={classes.scheduleSessionsIcon}
+                  src={ScheduleSessionsIcon}></img>
+                &nbsp;
+                <NavLink
+                  to={'scheduler'}
+                  className={classes.scheduleSessionsButton}>
+                  Schedule Sessions
+                </NavLink>
+                &nbsp; page before previewing your app.
+              </Box>
+            </Box>
+          )}
+          <ErrorBoundary
+            FallbackComponent={ErrorFallback}
+            onError={ErrorHandler}>
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={() => onGetParticipantId()}>
+              {isAssessmentDemo ? 'Continue' : 'Generate Preview'}
+            </Button>
+          </ErrorBoundary>
+        </Box>
+      </div>
+    </>
+  )
+}
+
+const Preview: React.FunctionComponent<PreviewProps> = ({
+  id,
+  isAssessmentDemo,
+}: PreviewProps) => {
+  const classes = useStyles()
+  const {token, demoExternalId} = useUserSessionDataState()
+
+  const [testParticipantId, setTestParticipantId] = React.useState('')
+
+  const handleError = useErrorHandler()
+
+  const getTestParticipantId = async () => {
+    try {
+      let testExternalId = ''
+      if (isAssessmentDemo) {
+        if (!demoExternalId) {
+          throw Error(
+            'The logged in user is not enrolled in demo study. \n You might need to have your administrator remove and re-add them '
+          )
+        }
+        testExternalId = demoExternalId.split(':')[0]
+      } else {
+        testExternalId = await ParticipantService.addTestParticipant(id, token!)
+      }
+      setTestParticipantId(testExternalId)
+    } catch (e) {
+      handleError(e!)
+    }
+  }
+
+  return (
+    <>
+      {!testParticipantId && (
+        <PreviewIntroScreen
+          isAssessmentDemo={isAssessmentDemo}
+          onGetParticipantId={() => getTestParticipantId()}
+        />
+      )}
+      {testParticipantId && (
         <PreviewIdGenerated
           isAssessmentDemo={isAssessmentDemo}
           testParticipantId={testParticipantId}
           studyId={id}>
-          {!isAssessmentDemo && (
-            <PreviewAssessments uniqueAssessments={uniqueAssessments} />
-          )}
+          {!isAssessmentDemo && <PreviewAssessments studyId={id} />}
         </PreviewIdGenerated>
       )}
     </>

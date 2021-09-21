@@ -1,4 +1,5 @@
 import {Box, Button, makeStyles, Theme} from '@material-ui/core'
+import ParticipantService from '@services/participants.service'
 import React, {FunctionComponent, ReactNode} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {ReactComponent as Delete} from '../../assets/trash.svg'
@@ -6,7 +7,12 @@ import {useAsync} from '../../helpers/AsyncHook'
 import Utility from '../../helpers/utility'
 import AccessService from '../../services/access.service'
 import {globals, poppinsFont} from '../../style/theme'
-import {OrgUser, Study, UserSessionData} from '../../types/types'
+import {
+  LoggedInUserClientData,
+  OrgUser,
+  Study,
+  UserSessionData,
+} from '../../types/types'
 import ConfirmationDialog from '../widgets/ConfirmationDialog'
 import {MTBHeadingH1, MTBHeadingH6} from '../widgets/Headings'
 import Loader from '../widgets/Loader'
@@ -141,7 +147,13 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   const [isAccessLoading, setIsAccessLoading] = React.useState(true)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
 
-  const {data: members, status, error, run, setData} = useAsync<any>({
+  const {
+    data: members,
+    status,
+    error,
+    run,
+    setData,
+  } = useAsync<any>({
     status: 'PENDING',
     data: [],
   })
@@ -187,7 +199,23 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     access: Access
   }) => {
     const roles = getRolesFromAccess(access)
-    await AccessService.updateIndividualAccountRoles(token!, member.id, roles)
+    // this is patch for existing users
+    let demoExternalId = member.clientData?.demoExternalId
+    if (!demoExternalId) {
+      demoExternalId = await ParticipantService.signUpForAssessmentDemoStudy(
+        token!
+      )
+    }
+
+    const clientData: LoggedInUserClientData = {
+      demoExternalId,
+    }
+    await AccessService.updateIndividualAccountRoles(
+      token!,
+      member.id,
+      roles,
+      clientData
+    )
     const result = await getMembers(orgMembership!, token!)
     setData(result)
   }

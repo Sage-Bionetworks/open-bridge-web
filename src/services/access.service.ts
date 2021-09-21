@@ -1,6 +1,6 @@
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
-import {OrgUser, UserData} from '../types/types'
+import {LoggedInUserClientData, OrgUser, UserData} from '../types/types'
 
 const AccessService = {
   createIndividualAccount,
@@ -142,7 +142,8 @@ async function createIndividualAccount(
 async function updateIndividualAccountRoles(
   token: string,
   userId: string,
-  roles: string[]
+  roles: string[],
+  updatedClientData?: LoggedInUserClientData
 ): Promise<any> {
   const endpoint = constants.endpoints.bridgeAccount.replace(':id', userId)
   const userResponse = await Utility.callEndpoint<OrgUser>(
@@ -151,8 +152,13 @@ async function updateIndividualAccountRoles(
     {},
     token
   )
+
   const data = userResponse.data
-  const updatedUser = {...data, roles}
+  const updatedUser = {
+    ...data,
+    roles,
+    clientData: updatedClientData || data.clientData,
+  }
   const result = await Utility.callEndpoint<any>(
     endpoint,
     'POST',
