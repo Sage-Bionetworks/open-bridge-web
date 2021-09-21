@@ -1,4 +1,4 @@
-import { useUserSessionDataState } from '@helpers/AuthContext'
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import {
   Box,
   Button,
@@ -6,37 +6,36 @@ import {
   createStyles,
   Divider,
   FormControlLabel,
-  Theme
+  Theme,
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import {makeStyles} from '@material-ui/core/styles'
 import ScheduleService from '@services/schedule.service'
-import { Study } from '@typedefs/types'
+import {Study} from '@typedefs/types'
 import React from 'react'
-import { latoFont, poppinsFont } from '../../../style/theme'
+import {latoFont, poppinsFont} from '../../../style/theme'
 import constants from '../../../types/constants'
-import { DWsEnum, Schedule } from '../../../types/scheduling'
-import { SimpleTextInput } from '../../widgets/StyledComponents'
-import { useUpdateSchedule } from '../scheduleHooks'
-import { useStudy, useUpdateStudyDetail } from '../studyHooks'
+import {DWsEnum, Schedule} from '../../../types/scheduling'
+import {SimpleTextInput} from '../../widgets/StyledComponents'
+import {useUpdateSchedule} from '../scheduleHooks'
+import {useStudy, useUpdateStudyDetail} from '../studyHooks'
 import Duration from './Duration'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     labelDuration: {
       fontFamily: poppinsFont,
+      marginLeft: 0,
       fontSize: '18px',
       fontWeight: 600,
       textAlign: 'left',
       alignSelf: 'start',
+      alignItems: 'flex-start',
     },
     container: {
-      backgroundColor: '#FAFAFA',
       display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-evenly',
-      alignItems: 'center',
+      flexDirection: 'row',
       padding: theme.spacing(3.75),
-      minWidth: '600px',
+      minWidth: '300px',
     },
     formControl: {
       fontSize: '18px',
@@ -44,14 +43,10 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       flexDirection: 'row-reverse',
       justifyContent: 'flex-end',
-      alignItems: 'center',
+      alignItems: 'flex-start',
     },
-    divider2: {
-      width: '100%',
-      marginTop: theme.spacing(5),
-      marginBottom: theme.spacing(3.75),
-    },
-    divider1: {
+
+    divider: {
       width: '100%',
       marginBottom: theme.spacing(3),
     },
@@ -70,8 +65,6 @@ const useStyles = makeStyles((theme: Theme) =>
     middleContainer: {
       display: 'flex',
       flexDirection: 'row',
-      position: 'relative',
-      marginLeft: theme.spacing(-8.75),
     },
     weekInformation: {
       fontStyle: 'italic',
@@ -79,9 +72,8 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: '12px',
       lineHeight: '20px',
       marginLeft: theme.spacing(2.25),
-      position: 'absolute',
-      right: theme.spacing(-18.75),
-      marginTop: theme.spacing(0.5),
+
+      marginTop: theme.spacing(19),
       textAlign: 'left',
       listStyle: 'none',
     },
@@ -90,6 +82,7 @@ const useStyles = makeStyles((theme: Theme) =>
       fontFamily: latoFont,
       fontSize: '11px',
       fontWeight: 'bold',
+      display: 'block',
     },
     continueButton: {
       display: 'flex',
@@ -158,97 +151,100 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
 
     mutateStudy({study: updatedStudy}).then(e => {
       console.log('study updated')
-  
     })
   }
 
   return (
-    <Container maxWidth="sm" className={classes.container}>
-      <FormControlLabel
-        style={{marginBottom: '35px'}}
-        classes={{labelPlacementStart: classes.labelDuration}}
-        label={
-          <Box width="210px" marginRight="40px">
-            <strong className={classes.headerText}>Study Name</strong>
-            <br /> <br />
-            <div className={classes.description}>
-              This name will be displayed to your participants in the app.
-            </div>{' '}
-          </Box>
-        }
-        className={classes.formControl}
-        labelPlacement="start"
-        control={
-          <SimpleTextInput
-            fullWidth
-            value={studyName}
-            onChange={e => setStudyName(e.target.value)}
-            style={{marginTop: '-20px'}}
-          />
-        }
-      />
-      <Divider className={classes.divider1}></Divider>
-      <Box className={classes.middleContainer}>
+    <Container maxWidth="md" className={classes.container}>
+      <div>
         <FormControlLabel
+          style={{marginBottom: '35px', marginLeft: 0}}
           classes={{labelPlacementStart: classes.labelDuration}}
           label={
             <Box width="210px" marginRight="40px">
-              <strong className={classes.headerText}>
-                How long is your study?
-              </strong>
+              <strong className={classes.headerText}>Study Name</strong>
               <br /> <br />
               <div className={classes.description}>
-                This is the duration that a participant is involved in the
-                study.
+                This name will be displayed to your participants in the app.
               </div>{' '}
             </Box>
           }
           className={classes.formControl}
           labelPlacement="start"
           control={
-            <Box mt={-10}>
-              <Duration
-                onChange={e => setDuration(e.target.value)}
-                durationString={duration || ''}
-                unitLabel="study duration unit"
-                numberLabel="study duration number"
-                maxDurationDays={1825}
-                unitData={DWsEnum}
-                isIntro={true}></Duration>
-              <span className={classes.hint}>
-                <strong>
-                  The study duration must be shorter than 5 years.
-                </strong>
-              </span>
-            </Box>
+            <SimpleTextInput
+              fullWidth
+              value={studyName}
+              onChange={e => setStudyName(e.target.value)}
+            />
           }
         />
-        <ul className={classes.weekInformation}>
-          <li>Example Conversions</li>
-          <li>1 year = 52 weeks</li>
-          <li>2 year = 104 weeks</li>
-          <li>3 year = 156 weeks</li>
-          <li>4 year = 208 weeks</li>
-          <li>5 year = 260 weeks</li>
-        </ul>
-      </Box>
-      <Button
-        className={classes.continueButton}
-        variant="contained"
-        color="primary"
-        key="saveButton"
-        onClick={e =>
-          createScheduleAndNameStudy(
-            studyId,
+        <Divider className={classes.divider}></Divider>
+        <Box className={classes.middleContainer}>
+          <FormControlLabel
+            classes={{
+              labelPlacementStart: classes.labelDuration,
+            }}
+            label={
+              <Box width="210px" marginRight="40px">
+                <strong className={classes.headerText}>
+                  How long is your study?
+                </strong>
+                <br /> <br />
+                <div className={classes.description}>
+                  This is the duration that a participant is involved in the
+                  study.
+                </div>{' '}
+              </Box>
+            }
+            className={classes.formControl}
+            labelPlacement="start"
+            control={
+              <Box>
+                <Duration
+                  onChange={e => setDuration(e.target.value)}
+                  durationString={duration || ''}
+                  unitLabel="study duration unit"
+                  numberLabel="study duration number"
+                  maxDurationDays={1825}
+                  unitData={DWsEnum}
+                  isIntro={true}></Duration>
+                <span className={classes.hint}>
+                  <strong>
+                    The study duration must be shorter than 5 years.
+                  </strong>
+                </span>
+              </Box>
+            }
+          />
+        </Box>
+        <Button
+          className={classes.continueButton}
+          variant="contained"
+          color="primary"
+          key="saveButton"
+          onClick={e =>
+            createScheduleAndNameStudy(
+              studyId,
 
-            studyName,
-            duration,
-            'timeline_retrieved'
-          )
-        }
-        disabled={!(duration && studyName)}>
-        Continue
-      </Button>
+              studyName,
+              duration,
+              'timeline_retrieved'
+            )
+          }
+          disabled={!(duration && studyName)}>
+          Continue
+        </Button>
+      </div>
+
+      <ul className={classes.weekInformation}>
+        <li>Example Conversions</li>
+        <li>1 year = 52 weeks</li>
+        <li>2 year = 104 weeks</li>
+        <li>3 year = 156 weeks</li>
+        <li>4 year = 208 weeks</li>
+        <li>5 year = 260 weeks</li>
+      </ul>
     </Container>
   )
 }

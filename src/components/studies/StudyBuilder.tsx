@@ -105,7 +105,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   introInfoContainer: {
     textAlign: 'center',
-    backgroundColor: '#FAFAFA',
     minHeight: '100vh',
     paddingTop: theme.spacing(5),
   },
