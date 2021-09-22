@@ -14,11 +14,7 @@ import {Contact, Study} from '../../../types/types'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import {isAppBackgroundColorValid} from '../app-design/AppDesign'
 import {isSameAsDefaultSchedule} from '../scheduler/utility'
-import {
-  getStudyBuilderSections,
-  normalNavIcons,
-  StudySection,
-} from '../sections'
+import {getStudyBuilderSections, StudySection} from '../sections'
 
 type DataToValidate = {
   study: Study
@@ -325,18 +321,18 @@ const StudyAlertComponent: React.FunctionComponent<
 }: StudyAlertSection & {onIgnore: Function; study: Study}) => {
   const classes = useStyles()
   const sections = getStudyBuilderSections(StudyService.isStudyInDesign(study))
-  const sectionIndex = sections.findIndex(s => s.path === section)
-  const indexedSection = sections[sectionIndex]
+  const _section = sections.find(s => s.path === section)
+  // const indexedSection = sections[sectionIndex]
 
   return (
     <div className={classes.section}>
       <div className={classes.sectionHeader}>
         <img
-          src={normalNavIcons[sectionIndex]}
+          src={_section!.navIcon}
           className={classes.navIcon}
-          alt={indexedSection.name}
+          alt={_section!.name}
         />
-        <span>{indexedSection.name}</span>
+        <span>{_section!.name}</span>
       </div>
       {errors.map((error, errorIndex) => (
         <div
@@ -353,13 +349,13 @@ const StudyAlertComponent: React.FunctionComponent<
             <Box className={classes.reviewIgnoreButtons}>
               <NavLink
                 style={{textDecoration: 'none'}}
-                to={`${indexedSection.path}?from=launch${
+                to={`${_section!.path}?from=launch${
                   error.anchor ? '&anchor=' + error.anchor : ''
                 }`}>
                 <Button>Review</Button>
               </NavLink>
 
-              <Button onClick={() => onIgnore(indexedSection.path, errorIndex)}>
+              <Button onClick={() => onIgnore(_section!.path, errorIndex)}>
                 Ignore
               </Button>
             </Box>
@@ -367,7 +363,7 @@ const StudyAlertComponent: React.FunctionComponent<
           {!error.isDismissable && (
             <NavLink
               style={{textDecoration: 'none'}}
-              to={`${sections[sectionIndex].path}?from=launch${
+              to={`${_section!.path}?from=launch${
                 error.anchor ? '&anchor=' + error.anchor : ''
               }`}>
               <Button variant="contained" className={classes.mustReviewButton}>

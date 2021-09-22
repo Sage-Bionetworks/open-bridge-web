@@ -133,12 +133,13 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
   const [isNextEnabled, setIsNextEnabled] = React.useState(false)
 
   React.useEffect(() => {
-    setStudy(sourceStudy)
     if (sourceStudy) {
+      setStudy(sourceStudy)
+
       const isLive =
         StudyService.getDisplayStatusForStudyPhase(sourceStudy.phase) === 'LIVE'
       setIsStudyLive(isLive)
-      getSteps(isLive)
+      setSteps(getSteps(isLive))
     }
   }, [sourceStudy])
 
@@ -202,15 +203,18 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
   const submitAndLock = () => {
     onSave()
     setIsFinished(true)
-    setIsFinished(true)
   }
 
   const isReadOnly = StudyService.isStudyClosedToEdits(study)
   if (isReadOnly) {
     return <ReadOnlyIrbDetails study={study} />
   }
-  const showNextButton =
-    (!isReadOnly && activeStep < 2) || (isStudyLive && activeStep === 0)
+  const showNextButton = () => {
+    if (isReadOnly) {
+      return false
+    }
+    return (!isStudyLive && activeStep < 2) || (isStudyLive && activeStep === 0)
+  }
   return (
     <Paper className={classes.root} elevation={2} id="container">
       <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
@@ -254,20 +258,20 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
                       variant="outlined"
                       color="primary"
                       onClick={handleBack}>
-                      <ArrowIcon /> {steps[activeStep - 1].label}
+                      <ArrowIcon /> {steps[activeStep - 1]?.label}
                     </PrevButton>
                   )}
                   &nbsp;&nbsp;
                 </>
               )}
 
-              {showNextButton && (
+              {showNextButton() && (
                 <NextButton
                   variant="contained"
                   color="primary"
                   onClick={handleNext}
                   disabled={!isNextEnabled}>
-                  {steps[activeStep + 1].label}
+                  {steps[activeStep + 1]?.label}
                   <ArrowIcon />
                 </NextButton>
               )}
