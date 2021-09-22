@@ -293,7 +293,11 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
               setDisplayEditabilityBanner(false)
             }}
             isVisible={displayEditabilityBanner}
-            icon={editabilityBannerType?.icon[0]!}
+            icon={
+              isSectionEditableWhenLive(section)
+                ? editabilityBannerType?.icon[1]!
+                : editabilityBannerType?.icon[0]!
+            }
             isSelfClosing={false}
             displayBottomOfPage={true}
             displayText={

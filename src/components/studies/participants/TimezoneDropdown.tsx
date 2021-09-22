@@ -1,6 +1,6 @@
-import React from 'react'
-import SaveBlackBorderDropdown from '../../widgets/BlackBorderDropdown'
 import moment from 'moment-timezone'
+import React from 'react'
+import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
 
 type TimezoneInfoType = {
   label: string
@@ -24,7 +24,7 @@ const TimezoneDropdown: React.FunctionComponent<{
   }
   const timezones = React.useMemo(getAllTimezones, [])
   return (
-    <SaveBlackBorderDropdown
+    <BlackBorderDropdown
       width="100%"
       dropdown={timezones}
       searchableOnChange={onValueChange}

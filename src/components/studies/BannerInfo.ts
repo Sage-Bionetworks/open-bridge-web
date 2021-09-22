@@ -1,4 +1,5 @@
 import {DisplayStudyPhase} from '@typedefs/types'
+import EditIcon from '../../assets/edit_icon.svg'
 import NoEditIcon from '../../assets/no_edit_icon.svg'
 import SaveIcon from '../../assets/save_icon.svg'
 import Alert_Icon from '../../assets/scheduler/white_alert_icon.svg'
@@ -37,7 +38,7 @@ bannerMap.set('LIVE', {
     'This page is view only. We currently don’t support scheduling related editing of lives studies. To make adjustments to your study, create a duplicate of this study and launch again.',
     'You may edit this page.',
   ],
-  icon: [NoEditIcon],
+  icon: [NoEditIcon, EditIcon],
   textColor: 'white',
   type: 'LIVE',
 })
