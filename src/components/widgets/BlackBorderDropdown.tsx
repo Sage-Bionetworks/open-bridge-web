@@ -1,15 +1,15 @@
 import {
+  Box,
   makeStyles,
   MenuItem,
   Select,
   SelectProps,
-  Box,
   TextField,
 } from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete'
+import clsx from 'clsx'
 import React from 'react'
 import {poppinsFont, ThemeType} from '../../style/theme'
-import clsx from 'clsx'
 
 interface StyleProps {
   width: string //px or %
@@ -93,7 +93,7 @@ export interface BlackBorderDropdownStyleProps {
   searchableDescription?: string
 }
 
-const SaveBlackBorderDropdown: React.FunctionComponent<
+const BlackBorderDropdown: React.FunctionComponent<
   SelectProps & BlackBorderDropdownStyleProps
 > = ({
   value,
@@ -189,4 +189,4 @@ const SaveBlackBorderDropdown: React.FunctionComponent<
   return <Box>{isSearchable ? searchableDropdown : selectMenu}</Box>
 }
 
-export default SaveBlackBorderDropdown
+export default BlackBorderDropdown

@@ -463,19 +463,23 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     },
     customEvents: ParticipantEvent[]
   ) => {
-    await ParticipantService.updateParticipant(
-      study!.identifier,
-      token!,
-      participantId,
-      updatedFields
-    )
-    await EventService.updateParticipantCustomEvents(
-      study!.identifier,
-      token!,
-      participantId,
-      customEvents
-    )
-    setRefreshParticipantsToggle(prev => !prev)
+    try {
+      await ParticipantService.updateParticipant(
+        study!.identifier,
+        token!,
+        participantId,
+        updatedFields
+      )
+      await EventService.updateParticipantCustomEvents(
+        study!.identifier,
+        token!,
+        participantId,
+        customEvents
+      )
+      setRefreshParticipantsToggle(prev => !prev)
+    } catch (e) {
+      alert(e.message)
+    }
   }
 
   if (!study) {
@@ -838,8 +842,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           const data = {
                             note: note,
                             clientTimeZone: clientTimeZone,
-                          }
-                          if (!clientTimeZone) {
+                          } //timezone empty  || '-'
+                          if ((clientTimeZone?.length || 0) < 2) {
                             delete data.clientTimeZone
                           }
                           updateParticipant(
