@@ -346,7 +346,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
                     <Box className={classes.errorText}>
                       {evt.hasError === 'duplicate'
                         ? 'Duplicate event identifier.'
-                        : 'Event name has blank spaces'}
+                        : 'Sorry, event labels cannot have any blank spaces.'}
                     </Box>
                   )}
                 </Box>
