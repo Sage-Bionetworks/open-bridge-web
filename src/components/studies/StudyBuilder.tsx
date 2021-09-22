@@ -9,26 +9,15 @@ import clsx from 'clsx'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
 import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
-import {
-  Route,
-  RouteComponentProps,
-  Switch,
-  useParams,
-  useRouteMatch,
-} from 'react-router-dom'
+import {Route, RouteComponentProps, Switch, useParams} from 'react-router-dom'
 import {Schedule} from '../../types/scheduling'
-import {
-  ExtendedError,
-  StringDictionary,
-  Study,
-  StudyPhase,
-} from '../../types/types'
+import {ExtendedError, StringDictionary, Study} from '../../types/types'
+import AlertBanner from '../widgets/AlertBanner'
 import {ErrorFallback, ErrorHandler} from '../widgets/ErrorHandler'
 import {MTBHeadingH1} from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
-import TopErrorBanner from '../widgets/TopErrorBanner'
 import AppDesign from './app-design/AppDesign'
-import BannerInfo from './BannerInfo'
+import BannerInfo, {BannerInfoType} from './BannerInfo'
 import EnrollmentTypeSelector from './enrollment-type-selector/EnrollmentTypeSelector'
 import Launch from './launch/Launch'
 import NavButtons from './NavButtons'
@@ -37,7 +26,7 @@ import Preview from './preview/Preview'
 import IntroInfo from './scheduler/IntroInfo'
 import ReadOnlyScheduler from './scheduler/read-only-pages/ReadOnlyScheduler'
 import Scheduler from './scheduler/Scheduler'
-import {StudySection} from './sections'
+import {isSectionEditableWhenLive, StudySection} from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
 
@@ -130,7 +119,6 @@ export type SchedulerErrorType = {
 const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
   () => {
     const classes = useStyles()
-    const {url, path} = useRouteMatch()
     let {id, section = 'session-creator'} = useParams<{
       id: string
       section: StudySection
@@ -151,15 +139,17 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
     const [error, setError] = React.useState<string>()
     const handleError = useErrorHandler()
     const [open, setOpen] = React.useState(true)
-    const [displayBanner, setDisplayBanner] = React.useState(false)
+    const [displayFeedbackBanner, setDisplayFeedbackBanner] =
+      React.useState(false)
+    const [displayEditabilityBanner, setDisplayEditabilityBanner] =
+      React.useState(false)
     const [cancelBanner, setCancelBanner] = React.useState(false)
-    const [bannerType, setBannerType] = React.useState<{
-      bgColor: string
-      displayText: string[]
-      icon: string[]
-      textColor: string
-      type: string
-    }>()
+    const [editabilityBannerType, setEditabilityBannerType] = React.useState<
+      BannerInfoType | undefined
+    >()
+    const [feedbackBannerType, setFeedbackBannerType] = React.useState<
+      BannerInfoType | undefined
+    >()
 
     React.useEffect(() => {
       if (!study) {
@@ -175,15 +165,21 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
 
     React.useEffect(() => {
       if (study) {
-        const banner = getBannerType(study.phase, !!error)
+        setFeedbackBannerType(getFeedbackBannerInfo(!!error))
+        setEditabilityBannerType(getEditabilityBannerInfo(study))
+        if (!StudyService.isStudyInDesign(study)) {
+          setDisplayEditabilityBanner(true)
+        }
+
+        /*  const banner = getBannerType(study.phase, !!error)
         const bannerType = BannerInfo.bannerMap.get(banner)
         setBannerType(bannerType)
 
-        if (banner !== 'success' && banner !== 'error' && !cancelBanner) {
-          setDisplayBanner(true)
-        }
+        if (banner !== 'success' && banner !== 'error' /*&& !cancelBanner*/ //) {
+        //setDisplayBanner(true)
+        // }
       }
-    }, [study?.phase, section, error, cancelBanner])
+    }, [study?.phase, study, section, cancelBanner])
 
     if (studyError || scheduleError) {
       if (studyError || (scheduleError && scheduleError.statusCode !== 404)) {
@@ -191,13 +187,24 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
       }
     }
 
-    const getBannerType = (phase: StudyPhase, hasError: boolean) => {
-      const displayPhase = StudyService.getDisplayStatusForStudyPhase(phase)
-      if (displayPhase !== 'DRAFT') {
-        return displayPhase
-      }
-      return hasError ? 'error' : 'success'
+    const getFeedbackBannerInfo = (hasError: boolean) => {
+      const bannerType = hasError ? 'error' : 'success'
+      return BannerInfo.bannerMap.get(bannerType)
     }
+
+    const getEditabilityBannerInfo = (study: Study) => {
+      const phase = study.phase
+
+      const displayPhase = StudyService.getDisplayStatusForStudyPhase(phase)
+      if (displayPhase === 'DRAFT') {
+        return
+      }
+      const bannerInfo = BannerInfo.bannerMap.get(displayPhase)
+      // const isEditable = isSectionEditableWhenLive(section)
+      //return {bannerType, isEditable}
+      return bannerInfo
+    }
+
     const allSessionsHaveAssessments = () => {
       return (
         !_.isEmpty(scheduleSource?.sessions) &&
@@ -260,26 +267,40 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
       } else {
         setError(undefined)
       }
-      setDisplayBanner(true)
+      setDisplayFeedbackBanner(true)
     }
 
     return (
       <Box bgcolor={section === 'scheduler' ? '#E5E5E5' : '#f7f7f7'}>
         <Box display="flex" bgcolor="#f7f7f7">
-          <TopErrorBanner
-            backgroundColor={bannerType?.bgColor!}
-            textColor={bannerType?.textColor!}
+          <AlertBanner
+            backgroundColor={feedbackBannerType?.bgColor!}
+            textColor={feedbackBannerType?.textColor!}
             onClose={() => {
-              setCancelBanner(true)
-              setDisplayBanner(false)
+              //setCancelBanner(true)
+              setDisplayFeedbackBanner(false)
             }}
-            isVisible={displayBanner}
-            icon={bannerType?.icon[0]!}
-            isSelfClosing={bannerType?.type === 'success'}
-            displayBottomOfPage={
-              bannerType?.type !== 'success' && bannerType?.type !== 'error'
-            }
-            displayText={bannerType?.displayText[0]!}></TopErrorBanner>
+            isVisible={displayFeedbackBanner}
+            icon={feedbackBannerType?.icon[0]!}
+            isSelfClosing={feedbackBannerType?.type === 'success'}
+            displayBottomOfPage={false}
+            displayText={feedbackBannerType?.displayText[0]!}></AlertBanner>
+          <AlertBanner
+            backgroundColor={editabilityBannerType?.bgColor!}
+            textColor={editabilityBannerType?.textColor!}
+            onClose={() => {
+              // setCancelBanner(true)
+              setDisplayEditabilityBanner(false)
+            }}
+            isVisible={displayEditabilityBanner}
+            icon={editabilityBannerType?.icon[0]!}
+            isSelfClosing={false}
+            displayBottomOfPage={true}
+            displayText={
+              isSectionEditableWhenLive(section)
+                ? editabilityBannerType?.displayText[1]!
+                : editabilityBannerType?.displayText[0]!
+            }></AlertBanner>
           <Box width={open ? 210 : 56} flexShrink={0}></Box>
           <Box className={getClasses()} pt={8} pl={2}>
             <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>
@@ -302,7 +323,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
               open={open}
               onToggle={() => setOpen(prev => !prev)}
               currentSection={section}
-              id={id}
+              study={study!}
               disabled={!allSessionsHaveAssessments()}></StudyLeftNav>
             <Box className={classes.mainAreaWrapper}>
               <Box className={getClasses()}>

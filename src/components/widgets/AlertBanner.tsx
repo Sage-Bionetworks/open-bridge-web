@@ -51,7 +51,7 @@ const useStyles = makeStyles<ThemeType, StyleProps>((theme: ThemeType) => ({
   },
 }))
 
-type TopErrorBannerProps = {
+type AlertBannerProps = {
   onClose: Function
   isVisible: boolean
   displayText: string
@@ -64,7 +64,7 @@ type TopErrorBannerProps = {
 
 let timeout: NodeJS.Timeout
 
-const TopErrorBanner: React.FunctionComponent<TopErrorBannerProps> = ({
+const AlertBanner: React.FunctionComponent<AlertBannerProps> = ({
   isVisible,
   displayText,
   onClose,
@@ -105,4 +105,4 @@ const TopErrorBanner: React.FunctionComponent<TopErrorBannerProps> = ({
   )
 }
 
-export default TopErrorBanner
+export default AlertBanner

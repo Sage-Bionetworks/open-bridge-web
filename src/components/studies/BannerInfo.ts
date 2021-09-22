@@ -3,15 +3,17 @@ import NoEditIcon from '../../assets/no_edit_icon.svg'
 import SaveIcon from '../../assets/save_icon.svg'
 import Alert_Icon from '../../assets/scheduler/white_alert_icon.svg'
 
+export type BannerInfoType = {
+  bgColor: string
+  displayText: string[]
+  icon: string[]
+  textColor: string
+  type: DisplayStudyPhase | 'success' | 'error'
+}
+
 const bannerMap = new Map<
   DisplayStudyPhase | 'success' | 'error',
-  {
-    bgColor: string
-    displayText: string[]
-    icon: string[]
-    textColor: string
-    type: DisplayStudyPhase | 'success' | 'error'
-  }
+  BannerInfoType
 >()
 
 bannerMap.set('error', {
@@ -28,6 +30,7 @@ bannerMap.set('success', {
   textColor: 'black',
   type: 'success',
 })
+
 bannerMap.set('LIVE', {
   bgColor: '#2196F3',
   displayText: [
@@ -38,6 +41,7 @@ bannerMap.set('LIVE', {
   textColor: 'white',
   type: 'LIVE',
 })
+
 bannerMap.set('COMPLETED', {
   bgColor: '#EE6352',
   displayText: ['The study is officially closed and cannot be edited.'],

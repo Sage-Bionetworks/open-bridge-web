@@ -30,32 +30,53 @@ export type StudySection =
 
 const SECTIONS: {
   name: string
+  liveName?: string
   path: StudySection
   hideApps?: string[]
+  isEditableLive?: boolean
+  isHiddenLive?: boolean
 }[] = [
-  // { name: 'Set up Study', path: 'description' },
   {name: 'Create Sessions', path: 'session-creator'},
   {name: 'Schedule Sessions', path: 'scheduler'},
   {name: 'Enrollment Type', path: 'enrollment-type-selector'},
-  {name: 'Customize App', path: 'customize'},
-  // { name: 'Designate Groups', path: 'team-settings' },
+  {name: 'Customize App', path: 'customize', isEditableLive: true},
 
   {
     name: 'Optional Monitoring',
     path: 'passive-features',
     hideApps: [CONSTANTS.constants.ARC_APP_ID],
   },
-  {name: 'Preview Study', path: 'preview'},
-  // { name: 'IRB Approval', path: 'irb' },
-  // { name: 'Review Alerts', path: 'alerts' },
-  {name: 'Launch Study', path: 'launch'},
+  {name: 'Preview Study', path: 'preview', isHiddenLive: true},
+
+  {
+    name: 'Launch Study',
+    liveName: 'Study & IRB Details',
+    path: 'launch',
+    isEditableLive: true,
+  },
 ]
 
 const appId = Utility.getAppId()
 
-export const getStudyBuilderSections = () => {
-  return SECTIONS.filter(section => !section.hideApps?.includes(appId))
+export const getStudyBuilderSections = (isStudyInDraft: boolean) => {
+  return isStudyInDraft
+    ? SECTIONS.filter(section => !section.hideApps?.includes(appId))
+    : SECTIONS.filter(
+        section => !section.hideApps?.includes(appId) && !section.isHiddenLive
+      )
 }
+
+export const isSectionEditableWhenLive = (
+  sectionPath: StudySection
+): boolean | undefined => {
+  const section = SECTIONS.find(section => section.path === sectionPath)
+  if (!section) {
+    throw Error(`the ${sectionPath} section is not exist`)
+  } else {
+    return section.isEditableLive
+  }
+}
+
 export const normalNavIcons = [
   CreateSessionRegularIcon,
   ScheduleSessionsRegularIcon,

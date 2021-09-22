@@ -1,5 +1,6 @@
 import {Box, Button, Container} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import StudyService from '@services/study.service'
 import _ from 'lodash'
 import React from 'react'
 import {NavLink} from 'react-router-dom'
@@ -315,10 +316,15 @@ export interface LaunchAlertsProps {
 }
 
 const StudyAlertComponent: React.FunctionComponent<
-  StudyAlertSection & {onIgnore: Function}
-> = ({section, errors, onIgnore}: StudyAlertSection & {onIgnore: Function}) => {
+  StudyAlertSection & {onIgnore: Function; study: Study}
+> = ({
+  section,
+  errors,
+  onIgnore,
+  study,
+}: StudyAlertSection & {onIgnore: Function; study: Study}) => {
   const classes = useStyles()
-  const sections = getStudyBuilderSections()
+  const sections = getStudyBuilderSections(StudyService.isStudyInDesign(study))
   const sectionIndex = sections.findIndex(s => s.path === section)
   const indexedSection = sections[sectionIndex]
 
@@ -441,14 +447,16 @@ const LaunchAlerts: React.FunctionComponent<LaunchAlertsProps> = ({
           </MTBHeadingH2>
         )}
       </Box>
-      {alerts.map((alert, index) => (
-        <StudyAlertComponent
-          key={index}
-          {...alert}
-          onIgnore={(sectionPath: string, index: number) => {
-            ignore(sectionPath, index)
-          }}></StudyAlertComponent>
-      ))}
+      {study &&
+        alerts.map((alert, index) => (
+          <StudyAlertComponent
+            study={study}
+            key={index}
+            {...alert}
+            onIgnore={(sectionPath: string, index: number) => {
+              ignore(sectionPath, index)
+            }}></StudyAlertComponent>
+        ))}
 
       <div className={classes.previewBox}>
         <Preview_Icon />
