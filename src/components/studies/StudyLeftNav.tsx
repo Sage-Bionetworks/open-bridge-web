@@ -9,12 +9,7 @@ import CloseIcon from '../../assets/study-builder-icons/left_nav_close_icon.svg'
 import OpenIcon from '../../assets/study-builder-icons/left_nav_open_icon.svg'
 import {ThemeType} from '../../style/theme'
 import SideBarListItem from '../widgets/SideBarListItem'
-import {
-  getStudyBuilderSections,
-  hoverNavIcons,
-  normalNavIcons,
-  StudySection,
-} from './sections'
+import {getStudyBuilderSections, StudySection} from './sections'
 
 const drawerWidth = 212
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -119,14 +114,6 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
 
   const [currentHoveredElement, setCurrentHoveredElement] = React.useState(-1)
 
-  function typeOfIcon(index: number, sectionPath: string) {
-    if (index === currentHoveredElement || sectionPath === currentSection) {
-      return hoverNavIcons
-    } else {
-      return normalNavIcons
-    }
-  }
-
   const toggleDrawer = () => {
     onToggle()
   }
@@ -182,7 +169,12 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
                           classes.listItemCollapsed
                       )}>
                       <img
-                        src={typeOfIcon(index, sectionLink.path)[index]}
+                        src={
+                          sectionLink.path === currentSection ||
+                          index === currentHoveredElement
+                            ? sectionLink.hoverIcon
+                            : sectionLink.navIcon
+                        }
                         className={clsx(
                           classes.navIcon,
                           disabled &&
