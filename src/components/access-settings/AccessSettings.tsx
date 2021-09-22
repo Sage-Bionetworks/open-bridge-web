@@ -12,6 +12,7 @@ import {
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import MailOutlineIcon from '@material-ui/icons/MailOutline'
+import ParticipantService from '@services/participants.service'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps, useParams} from 'react-router-dom'
@@ -120,6 +121,9 @@ async function createNewAccount(
     const {principalId, firstName, lastName} =
       await AccessService.getAliasFromSynapseByEmail(email)
 
+    const demoExternalId =
+      await ParticipantService.signUpForAssessmentDemoStudy(token!)
+
     await AccessService.createIndividualAccount(
       token!,
       email,
@@ -127,8 +131,10 @@ async function createNewAccount(
       firstName,
       lastName,
       currentUserOrg,
+      {demoExternalId},
       getRolesFromAccess(access)
     )
+
     return [true]
   } catch (error) {
     return [false, error]

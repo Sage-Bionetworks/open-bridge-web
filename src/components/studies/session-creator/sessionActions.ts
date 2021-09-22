@@ -55,8 +55,12 @@ function addSession(
   name: string,
   assessments: Assessment[]
 ): StudySession[] {
+  const startEventId = sessions.length
+    ? _.first(sessions[0].startEventIds)
+    : JOINED_EVENT_ID
+
   const session = ScheduleService.createEmptyScheduleSession(
-    sessions.length ? _.first(sessions[0].startEventIds)! : JOINED_EVENT_ID,
+    startEventId || JOINED_EVENT_ID,
     name
   )
 

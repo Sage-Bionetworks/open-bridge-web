@@ -62,6 +62,7 @@ const detectSSOCode = async (
           roles: loggedIn.data.roles,
           id: loggedIn.data.id,
           appId: Utility.getAppId(),
+          demoExternalId: loggedIn.data.clientData?.demoExternalId,
         },
       })
       return true

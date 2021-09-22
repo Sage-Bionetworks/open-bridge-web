@@ -174,6 +174,9 @@ export const SimpleTextInput = withStyles(theme => ({
         ' -webkit-box-shadow': '0 0 0 30px white inset !important',
       },
   },
+  fullWidth: {
+    '& input': {width: '100%'},
+  },
 }))(InputBase)
 
 export const FormControlLabelHidden = withStyles(theme => ({

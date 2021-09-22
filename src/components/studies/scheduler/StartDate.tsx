@@ -39,16 +39,9 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
 }: StartDateProps) => {
   const classes = useStyles()
   const [hasDelay, setHasDelay] = React.useState<boolean>(delay ? true : false)
-  const eventDropdownValues2 = [
-    ...[{eventId: JOINED_EVENT_ID}],
-    ...(customEvents || []),
-  ].map(e => ({
-    value: constants.constants.CUSTOM_EVENT_PREFIX + e.eventId,
-    label: e.eventId,
-  }))
 
   const eventDropdownValues = [
-    ...[{value: JOINED_EVENT_ID, label: JOINED_EVENT_ID}],
+    ...[{value: JOINED_EVENT_ID, label: 'Initial_Login'}],
     ...(customEvents || []).map(e => ({
       value: constants.constants.CUSTOM_EVENT_PREFIX + e.eventId,
       label: e.eventId,

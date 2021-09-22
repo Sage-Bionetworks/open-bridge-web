@@ -15,6 +15,7 @@ const initialState = {
   roles: [],
   id: '',
   appId: '',
+  demoExternalId: '',
 }
 
 const UserSessionDataStateContext = React.createContext<
@@ -56,6 +57,7 @@ function userReducer(state: UserSessionData, action: Action): UserSessionData {
         dataGroups: action.payload!.dataGroups,
         roles: action.payload!.roles,
         id: action.payload!.id,
+        demoExternalId: action.payload?.demoExternalId,
       }
 
       Utility.setSession({...newState, token: undefined})
@@ -63,7 +65,7 @@ function userReducer(state: UserSessionData, action: Action): UserSessionData {
 
     case 'LOGOUT':
       Utility.clearSession()
-      window.location.href = "/sign-in"
+      window.location.href = '/sign-in'
       return {
         ...initialState,
       }

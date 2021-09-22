@@ -5,12 +5,13 @@ import {Assessment, StringDictionary} from '@typedefs/types'
 import React, {FunctionComponent, ReactNode} from 'react'
 import {NavLink} from 'react-router-dom'
 
-type AssessmentLibraryWrapperOwnProps = {
+type AssessmentLibraryWrapperProps = {
   assessments: Assessment[]
   tags: StringDictionary<number>
   children: ReactNode[]
   onChangeTags: Function
   isAssessmentLibrary?: boolean
+  token?: string
 }
 
 const useStyles = makeStyles(theme => ({
@@ -53,8 +54,6 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-type AssessmentLibraryWrapperProps = AssessmentLibraryWrapperOwnProps
-
 const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps> =
   ({
     children,
@@ -62,6 +61,7 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
     tags,
     assessments,
     onChangeTags,
+    token,
   }: AssessmentLibraryWrapperProps) => {
     const classes = useStyles()
 
@@ -74,7 +74,7 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
         onChangeTags={(tags: string[]) => onChangeTags(tags)}
       /> */}
         <Container className={classes.assessmentContainer} maxWidth="xl">
-          {isAssessmentLibrary && (
+          {isAssessmentLibrary && token && (
             <Box textAlign="right" mx={3.5} mb={6}>
               <NavLink
                 to={'assessments/preview'}

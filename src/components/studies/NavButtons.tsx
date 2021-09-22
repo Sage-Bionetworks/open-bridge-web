@@ -23,7 +23,7 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
 
   disabled,
 }: NavButtonsProps) => {
-  const sectionLinks = getStudyBuilderSections()
+  const sectionLinks = getStudyBuilderSections(false)
   const currentIndex = sectionLinks.findIndex(i => i.path === currentSection)
   const prev = currentIndex > 0 ? sectionLinks[currentIndex - 1] : undefined
   const next =

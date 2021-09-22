@@ -62,6 +62,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
       {data && (
         <AssessmentLibraryWrapper
           tags={data.tags}
+          token={token}
           assessments={data.assessments}
           onChangeTags={
             (assessments: Assessment[]) =>

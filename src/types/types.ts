@@ -44,6 +44,7 @@ export type UserSessionData = {
   alert?: string
   id: string
   appId: string
+  demoExternalId?: string
 }
 
 export type AdminRole = typeof constants.org_roles[number]
@@ -56,11 +57,14 @@ export interface UserData {
   // email?: string
 }
 
+export type LoggedInUserClientData = {demoExternalId?: string}
+
 export interface LoggedInUserData extends UserData {
   sessionToken: string
   orgMembership: string
   dataGroups?: string[]
   roles: AdminRole[]
+  clientData?: LoggedInUserClientData
 }
 
 export interface OrgUser extends LoggedInUserData {
@@ -232,7 +236,6 @@ export type EditableParticipantData = {
   clientTimeZone?: string
   timeZone?: string
 }
-
 
 export type ParticipantAccountSummary = {
   // isSelected?: boolean
