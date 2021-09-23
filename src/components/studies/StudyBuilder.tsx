@@ -179,7 +179,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
         //setDisplayBanner(true)
         // }
       }
-    }, [study?.phase, study, section, cancelBanner])
+    }, [study?.phase, study, section, cancelBanner, error])
 
     if (studyError || scheduleError) {
       if (studyError || (scheduleError && scheduleError.statusCode !== 404)) {
