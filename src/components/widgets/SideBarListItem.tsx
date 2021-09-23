@@ -25,10 +25,10 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     '&:hover': {
       backgroundColor: '#f7f7f7',
     },
-    height: '48px',
   },
   studyBuilderListItem: {
     color: theme.palette.action.active,
+    height: '48px',
     paddingLeft: theme.spacing(1),
     '&$listItemActive': {
       borderLeft: '4px solid #BCD5E4',
