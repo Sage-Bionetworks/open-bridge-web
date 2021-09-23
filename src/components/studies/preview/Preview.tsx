@@ -1,34 +1,33 @@
+import LinkIcon from '@assets/link_icon.svg'
+import appStoreBtn from '@assets/preview/appStoreBtn.png'
+import googlePlayBtn from '@assets/preview/googlePlayBtn.png'
+import {ReactComponent as PhoneImg} from '@assets/preview/preview_phone.svg'
+import {ReactComponent as PhoneImgAssmnt} from '@assets/preview/preview_phone_assessment.svg'
+import AuthorizedIcon from '@assets/preview/reminder_of_use_authorization_icon.svg'
+import MedicalIcon from '@assets/preview/reminder_of_use_medical_icon.svg'
+import ProtectionIcon from '@assets/preview/reminder_of_use_protect_icon.svg'
+import SampleAssessmentDataImg from '@assets/preview/sample_assessment_data.svg'
+import ScheduleSessionsIcon from '@assets/preview/schedule_session_icon_no_padding.svg'
+import AssessmentSmall from '@components/assessments/AssessmentSmall'
+import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
+import {MTBHeadingH1, MTBHeadingH2} from '@components/widgets/Headings'
+import {PrevButton, SimpleTextInput} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
+import Utility from '@helpers/utility'
 import {Box, Button, Divider, FormControl, FormLabel} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
-import clsx from 'clsx'
-import React, {useEffect} from 'react'
-import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
-import {NavLink} from 'react-router-dom'
-import LinkIcon from '../../../assets/link_icon.svg'
-import appStoreBtn from '../../../assets/preview/appStoreBtn.png'
-import {ReactComponent as DemoAssessmentPlayImg} from '../../../assets/preview/assessment_preview_play.svg'
-import googlePlayBtn from '../../../assets/preview/googlePlayBtn.png'
-import PhoneImg from '../../../assets/preview/preview_phone.svg'
-import {ReactComponent as DemoStudyPlayImg} from '../../../assets/preview/preview_play.svg'
-import AuthorizedIcon from '../../../assets/preview/reminder_of_use_authorization_icon.svg'
-import MedicalIcon from '../../../assets/preview/reminder_of_use_medical_icon.svg'
-import ProtectionIcon from '../../../assets/preview/reminder_of_use_protect_icon.svg'
-import SampleAssessmentDataImg from '../../../assets/preview/sample_assessment_data.svg'
-import ScheduleSessionsIcon from '../../../assets/preview/schedule_session_icon_no_padding.svg'
-import Utility from '../../../helpers/utility'
-import ParticipantService from '../../../services/participants.service'
+import ParticipantService from '@services/participants.service'
 import {
   latoFont,
   playfairDisplayFont,
   poppinsFont,
   ThemeType,
-} from '../../../style/theme'
-import {Assessment} from '../../../types/types'
-import AssessmentSmall from '../../assessments/AssessmentSmall'
-import {ErrorFallback, ErrorHandler} from '../../widgets/ErrorHandler'
-import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
-import {PrevButton, SimpleTextInput} from '../../widgets/StyledComponents'
+} from '@style/theme'
+import {Assessment} from '@typedefs/types'
+import clsx from 'clsx'
+import React, {useEffect} from 'react'
+import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
+import {NavLink} from 'react-router-dom'
 import {useSchedule} from '../scheduleHooks'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -42,44 +41,19 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       backgroundColor: 'inherit',
     },
   },
-  phoneAssessmentDemo: {
-    width: '145px',
-    height: '275px',
-    marginRight: '64px',
-    textAlign: 'left',
-    flexShrink: 0,
-  },
+
   phone: {
     width: '145px',
     height: '275px',
     marginRight: '64px',
     textAlign: 'left',
     flexShrink: 0,
-    backgroundRepeat: 'no-repeat',
-    backgroundColor: '#fff',
-    padding: '4px 12px 11px 10px',
-    backgroundImage: 'url(' + PhoneImg + ')',
-    '& > div:first-child': {
-      backgroundColor: '#fff',
-      borderRadius: '16px',
-      display: 'flex',
-      width: '100%',
-      height: '261px',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    '& > div:first-child >  div': {
-      borderRadius: '50%',
-      border: '3px solid black',
-      backgroundColor: '#FDE93D',
-      width: '70px',
-      height: '70px',
-      paddingTop: '17px',
-      paddingLeft: '22px',
-    },
+
+    padding: '4px 12px 11px 0px',
   },
   mtbApp: {
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(2),
+    paddingLeft: theme.spacing(1),
     fontFamily: poppinsFont,
     fontWeight: 600,
     fontSize: '12px',
@@ -336,16 +310,12 @@ const PreviewIdGenerated: React.FunctionComponent<{
       <Box width="548px" mx="auto">
         <Box display="flex" width="100%">
           {isAssessmentDemo ? (
-            <div className={classes.phoneAssessmentDemo}>
-              <DemoAssessmentPlayImg />
+            <div className={classes.phone}>
+              <PhoneImgAssmnt />
             </div>
           ) : (
             <div className={classes.phone}>
-              <div>
-                <div>
-                  <DemoStudyPlayImg />
-                </div>
-              </div>
+              <PhoneImg />
               <div className={classes.mtbApp}> Mobile Toolbox App</div>
             </div>
           )}
@@ -478,7 +448,7 @@ const PreviewIntroScreen: React.FunctionComponent<{
               color="primary"
               variant="contained"
               onClick={() => onGetParticipantId()}>
-              {isAssessmentDemo ? 'Continue' : 'Generate Preview'}
+              Continue
             </Button>
           </ErrorBoundary>
         </Box>
