@@ -1,5 +1,5 @@
 import {useStudy} from '@components/studies/studyHooks'
-import {Box, Button} from '@material-ui/core'
+import {Button} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React from 'react'
@@ -18,6 +18,13 @@ import {MTBHeadingH1} from '../../widgets/Headings'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    backgroundColor: 'black',
+  },
+  inner: {
     padding: theme.spacing(3),
     backgroundImage: 'url(' + confetti + ')',
     backgroundColor: 'black',
@@ -85,8 +92,8 @@ const Live: React.FunctionComponent<RouteComponentProps> =
       return <></>
     }
     return (
-      <Box display="flex" justifyContent="center" alignItems="center">
-        <div className={classes.root}>
+      <div className={classes.root}>
+        <div className={classes.inner}>
           <div style={{marginLeft: '-50px'}}>
             <MTBHeadingH1 className={classes.congratsText}>
               Congratulations!
@@ -111,7 +118,7 @@ const Live: React.FunctionComponent<RouteComponentProps> =
             </Button>
           </div>
         </div>
-      </Box>
+      </div>
     )
   }
 
