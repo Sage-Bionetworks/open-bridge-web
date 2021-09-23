@@ -6,10 +6,13 @@
 <rect x="4" y="78.8945" width="4.21874" height="19.8281" rx="2.10937" fill="#131315"/>
 <rect x="4.00098" y="35.4414" width="4.21874" height="9.70311" rx="2.10937" fill="#131315"/>
 </g>
+<circle cx="71" cy="129" r="33.5" fill="#FDE93D" stroke="black" stroke-width="3"/>
+<path d="M84.5 126.402C86.5 127.557 86.5 130.443 84.5 131.598L65 142.856C63 144.011 60.5 142.568 60.5 140.258L60.5 117.742C60.5 115.432 63 113.989 65 115.144L84.5 126.402Z" fill="#131315"/>
+<rect x="12.5" y="5.5" width="118" height="257" rx="13.5" stroke="#FDE93D" stroke-opacity="0.75" stroke-width="5"/>
 <defs>
 <filter id="filter0_d" x="0" y="0" width="143" height="276.312" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
 <feOffset dy="4"/>
 <feGaussianBlur stdDeviation="2"/>
 <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
