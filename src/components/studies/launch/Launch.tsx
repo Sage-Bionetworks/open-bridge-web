@@ -9,7 +9,7 @@ import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
 import {ReactComponent as LockIcon} from '../../../assets/launch/lock_icon.svg'
 import StudyService from '../../../services/study.service'
 import {ThemeType} from '../../../style/theme'
-import {Study, StudyPhase} from '../../../types/types'
+import {Study} from '../../../types/types'
 import {NextButton, PrevButton} from '../../widgets/StyledComponents'
 import {useSchedule} from '../scheduleHooks'
 import {useStudy, useUpdateStudyDetail} from '../studyHooks'
@@ -139,7 +139,8 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
       const isLive =
         StudyService.getDisplayStatusForStudyPhase(sourceStudy.phase) === 'LIVE'
       setIsStudyLive(isLive)
-      setSteps(getSteps(isLive))
+      const steps = getSteps(isLive)
+      setSteps(steps)
     }
   }, [sourceStudy])
 
@@ -159,14 +160,9 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
         delete study.irbExpiresOn
         delete study.irbDecisionType
       }
-      console.log('starting update from launch')
-      const updatedStudy = {
-        ...study,
-        phase: 'recruitment' as StudyPhase,
-      }
 
       try {
-        const result = await mutateStudy({study: updatedStudy})
+        const result = await mutateStudy({study: study})
         setHasObjectChanged(false)
       } catch (e) {
         alert(e)
@@ -202,6 +198,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
 
   const submitAndLock = () => {
     onSave()
+
     setIsFinished(true)
   }
 
@@ -209,12 +206,10 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
   if (isReadOnly) {
     return <ReadOnlyIrbDetails study={study} />
   }
-  const showNextButton = () => {
-    if (isReadOnly) {
-      return false
-    }
-    return (!isStudyLive && activeStep < 2) || (isStudyLive && activeStep === 0)
-  }
+  const showNextButton =
+    !isReadOnly &&
+    ((!isStudyLive && activeStep < 2) || (isStudyLive && activeStep === 0))
+
   return (
     <Paper className={classes.root} elevation={2} id="container">
       <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
@@ -238,11 +233,10 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
         <StepContent
           study={study}
           schedule={schedule}
-          stepName={steps[activeStep].label}
+          stepName={steps[activeStep]?.label}
           isFinished={isFinished}
           onEnableNext={(isEnabled: boolean) => setIsNextEnabled(isEnabled)}
           onChange={(study: Study) => {
-            console.log('onChange', study)
             onUpdate(study)
           }}
         />{' '}
@@ -265,7 +259,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
                 </>
               )}
 
-              {showNextButton() && (
+              {showNextButton && (
                 <NextButton
                   variant="contained"
                   color="primary"
