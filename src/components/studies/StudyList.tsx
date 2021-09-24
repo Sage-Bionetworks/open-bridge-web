@@ -44,7 +44,14 @@ type StudySublistProps = {
   } | null
 }
 
-type StudyAction = 'DELETE' | 'ANCHOR' | 'DUPLICATE' | 'RENAME' | 'VIEW'
+type StudyAction =
+  | 'DELETE'
+  | 'ANCHOR'
+  | 'DUPLICATE'
+  | 'RENAME'
+  | 'VIEW'
+  | 'WITHDRAW'
+  | 'CLOSE'
 
 const studyCardWidth = '290'
 
@@ -343,9 +350,10 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         setRenameStudyId('')
 
         return
-
+      case 'WITHDRAW':
+      case 'CLOSE':
       case 'DELETE':
-        await mutate({action: 'DELETE', study: {...study, name: study.name}})
+        await mutate({action: type, study})
         return
 
       case 'DUPLICATE':
@@ -372,6 +380,11 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       </div>
     )
   }
+
+  const getPhase = () =>
+    !menuAnchor
+      ? undefined
+      : StudyService.getDisplayStatusForStudyPhase(menuAnchor.study.phase)
 
   return (
     <Loader reqStatusLoading={isStudyLoading || !studies} variant="full">
@@ -456,34 +469,50 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
               </Box>
             ))}
 
-          <Menu
-            id="study-menu"
-            anchorEl={menuAnchor?.anchorEl}
-            keepMounted
-            open={Boolean(menuAnchor?.anchorEl)}
-            onClose={handleMenuClose}
-            classes={{paper: classes.paper, list: classes.list}}>
-            <MenuItem onClick={() => navigateToStudy(menuAnchor?.study)}>
-              View
-            </MenuItem>
-            {menuAnchor?.study.phase === 'design' && (
-              <MenuItem
-                onClick={() => {
-                  setRenameStudyId(menuAnchor?.study.identifier)
-                  handleMenuClose()
-                }}>
-                Rename
+          {menuAnchor && (
+            <Menu
+              id="study-menu"
+              anchorEl={menuAnchor.anchorEl}
+              keepMounted
+              open={Boolean(menuAnchor.anchorEl)}
+              onClose={handleMenuClose}
+              classes={{paper: classes.paper, list: classes.list}}>
+              <MenuItem onClick={() => navigateToStudy(menuAnchor?.study)}>
+                View
               </MenuItem>
-            )}
+              {getPhase() === 'DRAFT' ||
+                (getPhase() === 'LIVE' && (
+                  <MenuItem
+                    onClick={() => {
+                      setRenameStudyId(menuAnchor?.study.identifier)
+                      handleMenuClose()
+                    }}>
+                    Rename
+                  </MenuItem>
+                ))}
 
-            <MenuItem onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>
-              Duplicate
-            </MenuItem>
+              <MenuItem
+                onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>
+                Duplicate
+              </MenuItem>
 
-            <MenuItem onClick={() => setIsConfirmDeleteOpen(true)}>
-              Delete
-            </MenuItem>
-          </Menu>
+              {(getPhase() === 'DRAFT' || getPhase() === 'WITHDRAWN') && (
+                <MenuItem onClick={() => setIsConfirmDeleteOpen(true)}>
+                  Delete
+                </MenuItem>
+              )}
+
+              {getPhase() === 'LIVE' && [
+                <MenuItem
+                  onClick={() => onAction(menuAnchor!.study, 'WITHDRAW')}>
+                  Withdraw Study
+                </MenuItem>,
+                <MenuItem onClick={() => onAction(menuAnchor!.study, 'CLOSE')}>
+                  Close Study
+                </MenuItem>,
+              ]}
+            </Menu>
+          )}
 
           <ConfirmationDialog
             isOpen={isConfirmDeleteOpen}
