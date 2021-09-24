@@ -21,6 +21,8 @@ const StudyService = {
   launchStudy,
   removeStudy,
   updateStudy,
+  completeStudy,
+  withdrawStudy,
 }
 
 function getDisplayStatusForStudyPhase(phase: StudyPhase): DisplayStudyPhase {
@@ -165,13 +167,22 @@ async function copyStudy(
     createdOn: new Date(),
     modifiedOn: new Date(),
   }
+  //@ts-ignore
+  delete newStudy.scheduleGuid
 
   await createStudy(newStudy, token)
   let copiedSchedule
   if (scheduleToCopy) {
+    copiedSchedule = {
+      duration: scheduleToCopy.duration,
+      guid: '',
+      name: newStudyId + 'test',
+      sessions: scheduleToCopy.sessions.map(s => ({...s, guid: undefined})),
+    }
+
     copiedSchedule = await ScheduleService.createSchedule(
       newStudyId,
-      scheduleToCopy,
+      copiedSchedule,
       token!
     )
   }
@@ -207,6 +218,39 @@ async function removeStudy(studyId: string, token: string): Promise<Study[]> {
   await Utility.callEndpoint<{items: Study[]}>(
     constants.endpoints.study.replace(':id', studyId),
     'DELETE',
+    {},
+    token
+  )
+  const data = await getStudies(token)
+  return data
+}
+
+async function completeStudy(studyId: string, token: string): Promise<Study[]> {
+  await Utility.callEndpoint<{items: Study[]}>(
+    constants.endpoints.studyConduct.replace(':id', studyId),
+    'POST',
+    {},
+    token
+  )
+  await Utility.callEndpoint<{items: Study[]}>(
+    constants.endpoints.studyAnalyze.replace(':id', studyId),
+    'POST',
+    {},
+    token
+  )
+  await Utility.callEndpoint<{items: Study[]}>(
+    constants.endpoints.studyComplete.replace(':id', studyId),
+    'POST',
+    {},
+    token
+  )
+  const data = await getStudies(token)
+  return data
+}
+async function withdrawStudy(studyId: string, token: string): Promise<Study[]> {
+  await Utility.callEndpoint<{items: Study[]}>(
+    constants.endpoints.studyWithdraw.replace(':id', studyId),
+    'POST',
     {},
     token
   )

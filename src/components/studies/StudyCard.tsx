@@ -220,28 +220,23 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
 
   return (
     <Box display="flex" textAlign="left" className={classes.cardTopContainer}>
-      {study.phase !== 'completed' ? (
-        <IconButton
-          style={{
-            padding: '0',
-          }}
-          onClick={e => {
-            cancelPropagation(e)
-            onSetAnchor(e.currentTarget)
-          }}>
-          <Box
-            className={classes.menuBox}
-            style={
-              isMenuOpen
-                ? {boxShadow: '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)'}
-                : {}
-            }>
-            <MoreVertIcon />
-          </Box>
-        </IconButton>
-      ) : (
-        <div />
-      )}
+      <IconButton
+        style={{
+          padding: '0',
+        }}
+        onClick={e => {
+          cancelPropagation(e)
+          onSetAnchor(e.currentTarget)
+        }}>
+        <Box
+          className={classes.menuBox}
+          style={
+            isMenuOpen ? {boxShadow: '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)'} : {}
+          }>
+          <MoreVertIcon />
+        </Box>
+      </IconButton>
+
       {section !== 'DRAFT' ? (
         <div className={classes.liveIconContainer}>
           <img src={getStatusIcon(section)}></img>
