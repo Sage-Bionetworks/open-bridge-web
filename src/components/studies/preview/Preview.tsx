@@ -106,8 +106,14 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   reminderOfUseIcon: {
     marginBottom: theme.spacing(2),
-    height: '100px',
-    width: '80px',
+  },
+  remindersOfUseContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginTop: theme.spacing(10),
+    marginBottom: theme.spacing(4),
+    alignItems: 'flex-start',
+    width: '100%',
   },
   reminderOfUseText: {
     fontFamily: latoFont,
@@ -409,13 +415,7 @@ const PreviewIntroScreen: React.FunctionComponent<{
           <MTBHeadingH1 className={classes.reminderOfUseHeader}>
             Reminder of use:
           </MTBHeadingH1>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            mt={10}
-            mb={4}
-            alignItems="center"
-            width="100%">
+          <Box className={classes.remindersOfUseContainer}>
             {text.map((text, index) => (
               <Reminder key={index} text={text} img={icons[index]}></Reminder>
             ))}
