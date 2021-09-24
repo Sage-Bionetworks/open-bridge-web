@@ -1,4 +1,5 @@
 import {Box, makeStyles} from '@material-ui/core'
+import EventService from '@services/event.service'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React, {ReactNode} from 'react'
@@ -134,7 +135,9 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
                       classes.readOnlyText,
                       classes.readOnlyTextCentering
                     )}>
-                    Placeholder
+                    {EventService.formatCustomEventIdForDisplay(
+                      _.first(session.startEventIds) || 'Unknown'
+                    )}
                   </strong>
                 </SchedulingFormSection>
               </Box>
