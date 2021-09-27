@@ -28,7 +28,7 @@ const EndDate: React.FunctionComponent<EndDateProps> = ({
   }
 
   return (
-    <SchedulingFormSection label={'End after:'}>
+    <SchedulingFormSection label={'End after*:'}>
       <RadioGroup
         aria-label="End after"
         name="endAfter"
