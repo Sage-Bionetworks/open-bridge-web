@@ -45,7 +45,7 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
 
   const nextButton = next ? (
     <NavLink
-      to={`/studies/builder/${id}/${next.path}`}
+      to={disabled ? '#' : `/studies/builder/${id}/${next.path}`}
       style={{textDecoration: 'none'}}>
       <NextButton
         variant="contained"
