@@ -203,6 +203,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProp
     if (!StudyService.isStudyInDesign(study)) {
       return (
         <ReadOnlyEnrollmentTypeSelector
+          isIdGenerated={study.clientData.generateIds}
           isPhoneNumberSignInType={
             study.signInTypes && study.signInTypes[0] === 'phone_password'
           }
