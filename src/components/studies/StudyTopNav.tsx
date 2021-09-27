@@ -1,3 +1,9 @@
+import PARTICIPANTS_ICON from '@assets/group_participants_icon.svg'
+import Logo from '@assets/logo_mtb.svg'
+import BreadCrumb from '@components/widgets/BreadCrumb'
+import HideWhen from '@components/widgets/HideWhen'
+import MobileDrawerMenuHeader from '@components/widgets/MobileDrawerMenuHeader'
+import Utility from '@helpers/utility'
 import {
   Box,
   Drawer,
@@ -5,24 +11,17 @@ import {
   IconButton,
   LinearProgress,
 } from '@material-ui/core'
-import Link from '@material-ui/core/Link'
 import {makeStyles} from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
 import PeopleIcon from '@material-ui/icons/People'
 import {Alert} from '@material-ui/lab'
+import {latoFont} from '@style/theme'
+import constants from '@typedefs/constants'
+import {ExtendedError, Study, StudyPhase} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {NavLink} from 'react-router-dom'
-import PARTICIPANTS_ICON from '../../assets/group_participants_icon.svg'
-import Logo from '../../assets/logo_mtb.svg'
-import Utility from '../../helpers/utility'
-import {latoFont} from '../../style/theme'
-import constants from '../../types/constants'
-import {ExtendedError, Study, StudyPhase} from '../../types/types'
-import BreadCrumb from '../widgets/BreadCrumb'
-import HideWhen from '../widgets/HideWhen'
-import MobileDrawerMenuHeader from '../widgets/MobileDrawerMenuHeader'
 
 const useStyles = makeStyles(theme => ({
   rootStudyTopNav: {
@@ -207,13 +206,13 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               paddingTop: '0',
               alignItems: 'center',
             }}>
-            <Link
-              href="/Studies"
+            <NavLink
+              to="/Studies"
               key="/Studies"
               className={classes.toolbarLink}
               style={{paddingBottom: '0', paddingLeft: '4px'}}>
               <img src={Logo} key="img_home" alt="home" />
-            </Link>
+            </NavLink>
             <HideWhen hideWhen={study === undefined && !error}>
               <BreadCrumb
                 links={[{url: '/Studies', text: ''}]}
