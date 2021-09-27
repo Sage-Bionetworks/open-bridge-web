@@ -41,7 +41,7 @@ export const useUpdateStudyInList = () => {
 
   const update = async (props: {
     study: Study
-    action: 'UPDATE' | 'DELETE' | 'COPY' | 'CREATE' | 'WITHDRAW' | 'CLOSE'
+    action: 'RENAME' | 'DELETE' | 'COPY' | 'CREATE' | 'WITHDRAW' | 'CLOSE'
   }): Promise<Study[]> => {
     const {study, action} = props
     let newVersion = 0
@@ -53,12 +53,15 @@ export const useUpdateStudyInList = () => {
         return await StudyService.completeStudy(study.identifier, token!)
       case 'WITHDRAW':
         return await StudyService.withdrawStudy(study.identifier, token!)
-      case 'UPDATE':
-        newVersion = await StudyService.updateStudy(
-          {...props.study /*, version: originalStudy!.version*/},
+
+      case 'RENAME':
+        const updatedStudy = await StudyService.renameStudy(
+          study.identifier,
+          study.name,
           token!
         )
-        return [{...props.study, version: newVersion}]
+
+        return [updatedStudy]
       case 'COPY':
         const {study: newStudy} = await StudyService.copyStudy(
           study.identifier!,
@@ -88,7 +91,7 @@ export const useUpdateStudyInList = () => {
       switch (action) {
         case 'CLOSE':
         case 'WITHDRAW':
-        case 'UPDATE':
+        case 'RENAME':
           if (previousStudies) {
             updatedList = previousStudies.map(s =>
               s.identifier !== study.identifier

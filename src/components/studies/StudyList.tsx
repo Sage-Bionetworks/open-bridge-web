@@ -226,6 +226,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
             key={study.identifier || index}
             variant="body2"
             onClick={() => onStudyCardClick({...study}, 'VIEW')}>
+            {study.contacts?.length}
             <StudyCard
               study={study}
               onRename={(newName: string) => {
@@ -346,7 +347,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     let result
     switch (type) {
       case 'RENAME':
-        await mutate({action: 'UPDATE', study: {...study, name: study.name}})
+        await mutate({action: 'RENAME', study: {...study, name: study.name}})
         setRenameStudyId('')
 
         return
