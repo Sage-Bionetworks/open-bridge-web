@@ -1,6 +1,11 @@
 import _ from 'lodash'
 import moment from 'moment'
-import {TimelineScheduleItem, TimelineZoomLevel, unitPixelWidth} from './types'
+import {
+  daysPage,
+  TimelineScheduleItem,
+  TimelineZoomLevel,
+  unitPixelWidth,
+} from './types'
 
 function getZoomLevel(scheduleDuration: string): {
   lengthInDays: number
@@ -16,7 +21,7 @@ function getZoomLevel(scheduleDuration: string): {
 
   const lengthInDays = duration.asDays()
 
-  if (lengthInDays < 8) {
+  if (lengthInDays < 2) {
     periods.splice(1)
   } else if (lengthInDays < 31) {
     periods.splice(2)
@@ -27,7 +32,9 @@ function getZoomLevel(scheduleDuration: string): {
 }
 
 function getContainerWidth(lengthInDays: number, zoomLevel: TimelineZoomLevel) {
-  return unitPixelWidth[zoomLevel] * lengthInDays
+  const minWidth = unitPixelWidth[zoomLevel] * daysPage[zoomLevel]
+  const realWidth = unitPixelWidth[zoomLevel] * lengthInDays
+  return Math.max(realWidth, minWidth)
 }
 
 const Utility = {
