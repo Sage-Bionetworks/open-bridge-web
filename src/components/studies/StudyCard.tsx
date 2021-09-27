@@ -202,7 +202,6 @@ const CardBottom: FunctionComponent<{
 }
 
 const CardTop: FunctionComponent<StudyCardProps> = ({
-  study,
   onSetAnchor,
   section,
   isMenuOpen,

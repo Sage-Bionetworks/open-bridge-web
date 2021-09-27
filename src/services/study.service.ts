@@ -20,6 +20,7 @@ const StudyService = {
   copyStudy,
   launchStudy,
   removeStudy,
+  renameStudy,
   updateStudy,
   completeStudy,
   withdrawStudy,
@@ -136,6 +137,20 @@ async function createStudy(study: Study, token: string): Promise<number> {
   )
 
   return newVersion.data.version
+}
+
+async function renameStudy(
+  studyId: string,
+  newName: string,
+  token: string
+): Promise<Study> {
+  const study = await getStudy(studyId, token)
+  if (!study) {
+    throw 'no study found'
+  }
+  study.name = newName
+  const version = await updateStudy(study, token)
+  return study
 }
 
 async function copyStudy(

@@ -346,7 +346,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     let result
     switch (type) {
       case 'RENAME':
-        await mutate({action: 'UPDATE', study: {...study, name: study.name}})
+        await mutate({action: 'RENAME', study: {...study, name: study.name}})
         setRenameStudyId('')
 
         return

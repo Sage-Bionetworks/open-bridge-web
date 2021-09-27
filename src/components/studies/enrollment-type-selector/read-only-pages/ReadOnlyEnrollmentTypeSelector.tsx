@@ -28,13 +28,21 @@ const useStyles = makeStyles(theme => ({
 
 type ReadOnlyEnrollmentTypeSelectorProps = {
   isPhoneNumberSignInType: boolean
+  isIdGenerated?: boolean
   children: React.ReactNode
   studyId: string
 }
 
 const ReadOnlyEnrollmentTypeSelector: React.FunctionComponent<ReadOnlyEnrollmentTypeSelectorProps> =
-  ({isPhoneNumberSignInType, children, studyId}) => {
+  ({isPhoneNumberSignInType, children, studyId, isIdGenerated}) => {
     const classes = useStyles()
+    let signInType = 'Phone number'
+    if (!isPhoneNumberSignInType) {
+      signInType = isIdGenerated
+        ? 'Generated Participant ID'
+        : 'Participant ID defined by you'
+    }
+
     return (
       <>
         <Box className={classes.container}>
@@ -46,11 +54,7 @@ const ReadOnlyEnrollmentTypeSelector: React.FunctionComponent<ReadOnlyEnrollment
             with a:
             <br></br>
             <br></br>
-            <strong>
-              {isPhoneNumberSignInType
-                ? 'Phone number'
-                : 'Participant ID defined by you'}
-            </strong>
+            <strong>{signInType}</strong>
             <br></br>
             <br></br>
             If you haven’t already done so, you will need to enroll your
