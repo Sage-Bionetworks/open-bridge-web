@@ -480,16 +480,15 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
               <MenuItem onClick={() => navigateToStudy(menuAnchor?.study)}>
                 View
               </MenuItem>
-              {getPhase() === 'DRAFT' ||
-                (getPhase() === 'LIVE' && (
-                  <MenuItem
-                    onClick={() => {
-                      setRenameStudyId(menuAnchor?.study.identifier)
-                      handleMenuClose()
-                    }}>
-                    Rename
-                  </MenuItem>
-                ))}
+              {(getPhase() === 'DRAFT' || getPhase() === 'LIVE') && (
+                <MenuItem
+                  onClick={() => {
+                    setRenameStudyId(menuAnchor?.study.identifier)
+                    handleMenuClose()
+                  }}>
+                  Rename
+                </MenuItem>
+              )}
 
               <MenuItem
                 onClick={() => onAction(menuAnchor!.study, 'DUPLICATE')}>

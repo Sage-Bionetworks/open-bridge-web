@@ -320,7 +320,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               })}
             </Box>
 
-            <SchedulingFormSection label="Session Window:">
+            <SchedulingFormSection label="Session Window*:">
               <Box flexGrow={1}>
                 {schedulableSession.timeWindows?.map((window, index) => (
                   <AssessmentWindow

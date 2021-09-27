@@ -81,7 +81,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
   }
 
   return (
-    <SchedulingFormSection label={`${sessionName} starts on:`}>
+    <SchedulingFormSection label={`${sessionName} starts on*:`}>
       <RadioGroup
         aria-label="Session Starts On"
         name="startDate"
