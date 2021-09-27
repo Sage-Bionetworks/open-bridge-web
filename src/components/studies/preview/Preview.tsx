@@ -469,15 +469,17 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
   const handleError = useErrorHandler()
 
   const getTestParticipantId = async () => {
+    let newId = ''
     try {
       let testExternalId = ''
       if (isAssessmentDemo) {
         if (!demoExternalId) {
-          throw Error(
+          newId = await ParticipantService.signUpForAssessmentDemoStudy(token!)
+          /*throw Error(
             'The logged in user is not enrolled in demo study. \n You might need to have your administrator remove and re-add them '
-          )
+          )*/
         }
-        testExternalId = demoExternalId.split(':')[0]
+        testExternalId = (demoExternalId || newId).split(':')[0]
       } else {
         testExternalId = await ParticipantService.addTestParticipant(id, token!)
       }
