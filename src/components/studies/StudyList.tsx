@@ -226,7 +226,6 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
             key={study.identifier || index}
             variant="body2"
             onClick={() => onStudyCardClick({...study}, 'VIEW')}>
-            {study.contacts?.length}
             <StudyCard
               study={study}
               onRename={(newName: string) => {
