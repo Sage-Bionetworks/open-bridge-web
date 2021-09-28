@@ -43,6 +43,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     },
   },
   listItemDark: {
+    height: theme.spacing(9),
+    display: 'flex',
     color: theme.palette.common.white,
     '& $linkLabel': {
       color: theme.palette.common.white,

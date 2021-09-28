@@ -1,4 +1,5 @@
 import {Box, Button, makeStyles, Theme} from '@material-ui/core'
+import {Alert} from '@material-ui/lab'
 import ParticipantService from '@services/participants.service'
 import React, {FunctionComponent, ReactNode} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
@@ -146,6 +147,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   >()
   const [isAccessLoading, setIsAccessLoading] = React.useState(true)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
+  const [updateError, setUpdateError] = React.useState('')
 
   const {
     data: members,
@@ -186,9 +188,14 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   }, [run, orgMembership, token, updateToggle, getMembers])
 
   const deleteExistingAccount = async (member: OrgUser) => {
-    await AccessService.deleteIndividualAccount(token!, member.id)
-    const result = await getMembers(orgMembership!, token!)
-    setData(result)
+    setUpdateError('')
+    try {
+      await AccessService.deleteIndividualAccount(token!, member.id)
+      const result = await getMembers(orgMembership!, token!)
+      setData(result)
+    } catch (e) {
+      setUpdateError(e.message)
+    }
   }
 
   const updateRolesForExistingAccount = async ({
@@ -198,26 +205,31 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     member: OrgUser
     access: Access
   }) => {
-    const roles = getRolesFromAccess(access)
-    // this is patch for existing users
-    let demoExternalId = member.clientData?.demoExternalId
-    if (!demoExternalId) {
-      demoExternalId = await ParticipantService.signUpForAssessmentDemoStudy(
-        token!
-      )
-    }
+    try {
+      setUpdateError('')
+      const roles = getRolesFromAccess(access)
+      // this is patch for existing users
+      let demoExternalId = member.clientData?.demoExternalId
+      if (!demoExternalId) {
+        demoExternalId = await ParticipantService.signUpForAssessmentDemoStudy(
+          token!
+        )
+      }
 
-    const clientData: LoggedInUserClientData = {
-      demoExternalId,
+      const clientData: LoggedInUserClientData = {
+        demoExternalId,
+      }
+      await AccessService.updateIndividualAccountRoles(
+        token!,
+        member.id,
+        roles,
+        clientData
+      )
+      const result = await getMembers(orgMembership!, token!)
+      setData(result)
+    } catch (e) {
+      setUpdateError(e.message)
     }
-    await AccessService.updateIndividualAccountRoles(
-      token!,
-      member.id,
-      roles,
-      clientData
-    )
-    const result = await getMembers(orgMembership!, token!)
-    setData(result)
   }
 
   const updateAccess = React.useCallback(
@@ -285,61 +297,71 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
         reqStatusLoading={!currentMemberAccess?.member || isAccessLoading}
         style={{width: 'auto', margin: '0 auto'}}>
         {currentMemberAccess && (
-          <Box pl={10} position="relative" pb={10}>
-            <NameDisplayDetail member={currentMemberAccess!.member} />
-            <AccessGrid
-              access={currentMemberAccess!.access!}
-              onUpdate={(_access: Access) =>
-                setCurrentMemberAccess({
-                  member: currentMemberAccess!.member,
-                  access: _access,
-                })
-              }
-              isEdit={true}
-              isThisMe={currentMemberAccess.member.id === id}
-              currentUserIsAdmin={Utility.isInAdminRole()}></AccessGrid>
-            {Utility.isInAdminRole() && (
-              <Box className={classes.buttons}>
-                <Button
-                  aria-label="delete"
-                  onClick={() => {
-                    setIsConfirmDeleteOpen(true)
-                  }}
-                  startIcon={<Delete />}>
-                  Remove from study
-                </Button>
-                <Button
-                  aria-label="save changes"
-                  color="primary"
-                  variant="contained"
-                  onClick={() =>
-                    updateRolesForExistingAccount(currentMemberAccess!)
-                  }>
-                  Save changes
-                </Button>
-              </Box>
-            )}
+          <>
+            <Box pl={10} position="relative" pb={10}>
+              {updateError && (
+                <Alert
+                  variant="outlined"
+                  color="error"
+                  style={{marginTop: '8px'}}>
+                  {updateError}
+                </Alert>
+              )}
+              <NameDisplayDetail member={currentMemberAccess!.member} />
+              <AccessGrid
+                access={currentMemberAccess!.access!}
+                onUpdate={(_access: Access) =>
+                  setCurrentMemberAccess({
+                    member: currentMemberAccess!.member,
+                    access: _access,
+                  })
+                }
+                isEdit={true}
+                isThisMe={currentMemberAccess.member.id === id}
+                currentUserIsAdmin={Utility.isInAdminRole()}></AccessGrid>
+              {Utility.isInAdminRole() && (
+                <Box className={classes.buttons}>
+                  <Button
+                    aria-label="delete"
+                    onClick={() => {
+                      setIsConfirmDeleteOpen(true)
+                    }}
+                    startIcon={<Delete />}>
+                    Remove from study
+                  </Button>
+                  <Button
+                    aria-label="save changes"
+                    color="primary"
+                    variant="contained"
+                    onClick={() =>
+                      updateRolesForExistingAccount(currentMemberAccess!)
+                    }>
+                    Save changes
+                  </Button>
+                </Box>
+              )}
 
-            <ConfirmationDialog
-              isOpen={isConfirmDeleteOpen}
-              title={'Delete Study'}
-              type={'DELETE'}
-              onCancel={() => setIsConfirmDeleteOpen(false)}
-              onConfirm={() => {
-                const member = {...currentMemberAccess!.member}
-                // setCurrentMemberId(members[0].id)
-                deleteExistingAccount(member)
+              <ConfirmationDialog
+                isOpen={isConfirmDeleteOpen}
+                title={'Delete Study'}
+                type={'DELETE'}
+                onCancel={() => setIsConfirmDeleteOpen(false)}
+                onConfirm={() => {
+                  const member = {...currentMemberAccess!.member}
+                  // setCurrentMemberId(members[0].id)
+                  deleteExistingAccount(member)
 
-                setIsConfirmDeleteOpen(false)
-              }}>
-              <div>
-                <strong>
-                  Are you sure you would like to permanently delete{' '}
-                  {getNameDisplay(currentMemberAccess!.member)}
-                </strong>
-              </div>
-            </ConfirmationDialog>
-          </Box>
+                  setIsConfirmDeleteOpen(false)
+                }}>
+                <div>
+                  <strong>
+                    Are you sure you would like to permanently delete{' '}
+                    {getNameDisplay(currentMemberAccess!.member)}
+                  </strong>
+                </div>
+              </ConfirmationDialog>
+            </Box>
+          </>
         )}
       </Loader>
     </Box>
