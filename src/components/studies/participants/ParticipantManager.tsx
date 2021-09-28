@@ -1,5 +1,4 @@
 import {ReactComponent as CollapseIcon} from '@assets/collapse.svg'
-import LiveIcon from '@assets/live_study_icon.svg'
 import {ReactComponent as AddParticipantsIcon} from '@assets/participants/add_participants.svg'
 import {ReactComponent as AddTestParticipantsIcon} from '@assets/participants/add_test_participants.svg'
 import BatchEditIcon from '@assets/participants/batch_edit_icon.svg'
@@ -18,6 +17,7 @@ import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import {MTBHeadingH3} from '@components/widgets/Headings'
 import HelpBox from '@components/widgets/HelpBox'
+import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
 import {
   DialogButtonPrimary,
   DialogButtonSecondary,
@@ -591,12 +591,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     <Box bgcolor="#F8F8F8">
       <Box px={3} py={2} display="flex" alignItems="center">
         <MTBHeadingH3 className={classes.studyId}>
-          {' '}
-          Study ID: {Utility.formatStudyId(study.identifier)}{' '}
+          <NonDraftHeaderFunctionComponent study={study} />
         </MTBHeadingH3>
-        {!displayPlaceholderScreen && (
-          <img src={LiveIcon} style={{height: '25px'}}></img>
-        )}
       </Box>
       {displayPlaceholderScreen ? (
         <ParticipantManagerPlaceholder />
