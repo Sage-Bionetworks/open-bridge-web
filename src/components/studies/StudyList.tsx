@@ -1,4 +1,10 @@
 import {useStudies, useUpdateStudyInList} from '@components/studies/studyHooks'
+import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
+import {MTBHeading} from '@components/widgets/Headings'
+import Loader from '@components/widgets/Loader'
+import {useUserSessionDataState} from '@helpers/AuthContext'
+import {useStudyInfoDataDispatch} from '@helpers/StudyInfoContext'
+import Utility from '@helpers/utility'
 import {
   Box,
   Button,
@@ -9,24 +15,13 @@ import {
   MenuItem,
 } from '@material-ui/core'
 import Link from '@material-ui/core/Link'
+import StudyService from '@services/study.service'
+import {latoFont} from '@style/theme'
+import constants from '@typedefs/constants'
+import {AdminRole, DisplayStudyPhase, Study, StudyPhase} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {Redirect, RouteComponentProps} from 'react-router-dom'
-import {useUserSessionDataState} from '../../helpers/AuthContext'
-import {useStudyInfoDataDispatch} from '../../helpers/StudyInfoContext'
-import Utility from '../../helpers/utility'
-import StudyService from '../../services/study.service'
-import {latoFont} from '../../style/theme'
-import constants from '../../types/constants'
-import {
-  AdminRole,
-  DisplayStudyPhase,
-  Study,
-  StudyPhase,
-} from '../../types/types'
-import ConfirmationDialog from '../widgets/ConfirmationDialog'
-import {MTBHeading} from '../widgets/Headings'
-import Loader from '../widgets/Loader'
 import StudyCard from './StudyCard'
 
 type StudyListOwnProps = {}

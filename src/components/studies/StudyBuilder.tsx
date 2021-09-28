@@ -1,5 +1,6 @@
 import {useSchedule} from '@components/studies/scheduleHooks'
 import {useStudy} from '@components/studies/studyHooks'
+import StudyIdWithPhaseImage from '@components/widgets/StudyIdWithPhaseImage'
 import {Box, Container} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import {Alert} from '@material-ui/lab'
@@ -170,14 +171,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
         if (!StudyService.isStudyInDesign(study)) {
           setDisplayEditabilityBanner(true)
         }
-
-        /*  const banner = getBannerType(study.phase, !!error)
-        const bannerType = BannerInfo.bannerMap.get(banner)
-        setBannerType(bannerType)
-
-        if (banner !== 'success' && banner !== 'error' /*&& !cancelBanner*/ //) {
-        //setDisplayBanner(true)
-        // }
       }
     }, [study?.phase, study, section, cancelBanner, error])
 
@@ -305,12 +298,13 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                 ? editabilityBannerType?.displayText[1]!
                 : editabilityBannerType?.displayText[0]!
             }></AlertBanner>
-          <Box width={open ? 210 : 56} flexShrink={0}></Box>
+          <Box width={open ? 210 : 56} flexShrink={0} pl={5} pt={2}>
+            <StudyIdWithPhaseImage study={study} excludedPhase="DRAFT" />
+          </Box>
           <Box className={getClasses()} pt={8} pl={2}>
             <MTBHeadingH1>{subtitles[section as string]}</MTBHeadingH1>
           </Box>
         </Box>
-
         <Container
           maxWidth="xl"
           className={classes.studyComponentContainer}
