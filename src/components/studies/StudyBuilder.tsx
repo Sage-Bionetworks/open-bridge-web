@@ -174,12 +174,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
       }
     }, [study?.phase, study, section, cancelBanner, error])
 
-    if (studyError || scheduleError) {
-      if (studyError || (scheduleError && scheduleError.statusCode !== 404)) {
-        handleError(studyError)
-      }
-    }
-
     const getFeedbackBannerInfo = (hasError: boolean) => {
       const bannerType = hasError ? 'error' : 'success'
       return BannerInfo.bannerMap.get(bannerType)

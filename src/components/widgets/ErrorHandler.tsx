@@ -1,7 +1,6 @@
 import {Box, Container} from '@material-ui/core'
 import Alert from '@material-ui/lab/Alert/Alert'
 import * as React from 'react'
-import {NavLink} from 'react-router-dom'
 import Utility from '../../helpers/utility'
 import CONSTANTS from '../../types/constants'
 import AccountLogin from '../account/AccountLogin'
@@ -39,9 +38,8 @@ export function ErrorFallback(props: any) {
             You do not have the permission to access this feature. Please
             contact your study administrator
           </Alert>
-          <NavLink to={'/Studies'} key="home">
-            Back to study listings
-          </NavLink>
+
+          <a href="/studies"> Back to study listings</a>
         </Box>
       )}
     </Container>
