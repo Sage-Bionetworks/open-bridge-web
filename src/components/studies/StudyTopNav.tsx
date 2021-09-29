@@ -157,7 +157,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
       path: constants.restrictedPaths.PARTICIPANT_MANAGER,
       name: 'PARTICIPANT MANAGER',
       status: constants.constants.IS_TEST_MODE
-        ? ['in_flight', 'legacy', 'recruitment', 'design']
+        ? ['in_flight', 'legacy', 'recruitment', 'design', 'completed']
         : ['in_flight', 'completed', 'withdrawn', 'recruitment'],
     },
     {

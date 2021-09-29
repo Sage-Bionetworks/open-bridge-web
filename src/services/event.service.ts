@@ -57,7 +57,7 @@ async function getRelevantEventsForParticipants(
         return eventIdsForSchedule.includes(event.eventId)
       })
       let joinedDate = item.apiCall.data.items.find(
-        event => event.eventId === `custom:${JOINED_EVENT_ID}` //TODO: this will not be custom
+        event => event.eventId === JOINED_EVENT_ID
       )
 
       // let smsDate = item.apiCall.data.items.find(
@@ -66,7 +66,7 @@ async function getRelevantEventsForParticipants(
       return {
         ...acc,
         [item.participantId]: {
-          timeline_retrieved: joinedDate,
+          timeline_retrieved: joinedDate?.timestamp,
           customEvents: relevantEvents,
         },
       }
