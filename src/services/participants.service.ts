@@ -518,12 +518,16 @@ async function addParticipant(
   options: EditableParticipantData,
   isTestUser?: boolean
 ): Promise<string> {
-  const endpoint = constants.endpoints.participant.replace(
+  const participantEndpoint = constants.endpoints.participant.replace(
     ':id',
     studyIdentifier
   )
+  const enrollmentEndpoint = constants.endpoints.enrollments.replace(
+    ':studyId',
+    studyIdentifier
+  )
 
-  const data: StringDictionary<any> = {
+  let data: StringDictionary<any> = {
     appId: Utility.getAppId(),
   }
 
@@ -533,23 +537,47 @@ async function addParticipant(
   if (isTestUser) {
     data.dataGroups = ['test_user']
   }
+  let backEndFormatExternalId = undefined
   if (options.externalId) {
-    const backEndFormatExternalId = makeBackendExternalId(
+    backEndFormatExternalId = makeBackendExternalId(
       studyIdentifier,
       options.externalId
     )
+  }
+  if (backEndFormatExternalId) {
     data.externalIds = {[studyIdentifier]: backEndFormatExternalId}
     data.password = backEndFormatExternalId
   }
+  let userId = undefined
 
-  const result = await Utility.callEndpoint<{identifier: string}>(
-    endpoint,
-    'POST',
-    data,
-    token
-  )
+  try {
+    const result = await Utility.callEndpoint<{identifier: string}>(
+      participantEndpoint,
+      'POST',
+      data,
+      token
+    )
+    userId = result.data.identifier
+  } catch (error) {
+    if (error.statusCode !== 409 || !error.entity?.userId) {
+      throw error
+    }
+    userId = error.entity.userId
+    data = {
+      userId,
+    }
+    if (backEndFormatExternalId) {
+      data.externalId = backEndFormatExternalId
+    }
 
-  const userId = result.data.identifier
+    const result = await Utility.callEndpoint<{identifier: string}>(
+      enrollmentEndpoint,
+      'POST',
+      data,
+      token
+    )
+  }
+
   //update custom evnts date
   if (options.events) {
     const endpoint = constants.endpoints.events
