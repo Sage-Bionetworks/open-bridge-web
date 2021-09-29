@@ -63,15 +63,21 @@ function formatIds(
   isEnrolledById: boolean,
   participants: ParticipantDisplayType[]
 ): string[] {
-  return participants.map((participant: ParticipantDisplayType) =>
-    !isEnrolledById
-      ? participant.phone?.nationalFormat || participant.externalId
+  return participants.map((participant: ParticipantDisplayType) => {
+    if (isEnrolledById) {
+      return participant.externalId
         ? formatExternalId(studyId, participant.externalId)
         : 'unknown'
-      : participant.externalId
-      ? formatExternalId(studyId, participant.externalId)
-      : 'unknown'
-  )
+    } else {
+      if (participant.phone?.nationalFormat) {
+        return participant.phone?.nationalFormat
+      } else {
+        return participant.externalId
+          ? formatExternalId(studyId, participant.externalId)
+          : 'unknown'
+      }
+    }
+  })
 }
 
 const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
@@ -92,27 +98,30 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
 
   const setData = async () => {
     let finalResult: EnrolledAccountRecord[] = []
-    const resultEnrolled = await ParticipantService.getAllParticipantsInEnrollmentType(
-      study.identifier,
-      token,
-      'enrolled',
-      false
-    )
+    const resultEnrolled =
+      await ParticipantService.getAllParticipantsInEnrollmentType(
+        study.identifier,
+        token,
+        'enrolled',
+        false
+      )
     const enrolledNonTestParticipants = resultEnrolled.items
     finalResult = enrolledNonTestParticipants
     if (tab === 'TEST') {
-      const resultAll = await ParticipantService.getAllParticipantsInEnrollmentType(
-        study.identifier,
-        token,
-        'all',
-        true
-      )
-      const resultWithdrawn = await ParticipantService.getAllParticipantsInEnrollmentType(
-        study.identifier,
-        token,
-        'withdrawn',
-        false
-      )
+      const resultAll =
+        await ParticipantService.getAllParticipantsInEnrollmentType(
+          study.identifier,
+          token,
+          'all',
+          true
+        )
+      const resultWithdrawn =
+        await ParticipantService.getAllParticipantsInEnrollmentType(
+          study.identifier,
+          token,
+          'withdrawn',
+          false
+        )
       const allParticipants = resultAll.items
       const withdrawnNonTestParticipants = resultWithdrawn.items
       let testParticipants = allParticipants.filter(
@@ -224,7 +233,7 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
               )}
               elevation={0}>
               {selectedIds.map((id, index) => (
-                <span key={'selected-id' + index}>{id}</span>
+                <span key={'selected-id' + index}>1{id}</span>
               ))}
             </Paper>
             {isRemove ? (

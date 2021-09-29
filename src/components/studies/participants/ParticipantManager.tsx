@@ -597,9 +597,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       </Box>
 
       {displayPlaceholderScreen && <ParticipantManagerPlaceholder />}
-      {/*['COMPLETED', 'WITHDRAWN'].includes(
+      {['COMPLETED', 'WITHDRAWN'].includes(
         StudyService.getDisplayStatusForStudyPhase(study.phase)
-      ) && <div>TODO: Readonly Participant Grid</div>*/}
+      ) && (
+        <div style={{textAlign: 'center'}}>TODO: Readonly Participant Grid</div>
+      )}
       {(StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE' ||
         StudyService.getDisplayStatusForStudyPhase(study.phase) ===
           'COMPLETED') && (
