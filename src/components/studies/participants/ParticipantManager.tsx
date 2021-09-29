@@ -597,10 +597,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       </Box>
 
       {displayPlaceholderScreen && <ParticipantManagerPlaceholder />}
-      {['COMPLETED', 'WITHDRAWN'].includes(
+      {/*['COMPLETED', 'WITHDRAWN'].includes(
         StudyService.getDisplayStatusForStudyPhase(study.phase)
-      ) && <div>TODO: Readonly Participant Grid</div>}
-      {StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE' && (
+      ) && <div>TODO: Readonly Participant Grid</div>*/}
+      {(StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE' ||
+        StudyService.getDisplayStatusForStudyPhase(study.phase) ===
+          'COMPLETED') && (
         <>
           {/* {tab === 'ACTIVE' && !isUserSearchingForParticipant && (
             <HelpBoxSC
@@ -777,28 +779,26 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           </>
                         </ParticipantDownloadTrigger>
 
-                        {tab === 'TEST' && (
-                          <Button
-                            aria-label="delete"
-                            onClick={() => {
-                              setParticipantsWithError([])
-                              setDialogState({
-                                dialogOpenRemove: true,
-                                dialogOpenSMS: false,
-                              })
-                            }}
-                            className={classes.deleteButtonParticipant}
-                            disabled={selectedParticipantIds[tab].length === 0}>
-                            <DeleteIcon
-                              className={clsx(
-                                selectedParticipantIds[tab].length === 0 &&
-                                  classes.disabledImage,
-                                classes.topRowImage,
-                                classes.deleteIcon
-                              )}></DeleteIcon>
-                            Remove from Study
-                          </Button>
-                        )}
+                        <Button
+                          aria-label="delete"
+                          onClick={() => {
+                            setParticipantsWithError([])
+                            setDialogState({
+                              dialogOpenRemove: true,
+                              dialogOpenSMS: false,
+                            })
+                          }}
+                          className={classes.deleteButtonParticipant}
+                          disabled={selectedParticipantIds[tab].length === 0}>
+                          <DeleteIcon
+                            className={clsx(
+                              selectedParticipantIds[tab].length === 0 &&
+                                classes.disabledImage,
+                              classes.topRowImage,
+                              classes.deleteIcon
+                            )}></DeleteIcon>
+                          Remove from Study
+                        </Button>
                       </Box>
                       <ParticipantSearch
                         isEnrolledById={Utility.isSignInById(study.signInTypes)}

@@ -368,6 +368,7 @@ function getColumns(
     {
       field: 'clientTimeZone',
       headerName: 'Time Zone',
+      align: 'center',
       valueGetter: params => params.value || '-',
       flex: 1,
     },
