@@ -217,7 +217,9 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
       <div className={classes.root}>
         {isReadOnly ? (
           <MTBHeadingH3 style={{marginBottom: '24px'}}>
-            You’ve added the following Optional Monitoring to your study:
+            {Object.keys(features).length > 0
+              ? 'You’ve added the following Optional Monitoring to your study:'
+              : 'No Optional Monitoring was added to your study.'}
           </MTBHeadingH3>
         ) : (
           <Box>
