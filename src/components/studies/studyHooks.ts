@@ -114,7 +114,8 @@ export const useUpdateStudyInList = () => {
             ...study,
             identifier: '...',
             modifiedOn: new Date(),
-            name: 'Copying ' + study.name + " and it's schedule...",
+            phase: 'design',
+            name: 'Copying ' + study.name + '...',
           })
 
           break
