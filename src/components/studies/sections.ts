@@ -116,10 +116,13 @@ export const getStudyBuilderSections = (isStudyInDraft: boolean) => {
 export const isSectionEditableWhenLive = (
   sectionPath: StudySection
 ): boolean | undefined => {
-  const section = SECTIONS.find(section => section.path === sectionPath)
-  if (!section) {
+  const sections = SECTIONS.filter(section => section.path === sectionPath)
+  if (!sections.length) {
     throw Error(`the ${sectionPath} section is not exist`)
   } else {
-    return section.isEditableLive
+    const hasEditableSections = sections.find(
+      section => section.isEditableLive === true
+    )
+    return !!hasEditableSections
   }
 }

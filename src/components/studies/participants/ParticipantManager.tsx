@@ -39,6 +39,7 @@ import {makeStyles} from '@material-ui/core/styles'
 import EventService from '@services/event.service'
 import ParticipantService from '@services/participants.service'
 import ScheduleService from '@services/schedule.service'
+import StudyService from '@services/study.service'
 import {latoFont, poppinsFont, theme} from '@style/theme'
 import constants from '@typedefs/constants'
 import {
@@ -594,9 +595,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           <NonDraftHeaderFunctionComponent study={study} />
         </MTBHeadingH3>
       </Box>
-      {displayPlaceholderScreen ? (
-        <ParticipantManagerPlaceholder />
-      ) : (
+
+      {displayPlaceholderScreen && <ParticipantManagerPlaceholder />}
+      {['COMPLETED', 'WITHDRAWN'].includes(
+        StudyService.getDisplayStatusForStudyPhase(study.phase)
+      ) && <div>TODO: Readonly Participant Grid</div>}
+      {StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE' && (
         <>
           {/* {tab === 'ACTIVE' && !isUserSearchingForParticipant && (
             <HelpBoxSC
