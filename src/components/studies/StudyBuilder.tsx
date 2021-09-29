@@ -38,7 +38,7 @@ const subtitles: StringDictionary<string> = {
   'session-creator': 'Create Sessions',
   customize: 'Customize your App',
   'enrollment-type-selector': 'Participant Study Enrollment',
-  'passive-features': 'App Background Recorders ',
+  'passive-features': 'Optional Background Monitoring',
   launch: 'Launch study requirements',
 }
 
