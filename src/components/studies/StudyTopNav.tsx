@@ -151,14 +151,14 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
     {
       path: `${constants.restrictedPaths.STUDY_BUILDER}`,
       name: 'STUDY BUILDER',
-      status: ['design', 'in_flight', 'recruitment'],
+      status: ['design', 'in_flight', 'recruitment', 'completed', 'withdrawn'],
     },
     {
       path: constants.restrictedPaths.PARTICIPANT_MANAGER,
       name: 'PARTICIPANT MANAGER',
       status: constants.constants.IS_TEST_MODE
         ? ['in_flight', 'legacy', 'recruitment', 'design']
-        : ['in_flight', 'recruitment'],
+        : ['in_flight', 'completed', 'withdrawn', 'recruitment'],
     },
     {
       path: constants.restrictedPaths.ADHERENCE_DATA,
@@ -168,7 +168,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
     {
       path: constants.restrictedPaths.STUDY_DATA,
       name: 'STUDY DATA',
-      status: ['in_flight', 'legacy'],
+      status: ['in_flight', 'legacy', 'completed', 'withdrawn', 'recruitment'],
     },
   ]
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)

@@ -1,4 +1,5 @@
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
+import SaveButton from '@components/widgets/SaveButton'
 import {Box, Button, Paper} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import {Schedule} from '@typedefs/scheduling'
@@ -279,6 +280,16 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
                   <LockIcon style={{marginRight: '4px'}} />
                   Submit and lock the study
                 </Button>
+              )}
+
+              {activeStep == 1 && isStudyLive && (
+                <SaveButton
+                  variant="contained"
+                  color="primary"
+                  disabled={!isNextEnabled}
+                  onClick={() => onSave()}>
+                  Save to App
+                </SaveButton>
               )}
             </Box>
           )}
