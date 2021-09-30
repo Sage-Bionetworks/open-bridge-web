@@ -3,22 +3,22 @@ import AssessmentDetail from './components/assessments/AssessmentDetail'
 import AssessmentLibrary from './components/assessments/AssessmentLibrary'
 import SessionsLayout from './components/layouts/sessions'
 import DevelopmentTeam from './components/static/DevelopmentTeam'
-import HowItWorks from './components/static/HowItWorks'
-import Plans from './components/static/Plans'
 import DownloadAppLandingPage from './components/static/DownloadAppLandingPage'
+import Plans from './components/static/Plans'
 import SignInPage from './SignInPage'
 
 export default [
   {
-    path: '/app-store-download-page',
-    name: 'APP STORE',
+    path: '/app-store-download',
+    name: '',
     Component: DownloadAppLandingPage,
     exact: true,
+    noToolbar: true,
   },
   {
     path: '/how-it-works',
     name: 'HOW IT WORKS',
-    Component: HowItWorks,
+    Component: DownloadAppLandingPage,
     exact: true,
   },
   {

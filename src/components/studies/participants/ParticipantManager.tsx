@@ -2,6 +2,7 @@ import {ReactComponent as CollapseIcon} from '@assets/collapse.svg'
 import {ReactComponent as AddParticipantsIcon} from '@assets/participants/add_participants.svg'
 import {ReactComponent as AddTestParticipantsIcon} from '@assets/participants/add_test_participants.svg'
 import BatchEditIcon from '@assets/participants/batch_edit_icon.svg'
+import DownloadAppIcon from '@assets/participants/download_app_icon.svg'
 import DownloadIcon from '@assets/participants/download_icon.svg'
 import SMSPhoneImg from '@assets/participants/joined_phone_icon.svg'
 import ParticipantListFocusIcon from '@assets/participants/participant_list_focus_icon.svg'
@@ -68,6 +69,14 @@ import WithdrawnTabNoParticipantsPage from './WithdrawnTabNoParticipantsPage'
 
 const useStyles = makeStyles(theme => ({
   root: {},
+  downloadPageLinkButton: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    display: 'flex',
+    fontFamily: latoFont,
+    fontSize: '14px',
+  },
 
   tab: {
     marginRight: theme.spacing(2),
@@ -89,6 +98,12 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+
+    '&  button': {
+      display: 'flex',
+      fontFamily: latoFont,
+      fontSize: '14px',
+    },
   },
 
   tabPanel: {
@@ -101,13 +116,7 @@ const useStyles = makeStyles(theme => ({
     marginRight: '24px',
     opacity: 0.75,
   },
-  topButtons: {
-    marginRight: theme.spacing(2),
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '36px',
-  },
+
   topRow: {
     width: '100%',
     display: 'flex',
@@ -115,29 +124,13 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     fontSize: '16px',
-    //paddingLeft: theme.spacing(5),
   },
   horizontalGroup: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
   },
-  topButtonContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    marginLeft: theme.spacing(5),
-  },
-  buttonImage: {
-    marginRight: theme.spacing(0.5),
-  },
 
-  inputRow: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   disabledImage: {
     opacity: 0.5,
   },
@@ -153,27 +146,6 @@ const useStyles = makeStyles(theme => ({
     height: theme.spacing(6),
     backgroundColor: '#AEDCC9',
     paddingTop: theme.spacing(1.5),
-  },
-  deleteButtonParticipant: {
-    fontFamily: latoFont,
-    marginLeft: theme.spacing(3),
-    fontSize: '14px',
-  },
-  sendSMSButton: {
-    marginRight: theme.spacing(1),
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    fontFamily: latoFont,
-    fontSize: '14px',
-  },
-  batchEditButton: {
-    marginRight: theme.spacing(2),
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    fontFamily: latoFont,
-    fontSize: '14px',
   },
   selectedTab: {
     zIndex: 100,
@@ -268,7 +240,19 @@ const AddTestParticipantsIconSC: FunctionComponent<{title: string}> = ({
     </div>
   )
 }
-
+const GoToDownloadPageLinkSC: FunctionComponent = () => {
+  const classes = useStyles()
+  return (
+    <Button
+      href="/app-store-download"
+      target="_blank"
+      aria-label="downloadApp"
+      className={classes.downloadPageLinkButton}>
+      <img src={DownloadAppIcon}></img>
+      App Download Link
+    </Button>
+  )
+}
 const HelpBoxSC: FunctionComponent<{
   numRows: number | undefined
   status: RequestStatus
@@ -619,6 +603,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               variant="standard"
               onChange={handleTabChange}
               TabIndicatorProps={{hidden: true}}>
+              <GoToDownloadPageLinkSC />
               {TAB_DEFs.map((tabDef, index) => (
                 <Tab
                   key={`tab_${tabDef.label}`}
@@ -719,7 +704,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                                 dialogOpenSMS: true,
                               })
                             }}
-                            className={classes.sendSMSButton}
+                            style={{marginRight: theme.spacing(1)}}
                             disabled={selectedParticipantIds[tab].length === 0}>
                             <img
                               src={SMSPhoneImg}
@@ -737,7 +722,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                             onClick={() => {
                               setIsBatchEditOpen(true)
                             }}
-                            className={classes.batchEditButton}
+                            style={{marginRight: theme.spacing(2)}}
                             disabled={selectedParticipantIds[tab].length <= 1}>
                             <img
                               className={clsx(
@@ -790,7 +775,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                               dialogOpenSMS: false,
                             })
                           }}
-                          className={classes.deleteButtonParticipant}
+                          style={{marginLeft: theme.spacing(3)}}
                           disabled={selectedParticipantIds[tab].length === 0}>
                           <DeleteIcon
                             className={clsx(
