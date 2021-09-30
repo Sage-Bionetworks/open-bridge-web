@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export const AccessRestriction = ['NO_ACCESS', 'VIEWER', 'EDITOR']
+export const AccessRestriction = ['NO_ACCESS', 'VIEWER', 'EDITOR'] as const
 
 type AccessGridProps = {
   access: Access
@@ -126,67 +126,68 @@ type AccessGridRadioComponentsProps = {
   isAllowedAccess: boolean
   isEdit?: boolean
 }
-const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponentsProps> = ({
-  restriction,
-  role_key,
-  isCoAdmin,
-  currentUserIsAdmin,
-  onUpdate,
-  isEdit,
-  isAllowedAccess,
-}) => {
-  const classes = useStyles()
+const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponentsProps> =
+  ({
+    restriction,
+    role_key,
+    isCoAdmin,
+    currentUserIsAdmin,
+    onUpdate,
+    isEdit,
+    isAllowedAccess,
+  }) => {
+    const classes = useStyles()
 
-  if (!isEdit) {
-    return isAllowedAccess ? <div className={classes.dot} /> : <>&nbsp;</>
-  }
+    if (!isEdit) {
+      return isAllowedAccess ? <div className={classes.dot} /> : <>&nbsp;</>
+    }
 
-  const key = Object.keys(role_key)[0] as keyof Access
-  let checkboxChecked = false
-  if (!currentUserIsAdmin) {
-    if (!isAllowedAccess) {
-      return null
-    }
-    return (
-      <Box
-        mt={-2.5}
-        height="40px"
-        display="flex"
-        justifyContent="center"
-        alignItems="center">
-        <CheckIcon style={{color: 'black'}} />
-      </Box>
-    )
-  }
-  if (key === 'ACCESS_SETTINGS') {
-    checkboxChecked = true
-    if (restriction === 'NO_ACCESS') {
-      return null
-    }
-    if (restriction === 'VIEWER' && isCoAdmin) {
-      return null
-    }
-    if (restriction === 'EDITOR' && !isCoAdmin) {
+    const key = Object.keys(role_key)[0] as keyof Access
+    let checkboxChecked = false
+    if (!currentUserIsAdmin) {
+      if (!isAllowedAccess) {
+        return null
+      }
       return (
         <Box
-          fontSize="10px"
-          fontStyle="italic"
-          fontFamily={latoFont}
-          fontWeight="normal">
-          Only available to Administrators
+          mt={-2.5}
+          height="40px"
+          display="flex"
+          justifyContent="center"
+          alignItems="center">
+          <CheckIcon style={{color: 'black'}} />
         </Box>
       )
     }
+    if (key === 'ACCESS_SETTINGS') {
+      checkboxChecked = true
+      if (restriction === 'NO_ACCESS') {
+        return null
+      }
+      if (restriction === 'VIEWER' && isCoAdmin) {
+        return null
+      }
+      if (restriction === 'EDITOR' && !isCoAdmin) {
+        return (
+          <Box
+            fontSize="10px"
+            fontStyle="italic"
+            fontFamily={latoFont}
+            fontWeight="normal">
+            Only available to Administrators
+          </Box>
+        )
+      }
+    }
+    return (
+      <Radio
+        checked={checkboxChecked || isAllowedAccess}
+        disabled={restriction === 'VIEWER'}
+        value={restriction}
+        onChange={e => onUpdate(e)}
+        radioGroup={'group_' + Object.keys(role_key)}></Radio>
+    )
   }
-  return (
-    <Radio
-      checked={checkboxChecked || isAllowedAccess}
-      disabled={restriction === 'VIEWER'}
-      value={restriction}
-      onChange={e => onUpdate(e)}
-      radioGroup={'group_' + Object.keys(role_key)}></Radio>
-  )
-}
 
 const AccessGrid: FunctionComponent<AccessGridProps> = ({
   access,
@@ -205,17 +206,20 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
     return access[key] === restriction
   }
 
-  const updateAccess = (restriction: string, accessObject: AccessLabel) => {
+  const updateAccess = (
+    restriction: typeof AccessRestriction[number] | '',
+    accessObject: AccessLabel
+  ) => {
     if (!onUpdate) {
       return
     }
     const accessKey = Object.keys(accessObject)[0]
-    /* ALINA: this is not intuitive for me. If they are coadmin and they disable some settings -- all get disabled */
-    /*  if (restriction !== 'EDITOR' && access.ACCESS_SETTINGS === 'EDITOR') {
-      onUpdate({...access, [accessKey]: restriction, ACCESS_SETTINGS: 'VIEWER'})
-    } else {*/
-    onUpdate({...access, [accessKey]: restriction})
-    //  }
+
+    const updatedAccess = {...access, [accessKey]: restriction}
+    if (restriction !== 'EDITOR') {
+      updatedAccess.ACCESS_SETTINGS = 'VIEWER'
+    }
+    onUpdate(updatedAccess)
   }
   const updateCoadminAccess = (hasAccess?: boolean) => {
     if (!onUpdate) {
@@ -230,10 +234,10 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
 
   const hasCoadminAccess = () => {
     const accessKeys = Object.keys(access)
-
     const nonAdmin = accessKeys.find(
       key => access[key as keyof Access] !== 'EDITOR'
     )
+    console.log('nonadmin' + nonAdmin)
     return nonAdmin === undefined
   }
 
@@ -245,7 +249,9 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
             control={
               <Switch
                 checked={hasCoadminAccess()}
-                onChange={e => updateCoadminAccess(e.target.checked)}
+                onChange={e => {
+                  updateCoadminAccess(e.target.checked)
+                }}
                 name="isCoadmin"
                 color="primary"
               />
@@ -312,7 +318,10 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
                     isCoAdmin={hasCoadminAccess()}
                     currentUserIsAdmin={currentUserIsAdmin}
                     onUpdate={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      updateAccess(e.target.value, role_key)
+                      let restriction = e.target.value as
+                        | typeof AccessRestriction[number]
+                        | ''
+                      updateAccess(restriction, role_key)
                     }}
                     isAllowedAccess={isAllowedAccess(restriction, role_key)}
                   />
