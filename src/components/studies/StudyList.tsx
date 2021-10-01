@@ -524,17 +524,20 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
             }}>
             <div>
               <p>
-                By closing this study, you are stopping enrollment of new
-                participants and data collection from existing participants will
-                stop.
+                By withdrawing this study, you are closing it early and can no
+                longer enroll future participants. Data collection from existing
+                participants will stop.
+              </p>
+
+              <p>
+                {' '}
+                Are you sure you would like to stop the following study early:
+              </p>
+              <p>
+                <strong>{menuAnchor?.study.name}</strong>
               </p>
               <p>
                 <strong>This action cannot be undone.</strong>
-              </p>
-
-              <p> Close the following study?</p>
-              <p>
-                <strong>{menuAnchor?.study.name}</strong>
               </p>
             </div>
           </ConfirmationDialog>
