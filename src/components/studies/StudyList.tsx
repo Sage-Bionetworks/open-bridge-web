@@ -1,5 +1,7 @@
 import {useStudies, useUpdateStudyInList} from '@components/studies/studyHooks'
-import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
+import ConfirmationDialog, {
+  ConfirmationDialogType,
+} from '@components/widgets/ConfirmationDialog'
 import {MTBHeading} from '@components/widgets/Headings'
 import Loader from '@components/widgets/Loader'
 import {useUserSessionDataState} from '@helpers/AuthContext'
@@ -21,7 +23,7 @@ import constants from '@typedefs/constants'
 import {AdminRole, DisplayStudyPhase, Study, StudyPhase} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import {Redirect, RouteComponentProps} from 'react-router-dom'
+import {Redirect} from 'react-router-dom'
 import StudyCard from './StudyCard'
 
 type StudyListOwnProps = {}
@@ -257,10 +259,12 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     setMenuAnchor(null)
   }
   const closeConfirmationDialog = () => {
-    setIsConfirmDeleteOpen(false)
+    setIsConfirmDialogOpen(undefined)
     setMenuAnchor(null)
   }
-  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState<
+    ConfirmationDialogType | undefined
+  >(undefined)
 
   const [statusFilters, setStatusFilters] = React.useState<DisplayStudyPhase[]>(
     sections.map(section => section.sectionStatus)
@@ -491,17 +495,17 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
               </MenuItem>
 
               {(getPhase() === 'DRAFT' || getPhase() === 'WITHDRAWN') && (
-                <MenuItem onClick={() => setIsConfirmDeleteOpen(true)}>
+                <MenuItem onClick={() => setIsConfirmDialogOpen('DELETE')}>
                   Delete
                 </MenuItem>
               )}
 
               {getPhase() === 'LIVE' && [
                 <MenuItem
-                  onClick={() => onAction(menuAnchor!.study, 'WITHDRAW')}>
+                  onClick={() => setIsConfirmDialogOpen('WITHDRAW_STUDY')}>
                   Withdraw Study
                 </MenuItem>,
-                <MenuItem onClick={() => onAction(menuAnchor!.study, 'CLOSE')}>
+                <MenuItem onClick={() => setIsConfirmDialogOpen('CLOSE_STUDY')}>
                   Close Study
                 </MenuItem>,
               ]}
@@ -509,7 +513,61 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
           )}
 
           <ConfirmationDialog
-            isOpen={isConfirmDeleteOpen}
+            isOpen={isConfirmDialogOpen === 'WITHDRAW_STUDY'}
+            title={'Withdraw a Study'}
+            actionText="Yes, withdraw study"
+            type={'WITHDRAW_STUDY'}
+            onCancel={closeConfirmationDialog}
+            onConfirm={() => {
+              closeConfirmationDialog()
+              onAction(menuAnchor!.study, 'WITHDRAW')
+            }}>
+            <div>
+              <p>
+                By closing this study, you are stopping enrollment of new
+                participants and data collection from existing participants will
+                stop.
+              </p>
+              <p>
+                <strong>This action cannot be undone.</strong>
+              </p>
+
+              <p> Close the following study?</p>
+              <p>
+                <strong>{menuAnchor?.study.name}</strong>
+              </p>
+            </div>
+          </ConfirmationDialog>
+
+          <ConfirmationDialog
+            isOpen={isConfirmDialogOpen === 'CLOSE_STUDY'}
+            title={'Close Study'}
+            type={'CLOSE_STUDY'}
+            actionText="Yes, this study is complete"
+            onCancel={closeConfirmationDialog}
+            onConfirm={() => {
+              closeConfirmationDialog()
+              onAction(menuAnchor!.study, 'CLOSE')
+            }}>
+            <div>
+              <p>
+                By closing this study, you are stopping enrollment of new
+                participants and data collection from existing participants will
+                stop.
+              </p>
+              <p>
+                <strong>This action cannot be undone.</strong>
+              </p>
+
+              <p> Close the following study?</p>
+              <p>
+                <strong>{menuAnchor?.study.name}</strong>
+              </p>
+            </div>
+          </ConfirmationDialog>
+
+          <ConfirmationDialog
+            isOpen={isConfirmDialogOpen === 'DELETE'}
             title={'Delete Study'}
             type={'DELETE'}
             onCancel={closeConfirmationDialog}
