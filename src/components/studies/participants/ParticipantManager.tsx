@@ -10,6 +10,8 @@ import ParticipantListUnfocusIcon from '@assets/participants/participant_list_un
 import {ReactComponent as PinkSendSMSIcon} from '@assets/participants/send_sms_link_pink_icon.svg'
 import TestAccountFocusIcon from '@assets/participants/test_account_focus_icon.svg'
 import TestAccountUnfocusIcon from '@assets/participants/test_account_unfocus_icon.svg'
+import {ReactComponent as UnderConstructionCone} from '@assets/participants/under_construction_cone.svg'
+import {ReactComponent as UnderConstructionGirl} from '@assets/participants/under_construction_girl.svg'
 import WithdrawnParticipantsFocusIcon from '@assets/participants/withdrawn_participants_focus_icon.svg'
 import WithdrawnParticipantsUnfocusIcon from '@assets/participants/withdrawn_participants_unfocus_icon.svg'
 import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
@@ -29,6 +31,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  Container,
   Dialog,
   DialogActions,
   DialogContent,
@@ -113,7 +116,6 @@ const useStyles = makeStyles(theme => ({
   studyId: {
     color: '#393434',
     marginRight: '24px',
-    opacity: 0.75,
   },
 
   topRow: {
@@ -229,6 +231,19 @@ const getCurrentPageFromPageNavigationArrowPressed = (
 }
 
 /***  subcomponents  */
+const UnderConstructionSC: FunctionComponent = () => (
+  <Container maxWidth="md" fixed style={{minHeight: '90vh'}}>
+    <Box textAlign="center" my={7}>
+      <UnderConstructionCone />
+      <Box lineHeight="21px" py={5}>
+        <p>Sorry this page is under construction.</p>
+        <p> We are working on making it available soon.</p>
+      </Box>
+      <UnderConstructionGirl />
+    </Box>
+  </Container>
+)
+
 const AddTestParticipantsIconSC: FunctionComponent<{title: string}> = ({
   title,
 }) => {
@@ -582,12 +597,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       {displayPlaceholderScreen && <ParticipantManagerPlaceholder />}
       {['COMPLETED', 'WITHDRAWN'].includes(
         StudyService.getDisplayStatusForStudyPhase(study.phase)
-      ) && (
-        <div style={{textAlign: 'center'}}>TODO: Readonly Participant Grid</div>
-      )}
-      {(StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE' ||
-        StudyService.getDisplayStatusForStudyPhase(study.phase) ===
-          'COMPLETED') && (
+      ) && <UnderConstructionSC />}
+      {StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE' && (
         <>
           {/* {tab === 'ACTIVE' && !isUserSearchingForParticipant && (
             <HelpBoxSC

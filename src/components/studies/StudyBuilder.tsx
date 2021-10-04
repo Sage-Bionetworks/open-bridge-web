@@ -272,26 +272,32 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
             isSelfClosing={feedbackBannerType?.type === 'success'}
             displayBottomOfPage={false}
             displayText={feedbackBannerType?.displayText[0]!}></AlertBanner>
-          <AlertBanner
-            backgroundColor={editabilityBannerType?.bgColor!}
-            textColor={editabilityBannerType?.textColor!}
-            onClose={() => {
-              // setCancelBanner(true)
-              setDisplayEditabilityBanner(false)
-            }}
-            isVisible={displayEditabilityBanner}
-            icon={
-              isSectionEditableWhenLive(section)
-                ? editabilityBannerType?.icon[1]!
-                : editabilityBannerType?.icon[0]!
-            }
-            isSelfClosing={false}
-            displayBottomOfPage={true}
-            displayText={
-              isSectionEditableWhenLive(section)
-                ? editabilityBannerType?.displayText[1]!
-                : editabilityBannerType?.displayText[0]!
-            }></AlertBanner>
+          {study && (
+            <AlertBanner
+              backgroundColor={editabilityBannerType?.bgColor!}
+              textColor={editabilityBannerType?.textColor!}
+              onClose={() => {
+                // setCancelBanner(true)
+                setDisplayEditabilityBanner(false)
+              }}
+              isVisible={displayEditabilityBanner}
+              icon={
+                isSectionEditableWhenLive(section) &&
+                StudyService.getDisplayStatusForStudyPhase(study.phase) ===
+                  'LIVE'
+                  ? editabilityBannerType?.icon[1]!
+                  : editabilityBannerType?.icon[0]!
+              }
+              isSelfClosing={false}
+              displayBottomOfPage={true}
+              displayText={
+                isSectionEditableWhenLive(section) &&
+                StudyService.getDisplayStatusForStudyPhase(study.phase) ===
+                  'LIVE'
+                  ? editabilityBannerType?.displayText[1]!
+                  : editabilityBannerType?.displayText[0]!
+              }></AlertBanner>
+          )}
           <Box width={open ? 210 : 56} flexShrink={0} pl={5} pt={2}>
             <StudyIdWithPhaseImage study={study} excludedPhase="DRAFT" />
           </Box>
