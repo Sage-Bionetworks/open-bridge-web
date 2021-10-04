@@ -559,6 +559,7 @@ async function addParticipant(
     )
     userId = result.data.identifier
   } catch (error) {
+    //user already exists
     if (error.statusCode !== 409 || !error.entity?.userId) {
       throw error
     }

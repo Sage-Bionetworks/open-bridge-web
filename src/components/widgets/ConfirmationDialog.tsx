@@ -1,3 +1,6 @@
+import {ReactComponent as CloseStudy} from '@assets/dialogs/close_study.svg'
+import {ReactComponent as WithdrawStudy} from '@assets/dialogs/withdraw_study.svg'
+import {ReactComponent as Delete} from '@assets/trash.svg'
 import {IconButton, makeStyles} from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
@@ -6,9 +9,8 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import CloseIcon from '@material-ui/icons/Close'
+import {latoFont, poppinsFont} from '@style/theme'
 import React, {FunctionComponent} from 'react'
-import {ReactComponent as Delete} from '../../assets/trash.svg'
-import {latoFont, poppinsFont} from '../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {},
@@ -41,7 +43,9 @@ const useStyles = makeStyles(theme => ({
     lineHeight: '19px',
   },
   confirmButton: {
-    width: '74px',
+    whiteSpace: 'nowrap',
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
     height: '49px',
     background: theme.palette.error.light,
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
@@ -53,8 +57,12 @@ const useStyles = makeStyles(theme => ({
     },
   },
   dialogPaper: {
+    //height: '275px',
     width: '302px',
-    height: '275px',
+  },
+  dialogPaperWide: {
+    //height: '275px',
+    width: '362px',
   },
   cancelButton: {
     width: '120px',
@@ -77,9 +85,15 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+export type ConfirmationDialogType =
+  | 'DELETE'
+  | 'NAVIGATE'
+  | 'WITHDRAW_STUDY'
+  | 'CLOSE_STUDY'
+
 type ConfirmationDialogProps = {
   isOpen: boolean
-  type: 'DELETE' | 'NAVIGATE'
+  type: ConfirmationDialogType
   title?: string
   cancelText?: string
   actionText?: string
@@ -106,19 +120,38 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
     </div>
   )
   let body = type === 'NAVIGATE' ? navigateBody : children
+  const getImage = () => {
+    switch (type) {
+      case 'DELETE':
+        return <Delete />
+      case 'WITHDRAW_STUDY':
+        return <WithdrawStudy />
+      case 'CLOSE_STUDY':
+        return <CloseStudy />
+      default:
+        return <></>
+    }
+  }
 
   return (
     <Dialog
       open={isOpen}
       onClose={() => onCancel()}
       aria-labelledby={type}
+      maxWidth="md"
+      scroll="paper"
       className={classes.dialogTitle}
-      classes={{paper: classes.dialogPaper}}>
+      classes={{
+        paper:
+          type === 'CLOSE_STUDY'
+            ? classes.dialogPaperWide
+            : classes.dialogPaper,
+      }}>
       <DialogTitle
         id="alert-dialog-title"
         disableTypography={true}
         className={classes.title}>
-        {type === 'DELETE' && <Delete></Delete>}
+        {getImage()}
         <div>{title}</div>
         <IconButton
           aria-label="close"

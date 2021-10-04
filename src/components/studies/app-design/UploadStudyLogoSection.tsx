@@ -1,6 +1,6 @@
-import React from 'react'
-import {makeStyles} from '@material-ui/core/styles'
 import {Box, Button, CircularProgress} from '@material-ui/core'
+import {makeStyles} from '@material-ui/core/styles'
+import React from 'react'
 import Subsection from './Subsection'
 
 const useStyles = makeStyles(theme => ({
@@ -11,6 +11,12 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(1.5),
     marginBottom: theme.spacing(1),
   },
+  imagePreviewBox: {
+    textAlign: 'center',
+    width: '320px',
+    border: '1px solid black',
+    boxSizing: 'content-box',
+  },
 }))
 
 type UploadStudyLogoSection = {
@@ -18,67 +24,65 @@ type UploadStudyLogoSection = {
   imgHeight: number
   saveLoader: boolean
   studyLogoUrl?: string
+
   isSettingStudyLogo: boolean
 }
 
-const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> = ({
-  handleFileChange,
-  imgHeight,
-  saveLoader,
-  studyLogoUrl,
-  isSettingStudyLogo,
-}) => {
-  const classes = useStyles()
-  return (
-    <Subsection heading="Upload Study Logo">
-      <Box>
-        <Box className={classes.studyLogoUploadText}>
-          Recommended dimensions are 320px x 80px
+const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> =
+  ({
+    handleFileChange,
+    imgHeight,
+    saveLoader,
+    studyLogoUrl,
+
+    isSettingStudyLogo,
+  }) => {
+    const classes = useStyles()
+    return (
+      <Subsection heading="Upload Study Logo">
+        <Box>
+          <Box className={classes.studyLogoUploadText}>
+            Files should be in .jpg, .png. Recommended dimensions are 1280px x
+            320px.
+          </Box>
+
+          <Box
+            className={classes.imagePreviewBox}
+            style={{
+              height: `${imgHeight}px`,
+            }}>
+            {studyLogoUrl && (
+              <img src={studyLogoUrl} style={{height: `${imgHeight}px`}} />
+            )}
+          </Box>
         </Box>
 
-        <Box
-          style={{
-            padding: '8px 1px',
-            textAlign: 'center',
-            width: '320px',
-            height: `${imgHeight + 16}px`,
-            border: '1px solid black',
-          }}>
-          {studyLogoUrl && (
-            <img
-              src={studyLogoUrl}
-              style={{height: `${imgHeight}px`, width: '310px'}}
+        {saveLoader && (
+          <Box className="text-center">
+            <CircularProgress color="primary" />
+          </Box>
+        )}
+        {isSettingStudyLogo ? (
+          <CircularProgress color="primary" className={classes.uploadButton} />
+        ) : (
+          <Button
+            variant="contained"
+            component="label"
+            color="primary"
+            className={classes.uploadButton}>
+            Upload
+            <input
+              accept="image/*,.jpg,.png"
+              id="file"
+              multiple={false}
+              type="file"
+              onChange={e => handleFileChange(e)}
+              style={{display: 'none'}}
             />
-          )}
-        </Box>
-      </Box>
-
-      {saveLoader && (
-        <Box className="text-center">
-          <CircularProgress color="primary" />
-        </Box>
-      )}
-      {isSettingStudyLogo ? (
-        <CircularProgress color="primary" className={classes.uploadButton} />
-      ) : (
-        <Button
-          variant="contained"
-          component="label"
-          color="primary"
-          className={classes.uploadButton}>
-          Upload
-          <input
-            accept="image/*,.pdf,.jpg,.png,.svg"
-            id="file"
-            multiple={false}
-            type="file"
-            onChange={e => handleFileChange(e)}
-            style={{display: 'none'}}
-          />
-        </Button>
-      )}
-    </Subsection>
-  )
-}
+          </Button>
+        )}
+      </Subsection>
+    )
+  }
 
 export default UploadStudyLogoSection
