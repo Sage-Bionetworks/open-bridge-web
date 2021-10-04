@@ -23,7 +23,7 @@ import constants from '@typedefs/constants'
 import {AdminRole, DisplayStudyPhase, Study, StudyPhase} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import {Redirect} from 'react-router-dom'
+import {Redirect, RouteComponentProps} from 'react-router-dom'
 import StudyCard from './StudyCard'
 
 type StudyListOwnProps = {}

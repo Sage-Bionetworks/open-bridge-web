@@ -3,12 +3,12 @@ import React from 'react'
 import {Study} from '../../../../types/types'
 import {MTBHeadingH2} from '../../../widgets/Headings'
 import {
-  useStyles as AppDesignSharedStyles,
   formatPhoneNumber,
   getContact,
-  WelcomeScreenDisplay,
-  StudyPageTopPhone,
   StudyPageBottomPhone,
+  StudyPageTopPhone,
+  useStyles as AppDesignSharedStyles,
+  WelcomeScreenDisplay,
 } from '../AppDesign'
 
 const ReadOnlyAppDesign: React.FunctionComponent<{
@@ -42,7 +42,11 @@ const ReadOnlyAppDesign: React.FunctionComponent<{
           </Box>
           <Box className={AppDesignClasses.phoneArea}>
             <Box ml={-3}>
-              <WelcomeScreenDisplay study={study} isReadOnly={true} />
+              <WelcomeScreenDisplay
+                study={study}
+                isReadOnly={true}
+                studyLogoUrl={study.studyLogoUrl}
+              />
             </Box>
           </Box>
         </Paper>
@@ -64,6 +68,7 @@ const ReadOnlyAppDesign: React.FunctionComponent<{
             ml={-1}>
             <StudyPageTopPhone
               study={study}
+              studyLogoUrl={study.studyLogoUrl}
               getContactPersonObject={getContactPersonObject}
               isReadOnly={true}
             />

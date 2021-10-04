@@ -16,7 +16,6 @@ import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
 import {useStudy} from '@components/studies/studyHooks'
 import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
-import {MTBHeadingH3} from '@components/widgets/Headings'
 import HelpBox from '@components/widgets/HelpBox'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
 import {
@@ -575,9 +574,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   return (
     <Box bgcolor="#F8F8F8">
       <Box px={3} py={2} display="flex" alignItems="center">
-        <MTBHeadingH3 className={classes.studyId}>
+        <div className={classes.studyId}>
           <NonDraftHeaderFunctionComponent study={study} />
-        </MTBHeadingH3>
+        </div>
       </Box>
 
       {displayPlaceholderScreen && <ParticipantManagerPlaceholder />}

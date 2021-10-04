@@ -1,24 +1,23 @@
+import {ReactComponent as PhoneTopImgLeftHighlighted} from '@assets/appdesign/CustomizeAppTopbarLeft.svg'
+import {ReactComponent as PhoneTopImgRightHighlighted} from '@assets/appdesign/CustomizeAppTopbarRight.svg'
+import PhoneBg from '@assets/appdesign/phone_bg.svg'
+import {ReactComponent as PhoneBottomImg} from '@assets/appdesign/phone_buttons.svg'
+import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
+import {MTBHeadingH1, MTBHeadingH2} from '@components/widgets/Headings'
+import {useUserSessionDataState} from '@helpers/AuthContext'
+import Utility from '@helpers/utility'
 import {Box, Paper, Switch} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import StudyService from '@services/study.service'
+import {latoFont, ThemeType} from '@style/theme'
+import constants from '@typedefs/constants'
+import {Contact, Study, WelcomeScreenData} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {ChangeEvent, useEffect, useState} from 'react'
 import {HexColorPicker} from 'react-colorful'
 import {useErrorHandler} from 'react-error-boundary'
 import {useLocation} from 'react-router-dom'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import {ReactComponent as PhoneTopImgLeftHighlighted} from '../../../assets/appdesign/CustomizeAppTopbarLeft.svg'
-import {ReactComponent as PhoneTopImgRightHighlighted} from '../../../assets/appdesign/CustomizeAppTopbarRight.svg'
-import PhoneBg from '../../../assets/appdesign/phone_bg.svg'
-import {ReactComponent as PhoneBottomImg} from '../../../assets/appdesign/phone_buttons.svg'
-import DefaultLogo from '../../../assets/logo_mtb.svg'
-import {useUserSessionDataState} from '../../../helpers/AuthContext'
-import Utility from '../../../helpers/utility'
-import StudyService from '../../../services/study.service'
-import {latoFont, ThemeType} from '../../../style/theme'
-import constants from '../../../types/constants'
-import {Contact, Study, WelcomeScreenData} from '../../../types/types'
-import ConfirmationDialog from '../../widgets/ConfirmationDialog'
-import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import {useStudy, useUpdateStudyDetail} from '../studyHooks'
 import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
 import IrbBoardContactSection from './IrbBoardContactSection'
@@ -33,7 +32,7 @@ import UploadStudyLogoSection from './UploadStudyLogoSection'
 import WelcomeScreenMessagingSection from './WelcomeScreenMessagingSection'
 import WelcomeScreenPhoneContent from './WelcomeScreenPhoneContent'
 
-const imgHeight = 70
+const imgHeight = 80
 const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
 
 export const useStyles = makeStyles((theme: ThemeType) => ({
@@ -113,6 +112,7 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
   },
   preview: {
     backgroundColor: '#EBEBEB',
@@ -217,6 +217,7 @@ export type PreviewFile = {
   name: string
   size: number
   body?: string
+  type: string
 }
 
 export interface AppDesignProps {
@@ -244,6 +245,7 @@ function getPreviewForImage(file: File): PreviewFile {
     body: previewFileBody,
     name: file.name,
     size: file.size,
+    type: file.type,
   }
 }
 
@@ -266,11 +268,7 @@ const PhoneTopBar: React.FunctionComponent<{
           />
         )
       ) : (
-        <img
-          src={DefaultLogo}
-          style={{height: `${imgHeight - 16}px`}}
-          alt="study-logo"
-        />
+        <></>
       )}
     </div>
   )
@@ -279,7 +277,8 @@ const PhoneTopBar: React.FunctionComponent<{
 export const WelcomeScreenDisplay: React.FunctionComponent<{
   study: Study
   isReadOnly?: boolean
-}> = ({study, isReadOnly}) => {
+  studyLogoUrl?: string
+}> = ({study, isReadOnly, studyLogoUrl}) => {
   const classes = useStyles()
   return (
     <>
@@ -302,7 +301,7 @@ export const WelcomeScreenDisplay: React.FunctionComponent<{
           isUsingDefaultMessage={
             study.clientData.welcomeScreenData?.isUsingDefaultMessage || false
           }
-          studyLogoUrl={study.studyLogoUrl}
+          studyLogoUrl={studyLogoUrl}
         />
         <WelcomeScreenPhoneContent
           welcomeScreenContent={
@@ -330,7 +329,8 @@ export const StudyPageTopPhone: React.FunctionComponent<{
   study: Study
   getContactPersonObject: Function
   isReadOnly?: boolean
-}> = ({study, getContactPersonObject, isReadOnly}) => {
+  studyLogoUrl?: string
+}> = ({study, getContactPersonObject, isReadOnly, studyLogoUrl}) => {
   const classes = useStyles()
   return (
     <>
@@ -339,7 +339,7 @@ export const StudyPageTopPhone: React.FunctionComponent<{
           <PhoneTopImgLeftHighlighted title="phone top image" width="312px" />
         </Box>
         <StudyPageTopPhoneContent
-          studyLogoUrl={study.studyLogoUrl}
+          studyLogoUrl={studyLogoUrl}
           isUsingDefaultMessage={
             study.clientData.welcomeScreenData?.isUsingDefaultMessage || false
           }
@@ -451,6 +451,9 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   const [study, setStudy] = React.useState<Study>()
 
   const {data: sourceStudy, error, isLoading} = useStudy(id)
+  const [previewFile, setPreviewFile] = React.useState<
+    PreviewFile | undefined
+  >()
 
   const {
     isSuccess: scheduleUpdateSuccess,
@@ -484,6 +487,10 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   })
 
   const [errorState, setErrorState] = React.useState<ErrorStateType>({})
+
+  const getStudyLogoUrl = (): string | undefined => {
+    return previewFile?.body || study?.studyLogoUrl
+  }
 
   useEffect(() => {
     setStudy(sourceStudy)
@@ -609,32 +616,29 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     setErrorState(updatedErrorState)
   }, [study, showError])
 
-  async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-    event.persist()
-    if (!event.target.files || !study) {
+  async function uploadLogoFile() {
+    if (!previewFile?.body || !study) {
+      console.log('nothing to upload')
       return
     }
     setIsSettingStudyLogo(true)
-    const file = event.target.files[0]
-    const previewForImage = getPreviewForImage(file)
-
     try {
+      console.log('uploading')
       const uploadResponse = await StudyService.editStudyLogo(
         study.identifier,
         token!,
-        previewForImage.size,
-        previewForImage.name,
-        previewForImage.body || '',
-        file.type,
-        previewForImage.file
+        previewFile.size,
+        previewFile.name,
+        previewFile.body || '',
+        previewFile.type,
+        previewFile.file
       )
-      const updatedStudy: Study = {
-        ...study,
+
+      setPreviewFile(undefined)
+      return {
         studyLogoUrl: uploadResponse.studyLogoUrl,
         version: uploadResponse.version,
       }
-
-      handleUpdate(updatedStudy)
     } catch (error) {
       onError(error)
     } finally {
@@ -642,8 +646,28 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     }
   }
 
+  async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
+    event.persist()
+    if (!event.target.files || !study) {
+      return
+    }
+    setHasObjectChanged(true)
+    setIsSettingStudyLogo(true)
+    const file = event.target.files[0]
+    const previewForImage = getPreviewForImage(file)
+    setPreviewFile(previewForImage)
+    setIsSettingStudyLogo(false)
+  }
+
   const onSave = async (study: Study) => {
     console.log('start update from app resign')
+    if (previewFile) {
+      const logoUpdateInfo = await uploadLogoFile()
+      if (logoUpdateInfo) {
+        study.version = logoUpdateInfo.version
+        study.studyLogoUrl = logoUpdateInfo.studyLogoUrl
+      }
+    }
     try {
       setSaveLoader(true)
       await mutateStudy({
@@ -850,6 +874,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
                       isUsingDefaultMessage:
                         !currentWelcomeScreenData.isUsingDefaultMessage,
                     }
+
                     updatedStudy.clientData.welcomeScreenData =
                       newWelcomeScreenData
                     handleUpdate(updatedStudy)
@@ -867,7 +892,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
                   handleFileChange={handleFileChange}
                   imgHeight={imgHeight}
                   saveLoader={saveLoader}
-                  studyLogoUrl={study.studyLogoUrl}
+                  studyLogoUrl={getStudyLogoUrl()}
                   isSettingStudyLogo={isSettingStudyLogo}
                 />
                 <a id="hex-color-picker"></a>
@@ -936,7 +961,10 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
           </Box>
           <Box className={classes.phoneArea}>
             <MTBHeadingH1>What participants will see: </MTBHeadingH1>
-            <WelcomeScreenDisplay study={study} />
+            <WelcomeScreenDisplay
+              study={study}
+              studyLogoUrl={getStudyLogoUrl()}
+            />
           </Box>
         </Paper>
         <Paper className={classes.section} elevation={2}>
@@ -1064,6 +1092,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
             <MTBHeadingH1>What participants will see: </MTBHeadingH1>
             <StudyPageTopPhone
               study={study}
+              studyLogoUrl={getStudyLogoUrl()}
               getContactPersonObject={getContactPersonObject}
             />
             <StudyPageBottomPhone

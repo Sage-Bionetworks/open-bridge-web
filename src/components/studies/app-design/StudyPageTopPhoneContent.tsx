@@ -1,7 +1,6 @@
 import {Box, Divider} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
-import DefaultLogo from '../../../assets/logo_mtb.svg'
 import {latoFont, playfairDisplayFont} from '../../../style/theme'
 import {Contact} from '../../../types/types'
 import SectionIndicator from './SectionIndicator'
@@ -113,11 +112,7 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
               />
             )
           ) : (
-            <img
-              src={DefaultLogo}
-              style={{height: `${imgHeight - 16}px`}}
-              alt="study-logo"
-            />
+            <></>
           )}
         </Box>
         <Box className={classes.innerContainer}>
