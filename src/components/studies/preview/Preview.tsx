@@ -14,7 +14,14 @@ import {MTBHeadingH1, MTBHeadingH2} from '@components/widgets/Headings'
 import {PrevButton, SimpleTextInput} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import {Box, Button, Divider, FormControl, FormLabel} from '@material-ui/core'
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  FormControl,
+  FormLabel,
+} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import ParticipantService from '@services/participants.service'
 import {
@@ -402,7 +409,8 @@ const PreviewIntroScreen: React.FunctionComponent<{
         </PrevButton>
       </Box>
 
-      <div
+      <Container
+        maxWidth="md"
         className={clsx(
           classes.root,
           isAssessmentDemo && classes.assessmentDemo
@@ -452,7 +460,7 @@ const PreviewIntroScreen: React.FunctionComponent<{
             </Button>
           </ErrorBoundary>
         </Box>
-      </div>
+      </Container>
     </>
   )
 }
