@@ -510,7 +510,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
           isAssessmentDemo={isAssessmentDemo}
           testParticipantId={testParticipantId}
           studyId={id}>
-          {!isAssessmentDemo && <PreviewAssessments studyId={id} />}
+          {!isAssessmentDemo && false && <PreviewAssessments studyId={id} />}
         </PreviewIdGenerated>
       )}
     </>

@@ -217,7 +217,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
       <div className={classes.root}>
         {isReadOnly ? (
           <MTBHeadingH3 style={{marginBottom: '24px'}}>
-            {Object.keys(features).length > 0
+            {Object.values(features).filter(o => o === true).length > 0
               ? 'You’ve added the following Optional Monitoring to your study:'
               : 'No Optional Monitoring was added to your study.'}
           </MTBHeadingH3>
