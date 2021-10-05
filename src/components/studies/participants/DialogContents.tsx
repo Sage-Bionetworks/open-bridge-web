@@ -233,7 +233,7 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
               )}
               elevation={0}>
               {selectedIds.map((id, index) => (
-                <span key={'selected-id' + index}>1{id}</span>
+                <span key={'selected-id' + index}>{id}</span>
               ))}
             </Paper>
             {isRemove ? (
