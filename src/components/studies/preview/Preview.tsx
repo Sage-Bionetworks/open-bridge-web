@@ -359,7 +359,7 @@ const PreviewIdGenerated: React.FunctionComponent<{
 
               <FormControl component="div">
                 <FormLabel component="label" className={classes.idLabel}>
-                  Preview ID:
+                  Participant ID:
                 </FormLabel>
                 <SimpleTextInput
                   multiline={false}
