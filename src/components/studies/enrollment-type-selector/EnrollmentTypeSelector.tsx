@@ -115,6 +115,21 @@ const useStyles = makeStyles((theme: ThemeType) => ({
       },
     },
   },
+  notFirstColumnDisabled: {
+    width: theme.spacing(32),
+    backgroundColor: '#ccc',
+    opacity: 0.7,
+    '& table th > span ': {
+      textAlign: 'center',
+      display: 'block',
+
+      fontFamily: poppinsFont,
+      fontSize: '14px',
+      fontWeight: 700,
+      lineHeight: '21px',
+      opacity: 0.8,
+    },
+  },
   selectedColumn: {
     border: '10px solid #CBDEE9',
     '& th': {
@@ -256,13 +271,16 @@ const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProp
             <Paper
               className={clsx(
                 classes.column,
-                classes.notFirstColumn,
+                classes.notFirstColumnDisabled,
+
                 study.signInTypes &&
                   study.signInTypes[0] === 'phone_password' &&
                   classes.selectedColumn
               )}
               elevation={2}
-              onClick={() => updateStudy(['phone_password'] as SignInType[])}>
+
+              /*onClick={() => updateStudy(['phone_password'] as SignInType[])}*/
+            >
               <div>
                 <table width="100%" className={classes.table}>
                   <thead>

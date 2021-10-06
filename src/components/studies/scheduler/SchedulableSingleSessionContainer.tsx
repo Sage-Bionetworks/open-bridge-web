@@ -338,11 +338,13 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                       ''
                     }></AssessmentWindow>
                 ))}
-                {!hasWindowLongerThan24h() && (
-                  <BlueButton onClick={addNewWindow} variant="contained">
-                    +Add new window
-                  </BlueButton>
-                )}
+
+                <BlueButton
+                  onClick={addNewWindow}
+                  variant="contained"
+                  disabled={hasWindowLongerThan24h()}>
+                  +Add new window
+                </BlueButton>
               </Box>
             </SchedulingFormSection>
             <Box ml={-2}>

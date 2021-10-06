@@ -141,7 +141,12 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
       token!
     )
 
-    const updatedStudy: Study = {...study!, name: studyName}
+    //agendel 10/6 adding  default to signin with study Id signInTypes: SignInType[]
+    const updatedStudy: Study = {
+      ...study!,
+      name: studyName,
+      signInTypes: ['external_id_password'],
+    }
 
     mutateSchedule({
       studyId: studyId,

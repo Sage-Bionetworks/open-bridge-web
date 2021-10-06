@@ -158,7 +158,7 @@ async function getParticipantDataForDownload(
   //massage data
   const columns = getExportColumns(isEnrolledById)
   const dateToString = (d?: Date | string): string =>
-    d ? new Date(d).toLocaleDateString() : ''
+    d ? new Date(d).toLocaleString() : ''
   const transformedParticipantsData = participantsData.items.map(
     (p: ExtendedParticipantAccountSummary) => {
       const participant: Record<string, string | undefined> = {
