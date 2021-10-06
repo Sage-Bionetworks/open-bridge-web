@@ -282,7 +282,15 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     isLoading: isStudyLoading,
   } = useStudies()
 
-  const {mutate, isSuccess, isError, mutateAsync, data} = useUpdateStudyInList()
+  const {
+    mutate,
+    isSuccess,
+    isError,
+    mutateAsync,
+    data,
+    isLoading: isStudyUpdating,
+    variables: mutateData,
+  } = useUpdateStudyInList()
 
   if (studyError) {
     handleError(studyError)
@@ -319,9 +327,18 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         modifiedOn: new Date(),
       }
 
-      const version = await StudyService.createStudy(newStudy, token!)
-      newStudy.version = version
-      navigateToStudy(newStudy)
+      //  const version = await StudyService.createStudy(newStudy, token!)
+      // newStudy.version = version
+      //  navigateToStudy(newStudy)
+
+      mutateAsync({
+        action: 'CREATE',
+        study: {...newStudy, name: newStudy.name},
+      }).then(studies => {
+        if (studies[0]) {
+          navigateToStudy(studies[0])
+        }
+      })
     }
   }
 
@@ -386,7 +403,13 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       : StudyService.getDisplayStatusForStudyPhase(menuAnchor.study.phase)
 
   return (
-    <Loader reqStatusLoading={isStudyLoading || !studies} variant="full">
+    <Loader
+      reqStatusLoading={
+        isStudyLoading ||
+        !studies ||
+        (isStudyUpdating && mutateData?.action === 'CREATE')
+      }
+      variant="full">
       <Box className={classes.root}>
         <Container maxWidth="lg" className={classes.studyContainer}>
           <Box display="flex" justifyContent="space-between">
