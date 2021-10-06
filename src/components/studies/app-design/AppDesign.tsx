@@ -258,12 +258,12 @@ const PhoneTopBar: React.FunctionComponent<{
   return (
     <div
       className={classes.phoneTopBar}
-      style={{backgroundColor: isUsingDefaultMessage ? '#BCD5E4' : color}}>
+      style={{backgroundColor: isUsingDefaultMessage ? 'transparent' : color}}>
       {!isUsingDefaultMessage ? (
         studyLogoUrl && (
           <img
             src={studyLogoUrl}
-            style={{height: `${imgHeight}px`}}
+            style={{height: `${imgHeight - 8}px`}}
             alt="study-logo"
           />
         )

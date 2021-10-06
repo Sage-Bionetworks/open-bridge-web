@@ -101,13 +101,13 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         <Box
           className={classes.studyLogoContainer}
           style={{
-            backgroundColor: isUsingDefaultMessage ? '#BCD5E4' : appColor,
+            backgroundColor: isUsingDefaultMessage ? 'transparent' : appColor,
           }}>
           {!isUsingDefaultMessage ? (
             studyLogoUrl && (
               <img
                 src={studyLogoUrl}
-                style={{height: `${imgHeight}px`}}
+                style={{height: `${imgHeight - 16}px`}}
                 alt="study-logo"
               />
             )
