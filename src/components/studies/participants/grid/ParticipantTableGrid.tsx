@@ -356,7 +356,7 @@ function getColumns(
       headerName: isEnrolledById
         ? 'Participant ID'
         : `${gridType === 'TEST' ? 'Log in' : 'Reference'} ID`,
-      width: 120,
+      width: 125,
     },
 
     {
