@@ -102,7 +102,7 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
           <MTBHeadingH3>
             {!isBatchEdit ? (
               isEnrolledById ? (
-                <span>Reference ID: {participant.externalId}</span>
+                <span>Participant ID: {participant.externalId}</span>
               ) : (
                 <span>Phone number: {participant.phoneNumber}</span>
               )
