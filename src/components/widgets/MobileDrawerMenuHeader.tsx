@@ -1,6 +1,5 @@
-import RegularMTBLogo from '@assets/black_mtb_logo.svg'
 import BlackXIcon from '@assets/black_x_icon.svg'
-import WhiteMTBLogo from '@assets/white_logo_mtb.svg'
+import Logo from '@assets/logo_mtb.svg'
 import {makeStyles} from '@material-ui/core/styles'
 import {latoFont} from '@style/theme'
 import React from 'react'
@@ -31,11 +30,17 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'space-between',
   },
   logoImage: {
-    backgroundImage: 'url(' + RegularMTBLogo + ')',
-    width: '40px',
-    height: '40px',
+    borderRadius: '50%',
+    backgroundColor: 'black',
+    backgroundPosition: '12px 4px',
+    backgroundRepeat: 'no-repeat',
+    border: '1px solid black',
+
+    backgroundImage: 'url(' + Logo + ')',
+    width: '45px',
+    height: '45px',
     '&:hover': {
-      backgroundImage: 'url(' + WhiteMTBLogo + ')',
+      backgroundColor: 'white',
     },
   },
 }))
