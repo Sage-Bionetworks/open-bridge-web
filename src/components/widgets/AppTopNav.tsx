@@ -1,3 +1,4 @@
+import Logo from '@assets/logo_mtb.svg'
 import {
   Divider,
   Drawer,
@@ -11,15 +12,14 @@ import Button from '@material-ui/core/Button'
 import {makeStyles} from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import MenuIcon from '@material-ui/icons/Menu'
+import {latoFont} from '@style/theme'
+import {UserSessionData} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
+import {useLocation} from 'react-router'
 import {NavLink} from 'react-router-dom'
-import Logo from '../../assets/logo_mtb.svg'
-import {latoFont} from '../../style/theme'
-import {UserSessionData} from '../../types/types'
 import Logout from '../account/Logout'
 import MobileDrawerMenuHeader from './MobileDrawerMenuHeader'
-import {useLocation} from 'react-router'
 
 const drawerWidth = '320px'
 
@@ -87,6 +87,11 @@ const useStyles = makeStyles(theme => ({
     '&:hover': {
       backgroundColor: '#fff',
     },
+
+    '&$drawerProfileOptionsDisabled:hover': {
+      backgroundColor: 'inherit',
+      cursor: 'default',
+    },
     display: 'flex',
     alignItems: 'center',
     borderLeft: '4px solid transparent',
@@ -153,6 +158,11 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'flex-start',
     height: '56px',
   },
+  drawerProfileOptionsDisabled: {
+    justifyContent: 'flex-start',
+    height: '56px',
+    opacity: 0.5,
+  },
   divider: {
     border: '1px solid #EAEAEA',
     width: '100%',
@@ -216,21 +226,33 @@ const MenuLinksRhs: FunctionComponent<
       )
     }
     if (routeName === 'Edit Profile' || routeName === 'Settings') {
-      return clsx(className, classes.drawerProfileOptions)
+      return clsx(className, classes.drawerProfileOptionsDisabled)
     }
     return className
   }
 
-  let links: React.ReactNode[] = routes.map(route => (
-    <NavLink
-      to={route.path}
-      key={`rhs_${route.name}`}
-      className={getClassName(route.name, isRightHandSide || false)}
-      activeClassName={activeClassName}
-      onClick={() => setIsMobileOpen(false)}>
-      {route.name}
-    </NavLink>
-  ))
+  let links: React.ReactNode[] = routes.map(route => {
+    if (route.name === 'Edit Profile' || route.name === 'Settings') {
+      return (
+        <div
+          key={`rhs_${route.name}`}
+          className={getClassName(route.name, isRightHandSide || false)}>
+          {route.name}
+        </div>
+      )
+    } else {
+      return (
+        <NavLink
+          to={route.path}
+          key={`rhs_${route.name}`}
+          className={getClassName(route.name, isRightHandSide || false)}
+          activeClassName={activeClassName}
+          onClick={() => setIsMobileOpen(false)}>
+          {route.name}
+        </NavLink>
+      )
+    }
+  })
   if (Array.isArray(children)) {
     if (sessionData?.token) {
       links.push(children[0])
