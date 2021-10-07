@@ -2,6 +2,7 @@ import {ReactComponent as DemoPhone} from '@assets/preview/demo_phone.svg'
 import {WhiteButton} from '@components/widgets/StyledComponents'
 import {Box, Container, makeStyles} from '@material-ui/core'
 import {Assessment, StringDictionary} from '@typedefs/types'
+import clsx from 'clsx'
 import React, {FunctionComponent, ReactNode} from 'react'
 import {NavLink} from 'react-router-dom'
 
@@ -18,6 +19,9 @@ const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
+    '&$blue': {
+      backgroundColor: '#BCD5E4',
+    },
     /*paddingTop: theme.spacing(4),*/
     // margin: `0 ${theme.spacing(4)}px`,
     minWidth: '1000px',
@@ -29,6 +33,7 @@ const useStyles = makeStyles(theme => ({
     },
     paddingTop: theme.spacing(1),
   },
+  blue: {},
   assessmentContainer: {
     padding: theme.spacing(1),
     textAlign: 'center',
@@ -66,7 +71,11 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
     const classes = useStyles()
 
     return (
-      <Box className={classes.root}>
+      <Box
+        className={clsx(
+          classes.root,
+          !token && isAssessmentLibrary && classes.blue
+        )}>
         {/* Filtering will not be present in the october release */}
         {/* <AssessmentLibraryFilter
         tags={tags}
