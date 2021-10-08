@@ -66,13 +66,13 @@ export interface IrbDetailsProps {
   isFinished: boolean
   onEnableNext: Function
   onChange: Function
+  onShowFeedback: Function
 }
 
-const LastScreen: React.FunctionComponent<{study: Study}> = ({
-  study,
-}: {
+const LastScreen: React.FunctionComponent<{
   study: Study
-}) => {
+  onShowFeedback: Function
+}> = ({study, onShowFeedback}) => {
   const classes = useStyles()
   const {token} = useUserSessionDataState()
   const [isLaunching, setIsLaunching] = React.useState(false)
@@ -83,8 +83,14 @@ const LastScreen: React.FunctionComponent<{study: Study}> = ({
   }
   const launchStudy = async () => {
     setIsLaunching(true)
-    await StudyService.launchStudy(study.identifier, token!)
-    setIsLaunched(true)
+    try {
+      await StudyService.launchStudy(study.identifier, token!)
+      setIsLaunched(true)
+    } catch (error) {
+      onShowFeedback(error)
+    } finally {
+      setIsLaunching(false)
+    }
   }
   return (
     <Box textAlign="center">
@@ -139,6 +145,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
   isFinished,
   onEnableNext,
   onChange,
+  onShowFeedback,
 }: IrbDetailsProps) => {
   const inputStyles = {
     width: '100%',
@@ -623,7 +630,9 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
           )}
         </Box>
       )}
-      {isFinished && <LastScreen study={study}></LastScreen>}
+      {isFinished && (
+        <LastScreen study={study} onShowFeedback={onShowFeedback}></LastScreen>
+      )}
     </>
   )
 }

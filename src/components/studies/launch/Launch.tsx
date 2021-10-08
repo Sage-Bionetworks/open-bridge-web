@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 export interface LaunchProps {
   id: string
   children: React.ReactNode
+  onShowFeedback: Function
 }
 
 function getSteps(isLive: boolean) {
@@ -57,6 +58,7 @@ type StepContentProps = {
   isFinished: boolean
   onChange: Function
   onEnableNext: Function
+  onShowFeedback: Function
 }
 
 const StepContent: React.FunctionComponent<StepContentProps> = ({
@@ -66,6 +68,7 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
   isFinished,
   onChange,
   onEnableNext,
+  onShowFeedback,
 }) => {
   switch (stepName) {
     case 'Review Alerts':
@@ -88,6 +91,7 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
       return (
         <IrbDetails
           study={study}
+          onShowFeedback={onShowFeedback}
           onChange={onChange}
           isFinished={isFinished}
           onEnableNext={onEnableNext}
@@ -104,6 +108,7 @@ const StepContent: React.FunctionComponent<StepContentProps> = ({
 const Launch: React.FunctionComponent<LaunchProps> = ({
   id,
   children,
+  onShowFeedback,
 }: LaunchProps) => {
   const classes = useStyles()
   const {data: sourceStudy, error, isLoading} = useStudy(id)
@@ -235,6 +240,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
           study={study}
           schedule={schedule}
           stepName={steps[activeStep]?.label}
+          onShowFeedback={onShowFeedback}
           isFinished={isFinished}
           onEnableNext={(isEnabled: boolean) => setIsNextEnabled(isEnabled)}
           onChange={(study: Study) => {
