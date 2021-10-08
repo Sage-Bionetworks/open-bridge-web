@@ -1,6 +1,6 @@
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
-import {LoggedInUserClientData, OrgUser, UserData} from '../types/types'
+import {LoggedInUserClientData, OrgUser} from '../types/types'
 
 const AccessService = {
   createIndividualAccount,
@@ -57,7 +57,7 @@ async function getAliasFromSynapseByEmail(
 async function getAccountsForOrg(
   token: string,
   orgId: string
-): Promise<UserData[]> {
+): Promise<OrgUser[]> {
   const endpoint = constants.endpoints.getAccountsForOrg.replace(
     ':orgId',
     orgId

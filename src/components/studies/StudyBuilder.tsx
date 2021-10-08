@@ -403,7 +403,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                             <Preview id={id}></Preview>
                           </Route>
                           <Route path={`/studies/builder/:id/launch`}>
-                            <Launch id={id}>{navButtons}</Launch>
+                            <Launch id={id} onShowFeedback={showFeedback}>
+                              {navButtons}
+                            </Launch>
                           </Route>
                           <Route path={`/studies/builder/:id/passive-features`}>
                             <PassiveFeatures id={id}>
