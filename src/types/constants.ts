@@ -50,6 +50,11 @@ export default {
       vendor: 'mtb-staging-studies',
       redirect: 'https://staging.studies.mobiletoolbox.org',
     },
+    prod_mtb_studies: {
+      client: '100123',
+      vendor: 'mtb-prod',
+      redirect: 'https://studies.mobiletoolbox.org',
+    },
     local_arc: {
       client: '100104',
       vendor: 'arc-dev',
