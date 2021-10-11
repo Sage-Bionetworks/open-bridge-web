@@ -1,13 +1,13 @@
+import BlackBorderDropdown from '@components/widgets/BlackBorderDropdown'
+import SessionIcon from '@components/widgets/SessionIcon'
 import {Box, FormControlLabel, FormGroup, makeStyles} from '@material-ui/core'
 import ClockIcon from '@material-ui/icons/AccessTime'
+import {latoFont, poppinsFont, ThemeType} from '@style/theme'
+import {PerformanceOrder, StudySession} from '@typedefs/scheduling'
+import {Assessment} from '@typedefs/types'
 import clsx from 'clsx'
 import React from 'react'
-import {ThemeType, poppinsFont, latoFont} from '../../../style/theme'
-import {PerformanceOrder, StudySession} from '../../../types/scheduling'
-import {Assessment} from '../../../types/types'
 import AssessmentSmall from '../../assessments/AssessmentSmall'
-import BlackBorderDropdown from '../../widgets/BlackBorderDropdown'
-import SessionIcon from '../../widgets/SessionIcon'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -146,7 +146,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
   const performanceOrderList = [
     {value: 'participant_choice', label: 'Participant Choice'},
     {value: 'sequential', label: 'Fixed Order'},
-    {value: 'randomized', label: 'Randomized Order'},
+    //{value: 'randomized', label: 'Randomized Order'},
   ]
 
   const assessmentOrderElement = !isReadOnly ? (
