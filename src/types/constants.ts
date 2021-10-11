@@ -45,6 +45,11 @@ export default {
       vendor: 'mtb-staging',
       redirect: 'https://staging.mobiletoolbox.org',
     },
+    staging_mtb_studies: {
+      client: '100122',
+      vendor: 'mtb-staging-studies',
+      redirect: 'https://staging.studies.mobiletoolbox.org',
+    },
     local_arc: {
       client: '100104',
       vendor: 'arc-dev',
