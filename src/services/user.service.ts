@@ -7,6 +7,7 @@ const getOathEnvironment = (): {
   vendor: string
   redirect: string
 } => {
+  //localhost
   if (document.location.origin.indexOf('127.0.0.1') > -1) {
     if (document.location.port === '3000') {
       return constants.oauth.local_mtb
@@ -14,8 +15,15 @@ const getOathEnvironment = (): {
     if (document.location.port === '3001') {
       return constants.oauth.local_arc
     }
-  } else if (document.location.origin.indexOf('staging') > -1) {
-    return constants.oauth.staging_mtb
+  } else {
+    //staging
+    if (document.location.origin.indexOf('staging.mobiletoolbox') > -1) {
+      return constants.oauth.staging_mtb
+    } else if (
+      document.location.origin.indexOf('staging.studies.mobiletoolbox') > -1
+    ) {
+      return constants.oauth.staging_mtb_studies
+    }
   }
   throw new Error('unknown')
 }
