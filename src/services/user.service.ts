@@ -2,29 +2,35 @@ import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {LoggedInUserData, Response} from '../types/types'
 
+const isLocalhost = (): boolean =>
+  document.location.origin.indexOf('127.0.0.1') > -1
+
+const isStaging = (): boolean =>
+  document.location.origin.indexOf('staging.') > -1
+
 const getOathEnvironment = (): {
   client: string
   vendor: string
   redirect: string
 } => {
   //localhost
-  if (document.location.origin.indexOf('127.0.0.1') > -1) {
+  if (isLocalhost()) {
     if (document.location.port === '3000') {
       return constants.oauth.local_mtb
     }
     if (document.location.port === '3001') {
       return constants.oauth.local_arc
     }
-  } else {
-    //staging
-    if (document.location.origin.indexOf('staging.mobiletoolbox') > -1) {
-      return constants.oauth.staging_mtb
-    } else if (
-      document.location.origin.indexOf('staging.studies.mobiletoolbox') > -1
-    ) {
-      return constants.oauth.staging_mtb_studies
-    }
+  } else if (isStaging()) {
+    return document.location.origin.indexOf('staging.studies.mobiletoolbox') >
+      -1
+      ? constants.oauth.staging_mtb_studies
+      : constants.oauth.staging_mtb
   }
+  if (document.location.origin.indexOf('studies.mobiletoolbox') > 1) {
+    return constants.oauth.prod_mtb_studies
+  }
+
   throw new Error('unknown')
 }
 
