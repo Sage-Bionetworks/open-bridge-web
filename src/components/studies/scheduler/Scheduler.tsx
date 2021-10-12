@@ -21,7 +21,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   instructions: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
-    // backgroundColor: theme.palette.common.white,
   },
 }))
 
