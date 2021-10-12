@@ -10,16 +10,15 @@ import {
   Theme,
 } from '@material-ui/core'
 import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
-import React, {FunctionComponent} from 'react'
+import React from 'react'
 import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
-import {useAsync} from '../../../helpers/AsyncHook'
-import ScheduleService from '../../../services/schedule.service'
 import {latoFont, poppinsFont} from '../../../style/theme'
 import {Schedule} from '../../../types/scheduling'
-import {Study} from '../../../types/types'
 import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
 import SaveButton from '../../widgets/SaveButton'
 import SmallTextBox from '../../widgets/SmallTextBox'
+import {useSchedule, useTimeline} from '../scheduleHooks'
+import {useStudy} from '../studyHooks'
 import {TooltipHoverDisplay} from './ScheduleTimelineDisplay'
 import BurstTimeline from './timeline-plot/BurstTimeline'
 
@@ -169,27 +168,42 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 type ConfigureBurstTabProps = {
-  schedule: Schedule
-  onUpdate: Function
-  onSave: Function
-  token: string
-  study: Study
+  id: string
+  onNavigate: Function
+  children: React.ReactNode
   // hasObjectChanged: boolean
   //saveLoader: boolean
 }
 
-const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
-  //hasObjectChanged,
-  //saveLoader,
+type SaveHandle = {
+  save: (a: number) => void
+}
 
-  onUpdate,
-  schedule,
+const ConfigureBurstTab: React.ForwardRefRenderFunction<
+  SaveHandle,
+  ConfigureBurstTabProps
+> = (
+  {
+    //hasObjectChanged,
+    //saveLoader,
 
-  token,
-  study,
-}: ConfigureBurstTabProps) => {
+    onNavigate,
+    id,
+    children,
+  }: ConfigureBurstTabProps,
+  ref
+) => {
   const classes = useStyles()
 
+  React.useImperativeHandle(ref, () => ({
+    save(step: number) {
+      onNavigate(step)
+    },
+  }))
+
+  const {data: study} = useStudy(id)
+  const {data: timeline, error, isLoading} = useTimeline(id)
+  const {data: schedule} = useSchedule(id)
   const [hasBursts, setHasBursts] = React.useState(false)
   const [burstSessionGuids, setBurstSessionGuids] = React.useState<string[]>([])
   const [burstNumber, setBurstNumber] = React.useState<number | undefined>()
@@ -197,27 +211,10 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
     number | undefined
   >()
 
-  const {
-    data: timeline,
-    status,
-    error,
-    run,
-    setData,
-  } = useAsync<any>({
-    status: 'PENDING',
-    data: [],
-  })
-  //console.log('rerender')
-
-  React.useEffect(() => {
-    console.log('%c ---timeline getting--' + schedule.version, 'color: blue')
-    return run(ScheduleService.getScheduleTimeline(study.identifier, token!))
-  }, [run, schedule.version, token])
-
   //setting new state
   const updateData = (schedule: Schedule) => {
     // setSchedule(schedule)
-    onUpdate(schedule)
+    //onUpdate(schedule)
   }
 
   const displayBurstInfoText =
@@ -269,36 +266,38 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
               What scheduled session(s) in your study should be repeated as a
               burst?
             </MTBHeadingH2>
-            <FormGroup className={classes.checkBoxStyling}>
-              {schedule.sessions.map((s, index) => (
-                <FormControlLabel
-                  key={s.guid}
-                  control={
-                    <Checkbox
-                      color="secondary"
-                      classes={{checked: classes.checked}}
-                      checked={burstSessionGuids.includes(s.guid!)}
-                      onChange={e => {
-                        e.target.checked
-                          ? setBurstSessionGuids(prev => [...prev, s.guid!])
-                          : setBurstSessionGuids(prev =>
-                              prev.filter(guid => guid !== s.guid)
-                            )
-                      }}
-                      name="isburst"
-                    />
-                  }
-                  label={
-                    <TooltipHoverDisplay
-                      session={s}
-                      index={index}
-                      getSession={() => {
-                        return {label: s.name}
-                      }}
-                    />
-                  }></FormControlLabel>
-              ))}
-            </FormGroup>
+            {schedule && (
+              <FormGroup className={classes.checkBoxStyling}>
+                {schedule.sessions.map((s, index) => (
+                  <FormControlLabel
+                    key={s.guid}
+                    control={
+                      <Checkbox
+                        color="secondary"
+                        classes={{checked: classes.checked}}
+                        checked={burstSessionGuids.includes(s.guid!)}
+                        onChange={e => {
+                          e.target.checked
+                            ? setBurstSessionGuids(prev => [...prev, s.guid!])
+                            : setBurstSessionGuids(prev =>
+                                prev.filter(guid => guid !== s.guid)
+                              )
+                        }}
+                        name="isburst"
+                      />
+                    }
+                    label={
+                      <TooltipHoverDisplay
+                        session={s}
+                        index={index}
+                        getSession={() => {
+                          return {label: s.name}
+                        }}
+                      />
+                    }></FormControlLabel>
+                ))}
+              </FormGroup>
+            )}
           </div>
           <div className={classes.setBurstInfoContainer}>
             <MTBHeadingH2 style={{textAlign: 'left', maxWidth: '300px'}}>
@@ -357,11 +356,10 @@ const ConfigureBurstTab: FunctionComponent<ConfigureBurstTabProps> = ({
           burstNumber={burstNumber || 0}
           burstFrequency={burstFrequency || 0}
           schedule={schedule}
-          studyId={study.identifier}
-          token={token}></BurstTimeline>
+          studyId={id}></BurstTimeline>
       )}
     </div>
   )
 }
 
-export default ConfigureBurstTab
+export default React.forwardRef(ConfigureBurstTab)

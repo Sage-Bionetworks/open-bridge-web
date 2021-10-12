@@ -1,15 +1,14 @@
+import {useTimeline} from '@components/studies/scheduleHooks'
 import {Box} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import moment from 'moment'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import {useAsync} from '../../../../helpers/AsyncHook'
-import ScheduleService from '../../../../services/schedule.service'
 import {latoFont} from '../../../../style/theme'
-import {Schedule} from '../../../../types/scheduling'
+import {Schedule, StudySessionGeneral} from '../../../../types/scheduling'
 import BlackBorderDropdown from '../../../widgets/BlackBorderDropdown'
 import TimelineBurstPlot from './../timeline-plot/TimelineBurstPlot'
-import {TimelineScheduleItem, TimelineSession, TimelineZoomLevel} from './types'
+import {TimelineScheduleItem, TimelineZoomLevel} from './types'
 
 const useStyles = makeStyles(theme => ({
   stats: {
@@ -51,7 +50,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export interface TimelineProps {
-  token: string
   schedule: Schedule
   burstSessionGuids: string[]
   burstNumber: number
@@ -60,7 +58,6 @@ export interface TimelineProps {
 }
 
 const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
-  token,
   burstNumber,
   burstFrequency,
   burstSessionGuids,
@@ -68,7 +65,7 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
   studyId,
 }: TimelineProps) => {
   const handleError = useErrorHandler()
-  const [sessions, setSessions] = React.useState<TimelineSession[]>([])
+  const [sessions, setSessions] = React.useState<StudySessionGeneral[]>([])
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
   const [dropdown, setDropdown] = React.useState(['Daily'])
@@ -76,20 +73,8 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
     React.useState<TimelineZoomLevel>('Monthly')
 
   const classes = useStyles()
-  const {
-    data: timeline,
-    status,
-    error,
-    run,
-    setData,
-  } = useAsync<any>({
-    status: 'PENDING',
-    data: [],
-  })
 
-  React.useEffect(() => {
-    return run(ScheduleService.getScheduleTimeline(studyId, token!))
-  }, [run, schedFromDisplay.version, token])
+  const {data: timeline, error, isLoading} = useTimeline(studyId)
 
   const setZoomLevel = (scheduleDuration: string) => {
     const periods: TimelineZoomLevel[] = [
@@ -124,14 +109,11 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
     }
   }, [timeline, schedFromDisplay?.version])
 
-  const getSession = (sessionGuid: string): TimelineSession => {
+  const getSession = (sessionGuid: string): StudySessionGeneral => {
     return sessions.find(s => s.guid === sessionGuid)!
   }
-  if (status === 'PENDING' || !burstFrequency || !burstNumber) {
+  if (isLoading || !burstFrequency || !burstNumber) {
     return <></>
-  }
-  if (status === 'REJECTED') {
-    handleError(error!)
   }
 
   return (
@@ -139,7 +121,7 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
       {!timeline && (
         <>
           This timeline viewer will update to provide a visual summary of the
-          schedules you’ve defined below for each session!.{status}
+          schedules you’ve defined below for each session!
         </>
       )}
 
