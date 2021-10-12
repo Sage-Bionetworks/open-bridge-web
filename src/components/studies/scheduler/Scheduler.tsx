@@ -5,6 +5,7 @@ import React, {ReactElement, useState} from 'react'
 import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
 import {ThemeType} from '../../../style/theme'
 import {NextButton, PrevButton} from '../../widgets/StyledComponents'
+import ConfigureBurstTab from './ConfigureBurstTab'
 import ScheduleCreatorTab from './ScheduleCreatorTab'
 import SchedulerStepper from './SchedulerStepper'
 import SessionStartTab from './SessionStartTab'
@@ -34,7 +35,7 @@ function getSteps() {
   return [
     {label: 'Define Session Start'},
     {label: 'Create Schedule'},
-    // {label: 'Configure Optional EMA/Bursts'},
+    {label: 'Configure Optional EMA/Bursts'},
   ]
 }
 
@@ -64,16 +65,22 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   const ref1 = React.useRef<CountdownHandle>(null) // assign null makes it compatible with elements.
   type CountdownHandle2 = React.ElementRef<typeof ScheduleCreatorTab>
   const ref2 = React.useRef<CountdownHandle2>(null) // assign null makes it compatible with elements.
+  type CountdownHandle3 = React.ElementRef<typeof ConfigureBurstTab>
+  const ref3 = React.useRef<CountdownHandle3>(null) // assign null makes it compatible with elements.
 
   if (!children) {
     return <>error. Please provide nav buttons</>
   }
   const firstPrevButton = (children as any)[0]
-  const lastNextButton = (children as any)[1]
+  const lastNextButton = (children as any)[2]
   const handleNext = () => {
     setSaveLoader(true)
     const nextStep = activeStep + 1
-    ref1.current?.save(nextStep)
+    if (nextStep === 1) {
+      ref1.current?.save(nextStep)
+    } else {
+      ref2.current?.save(nextStep)
+    }
     const newSteps = steps.map((s, i) =>
       i === activeStep ? {...s, isComplete: true} : s
     )
@@ -84,6 +91,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
     setSaveLoader(true)
     ref1.current?.save(index)
     ref2.current?.save(index)
+    ref3.current?.save(index)
   }
 
   const handleBack = () => {
@@ -118,6 +126,12 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
             onNavigate={handleNavigate}
             onShowFeedback={onShowFeedback}
             children={children}></ScheduleCreatorTab>
+          <ConfigureBurstTab
+            id={id}
+            ref={ref3}
+            onNavigate={handleNavigate}
+            //  onShowFeedback={onShowFeedback}
+            children={children}></ConfigureBurstTab>
         </StepContent>
         <Box py={2} px={2} textAlign="right" bgcolor="inherit">
           <>
@@ -134,7 +148,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
             &nbsp;&nbsp;
           </>
 
-          {activeStep < 1 ? (
+          {activeStep < 2 ? (
             <NextButton
               variant="contained"
               color="primary"
