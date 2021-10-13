@@ -303,11 +303,14 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     //if study is provided -- we are duplicating
 
     if (study) {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      })
+
       mutateAsync({study, action: 'COPY'}).then(e => {
-        //@ts-ignore
-        const newStudy = e.study
-        //@ts-ignore
-        if (e.study) {
+        const newStudy = e[0]
+        if (newStudy) {
           setHighlightedStudyId(newStudy.identifier)
           resetNewlyAddedStudyID = setTimeout(() => {
             setHighlightedStudyId(null)
