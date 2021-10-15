@@ -1,3 +1,11 @@
+import CalendarIcon from '@assets/scheduler/calendar_icon.svg'
+import {
+  MTBHeadingH1,
+  MTBHeadingH2,
+  MTBHeadingH4,
+} from '@components/widgets/Headings'
+import SaveButton from '@components/widgets/SaveButton'
+import SmallTextBox from '@components/widgets/SmallTextBox'
 import {
   Box,
   Checkbox,
@@ -7,17 +15,16 @@ import {
   FormGroup,
   InputLabel,
   makeStyles,
+  Paper,
   Theme,
 } from '@material-ui/core'
 import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
+import {latoFont, poppinsFont} from '@style/theme'
+import {Schedule, StudyBurst} from '@typedefs/scheduling'
+import clsx from 'clsx'
+import _ from 'lodash'
 import React from 'react'
-import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
-import {latoFont, poppinsFont} from '../../../style/theme'
-import {Schedule} from '../../../types/scheduling'
-import {MTBHeadingH1, MTBHeadingH2} from '../../widgets/Headings'
-import SaveButton from '../../widgets/SaveButton'
-import SmallTextBox from '../../widgets/SmallTextBox'
-import {useSchedule, useTimeline} from '../scheduleHooks'
+import {useSchedule, useTimeline, useUpdateSchedule} from '../scheduleHooks'
 import {useStudy} from '../studyHooks'
 import {TooltipHoverDisplay} from './ScheduleTimelineDisplay'
 import BurstTimeline from './timeline-plot/BurstTimeline'
@@ -32,9 +39,19 @@ const useStyles = makeStyles((theme: Theme) =>
         padding: theme.spacing(13, 3, 3, 3),
       },
     },
+    eventSessionCard: {
+      padding: theme.spacing(5, 5, 5, 5),
+      marginBottom: theme.spacing(3),
+      '&:hover': {
+        border: '1px solid black',
+      },
+      '&.selected': {
+        border: '1px solid black',
+      },
+    },
     burstBox: {
       display: 'flex',
-      padding: theme.spacing(8, 5),
+      padding: theme.spacing(8, 0),
       border: '1px solid black',
       margin: theme.spacing(8, 3),
 
@@ -179,48 +196,13 @@ type SaveHandle = {
   save: (a: number) => void
 }
 
-const ConfigureBurstTab: React.ForwardRefRenderFunction<
-  SaveHandle,
-  ConfigureBurstTabProps
-> = (
-  {
-    //hasObjectChanged,
-    //saveLoader,
-
-    onNavigate,
-    id,
-    children,
-  }: ConfigureBurstTabProps,
-  ref
-) => {
+const HasBurstsSC: React.FunctionComponent<{
+  hasBursts: boolean
+  setHasBursts: (hasBursts: boolean) => void
+}> = ({hasBursts, setHasBursts}) => {
   const classes = useStyles()
-
-  React.useImperativeHandle(ref, () => ({
-    save(step: number) {
-      onNavigate(step)
-    },
-  }))
-
-  const {data: study} = useStudy(id)
-  const {data: timeline, error, isLoading} = useTimeline(id)
-  const {data: schedule} = useSchedule(id)
-  const [hasBursts, setHasBursts] = React.useState(false)
-  const [burstSessionGuids, setBurstSessionGuids] = React.useState<string[]>([])
-  const [burstNumber, setBurstNumber] = React.useState<number | undefined>()
-  const [burstFrequency, setBurstFrequency] = React.useState<
-    number | undefined
-  >()
-
-  //setting new state
-  const updateData = (schedule: Schedule) => {
-    // setSchedule(schedule)
-    //onUpdate(schedule)
-  }
-
-  const displayBurstInfoText =
-    schedule && hasBursts && (burstNumber || 0) > 0 && (burstFrequency || 0) > 0
   return (
-    <div className={classes.root}>
+    <>
       <MTBHeadingH1 style={{marginBottom: '24px'}}>Burst Design</MTBHeadingH1>
       <p className={classes.paragraph}>
         A burst design involves repeating multiple study sessions that are
@@ -255,81 +237,293 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
-      {hasBursts && (
+    </>
+  )
+}
+
+const BurstSelectorSC: React.FunctionComponent<{
+  schedule: Schedule
+  burstSessionGuids: string[]
+  triggerEventId: string | undefined
+  onUpdateEvent: (eventId: string) => void
+  onUpdateSessionSelection: (guids: string[]) => void
+}> = ({
+  schedule,
+  burstSessionGuids,
+  onUpdateSessionSelection,
+  triggerEventId,
+  onUpdateEvent,
+}) => {
+  const classes = useStyles()
+  const groups = _.groupBy(schedule.sessions, 'startEventIds.0')
+  //const [selectedEvent, setSelectedEvent] = React.useState('')
+
+  const updateSelection = (guid: string, isSelected: boolean) => {
+    if (isSelected) {
+      onUpdateSessionSelection([...burstSessionGuids, guid!])
+    } else {
+      onUpdateSessionSelection(burstSessionGuids.filter(g => g !== guid))
+    }
+  }
+  const isEventSelected = (key: string) => triggerEventId === key
+
+  const selectEvent = (key: string) => {
+    if (!isEventSelected(key)) {
+      onUpdateEvent(key)
+    }
+    onUpdateSessionSelection([])
+  }
+
+  const eventKeys = Object.keys(groups) //.filter(group =>
+  //group.includes(constants.constants.CUSTOM_EVENT_PREFIX)
+  //)
+  //debugger
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
+      <MTBHeadingH2 style={{maxWidth: '290px'}}>
+        What scheduled session(s) in your study should be repeated as a burst?
+      </MTBHeadingH2>
+      {eventKeys.map(key => (
+        <Paper
+          elevation={3}
+          className={clsx(
+            classes.eventSessionCard,
+            isEventSelected(key) && 'selected'
+          )}
+          onClick={() => selectEvent(key)}>
+          <MTBHeadingH4>Sessions associated with {key} </MTBHeadingH4>
+          {groups[key].map(s => (
+            <FormControlLabel
+              key={s.guid}
+              control={
+                <Checkbox
+                  color="secondary"
+                  classes={{checked: classes.checked}}
+                  checked={burstSessionGuids.includes(s.guid!)}
+                  onChange={e => updateSelection(s.guid!, e.target.checked)}
+                  name="isburst"
+                  style={{
+                    visibility: isEventSelected(key) ? 'visible' : 'hidden',
+                  }}
+                />
+              }
+              label={
+                <TooltipHoverDisplay
+                  session={s}
+                  index={schedule.sessions.findIndex(
+                    session => session.guid === s.guid
+                  )}
+                  getSession={() => {
+                    return {label: s.name}
+                  }}
+                />
+              }></FormControlLabel>
+          ))}
+        </Paper>
+      ))}
+      {/*} <FormGroup className={classes.checkBoxStyling}>
+        {schedule.sessions.map((s, index) => (
+          <FormControlLabel
+            key={s.guid}
+            control={
+              <Checkbox
+                color="secondary"
+                classes={{checked: classes.checked}}
+                checked={burstSessionGuids.includes(s.guid!)}
+                onChange={e => updateSelection(s.guid!, e.target.checked)}
+                name="isburst"
+              />
+            }
+            label={
+              <TooltipHoverDisplay
+                session={s}
+                index={index}
+                getSession={() => {
+                  return {label: s.name}
+                }}
+              />
+            }></FormControlLabel>
+        ))}
+      </FormGroup>*/}
+    </div>
+  )
+}
+const BurstScheduleSC: React.FunctionComponent<{
+  burstFrequency?: number
+  burstNumber?: number
+  onSave: Function
+  onChange: (type: 'F' | 'N', value: number) => void
+}> = ({burstFrequency, burstNumber, onChange, onSave}) => {
+  const classes = useStyles()
+  return (
+    <div className={classes.setBurstInfoContainer}>
+      <MTBHeadingH2 style={{textAlign: 'left', maxWidth: '300px'}}>
+        How often should this burst be scheduled to repeat?
+      </MTBHeadingH2>
+      <FormGroup className={classes.burstSchedule}>
+        <FormControl className={classes.row}>
+          <InputLabel htmlFor="burst-freq" className={classes.assignBurstText}>
+            Assign a new burst every:
+          </InputLabel>
+          <SmallTextBox
+            value={burstFrequency || ''}
+            isLessThanOneAllowed={false}
+            onChange={e => onChange('F', Number(e.target.value))}
+          />
+          weeks
+        </FormControl>
+        <FormControl fullWidth className={classes.row}>
+          <InputLabel htmlFor="burst-num" style={{marginRight: '24px'}}>
+            For:
+          </InputLabel>
+          <SmallTextBox
+            isLessThanOneAllowed={false}
+            value={burstNumber || ''}
+            onChange={e => onChange('N', Number(e.target.value))}
+          />
+          bursts
+        </FormControl>
+      </FormGroup>
+      <SaveButton onClick={() => onSave()} />
+    </div>
+  )
+}
+
+const ConfigureBurstTab: React.ForwardRefRenderFunction<
+  SaveHandle,
+  ConfigureBurstTabProps
+> = (
+  {
+    //hasObjectChanged,
+    //saveLoader,
+
+    onNavigate,
+    id,
+    children,
+  }: ConfigureBurstTabProps,
+  ref
+) => {
+  const classes = useStyles()
+
+  React.useImperativeHandle(ref, () => ({
+    save(step: number) {
+      onNavigate(step)
+    },
+  }))
+
+  const {data: study} = useStudy(id)
+  const {data: timeline, error, isLoading} = useTimeline(id)
+  const {
+    isSuccess: scheduleUpdateSuccess,
+    isError: scheduleUpdateError,
+    mutateAsync: mutateSchedule,
+    data,
+  } = useUpdateSchedule()
+  const {data: schedule} = useSchedule(id)
+  const [hasBursts, setHasBursts] = React.useState(false)
+  const [originEventId, setOriginEventId] = React.useState<string | undefined>()
+  const [burstSessionGuids, setBurstSessionGuids] = React.useState<string[]>([])
+  const [burstNumber, setBurstNumber] = React.useState<number | undefined>()
+  const [burstFrequency, setBurstFrequency] = React.useState<
+    number | undefined
+  >()
+
+  //const [selectedEvent, setSelectedEvent] = React.useState('')
+
+  React.useEffect(() => {
+    if (!schedule) {
+      return
+    }
+    const burst = schedule.studyBursts?.[0]
+    if (!burst) {
+      setHasBursts(false)
+      return
+    }
+    setHasBursts(true)
+    setOriginEventId(burst.originEventId)
+    setBurstNumber(burst.occurrences)
+    setBurstFrequency(Number(burst.interval.replace(/[PW]/g, '')))
+    const sessionGuids = schedule.sessions.reduce((prev, current) => {
+      if (current.studyBurstIds?.[0]) {
+        return [...prev, current.guid!]
+      } else {
+        return prev
+      }
+    }, [] as string[])
+    console.log(sessionGuids)
+    setBurstSessionGuids(sessionGuids.filter(g => !!g))
+    console.log(burstSessionGuids)
+  }, [schedule])
+
+  //setting new state
+  const updateData = (schedule: Schedule) => {
+    // setSchedule(schedule)
+    //onUpdate(schedule)
+  }
+  const save = () => {
+    /*export type StudyBurst = {
+  identifier: string
+  originEventId: string
+  interval: string //($ISO 8601 Duration) e.g. P1W
+  occurrences: number
+  updateType: EventUpdateType
+}*/
+    if (!burstFrequency || !burstNumber || !schedule || !originEventId) {
+      return
+    }
+    //create burst
+    const burst: StudyBurst = {
+      identifier: `${originEventId.replace(':', '_')}_burst`,
+      originEventId: originEventId,
+      interval: `P${burstFrequency}W`,
+      occurrences: burstNumber,
+      updateType: 'mutable',
+    }
+    //update sessions
+    const sessions = schedule.sessions.map(s =>
+      burstSessionGuids.includes(s.guid!)
+        ? {...s, studyBurstIds: [burst.identifier]}
+        : s
+    )
+    const updatedSchedule = {...schedule, sessions, studyBursts: [burst]}
+    mutateSchedule({studyId: id, schedule: updatedSchedule, action: 'UPDATE'})
+  }
+
+  const displayBurstInfoText =
+    schedule && hasBursts && (burstNumber || 0) > 0 && (burstFrequency || 0) > 0
+  return (
+    <div className={classes.root}>
+      <HasBurstsSC hasBursts={hasBursts} setHasBursts={setHasBursts} />
+
+      {hasBursts && schedule && (
         <div className={classes.burstBox}>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-            }}>
-            <MTBHeadingH2 style={{maxWidth: '290px'}}>
-              What scheduled session(s) in your study should be repeated as a
-              burst?
-            </MTBHeadingH2>
-            {schedule && (
-              <FormGroup className={classes.checkBoxStyling}>
-                {schedule.sessions.map((s, index) => (
-                  <FormControlLabel
-                    key={s.guid}
-                    control={
-                      <Checkbox
-                        color="secondary"
-                        classes={{checked: classes.checked}}
-                        checked={burstSessionGuids.includes(s.guid!)}
-                        onChange={e => {
-                          e.target.checked
-                            ? setBurstSessionGuids(prev => [...prev, s.guid!])
-                            : setBurstSessionGuids(prev =>
-                                prev.filter(guid => guid !== s.guid)
-                              )
-                        }}
-                        name="isburst"
-                      />
-                    }
-                    label={
-                      <TooltipHoverDisplay
-                        session={s}
-                        index={index}
-                        getSession={() => {
-                          return {label: s.name}
-                        }}
-                      />
-                    }></FormControlLabel>
-                ))}
-              </FormGroup>
-            )}
-          </div>
+          <BurstSelectorSC
+            schedule={schedule}
+            burstSessionGuids={burstSessionGuids}
+            triggerEventId={originEventId}
+            onUpdateEvent={(eventId: string) => setOriginEventId(eventId)}
+            onUpdateSessionSelection={(guids: string[]) =>
+              setBurstSessionGuids(guids)
+            }
+          />
+
           <div className={classes.setBurstInfoContainer}>
-            <MTBHeadingH2 style={{textAlign: 'left', maxWidth: '300px'}}>
-              How often should this burst be scheduled to repeat?
-            </MTBHeadingH2>
-            <FormGroup className={classes.burstSchedule}>
-              <FormControl className={classes.row}>
-                <InputLabel
-                  htmlFor="burst-freq"
-                  className={classes.assignBurstText}>
-                  Assign a new burst every:
-                </InputLabel>
-                <SmallTextBox
-                  value={burstFrequency || ''}
-                  isLessThanOneAllowed={false}
-                  onChange={e => setBurstFrequency(Number(e.target.value))}
-                />
-                weeks
-              </FormControl>
-              <FormControl fullWidth className={classes.row}>
-                <InputLabel htmlFor="burst-num" style={{marginRight: '24px'}}>
-                  For:
-                </InputLabel>
-                <SmallTextBox
-                  isLessThanOneAllowed={false}
-                  value={burstNumber || ''}
-                  onChange={e => setBurstNumber(Number(e.target.value))}
-                />
-                bursts
-              </FormControl>
-            </FormGroup>
-            <SaveButton />
+            <BurstScheduleSC
+              burstFrequency={burstFrequency}
+              burstNumber={burstNumber}
+              onSave={save}
+              onChange={(type: 'N' | 'F', value: number) => {
+                if (type === 'F') {
+                  setBurstFrequency(value)
+                } else {
+                  setBurstNumber(value)
+                }
+              }}
+            />
           </div>
         </div>
       )}

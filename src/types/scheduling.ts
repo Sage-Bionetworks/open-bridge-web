@@ -33,11 +33,13 @@ export type PerformanceOrder =
   | 'randomized'
   | 'participant_choice' //done
 
-//export type StartEventId = 'timeline_retrieved' | 'study_start_date'
+//export type StartEventId = 'timeline_retrieved' | 'study_start_date'\
+
+export type EventUpdateType = 'mutable' | 'immutable' | 'future_only'
 
 export type SchedulingEvent = {
   eventId: string
-  updateType?: 'mutable' | 'immutable' | 'future_only'
+  updateType?: EventUpdateType
 }
 
 export type NotificationMessage = {
@@ -72,6 +74,7 @@ export type SessionSchedule = {
   reminderPeriod?: string //PT10M //move to notification
   messages?: NotificationMessage[] //move to notification
   notifications?: ScheduleNotification[]
+  studyBurstIds?: string[]
 }
 
 export type StudySessionGeneral = {
@@ -84,10 +87,19 @@ export type StudySessionGeneral = {
 
 export type StudySession = StudySessionGeneral & SessionSchedule
 
+export type StudyBurst = {
+  identifier: string
+  originEventId: string
+  interval: string //($ISO 8601 Duration) e.g. P1W
+  occurrences: number
+  updateType: EventUpdateType
+}
+
 export type Schedule = {
   name: string
   ownerId?: string //todo
   guid: string
+  studyBursts?: StudyBurst[]
   sessions: StudySession[]
   duration?: string //iso
   version?: number
