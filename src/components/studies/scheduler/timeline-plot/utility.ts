@@ -40,9 +40,10 @@ function getContainerWidth(lengthInDays: number, zoomLevel: TimelineZoomLevel) {
 const Utility = {
   getZoomLevel,
   getContainerWidth,
+  getGroupedDaysForSession,
   getDaysFractionForSingleSession,
 }
-export function getTimesForSession(
+function getTimesForSession(
   sessionGuid: string,
   schedulingItems: TimelineScheduleItem[]
 ): number[] {
@@ -51,14 +52,12 @@ export function getTimesForSession(
     .map(i => i.startDay)
 }
 
-function getDaysFractionForSingleSession(
+function getGroupedDaysForSession(
   studySessionGuid: string,
 
   schedulingItems: TimelineScheduleItem[],
   interval?: {start: number; end: number}
-): number[] {
-  let result: number[] = []
-
+) {
   const grouppedStartDays = _.groupBy(
     getTimesForSession(studySessionGuid, schedulingItems),
     Math.floor
@@ -68,6 +67,22 @@ function getDaysFractionForSingleSession(
         return Number(key) >= interval.start && Number(key) < interval.end
       })
     : grouppedStartDays
+
+  return startDays
+}
+
+function getDaysFractionForSingleSession(
+  studySessionGuid: string,
+
+  schedulingItems: TimelineScheduleItem[],
+  interval?: {start: number; end: number}
+): number[] {
+  let result: number[] = []
+  const startDays = getGroupedDaysForSession(
+    studySessionGuid,
+    schedulingItems,
+    interval
+  )
 
   Object.values(startDays).forEach(groupArray => {
     const fraction = 1 / groupArray.length

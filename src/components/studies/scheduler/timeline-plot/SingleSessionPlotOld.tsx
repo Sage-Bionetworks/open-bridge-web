@@ -115,20 +115,6 @@ const NonDailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   unitPixelWidth,
   xCoords,
 }) => {
-  const days = [...new Array(8)].map((i, index) => (
-    <div
-      key={`session${i}`}
-      style={{
-        // width: '20px',
-        width: '1px',
-        height: '16px',
-        backgroundColor: 'black',
-        position: 'absolute',
-        zIndex: 100,
-        top: `0`,
-        left: `${index * unitPixelWidth}px`,
-      }}></div>
-  ))
   const sessionGraph =
     /*getSingleSessionX(sessionGuid, schedulingItems)*/ xCoords.map(i => (
       <SessionIcon
@@ -142,13 +128,89 @@ const NonDailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
           left: `${i * unitPixelWidth - 6}px`,
         }}></SessionIcon>
     ))
-  return (
-    <>
-      {days}
-      {sessionGraph}
-    </>
-  )
+  return <>{sessionGraph}</>
 }
+
+export const SessionLine: React.FunctionComponent<SingleSessionLinePlotProps> =
+  ({
+    sessionIndex,
+    zoomLevel,
+    graphSessionHeight,
+    containerWidth,
+    hasSessionLines = true,
+  }) => {
+    const classes = useStyles()
+    if (zoomLevel === 'Daily' || !hasSessionLines) {
+      return <></>
+    }
+
+    const result = (
+      <>
+        <div
+          key="slash"
+          style={{
+            position: 'absolute',
+            top: `${graphSessionHeight * sessionIndex - 5}px`,
+
+            left: '-33px',
+          }}>
+          /
+        </div>
+        <div
+          className={classes.sessionLine}
+          key="sessionLine"
+          style={{
+            top: `${graphSessionHeight * sessionIndex + 5}px`,
+            width: `${containerWidth + 30}px`,
+            left: '-30px',
+          }}></div>
+      </>
+    )
+    return result
+  }
+
+export const DailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> =
+  ({
+    schedulingItems,
+    sessionGuid,
+    zoomLevel,
+    sessionIndex,
+    scheduleLength,
+    displayIndex,
+    unitPixelWidth,
+    graphSessionHeight,
+    xCoords,
+  }) => {
+    const classes = useStyles()
+    const singleSessionDayX = getSingleSessionDayX(
+      sessionGuid,
+      schedulingItems,
+      scheduleLength!
+    )
+    const sessionGraph = singleSessionDayX.map((i, index) => (
+      <div
+        className={classes.dailyIntervalLine}
+        key={`interval${index}`}
+        style={{
+          width: `${i.expire * unitPixelWidth}px`,
+          top: `${graphSessionHeight * displayIndex}px`,
+          left: `${(i.day + i.startTime) * unitPixelWidth}px`,
+        }}>
+        <div className={classes.dailyIntervalInner}>
+          <SessionIcon
+            index={sessionIndex}
+            style={{
+              // width: '20px',
+              display: 'block',
+              margin: '-5px auto 0 auto',
+            }}></SessionIcon>
+        </div>
+      </div>
+    ))
+
+    return <>{sessionGraph}</>
+    //return <>nothing</>
+  }
 
 export const SessionPlot: React.FunctionComponent<
   SingleSessionPlotProps & SingleSessionLinePlotProps
@@ -158,14 +220,27 @@ export const SessionPlot: React.FunctionComponent<
   zoomLevel,
   sessionIndex,
   displayIndex,
-
+  containerWidth,
+  scheduleLength,
   graphSessionHeight,
   unitPixelWidth,
   hasSessionLines = true,
   xCoords,
 }) => {
-  return (
-    <div style={{position: 'relative'}}>
+  const sPlot =
+    zoomLevel === 'Daily' ? (
+      <DailySessionPlot
+        sessionIndex={sessionIndex}
+        displayIndex={displayIndex}
+        xCoords={xCoords}
+        zoomLevel={zoomLevel}
+        schedulingItems={schedulingItems}
+        sessionGuid={sessionGuid}
+        graphSessionHeight={graphSessionHeight}
+        unitPixelWidth={unitPixelWidth}
+        scheduleLength={scheduleLength}
+      />
+    ) : (
       <NonDailySessionPlot
         sessionIndex={sessionIndex}
         displayIndex={displayIndex}
@@ -176,6 +251,21 @@ export const SessionPlot: React.FunctionComponent<
         sessionGuid={sessionGuid}
         unitPixelWidth={unitPixelWidth}
       />
+    )
+
+  return (
+    <div>
+      {hasSessionLines && (
+        <SessionLine
+          sessionIndex={displayIndex}
+          scheduleLength={scheduleLength}
+          graphSessionHeight={graphSessionHeight}
+          zoomLevel={zoomLevel}
+          containerWidth={containerWidth}
+          unitPixelWidth={unitPixelWidth}
+        />
+      )}
+      {sPlot}
     </div>
   )
 }

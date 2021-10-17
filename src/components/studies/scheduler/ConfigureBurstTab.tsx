@@ -438,14 +438,19 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
     if (!schedule) {
       return
     }
+
     const burst = schedule.studyBursts?.[0]
     if (!burst) {
       setHasBursts(false)
+      setBurstFrequency(undefined)
+      setBurstNumber(undefined)
+      setOriginEventId(undefined)
       return
     }
     setHasBursts(true)
     setOriginEventId(burst.originEventId)
     setBurstNumber(burst.occurrences)
+    setBurstSessionGuids([])
     setBurstFrequency(Number(burst.interval.replace(/[PW]/g, '')))
     const sessionGuids = schedule.sessions.reduce((prev, current) => {
       if (current.studyBurstIds?.[0]) {
@@ -464,7 +469,7 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
     // setSchedule(schedule)
     //onUpdate(schedule)
   }
-  const save = () => {
+  const save = async () => {
     /*export type StudyBurst = {
   identifier: string
   originEventId: string
@@ -490,14 +495,50 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
         : s
     )
     const updatedSchedule = {...schedule, sessions, studyBursts: [burst]}
-    mutateSchedule({studyId: id, schedule: updatedSchedule, action: 'UPDATE'})
+    try {
+      await mutateSchedule({
+        studyId: id,
+        schedule: updatedSchedule,
+        action: 'UPDATE',
+      })
+    } catch (e) {
+      alert(e)
+    }
   }
 
   const displayBurstInfoText =
     schedule && hasBursts && (burstNumber || 0) > 0 && (burstFrequency || 0) > 0
+
+  const clearBursts = async () => {
+    if (!schedule) {
+      return
+    }
+
+    //update sessions
+    const sessions = schedule.sessions.map(s => ({...s, studyBurstIds: []}))
+
+    const updatedSchedule = {...schedule, sessions, studyBursts: []}
+    try {
+      await mutateSchedule({
+        studyId: id,
+        schedule: updatedSchedule,
+        action: 'UPDATE',
+      })
+    } catch (e) {
+      alert(e)
+    }
+  }
   return (
     <div className={classes.root}>
-      <HasBurstsSC hasBursts={hasBursts} setHasBursts={setHasBursts} />
+      <HasBurstsSC
+        hasBursts={hasBursts}
+        setHasBursts={(hasBursts: boolean) => {
+          if (!hasBursts) {
+            clearBursts()
+          }
+          setHasBursts(hasBursts)
+        }}
+      />
 
       {hasBursts && schedule && (
         <div className={classes.burstBox}>
