@@ -4,28 +4,7 @@ import React from 'react'
 import SessionIcon from '../../../widgets/SessionIcon'
 import {TimelineScheduleItem, TimelineZoomLevel} from './types'
 
-const useStyles = makeStyles(theme => ({
-  sessionLine: {
-    backgroundColor: 'black',
-    height: '1px',
-    position: 'absolute',
-    zIndex: 100,
-  },
-
-  dailyIntervalLine: {
-    borderLeft: '1px solid black',
-    borderRight: '1px solid black',
-
-    padding: '3px 0',
-    position: 'absolute',
-    zIndex: 100,
-  },
-  dailyIntervalInner: {
-    backgroundColor: '#000',
-    height: '1px',
-    textAlign: 'center',
-  },
-}))
+const useStyles = makeStyles(theme => ({}))
 
 export interface SingleSessionPlotProps {
   sessionIndex: number
@@ -48,34 +27,6 @@ export interface SingleSessionLinePlotProps {
   unitPixelWidth: number
   hasSessionLines?: boolean
 }
-
-/*export function getSingleSessionX(
-  studySessionGuid: string,
-
-  schedulingItems: TimelineScheduleItem[],
-  interval?: {start: number; end: number}
-): number[] {
-  let result: number[] = []
-
-  const grouppedStartDays = _.groupBy(
-    getTimesForSession(studySessionGuid, schedulingItems),
-    Math.floor
-  )
-  const startDays = interval
-    ? _.pickBy(grouppedStartDays, function (value, key) {
-        return Number(key) >= interval.start && Number(key) < interval.end
-      })
-    : grouppedStartDays
-
-  Object.values(startDays).forEach(groupArray => {
-    const fraction = 1 / groupArray.length
-    groupArray.forEach((item, index) => {
-      result.push(item + fraction * index)
-    })
-  })
-
-  return result
-}*/
 
 export function getSingleSessionDayX(
   studySessionGuid: string,
@@ -106,9 +57,7 @@ export function getSingleSessionDayX(
   return times
 }
 
-const NonDailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
-  // schedulingItems,
-  // sessionGuid,
+const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   sessionIndex,
   displayIndex,
   graphSessionHeight,
@@ -117,9 +66,8 @@ const NonDailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
 }) => {
   const days = [...new Array(8)].map((i, index) => (
     <div
-      key={`session${i}`}
+      key={`day_${index}`}
       style={{
-        // width: '20px',
         width: '1px',
         height: '16px',
         backgroundColor: 'black',
@@ -143,39 +91,9 @@ const NonDailySessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
         }}></SessionIcon>
     ))
   return (
-    <>
+    <div style={{position: 'relative'}}>
       {days}
       {sessionGraph}
-    </>
-  )
-}
-
-export const SessionPlot: React.FunctionComponent<
-  SingleSessionPlotProps & SingleSessionLinePlotProps
-> = ({
-  schedulingItems,
-  sessionGuid,
-  zoomLevel,
-  sessionIndex,
-  displayIndex,
-
-  graphSessionHeight,
-  unitPixelWidth,
-  hasSessionLines = true,
-  xCoords,
-}) => {
-  return (
-    <div style={{position: 'relative'}}>
-      <NonDailySessionPlot
-        sessionIndex={sessionIndex}
-        displayIndex={displayIndex}
-        zoomLevel={zoomLevel}
-        xCoords={xCoords}
-        schedulingItems={schedulingItems}
-        graphSessionHeight={graphSessionHeight}
-        sessionGuid={sessionGuid}
-        unitPixelWidth={unitPixelWidth}
-      />
     </div>
   )
 }

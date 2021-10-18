@@ -246,7 +246,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                 schedulingItems,
                 {...getPlotDaysInterval()}
               )}
-              hasSessionLines={false}
               displayIndex={0}
               unitPixelWidth={getUnitWidth()}
               scheduleLength={scheduleLength}
@@ -254,10 +253,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
               schedulingItems={schedulingItems}
               sessionGuid={session.guid!}
               graphSessionHeight={graphSessionHeight}
-              containerWidth={Utility.getContainerWidth(
-                scheduleLength,
-                zoomLevel
-              )}
             />
           </div>
         </div>
@@ -293,7 +288,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                     sessionIndex={sortedSessions.findIndex(
                       s => s.guid === session.guid
                     )}
-                    hasSessionLines={false}
                     displayIndex={0}
                     unitPixelWidth={getUnitWidth()}
                     scheduleLength={scheduleLength}
@@ -301,10 +295,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                     schedulingItems={schedulingItems}
                     sessionGuid={session.guid!}
                     graphSessionHeight={graphSessionHeight}
-                    containerWidth={Utility.getContainerWidth(
-                      scheduleLength,
-                      zoomLevel
-                    )}
                   />
                 </div>
               </div>

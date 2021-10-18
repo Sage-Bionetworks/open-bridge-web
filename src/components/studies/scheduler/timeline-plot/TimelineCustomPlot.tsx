@@ -2,7 +2,7 @@ import {makeStyles} from '@material-ui/core/styles'
 import {StudySession, TimelineScheduleItem} from '@typedefs/scheduling'
 import React from 'react'
 import GridPlot from './GridPlot'
-import {SessionPlot} from './SingleSessionPlot'
+import SessionPlot from './SingleSessionPlot'
 import {TimelineZoomLevel, unitPixelWidth} from './types'
 import Utility from './utility'
 
@@ -108,10 +108,6 @@ const TimelineCustomPlot: React.FunctionComponent<TimelineCustomPlotProps> = ({
                     zoomLevel={zoomLevel}
                     schedulingItems={schedulingItems}
                     sessionGuid={session.guid!}
-                    containerWidth={Utility.getContainerWidth(
-                      scheduleLength,
-                      zoomLevel
-                    )}
                   />
                 </div>
               ))}

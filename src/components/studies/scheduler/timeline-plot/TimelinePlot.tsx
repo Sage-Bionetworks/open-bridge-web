@@ -77,8 +77,15 @@ const useStyles = makeStyles(theme => ({
     position: 'absolute',
   },
 
-  triangle: {
+  lessIcon: {
     transform: 'rotate(180deg)',
+  },
+  showMore: {
+    fontFamily: latoFont,
+    fontStyle: 'italic',
+    fontWeight: 'normal',
+    fontSize: '12px',
+    textAlign: 'right',
   },
 }))
 
@@ -143,15 +150,10 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
 
       return {
         coords: coords,
-        isVisible: isExpanded ? hasItems : hasItems && visibleWeeksCounter < 6,
+        isVisible: isExpanded ? hasItems : hasItems && visibleWeeksCounter < 3,
       }
     })
     return xCoordsMap
-  }
-
-  const weekHasActivity = (xCoords: number[][]) => {
-    const hasItems = xCoords.find(coordArr => coordArr.length > 0)
-    return !!hasItems
   }
 
   return (
@@ -183,33 +185,31 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
             {[...weeks].map(
               (wk, index) =>
                 !!xCoords[index].isVisible && (
-                  <div className={classes.week}>
-                    <div style={{width: '60px'}}>Week {index + 1}</div>
-                    <div style={{flexGrow: 1, flexShrink: 0}}>
+                  <div className={classes.week} key={`week_${index}`}>
+                    <div style={{width: '60px'}} key="week_index">
+                      Week {index + 1}
+                    </div>
+                    <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
                       {sortedSessions.map((session, sIndex) => (
-                        <div className={classes.graph}>
+                        <div
+                          className={classes.graph}
+                          key={`session_${sIndex}`}>
                           <Tooltip
+                            key="tooltip"
                             placement="top"
                             title={`Starts on: ${session.startEventIds[0]}`}>
                             <div className={classes.sessionName}>
                               <SessionIcon index={sIndex} />
                             </div>
                           </Tooltip>
-                          <div style={{position: 'relative', top: '0px'}}>
+                          <div
+                            style={{position: 'relative', top: '0px'}}
+                            key="session_plot">
                             <SessionPlot
-                              xCoords={
-                                xCoords[index].coords[
-                                  sIndex
-                                ] /*Utility.getDaysFractionForSingleSession(
-                                session.guid!,
-                                schedulingItems,
-                                {...getPlotDaysInterval(index)}
-                              )*/
-                              }
+                              xCoords={xCoords[index].coords[sIndex]}
                               sessionIndex={sortedSessions.findIndex(
                                 s => s.guid === session.guid
                               )}
-                              hasSessionLines={false}
                               displayIndex={0}
                               unitPixelWidth={unitWidth}
                               scheduleLength={7}
@@ -217,10 +217,6 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                               schedulingItems={schedulingItems}
                               sessionGuid={session.guid!}
                               graphSessionHeight={graphSessionHeight}
-                              containerWidth={Utility.getContainerWidth(
-                                scheduleLength,
-                                'Weekly'
-                              )}
                             />
                           </div>
                         </div>
@@ -229,17 +225,17 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                   </div>
                 )
             )}
-            <div>
-              <Button onClick={e => setIsExpanded(prev => !prev)}>
+            <div className={classes.showMore}>
+              <Button
+                onClick={e => setIsExpanded(prev => !prev)}
+                variant="text">
                 {isExpanded ? (
                   <>
-                    {' '}
                     <span>less&nbsp;</span>
-                    <Arrow className={classes.triangle} />
+                    <Arrow className={classes.lessIcon} />
                   </>
                 ) : (
                   <>
-                    {' '}
                     <span>more&nbsp;</span>
                     <Arrow />
                   </>
