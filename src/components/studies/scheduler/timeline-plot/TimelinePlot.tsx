@@ -1,5 +1,6 @@
+import {ReactComponent as Arrow} from '@assets/arrow.svg'
 import SessionIcon from '@components/widgets/SessionIcon'
-import {Button} from '@material-ui/core'
+import {Button, Tooltip} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import {latoFont} from '@style/theme'
 import {StudySession, TimelineScheduleItem} from '@typedefs/scheduling'
@@ -49,10 +50,14 @@ const useStyles = makeStyles(theme => ({
   },
   graph: {display: 'flex', marginBottom: '5px', height: '16px'},
   sessionName: {
+    textAlign: 'center',
     width: '20px',
     '& svg': {
       width: '5px',
       height: '5px',
+    },
+    '&:hover': {
+      cursor: 'pointer',
     },
   },
   week: {
@@ -71,6 +76,10 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     position: 'absolute',
   },
+
+  triangle: {
+    transform: 'rotate(180deg)',
+  },
 }))
 
 export interface TimelinePlotProps {
@@ -86,8 +95,10 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
 }: TimelinePlotProps) => {
   const classes = useStyles()
   const ref = React.useRef<HTMLDivElement>(null)
-  const [isExpand, setIsExpand] = React.useState(false)
+  const [isExpanded, setIsExpanded] = React.useState(false)
   const [plotWidth, setPlotWidth] = React.useState<number | null>(null)
+  const [lastWeekToShowCollapsed, setLastWeekToShowCollapsed] =
+    React.useState(1)
 
   function handleResize() {
     if (ref && ref.current) {
@@ -101,7 +112,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
     window.addEventListener('resize', handleResize)
   })
 
-  const weeks = new Array(isExpand ? Math.ceil(scheduleLength / 7) : 2) //Math.ceil(scheduleLength / 7))
+  const weeks = new Array(Math.ceil(scheduleLength / 7)) //Math.ceil(scheduleLength / 7))
   console.log('weeks', weeks)
 
   const unitWidth = getUnitWidth()
@@ -116,6 +127,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   }
 
   function getXCoords() {
+    let visibleWeeksCounter = 0
     const xCoordsMap = [...weeks].map((_week, weekNumber) => {
       const coords = sortedSessions.map(session => {
         return Utility.getDaysFractionForSingleSession(
@@ -124,7 +136,15 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
           {start: weekNumber * 7, end: (weekNumber + 1) * 7}
         )
       })
-      return coords
+      const hasItems = coords.find(coordArr => coordArr.length > 0)
+      if (hasItems) {
+        visibleWeeksCounter++
+      }
+
+      return {
+        coords: coords,
+        isVisible: isExpanded ? hasItems : hasItems && visibleWeeksCounter < 6,
+      }
     })
     return xCoordsMap
   }
@@ -162,19 +182,23 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
             </div>
             {[...weeks].map(
               (wk, index) =>
-                weekHasActivity(xCoords[index]) && (
+                !!xCoords[index].isVisible && (
                   <div className={classes.week}>
                     <div style={{width: '60px'}}>Week {index + 1}</div>
                     <div style={{flexGrow: 1, flexShrink: 0}}>
                       {sortedSessions.map((session, sIndex) => (
                         <div className={classes.graph}>
-                          <div className={classes.sessionName}>
-                            <SessionIcon index={sIndex} />
-                          </div>
+                          <Tooltip
+                            placement="top"
+                            title={`Starts on: ${session.startEventIds[0]}`}>
+                            <div className={classes.sessionName}>
+                              <SessionIcon index={sIndex} />
+                            </div>
+                          </Tooltip>
                           <div style={{position: 'relative', top: '0px'}}>
                             <SessionPlot
                               xCoords={
-                                xCoords[index][
+                                xCoords[index].coords[
                                   sIndex
                                 ] /*Utility.getDaysFractionForSingleSession(
                                 session.guid!,
@@ -206,8 +230,20 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                 )
             )}
             <div>
-              <Button onClick={e => setIsExpand(prev => !prev)}>
-                Expand {isExpand ? 'donw' : 'up'}
+              <Button onClick={e => setIsExpanded(prev => !prev)}>
+                {isExpanded ? (
+                  <>
+                    {' '}
+                    <span>less&nbsp;</span>
+                    <Arrow className={classes.triangle} />
+                  </>
+                ) : (
+                  <>
+                    {' '}
+                    <span>more&nbsp;</span>
+                    <Arrow />
+                  </>
+                )}
               </Button>
             </div>
           </div>
