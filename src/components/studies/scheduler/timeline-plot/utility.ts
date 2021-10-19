@@ -1,11 +1,7 @@
+import {TimelineScheduleItem} from '@typedefs/scheduling'
 import _ from 'lodash'
 import moment from 'moment'
-import {
-  daysPage,
-  TimelineScheduleItem,
-  TimelineZoomLevel,
-  unitPixelWidth,
-} from './types'
+import {daysPage, TimelineZoomLevel, unitPixelWidth} from './types'
 
 function getZoomLevel(scheduleDuration: string): {
   lengthInDays: number
@@ -48,7 +44,9 @@ function getTimesForSession(
   schedulingItems: TimelineScheduleItem[]
 ): number[] {
   return schedulingItems
-    .filter(i => i.refGuid === sessionGuid)
+    .filter(
+      i => i.refGuid === sessionGuid && !i.startEventId.includes('_burst:')
+    )
     .map(i => i.startDay)
 }
 

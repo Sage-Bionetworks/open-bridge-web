@@ -120,16 +120,13 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   })
 
   const weeks = new Array(Math.ceil(scheduleLength / 7)) //Math.ceil(scheduleLength / 7))
-  console.log('weeks', weeks)
 
   const unitWidth = getUnitWidth()
   const xCoords = getXCoords()
 
   function getUnitWidth(): number {
     //  const unitWidth = ((plotWidth || 0) - 30 - 124) / 7
-    console.log('plotWidth', plotWidth)
     const unitWidth = Math.round(((plotWidth || 0) - 154) / 7)
-    console.log('unit width', unitWidth)
     return unitWidth
   }
 
@@ -172,6 +169,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                 <div style={{position: 'relative'}}>
                   {[...new Array(7)].map((_i, index) => (
                     <div
+                      key={`day_number_${index}`}
                       className={classes.dayNumbers}
                       style={{
                         left: unitWidth * index - 10 + 'px',

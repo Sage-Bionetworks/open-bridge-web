@@ -122,5 +122,6 @@ export type TimelineScheduleItem = {
   delayTime: string
   expiration: string
   refGuid: string
+  startEventId: string
   assessments?: any[]
 }

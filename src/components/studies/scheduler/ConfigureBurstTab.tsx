@@ -289,6 +289,7 @@ const BurstSelectorSC: React.FunctionComponent<{
       </MTBHeadingH2>
       {eventKeys.map(key => (
         <Paper
+          key={`event_${key}`}
           elevation={3}
           className={clsx(
             classes.eventSessionCard,

@@ -1,8 +1,9 @@
+import SessionIcon from '@components/widgets/SessionIcon'
 import {makeStyles} from '@material-ui/core/styles'
+import {TimelineScheduleItem} from '@typedefs/scheduling'
 import moment from 'moment'
 import React from 'react'
-import SessionIcon from '../../../widgets/SessionIcon'
-import {TimelineScheduleItem, TimelineZoomLevel} from './types'
+import {TimelineZoomLevel} from './types'
 
 const useStyles = makeStyles(theme => ({}))
 

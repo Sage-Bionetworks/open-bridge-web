@@ -113,7 +113,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
   const [saveLoader, setSaveLoader] = React.useState(false)
 
   const [schedule, setSchedule] = React.useState<Schedule | undefined>()
-  console.log('%c ---scheduler update--' + study?.version, 'color: red')
+  // console.log('%c ---scheduler update--' + study?.version, 'color: red')
 
   const [schedulerErrorState, setSchedulerErrorState] = React.useState(
     new Map<
