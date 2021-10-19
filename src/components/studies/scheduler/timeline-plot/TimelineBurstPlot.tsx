@@ -1,12 +1,12 @@
+import {ReactComponent as SessionStartIcon} from '@assets/scheduler/calendar_icon.svg'
 import {Button} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import {latoFont} from '@style/theme'
+import {StudySession, TimelineScheduleItem} from '@typedefs/scheduling'
 import React from 'react'
-import {ReactComponent as SessionStartIcon} from '../../../../assets/scheduler/calendar_icon.svg'
-import {latoFont} from '../../../../style/theme'
-import {StudySession} from '../../../../types/scheduling'
 import {SingleSessionGridPlot} from './GridPlot'
 import SessionPlot from './SingleSessionPlot'
-import {daysPage, TimelineScheduleItem, TimelineZoomLevel} from './types'
+import {daysPage, TimelineZoomLevel} from './types'
 import Utility from './utility'
 
 const leftPad = 124

@@ -1,12 +1,16 @@
 import {useTimeline} from '@components/studies/scheduleHooks'
 import {Box} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import {latoFont} from '@style/theme'
+import {
+  Schedule,
+  StudySessionGeneral,
+  TimelineScheduleItem,
+} from '@typedefs/scheduling'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import {latoFont} from '../../../../style/theme'
-import {Schedule, StudySessionGeneral} from '../../../../types/scheduling'
 import TimelineBurstPlot from './../timeline-plot/TimelineBurstPlot'
-import {TimelineScheduleItem, TimelineZoomLevel} from './types'
+import {TimelineZoomLevel} from './types'
 
 const useStyles = makeStyles(theme => ({
   stats: {
