@@ -85,6 +85,7 @@ const theme: Theme = createMuiTheme({
     MuiButton: {
       containedPrimary: {
         backgroundColor: '#3a3a3a',
+        border: '1px solid #3a3a3a',
         borderRadius: '0px',
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
         fontFamily: latoFont,
