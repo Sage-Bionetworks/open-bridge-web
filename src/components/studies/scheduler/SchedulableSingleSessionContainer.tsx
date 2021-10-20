@@ -340,6 +340,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                 ))}
 
                 <BlueButton
+                  style={{marginLeft: 0}}
                   onClick={addNewWindow}
                   variant="contained"
                   disabled={hasWindowLongerThan24h()}>
@@ -436,13 +437,19 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                 )}
 
                 {!schedulableSession.notifications && (
-                  <BlueButton onClick={addNewNotification} variant="contained">
+                  <BlueButton
+                    onClick={addNewNotification}
+                    style={{marginLeft: 0}}
+                    variant="contained">
                     +Add new notification
                   </BlueButton>
                 )}
 
                 {schedulableSession.notifications?.length === 1 && (
-                  <BlueButton onClick={addNewNotification} variant="contained">
+                  <BlueButton
+                    onClick={addNewNotification}
+                    style={{marginLeft: 0}}
+                    variant="contained">
                     +Add a reminder notification
                   </BlueButton>
                 )}
