@@ -195,6 +195,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 export interface PreviewProps {
   id: string
   isAssessmentDemo?: boolean
+  children?: React.ReactNode
 }
 
 const Reminder: React.FunctionComponent<{text: string; img: string}> = ({
@@ -468,6 +469,7 @@ const PreviewIntroScreen: React.FunctionComponent<{
 const Preview: React.FunctionComponent<PreviewProps> = ({
   id,
   isAssessmentDemo,
+  children,
 }: PreviewProps) => {
   const classes = useStyles()
   const {token, demoExternalId} = useUserSessionDataState()
@@ -506,12 +508,15 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
         />
       )}
       {testParticipantId && (
-        <PreviewIdGenerated
-          isAssessmentDemo={isAssessmentDemo}
-          testParticipantId={testParticipantId}
-          studyId={id}>
-          {!isAssessmentDemo && false && <PreviewAssessments studyId={id} />}
-        </PreviewIdGenerated>
+        <>
+          <PreviewIdGenerated
+            isAssessmentDemo={isAssessmentDemo}
+            testParticipantId={testParticipantId}
+            studyId={id}>
+            {!isAssessmentDemo && false && <PreviewAssessments studyId={id} />}
+          </PreviewIdGenerated>
+          {!isAssessmentDemo && children}
+        </>
       )}
     </>
   )
