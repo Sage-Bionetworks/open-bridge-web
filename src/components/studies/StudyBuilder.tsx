@@ -400,7 +400,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                           </Route>
 
                           <Route path={`/studies/builder/:id/preview`}>
-                            <Preview id={id}></Preview>
+                            <Preview id={id}> {navButtons}</Preview>
                           </Route>
                           <Route path={`/studies/builder/:id/launch`}>
                             <Launch id={id} onShowFeedback={showFeedback}>
