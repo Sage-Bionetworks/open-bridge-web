@@ -153,11 +153,12 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     marginTop: theme.spacing(1.25),
     marginBottom: theme.spacing(4),
   },
-  hideSection: {
-    display: 'none',
-  },
+
   hideSectionVisibility: {
     visibility: 'hidden',
+    ':before': {
+      content: '',
+    },
   },
   sectionOneIndicatorPosition: {
     position: 'absolute',
@@ -251,22 +252,19 @@ function getPreviewForImage(file: File): PreviewFile {
 
 const PhoneTopBar: React.FunctionComponent<{
   color?: string
-  isUsingDefaultMessage?: boolean
   studyLogoUrl?: string
-}> = ({color = 'transparent', isUsingDefaultMessage, studyLogoUrl}) => {
+}> = ({color = 'transparent', studyLogoUrl}) => {
   const classes = useStyles()
   return (
     <div
       className={classes.phoneTopBar}
-      style={{backgroundColor: isUsingDefaultMessage ? 'transparent' : color}}>
-      {!isUsingDefaultMessage ? (
-        studyLogoUrl && (
-          <img
-            src={studyLogoUrl}
-            style={{height: `${imgHeight - 8}px`}}
-            alt="study-logo"
-          />
-        )
+      style={{backgroundColor: color || 'transparent'}}>
+      {studyLogoUrl ? (
+        <img
+          src={studyLogoUrl}
+          style={{height: `${imgHeight - 8}px`}}
+          alt="study-logo"
+        />
       ) : (
         <></>
       )}
@@ -283,24 +281,20 @@ export const WelcomeScreenDisplay: React.FunctionComponent<{
   return (
     <>
       <Box className={classes.phone}>
-        {!study.clientData.welcomeScreenData?.isUsingDefaultMessage &&
-          !isReadOnly && [
-            <SectionIndicator
-              index={1}
-              className={classes.sectionOneIndicatorPosition}
-              key={1}
-            />,
-            <SectionIndicator
-              index={2}
-              className={classes.sectionTwoIndicatorPosition}
-              key={2}
-            />,
-          ]}
+        {!isReadOnly && [
+          <SectionIndicator
+            index={1}
+            className={classes.sectionOneIndicatorPosition}
+            key={1}
+          />,
+          <SectionIndicator
+            index={2}
+            className={classes.sectionTwoIndicatorPosition}
+            key={2}
+          />,
+        ]}
         <PhoneTopBar
           color={study.colorScheme?.background || 'transparent'}
-          isUsingDefaultMessage={
-            study.clientData.welcomeScreenData?.isUsingDefaultMessage || false
-          }
           studyLogoUrl={studyLogoUrl}
         />
         <WelcomeScreenPhoneContent
@@ -340,9 +334,6 @@ export const StudyPageTopPhone: React.FunctionComponent<{
         </Box>
         <StudyPageTopPhoneContent
           studyLogoUrl={studyLogoUrl}
-          isUsingDefaultMessage={
-            study.clientData.welcomeScreenData?.isUsingDefaultMessage || false
-          }
           imgHeight={imgHeight}
           appColor={study.colorScheme?.background || 'transparent'}
           leadInvestigator={getContactPersonObject('principal_investigator')}
@@ -646,7 +637,12 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     }
   }
 
-  async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
+  async function handleFileChange(event?: ChangeEvent<HTMLInputElement>) {
+    if (!event) {
+      setHasObjectChanged(true)
+      setPreviewFile(undefined)
+      return
+    }
     event.persist()
     if (!event.target.files || !study) {
       return
@@ -667,6 +663,8 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
         study.version = logoUpdateInfo.version
         study.studyLogoUrl = logoUpdateInfo.studyLogoUrl
       }
+    } else {
+      study.studyLogoUrl = undefined
     }
     try {
       setSaveLoader(true)
@@ -789,8 +787,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
       welcomeScreenSalutation: welcomeScreenSalutation,
       useOptionalDisclaimer: useOptionalDisclaimer,
       isUsingDefaultMessage:
-        !!study?.clientData.welcomeScreenData?.isUsingDefaultMessage ||
-        !!isUsingDefaultMessage,
+        study?.clientData.welcomeScreenData?.isUsingDefaultMessage,
     } as WelcomeScreenData
     if (study) {
       const updatedStudy = {...study}
@@ -818,6 +815,34 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
 
   const color = getColor()
 
+  function updateDefaultMessageToggle(isCustomize: boolean) {
+    if (!study) {
+      return
+    }
+
+    const currentWelcomeScreenData = study.clientData.welcomeScreenData
+      ? {
+          ...study.clientData.welcomeScreenData,
+          isUsingDefaultMessage: !isCustomize,
+        }
+      : {
+          welcomeScreenBody: '',
+          welcomeScreenFromText: '',
+          welcomeScreenSalutation: '',
+          welcomeScreenHeader: '',
+          useOptionalDisclaimer: false,
+          isUsingDefaultMessage: !isCustomize,
+        }
+    const updatedStudy = {
+      ...study,
+      clientData: {
+        ...study.clientData,
+        welcomeScreenData: currentWelcomeScreenData,
+      },
+    }
+    handleUpdate(updatedStudy)
+  }
+
   return (
     <>
       <Box className={classes.root}>
@@ -839,9 +864,9 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
               welcome screen after signing into the study.
               <br></br>
               <br></br>
-              You can choose a default message or customize this screen below by
-              adding your logo, background color, and message. View how it would
-              be displayed to the right.
+              You can customize your logo and background color as well as choose
+              to use a custom welcome message or a default one.
+              <br></br>View how it would be displayed to the right.
             </p>
             <div className={classes.switchContainer}>
               <Box mr={1.5}>Use default message</Box>
@@ -852,41 +877,12 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
                     !study.clientData.welcomeScreenData
                       ?.isUsingDefaultMessage || false
                   }
-                  onChange={() => {
-                    const updatedStudy = {...study}
-                    let currentWelcomeScreenData
-                    if (!study.clientData.welcomeScreenData) {
-                      currentWelcomeScreenData = {
-                        welcomeScreenBody: '',
-                        welcomeScreenFromText: '',
-                        welcomeScreenSalutation: '',
-                        welcomeScreenHeader: '',
-                        isUsingDefaultMessage: false,
-                        useOptionalDisclaimer: false,
-                      } as WelcomeScreenData
-                    } else {
-                      currentWelcomeScreenData = {
-                        ...study.clientData.welcomeScreenData,
-                      }
-                    }
-                    const newWelcomeScreenData = {
-                      ...currentWelcomeScreenData,
-                      isUsingDefaultMessage:
-                        !currentWelcomeScreenData.isUsingDefaultMessage,
-                    }
-
-                    updatedStudy.clientData.welcomeScreenData =
-                      newWelcomeScreenData
-                    handleUpdate(updatedStudy)
-                  }}></Switch>
+                  onChange={e => updateDefaultMessageToggle(e.target.checked)}
+                />
               </Box>
               <Box ml={1.5}>Customize</Box>
             </div>
-            <div
-              className={clsx(
-                study.clientData.welcomeScreenData?.isUsingDefaultMessage &&
-                  classes.hideSection
-              )}>
+            <div>
               <ol className={classes.steps}>
                 <UploadStudyLogoSection
                   handleFileChange={handleFileChange}
@@ -921,43 +917,38 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
                     )}
                   </Box>
                 </Subsection>
-
-                <WelcomeScreenMessagingSection
-                  saveLoader={saveLoader}
-                  saveInfo={saveInfo}
-                  SimpleTextInputStyles={SimpleTextInputStyles}
-                  onUpdate={updateWelcomeScreenMessaging}
-                  welcomeScreenHeader={
-                    study.clientData.welcomeScreenData?.welcomeScreenHeader ||
-                    ''
-                  }
-                  welcomeScreenBody={
-                    study.clientData.welcomeScreenData?.welcomeScreenBody || ''
-                  }
-                  welcomeScreenFromText={
-                    study.clientData.welcomeScreenData?.welcomeScreenFromText ||
-                    ''
-                  }
-                  welcomeScreenSalutation={
-                    study.clientData.welcomeScreenData
-                      ?.welcomeScreenSalutation || ''
-                  }
-                  useOptionalDisclaimer={
-                    study.clientData.welcomeScreenData?.useOptionalDisclaimer ||
-                    false
-                  }
-                />
+                {!study.clientData.welcomeScreenData?.isUsingDefaultMessage ? (
+                  <WelcomeScreenMessagingSection
+                    saveLoader={saveLoader}
+                    saveInfo={saveInfo}
+                    SimpleTextInputStyles={SimpleTextInputStyles}
+                    onUpdate={updateWelcomeScreenMessaging}
+                    welcomeScreenHeader={
+                      study.clientData.welcomeScreenData?.welcomeScreenHeader ||
+                      ''
+                    }
+                    welcomeScreenBody={
+                      study.clientData.welcomeScreenData?.welcomeScreenBody ||
+                      ''
+                    }
+                    welcomeScreenFromText={
+                      study.clientData.welcomeScreenData
+                        ?.welcomeScreenFromText || ''
+                    }
+                    welcomeScreenSalutation={
+                      study.clientData.welcomeScreenData
+                        ?.welcomeScreenSalutation || ''
+                    }
+                    useOptionalDisclaimer={
+                      study.clientData.welcomeScreenData
+                        ?.useOptionalDisclaimer || false
+                    }
+                  />
+                ) : (
+                  <li className={classes.hideSectionVisibility}></li>
+                )}
               </ol>
             </div>
-            {study.clientData.welcomeScreenData?.isUsingDefaultMessage && (
-              <Box className={classes.hideSectionVisibility}>
-                <ol className={classes.steps}>
-                  <li></li>
-                  <li></li>
-                  <li></li>
-                </ol>
-              </Box>
-            )}
           </Box>
           <Box className={classes.phoneArea}>
             <MTBHeadingH1>What participants will see: </MTBHeadingH1>
