@@ -70,7 +70,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type StudyPageTopPhoneContentProps = {
-  isUsingDefaultMessage: boolean
   imgHeight: number
   appColor: string
   studyTitle: string
@@ -84,7 +83,6 @@ type StudyPageTopPhoneContentProps = {
 
 const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContentProps> =
   ({
-    isUsingDefaultMessage,
     imgHeight,
     appColor,
     studyTitle,
@@ -101,16 +99,14 @@ const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContent
         <Box
           className={classes.studyLogoContainer}
           style={{
-            backgroundColor: isUsingDefaultMessage ? 'transparent' : appColor,
+            backgroundColor: appColor ? 'transparent' : appColor,
           }}>
-          {!isUsingDefaultMessage ? (
-            studyLogoUrl && (
-              <img
-                src={studyLogoUrl}
-                style={{height: `${imgHeight - 16}px`}}
-                alt="study-logo"
-              />
-            )
+          {studyLogoUrl ? (
+            <img
+              src={studyLogoUrl}
+              style={{height: `${imgHeight - 16}px`}}
+              alt="study-logo"
+            />
           ) : (
             <></>
           )}
