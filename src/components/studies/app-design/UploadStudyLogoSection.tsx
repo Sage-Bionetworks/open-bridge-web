@@ -1,4 +1,5 @@
-import {Box, Button, CircularProgress} from '@material-ui/core'
+import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
+import {Box, Button, CircularProgress, IconButton} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
 import Subsection from './Subsection'
@@ -45,16 +46,24 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> =
             Files should be in .jpg, .png. Recommended dimensions are 1280px x
             320px.
           </Box>
-
-          <Box
-            className={classes.imagePreviewBox}
-            style={{
-              height: `${imgHeight}px`,
-            }}>
+          <div style={{display: 'flex', alignItems: 'center'}}>
+            <Box
+              className={classes.imagePreviewBox}
+              style={{
+                height: `${imgHeight}px`,
+              }}>
+              {studyLogoUrl && (
+                <img src={studyLogoUrl} style={{height: `${imgHeight}px`}} />
+              )}
+            </Box>
             {studyLogoUrl && (
-              <img src={studyLogoUrl} style={{height: `${imgHeight}px`}} />
+              <IconButton
+                style={{height: '40px'}}
+                onClick={e => handleFileChange(undefined)}>
+                <DeleteIcon />
+              </IconButton>
             )}
-          </Box>
+          </div>
         </Box>
 
         {saveLoader && (
