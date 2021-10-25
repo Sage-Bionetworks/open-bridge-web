@@ -1,85 +1,77 @@
 import {TimelineScheduleItem} from '@typedefs/scheduling'
 import _ from 'lodash'
 import moment from 'moment'
-import {daysPage, TimelineZoomLevel, unitPixelWidth} from './types'
 
-function getZoomLevel(scheduleDuration: string): {
-  lengthInDays: number
-  periods: TimelineZoomLevel[]
-} {
-  const periods: TimelineZoomLevel[] = [
-    'Daily',
-    'Weekly',
-    'Monthly',
-    'Quarterly',
-  ]
+function getScheduleDurationInDays(scheduleDuration: string): number {
   const duration = moment.duration(scheduleDuration)
-
   const lengthInDays = duration.asDays()
-
-  if (lengthInDays < 2) {
-    periods.splice(1)
-  } else if (lengthInDays < 31) {
-    periods.splice(2)
-  } else if (lengthInDays < 92) {
-    periods.splice(3)
-  }
-  return {lengthInDays, periods}
-}
-
-function getContainerWidth(lengthInDays: number, zoomLevel: TimelineZoomLevel) {
-  const minWidth = unitPixelWidth[zoomLevel] * daysPage[zoomLevel]
-  const realWidth = unitPixelWidth[zoomLevel] * lengthInDays
-  return Math.max(realWidth, minWidth)
+  return lengthInDays
 }
 
 const Utility = {
-  getZoomLevel,
-  getContainerWidth,
+  getScheduleDurationInDays,
+
   getGroupedDaysForSession,
   getDaysFractionForSingleSession,
 }
-function getTimesForSession(
+function getStartDaysForSession(
   sessionGuid: string,
-  schedulingItems: TimelineScheduleItem[]
+  schedulingItems: TimelineScheduleItem[],
+  includeBurst?: boolean
 ): number[] {
-  return schedulingItems
-    .filter(
-      i => i.refGuid === sessionGuid && !i.startEventId.includes('_burst:')
-    )
-    .map(i => i.startDay)
+  function filterItem(timelineItem: TimelineScheduleItem) {
+    if (includeBurst) {
+      return timelineItem.refGuid === sessionGuid
+    } else {
+      return (
+        timelineItem.refGuid === sessionGuid &&
+        !timelineItem.startEventId.includes('study_burst:')
+      )
+    }
+  }
+
+  return schedulingItems.filter(i => filterItem(i)).map(i => i.startDay)
 }
 
 function getGroupedDaysForSession(
   studySessionGuid: string,
 
   schedulingItems: TimelineScheduleItem[],
-  interval?: {start: number; end: number}
+  interval?: {start: number; end: number},
+  includeBurst?: boolean
 ) {
+  const i = interval
+    ? schedulingItems.filter(
+        i => i.startDay >= interval.start && i.endDay < interval.end
+      )
+    : schedulingItems
   const grouppedStartDays = _.groupBy(
-    getTimesForSession(studySessionGuid, schedulingItems),
+    getStartDaysForSession(studySessionGuid, i, includeBurst),
     Math.floor
   )
-  const startDays = interval
+  /* const startDaysWithinInterval = interval
     ? _.pickBy(grouppedStartDays, function (value, key) {
         return Number(key) >= interval.start && Number(key) < interval.end
       })
-    : grouppedStartDays
+    : grouppedStartDays*/
+  const startEventId = _.first(i)?.startEventId
+  const startDaysWithinInterval = grouppedStartDays
 
-  return startDays
+  return {startDays: startDaysWithinInterval, startEventId: startEventId}
 }
 
 function getDaysFractionForSingleSession(
   studySessionGuid: string,
-
   schedulingItems: TimelineScheduleItem[],
-  interval?: {start: number; end: number}
-): number[] {
+  interval?: {start: number; end: number},
+  includeBurst?: boolean
+): {startEventId: string | undefined; coords: number[]} {
   let result: number[] = []
-  const startDays = getGroupedDaysForSession(
+  const {startDays, startEventId} = getGroupedDaysForSession(
     studySessionGuid,
     schedulingItems,
-    interval
+    interval,
+    includeBurst
   )
 
   Object.values(startDays).forEach(groupArray => {
@@ -94,7 +86,7 @@ function getDaysFractionForSingleSession(
     })
   })
 
-  return result
+  return {startEventId, coords: result}
 }
 
 export default Utility

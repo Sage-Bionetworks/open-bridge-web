@@ -13,8 +13,6 @@ import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import Pluralize from 'react-pluralize'
 import TimelinePlot from './timeline-plot/TimelinePlot'
-import {TimelineZoomLevel} from './timeline-plot/types'
-import Utility from './timeline-plot/utility'
 
 const useStyles = makeStyles(theme => ({
   stats: {
@@ -111,28 +109,9 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
 }: TimelineProps) => {
   const handleError = useErrorHandler()
 
-  const [scheduleLength, setScheduleLength] = React.useState(0)
-  const [dropdown, setDropdown] = React.useState(['Daily'])
-  const [currentZoomLevel, setCurrentZoomLevel] =
-    React.useState<TimelineZoomLevel>('Monthly')
   const {data: timeline, error, isLoading} = useTimeline(studyId)
 
   const classes = useStyles()
-
-  const setZoomLevel = (scheduleDuration: string) => {
-    const {periods, lengthInDays} = Utility.getZoomLevel(scheduleDuration)
-    setScheduleLength(lengthInDays)
-    setCurrentZoomLevel(periods[periods.length - 1])
-    setDropdown(periods)
-  }
-
-  React.useEffect(() => {
-    console.log('trying to update info')
-
-    if (timeline?.sessions) {
-      setZoomLevel(timeline.duration as string)
-    }
-  }, [timeline])
 
   const getSession = (sessionGuid: string): StudySessionGeneral => {
     return timeline?.sessions.find(s => s.guid === sessionGuid)!
@@ -178,7 +157,6 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
       {timeline?.schedule && (
         <TimelinePlot
           schedulingItems={timeline.schedule}
-          scheduleLength={scheduleLength}
           sortedSessions={schedFromDisplay.sessions}></TimelinePlot>
       )}
     </Box>

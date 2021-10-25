@@ -9,8 +9,7 @@ import {
 } from '@typedefs/scheduling'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import TimelineBurstPlot from './../timeline-plot/TimelineBurstPlot'
-import {TimelineZoomLevel} from './types'
+import TimelineBurstPlot from './TimelineBurstPlot'
 
 const useStyles = makeStyles(theme => ({
   stats: {
@@ -70,9 +69,6 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
   const [sessions, setSessions] = React.useState<StudySessionGeneral[]>([])
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
-  // const [dropdown, setDropdown] = React.useState(['Daily'])
-  const [currentZoomLevel, setCurrentZoomLevel] =
-    React.useState<TimelineZoomLevel>('Weekly')
 
   const classes = useStyles()
 
@@ -132,9 +128,7 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
           burstSessionGuids={burstSessionGuids}
           burstNumber={burstNumber || 0}
           burstFrequency={burstFrequency || 0}
-          scheduleLength={scheduleLength}
-          sortedSessions={schedFromDisplay.sessions}
-          zoomLevel={currentZoomLevel}></TimelineBurstPlot>
+          sortedSessions={schedFromDisplay.sessions}></TimelineBurstPlot>
       )}
     </Box>
   )

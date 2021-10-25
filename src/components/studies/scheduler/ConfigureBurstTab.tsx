@@ -493,8 +493,10 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
     const sessions = schedule.sessions.map(s =>
       burstSessionGuids.includes(s.guid!)
         ? {...s, studyBurstIds: [burst.identifier]}
-        : s
+        : {...s, studyBurstIds: []}
     )
+    console.log('guids', burstSessionGuids)
+    console.log(sessions)
     const updatedSchedule = {...schedule, sessions, studyBursts: [burst]}
     try {
       await mutateSchedule({

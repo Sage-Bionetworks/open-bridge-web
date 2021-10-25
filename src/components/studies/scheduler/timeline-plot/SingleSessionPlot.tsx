@@ -3,30 +3,18 @@ import {makeStyles} from '@material-ui/core/styles'
 import {TimelineScheduleItem} from '@typedefs/scheduling'
 import moment from 'moment'
 import React from 'react'
-import {TimelineZoomLevel} from './types'
 
 const useStyles = makeStyles(theme => ({}))
 
 export interface SingleSessionPlotProps {
   sessionIndex: number
-  zoomLevel: TimelineZoomLevel
+  //zoomLevel: TimelineZoomLevel
   sessionGuid: string
   schedulingItems: TimelineScheduleItem[]
-  scheduleLength?: number
-  graphSessionHeight: number
+  scheduleLength: number
   unitPixelWidth: number
   displayIndex: number
   xCoords: number[]
-}
-
-export interface SingleSessionLinePlotProps {
-  containerWidth: number
-  sessionIndex: number
-  scheduleLength: number
-  zoomLevel: TimelineZoomLevel
-  graphSessionHeight: number
-  unitPixelWidth: number
-  hasSessionLines?: boolean
 }
 
 export function getSingleSessionDayX(
@@ -61,7 +49,7 @@ export function getSingleSessionDayX(
 const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   sessionIndex,
   displayIndex,
-  graphSessionHeight,
+
   unitPixelWidth,
   xCoords,
 }) => {
@@ -87,12 +75,12 @@ const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
           // width: '20px',
           position: 'absolute',
           zIndex: 100,
-          top: `${graphSessionHeight * displayIndex}px`,
+          top: `${displayIndex}px`,
           left: `${i * unitPixelWidth - 6}px`,
         }}></SessionIcon>
     ))
   return (
-    <div style={{position: 'relative'}}>
+    <div style={{position: 'relative', height: '18px'}}>
       {days}
       {sessionGraph}
     </div>

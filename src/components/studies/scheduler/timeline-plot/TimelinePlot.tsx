@@ -4,13 +4,13 @@ import {Button, Tooltip} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import {latoFont} from '@style/theme'
 import {StudySession, TimelineScheduleItem} from '@typedefs/scheduling'
+import _ from 'lodash'
 import React from 'react'
 import SessionPlot from './SingleSessionPlot'
 import Utility from './utility'
 
 const leftPad = 54
 const containerTopPad = 35
-const graphSessionHeight = 50
 
 const useStyles = makeStyles(theme => ({
   rootOld: {
@@ -91,13 +91,13 @@ const useStyles = makeStyles(theme => ({
 
 export interface TimelinePlotProps {
   schedulingItems: TimelineScheduleItem[]
-  scheduleLength: number
+
   sortedSessions: StudySession[]
 }
 
 const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   schedulingItems,
-  scheduleLength,
+
   sortedSessions,
 }: TimelinePlotProps) => {
   const classes = useStyles()
@@ -119,7 +119,10 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
     window.addEventListener('resize', handleResize)
   })
 
-  const weeks = new Array(Math.ceil(scheduleLength / 7)) //Math.ceil(scheduleLength / 7))
+  if (!schedulingItems) {
+    return <></>
+  }
+  const weeks = new Array(Math.ceil(_.last(schedulingItems!)!.endDay / 7)) //Math.ceil(scheduleLength / 7))
 
   const unitWidth = getUnitWidth()
   const xCoords = getXCoords()
@@ -140,7 +143,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
           {start: weekNumber * 7, end: (weekNumber + 1) * 7}
         )
       })
-      const hasItems = coords.find(coordArr => coordArr.length > 0)
+      const hasItems = coords.find(coordArr => coordArr.coords.length > 0)
       if (hasItems) {
         visibleWeeksCounter++
       }
@@ -204,17 +207,15 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                             style={{position: 'relative', top: '0px'}}
                             key="session_plot">
                             <SessionPlot
-                              xCoords={xCoords[index].coords[sIndex]}
+                              xCoords={xCoords[index].coords[sIndex].coords}
                               sessionIndex={sortedSessions.findIndex(
                                 s => s.guid === session.guid
                               )}
                               displayIndex={0}
                               unitPixelWidth={unitWidth}
                               scheduleLength={7}
-                              zoomLevel={'Weekly'}
                               schedulingItems={schedulingItems}
                               sessionGuid={session.guid!}
-                              graphSessionHeight={graphSessionHeight}
                             />
                           </div>
                         </div>
