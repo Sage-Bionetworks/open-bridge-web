@@ -335,7 +335,7 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
             </Grid>
             <Grid item xs={6}>
               <Box fontSize="12px" mt={2}>
-                Principle Investigators must be listed as the "Study
+                Principal Investigators must be listed as the "Study
                 Administrator".
                 <br />
                 <br />
