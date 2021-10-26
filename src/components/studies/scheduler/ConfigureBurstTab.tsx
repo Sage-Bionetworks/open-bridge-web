@@ -192,8 +192,6 @@ type ConfigureBurstTabProps = {
   id: string
   onNavigate: Function
   children: React.ReactNode
-  // hasObjectChanged: boolean
-  //saveLoader: boolean
 }
 
 type SaveHandle = {
