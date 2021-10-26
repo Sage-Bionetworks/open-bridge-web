@@ -72,7 +72,7 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
             value: item.name,
             label: item.name,
           }))}
-          emptyValueLabel="Select Principle Investigator"
+          emptyValueLabel="Select Principal Investigator"
           width="100%"
           itemHeight="48px"
           value={currentInvestigatorSelected}
