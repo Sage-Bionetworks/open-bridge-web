@@ -406,7 +406,14 @@ const PreviewIntroScreen: React.FunctionComponent<{
           color="primary"
           onClick={() => {}}>
           <img className={classes.linkIcon} src={LinkIcon}></img>
-          <Box className={classes.tosText}>Full terms of service</Box>
+          <Box className={classes.tosText}>
+            <a
+              style={{textDecoration: 'none'}}
+              href="/MTB-ToS-v2-210923.pdf"
+              target="_blank">
+              Full terms of service
+            </a>
+          </Box>
         </PrevButton>
       </Box>
 
