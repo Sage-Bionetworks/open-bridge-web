@@ -134,13 +134,6 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   }
 
   function createXCoords(schedulingItems: TimelineScheduleItem[]) {
-    console.log('test')
-    var z = [...new Array(3)].map(x => {
-      console.log('hello')
-      return 1
-    })
-    console.log('z = ' + z)
-    let visibleWeeksCounter = 0
     const numOfWeeks = Math.ceil(_.last(schedulingItems!)!.endDay / 7)
     const weeks = new Array(Math.ceil(_.last(schedulingItems!)!.endDay / 7)) //Math.ceil(scheduleLength / 7))
 
@@ -157,16 +150,11 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
       })
 
       const hasItems = coords.find(coordArr => coordArr.coords.length > 0)
-      if (hasItems) {
-        visibleWeeksCounter++
-      }
+
       if (hasItems)
         result[weekNumber] = {
           coords: coords,
           name: weekNumber,
-          isVisible: isExpanded
-            ? hasItems
-            : hasItems && visibleWeeksCounter < 3,
         }
     }
 
@@ -212,7 +200,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
             {xCoords &&
               xCoords.map(
                 (wk: any, index: number) =>
-                  (isExpanded || index < 3) && (
+                  (isExpanded || index < 2) && (
                     <div className={classes.week} key={`week_${index}`}>
                       <div style={{width: '60px'}} key="week_index">
                         Week {wk.name + 1}
@@ -253,23 +241,25 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                     </div>
                   )
               )}
-            <div className={classes.showMore}>
-              <Button
-                onClick={e => setIsExpanded(prev => !prev)}
-                variant="text">
-                {isExpanded ? (
-                  <>
-                    <span>less&nbsp;</span>
-                    <Arrow className={classes.lessIcon} />
-                  </>
-                ) : (
-                  <>
-                    <span>more&nbsp;</span>
-                    <Arrow />
-                  </>
-                )}
-              </Button>
-            </div>
+            {xCoords.length > 2 && (
+              <div className={classes.showMore}>
+                <Button
+                  onClick={e => setIsExpanded(prev => !prev)}
+                  variant="text">
+                  {isExpanded ? (
+                    <>
+                      <span>less&nbsp;</span>
+                      <Arrow className={classes.lessIcon} />
+                    </>
+                  ) : (
+                    <>
+                      <span>more&nbsp;</span>
+                      <Arrow />
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
