@@ -9,22 +9,30 @@ import React from 'react'
 import SessionPlot from './SingleSessionPlot'
 import Utility from './utility'
 
-const leftPad = 54
-const containerTopPad = 35
-//con//st graphSessionHeight = 50
+const LayoutConstants = {
+  marginGap: 4,
+  bracketOverlay: 16,
+  weekVPad: 10,
+  singleSessionGraphHeight: 16,
+  singleSessionGraphBottomMargin: 5,
+  weekMinHeight: 44,
+}
 
 const useStyles = makeStyles(theme => ({
   frequencyBracket: {
     display: 'flex',
-    position: 'absolute',
-    right: '-95px',
-    width: '80px',
+    flexDirection: 'row',
+    alignItems: 'center',
 
-    height: '80px',
-    top: '-40px',
+    position: 'absolute',
+    right: '-75px',
+    // width: '80px',
+
+    // height: '80px',
+    // top: '-40px',
     '&> div:first-child': {
-      width: '12px',
-      height: '80px',
+      width: '14px',
+      // height: '80px',
       border: '1px solid black',
       borderLeft: 'none',
     },
@@ -44,47 +52,20 @@ const useStyles = makeStyles(theme => ({
     letterSpacing: '0em',
     textAlign: 'left',
   },
-  rootOld: {
-    // overflowX: 'scroll',
-    width: '100%',
-    position: 'relative',
-    '&::-webkit-scrollbar': {
-      height: '8px',
-      '-webkit-appearance': 'none',
-    },
 
-    /* Track */
-    '&::-webkit-scrollbar-track': {
-      //bgColor: '#000';
-    },
-
-    '&::-webkit-scrollbar-thumb': {
-      borderRadius: '2px',
-      //color: 'blue',
-      background: '#C4C4C4',
-      boxShadow: '0 0 1px rgba(255, 255, 255, .5)',
-      '&:hover': {
-        background: '#b4b4b4',
-      },
-    },
-  },
   root: {width: '100%', position: 'relative'},
   plotContainer: {
     //  backgroundColor: '#ECECEC',
-    padding: `${containerTopPad}px 0 20px ${leftPad}px`,
+    padding: `35px 0 20px 54px`,
   },
-  whiteBg: {
-    //  height: `${containerTopPad}px`,
-    marginTop: `-${containerTopPad}px`,
-    marginLeft: `-${leftPad}px`,
-    backgroundColor: '#FFF',
-  },
+
   graph: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: '5px',
-    height: '16px',
+
+    marginBottom: `${LayoutConstants.singleSessionGraphBottomMargin}px`,
+    height: `${LayoutConstants.singleSessionGraphHeight}px`,
   },
   sessionName: {
     textAlign: 'center',
@@ -101,7 +82,12 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: '13px',
+  },
+  weekTitle: {
+    width: '82px',
+    lineHeight: '12px',
+    fontSize: '12px',
+    fontFamily: latoFont,
   },
   dayNumbers: {
     fontFamily: latoFont,
@@ -113,17 +99,6 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     position: 'absolute',
   },
-
-  lessIcon: {
-    transform: 'rotate(180deg)',
-  },
-  showMore: {
-    fontFamily: latoFont,
-    fontStyle: 'italic',
-    fontWeight: 'normal',
-    fontSize: '12px',
-    textAlign: 'right',
-  },
 }))
 
 export interface TimelineBurstPlotProps {
@@ -134,13 +109,35 @@ export interface TimelineBurstPlotProps {
   sortedSessions: StudySession[]
 }
 
-const FrequencyBracket: React.FunctionComponent<{frequency: number}> = ({
-  frequency,
-}) => {
+type PlotData = {
+  name: number
+  burst: boolean
+  burstNum: number
+  sessions: {
+    startEventId: string | undefined
+    coords: number[]
+    guid: string | undefined
+  }[]
+}
+
+const FrequencyBracket: React.FunctionComponent<{
+  frequency: number
+  topX: number[]
+}> = ({frequency, topX}) => {
   const classes = useStyles()
+  if (topX[0] === -1) {
+    return <></>
+  }
+  const [sessions, weeks] = topX
+  console.log(topX + 'top X')
+  const bot = -1 * (topX[0] + LayoutConstants.bracketOverlay) // sessions === 0 ? -19 : -1 * (sessions * 34 + weeks * 4)
+  const heightMe = topX[0] + LayoutConstants.bracketOverlay * 2 //sessions == 0 ? 34 : -bot
+  console.log(heightMe)
   return (
-    <div className={classes.frequencyBracket}>
-      <div />
+    <div
+      className={classes.frequencyBracket}
+      style={{bottom: bot + 'px', height: heightMe + 'px'}}>
+      <div style={{height: heightMe}} />
       <div>
         <SessionStartIcon />
         <span className={classes.frequencyText}>{frequency} weeks</span>
@@ -303,7 +300,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   }*/
 
   function getXCoords(schedItems: TimelineScheduleItem[]) {
-    var result: any = {}
+    var result: Record<string, PlotData> = {}
     const xCoordsMap = [...weeks].map((_week, weekNumber) => {
       // single week
       const schedItemsForWeek = schedItems.filter(
@@ -369,7 +366,56 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
         return o.name
       },
     ])
+    console.log(x)
     return x //{xCoords: xCoordsMap /*, sessionMax: getSessionLastDays()*/}
+  }
+
+  function calculateNumOfSessionsToNextBurst(
+    coords: PlotData[],
+    wkNumber: number,
+    burstNumber: number
+  ) {
+    var sessionsBetween = 0
+    var weeksBetween = 0
+
+    const isLargeNumber = (x: PlotData) => {
+      return x.name == wkNumber && x.burstNum === burstNumber
+    }
+
+    const firstIndex = coords.findIndex(isLargeNumber)
+    // console.log('find me', firstIndex)
+    if (firstIndex === coords.length - 1) {
+      return [-1]
+    }
+    if (coords[firstIndex + 1].burstNum == burstNumber || burstNumber === -1) {
+      return [-1]
+    }
+
+    sessionsBetween = LayoutConstants.marginGap //coords[firstIndex].sessions.length
+    console.log(sessionsBetween)
+    console.log(firstIndex + 'firstINdex')
+    for (var i = firstIndex + 1; i < coords.length; i++) {
+      const val = coords[i]
+      // console.log('looking at', val)
+      if (val.burstNum === burstNumber + 1) {
+        console.log('returning', sessionsBetween)
+        return [sessionsBetween, weeksBetween]
+      } else {
+        if (!val.burst) {
+          weeksBetween++
+          const weekHeight =
+            val.sessions.length * LayoutConstants.singleSessionGraphHeight +
+            (val.sessions.length - 1) *
+              LayoutConstants.singleSessionGraphBottomMargin
+
+          sessionsBetween =
+            sessionsBetween +
+            Math.max(weekHeight, LayoutConstants.weekMinHeight)
+          sessionsBetween = sessionsBetween + LayoutConstants.weekVPad * 2
+        }
+      }
+    }
+    return [-1]
   }
 
   return (
@@ -399,58 +445,73 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                 </div>
               </div>
             </div>
-            {xCoords &&
-              xCoords.map((wk, index) => (
-                <div
-                  className={classes.week}
-                  key={wk}
-                  style={{
-                    marginBottom:
-                      xCoords[index + 1] &&
-                      xCoords[index + 1].burstNum === wk.burstNum
-                        ? '0px'
-                        : '4px',
-                    padding: '12px 16px',
-                    backgroundColor: wk.burst ? 'yellow' : '#eee',
-                  }}>
-                  <div style={{width: '82px'}} key="week_index">
-                    Week {wk.name}
-                    {wk.burst !== false
-                      ? '/ Burst' + (wk.burstNum * 1 + 1)
-                      : ''}
-                  </div>
-                  <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
-                    {wk.sessions.map((session: any, sIndex: number) => (
-                      <div className={classes.graph} key={`session_${sIndex}`}>
-                        <Tooltip
-                          key="tooltip"
-                          placement="top"
-                          title={`Starts on: ${session.startEventId}`}>
-                          <div className={classes.sessionName}>
-                            <SessionIcon
-                              index={sortedSessions.findIndex(
-                                s => s.guid === session.guid
-                              )}
-                            />
-                          </div>
-                        </Tooltip>
+            <div style={{position: 'relative'}}>
+              xALINA
+              {xCoords &&
+                xCoords.map((wk, index) => (
+                  <div
+                    className={classes.week}
+                    key={`week_${wk.name}_ ${wk.burstNum}`}
+                    style={{
+                      marginBottom:
+                        xCoords[index + 1] &&
+                        xCoords[index + 1].burstNum === wk.burstNum
+                          ? '0px'
+                          : `${LayoutConstants.marginGap}px`,
+                      padding: `${LayoutConstants.weekVPad}px 16px`,
+                      backgroundColor: wk.burst ? 'yellow' : '#eee',
+                      position: 'relative',
+                    }}>
+                    <FrequencyBracket
+                      frequency={burstFrequency}
+                      topX={calculateNumOfSessionsToNextBurst(
+                        xCoords,
+                        wk.name,
+                        wk.burstNum
+                      )}
+                    />
 
-                        <SessionPlot
-                          xCoords={session.coords}
-                          sessionIndex={sortedSessions.findIndex(
-                            s => s.guid === session.guid
-                          )}
-                          displayIndex={2}
-                          unitPixelWidth={unitWidth}
-                          scheduleLength={7}
-                          schedulingItems={schedulingItems}
-                          sessionGuid={session.guid!}
-                        />
-                      </div>
-                    ))}
+                    <div className={classes.weekTitle} key="week_index">
+                      Week {wk.name}
+                      {wk.burst !== false
+                        ? '/ Burst' + (wk.burstNum * 1 + 1)
+                        : ''}
+                    </div>
+                    <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
+                      {wk.sessions.map((session, sIndex: number) => (
+                        <div
+                          className={classes.graph}
+                          key={`session_${sIndex}`}>
+                          <Tooltip
+                            key="tooltip"
+                            placement="top"
+                            title={`Starts on: ${session.startEventId}`}>
+                            <div className={classes.sessionName}>
+                              <SessionIcon
+                                index={sortedSessions.findIndex(
+                                  s => s.guid === session.guid
+                                )}
+                              />
+                            </div>
+                          </Tooltip>
+
+                          <SessionPlot
+                            xCoords={session.coords}
+                            sessionIndex={sortedSessions.findIndex(
+                              s => s.guid === session.guid
+                            )}
+                            displayIndex={2}
+                            unitPixelWidth={unitWidth}
+                            scheduleLength={7}
+                            schedulingItems={schedulingItems}
+                            sessionGuid={session.guid!}
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+            </div>
           </div>
         </div>
       </div>
