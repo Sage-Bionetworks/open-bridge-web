@@ -24,8 +24,7 @@ import {Schedule, StudyBurst} from '@typedefs/scheduling'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React from 'react'
-import {useSchedule, useTimeline, useUpdateSchedule} from '../scheduleHooks'
-import {useStudy} from '../studyHooks'
+import {useSchedule, useUpdateSchedule} from '../scheduleHooks'
 import {TooltipHoverDisplay} from './ScheduleTimelineDisplay'
 import BurstTimeline from './timeline-plot/BurstTimeline'
 
@@ -53,7 +52,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       padding: theme.spacing(8, 0),
       border: '1px solid black',
-      margin: theme.spacing(8, 3),
+      margin: theme.spacing(8, 3, 4, 3),
 
       '& > div': {
         flex: '1 1 0px',
@@ -144,15 +143,21 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
     burstsInfoText: {
-      height: '100px',
-      width: '100%',
-      justifyContent: 'center',
-      alignSelf: 'center',
+      width: '420px',
+
+      margin: '0 auto',
+
       display: 'flex',
+      '& p': {
+        fontFamily: poppinsFont,
+        fontSize: '14px',
+        lineHeight: '21px',
+      },
     },
     calendarIcon: {
       width: '20px',
       height: '20px',
+      marginTop: theme.spacing(2.4),
       marginRight: theme.spacing(2.5),
     },
     burstDesignHeading: {
@@ -164,22 +169,21 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
+
+      '& input': {
+        backgroundColor: '#FFF509',
+      },
     },
     assignBurstText: {
       fontFamily: poppinsFont,
       fontSize: '14px',
       lineHeight: '21px',
+
       marginRight: theme.spacing(2.5),
     },
     row: {
       display: 'flex',
       alignItems: 'center',
-    },
-    burstInfoTextContainer: {
-      maxWidth: '390px',
-      fontFamily: poppinsFont,
-      fontSize: '14px',
-      lineHeight: '21px',
     },
   })
 )
@@ -284,7 +288,7 @@ const BurstSelectorSC: React.FunctionComponent<{
         display: 'flex',
         flexDirection: 'column',
       }}>
-      <MTBHeadingH2 style={{maxWidth: '290px'}}>
+      <MTBHeadingH2 style={{maxWidth: '290px', marginBottom: '40px'}}>
         What scheduled session(s) in your study should be repeated as a burst?
       </MTBHeadingH2>
       {eventKeys.map(key => (
@@ -326,39 +330,15 @@ const BurstSelectorSC: React.FunctionComponent<{
           ))}
         </Paper>
       ))}
-      {/*} <FormGroup className={classes.checkBoxStyling}>
-        {schedule.sessions.map((s, index) => (
-          <FormControlLabel
-            key={s.guid}
-            control={
-              <Checkbox
-                color="secondary"
-                classes={{checked: classes.checked}}
-                checked={burstSessionGuids.includes(s.guid!)}
-                onChange={e => updateSelection(s.guid!, e.target.checked)}
-                name="isburst"
-              />
-            }
-            label={
-              <TooltipHoverDisplay
-                session={s}
-                index={index}
-                getSession={() => {
-                  return {label: s.name}
-                }}
-              />
-            }></FormControlLabel>
-        ))}
-      </FormGroup>*/}
     </div>
   )
 }
 const BurstScheduleSC: React.FunctionComponent<{
   burstFrequency?: number
   burstNumber?: number
-  onSave: Function
+
   onChange: (type: 'F' | 'N', value: number) => void
-}> = ({burstFrequency, burstNumber, onChange, onSave}) => {
+}> = ({burstFrequency, burstNumber, onChange}) => {
   const classes = useStyles()
   return (
     <div className={classes.setBurstInfoContainer}>
@@ -366,9 +346,9 @@ const BurstScheduleSC: React.FunctionComponent<{
         How often should this burst be scheduled to repeat?
       </MTBHeadingH2>
       <FormGroup className={classes.burstSchedule}>
-        <FormControl className={classes.row}>
+        <FormControl fullWidth className={classes.row}>
           <InputLabel htmlFor="burst-freq" className={classes.assignBurstText}>
-            Assign a new burst every:
+            Gap between bursts:
           </InputLabel>
           <SmallTextBox
             value={burstFrequency || ''}
@@ -378,7 +358,10 @@ const BurstScheduleSC: React.FunctionComponent<{
           weeks
         </FormControl>
         <FormControl fullWidth className={classes.row}>
-          <InputLabel htmlFor="burst-num" style={{marginRight: '24px'}}>
+          <InputLabel
+            htmlFor="burst-num"
+            style={{marginRight: '24px'}}
+            className={classes.assignBurstText}>
             For:
           </InputLabel>
           <SmallTextBox
@@ -389,7 +372,6 @@ const BurstScheduleSC: React.FunctionComponent<{
           bursts
         </FormControl>
       </FormGroup>
-      <SaveButton onClick={() => onSave()} />
     </div>
   )
 }
@@ -397,17 +379,7 @@ const BurstScheduleSC: React.FunctionComponent<{
 const ConfigureBurstTab: React.ForwardRefRenderFunction<
   SaveHandle,
   ConfigureBurstTabProps
-> = (
-  {
-    //hasObjectChanged,
-    //saveLoader,
-
-    onNavigate,
-    id,
-    children,
-  }: ConfigureBurstTabProps,
-  ref
-) => {
+> = ({onNavigate, id, children}: ConfigureBurstTabProps, ref) => {
   const classes = useStyles()
 
   React.useImperativeHandle(ref, () => ({
@@ -416,8 +388,6 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
     },
   }))
 
-  const {data: study} = useStudy(id)
-  const {data: timeline, error, isLoading} = useTimeline(id)
   const {
     isSuccess: scheduleUpdateSuccess,
     isError: scheduleUpdateError,
@@ -432,8 +402,6 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
   const [burstFrequency, setBurstFrequency] = React.useState<
     number | undefined
   >()
-
-  //const [selectedEvent, setSelectedEvent] = React.useState('')
 
   React.useEffect(() => {
     if (!schedule) {
@@ -465,19 +433,7 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
     console.log(burstSessionGuids)
   }, [schedule])
 
-  //setting new state
-  const updateData = (schedule: Schedule) => {
-    // setSchedule(schedule)
-    //onUpdate(schedule)
-  }
   const save = async () => {
-    /*export type StudyBurst = {
-  identifier: string
-  originEventId: string
-  interval: string //($ISO 8601 Duration) e.g. P1W
-  occurrences: number
-  updateType: EventUpdateType
-}*/
     if (!burstFrequency || !burstNumber || !schedule || !originEventId) {
       return
     }
@@ -559,7 +515,6 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
             <BurstScheduleSC
               burstFrequency={burstFrequency}
               burstNumber={burstNumber}
-              onSave={save}
               onChange={(type: 'N' | 'F', value: number) => {
                 if (type === 'F') {
                   setBurstFrequency(value)
@@ -571,20 +526,28 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
           </div>
         </div>
       )}
+      <Box textAlign="center">
+        {' '}
+        <SaveButton onClick={save} />
+      </Box>
       {displayBurstInfoText && (
         <Box className={classes.burstsInfoText}>
-          <Box className={classes.row}>
-            <img className={classes.calendarIcon} src={CalendarIcon}></img>
-            <Box className={classes.burstInfoTextContainer}>
+          <img className={classes.calendarIcon} src={CalendarIcon}></img>
+          <Box>
+            <p>
               Your
               <strong style={{backgroundColor: '#FFF509'}}>
                 {' '}
                 {burstNumber} burst(s)
               </strong>{' '}
-              will be scheduled <strong>{burstFrequency} week(s)</strong> apart.
+              will be automatically scheduled{' '}
+              <strong>{burstFrequency} week(s)</strong> apart from your
+              <strong>Session Start Date</strong>.
+            </p>
+            <p>
               Bursts can be rescheduled in the Participant Manager to accomodate
               a participant’s availability.
-            </Box>
+            </p>
           </Box>
         </Box>
       )}
