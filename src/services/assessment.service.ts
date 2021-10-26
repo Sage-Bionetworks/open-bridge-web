@@ -1,13 +1,16 @@
+import _ from 'lodash'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {Assessment} from '../types/types'
-import {getItem, KEYS} from './lshelper'
+
+const MTB_TAG = 'Mobile Toolbox'
 
 const AssessmentService = {
   getAssessments,
   getAssessmentsWithResources,
-  getAssessmentsForSession,
+
   getResource,
+  MTB_TAG,
 }
 
 const isArcApp = (): {isArc: boolean; token?: string} => {
@@ -33,7 +36,10 @@ async function getAssessment(
     token
   )
 
-  return [result.data]
+  const returnResult = isArc
+    ? [result.data]
+    : [{...result.data, tags: _.without(result.data.tags, MTB_TAG)}]
+  return returnResult
 }
 
 async function getAssessments(): Promise<Assessment[]> {
@@ -47,7 +53,12 @@ async function getAssessments(): Promise<Assessment[]> {
     token
   )
 
-  return result.data.items
+  const returnResult = isArc
+    ? result.data.items
+    : result.data.items
+        .filter(item => item.tags.includes(MTB_TAG))
+        .map(item => ({...item, tags: _.without(item.tags, MTB_TAG)}))
+  return returnResult
 }
 
 async function getResource(assessment: Assessment): Promise<Assessment> {
@@ -102,32 +113,6 @@ async function getAssessmentsWithResources(
 
     return result
   })
-}
-
-async function getAssessmentsForSession(
-  sessionId: string,
-  token?: string
-): Promise<Assessment[]> {
-  // aling to do when api is ready
-  /* const result =await callEndpoint<{ items: Assessment[] }>(
-    constants.endpoints.assessmentsForSession.replace(
-      ':sessionId',
-      sessionId),
-    'GET',
-    {},
-    token,
-  
-
-  return result*/
-  const sessionAssessments = await getItem<
-    {sessionId: string; assessments: Assessment[]}[]
-  >(KEYS.ASSESSMENTS)
-  if (!sessionAssessments) {
-    return []
-  }
-  return (
-    sessionAssessments.find(a => a.sessionId === sessionId)?.assessments || []
-  )
 }
 
 export default AssessmentService
