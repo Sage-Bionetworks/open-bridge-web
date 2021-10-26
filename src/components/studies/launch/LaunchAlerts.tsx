@@ -158,7 +158,7 @@ const ALERTS: StudyAlertSection[] = [
               _.get(n.messages, '0.subject') ===
                 DEFAULT_NOTIFICATION.messages[0]!.subject
           )
-          return !!defaultNotifications
+          return !defaultNotifications
         },
         isDismissable: true,
       },
