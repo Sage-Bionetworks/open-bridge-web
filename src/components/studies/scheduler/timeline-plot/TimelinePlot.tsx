@@ -139,12 +139,14 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
 
     const xCoordsMap = [...weeks].map((_week, weekNumber) => {
       const coords = sortedSessions.map(session => {
+        console.log(session)
         return Utility.getDaysFractionForSingleSession(
           session.guid!,
           schedulingItems,
           {start: weekNumber * 7, end: (weekNumber + 1) * 7}
         )
       })
+      console.log('coords', coords)
       const hasItems = coords.find(coordArr => coordArr.coords.length > 0)
       if (hasItems) {
         visibleWeeksCounter++
