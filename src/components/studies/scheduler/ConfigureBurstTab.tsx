@@ -259,7 +259,7 @@ const BurstSelectorSC: React.FunctionComponent<{
   const classes = useStyles()
   const groups = _.groupBy(schedule.sessions, 'startEventIds.0')
   //const [selectedEvent, setSelectedEvent] = React.useState('')
-
+  console.log('TEST')
   const updateSelection = (guid: string, isSelected: boolean) => {
     if (isSelected) {
       onUpdateSessionSelection([...burstSessionGuids, guid!])
