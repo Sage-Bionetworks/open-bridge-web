@@ -4,9 +4,10 @@ import PhoneBg from '@assets/appdesign/phone_bg.svg'
 import {ReactComponent as PhoneBottomImg} from '@assets/appdesign/phone_buttons.svg'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import {MTBHeadingH1, MTBHeadingH2} from '@components/widgets/Headings'
+import SaveButton from '@components/widgets/SaveButton'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import {Box, Paper, Switch} from '@material-ui/core'
+import {Box, CircularProgress, Paper, Switch} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import StudyService from '@services/study.service'
 import {latoFont, ThemeType} from '@style/theme'
@@ -151,7 +152,7 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     alignItems: 'center',
     fontWeight: 'bold',
     marginTop: theme.spacing(1.25),
-    marginBottom: theme.spacing(4),
+    marginBottom: theme.spacing(2),
   },
 
   hideSectionVisibility: {
@@ -639,6 +640,9 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
 
   async function handleFileChange(event?: ChangeEvent<HTMLInputElement>) {
     if (!event) {
+      if (study?.studyLogoUrl) {
+        handleUpdate({...study, studyLogoUrl: undefined})
+      }
       setHasObjectChanged(true)
       setPreviewFile(undefined)
       return
@@ -726,6 +730,10 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     const generalContactPhone = generalContact?.phone?.number
     if (generalContactPhone === '' || generalContactPhone === '+1') {
       delete generalContact!.phone
+    }
+    //if using default message
+    if (newStudy.clientData?.welcomeScreenData?.isUsingDefaultMessage) {
+      updatedStudy.clientData!.welcomeScreenData!.useOptionalDisclaimer = true
     }
     return updatedStudy
   }
@@ -860,28 +868,13 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
           <Box className={classes.fields}>
             <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
             <p className={classes.smallScreenText}>
-              When a participant downloads the app, they will be presented a
-              welcome screen after signing into the study.
+              When a participant downloads the appand signs into the study, they
+              are greeted with a welcome screen.
               <br></br>
               <br></br>
-              You can customize your logo and background color as well as choose
-              to use a custom welcome message or a default one.
-              <br></br>View how it would be displayed to the right.
+              Customize what you would like to display to participants below:
             </p>
-            <div className={classes.switchContainer}>
-              <Box mr={1.5}>Use default message</Box>
-              <Box mt={0.5}>
-                <Switch
-                  color="primary"
-                  checked={
-                    !study.clientData.welcomeScreenData
-                      ?.isUsingDefaultMessage || false
-                  }
-                  onChange={e => updateDefaultMessageToggle(e.target.checked)}
-                />
-              </Box>
-              <Box ml={1.5}>Customize</Box>
-            </div>
+
             <div>
               <ol className={classes.steps}>
                 <UploadStudyLogoSection
@@ -917,37 +910,66 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
                     )}
                   </Box>
                 </Subsection>
-                {!study.clientData.welcomeScreenData?.isUsingDefaultMessage ? (
-                  <WelcomeScreenMessagingSection
-                    saveLoader={saveLoader}
-                    saveInfo={saveInfo}
-                    SimpleTextInputStyles={SimpleTextInputStyles}
-                    onUpdate={updateWelcomeScreenMessaging}
-                    welcomeScreenHeader={
-                      study.clientData.welcomeScreenData?.welcomeScreenHeader ||
-                      ''
-                    }
-                    welcomeScreenBody={
-                      study.clientData.welcomeScreenData?.welcomeScreenBody ||
-                      ''
-                    }
-                    welcomeScreenFromText={
-                      study.clientData.welcomeScreenData
-                        ?.welcomeScreenFromText || ''
-                    }
-                    welcomeScreenSalutation={
-                      study.clientData.welcomeScreenData
-                        ?.welcomeScreenSalutation || ''
-                    }
-                    useOptionalDisclaimer={
-                      study.clientData.welcomeScreenData
-                        ?.useOptionalDisclaimer || false
-                    }
-                  />
-                ) : (
-                  <li className={classes.hideSectionVisibility}></li>
-                )}
+                <Subsection heading="Welcome screen messaging">
+                  <div className={classes.switchContainer}>
+                    <Box mr={1.5}>Use default message</Box>
+                    <Box mt={0.5}>
+                      <Switch
+                        color="primary"
+                        checked={
+                          !study.clientData.welcomeScreenData
+                            ?.isUsingDefaultMessage || false
+                        }
+                        onChange={e =>
+                          updateDefaultMessageToggle(e.target.checked)
+                        }
+                      />
+                    </Box>
+                    <Box ml={1.5}>Customize message</Box>
+                  </div>
+                  {!study.clientData.welcomeScreenData
+                    ?.isUsingDefaultMessage && (
+                    <WelcomeScreenMessagingSection
+                      SimpleTextInputStyles={SimpleTextInputStyles}
+                      onUpdate={updateWelcomeScreenMessaging}
+                      welcomeScreenHeader={
+                        study.clientData.welcomeScreenData
+                          ?.welcomeScreenHeader || ''
+                      }
+                      welcomeScreenBody={
+                        study.clientData.welcomeScreenData?.welcomeScreenBody ||
+                        ''
+                      }
+                      welcomeScreenFromText={
+                        study.clientData.welcomeScreenData
+                          ?.welcomeScreenFromText || ''
+                      }
+                      welcomeScreenSalutation={
+                        study.clientData.welcomeScreenData
+                          ?.welcomeScreenSalutation || ''
+                      }
+                      useOptionalDisclaimer={
+                        study.clientData.welcomeScreenData
+                          ?.useOptionalDisclaimer || false
+                      }
+                    />
+                  )}{' '}
+                </Subsection>
               </ol>
+              <Box textAlign="left">
+                {saveLoader ? (
+                  <div className="text-center">
+                    <CircularProgress
+                      color="primary"
+                      size={25}></CircularProgress>
+                  </div>
+                ) : (
+                  <SaveButton
+                    onClick={() => saveInfo()}
+                    id="save-button-study-builder-1"
+                  />
+                )}
+              </Box>
             </div>
           </Box>
           <Box className={classes.phoneArea}>
