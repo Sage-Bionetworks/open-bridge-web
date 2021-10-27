@@ -94,6 +94,11 @@ export interface TimelinePlotProps {
   sortedSessions: StudySession[]
 }
 
+type PlotData = {
+  sessionInfos: {startEventId?: string; coords: number[]}[]
+  weekNumber: number
+}
+
 const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   schedulingItems,
   sortedSessions,
@@ -102,7 +107,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   const ref = React.useRef<HTMLDivElement>(null)
   const [isExpanded, setIsExpanded] = React.useState(false)
   const [plotWidth, setPlotWidth] = React.useState<number | null>(null)
-  const [xCoords, setXCoords] = React.useState<any>()
+  const [plotData, setPlotData] = React.useState<PlotData[]>()
 
   function handleResize() {
     if (ref && ref.current) {
@@ -118,8 +123,8 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
 
   React.useEffect(() => {
     if (schedulingItems) {
-      const result = createXCoords(schedulingItems)
-      setXCoords(result)
+      const result = createPlotData(schedulingItems)
+      setPlotData(result)
     }
   }, [schedulingItems])
 
@@ -130,13 +135,13 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
     return unitWidth
   }
 
-  function createXCoords(schedulingItems: TimelineScheduleItem[]) {
+  function createPlotData(schedulingItems: TimelineScheduleItem[]): PlotData[] {
     const numOfWeeks = Math.ceil(_.last(schedulingItems!)!.endDay / 7)
 
-    var result: Record<string, any> = {}
+    var result: Record<string, PlotData> = {}
 
     for (var weekNumber = 0; weekNumber < numOfWeeks; weekNumber++) {
-      const coords = sortedSessions.map(session => {
+      const sessionInfos = sortedSessions.map(session => {
         return Utility.getDaysFractionForSingleSession(
           session.guid!,
           schedulingItems,
@@ -144,23 +149,25 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
         )
       })
 
-      const hasItems = coords.find(coordArr => coordArr.coords.length > 0)
+      const hasItems = sessionInfos.find(
+        sessionInfo => sessionInfo.coords.length > 0
+      )
 
       if (hasItems)
         result[weekNumber] = {
-          coords: coords,
-          name: weekNumber,
+          sessionInfos,
+          weekNumber,
         }
     }
 
     var sortedResult = _.sortBy(result, [
       function (o) {
-        return o.name
+        return o.weekNumber
       },
     ])
     return sortedResult
   }
-  if (!schedulingItems || !xCoords) {
+  if (!schedulingItems || !plotData) {
     return <></>
   }
 
@@ -190,13 +197,13 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                 </div>
               </div>
             </div>
-            {xCoords &&
-              xCoords.map(
-                (wk: any, index: number) =>
+            {plotData &&
+              plotData.map(
+                (wk, index) =>
                   (isExpanded || index < 2) && (
                     <div className={classes.week} key={`week_${index}`}>
                       <div style={{width: '60px'}} key="week_index">
-                        Week {wk.name + 1}
+                        Week {wk.weekNumber + 1}
                       </div>
                       <div
                         style={{flexGrow: 1, flexShrink: 0}}
@@ -217,7 +224,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                               style={{position: 'relative', top: '0px'}}
                               key="session_plot">
                               <SessionPlot
-                                xCoords={wk.coords[sIndex].coords}
+                                xCoords={wk.sessionInfos[sIndex].coords}
                                 sessionIndex={sortedSessions.findIndex(
                                   s => s.guid === session.guid
                                 )}
@@ -234,7 +241,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                     </div>
                   )
               )}
-            {xCoords.length > 2 && (
+            {plotData.length > 2 && (
               <div className={classes.showMore}>
                 <Button
                   onClick={e => setIsExpanded(prev => !prev)}
