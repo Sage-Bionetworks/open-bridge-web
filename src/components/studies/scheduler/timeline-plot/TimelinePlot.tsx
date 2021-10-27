@@ -155,6 +155,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
         isVisible: isExpanded ? hasItems : hasItems && visibleWeeksCounter < 3,
       }
     })
+    console.log('map', xCoordsMap)
     return xCoordsMap
   }
   if (!schedulingItems || !xCoords) {
