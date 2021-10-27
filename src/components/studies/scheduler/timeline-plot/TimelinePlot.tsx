@@ -91,20 +91,23 @@ const useStyles = makeStyles(theme => ({
 
 export interface TimelinePlotProps {
   schedulingItems: TimelineScheduleItem[]
-
   sortedSessions: StudySession[]
+}
+
+type PlotData = {
+  sessionInfos: {startEventId?: string; coords: number[]}[]
+  weekNumber: number
 }
 
 const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   schedulingItems,
-
   sortedSessions,
 }: TimelinePlotProps) => {
   const classes = useStyles()
   const ref = React.useRef<HTMLDivElement>(null)
   const [isExpanded, setIsExpanded] = React.useState(false)
   const [plotWidth, setPlotWidth] = React.useState<number | null>(null)
-  const [xCoords, setXCoords] = React.useState<any>()
+  const [plotData, setPlotData] = React.useState<PlotData[]>()
 
   function handleResize() {
     if (ref && ref.current) {
@@ -120,35 +123,25 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
 
   React.useEffect(() => {
     if (schedulingItems) {
-      const result = createXCoords(schedulingItems)
-      setXCoords(result)
+      const result = createPlotData(schedulingItems)
+      setPlotData(result)
     }
   }, [schedulingItems])
 
   const unitWidth = getUnitWidth()
 
   function getUnitWidth(): number {
-    //  const unitWidth = ((plotWidth || 0) - 30 - 124) / 7
     const unitWidth = Math.round(((plotWidth || 0) - 154) / 7)
     return unitWidth
   }
 
-  function createXCoords(schedulingItems: TimelineScheduleItem[]) {
-    console.log('test')
-    var z = [...new Array(3)].map(x => {
-      console.log('hello')
-      return 1
-    })
-    console.log('z = ' + z)
-    let visibleWeeksCounter = 0
+  function createPlotData(schedulingItems: TimelineScheduleItem[]): PlotData[] {
     const numOfWeeks = Math.ceil(_.last(schedulingItems!)!.endDay / 7)
-    const weeks = new Array(Math.ceil(_.last(schedulingItems!)!.endDay / 7)) //Math.ceil(scheduleLength / 7))
 
-    var result: Record<string, any> = {}
-    // const xCoordsMap = [...weeks].map((_week, weekNumber) => {
+    var result: Record<string, PlotData> = {}
 
     for (var weekNumber = 0; weekNumber < numOfWeeks; weekNumber++) {
-      const coords = sortedSessions.map(session => {
+      const sessionInfos = sortedSessions.map(session => {
         return Utility.getDaysFractionForSingleSession(
           session.guid!,
           schedulingItems,
@@ -156,29 +149,25 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
         )
       })
 
-      const hasItems = coords.find(coordArr => coordArr.coords.length > 0)
-      if (hasItems) {
-        visibleWeeksCounter++
-      }
+      const hasItems = sessionInfos.find(
+        sessionInfo => sessionInfo.coords.length > 0
+      )
+
       if (hasItems)
         result[weekNumber] = {
-          coords: coords,
-          name: weekNumber,
-          isVisible: isExpanded
-            ? hasItems
-            : hasItems && visibleWeeksCounter < 3,
+          sessionInfos,
+          weekNumber,
         }
     }
 
     var sortedResult = _.sortBy(result, [
       function (o) {
-        return o.name
+        return o.weekNumber
       },
     ])
-    console.log(sortedResult, 'sorted')
     return sortedResult
   }
-  if (!schedulingItems || !xCoords) {
+  if (!schedulingItems || !plotData) {
     return <></>
   }
 
@@ -188,7 +177,6 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
         <div ref={ref} className={classes.plotContainer}>
           <div
             style={{
-              // height: `${sortedSessions.length * graphSessionHeight}px`,
               position: 'relative',
             }}>
             <div className={classes.week}>
@@ -209,13 +197,13 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                 </div>
               </div>
             </div>
-            {xCoords &&
-              xCoords.map(
-                (wk: any, index: number) =>
-                  (isExpanded || index < 3) && (
+            {plotData &&
+              plotData.map(
+                (wk, index) =>
+                  (isExpanded || index < 2) && (
                     <div className={classes.week} key={`week_${index}`}>
                       <div style={{width: '60px'}} key="week_index">
-                        Week {wk.name + 1}
+                        Week {wk.weekNumber + 1}
                       </div>
                       <div
                         style={{flexGrow: 1, flexShrink: 0}}
@@ -236,7 +224,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                               style={{position: 'relative', top: '0px'}}
                               key="session_plot">
                               <SessionPlot
-                                xCoords={wk.coords[sIndex].coords}
+                                xCoords={wk.sessionInfos[sIndex].coords}
                                 sessionIndex={sortedSessions.findIndex(
                                   s => s.guid === session.guid
                                 )}
@@ -253,23 +241,25 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                     </div>
                   )
               )}
-            <div className={classes.showMore}>
-              <Button
-                onClick={e => setIsExpanded(prev => !prev)}
-                variant="text">
-                {isExpanded ? (
-                  <>
-                    <span>less&nbsp;</span>
-                    <Arrow className={classes.lessIcon} />
-                  </>
-                ) : (
-                  <>
-                    <span>more&nbsp;</span>
-                    <Arrow />
-                  </>
-                )}
-              </Button>
-            </div>
+            {plotData.length > 2 && (
+              <div className={classes.showMore}>
+                <Button
+                  onClick={e => setIsExpanded(prev => !prev)}
+                  variant="text">
+                  {isExpanded ? (
+                    <>
+                      <span>less&nbsp;</span>
+                      <Arrow className={classes.lessIcon} />
+                    </>
+                  ) : (
+                    <>
+                      <span>more&nbsp;</span>
+                      <Arrow />
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
