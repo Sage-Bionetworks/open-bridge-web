@@ -104,8 +104,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   const ref = React.useRef<HTMLDivElement>(null)
   const [isExpanded, setIsExpanded] = React.useState(false)
   const [plotWidth, setPlotWidth] = React.useState<number | null>(null)
-  const [lastWeekToShowCollapsed, setLastWeekToShowCollapsed] =
-    React.useState(1)
+  const [xCoords, setXCoords] = React.useState<any>()
 
   function handleResize() {
     if (ref && ref.current) {
@@ -119,13 +118,14 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
     window.addEventListener('resize', handleResize)
   })
 
-  if (!schedulingItems) {
-    return <></>
-  }
-  const weeks = new Array(Math.ceil(_.last(schedulingItems!)!.endDay / 7)) //Math.ceil(scheduleLength / 7))
-  console.log('weeks = ', weeks)
+  React.useEffect(() => {
+    if (schedulingItems) {
+      const result = createXCoords(schedulingItems)
+      setXCoords(result)
+    }
+  }, [schedulingItems])
+
   const unitWidth = getUnitWidth()
-  const xCoords = getXCoords()
 
   function getUnitWidth(): number {
     //  const unitWidth = ((plotWidth || 0) - 30 - 124) / 7
@@ -133,8 +133,10 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
     return unitWidth
   }
 
-  function getXCoords() {
+  function createXCoords(schedulingItems: TimelineScheduleItem[]) {
     let visibleWeeksCounter = 0
+    const weeks = new Array(Math.ceil(_.last(schedulingItems!)!.endDay / 7)) //Math.ceil(scheduleLength / 7))
+
     const xCoordsMap = [...weeks].map((_week, weekNumber) => {
       const coords = sortedSessions.map(session => {
         return Utility.getDaysFractionForSingleSession(
@@ -154,6 +156,9 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
       }
     })
     return xCoordsMap
+  }
+  if (!schedulingItems || !xCoords) {
+    return <></>
   }
 
   return (
@@ -183,10 +188,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                 </div>
               </div>
             </div>
-            hello2
-            {[1, 2].map((wk, index) => (
-              <div>hi2 Week {index + 1}</div>
-            ))}
+
             {[1, 2].map((wk, index) => (
               /* !!xCoords[index].isVisible &&*/ <div
                 className={classes.week}
