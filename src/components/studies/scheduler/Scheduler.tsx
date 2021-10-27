@@ -58,7 +58,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   const classes = useStyles()
 
   const [steps, setSteps] = useState(getSteps())
-  const [activeStep, setActiveStep] = React.useState(1)
+  const [activeStep, setActiveStep] = React.useState(0)
   const [saveLoader, setSaveLoader] = React.useState(false)
   const [isNextEnabled, setIsNextEnabled] = React.useState(true)
   type CountdownHandle = React.ElementRef<typeof SessionStartTab>
