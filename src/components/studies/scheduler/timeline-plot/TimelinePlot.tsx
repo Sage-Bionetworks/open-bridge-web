@@ -134,25 +134,28 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   }
 
   function createXCoords(schedulingItems: TimelineScheduleItem[]) {
+    console.log('test')
+    var z = [...new Array(3)].map(x => {
+      console.log('hello')
+      return 1
+    })
+    console.log('z = ' + z)
     let visibleWeeksCounter = 0
     const numOfWeeks = Math.ceil(_.last(schedulingItems!)!.endDay / 7)
     const weeks = new Array(Math.ceil(_.last(schedulingItems!)!.endDay / 7)) //Math.ceil(scheduleLength / 7))
-    console.log('weeks', weeks)
-    console.log(weeks.length)
+
     var result: Record<string, any> = {}
     // const xCoordsMap = [...weeks].map((_week, weekNumber) => {
 
     for (var weekNumber = 0; weekNumber < numOfWeeks; weekNumber++) {
-      console.log('sortedSessions', sortedSessions)
       const coords = sortedSessions.map(session => {
-        console.log(session)
         return Utility.getDaysFractionForSingleSession(
           session.guid!,
           schedulingItems,
           {start: weekNumber * 7, end: (weekNumber + 1) * 7}
         )
       })
-      console.log('coords', coords)
+
       const hasItems = coords.find(coordArr => coordArr.coords.length > 0)
       if (hasItems) {
         visibleWeeksCounter++
@@ -160,12 +163,13 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
       if (hasItems)
         result[weekNumber] = {
           coords: coords,
+          name: weekNumber,
           isVisible: isExpanded
             ? hasItems
             : hasItems && visibleWeeksCounter < 3,
         }
     }
-    console.log('map', result)
+
     var sortedResult = _.sortBy(result, [
       function (o) {
         return o.name
@@ -206,44 +210,49 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
               </div>
             </div>
             {xCoords &&
-              xCoords.map((wk: any, index: number) => (
-                /* !!xCoords[index].isVisible &&*/ <div
-                  className={classes.week}
-                  key={`week_${index}`}>
-                  <div style={{width: '60px'}} key="week_index">
-                    Week {index + 1}
-                  </div>
-                  <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
-                    {sortedSessions.map((session, sIndex) => (
-                      <div className={classes.graph} key={`session_${sIndex}`}>
-                        <Tooltip
-                          key="tooltip"
-                          placement="top"
-                          title={`Starts on: ${session.startEventIds[0]}`}>
-                          <div className={classes.sessionName}>
-                            <SessionIcon index={sIndex} />
-                          </div>
-                        </Tooltip>
-                        <div
-                          style={{position: 'relative', top: '0px'}}
-                          key="session_plot">
-                          <SessionPlot
-                            xCoords={wk.coords[sIndex].coords}
-                            sessionIndex={sortedSessions.findIndex(
-                              s => s.guid === session.guid
-                            )}
-                            displayIndex={0}
-                            unitPixelWidth={unitWidth}
-                            scheduleLength={7}
-                            schedulingItems={schedulingItems}
-                            sessionGuid={session.guid!}
-                          />
-                        </div>
+              xCoords.map(
+                (wk: any, index: number) =>
+                  (isExpanded || index < 3) && (
+                    <div className={classes.week} key={`week_${index}`}>
+                      <div style={{width: '60px'}} key="week_index">
+                        Week {wk.name + 1}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+                      <div
+                        style={{flexGrow: 1, flexShrink: 0}}
+                        key="week_graph">
+                        {sortedSessions.map((session, sIndex) => (
+                          <div
+                            className={classes.graph}
+                            key={`session_${sIndex}`}>
+                            <Tooltip
+                              key="tooltip"
+                              placement="top"
+                              title={`Starts on: ${session.startEventIds[0]}`}>
+                              <div className={classes.sessionName}>
+                                <SessionIcon index={sIndex} />
+                              </div>
+                            </Tooltip>
+                            <div
+                              style={{position: 'relative', top: '0px'}}
+                              key="session_plot">
+                              <SessionPlot
+                                xCoords={wk.coords[sIndex].coords}
+                                sessionIndex={sortedSessions.findIndex(
+                                  s => s.guid === session.guid
+                                )}
+                                displayIndex={0}
+                                unitPixelWidth={unitWidth}
+                                scheduleLength={7}
+                                schedulingItems={schedulingItems}
+                                sessionGuid={session.guid!}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+              )}
             <div className={classes.showMore}>
               <Button
                 onClick={e => setIsExpanded(prev => !prev)}
