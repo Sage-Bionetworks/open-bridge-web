@@ -1,4 +1,6 @@
 import {Box} from '@material-ui/core'
+import StudyService from '@services/study.service'
+import {Study} from '@typedefs/types'
 import React from 'react'
 import {NavLink} from 'react-router-dom'
 import {ReactComponent as ArrowIcon} from '../../assets/arrow_long.svg'
@@ -7,7 +9,7 @@ import {getStudyBuilderSections, StudySection} from './sections'
 
 export interface NavButtonsProps {
   currentSection: StudySection
-  id: string
+  study?: Study
 
   disabled?: boolean
   isPrevOnly?: boolean
@@ -19,21 +21,26 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
   currentSection,
   isNextOnly,
   isPrevOnly,
-  id,
+  study,
 
   disabled,
 }: NavButtonsProps) => {
-  const sectionLinks = getStudyBuilderSections(false)
+  if (!study) {
+    return <></>
+  }
+
+  const sectionLinks = getStudyBuilderSections(
+    StudyService.isStudyInDesign(study)
+  )
   const currentIndex = sectionLinks.findIndex(i => i.path === currentSection)
   const prev = currentIndex > 0 ? sectionLinks[currentIndex - 1] : undefined
   const next =
     currentIndex + 1 < sectionLinks.length
       ? sectionLinks[currentIndex + 1]
       : undefined
-
   const prevButton = prev ? (
     <NavLink
-      to={`/studies/builder/${id}/${prev.path}`}
+      to={`/studies/builder/${study.identifier}/${prev.path}`}
       style={{textDecoration: 'none'}}>
       <PrevButton variant="outlined" color="primary">
         <ArrowIcon /> {prev.name}
@@ -45,7 +52,7 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
 
   const nextButton = next ? (
     <NavLink
-      to={disabled ? '#' : `/studies/builder/${id}/${next.path}`}
+      to={disabled ? '#' : `/studies/builder/${study.identifier}/${next.path}`}
       style={{textDecoration: 'none'}}>
       <NextButton
         variant="contained"

@@ -195,6 +195,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 export interface PreviewProps {
   id: string
   isAssessmentDemo?: boolean
+  children?: React.ReactNode
 }
 
 const Reminder: React.FunctionComponent<{text: string; img: string}> = ({
@@ -405,7 +406,14 @@ const PreviewIntroScreen: React.FunctionComponent<{
           color="primary"
           onClick={() => {}}>
           <img className={classes.linkIcon} src={LinkIcon}></img>
-          <Box className={classes.tosText}>Full terms of service</Box>
+          <Box className={classes.tosText}>
+            <a
+              style={{textDecoration: 'none'}}
+              href="/MTB-ToS-v2-210923.pdf"
+              target="_blank">
+              Full terms of service
+            </a>
+          </Box>
         </PrevButton>
       </Box>
 
@@ -468,6 +476,7 @@ const PreviewIntroScreen: React.FunctionComponent<{
 const Preview: React.FunctionComponent<PreviewProps> = ({
   id,
   isAssessmentDemo,
+  children,
 }: PreviewProps) => {
   const classes = useStyles()
   const {token, demoExternalId} = useUserSessionDataState()
@@ -506,12 +515,15 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
         />
       )}
       {testParticipantId && (
-        <PreviewIdGenerated
-          isAssessmentDemo={isAssessmentDemo}
-          testParticipantId={testParticipantId}
-          studyId={id}>
-          {!isAssessmentDemo && false && <PreviewAssessments studyId={id} />}
-        </PreviewIdGenerated>
+        <>
+          <PreviewIdGenerated
+            isAssessmentDemo={isAssessmentDemo}
+            testParticipantId={testParticipantId}
+            studyId={id}>
+            {!isAssessmentDemo && false && <PreviewAssessments studyId={id} />}
+          </PreviewIdGenerated>
+          {!isAssessmentDemo && children}
+        </>
       )}
     </>
   )

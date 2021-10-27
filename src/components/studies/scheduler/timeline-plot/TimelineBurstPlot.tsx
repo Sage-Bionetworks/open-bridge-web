@@ -1,44 +1,32 @@
-import {Button} from '@material-ui/core'
+import {ReactComponent as SessionStartIcon} from '@assets/scheduler/calendar_icon.svg'
+import SessionIcon from '@components/widgets/SessionIcon'
+import {Tooltip} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import {latoFont} from '@style/theme'
+import {StudySession, TimelineScheduleItem} from '@typedefs/scheduling'
+import _ from 'lodash'
 import React from 'react'
-import {ReactComponent as SessionStartIcon} from '../../../../assets/scheduler/calendar_icon.svg'
-import {latoFont} from '../../../../style/theme'
-import {StudySession} from '../../../../types/scheduling'
-import {SingleSessionGridPlot} from './GridPlot'
 import SessionPlot from './SingleSessionPlot'
-import {daysPage, TimelineScheduleItem, TimelineZoomLevel} from './types'
 import Utility from './utility'
 
-const leftPad = 124
-const containerTopPad = 35
-const graphSessionHeight = 25
+const LayoutConstants = {
+  marginGap: 4,
+  bracketOverlay: 16,
+  weekVPad: 10,
+  singleSessionGraphHeight: 16,
+  singleSessionGraphBottomMargin: 5,
+  weekMinHeight: 44,
+}
 
 const useStyles = makeStyles(theme => ({
-  graph: {
-    height: '37px',
-    display: 'flex',
-    overflowX: 'clip',
-  },
-  burstTitle: {
-    fontFamily: latoFont,
-    fontStyle: 'normal',
-    fontWeight: 'bold',
-    fontSize: '12px',
-    margin: '24px 0  12px 8px',
-    lineHeight: '12px',
-    color: '#282828',
-  },
   frequencyBracket: {
     display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
     position: 'absolute',
-    right: '-95px',
-    width: '80px',
-
-    height: '80px',
-    top: '-40px',
+    right: '-75px',
     '&> div:first-child': {
-      width: '12px',
-      height: '80px',
+      width: '14px',
       border: '1px solid black',
       borderLeft: 'none',
     },
@@ -59,76 +47,83 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'left',
   },
 
-  root: {
-    overflowX: 'scroll',
-    width: '100%',
-
-    '&::-webkit-scrollbar': {
-      height: '8px',
-      '-webkit-appearance': 'none',
-    },
-
-    /* Track */
-    '&::-webkit-scrollbar-track': {
-      //bgColor: '#000';
-    },
-
-    '&::-webkit-scrollbar-thumb': {
-      borderRadius: '2px',
-      //color: 'blue',
-      background: '#C4C4C4',
-      boxShadow: '0 0 1px rgba(255, 255, 255, .5)',
-      '&:hover': {
-        background: '#b4b4b4',
-      },
-    },
-  },
+  root: {width: '100%', position: 'relative'},
   plotContainer: {
-    // backgroundColor: '#ECECEC',
-    padding: `${containerTopPad}px 0 20px ${leftPad}px`,
-    // position: 'relative',
+    padding: `0 0 20px 54px`,
+  },
+
+  graph: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: `${LayoutConstants.singleSessionGraphBottomMargin}px`,
+    height: `${LayoutConstants.singleSessionGraphHeight}px`,
   },
   sessionName: {
-    // backgroundColor: 'blue',
-    // position: 'relative',
-    // top: '-12px',
-    fontSize: '12px',
-    //  backgroundColor: '#FFF509',
-    padding: '5px',
-    width: `${leftPad}px`,
-    display: 'block',
-    lineHeight: `${graphSessionHeight}px`,
-    height: `${graphSessionHeight}px`,
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    // marginLeft: `${-leftPad}px`,
+    textAlign: 'center',
+    width: '12px',
+    '& svg': {
+      width: '5px',
+      height: '5px',
+    },
+    '&:hover': {
+      cursor: 'pointer',
+    },
   },
-  whiteBg: {
-    height: `${containerTopPad}px`,
-    marginTop: `-${containerTopPad}px`,
-    marginLeft: `-${leftPad}px`,
-    backgroundColor: '#FFF',
+  week: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  weekTitle: {
+    width: '82px',
+    lineHeight: '12px',
+    fontSize: '12px',
+    fontFamily: latoFont,
+  },
+  dayNumbers: {
+    fontFamily: latoFont,
+    fontSize: '14px',
+    width: '20px',
+    textAlign: 'center',
+    position: 'absolute',
   },
 }))
 
 export interface TimelineBurstPlotProps {
   schedulingItems: TimelineScheduleItem[]
-  scheduleLength: number
-  sortedSessions: StudySession[]
-  zoomLevel: TimelineZoomLevel
   burstSessionGuids: string[]
   burstNumber: number
   burstFrequency: number
+  sortedSessions: StudySession[]
 }
 
-const FrequencyBracket: React.FunctionComponent<{frequency: number}> = ({
-  frequency,
-}) => {
+type PlotData = {
+  name: number
+  burst: boolean
+  burstNum: number
+  sessions: {
+    startEventId: string | undefined
+    coords: number[]
+    guid: string | undefined
+  }[]
+}
+
+const FrequencyBracket: React.FunctionComponent<{
+  frequency: number
+  heightInterval: number
+}> = ({frequency, heightInterval}) => {
   const classes = useStyles()
+  if (heightInterval === -1) {
+    return <></>
+  }
+  const bottom = -1 * (heightInterval + LayoutConstants.bracketOverlay)
+  const height = heightInterval + LayoutConstants.bracketOverlay * 2
   return (
-    <div className={classes.frequencyBracket}>
-      <div />
+    <div
+      className={classes.frequencyBracket}
+      style={{bottom: `${bottom}px`, height: `${height}px`}}>
+      <div style={{height: `${height}px`}} />
       <div>
         <SessionStartIcon />
         <span className={classes.frequencyText}>{frequency} weeks</span>
@@ -139,32 +134,13 @@ const FrequencyBracket: React.FunctionComponent<{frequency: number}> = ({
 
 const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   schedulingItems,
-  scheduleLength,
-  sortedSessions,
-  zoomLevel,
-  burstNumber,
   burstFrequency,
   burstSessionGuids,
-}: TimelineBurstPlotProps) => {
+  sortedSessions,
+}) => {
   const classes = useStyles()
-  const [page, setPage] = React.useState(0)
-  const [burstSessions, setBurstSessions] = React.useState<StudySession[]>([])
-  const [nonBurstSessions, setNonBurstSessions] = React.useState<
-    StudySession[]
-  >([])
-
   const ref = React.useRef<HTMLDivElement>(null)
-
   const [plotWidth, setPlotWidth] = React.useState<number | null>(null)
-
-  React.useEffect(() => {
-    setNonBurstSessions(
-      sortedSessions.filter(s => !burstSessionGuids.includes(s.guid!))
-    )
-    setBurstSessions(
-      sortedSessions.filter(s => burstSessionGuids.includes(s.guid!))
-    )
-  }, [burstSessionGuids])
 
   function handleResize() {
     if (ref && ref.current) {
@@ -173,145 +149,272 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     }
   }
 
-  React.useEffect(() => {
-    setPage(0)
-  }, [zoomLevel])
-
   React.useLayoutEffect(() => {
     handleResize()
     window.addEventListener('resize', handleResize)
   })
 
-  const getPlotDaysInterval = (): {start: number; end: number} => {
-    return {
-      start: page * daysPage[zoomLevel],
-      end: (page + 1) * daysPage[zoomLevel],
-    }
-  }
-  const isLastPage = (): boolean => {
-    return scheduleLength < (page + 1) * daysPage[zoomLevel]
+  if (!schedulingItems) {
+    return <></>
   }
 
-  const getUnitWidth = (): number => {
-    return ((plotWidth || 0) - 30 - 124) / daysPage[zoomLevel]
+  const unitWidth = getUnitWidth()
+  const unwrappedSessions = unWrapSessions(schedulingItems)
+
+  const plotData = getPlotData(unwrappedSessions)
+
+  function getUnitWidth(): number {
+    const unitWidth = Math.round(((plotWidth || 0) - 170) / 7)
+    return unitWidth
+  }
+
+  //id in the form study_burst:[eventName]_burst:02
+  function getBurstNumberFromStartEventId(
+    startEventId: string,
+    sessionGuid: string
+  ) {
+    const burstParts = startEventId.match(/_burst:[0-9]+/g)
+
+    if (!burstParts?.length) {
+      if (burstSessionGuids.includes(sessionGuid)) {
+        return 0
+      } else {
+        return -1
+      }
+    } else {
+      return Number(burstParts[0].split(':')[1])
+    }
+  }
+
+  function unWrapSessions(items: TimelineScheduleItem[]) {
+    const lastBurstSessionEndDay = Math.max(
+      ...items
+        .filter(s => burstSessionGuids.includes(s.refGuid))
+        .map(s => s.endDay)
+    )
+    const burstLength = Math.floor(lastBurstSessionEndDay / 7) * 7
+    const unwrapped = items.map(i => {
+      const burstNumber = getBurstNumberFromStartEventId(
+        i.startEventId,
+        i.refGuid
+      )
+      //not burst -- return
+      if (burstNumber === -1) {
+        return i
+      } else if (burstNumber === 0) {
+        return {...i, startEventId: `study_burst:${i.startEventId}_burst:00`}
+      } else {
+        const offSet = burstNumber * (burstFrequency * 7 + burstLength)
+        return {...i, startDay: i.startDay + offSet, endDay: i.endDay + offSet}
+      }
+    })
+    return unwrapped
+  }
+
+  function getPlotData(schedItems: TimelineScheduleItem[]): PlotData[] {
+    var result: Record<string, PlotData> = {}
+    const numOfWeeks = Math.ceil(
+      Math.max(...unwrappedSessions.map(s => s.endDay)) / 7
+    )
+
+    for (var weekNumber = 0; weekNumber < numOfWeeks; weekNumber++) {
+      // do the non-burst sessions
+      let sessions = sortedSessions
+        .filter(s => !burstSessionGuids.includes(s.guid!))
+        .map(session => {
+          const sessionCoords = Utility.getDaysFractionForSingleSession(
+            session.guid!,
+            schedItems,
+            {start: weekNumber * 7, end: (weekNumber + 1) * 7},
+            true
+          )
+          return {...sessionCoords, guid: session.guid}
+        })
+
+      let hasItems = sessions.find(coordArr => coordArr.coords.length > 0)
+
+      if (hasItems) {
+        result[`${weekNumber}`] = {
+          name: weekNumber + 1,
+          burst: false,
+          burstNum: -1,
+          sessions,
+        }
+      }
+
+      sessions = sortedSessions
+        .filter(s => burstSessionGuids.includes(s.guid!))
+        .map(session => {
+          const sessionCoords = Utility.getDaysFractionForSingleSession(
+            session.guid!,
+            schedItems,
+
+            {start: weekNumber * 7, end: (weekNumber + 1) * 7},
+            true
+          )
+          // const last = Math.ceil(_.last(sessionCoords.coords) || -1)
+          return {...sessionCoords, guid: session.guid}
+        })
+
+      hasItems = sessions.find(coordArr => coordArr.coords.length > 0)
+
+      if (hasItems) {
+        const schedItemsForWeek = schedItems.filter(
+          i => i.startDay >= weekNumber * 7 && i.endDay < (weekNumber + 1) * 7
+        )
+        // for burst get the burst number
+        const firstSession = _.first(
+          schedItemsForWeek.filter(s => burstSessionGuids.includes(s.refGuid))
+        )
+        result[`${weekNumber}_burst`] = {
+          name: weekNumber + 1,
+          burst: true,
+          sessions,
+          burstNum: getBurstNumberFromStartEventId(
+            firstSession!.startEventId,
+            firstSession!.refGuid
+          ),
+        }
+      }
+    }
+    // sort by week number
+    var sortedResult = _.sortBy(result, [
+      function (o) {
+        return o.name
+      },
+    ])
+
+    return sortedResult
+  }
+
+  function calculateDistanceToNextBurst(
+    coords: PlotData[],
+    wkNumber: number,
+    burstNumber: number
+  ) {
+    var sessionsBetween = 0
+    const isLargeNumber = (x: PlotData) => {
+      return x.name == wkNumber && x.burstNum === burstNumber
+    }
+
+    const firstIndex = coords.findIndex(isLargeNumber)
+
+    if (firstIndex === coords.length - 1) {
+      return -1
+    }
+    if (coords[firstIndex + 1].burstNum == burstNumber || burstNumber === -1) {
+      return -1
+    }
+
+    sessionsBetween = LayoutConstants.marginGap
+    for (var i = firstIndex + 1; i < coords.length; i++) {
+      const val = coords[i]
+
+      if (val.burstNum === burstNumber + 1) {
+        return sessionsBetween
+      } else {
+        if (!val.burst) {
+          const weekHeight =
+            val.sessions.length * LayoutConstants.singleSessionGraphHeight +
+            (val.sessions.length - 1) *
+              LayoutConstants.singleSessionGraphBottomMargin
+
+          sessionsBetween =
+            sessionsBetween +
+            Math.max(weekHeight, LayoutConstants.weekMinHeight)
+          sessionsBetween = sessionsBetween + LayoutConstants.weekVPad * 2
+        }
+      }
+    }
+    return -1
   }
 
   return (
-    <div style={{paddingRight: '30px'}} ref={ref}>
-      <div style={{textAlign: 'right'}}>
-        <Button disabled={page == 0} onClick={e => setPage(prev => prev - 1)}>
-          &lt;&lt; PREV
-        </Button>
-        |
-        <Button
-          disabled={isLastPage()}
-          onClick={e => setPage(prev => prev + 1)}>
-          NEXT &gt;&gt;
-        </Button>
-      </div>
-      <div className={classes.graph} style={{height: '20px'}}>
-        <div className={classes.sessionName}>&nbsp;</div>
-        <div style={{position: 'relative', top: '10px'}}>
-          {' '}
-          <SingleSessionGridPlot
-            graphSessionHeight={graphSessionHeight - 10}
-            unitPixelWidth={getUnitWidth()}
-            hideDays={false}
-            interval={{...getPlotDaysInterval()}}
-            zoomLevel={zoomLevel}
-            numberSessions={1}
-            scheduleLength={scheduleLength}
-          />
-        </div>
-      </div>
-      {nonBurstSessions.map(session => (
-        <div className={classes.graph} style={{backgroundColor: '#EDEDED'}}>
-          <div className={classes.sessionName}>{session.name}</div>
-          <div style={{position: 'relative', top: '10px'}}>
-            <SingleSessionGridPlot
-              graphSessionHeight={graphSessionHeight - 10}
-              unitPixelWidth={getUnitWidth()}
-              hideDays={true}
-              zoomLevel={zoomLevel}
-              numberSessions={1}
-              scheduleLength={scheduleLength}
-            />
-
-            <SessionPlot
-              sessionIndex={sortedSessions.findIndex(
-                s => s.guid === session.guid
-              )}
-              xCoords={Utility.getDaysFractionForSingleSession(
-                session.guid!,
-                schedulingItems,
-                {...getPlotDaysInterval()}
-              )}
-              hasSessionLines={false}
-              displayIndex={0}
-              unitPixelWidth={getUnitWidth()}
-              scheduleLength={scheduleLength}
-              zoomLevel={zoomLevel}
-              schedulingItems={schedulingItems}
-              sessionGuid={session.guid!}
-              graphSessionHeight={graphSessionHeight}
-              containerWidth={Utility.getContainerWidth(
-                scheduleLength,
-                zoomLevel
-              )}
-            />
-          </div>
-        </div>
-      ))}
-      {[...Array(burstNumber)].map((i, burstIndex) => (
-        <div style={{position: 'relative'}}>
-          {burstIndex > 0 && <FrequencyBracket frequency={burstFrequency} />}
-          <div className={classes.burstTitle}>Burst {burstIndex + 1}</div>
-          <div>
-            {burstSessions.map((session, sIndex) => (
+    <div ref={ref} className={classes.plotContainer}>
+      <div className={classes.week}>
+        <div style={{width: '99px', paddingLeft: '12px'}}>Schedule</div>
+        <div className={classes.graph}>
+          <div className={classes.sessionName}></div>
+          <div style={{position: 'relative', top: '-10px'}}>
+            <div style={{left: '-5px', top: '-20px', position: 'absolute'}}>
+              {' '}
+              Day
+            </div>
+            {[...new Array(7)].map((_i, index) => (
               <div
-                className={classes.graph}
+                key={`day_number_${index}`}
+                className={classes.dayNumbers}
                 style={{
-                  backgroundColor: 'yellow',
+                  left: unitWidth * index - 10 + 'px',
                 }}>
-                <div className={classes.sessionName}>{session.name}</div>
-                <div style={{position: 'relative', top: '10px'}}>
-                  <SingleSessionGridPlot
-                    graphSessionHeight={graphSessionHeight - 10}
-                    unitPixelWidth={getUnitWidth()}
-                    hideDays={true}
-                    zoomLevel={zoomLevel}
-                    numberSessions={1}
-                    scheduleLength={scheduleLength}
-                  />
-
-                  <SessionPlot
-                    xCoords={Utility.getDaysFractionForSingleSession(
-                      session.guid!,
-                      schedulingItems,
-                      {...getPlotDaysInterval()}
-                    )}
-                    sessionIndex={sortedSessions.findIndex(
-                      s => s.guid === session.guid
-                    )}
-                    hasSessionLines={false}
-                    displayIndex={0}
-                    unitPixelWidth={getUnitWidth()}
-                    scheduleLength={scheduleLength}
-                    zoomLevel={zoomLevel}
-                    schedulingItems={schedulingItems}
-                    sessionGuid={session.guid!}
-                    graphSessionHeight={graphSessionHeight}
-                    containerWidth={Utility.getContainerWidth(
-                      scheduleLength,
-                      zoomLevel
-                    )}
-                  />
-                </div>
+                {index + 1}
               </div>
             ))}
           </div>
         </div>
-      ))}
+      </div>
+      <div style={{position: 'relative'}}>
+        {plotData &&
+          plotData.map((wk, index) => (
+            <div
+              className={classes.week}
+              key={`week_${wk.name}_ ${wk.burstNum}`}
+              style={{
+                marginBottom:
+                  plotData[index + 1] &&
+                  plotData[index + 1].burstNum === wk.burstNum
+                    ? '0px'
+                    : `${LayoutConstants.marginGap}px`,
+                padding: `${LayoutConstants.weekVPad}px 16px`,
+                backgroundColor: wk.burst ? 'yellow' : '#eee',
+                position: 'relative',
+              }}>
+              <FrequencyBracket
+                frequency={burstFrequency}
+                heightInterval={calculateDistanceToNextBurst(
+                  plotData,
+                  wk.name,
+                  wk.burstNum
+                )}
+              />
+
+              <div className={classes.weekTitle} key="week_index">
+                Week {wk.name}
+                {wk.burst !== false ? '/ Burst' + (wk.burstNum * 1 + 1) : ''}
+              </div>
+              <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
+                {wk.sessions.map((session, sIndex: number) => (
+                  <div className={classes.graph} key={`session_${sIndex}`}>
+                    <Tooltip
+                      key="tooltip"
+                      placement="top"
+                      title={`Starts on: ${session.startEventId}`}>
+                      <div className={classes.sessionName}>
+                        <SessionIcon
+                          index={sortedSessions.findIndex(
+                            s => s.guid === session.guid
+                          )}
+                        />
+                      </div>
+                    </Tooltip>
+
+                    <SessionPlot
+                      xCoords={session.coords}
+                      sessionIndex={sortedSessions.findIndex(
+                        s => s.guid === session.guid
+                      )}
+                      displayIndex={2}
+                      unitPixelWidth={unitWidth}
+                      scheduleLength={7}
+                      schedulingItems={schedulingItems}
+                      sessionGuid={session.guid!}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+      </div>
     </div>
   )
 }

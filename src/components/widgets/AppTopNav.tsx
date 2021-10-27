@@ -350,15 +350,17 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                 sessionData={sessionData}
                 setIsMobileOpen={setIsMobileOpen}>
                 <></>
-                <div className={classes.login}>
-                  <Button
-                    disabled={isLoginButtonDisabled}
-                    variant="text"
-                    className={classes.toolbarLink}
-                    href={'/sign-in'}>
-                    LOG IN
-                  </Button>
-                </div>
+                {window.location.pathname !== '/' && (
+                  <div className={classes.login}>
+                    <Button
+                      disabled={isLoginButtonDisabled}
+                      variant="text"
+                      className={classes.toolbarLink}
+                      href={'/sign-in'}>
+                      LOG IN
+                    </Button>
+                  </div>
+                )}
               </MenuLinksRhs>
             )}
             {sessionData && (
@@ -421,16 +423,18 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
                   Sign out
                 </Button>
               }></Logout>
-            <Button
-              disabled={isLoginButtonDisabled}
-              variant="text"
-              className={clsx(
-                classes.drawerAuthOptions,
-                classes.drawerMenuItem
-              )}
-              href={'/sign-in'}>
-              Login
-            </Button>
+            {window.location.pathname !== '/' && (
+              <Button
+                disabled={isLoginButtonDisabled}
+                variant="text"
+                className={clsx(
+                  classes.drawerAuthOptions,
+                  classes.drawerMenuItem
+                )}
+                href={'/sign-in'}>
+                Log in
+              </Button>
+            )}
           </MenuLinksRhs>
         </Drawer>
       </nav>

@@ -116,14 +116,14 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     animation: '$pop-out 0.5s ease',
     outline: `4px solid ${theme.palette.primary.dark}`,
   },
-  '@keyframes pop-out': {
+  /* '@keyframes pop-out': {
     '0%': {
       transform: 'scale(0)',
     },
     '100%': {
       transform: 'scale(1)',
     },
-  },
+  },*/
   menuBox: {
     display: 'flex',
     justifyContent: 'center',

@@ -2,7 +2,6 @@ import {ReactComponent as NotificationsIcon} from '@assets/scheduler/notificatio
 import {ReactComponent as TimerIcon} from '@assets/scheduler/timer_icon.svg'
 import AssessmentImage from '@components/assessments/AssessmentImage'
 import {useTimeline} from '@components/studies/scheduleHooks'
-import BlackBorderDropdown from '@components/widgets/BlackBorderDropdown'
 import LoadingComponent from '@components/widgets/Loader'
 import SessionIcon from '@components/widgets/SessionIcon'
 import {Box} from '@material-ui/core'
@@ -13,9 +12,7 @@ import {Schedule, StudySession, StudySessionGeneral} from '@typedefs/scheduling'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import Pluralize from 'react-pluralize'
-import TimelineCustomPlot from './timeline-plot/TimelineCustomPlot'
-import {TimelineZoomLevel} from './timeline-plot/types'
-import Utility from './timeline-plot/utility'
+import TimelinePlot from './timeline-plot/TimelinePlot'
 
 const useStyles = makeStyles(theme => ({
   stats: {
@@ -112,28 +109,9 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
 }: TimelineProps) => {
   const handleError = useErrorHandler()
 
-  const [scheduleLength, setScheduleLength] = React.useState(0)
-  const [dropdown, setDropdown] = React.useState(['Daily'])
-  const [currentZoomLevel, setCurrentZoomLevel] =
-    React.useState<TimelineZoomLevel>('Monthly')
   const {data: timeline, error, isLoading} = useTimeline(studyId)
 
   const classes = useStyles()
-
-  const setZoomLevel = (scheduleDuration: string) => {
-    const {periods, lengthInDays} = Utility.getZoomLevel(scheduleDuration)
-    setScheduleLength(lengthInDays)
-    setCurrentZoomLevel(periods[periods.length - 1])
-    setDropdown(periods)
-  }
-
-  React.useEffect(() => {
-    console.log('trying to update info')
-
-    if (timeline?.sessions) {
-      setZoomLevel(timeline.duration as string)
-    }
-  }, [timeline])
 
   const getSession = (sessionGuid: string): StudySessionGeneral => {
     return timeline?.sessions.find(s => s.guid === sessionGuid)!
@@ -175,22 +153,11 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
             />
           ))}
         </Box>
-        <BlackBorderDropdown
-          width="100px"
-          value={currentZoomLevel}
-          onChange={e => {
-            setCurrentZoomLevel(e.target.value as TimelineZoomLevel)
-          }}
-          id="zoom_level"
-          dropdown={dropdown.map(item => ({value: item, label: item}))}
-          emptyValueLabel="Select Zoom Level"></BlackBorderDropdown>
       </Box>
       {timeline?.schedule && (
-        <TimelineCustomPlot
+        <TimelinePlot
           schedulingItems={timeline.schedule}
-          scheduleLength={scheduleLength}
-          sortedSessions={schedFromDisplay.sessions}
-          zoomLevel={currentZoomLevel}></TimelineCustomPlot>
+          sortedSessions={schedFromDisplay.sessions}></TimelinePlot>
       )}
     </Box>
   )

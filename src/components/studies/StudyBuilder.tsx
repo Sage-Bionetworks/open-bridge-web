@@ -203,7 +203,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
 
     const navButtons = (
       <NavButtons
-        id={id}
+        study={study}
         key={`${id}_nav_button`}
         currentSection={section}
         isPrevOnly={section === 'launch'}
@@ -212,13 +212,13 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
 
     const navButtonsArray = [
       <NavButtons
-        id={id}
+        study={study}
         key={`${id}_p_button`}
         currentSection={section}
         isPrevOnly={true}
       />,
       <NavButtons
-        id={id}
+        study={study}
         key={`${id}_n_button`}
         currentSection={section}
         isNextOnly={true}></NavButtons>,
@@ -400,7 +400,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                           </Route>
 
                           <Route path={`/studies/builder/:id/preview`}>
-                            <Preview id={id}></Preview>
+                            <Preview id={id}> {navButtons}</Preview>
                           </Route>
                           <Route path={`/studies/builder/:id/launch`}>
                             <Launch id={id} onShowFeedback={showFeedback}>

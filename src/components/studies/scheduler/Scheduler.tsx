@@ -58,7 +58,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   const classes = useStyles()
 
   const [steps, setSteps] = useState(getSteps())
-  const [activeStep, setActiveStep] = React.useState(0)
+  const [activeStep, setActiveStep] = React.useState(1)
   const [saveLoader, setSaveLoader] = React.useState(false)
   const [isNextEnabled, setIsNextEnabled] = React.useState(true)
   type CountdownHandle = React.ElementRef<typeof SessionStartTab>
@@ -73,14 +73,21 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   }
   const firstPrevButton = (children as any)[0]
   const lastNextButton = (children as any)[2]
-  const handleNext = () => {
+
+  const doStep = (increment: number) => {
     setSaveLoader(true)
-    const nextStep = activeStep + 1
-    if (nextStep === 1) {
-      ref1.current?.save(nextStep)
-    } else {
-      ref2.current?.save(nextStep)
+    const nextStep = activeStep + increment
+    switch (activeStep) {
+      case 0:
+        ref1.current?.save(nextStep)
+        return
+      case 1:
+        ref2.current?.save(nextStep)
+        return
+      default:
+        ref3.current?.save(nextStep)
     }
+
     const newSteps = steps.map((s, i) =>
       i === activeStep ? {...s, isComplete: true} : s
     )
@@ -92,12 +99,6 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
     ref1.current?.save(index)
     ref2.current?.save(index)
     ref3.current?.save(index)
-  }
-
-  const handleBack = () => {
-    setSaveLoader(true)
-    const nextStep = activeStep - 1
-    ref2.current?.save(nextStep)
   }
 
   const handleNavigate = (step: number) => {
@@ -141,8 +142,11 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
               <PrevButton
                 variant="outlined"
                 color="primary"
-                onClick={handleBack}>
-                <ArrowIcon /> {steps[activeStep - 1].label}
+                onClick={() => {
+                  doStep(-1)
+                }}>
+                <ArrowIcon />
+                {steps[activeStep - 1].label}
               </PrevButton>
             )}
             &nbsp;&nbsp;
@@ -152,9 +156,10 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
             <NextButton
               variant="contained"
               color="primary"
-              onClick={handleNext}
+              onClick={() => doStep(+1)}
               disabled={!isNextEnabled}>
-              {steps[activeStep + 1].label} <ArrowIcon />
+              {steps[activeStep + 1].label}
+              <ArrowIcon />
             </NextButton>
           ) : (
             lastNextButton

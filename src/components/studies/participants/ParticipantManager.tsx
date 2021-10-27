@@ -262,8 +262,8 @@ const GoToDownloadPageLinkSC: FunctionComponent = () => {
       target="_blank"
       aria-label="downloadApp"
       className={classes.downloadPageLinkButton}>
-      <img src={DownloadAppIcon}></img>
-      App Download Link
+      <img src={DownloadAppIcon} style={{marginRight: '10px'}}></img> App
+      Download Link
     </Button>
   )
 }

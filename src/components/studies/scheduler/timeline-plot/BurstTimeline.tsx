@@ -1,14 +1,15 @@
 import {useTimeline} from '@components/studies/scheduleHooks'
 import {Box} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
-import moment from 'moment'
+import {latoFont} from '@style/theme'
+import {
+  Schedule,
+  StudySessionGeneral,
+  TimelineScheduleItem,
+} from '@typedefs/scheduling'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import {latoFont} from '../../../../style/theme'
-import {Schedule, StudySessionGeneral} from '../../../../types/scheduling'
-import BlackBorderDropdown from '../../../widgets/BlackBorderDropdown'
-import TimelineBurstPlot from './../timeline-plot/TimelineBurstPlot'
-import {TimelineScheduleItem, TimelineZoomLevel} from './types'
+import TimelineBurstPlot from './TimelineBurstPlot'
 
 const useStyles = makeStyles(theme => ({
   stats: {
@@ -68,15 +69,12 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
   const [sessions, setSessions] = React.useState<StudySessionGeneral[]>([])
   const [schedule, setSchedule] = React.useState<TimelineScheduleItem[]>()
   const [scheduleLength, setScheduleLength] = React.useState(0)
-  const [dropdown, setDropdown] = React.useState(['Daily'])
-  const [currentZoomLevel, setCurrentZoomLevel] =
-    React.useState<TimelineZoomLevel>('Monthly')
 
   const classes = useStyles()
 
   const {data: timeline, error, isLoading} = useTimeline(studyId)
 
-  const setZoomLevel = (scheduleDuration: string) => {
+  /* const setZoomLevel = (scheduleDuration: string) => {
     const periods: TimelineZoomLevel[] = [
       //'Daily',
 
@@ -98,14 +96,13 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
     }
     setCurrentZoomLevel(periods[0])
     setDropdown(periods)
-  }
+  }*/
 
   React.useEffect(() => {
     if (timeline?.sessions) {
       const {sessions, schedule} = timeline
       setSessions(sessions)
       setSchedule(schedule)
-      setZoomLevel(timeline.duration as string)
     }
   }, [timeline, schedFromDisplay?.version])
 
@@ -125,26 +122,13 @@ const BurstTimeline: React.FunctionComponent<TimelineProps> = ({
         </>
       )}
 
-      <Box mb={4} pr={4} textAlign="right">
-        <BlackBorderDropdown
-          width="100px"
-          value={currentZoomLevel}
-          onChange={e => {
-            setCurrentZoomLevel(e.target.value as TimelineZoomLevel)
-          }}
-          id="lead-investigator-drop-down"
-          dropdown={dropdown.map(item => ({value: item, label: item}))}
-          emptyValueLabel="Select Zoom Level"></BlackBorderDropdown>
-      </Box>
       {schedule && (
         <TimelineBurstPlot
           schedulingItems={schedule}
           burstSessionGuids={burstSessionGuids}
           burstNumber={burstNumber || 0}
           burstFrequency={burstFrequency || 0}
-          scheduleLength={scheduleLength}
-          sortedSessions={schedFromDisplay.sessions}
-          zoomLevel={currentZoomLevel}></TimelineBurstPlot>
+          sortedSessions={schedFromDisplay.sessions}></TimelineBurstPlot>
       )}
     </Box>
   )
