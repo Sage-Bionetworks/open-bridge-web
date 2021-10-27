@@ -183,11 +183,11 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                 </div>
               </div>
             </div>
-            hello
-            {[...weeks].map((wk, index) => (
-              <div>hi</div>
+            hello2
+            {[1, 2].map((wk, index) => (
+              <div>hi2 Week {index + 1}</div>
             ))}
-            {[...weeks].map((wk, index) => (
+            {[1, 2].map((wk, index) => (
               /* !!xCoords[index].isVisible &&*/ <div
                 className={classes.week}
                 key={`week_${index}`}>
