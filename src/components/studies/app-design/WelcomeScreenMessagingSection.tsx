@@ -1,9 +1,6 @@
+import {Box, Checkbox, FormControl, makeStyles} from '@material-ui/core'
 import React from 'react'
-import {makeStyles} from '@material-ui/core'
-import Subsection from './Subsection'
-import {Box, CircularProgress, FormControl, Checkbox} from '@material-ui/core'
 import {playfairDisplayFont} from '../../../style/theme'
-import SaveButton from '../../widgets/SaveButton'
 import FormGroupWrapper from './FormGroupWrapper'
 import TextInputWrapper from './TextInputWrapper'
 
@@ -39,8 +36,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type WelcomeScreenMessagingSectionProps = {
-  saveLoader: boolean
-  saveInfo: Function
   SimpleTextInputStyles: React.CSSProperties
   onUpdate: (
     welcomeStringHeader: string,
@@ -56,21 +51,19 @@ type WelcomeScreenMessagingSectionProps = {
   useOptionalDisclaimer: boolean
 }
 
-const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessagingSectionProps> = ({
-  saveInfo,
-  saveLoader,
-  SimpleTextInputStyles,
-  onUpdate,
-  welcomeScreenHeader,
-  welcomeScreenBody,
-  welcomeScreenSalutation,
-  welcomeScreenFromText,
-  useOptionalDisclaimer,
-}) => {
-  const classes = useStyles()
+const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessagingSectionProps> =
+  ({
+    SimpleTextInputStyles,
+    onUpdate,
+    welcomeScreenHeader,
+    welcomeScreenBody,
+    welcomeScreenSalutation,
+    welcomeScreenFromText,
+    useOptionalDisclaimer,
+  }) => {
+    const classes = useStyles()
 
-  return (
-    <Subsection heading="Welcome screen messaging">
+    return (
       <FormGroupWrapper>
         <FormControl className={classes.firstFormElement}>
           <TextInputWrapper
@@ -185,20 +178,7 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
           </div>
         </div>
       </FormGroupWrapper>
-      <Box textAlign="left">
-        {saveLoader ? (
-          <div className="text-center">
-            <CircularProgress color="primary" size={25}></CircularProgress>
-          </div>
-        ) : (
-          <SaveButton
-            onClick={() => saveInfo()}
-            id="save-button-study-builder-1"
-          />
-        )}
-      </Box>
-    </Subsection>
-  )
-}
+    )
+  }
 
 export default WelcomeScreenMessagingSection
