@@ -91,13 +91,11 @@ const useStyles = makeStyles(theme => ({
 
 export interface TimelinePlotProps {
   schedulingItems: TimelineScheduleItem[]
-
   sortedSessions: StudySession[]
 }
 
 const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   schedulingItems,
-
   sortedSessions,
 }: TimelinePlotProps) => {
   const classes = useStyles()
@@ -128,17 +126,14 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   const unitWidth = getUnitWidth()
 
   function getUnitWidth(): number {
-    //  const unitWidth = ((plotWidth || 0) - 30 - 124) / 7
     const unitWidth = Math.round(((plotWidth || 0) - 154) / 7)
     return unitWidth
   }
 
   function createXCoords(schedulingItems: TimelineScheduleItem[]) {
     const numOfWeeks = Math.ceil(_.last(schedulingItems!)!.endDay / 7)
-    const weeks = new Array(Math.ceil(_.last(schedulingItems!)!.endDay / 7)) //Math.ceil(scheduleLength / 7))
 
     var result: Record<string, any> = {}
-    // const xCoordsMap = [...weeks].map((_week, weekNumber) => {
 
     for (var weekNumber = 0; weekNumber < numOfWeeks; weekNumber++) {
       const coords = sortedSessions.map(session => {
@@ -163,7 +158,6 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
         return o.name
       },
     ])
-    console.log(sortedResult, 'sorted')
     return sortedResult
   }
   if (!schedulingItems || !xCoords) {
@@ -176,7 +170,6 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
         <div ref={ref} className={classes.plotContainer}>
           <div
             style={{
-              // height: `${sortedSessions.length * graphSessionHeight}px`,
               position: 'relative',
             }}>
             <div className={classes.week}>
