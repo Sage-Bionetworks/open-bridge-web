@@ -71,7 +71,7 @@ const WelcomeScreenMessagingSection: React.FunctionComponent<WelcomeScreenMessag
               {fontSize: '24px', width: '100%'} as React.CSSProperties
             }
             id="headline-input"
-            placeholder="Welcome Headline"
+            placeholder="Main Header"
             value={welcomeScreenHeader}
             onChange={(
               e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
