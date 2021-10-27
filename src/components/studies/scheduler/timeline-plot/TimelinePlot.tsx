@@ -123,7 +123,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
     return <></>
   }
   const weeks = new Array(Math.ceil(_.last(schedulingItems!)!.endDay / 7)) //Math.ceil(scheduleLength / 7))
-
+  console.log('weeks = ', weeks)
   const unitWidth = getUnitWidth()
   const xCoords = getXCoords()
 
@@ -183,6 +183,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                 </div>
               </div>
             </div>
+            hello
             {[...weeks].map(
               (wk, index) =>
                 !!xCoords[index].isVisible && (
