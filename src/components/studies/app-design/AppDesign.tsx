@@ -610,12 +610,10 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
 
   async function uploadLogoFile() {
     if (!previewFile?.body || !study) {
-      console.log('nothing to upload')
       return
     }
     setIsSettingStudyLogo(true)
     try {
-      console.log('uploading')
       const uploadResponse = await StudyService.editStudyLogo(
         study.identifier,
         token!,
@@ -660,7 +658,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   }
 
   const onSave = async (study: Study) => {
-    console.log('start update from app resign')
     if (previewFile) {
       const logoUpdateInfo = await uploadLogoFile()
       if (logoUpdateInfo) {
@@ -674,6 +671,8 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
       setSaveLoader(true)
       await mutateStudy({
         study: study,
+      }).then(e => {
+        setStudy(e)
       })
       setHasObjectChanged(false)
     } catch (e) {
