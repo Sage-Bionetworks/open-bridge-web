@@ -157,6 +157,9 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
       {timeline?.schedule && (
         <TimelinePlot
           schedulingItems={timeline.schedule}
+          maxWindows={Math.max(
+            ...timeline.sessions.map(s => s.timeWindowGuids.length)
+          )}
           sortedSessions={schedFromDisplay.sessions}></TimelinePlot>
       )}
     </Box>

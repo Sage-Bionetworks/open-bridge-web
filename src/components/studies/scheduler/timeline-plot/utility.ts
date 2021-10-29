@@ -64,7 +64,8 @@ function getDaysFractionForSingleSession(
   studySessionGuid: string,
   schedulingItems: TimelineScheduleItem[],
   interval?: {start: number; end: number},
-  includeBurst?: boolean
+  includeBurst?: boolean,
+  maxWindowNumber?: number
 ): {startEventId: string | undefined; coords: number[]} {
   let result: number[] = []
   const {startDays, startEventId} = getGroupedDaysForSession(
@@ -75,11 +76,11 @@ function getDaysFractionForSingleSession(
   )
 
   Object.values(startDays).forEach(groupArray => {
-    const fraction = 1 / groupArray.length
+    const fraction = 1 / (maxWindowNumber || groupArray.length)
     groupArray.forEach((item, index) => {
       let val = item + fraction * index
       if (interval) {
-        val = val + 0.5 / groupArray.length
+        val = val + 0.5 / (maxWindowNumber || groupArray.length)
         val = val - interval.start
       }
       result.push(val)
