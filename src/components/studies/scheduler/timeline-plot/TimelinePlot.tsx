@@ -211,7 +211,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                             sessionIndex={sortedSessions.findIndex(
                               s => s.guid === session.guid
                             )}
-                            displayIndex={0}
+                            displayIndex={2}
                             unitPixelWidth={unitWidth}
                             scheduleLength={7}
                             schedulingItems={schedulingItems}
@@ -256,7 +256,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                                 sessionIndex={sortedSessions.findIndex(
                                   s => s.guid === session.guid
                                 )}
-                                displayIndex={0}
+                                displayIndex={2}
                                 unitPixelWidth={unitWidth}
                                 scheduleLength={7}
                                 schedulingItems={schedulingItems}

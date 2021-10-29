@@ -24,9 +24,9 @@ import {Schedule, StudyBurst} from '@typedefs/scheduling'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React from 'react'
-import {useSchedule, useUpdateSchedule} from '../scheduleHooks'
+import {useSchedule, useTimeline, useUpdateSchedule} from '../scheduleHooks'
 import {TooltipHoverDisplay} from './ScheduleTimelineDisplay'
-import BurstTimeline from './timeline-plot/BurstTimeline'
+import TimelineBurstPlot from './timeline-plot/TimelineBurstPlot'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -401,6 +401,8 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
     number | undefined
   >()
 
+  const {data: timeline, error, isLoading} = useTimeline(id)
+
   React.useEffect(() => {
     if (!schedule) {
       return
@@ -498,36 +500,37 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
       />
 
       {hasBursts && schedule && (
-        <div className={classes.burstBox}>
-          <BurstSelectorSC
-            schedule={schedule}
-            burstSessionGuids={burstSessionGuids}
-            triggerEventId={originEventId}
-            onUpdateEvent={(eventId: string) => setOriginEventId(eventId)}
-            onUpdateSessionSelection={(guids: string[]) =>
-              setBurstSessionGuids(guids)
-            }
-          />
-
-          <div className={classes.setBurstInfoContainer}>
-            <BurstScheduleSC
-              burstFrequency={burstFrequency}
-              burstNumber={burstNumber}
-              onChange={(type: 'N' | 'F', value: number) => {
-                if (type === 'F') {
-                  setBurstFrequency(value)
-                } else {
-                  setBurstNumber(value)
-                }
-              }}
+        <Box textAlign="center" mb={4}>
+          <div className={classes.burstBox}>
+            <BurstSelectorSC
+              schedule={schedule}
+              burstSessionGuids={burstSessionGuids}
+              triggerEventId={originEventId}
+              onUpdateEvent={(eventId: string) => setOriginEventId(eventId)}
+              onUpdateSessionSelection={(guids: string[]) =>
+                setBurstSessionGuids(guids)
+              }
             />
+
+            <div className={classes.setBurstInfoContainer}>
+              <BurstScheduleSC
+                burstFrequency={burstFrequency}
+                burstNumber={burstNumber}
+                onChange={(type: 'N' | 'F', value: number) => {
+                  if (type === 'F') {
+                    setBurstFrequency(value)
+                  } else {
+                    setBurstNumber(value)
+                  }
+                }}
+              />
+            </div>
           </div>
-        </div>
+
+          <SaveButton onClick={save} />
+        </Box>
       )}
-      <Box textAlign="center">
-        {' '}
-        <SaveButton onClick={save} />
-      </Box>
+
       {displayBurstInfoText && (
         <Box className={classes.burstsInfoText}>
           <img className={classes.calendarIcon} src={CalendarIcon}></img>
@@ -539,7 +542,7 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
                 {burstNumber} burst(s)
               </strong>{' '}
               will be automatically scheduled{' '}
-              <strong>{burstFrequency} week(s)</strong> apart from your
+              <strong>{burstFrequency} week(s)</strong> apart from your&nbsp;
               <strong>Session Start Date</strong>.
             </p>
             <p>
@@ -550,12 +553,16 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
         </Box>
       )}
       {schedule && hasBursts && (
-        <BurstTimeline
-          burstSessionGuids={burstSessionGuids}
-          burstNumber={burstNumber || 0}
-          burstFrequency={burstFrequency || 0}
-          schedule={schedule}
-          studyId={id}></BurstTimeline>
+        <>
+          <Box py={3} px={0}>
+            <TimelineBurstPlot
+              schedulingItems={timeline?.schedule || []}
+              burstSessionGuids={burstSessionGuids}
+              burstNumber={burstNumber || 0}
+              burstFrequency={burstFrequency || 0}
+              sortedSessions={schedule.sessions}></TimelineBurstPlot>
+          </Box>
+        </>
       )}
     </div>
   )
