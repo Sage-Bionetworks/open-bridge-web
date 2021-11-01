@@ -1,7 +1,5 @@
 import SessionIcon from '@components/widgets/SessionIcon'
 import {makeStyles} from '@material-ui/core/styles'
-import {TimelineScheduleItem} from '@typedefs/scheduling'
-import moment from 'moment'
 import React from 'react'
 
 const useStyles = makeStyles(theme => ({}))
@@ -10,13 +8,13 @@ export interface SingleSessionPlotProps {
   sessionIndex: number
   //zoomLevel: TimelineZoomLevel
   sessionGuid: string
-  schedulingItems: TimelineScheduleItem[]
-  scheduleLength: number
+  // schedulingItems: TimelineScheduleItem[]
+  //scheduleLength?: number
   unitPixelWidth: number
   displayIndex: number
   xCoords: number[]
 }
-
+/*
 export function getSingleSessionDayX(
   studySessionGuid: string,
   schedulingItems: TimelineScheduleItem[],
@@ -44,12 +42,11 @@ export function getSingleSessionDayX(
     })
 
   return times
-}
+}*/
 
 const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   sessionIndex,
   displayIndex,
-
   unitPixelWidth,
   xCoords,
 }) => {
@@ -66,19 +63,18 @@ const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
         left: `${index * unitPixelWidth}px`,
       }}></div>
   ))
-  const sessionGraph =
-    /*getSingleSessionX(sessionGuid, schedulingItems)*/ xCoords.map(i => (
-      <SessionIcon
-        key={`session${i}`}
-        index={sessionIndex}
-        style={{
-          // width: '20px',
-          position: 'absolute',
-          zIndex: 100,
-          top: `${displayIndex}px`,
-          left: `${i * unitPixelWidth - 6}px`,
-        }}></SessionIcon>
-    ))
+  const sessionGraph = xCoords.map(i => (
+    <SessionIcon
+      key={`session${i}`}
+      index={sessionIndex}
+      style={{
+        // width: '20px',
+        position: 'absolute',
+        zIndex: 100,
+        top: `${displayIndex}px`,
+        left: `${i * unitPixelWidth - 6}px`,
+      }}></SessionIcon>
+  ))
   return (
     <div style={{position: 'relative', height: '18px'}}>
       {days}

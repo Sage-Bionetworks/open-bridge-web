@@ -21,6 +21,9 @@ const useStyles = makeStyles(theme => ({
     height: '16px',
     alignItems: 'center',
     flexDirection: 'row',
+    '&:last-child': {
+      marginBottom: 0,
+    },
   },
   sessionName: {
     display: 'flex',
@@ -77,8 +80,46 @@ export interface TimelinePlotProps {
 }
 
 type PlotData = {
-  sessionInfos: {startEventId?: string; coords: number[]}[]
+  sessionInfos: {startEventId?: string; coords: number[]; guid: string}[]
   weekNumber: number
+}
+
+const EmptyPlotSC: React.FunctionComponent<{
+  sortedSessions: StudySession[]
+  unitWidth: number
+}> = ({sortedSessions, unitWidth}) => {
+  const classes = useStyles()
+  const result = (
+    <div className={classes.week} key={`week_none`}>
+      <div style={{width: '60px'}} key="week_index">
+        Week
+      </div>
+      <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
+        {sortedSessions.map((session, sIndex) => (
+          <div className={classes.graph} key={`session_${sIndex}`}>
+            <Tooltip
+              key="tooltip"
+              placement="top"
+              title={`Starts on: ${session.startEventIds[0]}`}>
+              <div className={classes.sessionName}>
+                <SessionIcon index={sIndex} />
+              </div>
+            </Tooltip>
+            <div style={{position: 'relative', top: '0px'}} key="session_plot">
+              <SessionPlot
+                xCoords={[]}
+                sessionIndex={sIndex}
+                displayIndex={2}
+                unitPixelWidth={unitWidth}
+                sessionGuid={session.guid!}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+  return result
 }
 
 const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
@@ -126,20 +167,25 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
 
     for (var weekNumber = 0; weekNumber < numOfWeeks; weekNumber++) {
       const sessionInfos = sortedSessions.map(session => {
-        return Utility.getDaysFractionForSingleSession(
+        const infos = Utility.getDaysFractionForSingleSession(
           session.guid!,
           schedulingItems,
           {start: weekNumber * 7, end: (weekNumber + 1) * 7},
           false,
           maxWindows
         )
+        return {...infos, guid: session.guid!}
       })
 
-      const hasItems = sessionInfos.find(
+      /* const hasItems = sessionInfos.find(
         sessionInfo => sessionInfo.coords.length > 0
-      )
+      )*/
 
-      if (hasItems)
+      console.log('si' + sessionInfos.length)
+      var noEmpties = sessionInfos.filter(s => s.coords.length > 0)
+      console.log('ne' + noEmpties.length)
+
+      if (noEmpties.length)
         result[weekNumber] = {
           sessionInfos,
           weekNumber,
@@ -186,45 +232,13 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
               </div>
             </div>
 
-            {!plotData ||
-              (plotData.length == 0 && (
-                <div className={classes.week} key={`week_none`}>
-                  <div style={{width: '60px'}} key="week_index">
-                    Week
-                  </div>
-                  <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
-                    {sortedSessions.map((session, sIndex) => (
-                      <div className={classes.graph} key={`session_${sIndex}`}>
-                        <Tooltip
-                          key="tooltip"
-                          placement="top"
-                          title={`Starts on: ${session.startEventIds[0]}`}>
-                          <div className={classes.sessionName}>
-                            <SessionIcon index={sIndex} />
-                          </div>
-                        </Tooltip>
-                        <div
-                          style={{position: 'relative', top: '0px'}}
-                          key="session_plot">
-                          <SessionPlot
-                            xCoords={[]}
-                            sessionIndex={sortedSessions.findIndex(
-                              s => s.guid === session.guid
-                            )}
-                            displayIndex={2}
-                            unitPixelWidth={unitWidth}
-                            scheduleLength={7}
-                            schedulingItems={schedulingItems}
-                            sessionGuid={session.guid!}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            {_.isEmpty(plotData) && (
+              <EmptyPlotSC
+                sortedSessions={sortedSessions}
+                unitWidth={unitWidth}
+              />
+            )}
 
-            {/*.......... */}
             {plotData &&
               plotData.map(
                 (wk, index) =>
@@ -236,35 +250,35 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                       <div
                         style={{flexGrow: 1, flexShrink: 0}}
                         key="week_graph">
-                        {sortedSessions.map((session, sIndex) => (
-                          <div
-                            className={classes.graph}
-                            key={`session_${sIndex}`}>
-                            <Tooltip
-                              key="tooltip"
-                              placement="top"
-                              title={`Starts on: ${session.startEventIds[0]}`}>
-                              <div className={classes.sessionName}>
-                                <SessionIcon index={sIndex} />
-                              </div>
-                            </Tooltip>
+                        {wk.sessionInfos
+                          .filter(s => s.coords.length > 0)
+                          .map((session, sIndex) => (
                             <div
-                              style={{position: 'relative', top: '0px'}}
-                              key="session_plot">
-                              <SessionPlot
-                                xCoords={wk.sessionInfos[sIndex].coords}
-                                sessionIndex={sortedSessions.findIndex(
-                                  s => s.guid === session.guid
-                                )}
-                                displayIndex={2}
-                                unitPixelWidth={unitWidth}
-                                scheduleLength={7}
-                                schedulingItems={schedulingItems}
-                                sessionGuid={session.guid!}
-                              />
+                              className={classes.graph}
+                              key={`session_${sIndex}`}>
+                              <Tooltip
+                                key="tooltip"
+                                placement="top"
+                                title={`Starts on: ${session.startEventId}`}>
+                                <div className={classes.sessionName}>
+                                  <SessionIcon index={sIndex} />
+                                </div>
+                              </Tooltip>
+                              <div
+                                style={{position: 'relative', top: '0px'}}
+                                key="session_plot">
+                                <SessionPlot
+                                  xCoords={session.coords}
+                                  sessionIndex={sortedSessions.findIndex(
+                                    s => s.guid === session.guid
+                                  )}
+                                  displayIndex={2}
+                                  unitPixelWidth={unitWidth}
+                                  sessionGuid={session.guid!}
+                                />
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
                       </div>
                     </div>
                   )
