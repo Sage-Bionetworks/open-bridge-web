@@ -6,43 +6,11 @@ const useStyles = makeStyles(theme => ({}))
 
 export interface SingleSessionPlotProps {
   sessionIndex: number
-  //zoomLevel: TimelineZoomLevel
   sessionGuid: string
-  // schedulingItems: TimelineScheduleItem[]
-  //scheduleLength?: number
   unitPixelWidth: number
   displayIndex: number
   xCoords: number[]
 }
-/*
-export function getSingleSessionDayX(
-  studySessionGuid: string,
-  schedulingItems: TimelineScheduleItem[],
-  scheduleLength: number
-): {day: number; startTime: number; expire: number}[] {
-  let result: number[] = []
-
-  const times = schedulingItems
-    .filter(i => i.refGuid === studySessionGuid)
-    .map(i => {
-      const startTimeAsTime = moment(i.startTime, ['h:m a', 'H:m'])
-      var stHrAsMin = startTimeAsTime.get('hours') * 60
-      var stMin = startTimeAsTime.get('minutes')
-      var fractionOfDay = (stHrAsMin + stMin) / (24 * 60)
-
-      const expiration = i.expiration ? i.expiration : `P${scheduleLength}D`
-
-      const duration = moment.duration(expiration).asMinutes()
-      let expire = duration / 1440
-
-      if (!i.expiration) {
-        expire = expire - fractionOfDay
-      }
-      return {day: i.startDay, startTime: fractionOfDay, expire: expire}
-    })
-
-  return times
-}*/
 
 const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   sessionIndex,
@@ -68,7 +36,6 @@ const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
       key={`session${i}`}
       index={sessionIndex}
       style={{
-        // width: '20px',
         position: 'absolute',
         zIndex: 100,
         top: `${displayIndex}px`,
