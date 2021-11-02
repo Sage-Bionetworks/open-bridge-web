@@ -574,10 +574,11 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
 
   const onUpdate = (updatedStudy: Study) => {
     const areObjectsSame = _.isEqual(study, updatedStudy)
-    if (!areObjectsSame) {
-      setHasObjectChanged(true)
-      setStudy({...updatedStudy})
-    }
+    //  console.log(areObjectsSame)
+    //  if (!areObjectsSame) {
+    setHasObjectChanged(true)
+    setStudy({...updatedStudy})
+    // }
   }
 
   useEffect(() => {
