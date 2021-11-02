@@ -18,7 +18,7 @@ const LayoutConstants = {
   weekVPad: 10,
   singleSessionGraphHeight: 16,
   singleSessionGraphBottomMargin: 5,
-  weekMinHeight: 44,
+  weekMinHeight: 22,
 }
 
 const useStyles = makeStyles(theme => ({
@@ -254,9 +254,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
       return []
     }
     var result: Record<string, PlotData> = {}
-    /* var maxWindows={Math.max(
-      ...sessionsSchedule.sessions.map(s => s.timeWindowGuids.length)
-    )}*/
+
     const numOfWeeks = Math.ceil(
       Math.max(...unwrappedSessions.map(s => s.endDay)) / 7
     )
@@ -279,15 +277,15 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
           )
           return {...sessionCoords, guid: session.guid}
         })
+      let noEmpties = sessions.filter(s => s.coords.length > 0)
+      // let hasItems = sessions.find(coordArr => coordArr.coords.length > 0)
 
-      let hasItems = sessions.find(coordArr => coordArr.coords.length > 0)
-
-      if (hasItems) {
+      if (noEmpties.length) {
         result[`${weekNumber}`] = {
           name: weekNumber + 1,
           burst: false,
           burstNum: -1,
-          sessions,
+          sessions: noEmpties,
         }
       }
 
@@ -305,10 +303,10 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
           // const last = Math.ceil(_.last(sessionCoords.coords) || -1)
           return {...sessionCoords, guid: session.guid}
         })
+      noEmpties = sessions.filter(s => s.coords.length > 0)
+      // hasItems = sessions.find(coordArr => coordArr.coords.length > 0)
 
-      hasItems = sessions.find(coordArr => coordArr.coords.length > 0)
-
-      if (hasItems) {
+      if (noEmpties.length) {
         const schedItemsForWeek = schedItems.filter(
           i => i.startDay >= weekNumber * 7 && i.endDay < (weekNumber + 1) * 7
         )
@@ -319,7 +317,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
         result[`${weekNumber}_burst`] = {
           name: weekNumber + 1,
           burst: true,
-          sessions,
+          sessions: noEmpties,
           burstNum: getBurstNumberFromStartEventId(
             firstSession!.startEventId,
             firstSession!.refGuid
@@ -342,37 +340,44 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     wkNumber: number,
     burstNumber: number
   ) {
-    var sessionsBetween = 0
-    const isLargeNumber = (x: PlotData) => {
-      return x.name == wkNumber && x.burstNum === burstNumber
+    var pxGapBetweenBursts = LayoutConstants.marginGap
+
+    const getThisSessionPlot = (weekPlot: PlotData) => {
+      return weekPlot.name === wkNumber && weekPlot.burstNum === burstNumber
     }
 
-    const firstIndex = coords.findIndex(isLargeNumber)
+    const thisPlotIndex = coords.findIndex(getThisSessionPlot)
 
-    if (firstIndex === coords.length - 1) {
+    // it's a last graph -- no bracket or if it's not a burst or if the next graph is the same burst
+
+    if (
+      thisPlotIndex === coords.length - 1 ||
+      burstNumber === -1 ||
+      coords[thisPlotIndex + 1].burstNum === burstNumber
+    ) {
       return -1
     }
-    if (coords[firstIndex + 1].burstNum == burstNumber || burstNumber === -1) {
-      return -1
-    }
 
-    sessionsBetween = LayoutConstants.marginGap
-    for (var i = firstIndex + 1; i < coords.length; i++) {
-      const val = coords[i]
+    for (var i = thisPlotIndex + 1; i < coords.length; i++) {
+      const plotData = coords[i]
 
-      if (val.burstNum === burstNumber + 1) {
-        return sessionsBetween
+      if (plotData.burstNum === burstNumber + 1) {
+        //found the end
+        return pxGapBetweenBursts
       } else {
-        if (!val.burst) {
+        //if we are in the same bust - add graph height
+        if (!plotData.burst) {
           const weekHeight =
-            val.sessions.length * LayoutConstants.singleSessionGraphHeight +
-            (val.sessions.length - 1) *
+            plotData.sessions.length *
+              LayoutConstants.singleSessionGraphHeight +
+            (plotData.sessions.length - 1) *
               LayoutConstants.singleSessionGraphBottomMargin
+          //add padding
+          pxGapBetweenBursts = pxGapBetweenBursts + LayoutConstants.weekVPad * 2
 
-          sessionsBetween =
-            sessionsBetween +
+          pxGapBetweenBursts =
+            pxGapBetweenBursts +
             Math.max(weekHeight, LayoutConstants.weekMinHeight)
-          sessionsBetween = sessionsBetween + LayoutConstants.weekVPad * 2
         }
       }
     }
