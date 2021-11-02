@@ -6,20 +6,12 @@ import CONSTANTS from '../../types/constants'
 import AccountLogin from '../account/AccountLogin'
 
 export function ErrorFallback(props: any) {
-  console.log(props)
-  if (props.error.statusCode === 401) {
-    console.log(props.error)
-  }
+  console.log('ERROR:', props.error.message)
+  console.log('STACK:', props.error.stack)
 
   return (
     <Container maxWidth="md">
-      <Alert variant="outlined" color="error" style={{marginBottom: '40px'}}>
-        <pre>
-          {props.error.statusCode}:&nbsp;
-          {props.error.message}
-        </pre>
-      </Alert>
-      {props.error.statusCode === 401 && (
+      {props.error.statusCode === 401 ? (
         <Box mx="auto" bgcolor="white" p={5} textAlign="center">
           <AccountLogin
             {...props}
@@ -28,8 +20,7 @@ export function ErrorFallback(props: any) {
               window.location.replace('/')
             }}></AccountLogin>
         </Box>
-      )}
-      {props.error.statusCode === 403 && (
+      ) : props.error.statusCode === 403 ? (
         <Box mx="auto" bgcolor="white" p={5} textAlign="center">
           <Alert
             variant="outlined"
@@ -41,6 +32,15 @@ export function ErrorFallback(props: any) {
 
           <a href="/studies"> Back to study listings</a>
         </Box>
+      ) : (
+        <Alert variant="outlined" color="error" style={{marginBottom: '40px'}}>
+          <pre>
+            {' '}
+            ALINA
+            {props.error.statusCode}:&nbsp;
+            {props.error.message}
+          </pre>
+        </Alert>
       )}
     </Container>
   )

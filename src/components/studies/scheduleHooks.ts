@@ -72,14 +72,13 @@ export const useUpdateSchedule = () => {
       return {previousSchedule}
     },
     onError: (err: Error, args, context) => {
-      console.log('%c ' + err, 'color: red')
-
-      // queryClient.invalidateQueries(SCHEDULE_KEYS.detail(args.studyId))
-      // queryClient.invalidateQueries(STUDY_KEYS.detail(args.studyId))
+      console.log(
+        `%c Error updating schedule:  ${err.message}, Data: ${JSON.stringify(
+          args.schedule
+        )}`,
+        'color: red'
+      )
       throw err
-      /* if (context?.previousStudies) {
-          queryClient.setQueryData<Study[]>(KEYS.studies, context.previousStudies)
-        }*/
     },
     onSettled: async (data, error, args) => {
       queryClient.invalidateQueries(SCHEDULE_KEYS.detail(args.studyId))
