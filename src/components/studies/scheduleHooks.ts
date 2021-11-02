@@ -60,17 +60,22 @@ export const useUpdateSchedule = () => {
         SCHEDULE_KEYS.detail(studyId)
       )
 
-      queryClient.setQueryData<Schedule>(SCHEDULE_KEYS.detail(studyId), {
+      const newSchedule: Schedule = {
         ...schedule,
-      })
+        version: (schedule.version || 0) + 1,
+      }
+      queryClient.setQueryData<Schedule>(
+        SCHEDULE_KEYS.detail(studyId),
+        newSchedule
+      )
 
       return {previousSchedule}
     },
     onError: (err: Error, args, context) => {
       console.log('%c ' + err, 'color: red')
-      alert(err?.message)
-      queryClient.invalidateQueries(SCHEDULE_KEYS.detail(args.studyId))
-      queryClient.invalidateQueries(STUDY_KEYS.detail(args.studyId))
+
+      // queryClient.invalidateQueries(SCHEDULE_KEYS.detail(args.studyId))
+      // queryClient.invalidateQueries(STUDY_KEYS.detail(args.studyId))
       throw err
       /* if (context?.previousStudies) {
           queryClient.setQueryData<Study[]>(KEYS.studies, context.previousStudies)
