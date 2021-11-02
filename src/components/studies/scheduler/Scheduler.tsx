@@ -1,5 +1,5 @@
 import LoadingComponent from '@components/widgets/Loader'
-import {Box, Paper} from '@material-ui/core'
+import {Box} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import React, {ReactElement, useState} from 'react'
 import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
@@ -107,7 +107,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   }
 
   return (
-    <Paper className={classes.root} elevation={2} id="container">
+    <Box className={classes.root} id="container">
       <SchedulerStepper
         steps={steps}
         activeStep={activeStep}
@@ -166,7 +166,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
           )}
         </Box>
       </div>
-    </Paper>
+    </Box>
   )
 }
 

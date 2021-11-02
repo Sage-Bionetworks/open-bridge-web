@@ -118,7 +118,9 @@ export const isSectionEditableWhenLive = (
 ): boolean | undefined => {
   const sections = SECTIONS.filter(section => section.path === sectionPath)
   if (!sections.length) {
-    throw Error(`the ${sectionPath} section is not exist`)
+    throw Error(
+      `isSectionEditableWhenLive: the ${sectionPath} section does not exist`
+    )
   } else {
     const hasEditableSections = sections.find(
       section => section.isEditableLive === true
