@@ -35,8 +35,6 @@ export function ErrorFallback(props: any) {
       ) : (
         <Alert variant="outlined" color="error" style={{marginBottom: '40px'}}>
           <pre>
-            {' '}
-            ALINA
             {props.error.statusCode}:&nbsp;
             {props.error.message}
           </pre>
