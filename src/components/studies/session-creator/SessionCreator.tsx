@@ -92,6 +92,7 @@ export const useStyles = makeStyles(theme => ({
 type SessionCreatorProps = {
   id: string
   children: React.ReactNode
+  onShowFeedback?: Function
   // sessions: StudySession[]
   // onSave: Function
   // study: Study
@@ -100,6 +101,7 @@ type SessionCreatorProps = {
 const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   id,
   children,
+  onShowFeedback,
 }: /*sessions,
 
   onUpdate,
@@ -143,12 +145,17 @@ SessionCreatorProps) => {
   const onUpdate = async (newState: StudySession[]) => {
     const updatedSchedule = {...schedule!, sessions: newState}
     setSaveLoader(true)
-    const savedUpdatedSchedule = await mutateSchedule({
-      studyId: id,
-      schedule: updatedSchedule,
-      action: 'UPDATE',
-    })
-    setSaveLoader(false)
+    try {
+      await mutateSchedule({
+        studyId: id,
+        schedule: updatedSchedule,
+        action: 'UPDATE',
+      })
+    } catch (e) {
+      onShowFeedback && onShowFeedback(e)
+    } finally {
+      setSaveLoader(false)
+    }
   }
 
   React.useEffect(() => {

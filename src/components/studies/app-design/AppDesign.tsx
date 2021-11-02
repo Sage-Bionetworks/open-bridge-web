@@ -14,6 +14,7 @@ import {latoFont, ThemeType} from '@style/theme'
 import constants from '@typedefs/constants'
 import {Contact, Study, WelcomeScreenData} from '@typedefs/types'
 import clsx from 'clsx'
+import _ from 'lodash'
 import React, {ChangeEvent, useEffect, useState} from 'react'
 import {HexColorPicker} from 'react-colorful'
 import {useErrorHandler} from 'react-error-boundary'
@@ -572,8 +573,11 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   }
 
   const onUpdate = (updatedStudy: Study) => {
-    setHasObjectChanged(true)
-    setStudy({...updatedStudy})
+    const areObjectsSame = _.isEqual(study, updatedStudy)
+    if (!areObjectsSame) {
+      setHasObjectChanged(true)
+      setStudy({...updatedStudy})
+    }
   }
 
   useEffect(() => {
@@ -637,11 +641,13 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   }
 
   async function handleFileChange(event?: ChangeEvent<HTMLInputElement>) {
+    console.log('handle file change')
+    setHasObjectChanged(true)
     if (!event) {
       if (study?.studyLogoUrl) {
         handleUpdate({...study, studyLogoUrl: undefined})
       }
-      setHasObjectChanged(true)
+
       setPreviewFile(undefined)
       return
     }
@@ -649,7 +655,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     if (!event.target.files || !study) {
       return
     }
-    setHasObjectChanged(true)
+
     setIsSettingStudyLogo(true)
     const file = event.target.files[0]
     const previewForImage = getPreviewForImage(file)

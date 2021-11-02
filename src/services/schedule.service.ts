@@ -83,8 +83,9 @@ async function saveSchedule(
       schedule,
       token
     )
+
     return response.data
-  } catch (error) {
+  } catch (error: any) {
     //we might need to retry if there is a verison mismatch
     if (error.statusCode === 409) {
       const updatedSchedule = await getSchedule(studyId, token, false)
