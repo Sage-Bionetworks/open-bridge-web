@@ -401,7 +401,8 @@ export function getContact(
   if (!contacts) {
     return undefined
   }
-  return contacts.find(el => el.role === role)
+  var person = contacts.find(el => el.role === role)
+  return person ? {...person} : undefined
 }
 
 export const formatPhoneNumber = (phoneNumber: string | undefined) => {
@@ -505,12 +506,12 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
       // Set the use default message property to true by default
       const {welcomeScreenData} = sourceStudy.clientData
       if (welcomeScreenData?.isUsingDefaultMessage === undefined) {
+        console.log('no default')
         updateWelcomeScreenMessaging(
           welcomeScreenData?.welcomeScreenHeader || '',
           welcomeScreenData?.welcomeScreenBody || '',
           welcomeScreenData?.welcomeScreenSalutation || '',
           welcomeScreenData?.welcomeScreenFromText || '',
-          true,
           true
         )
       }
@@ -641,7 +642,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   }
 
   async function handleFileChange(event?: ChangeEvent<HTMLInputElement>) {
-    console.log('handle file change')
     setHasObjectChanged(true)
     if (!event) {
       if (study?.studyLogoUrl) {
@@ -790,8 +790,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     welcomeScreenBody: string,
     welcomeScreenSalutation: string,
     welcomeScreenFromText: string,
-    useOptionalDisclaimer: boolean,
-    isUsingDefaultMessage?: boolean
+    useOptionalDisclaimer: boolean
   ) => {
     const newWelcomeScreenData = {
       welcomeScreenHeader: welcomeScreenHeader,
@@ -803,9 +802,22 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
         study?.clientData.welcomeScreenData?.isUsingDefaultMessage,
     } as WelcomeScreenData
     if (study) {
-      const updatedStudy = {...study}
-      updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
-      handleUpdate(updatedStudy)
+      if (newWelcomeScreenData.isUsingDefaultMessage === undefined) {
+        //@ts-ignore
+        delete newWelcomeScreenData.isUsingDefaultMessage
+      }
+      if (
+        !_.isEqual(study.clientData.welcomeScreenData, newWelcomeScreenData)
+      ) {
+        const updatedStudy = {...study}
+        updatedStudy.clientData = {
+          ...updatedStudy.clientData,
+          welcomeScreenData: newWelcomeScreenData,
+        }
+
+        //updatedStudy.clientData.welcomeScreenData = newWelcomeScreenData
+        handleUpdate(updatedStudy)
+      }
     }
   }
 

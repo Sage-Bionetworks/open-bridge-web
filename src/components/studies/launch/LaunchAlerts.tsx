@@ -238,13 +238,7 @@ const ALERTS: StudyAlertSection[] = [
         isDismissable: false,
         anchor: 'contactLead',
       },
-      {
-        errorText: 'Please enter Phone # of Contact Lead',
-        validationFn: (args: DataToValidate) =>
-          !!getStudySupportPerson(args.study)?.phone,
-        isDismissable: false,
-        anchor: 'contactLead',
-      },
+
       {
         errorText: 'Please enter Email of Contact Lead',
         validationFn: (args: DataToValidate) =>
