@@ -1,7 +1,7 @@
-import React from 'react'
-import {makeStyles} from '@material-ui/core/styles'
 import {FormGroup} from '@material-ui/core'
-import {poppinsFont} from '../../../style/theme'
+import {makeStyles} from '@material-ui/core/styles'
+import React from 'react'
+import {poppinsFont} from '../../../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   formFields: {

@@ -1,7 +1,7 @@
 import {Box} from '@material-ui/core'
 import ReactColorPicker from '@super-effective/react-color-picker'
 import React from 'react'
-import Subsection from './Subsection'
+import Subsection from './widgets/Subsection'
 
 type ColorPickerSection = {
   appBackgroundColor: string
