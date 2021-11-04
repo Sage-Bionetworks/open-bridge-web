@@ -1,8 +1,7 @@
-import React from 'react'
-import {makeStyles} from '@material-ui/core'
-import {latoFont} from '../../../style/theme'
-import {Box} from '@material-ui/core'
+import {Box, makeStyles} from '@material-ui/core'
 import clsx from 'clsx'
+import React from 'react'
+import {latoFont} from '../../../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   container: {

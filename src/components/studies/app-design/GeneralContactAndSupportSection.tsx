@@ -5,9 +5,9 @@ import Utility from '../../../helpers/utility'
 import {Contact} from '../../../types/types'
 import AlertWithTextWrapper from '../../widgets/AlertWithTextWrapper'
 import {ContactType} from './AppDesign'
-import FormGroupWrapper from './FormGroupWrapper'
-import Subsection from './Subsection'
-import TextInputWrapper from './TextInputWrapper'
+import FormGroupWrapper from './widgets/FormGroupWrapper'
+import Subsection from './widgets/Subsection'
+import TextInputWrapper from './widgets/TextInputWrapper'
 
 const useStyles = makeStyles(theme => ({
   firstFormElement: {
