@@ -1,10 +1,10 @@
 import {Box, Divider} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import {latoFont, playfairDisplayFont} from '@style/theme'
+import {Contact} from '@typedefs/types'
 import React from 'react'
-import {latoFont, playfairDisplayFont} from '../../../style/theme'
-import {Contact} from '../../../types/types'
-import SectionIndicator from './SectionIndicator'
-import StudySummaryRoles from './StudySummaryRoles'
+import StudySummaryRoles from '../StudySummaryRoles'
+import SectionIndicator from '../widgets/SectionIndicator'
 
 const useStyles = makeStyles(theme => ({
   sectionFourIndicatorPosition: {

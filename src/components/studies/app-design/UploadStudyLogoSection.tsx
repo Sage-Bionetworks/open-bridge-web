@@ -2,7 +2,7 @@ import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
 import {Box, Button, CircularProgress, IconButton} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
-import Subsection from './Subsection'
+import Subsection from './widgets/Subsection'
 
 const useStyles = makeStyles(theme => ({
   uploadButton: {

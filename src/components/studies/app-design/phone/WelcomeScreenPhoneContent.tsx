@@ -1,10 +1,10 @@
 import {Box} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import {latoFont, playfairDisplayFont} from '@style/theme'
+import {SubType, WelcomeScreenData} from '@typedefs/types'
 import clsx from 'clsx'
 import React from 'react'
-import {latoFont, playfairDisplayFont} from '../../../style/theme'
-import {WelcomeScreenData} from '../../../types/types'
-import SectionIndicator from './SectionIndicator'
+import SectionIndicator from '../widgets/SectionIndicator'
 
 const useStyles = makeStyles(theme => ({
   phoneInner: {
@@ -54,13 +54,34 @@ type WelcomeScreenPhoneContentProps = {
   isReadOnly?: boolean
 }
 
+type WelcomeScreenStrings = keyof SubType<WelcomeScreenData, string>
+
+export const DEFAULT_TEXT: {[K in WelcomeScreenStrings]: string} = {
+  welcomeScreenHeader: 'Welcome to \n[STUDY_TITLE]!',
+  welcomeScreenBody:
+    'We are excited that you will be participating. We hope that you find this study helpful.',
+  welcomeScreenSalutation: 'Sincerely,',
+  welcomeScreenFromText: 'The [STUDY_TITLE] team',
+}
+
+const PLACEHOLDER_TEXT: {[K in WelcomeScreenStrings]: string} = {
+  welcomeScreenHeader: 'Main Header',
+  welcomeScreenBody: 'Body Copy',
+  welcomeScreenSalutation: 'Salutation,',
+  welcomeScreenFromText: 'Study Team Name',
+}
+
 const WelcomeScreenPhoneContent: React.FunctionComponent<WelcomeScreenPhoneContentProps> =
   ({welcomeScreenContent, studyTitle, isReadOnly}) => {
     const classes = useStyles()
-    const defaultStudyBody =
-      'We are excited that you will be participating. We hope that you find this study helpful.'
-    const defaultSalutations = 'Sincerely,'
-    const defaultFrom = `The ${studyTitle} team`
+
+    function getMessage(field: WelcomeScreenStrings): string {
+      if (welcomeScreenContent.isUsingDefaultMessage) {
+        return DEFAULT_TEXT[field].replace('[STUDY_TITLE]', studyTitle)
+      } else {
+        return welcomeScreenContent[field] || PLACEHOLDER_TEXT[field]
+      }
+    }
 
     return (
       <Box className={classes.phoneInner}>
@@ -71,24 +92,16 @@ const WelcomeScreenPhoneContent: React.FunctionComponent<WelcomeScreenPhoneConte
           />
         )}
         <Box className={classes.headlineStyle}>
-          {welcomeScreenContent.isUsingDefaultMessage
-            ? 'Welcome to \n' + studyTitle + '!'
-            : welcomeScreenContent.welcomeScreenHeader || 'Main Header'}
+          {getMessage('welcomeScreenHeader')}
         </Box>
         <p className={clsx(classes.bodyText)}>
-          {welcomeScreenContent.isUsingDefaultMessage
-            ? defaultStudyBody
-            : welcomeScreenContent.welcomeScreenBody || 'Body Copy'}
+          {getMessage('welcomeScreenBody')}
         </p>
         <Box className={clsx(classes.bodyText, classes.salutationText)}>
-          {welcomeScreenContent.isUsingDefaultMessage
-            ? defaultSalutations
-            : welcomeScreenContent.welcomeScreenSalutation || 'Salutation,'}
+          {getMessage('welcomeScreenSalutation')}
         </Box>
         <Box className={clsx(classes.bodyText, classes.fromText)}>
-          {welcomeScreenContent.isUsingDefaultMessage
-            ? defaultFrom
-            : welcomeScreenContent.welcomeScreenFromText || 'Study Team Name'}
+          {getMessage('welcomeScreenFromText')}
         </Box>
         {welcomeScreenContent.isUsingDefaultMessage && (
           <Box className={clsx(classes.bodyText, classes.disclaimerText)}>
