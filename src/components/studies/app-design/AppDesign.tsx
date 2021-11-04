@@ -688,7 +688,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
       if (study?.studyLogoUrl) {
         handleUpdate({...study, studyLogoUrl: undefined})
       }
-
       setPreviewFile(undefined)
       return
     }
@@ -772,6 +771,10 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
       }
     })
 
+    //if using default message
+    if (newStudy.clientData?.welcomeScreenData?.isUsingDefaultMessage) {
+      updatedStudy.clientData!.welcomeScreenData!.useOptionalDisclaimer = true
+    }
     //if using default message
     if (newStudy.clientData?.welcomeScreenData?.isUsingDefaultMessage) {
       updatedStudy.clientData!.welcomeScreenData!.useOptionalDisclaimer = true
