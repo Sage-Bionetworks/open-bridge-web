@@ -342,6 +342,14 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   ) {
     var pxGapBetweenBursts = LayoutConstants.marginGap
 
+    const getNextBurstNumber = (currentIndex: number) => {
+      for (var i = currentIndex + 1; i < coords.length; i++) {
+        if (plotData[i].burst) {
+          return plotData[i].burstNum
+        }
+      }
+    }
+
     const getThisSessionPlot = (weekPlot: PlotData) => {
       return weekPlot.name === wkNumber && weekPlot.burstNum === burstNumber
     }
@@ -353,7 +361,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     if (
       thisPlotIndex === coords.length - 1 ||
       burstNumber === -1 ||
-      coords[thisPlotIndex + 1].burstNum === burstNumber
+      getNextBurstNumber(thisPlotIndex) === burstNumber
     ) {
       return -1
     }
@@ -363,6 +371,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
 
       if (plotData.burstNum === burstNumber + 1) {
         //found the end
+
         return pxGapBetweenBursts
       } else {
         //if we are in the same bust - add graph height
