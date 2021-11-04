@@ -30,7 +30,7 @@ export const useStudies = () => {
 
   return useQuery<Study[], ExtendedError>(
     STUDY_KEYS.list(),
-    () => StudyService.getStudies(token!),
+    () => StudyService.getStudies(token!).then(result => result.items),
     {retry: 1}
   )
 }

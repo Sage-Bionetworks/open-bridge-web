@@ -350,6 +350,31 @@ if (studyId.length !== 6) return studyId
   return studyId
 }
 
+//this function allows to retrieve all of the pages for a query function
+
+async function getAllPages<T>(
+  fn: Function,
+  args: any[]
+): Promise<{items: T[]; total: number}> {
+  const pageSize = 50
+  const result = await fn(...args, pageSize, 0)
+  const pages = Math.ceil(result.total / pageSize)
+  if (pages < 2) {
+    return result
+  }
+
+  const queries: Promise<{items: T[]; total: number}>[] = []
+  for (let i = 0; i < pages; i++) {
+    queries.push(fn(...args, pageSize, i * pageSize))
+  }
+  return Promise.all(queries).then(result => {
+    const allItems1 = result.map(i => i.items as T[])
+    const allItems = allItems1.flat()
+
+    return {items: allItems, total: result[0].total}
+  })
+}
+
 const UtilityObject = {
   formatStudyId,
   setBodyClass,
@@ -372,6 +397,7 @@ const UtilityObject = {
   callEndpoint,
   callEndpointXHR,
   redirectToSynapseLogin,
+  getAllPages,
 }
 
 export default UtilityObject

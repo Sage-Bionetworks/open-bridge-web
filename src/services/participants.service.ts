@@ -52,29 +52,6 @@ export function formatExternalId(
     : `${forDisplay.substr(0, 3)}-${forDisplay.substr(3, 3)}`*/
 }
 
-async function getAllPages<T>(
-  fn: Function,
-  args: any[]
-): Promise<{items: T[]; total: number}> {
-  const pageSize = 50
-  const result = await fn(...args, pageSize, 0)
-  const pages = Math.ceil(result.total / pageSize)
-  if (pages < 2) {
-    return result
-  }
-
-  const queries: Promise<{items: T[]; total: number}>[] = []
-  for (let i = 0; i < pages; i++) {
-    queries.push(fn(...args, pageSize, i * pageSize))
-  }
-  return Promise.all(queries).then(result => {
-    const allItems1 = result.map(i => i.items as T[])
-    const allItems = allItems1.flat()
-
-    return {items: allItems, total: result[0].total}
-  })
-}
-
 // get participants
 //if page and offset not specified - get all
 async function getTestParticipants(
@@ -216,7 +193,7 @@ async function getParticipants(
 ): Promise<{items: ExtendedParticipantAccountSummary[]; total: number}> {
   // get enrollment for non test account
   if (!pageSize) {
-    return getAllPages<ParticipantAccountSummary>(getParticipants, [
+    return Utility.getAllPages<ParticipantAccountSummary>(getParticipants, [
       studyIdentifier,
       token,
       participantType,
@@ -279,7 +256,7 @@ async function getAllParticipantsInEnrollmentType(
   offsetBy?: number
 ) {
   if (!pageSize) {
-    return getAllPages<EnrolledAccountRecord>(
+    return Utility.getAllPages<EnrolledAccountRecord>(
       getAllParticipantsInEnrollmentType,
       [studyIdentifier, token, enrollmentType, includeTesters || false]
     )
