@@ -1,4 +1,3 @@
-import CalendarIcon from '@assets/scheduler/calendar_icon.svg'
 import {
   MTBHeadingH1,
   MTBHeadingH2,
@@ -26,7 +25,7 @@ import _ from 'lodash'
 import React from 'react'
 import {useSchedule, useUpdateSchedule} from '../scheduleHooks'
 import {TooltipHoverDisplay} from './ScheduleTimelineDisplay'
-import BurstTimeline from './timeline-plot/BurstTimeline'
+import TimelineBurstPlot from './timeline-plot/TimelineBurstPlot'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -142,24 +141,7 @@ const useStyles = makeStyles((theme: Theme) =>
         border: '1px solid black',
       },
     },
-    burstsInfoText: {
-      width: '420px',
 
-      margin: '0 auto',
-
-      display: 'flex',
-      '& p': {
-        fontFamily: poppinsFont,
-        fontSize: '14px',
-        lineHeight: '21px',
-      },
-    },
-    calendarIcon: {
-      width: '20px',
-      height: '20px',
-      marginTop: theme.spacing(2.4),
-      marginRight: theme.spacing(2.5),
-    },
     burstDesignHeading: {
       fontFamily: poppinsFont,
       fontSize: '18px',
@@ -168,6 +150,7 @@ const useStyles = makeStyles((theme: Theme) =>
     setBurstInfoContainer: {
       display: 'flex',
       flexDirection: 'column',
+      justifyContent: 'center',
       alignItems: 'center',
 
       '& input': {
@@ -258,7 +241,7 @@ const BurstSelectorSC: React.FunctionComponent<{
 }) => {
   const classes = useStyles()
   const groups = _.groupBy(schedule.sessions, 'startEventIds.0')
-  //const [selectedEvent, setSelectedEvent] = React.useState('')
+
   console.log('TEST')
   const updateSelection = (guid: string, isSelected: boolean) => {
     if (isSelected) {
@@ -401,6 +384,19 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
     number | undefined
   >()
 
+  // const {data: timeline, error, isLoading} = useTimeline(id)
+  /*const [plotData, setPlotData]= React.useState<{timelineSchedule, burstNumber: number}>()
+
+
+  ///
+  schedulingItems={timeline?.schedule || []}
+  burstSessionGuids={burstSessionGuids}
+  burstNumber={burstNumber || 0}
+  burstFrequency={burstFrequency || 0}
+  sortedSessions={schedule.sessions*/
+
+  ///
+
   React.useEffect(() => {
     if (!schedule) {
       return
@@ -463,9 +459,6 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
     }
   }
 
-  const displayBurstInfoText =
-    schedule && hasBursts && (burstNumber || 0) > 0 && (burstFrequency || 0) > 0
-
   const clearBursts = async () => {
     if (!schedule) {
       return
@@ -498,64 +491,46 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
       />
 
       {hasBursts && schedule && (
-        <div className={classes.burstBox}>
-          <BurstSelectorSC
-            schedule={schedule}
-            burstSessionGuids={burstSessionGuids}
-            triggerEventId={originEventId}
-            onUpdateEvent={(eventId: string) => setOriginEventId(eventId)}
-            onUpdateSessionSelection={(guids: string[]) =>
-              setBurstSessionGuids(guids)
-            }
-          />
-
-          <div className={classes.setBurstInfoContainer}>
-            <BurstScheduleSC
-              burstFrequency={burstFrequency}
-              burstNumber={burstNumber}
-              onChange={(type: 'N' | 'F', value: number) => {
-                if (type === 'F') {
-                  setBurstFrequency(value)
-                } else {
-                  setBurstNumber(value)
-                }
-              }}
+        <Box textAlign="center" mb={4}>
+          <div className={classes.burstBox}>
+            <BurstSelectorSC
+              schedule={schedule}
+              burstSessionGuids={burstSessionGuids}
+              triggerEventId={originEventId}
+              onUpdateEvent={(eventId: string) => setOriginEventId(eventId)}
+              onUpdateSessionSelection={(guids: string[]) =>
+                setBurstSessionGuids(guids)
+              }
             />
+
+            <div className={classes.setBurstInfoContainer}>
+              <BurstScheduleSC
+                burstFrequency={burstFrequency}
+                burstNumber={burstNumber}
+                onChange={(type: 'N' | 'F', value: number) => {
+                  if (type === 'F') {
+                    setBurstFrequency(value)
+                  } else {
+                    setBurstNumber(value)
+                  }
+                }}
+              />
+            </div>
           </div>
-        </div>
-      )}
-      <Box textAlign="center">
-        {' '}
-        <SaveButton onClick={save} />
-      </Box>
-      {displayBurstInfoText && (
-        <Box className={classes.burstsInfoText}>
-          <img className={classes.calendarIcon} src={CalendarIcon}></img>
-          <Box>
-            <p>
-              Your
-              <strong style={{backgroundColor: '#FFF509'}}>
-                {' '}
-                {burstNumber} burst(s)
-              </strong>{' '}
-              will be automatically scheduled{' '}
-              <strong>{burstFrequency} week(s)</strong> apart from your
-              <strong>Session Start Date</strong>.
-            </p>
-            <p>
-              Bursts can be rescheduled in the Participant Manager to accomodate
-              a participant’s availability.
-            </p>
-          </Box>
+
+          <SaveButton onClick={save} />
         </Box>
       )}
+
       {schedule && hasBursts && (
-        <BurstTimeline
-          burstSessionGuids={burstSessionGuids}
-          burstNumber={burstNumber || 0}
-          burstFrequency={burstFrequency || 0}
-          schedule={schedule}
-          studyId={id}></BurstTimeline>
+        <>
+          <Box py={3} px={0}>
+            <TimelineBurstPlot
+              studyId={id}
+              // schedulingItems={timeline?.schedule || []}
+            ></TimelineBurstPlot>
+          </Box>
+        </>
       )}
     </div>
   )

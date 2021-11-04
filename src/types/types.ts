@@ -2,6 +2,13 @@ import constants from './constants'
 import {Schedule, ScheduleNotification, SchedulingEvent} from './scheduling'
 
 /* *** General Types ********************************/
+//usage example type JsonPrimitive = SubType<Person, number | string>;
+export type SubType<Base, Condition> = Pick<
+  Base,
+  {
+    [Key in keyof Base]: Base[Key] extends Condition ? Key : never
+  }[keyof Base]
+>
 export interface StringDictionary<T> {
   [key: string]: T
 }

@@ -3,10 +3,10 @@ import React from 'react'
 import constants from '../../../types/constants'
 import {Contact} from '../../../types/types'
 import {ContactType} from './AppDesign'
-import FormGroupWrapper from './FormGroupWrapper'
 import LeadInvestigatorDropdown from './LeadInvestigatorDropdown'
-import Subsection from './Subsection'
-import TextInputWrapper from './TextInputWrapper'
+import FormGroupWrapper from './widgets/FormGroupWrapper'
+import Subsection from './widgets/Subsection'
+import TextInputWrapper from './widgets/TextInputWrapper'
 
 const useStyles = makeStyles(theme => ({
   firstFormElement: {

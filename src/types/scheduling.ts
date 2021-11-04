@@ -85,6 +85,10 @@ export type StudySessionGeneral = {
   minutesToComplete?: number
 }
 
+export interface StudySessionTimeline extends StudySessionGeneral {
+  timeWindowGuids: string[]
+}
+
 export type StudySession = StudySessionGeneral & SessionSchedule
 
 export type StudyBurst = {
@@ -110,7 +114,7 @@ export type ScheduleTimeline = {
   duration: string //iso
   schedule: TimelineScheduleItem[]
   assessments: Assessment[]
-  sessions: StudySessionGeneral[]
+  sessions: StudySessionTimeline[]
   totalMinutes: number
   totalNotifications: number
 }

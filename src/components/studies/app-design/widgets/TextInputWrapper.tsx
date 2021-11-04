@@ -1,8 +1,11 @@
-import React from 'react'
 import {makeStyles} from '@material-ui/core'
-import {SimpleTextInput, SimpleTextLabel} from '../../widgets/StyledComponents'
-import {playfairDisplayFont} from '../../../style/theme'
 import clsx from 'clsx'
+import React, {ChangeEventHandler} from 'react'
+import {playfairDisplayFont} from '../../../../style/theme'
+import {
+  SimpleTextInput,
+  SimpleTextLabel,
+} from '../../../widgets/StyledComponents'
 
 const useStyles = makeStyles(theme => ({
   informationRowStyle: {
@@ -20,7 +23,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type TextInputWrapperProps = {
-  onChange: Function
+  onChange: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>
   onBlur?: Function
   id: string
   placeholder: string
@@ -74,7 +77,7 @@ const TextInputWrapper: React.FunctionComponent<TextInputWrapperProps> = ({
         id={id}
         placeholder={placeholder}
         value={value}
-        onChange={e => onChange(e)}
+        onChange={onChange}
         onBlur={e => (onBlur ? onBlur(e) : null)}
         multiline={multiline}
         rows={rows ? rows : 1}

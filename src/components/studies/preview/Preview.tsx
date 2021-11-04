@@ -8,6 +8,7 @@ import MedicalIcon from '@assets/preview/reminder_of_use_medical_icon.svg'
 import ProtectionIcon from '@assets/preview/reminder_of_use_protect_icon.svg'
 import SampleAssessmentDataImg from '@assets/preview/sample_assessment_data.svg'
 import ScheduleSessionsIcon from '@assets/preview/schedule_session_icon_no_padding.svg'
+import QrCode from '@assets/qr_code.png'
 import AssessmentSmall from '@components/assessments/AssessmentSmall'
 import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
 import {MTBHeadingH1, MTBHeadingH2} from '@components/widgets/Headings'
@@ -81,6 +82,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   storeButtons: {
     display: 'flex',
+    justifyContent: 'space-between',
+
     marginTop: theme.spacing(5),
     '& button:first-child': {
       padding: 0,
@@ -301,6 +304,9 @@ const PreviewIdGenerated: React.FunctionComponent<{
         Please download and/or open the <strong>Mobile Toolbox App</strong> and
         login with the following credentials below.
       </p>
+      <Box my={3} mx="auto" p={2} bgcolor="white" textAlign="center">
+        <img src={QrCode} width="95px" />
+      </Box>
     </>
   )
 
@@ -336,12 +342,16 @@ const PreviewIdGenerated: React.FunctionComponent<{
           <div>
             {isAssessmentDemo ? assessmentDemoIntro : studyDemoIntro}
             <div className={classes.storeButtons}>
-              <Button>
+              <a
+                href="https://apps.apple.com/us/app/mobile-toolbox-app/id1578358408"
+                target="_blank">
                 <img src={appStoreBtn} />
-              </Button>
-              <Button>
+              </a>
+              <a
+                href="https://play.google.com/store/apps/details?id=org.sagebionetworks.research.mobiletoolbox.app"
+                target="_blank">
                 <img src={googlePlayBtn} />
-              </Button>
+              </a>
             </div>
             <p className={classes.reminderOfUseText}>
               This is only for login purposes only.
