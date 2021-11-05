@@ -925,8 +925,8 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
           <Box className={classes.fields}>
             <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
             <p className={classes.smallScreenText}>
-              When a participant downloads the appand signs into the study, they
-              are greeted with a welcome screen.
+              When a participant downloads the app and signs into the study,
+              they are greeted with a welcome screen.
               <br></br>
               <br></br>
               Customize what you would like to display to participants below:
