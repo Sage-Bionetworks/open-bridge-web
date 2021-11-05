@@ -394,12 +394,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                             </EnrollmentTypeSelector>
                           </Route>
                           <Route path={`/studies/builder/:id/customize`}>
-                            <AppDesign
-                              id={id}
-                              onError={(error: string) =>
-                                showFeedback({message: error, name: error})
-                              }
-                              onShowFeedback={showFeedback}>
+                            <AppDesign id={id} onShowFeedback={showFeedback}>
                               {navButtons}
                             </AppDesign>
                           </Route>
