@@ -180,7 +180,7 @@ export const useUpdateStudyDetail = () => {
       return {previousStudy}
     },
     onError: (err, variables, context) => {
-      console.log(err, variables, context)
+      throw err
       /* if (context?.previousStudies) {
           queryClient.setQueryData<Study[]>(KEYS.studies, context.previousStudies)
         }*/

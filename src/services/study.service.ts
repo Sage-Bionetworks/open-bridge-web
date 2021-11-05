@@ -200,6 +200,9 @@ async function copyStudy(
       guid: '',
       name: newStudyId + 'test',
       sessions: scheduleToCopy.sessions.map(s => ({...s, guid: undefined})),
+      studyBursts: scheduleToCopy.studyBursts
+        ? [...scheduleToCopy.studyBursts]
+        : [],
     }
 
     copiedSchedule = await ScheduleService.createSchedule(
