@@ -25,6 +25,7 @@ export interface Response<T> {
 
 export interface ExtendedError extends Error {
   statusCode?: number
+  entity?: any
 }
 
 export type RequestStatus = 'IDLE' | 'PENDING' | 'RESOLVED' | 'REJECTED'
@@ -283,6 +284,7 @@ export type EnrolledAccountRecord = {
   withdrawalNote?: string
   withdrawnBy: OrgUser
   withdrawnOn: Date
+  note?: string
 }
 
 export type Phone = {

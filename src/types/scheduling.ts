@@ -108,6 +108,7 @@ export type Schedule = {
   duration?: string //iso
   version?: number
   clientData?: any
+  studyBursts?: any[]
 }
 
 export type ScheduleTimeline = {
