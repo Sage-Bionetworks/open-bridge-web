@@ -51,11 +51,13 @@ export interface AssessmentListProps {
 export interface SessionHeaderProps {
   order: number
   name: string
+  symbol?: string
   assessments: Assessment[]
 }
 const SessionHeader: React.FunctionComponent<SessionHeaderProps> = ({
   order,
   name,
+  symbol,
   assessments,
 }: SessionHeaderProps) => {
   const totalTime = assessments.reduce((total, curr) => {
@@ -64,7 +66,7 @@ const SessionHeader: React.FunctionComponent<SessionHeaderProps> = ({
   }, 0)
   const result = (
     <Box mb={2}>
-      <SessionIcon index={order}>
+      <SessionIcon index={order} symbolKey={symbol}>
         <span>{name}</span>
       </SessionIcon>
       <Box
@@ -171,6 +173,7 @@ const AssessmentList: React.FunctionComponent<AssessmentListProps> = ({
     <Box m={0.5} style={isReadOnly ? {backgroundColor: '#f8f8f8'} : {}}>
       <SessionHeader
         order={studySessionIndex}
+        symbol={studySession.symbol}
         name={studySession.name}
         assessments={studySession.assessments || []}></SessionHeader>
 

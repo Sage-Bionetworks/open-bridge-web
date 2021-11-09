@@ -6,7 +6,7 @@ import SessionIcon from '@components/widgets/SessionIcon'
 import {Box, Tooltip} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import {latoFont, poppinsFont} from '@style/theme'
-import {TimelineScheduleItem} from '@typedefs/scheduling'
+import {StudySession, TimelineScheduleItem} from '@typedefs/scheduling'
 import _ from 'lodash'
 import React from 'react'
 import SessionPlot from './SingleSessionPlot'
@@ -127,7 +127,7 @@ type PlotData = {
   sessions: {
     startEventId: string | undefined
     coords: number[]
-    guid: string | undefined
+    session: StudySession
   }[]
 }
 
@@ -275,7 +275,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
             true,
             maxWindows
           )
-          return {...sessionCoords, guid: session.guid}
+          return {...sessionCoords, session}
         })
       let noEmpties = sessions.filter(s => s.coords.length > 0)
       // let hasItems = sessions.find(coordArr => coordArr.coords.length > 0)
@@ -301,7 +301,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
             maxWindows
           )
           // const last = Math.ceil(_.last(sessionCoords.coords) || -1)
-          return {...sessionCoords, guid: session.guid}
+          return {...sessionCoords, session}
         })
       noEmpties = sessions.filter(s => s.coords.length > 0)
       // hasItems = sessions.find(coordArr => coordArr.coords.length > 0)
@@ -469,29 +469,28 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                 {wk.burst !== false ? '/ Burst' + (wk.burstNum * 1 + 1) : ''}
               </div>
               <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
-                {wk.sessions.map((session, sIndex: number) => (
+                {wk.sessions.map((sessionInfo, sIndex: number) => (
                   <div className={classes.graph} key={`session_${sIndex}`}>
                     <Tooltip
                       key="tooltip"
                       placement="top"
-                      title={`Starts on: ${session.startEventId}`}>
+                      title={`Starts on: ${sessionInfo.startEventId}`}>
                       <div className={classes.sessionName}>
                         <SessionIcon
+                          symbolKey={sessionInfo.session.symbol}
                           index={sessionsSchedule.sessions.findIndex(
-                            s => s.guid === session.guid
+                            s => s.guid === sessionInfo.session.guid
                           )}
                         />
                       </div>
                     </Tooltip>
 
                     <SessionPlot
-                      xCoords={session.coords}
-                      sessionIndex={sessionsSchedule.sessions.findIndex(
-                        s => s.guid === session.guid
-                      )}
+                      xCoords={sessionInfo.coords}
                       displayIndex={2}
+                      sessionSymbol={sessionInfo.session.symbol}
                       unitPixelWidth={unitWidth}
-                      sessionGuid={session.guid!}
+                      sessionGuid={sessionInfo.session.guid!}
                     />
                   </div>
                 ))}

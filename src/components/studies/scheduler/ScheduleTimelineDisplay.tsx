@@ -95,7 +95,10 @@ export const TooltipHoverDisplay: React.FunctionComponent<{
         arrow: classes.arrow,
       }}>
       <Box style={{cursor: 'pointer'}}>
-        <SessionIcon index={index} key={session.guid}>
+        <SessionIcon
+          index={index}
+          key={session.guid}
+          symbolKey={session.symbol}>
           {getSession(session.guid!)?.label}
         </SessionIcon>
       </Box>

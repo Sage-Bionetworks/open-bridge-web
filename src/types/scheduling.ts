@@ -82,6 +82,7 @@ export type StudySessionGeneral = {
   labels?: StringDictionary<string>[]
   guid?: string
   startEventIds: string[]
+  symbol?: string
   minutesToComplete?: number
 }
 
@@ -108,7 +109,6 @@ export type Schedule = {
   duration?: string //iso
   version?: number
   clientData?: any
-  studyBursts?: any[]
 }
 
 export type ScheduleTimeline = {
