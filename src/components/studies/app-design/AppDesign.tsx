@@ -707,8 +707,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
         study.version = logoUpdateInfo.version
         study.studyLogoUrl = logoUpdateInfo.studyLogoUrl
       }
-    } else {
-      study.studyLogoUrl = undefined
     }
 
     setSaveLoader(true)
