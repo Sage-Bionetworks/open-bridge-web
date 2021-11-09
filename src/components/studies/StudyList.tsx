@@ -330,10 +330,6 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         modifiedOn: new Date(),
       }
 
-      //  const version = await StudyService.createStudy(newStudy, token!)
-      // newStudy.version = version
-      //  navigateToStudy(newStudy)
-
       mutateAsync({
         action: 'CREATE',
         study: {...newStudy, name: newStudy.name},
