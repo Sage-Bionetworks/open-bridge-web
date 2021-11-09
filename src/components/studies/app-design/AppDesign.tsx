@@ -262,7 +262,6 @@ export type PreviewFile = {
 
 export interface AppDesignProps {
   id: string
-  onError: Function
   children: React.ReactNode
   onShowFeedback: Function
 }
@@ -472,7 +471,6 @@ export const isAppBackgroundColorValid = (currentColor: string | undefined) => {
 
 const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   children,
-  onError,
   id,
   onShowFeedback,
 }) => {
@@ -676,7 +674,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
         version: uploadResponse.version,
       }
     } catch (error) {
-      onError(error)
     } finally {
       setIsSettingStudyLogo(false)
     }
@@ -710,22 +707,23 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
         study.version = logoUpdateInfo.version
         study.studyLogoUrl = logoUpdateInfo.studyLogoUrl
       }
-    } else {
-      study.studyLogoUrl = undefined
     }
-    try {
-      setSaveLoader(true)
-      await mutateStudy({
-        study: study,
-      }).then(e => {
-        setStudy(e)
+
+    setSaveLoader(true)
+    return mutateStudy({
+      study: study,
+    })
+      .then(s => {
+        setStudy(s)
+        setHasObjectChanged(false)
+        onShowFeedback()
       })
-      setHasObjectChanged(false)
-    } catch (e) {
-      onError(e)
-    } finally {
-      setSaveLoader(false)
-    }
+      .catch(e => {
+        onShowFeedback(e)
+      })
+      .finally(() => {
+        setSaveLoader(false)
+      })
   }
 
   const saveInfo = async () => {
@@ -748,9 +746,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     }
     if (study) {
       const updatedStudy = formatStudy(study)
-      await onSave(updatedStudy)
-
-      onShowFeedback()
+      onSave(updatedStudy)
     }
   }
 
@@ -930,8 +926,8 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
           <Box className={classes.fields}>
             <MTBHeadingH2>WELCOME SCREEN</MTBHeadingH2>
             <p className={classes.smallScreenText}>
-              When a participant downloads the appand signs into the study, they
-              are greeted with a welcome screen.
+              When a participant downloads the app and signs into the study,
+              they are greeted with a welcome screen.
               <br></br>
               <br></br>
               Customize what you would like to display to participants below:

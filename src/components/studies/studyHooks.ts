@@ -30,7 +30,7 @@ export const useStudies = () => {
 
   return useQuery<Study[], ExtendedError>(
     STUDY_KEYS.list(),
-    () => StudyService.getStudies(token!),
+    () => StudyService.getStudies(token!).then(result => result.items),
     {retry: 1}
   )
 }
@@ -180,7 +180,7 @@ export const useUpdateStudyDetail = () => {
       return {previousStudy}
     },
     onError: (err, variables, context) => {
-      console.log(err, variables, context)
+      throw err
       /* if (context?.previousStudies) {
           queryClient.setQueryData<Study[]>(KEYS.studies, context.previousStudies)
         }*/

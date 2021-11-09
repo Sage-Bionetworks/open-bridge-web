@@ -103,15 +103,22 @@ async function editStudyLogo(
   }
 }
 
-async function getStudies(token: string): Promise<Study[]> {
-  const studies = await Utility.callEndpoint<{items: Study[]}>(
+async function getStudies(
+  token: string,
+  pageSize?: number,
+  offsetBy?: number
+): Promise<{items: Study[]; total: number}> {
+  if (!pageSize) {
+    return Utility.getAllPages<Study>(getStudies, [token])
+  }
+  const studies = await Utility.callEndpoint<{items: Study[]; total: number}>(
     constants.endpoints.studies,
     'GET',
-    {},
+    {pageSize: pageSize, offsetBy: offsetBy},
     token
   )
 
-  return studies.data.items
+  return {items: studies.data.items, total: studies.data.total}
 }
 
 async function getStudy(id: string, token: string): Promise<Study | undefined> {
@@ -193,6 +200,9 @@ async function copyStudy(
       guid: '',
       name: newStudyId + 'test',
       sessions: scheduleToCopy.sessions.map(s => ({...s, guid: undefined})),
+      studyBursts: scheduleToCopy.studyBursts
+        ? [...scheduleToCopy.studyBursts]
+        : [],
     }
 
     copiedSchedule = await ScheduleService.createSchedule(
@@ -237,7 +247,7 @@ async function removeStudy(studyId: string, token: string): Promise<Study[]> {
     token
   )
   const data = await getStudies(token)
-  return data
+  return data.items
 }
 
 async function completeStudy(studyId: string, token: string): Promise<Study[]> {
@@ -260,7 +270,7 @@ async function completeStudy(studyId: string, token: string): Promise<Study[]> {
     token
   )
   const data = await getStudies(token)
-  return data
+  return data.items
 }
 async function withdrawStudy(studyId: string, token: string): Promise<Study[]> {
   await Utility.callEndpoint<{items: Study[]}>(
@@ -270,7 +280,7 @@ async function withdrawStudy(studyId: string, token: string): Promise<Study[]> {
     token
   )
   const data = await getStudies(token)
-  return data
+  return data.items
 }
 
 async function launchStudy(studyId: string, token: string): Promise<Study> {
