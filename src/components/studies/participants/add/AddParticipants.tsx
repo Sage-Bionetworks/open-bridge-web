@@ -170,8 +170,8 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
     setIsCsvUploaded(true)
     setProgress(0)
     for (const row of rows) {
-      console.log(progress)
       const data = row.data
+
       try {
         await CsvUtility.uploadCsvRow(
           data,
@@ -182,11 +182,12 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
         )
         setProgress(prev => prev + progressTick)
       } catch (error) {
-        console.log('error', importError.length)
-        console.log(importError)
-
-        const key = data[0]
-        setImportError(prev => [...prev, `${key}: ${error.message || error}`])
+        console.log('Error', JSON.stringify(error))
+        const key = Object.values(row.data)[0]
+        setImportError(prev => [
+          ...prev,
+          `${key}: ${(error as Error).message || error}`,
+        ])
       }
     }
     setIsCsvProcessed(true)
