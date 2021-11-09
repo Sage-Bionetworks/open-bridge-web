@@ -1,3 +1,4 @@
+import {SessionSymbols} from '@components/widgets/SessionIcon'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import {
   Box,
@@ -128,7 +129,11 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
     duration: string,
     start: string
   ) => {
-    const studySession = ScheduleService.createEmptyScheduleSession(start)
+    const symbol = SessionSymbols.values().next().value
+    const studySession = ScheduleService.createEmptyScheduleSession(
+      start,
+      SessionSymbols.keys().next().value
+    )
     let schedule: Schedule = {
       guid: '',
       name: studyId,

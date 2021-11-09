@@ -3,6 +3,7 @@ import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {
   DisplayStudyPhase,
+  ExtendedError,
   FileRevision,
   Study,
   StudyPhase,
@@ -225,7 +226,7 @@ async function updateStudy(study: Study, token: string): Promise<number> {
     return result.data.version
   } catch (error) {
     //we might need to retry if there is a verison mismatch
-    if (error.statusCode === 409) {
+    if ((error as ExtendedError).statusCode === 409) {
       console.log('409')
       const updatedStudy = await getStudy(study.identifier, token)
       if (!updatedStudy) {

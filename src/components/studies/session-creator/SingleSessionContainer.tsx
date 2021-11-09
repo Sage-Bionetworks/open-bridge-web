@@ -182,7 +182,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> =
         <>
           <Box className={classes.inner}>
             <Box marginRight={2}>
-              <SessionIcon index={sessionIndex}>
+              <SessionIcon index={sessionIndex} symbolKey={studySession.symbol}>
                 <EditableTextbox
                   maxCharacters={18}
                   component="h4"

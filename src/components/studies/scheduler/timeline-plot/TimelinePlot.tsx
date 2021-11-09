@@ -80,7 +80,11 @@ export interface TimelinePlotProps {
 }
 
 type PlotData = {
-  sessionInfos: {startEventId?: string; coords: number[]; guid: string}[]
+  sessionInfos: {
+    startEventId?: string
+    coords: number[]
+    session: StudySession
+  }[]
   weekNumber: number
 }
 
@@ -108,7 +112,7 @@ const EmptyPlotSC: React.FunctionComponent<{
             <div style={{position: 'relative', top: '0px'}} key="session_plot">
               <SessionPlot
                 xCoords={[]}
-                sessionIndex={sIndex}
+                sessionSymbol={session.symbol}
                 displayIndex={2}
                 unitPixelWidth={unitWidth}
                 sessionGuid={session.guid!}
@@ -132,7 +136,6 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   const [isExpanded, setIsExpanded] = React.useState(false)
   const [plotWidth, setPlotWidth] = React.useState<number | null>(null)
   const [plotData, setPlotData] = React.useState<PlotData[]>()
-  console.log(maxWindows, 'mw')
 
   function handleResize() {
     if (ref && ref.current) {
@@ -174,16 +177,10 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
           false,
           maxWindows
         )
-        return {...infos, guid: session.guid!}
+        return {...infos, session}
       })
 
-      /* const hasItems = sessionInfos.find(
-        sessionInfo => sessionInfo.coords.length > 0
-      )*/
-
-      console.log('si' + sessionInfos.length)
       var noEmpties = sessionInfos.filter(s => s.coords.length > 0)
-      console.log('ne' + noEmpties.length)
 
       if (noEmpties.length)
         result[weekNumber] = {
@@ -252,29 +249,30 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                         key="week_graph">
                         {wk.sessionInfos
                           .filter(s => s.coords.length > 0)
-                          .map((session, sIndex) => (
+                          .map((sessionInfo, sIndex) => (
                             <div
                               className={classes.graph}
                               key={`session_${sIndex}`}>
                               <Tooltip
                                 key="tooltip"
                                 placement="top"
-                                title={`Starts on: ${session.startEventId}`}>
+                                title={`Starts on: ${sessionInfo.startEventId}`}>
                                 <div className={classes.sessionName}>
-                                  <SessionIcon index={sIndex} />
+                                  <SessionIcon
+                                    index={sIndex}
+                                    symbolKey={sessionInfo.session.symbol}
+                                  />
                                 </div>
                               </Tooltip>
                               <div
                                 style={{position: 'relative', top: '0px'}}
                                 key="session_plot">
                                 <SessionPlot
-                                  xCoords={session.coords}
-                                  sessionIndex={sortedSessions.findIndex(
-                                    s => s.guid === session.guid
-                                  )}
+                                  xCoords={sessionInfo.coords}
+                                  sessionSymbol={sessionInfo.session.symbol}
                                   displayIndex={2}
                                   unitPixelWidth={unitWidth}
-                                  sessionGuid={session.guid!}
+                                  sessionGuid={sessionInfo.session.guid!}
                                 />
                               </div>
                             </div>

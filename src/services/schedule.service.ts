@@ -40,12 +40,17 @@ export const DEFAULT_NOTIFICATION: ScheduleNotification = {
   ],
 }
 
-function createEmptyScheduleSession(startEventId: string, name = 'Session1') {
+function createEmptyScheduleSession(
+  startEventId: string,
+  symbol: string,
+  name = 'Session1'
+) {
   const defaultTimeWindow: AssessmentWindow = {
     startTime: '08:00',
   }
   const studySession: StudySession = {
-    name: name,
+    name,
+    symbol,
     startEventIds: [startEventId],
     timeWindows: [defaultTimeWindow],
     performanceOrder: 'participant_choice',

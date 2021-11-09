@@ -1,3 +1,4 @@
+import {SessionSymbols} from '@components/widgets/SessionIcon'
 import {JOINED_EVENT_ID} from '@services/event.service'
 import _ from 'lodash'
 import ScheduleService from '../../../services/schedule.service'
@@ -53,25 +54,31 @@ export type SessionAction =
 function addSession(
   sessions: StudySession[],
   name: string,
+
   assessments: Assessment[]
 ): StudySession[] {
   const startEventId = sessions.length
     ? _.first(sessions[0].startEventIds)
     : JOINED_EVENT_ID
 
+  var symbolKeys = Array.from(SessionSymbols.keys())
+  debugger
+  var ndx = sessions.length
+  if (symbolKeys.length <= ndx) {
+    ndx = ndx % symbolKeys.length
+  }
+  var symbol = symbolKeys[ndx]
+
   const session = ScheduleService.createEmptyScheduleSession(
     startEventId || JOINED_EVENT_ID,
+    symbol,
     name
   )
 
   session.assessments = assessments
 
   const result = [
-    ...sessions.map((session, index) => ({
-      ...session,
-      // active: false,
-      order: index,
-    })),
+    ...sessions,
     {
       ...session,
     },

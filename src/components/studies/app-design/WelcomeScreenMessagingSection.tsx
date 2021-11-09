@@ -1,8 +1,8 @@
 import {Box, Checkbox, FormControl, makeStyles} from '@material-ui/core'
+import {playfairDisplayFont} from '@style/theme'
 import React from 'react'
-import {playfairDisplayFont} from '../../../style/theme'
-import FormGroupWrapper from './FormGroupWrapper'
-import TextInputWrapper from './TextInputWrapper'
+import FormGroupWrapper from './widgets/FormGroupWrapper'
+import TextInputWrapper from './widgets/TextInputWrapper'
 
 const useStyles = makeStyles(theme => ({
   firstFormElement: {
