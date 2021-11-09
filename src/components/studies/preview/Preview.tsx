@@ -354,7 +354,8 @@ const PreviewIdGenerated: React.FunctionComponent<{
               </a>
             </div>
             <p className={classes.reminderOfUseText}>
-              This is only for login purposes only.
+              This login is only for preview purposes and allows you to view the
+              study as a participant would.
             </p>
             <div className={classes.inputs}>
               <FormControl component="div">
