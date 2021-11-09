@@ -53,7 +53,9 @@ const DownloadAppLandingPage: React.FunctionComponent<{}> = ({}) => {
         Thank you for participating.
         <br></br>
         <br></br>
-        Please select the store that works best on your smartphone:
+        Please scan the QR code with your phone camera and open the link, or
+        select the store button that works best for your smartphone to download
+        the Mobile Toolbox App.
       </p>
 
       <Box m={2} textAlign="center" bgcolor="white" style={{padding: '16px'}}>
