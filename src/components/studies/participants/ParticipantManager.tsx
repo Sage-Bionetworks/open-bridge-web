@@ -46,6 +46,7 @@ import StudyService from '@services/study.service'
 import {latoFont, poppinsFont, theme} from '@style/theme'
 import constants from '@typedefs/constants'
 import {
+  ExtendedError,
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
@@ -412,7 +413,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       return
     }
     const fn = async () => {
-      console.log('getting data')
       const result: ParticipantData = await run(
         ParticipantUtility.getParticipants(
           study.identifier,
@@ -433,7 +433,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }
 
   React.useEffect(() => {
-    console.log('data updated - resetting selected')
     if (isAllSelected) {
       setSelectedParticipantIds(prev => ({
         ...prev,
@@ -477,7 +476,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       )
       setRefreshParticipantsToggle(prev => !prev)
     } catch (e) {
-      alert(e.message)
+      alert((e as ExtendedError).message)
     }
   }
 
@@ -536,7 +535,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     } else {
       setIsUserSearchingForParticipant(false)
     }
-    const {items, total} = await run(
+    const searchResult = await run(
       ParticipantUtility.getParticipants(
         study.identifier,
         0,
@@ -546,6 +545,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         searchOptions
       )
     )
+    const {items, total} = searchResult || {items: [], total: 0}
     setParticipantData({items, total})
   }
 

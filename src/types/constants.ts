@@ -78,7 +78,7 @@ export default {
     getAccountsForOrg: '/v1/organizations/:orgId/members',
     oauthSignIn: '/v3/auth/oauth/signIn',
     participant: '/v5/studies/:id/participants',
-    participantsSearch: '/v5/studies/:id/participants/search',
+    participantsSearch: '/v5/studies/:studyId/participants/search',
     requestResetPassword: '/v3/auth/requestResetPassword',
     requestInfo: '/v5/studies/:studyId/participants/:userId/requestInfo',
     schedule: '/v5/studies/:studyId/schedule',
