@@ -13,6 +13,7 @@ import {useUserSessionDataState} from '@helpers/AuthContext'
 import {
   Box,
   Button,
+  Checkbox,
   CircularProgress,
   Dialog,
   IconButton,
@@ -90,7 +91,7 @@ const PhoneCell: FunctionComponent<{
 
     try {
     } catch (e) {
-      console.log('Error in  onClick', e.message)
+      console.log('Error in  onClick', (e as Error).message)
     }
   }
 
@@ -163,7 +164,7 @@ const EditCell: FunctionComponent<{
         shouldWithdraw: false,
       })
     } catch (e) {
-      console.log('Error in  onClick', e.message)
+      console.log('Error in  onClick', (e as Error).message)
     }
   }
   const isWithdrawn =
@@ -216,25 +217,40 @@ const SelectionControl: FunctionComponent<{
           />{' '}
           selected
         </Box>
-
-        <div
-          style={{
-            position: 'absolute',
-            zIndex: 11,
-            top: 40,
-            left: 0,
-            backgroundColor: '#fff',
-          }}>
-          <SelectAll
-            selectionType={selectionType}
-            allText={`Select all ${totalParticipants}`}
-            allPageText="Select this page"
-            onSelectAllPage={onSelectAllPage}
-            onDeselect={onDeselect}
-            onSelectAll={onSelectAll}></SelectAll>
-        </div>
       </div>
     </GridToolbarContainer>
+  )
+}
+
+//---------------------- selection control2
+
+const SelectionControl2: FunctionComponent<{
+  selectionModel: string[]
+  isAllSelected: boolean
+  totalParticipants: number
+  onSelectAllPage: Function
+  onSelectAll: Function
+  onDeselect: Function
+  selectionType: any
+}> = ({
+  selectionModel,
+  isAllSelected,
+  totalParticipants,
+  selectionType,
+  onSelectAll,
+  onSelectAllPage,
+  onDeselect,
+}) => {
+  const classes = useStyles()
+
+  return (
+    <SelectAll
+      selectionType={selectionType}
+      allText={`Select all ${totalParticipants}`}
+      allPageText="Select this page"
+      onSelectAllPage={onSelectAllPage}
+      onDeselect={onDeselect}
+      onSelectAll={onSelectAll}></SelectAll>
   )
 }
 
@@ -263,7 +279,7 @@ function getPhone(params: GridValueGetterParams) {
   } else return ''
 }
 function getDate(value: GridCellValue) {
-  return value ? new Date(value as string).toLocaleString() : undefined
+  return value ? new Date(value as string).toLocaleDateString() : undefined
 }
 
 function getJoinedDateWithIcons(params: GridValueGetterParams) {
@@ -377,9 +393,9 @@ function getColumns(
       renderHeader: () =>
         renderColumnHeaderWithIcon(JoinedCheckSymbol, 'Joined'),
       renderCell: getJoinedDateWithIcons,
-      flex: 1,
+      width: 110,
     },
-    {field: 'note', headerName: 'Notes', flex: 2},
+    {field: 'note', headerName: 'Notes', width: 200},
     {
       field: 'dateWithdrawn',
       headerName: 'Withdrawn',
@@ -413,6 +429,8 @@ function getColumns(
   const customEventColumns = scheduleEventIds.map((eventId, index) => {
     const col: GridColDef = {
       field: eventId + index,
+      width: 100,
+
       headerName: EventService.formatCustomEventIdForDisplay(eventId),
       valueGetter: params => {
         const foundEvent = params.row.events.find(
@@ -421,7 +439,7 @@ function getColumns(
         )
         return foundEvent ? getDate(foundEvent.timestamp) : ' '
       },
-      flex: 1,
+      // flex: 1,
     }
     return col
   })
@@ -561,6 +579,60 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     return 'NONE'
   }
 
+  const editColumn1: GridColDef = {
+    field: 'editxoxoxo',
+
+    disableClickEventBubbling: true,
+    disableColumnMenu: true,
+    width: 70,
+    renderHeader: () => {
+      console.log(isAllSelected, getSelectionType())
+      return (
+        <>
+          <SelectAll
+            selectionType={getSelectionType()}
+            allText={`Select all ${totalParticipants}`}
+            allPageText="Select this page"
+            onSelectAllPage={() => {
+              const ids = rows.map(row => row.id)
+              onRowSelected(_.uniq([...selectionModel, ...ids]), false)
+            }}
+            onDeselect={() => onRowSelected([], false)}
+            onSelectAll={() => {
+              const ids = rows.map(row => row.id)
+              onRowSelected(ids, true)
+            }}></SelectAll>
+        </>
+      )
+    },
+
+    renderCell: (params: GridCellParams) => {
+      const id = params.row['id']
+      console.log('id', id)
+
+      return (
+        <div>
+          <Checkbox
+            name="selectAllCheckbox"
+            checked={selectionModel.includes(id)}
+            onChange={e => {
+              let model: string[] = []
+              if (e.target.checked) {
+                model = [...selectionModel, id]
+              } else {
+                model = selectionModel.filter(mid => mid != id)
+              }
+
+              onRowSelected(model, false)
+            }}
+          />
+        </div>
+      )
+    },
+  }
+
+  participantColumns.unshift(editColumn1)
+
   return (
     <>
       <Paper elevation={0}>
@@ -571,7 +643,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               classes={{columnHeader: classes.gridHeader}}
               density="standard"
               columns={participantColumns}
-              checkboxSelection
+              checkboxSelection={false}
               onRowSelected={(row: GridRowSelectedParams) => {
                 let model: string[] = []
                 if (row.isSelected) {
@@ -587,21 +659,26 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                 ColumnMenu: CustomColumnMenuComponent,
 
                 Toolbar: () => (
-                  <SelectionControl
-                    selectionModel={selectionModel}
-                    isAllSelected={isAllSelected}
-                    totalParticipants={totalParticipants}
-                    selectionType={getSelectionType()}
-                    onSelectAllPage={() => {
-                      const ids = rows.map(row => row.id)
-                      onRowSelected(_.uniq([...selectionModel, ...ids]), false)
-                    }}
-                    onDeselect={() => onRowSelected([], false)}
-                    onSelectAll={() => {
-                      const ids = rows.map(row => row.id)
-                      onRowSelected(ids, true)
-                    }}
-                  />
+                  <>
+                    <SelectionControl
+                      selectionModel={selectionModel}
+                      isAllSelected={isAllSelected}
+                      totalParticipants={totalParticipants}
+                      selectionType={getSelectionType()}
+                      onSelectAllPage={() => {
+                        const ids = rows.map(row => row.id)
+                        onRowSelected(
+                          _.uniq([...selectionModel, ...ids]),
+                          false
+                        )
+                      }}
+                      onDeselect={() => onRowSelected([], false)}
+                      onSelectAll={() => {
+                        const ids = rows.map(row => row.id)
+                        onRowSelected(ids, true)
+                      }}
+                    />
+                  </>
                 ),
 
                 Footer: () => <>{children}</>,

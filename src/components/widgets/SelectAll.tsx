@@ -74,7 +74,7 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
   selectionType,
 }) => {
   const classes = useStyles()
-
+  console.log('st', selectionType)
   const [selection, setSelection] = React.useState<SelectionType>(selectionType)
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null)
 
@@ -119,13 +119,13 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
       <Checkbox
         name="selectAllCheckbox"
         className={classes.check}
-        checked={selection === 'ALL' || selection === 'PAGE'}
-        indeterminate={selection === 'SOME'}
+        checked={selectionType === 'ALL' || selectionType === 'PAGE'}
+        indeterminate={selectionType === 'SOME'}
         onClick={() => {
           if (
-            selection === 'ALL' ||
-            selection === 'PAGE' ||
-            selection === 'SOME'
+            selectionType === 'ALL' ||
+            selectionType === 'PAGE' ||
+            selectionType === 'SOME'
           ) {
             onDeselect()
           } else {
@@ -154,7 +154,7 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
             onClick={() => setSelect(item.value as SelectionType)}
             key={item.value}>
             <div className={classes.icon}>
-              {selection == item.value && <CheckIcon />}
+              {selectionType == item.value && <CheckIcon />}
             </div>
             {item.label}
           </MenuItem>
