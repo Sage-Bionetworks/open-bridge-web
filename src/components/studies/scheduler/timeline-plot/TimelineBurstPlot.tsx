@@ -213,7 +213,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     startEventId: string,
     sessionGuid: string
   ) {
-    const burstParts = startEventId.match(/_burst:[0-9]+/g)
+    const burstParts = startEventId.match(/study_burst:[0-9]+/g)
 
     if (!burstParts?.length) {
       if (isSessionBurst(sessionGuid)) {

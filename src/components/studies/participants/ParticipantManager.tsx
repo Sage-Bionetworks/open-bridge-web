@@ -41,7 +41,6 @@ import {
 import {makeStyles} from '@material-ui/core/styles'
 import EventService from '@services/event.service'
 import ParticipantService from '@services/participants.service'
-import ScheduleService from '@services/schedule.service'
 import StudyService from '@services/study.service'
 import {latoFont, poppinsFont, theme} from '@style/theme'
 import constants from '@typedefs/constants'
@@ -58,6 +57,7 @@ import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useParams} from 'react-router-dom'
+import {useEvents} from '../eventHooks'
 import AddParticipants from './add/AddParticipants'
 import CsvUtility from './csv/csvUtility'
 import ParticipantDownloadTrigger from './csv/ParticipantDownloadTrigger'
@@ -379,6 +379,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
     React.useState(false)
 
+  const {data: scheduleEventIds = [], error: eventError} = useEvents(
+    studyId,
+    true,
+    true
+  )
+
   const {
     data,
     status,
@@ -389,7 +395,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     status: 'PENDING',
     data: null,
   })
-
+  /*
   const {
     data: scheduleEventIds,
     run: getEvents,
@@ -397,16 +403,16 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   } = useAsync<string[]>({
     status: 'PENDING',
     data: [],
-  })
+  })*/
 
-  React.useEffect(() => {
+  /*React.useEffect(() => {
     if (!study?.identifier) {
       return
     }
     getEvents(
       ScheduleService.getEventIdsForScheduleByStudyId(study.identifier, token!)
     )
-  }, [study?.identifier, getEvents])
+  }, [study?.identifier, getEvents])*/
 
   React.useEffect(() => {
     if (!study?.identifier) {
@@ -567,7 +573,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       study.identifier,
       token!,
       tab,
-      scheduleEventIds,
+      scheduleEventIds.map(e => e.eventId),
       selectionType,
       Utility.isSignInById(study.signInTypes),
       participantsData
@@ -685,7 +691,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 }}>
                 <>
                   <AddParticipants
-                    scheduleEventIds={scheduleEventIds || []}
+                    scheduleEventIds={
+                      scheduleEventIds.map(e => e.eventId) || []
+                    }
                     study={study}
                     token={token!}
                     onAdded={() => {
@@ -820,7 +828,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       <ParticipantTableGrid
                         rows={data?.items || []}
                         status={status}
-                        scheduleEventIds={scheduleEventIds || []}
+                        scheduleEventIds={
+                          scheduleEventIds.map(e => e.eventId) || []
+                        }
                         studyId={study.identifier}
                         totalParticipants={data?.total || 0}
                         isAllSelected={isAllSelected}

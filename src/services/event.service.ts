@@ -6,6 +6,9 @@ import ScheduleService from './schedule.service'
 export const JOINED_EVENT_ID = 'timeline_retrieved'
 export const LINK_SENT_EVENT_ID = 'install_link_sent'
 export const EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING = 'withdrawn'
+export const BURST_EVENT_PATTERN = 'study_burst:[burst_id]:[0-9]+'
+export const BURST_EVENT_REGEX_PATTERN = /study_burst:(\w+):([0-9]+)/
+//study_burst:custom_Custom2_burst:01
 
 function prefixCustomEventIdentifier(eventIdentifier: string) {
   return eventIdentifier.includes(constants.constants.CUSTOM_EVENT_PREFIX)
@@ -14,7 +17,15 @@ function prefixCustomEventIdentifier(eventIdentifier: string) {
 }
 
 function formatCustomEventIdForDisplay(eventIdentifier: string) {
-  return eventIdentifier.replace(constants.constants.CUSTOM_EVENT_PREFIX, '')
+  var isBurst = new RegExp(BURST_EVENT_REGEX_PATTERN).test(eventIdentifier)
+
+  if (isBurst) {
+    var burstNumber = eventIdentifier.match(/([0-9]+)\b/)?.[0] || '-1'
+
+    return `Burst ${Number(burstNumber)}`
+  } else {
+    return eventIdentifier.replace(constants.constants.CUSTOM_EVENT_PREFIX, '')
+  }
 }
 
 // gets clinic visits and join events for participants with the specified ids
@@ -34,7 +45,9 @@ async function getRelevantEventsForParticipants(
       studyIdentifier,
       token
     ).then(result =>
-      result.map(eventId => prefixCustomEventIdentifier(eventId))
+      result.map(eventObject =>
+        prefixCustomEventIdentifier(eventObject.eventId)
+      )
     )
   const promises = participantId.map(async pId => {
     const endpoint = constants.endpoints.events
@@ -94,7 +107,8 @@ async function updateParticipantCustomEvents(
   const customEventWithDate = customEvents.filter(event => !!event.timestamp)
 
   const eventsToDelete = schedulingEventIds.filter(
-    eventId => !customEventWithDate.find(pEvent => eventId === pEvent.eventId)
+    event =>
+      !customEventWithDate.find(pEvent => event.eventId === pEvent.eventId)
   )
 
   const eventsToDeletePromises = eventsToDelete.map(eventId =>

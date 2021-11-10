@@ -11,6 +11,7 @@ import {
 } from '../types/scheduling'
 import {Assessment} from '../types/types'
 import AssessmentService from './assessment.service'
+import {BURST_EVENT_PATTERN} from './event.service'
 
 const ScheduleService = {
   createSchedule,
@@ -21,6 +22,8 @@ const ScheduleService = {
   getEventIdsForSchedule,
   getEventIdsForScheduleByStudyId,
 }
+
+export type BurstEventObject = {eventId: string; originEventId?: string}
 
 export const TIMELINE_RETRIEVED_EVENT: SchedulingEvent = {
   eventId: 'timeline_retrieved',
@@ -181,16 +184,47 @@ function getEventIdsForSchedule(schedule: Schedule): string[] {
 async function getEventIdsForScheduleByStudyId(
   studyId: string,
   token: string,
-  isCustom = true
-): Promise<string[]> {
+  onlyCustom = true,
+  withBursts = false
+): Promise<BurstEventObject[]> {
+  // get schedule
   const schedule = await getSchedule(studyId, token, false)
   if (!schedule) {
     throw Error('Schedule not found')
   }
+  // get events from Sessions
   const events = getEventIdsForSchedule(schedule)
-  return isCustom
-    ? events.filter(e => e !== TIMELINE_RETRIEVED_EVENT.eventId)
-    : events
+
+  var burst = schedule.studyBursts?.[0]
+
+  var result = events.reduce((res, current) => {
+    //custom events
+    const isEventCustom = current !== TIMELINE_RETRIEVED_EVENT.eventId
+    //if we are ignoring the timeline events -- don't add it
+    if (!isEventCustom && onlyCustom) {
+      return res
+    } else {
+      // create and add non-burst event
+      var nontBurstEvent: BurstEventObject = {eventId: current}
+
+      var res = [...res, nontBurstEvent]
+      // if we are getting burst events -- add them as well
+      if (withBursts && burst?.originEventId === current) {
+        for (let i = 1; i <= burst.occurrences; i++) {
+          //generate burst name
+          var eventId = BURST_EVENT_PATTERN.replace(
+            '[0-9]+',
+            i < 10 ? '0' + i : '' + i
+          ).replace('[burst_id]', burst.identifier)
+          res.push({eventId, originEventId: current})
+        }
+      }
+
+      return res
+    }
+  }, [] as BurstEventObject[])
+
+  return result
 }
 
 export default ScheduleService
