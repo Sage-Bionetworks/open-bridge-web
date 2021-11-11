@@ -1,8 +1,8 @@
 import moment from 'moment'
+import {HDWMEnum, Schedule} from '../../../types/scheduling'
 import {StringDictionary} from '../../../types/types'
-import {Schedule, HDWMEnum} from '../../../types/scheduling'
 
-export function getAmountOfTimeFromString(durationString: string) {
+export function getValueFromPeriodString(durationString: string) {
   var numberPattern = /\d+/g
   const num = durationString.match(numberPattern)
   return num ? Number(num[0]) : 0
@@ -10,7 +10,7 @@ export function getAmountOfTimeFromString(durationString: string) {
 
 // returns a string in the form "2 weeks", "7 days", ...
 export function getTimeUnitFormatted(durationString: string) {
-  const time = getAmountOfTimeFromString(durationString)
+  const time = getValueFromPeriodString(durationString)
   const unit = durationString[
     durationString.length - 1
   ] as keyof typeof HDWMEnum

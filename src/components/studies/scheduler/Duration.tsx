@@ -1,11 +1,11 @@
+import SelectWithEnum from '@components/widgets/SelectWithEnum'
+import SmallTextBox from '@components/widgets/SmallTextBox'
+import Utility from '@helpers/utility'
 import {IconButton, makeStyles, StandardTextFieldProps} from '@material-ui/core'
 import ClearIcon from '@material-ui/icons/HighlightOff'
 import moment from 'moment'
 import React from 'react'
-import Utility from '../../../helpers/utility'
-import SelectWithEnum from '../../widgets/SelectWithEnum'
-import SmallTextBox from '../../widgets/SmallTextBox'
-import {getAmountOfTimeFromString} from './utility'
+import {getValueFromPeriodString} from './utility'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -61,7 +61,7 @@ const Duration: React.FunctionComponent<
       }
 
       let unit = durationString[durationString.length - 1]
-      const n = getAmountOfTimeFromString(durationString)
+      const n = getValueFromPeriodString(durationString)
 
       setUnit(unit)
       setNum(n)
