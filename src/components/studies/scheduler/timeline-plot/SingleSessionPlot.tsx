@@ -5,7 +5,8 @@ import React from 'react'
 const useStyles = makeStyles(theme => ({}))
 
 export interface SingleSessionPlotProps {
-  // sessionIndex: number
+  lineNumber?: number
+  sessionIndex?: number
   sessionGuid: string
 
   unitPixelWidth: number
@@ -15,10 +16,11 @@ export interface SingleSessionPlotProps {
 }
 
 const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
-  // sessionIndex,
+  sessionIndex,
   displayIndex,
   unitPixelWidth,
   sessionSymbol,
+  lineNumber,
   xCoords,
 }) => {
   const days = [...new Array(8)].map((i, index) => (
@@ -36,7 +38,7 @@ const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   ))
   const sessionGraph = xCoords.map(i => (
     <SessionIcon
-      key={`session${i}`}
+      key={`sessionG${i}_${unitPixelWidth * i}_${sessionIndex}_${lineNumber}`}
       // index={sessionIndex}
       symbolKey={sessionSymbol}
       style={{

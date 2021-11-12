@@ -466,7 +466,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
               </div>
               <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
                 {wk.sessions.map((sessionInfo, sIndex: number) => (
-                  <div className={classes.graph} key={`session_${sIndex}`}>
+                  <div className={classes.graph} key={`sessionA_${sIndex}`}>
                     <Tooltip
                       key="tooltip"
                       placement="top"
@@ -482,6 +482,8 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                     </Tooltip>
 
                     <SessionPlot
+                      sessionIndex={sIndex}
+                      lineNumber={index}
                       xCoords={sessionInfo.coords}
                       displayIndex={2}
                       sessionSymbol={sessionInfo.session.symbol}
