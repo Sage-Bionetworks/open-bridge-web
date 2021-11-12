@@ -213,7 +213,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     startEventId: string,
     sessionGuid: string
   ) {
-    const burstParts = startEventId.match(/study_burst:[0-9]+/g)
+    const burstParts = startEventId.match(/_burst:[0-9]+/g)
 
     if (!burstParts?.length) {
       if (isSessionBurst(sessionGuid)) {
@@ -254,10 +254,9 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
       return []
     }
     var result: Record<string, PlotData> = {}
+    const lastDay = Math.max(...unwrappedSessions.map(s => s.endDay)) + 1
 
-    const numOfWeeks = Math.ceil(
-      Math.max(...unwrappedSessions.map(s => s.endDay)) / 7
-    )
+    const numOfWeeks = Math.ceil(lastDay / 7)
 
     const maxWindows = Math.max(
       ...timeline.sessions.map(s => s.timeWindowGuids.length)
