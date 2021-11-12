@@ -20,7 +20,7 @@ import {
 import {useStyles as sharedSchedulerStyles} from '../ScheduleCreatorTab'
 import ScheduleTimelineDisplay from '../ScheduleTimelineDisplay'
 import SchedulingFormSection from '../SchedulingFormSection'
-import {getTimeUnitFormatted} from '../utility'
+import {getFormattedTimeDateFromPeriodString} from '../utility'
 
 type ReadOnlySchedulerProps = {
   children: ReactNode
@@ -68,7 +68,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
       : 'until the end of study'
     let intervalString = ''
     if (interval) {
-      intervalString = getTimeUnitFormatted(interval) + ' '
+      intervalString = getFormattedTimeDateFromPeriodString(interval) + ' '
     }
     return `${intervalString}${label}`
   }
@@ -84,7 +84,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
         : NotificationTimeAtEnum[notification.notifyAt]
     let offsetText = ''
     if (offset) {
-      offsetText = getTimeUnitFormatted(offset) + ' '
+      offsetText = getFormattedTimeDateFromPeriodString(offset) + ' '
     }
     return `${offsetText}${endingText}`
   }
@@ -98,7 +98,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
           </Box>
           <strong className={classes.readOnlyText}>
             {schedule.duration
-              ? getTimeUnitFormatted(schedule.duration)
+              ? getFormattedTimeDateFromPeriodString(schedule.duration)
               : 'No duration set'}
           </strong>
         </Box>

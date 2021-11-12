@@ -23,6 +23,11 @@ export enum HDWMEnum {
   W = 'weeks',
 }
 
+export type TimePeriod = {
+  value: number
+  unit: keyof typeof HDWMEnum
+}
+
 export enum NotificationTimeAtEnum {
   'after_window_start' = 'after start of window',
   'before_window_end' = 'before window expires',
