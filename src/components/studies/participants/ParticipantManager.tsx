@@ -604,7 +604,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       {['COMPLETED', 'WITHDRAWN'].includes(
         StudyService.getDisplayStatusForStudyPhase(study.phase)
       ) && <UnderConstructionSC />}
-      {StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE' && (
+      {(StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE' ||
+        constants.constants.IS_TEST_MODE) && (
         <>
           {/* {tab === 'ACTIVE' && !isUserSearchingForParticipant && (
             <HelpBoxSC
