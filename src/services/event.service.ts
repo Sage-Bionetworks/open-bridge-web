@@ -19,7 +19,9 @@ function isEventBurstEvent(eventIdentifier: string) {
 //study_burst:custom_Custom2_burst:01
 
 function prefixCustomEventIdentifier(eventIdentifier: string) {
-  return eventIdentifier.includes(constants.constants.CUSTOM_EVENT_PREFIX)
+  var isBurst = new RegExp(BURST_EVENT_REGEX_PATTERN).test(eventIdentifier)
+  return eventIdentifier.includes(constants.constants.CUSTOM_EVENT_PREFIX) ||
+    isBurst
     ? eventIdentifier
     : constants.constants.CUSTOM_EVENT_PREFIX + eventIdentifier
 }
@@ -49,7 +51,9 @@ async function getRelevantEventsForParticipants(
   const eventIdsForSchedule =
     await ScheduleService.getEventIdsForScheduleByStudyId(
       studyIdentifier,
-      token
+      token,
+      true,
+      true
     ).then(result =>
       result.map(eventObject =>
         prefixCustomEventIdentifier(eventObject.eventId)
