@@ -4,6 +4,7 @@ import JoinedPhoneSymbol from '@assets/participants/joined_phone_icon.svg'
 import {ReactComponent as HidePhoneIcon} from '@assets/participants/phone_hide_icon.svg'
 import {ReactComponent as ShowPhoneIcon} from '@assets/participants/phone_show_icon.svg'
 import {ReactComponent as WithdrawIcon} from '@assets/withdraw.svg'
+import {useEvents} from '@components/studies/eventHooks'
 import EditDialogTitle from '@components/studies/participants/modify/EditDialogTitle'
 import EditParticipantForm from '@components/studies/participants/modify/EditParticipantForm'
 import WithdrawParticipantForm from '@components/studies/participants/modify/WithdrawParticipantForm'
@@ -509,7 +510,7 @@ export type ParticipantTableGridProps = {
 
 const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   rows,
-  scheduleEventIds,
+  //scheduleEventIds,
   studyId,
   totalParticipants,
   gridType,
@@ -524,6 +525,11 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 }: ParticipantTableGridProps) => {
   const classes = useStyles()
   const {token} = useUserSessionDataState()
+  const {data: scheduleEvents = [], error: eventError} = useEvents(
+    studyId,
+    true,
+    true
+  )
 
   //when we are editing the record this is where the info is stored
   const [participantToEdit, setParticipantToEdit] = React.useState<
@@ -546,7 +552,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     token!,
     gridType,
     isEnrolledById,
-    scheduleEventIds,
+    scheduleEvents.map(e => e.eventId),
     setParticipantToEdit,
     isGloballyHidePhone,
     setIsGloballyHidePhone
@@ -579,16 +585,17 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     return 'NONE'
   }
 
-  const editColumn1: GridColDef = {
-    field: 'editxoxoxo',
+  const checkBoxSelectColumn: GridColDef = {
+    field: 'selectCheckboxColumn',
 
     disableClickEventBubbling: true,
     disableColumnMenu: true,
     width: 70,
+    align: 'left',
     renderHeader: () => {
       console.log(isAllSelected, getSelectionType())
       return (
-        <>
+        <div style={{marginLeft: '-6px'}}>
           <SelectAll
             selectionType={getSelectionType()}
             allText={`Select all ${totalParticipants}`}
@@ -602,13 +609,12 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               const ids = rows.map(row => row.id)
               onRowSelected(ids, true)
             }}></SelectAll>
-        </>
+        </div>
       )
     },
 
     renderCell: (params: GridCellParams) => {
       const id = params.row['id']
-      console.log('id', id)
 
       return (
         <div>
@@ -631,7 +637,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     },
   }
 
-  participantColumns.unshift(editColumn1)
+  participantColumns.unshift(checkBoxSelectColumn)
 
   return (
     <>
@@ -708,7 +714,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
         <HideWhen hideWhen={participantToEdit?.shouldWithdraw || false}>
           <EditParticipantForm
-            scheduleEventIds={scheduleEventIds}
+            scheduleEvents={scheduleEvents}
             isEnrolledById={isEnrolledById}
             onCancel={() => setParticipantToEdit(undefined)}
             onOK={(

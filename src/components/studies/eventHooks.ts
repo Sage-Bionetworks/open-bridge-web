@@ -1,5 +1,7 @@
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import ScheduleService, {BurstEventObject} from '@services/schedule.service'
+import ScheduleService, {
+  ExtendedScheduleEventObject,
+} from '@services/schedule.service'
 import {ExtendedError} from '@typedefs/types'
 import {useQuery} from 'react-query'
 
@@ -18,7 +20,7 @@ export const useEvents = (
 ) => {
   const {token} = useUserSessionDataState()
 
-  return useQuery<BurstEventObject[], ExtendedError>(
+  return useQuery<ExtendedScheduleEventObject[], ExtendedError>(
     EVENTS_KEYS.list(studyId),
     () =>
       ScheduleService.getEventIdsForScheduleByStudyId(
