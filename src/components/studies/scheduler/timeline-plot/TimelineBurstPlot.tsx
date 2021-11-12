@@ -5,6 +5,7 @@ import {useSchedule, useTimeline} from '@components/studies/scheduleHooks'
 import SessionIcon from '@components/widgets/SessionIcon'
 import {Box, Tooltip} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import EventService from '@services/event.service'
 import {latoFont, poppinsFont} from '@style/theme'
 import {StudySession, TimelineScheduleItem} from '@typedefs/scheduling'
 import _ from 'lodash'
@@ -213,16 +214,12 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     startEventId: string,
     sessionGuid: string
   ) {
-    const burstParts = startEventId.match(/_burst:[0-9]+/g)
+    const isBurst = EventService.isEventBurstEvent(startEventId)
 
-    if (!burstParts?.length) {
-      if (isSessionBurst(sessionGuid)) {
-        return 0
-      } else {
-        return -1
-      }
+    if (!isBurst) {
+      return isSessionBurst(sessionGuid) ? 0 : -1
     } else {
-      return Number(burstParts[0].split(':')[1])
+      return EventService.getBurstNumberFromEventId(startEventId)
     }
   }
 

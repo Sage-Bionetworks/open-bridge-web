@@ -8,6 +8,14 @@ export const LINK_SENT_EVENT_ID = 'install_link_sent'
 export const EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING = 'withdrawn'
 export const BURST_EVENT_PATTERN = 'study_burst:[burst_id]:[0-9]+'
 export const BURST_EVENT_REGEX_PATTERN = /study_burst:(\w+):([0-9]+)/
+
+function getBurstNumberFromEventId(eventIdentifier: string): number {
+  return Number(eventIdentifier.match(/([0-9]+)\b/)?.[0] || '-1')
+}
+
+function isEventBurstEvent(eventIdentifier: string) {
+  return new RegExp(BURST_EVENT_REGEX_PATTERN).test(eventIdentifier)
+}
 //study_burst:custom_Custom2_burst:01
 
 function prefixCustomEventIdentifier(eventIdentifier: string) {
@@ -17,12 +25,10 @@ function prefixCustomEventIdentifier(eventIdentifier: string) {
 }
 
 function formatCustomEventIdForDisplay(eventIdentifier: string) {
-  var isBurst = new RegExp(BURST_EVENT_REGEX_PATTERN).test(eventIdentifier)
+  if (isEventBurstEvent(eventIdentifier)) {
+    var burstNumber = getBurstNumberFromEventId(eventIdentifier)
 
-  if (isBurst) {
-    var burstNumber = eventIdentifier.match(/([0-9]+)\b/)?.[0] || '-1'
-
-    return `Burst ${Number(burstNumber)}`
+    return `Burst ${burstNumber}`
   } else {
     return eventIdentifier.replace(constants.constants.CUSTOM_EVENT_PREFIX, '')
   }
@@ -143,6 +149,8 @@ const EventService = {
   updateParticipantCustomEvents,
   prefixCustomEventIdentifier,
   formatCustomEventIdForDisplay,
+  getBurstNumberFromEventId,
+  isEventBurstEvent,
 }
 
 export default EventService
