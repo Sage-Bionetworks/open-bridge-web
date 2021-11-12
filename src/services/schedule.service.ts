@@ -1,3 +1,4 @@
+import {getTimePeriodFromPeriodString} from '@components/studies/scheduler/utility'
 import _ from 'lodash'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
@@ -8,9 +9,11 @@ import {
   ScheduleTimeline,
   SchedulingEvent,
   StudySession,
+  TimePeriod,
 } from '../types/scheduling'
 import {Assessment} from '../types/types'
 import AssessmentService from './assessment.service'
+import {BURST_EVENT_PATTERN} from './event.service'
 
 const ScheduleService = {
   createSchedule,
@@ -20,6 +23,15 @@ const ScheduleService = {
   createEmptyScheduleSession,
   getEventIdsForSchedule,
   getEventIdsForScheduleByStudyId,
+}
+
+export type ExtendedScheduleEventObject = {
+  eventId: string
+
+  originEventId?: string
+  interval?: TimePeriod
+  delay?: TimePeriod
+  studyBurstId?: string
 }
 
 export const TIMELINE_RETRIEVED_EVENT: SchedulingEvent = {
@@ -163,17 +175,47 @@ async function getScheduleTimeline(
   return result.data
 }
 
-function getEventIdsForSchedule(schedule: Schedule): string[] {
+function getEventsForSchedule(
+  schedule: Schedule
+): ExtendedScheduleEventObject[] {
   const sessions = schedule.sessions.filter(
     session => !_.isEmpty(session.startEventIds)
   )
   if (!sessions) {
     return []
   }
-  const eventIds = sessions.reduce(
-    (p: string[], c) => [...p, ...c.startEventIds],
-    []
+
+  const events = sessions.reduce(
+    (p: ExtendedScheduleEventObject[], c: StudySession) => {
+      var eventId = c.startEventIds?.[0]
+      var studyBurstId = c.studyBurstIds ? _.first(c.studyBurstIds) : undefined
+      //if we already have this event
+      var event = {
+        eventId,
+        delay: c.delay ? getTimePeriodFromPeriodString(c.delay) : undefined,
+        studyBurstId,
+      }
+      const eventIndex = p.findIndex(e => e.eventId === eventId)
+      // if event already exists
+      if (eventIndex > -1) {
+        //if it's a burst -- replace non-burst otherwise ignore
+        if (studyBurstId) {
+          p[eventIndex] = event
+        }
+        return p
+
+        //else replace it with the burst event
+      } else {
+        return [...p, event]
+      }
+    },
+    [] as {eventId: string; delay: TimePeriod}[]
   )
+  return events
+}
+
+function getEventIdsForSchedule(schedule: Schedule): string[] {
+  const eventIds = getEventsForSchedule(schedule).map(e => e.eventId)
 
   return _.uniq(eventIds)
 }
@@ -181,16 +223,60 @@ function getEventIdsForSchedule(schedule: Schedule): string[] {
 async function getEventIdsForScheduleByStudyId(
   studyId: string,
   token: string,
-  isCustom = true
-): Promise<string[]> {
+  onlyCustom = true,
+  withBursts = false
+): Promise<ExtendedScheduleEventObject[]> {
+  // get schedule
   const schedule = await getSchedule(studyId, token, false)
   if (!schedule) {
     throw Error('Schedule not found')
   }
-  const events = getEventIdsForSchedule(schedule)
-  return isCustom
-    ? events.filter(e => e !== TIMELINE_RETRIEVED_EVENT.eventId)
-    : events
+  // get events from Sessions
+  const events = getEventsForSchedule(schedule)
+
+  var burst = schedule.studyBursts?.[0]
+
+  var result = events.reduce((res, current) => {
+    //custom events
+    const isEventCustom = current.eventId !== TIMELINE_RETRIEVED_EVENT.eventId
+    //if we are ignoring the timeline events -- don't add it
+    if (!isEventCustom && onlyCustom) {
+      return res
+    } else {
+      // create and add non-burst event
+      var nontBurstEvent: ExtendedScheduleEventObject = {
+        eventId: current.eventId,
+        delay: current.delay,
+      }
+
+      var res = [...res, nontBurstEvent]
+
+      // if we are getting burst events -- add them as well
+      if (
+        withBursts &&
+        burst?.identifier &&
+        burst.identifier === current.studyBurstId
+      ) {
+        for (let i = 1; i <= burst.occurrences; i++) {
+          //generate burst name
+          var eventId = BURST_EVENT_PATTERN.replace(
+            '[0-9]+',
+            i < 10 ? '0' + i : '' + i
+          ).replace('[burst_id]', burst.identifier)
+          res.push({
+            eventId,
+            originEventId: current.eventId,
+            delay: current.delay,
+            interval: getTimePeriodFromPeriodString(burst.interval),
+          })
+        }
+      }
+
+      return res
+    }
+  }, [] as ExtendedScheduleEventObject[])
+
+  return result
 }
 
 export default ScheduleService

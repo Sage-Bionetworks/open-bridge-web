@@ -42,7 +42,7 @@ const useStyles = makeStyles({
 })
 
 const SessionSymbolsArray: any[] = [
-  /*<Session1Circle></Session1Circle>,
+  <Session1Circle></Session1Circle>,
   <Session2Triangle></Session2Triangle>,
   <Session3Square></Session3Square>,
   <Session4Diamond></Session4Diamond>,
@@ -60,7 +60,7 @@ const SessionSymbolsArray: any[] = [
   <Session16RhombusH></Session16RhombusH>,
   <Session17TriandleCornerR></Session17TriandleCornerR>,
   <Session18TriangleL></Session18TriangleL>,
-  <Session19TriangleB></Session19TriangleB>,*/
+  <Session19TriangleB></Session19TriangleB>,
   <Session20TriangleDiagonal></Session20TriangleDiagonal>,
 ]
 export const SessionSymbols = new Map([

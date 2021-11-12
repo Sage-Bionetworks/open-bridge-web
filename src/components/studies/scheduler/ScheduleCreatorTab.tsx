@@ -5,6 +5,7 @@ import {
   makeStyles,
   Theme,
 } from '@material-ui/core'
+import {ExtendedError} from '@typedefs/types'
 import _ from 'lodash'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
@@ -163,12 +164,12 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
     } catch (e) {
       console.log('ERROR IN SCHEDULER', e)
 
-      if (e.statusCode === 401) {
+      if ((e as ExtendedError).statusCode === 401) {
         handleError(e)
       }
 
-      const entity = e.entity
-      const errors = e.errors
+      const entity = (e as ExtendedError).entity
+      const errors = (e as ExtendedError).errors
       // This can occur when a request fails due to reasons besides bad user input.
       if (!errors || !entity) {
         window.scrollTo({
@@ -178,7 +179,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
         // alina todo
         console.log('todo')
         // setError(prev => [...prev, e.message])
-        error = e
+        error = e as ExtendedError
       } else {
         const errorObject = {
           entity: entity,
@@ -372,10 +373,17 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
                 key={session.guid}
                 customEvents={study?.customEvents}
                 studySession={session}
-                onUpdateSessionSchedule={(schedule: SessionSchedule) => {
+                onUpdateSessionSchedule={(
+                  schedule: SessionSchedule,
+                  shouldInvalidateBurst: boolean
+                ) => {
                   scheduleUpdateFn({
                     type: ActionTypes.UpdateSessionSchedule,
-                    payload: {sessionId: session.guid!, schedule},
+                    payload: {
+                      sessionId: session.guid!,
+                      schedule,
+                      shouldInvalidateBurst,
+                    },
                   })
                 }}
                 sessionErrorState={schedulerErrorState.get(

@@ -1,3 +1,4 @@
+import {useEvents} from '@components/studies/eventHooks'
 import EditDialogTitle from '@components/studies/participants/modify/EditDialogTitle'
 import {Dialog} from '@material-ui/core'
 import ParticipantService from '@services/participants.service'
@@ -26,6 +27,11 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
   isAllSelected,
 }) => {
   const [isLoading, setIsLoading] = React.useState(false)
+  const {data: scheduleEvents = [], error: eventError} = useEvents(
+    studyId,
+    true,
+    true
+  )
 
   const updateParticipants = async (clientTimeZone?: string) => {
     if (!clientTimeZone) return
@@ -72,7 +78,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
         batchEdit
       />
       <EditParticipantForm
-        scheduleEventIds={[]}
+        scheduleEvents={scheduleEvents}
         isEnrolledById={isEnrolledById}
         onCancel={() => {
           onSetIsBatchEditOpen(false)

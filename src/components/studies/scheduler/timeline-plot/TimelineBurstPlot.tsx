@@ -5,6 +5,7 @@ import {useSchedule, useTimeline} from '@components/studies/scheduleHooks'
 import SessionIcon from '@components/widgets/SessionIcon'
 import {Box, Tooltip} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
+import EventService from '@services/event.service'
 import {latoFont, poppinsFont} from '@style/theme'
 import {StudySession, TimelineScheduleItem} from '@typedefs/scheduling'
 import _ from 'lodash'
@@ -213,16 +214,12 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     startEventId: string,
     sessionGuid: string
   ) {
-    const burstParts = startEventId.match(/_burst:[0-9]+/g)
+    const isBurst = EventService.isEventBurstEvent(startEventId)
 
-    if (!burstParts?.length) {
-      if (isSessionBurst(sessionGuid)) {
-        return 0
-      } else {
-        return -1
-      }
+    if (!isBurst) {
+      return isSessionBurst(sessionGuid) ? 0 : -1
     } else {
-      return Number(burstParts[0].split(':')[1])
+      return EventService.getBurstNumberFromEventId(startEventId)
     }
   }
 
@@ -254,10 +251,9 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
       return []
     }
     var result: Record<string, PlotData> = {}
+    const lastDay = Math.max(...unwrappedSessions.map(s => s.endDay)) + 1
 
-    const numOfWeeks = Math.ceil(
-      Math.max(...unwrappedSessions.map(s => s.endDay)) / 7
-    )
+    const numOfWeeks = Math.ceil(lastDay / 7)
 
     const maxWindows = Math.max(
       ...timeline.sessions.map(s => s.timeWindowGuids.length)
@@ -470,7 +466,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
               </div>
               <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
                 {wk.sessions.map((sessionInfo, sIndex: number) => (
-                  <div className={classes.graph} key={`session_${sIndex}`}>
+                  <div className={classes.graph} key={`sessionA_${sIndex}`}>
                     <Tooltip
                       key="tooltip"
                       placement="top"
@@ -486,6 +482,8 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                     </Tooltip>
 
                     <SessionPlot
+                      sessionIndex={sIndex}
+                      lineNumber={index}
                       xCoords={sessionInfo.coords}
                       displayIndex={2}
                       sessionSymbol={sessionInfo.session.symbol}

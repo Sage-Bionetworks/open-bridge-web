@@ -24,6 +24,7 @@ export interface Response<T> {
 }
 
 export interface ExtendedError extends Error {
+  errors?: any
   statusCode?: number
   entity?: any
 }

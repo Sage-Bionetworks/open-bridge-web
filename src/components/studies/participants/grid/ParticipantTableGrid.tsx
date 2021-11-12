@@ -4,6 +4,7 @@ import JoinedPhoneSymbol from '@assets/participants/joined_phone_icon.svg'
 import {ReactComponent as HidePhoneIcon} from '@assets/participants/phone_hide_icon.svg'
 import {ReactComponent as ShowPhoneIcon} from '@assets/participants/phone_show_icon.svg'
 import {ReactComponent as WithdrawIcon} from '@assets/withdraw.svg'
+import {useEvents} from '@components/studies/eventHooks'
 import EditDialogTitle from '@components/studies/participants/modify/EditDialogTitle'
 import EditParticipantForm from '@components/studies/participants/modify/EditParticipantForm'
 import WithdrawParticipantForm from '@components/studies/participants/modify/WithdrawParticipantForm'
@@ -13,6 +14,7 @@ import {useUserSessionDataState} from '@helpers/AuthContext'
 import {
   Box,
   Button,
+  Checkbox,
   CircularProgress,
   Dialog,
   IconButton,
@@ -90,7 +92,7 @@ const PhoneCell: FunctionComponent<{
 
     try {
     } catch (e) {
-      console.log('Error in  onClick', e.message)
+      console.log('Error in  onClick', (e as Error).message)
     }
   }
 
@@ -163,7 +165,7 @@ const EditCell: FunctionComponent<{
         shouldWithdraw: false,
       })
     } catch (e) {
-      console.log('Error in  onClick', e.message)
+      console.log('Error in  onClick', (e as Error).message)
     }
   }
   const isWithdrawn =
@@ -216,25 +218,40 @@ const SelectionControl: FunctionComponent<{
           />{' '}
           selected
         </Box>
-
-        <div
-          style={{
-            position: 'absolute',
-            zIndex: 11,
-            top: 40,
-            left: 0,
-            backgroundColor: '#fff',
-          }}>
-          <SelectAll
-            selectionType={selectionType}
-            allText={`Select all ${totalParticipants}`}
-            allPageText="Select this page"
-            onSelectAllPage={onSelectAllPage}
-            onDeselect={onDeselect}
-            onSelectAll={onSelectAll}></SelectAll>
-        </div>
       </div>
     </GridToolbarContainer>
+  )
+}
+
+//---------------------- selection control2
+
+const SelectionControl2: FunctionComponent<{
+  selectionModel: string[]
+  isAllSelected: boolean
+  totalParticipants: number
+  onSelectAllPage: Function
+  onSelectAll: Function
+  onDeselect: Function
+  selectionType: any
+}> = ({
+  selectionModel,
+  isAllSelected,
+  totalParticipants,
+  selectionType,
+  onSelectAll,
+  onSelectAllPage,
+  onDeselect,
+}) => {
+  const classes = useStyles()
+
+  return (
+    <SelectAll
+      selectionType={selectionType}
+      allText={`Select all ${totalParticipants}`}
+      allPageText="Select this page"
+      onSelectAllPage={onSelectAllPage}
+      onDeselect={onDeselect}
+      onSelectAll={onSelectAll}></SelectAll>
   )
 }
 
@@ -263,7 +280,7 @@ function getPhone(params: GridValueGetterParams) {
   } else return ''
 }
 function getDate(value: GridCellValue) {
-  return value ? new Date(value as string).toLocaleString() : undefined
+  return value ? new Date(value as string).toLocaleDateString() : undefined
 }
 
 function getJoinedDateWithIcons(params: GridValueGetterParams) {
@@ -377,9 +394,9 @@ function getColumns(
       renderHeader: () =>
         renderColumnHeaderWithIcon(JoinedCheckSymbol, 'Joined'),
       renderCell: getJoinedDateWithIcons,
-      flex: 1,
+      width: 110,
     },
-    {field: 'note', headerName: 'Notes', flex: 2},
+    {field: 'note', headerName: 'Notes', width: 200},
     {
       field: 'dateWithdrawn',
       headerName: 'Withdrawn',
@@ -413,6 +430,8 @@ function getColumns(
   const customEventColumns = scheduleEventIds.map((eventId, index) => {
     const col: GridColDef = {
       field: eventId + index,
+      width: 100,
+
       headerName: EventService.formatCustomEventIdForDisplay(eventId),
       valueGetter: params => {
         const foundEvent = params.row.events.find(
@@ -421,7 +440,7 @@ function getColumns(
         )
         return foundEvent ? getDate(foundEvent.timestamp) : ' '
       },
-      flex: 1,
+      // flex: 1,
     }
     return col
   })
@@ -491,7 +510,7 @@ export type ParticipantTableGridProps = {
 
 const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   rows,
-  scheduleEventIds,
+  //scheduleEventIds,
   studyId,
   totalParticipants,
   gridType,
@@ -506,6 +525,11 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 }: ParticipantTableGridProps) => {
   const classes = useStyles()
   const {token} = useUserSessionDataState()
+  const {data: scheduleEvents = [], error: eventError} = useEvents(
+    studyId,
+    true,
+    true
+  )
 
   //when we are editing the record this is where the info is stored
   const [participantToEdit, setParticipantToEdit] = React.useState<
@@ -528,7 +552,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     token!,
     gridType,
     isEnrolledById,
-    scheduleEventIds,
+    scheduleEvents.map(e => e.eventId),
     setParticipantToEdit,
     isGloballyHidePhone,
     setIsGloballyHidePhone
@@ -561,6 +585,60 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     return 'NONE'
   }
 
+  const checkBoxSelectColumn: GridColDef = {
+    field: 'selectCheckboxColumn',
+
+    disableClickEventBubbling: true,
+    disableColumnMenu: true,
+    width: 70,
+    align: 'left',
+    renderHeader: () => {
+      console.log(isAllSelected, getSelectionType())
+      return (
+        <div style={{marginLeft: '-6px'}}>
+          <SelectAll
+            selectionType={getSelectionType()}
+            allText={`Select all ${totalParticipants}`}
+            allPageText="Select this page"
+            onSelectAllPage={() => {
+              const ids = rows.map(row => row.id)
+              onRowSelected(_.uniq([...selectionModel, ...ids]), false)
+            }}
+            onDeselect={() => onRowSelected([], false)}
+            onSelectAll={() => {
+              const ids = rows.map(row => row.id)
+              onRowSelected(ids, true)
+            }}></SelectAll>
+        </div>
+      )
+    },
+
+    renderCell: (params: GridCellParams) => {
+      const id = params.row['id']
+
+      return (
+        <div>
+          <Checkbox
+            name="selectAllCheckbox"
+            checked={selectionModel.includes(id)}
+            onChange={e => {
+              let model: string[] = []
+              if (e.target.checked) {
+                model = [...selectionModel, id]
+              } else {
+                model = selectionModel.filter(mid => mid != id)
+              }
+
+              onRowSelected(model, false)
+            }}
+          />
+        </div>
+      )
+    },
+  }
+
+  participantColumns.unshift(checkBoxSelectColumn)
+
   return (
     <>
       <Paper elevation={0}>
@@ -571,7 +649,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               classes={{columnHeader: classes.gridHeader}}
               density="standard"
               columns={participantColumns}
-              checkboxSelection
+              checkboxSelection={false}
               onRowSelected={(row: GridRowSelectedParams) => {
                 let model: string[] = []
                 if (row.isSelected) {
@@ -587,21 +665,26 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                 ColumnMenu: CustomColumnMenuComponent,
 
                 Toolbar: () => (
-                  <SelectionControl
-                    selectionModel={selectionModel}
-                    isAllSelected={isAllSelected}
-                    totalParticipants={totalParticipants}
-                    selectionType={getSelectionType()}
-                    onSelectAllPage={() => {
-                      const ids = rows.map(row => row.id)
-                      onRowSelected(_.uniq([...selectionModel, ...ids]), false)
-                    }}
-                    onDeselect={() => onRowSelected([], false)}
-                    onSelectAll={() => {
-                      const ids = rows.map(row => row.id)
-                      onRowSelected(ids, true)
-                    }}
-                  />
+                  <>
+                    <SelectionControl
+                      selectionModel={selectionModel}
+                      isAllSelected={isAllSelected}
+                      totalParticipants={totalParticipants}
+                      selectionType={getSelectionType()}
+                      onSelectAllPage={() => {
+                        const ids = rows.map(row => row.id)
+                        onRowSelected(
+                          _.uniq([...selectionModel, ...ids]),
+                          false
+                        )
+                      }}
+                      onDeselect={() => onRowSelected([], false)}
+                      onSelectAll={() => {
+                        const ids = rows.map(row => row.id)
+                        onRowSelected(ids, true)
+                      }}
+                    />
+                  </>
                 ),
 
                 Footer: () => <>{children}</>,
@@ -631,7 +714,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
         <HideWhen hideWhen={participantToEdit?.shouldWithdraw || false}>
           <EditParticipantForm
-            scheduleEventIds={scheduleEventIds}
+            scheduleEvents={scheduleEvents}
             isEnrolledById={isEnrolledById}
             onCancel={() => setParticipantToEdit(undefined)}
             onOK={(

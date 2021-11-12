@@ -164,7 +164,9 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
   }
 
   function createPlotData(schedulingItems: TimelineScheduleItem[]): PlotData[] {
-    const numOfWeeks = Math.ceil(_.last(schedulingItems!)!.endDay / 7)
+    var lastDay = Math.max(...schedulingItems.map(s => s.endDay)) + 1
+
+    const numOfWeeks = Math.ceil(lastDay / 7)
 
     var result: Record<string, PlotData> = {}
 
@@ -182,11 +184,12 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
 
       var noEmpties = sessionInfos.filter(s => s.coords.length > 0)
 
-      if (noEmpties.length)
+      if (noEmpties.length && true) {
         result[weekNumber] = {
           sessionInfos,
           weekNumber,
         }
+      }
     }
 
     var sortedResult = _.sortBy(result, [

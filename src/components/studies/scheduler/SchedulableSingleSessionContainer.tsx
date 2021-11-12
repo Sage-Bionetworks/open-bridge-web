@@ -153,8 +153,11 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
       return over24 !== undefined
     }
 
-    const updateSessionSchedule = (newSession: StudySession) => {
-      onUpdateSessionSchedule(newSession)
+    const updateSessionSchedule = (
+      newSession: StudySession,
+      shouldInvalidateBurst?: boolean
+    ) => {
+      onUpdateSessionSchedule(newSession, shouldInvalidateBurst)
     }
 
     const addNewWindow = () => {
@@ -274,10 +277,13 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               customEvents={customEvents}
               sessionName={studySession.name}
               onChangeStartEventId={(startEventId: string) => {
-                updateSessionSchedule({
-                  ...schedulableSession,
-                  startEventIds: [startEventId],
-                })
+                updateSessionSchedule(
+                  {
+                    ...schedulableSession,
+                    startEventIds: [startEventId],
+                  },
+                  true
+                )
               }}
               onChangeDelay={(delay: string | undefined) => {
                 updateSessionSchedule({...schedulableSession, delay})

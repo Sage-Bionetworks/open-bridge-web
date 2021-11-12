@@ -19,18 +19,22 @@ export type ActionPayload = {
   [ActionTypes.UpdateSessionSchedule]: {
     sessionId: string
     schedule: SessionSchedule
+    shouldInvalidateBurst?: boolean
   }
 }
 
-export type SessionScheduleAction = ActionMap<ActionPayload>[keyof ActionMap<
-  ActionPayload
->]
+export type SessionScheduleAction =
+  ActionMap<ActionPayload>[keyof ActionMap<ActionPayload>]
 
 function updateSessionSchedule(
   sessions: StudySession[],
   sessionId: string,
-  updatedSession: SessionSchedule
+  updatedSession: SessionSchedule,
+  shouldInvalidateBurst?: boolean
 ): StudySession[] {
+  if (shouldInvalidateBurst) {
+    updatedSession.studyBurstIds = []
+  }
   const result = sessions.map(session => {
     if (session.guid !== sessionId) {
       return session
@@ -50,7 +54,8 @@ function actionsReducer(
       return updateSessionSchedule(
         sessions,
         action.payload.sessionId,
-        action.payload.schedule
+        action.payload.schedule,
+        action.payload.shouldInvalidateBurst
       )
     }
 

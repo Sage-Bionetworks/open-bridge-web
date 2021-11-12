@@ -38,12 +38,10 @@ import {
   Tab,
   Tabs,
 } from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
 import EventService from '@services/event.service'
 import ParticipantService from '@services/participants.service'
-import ScheduleService from '@services/schedule.service'
 import StudyService from '@services/study.service'
-import {latoFont, poppinsFont, theme} from '@style/theme'
+import {theme} from '@style/theme'
 import constants from '@typedefs/constants'
 import {
   ExtendedError,
@@ -58,6 +56,7 @@ import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useParams} from 'react-router-dom'
+import {useEvents} from '../eventHooks'
 import AddParticipants from './add/AddParticipants'
 import CsvUtility from './csv/csvUtility'
 import ParticipantDownloadTrigger from './csv/ParticipantDownloadTrigger'
@@ -66,116 +65,10 @@ import ParticipantTableGrid from './grid/ParticipantTableGrid'
 import ParticipantTablePagination from './grid/ParticipantTablePagination'
 import BatchEditForm from './modify/BatchEditForm'
 import ParticipantManagerPlaceholder from './ParticipantManagerPlaceholder'
+import useStyles from './ParticipantManager_style'
 import ParticipantSearch from './ParticipantSearch'
 import ParticipantUtility from './participantUtility'
 import WithdrawnTabNoParticipantsPage from './WithdrawnTabNoParticipantsPage'
-
-const useStyles = makeStyles(theme => ({
-  root: {},
-  downloadPageLinkButton: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    display: 'flex',
-    fontFamily: latoFont,
-    fontSize: '14px',
-  },
-
-  tab: {
-    marginRight: theme.spacing(2),
-    width: '250px',
-    clipPath: 'polygon(10% 0%, 90% 0, 98% 100%,0 100%)',
-    marginLeft: theme.spacing(-3.5),
-    zIndex: 0,
-    backgroundColor: '#F0F0F0',
-    fontSize: '12px',
-    fontFamily: poppinsFont,
-  },
-  gridToolBar: {
-    backgroundColor: theme.palette.common.white,
-    // padding: theme.spacing(1, 5, 0, 5),
-    height: theme.spacing(9),
-    paddingLeft: theme.spacing(3),
-    paddingRight: theme.spacing(3),
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-
-    '&  button': {
-      display: 'flex',
-      fontFamily: latoFont,
-      fontSize: '14px',
-    },
-  },
-
-  tabPanel: {
-    backgroundColor: theme.palette.common.white,
-    boxShadow: 'none',
-    padding: theme.spacing(0, 0, 2, 0),
-  },
-  studyId: {
-    color: '#393434',
-    marginRight: '24px',
-  },
-
-  topRow: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    fontSize: '16px',
-  },
-  horizontalGroup: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  disabledImage: {
-    opacity: 0.5,
-  },
-  topRowImage: {
-    marginRight: theme.spacing(0.75),
-  },
-  deleteIcon: {
-    height: '17px',
-    width: '13px',
-  },
-  addParticipantIcon: {
-    width: theme.spacing(6),
-    height: theme.spacing(6),
-    backgroundColor: '#AEDCC9',
-    paddingTop: theme.spacing(1.5),
-  },
-  selectedTab: {
-    zIndex: 100,
-    backgroundColor: theme.palette.common.white,
-  },
-  withdrawnParticipants: {
-    width: '270px',
-  },
-  tab_icon: {
-    borderBottom: '1px solid transparent',
-  },
-  unactiveTabIcon: {
-    '&:hover div': {
-      borderBottom: '1px solid black',
-    },
-  },
-  collapsedAddTestUser: {
-    '& > rect': {
-      fill: '#AEDCC9',
-    },
-  },
-  primaryDialogButton: {
-    border: 'none',
-    height: '48px',
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-  },
-}))
 
 /** types and constants  */
 type ParticipantData = {
@@ -379,6 +272,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
     React.useState(false)
 
+  const {data: scheduleEventIds = [], error: eventError} = useEvents(
+    studyId,
+    true,
+    true
+  )
+
   const {
     data,
     status,
@@ -389,24 +288,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     status: 'PENDING',
     data: null,
   })
-
-  const {
-    data: scheduleEventIds,
-    run: getEvents,
-    status: eventsStatus,
-  } = useAsync<string[]>({
-    status: 'PENDING',
-    data: [],
-  })
-
-  React.useEffect(() => {
-    if (!study?.identifier) {
-      return
-    }
-    getEvents(
-      ScheduleService.getEventIdsForScheduleByStudyId(study.identifier, token!)
-    )
-  }, [study?.identifier, getEvents])
 
   React.useEffect(() => {
     if (!study?.identifier) {
@@ -567,7 +448,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       study.identifier,
       token!,
       tab,
-      scheduleEventIds,
+      scheduleEventIds.map(e => e.eventId),
       selectionType,
       Utility.isSignInById(study.signInTypes),
       participantsData
@@ -598,7 +479,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       {['COMPLETED', 'WITHDRAWN'].includes(
         StudyService.getDisplayStatusForStudyPhase(study.phase)
       ) && <UnderConstructionSC />}
-      {StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE' && (
+      {(StudyService.getDisplayStatusForStudyPhase(study.phase) === 'LIVE' ||
+        constants.constants.IS_TEST_MODE) && (
         <>
           {/* {tab === 'ACTIVE' && !isUserSearchingForParticipant && (
             <HelpBoxSC
@@ -685,7 +567,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 }}>
                 <>
                   <AddParticipants
-                    scheduleEventIds={scheduleEventIds || []}
+                    scheduleEventIds={
+                      scheduleEventIds.map(e => e.eventId) || []
+                    }
                     study={study}
                     token={token!}
                     onAdded={() => {
@@ -820,7 +704,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       <ParticipantTableGrid
                         rows={data?.items || []}
                         status={status}
-                        scheduleEventIds={scheduleEventIds || []}
+                        scheduleEventIds={
+                          scheduleEventIds.map(e => e.eventId) || []
+                        }
                         studyId={study.identifier}
                         totalParticipants={data?.total || 0}
                         isAllSelected={isAllSelected}

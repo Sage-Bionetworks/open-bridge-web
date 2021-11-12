@@ -1,21 +1,37 @@
+import {HDWMEnum, Schedule, TimePeriod} from '@typedefs/scheduling'
+import {StringDictionary} from '@typedefs/types'
 import moment from 'moment'
-import {StringDictionary} from '../../../types/types'
-import {Schedule, HDWMEnum} from '../../../types/scheduling'
 
-export function getAmountOfTimeFromString(durationString: string) {
+export function getValueFromPeriodString(periodString: string): number {
   var numberPattern = /\d+/g
-  const num = durationString.match(numberPattern)
+  const num = periodString.match(numberPattern)
   return num ? Number(num[0]) : 0
+}
+export function getUnitFromPeriodString(
+  periodString: string
+): keyof typeof HDWMEnum {
+  return periodString[periodString.length - 1] as keyof typeof HDWMEnum
 }
 
 // returns a string in the form "2 weeks", "7 days", ...
-export function getTimeUnitFormatted(durationString: string) {
-  const time = getAmountOfTimeFromString(durationString)
-  const unit = durationString[
-    durationString.length - 1
-  ] as keyof typeof HDWMEnum
-  const timeUnit = HDWMEnum[unit]
-  return `${time} ${timeUnit}`
+// we do not worry about the 'T' months vs minutes because we do not have months
+export function getFormattedTimeDateFromPeriodString(periodString: string) {
+  const time = getValueFromPeriodString(periodString)
+  const unit = getUnitFromPeriodString(periodString)
+  return `${time} ${HDWMEnum[unit]}`
+}
+
+export function getFormattedTimeDateFromTimePeriod(period: TimePeriod) {
+  return `${period.value} ${HDWMEnum[period.unit]}`
+}
+
+export function getTimePeriodFromPeriodString(
+  periodString: string
+): TimePeriod {
+  return {
+    value: getValueFromPeriodString(periodString),
+    unit: getUnitFromPeriodString(periodString),
+  }
 }
 
 export function getDropdownTimeItems(): StringDictionary<string> {
