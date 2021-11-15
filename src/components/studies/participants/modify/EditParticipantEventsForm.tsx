@@ -4,7 +4,6 @@ import EventService from '@services/event.service'
 import {ExtendedScheduleEventObject} from '@services/schedule.service'
 import {ParticipantEvent} from '@typedefs/types'
 import clsx from 'clsx'
-import _ from 'lodash'
 import moment from 'moment'
 import React, {FunctionComponent} from 'react'
 
@@ -48,6 +47,13 @@ const useStyles = makeStyles(theme => ({
   },
   burstEventField: {},
   burstOrigin: {},
+  emptyDate: {
+    margin: theme.spacing(2, 0),
+    height: theme.spacing(4),
+    width: theme.spacing(22),
+    textAlign: 'center',
+    lineHeight: 2,
+  },
 }))
 
 type EditParticipantEventsFormProps = {
@@ -139,8 +145,6 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
       return null
     }
 
-    const evs = _.groupBy(scheduleEvents, g => g.originEventId)
-
     function getEventLabel(
       eo: ExtendedScheduleEventObject,
       index: number
@@ -159,6 +163,15 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
           <i style={{fontWeight: 'normal', fontSize: '12px'}}>
             Week {(index + 1) * (eo.interval?.value || 0)}
           </i>
+        </div>
+      )
+    }
+
+    function getEmptyDate(eo: ExtendedScheduleEventObject, index: number) {
+      return (
+        <div className="MuiFormControl-root">
+          <label>{getEventLabel(eo, index)}</label>
+          <div className={classes.emptyDate}>--</div>
         </div>
       )
     }
@@ -199,16 +212,23 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
                     )}
                     style={{}}
                     key={burstEvent.eventId}>
-                    <DatePicker
-                      label={getEventLabel(burstEvent, index)}
-                      id={burstEvent.eventId}
-                      value={getEventDateValue(
-                        customParticipantEvents,
-                        burstEvent.eventId
-                      )}
-                      onChange={e =>
-                        handleEventDateChange(burstEvent.eventId, e)
-                      }></DatePicker>
+                    {getEventDateValue(
+                      customParticipantEvents,
+                      nonBurstEvent.eventId
+                    ) !== null ? (
+                      <DatePicker
+                        label={getEventLabel(burstEvent, index)}
+                        id={burstEvent.eventId}
+                        value={getEventDateValue(
+                          customParticipantEvents,
+                          burstEvent.eventId
+                        )}
+                        onChange={e =>
+                          handleEventDateChange(burstEvent.eventId, e)
+                        }></DatePicker>
+                    ) : (
+                      getEmptyDate(burstEvent, index)
+                    )}
                   </div>
                 ))}
             </div>

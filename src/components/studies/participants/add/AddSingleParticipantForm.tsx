@@ -8,7 +8,7 @@ import {FormHelperText, makeStyles} from '@material-ui/core'
 import FormControl from '@material-ui/core/FormControl'
 import FormGroup from '@material-ui/core/FormGroup'
 import {ExtendedScheduleEventObject} from '@services/schedule.service'
-import {EditableParticipantData, ParticipantEvent} from '@typedefs/types'
+import {EditableParticipantData} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import EditParticipantEventsForm from '../modify/EditParticipantEventsForm'
@@ -36,23 +36,6 @@ const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps>
       phone: false,
       externalId: false,
     })
-
-    const handleEventDateChange = (eventId: string, newDate: Date | null) => {
-      const newEvent: ParticipantEvent = {
-        eventId: eventId,
-        timestamp: newDate || undefined,
-      }
-      let events = participant.events ? [...participant.events] : []
-      const participantEventIndex = events.findIndex(e => e.eventId === eventId)
-
-      if (participantEventIndex > -1) {
-        events[participantEventIndex] = newEvent
-      } else {
-        events.push(newEvent)
-      }
-
-      onChange({...participant, events: events})
-    }
 
     const extId = (
       <FormControl>
@@ -124,7 +107,7 @@ const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps>
           <FormControl>
             <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
             <SimpleTextInput
-              value={participant.note}
+              value={participant.note || ''}
               onChange={e => onChange({...participant, note: e.target.value})}
               placeholder="comments"
               id="note"
