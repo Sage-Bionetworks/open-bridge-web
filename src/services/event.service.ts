@@ -49,7 +49,7 @@ async function getRelevantEventsForParticipants(
 > {
   //transform ids into promises
   const eventIdsForSchedule =
-    await ScheduleService.getEventIdsForScheduleByStudyId(
+    await ScheduleService.getEventsForScheduleByStudyId(
       studyIdentifier,
       token,
       true,
@@ -110,10 +110,7 @@ async function updateParticipantCustomEvents(
 
   // get Events for schedule  - we need this in order to possibly delete userEvents
   const schedulingEventIds =
-    await ScheduleService.getEventIdsForScheduleByStudyId(
-      studyIdentifier,
-      token
-    )
+    await ScheduleService.getEventsForScheduleByStudyId(studyIdentifier, token)
   const customEventWithDate = customEvents.filter(event => !!event.timestamp)
 
   const eventsToDelete = schedulingEventIds.filter(

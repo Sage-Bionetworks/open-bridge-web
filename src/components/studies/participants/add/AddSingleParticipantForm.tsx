@@ -1,4 +1,3 @@
-import DatePicker from '@components/widgets/DatePicker'
 import TextMask from '@components/widgets/MaskedInput'
 import {
   SimpleTextInput,
@@ -8,10 +7,11 @@ import Utility from '@helpers/utility'
 import {FormHelperText, makeStyles} from '@material-ui/core'
 import FormControl from '@material-ui/core/FormControl'
 import FormGroup from '@material-ui/core/FormGroup'
-import EventService from '@services/event.service'
+import {ExtendedScheduleEventObject} from '@services/schedule.service'
 import {EditableParticipantData, ParticipantEvent} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
+import EditParticipantEventsForm from '../modify/EditParticipantEventsForm'
 
 const useStyles = makeStyles(theme => ({
   addForm: {
@@ -23,14 +23,14 @@ const useStyles = makeStyles(theme => ({
 
 type AddSingleParticipantFormProps = {
   participant: EditableParticipantData
-  scheduleEventIds: string[]
+  scheduleEvents: ExtendedScheduleEventObject[]
   isEnrolledById: boolean
 
   onChange: (p: EditableParticipantData) => void
 }
 
 const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps> =
-  ({participant, isEnrolledById, scheduleEventIds, onChange}) => {
+  ({participant, isEnrolledById, scheduleEvents, onChange}) => {
     const classes = useStyles()
     const [validationErrors, setValidationErrors] = React.useState({
       phone: false,
@@ -112,19 +112,14 @@ const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps>
               {extId}
             </>
           )}
-          <>
-            {scheduleEventIds.map(eventId => (
-              <DatePicker
-                key={eventId}
-                label={EventService.formatCustomEventIdForDisplay(eventId)}
-                id={eventId}
-                value={
-                  participant.events?.find(pEvt => pEvt.eventId === eventId)
-                    ?.timestamp || null
-                }
-                onChange={e => handleEventDateChange(eventId, e)}></DatePicker>
-            ))}
-          </>
+          <EditParticipantEventsForm
+            customParticipantEvents={participant.events || []}
+            scheduleEvents={scheduleEvents}
+            onChange={events => {
+              console.log('event change')
+              onChange({...participant, events: events})
+            }}
+          />
 
           <FormControl>
             <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>

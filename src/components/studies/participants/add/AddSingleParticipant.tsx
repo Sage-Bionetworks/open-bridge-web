@@ -1,13 +1,14 @@
 // pick a date util library
 
 import {BlueButton} from '@components/widgets/StyledComponents'
+import Utility from '@helpers/utility'
 import {Box, CircularProgress} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
-import {EditableParticipantData, Phone} from '@typedefs/types'
+import ParticipantService from '@services/participants.service'
+import {ExtendedScheduleEventObject} from '@services/schedule.service'
+import {EditableParticipantData, ExtendedError, Phone} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
-import Utility from '../../../../helpers/utility'
-import ParticipantService from '../../../../services/participants.service'
 import AddSingleParticipantForm from './AddSingleParticipantForm'
 
 const useStyles = makeStyles(theme => ({
@@ -17,7 +18,7 @@ const useStyles = makeStyles(theme => ({
 type AddSingleParticipantProps = {
   token: string
   isEnrolledById: boolean
-  scheduleEventIds: string[]
+  scheduleEvents: ExtendedScheduleEventObject[]
   onAdded: Function
   studyIdentifier: string
 }
@@ -46,7 +47,7 @@ export async function addParticipantByPhone(
 const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
   onAdded,
   isEnrolledById,
-  scheduleEventIds,
+  scheduleEvents,
   token,
   studyIdentifier,
 }) => {
@@ -83,7 +84,10 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
       onAdded()
       setParticipant({externalId: ''})
     } catch (e) {
-      setError(e?.message.toString() || e.toString())
+      setError(
+        (e as ExtendedError).message.toString() ||
+          (e as ExtendedError).toString()
+      )
     } finally {
       setIsLoading(false)
     }
@@ -105,7 +109,7 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
         {error && <Alert color="error">{error}</Alert>}
       </Box>
       <AddSingleParticipantForm
-        scheduleEventIds={scheduleEventIds}
+        scheduleEvents={scheduleEvents}
         isEnrolledById={isEnrolledById}
         participant={participant}
         onChange={participant => {

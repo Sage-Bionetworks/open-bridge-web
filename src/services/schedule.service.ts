@@ -22,7 +22,7 @@ const ScheduleService = {
   saveSchedule,
   createEmptyScheduleSession,
   getEventIdsForSchedule,
-  getEventIdsForScheduleByStudyId,
+  getEventsForScheduleByStudyId,
 }
 
 export type ExtendedScheduleEventObject = {
@@ -220,7 +220,7 @@ function getEventIdsForSchedule(schedule: Schedule): string[] {
   return _.uniq(eventIds)
 }
 
-async function getEventIdsForScheduleByStudyId(
+async function getEventsForScheduleByStudyId(
   studyId: string,
   token: string,
   onlyCustom = true,
