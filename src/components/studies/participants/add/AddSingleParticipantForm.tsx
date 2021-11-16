@@ -12,6 +12,7 @@ import {EditableParticipantData} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import EditParticipantEventsForm from '../modify/EditParticipantEventsForm'
+import TimezoneDropdown from '../TimezoneDropdown'
 
 const useStyles = makeStyles(theme => ({
   addForm: {
@@ -92,9 +93,18 @@ const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps>
                   </FormHelperText>
                 )}
               </FormControl>
+
               {extId}
             </>
           )}
+          <FormControl>
+            <TimezoneDropdown
+              currentValue={participant.clientTimeZone || ''}
+              onValueChange={(clientTimeZone: string) =>
+                onChange({...participant, clientTimeZone})
+              }
+            />
+          </FormControl>
           <EditParticipantEventsForm
             customParticipantEvents={participant.events || []}
             scheduleEvents={scheduleEvents}

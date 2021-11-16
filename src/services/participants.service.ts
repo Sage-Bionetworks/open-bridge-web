@@ -517,6 +517,9 @@ async function addParticipant(
     data.externalIds = {[studyId]: backEndFormatExternalId}
     data.password = backEndFormatExternalId
   }
+  if (options.clientTimeZone) {
+    data.clientTimeZone = options.clientTimeZone
+  }
   let userId = undefined
 
   try {

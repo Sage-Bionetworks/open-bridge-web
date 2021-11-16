@@ -62,6 +62,9 @@ const ImportParticipantsInstructions: FunctionComponent<{
       </li>
       {instructionItems.map(i => i)}
       <li>
+        <strong>Participant Time Zone</strong>(can be updated later)
+      </li>
+      <li>
         <strong>Note</strong> (for your reference)
       </li>
     </ul>
@@ -73,6 +76,9 @@ const ImportParticipantsInstructions: FunctionComponent<{
       {instructionItems.map(i => i)}
       <li>
         <strong>Reference ID</strong> (Alternate ID for your reference)
+      </li>
+      <li>
+        <strong>Participant Time Zone</strong> (can be updated later)
       </li>
       <li>
         <strong>Note</strong> (for your reference)
