@@ -51,7 +51,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
   const changeStartDelayType = (_hasDelay: boolean) => {
     setHasDelay(_hasDelay)
 
-    if (!hasDelay) {
+    if (!_hasDelay) {
       onChangeDelay(undefined)
     }
   }
