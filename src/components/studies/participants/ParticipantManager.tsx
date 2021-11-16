@@ -272,7 +272,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
     React.useState(false)
 
-  const {data: scheduleEventIds = [], error: eventError} = useEvents(
+  const {data: scheduleEvents = [], error: eventError} = useEvents(
     studyId,
     true,
     true
@@ -448,7 +448,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       study.identifier,
       token!,
       tab,
-      scheduleEventIds.map(e => e.eventId),
+      scheduleEvents.map(e => e.eventId),
       selectionType,
       Utility.isSignInById(study.signInTypes),
       participantsData
@@ -567,9 +567,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 }}>
                 <>
                   <AddParticipants
-                    scheduleEventIds={
-                      scheduleEventIds.map(e => e.eventId) || []
-                    }
+                    scheduleEvents={scheduleEvents}
                     study={study}
                     token={token!}
                     onAdded={() => {
@@ -705,7 +703,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         rows={data?.items || []}
                         status={status}
                         scheduleEventIds={
-                          scheduleEventIds.map(e => e.eventId) || []
+                          scheduleEvents.map(e => e.eventId) || []
                         }
                         studyId={study.identifier}
                         totalParticipants={data?.total || 0}

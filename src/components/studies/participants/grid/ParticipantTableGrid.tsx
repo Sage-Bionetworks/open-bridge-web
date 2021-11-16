@@ -165,7 +165,8 @@ const EditCell: FunctionComponent<{
         shouldWithdraw: false,
       })
     } catch (e) {
-      console.log('Error in  onClick', (e as Error).message)
+      console.log('Error in  onClick!', (e as Error).message)
+      throw e
     }
   }
   const isWithdrawn =

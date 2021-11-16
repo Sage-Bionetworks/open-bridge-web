@@ -1,4 +1,3 @@
-import DatePicker from '@components/widgets/DatePicker'
 import {MTBHeadingH3} from '@components/widgets/Headings'
 import {
   DialogButtonPrimary,
@@ -15,36 +14,16 @@ import {
   FormGroup,
   makeStyles,
 } from '@material-ui/core'
-import EventService from '@services/event.service'
 import {ExtendedScheduleEventObject} from '@services/schedule.service'
 import {EditableParticipantData, ParticipantEvent} from '@typedefs/types'
-import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
 import TimezoneDropdown from '../TimezoneDropdown'
+import EditParticipantEventsForm from './EditParticipantEventsForm'
 
 const useStyles = makeStyles(theme => ({
   editForm: {
     '& .MuiFormControl-root:not(:last-child)': {
       marginBottom: theme.spacing(2),
-    },
-  },
-  eventField: {
-    marginBottom: '8px',
-    '&>.MuiFormControl-root': {
-      display: 'flex',
-      flexDirection: 'row',
-      padding: theme.spacing(0, 2),
-      width: '100%',
-      alignItems: 'center',
-      backgroundColor: '#f8f8f8',
-
-      justifyContent: 'space-between',
-      '& >label': {
-        position: 'static',
-      },
-      '&>.MuiFormControl-root': {
-        margin: theme.spacing(2, 0),
-      },
     },
   },
 }))
@@ -83,69 +62,6 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
     setCustomParticipantEvents(participant.events || [])
   }, [])
 
-  const handleEventDateChange = (eventId: string, newDate: Date | null) => {
-    const newEvent: ParticipantEvent = {
-      eventId: eventId,
-      timestamp: newDate || undefined,
-    }
-    let events = [...customParticipantEvents]
-    const participantEventIndex = events.findIndex(e => e.eventId === eventId)
-    if (participantEventIndex > -1) {
-      events[participantEventIndex] = newEvent
-    } else {
-      events.push(newEvent)
-    }
-
-    setCustomParticipantEvents(prev => events)
-  }
-
-  const getEventDateValue = (
-    participantEvents: ParticipantEvent[] | undefined,
-    currentEventId: string
-  ) => {
-    if (!participantEvents) {
-      return null
-    }
-    const matchingParticipantEvent = participantEvents.find(
-      pEvt => pEvt.eventId === currentEventId
-    )
-    if (matchingParticipantEvent) {
-      console.log('found event')
-      return matchingParticipantEvent.timestamp || null
-    }
-    return null
-  }
-
-  const evs = _.groupBy(scheduleEvents, g => g.originEventId)
-
-  function getEventLabel(
-    eo: ExtendedScheduleEventObject,
-    index: number
-  ): React.ReactNode {
-    const formattedEventId = EventService.formatCustomEventIdForDisplay(
-      eo.eventId
-    )
-    // not a burst
-    if (!eo.originEventId) {
-      return formattedEventId
-    }
-    if (index === 0 || !eo.interval) {
-      return (
-        <div>
-          {formattedEventId}
-          <br /> {eo.delay}
-        </div>
-      )
-    }
-    return (
-      <div>
-        {formattedEventId}
-        <br />
-        <i> Week {index * eo.interval?.value}</i>
-      </div>
-    )
-  }
-
   return (
     <>
       <DialogContent>
@@ -163,28 +79,14 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
           </MTBHeadingH3>
         </Box>
         <FormGroup className={classes.editForm}>
-          <>
-            {Object.keys(evs).map(eventId1 => (
-              <div>
-                {eventId1 !== 'undefined' && <span>{eventId1}test</span>}
-                {evs[eventId1].map((eo, index) => (
-                  <div className={classes.eventField} key={eo.eventId}>
-                    <DatePicker
-                      key={eo.eventId}
-                      label={getEventLabel(eo, index)}
-                      id={eo.eventId}
-                      value={getEventDateValue(
-                        customParticipantEvents,
-                        eo.eventId
-                      )}
-                      onChange={e =>
-                        handleEventDateChange(eo.eventId, e)
-                      }></DatePicker>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </>
+          <EditParticipantEventsForm
+            customParticipantEvents={customParticipantEvents}
+            scheduleEvents={scheduleEvents}
+            onChange={e => {
+              console.log('event change')
+              setCustomParticipantEvents(_prev => e)
+            }}
+          />
           <Box width="375px" mb={3}>
             <TimezoneDropdown
               currentValue={currentTimeZone}

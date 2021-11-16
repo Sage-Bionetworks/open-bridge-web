@@ -1,4 +1,3 @@
-import DatePicker from '@components/widgets/DatePicker'
 import TextMask from '@components/widgets/MaskedInput'
 import {
   SimpleTextInput,
@@ -8,10 +7,12 @@ import Utility from '@helpers/utility'
 import {FormHelperText, makeStyles} from '@material-ui/core'
 import FormControl from '@material-ui/core/FormControl'
 import FormGroup from '@material-ui/core/FormGroup'
-import EventService from '@services/event.service'
-import {EditableParticipantData, ParticipantEvent} from '@typedefs/types'
+import {ExtendedScheduleEventObject} from '@services/schedule.service'
+import {EditableParticipantData} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
+import EditParticipantEventsForm from '../modify/EditParticipantEventsForm'
+import TimezoneDropdown from '../TimezoneDropdown'
 
 const useStyles = makeStyles(theme => ({
   addForm: {
@@ -23,36 +24,19 @@ const useStyles = makeStyles(theme => ({
 
 type AddSingleParticipantFormProps = {
   participant: EditableParticipantData
-  scheduleEventIds: string[]
+  scheduleEvents: ExtendedScheduleEventObject[]
   isEnrolledById: boolean
 
   onChange: (p: EditableParticipantData) => void
 }
 
 const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps> =
-  ({participant, isEnrolledById, scheduleEventIds, onChange}) => {
+  ({participant, isEnrolledById, scheduleEvents, onChange}) => {
     const classes = useStyles()
     const [validationErrors, setValidationErrors] = React.useState({
       phone: false,
       externalId: false,
     })
-
-    const handleEventDateChange = (eventId: string, newDate: Date | null) => {
-      const newEvent: ParticipantEvent = {
-        eventId: eventId,
-        timestamp: newDate || undefined,
-      }
-      let events = participant.events ? [...participant.events] : []
-      const participantEventIndex = events.findIndex(e => e.eventId === eventId)
-
-      if (participantEventIndex > -1) {
-        events[participantEventIndex] = newEvent
-      } else {
-        events.push(newEvent)
-      }
-
-      onChange({...participant, events: events})
-    }
 
     const extId = (
       <FormControl>
@@ -109,27 +93,31 @@ const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps>
                   </FormHelperText>
                 )}
               </FormControl>
+
               {extId}
             </>
           )}
-          <>
-            {scheduleEventIds.map(eventId => (
-              <DatePicker
-                key={eventId}
-                label={EventService.formatCustomEventIdForDisplay(eventId)}
-                id={eventId}
-                value={
-                  participant.events?.find(pEvt => pEvt.eventId === eventId)
-                    ?.timestamp || null
-                }
-                onChange={e => handleEventDateChange(eventId, e)}></DatePicker>
-            ))}
-          </>
+          <FormControl>
+            <TimezoneDropdown
+              currentValue={participant.clientTimeZone || ''}
+              onValueChange={(clientTimeZone: string) =>
+                onChange({...participant, clientTimeZone})
+              }
+            />
+          </FormControl>
+          <EditParticipantEventsForm
+            customParticipantEvents={participant.events || []}
+            scheduleEvents={scheduleEvents}
+            onChange={events => {
+              console.log('event change')
+              onChange({...participant, events: events})
+            }}
+          />
 
           <FormControl>
             <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
             <SimpleTextInput
-              value={participant.note}
+              value={participant.note || ''}
               onChange={e => onChange({...participant, note: e.target.value})}
               placeholder="comments"
               id="note"

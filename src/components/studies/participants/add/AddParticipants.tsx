@@ -18,6 +18,7 @@ import {
 import {makeStyles} from '@material-ui/core/styles'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import EventService from '@services/event.service'
+import {ExtendedScheduleEventObject} from '@services/schedule.service'
 import {poppinsFont, theme} from '@style/theme'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
@@ -111,8 +112,8 @@ const uploadAreaStyle = {
 type AddParticipantsProps = {
   token: string
   study: Study
-  onAdded: Function
-  scheduleEventIds: string[]
+  onAdded: () => void
+  scheduleEvents: ExtendedScheduleEventObject[]
   isTestAccount: boolean
 }
 
@@ -120,7 +121,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
   onAdded,
   study,
   token,
-  scheduleEventIds,
+  scheduleEvents,
   isTestAccount,
 }) => {
   const [tab, setTab] = React.useState(0)
@@ -151,15 +152,15 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       return
     }
 
-    const customParticipantEvents: ParticipantEvent[] = scheduleEventIds.map(
-      eventId => ({
-        eventId: EventService.formatCustomEventIdForDisplay(eventId),
+    const customParticipantEvents: ParticipantEvent[] = scheduleEvents.map(
+      event => ({
+        eventId: EventService.formatCustomEventIdForDisplay(event.eventId),
       })
     )
 
     const isValid = CsvUtility.isImportFileValid(
       isEnrolledById,
-      scheduleEventIds,
+      scheduleEvents.map(e => e.eventId),
       rows[0].data
     )
     if (!isValid) {
@@ -315,7 +316,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             <TabPanel value={tab} index={0}>
               <ImportParticipantsInstructions
                 isEnrolledById={isEnrolledById}
-                scheduleEventIds={scheduleEventIds}>
+                scheduleEventIds={scheduleEvents.map(e => e.eventId)}>
                 <BlueButton
                   onClick={() => {
                     setIsCsvUploaded(false)
@@ -330,7 +331,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
             </TabPanel>
             <TabPanel value={tab} index={1}>
               <AddSingleParticipant
-                scheduleEventIds={scheduleEventIds}
+                scheduleEvents={scheduleEvents}
                 isEnrolledById={isEnrolledById}
                 token={token}
                 studyIdentifier={study.identifier}

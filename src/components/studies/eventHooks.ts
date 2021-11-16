@@ -23,7 +23,7 @@ export const useEvents = (
   return useQuery<ExtendedScheduleEventObject[], ExtendedError>(
     EVENTS_KEYS.list(studyId),
     () =>
-      ScheduleService.getEventIdsForScheduleByStudyId(
+      ScheduleService.getEventsForScheduleByStudyId(
         studyId!,
         token!,
         onlyCustom,

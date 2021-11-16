@@ -22,6 +22,7 @@ const CSV_BY_ID_IMPORT_KEY: Map<keyof EditableParticipantData, string> =
   new Map([
     ['externalId', 'Participant ID'],
     ['timeZone', 'Time Zone'],
+    ['clientTimeZone', 'Participant Time Zone'],
     ['note', 'Notes'],
   ])
 
@@ -30,6 +31,7 @@ const CSV_BY_PHONE_IMPORT_KEY: Map<keyof EditableParticipantData, string> =
     ['phoneNumber', 'Phone#'],
     ['timeZone', 'Time Zone'],
     ['externalId', 'Reference ID'],
+    ['clientTimeZone', 'Participant Time Zone'],
     ['note', 'Notes'],
   ])
 
@@ -183,6 +185,7 @@ async function getParticipantDataForDownload(
       if (columns.get('phoneNumber')) {
         participant[columns.get('phoneNumber')!] = p.phone?.nationalFormat
       }
+      participant[columns.get('clientTimeZone')!] = p.clientTimeZone
 
       scheduleEventIds?.forEach(eventId => {
         const matchingEvent = p.events?.find(pEvt => pEvt.eventId === eventId)
