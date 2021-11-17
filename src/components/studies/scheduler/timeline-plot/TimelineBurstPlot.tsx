@@ -216,11 +216,11 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   ) {
     const isBurst = EventService.isEventBurstEvent(startEventId)
 
-    if (!isBurst) {
+    /* if (!isBurst) {
       return isSessionBurst(sessionGuid) ? 0 : -1
-    } else {
-      return EventService.getBurstNumberFromEventId(startEventId)
-    }
+    } else {*/
+    return !isBurst ? -1 : EventService.getBurstNumberFromEventId(startEventId)
+    //  }
   }
 
   function unWrapSessions(items: TimelineScheduleItem[]) {
@@ -236,10 +236,11 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
       //not burst -- return
       if (burstNumber === -1) {
         return i
-      } else if (burstNumber === 0) {
+      } /*else if (burstNumber === 0) {
         return {...i, startEventId: `study_burst:${i.startEventId}_burst:00`}
-      } else {
-        const offSet = burstNumber * (getBurstFrequency() * 7 + burstLength)
+      }*/ else {
+        const offSet =
+          (burstNumber - 1) * (getBurstFrequency() * 7 + burstLength)
         return {...i, startDay: i.startDay + offSet, endDay: i.endDay + offSet}
       }
     })
