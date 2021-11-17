@@ -19,7 +19,7 @@ import {
 } from '@material-ui/core'
 import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
 import {latoFont, poppinsFont} from '@style/theme'
-import {Schedule, StudyBurst} from '@typedefs/scheduling'
+import {Schedule, StudyBurst, StudySession} from '@typedefs/scheduling'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React from 'react'
@@ -240,9 +240,12 @@ const BurstSelectorSC: React.FunctionComponent<{
   onUpdateEvent,
 }) => {
   const classes = useStyles()
-  const groups = _.groupBy(schedule.sessions, 'startEventIds.0')
+  const burstEventId = schedule.studyBursts?.[0]?.originEventId
+  const updatedSessions = schedule.sessions.map(s =>
+    _.isEmpty(s.studyBurstIds) ? s : {...s, startEventIds: [burstEventId || '']}
+  )
+  const groups = _.groupBy(updatedSessions, 'startEventIds.0')
 
-  console.log('TEST')
   const updateSelection = (guid: string, isSelected: boolean) => {
     if (isSelected) {
       onUpdateSessionSelection([...burstSessionGuids, guid!])
@@ -384,19 +387,6 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
     number | undefined
   >()
 
-  // const {data: timeline, error, isLoading} = useTimeline(id)
-  /*const [plotData, setPlotData]= React.useState<{timelineSchedule, burstNumber: number}>()
-
-
-  ///
-  schedulingItems={timeline?.schedule || []}
-  burstSessionGuids={burstSessionGuids}
-  burstNumber={burstNumber || 0}
-  burstFrequency={burstFrequency || 0}
-  sortedSessions={schedule.sessions*/
-
-  ///
-
   React.useEffect(() => {
     if (!schedule) {
       return
@@ -427,10 +417,33 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
     console.log(burstSessionGuids)
   }, [schedule])
 
+  function restoreSessionsFromBursts(schedule: Schedule): StudySession[] {
+    var previousBurst = schedule?.studyBursts?.[0]
+    if (previousBurst === undefined) {
+      return [...schedule.sessions]
+    } else {
+      const sessions = schedule.sessions.map(s =>
+        //if no bursts -- nothing needs to be done
+        _.isEmpty(s.studyBurstIds)
+          ? s
+          : {
+              ...s,
+              studyBurstIds: [],
+              startEventIds: [previousBurst!.originEventId],
+            }
+      )
+      return sessions
+    }
+  }
+
   const save = async () => {
     if (!burstFrequency || !burstNumber || !schedule || !originEventId) {
       return
     }
+
+    //1. restore all of the startEventId
+    const sessions = restoreSessionsFromBursts(schedule)
+
     //create burst
     const burst: StudyBurst = {
       identifier: `${originEventId.replace(':', '_')}_burst`,
@@ -439,15 +452,20 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
       occurrences: burstNumber,
       updateType: 'mutable',
     }
-    //update sessions
-    const sessions = schedule.sessions.map(s =>
+
+    //update sessions, remove startEventId
+    const sessionsWithBurst = sessions.map(s =>
       burstSessionGuids.includes(s.guid!)
-        ? {...s, studyBurstIds: [burst.identifier]}
-        : {...s, studyBurstIds: []}
+        ? {...s, studyBurstIds: [burst.identifier], startEventIds: []}
+        : s
     )
     console.log('guids', burstSessionGuids)
-    console.log(sessions)
-    const updatedSchedule = {...schedule, sessions, studyBursts: [burst]}
+
+    const updatedSchedule = {
+      ...schedule,
+      sessions: sessionsWithBurst,
+      studyBursts: [burst],
+    }
     try {
       await mutateSchedule({
         studyId: id,
@@ -460,12 +478,12 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
   }
 
   const clearBursts = async () => {
+    //update sessions
+
     if (!schedule) {
       return
     }
-
-    //update sessions
-    const sessions = schedule.sessions.map(s => ({...s, studyBurstIds: []}))
+    const sessions = restoreSessionsFromBursts(schedule)
 
     const updatedSchedule = {...schedule, sessions, studyBursts: []}
     try {

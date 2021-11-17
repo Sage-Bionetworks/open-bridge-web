@@ -20,12 +20,14 @@ function getStartDaysForSession(
   includeBurst?: boolean
 ): number[] {
   function filterItem(timelineItem: TimelineScheduleItem) {
+    //if study burst -- only return first burst
     if (includeBurst) {
       return timelineItem.refGuid === sessionGuid
     } else {
       return (
         timelineItem.refGuid === sessionGuid &&
-        !timelineItem.startEventId.includes('study_burst:')
+        (!/study_burst:/.test(timelineItem.startEventId) ||
+          /study_burst:(\w+):01/.test(timelineItem.startEventId))
       )
     }
   }

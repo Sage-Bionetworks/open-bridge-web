@@ -462,7 +462,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
 
               <div className={classes.weekTitle} key="week_index">
                 Week {wk.name}
-                {wk.burst !== false ? '/ Burst' + (wk.burstNum * 1 + 1) : ''}
+                {wk.burst !== false ? '/ Burst' + wk.burstNum * 1 : ''}
               </div>
               <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
                 {wk.sessions.map((sessionInfo, sIndex: number) => (

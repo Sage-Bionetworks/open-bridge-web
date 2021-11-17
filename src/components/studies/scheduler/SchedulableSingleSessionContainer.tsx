@@ -55,6 +55,7 @@ type SchedulableSingleSessionContainerProps = {
   studySession: StudySession
   onUpdateSessionSchedule: Function
   customEvents?: SchedulingEvent[]
+
   sessionErrorState:
     | {
         generalErrorMessage: string[]
@@ -62,6 +63,7 @@ type SchedulableSingleSessionContainerProps = {
         notificationErrors: Map<number, string>
       }
     | undefined
+  burstOriginEventId: string | undefined
 }
 
 type windowErrorArrayType = {
@@ -80,6 +82,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     onUpdateSessionSchedule,
     sessionErrorState,
     customEvents,
+    burstOriginEventId,
   }) => {
     const classes = useStyles()
 
@@ -272,7 +275,11 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         <form noValidate autoComplete="off">
           <Box className={classes.formSection}>
             <StartDate
-              startEventId={_.first(schedulableSession.startEventIds)!}
+              startEventId={
+                _.isEmpty(studySession.studyBurstIds)
+                  ? _.first(schedulableSession.startEventIds)!
+                  : burstOriginEventId || ''
+              }
               delay={schedulableSession.delay}
               customEvents={customEvents}
               sessionName={studySession.name}

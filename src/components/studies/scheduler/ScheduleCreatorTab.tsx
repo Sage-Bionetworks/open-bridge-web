@@ -373,6 +373,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
                 key={session.guid}
                 customEvents={study?.customEvents}
                 studySession={session}
+                burstOriginEventId={schedule.studyBursts?.[0]?.originEventId}
                 onUpdateSessionSchedule={(
                   schedule: SessionSchedule,
                   shouldInvalidateBurst: boolean
