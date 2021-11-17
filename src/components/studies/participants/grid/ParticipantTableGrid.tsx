@@ -1,4 +1,4 @@
-import {ReactComponent as PencilIcon} from '@assets/edit_pencil.svg'
+import {ReactComponent as PencilIcon} from '@assets/edit_pencil_red.svg'
 import JoinedCheckSymbol from '@assets/participants/joined_check_mark.svg'
 import JoinedPhoneSymbol from '@assets/participants/joined_phone_icon.svg'
 import {ReactComponent as HidePhoneIcon} from '@assets/participants/phone_hide_icon.svg'
