@@ -178,12 +178,9 @@ async function getScheduleTimeline(
 function getEventsForSchedule(
   schedule: Schedule
 ): ExtendedScheduleEventObject[] {
-  const sessions = schedule.sessions.filter(
-    session => !_.isEmpty(session.startEventIds)
-  )
-  if (!sessions) {
-    return []
-  }
+  //get startEventIds from Sessions
+  const sessions =
+    schedule.sessions.filter(session => !_.isEmpty(session.startEventIds)) || []
 
   const events = sessions.reduce(
     (p: ExtendedScheduleEventObject[], c: StudySession) => {
@@ -211,6 +208,16 @@ function getEventsForSchedule(
     },
     [] as {eventId: string; delay: TimePeriod}[]
   )
+
+  //add events from StudyBursts
+  if (schedule.studyBursts?.[0].originEventId) {
+    const burst = schedule.studyBursts[0]
+    events.push({
+      eventId: burst.originEventId,
+      delay: undefined,
+      studyBurstId: burst.identifier,
+    })
+  }
   return events
 }
 
