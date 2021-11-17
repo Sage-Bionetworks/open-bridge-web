@@ -24,6 +24,7 @@ export interface StartDateProps {
   delay?: string //ISO6801
   startEventId: string
   sessionName: string
+  isBurst: boolean
   customEvents?: SchedulingEvent[]
   onChangeDelay: Function
   onChangeStartEventId: Function
@@ -36,6 +37,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
   onChangeDelay,
   onChangeStartEventId,
   sessionName,
+  isBurst,
 }: StartDateProps) => {
   const classes = useStyles()
   const [hasDelay, setHasDelay] = React.useState<boolean>(delay ? true : false)
@@ -81,39 +83,53 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
   }
 
   return (
-    <SchedulingFormSection label={`${sessionName} starts on*:`}>
-      <RadioGroup
-        aria-label="Session Starts On"
-        name="startDate"
-        value={hasDelay}
-        onChange={e => changeStartDelayType(e.target.value === 'true')}>
-        <FormGroup row={true}>
-          <Radio value={false} />
-          <SelectEventId
-            disabled={hasDelay}
-            value={!hasDelay ? startEventId : ''}
-            onChangeFn={(e: string) => onChangeStartEventId(e)}></SelectEventId>
-        </FormGroup>
-        <FormGroup row={true} style={{alignItems: 'center'}}>
-          <Radio value={true} />{' '}
-          <Duration
-            onChange={e => {
-              onChangeDelay(e.target.value)
-            }}
-            durationString={delay}
-            unitLabel="Repeat Every"
-            numberLabel="frequency number"
-            unitDefault={HDWMEnum.D}
-            unitData={HDWMEnum}
-            disabled={!hasDelay}
-            isShowClear={false}></Duration>
-          <span>from:&nbsp;</span>
-          <SelectEventId
-            disabled={!hasDelay}
-            value={hasDelay ? startEventId : ''}
-            onChangeFn={(e: string) => onChangeStartEventId(e)}></SelectEventId>
-        </FormGroup>
-      </RadioGroup>
+    <SchedulingFormSection
+      label={`${sessionName} starts on*:`}
+      disabled={isBurst}>
+      <div>
+        {isBurst && (
+          <i>
+            This session is a part of the study burst. Please remove it from
+            burst in order to change the how it's started
+          </i>
+        )}
+        <RadioGroup
+          aria-label="Session Starts On"
+          name="startDate"
+          value={hasDelay}
+          onChange={e => changeStartDelayType(e.target.value === 'true')}>
+          <FormGroup row={true}>
+            <Radio value={false} disabled={isBurst} />
+            <SelectEventId
+              disabled={hasDelay}
+              value={!hasDelay ? startEventId : ''}
+              onChangeFn={(e: string) =>
+                onChangeStartEventId(e)
+              }></SelectEventId>
+          </FormGroup>
+          <FormGroup row={true} style={{alignItems: 'center'}}>
+            <Radio value={true} disabled={isBurst} />{' '}
+            <Duration
+              onChange={e => {
+                onChangeDelay(e.target.value)
+              }}
+              durationString={delay}
+              unitLabel="Repeat Every"
+              numberLabel="frequency number"
+              unitDefault={HDWMEnum.D}
+              unitData={HDWMEnum}
+              disabled={!hasDelay || isBurst}
+              isShowClear={false}></Duration>
+            <span>from:&nbsp;</span>
+            <SelectEventId
+              disabled={!hasDelay || !!isBurst}
+              value={hasDelay ? startEventId : ''}
+              onChangeFn={(e: string) =>
+                onChangeStartEventId(e)
+              }></SelectEventId>
+          </FormGroup>
+        </RadioGroup>
+      </div>
     </SchedulingFormSection>
   )
 }
