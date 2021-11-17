@@ -210,8 +210,8 @@ function getEventsForSchedule(
   )
 
   //add events from StudyBursts
-  if (schedule.studyBursts?.[0].originEventId) {
-    const burst = schedule.studyBursts[0]
+  if (_.first(schedule.studyBursts)?.originEventId) {
+    const burst = _.first(schedule.studyBursts)!
     events.push({
       eventId: burst.originEventId,
       delay: undefined,

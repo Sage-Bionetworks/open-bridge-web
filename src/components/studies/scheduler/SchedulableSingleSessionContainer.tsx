@@ -280,6 +280,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   ? _.first(schedulableSession.startEventIds)!
                   : burstOriginEventId || ''
               }
+              isBurst={!_.isEmpty(studySession.studyBurstIds)}
               delay={schedulableSession.delay}
               customEvents={customEvents}
               sessionName={studySession.name}
