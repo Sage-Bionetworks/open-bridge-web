@@ -50,8 +50,8 @@ const ImportParticipantsInstructions: FunctionComponent<{
 
   const instructionItems = scheduleEventIds.map((eventId, i) => (
     <li key={i}>
-      <strong>{EventService.formatCustomEventIdForDisplay(eventId)}</strong>{' '}
-      (can be updated later)
+      <strong>{EventService.formatEventIdForDisplay(eventId)}</strong> (can be
+      updated later)
     </li>
   ))
 

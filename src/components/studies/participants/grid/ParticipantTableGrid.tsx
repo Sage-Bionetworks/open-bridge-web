@@ -35,7 +35,7 @@ import {
   GridValueGetterParams,
   HideGridColMenuItem,
 } from '@material-ui/data-grid'
-import EventService from '@services/event.service'
+import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ParticipantService, {
   EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING,
 } from '@services/participants.service'
@@ -285,8 +285,12 @@ function getDate(value: GridCellValue) {
 }
 
 function getJoinedDateWithIcons(params: GridValueGetterParams) {
-  const joinedDate = params.row.joinedDate
+  // const joinedDate = params.row.joinedDate
   // const smsDate = params.row.smsDate
+  const foundEvent = params.row.events.find(
+    (event: any) => event.eventId === JOINED_EVENT_ID
+  )
+  const joinedDate = foundEvent ? getDate(foundEvent.timestamp) : ' '
 
   const dateToDisplay = joinedDate //|| smsDate
   const formattedDate = getDate(dateToDisplay)
@@ -312,11 +316,11 @@ function renderColumnHeaderWithIcon(icon: string, headerName: string) {
   ) as ReactNode
 }
 
-function renderCellExpand(params: GridCellParams) {
+function renderCellExpand(params: GridCellParams, width: number) {
   return (
     <GridCellExpand
       value={params.value ? params.value.toString() : ''}
-      width={params.colDef.computedWidth}
+      width={Math.max(params.colDef.computedWidth, width)}
     />
   )
 }
@@ -380,15 +384,15 @@ function getColumns(
     {
       field: 'id',
       headerName: 'HealthCode',
-      renderCell: renderCellExpand,
-      flex: 2,
+      renderCell: params => renderCellExpand(params, 130),
+      width: 130,
     },
     {
       field: 'clientTimeZone',
       headerName: 'Time Zone',
       align: 'center',
       valueGetter: params => params.value || '-',
-      flex: 1,
+      width: 150,
     },
     {
       field: 'joinedDate',
@@ -428,23 +432,27 @@ function getColumns(
     ),
   }
 
-  const customEventColumns = scheduleEventIds.map((eventId, index) => {
-    const col: GridColDef = {
-      field: eventId + index,
-      width: 100,
+  const customEventColumns = scheduleEventIds
+    //we display join
+    .filter(eventId => eventId !== JOINED_EVENT_ID)
+    .map((eventId, index) => {
+      const col: GridColDef = {
+        field: eventId + index,
+        width: 100,
 
-      headerName: EventService.formatCustomEventIdForDisplay(eventId),
-      valueGetter: params => {
-        const foundEvent = params.row.events.find(
-          (event: any) =>
-            event.eventId === EventService.prefixCustomEventIdentifier(eventId)
-        )
-        return foundEvent ? getDate(foundEvent.timestamp) : ' '
-      },
-      // flex: 1,
-    }
-    return col
-  })
+        headerName: EventService.formatEventIdForDisplay(eventId),
+        valueGetter: params => {
+          const foundEvent = params.row.events.find(
+            (event: any) =>
+              event.eventId ===
+              EventService.prefixCustomEventIdentifier(eventId)
+          )
+          return foundEvent ? getDate(foundEvent.timestamp) : ' '
+        },
+        // flex: 1,
+      }
+      return col
+    })
 
   let participantColumns = [...COLUMNS]
   // for active participants -- don't need withdrawn date and note
@@ -528,7 +536,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   const {token} = useUserSessionDataState()
   const {data: scheduleEvents = [], error: eventError} = useEvents(
     studyId,
-    true,
+    false,
     true
   )
 

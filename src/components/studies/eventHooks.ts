@@ -15,8 +15,8 @@ const EVENTS_KEYS = {
 
 export const useEvents = (
   studyId: string | undefined,
-  withBursts: boolean = true,
-  onlyCustom: boolean = true
+  onlyCustom: boolean,
+  withBursts: boolean
 ) => {
   const {token} = useUserSessionDataState()
 

@@ -274,7 +274,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const {data: scheduleEvents = [], error: eventError} = useEvents(
     studyId,
-    true,
+    false,
     true
   )
 

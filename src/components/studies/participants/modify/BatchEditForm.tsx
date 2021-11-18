@@ -29,7 +29,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
   const [isLoading, setIsLoading] = React.useState(false)
   const {data: scheduleEvents = [], error: eventError} = useEvents(
     studyId,
-    true,
+    false,
     true
   )
 

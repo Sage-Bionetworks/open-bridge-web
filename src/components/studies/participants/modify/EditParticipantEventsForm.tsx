@@ -1,7 +1,10 @@
 import DatePicker from '@components/widgets/DatePicker'
 import {makeStyles} from '@material-ui/core'
 import EventService from '@services/event.service'
-import {ExtendedScheduleEventObject} from '@services/schedule.service'
+import {
+  ExtendedScheduleEventObject,
+  TIMELINE_RETRIEVED_EVENT,
+} from '@services/schedule.service'
 import {ParticipantEvent} from '@typedefs/types'
 import clsx from 'clsx'
 import moment from 'moment'
@@ -60,6 +63,43 @@ type EditParticipantEventsFormProps = {
   customParticipantEvents: ParticipantEvent[]
   scheduleEvents: ExtendedScheduleEventObject[]
   onChange: (p: ParticipantEvent[]) => void
+}
+
+const EventLabel: FunctionComponent<{
+  eo: ExtendedScheduleEventObject
+  index: number
+}> = ({eo, index}) => {
+  const formattedEventId = EventService.formatEventIdForDisplay(eo.eventId)
+  // not a burst
+  if (!eo.originEventId) {
+    return <span>{formattedEventId}</span>
+  }
+  return (
+    <div>
+      {formattedEventId}:
+      <br />
+      <i style={{fontWeight: 'normal', fontSize: '12px'}}>
+        Week {(index + 1) * (eo.interval?.value || 0)}
+      </i>
+    </div>
+  )
+}
+
+const ReadOnlyDate: FunctionComponent<{
+  eo: ExtendedScheduleEventObject
+  index: number
+  value?: Date | null
+}> = ({eo, index, value}) => {
+  const classes = useStyles()
+  var displayValue = value ? new Date(value).toLocaleDateString() : '--'
+  return (
+    <div className="MuiFormControl-root">
+      <label>
+        <EventLabel eo={eo} index={index} />
+      </label>
+      <div className={classes.emptyDate}>{displayValue}</div>
+    </div>
+  )
 }
 
 const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProps> =
@@ -145,11 +185,11 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
       return null
     }
 
-    function getEventLabel(
+    /*  function getEventLabel(
       eo: ExtendedScheduleEventObject,
       index: number
     ): React.ReactNode {
-      const formattedEventId = EventService.formatCustomEventIdForDisplay(
+      const formattedEventId = EventService.formatEventIdForDisplay(
         eo.eventId
       )
       // not a burst
@@ -167,14 +207,18 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
       )
     }
 
-    function getEmptyDate(eo: ExtendedScheduleEventObject, index: number) {
+    function getEmptyDate(
+      eo: ExtendedScheduleEventObject,
+      index: number,
+      value?: string
+    ) {
       return (
         <div className="MuiFormControl-root">
           <label>{getEventLabel(eo, index)}</label>
-          <div className={classes.emptyDate}>--</div>
+          <div className={classes.emptyDate}>{value || '--'}</div>
         </div>
       )
-    }
+    }*/
 
     return (
       <>
@@ -191,16 +235,27 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
                     classes.burstOrigin
                 )}
                 key={nonBurstEvent.eventId}>
-                <DatePicker
-                  label={getEventLabel(nonBurstEvent, index)}
-                  id={nonBurstEvent.eventId}
-                  value={getEventDateValue(
-                    customParticipantEvents,
-                    nonBurstEvent.eventId
-                  )}
-                  onChange={e =>
-                    handleEventDateChange(nonBurstEvent.eventId, e)
-                  }></DatePicker>
+                {nonBurstEvent.eventId !== TIMELINE_RETRIEVED_EVENT.eventId ? (
+                  <DatePicker
+                    label={<EventLabel eo={nonBurstEvent} index={index} />}
+                    id={nonBurstEvent.eventId}
+                    value={getEventDateValue(
+                      customParticipantEvents,
+                      nonBurstEvent.eventId
+                    )}
+                    onChange={e =>
+                      handleEventDateChange(nonBurstEvent.eventId, e)
+                    }></DatePicker>
+                ) : (
+                  <ReadOnlyDate
+                    eo={nonBurstEvent}
+                    index={index}
+                    value={getEventDateValue(
+                      customParticipantEvents,
+                      nonBurstEvent.eventId
+                    )}
+                  />
+                )}
               </div>
               {scheduleEvents
                 .filter(e => e.originEventId === nonBurstEvent.eventId)
@@ -217,7 +272,7 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
                       nonBurstEvent.eventId
                     ) !== null ? (
                       <DatePicker
-                        label={getEventLabel(burstEvent, index)}
+                        label={<EventLabel eo={burstEvent} index={index} />}
                         id={burstEvent.eventId}
                         value={getEventDateValue(
                           customParticipantEvents,
@@ -227,7 +282,11 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
                           handleEventDateChange(burstEvent.eventId, e)
                         }></DatePicker>
                     ) : (
-                      getEmptyDate(burstEvent, index)
+                      <ReadOnlyDate
+                        eo={burstEvent}
+                        index={index}
+                        value={null}
+                      />
                     )}
                   </div>
                 ))}

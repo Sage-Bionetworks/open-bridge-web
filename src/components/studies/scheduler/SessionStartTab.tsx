@@ -175,7 +175,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
     if (schedule) {
       setEventIdsInSchedule(
         ScheduleService.getEventIdsForSchedule(schedule).map(e =>
-          EventService.formatCustomEventIdForDisplay(e)
+          EventService.formatEventIdForDisplay(e)
         )
       )
     }

@@ -13,7 +13,7 @@ import {
 } from '../types/scheduling'
 import {Assessment} from '../types/types'
 import AssessmentService from './assessment.service'
-import {BURST_EVENT_PATTERN} from './event.service'
+import {BURST_EVENT_PATTERN, JOINED_EVENT_ID} from './event.service'
 
 const ScheduleService = {
   createSchedule,
@@ -35,7 +35,7 @@ export type ExtendedScheduleEventObject = {
 }
 
 export const TIMELINE_RETRIEVED_EVENT: SchedulingEvent = {
-  eventId: 'timeline_retrieved',
+  eventId: JOINED_EVENT_ID,
   updateType: 'immutable',
 }
 
@@ -230,10 +230,11 @@ function getEventIdsForSchedule(schedule: Schedule): string[] {
 async function getEventsForScheduleByStudyId(
   studyId: string,
   token: string,
-  onlyCustom = true,
-  withBursts = false
+  onlyCustom: boolean,
+  withBursts: boolean
 ): Promise<ExtendedScheduleEventObject[]> {
   // get schedule
+
   const schedule = await getSchedule(studyId, token, false)
   if (!schedule) {
     throw Error('Schedule not found')

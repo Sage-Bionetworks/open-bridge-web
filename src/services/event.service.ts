@@ -26,13 +26,15 @@ function prefixCustomEventIdentifier(eventIdentifier: string) {
     : constants.constants.CUSTOM_EVENT_PREFIX + eventIdentifier
 }
 
-function formatCustomEventIdForDisplay(eventIdentifier: string) {
+function formatEventIdForDisplay(eventIdentifier: string) {
   if (isEventBurstEvent(eventIdentifier)) {
     var burstNumber = getBurstNumberFromEventId(eventIdentifier)
 
     return `Burst ${burstNumber}`
   } else {
-    return eventIdentifier.replace(constants.constants.CUSTOM_EVENT_PREFIX, '')
+    return eventIdentifier === JOINED_EVENT_ID
+      ? 'Initial Login'
+      : eventIdentifier.replace(constants.constants.CUSTOM_EVENT_PREFIX, '')
   }
 }
 
@@ -52,7 +54,7 @@ async function getRelevantEventsForParticipants(
     await ScheduleService.getEventsForScheduleByStudyId(
       studyIdentifier,
       token,
-      true,
+      false,
       true
     ).then(result =>
       result.map(eventObject =>
@@ -90,7 +92,9 @@ async function getRelevantEventsForParticipants(
         ...acc,
         [item.participantId]: {
           timeline_retrieved: joinedDate?.timestamp,
-          customEvents: relevantEvents,
+          customEvents: relevantEvents.filter(
+            e => e.eventId !== JOINED_EVENT_ID
+          ),
         },
       }
     }, {})
@@ -110,13 +114,20 @@ async function updateParticipantCustomEvents(
 
   // get Events for schedule  - we need this in order to possibly delete userEvents
   const schedulingEventIds =
-    await ScheduleService.getEventsForScheduleByStudyId(studyIdentifier, token)
+    await ScheduleService.getEventsForScheduleByStudyId(
+      studyIdentifier,
+      token,
+      false,
+      true
+    )
   const customEventWithDate = customEvents.filter(event => !!event.timestamp)
 
-  const eventsToDelete = schedulingEventIds.filter(
-    event =>
-      !customEventWithDate.find(pEvent => event.eventId === pEvent.eventId)
-  )
+  const eventsToDelete = schedulingEventIds
+    .filter(
+      event =>
+        !customEventWithDate.find(pEvent => event.eventId === pEvent.eventId)
+    )
+    .map(e => e.eventId)
 
   const eventsToDeletePromises = eventsToDelete.map(eventId =>
     Utility.callEndpoint<{identifier: string}>(
@@ -149,7 +160,7 @@ const EventService = {
   getRelevantEventsForParticipants,
   updateParticipantCustomEvents,
   prefixCustomEventIdentifier,
-  formatCustomEventIdForDisplay,
+  formatEventIdForDisplay,
   getBurstNumberFromEventId,
   isEventBurstEvent,
 }

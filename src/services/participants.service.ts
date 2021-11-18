@@ -688,7 +688,7 @@ const ParticipantService = {
   // updateParticipantCustomEvents,
   withdrawParticipant,
   //prefixCustomEventIdentifier,
-  //formatCustomEventIdForDisplay,
+  //formatEventIdForDisplay,
 }
 
 export default ParticipantService
