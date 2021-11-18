@@ -18,6 +18,7 @@ import {
   Theme,
 } from '@material-ui/core'
 import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
+import EventService from '@services/event.service'
 import {latoFont, poppinsFont} from '@style/theme'
 import {Schedule, StudyBurst, StudySession} from '@typedefs/scheduling'
 import clsx from 'clsx'
@@ -284,7 +285,9 @@ const BurstSelectorSC: React.FunctionComponent<{
             isEventSelected(key) && 'selected'
           )}
           onClick={() => selectEvent(key)}>
-          <MTBHeadingH4>Sessions associated with {key} </MTBHeadingH4>
+          <MTBHeadingH4>
+            Sessions associated with {EventService.formatEventIdForDisplay(key)}{' '}
+          </MTBHeadingH4>
           {groups[key].map(s => (
             <FormControlLabel
               key={s.guid}
