@@ -62,6 +62,7 @@ const useStyles = makeStyles(theme => ({
 type EditParticipantEventsFormProps = {
   customParticipantEvents: ParticipantEvent[]
   scheduleEvents: ExtendedScheduleEventObject[]
+  hideLoginEvent: boolean
   onChange: (p: ParticipantEvent[]) => void
 }
 
@@ -103,7 +104,7 @@ const ReadOnlyDate: FunctionComponent<{
 }
 
 const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProps> =
-  ({customParticipantEvents, scheduleEvents, onChange}) => {
+  ({customParticipantEvents, scheduleEvents, onChange, hideLoginEvent}) => {
     const classes = useStyles()
 
     const reCalculateBursts = (
@@ -185,113 +186,85 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
       return null
     }
 
-    /*  function getEventLabel(
-      eo: ExtendedScheduleEventObject,
-      index: number
-    ): React.ReactNode {
-      const formattedEventId = EventService.formatEventIdForDisplay(
-        eo.eventId
-      )
-      // not a burst
-      if (!eo.originEventId) {
-        return formattedEventId
-      }
-      return (
-        <div>
-          {formattedEventId}:
-          <br />
-          <i style={{fontWeight: 'normal', fontSize: '12px'}}>
-            Week {(index + 1) * (eo.interval?.value || 0)}
-          </i>
-        </div>
-      )
-    }
-
-    function getEmptyDate(
-      eo: ExtendedScheduleEventObject,
-      index: number,
-      value?: string
-    ) {
-      return (
-        <div className="MuiFormControl-root">
-          <label>{getEventLabel(eo, index)}</label>
-          <div className={classes.emptyDate}>{value || '--'}</div>
-        </div>
-      )
-    }*/
-
     return (
       <>
         {scheduleEvents
           .filter(e => e.originEventId === undefined)
-          .map((nonBurstEvent, index) => (
-            <div
-              style={{marginBottom: '8px'}}
-              key={nonBurstEvent.eventId + index}>
-              <div
-                className={clsx(
-                  classes.eventField,
-                  isBurstOriginEvent(nonBurstEvent.eventId) &&
-                    classes.burstOrigin
-                )}
-                key={nonBurstEvent.eventId}>
-                {nonBurstEvent.eventId !== TIMELINE_RETRIEVED_EVENT.eventId ? (
-                  <DatePicker
-                    label={<EventLabel eo={nonBurstEvent} index={index} />}
-                    id={nonBurstEvent.eventId}
-                    value={getEventDateValue(
-                      customParticipantEvents,
-                      nonBurstEvent.eventId
-                    )}
-                    onChange={e =>
-                      handleEventDateChange(nonBurstEvent.eventId, e)
-                    }></DatePicker>
-                ) : (
-                  <ReadOnlyDate
-                    eo={nonBurstEvent}
-                    index={index}
-                    value={getEventDateValue(
-                      customParticipantEvents,
-                      nonBurstEvent.eventId
-                    )}
-                  />
-                )}
-              </div>
-              {scheduleEvents
-                .filter(e => e.originEventId === nonBurstEvent.eventId)
-                .map((burstEvent, index) => (
+          .map(
+            (nonBurstEvent, index) =>
+              (nonBurstEvent.eventId !== TIMELINE_RETRIEVED_EVENT.eventId ||
+                !hideLoginEvent) && (
+                <div
+                  style={{marginBottom: '8px'}}
+                  key={nonBurstEvent.eventId + index}>
                   <div
                     className={clsx(
                       classes.eventField,
-                      classes.burstEventField
+                      isBurstOriginEvent(nonBurstEvent.eventId) &&
+                        classes.burstOrigin
                     )}
-                    style={{}}
-                    key={burstEvent.eventId}>
-                    {getEventDateValue(
-                      customParticipantEvents,
-                      nonBurstEvent.eventId
-                    ) !== null ? (
+                    key={nonBurstEvent.eventId}>
+                    {nonBurstEvent.eventId !==
+                    TIMELINE_RETRIEVED_EVENT.eventId ? (
                       <DatePicker
-                        label={<EventLabel eo={burstEvent} index={index} />}
-                        id={burstEvent.eventId}
+                        label={<EventLabel eo={nonBurstEvent} index={index} />}
+                        id={nonBurstEvent.eventId}
                         value={getEventDateValue(
                           customParticipantEvents,
-                          burstEvent.eventId
+                          nonBurstEvent.eventId
                         )}
                         onChange={e =>
-                          handleEventDateChange(burstEvent.eventId, e)
+                          handleEventDateChange(nonBurstEvent.eventId, e)
                         }></DatePicker>
-                    ) : (
+                    ) : isBurstOriginEvent(nonBurstEvent.eventId) ? (
                       <ReadOnlyDate
-                        eo={burstEvent}
+                        eo={nonBurstEvent}
                         index={index}
-                        value={null}
+                        value={getEventDateValue(
+                          customParticipantEvents,
+                          nonBurstEvent.eventId
+                        )}
                       />
+                    ) : (
+                      <></>
                     )}
                   </div>
-                ))}
-            </div>
-          ))}
+                  {scheduleEvents
+                    .filter(e => e.originEventId === nonBurstEvent.eventId)
+                    .map((burstEvent, index) => (
+                      <div
+                        className={clsx(
+                          classes.eventField,
+                          classes.burstEventField
+                        )}
+                        style={{}}
+                        key={burstEvent.eventId}>
+                        {getEventDateValue(
+                          customParticipantEvents,
+                          nonBurstEvent.eventId
+                        ) !== null ? (
+                          <DatePicker
+                            label={<EventLabel eo={burstEvent} index={index} />}
+                            id={burstEvent.eventId}
+                            value={getEventDateValue(
+                              customParticipantEvents,
+                              burstEvent.eventId
+                            )}
+                            onChange={e =>
+                              handleEventDateChange(burstEvent.eventId, e)
+                            }></DatePicker>
+                        ) : (
+                          <ReadOnlyDate
+                            eo={burstEvent}
+                            index={index}
+                            value={null}
+                          />
+                        )}
+                      </div>
+                    ))}
+                </div>
+              )
+          )}
       </>
     )
   }

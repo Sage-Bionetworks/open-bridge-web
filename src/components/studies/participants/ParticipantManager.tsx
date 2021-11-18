@@ -272,11 +272,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
     React.useState(false)
 
-  const {data: scheduleEvents = [], error: eventError} = useEvents(
-    studyId,
-    false,
-    true
-  )
+  const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
 
   const {
     data,

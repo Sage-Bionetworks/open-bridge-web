@@ -534,11 +534,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 }: ParticipantTableGridProps) => {
   const classes = useStyles()
   const {token} = useUserSessionDataState()
-  const {data: scheduleEvents = [], error: eventError} = useEvents(
-    studyId,
-    false,
-    true
-  )
+  const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
 
   //when we are editing the record this is where the info is stored
   const [participantToEdit, setParticipantToEdit] = React.useState<

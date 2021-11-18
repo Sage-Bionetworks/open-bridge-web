@@ -53,9 +53,7 @@ async function getRelevantEventsForParticipants(
   const eventIdsForSchedule =
     await ScheduleService.getEventsForScheduleByStudyId(
       studyIdentifier,
-      token,
-      false,
-      true
+      token
     ).then(result =>
       result.map(eventObject =>
         prefixCustomEventIdentifier(eventObject.eventId)
@@ -106,7 +104,7 @@ async function updateParticipantCustomEvents(
   studyIdentifier: string,
   token: string,
   participantId: string,
-  customEvents: ParticipantEvent[]
+  eventsToUpdate: ParticipantEvent[]
 ) {
   let eventEndpoint = constants.endpoints.events
     .replace(':studyId', studyIdentifier)
@@ -114,22 +112,44 @@ async function updateParticipantCustomEvents(
 
   // get Events for schedule  - we need this in order to possibly delete userEvents
   const schedulingEventIds =
-    await ScheduleService.getEventsForScheduleByStudyId(
-      studyIdentifier,
-      token,
-      false,
-      true
-    )
-  const customEventWithDate = customEvents.filter(event => !!event.timestamp)
+    await ScheduleService.getEventsForScheduleByStudyId(studyIdentifier, token)
+
+  //ag: why date?  const customEventWithDate = eventsToUpdate.filter(event => !!event.timestamp)
+  const customEventsToUpdate = eventsToUpdate.filter(
+    e => e.eventId !== JOINED_EVENT_ID
+  )
 
   const eventsToDelete = schedulingEventIds
-    .filter(
-      event =>
-        !customEventWithDate.find(pEvent => event.eventId === pEvent.eventId)
+    .filter(event =>
+      customEventsToUpdate.find(pEvent => event.eventId === pEvent.eventId)
     )
     .map(e => e.eventId)
 
-  const eventsToDeletePromises = eventsToDelete.map(eventId =>
+  customEventsToUpdate.forEach(async event => {
+    const d = await Utility.callEndpoint<{identifier: string}>(
+      eventEndpoint + '/' + event.eventId,
+      'DELETE',
+      {},
+      token
+    )
+    console.log('deleted' + event.eventId)
+    if (event.timestamp) {
+      const data = {
+        eventId: event.eventId,
+        timestamp: new Date(event.timestamp!).toISOString(),
+      }
+
+      const z = Utility.callEndpoint<{identifier: string}>(
+        `${eventEndpoint}?showError=true&updateBursts=false`,
+        'POST',
+        data,
+        token
+      )
+      console.log('added' + event.eventId)
+    }
+  })
+
+  /* const eventsToDeletePromises = eventsToDelete.map(eventId =>
     Utility.callEndpoint<{identifier: string}>(
       eventEndpoint + '/' + eventId,
       'DELETE',
@@ -137,22 +157,24 @@ async function updateParticipantCustomEvents(
       token
     )
   )
-  const eventsToUpdatePromises = customEventWithDate.map(event => {
-    const data = {
-      eventId: event.eventId,
-      timestamp: new Date(event.timestamp!).toISOString(),
-    }
+  const eventsToUpdatePromises = customEventsToUpdate
+    .filter(e => !!e.timestamp)
+    .map(event => {
+      const data = {
+        eventId: event.eventId,
+        timestamp: new Date(event.timestamp!).toISOString(),
+      }
 
-    return Utility.callEndpoint<{identifier: string}>(
-      eventEndpoint,
-      'POST',
-      data,
-      token
-    )
-  })
+      return Utility.callEndpoint<{identifier: string}>(
+        `${eventEndpoint}?showError=true&updateBursts=false`,
+        'POST',
+        data,
+        token
+      )
+    })
 
   await Promise.allSettled(eventsToDeletePromises)
-  await Promise.allSettled(eventsToUpdatePromises)
+  await Promise.allSettled(eventsToUpdatePromises)*/
   return participantId
 }
 

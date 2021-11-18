@@ -107,6 +107,7 @@ const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps>
           </FormControl>
           <EditParticipantEventsForm
             customParticipantEvents={participant.events || []}
+            hideLoginEvent={true}
             scheduleEvents={scheduleEvents}
             onChange={events => {
               console.log('event change')

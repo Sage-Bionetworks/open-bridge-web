@@ -81,6 +81,7 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
         <FormGroup className={classes.editForm}>
           <EditParticipantEventsForm
             customParticipantEvents={customParticipantEvents}
+            hideLoginEvent={false}
             scheduleEvents={scheduleEvents}
             onChange={e => {
               console.log('event change')
