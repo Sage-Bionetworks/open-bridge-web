@@ -26,61 +26,55 @@ import {useErrorHandler} from 'react-error-boundary'
 import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
 import {SchedulingEvent} from '../../../types/scheduling'
 import ErrorDisplay from '../../widgets/ErrorDisplay'
-import {MTBHeadingH2} from '../../widgets/Headings'
-import {BlueButton} from '../../widgets/StyledComponents'
+import {RedButton} from '../../widgets/StyledComponents'
 import {useSchedule} from '../scheduleHooks'
 import {useStudy, useUpdateStudyDetail} from '../studyHooks'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      backgroundColor: '#fff', //'#E5E5E5',
-      padding: theme.spacing(6, 7, 3, 7),
+      padding: theme.spacing(0),
     },
-    intialLoginContainer: {
-      backgroundColor: 'white',
-      padding: theme.spacing(1.75, 1),
-      maxWidth: '166px',
-    },
-    paragraphText: {
+
+    small: {
       fontFamily: latoFont,
       fontSize: '15px',
-      lineHeight: '18px',
-      '&:first-child': {
-        marginBottom: theme.spacing(4),
-      },
-      '&:last-child': {
-        fontStyle: 'italic',
-      },
-    },
-    exampleText: {
       fontStyle: 'italic',
-      fontFamily: latoFont,
-      fontSize: '15px',
+
       lineHeight: '18px',
-      maxWidth: '240px',
-      marginTop: theme.spacing(-0.5),
     },
+
+    columnContainer: {
+      padding: theme.spacing(3),
+      justifyContent: 'space-between',
+      display: 'flex',
+      textAlign: 'left',
+    },
+    leftCol: {
+      textAlign: 'left',
+      marginRight: theme.spacing(4),
+      flexGrow: 1,
+    },
+    rightCol: {
+      width: theme.spacing(35),
+      flexShrink: 9,
+    },
+
     eventText: {
-      minWidth: theme.spacing(20),
+      width: theme.spacing(16),
       marginRight: theme.spacing(0.5),
       padding: theme.spacing(0, 1.25),
     },
-    input: {
-      backgroundColor: 'white',
-      marginRight: theme.spacing(0.5),
-      padding: theme.spacing(2, 1.25),
-      '&:focus': {
-        outline: 'none',
-      },
-      '&:disabled': {
-        border: 'none',
-      },
-      outline: 'none',
-    },
+
     newEventButton: {
-      marginTop: theme.spacing(4),
+      width: '100%',
+      marginTop: theme.spacing(2),
       marginLeft: theme.spacing(0),
+    },
+    input: {
+      width: '100%',
+      height: theme.spacing(6),
+      padding: theme.spacing(2),
     },
     errorText: {
       color: 'red',
@@ -105,6 +99,7 @@ const useStyles = makeStyles((theme: Theme) =>
       },
       '& >div': {
         width: '162px',
+        textAlign: 'left',
 
         border: `1px solid ${theme.palette.divider}`,
         borderBottom: 'none',
@@ -126,13 +121,13 @@ const useStyles = makeStyles((theme: Theme) =>
       },
     },
 
-    eventInput: {
+    draggableEvent: {
       alignItems: 'center',
       position: 'relative',
 
       border: '1px solid black',
       backgroundColor: '#f6f6f6',
-      padding: theme.spacing(2, 2, 2, 3),
+      padding: theme.spacing(1.5, 1, 1.5, 3),
 
       '&.dragging': {
         border: '1px dashed #000',
@@ -185,7 +180,8 @@ const CalendarIconControl: React.FunctionComponent<any> = React.memo(() => {
 const FakeSelect: React.FunctionComponent<{
   evtName: string
   hasCalendar: boolean
-}> = ({evtName, hasCalendar}) => {
+  hasCarret?: boolean
+}> = ({evtName, hasCalendar, hasCarret = false}) => {
   const classes = useStyles()
   var x = <span>{evtName}</span>
   console.log(hasCalendar)
@@ -195,9 +191,11 @@ const FakeSelect: React.FunctionComponent<{
       {hasCalendar && <CalendarIconControl />}
       <div>
         {evtName}
-        <svg viewBox="0 0 24 24">
-          <path d="M7 10l5 5 5-5z"></path>
-        </svg>
+        {hasCarret && (
+          <svg viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"></path>
+          </svg>
+        )}
       </div>
     </Box>
   )
@@ -274,25 +272,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
       setNewEvent('')
       onUpdate(newEvents)
     }
-    //  if (!checkForErrors(newEvent))
-    // const newEvents = [...transformLocalEventObjects(), newEvent]
-    //onUpdate(newEvents)
   }
-
-  /* const transformLocalEventObjects = () => {
-    return localEventObjects.map(element => {
-      return {
-        eventId: element.eventId,
-        updateType: element.updateType,
-      }
-    })
-  }
-
-  const updateEvent = () => {
-    if (checkForErrors()) return
-
-    onUpdate(transformLocalEventObjects())
-  }*/
 
   const checkForErrors = (
     eventId: string
@@ -311,7 +291,6 @@ const SessionStartTab: React.ForwardRefRenderFunction<
       return
     }
     const newEvents = [...study.customEvents]
-    /*  const newEvents: LocalEventObject[] = [...localEventObjects]*/
     newEvents.splice(index, 1)
     onUpdate(newEvents)
   }
@@ -326,11 +305,6 @@ const SessionStartTab: React.ForwardRefRenderFunction<
     )
   }
 
-  const isErrorPresent = () => {
-    // return localEventObjects.findIndex(el => el.hasError) >= 0
-    return false
-  }
-
   const canEdit = (eventId: string): boolean => {
     return !eventIdsInSchedule.includes(eventId)
   }
@@ -341,9 +315,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
     destination: DraggableLocation
   ) => {
     const startIndex = source.index
-
     const endIndex = destination.index
-
     const result = Array.from(list)
     const [removed] = result.splice(startIndex, 1)
     result.splice(endIndex, 0, removed)
@@ -364,7 +336,6 @@ const SessionStartTab: React.ForwardRefRenderFunction<
       dropResult.destination
     )
     onUpdate(updatedEvents)
-    // setLocalEventObjects(updatedEvents)
   }
 
   return (
@@ -375,119 +346,53 @@ const SessionStartTab: React.ForwardRefRenderFunction<
         style={{marginTop: '-30px'}}
         variant={'small'}
       />
-      <Box width="600px" mx="auto" textAlign="left">
-        <p className={classes.paragraphText}>
-          Sessions in a study can be scheduled to start{' '}
-          <strong>after a participant logs into the study</strong> for the first
-          time known as “Initial Log in” or by a <strong>calendar date</strong>{' '}
-          known as “Event” that are unique to each participant. Once your study
-          launches, you can specify these dates for each participant in the{' '}
-          <strong>Participant Manager tab.</strong>
-        </p>
-        <MTBHeadingH2>How will your session(s) start? </MTBHeadingH2>
-        <p className={classes.paragraphText}>
-          You can add additional calendar Events and{' '}
-          <strong>
-            relabel <br />
-            them to make it easier to reference later. Spaces are not allowed.
-          </strong>
-        </p>
-        <div>
-          <FakeSelect evtName="Initial Login" hasCalendar={false} />
-          <FakeSelect evtName="Baseline Visit" hasCalendar={true} />
+
+      <Box className={classes.columnContainer} bgcolor="#F8F8F8">
+        <div className={classes.leftCol} style={{maxWidth: '300px'}}>
+          <p>
+            By default, sessions start once a participant logs into the study
+            for the first time on their smart phone, known as{' '}
+            <strong>Initial Login</strong>.
+          </p>
+
+          <p>
+            To start a session on calendar date/appointment unique to each
+            participant, create additional <strong>Events</strong> to this
+            Dropdown menu.
+          </p>
+          <p>
+            When you add participants to your study, you will be able to define
+            these dates in the Participant Manager tab.
+          </p>
         </div>
+        <div className={classes.rightCol}>
+          <p className={classes.small} style={{width: '170px'}}>
+            Example: A clinical study might have 2 Events: a Baseline Visit and
+            Final Visit.
+          </p>
+          <div>
+            <FakeSelect
+              evtName="Initial Login"
+              hasCalendar={false}
+              hasCarret={true}
+            />
+            <FakeSelect evtName="Baseline Visit" hasCalendar={true} />
+            <FakeSelect evtName="Final Visit" hasCalendar={true} />
+          </div>
+        </div>
+      </Box>
 
-        <Box display="flex" justifyContent="flex-start" mt={3}>
-          <Box flexShrink={0} minWidth="200px" mr={2}>
-            <>
-              <Box className={classes.intialLoginContainer}>Initial_Login</Box>
-
-              <DragDropContext
-                onDragEnd={(dropResult: DropResult) => {
-                  reorderEvents(study.customEvents, dropResult)
-                }}>
-                <div className={classes.droppable}>
-                  <Droppable droppableId={'eventList'} type="ASSESSMENT">
-                    {(provided, snapshot) => (
-                      <div
-                        className={clsx({
-                          dragging: snapshot.isDraggingOver,
-                        })}
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}>
-                        {study.customEvents &&
-                          study.customEvents.map((evt, index) => (
-                            <Draggable
-                              draggableId={evt.eventId + index}
-                              index={index}
-                              key={evt.eventId + index}>
-                              {(provided, snapshot) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}>
-                                  <Box
-                                    display="block"
-                                    key={evt.eventId}
-                                    className={classes.eventBox}>
-                                    <CalendarIconControl />
-                                    <FormGroup
-                                      row={true}
-                                      className={classes.eventInput}
-                                      style={{
-                                        alignItems: 'center',
-                                      }}>
-                                      <div className={classes.hoverImage}>
-                                        {' '}
-                                        &#9776;
-                                      </div>
-                                      <div className={classes.eventText}>
-                                        {evt.eventId}
-                                      </div>
-
-                                      {canEdit(evt.eventId) ? (
-                                        <IconButton
-                                          edge="end"
-                                          size="small"
-                                          style={{padding: 0}}
-                                          onClick={() => deleteEvent(index)}>
-                                          <DeleteIcon></DeleteIcon>
-                                        </IconButton>
-                                      ) : (
-                                        <InfoCircleWithToolTip
-                                          tooltipDescription={
-                                            <span>
-                                              &nbsp;To{' '}
-                                              <strong>rename or delete</strong>{' '}
-                                              this Event, please unselect it
-                                              from the Session Start that is
-                                              currently mapped to it in the
-                                              Create Scheduler step.
-                                            </span>
-                                          }
-                                          variant="info"
-                                        />
-                                      )}
-                                    </FormGroup>
-                                    {false && (
-                                      <Box className={classes.errorText}>
-                                        {/*evt.hasError === 'duplicate'
-                                        ? 'Duplicate event identifier.'
-                                  : 'Sorry, event labels cannot have any blank spaces.'*/}
-                                      </Box>
-                                    )}
-                                  </Box>
-                                </div>
-                              )}
-                            </Draggable>
-                          ))}
-                      </div>
-                    )}
-                  </Droppable>
-                </div>
-              </DragDropContext>
-            </>
-
+      <Box
+        className={classes.columnContainer}
+        bgcolor="#FFF"
+        height={`${
+          study.customEvents ? study.customEvents.length * 64 + 24 : 200
+        }px`}>
+        <Box
+          className={classes.leftCol}
+          display="flex"
+          justifyContent="space-between">
+          <div style={{width: '165px'}}>
             {error && (
               <Box className={classes.errorText}>
                 {error === 'duplicate'
@@ -503,39 +408,100 @@ const SessionStartTab: React.ForwardRefRenderFunction<
                 classes.input,
                 error && classes.errorTextbox
               )}></input>
-            <BlueButton
+            <RedButton
               variant="contained"
               onClick={addEvent}
               className={classes.newEventButton}>
-              + New Custom Event
-            </BlueButton>
-          </Box>
-          <Box className={classes.exampleText}>
-            <Box mb={2}>
-              An example Clinical Study might require 3 unique calendar events:
+              + Add New Event
+            </RedButton>
+          </div>
+          {study.customEvents && study.customEvents.length > 1 && (
+            <Box className={classes.small} ml={3} width={'130px'}>
+              <strong>Drag</strong> to reorder which event will occur first.
             </Box>
-            <Box mb={1} display="flex" mr={0.5}>
-              <CalendarIconControl />
-              Event 1 = BaselineVisit
-            </Box>
-            <Box mb={1} display="flex" mr={0.5}>
-              {' '}
-              <CalendarIconControl />
-              Event 2 = Follow-upVisit
-            </Box>
-            <Box display="flex">
-              {' '}
-              <CalendarIconControl />
-              Event 3 = FinalVisit
-            </Box>
-          </Box>
+          )}
         </Box>
+        <div className={classes.rightCol} style={{marginRight: '19px'}}>
+          <DragDropContext
+            onDragEnd={(dropResult: DropResult) => {
+              reorderEvents(study.customEvents, dropResult)
+            }}>
+            <div className={classes.droppable}>
+              <Droppable droppableId={'eventList'} type="ASSESSMENT">
+                {(provided, snapshot) => (
+                  <div
+                    className={clsx({
+                      dragging: snapshot.isDraggingOver,
+                    })}
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}>
+                    {study.customEvents &&
+                      study.customEvents.map((evt, index) => (
+                        <Draggable
+                          draggableId={evt.eventId + index}
+                          index={index}
+                          key={evt.eventId + index}>
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}>
+                              <Box
+                                display="block"
+                                key={evt.eventId}
+                                className={classes.eventBox}>
+                                <CalendarIconControl />
+                                <FormGroup
+                                  row={true}
+                                  className={classes.draggableEvent}
+                                  style={{
+                                    alignItems: 'center',
+                                  }}>
+                                  <div className={classes.hoverImage}>
+                                    {' '}
+                                    &#9776;
+                                  </div>
+                                  <div className={classes.eventText}>
+                                    {evt.eventId}
+                                  </div>
+
+                                  {canEdit(evt.eventId) ? (
+                                    <IconButton
+                                      edge="end"
+                                      size="small"
+                                      style={{padding: 0}}
+                                      onClick={() => deleteEvent(index)}>
+                                      <DeleteIcon></DeleteIcon>
+                                    </IconButton>
+                                  ) : (
+                                    <InfoCircleWithToolTip
+                                      tooltipDescription={
+                                        <span>
+                                          &nbsp;To{' '}
+                                          <strong>rename or delete</strong> this
+                                          Event, please unselect it from the
+                                          Session Start that is currently mapped
+                                          to it in the Create Scheduler step.
+                                        </span>
+                                      }
+                                      variant="info"
+                                    />
+                                  )}
+                                </FormGroup>
+                              </Box>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          </DragDropContext>
+        </div>
       </Box>
     </Box>
   )
 }
 
 export default React.forwardRef(SessionStartTab)
-function setEventIdsInSchedule(arg0: any[]) {
-  throw new Error('Function not implemented.')
-}

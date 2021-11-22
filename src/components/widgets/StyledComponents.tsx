@@ -64,6 +64,24 @@ export const BlueButton = withStyles(theme => ({
   },
 }))(Button)
 
+export const RedButton = withStyles(theme => ({
+  root: {
+    borderRadius: '0px',
+
+    height: '40px',
+    marginRight: theme.spacing(2),
+    marginBottom: theme.spacing(1),
+    marginLeft: theme.spacing(1),
+    color: 'black',
+    backgroundColor: theme.palette.error.light,
+    '&:hover': {
+      fontWeight: 'bolder',
+      backgroundColor: theme.palette.primary.dark,
+    },
+    fontFamily: 'Lato',
+  },
+}))(Button)
+
 export const WhiteButton = withStyles(theme => ({
   root: {
     borderRadius: '0px',
