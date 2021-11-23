@@ -93,6 +93,7 @@ export type StudySessionGeneral = {
 
 export interface StudySessionTimeline extends StudySessionGeneral {
   timeWindowGuids: string[]
+  label: string
 }
 
 export type StudySession = StudySessionGeneral & SessionSchedule
