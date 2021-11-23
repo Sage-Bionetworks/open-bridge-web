@@ -1,5 +1,5 @@
 import Utility from '@helpers/utility'
-import EventService from '@services/event.service'
+import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ParticipantService from '@services/participants.service'
 import {
   ExtendedParticipantAccountSummary,
@@ -47,8 +47,11 @@ async function getRelevantParticipantInfo(
     }
     const updatedParticipant = {
       ...participant,
-      joinedDate: events.timeline_retrieved,
-      events: events.customEvents,
+      // joinedDate: events.timeline_retrieved,
+      events: [
+        ...events.customEvents,
+        {eventId: JOINED_EVENT_ID, timestamp: events.timeline_retrieved},
+      ],
       //   smsDate: event.smsDate,
     }
     return updatedParticipant

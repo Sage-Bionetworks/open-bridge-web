@@ -13,22 +13,12 @@ const EVENTS_KEYS = {
   detail: (id: string | undefined) => [...EVENTS_KEYS.details(), id] as const,
 }
 
-export const useEvents = (
-  studyId: string | undefined,
-  withBursts: boolean = true,
-  onlyCustom: boolean = true
-) => {
+export const useEvents = (studyId: string | undefined) => {
   const {token} = useUserSessionDataState()
 
   return useQuery<ExtendedScheduleEventObject[], ExtendedError>(
     EVENTS_KEYS.list(studyId),
-    () =>
-      ScheduleService.getEventsForScheduleByStudyId(
-        studyId!,
-        token!,
-        onlyCustom,
-        withBursts
-      ),
+    () => ScheduleService.getEventsForScheduleByStudyId(studyId!, token!),
     {
       enabled: !!studyId,
       retry: false,

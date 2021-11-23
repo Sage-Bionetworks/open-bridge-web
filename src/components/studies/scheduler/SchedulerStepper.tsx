@@ -12,7 +12,6 @@ import {
 } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import React from 'react'
-import {ReactComponent as SessionStartIcon} from '../../../assets/scheduler/calendar_icon.svg'
 import {ReactComponent as EmaIcon} from '../../../assets/scheduler/ema_icon.svg'
 import {ReactComponent as ScheduleIcon} from '../../../assets/scheduler/schedule_icon.svg'
 
@@ -67,9 +66,8 @@ function ColorlibStepIcon(props: StepIconProps) {
       inactive: React.ReactElement
     }
   } = {
-    1: {active: <SessionStartIcon />, inactive: <SessionStartIcon />},
-    2: {active: <ScheduleIcon />, inactive: <ScheduleIcon />},
-    3: {active: <EmaIcon />, inactive: <EmaIcon />},
+    1: {active: <ScheduleIcon />, inactive: <ScheduleIcon />},
+    2: {active: <EmaIcon />, inactive: <EmaIcon />},
   }
   const iconNode = icons[String(props.icon)]
 

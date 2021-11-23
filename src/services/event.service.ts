@@ -26,13 +26,15 @@ function prefixCustomEventIdentifier(eventIdentifier: string) {
     : constants.constants.CUSTOM_EVENT_PREFIX + eventIdentifier
 }
 
-function formatCustomEventIdForDisplay(eventIdentifier: string) {
+function formatEventIdForDisplay(eventIdentifier: string) {
   if (isEventBurstEvent(eventIdentifier)) {
     var burstNumber = getBurstNumberFromEventId(eventIdentifier)
 
     return `Burst ${burstNumber}`
   } else {
-    return eventIdentifier.replace(constants.constants.CUSTOM_EVENT_PREFIX, '')
+    return eventIdentifier === JOINED_EVENT_ID
+      ? 'Initial Login'
+      : eventIdentifier.replace(constants.constants.CUSTOM_EVENT_PREFIX, '')
   }
 }
 
@@ -51,9 +53,7 @@ async function getRelevantEventsForParticipants(
   const eventIdsForSchedule =
     await ScheduleService.getEventsForScheduleByStudyId(
       studyIdentifier,
-      token,
-      true,
-      true
+      token
     ).then(result =>
       result.map(eventObject =>
         prefixCustomEventIdentifier(eventObject.eventId)
@@ -90,7 +90,9 @@ async function getRelevantEventsForParticipants(
         ...acc,
         [item.participantId]: {
           timeline_retrieved: joinedDate?.timestamp,
-          customEvents: relevantEvents,
+          customEvents: relevantEvents.filter(
+            e => e.eventId !== JOINED_EVENT_ID
+          ),
         },
       }
     }, {})
@@ -102,7 +104,7 @@ async function updateParticipantCustomEvents(
   studyIdentifier: string,
   token: string,
   participantId: string,
-  customEvents: ParticipantEvent[]
+  eventsToUpdate: ParticipantEvent[]
 ) {
   let eventEndpoint = constants.endpoints.events
     .replace(':studyId', studyIdentifier)
@@ -111,14 +113,43 @@ async function updateParticipantCustomEvents(
   // get Events for schedule  - we need this in order to possibly delete userEvents
   const schedulingEventIds =
     await ScheduleService.getEventsForScheduleByStudyId(studyIdentifier, token)
-  const customEventWithDate = customEvents.filter(event => !!event.timestamp)
 
-  const eventsToDelete = schedulingEventIds.filter(
-    event =>
-      !customEventWithDate.find(pEvent => event.eventId === pEvent.eventId)
+  //ag: why date?  const customEventWithDate = eventsToUpdate.filter(event => !!event.timestamp)
+  const customEventsToUpdate = eventsToUpdate.filter(
+    e => e.eventId !== JOINED_EVENT_ID
   )
 
-  const eventsToDeletePromises = eventsToDelete.map(eventId =>
+  const eventsToDelete = schedulingEventIds
+    .filter(event =>
+      customEventsToUpdate.find(pEvent => event.eventId === pEvent.eventId)
+    )
+    .map(e => e.eventId)
+
+  customEventsToUpdate.forEach(async event => {
+    const d = await Utility.callEndpoint<{identifier: string}>(
+      eventEndpoint + '/' + event.eventId,
+      'DELETE',
+      {},
+      token
+    )
+    console.log('deleted' + event.eventId)
+    if (event.timestamp) {
+      const data = {
+        eventId: event.eventId,
+        timestamp: new Date(event.timestamp!).toISOString(),
+      }
+
+      const z = Utility.callEndpoint<{identifier: string}>(
+        `${eventEndpoint}?showError=true&updateBursts=false`,
+        'POST',
+        data,
+        token
+      )
+      console.log('added' + event.eventId)
+    }
+  })
+
+  /* const eventsToDeletePromises = eventsToDelete.map(eventId =>
     Utility.callEndpoint<{identifier: string}>(
       eventEndpoint + '/' + eventId,
       'DELETE',
@@ -126,22 +157,24 @@ async function updateParticipantCustomEvents(
       token
     )
   )
-  const eventsToUpdatePromises = customEventWithDate.map(event => {
-    const data = {
-      eventId: event.eventId,
-      timestamp: new Date(event.timestamp!).toISOString(),
-    }
+  const eventsToUpdatePromises = customEventsToUpdate
+    .filter(e => !!e.timestamp)
+    .map(event => {
+      const data = {
+        eventId: event.eventId,
+        timestamp: new Date(event.timestamp!).toISOString(),
+      }
 
-    return Utility.callEndpoint<{identifier: string}>(
-      eventEndpoint,
-      'POST',
-      data,
-      token
-    )
-  })
+      return Utility.callEndpoint<{identifier: string}>(
+        `${eventEndpoint}?showError=true&updateBursts=false`,
+        'POST',
+        data,
+        token
+      )
+    })
 
   await Promise.allSettled(eventsToDeletePromises)
-  await Promise.allSettled(eventsToUpdatePromises)
+  await Promise.allSettled(eventsToUpdatePromises)*/
   return participantId
 }
 
@@ -149,7 +182,7 @@ const EventService = {
   getRelevantEventsForParticipants,
   updateParticipantCustomEvents,
   prefixCustomEventIdentifier,
-  formatCustomEventIdForDisplay,
+  formatEventIdForDisplay,
   getBurstNumberFromEventId,
   isEventBurstEvent,
 }

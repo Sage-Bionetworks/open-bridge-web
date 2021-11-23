@@ -675,7 +675,7 @@ const ParticipantService = {
   addTestParticipant,
   deleteParticipant,
   formatExternalId,
-  // getRelevantEventsForParticipants,
+
   getNumEnrolledParticipants,
   getAllParticipantsInEnrollmentType,
   getEnrollmentById,
@@ -685,10 +685,8 @@ const ParticipantService = {
   getRequestInfoForParticipant,
   signUpForAssessmentDemoStudy,
   updateParticipant,
-  // updateParticipantCustomEvents,
+
   withdrawParticipant,
-  //prefixCustomEventIdentifier,
-  //formatCustomEventIdForDisplay,
 }
 
 export default ParticipantService

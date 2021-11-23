@@ -1,10 +1,19 @@
 import {
+  DialogButtonPrimary,
+  DialogButtonSecondary,
+} from '@components/widgets/StyledComponents'
+import {
   Box,
   createStyles,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControlLabel,
   makeStyles,
   Theme,
 } from '@material-ui/core'
+import ScheduleService from '@services/schedule.service'
 import {ExtendedError} from '@typedefs/types'
 import _ from 'lodash'
 import React from 'react'
@@ -30,6 +39,7 @@ import actionsReducer, {
   SessionScheduleAction,
 } from './scheduleActions'
 import ScheduleTimelineDisplay from './ScheduleTimelineDisplay'
+import SessionStartTab from './SessionStartTab'
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -94,7 +104,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
   ref
 ) => {
   const classes = useStyles()
-  const [isErrorAlert, setIsErrorAlert] = React.useState(true)
+
   const {data: study, error, isLoading} = useStudy(id)
   const {data: _schedule} = useSchedule(id)
 
@@ -126,6 +136,11 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
       }
     >()
   )
+
+  const [isOpenEventsEditor, setIsOpenEventsEditor] = React.useState(false)
+
+  type SessionStartHandle = React.ElementRef<typeof SessionStartTab>
+  const ref1 = React.useRef<SessionStartHandle>(null) // assign null makes it compatible with elements.
 
   React.useImperativeHandle(ref, () => ({
     save(step: number) {
@@ -288,115 +303,157 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
       </Box>
     )
   }
+  if (!study) {
+    return <span>...loading</span>
+  }
 
   return (
-    <Box>
-      <NavigationPrompt when={hasObjectChanged} key="prompt">
-        {({onConfirm, onCancel}) => (
-          <ConfirmationDialog
-            isOpen={hasObjectChanged}
-            type={'NAVIGATE'}
-            onCancel={onCancel}
-            onConfirm={onConfirm}
-          />
-        )}
-      </NavigationPrompt>
-
-      <Box textAlign="left" key="content">
-        {/* <ObjectDebug data={timeline} label=""></ObjectDebug> */}
-        <div className={classes.scheduleHeader} key="intro">
-          <Box>
-            <FormControlLabel
-              classes={{label: classes.labelDuration}}
-              label="Study duration:"
-              style={{fontSize: '14px'}}
-              labelPlacement="start"
-              control={
-                <Duration
-                  maxDurationDays={1825}
-                  onChange={e =>
-                    updateScheduleData({...schedule, duration: e.target.value})
-                  }
-                  durationString={schedule.duration || ''}
-                  unitLabel="study duration unit"
-                  numberLabel="study duration number"
-                  unitData={DWsEnum}></Duration>
-              }
+    <>
+      <Box>
+        <NavigationPrompt when={hasObjectChanged} key="prompt">
+          {({onConfirm, onCancel}) => (
+            <ConfirmationDialog
+              isOpen={hasObjectChanged}
+              type={'NAVIGATE'}
+              onCancel={onCancel}
+              onConfirm={onConfirm}
             />
-            <Box fontSize="12px" ml={2} fontFamily={latoFont} fontWeight="bold">
-              The study duration must be shorter than 5 years.
-            </Box>
-          </Box>
-
-          {hasObjectChanged && (
-            <SaveButton
-              isFloatingSave={true}
-              onClick={() => onSave(true)}
-              isSaving={saveLoader}>
-              Save changes
-            </SaveButton>
           )}
-        </div>
-        <Box bgcolor="#fff" p={2} pb={0} mt={3} key="scheduler">
-          <ScheduleTimelineDisplay
-            studyId={id}
-            schedule={schedule}></ScheduleTimelineDisplay>
+        </NavigationPrompt>
 
-          {schedule.sessions.map((session, index) => (
-            <Box
-              className={classes.sessionContainer}
-              key={session.guid}
-              border={
-                schedulerErrorState.get(`${session.name}-${index + 1}`)
-                  ? `1px solid ${theme.palette.error.main}`
-                  : ''
-              }>
-              <Box className={classes.assessments}>
-                <AssessmentList
-                  studySessionIndex={index}
+        <Box textAlign="left" key="content">
+          {/* <ObjectDebug data={timeline} label=""></ObjectDebug> */}
+          <div className={classes.scheduleHeader} key="intro">
+            <Box>
+              <FormControlLabel
+                classes={{label: classes.labelDuration}}
+                label="Study duration:"
+                style={{fontSize: '14px'}}
+                labelPlacement="start"
+                control={
+                  <Duration
+                    maxDurationDays={1825}
+                    onChange={e =>
+                      updateScheduleData({
+                        ...schedule,
+                        duration: e.target.value,
+                      })
+                    }
+                    durationString={schedule.duration || ''}
+                    unitLabel="study duration unit"
+                    numberLabel="study duration number"
+                    unitData={DWsEnum}></Duration>
+                }
+              />
+              <Box
+                fontSize="12px"
+                ml={2}
+                fontFamily={latoFont}
+                fontWeight="bold">
+                The study duration must be shorter than 5 years.
+              </Box>
+            </Box>
+
+            {hasObjectChanged && (
+              <SaveButton
+                isFloatingSave={true}
+                onClick={() => onSave(true)}
+                isSaving={saveLoader}>
+                Save changes
+              </SaveButton>
+            )}
+          </div>
+          <Box bgcolor="#fff" p={2} pb={0} mt={3} key="scheduler">
+            <ScheduleTimelineDisplay
+              studyId={id}
+              schedule={schedule}></ScheduleTimelineDisplay>
+
+            {schedule.sessions.map((session, index) => (
+              <Box
+                className={classes.sessionContainer}
+                key={session.guid}
+                border={
+                  schedulerErrorState.get(`${session.name}-${index + 1}`)
+                    ? `1px solid ${theme.palette.error.main}`
+                    : ''
+                }>
+                <Box className={classes.assessments}>
+                  <AssessmentList
+                    studySessionIndex={index}
+                    studySession={session}
+                    onChangePerformanceOrder={(
+                      performanceOrder: PerformanceOrder
+                    ) => {
+                      const schedule = {...session, performanceOrder}
+
+                      scheduleUpdateFn({
+                        type: ActionTypes.UpdateSessionSchedule,
+                        payload: {sessionId: session.guid!, schedule},
+                      })
+                    }}
+                    performanceOrder={session.performanceOrder || 'sequential'}
+                  />
+                </Box>
+                {/* This is what is being displayed as the card */}
+                <SchedulableSingleSessionContainer
+                  onOpenEventsEditor={() => setIsOpenEventsEditor(true)}
+                  key={session.guid}
+                  customEvents={study?.customEvents}
                   studySession={session}
-                  onChangePerformanceOrder={(
-                    performanceOrder: PerformanceOrder
+                  burstOriginEventId={
+                    _.first(schedule.studyBursts)?.originEventId
+                  }
+                  onUpdateSessionSchedule={(
+                    schedule: SessionSchedule,
+                    shouldInvalidateBurst: boolean
                   ) => {
-                    const schedule = {...session, performanceOrder}
-
                     scheduleUpdateFn({
                       type: ActionTypes.UpdateSessionSchedule,
-                      payload: {sessionId: session.guid!, schedule},
+                      payload: {
+                        sessionId: session.guid!,
+                        schedule,
+                        shouldInvalidateBurst,
+                      },
                     })
                   }}
-                  performanceOrder={session.performanceOrder || 'sequential'}
-                />
+                  sessionErrorState={schedulerErrorState.get(
+                    `${session.name}-${index + 1}`
+                  )}></SchedulableSingleSessionContainer>
               </Box>
-              {/* This is what is being displayed as the card */}
-              <SchedulableSingleSessionContainer
-                key={session.guid}
-                customEvents={study?.customEvents}
-                studySession={session}
-                burstOriginEventId={
-                  _.first(schedule.studyBursts)?.originEventId
-                }
-                onUpdateSessionSchedule={(
-                  schedule: SessionSchedule,
-                  shouldInvalidateBurst: boolean
-                ) => {
-                  scheduleUpdateFn({
-                    type: ActionTypes.UpdateSessionSchedule,
-                    payload: {
-                      sessionId: session.guid!,
-                      schedule,
-                      shouldInvalidateBurst,
-                    },
-                  })
-                }}
-                sessionErrorState={schedulerErrorState.get(
-                  `${session.name}-${index + 1}`
-                )}></SchedulableSingleSessionContainer>
-            </Box>
-          ))}
+            ))}
+          </Box>
         </Box>
       </Box>
-    </Box>
+      <Dialog open={isOpenEventsEditor} maxWidth="md">
+        <DialogTitle>Edot Events</DialogTitle>
+        <DialogContent style={{padding: 0}}>
+          <SessionStartTab
+            ref={ref1}
+            study={study!}
+            eventIdsInSchedule={ScheduleService.getEventIdsForSchedule(
+              schedule
+            )}
+            onNavigate={() => setIsOpenEventsEditor(false)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <DialogButtonSecondary onClick={() => setIsOpenEventsEditor(false)}>
+            Cancel
+          </DialogButtonSecondary>
+
+          <DialogButtonPrimary
+            onClick={() => {
+              console.log('about to save')
+              console.log(ref1.current)
+              ref1.current?.save()
+
+              //setIsOpenEventsEditor(false)
+            }}>
+            Save Changes
+          </DialogButtonPrimary>
+        </DialogActions>
+      </Dialog>
+    </>
   )
 }
 

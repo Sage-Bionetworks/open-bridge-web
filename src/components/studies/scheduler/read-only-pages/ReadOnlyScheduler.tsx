@@ -135,7 +135,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
                       classes.readOnlyText,
                       classes.readOnlyTextCentering
                     )}>
-                    {EventService.formatCustomEventIdForDisplay(
+                    {EventService.formatEventIdForDisplay(
                       _.first(session.startEventIds) || 'Unknown'
                     )}
                   </strong>

@@ -8,7 +8,6 @@ import {NextButton, PrevButton} from '../../widgets/StyledComponents'
 import ConfigureBurstTab from './ConfigureBurstTab'
 import ScheduleCreatorTab from './ScheduleCreatorTab'
 import SchedulerStepper from './SchedulerStepper'
-import SessionStartTab from './SessionStartTab'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -32,11 +31,7 @@ export type SchedulerProps = {
 }
 
 function getSteps() {
-  return [
-    {label: 'Define Session Start'},
-    {label: 'Create Schedule'},
-    {label: 'Configure Optional EMA/Bursts'},
-  ]
+  return [{label: 'Create Schedule'}, {label: 'Configure Optional EMA/Bursts'}]
 }
 
 const StepContent: React.FunctionComponent<{
@@ -61,8 +56,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   const [activeStep, setActiveStep] = React.useState(0)
   const [saveLoader, setSaveLoader] = React.useState(false)
   const [isNextEnabled, setIsNextEnabled] = React.useState(true)
-  type CountdownHandle = React.ElementRef<typeof SessionStartTab>
-  const ref1 = React.useRef<CountdownHandle>(null) // assign null makes it compatible with elements.
+
   type CountdownHandle2 = React.ElementRef<typeof ScheduleCreatorTab>
   const ref2 = React.useRef<CountdownHandle2>(null) // assign null makes it compatible with elements.
   type CountdownHandle3 = React.ElementRef<typeof ConfigureBurstTab>
@@ -79,10 +73,10 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
     const nextStep = activeStep + increment
     switch (activeStep) {
       case 0:
-        ref1.current?.save(nextStep)
+        ref2.current?.save(nextStep)
         return
       case 1:
-        ref2.current?.save(nextStep)
+        ref3.current?.save(nextStep)
         return
       default:
         ref3.current?.save(nextStep)
@@ -96,7 +90,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
 
   const handleStepClick = (index: number) => {
     setSaveLoader(true)
-    ref1.current?.save(index)
+
     ref2.current?.save(index)
     ref3.current?.save(index)
   }
@@ -120,7 +114,6 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
           variant={'small'}
         />
         <StepContent step={activeStep}>
-          <SessionStartTab id={id} ref={ref1} onNavigate={handleNavigate} />
           <ScheduleCreatorTab
             id={id}
             ref={ref2}
@@ -152,7 +145,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
             &nbsp;&nbsp;
           </>
 
-          {activeStep < 2 ? (
+          {activeStep < 1 ? (
             <NextButton
               variant="contained"
               color="primary"

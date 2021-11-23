@@ -154,7 +154,7 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
 
     const customParticipantEvents: ParticipantEvent[] = scheduleEvents.map(
       event => ({
-        eventId: EventService.formatCustomEventIdForDisplay(event.eventId),
+        eventId: EventService.formatEventIdForDisplay(event.eventId),
       })
     )
 

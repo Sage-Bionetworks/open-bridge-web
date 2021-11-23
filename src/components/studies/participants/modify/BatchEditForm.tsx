@@ -27,11 +27,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
   isAllSelected,
 }) => {
   const [isLoading, setIsLoading] = React.useState(false)
-  const {data: scheduleEvents = [], error: eventError} = useEvents(
-    studyId,
-    true,
-    true
-  )
+  const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
 
   const updateParticipants = async (clientTimeZone?: string) => {
     if (!clientTimeZone) return

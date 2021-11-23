@@ -9,8 +9,8 @@ import {
 } from '@material-ui/core'
 import {JOINED_EVENT_ID} from '@services/event.service'
 import constants from '@typedefs/constants'
+import {HDWMEnum, SchedulingEvent} from '@typedefs/scheduling'
 import React from 'react'
-import {HDWMEnum, SchedulingEvent} from '../../../types/scheduling'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
 
@@ -28,6 +28,7 @@ export interface StartDateProps {
   customEvents?: SchedulingEvent[]
   onChangeDelay: Function
   onChangeStartEventId: Function
+  children: React.ReactNode
 }
 
 const StartDate: React.FunctionComponent<StartDateProps> = ({
@@ -38,6 +39,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
   onChangeStartEventId,
   sessionName,
   isBurst,
+  children,
 }: StartDateProps) => {
   const classes = useStyles()
   const [hasDelay, setHasDelay] = React.useState<boolean>(delay ? true : false)
@@ -98,7 +100,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
           name="startDate"
           value={hasDelay}
           onChange={e => changeStartDelayType(e.target.value === 'true')}>
-          <FormGroup row={true}>
+          <FormGroup row={true} style={{alignItems: 'center'}}>
             <Radio value={false} disabled={isBurst} />
             <SelectEventId
               disabled={hasDelay}
@@ -106,6 +108,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
               onChangeFn={(e: string) =>
                 onChangeStartEventId(e)
               }></SelectEventId>
+            {children}
           </FormGroup>
           <FormGroup row={true} style={{alignItems: 'center'}}>
             <Radio value={true} disabled={isBurst} />{' '}
@@ -127,6 +130,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
               onChangeFn={(e: string) =>
                 onChangeStartEventId(e)
               }></SelectEventId>
+            {children}
           </FormGroup>
         </RadioGroup>
       </div>

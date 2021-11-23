@@ -1,18 +1,19 @@
-import {Box, makeStyles, Switch} from '@material-ui/core'
-import _ from 'lodash'
-import moment from 'moment'
-import React, {FunctionComponent} from 'react'
-import Alert_Icon from '../../../assets/alert_icon.svg'
-import {DEFAULT_NOTIFICATION} from '../../../services/schedule.service'
-import {latoFont, ThemeType} from '../../../style/theme'
+import AlertIcon from '@assets/alert_icon.svg'
+import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'
+import {AlertWithText, BlueButton} from '@components/widgets/StyledComponents'
+import {Box, IconButton, makeStyles, Switch} from '@material-ui/core'
+import {DEFAULT_NOTIFICATION} from '@services/schedule.service'
+import {latoFont, ThemeType} from '@style/theme'
 import {
   AssessmentWindow as AssessmentWindowType,
   ScheduleNotification,
   SchedulingEvent,
   SessionSchedule,
   StudySession,
-} from '../../../types/scheduling'
-import {AlertWithText, BlueButton} from '../../widgets/StyledComponents'
+} from '@typedefs/scheduling'
+import _ from 'lodash'
+import moment from 'moment'
+import React, {FunctionComponent} from 'react'
 import AssessmentWindow from './AssessmentWindow'
 import EndDate from './EndDate'
 import NotificationTime from './NotificationTime'
@@ -55,6 +56,7 @@ type SchedulableSingleSessionContainerProps = {
   studySession: StudySession
   onUpdateSessionSchedule: Function
   customEvents?: SchedulingEvent[]
+  onOpenEventsEditor: Function
 
   sessionErrorState:
     | {
@@ -83,6 +85,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     sessionErrorState,
     customEvents,
     burstOriginEventId,
+    onOpenEventsEditor,
   }) => {
     const classes = useStyles()
 
@@ -261,7 +264,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                   key={index}
                   icon={
                     <img
-                      src={Alert_Icon}
+                      src={AlertIcon}
                       style={{height: '20px'}}
                       alt={'error-message-' + index}></img>
                   }
@@ -295,7 +298,19 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               }}
               onChangeDelay={(delay: string | undefined) => {
                 updateSessionSchedule({...schedulableSession, delay})
-              }}></StartDate>
+              }}>
+              <IconButton
+                onClick={() => onOpenEventsEditor()}
+                style={{
+                  width: '45px',
+                  height: '45px',
+                  padding: '8px',
+                  marginLeft: '4px',
+                }}>
+                {' '}
+                <EditIcon />
+              </IconButton>
+            </StartDate>
           </Box>
           <Box className={classes.formSection}>
             <EndDate
@@ -322,7 +337,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                     severity="error"
                     icon={
                       <img
-                        src={Alert_Icon}
+                        src={AlertIcon}
                         style={{height: '20px'}}
                         alt={'window-error-' + index}></img>
                     }
@@ -370,7 +385,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                       severity="error"
                       icon={
                         <img
-                          src={Alert_Icon}
+                          src={AlertIcon}
                           style={{height: '24px'}}
                           alt={'notification-error-' + index}></img>
                       }

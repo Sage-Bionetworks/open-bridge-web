@@ -80,7 +80,7 @@ export const useUpdateStudyInList = () => {
     onMutate: async props => {
       queryClient.cancelQueries(STUDY_KEYS.all)
 
-      console.log('starting update in studies')
+      // console.log('starting update in studies')
       // Snapshot the previous value
       const {study, action} = props
       const previousStudies = queryClient.getQueryData<Study[]>(
@@ -152,7 +152,6 @@ export const useUpdateStudyDetail = () => {
   const queryClient = useQueryClient()
 
   const update = async (props: {study: Study}): Promise<Study> => {
-    const {study} = props
     let newVersion = 0
 
     newVersion = await StudyService.updateStudy({...props.study}, token!)
@@ -163,7 +162,7 @@ export const useUpdateStudyDetail = () => {
     onMutate: async props => {
       queryClient.cancelQueries(STUDY_KEYS.detail(props.study.identifier))
 
-      console.log('starting update for study detail')
+      // console.log('starting update for study detail')
       // Snapshot the previous value
       const {study} = props
       const previousStudy = queryClient.getQueryData<Study>(
