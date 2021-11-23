@@ -152,7 +152,6 @@ export const useUpdateStudyDetail = () => {
   const queryClient = useQueryClient()
 
   const update = async (props: {study: Study}): Promise<Study> => {
-    const {study} = props
     let newVersion = 0
 
     newVersion = await StudyService.updateStudy({...props.study}, token!)

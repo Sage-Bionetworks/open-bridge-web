@@ -10,10 +10,9 @@ import {
 } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Close'
 import EventService from '@services/event.service'
-import ScheduleService from '@services/schedule.service'
 import {latoFont} from '@style/theme'
+import {ExtendedError, Study} from '@typedefs/types'
 import clsx from 'clsx'
-import _ from 'lodash'
 import React from 'react'
 import {
   DragDropContext,
@@ -22,13 +21,10 @@ import {
   Droppable,
   DropResult,
 } from 'react-beautiful-dnd'
-import {useErrorHandler} from 'react-error-boundary'
 import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
 import {SchedulingEvent} from '../../../types/scheduling'
-import ErrorDisplay from '../../widgets/ErrorDisplay'
 import {RedButton} from '../../widgets/StyledComponents'
-import {useSchedule} from '../scheduleHooks'
-import {useStudy, useUpdateStudyDetail} from '../studyHooks'
+import {useUpdateStudyDetail} from '../studyHooks'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,7 +41,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
 
     columnContainer: {
-      padding: theme.spacing(3),
+      padding: theme.spacing(3, 10, 3, 6),
+
       justifyContent: 'space-between',
       display: 'flex',
       textAlign: 'left',
@@ -56,8 +53,12 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
     },
     rightCol: {
-      width: theme.spacing(35),
-      flexShrink: 9,
+      width: theme.spacing(25),
+      flexShrink: 0,
+      display: 'flex',
+      flexDirection: 'column',
+      alignContent: 'flex-end',
+      alignItems: 'flex-end',
     },
 
     eventText: {
@@ -84,23 +85,24 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     eventBox: {
       marginBottom: theme.spacing(2),
-      marginLeft: theme.spacing(-4),
+      justifyContent: 'flex-end',
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
     },
 
     fakeSelect: {
+      marginLeft: '28px',
       '&$withCalendar': {
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'row',
-        marginLeft: '-28px',
+        marginLeft: 0,
       },
       '& >div': {
         width: '162px',
         textAlign: 'left',
-
+        flexShrink: 0,
         border: `1px solid ${theme.palette.divider}`,
         borderBottom: 'none',
         padding: theme.spacing(2),
@@ -165,11 +167,18 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type SessionStartTabProps = {
   onNavigate: Function
-  id: string
+  study: Study
+  eventIdsInSchedule: string[]
 }
 
 type SaveHandle = {
-  save: (a: number) => void
+  save: () => void
+}
+const ERROR_MSG = {
+  duplicate: 'Duplicate event identifier.',
+  word: 'Sorry, event labels cannot have any blank spaces.',
+  special:
+    'The event name must contain only letters, numbers, dashes, and/or underscores',
 }
 
 const CalendarIconControl: React.FunctionComponent<any> = React.memo(() => {
@@ -184,7 +193,7 @@ const FakeSelect: React.FunctionComponent<{
 }> = ({evtName, hasCalendar, hasCarret = false}) => {
   const classes = useStyles()
   var x = <span>{evtName}</span>
-  console.log(hasCalendar)
+
   return (
     <Box
       className={clsx(classes.fakeSelect, hasCalendar && classes.withCalendar)}>
@@ -204,45 +213,38 @@ const FakeSelect: React.FunctionComponent<{
 const SessionStartTab: React.ForwardRefRenderFunction<
   SaveHandle,
   SessionStartTabProps
-> = ({id, onNavigate}: SessionStartTabProps, ref) => {
+> = ({study, onNavigate, eventIdsInSchedule}: SessionStartTabProps, ref) => {
   const classes = useStyles()
 
   React.useImperativeHandle(ref, () => ({
-    save(step: number) {
-      onNavigate(step)
+    async save() {
+      setSaveLoader(true)
+      try {
+        setError(undefined)
+        await onSave()
+        onNavigate()
+      } catch (error) {
+        setError((error as ExtendedError).message)
+      } finally {
+        setSaveLoader(false)
+      }
     },
   }))
 
-  const {data: study, error: studyError, isLoading} = useStudy(id)
-  const {data: schedule} = useSchedule(id)
-
   const {
-    isSuccess: scheduleUpdateSuccess,
-    isError: scheduleUpdateError,
+    isSuccess,
+    isError,
     mutateAsync: mutateStudy,
     data,
   } = useUpdateStudyDetail()
 
-  const handleError = useErrorHandler()
   const [saveLoader, setSaveLoader] = React.useState(false)
-  const [error, setError] = React.useState<'word' | 'duplicate' | undefined>(
-    undefined
-  )
-  const [eventIdsInSchedule, setEventIdsInSchedule] = React.useState<string[]>(
-    []
+  const [error, setError] = React.useState<string | undefined>(undefined)
+  const [customEvents, setCustomEvents] = React.useState<SchedulingEvent[]>(
+    study.customEvents || []
   )
 
-  React.useEffect(() => {
-    if (schedule) {
-      setEventIdsInSchedule(
-        ScheduleService.getEventIdsForSchedule(schedule).map(e =>
-          EventService.formatEventIdForDisplay(e)
-        )
-      )
-    }
-  }, [schedule?.sessions])
-
-  const onUpdate = async (customEvents: SchedulingEvent[]) => {
+  const onSave = async () => {
     if (!study) {
       return
     }
@@ -268,45 +270,43 @@ const SessionStartTab: React.ForwardRefRenderFunction<
     const evtError = checkForErrors(newEvent)
     setError(evtError)
     if (!evtError) {
-      const newEvents = [...(study.customEvents || []), _newEvent]
+      setCustomEvents(prev => [...(prev || []), _newEvent])
       setNewEvent('')
-      onUpdate(newEvents)
     }
   }
 
-  const checkForErrors = (
-    eventId: string
-  ): 'word' | 'duplicate' | undefined => {
-    if (eventId !== eventId.replace(/ /gi, '')) {
-      return 'word'
+  const checkForErrors = (eventId: string): string | undefined => {
+    const specialChars = /[!,@,#,$,%,^,?,&,*,+,/,\,;,:]/
+    if (specialChars.test(eventId)) {
+      return ERROR_MSG.special
     }
-    if (study.customEvents?.find(e => e.eventId === eventId)) {
-      return 'duplicate'
+    if (eventId !== eventId.replace(/ /gi, '')) {
+      return ERROR_MSG.word
+    }
+    if (eventId !== eventId.replace(/ /gi, '')) {
+      return ERROR_MSG.word
+    }
+    if (customEvents?.find(e => e.eventId === eventId)) {
+      return ERROR_MSG.duplicate
     }
     return undefined
   }
 
   const deleteEvent = (index: number) => {
-    if (!study.customEvents) {
+    if (!customEvents) {
       return
     }
-    const newEvents = [...study.customEvents]
-    newEvents.splice(index, 1)
-    onUpdate(newEvents)
-  }
+    const newEvents = [...customEvents]
 
-  if (_.isEmpty(schedule?.sessions)) {
-    return (
-      <Box textAlign="center" mx="auto">
-        <ErrorDisplay>
-          You need to create sessions before creating the schedule
-        </ErrorDisplay>
-      </Box>
-    )
+    newEvents.splice(index, 1)
+    setCustomEvents(newEvents)
+    //onUpdate(newEvents)
   }
 
   const canEdit = (eventId: string): boolean => {
-    return !eventIdsInSchedule.includes(eventId)
+    return !eventIdsInSchedule
+      .map(e => EventService.formatEventIdForDisplay(e))
+      .includes(eventId)
   }
 
   const rearrangeList = (
@@ -335,18 +335,18 @@ const SessionStartTab: React.ForwardRefRenderFunction<
       dropResult.source,
       dropResult.destination
     )
-    onUpdate(updatedEvents)
+    setCustomEvents(updatedEvents)
+    // onUpdate(updatedEvents)
   }
 
   return (
-    <Box className={classes.root}>
+    <Box className={classes.root} bgcolor="#F8F8F8">
+      {' '}
       <LoadingComponent
-        reqStatusLoading={saveLoader || isLoading}
+        reqStatusLoading={saveLoader}
         loaderSize="2rem"
-        style={{marginTop: '-30px'}}
         variant={'small'}
       />
-
       <Box className={classes.columnContainer} bgcolor="#F8F8F8">
         <div className={classes.leftCol} style={{maxWidth: '300px'}}>
           <p>
@@ -366,7 +366,9 @@ const SessionStartTab: React.ForwardRefRenderFunction<
           </p>
         </div>
         <div className={classes.rightCol}>
-          <p className={classes.small} style={{width: '170px'}}>
+          <p
+            className={classes.small}
+            style={{width: '170px', marginLeft: '28px'}}>
             Example: A clinical study might have 2 Events: a Baseline Visit and
             Final Visit.
           </p>
@@ -381,25 +383,16 @@ const SessionStartTab: React.ForwardRefRenderFunction<
           </div>
         </div>
       </Box>
-
       <Box
         className={classes.columnContainer}
         bgcolor="#FFF"
-        height={`${
-          study.customEvents ? study.customEvents.length * 64 + 24 : 200
-        }px`}>
+        height={`${customEvents ? customEvents.length * 64 + 24 : 200}px`}>
         <Box
           className={classes.leftCol}
           display="flex"
           justifyContent="space-between">
           <div style={{width: '165px'}}>
-            {error && (
-              <Box className={classes.errorText}>
-                {error === 'duplicate'
-                  ? 'Duplicate event identifier.'
-                  : 'Sorry, event labels cannot have any blank spaces.'}
-              </Box>
-            )}
+            {error && <Box className={classes.errorText}>{error}</Box>}
             <input
               key="new_event"
               value={newEvent}
@@ -415,19 +408,19 @@ const SessionStartTab: React.ForwardRefRenderFunction<
               + Add New Event
             </RedButton>
           </div>
-          {study.customEvents && study.customEvents.length > 1 && (
+          {customEvents && customEvents.length > 1 && (
             <Box className={classes.small} ml={3} width={'130px'}>
               <strong>Drag</strong> to reorder which event will occur first.
             </Box>
           )}
         </Box>
-        <div className={classes.rightCol} style={{marginRight: '19px'}}>
+        <div className={classes.rightCol} style={{width: '250px'}}>
           <DragDropContext
             onDragEnd={(dropResult: DropResult) => {
-              reorderEvents(study.customEvents, dropResult)
+              reorderEvents(customEvents, dropResult)
             }}>
             <div className={classes.droppable}>
-              <Droppable droppableId={'eventList'} type="ASSESSMENT">
+              <Droppable droppableId={'eventList'} type="custom_events">
                 {(provided, snapshot) => (
                   <div
                     className={clsx({
@@ -435,8 +428,8 @@ const SessionStartTab: React.ForwardRefRenderFunction<
                     })}
                     ref={provided.innerRef}
                     {...provided.droppableProps}>
-                    {study.customEvents &&
-                      study.customEvents.map((evt, index) => (
+                    {customEvents &&
+                      customEvents.map((evt, index) => (
                         <Draggable
                           draggableId={evt.eventId + index}
                           index={index}
