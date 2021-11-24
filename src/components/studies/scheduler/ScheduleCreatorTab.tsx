@@ -1,9 +1,13 @@
+import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'
+import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
+import ErrorDisplay from '@components/widgets/ErrorDisplay'
 import {
   DialogButtonPrimary,
   DialogButtonSecondary,
 } from '@components/widgets/StyledComponents'
 import {
   Box,
+  CircularProgress,
   createStyles,
   Dialog,
   DialogActions,
@@ -14,21 +18,19 @@ import {
   Theme,
 } from '@material-ui/core'
 import ScheduleService from '@services/schedule.service'
-import {ExtendedError} from '@typedefs/types'
-import _ from 'lodash'
-import React from 'react'
-import {useErrorHandler} from 'react-error-boundary'
-import NavigationPrompt from 'react-router-navigation-prompt'
-import {latoFont, poppinsFont, theme} from '../../../style/theme'
+import {latoFont, poppinsFont, theme} from '@style/theme'
 import {
   DWsEnum,
   PerformanceOrder,
   Schedule,
   SessionSchedule,
-} from '../../../types/scheduling'
-import ConfirmationDialog from '../../widgets/ConfirmationDialog'
-import ErrorDisplay from '../../widgets/ErrorDisplay'
-import SaveButton from '../../widgets/SaveButton'
+  StudySession,
+} from '@typedefs/scheduling'
+import {ExtendedError} from '@typedefs/types'
+import _ from 'lodash'
+import React from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import NavigationPrompt from 'react-router-navigation-prompt'
 import {useSchedule, useUpdateSchedule} from '../scheduleHooks'
 import {useStudy} from '../studyHooks'
 import AssessmentList from './AssessmentList'
@@ -138,6 +140,9 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
   )
 
   const [isOpenEventsEditor, setIsOpenEventsEditor] = React.useState(false)
+  const [openStudySession, setOpenStudySession] = React.useState<
+    StudySession | undefined
+  >()
 
   type SessionStartHandle = React.ElementRef<typeof SessionStartTab>
   const ref1 = React.useRef<SessionStartHandle>(null) // assign null makes it compatible with elements.
@@ -162,6 +167,15 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
 
   if (!schedule?.sessions) {
     return <>...loading</>
+  }
+
+  const getOpenStudySession = () => {
+    return schedule.sessions.find(s => s.guid === openStudySession!.guid)!
+  }
+
+  const onCancelSessionUpdate = () => {
+    setSchedule(_schedule)
+    setHasObjectChanged(false)
   }
 
   const onSave = async (isButtonPressed?: boolean) => {
@@ -320,6 +334,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
             />
           )}
         </NavigationPrompt>
+        <div>{saveLoader && <CircularProgress />}</div>
 
         <Box textAlign="left" key="content">
           {/* <ObjectDebug data={timeline} label=""></ObjectDebug> */}
@@ -333,12 +348,14 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
                 control={
                   <Duration
                     maxDurationDays={1825}
-                    onChange={e =>
+                    onChange={e => {
                       updateScheduleData({
                         ...schedule,
                         duration: e.target.value,
                       })
-                    }
+                      console.log('durationchange')
+                      onSave()
+                    }}
                     durationString={schedule.duration || ''}
                     unitLabel="study duration unit"
                     numberLabel="study duration number"
@@ -355,20 +372,29 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
             </Box>
 
             {hasObjectChanged && (
-              <SaveButton
-                isFloatingSave={true}
-                onClick={() => onSave(true)}
-                isSaving={saveLoader}>
-                Save changes
-              </SaveButton>
+              <div
+                style={{
+                  position: 'fixed',
+                  zIndex: 2000,
+                  right: '10px',
+                  top: '5px',
+                  fontSize: '40px',
+                  fontWeight: 'bold',
+                  color: 'blue',
+                }}>
+                *
+              </div>
             )}
           </div>
           <Box bgcolor="#fff" p={2} pb={0} mt={3} key="scheduler">
             <ScheduleTimelineDisplay
               studyId={id}
+              onSelectSession={(session: StudySession) => {
+                setOpenStudySession(session)
+              }}
               schedule={schedule}></ScheduleTimelineDisplay>
 
-            {schedule.sessions.map((session, index) => (
+            {/*schedule.sessions.map((session, index) => (
               <Box
                 className={classes.sessionContainer}
                 key={session.guid}
@@ -394,7 +420,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
                     performanceOrder={session.performanceOrder || 'sequential'}
                   />
                 </Box>
-                {/* This is what is being displayed as the card */}
+         
                 <SchedulableSingleSessionContainer
                   onOpenEventsEditor={() => setIsOpenEventsEditor(true)}
                   key={session.guid}
@@ -420,12 +446,15 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
                     `${session.name}-${index + 1}`
                   )}></SchedulableSingleSessionContainer>
               </Box>
-            ))}
+            ))*/}
           </Box>
         </Box>
       </Box>
       <Dialog open={isOpenEventsEditor} maxWidth="md">
-        <DialogTitle>Edot Events</DialogTitle>
+        <DialogTitle>
+          <EditIcon />
+          &nbsp;&nbsp; Edit Session Start Drop Down
+        </DialogTitle>
         <DialogContent style={{padding: 0}}>
           <SessionStartTab
             ref={ref1}
@@ -450,6 +479,107 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
               //setIsOpenEventsEditor(false)
             }}>
             Save Changes
+          </DialogButtonPrimary>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={openStudySession !== undefined}
+        maxWidth="lg"
+        scroll={'paper' /*body"*/}>
+        <DialogContent style={{padding: 0}}>
+          {openStudySession && (
+            <Box
+              className={classes.sessionContainer}
+              key={getOpenStudySession().guid}
+              border={
+                schedulerErrorState.get(
+                  `${openStudySession.name}-${
+                    schedule.sessions.findIndex(
+                      s => s.guid === openStudySession.guid
+                    ) + 1
+                  }`
+                )
+                  ? `1px solid ${theme.palette.error.main}`
+                  : ''
+              }>
+              <Box className={classes.assessments}>
+                <AssessmentList
+                  studySessionIndex={schedule.sessions.findIndex(
+                    s => s.guid === openStudySession.guid
+                  )}
+                  studySession={getOpenStudySession()}
+                  onChangePerformanceOrder={(
+                    performanceOrder: PerformanceOrder
+                  ) => {
+                    const schedule = {
+                      ...getOpenStudySession(),
+                      performanceOrder,
+                    }
+
+                    scheduleUpdateFn({
+                      type: ActionTypes.UpdateSessionSchedule,
+                      payload: {
+                        sessionId: getOpenStudySession().guid!,
+                        schedule,
+                      },
+                    })
+                  }}
+                  performanceOrder={
+                    getOpenStudySession().performanceOrder || 'sequential'
+                  }
+                />
+              </Box>
+              {/* This is what is being displayed as the card */}
+              <SchedulableSingleSessionContainer
+                onOpenEventsEditor={() => setIsOpenEventsEditor(true)}
+                key={getOpenStudySession().guid}
+                customEvents={study?.customEvents}
+                studySession={getOpenStudySession()}
+                burstOriginEventId={
+                  _.first(schedule.studyBursts)?.originEventId
+                }
+                onUpdateSessionSchedule={(
+                  schedule: SessionSchedule,
+                  shouldInvalidateBurst: boolean
+                ) => {
+                  scheduleUpdateFn({
+                    type: ActionTypes.UpdateSessionSchedule,
+                    payload: {
+                      sessionId: getOpenStudySession().guid!,
+                      schedule,
+                      shouldInvalidateBurst,
+                    },
+                  })
+                }}
+                sessionErrorState={schedulerErrorState.get(
+                  `${getOpenStudySession().name}-${
+                    schedule.sessions.findIndex(
+                      s => s.guid === openStudySession.guid
+                    ) + 1
+                  }`
+                )}></SchedulableSingleSessionContainer>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <DialogButtonSecondary
+            onClick={() => {
+              onCancelSessionUpdate()
+              setOpenStudySession(undefined)
+            }}>
+            Cancel
+          </DialogButtonSecondary>
+
+          <DialogButtonPrimary
+            onClick={() => {
+              console.log('about to save')
+              onSave(true).then(() => setOpenStudySession(undefined))
+              // console.log(ref1.current)
+              // ref1.current?.save()
+
+              //setIsOpenEventsEditor(false)
+            }}>
+            {saveLoader ? <CircularProgress /> : <span>Save Changes</span>}
           </DialogButtonPrimary>
         </DialogActions>
       </Dialog>

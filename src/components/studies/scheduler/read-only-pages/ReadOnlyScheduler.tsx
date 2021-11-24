@@ -106,6 +106,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
       <Box bgcolor="#fff" p={2} mt={3} key="scheduler">
         <ScheduleTimelineDisplay
           studyId={studyId}
+          onSelectSession={() => {}}
           schedule={schedule}></ScheduleTimelineDisplay>
 
         {schedule.sessions.map((session, index) => (

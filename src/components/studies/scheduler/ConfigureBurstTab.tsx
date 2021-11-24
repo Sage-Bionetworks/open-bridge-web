@@ -4,6 +4,7 @@ import {
   MTBHeadingH4,
 } from '@components/widgets/Headings'
 import SaveButton from '@components/widgets/SaveButton'
+import SessionIcon from '@components/widgets/SessionIcon'
 import SmallTextBox from '@components/widgets/SmallTextBox'
 import {
   Box,
@@ -288,7 +289,7 @@ const BurstSelectorSC: React.FunctionComponent<{
           <MTBHeadingH4>
             Sessions associated with {EventService.formatEventIdForDisplay(key)}{' '}
           </MTBHeadingH4>
-          {groups[key].map(s => (
+          {groups[key].map((s, index) => (
             <FormControlLabel
               key={s.guid}
               control={
@@ -304,15 +305,17 @@ const BurstSelectorSC: React.FunctionComponent<{
                 />
               }
               label={
-                <TooltipHoverDisplay
-                  session={s}
-                  index={schedule.sessions.findIndex(
-                    session => session.guid === s.guid
-                  )}
-                  getSession={() => {
-                    return {label: s.name}
-                  }}
-                />
+                <TooltipHoverDisplay key={s.guid} session={s}>
+                  <SessionIcon
+                    index={index}
+                    key={s.guid}
+                    symbolKey={s.symbol}
+                    onClick={() => {
+                      console.log('selecting')
+                    }}>
+                    {s.name}
+                  </SessionIcon>
+                </TooltipHoverDisplay>
               }></FormControlLabel>
           ))}
         </Paper>

@@ -7,8 +7,12 @@ import SessionIcon from '@components/widgets/SessionIcon'
 import {Box} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import Tooltip from '@material-ui/core/Tooltip'
-import {latoFont} from '@style/theme'
-import {Schedule, StudySession, StudySessionGeneral} from '@typedefs/scheduling'
+import {latoFont, poppinsFont} from '@style/theme'
+import {
+  Schedule,
+  StudySession,
+  StudySessionTimeline,
+} from '@typedefs/scheduling'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import Pluralize from 'react-pluralize'
@@ -29,9 +33,17 @@ const useStyles = makeStyles(theme => ({
   legend: {
     margin: theme.spacing(1, 0),
     display: 'flex',
-    '& div': {
+    '&>div': {
       marginRight: theme.spacing(2),
       marginBottom: theme.spacing(0.25),
+      padding: theme.spacing(1, 2),
+      border: '1px solid black',
+      borderRadius: '22px',
+      fontFamily: poppinsFont,
+      fontSize: '14px',
+      '&:hover': {
+        backgroundColor: '#f8f8f8',
+      },
     },
     maxWidth: '90%',
     flexWrap: 'wrap',
@@ -55,15 +67,15 @@ const useStyles = makeStyles(theme => ({
 
 export interface TimelineProps {
   schedule: Schedule
-
   studyId: string
+  onSelectSession: (session: StudySession) => void
 }
 
 export const TooltipHoverDisplay: React.FunctionComponent<{
   session: StudySession
-  index: number
-  getSession: Function
-}> = ({session, index, getSession}) => {
+
+  children: React.ReactNode
+}> = ({session, children}) => {
   const classes = useStyles()
   return (
     <Tooltip
@@ -94,14 +106,7 @@ export const TooltipHoverDisplay: React.FunctionComponent<{
         tooltip: classes.toolTip,
         arrow: classes.arrow,
       }}>
-      <Box style={{cursor: 'pointer'}}>
-        <SessionIcon
-          index={index}
-          key={session.guid}
-          symbolKey={session.symbol}>
-          {getSession(session.guid!)?.label}
-        </SessionIcon>
-      </Box>
+      <Box style={{cursor: 'pointer'}}>{children}</Box>
     </Tooltip>
   )
 }
@@ -109,6 +114,7 @@ export const TooltipHoverDisplay: React.FunctionComponent<{
 const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
   studyId,
   schedule: schedFromDisplay,
+  onSelectSession,
 }: TimelineProps) => {
   const handleError = useErrorHandler()
 
@@ -116,7 +122,7 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
 
   const classes = useStyles()
 
-  const getSession = (sessionGuid: string): StudySessionGeneral => {
+  const getSession = (sessionGuid: string): StudySessionTimeline => {
     return timeline?.sessions.find(s => s.guid === sessionGuid)!
   }
   if (isLoading) {
@@ -148,12 +154,17 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
       <Box display="flex" justifyContent="space-between">
         <Box className={classes.legend}>
           {schedFromDisplay?.sessions?.map((s, index) => (
-            <TooltipHoverDisplay
-              key={s.guid}
-              session={s}
-              index={index}
-              getSession={getSession}
-            />
+            <TooltipHoverDisplay key={s.guid} session={s}>
+              <div
+                onClick={() => {
+                  console.log('selecting')
+                  onSelectSession(s)
+                }}>
+                <SessionIcon index={index} key={s.guid} symbolKey={s.symbol}>
+                  {getSession(s.guid!)?.label}
+                </SessionIcon>
+              </div>
+            </TooltipHoverDisplay>
           ))}
         </Box>
       </Box>
