@@ -133,7 +133,7 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
   }
 
   return (
-    <Box py={3} px={0}>
+    <Box pt={0} pb={3} px={0}>
       {!timeline && (
         <>
           This timeline viewer will update to provide a visual summary of the

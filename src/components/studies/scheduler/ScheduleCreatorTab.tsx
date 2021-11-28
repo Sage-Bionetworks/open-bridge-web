@@ -1,4 +1,5 @@
 import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'
+import {ReactComponent as BurstIcon} from '@assets/scheduler/burst_icon.svg'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import ErrorDisplay from '@components/widgets/ErrorDisplay'
 import {
@@ -60,6 +61,15 @@ export const useStyles = makeStyles((theme: Theme) =>
       fontStyle: 'normal',
       fontWeight: 600,
     },
+    burstButton: {
+      fontFamily: poppinsFont,
+      display: 'flex',
+      float: 'right',
+
+      fontSize: '14px',
+      '& svg': {marginRight: theme.spacing(1)},
+    },
+
     scheduleHeader: {
       display: 'flex',
       alignItems: 'center',
@@ -387,6 +397,9 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
             )}
           </div>
           <Box bgcolor="#fff" p={2} pb={0} mt={3} key="scheduler">
+            <div className={classes.burstButton}>
+              <BurstIcon /> Configure Study Bursts
+            </div>
             <ScheduleTimelineDisplay
               studyId={id}
               onSelectSession={(session: StudySession) => {
