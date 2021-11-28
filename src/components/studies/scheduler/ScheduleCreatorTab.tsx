@@ -8,6 +8,7 @@ import {
 } from '@components/widgets/StyledComponents'
 import {
   Box,
+  Button,
   CircularProgress,
   createStyles,
   Dialog,
@@ -35,14 +36,15 @@ import NavigationPrompt from 'react-router-navigation-prompt'
 import {useSchedule, useUpdateSchedule} from '../scheduleHooks'
 import {useStudy} from '../studyHooks'
 import AssessmentList from './AssessmentList'
+import ConfigureBurstTab from './ConfigureBurstTab'
 import Duration from './Duration'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {
   ActionTypes,
   SessionScheduleAction,
 } from './scheduleActions'
-import ScheduleTimelineDisplay from './ScheduleTimelineDisplay'
 import SessionStartTab from './SessionStartTab'
+import TimelineBurstPlot from './timeline-plot/TimelineBurstPlot'
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -149,13 +151,18 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
     >()
   )
 
-  const [isOpenEventsEditor, setIsOpenEventsEditor] = React.useState(false)
+  const [openModal, setOpenModal] = React.useState<
+    'EVENTS' | 'BURSTS' | undefined
+  >(undefined)
   const [openStudySession, setOpenStudySession] = React.useState<
     StudySession | undefined
   >()
 
   type SessionStartHandle = React.ElementRef<typeof SessionStartTab>
   const ref1 = React.useRef<SessionStartHandle>(null) // assign null makes it compatible with elements.
+
+  type ConfigureBurstHandle = React.ElementRef<typeof ConfigureBurstTab>
+  const ref2 = React.useRef<SessionStartHandle>(null)
 
   React.useImperativeHandle(ref, () => ({
     save(step: number) {
@@ -397,15 +404,16 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
             )}
           </div>
           <Box bgcolor="#fff" p={2} pb={0} mt={3} key="scheduler">
-            <div className={classes.burstButton}>
+            <Button
+              className={classes.burstButton}
+              onClick={() => setOpenModal('BURSTS')}>
               <BurstIcon /> Configure Study Bursts
-            </div>
-            <ScheduleTimelineDisplay
+            </Button>
+
+            <TimelineBurstPlot
               studyId={id}
-              onSelectSession={(session: StudySession) => {
-                setOpenStudySession(session)
-              }}
-              schedule={schedule}></ScheduleTimelineDisplay>
+              // schedulingItems={timeline?.schedule || []}
+            ></TimelineBurstPlot>
 
             {/*schedule.sessions.map((session, index) => (
               <Box
@@ -463,7 +471,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
           </Box>
         </Box>
       </Box>
-      <Dialog open={isOpenEventsEditor} maxWidth="md">
+      <Dialog open={openModal === 'EVENTS'} maxWidth="md">
         <DialogTitle>
           <EditIcon />
           &nbsp;&nbsp; Edit Session Start Drop Down
@@ -475,11 +483,11 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
             eventIdsInSchedule={ScheduleService.getEventIdsForSchedule(
               schedule
             )}
-            onNavigate={() => setIsOpenEventsEditor(false)}
+            onNavigate={() => setOpenModal(undefined)}
           />
         </DialogContent>
         <DialogActions>
-          <DialogButtonSecondary onClick={() => setIsOpenEventsEditor(false)}>
+          <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>
             Cancel
           </DialogButtonSecondary>
 
@@ -544,7 +552,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
               </Box>
               {/* This is what is being displayed as the card */}
               <SchedulableSingleSessionContainer
-                onOpenEventsEditor={() => setIsOpenEventsEditor(true)}
+                onOpenEventsEditor={() => setOpenModal('EVENTS')}
                 key={getOpenStudySession().guid}
                 customEvents={study?.customEvents}
                 studySession={getOpenStudySession()}
@@ -585,7 +593,6 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
 
           <DialogButtonPrimary
             onClick={() => {
-              console.log('about to save')
               onSave(true).then(() => setOpenStudySession(undefined))
               // console.log(ref1.current)
               // ref1.current?.save()
@@ -593,6 +600,36 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
               //setIsOpenEventsEditor(false)
             }}>
             {saveLoader ? <CircularProgress /> : <span>Save Changes</span>}
+          </DialogButtonPrimary>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openModal === 'BURSTS'} maxWidth="md">
+        <DialogTitle>
+          <EditIcon />
+          &nbsp;&nbsp; Edit Bursts
+        </DialogTitle>
+        <DialogContent style={{padding: 0}}>
+          <ConfigureBurstTab
+            schedule={schedule}
+            ref={ref2}
+            id={study!.identifier}
+            onNavigate={() => setOpenModal(undefined)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>
+            Cancel
+          </DialogButtonSecondary>
+
+          <DialogButtonPrimary
+            onClick={() => {
+              console.log('about to save')
+              console.log(ref1.current)
+              ref1.current?.save()
+
+              //setIsOpenEventsEditor(false)
+            }}>
+            Save Changes
           </DialogButtonPrimary>
         </DialogActions>
       </Dialog>

@@ -25,9 +25,8 @@ import {Schedule, StudyBurst, StudySession} from '@typedefs/scheduling'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React from 'react'
-import {useSchedule, useUpdateSchedule} from '../scheduleHooks'
+import {useUpdateSchedule} from '../scheduleHooks'
 import {TooltipHoverDisplay} from './ScheduleTimelineDisplay'
-import TimelineBurstPlot from './timeline-plot/TimelineBurstPlot'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -175,8 +174,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type ConfigureBurstTabProps = {
   id: string
+  schedule: Schedule
   onNavigate: Function
-  children: React.ReactNode
 }
 
 type SaveHandle = {
@@ -369,7 +368,7 @@ const BurstScheduleSC: React.FunctionComponent<{
 const ConfigureBurstTab: React.ForwardRefRenderFunction<
   SaveHandle,
   ConfigureBurstTabProps
-> = ({onNavigate, id, children}: ConfigureBurstTabProps, ref) => {
+> = ({onNavigate, id, schedule}: ConfigureBurstTabProps, ref) => {
   const classes = useStyles()
 
   React.useImperativeHandle(ref, () => ({
@@ -384,7 +383,7 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
     mutateAsync: mutateSchedule,
     data,
   } = useUpdateSchedule()
-  const {data: schedule} = useSchedule(id)
+
   const [hasBursts, setHasBursts] = React.useState(false)
   const [originEventId, setOriginEventId] = React.useState<string | undefined>()
   const [burstSessionGuids, setBurstSessionGuids] = React.useState<string[]>([])
@@ -544,17 +543,6 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
 
           <SaveButton onClick={save} />
         </Box>
-      )}
-
-      {schedule && hasBursts && (
-        <>
-          <Box py={3} px={0}>
-            <TimelineBurstPlot
-              studyId={id}
-              // schedulingItems={timeline?.schedule || []}
-            ></TimelineBurstPlot>
-          </Box>
-        </>
       )}
     </div>
   )
