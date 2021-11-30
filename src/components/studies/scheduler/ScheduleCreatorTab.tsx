@@ -43,8 +43,8 @@ import actionsReducer, {
   ActionTypes,
   SessionScheduleAction,
 } from './scheduleActions'
+import ScheduleTimelineDisplay from './ScheduleTimelineDisplay'
 import SessionStartTab from './SessionStartTab'
-import TimelineBurstPlot from './timeline-plot/TimelineBurstPlot'
 
 export const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -162,7 +162,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
   const ref1 = React.useRef<SessionStartHandle>(null) // assign null makes it compatible with elements.
 
   type ConfigureBurstHandle = React.ElementRef<typeof ConfigureBurstTab>
-  const ref2 = React.useRef<SessionStartHandle>(null)
+  const ref2 = React.useRef<ConfigureBurstHandle>(null)
 
   React.useImperativeHandle(ref, () => ({
     save(step: number) {
@@ -200,6 +200,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
     setScheduleErrors([])
     setSaveLoader(true)
     let error: Error | undefined = undefined
+    console.log('sacing', schedule.duration)
     try {
       const result = await mutateSchedule({
         studyId: id,
@@ -360,18 +361,17 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
               <FormControlLabel
                 classes={{label: classes.labelDuration}}
                 label="Study duration:"
-                style={{fontSize: '14px'}}
+                style={{fontSize: '14px', marginRight: '4px'}}
                 labelPlacement="start"
                 control={
                   <Duration
                     maxDurationDays={1825}
+                    isShowClear={false}
                     onChange={e => {
                       updateScheduleData({
                         ...schedule,
                         duration: e.target.value,
                       })
-                      console.log('durationchange')
-                      onSave()
                     }}
                     durationString={schedule.duration || ''}
                     unitLabel="study duration unit"
@@ -379,6 +379,10 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
                     unitData={DWsEnum}></Duration>
                 }
               />
+              <Button variant="outlined" onClick={() => onSave(true)}>
+                {' '}
+                Save
+              </Button>
               <Box
                 fontSize="12px"
                 ml={2}
@@ -410,64 +414,12 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
               <BurstIcon /> Configure Study Bursts
             </Button>
 
-            <TimelineBurstPlot
+            <ScheduleTimelineDisplay
               studyId={id}
-              // schedulingItems={timeline?.schedule || []}
-            ></TimelineBurstPlot>
-
-            {/*schedule.sessions.map((session, index) => (
-              <Box
-                className={classes.sessionContainer}
-                key={session.guid}
-                border={
-                  schedulerErrorState.get(`${session.name}-${index + 1}`)
-                    ? `1px solid ${theme.palette.error.main}`
-                    : ''
-                }>
-                <Box className={classes.assessments}>
-                  <AssessmentList
-                    studySessionIndex={index}
-                    studySession={session}
-                    onChangePerformanceOrder={(
-                      performanceOrder: PerformanceOrder
-                    ) => {
-                      const schedule = {...session, performanceOrder}
-
-                      scheduleUpdateFn({
-                        type: ActionTypes.UpdateSessionSchedule,
-                        payload: {sessionId: session.guid!, schedule},
-                      })
-                    }}
-                    performanceOrder={session.performanceOrder || 'sequential'}
-                  />
-                </Box>
-         
-                <SchedulableSingleSessionContainer
-                  onOpenEventsEditor={() => setIsOpenEventsEditor(true)}
-                  key={session.guid}
-                  customEvents={study?.customEvents}
-                  studySession={session}
-                  burstOriginEventId={
-                    _.first(schedule.studyBursts)?.originEventId
-                  }
-                  onUpdateSessionSchedule={(
-                    schedule: SessionSchedule,
-                    shouldInvalidateBurst: boolean
-                  ) => {
-                    scheduleUpdateFn({
-                      type: ActionTypes.UpdateSessionSchedule,
-                      payload: {
-                        sessionId: session.guid!,
-                        schedule,
-                        shouldInvalidateBurst,
-                      },
-                    })
-                  }}
-                  sessionErrorState={schedulerErrorState.get(
-                    `${session.name}-${index + 1}`
-                  )}></SchedulableSingleSessionContainer>
-              </Box>
-            ))*/}
+              onSelectSession={(session: StudySession) => {
+                setOpenStudySession(session)
+              }}
+              schedule={schedule}></ScheduleTimelineDisplay>
           </Box>
         </Box>
       </Box>
@@ -496,8 +448,6 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
               console.log('about to save')
               console.log(ref1.current)
               ref1.current?.save()
-
-              //setIsOpenEventsEditor(false)
             }}>
             Save Changes
           </DialogButtonPrimary>
@@ -605,8 +555,8 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
       </Dialog>
       <Dialog open={openModal === 'BURSTS'} maxWidth="md">
         <DialogTitle>
-          <EditIcon />
-          &nbsp;&nbsp; Edit Bursts
+          <BurstIcon />
+          &nbsp;&nbsp; Configure Study bursts
         </DialogTitle>
         <DialogContent style={{padding: 0}}>
           <ConfigureBurstTab
@@ -624,12 +574,12 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
           <DialogButtonPrimary
             onClick={() => {
               console.log('about to save')
-              console.log(ref1.current)
-              ref1.current?.save()
+              console.log(ref2.current)
+              ref2.current?.save()
 
               //setIsOpenEventsEditor(false)
             }}>
-            Save Changes
+            Update burst to Schedule
           </DialogButtonPrimary>
         </DialogActions>
       </Dialog>

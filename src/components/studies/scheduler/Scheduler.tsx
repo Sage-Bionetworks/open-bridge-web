@@ -65,33 +65,6 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   const firstPrevButton = (children as any)[0]
   const lastNextButton = (children as any)[2]
 
-  const doStep = (increment: number) => {
-    setSaveLoader(true)
-    const nextStep = activeStep + increment
-    switch (activeStep) {
-      case 0:
-        ref2.current?.save(nextStep)
-        return
-      case 1:
-        ref3.current?.save(nextStep)
-        return
-      default:
-        ref3.current?.save(nextStep)
-    }
-
-    const newSteps = steps.map((s, i) =>
-      i === activeStep ? {...s, isComplete: true} : s
-    )
-    setSteps(newSteps)
-  }
-
-  const handleStepClick = (index: number) => {
-    setSaveLoader(true)
-
-    ref2.current?.save(index)
-    ref3.current?.save(index)
-  }
-
   const handleNavigate = (step: number) => {
     setActiveStep(step)
     setSaveLoader(false)

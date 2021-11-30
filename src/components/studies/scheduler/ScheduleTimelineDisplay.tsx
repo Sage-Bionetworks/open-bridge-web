@@ -16,7 +16,7 @@ import {
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import Pluralize from 'react-pluralize'
-import TimelinePlot from './timeline-plot/TimelinePlot'
+import TimelineBurstPlot from './timeline-plot/TimelineBurstPlot'
 
 const useStyles = makeStyles(theme => ({
   stats: {
@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   legend: {
-    margin: theme.spacing(1, 0),
+    margin: theme.spacing(1, 0, 2, 0),
     display: 'flex',
     '&>div': {
       marginRight: theme.spacing(2),
@@ -169,13 +169,14 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
         </Box>
       </Box>
       {timeline?.schedule && (
-        <TimelinePlot
+        <TimelineBurstPlot studyId={studyId}></TimelineBurstPlot>
+      )}
+      {/* <TimelinePlot
           schedulingItems={timeline.schedule}
           maxWindows={Math.max(
             ...timeline.sessions.map(s => s.timeWindowGuids.length)
           )}
-          sortedSessions={schedFromDisplay.sessions}></TimelinePlot>
-      )}
+          sortedSessions={schedFromDisplay.sessions}></TimelinePlot>*/}
     </Box>
   )
 }
