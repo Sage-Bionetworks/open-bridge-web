@@ -1,5 +1,6 @@
 import AlertIcon from '@assets/alert_icon.svg'
 import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'
+import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
 import {AlertWithText, BlueButton} from '@components/widgets/StyledComponents'
 import {Box, IconButton, makeStyles, Switch} from '@material-ui/core'
 import {DEFAULT_NOTIFICATION} from '@services/schedule.service'
@@ -299,17 +300,20 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               onChangeDelay={(delay: string | undefined) => {
                 updateSessionSchedule({...schedulableSession, delay})
               }}>
-              <IconButton
-                onClick={() => onOpenEventsEditor()}
-                style={{
-                  width: '45px',
-                  height: '45px',
-                  padding: '8px',
-                  marginLeft: '4px',
-                }}>
+              <IconButton onClick={() => onOpenEventsEditor()}>
                 {' '}
                 <EditIcon />
               </IconButton>
+              <InfoCircleWithToolTip
+                tooltipDescription={
+                  <span>
+                    &nbsp;To <strong>rename or delete</strong> this Event,
+                    please unselect it from the Session Start that is currently
+                    mapped to it in the Create Scheduler step.
+                  </span>
+                }
+                variant="info"
+              />
             </StartDate>
           </Box>
           <Box className={classes.formSection}>

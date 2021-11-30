@@ -18,6 +18,25 @@ const useStyles = makeStyles(theme => ({
   select: {padding: theme.spacing(1, 4, 1, 1), width: '150px'},
   formControl: {
     margin: theme.spacing(1, 0, 1, 0),
+    '& button': {
+      width: '45px',
+      height: '45px',
+      padding: '8px',
+      marginLeft: '4px',
+    },
+  },
+  disabled: {
+    '& .MuiOutlinedInput-root': {
+      opacity: 0.5,
+    },
+    '&  button': {
+      opacity: 0.4,
+      paddingRight: '4px',
+      pointerEvents: 'none',
+    },
+    '& .MuiRadio-colorSecondary': {
+      opacity: 0.5,
+    },
   },
 }))
 export interface StartDateProps {
@@ -28,7 +47,7 @@ export interface StartDateProps {
   customEvents?: SchedulingEvent[]
   onChangeDelay: Function
   onChangeStartEventId: Function
-  children: React.ReactNode
+  children: React.ReactNodeArray
 }
 
 const StartDate: React.FunctionComponent<StartDateProps> = ({
@@ -85,16 +104,8 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
   }
 
   return (
-    <SchedulingFormSection
-      label={`${sessionName} starts on*:`}
-      disabled={isBurst}>
-      <div>
-        {isBurst && (
-          <i>
-            This session is a part of the study burst. Please remove it from
-            burst in order to change the how it's started
-          </i>
-        )}
+    <SchedulingFormSection label={`${sessionName} starts on*:`}>
+      <div className={isBurst ? classes.disabled : ''}>
         <RadioGroup
           aria-label="Session Starts On"
           name="startDate"
@@ -108,7 +119,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
               onChangeFn={(e: string) =>
                 onChangeStartEventId(e)
               }></SelectEventId>
-            {children}
+            {isBurst ? children : children[0]}
           </FormGroup>
           <FormGroup row={true} style={{alignItems: 'center'}}>
             <Radio value={true} disabled={isBurst} />{' '}
@@ -130,7 +141,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
               onChangeFn={(e: string) =>
                 onChangeStartEventId(e)
               }></SelectEventId>
-            {children}
+            {children[0]}
           </FormGroup>
         </RadioGroup>
       </div>
