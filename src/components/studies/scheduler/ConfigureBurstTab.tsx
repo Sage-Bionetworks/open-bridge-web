@@ -1,9 +1,10 @@
 import {
   MTBHeadingH1,
   MTBHeadingH2,
+  MTBHeadingH3,
   MTBHeadingH4,
 } from '@components/widgets/Headings'
-import SaveButton from '@components/widgets/SaveButton'
+import LoadingComponent from '@components/widgets/Loader'
 import SessionIcon from '@components/widgets/SessionIcon'
 import SmallTextBox from '@components/widgets/SmallTextBox'
 import {
@@ -16,12 +17,15 @@ import {
   InputLabel,
   makeStyles,
   Paper,
+  Switch,
   Theme,
+  Typography,
 } from '@material-ui/core'
-import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
+import {Alert} from '@material-ui/lab'
 import EventService from '@services/event.service'
-import {latoFont, poppinsFont} from '@style/theme'
+import {poppinsFont} from '@style/theme'
 import {Schedule, StudyBurst, StudySession} from '@typedefs/scheduling'
+import {ExtendedError} from '@typedefs/types'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React from 'react'
@@ -32,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       backgroundColor: '#fff',
-      padding: theme.spacing(13, 12, 3, 14),
+      padding: theme.spacing(2, 12, 3, 11),
       textAlign: 'left',
       [theme.breakpoints.down('md')]: {
         padding: theme.spacing(13, 3, 3, 3),
@@ -50,21 +54,18 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     burstBox: {
       display: 'flex',
-      padding: theme.spacing(8, 0),
-      border: '1px solid black',
-      margin: theme.spacing(8, 3, 4, 3),
+
+      marginTop: theme.spacing(6),
 
       '& > div': {
         flex: '1 1 0px',
         textAlign: 'center',
-        padding: theme.spacing(0, 8),
+        padding: theme.spacing(1, 0, 0, 8),
         '&:first-child': {
           textAlign: 'left',
           borderRight: '1px solid black',
+          padding: theme.spacing(1, 8, 0, 0),
         },
-      },
-      [theme.breakpoints.down('md')]: {
-        padding: theme.spacing(8, 0),
       },
     },
     checked: {
@@ -105,42 +106,11 @@ const useStyles = makeStyles((theme: Theme) =>
         padding: theme.spacing(5, 0, 0, 0),
       },
     },
-    toggleButtonRoot: {
-      '& .Mui-selected': {
-        backgroundColor: '#BCD5E4',
-        '&:hover': {
-          backgroundColor: '#BCD5E4',
-        },
-      },
-    },
+
     checkBoxStyling: {
       alignItems: 'left',
       marginTop: theme.spacing(3),
       marginLeft: theme.spacing(3),
-    },
-    paragraph: {
-      maxWidth: '590px',
-      lineHeight: '18px',
-      fontSize: '15px',
-      fontFamily: latoFont,
-    },
-    burstSummaryContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      maxWidth: '380px',
-      marginTop: theme.spacing(5),
-    },
-    buttons: {
-      border: '1px solid black',
-      color: 'black',
-      borderRadius: '0px',
-      boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-      '&:last-child': {
-        marginLeft: theme.spacing(2),
-        // the left border disappears if this is not added
-        border: '1px solid black',
-      },
     },
 
     burstDesignHeading: {
@@ -151,7 +121,7 @@ const useStyles = makeStyles((theme: Theme) =>
     setBurstInfoContainer: {
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'center',
+      justifyContent: 'flex-start',
       alignItems: 'center',
 
       '& input': {
@@ -179,7 +149,7 @@ type ConfigureBurstTabProps = {
 }
 
 type SaveHandle = {
-  save: (a: number) => void
+  save: () => void
 }
 
 const HasBurstsSC: React.FunctionComponent<{
@@ -189,40 +159,22 @@ const HasBurstsSC: React.FunctionComponent<{
   const classes = useStyles()
   return (
     <>
-      <MTBHeadingH1 style={{marginBottom: '24px'}}>Burst Design</MTBHeadingH1>
-      <p className={classes.paragraph}>
-        A burst design involves repeating multiple study sessions that are
-        spaced out over time at regular intervals with long breaks. This is
-        intended to maximize longitudinal participation with minimal burden.
-      </p>
-      <Box className={classes.burstSummaryContainer}>
-        <MTBHeadingH2 style={{marginBottom: '24px'}}>
-          Will your study include a Burst Design?
-        </MTBHeadingH2>
-        <ToggleButtonGroup
-          value={hasBursts}
-          exclusive={true}
-          classes={{root: classes.toggleButtonRoot}}
-          onChange={(e: React.MouseEvent<HTMLElement>, val: boolean) => {
-            if (val !== null) {
-              setHasBursts(val)
-            }
-          }}
-          aria-label="study includes bursts">
-          <ToggleButton
-            value={true}
-            aria-label="yes"
-            className={classes.buttons}>
-            Yes
-          </ToggleButton>
-          <ToggleButton
-            value={false}
-            aria-label="no"
-            className={classes.buttons}>
-            No
-          </ToggleButton>
-        </ToggleButtonGroup>
+      <Box display="flex" flexDirection="row" alignItems="center">
+        <Switch
+          checked={hasBursts}
+          onChange={e => setHasBursts(e.target.checked)}
+          color="primary"
+        />{' '}
+        <MTBHeadingH3>{hasBursts ? 'ON' : 'OFF'}</MTBHeadingH3>
       </Box>
+
+      <MTBHeadingH1 style={{marginBottom: '16px'}}>Burst Design</MTBHeadingH1>
+      <Typography component="p" variant="body1">
+        A burst design involves repeating multiple study sessions tied to an
+        Event that are spaced out over time at regular intervals with long
+        breaks. This is intended to maximize longitudinal participation with
+        minimal burden.
+      </Typography>
     </>
   )
 }
@@ -371,19 +323,14 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
 > = ({onNavigate, id, schedule}: ConfigureBurstTabProps, ref) => {
   const classes = useStyles()
 
-  React.useImperativeHandle(ref, () => ({
-    save(step: number) {
-      onNavigate(step)
-    },
-  }))
-
   const {
     isSuccess: scheduleUpdateSuccess,
     isError: scheduleUpdateError,
     mutateAsync: mutateSchedule,
     data,
   } = useUpdateSchedule()
-
+  const [saveLoader, setSaveLoader] = React.useState(false)
+  const [error, setError] = React.useState<string | undefined>()
   const [hasBursts, setHasBursts] = React.useState(false)
   const [originEventId, setOriginEventId] = React.useState<string | undefined>()
   const [burstSessionGuids, setBurstSessionGuids] = React.useState<string[]>([])
@@ -391,6 +338,21 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
   const [burstFrequency, setBurstFrequency] = React.useState<
     number | undefined
   >()
+
+  React.useImperativeHandle(ref, () => ({
+    async save() {
+      setSaveLoader(true)
+      try {
+        setError(undefined)
+        await onSave()
+        onNavigate()
+      } catch (error) {
+        setError((error as ExtendedError).message)
+      } finally {
+        setSaveLoader(false)
+      }
+    },
+  }))
 
   React.useEffect(() => {
     if (!schedule) {
@@ -441,7 +403,7 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
     }
   }
 
-  const save = async () => {
+  const onSave = async () => {
     if (!burstFrequency || !burstNumber || !schedule || !originEventId) {
       return
     }
@@ -503,6 +465,12 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
   }
   return (
     <div className={classes.root}>
+      <LoadingComponent
+        reqStatusLoading={saveLoader}
+        loaderSize="2rem"
+        variant={'small'}
+      />
+      {error && <Alert color="error">{error}</Alert>}
       <HasBurstsSC
         hasBursts={hasBursts}
         setHasBursts={(hasBursts: boolean) => {
@@ -540,8 +508,6 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
               />
             </div>
           </div>
-
-          <SaveButton onClick={save} />
         </Box>
       )}
     </div>
@@ -549,3 +515,6 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
 }
 
 export default React.forwardRef(ConfigureBurstTab)
+function setError(message: string) {
+  throw new Error('Function not implemented.')
+}

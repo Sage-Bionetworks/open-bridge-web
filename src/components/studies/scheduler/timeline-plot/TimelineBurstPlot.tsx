@@ -1,9 +1,7 @@
-import CalendarIcon, {
-  ReactComponent as SessionStartIcon,
-} from '@assets/scheduler/calendar_icon.svg'
+import {ReactComponent as SessionStartIcon} from '@assets/scheduler/calendar_icon.svg'
 import {useSchedule, useTimeline} from '@components/studies/scheduleHooks'
 import SessionIcon from '@components/widgets/SessionIcon'
-import {Box, Tooltip} from '@material-ui/core'
+import {Tooltip} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import EventService from '@services/event.service'
 import {latoFont, poppinsFont} from '@style/theme'
@@ -71,7 +69,7 @@ const useStyles = makeStyles(theme => ({
 
   root: {width: '100%', position: 'relative'},
   plotContainer: {
-    padding: `0 0 20px 54px`,
+    paddingRight: theme.spacing(8),
   },
 
   graph: {
@@ -164,7 +162,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   const {data: sessionsSchedule} = useSchedule(studyId)
   const ref = React.useRef<HTMLDivElement>(null)
   const [plotWidth, setPlotWidth] = React.useState<number | null>(null)
-
+  console.log('rerenderBurst')
   const isSessionBurst = (sessionGuid: string): boolean => {
     return (
       sessionsSchedule?.sessions
@@ -205,7 +203,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   const plotData = getPlotData(unwrappedSessions)
 
   function getUnitWidth(): number {
-    const unitWidth = Math.round(((plotWidth || 0) - 170) / 7)
+    const unitWidth = Math.round(((plotWidth || 0) - 180) / 7)
     return unitWidth
   }
 
@@ -392,40 +390,30 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
 
   return (
     <div ref={ref} className={classes.plotContainer}>
-      <Box className={classes.burstsInfoText}>
-        <img className={classes.calendarIcon} src={CalendarIcon}></img>
-        <Box>
-          <p>
-            Your
-            <strong style={{backgroundColor: '#FFF509'}}>
-              {' '}
-              {getBurstsNumber()} burst(s)
-            </strong>{' '}
-            will be automatically scheduled{' '}
-            <strong>{getBurstFrequency()} week(s)</strong> apart from your&nbsp;
-            <strong>Session Start Date</strong>.
-          </p>
-          <p>
-            Bursts can be rescheduled in the Participant Manager to accomodate a
-            participant’s availability.
-          </p>
-        </Box>
-      </Box>
-
       <div className={classes.week}>
-        <div style={{width: '99px', paddingLeft: '12px'}}>Schedule</div>
+        <div
+          style={{
+            width: `${99 + unitWidth / 2}px`,
+            paddingLeft: '12px',
+            fontSize: '12px',
+          }}>
+          {' '}
+          Schedule by week day
+        </div>
         <div className={classes.graph}>
           <div className={classes.sessionName}></div>
-          <div style={{position: 'relative', top: '-10px'}}>
-            <div style={{left: '-5px', top: '-20px', position: 'absolute'}}>
-              {' '}
-              Day
-            </div>
+          <div
+            style={{
+              position: 'relative',
+              top: '-10px',
+              left: `-${unitWidth / 2}px`,
+            }}>
             {[...new Array(7)].map((_i, index) => (
               <div
                 key={`day_number_${index}`}
                 className={classes.dayNumbers}
                 style={{
+                  width: unitWidth + 'px',
                   left: unitWidth * index - 10 + 'px',
                 }}>
                 {index + 1}
@@ -501,4 +489,4 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   )
 }
 
-export default TimelineBurstPlot
+export default React.memo(TimelineBurstPlot)

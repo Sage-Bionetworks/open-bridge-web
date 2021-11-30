@@ -39,7 +39,6 @@ const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   const sessionGraph = xCoords.map(i => (
     <SessionIcon
       key={`sessionG${i}_${unitPixelWidth * i}_${sessionIndex}_${lineNumber}`}
-      // index={sessionIndex}
       symbolKey={sessionSymbol}
       style={{
         position: 'absolute',
@@ -56,4 +55,4 @@ const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   )
 }
 
-export default SessionPlot
+export default React.memo(SessionPlot)
