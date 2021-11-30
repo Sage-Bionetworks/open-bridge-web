@@ -211,6 +211,13 @@ const theme: Theme = createMuiTheme({
 
   typography: {
     fontSize: 12,
+    body1: {
+      fontFamily: latoFont,
+      fontSize: '15px',
+      color: '#3E3E3E',
+      lineHeight: '18px',
+    },
+
     h3: {
       fontFamily: poppinsFont,
       fontWeight: 600,

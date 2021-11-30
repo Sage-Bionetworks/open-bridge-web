@@ -98,12 +98,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     minHeight: '100vh',
     paddingTop: theme.spacing(5),
   },
-  negativeTop: {
-    marginTop: '-38px',
-    '& .MuiAlert-outlinedError': {
-      marginTop: '38px',
-    },
-  },
+
   studyComponentContainer: {
     minHeight: '100vh',
     padding: '0',
@@ -235,11 +230,6 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
         [classes.mainAreaNoLeftNav]: !open,
         [classes.mainAreaWideNoLeftNav]:
           !open && ['customize', 'scheduler'].includes(section),
-
-        [classes.negativeTop]:
-          ['scheduler'].includes(section) &&
-          study &&
-          StudyService.isStudyInDesign(study),
       })
     }
 

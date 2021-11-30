@@ -1,9 +1,15 @@
+import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'
+import {ReactComponent as BurstIcon} from '@assets/scheduler/burst_icon.svg'
+import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
+import ErrorDisplay from '@components/widgets/ErrorDisplay'
 import {
   DialogButtonPrimary,
   DialogButtonSecondary,
 } from '@components/widgets/StyledComponents'
 import {
   Box,
+  Button,
+  CircularProgress,
   createStyles,
   Dialog,
   DialogActions,
@@ -14,24 +20,23 @@ import {
   Theme,
 } from '@material-ui/core'
 import ScheduleService from '@services/schedule.service'
-import {ExtendedError} from '@typedefs/types'
-import _ from 'lodash'
-import React from 'react'
-import {useErrorHandler} from 'react-error-boundary'
-import NavigationPrompt from 'react-router-navigation-prompt'
-import {latoFont, poppinsFont, theme} from '../../../style/theme'
+import {latoFont, poppinsFont, theme} from '@style/theme'
 import {
   DWsEnum,
   PerformanceOrder,
   Schedule,
   SessionSchedule,
-} from '../../../types/scheduling'
-import ConfirmationDialog from '../../widgets/ConfirmationDialog'
-import ErrorDisplay from '../../widgets/ErrorDisplay'
-import SaveButton from '../../widgets/SaveButton'
+  StudySession,
+} from '@typedefs/scheduling'
+import {ExtendedError} from '@typedefs/types'
+import _ from 'lodash'
+import React from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import NavigationPrompt from 'react-router-navigation-prompt'
 import {useSchedule, useUpdateSchedule} from '../scheduleHooks'
 import {useStudy} from '../studyHooks'
 import AssessmentList from './AssessmentList'
+import ConfigureBurstTab from './ConfigureBurstTab'
 import Duration from './Duration'
 import SchedulableSingleSessionContainer from './SchedulableSingleSessionContainer'
 import actionsReducer, {
@@ -58,6 +63,15 @@ export const useStyles = makeStyles((theme: Theme) =>
       fontStyle: 'normal',
       fontWeight: 600,
     },
+    burstButton: {
+      fontFamily: poppinsFont,
+      display: 'flex',
+      float: 'right',
+
+      fontSize: '14px',
+      '& svg': {marginRight: theme.spacing(1)},
+    },
+
     scheduleHeader: {
       display: 'flex',
       alignItems: 'center',
@@ -137,10 +151,18 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
     >()
   )
 
-  const [isOpenEventsEditor, setIsOpenEventsEditor] = React.useState(false)
+  const [openModal, setOpenModal] = React.useState<
+    'EVENTS' | 'BURSTS' | undefined
+  >(undefined)
+  const [openStudySession, setOpenStudySession] = React.useState<
+    StudySession | undefined
+  >()
 
   type SessionStartHandle = React.ElementRef<typeof SessionStartTab>
   const ref1 = React.useRef<SessionStartHandle>(null) // assign null makes it compatible with elements.
+
+  type ConfigureBurstHandle = React.ElementRef<typeof ConfigureBurstTab>
+  const ref2 = React.useRef<ConfigureBurstHandle>(null)
 
   React.useImperativeHandle(ref, () => ({
     save(step: number) {
@@ -164,11 +186,21 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
     return <>...loading</>
   }
 
+  const getOpenStudySession = () => {
+    return schedule.sessions.find(s => s.guid === openStudySession!.guid)!
+  }
+
+  const onCancelSessionUpdate = () => {
+    setSchedule(_schedule)
+    setHasObjectChanged(false)
+  }
+
   const onSave = async (isButtonPressed?: boolean) => {
     console.log('starting save')
     setScheduleErrors([])
     setSaveLoader(true)
     let error: Error | undefined = undefined
+    console.log('sacing', schedule.duration)
     try {
       const result = await mutateSchedule({
         studyId: id,
@@ -320,6 +352,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
             />
           )}
         </NavigationPrompt>
+        <div>{saveLoader && <CircularProgress />}</div>
 
         <Box textAlign="left" key="content">
           {/* <ObjectDebug data={timeline} label=""></ObjectDebug> */}
@@ -328,23 +361,28 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
               <FormControlLabel
                 classes={{label: classes.labelDuration}}
                 label="Study duration:"
-                style={{fontSize: '14px'}}
+                style={{fontSize: '14px', marginRight: '4px'}}
                 labelPlacement="start"
                 control={
                   <Duration
                     maxDurationDays={1825}
-                    onChange={e =>
+                    isShowClear={false}
+                    onChange={e => {
                       updateScheduleData({
                         ...schedule,
                         duration: e.target.value,
                       })
-                    }
+                    }}
                     durationString={schedule.duration || ''}
                     unitLabel="study duration unit"
                     numberLabel="study duration number"
                     unitData={DWsEnum}></Duration>
                 }
               />
+              <Button variant="outlined" onClick={() => onSave(true)}>
+                {' '}
+                Save
+              </Button>
               <Box
                 fontSize="12px"
                 ml={2}
@@ -355,77 +393,41 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
             </Box>
 
             {hasObjectChanged && (
-              <SaveButton
-                isFloatingSave={true}
-                onClick={() => onSave(true)}
-                isSaving={saveLoader}>
-                Save changes
-              </SaveButton>
+              <div
+                style={{
+                  position: 'fixed',
+                  zIndex: 2000,
+                  right: '10px',
+                  top: '5px',
+                  fontSize: '40px',
+                  fontWeight: 'bold',
+                  color: 'blue',
+                }}>
+                *
+              </div>
             )}
           </div>
           <Box bgcolor="#fff" p={2} pb={0} mt={3} key="scheduler">
+            <Button
+              className={classes.burstButton}
+              onClick={() => setOpenModal('BURSTS')}>
+              <BurstIcon /> Configure Study Bursts
+            </Button>
+
             <ScheduleTimelineDisplay
               studyId={id}
+              onSelectSession={(session: StudySession) => {
+                setOpenStudySession(session)
+              }}
               schedule={schedule}></ScheduleTimelineDisplay>
-
-            {schedule.sessions.map((session, index) => (
-              <Box
-                className={classes.sessionContainer}
-                key={session.guid}
-                border={
-                  schedulerErrorState.get(`${session.name}-${index + 1}`)
-                    ? `1px solid ${theme.palette.error.main}`
-                    : ''
-                }>
-                <Box className={classes.assessments}>
-                  <AssessmentList
-                    studySessionIndex={index}
-                    studySession={session}
-                    onChangePerformanceOrder={(
-                      performanceOrder: PerformanceOrder
-                    ) => {
-                      const schedule = {...session, performanceOrder}
-
-                      scheduleUpdateFn({
-                        type: ActionTypes.UpdateSessionSchedule,
-                        payload: {sessionId: session.guid!, schedule},
-                      })
-                    }}
-                    performanceOrder={session.performanceOrder || 'sequential'}
-                  />
-                </Box>
-                {/* This is what is being displayed as the card */}
-                <SchedulableSingleSessionContainer
-                  onOpenEventsEditor={() => setIsOpenEventsEditor(true)}
-                  key={session.guid}
-                  customEvents={study?.customEvents}
-                  studySession={session}
-                  burstOriginEventId={
-                    _.first(schedule.studyBursts)?.originEventId
-                  }
-                  onUpdateSessionSchedule={(
-                    schedule: SessionSchedule,
-                    shouldInvalidateBurst: boolean
-                  ) => {
-                    scheduleUpdateFn({
-                      type: ActionTypes.UpdateSessionSchedule,
-                      payload: {
-                        sessionId: session.guid!,
-                        schedule,
-                        shouldInvalidateBurst,
-                      },
-                    })
-                  }}
-                  sessionErrorState={schedulerErrorState.get(
-                    `${session.name}-${index + 1}`
-                  )}></SchedulableSingleSessionContainer>
-              </Box>
-            ))}
           </Box>
         </Box>
       </Box>
-      <Dialog open={isOpenEventsEditor} maxWidth="md">
-        <DialogTitle>Edot Events</DialogTitle>
+      <Dialog open={openModal === 'EVENTS'} maxWidth="md">
+        <DialogTitle>
+          <EditIcon />
+          &nbsp;&nbsp; Edit Session Start Drop Down
+        </DialogTitle>
         <DialogContent style={{padding: 0}}>
           <SessionStartTab
             ref={ref1}
@@ -433,11 +435,11 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
             eventIdsInSchedule={ScheduleService.getEventIdsForSchedule(
               schedule
             )}
-            onNavigate={() => setIsOpenEventsEditor(false)}
+            onNavigate={() => setOpenModal(undefined)}
           />
         </DialogContent>
         <DialogActions>
-          <DialogButtonSecondary onClick={() => setIsOpenEventsEditor(false)}>
+          <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>
             Cancel
           </DialogButtonSecondary>
 
@@ -446,10 +448,138 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
               console.log('about to save')
               console.log(ref1.current)
               ref1.current?.save()
+            }}>
+            Save Changes
+          </DialogButtonPrimary>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={openStudySession !== undefined}
+        maxWidth="lg"
+        scroll={'paper' /*body"*/}>
+        <DialogContent style={{padding: 0}}>
+          {openStudySession && (
+            <Box
+              className={classes.sessionContainer}
+              key={getOpenStudySession().guid}
+              border={
+                schedulerErrorState.get(
+                  `${openStudySession.name}-${
+                    schedule.sessions.findIndex(
+                      s => s.guid === openStudySession.guid
+                    ) + 1
+                  }`
+                )
+                  ? `1px solid ${theme.palette.error.main}`
+                  : ''
+              }>
+              <Box className={classes.assessments}>
+                <AssessmentList
+                  studySessionIndex={schedule.sessions.findIndex(
+                    s => s.guid === openStudySession.guid
+                  )}
+                  studySession={getOpenStudySession()}
+                  onChangePerformanceOrder={(
+                    performanceOrder: PerformanceOrder
+                  ) => {
+                    const schedule = {
+                      ...getOpenStudySession(),
+                      performanceOrder,
+                    }
+
+                    scheduleUpdateFn({
+                      type: ActionTypes.UpdateSessionSchedule,
+                      payload: {
+                        sessionId: getOpenStudySession().guid!,
+                        schedule,
+                      },
+                    })
+                  }}
+                  performanceOrder={
+                    getOpenStudySession().performanceOrder || 'sequential'
+                  }
+                />
+              </Box>
+              {/* This is what is being displayed as the card */}
+              <SchedulableSingleSessionContainer
+                onOpenEventsEditor={() => setOpenModal('EVENTS')}
+                key={getOpenStudySession().guid}
+                customEvents={study?.customEvents}
+                studySession={getOpenStudySession()}
+                burstOriginEventId={
+                  _.first(schedule.studyBursts)?.originEventId
+                }
+                onUpdateSessionSchedule={(
+                  schedule: SessionSchedule,
+                  shouldInvalidateBurst: boolean
+                ) => {
+                  scheduleUpdateFn({
+                    type: ActionTypes.UpdateSessionSchedule,
+                    payload: {
+                      sessionId: getOpenStudySession().guid!,
+                      schedule,
+                      shouldInvalidateBurst,
+                    },
+                  })
+                }}
+                sessionErrorState={schedulerErrorState.get(
+                  `${getOpenStudySession().name}-${
+                    schedule.sessions.findIndex(
+                      s => s.guid === openStudySession.guid
+                    ) + 1
+                  }`
+                )}></SchedulableSingleSessionContainer>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <DialogButtonSecondary
+            onClick={() => {
+              onCancelSessionUpdate()
+              setOpenStudySession(undefined)
+            }}>
+            Cancel
+          </DialogButtonSecondary>
+
+          <DialogButtonPrimary
+            onClick={() => {
+              onSave(true).then(() => setOpenStudySession(undefined))
+              // console.log(ref1.current)
+              // ref1.current?.save()
 
               //setIsOpenEventsEditor(false)
             }}>
-            Save Changes
+            {saveLoader ? <CircularProgress /> : <span>Save Changes</span>}
+          </DialogButtonPrimary>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openModal === 'BURSTS'} maxWidth="md">
+        <DialogTitle>
+          <BurstIcon />
+          &nbsp;&nbsp; Configure Study bursts
+        </DialogTitle>
+        <DialogContent style={{padding: 0}}>
+          <ConfigureBurstTab
+            schedule={schedule}
+            ref={ref2}
+            id={study!.identifier}
+            onNavigate={() => setOpenModal(undefined)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>
+            Cancel
+          </DialogButtonSecondary>
+
+          <DialogButtonPrimary
+            onClick={() => {
+              console.log('about to save')
+              console.log(ref2.current)
+              ref2.current?.save()
+
+              //setIsOpenEventsEditor(false)
+            }}>
+            Update burst to Schedule
           </DialogButtonPrimary>
         </DialogActions>
       </Dialog>

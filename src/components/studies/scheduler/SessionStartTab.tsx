@@ -1,5 +1,7 @@
+import CalendarIcon from '@assets/scheduler/calendar_icon.svg'
 import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
 import LoadingComponent from '@components/widgets/Loader'
+import {RedButton} from '@components/widgets/StyledComponents'
 import {
   Box,
   createStyles,
@@ -11,6 +13,7 @@ import {
 import DeleteIcon from '@material-ui/icons/Close'
 import EventService from '@services/event.service'
 import {latoFont} from '@style/theme'
+import {SchedulingEvent} from '@typedefs/scheduling'
 import {ExtendedError, Study} from '@typedefs/types'
 import clsx from 'clsx'
 import React from 'react'
@@ -21,9 +24,6 @@ import {
   Droppable,
   DropResult,
 } from 'react-beautiful-dnd'
-import CalendarIcon from '../../../assets/scheduler/calendar_icon.svg'
-import {SchedulingEvent} from '../../../types/scheduling'
-import {RedButton} from '../../widgets/StyledComponents'
 import {useUpdateStudyDetail} from '../studyHooks'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -470,11 +470,10 @@ const SessionStartTab: React.ForwardRefRenderFunction<
                                     <InfoCircleWithToolTip
                                       tooltipDescription={
                                         <span>
-                                          &nbsp;To{' '}
-                                          <strong>rename or delete</strong> this
-                                          Event, please unselect it from the
-                                          Session Start that is currently mapped
-                                          to it in the Create Scheduler step.
+                                          This session is now part of a{' '}
+                                          <strong>Burst</strong>. To edit this
+                                          Start Session event, the session must
+                                          be removed from the Burst first.
                                         </span>
                                       }
                                       variant="info"

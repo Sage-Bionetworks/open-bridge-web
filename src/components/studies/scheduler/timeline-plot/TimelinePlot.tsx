@@ -1,6 +1,5 @@
-import {ReactComponent as Arrow} from '@assets/arrow.svg'
 import SessionIcon from '@components/widgets/SessionIcon'
-import {Button, Tooltip} from '@material-ui/core'
+import {Tooltip} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import {latoFont} from '@style/theme'
 import {StudySession, TimelineScheduleItem} from '@typedefs/scheduling'
@@ -240,51 +239,48 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
             )}
 
             {plotData &&
-              plotData.map(
-                (wk, index) =>
-                  (isExpanded || index < 3) && (
-                    <div className={classes.week} key={`week_${index}`}>
-                      <div style={{width: '60px'}} key="week_index">
-                        Week {wk.weekNumber + 1}
-                      </div>
-                      <div
-                        style={{flexGrow: 1, flexShrink: 0}}
-                        key="week_graph">
-                        {wk.sessionInfos
-                          .filter(s => s.coords.length > 0)
-                          .map((sessionInfo, sIndex) => (
-                            <div
-                              className={classes.graph}
-                              key={`session_${sIndex}`}>
-                              <Tooltip
-                                key="tooltip"
-                                placement="top"
-                                title={`Starts on: ${sessionInfo.startEventId}`}>
-                                <div className={classes.sessionName}>
-                                  <SessionIcon
-                                    index={sIndex}
-                                    symbolKey={sessionInfo.session.symbol}
-                                  />
-                                </div>
-                              </Tooltip>
-                              <div
-                                style={{position: 'relative', top: '0px'}}
-                                key="session_plot">
-                                <SessionPlot
-                                  xCoords={sessionInfo.coords}
-                                  sessionSymbol={sessionInfo.session.symbol}
-                                  displayIndex={2}
-                                  unitPixelWidth={unitWidth}
-                                  sessionGuid={sessionInfo.session.guid!}
-                                />
-                              </div>
+              plotData.map((wk, index) => (
+                /*(isExpanded || index < 3) &&*/ <div
+                  className={classes.week}
+                  key={`week_${index}`}>
+                  <div style={{width: '60px'}} key="week_index">
+                    Week {wk.weekNumber + 1}
+                  </div>
+                  <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
+                    {wk.sessionInfos
+                      .filter(s => s.coords.length > 0)
+                      .map((sessionInfo, sIndex) => (
+                        <div
+                          className={classes.graph}
+                          key={`session_${sIndex}`}>
+                          <Tooltip
+                            key="tooltip"
+                            placement="top"
+                            title={`Starts on: ${sessionInfo.startEventId}`}>
+                            <div className={classes.sessionName}>
+                              <SessionIcon
+                                index={sIndex}
+                                symbolKey={sessionInfo.session.symbol}
+                              />
                             </div>
-                          ))}
-                      </div>
-                    </div>
-                  )
-              )}
-            {plotData.length > 2 && (
+                          </Tooltip>
+                          <div
+                            style={{position: 'relative', top: '0px'}}
+                            key="session_plot">
+                            <SessionPlot
+                              xCoords={sessionInfo.coords}
+                              sessionSymbol={sessionInfo.session.symbol}
+                              displayIndex={2}
+                              unitPixelWidth={unitWidth}
+                              sessionGuid={sessionInfo.session.guid!}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            {/*plotData.length > 2 && (
               <div className={classes.showMore}>
                 <Button
                   onClick={e => setIsExpanded(prev => !prev)}
@@ -302,7 +298,7 @@ const TimelinePlot: React.FunctionComponent<TimelinePlotProps> = ({
                   )}
                 </Button>
               </div>
-            )}
+                  )*/}
           </div>
         </div>
       </div>
