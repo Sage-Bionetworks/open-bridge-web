@@ -553,7 +553,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
           </DialogButtonPrimary>
         </DialogActions>
       </Dialog>
-      <Dialog open={openModal === 'BURSTS'} maxWidth="md">
+      <Dialog open={openModal === 'BURSTS'} maxWidth="md" scroll="body">
         <DialogTitle>
           <BurstIcon />
           &nbsp;&nbsp; Configure Study bursts

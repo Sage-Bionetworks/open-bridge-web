@@ -48,6 +48,20 @@ const useStyles = makeStyles(theme => ({
       },
     },
   },
+  eventIdLabel: {
+    paddingRight: '4px',
+    width: '70px',
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
+    '&:hover': {
+      overflow: 'visible',
+      fontSize: '12px',
+      position: 'absolute',
+      width: '300px',
+      zIndex: 1000,
+      top: '27px',
+    },
+  },
   burstEventField: {},
   burstOrigin: {},
   emptyDate: {
@@ -70,10 +84,11 @@ const EventLabel: FunctionComponent<{
   eo: ExtendedScheduleEventObject
   index: number
 }> = ({eo, index}) => {
+  const classes = useStyles()
   const formattedEventId = EventService.formatEventIdForDisplay(eo.eventId)
   // not a burst
   if (!eo.originEventId) {
-    return <span>{formattedEventId}</span>
+    return <div className={classes.eventIdLabel}>{formattedEventId}</div>
   }
   return (
     <div>
