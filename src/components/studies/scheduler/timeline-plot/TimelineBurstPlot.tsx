@@ -1,11 +1,19 @@
 import {ReactComponent as SessionStartIcon} from '@assets/scheduler/calendar_icon.svg'
 import {useSchedule, useTimeline} from '@components/studies/scheduleHooks'
+import {useStudy} from '@components/studies/studyHooks'
 import SessionIcon from '@components/widgets/SessionIcon'
 import {Tooltip} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import EventService from '@services/event.service'
+import ScheduleService from '@services/schedule.service'
 import {latoFont, poppinsFont} from '@style/theme'
-import {StudySession, TimelineScheduleItem} from '@typedefs/scheduling'
+import {
+  Schedule,
+  ScheduleTimeline,
+  SchedulingEvent,
+  StudySession,
+  TimelineScheduleItem,
+} from '@typedefs/scheduling'
 import _ from 'lodash'
 import React from 'react'
 import SessionPlot from './SingleSessionPlot'
@@ -159,9 +167,14 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
 }) => {
   const classes = useStyles()
   const {data: timeline, error, isLoading} = useTimeline(studyId)
+  const [eventIds, setEventIds] = React.useState<string[]>([])
   const {data: sessionsSchedule} = useSchedule(studyId)
+  const {data: study} = useStudy(studyId)
   const ref = React.useRef<HTMLDivElement>(null)
   const [plotWidth, setPlotWidth] = React.useState<number | null>(null)
+  const [plotData, setPlotData] = React.useState<
+    Record<string, PlotData[]> | undefined
+  >()
   console.log('rerenderBurst')
   const isSessionBurst = (sessionGuid: string): boolean => {
     return (
@@ -169,11 +182,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
         .filter(s => !_.isEmpty(s.studyBurstIds))
         .map(s => s.guid!) || []
     ).includes(sessionGuid)
-  }
-
-  const getBurstsNumber = (): number => {
-    const burst = _.first(sessionsSchedule?.studyBursts)
-    return burst ? Number(burst.occurrences) : 0
   }
 
   const getBurstFrequency = (): number => {
@@ -188,6 +196,44 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     }
   }
 
+  React.useEffect(() => {
+    const getEvents = async (
+      schedule: Schedule,
+      timeline: ScheduleTimeline,
+      studyEvents: SchedulingEvent[]
+    ) => {
+      const events = await ScheduleService.getEventIdsForSchedule(
+        schedule,
+        studyEvents.map(e => e.eventId)
+      )
+      console.log(events)
+      const e = study?.customEvents
+      console.log(e)
+      setEventIds(events)
+      const unwrappedSessions = unWrapSessions(timeline.schedule)
+      const lastDay = Math.max(...unwrappedSessions.map(s => s.endDay)) + 1
+      const numOfWeeks = Math.ceil(lastDay / 7)
+      const maxWindows = Math.max(
+        ...timeline.sessions.map(s => s.timeWindowGuids.length)
+      )
+      var result: Record<string, PlotData[]> = {}
+      for (var event of events) {
+        const plotData = getPlotData(
+          unwrappedSessions,
+          numOfWeeks,
+          maxWindows,
+          event
+        )
+        result[event] = plotData
+      }
+
+      setPlotData(result)
+    }
+    if (sessionsSchedule && timeline && study) {
+      getEvents(sessionsSchedule, timeline, study.customEvents || [])
+    }
+  }, [sessionsSchedule, timeline, study])
+
   React.useLayoutEffect(() => {
     handleResize()
     window.addEventListener('resize', handleResize)
@@ -198,9 +244,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   }
 
   const unitWidth = getUnitWidth()
-  const unwrappedSessions = unWrapSessions(timeline.schedule)
-
-  const plotData = getPlotData(unwrappedSessions)
 
   function getUnitWidth(): number {
     const unitWidth = Math.round(((plotWidth || 0) - 180) / 7)
@@ -245,36 +288,52 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     return unwrapped
   }
 
-  function getPlotData(schedItems: TimelineScheduleItem[]): PlotData[] {
+  function getDataForSessionsInWeek(
+    schedItems: TimelineScheduleItem[],
+    sessions: StudySession[],
+    weekNumber: number,
+    maxWindows: number
+  ) {
+    let resultSessions = sessions.map(session => {
+      const sessionCoords = Utility.getDaysFractionForSingleSession(
+        session.guid!,
+        schedItems,
+        {start: weekNumber * 7, end: (weekNumber + 1) * 7},
+        true,
+        maxWindows
+      )
+
+      return {...sessionCoords, session}
+    })
+    const noEmpties = resultSessions.filter(s => s.coords.length > 0)
+    return noEmpties
+  }
+
+  function getPlotData(
+    schedItems: TimelineScheduleItem[],
+    numOfWeeks: number,
+    maxWindows: number,
+    eventId: string
+  ): PlotData[] {
     if (!sessionsSchedule || !timeline) {
       return []
     }
+    var r: Record<string, PlotData[]> = {}
+    //for (var eventName in eventIds) {
     var result: Record<string, PlotData> = {}
-    const lastDay = Math.max(...unwrappedSessions.map(s => s.endDay)) + 1
-
-    const numOfWeeks = Math.ceil(lastDay / 7)
-
-    const maxWindows = Math.max(
-      ...timeline.sessions.map(s => s.timeWindowGuids.length)
-    )
 
     for (var weekNumber = 0; weekNumber < numOfWeeks; weekNumber++) {
       // do the non-burst sessions
-      let sessions = sessionsSchedule.sessions
-        .filter(s => !isSessionBurst(s.guid!))
-        .map(session => {
-          const sessionCoords = Utility.getDaysFractionForSingleSession(
-            session.guid!,
-            schedItems,
-            {start: weekNumber * 7, end: (weekNumber + 1) * 7},
-            true,
-            maxWindows
-          )
-          return {...sessionCoords, session}
-        })
-      let noEmpties = sessions.filter(s => s.coords.length > 0)
-      // let hasItems = sessions.find(coordArr => coordArr.coords.length > 0)
 
+      let s = sessionsSchedule.sessions.filter(
+        s => !isSessionBurst(s.guid!) && s.startEventIds?.[0] === eventId
+      )
+      let noEmpties = getDataForSessionsInWeek(
+        schedItems,
+        s,
+        weekNumber,
+        maxWindows
+      )
       if (noEmpties.length) {
         result[`${weekNumber}`] = {
           name: weekNumber + 1,
@@ -283,23 +342,16 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
           sessions: noEmpties,
         }
       }
-
-      sessions = sessionsSchedule.sessions
-        .filter(s => isSessionBurst(s.guid!))
-        .map(session => {
-          const sessionCoords = Utility.getDaysFractionForSingleSession(
-            session.guid!,
-            schedItems,
-
-            {start: weekNumber * 7, end: (weekNumber + 1) * 7},
-            true,
-            maxWindows
-          )
-          // const last = Math.ceil(_.last(sessionCoords.coords) || -1)
-          return {...sessionCoords, session}
-        })
-      noEmpties = sessions.filter(s => s.coords.length > 0)
-      // hasItems = sessions.find(coordArr => coordArr.coords.length > 0)
+      s =
+        sessionsSchedule.studyBursts?.[0].originEventId === eventId
+          ? sessionsSchedule.sessions.filter(s => isSessionBurst(s.guid!))
+          : []
+      noEmpties = getDataForSessionsInWeek(
+        schedItems,
+        s,
+        weekNumber,
+        maxWindows
+      )
 
       if (noEmpties.length) {
         const schedItemsForWeek = schedItems.filter(
@@ -312,11 +364,11 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
         result[`${weekNumber}_burst`] = {
           name: weekNumber + 1,
           burst: true,
-          sessions: noEmpties,
           burstNum: getBurstNumberFromStartEventId(
             firstSession!.startEventId,
             firstSession!.refGuid
           ),
+          sessions: noEmpties,
         }
       }
     }
@@ -326,6 +378,8 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
         return o.name
       },
     ])
+    // r[eventName]=sortedResult
+    // }
 
     return sortedResult
   }
@@ -333,14 +387,15 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   function calculateDistanceToNextBurst(
     coords: PlotData[],
     wkNumber: number,
-    burstNumber: number
+    burstNumber: number,
+    allEventData: PlotData[]
   ) {
     var pxGapBetweenBursts = LayoutConstants.marginGap
 
     const getNextBurstNumber = (currentIndex: number) => {
       for (var i = currentIndex + 1; i < coords.length; i++) {
-        if (plotData[i].burst) {
-          return plotData[i].burstNum
+        if (allEventData![i].burst) {
+          return allEventData![i].burstNum
         }
       }
     }
@@ -426,62 +481,70 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
         {sessionsSchedule &&
           timeline &&
           plotData &&
-          plotData.map((wk, index) => (
-            <div
-              className={classes.week}
-              key={`week_${wk.name}_ ${wk.burstNum}`}
-              style={{
-                marginBottom:
-                  plotData[index + 1] &&
-                  plotData[index + 1].burstNum === wk.burstNum
-                    ? '0px'
-                    : `${LayoutConstants.marginGap}px`,
-                padding: `${LayoutConstants.weekVPad}px 16px`,
-                backgroundColor: wk.burst ? 'yellow' : '#eee',
-                position: 'relative',
-              }}>
-              <FrequencyBracket
-                frequency={getBurstFrequency()}
-                heightInterval={calculateDistanceToNextBurst(
-                  plotData,
-                  wk.name,
-                  wk.burstNum
-                )}
-              />
+          eventIds &&
+          eventIds.map((evt, evtIndex) => (
+            <div>
+              {evt}
 
-              <div className={classes.weekTitle} key="week_index">
-                Week {wk.name}
-                {wk.burst !== false ? '/ Burst' + wk.burstNum * 1 : ''}
-              </div>
-              <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
-                {wk.sessions.map((sessionInfo, sIndex: number) => (
-                  <div className={classes.graph} key={`sessionA_${sIndex}`}>
-                    <Tooltip
-                      key="tooltip"
-                      placement="top"
-                      title={`Starts on: ${sessionInfo.startEventId}`}>
-                      <div className={classes.sessionName}>
-                        <SessionIcon
-                          symbolKey={sessionInfo.session.symbol}
-                          index={sessionsSchedule.sessions.findIndex(
-                            s => s.guid === sessionInfo.session.guid
-                          )}
+              {plotData[evt]?.map((wk, index) => (
+                <div
+                  className={classes.week}
+                  key={`week_${wk.name}_ ${wk.burstNum}`}
+                  style={{
+                    marginBottom:
+                      plotData[evt][index + 1] &&
+                      plotData[evt][index + 1].burstNum === wk.burstNum
+                        ? '0px'
+                        : `${LayoutConstants.marginGap}px`,
+                    padding: `${LayoutConstants.weekVPad}px 16px`,
+                    backgroundColor: wk.burst ? 'yellow' : '#eee',
+                    position: 'relative',
+                  }}>
+                  <FrequencyBracket
+                    frequency={getBurstFrequency()}
+                    heightInterval={calculateDistanceToNextBurst(
+                      plotData[evt],
+                      wk.name,
+                      wk.burstNum,
+                      plotData[evt]
+                    )}
+                  />
+
+                  <div className={classes.weekTitle} key="week_index">
+                    Week {wk.name}
+                    {wk.burst !== false ? '/ Burst' + wk.burstNum * 1 : ''}
+                  </div>
+                  <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
+                    {wk.sessions.map((sessionInfo, sIndex: number) => (
+                      <div className={classes.graph} key={`sessionA_${sIndex}`}>
+                        <Tooltip
+                          key="tooltip"
+                          placement="top"
+                          title={`Starts on: ${sessionInfo.startEventId}`}>
+                          <div className={classes.sessionName}>
+                            <SessionIcon
+                              symbolKey={sessionInfo.session.symbol}
+                              index={sessionsSchedule.sessions.findIndex(
+                                s => s.guid === sessionInfo.session.guid
+                              )}
+                            />
+                          </div>
+                        </Tooltip>
+
+                        <SessionPlot
+                          sessionIndex={sIndex}
+                          lineNumber={index}
+                          xCoords={sessionInfo.coords}
+                          displayIndex={2}
+                          sessionSymbol={sessionInfo.session.symbol}
+                          unitPixelWidth={unitWidth}
+                          sessionGuid={sessionInfo.session.guid!}
                         />
                       </div>
-                    </Tooltip>
-
-                    <SessionPlot
-                      sessionIndex={sIndex}
-                      lineNumber={index}
-                      xCoords={sessionInfo.coords}
-                      displayIndex={2}
-                      sessionSymbol={sessionInfo.session.symbol}
-                      unitPixelWidth={unitWidth}
-                      sessionGuid={sessionInfo.session.guid!}
-                    />
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           ))}
       </div>

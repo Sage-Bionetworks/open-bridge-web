@@ -14,6 +14,7 @@ import {
 import {Assessment} from '../types/types'
 import AssessmentService from './assessment.service'
 import {BURST_EVENT_PATTERN, JOINED_EVENT_ID} from './event.service'
+import StudyService from './study.service'
 
 const ScheduleService = {
   createSchedule,
@@ -176,29 +177,32 @@ async function getScheduleTimeline(
 }
 
 function getEventsForSchedule(
-  schedule: Schedule
+  schedule: Schedule,
+  sortedCustomEventIds?: string[]
 ): ExtendedScheduleEventObject[] {
   //get startEventIds from Sessions
+
   const sessions =
     schedule.sessions.filter(session => !_.isEmpty(session.startEventIds)) || []
 
   const events = sessions.reduce(
     (p: ExtendedScheduleEventObject[], c: StudySession) => {
-      var eventId = c.startEventIds?.[0]
-      var studyBurstId = c.studyBurstIds ? _.first(c.studyBurstIds) : undefined
-      //if we already have this event
+      var eventId = c.startEventIds[0]
+      //var studyBurstId = c.studyBurstIds ? _.first(c.studyBurstIds) : undefined
+
       var event = {
         eventId,
-        delay: c.delay ? getTimePeriodFromPeriodString(c.delay) : undefined,
-        studyBurstId,
+        // delay: c.delay ? getTimePeriodFromPeriodString(c.delay) : undefined,
+        // studyBurstId,
       }
+      //if we already have this event
       const eventIndex = p.findIndex(e => e.eventId === eventId)
       // if event already exists
       if (eventIndex > -1) {
         //if it's a burst -- replace non-burst otherwise ignore
-        if (studyBurstId) {
-          p[eventIndex] = event
-        }
+        // if (studyBurstId) {
+        //  p[eventIndex] = event
+        //  }
         return p
 
         //else replace it with the burst event
@@ -225,27 +229,43 @@ function getEventsForSchedule(
       events.push(event)
     }
   }
-  return events
+  if (!sortedCustomEventIds) {
+    return events
+  }
+  return events.sort((a, b) => {
+    return sortedCustomEventIds.indexOf(a.eventId) >
+      sortedCustomEventIds.indexOf(b.eventId)
+      ? 1
+      : -1
+  })
 }
 
-function getEventIdsForSchedule(schedule: Schedule): string[] {
-  const eventIds = getEventsForSchedule(schedule).map(e => e.eventId)
+function getEventIdsForSchedule(
+  schedule: Schedule,
+  studyEventIds?: string[]
+): string[] {
+  const eventIds = getEventsForSchedule(schedule, studyEventIds).map(
+    e => e.eventId
+  )
 
   return _.uniq(eventIds)
 }
-
+//this includes burst events
 async function getEventsForScheduleByStudyId(
   studyId: string,
   token: string
 ): Promise<ExtendedScheduleEventObject[]> {
   // get schedule
-
+  const study = await StudyService.getStudy(studyId, token)
   const schedule = await getSchedule(studyId, token, false)
   if (!schedule) {
     throw Error('Schedule not found')
   }
   // get events from Sessions
-  const events = getEventsForSchedule(schedule)
+  const events = getEventsForSchedule(
+    schedule,
+    study?.customEvents?.map(e => e.eventId)
+  )
 
   var burst = schedule.studyBursts?.[0]
 
