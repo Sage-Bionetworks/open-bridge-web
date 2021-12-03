@@ -1,35 +1,25 @@
 import {TimelineScheduleItem} from '@typedefs/scheduling'
 import _ from 'lodash'
-import moment from 'moment'
-
-function getScheduleDurationInDays(scheduleDuration: string): number {
-  const duration = moment.duration(scheduleDuration)
-  const lengthInDays = duration.asDays()
-  return lengthInDays
-}
 
 const Utility = {
-  getScheduleDurationInDays,
-
   getGroupedDaysForSession,
   getDaysFractionForSingleSession,
 }
 function getStartDaysForSession(
   sessionGuid: string,
-  schedulingItems: TimelineScheduleItem[],
-  includeBurst?: boolean
+  schedulingItems: TimelineScheduleItem[]
 ): number[] {
   function filterItem(timelineItem: TimelineScheduleItem) {
     //if study burst -- only return first burst
-    if (includeBurst) {
-      return timelineItem.refGuid === sessionGuid
-    } else {
+
+    return timelineItem.refGuid === sessionGuid
+    /*} else {
       return (
         timelineItem.refGuid === sessionGuid &&
         (!/study_burst:/.test(timelineItem.startEventId) ||
           /study_burst:(\w+):01/.test(timelineItem.startEventId))
       )
-    }
+    }*/
   }
 
   return schedulingItems.filter(i => filterItem(i)).map(i => i.startDay)
@@ -39,8 +29,7 @@ function getGroupedDaysForSession(
   studySessionGuid: string,
 
   schedulingItems: TimelineScheduleItem[],
-  interval?: {start: number; end: number},
-  includeBurst?: boolean
+  interval?: {start: number; end: number}
 ) {
   const i = interval
     ? schedulingItems.filter(
@@ -48,14 +37,10 @@ function getGroupedDaysForSession(
       )
     : schedulingItems
   const grouppedStartDays = _.groupBy(
-    getStartDaysForSession(studySessionGuid, i, includeBurst),
+    getStartDaysForSession(studySessionGuid, i),
     Math.floor
   )
-  /* const startDaysWithinInterval = interval
-    ? _.pickBy(grouppedStartDays, function (value, key) {
-        return Number(key) >= interval.start && Number(key) < interval.end
-      })
-    : grouppedStartDays*/
+
   const startEventId = _.first(i)?.startEventId
   const startDaysWithinInterval = grouppedStartDays
 
@@ -65,16 +50,15 @@ function getGroupedDaysForSession(
 function getDaysFractionForSingleSession(
   studySessionGuid: string,
   schedulingItems: TimelineScheduleItem[],
-  interval?: {start: number; end: number},
-  includeBurst?: boolean,
-  maxWindowNumber?: number
+  interval: {start: number; end: number},
+
+  maxWindowNumber: number
 ): {startEventId: string | undefined; coords: number[]} {
   let result: number[] = []
   const {startDays, startEventId} = getGroupedDaysForSession(
     studySessionGuid,
     schedulingItems,
-    interval,
-    includeBurst
+    interval
   )
 
   Object.values(startDays).forEach(groupArray => {

@@ -16,9 +16,11 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
+  IconButton,
   makeStyles,
   Theme,
 } from '@material-ui/core'
+import CloseIcon from '@material-ui/icons/Close'
 import ScheduleService from '@services/schedule.service'
 import {latoFont, poppinsFont, theme} from '@style/theme'
 import {
@@ -71,7 +73,13 @@ export const useStyles = makeStyles((theme: Theme) =>
       fontSize: '14px',
       '& svg': {marginRight: theme.spacing(1)},
     },
-
+    closeModalButton: {
+      position: 'absolute',
+      right: theme.spacing(2),
+      top: theme.spacing(2),
+      padding: 0,
+      color: theme.palette.common.black,
+    },
     scheduleHeader: {
       display: 'flex',
       alignItems: 'center',
@@ -120,7 +128,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
   const classes = useStyles()
 
   const {data: study, error, isLoading} = useStudy(id)
-  const {data: _schedule} = useSchedule(id)
+  const {data: _schedule, refetch} = useSchedule(id)
 
   const {
     isSuccess: scheduleUpdateSuccess,
@@ -178,7 +186,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
     if (_schedule) {
       console.log('----setting schedule----')
 
-      setSchedule(_schedule)
+      setSchedule({..._schedule})
     }
   }, [_schedule])
 
@@ -191,8 +199,14 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
   }
 
   const onCancelSessionUpdate = () => {
-    setSchedule(_schedule)
-    setHasObjectChanged(false)
+    if (hasObjectChanged) {
+      refetch()
+      setHasObjectChanged(false)
+    }
+    // setSchedule(_schedule)
+
+    setScheduleErrors([])
+    setOpenStudySession(undefined)
   }
 
   const onSave = async (isButtonPressed?: boolean) => {
@@ -235,11 +249,13 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
         error = new Error('!')
         setScheduleErrors(prev => [...prev, errorObject])
       }
-    } finally {
       setSaveLoader(false)
+      throw e
+    } finally {
       if (isButtonPressed) {
         onShowFeedback(error)
       }
+      setSaveLoader(false)
     }
   }
 
@@ -399,11 +415,9 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
                   zIndex: 2000,
                   right: '10px',
                   top: '5px',
-                  fontSize: '40px',
-                  fontWeight: 'bold',
-                  color: 'blue',
+                  fontSize: '12px',
                 }}>
-                *
+                schedule changed ...
               </div>
             )}
           </div>
@@ -423,10 +437,16 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
           </Box>
         </Box>
       </Box>
-      <Dialog open={openModal === 'EVENTS'} maxWidth="md">
+      <Dialog open={openModal === 'EVENTS'} maxWidth="md" scroll="body">
         <DialogTitle>
           <EditIcon />
           &nbsp;&nbsp; Edit Session Start Drop Down
+          <IconButton
+            aria-label="close"
+            className={classes.closeModalButton}
+            onClick={() => setOpenModal(undefined)}>
+            <CloseIcon />
+          </IconButton>
         </DialogTitle>
         <DialogContent style={{padding: 0}}>
           <SessionStartTab
@@ -453,10 +473,7 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
           </DialogButtonPrimary>
         </DialogActions>
       </Dialog>
-      <Dialog
-        open={openStudySession !== undefined}
-        maxWidth="lg"
-        scroll={'paper' /*body"*/}>
+      <Dialog open={openStudySession !== undefined} maxWidth="lg" scroll="body">
         <DialogContent style={{padding: 0}}>
           {openStudySession && (
             <Box
@@ -473,6 +490,12 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
                   ? `1px solid ${theme.palette.error.main}`
                   : ''
               }>
+              <IconButton
+                aria-label="close"
+                className={classes.closeModalButton}
+                onClick={() => onCancelSessionUpdate()}>
+                <CloseIcon />
+              </IconButton>
               <Box className={classes.assessments}>
                 <AssessmentList
                   studySessionIndex={schedule.sessions.findIndex(
@@ -533,21 +556,13 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
           )}
         </DialogContent>
         <DialogActions>
-          <DialogButtonSecondary
-            onClick={() => {
-              onCancelSessionUpdate()
-              setOpenStudySession(undefined)
-            }}>
+          <DialogButtonSecondary onClick={() => onCancelSessionUpdate()}>
             Cancel
           </DialogButtonSecondary>
 
           <DialogButtonPrimary
             onClick={() => {
               onSave(true).then(() => setOpenStudySession(undefined))
-              // console.log(ref1.current)
-              // ref1.current?.save()
-
-              //setIsOpenEventsEditor(false)
             }}>
             {saveLoader ? <CircularProgress /> : <span>Save Changes</span>}
           </DialogButtonPrimary>
@@ -557,6 +572,12 @@ const ScheduleCreatorTab: React.ForwardRefRenderFunction<
         <DialogTitle>
           <BurstIcon />
           &nbsp;&nbsp; Configure Study bursts
+          <IconButton
+            aria-label="close"
+            className={classes.closeModalButton}
+            onClick={() => setOpenModal(undefined)}>
+            <CloseIcon />
+          </IconButton>
         </DialogTitle>
         <DialogContent style={{padding: 0}}>
           <ConfigureBurstTab
