@@ -25,7 +25,7 @@ const LayoutConstants = {
   weekVPad: 10,
   height: 30,
   singleSessionGraphHeight: 16,
-  singleSessionGraphBottomMargin: 5,
+  singleSessionGraphBottomMargin: 0, //5,
   weekMinHeight: 22,
 }
 
@@ -166,7 +166,8 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   studyId,
 }) => {
   const classes = useStyles()
-  const {data: timeline, error, isLoading} = useTimeline(studyId)
+  const {data: timeline} = useTimeline(studyId)
+  const [isLoading, setIsLoading] = React.useState(true)
   const [eventIds, setEventIds] = React.useState<string[]>([])
   const {data: sessionsSchedule} = useSchedule(studyId)
   const {data: study} = useStudy(studyId)
@@ -198,42 +199,49 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   }
 
   React.useEffect(() => {
+    setIsLoading(true)
     const getEvents = async (
       schedule: Schedule,
       timeline: ScheduleTimeline,
       studyEvents: SchedulingEvent[]
     ) => {
-      const events = await ScheduleService.getEventIdsForSchedule(
-        schedule,
-        studyEvents.map(e => e.eventId)
-      )
-      console.log(events)
-      const e = study?.customEvents
-      console.log(e)
-      setEventIds(events)
-      const unwrappedSessions = unWrapSessions(timeline.schedule)
-      const lastDay = Math.max(...unwrappedSessions.map(s => s.endDay)) + 1
-      const numOfWeeks = Math.ceil(lastDay / 7)
-      const maxWindows = Math.max(
-        ...timeline.sessions.map(s => s.timeWindowGuids.length)
-      )
-      var result: Record<string, PlotData[]> = {}
-      for (var event of events) {
-        const plotData = getPlotData(
-          unwrappedSessions,
-          numOfWeeks,
-          maxWindows,
-          event
+      try {
+        const events = await ScheduleService.getEventIdsForSchedule(
+          schedule,
+          studyEvents.map(e => e.eventId)
         )
-        result[event] = plotData
-      }
+        console.log(events)
+        const e = study?.customEvents
+        console.log(e)
+        setEventIds(events)
+        const unwrappedSessions = unWrapSessions(timeline.schedule)
+        const lastDay = Math.max(...unwrappedSessions.map(s => s.endDay)) + 1
+        const numOfWeeks = Math.ceil(lastDay / 7)
+        const maxWindows = Math.max(
+          ...timeline.sessions.map(s => s.timeWindowGuids.length)
+        )
+        var result: Record<string, PlotData[]> = {}
+        for (var event of events) {
+          const plotData = getPlotData(
+            unwrappedSessions,
+            numOfWeeks,
+            maxWindows,
+            event
+          )
+          result[event] = plotData
+        }
 
-      setPlotData(result)
+        setPlotData(result)
+      } catch (e) {
+        console.log((e as Error).message)
+      } finally {
+        setIsLoading(false)
+      }
     }
     if (sessionsSchedule && timeline && study) {
       getEvents(sessionsSchedule, timeline, study.customEvents || [])
     }
-  }, [sessionsSchedule, timeline, study])
+  }, [sessionsSchedule, timeline, study?.customEvents])
 
   React.useLayoutEffect(() => {
     handleResize()
@@ -485,11 +493,22 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
         </div>
       </div>
       <div style={{position: 'relative'}}>
-        {sessionsSchedule &&
+        {!isLoading &&
+          sessionsSchedule &&
           plotData &&
           eventIds.map((evt, evtIndex) => (
             <div>
-              {EventService.formatEventIdForDisplay(evt)}
+              <div
+                className={classes.weekTitle}
+                style={{
+                  width: 'auto',
+                  fontWeight: 'bold',
+                  padding: `${LayoutConstants.weekVPad}px 16px 0 16px`,
+                  backgroundColor: plotData[evt][0].burst ? 'yellow' : '#eee',
+                }}>
+                {' '}
+                {EventService.formatEventIdForDisplay(evt)}
+              </div>
 
               {plotData[evt]?.map((wk, index) => (
                 <div

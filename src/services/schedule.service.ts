@@ -14,7 +14,10 @@ import {
 } from '../types/scheduling'
 import {Assessment} from '../types/types'
 import AssessmentService from './assessment.service'
-import {BURST_EVENT_PATTERN, JOINED_EVENT_ID} from './event.service'
+import EventService, {
+  BURST_EVENT_PATTERN,
+  JOINED_EVENT_ID,
+} from './event.service'
 import StudyService from './study.service'
 
 const ScheduleService = {
@@ -233,12 +236,16 @@ function getEventsForSchedule(
   if (!sortedCustomEventIds) {
     return events
   }
-  return events.sort((a, b) => {
-    return sortedCustomEventIds.indexOf(a.eventId) >
-      sortedCustomEventIds.indexOf(b.eventId)
+  const prefixedStudyEvents = sortedCustomEventIds.map(e =>
+    EventService.prefixCustomEventIdentifier(e)
+  )
+  const result = events.sort((a, b) => {
+    return prefixedStudyEvents.indexOf(a.eventId) >
+      prefixedStudyEvents.indexOf(b.eventId)
       ? 1
       : -1
   })
+  return result
 }
 
 function getEventIdsForSchedule(
