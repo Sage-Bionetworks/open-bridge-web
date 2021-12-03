@@ -308,7 +308,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
         session.guid!,
         schedItems,
         {start: weekNumber * 7, end: (weekNumber + 1) * 7},
-        true,
         maxWindows
       )
 
