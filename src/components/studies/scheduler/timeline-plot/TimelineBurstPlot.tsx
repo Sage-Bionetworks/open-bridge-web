@@ -23,6 +23,7 @@ const LayoutConstants = {
   marginGap: 4,
   bracketOverlay: 8,
   weekVPad: 10,
+  height: 30,
   singleSessionGraphHeight: 16,
   singleSessionGraphBottomMargin: 5,
   weekMinHeight: 22,
@@ -162,7 +163,6 @@ const FrequencyBracket: React.FunctionComponent<{
 }
 
 const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
-  //schedulingItems,
   studyId,
 }) => {
   const classes = useStyles()
@@ -175,7 +175,8 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   const [plotData, setPlotData] = React.useState<
     Record<string, PlotData[]> | undefined
   >()
-  console.log('rerenderBurst')
+
+  //check if we are dealing with the sesison converted into a burst
   const isSessionBurst = (sessionGuid: string): boolean => {
     return (
       sessionsSchedule?.sessions
@@ -185,7 +186,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   }
 
   const getBurstFrequency = (): number => {
-    const burst = _.first(sessionsSchedule?.studyBursts)
+    const burst = ScheduleService.getStudyBurst(sessionsSchedule)
     return burst ? Number(burst.interval.replace(/[PW]/g, '')) : 0
   }
 
@@ -326,7 +327,10 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
       // do the non-burst sessions
 
       let s = sessionsSchedule.sessions.filter(
-        s => !isSessionBurst(s.guid!) && s.startEventIds?.[0] === eventId
+        s =>
+          !isSessionBurst(s.guid!) &&
+          _.first(s.startEventIds) &&
+          _.first(s.startEventIds) === eventId
       )
       let noEmpties = getDataForSessionsInWeek(
         schedItems,
@@ -342,33 +346,36 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
           sessions: noEmpties,
         }
       }
-      s =
-        sessionsSchedule.studyBursts?.[0].originEventId === eventId
-          ? sessionsSchedule.sessions.filter(s => isSessionBurst(s.guid!))
-          : []
-      noEmpties = getDataForSessionsInWeek(
-        schedItems,
-        s,
-        weekNumber,
-        maxWindows
-      )
+      const burst = ScheduleService.getStudyBurst(sessionsSchedule)
+      if (burst) {
+        s =
+          burst.originEventId === eventId
+            ? sessionsSchedule.sessions.filter(s => isSessionBurst(s.guid!))
+            : []
+        noEmpties = getDataForSessionsInWeek(
+          schedItems,
+          s,
+          weekNumber,
+          maxWindows
+        )
 
-      if (noEmpties.length) {
-        const schedItemsForWeek = schedItems.filter(
-          i => i.startDay >= weekNumber * 7 && i.endDay < (weekNumber + 1) * 7
-        )
-        // for burst get the burst number
-        const firstSession = _.first(
-          schedItemsForWeek.filter(s => isSessionBurst(s.refGuid))
-        )
-        result[`${weekNumber}_burst`] = {
-          name: weekNumber + 1,
-          burst: true,
-          burstNum: getBurstNumberFromStartEventId(
-            firstSession!.startEventId,
-            firstSession!.refGuid
-          ),
-          sessions: noEmpties,
+        if (noEmpties.length) {
+          const schedItemsForWeek = schedItems.filter(
+            i => i.startDay >= weekNumber * 7 && i.endDay < (weekNumber + 1) * 7
+          )
+          // for burst get the burst number
+          const firstSession = _.first(
+            schedItemsForWeek.filter(s => isSessionBurst(s.refGuid))
+          )
+          result[`${weekNumber}_burst`] = {
+            name: weekNumber + 1,
+            burst: true,
+            burstNum: getBurstNumberFromStartEventId(
+              firstSession!.startEventId,
+              firstSession!.refGuid
+            ),
+            sessions: noEmpties,
+          }
         }
       }
     }
@@ -479,12 +486,10 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
       </div>
       <div style={{position: 'relative'}}>
         {sessionsSchedule &&
-          timeline &&
           plotData &&
-          eventIds &&
           eventIds.map((evt, evtIndex) => (
             <div>
-              {evt}
+              {EventService.formatEventIdForDisplay(evt)}
 
               {plotData[evt]?.map((wk, index) => (
                 <div
@@ -497,6 +502,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                         ? '0px'
                         : `${LayoutConstants.marginGap}px`,
                     padding: `${LayoutConstants.weekVPad}px 16px`,
+                    // height: `${LayoutConstants.height}px`,
                     backgroundColor: wk.burst ? 'yellow' : '#eee',
                     position: 'relative',
                   }}>

@@ -8,6 +8,7 @@ import {
   ScheduleNotification,
   ScheduleTimeline,
   SchedulingEvent,
+  StudyBurst,
   StudySession,
   TimePeriod,
 } from '../types/scheduling'
@@ -18,12 +19,13 @@ import StudyService from './study.service'
 
 const ScheduleService = {
   createSchedule,
-  getSchedule,
-  getScheduleTimeline,
-  saveSchedule,
   createEmptyScheduleSession,
   getEventIdsForSchedule,
   getEventsForScheduleByStudyId,
+  getSchedule,
+  getScheduleTimeline,
+  saveSchedule,
+  getStudyBurst,
 }
 
 export type ExtendedScheduleEventObject = {
@@ -51,6 +53,12 @@ export const DEFAULT_NOTIFICATION: ScheduleNotification = {
       lang: 'en',
     },
   ],
+}
+
+function getStudyBurst(schedule?: Schedule): StudyBurst | undefined {
+  return !schedule?.studyBursts || schedule.studyBursts.length === 0
+    ? undefined
+    : schedule.studyBursts[0]
 }
 
 function createEmptyScheduleSession(
@@ -188,21 +196,14 @@ function getEventsForSchedule(
   const events = sessions.reduce(
     (p: ExtendedScheduleEventObject[], c: StudySession) => {
       var eventId = c.startEventIds[0]
-      //var studyBurstId = c.studyBurstIds ? _.first(c.studyBurstIds) : undefined
 
       var event = {
         eventId,
-        // delay: c.delay ? getTimePeriodFromPeriodString(c.delay) : undefined,
-        // studyBurstId,
       }
       //if we already have this event
       const eventIndex = p.findIndex(e => e.eventId === eventId)
       // if event already exists
       if (eventIndex > -1) {
-        //if it's a burst -- replace non-burst otherwise ignore
-        // if (studyBurstId) {
-        //  p[eventIndex] = event
-        //  }
         return p
 
         //else replace it with the burst event
@@ -267,7 +268,7 @@ async function getEventsForScheduleByStudyId(
     study?.customEvents?.map(e => e.eventId)
   )
 
-  var burst = schedule.studyBursts?.[0]
+  var burst = getStudyBurst(schedule)
 
   var result = events.reduce((res, current) => {
     //custom events

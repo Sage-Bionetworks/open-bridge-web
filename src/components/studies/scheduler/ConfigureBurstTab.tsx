@@ -23,6 +23,7 @@ import {
 } from '@material-ui/core'
 import {Alert} from '@material-ui/lab'
 import EventService from '@services/event.service'
+import ScheduleService from '@services/schedule.service'
 import {poppinsFont} from '@style/theme'
 import {Schedule, StudyBurst, StudySession} from '@typedefs/scheduling'
 import {ExtendedError} from '@typedefs/types'
@@ -193,7 +194,7 @@ const BurstSelectorSC: React.FunctionComponent<{
   onUpdateEvent,
 }) => {
   const classes = useStyles()
-  const burstEventId = schedule.studyBursts?.[0]?.originEventId
+  const burstEventId = _.first(schedule.studyBursts)?.originEventId
   const updatedSessions = schedule.sessions.map(s =>
     _.isEmpty(s.studyBurstIds) ? s : {...s, startEventIds: [burstEventId || '']}
   )
@@ -359,7 +360,7 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
       return
     }
 
-    const burst = schedule.studyBursts?.[0]
+    const burst = ScheduleService.getStudyBurst(schedule)
     if (!burst) {
       setHasBursts(false)
       setBurstFrequency(undefined)
@@ -373,7 +374,7 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
     setBurstSessionGuids([])
     setBurstFrequency(Number(burst.interval.replace(/[PW]/g, '')))
     const sessionGuids = schedule.sessions.reduce((prev, current) => {
-      if (current.studyBurstIds?.[0]) {
+      if (_.isEmpty(current.studyBurstIds)) {
         return [...prev, current.guid!]
       } else {
         return prev
@@ -385,7 +386,7 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
   }, [schedule])
 
   function restoreSessionsFromBursts(schedule: Schedule): StudySession[] {
-    var previousBurst = schedule?.studyBursts?.[0]
+    var previousBurst = ScheduleService.getStudyBurst(schedule)
     if (previousBurst === undefined) {
       return [...schedule.sessions]
     } else {
