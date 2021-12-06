@@ -503,7 +503,9 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                   width: 'auto',
                   fontWeight: 'bold',
                   padding: `${LayoutConstants.weekVPad}px 16px 0 16px`,
-                  backgroundColor: plotData[evt][0].burst ? 'yellow' : '#eee',
+                  backgroundColor: plotData[evt]?.[0]?.burst
+                    ? 'yellow'
+                    : '#eee',
                 }}>
                 {' '}
                 {EventService.formatEventIdForDisplay(evt)}

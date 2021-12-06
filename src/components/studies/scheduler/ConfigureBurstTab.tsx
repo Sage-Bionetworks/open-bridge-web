@@ -405,6 +405,9 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
   }
 
   const onSave = async () => {
+    if (!hasBursts) {
+      return clearBursts()
+    }
     if (!burstFrequency || !burstNumber || !schedule || !originEventId) {
       return
     }
@@ -472,15 +475,7 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
         variant={'small'}
       />
       {error && <Alert color="error">{error}</Alert>}
-      <HasBurstsSC
-        hasBursts={hasBursts}
-        setHasBursts={(hasBursts: boolean) => {
-          if (!hasBursts) {
-            clearBursts()
-          }
-          setHasBursts(hasBursts)
-        }}
-      />
+      <HasBurstsSC hasBursts={hasBursts} setHasBursts={setHasBursts} />
 
       {hasBursts && schedule && (
         <Box textAlign="center" mb={4}>
@@ -516,6 +511,3 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
 }
 
 export default React.forwardRef(ConfigureBurstTab)
-function setError(message: string) {
-  throw new Error('Function not implemented.')
-}
