@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
     minHeight: 'auto',
     display: 'flex',
     justifyContent: 'space-between',
-    paddingTop: theme.spacing(8),
+    paddingTop: theme.spacing(8.5),
     '&:last-child': {
       paddingRight: 0,
     },
@@ -243,7 +243,9 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
                 )
               )}
           </Toolbar>
-          <Toolbar className={classes.toolbar} style={{width: '160px'}}>
+          <Toolbar
+            className={classes.toolbar}
+            style={{width: '160px', overflow: 'hidden'}}>
             {(Utility.isInAdminRole() || true) /* enable all aggess*/ && (
               <NavLink
                 to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
