@@ -25,7 +25,6 @@ import NavButtons from './NavButtons'
 import PassiveFeatures from './passive-features/PassiveFeatures'
 import Preview from './preview/Preview'
 import IntroInfo from './scheduler/IntroInfo'
-import ReadOnlyScheduler from './scheduler/read-only-pages/ReadOnlyScheduler'
 import Scheduler from './scheduler/Scheduler'
 import {isSectionEditableWhenLive, StudySection} from './sections'
 import SessionCreator from './session-creator/SessionCreator'
@@ -365,17 +364,12 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                       schedule && (
                         <Switch>
                           <Route path={`/studies/builder/:id/scheduler`}>
-                            {!StudyService.isStudyInDesign(study) ? (
-                              <ReadOnlyScheduler
-                                schedule={schedule}
-                                studyId={id}>
-                                {navButtons}
-                              </ReadOnlyScheduler>
-                            ) : (
-                              <Scheduler id={id} onShowFeedback={showFeedback}>
-                                {navButtonsArray}
-                              </Scheduler>
-                            )}
+                            <Scheduler
+                              id={id}
+                              onShowFeedback={showFeedback}
+                              isReadOnly={!StudyService.isStudyInDesign(study)}>
+                              {navButtonsArray}
+                            </Scheduler>
                           </Route>
                           <Route
                             path={`/studies/builder/:id/enrollment-type-selector`}>

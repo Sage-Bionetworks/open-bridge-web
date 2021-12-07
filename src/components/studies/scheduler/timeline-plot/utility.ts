@@ -10,16 +10,7 @@ function getStartDaysForSession(
   schedulingItems: TimelineScheduleItem[]
 ): number[] {
   function filterItem(timelineItem: TimelineScheduleItem) {
-    //if study burst -- only return first burst
-
     return timelineItem.refGuid === sessionGuid
-    /*} else {
-      return (
-        timelineItem.refGuid === sessionGuid &&
-        (!/study_burst:/.test(timelineItem.startEventId) ||
-          /study_burst:(\w+):01/.test(timelineItem.startEventId))
-      )
-    }*/
   }
 
   return schedulingItems.filter(i => filterItem(i)).map(i => i.startDay)

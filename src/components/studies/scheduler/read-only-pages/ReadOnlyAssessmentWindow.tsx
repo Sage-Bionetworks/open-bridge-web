@@ -3,7 +3,7 @@ import {Box, makeStyles} from '@material-ui/core'
 import {latoFont} from '@style/theme'
 import moment from 'moment'
 import React from 'react'
-import {useStyles as SharedSchedulerStyles} from '../ScheduleCreatorTab'
+import {useStyles as SharedSchedulerStyles} from '../Scheduler'
 import {getFormattedTimeDateFromPeriodString} from '../utility'
 
 const useStyles = makeStyles(theme => ({

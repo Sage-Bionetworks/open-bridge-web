@@ -1,4 +1,4 @@
-import {SessionSchedule, StudySession} from '../../../types/scheduling'
+import {SessionSchedule, StudySession} from '@typedefs/scheduling'
 
 type ActionMap<M extends {[index: string]: any}> = {
   [Key in keyof M]: M[Key] extends undefined
