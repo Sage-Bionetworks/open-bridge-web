@@ -165,11 +165,6 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
       name: 'ADHERENCE DATA',
       status: ['in_flight', 'legacy'],
     },
-    {
-      path: constants.restrictedPaths.STUDY_DATA,
-      name: 'STUDY DATA',
-      status: ['in_flight', 'legacy', 'completed', 'withdrawn', 'recruitment'],
-    },
   ]
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
