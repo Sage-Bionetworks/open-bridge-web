@@ -7,7 +7,7 @@ export default {
     SYNAPSE_ENDPOINT: 'https://repo-prod.prod.sagebase.org',
     NEW_STUDY_NAME: 'Untitled Study',
     DEFAULT_PLACEHOLDER: '*UNDEFINED*',
-    IS_TEST_MODE: true,
+    IS_TEST_MODE: false,
     CUSTOM_EVENT_PREFIX: 'custom:',
     ASSESSMENT_DEMO_STUDY_ID: 'demo',
   },
