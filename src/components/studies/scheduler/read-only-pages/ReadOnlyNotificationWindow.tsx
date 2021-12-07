@@ -1,4 +1,4 @@
-import NotifcationIcon from '2assets/bell.svg'
+import NotifcationIcon from '@assets/bell.svg'
 import {Box, makeStyles} from '@material-ui/core'
 import {latoFont, poppinsFont} from '@style/theme'
 import React from 'react'
