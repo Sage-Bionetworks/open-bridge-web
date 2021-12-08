@@ -1,9 +1,8 @@
-import React from 'react'
+import NotifcationIcon from '@assets/bell.svg'
 import {Box, makeStyles} from '@material-ui/core'
-import NotifcationIcon from '../../../../assets/bell.svg'
-import {latoFont, poppinsFont} from '../../../../style/theme'
-import {useStyles as SharedSchedulerStyles} from '../ScheduleCreatorTab'
-import _ from 'lodash'
+import {latoFont, poppinsFont} from '@style/theme'
+import React from 'react'
+import {useStyles as SharedSchedulerStyles} from '../Scheduler'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -39,49 +38,45 @@ type ReadOnlyNotificationWindowProps = {
   notificationTimeText: string
 }
 
-const ReadOnlyNotificationWindow: React.FunctionComponent<ReadOnlyNotificationWindowProps> = ({
-  index,
-  notificationHeader,
-  notificationMessage,
-  notificationTimeText,
-}) => {
-  const classes = useStyles()
-  const sharedSchedulerStyles = SharedSchedulerStyles()
-  return (
-    <Box className={classes.container}>
-      <Box className={sharedSchedulerStyles.row}>
-        <Box>{index}.</Box>
-        <img src={NotifcationIcon}></img>
-      </Box>
-      <Box className={sharedSchedulerStyles.row} mt={4}>
-        <Box width="100px" mr={3}>
-          Notification Message:
+const ReadOnlyNotificationWindow: React.FunctionComponent<ReadOnlyNotificationWindowProps> =
+  ({index, notificationHeader, notificationMessage, notificationTimeText}) => {
+    const classes = useStyles()
+    const sharedSchedulerStyles = SharedSchedulerStyles()
+    return (
+      <Box className={classes.container}>
+        <Box className={sharedSchedulerStyles.row}>
+          <Box>{index}.</Box>
+          <img src={NotifcationIcon}></img>
         </Box>
-        <Box className={classes.colContainer}>
-          <Box className={classes.textWithGrayBackground} mb={1}>
-            <strong>{notificationHeader}</strong>
+        <Box className={sharedSchedulerStyles.row} mt={4}>
+          <Box width="100px" mr={3}>
+            Notification Message:
           </Box>
-          <Box className={classes.textWithGrayBackground}>
-            {notificationMessage}
+          <Box className={classes.colContainer}>
+            <Box className={classes.textWithGrayBackground} mb={1}>
+              <strong>{notificationHeader}</strong>
+            </Box>
+            <Box className={classes.textWithGrayBackground}>
+              {notificationMessage}
+            </Box>
           </Box>
         </Box>
-      </Box>
-      <Box
-        className={sharedSchedulerStyles.row}
-        style={{
-          alignItems: 'center',
-          justifyContent: 'normal',
-          marginTop: '27px',
-        }}>
-        <Box width="100px" mr={3}>
-          Notify Participant:
+        <Box
+          className={sharedSchedulerStyles.row}
+          style={{
+            alignItems: 'center',
+            justifyContent: 'normal',
+            marginTop: '27px',
+          }}>
+          <Box width="100px" mr={3}>
+            Notify Participant:
+          </Box>
+          <strong className={classes.timeFrameText}>
+            {notificationTimeText}
+          </strong>
         </Box>
-        <strong className={classes.timeFrameText}>
-          {notificationTimeText}
-        </strong>
       </Box>
-    </Box>
-  )
-}
+    )
+  }
 
 export default ReadOnlyNotificationWindow

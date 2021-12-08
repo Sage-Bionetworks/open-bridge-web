@@ -24,50 +24,50 @@ export interface NotificationIntervalProps {
   onChange: (interval: string | undefined) => void
 }
 
-const NotificationInterval: React.FunctionComponent<NotificationIntervalProps> = ({
-  repeatInterval,
-  onChange,
-}: NotificationIntervalProps) => {
-  const [hasInterval, setHasInterval] = React.useState(true)
+const NotificationInterval: React.FunctionComponent<NotificationIntervalProps> =
+  ({repeatInterval, onChange}: NotificationIntervalProps) => {
+    const [hasInterval, setHasInterval] = React.useState(
+      repeatInterval !== undefined
+    )
 
-  return (
-    <SchedulingFormSection label={''} variant="small" border={false}>
-      {' '}
-      <div style={{flexBasis: '100%', display: 'block'}}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={hasInterval}
-              onChange={e => {
-                if (!e.target.checked) {
-                  onChange(undefined)
-                }
-                setHasInterval(e.target.checked)
-              }}
-              name="hasInterval"
-              color="primary"
-            />
-          }
-          label="Repeat:"
-        />
-        {hasInterval && (
-          <div style={{display: 'flex', alignItems: 'center'}}>
-            every&nbsp;&nbsp;
-            <Duration
-              onChange={e => {
-                onChange(e.target.value)
-              }}
-              unitDefault={MHDsEnum.M}
-              durationString={repeatInterval || ''}
-              unitLabel="Repeat Every"
-              numberLabel="frequency number"
-              unitData={MHDsEnum}></Duration>
-            until Session expires
-          </div>
-        )}
-      </div>
-    </SchedulingFormSection>
-  )
-}
+    return (
+      <SchedulingFormSection label={''} variant="small" border={false}>
+        {' '}
+        <div style={{flexBasis: '100%', display: 'block'}}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={hasInterval}
+                onChange={e => {
+                  if (!e.target.checked) {
+                    onChange(undefined)
+                  }
+                  setHasInterval(e.target.checked)
+                }}
+                name="hasInterval"
+                color="primary"
+              />
+            }
+            label="Repeat:"
+          />
+          {hasInterval && (
+            <div style={{display: 'flex', alignItems: 'center'}}>
+              every&nbsp;&nbsp;
+              <Duration
+                onChange={e => {
+                  onChange(e.target.value)
+                }}
+                unitDefault={MHDsEnum.M}
+                durationString={repeatInterval || ''}
+                unitLabel="Repeat Every"
+                numberLabel="frequency number"
+                unitData={MHDsEnum}></Duration>
+              until Session expires
+            </div>
+          )}
+        </div>
+      </SchedulingFormSection>
+    )
+  }
 
 export default NotificationInterval

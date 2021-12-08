@@ -7,7 +7,7 @@ export const JOINED_EVENT_ID = 'timeline_retrieved'
 export const LINK_SENT_EVENT_ID = 'install_link_sent'
 export const EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING = 'withdrawn'
 export const BURST_EVENT_PATTERN = 'study_burst:[burst_id]:[0-9]+'
-export const BURST_EVENT_REGEX_PATTERN = /study_burst:(\w+):([0-9]+)/
+export const BURST_EVENT_REGEX_PATTERN = /study_burst:([^:]+):([0-9]+)/
 
 function getBurstNumberFromEventId(eventIdentifier: string): number {
   return Number(eventIdentifier.match(/([0-9]+)\b/)?.[0] || '-1')

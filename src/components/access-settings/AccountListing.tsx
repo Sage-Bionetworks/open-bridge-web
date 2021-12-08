@@ -162,7 +162,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
 
   const getMembers = React.useCallback(
     async (orgMembership: string, token: string) => {
-      const members = await AccessService.getDetailedAccountsForOrg(
+      const members = await AccessService.getAccountsForOrg(
         token!,
         orgMembership!
       )
@@ -194,7 +194,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
       const result = await getMembers(orgMembership!, token!)
       setData(result)
     } catch (e) {
-      setUpdateError(e.message)
+      setUpdateError((e as Error).message)
     }
   }
 
@@ -228,17 +228,14 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
       const result = await getMembers(orgMembership!, token!)
       setData(result)
     } catch (e) {
-      setUpdateError(e.message)
+      setUpdateError((e as Error).message)
     }
   }
 
   const updateAccess = React.useCallback(
-    async (memberId: string) => {
+    async (member: OrgUser) => {
       setIsAccessLoading(true)
-      const member = await AccessService.getIndividualAccount(token!, memberId)
-      console.log(member.roles.join(','))
       const access = getAccessFromRoles(member.roles)
-
       setCurrentMemberAccess({access, member})
       setIsAccessLoading(false)
     },
@@ -246,12 +243,12 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   )
 
   React.useEffect(() => {
-    ;(async function (id) {
-      if (!id) {
+    ;(async function (member) {
+      if (!member) {
         return
       }
-      updateAccess(id)
-    })(members ? members[0]?.id : undefined)
+      updateAccess(member)
+    })(members ? members[0] : undefined)
   }, [members, updateAccess])
 
   if (status === 'REJECTED') {
@@ -277,7 +274,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                   member.id ===
                   /*currentMemberId*/ currentMemberAccess?.member.id
                 }
-                onClick={() => updateAccess(member.id)}>
+                onClick={() => updateAccess(member)}>
                 <div
                   style={{
                     paddingLeft: '8px',
@@ -316,7 +313,6 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                     access: _access,
                   })
                 }
-                isEdit={true}
                 isThisMe={currentMemberAccess.member.id === id}
                 currentUserIsAdmin={Utility.isInAdminRole()}></AccessGrid>
               {Utility.isInAdminRole() && (

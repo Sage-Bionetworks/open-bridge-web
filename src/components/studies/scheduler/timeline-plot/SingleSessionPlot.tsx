@@ -23,7 +23,7 @@ const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   lineNumber,
   xCoords,
 }) => {
-  const days = [...new Array(8)].map((i, index) => (
+  const dayDividers = [...new Array(8)].map((i, index) => (
     <div
       key={`day_${index}`}
       style={{
@@ -49,7 +49,7 @@ const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
   ))
   return (
     <div style={{position: 'relative', height: '18px'}}>
-      {days}
+      {dayDividers}
       {sessionGraph}
     </div>
   )

@@ -260,17 +260,10 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   }
 
   //id in the form study_burst:[eventName]_burst:02
-  function getBurstNumberFromStartEventId(
-    startEventId: string,
-    sessionGuid: string
-  ) {
+  function getBurstNumberFromStartEventId(startEventId: string) {
     const isBurst = EventService.isEventBurstEvent(startEventId)
 
-    /* if (!isBurst) {
-      return isSessionBurst(sessionGuid) ? 0 : -1
-    } else {*/
     return !isBurst ? -1 : EventService.getBurstNumberFromEventId(startEventId)
-    //  }
   }
 
   function unWrapSessions(items: TimelineScheduleItem[]) {
@@ -279,10 +272,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     )
     const burstLength = Math.floor(lastBurstSessionEndDay / 7) * 7
     const unwrapped = items.map(i => {
-      const burstNumber = getBurstNumberFromStartEventId(
-        i.startEventId,
-        i.refGuid
-      )
+      const burstNumber = getBurstNumberFromStartEventId(i.startEventId)
       //not burst -- return
       if (burstNumber === -1) {
         return i
@@ -304,10 +294,10 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     maxWindows: number
   ) {
     let resultSessions = sessions.map(session => {
-      const sessionCoords = Utility.getDaysFractionForSingleSession(
+      const sessionCoords = Utility.getDaysFractionForSingleSessionWeek(
         session.guid!,
         schedItems,
-        {start: weekNumber * 7, end: (weekNumber + 1) * 7},
+        weekNumber,
         maxWindows
       )
 
@@ -368,7 +358,8 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
 
         if (noEmpties.length) {
           const schedItemsForWeek = schedItems.filter(
-            i => i.startDay >= weekNumber * 7 && i.endDay < (weekNumber + 1) * 7
+            i =>
+              i.startDay >= weekNumber * 7 && i.startDay < (weekNumber + 1) * 7
           )
           // for burst get the burst number
           const firstSession = _.first(
@@ -378,8 +369,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
             name: weekNumber + 1,
             burst: true,
             burstNum: getBurstNumberFromStartEventId(
-              firstSession!.startEventId,
-              firstSession!.refGuid
+              firstSession!.startEventId
             ),
             sessions: noEmpties,
           }
