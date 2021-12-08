@@ -2,8 +2,8 @@ import {TimelineScheduleItem} from '@typedefs/scheduling'
 import _ from 'lodash'
 
 const Utility = {
-  getGroupedDaysForSession,
-  getDaysFractionForSingleSession,
+  getGroupedDaysForSessionWeek,
+  getDaysFractionForSingleSessionWeek,
 }
 function getStartDaysForSession(
   sessionGuid: string,
@@ -16,17 +16,17 @@ function getStartDaysForSession(
   return schedulingItems.filter(i => filterItem(i)).map(i => i.startDay)
 }
 
-function getGroupedDaysForSession(
+function getGroupedDaysForSessionWeek(
   studySessionGuid: string,
 
   schedulingItems: TimelineScheduleItem[],
-  interval?: {start: number; end: number}
+  weekNumber: number
 ) {
-  const i = interval
-    ? schedulingItems.filter(
-        i => i.startDay >= interval.start && i.endDay < interval.end
-      )
-    : schedulingItems
+  const interval = {start: weekNumber * 7, end: (weekNumber + 1) * 7}
+  const i = schedulingItems.filter(
+    i => i.startDay >= interval.start && i.startDay < interval.end
+  )
+
   const grouppedStartDays = _.groupBy(
     getStartDaysForSession(studySessionGuid, i),
     Math.floor
@@ -38,28 +38,28 @@ function getGroupedDaysForSession(
   return {startDays: startDaysWithinInterval, startEventId: startEventId}
 }
 
-function getDaysFractionForSingleSession(
+function getDaysFractionForSingleSessionWeek(
   studySessionGuid: string,
   schedulingItems: TimelineScheduleItem[],
-  interval: {start: number; end: number},
+  weekNumber: number,
 
   maxWindowNumber: number
 ): {startEventId: string | undefined; coords: number[]} {
   let result: number[] = []
-  const {startDays, startEventId} = getGroupedDaysForSession(
+  const {startDays, startEventId} = getGroupedDaysForSessionWeek(
     studySessionGuid,
     schedulingItems,
-    interval
+    weekNumber
   )
 
   Object.values(startDays).forEach(groupArray => {
     const fraction = 1 / (maxWindowNumber || groupArray.length)
     groupArray.forEach((item, index) => {
       let val = item + fraction * index
-      if (interval) {
-        val = val + 0.5 / (maxWindowNumber || groupArray.length)
-        val = val - interval.start
-      }
+
+      val = val + 0.5 / (maxWindowNumber || groupArray.length)
+      val = val - weekNumber * 7
+
       result.push(val)
     })
   })

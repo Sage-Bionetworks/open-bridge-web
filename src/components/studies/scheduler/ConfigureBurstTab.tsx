@@ -374,7 +374,7 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
     setBurstSessionGuids([])
     setBurstFrequency(Number(burst.interval.replace(/[PW]/g, '')))
     const sessionGuids = schedule.sessions.reduce((prev, current) => {
-      if (_.isEmpty(current.studyBurstIds)) {
+      if (!_.isEmpty(current.studyBurstIds)) {
         return [...prev, current.guid!]
       } else {
         return prev

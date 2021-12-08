@@ -176,9 +176,8 @@ type SaveHandle = {
 }
 const ERROR_MSG = {
   duplicate: 'Duplicate event identifier.',
-  word: 'Sorry, event labels cannot have any blank spaces.',
-  special:
-    'The event name must contain only letters, numbers, dashes, and/or underscores',
+  // word: 'Sorry, event labels cannot have any blank spaces.',
+  special: 'The event name may not contain a colon (:)',
 }
 
 const CalendarIconControl: React.FunctionComponent<any> = React.memo(() => {
@@ -276,16 +275,15 @@ const SessionStartTab: React.ForwardRefRenderFunction<
   }
 
   const checkForErrors = (eventId: string): string | undefined => {
-    const specialChars = /[!,@,#,$,%,^,?,&,*,+,/,\,;,:]/
+    //const specialChars = /[!,@,#,$,%,^,?,&,*,+,/,\,;,:]/
+    const specialChars = /[;,:]/
     if (specialChars.test(eventId)) {
       return ERROR_MSG.special
     }
-    if (eventId !== eventId.replace(/ /gi, '')) {
+
+    /* if (eventId !== eventId.replace(/ /gi, '')) {
       return ERROR_MSG.word
-    }
-    if (eventId !== eventId.replace(/ /gi, '')) {
-      return ERROR_MSG.word
-    }
+    }*/
     if (customEvents?.find(e => e.eventId === eventId)) {
       return ERROR_MSG.duplicate
     }
