@@ -60,7 +60,6 @@ const MemberInvite: FunctionComponent<MemberInviteProps> = ({
 
           onUpdate({...newOrgAccount, access: _access})
         }}
-        isEdit={true}
         // isCoadmin={coadmin}
         currentUserIsAdmin={Utility.isInAdminRole()}></AccessGrid>
     </Container>

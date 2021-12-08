@@ -40,7 +40,7 @@ export const AccessRestriction = ['NO_ACCESS', 'VIEWER', 'EDITOR'] as const
 type AccessGridProps = {
   access: Access
   onUpdate?: Function
-  isEdit?: boolean
+
   isThisMe?: boolean
   //isCoadmin?: boolean
   currentUserIsAdmin: boolean
@@ -124,7 +124,6 @@ type AccessGridRadioComponentsProps = {
   currentUserIsAdmin: boolean
   onUpdate: Function
   isAllowedAccess: boolean
-  isEdit?: boolean
 }
 const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponentsProps> =
   ({
@@ -133,14 +132,10 @@ const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponen
     isCoAdmin,
     currentUserIsAdmin,
     onUpdate,
-    isEdit,
+
     isAllowedAccess,
   }) => {
     const classes = useStyles()
-
-    if (!isEdit) {
-      return isAllowedAccess ? <div className={classes.dot} /> : <>&nbsp;</>
-    }
 
     const key = Object.keys(role_key)[0] as keyof Access
     let checkboxChecked = false
@@ -150,7 +145,7 @@ const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponen
       }
       return (
         <Box
-          mt={-2.5}
+          mt={0}
           height="40px"
           display="flex"
           justifyContent="center"
@@ -192,7 +187,7 @@ const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponen
 const AccessGrid: FunctionComponent<AccessGridProps> = ({
   access,
   onUpdate,
-  isEdit,
+
   isThisMe,
   currentUserIsAdmin,
 }: AccessGridProps) => {
@@ -243,7 +238,7 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
 
   return (
     <Box>
-      {!isThisMe && (
+      {!isThisMe && currentUserIsAdmin && (
         <Box>
           <FormControlLabel
             control={
@@ -312,7 +307,6 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
                   className={clsx(classes.cell, classes.data)}
                   key={Object.values(role_key)[0] + restriction + index}>
                   <AccessGridRadioComponents
-                    isEdit={isEdit}
                     restriction={restriction}
                     role_key={role_key}
                     isCoAdmin={hasCoadminAccess()}
