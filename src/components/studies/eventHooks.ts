@@ -18,7 +18,7 @@ export const useEvents = (studyId: string | undefined) => {
 
   return useQuery<ExtendedScheduleEventObject[], ExtendedError>(
     EVENTS_KEYS.list(studyId),
-    () => ScheduleService.getEventsForScheduleByStudyId(studyId!, token!),
+    () => ScheduleService.getAllEventsForTimelineByStudyId(studyId!, token!),
     {
       enabled: !!studyId,
       retry: false,

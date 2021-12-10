@@ -1,17 +1,15 @@
 import {ReactComponent as SessionStartIcon} from '@assets/scheduler/calendar_icon.svg'
-import {useSchedule, useTimeline} from '@components/studies/scheduleHooks'
 import {useStudy} from '@components/studies/studyHooks'
 import SessionIcon from '@components/widgets/SessionIcon'
 import {Tooltip} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
-import EventService from '@services/event.service'
+import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ScheduleService from '@services/schedule.service'
 import {latoFont, poppinsFont} from '@style/theme'
 import {
-  Schedule,
   ScheduleTimeline,
   SchedulingEvent,
-  StudySession,
+  StudySessionTimeline,
   TimelineScheduleItem,
 } from '@typedefs/scheduling'
 import _ from 'lodash'
@@ -123,8 +121,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export interface TimelineBurstPlotProps {
-  // schedulingItems: TimelineScheduleItem[]
-
+  timeline: ScheduleTimeline
   studyId: string
 }
 
@@ -135,7 +132,7 @@ type PlotData = {
   sessions: {
     startEventId: string | undefined
     coords: number[]
-    session: StudySession
+    session: StudySessionTimeline
   }[]
 }
 
@@ -164,12 +161,13 @@ const FrequencyBracket: React.FunctionComponent<{
 
 const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   studyId,
+  timeline,
 }) => {
   const classes = useStyles()
-  const {data: timeline} = useTimeline(studyId)
+
   const [isLoading, setIsLoading] = React.useState(true)
   const [eventIds, setEventIds] = React.useState<string[]>([])
-  const {data: sessionsSchedule} = useSchedule(studyId)
+
   const {data: study} = useStudy(studyId)
   const ref = React.useRef<HTMLDivElement>(null)
   const [plotWidth, setPlotWidth] = React.useState<number | null>(null)
@@ -180,14 +178,15 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   //check if we are dealing with the sesison converted into a burst
   const isSessionBurst = (sessionGuid: string): boolean => {
     return (
-      sessionsSchedule?.sessions
-        .filter(s => !_.isEmpty(s.studyBurstIds))
-        .map(s => s.guid!) || []
-    ).includes(sessionGuid)
+      timeline?.schedule.find(
+        scheduleItem =>
+          scheduleItem.refGuid === sessionGuid && scheduleItem.studyBurstId
+      ) !== undefined
+    )
   }
 
   const getBurstFrequency = (): number => {
-    const burst = ScheduleService.getStudyBurst(sessionsSchedule)
+    const burst = ScheduleService.getStudyBurst(timeline)
     return burst ? Number(burst.interval.replace(/[PW]/g, '')) : 0
   }
 
@@ -201,19 +200,17 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   React.useEffect(() => {
     setIsLoading(true)
     const getEvents = async (
-      schedule: Schedule,
       timeline: ScheduleTimeline,
       studyEvents: SchedulingEvent[]
     ) => {
       try {
-        const events = await ScheduleService.getEventIdsForSchedule(
-          schedule,
-          studyEvents.map(e => e.eventId)
-        )
-        console.log(events)
-        const e = study?.customEvents
-        console.log(e)
-        setEventIds(events)
+        const events = [
+          JOINED_EVENT_ID,
+          ...studyEvents.map(e =>
+            EventService.prefixCustomEventIdentifier(e.eventId)
+          ),
+        ]
+
         const unwrappedSessions = unWrapSessions(timeline.schedule)
         const lastDay = Math.max(...unwrappedSessions.map(s => s.endDay)) + 1
         const numOfWeeks = Math.ceil(lastDay / 7)
@@ -231,6 +228,9 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
           result[event] = plotData
         }
 
+        const newEvents = events.filter(e => !_.isEmpty(result[e]))
+
+        setEventIds(newEvents)
         setPlotData(result)
       } catch (e) {
         console.log((e as Error).message)
@@ -238,10 +238,10 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
         setIsLoading(false)
       }
     }
-    if (sessionsSchedule && timeline && study) {
-      getEvents(sessionsSchedule, timeline, study.customEvents || [])
+    if (timeline && study) {
+      getEvents(timeline, study.customEvents || [])
     }
-  }, [sessionsSchedule, timeline, study?.customEvents])
+  }, [timeline, study?.customEvents])
 
   React.useLayoutEffect(() => {
     handleResize()
@@ -276,9 +276,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
       //not burst -- return
       if (burstNumber === -1) {
         return i
-      } /*else if (burstNumber === 0) {
-        return {...i, startEventId: `study_burst:${i.startEventId}_burst:00`}
-      }*/ else {
+      } else {
         const offSet =
           (burstNumber - 1) * (getBurstFrequency() * 7 + burstLength)
         return {...i, startDay: i.startDay + offSet, endDay: i.endDay + offSet}
@@ -289,7 +287,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
 
   function getDataForSessionsInWeek(
     schedItems: TimelineScheduleItem[],
-    sessions: StudySession[],
+    sessions: StudySessionTimeline[],
     weekNumber: number,
     maxWindows: number
   ) {
@@ -313,7 +311,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     maxWindows: number,
     eventId: string
   ): PlotData[] {
-    if (!sessionsSchedule || !timeline) {
+    if (!timeline) {
       return []
     }
     var r: Record<string, PlotData[]> = {}
@@ -323,11 +321,11 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     for (var weekNumber = 0; weekNumber < numOfWeeks; weekNumber++) {
       // do the non-burst sessions
 
-      let s = sessionsSchedule.sessions.filter(
+      let s = timeline.sessions.filter(
         s =>
           !isSessionBurst(s.guid!) &&
-          _.first(s.startEventIds) &&
-          _.first(s.startEventIds) === eventId
+          //_.first(s.startEventIds) &&
+          s.startEventId === eventId
       )
       let noEmpties = getDataForSessionsInWeek(
         schedItems,
@@ -343,11 +341,12 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
           sessions: noEmpties,
         }
       }
-      const burst = ScheduleService.getStudyBurst(sessionsSchedule)
+      const burst = ScheduleService.getStudyBurst(timeline)
       if (burst) {
         s =
-          burst.originEventId === eventId
-            ? sessionsSchedule.sessions.filter(s => isSessionBurst(s.guid!))
+          // TEMPORARAY UNTILL BURST GETS EVENT ID burst.originEventId === eventId
+          burst.identifier === `${eventId.replace(':', '_')}_burst`
+            ? timeline.sessions.filter(s => isSessionBurst(s.guid!))
             : []
         noEmpties = getDataForSessionsInWeek(
           schedItems,
@@ -483,7 +482,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
       </div>
       <div style={{position: 'relative'}}>
         {!isLoading &&
-          sessionsSchedule &&
           plotData &&
           eventIds.map((evt, evtIndex) => (
             <div>
@@ -540,9 +538,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                           <div className={classes.sessionName}>
                             <SessionIcon
                               symbolKey={sessionInfo.session.symbol}
-                              index={sessionsSchedule.sessions.findIndex(
-                                s => s.guid === sessionInfo.session.guid
-                              )}
                             />
                           </div>
                         </Tooltip>

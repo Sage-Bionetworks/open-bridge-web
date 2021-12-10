@@ -94,6 +94,7 @@ export type StudySessionGeneral = {
 export interface StudySessionTimeline extends StudySessionGeneral {
   timeWindowGuids: string[]
   label: string
+  startEventId: string
 }
 
 export type StudySession = StudySessionGeneral & SessionSchedule
@@ -105,6 +106,10 @@ export type StudyBurst = {
   occurrences: number
   updateType: EventUpdateType
 }
+
+//"identifier": "custom_CE2_burst",//
+//"interval": "P4W",
+//"occurrences": 10,
 
 export type Schedule = {
   name: string
@@ -121,12 +126,14 @@ export type ScheduleTimeline = {
   duration: string //iso
   schedule: TimelineScheduleItem[]
   assessments: Assessment[]
+  studyBursts: StudyBurst[]
   sessions: StudySessionTimeline[]
   totalMinutes: number
   totalNotifications: number
 }
 
 export type TimelineScheduleItem = {
+  instanceGuid: string
   startDay: number
   endDay: number
   startTime: string
@@ -135,4 +142,7 @@ export type TimelineScheduleItem = {
   refGuid: string
   startEventId: string
   assessments?: any[]
+  timeWindowGuid: string
+  studyBurstId?: string
+  studyBurstNum?: number
 }

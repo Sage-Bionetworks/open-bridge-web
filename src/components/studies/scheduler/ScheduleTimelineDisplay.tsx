@@ -1,8 +1,6 @@
 import {ReactComponent as NotificationsIcon} from '@assets/scheduler/notifications_icon.svg'
 import {ReactComponent as TimerIcon} from '@assets/scheduler/timer_icon.svg'
 import AssessmentImage from '@components/assessments/AssessmentImage'
-import {useTimeline} from '@components/studies/scheduleHooks'
-import LoadingComponent from '@components/widgets/Loader'
 import SessionIcon from '@components/widgets/SessionIcon'
 import {Box} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
@@ -10,6 +8,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import {latoFont, poppinsFont} from '@style/theme'
 import {
   Schedule,
+  ScheduleTimeline,
   StudySession,
   StudySessionTimeline,
 } from '@typedefs/scheduling'
@@ -67,6 +66,7 @@ const useStyles = makeStyles(theme => ({
 
 export interface TimelineProps {
   schedule: Schedule
+  timeline: ScheduleTimeline
   studyId: string
   onSelectSession: (session: StudySession) => void
 }
@@ -114,22 +114,15 @@ export const TooltipHoverDisplay: React.FunctionComponent<{
 const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
   studyId,
   schedule: schedFromDisplay,
+  timeline,
   onSelectSession,
 }: TimelineProps) => {
   const handleError = useErrorHandler()
-
-  const {data: timeline, error, isLoading} = useTimeline(studyId)
 
   const classes = useStyles()
 
   const getSession = (sessionGuid: string): StudySessionTimeline => {
     return timeline?.sessions.find(s => s.guid === sessionGuid)!
-  }
-  if (isLoading) {
-    return <LoadingComponent reqStatusLoading={true} variant="small" />
-  }
-  if (error) {
-    handleError(error!)
   }
 
   return (
@@ -169,7 +162,9 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
         </Box>
       </Box>
       {timeline?.schedule && (
-        <TimelineBurstPlot studyId={studyId}></TimelineBurstPlot>
+        <TimelineBurstPlot
+          studyId={studyId}
+          timeline={timeline}></TimelineBurstPlot>
       )}
     </Box>
   )

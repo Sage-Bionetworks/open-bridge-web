@@ -2,6 +2,7 @@ import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'
 import {ReactComponent as BurstIcon} from '@assets/scheduler/burst_icon.svg'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import ErrorDisplay from '@components/widgets/ErrorDisplay'
+import LoadingComponent from '@components/widgets/Loader'
 import {
   DialogButtonPrimary,
   DialogButtonSecondary,
@@ -35,7 +36,7 @@ import _ from 'lodash'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import {useSchedule, useUpdateSchedule} from '../scheduleHooks'
+import {useSchedule, useTimeline, useUpdateSchedule} from '../scheduleHooks'
 import {useStudy} from '../studyHooks'
 import AssessmentList from './AssessmentList'
 import ConfigureBurstTab from './ConfigureBurstTab'
@@ -124,6 +125,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
 
   const {data: study, error, isLoading} = useStudy(id)
   const {data: _schedule, refetch} = useSchedule(id)
+  const {data: timeline, isLoading: isTimelineLoading} = useTimeline(id)
 
   const {
     isSuccess: scheduleUpdateSuccess,
@@ -341,7 +343,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
       </Box>
     )
   }
-  if (!study) {
+  if (!study || isTimelineLoading || !timeline) {
     return <span>...loading</span>
   }
 
@@ -436,13 +438,17 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                 <BurstIcon /> Configure Study Bursts
               </Button>
             )}
-
-            <ScheduleTimelineDisplay
-              studyId={id}
-              onSelectSession={(session: StudySession) => {
-                setOpenStudySession(session)
-              }}
-              schedule={schedule}></ScheduleTimelineDisplay>
+            {!timeline ? (
+              <LoadingComponent reqStatusLoading={true} variant="small" />
+            ) : (
+              <ScheduleTimelineDisplay
+                studyId={id}
+                timeline={timeline}
+                onSelectSession={(session: StudySession) => {
+                  setOpenStudySession(session)
+                }}
+                schedule={schedule}></ScheduleTimelineDisplay>
+            )}
           </Box>
         </Box>
       </Box>
@@ -461,8 +467,10 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
           <SessionStartTab
             ref={ref1}
             study={study!}
-            eventIdsInSchedule={ScheduleService.getEventIdsForSchedule(
-              schedule
+            eventIdsInSchedule={_.uniq(
+              ScheduleService.getEventsForTimeline(timeline!).map(
+                e => e.eventId
+              )
             )}
             onNavigate={() => setOpenModal(undefined)}
           />
