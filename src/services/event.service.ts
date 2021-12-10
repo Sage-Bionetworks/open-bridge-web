@@ -15,12 +15,6 @@ function getBurstNumberFromEventId(eventIdentifier: string): number {
   return Number(eventIdentifier.match(/([0-9]+)\b/)?.[0] || '-1')
 }
 
-function getOriginEventIdFromBurstStartEventId(
-  eventIdentifier: string
-): string | undefined {
-  return eventIdentifier.match(BURST_START_EVENT_ID_REGEX_PATTERN)?.[0]
-}
-
 function isEventBurstEvent(eventIdentifier: string) {
   return new RegExp(BURST_EVENT_REGEX_PATTERN).test(eventIdentifier)
 }
@@ -57,16 +51,6 @@ async function getRelevantEventsForParticipants(
     customEvents: ParticipantEvent[]
   }>
 > {
-  //transform ids into promises
-  /* const eventIdsForSchedule =
-    await ScheduleService.getAllEventsForTimelineByStudyId(
-      studyIdentifier,
-      token
-    ).then(result =>
-      result.map(eventObject =>
-        prefixCustomEventIdentifier(eventObject.eventId)
-      )
-    )*/
   const customEventsForStudy =
     await ScheduleService.getAllEventsForTimelineByStudyId(
       studyIdentifier,
@@ -115,6 +99,7 @@ async function getRelevantEventsForParticipants(
   })
 }
 
+//we can't 'update' the events, so we delete them and then recreate them with the new info
 async function updateParticipantCustomEvents(
   studyIdentifier: string,
   token: string,
@@ -136,12 +121,6 @@ async function updateParticipantCustomEvents(
   const customEventsToUpdate = eventsToUpdate.filter(
     e => e.eventId !== JOINED_EVENT_ID
   )
-
-  const eventsToDelete = schedulingEventIds
-    .filter(event =>
-      customEventsToUpdate.find(pEvent => event.eventId === pEvent.eventId)
-    )
-    .map(e => e.eventId)
 
   customEventsToUpdate.forEach(async event => {
     const d = await Utility.callEndpoint<{identifier: string}>(
@@ -167,32 +146,6 @@ async function updateParticipantCustomEvents(
     }
   })
 
-  /* const eventsToDeletePromises = eventsToDelete.map(eventId =>
-    Utility.callEndpoint<{identifier: string}>(
-      eventEndpoint + '/' + eventId,
-      'DELETE',
-      {},
-      token
-    )
-  )
-  const eventsToUpdatePromises = customEventsToUpdate
-    .filter(e => !!e.timestamp)
-    .map(event => {
-      const data = {
-        eventId: event.eventId,
-        timestamp: new Date(event.timestamp!).toISOString(),
-      }
-
-      return Utility.callEndpoint<{identifier: string}>(
-        `${eventEndpoint}?showError=true&updateBursts=false`,
-        'POST',
-        data,
-        token
-      )
-    })
-
-  await Promise.allSettled(eventsToDeletePromises)
-  await Promise.allSettled(eventsToUpdatePromises)*/
   return participantId
 }
 

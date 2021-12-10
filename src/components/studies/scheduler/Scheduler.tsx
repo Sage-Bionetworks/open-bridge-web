@@ -182,8 +182,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
     }
   }, [_schedule])
 
-  if (!schedule?.sessions) {
-    return <>...loading</>
+  if (!study || isTimelineLoading || !timeline || !schedule?.sessions) {
+    return <LoadingComponent reqStatusLoading={true} />
   }
 
   const getOpenStudySession = () => {
@@ -342,9 +342,6 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
         </ErrorDisplay>
       </Box>
     )
-  }
-  if (!study || isTimelineLoading || !timeline) {
-    return <span>...loading</span>
   }
 
   return (

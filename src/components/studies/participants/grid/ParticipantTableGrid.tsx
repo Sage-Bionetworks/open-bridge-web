@@ -487,7 +487,7 @@ export type ParticipantTableGridProps = {
 
 const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   rows,
-  //scheduleEventIds,
+
   studyId,
   totalParticipants,
   gridType,
