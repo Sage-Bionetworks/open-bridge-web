@@ -94,7 +94,7 @@ export const useTimeline = (studyId: string) => {
 
   return useQuery<ScheduleTimeline | undefined, ExtendedError>(
     SCHEDULE_KEYS.timeline(studyId),
-    () => ScheduleService.getScheduleTimeline(studyId, token!),
+    () => ScheduleService.getTimeline(studyId, token!),
     {
       enabled: !!studyId,
       refetchOnWindowFocus: true,

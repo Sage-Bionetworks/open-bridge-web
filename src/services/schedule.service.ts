@@ -24,11 +24,10 @@ import StudyService from './study.service'
 const ScheduleService = {
   createSchedule,
   createEmptyScheduleSession,
-  // getEventIdsForSchedule,
   getEventsForTimeline,
   getAllEventsForTimelineByStudyId,
   getSchedule,
-  getScheduleTimeline,
+  getTimeline,
   saveSchedule,
   getStudyBurst,
 }
@@ -178,7 +177,7 @@ async function getSchedule(
     : schedule.data
 }
 
-async function getScheduleTimeline(
+async function getTimeline(
   studyId: string,
   token: string
 ): Promise<ScheduleTimeline | undefined> {
@@ -245,7 +244,7 @@ async function getAllEventsForTimelineByStudyId(
 ): Promise<ExtendedScheduleEventObject[]> {
   // get schedule
   const study = await StudyService.getStudy(studyId, token)
-  const timeline = await getScheduleTimeline(studyId, token)
+  const timeline = await getTimeline(studyId, token)
   if (!timeline) {
     throw Error('Schedule not found')
   }

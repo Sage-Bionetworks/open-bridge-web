@@ -530,7 +530,9 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                         <Tooltip
                           key="tooltip"
                           placement="top"
-                          title={`Starts on: ${sessionInfo.startEventId}`}>
+                          title={`Starts on: ${EventService.formatEventIdForDisplay(
+                            sessionInfo.startEventId!
+                          )}`}>
                           <div className={classes.sessionName}>
                             <SessionIcon
                               symbolKey={sessionInfo.session.symbol}
