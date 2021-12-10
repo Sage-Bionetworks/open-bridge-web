@@ -130,6 +130,7 @@ type PlotData = {
   burst: boolean
   burstNum: number
   sessions: {
+    sessionIndex: number
     startEventId: string | undefined
     coords: number[]
     session: StudySessionTimeline
@@ -299,7 +300,11 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
         maxWindows
       )
 
-      return {...sessionCoords, session}
+      return {
+        ...sessionCoords,
+        session,
+        sessionIndex: timeline.sessions.findIndex(s => s.guid === session.guid),
+      }
     })
     const noEmpties = resultSessions.filter(s => s.coords.length > 0)
     return noEmpties
@@ -538,12 +543,13 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                           <div className={classes.sessionName}>
                             <SessionIcon
                               symbolKey={sessionInfo.session.symbol}
+                              index={sessionInfo.sessionIndex}
                             />
                           </div>
                         </Tooltip>
 
                         <SessionPlot
-                          sessionIndex={sIndex}
+                          sessionIndex={sessionInfo.sessionIndex}
                           lineNumber={index}
                           xCoords={sessionInfo.coords}
                           displayIndex={2}

@@ -259,7 +259,9 @@ const BurstSelectorSC: React.FunctionComponent<{
               label={
                 <TooltipHoverDisplay key={s.guid} session={s}>
                   <SessionIcon
-                    index={index}
+                    index={schedule.sessions.findIndex(
+                      session => session.guid === s.guid
+                    )}
                     key={s.guid}
                     symbolKey={s.symbol}
                     onClick={() => {

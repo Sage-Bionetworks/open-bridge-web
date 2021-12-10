@@ -40,6 +40,7 @@ const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
     <SessionIcon
       key={`sessionG${i}_${unitPixelWidth * i}_${sessionIndex}_${lineNumber}`}
       symbolKey={sessionSymbol}
+      index={sessionIndex}
       style={{
         position: 'absolute',
         zIndex: 100,
