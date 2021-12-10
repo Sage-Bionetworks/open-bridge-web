@@ -15,7 +15,7 @@ import {
 import _ from 'lodash'
 import React from 'react'
 import SessionPlot from './SingleSessionPlot'
-import Utility from './utility'
+import Utility, {CoordItem} from './utility'
 
 const LayoutConstants = {
   marginGap: 4,
@@ -132,7 +132,7 @@ type PlotData = {
   sessions: {
     sessionIndex: number
     startEventId: string | undefined
-    coords: number[]
+    coords: CoordItem[]
     session: StudySessionTimeline
   }[]
 }
@@ -226,7 +226,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
             burst && burst.originEventId === event
               ? burst.originEventId
               : undefined
-          const plotData = getPlotData(
+          const plotData = getPlotDataForEvent(
             unwrappedSessions,
             numOfWeeks,
             maxWindows,
@@ -311,7 +311,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     return noEmpties
   }
 
-  function getPlotData(
+  function getPlotDataForEvent(
     schedItems: TimelineScheduleItem[],
     numOfWeeks: number,
     maxWindows: number,
@@ -359,12 +359,10 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
 
         if (dataForWeek.length) {
           //get burst number from one of the items
-          const itemsWidthBurstForWeek = schedItems.filter(
-            i =>
-              i.startDay >= weekNumber * 7 &&
-              i.startDay < (weekNumber + 1) * 7 &&
-              i.studyBurstNum !== undefined
-          )
+          const itemsWidthBurstForWeek = Utility.getSchedulingItemsForWeek(
+            schedItems,
+            weekNumber
+          ).filter(i => i.studyBurstNum !== undefined)
 
           result[`${weekNumber}_burst`] = {
             name: weekNumber + 1,

@@ -1,66 +1,59 @@
 import {TimelineScheduleItem} from '@typedefs/scheduling'
 import _ from 'lodash'
+import {getFormattedTimeDateFromPeriodString} from '../utility'
 
 const Utility = {
-  getGroupedDaysForSessionWeek,
   getDaysFractionForSingleSessionWeek,
-}
-function getStartDaysForSession(
-  sessionGuid: string,
-  schedulingItems: TimelineScheduleItem[]
-): number[] {
-  function filterItem(timelineItem: TimelineScheduleItem) {
-    return timelineItem.refGuid === sessionGuid
-  }
-
-  return schedulingItems.filter(i => filterItem(i)).map(i => i.startDay)
+  getSchedulingItemsForWeek,
 }
 
-function getGroupedDaysForSessionWeek(
-  studySessionGuid: string,
+export type CoordItem = {
+  c: number
+  expiration: string
+}
 
+function getSchedulingItemsForWeek(
   schedulingItems: TimelineScheduleItem[],
   weekNumber: number
-) {
-  const interval = {start: weekNumber * 7, end: (weekNumber + 1) * 7}
-  const i = schedulingItems.filter(
-    i => i.startDay >= interval.start && i.startDay < interval.end
+): TimelineScheduleItem[] {
+  return schedulingItems.filter(
+    i => i.startDay >= weekNumber * 7 && i.startDay < (weekNumber + 1) * 7
   )
-
-  const grouppedStartDays = _.groupBy(
-    getStartDaysForSession(studySessionGuid, i),
-    Math.floor
-  )
-
-  const startEventId = _.first(i)?.startEventId
-  const startDaysWithinInterval = grouppedStartDays
-
-  return {startDays: startDaysWithinInterval, startEventId: startEventId}
 }
 
 function getDaysFractionForSingleSessionWeek(
   studySessionGuid: string,
   schedulingItems: TimelineScheduleItem[],
   weekNumber: number,
-
   maxWindowNumber: number
-): {startEventId: string | undefined; coords: number[]} {
-  let result: number[] = []
-  const {startDays, startEventId} = getGroupedDaysForSessionWeek(
-    studySessionGuid,
+): {
+  startEventId: string | undefined
+  coords: CoordItem[]
+} {
+  let result: CoordItem[] = []
+  const itemsForSessionWithinInterval = getSchedulingItemsForWeek(
     schedulingItems,
     weekNumber
+  ).filter(i => i.refGuid === studySessionGuid)
+
+  const grouppedStartDays = _.groupBy(itemsForSessionWithinInterval, i =>
+    Math.floor(i.startDay)
   )
 
-  Object.values(startDays).forEach(groupArray => {
-    const fraction = 1 / (maxWindowNumber || groupArray.length)
-    groupArray.forEach((item, index) => {
-      let val = item + fraction * index
+  const startEventId = _.first(itemsForSessionWithinInterval)?.startEventId
 
-      val = val + 0.5 / (maxWindowNumber || groupArray.length)
+  Object.values(grouppedStartDays).forEach(groupArray => {
+    const fraction = 1 / maxWindowNumber
+    groupArray.forEach((item, index) => {
+      let val = item.startDay + fraction * index
+
+      val = val + 0.5 / maxWindowNumber
       val = val - weekNumber * 7
 
-      result.push(val)
+      result.push({
+        c: val,
+        expiration: getFormattedTimeDateFromPeriodString(item.expiration),
+      })
     })
   })
 
