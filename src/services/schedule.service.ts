@@ -10,6 +10,7 @@ import {
   SchedulingEvent,
   StudyBurst,
   StudySession,
+  TimelineScheduleItem,
   TimePeriod,
 } from '../types/scheduling'
 import {Assessment} from '../types/types'
@@ -23,8 +24,9 @@ import StudyService from './study.service'
 const ScheduleService = {
   createSchedule,
   createEmptyScheduleSession,
-  getEventIdsForSchedule,
-  getEventsForScheduleByStudyId,
+  // getEventIdsForSchedule,
+  getEventsForTimeline,
+  getAllEventsForTimelineByStudyId,
   getSchedule,
   getScheduleTimeline,
   saveSchedule,
@@ -58,7 +60,9 @@ export const DEFAULT_NOTIFICATION: ScheduleNotification = {
   ],
 }
 
-function getStudyBurst(schedule?: Schedule): StudyBurst | undefined {
+function getStudyBurst(
+  schedule?: Schedule | ScheduleTimeline
+): StudyBurst | undefined {
   return !schedule?.studyBursts || schedule.studyBursts.length === 0
     ? undefined
     : schedule.studyBursts[0]
@@ -187,52 +191,38 @@ async function getScheduleTimeline(
   return result.data
 }
 
-function getEventsForSchedule(
-  schedule: Schedule,
+function getEventsForTimeline(
+  {schedule, studyBursts}: ScheduleTimeline,
   sortedCustomEventIds?: string[]
 ): ExtendedScheduleEventObject[] {
   //get startEventIds from Sessions
 
-  const sessions =
-    schedule.sessions.filter(session => !_.isEmpty(session.startEventIds)) || []
+  const burst = !_.isEmpty(studyBursts) ? studyBursts[0] : undefined
 
-  const events = sessions.reduce(
-    (p: ExtendedScheduleEventObject[], c: StudySession) => {
-      var eventId = c.startEventIds[0]
+  const events = schedule.reduce(
+    (p: ExtendedScheduleEventObject[], i: TimelineScheduleItem) => {
+      var isBurstEvent = i.studyBurstNum !== undefined
+      var eventId = isBurstEvent ? burst!.originEventId : i.startEventId
 
       var event = {
         eventId,
+        studyBurstId: isBurstEvent ? burst?.identifier : undefined,
       }
-      //if we already have this event
+      //check if we already have this event
       const eventIndex = p.findIndex(e => e.eventId === eventId)
-      // if event already exists
-      if (eventIndex > -1) {
-        return p
-
-        //else replace it with the burst event
-      } else {
+      // add event if it doesn't exist or would replace non-burst event
+      if (eventIndex === -1) {
         return [...p, event]
+      } else {
+        if (!p[eventIndex].studyBurstId && event.studyBurstId) {
+          p[eventIndex] = event
+        }
+        return p
       }
     },
     [] as {eventId: string; delay: TimePeriod}[]
   )
 
-  //add events from StudyBursts
-  if (_.first(schedule.studyBursts)?.originEventId) {
-    const burst = _.first(schedule.studyBursts)!
-    const event = {
-      eventId: burst.originEventId,
-      delay: undefined,
-      studyBurstId: burst.identifier,
-    }
-    const eventIndex = events.findIndex(e => e.eventId === event.eventId)
-    // if event already exists
-    if (eventIndex > -1) {
-      events[eventIndex] = event
-    } else {
-      events.push(event)
-    }
-  }
   if (!sortedCustomEventIds) {
     return events
   }
@@ -248,39 +238,26 @@ function getEventsForSchedule(
   return result
 }
 
-function getEventIdsForSchedule(
-  schedule: Schedule,
-  studyEventIds?: string[]
-): string[] {
-  const eventIds = getEventsForSchedule(schedule, studyEventIds).map(
-    e => e.eventId
-  )
-
-  return _.uniq(eventIds)
-}
 //this includes burst events
-async function getEventsForScheduleByStudyId(
+async function getAllEventsForTimelineByStudyId(
   studyId: string,
   token: string
 ): Promise<ExtendedScheduleEventObject[]> {
   // get schedule
   const study = await StudyService.getStudy(studyId, token)
-  const schedule = await getSchedule(studyId, token, false)
-  if (!schedule) {
+  const timeline = await getScheduleTimeline(studyId, token)
+  if (!timeline) {
     throw Error('Schedule not found')
   }
   // get events from Sessions
-  const events = getEventsForSchedule(
-    schedule,
+  const events = getEventsForTimeline(
+    timeline,
     study?.customEvents?.map(e => e.eventId)
   )
 
-  var burst = getStudyBurst(schedule)
+  var burst = getStudyBurst(timeline)
 
   var result = events.reduce((res, current) => {
-    //custom events
-    //  const isEventCustom = current.eventId !== TIMELINE_RETRIEVED_EVENT.eventId
-    //if we are ignoring the timeline events -- don't add it
     var res = [...res]
 
     // create and add non-burst event
@@ -291,7 +268,7 @@ async function getEventsForScheduleByStudyId(
 
     res.push(nontBurstEvent)
 
-    // if we are getting burst events -- add them as well
+    // if we are getting burst events -- add it and create the events for an actual burst
     if (burst?.identifier && burst.identifier === current.studyBurstId) {
       for (let i = 1; i <= burst.occurrences; i++) {
         //generate burst name

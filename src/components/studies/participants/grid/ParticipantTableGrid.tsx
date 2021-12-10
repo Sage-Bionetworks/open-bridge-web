@@ -224,38 +224,6 @@ const SelectionControl: FunctionComponent<{
   )
 }
 
-//---------------------- selection control2
-
-const SelectionControl2: FunctionComponent<{
-  selectionModel: string[]
-  isAllSelected: boolean
-  totalParticipants: number
-  onSelectAllPage: Function
-  onSelectAll: Function
-  onDeselect: Function
-  selectionType: any
-}> = ({
-  selectionModel,
-  isAllSelected,
-  totalParticipants,
-  selectionType,
-  onSelectAll,
-  onSelectAllPage,
-  onDeselect,
-}) => {
-  const classes = useStyles()
-
-  return (
-    <SelectAll
-      selectionType={selectionType}
-      allText={`Select all ${totalParticipants}`}
-      allPageText="Select this page"
-      onSelectAllPage={onSelectAllPage}
-      onDeselect={onDeselect}
-      onSelectAll={onSelectAll}></SelectAll>
-  )
-}
-
 export function CustomColumnMenuComponent(
   props: GridColumnMenuProps & {color: string}
 ) {
@@ -598,7 +566,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     width: 70,
     align: 'left',
     renderHeader: () => {
-      console.log(isAllSelected, getSelectionType())
       return (
         <div style={{marginLeft: '-6px'}}>
           <SelectAll

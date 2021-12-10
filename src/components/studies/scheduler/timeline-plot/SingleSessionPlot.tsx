@@ -1,6 +1,8 @@
 import SessionIcon from '@components/widgets/SessionIcon'
+import {Tooltip} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
+import {CoordItem} from './utility'
 
 const useStyles = makeStyles(theme => ({}))
 
@@ -12,7 +14,7 @@ export interface SingleSessionPlotProps {
   unitPixelWidth: number
   displayIndex: number
   sessionSymbol?: string
-  xCoords: number[]
+  xCoords: CoordItem[]
 }
 
 const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
@@ -36,16 +38,24 @@ const SessionPlot: React.FunctionComponent<SingleSessionPlotProps> = ({
         left: `${index * unitPixelWidth}px`,
       }}></div>
   ))
-  const sessionGraph = xCoords.map(i => (
-    <SessionIcon
-      key={`sessionG${i}_${unitPixelWidth * i}_${sessionIndex}_${lineNumber}`}
-      symbolKey={sessionSymbol}
-      style={{
-        position: 'absolute',
-        zIndex: 100,
-        top: `${displayIndex}px`,
-        left: `${i * unitPixelWidth - 6}px`,
-      }}></SessionIcon>
+  const sessionGraph = xCoords.map(({c: i, expiration}) => (
+    <Tooltip
+      title={expiration}
+      placement="top"
+      key={`session${i}_${unitPixelWidth * i}_${sessionIndex}_${lineNumber}`}>
+      <div
+        style={{
+          position: 'absolute',
+          zIndex: 100,
+
+          top: `${displayIndex}px`,
+          left: `${i * unitPixelWidth - 6}px`,
+        }}>
+        <SessionIcon
+          symbolKey={sessionSymbol}
+          index={sessionIndex}></SessionIcon>
+      </div>
+    </Tooltip>
   ))
   return (
     <div style={{position: 'relative', height: '18px'}}>

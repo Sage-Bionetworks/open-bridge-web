@@ -8,9 +8,17 @@ export const LINK_SENT_EVENT_ID = 'install_link_sent'
 export const EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING = 'withdrawn'
 export const BURST_EVENT_PATTERN = 'study_burst:[burst_id]:[0-9]+'
 export const BURST_EVENT_REGEX_PATTERN = /study_burst:([^:]+):([0-9]+)/
+export const BURST_START_EVENT_ID_REGEX_PATTERN =
+  /(?<=study_burst:custom_)[^:]+(?=_burst:[0-9]+)/
 
 function getBurstNumberFromEventId(eventIdentifier: string): number {
   return Number(eventIdentifier.match(/([0-9]+)\b/)?.[0] || '-1')
+}
+
+function getOriginEventIdFromBurstStartEventId(
+  eventIdentifier: string
+): string | undefined {
+  return eventIdentifier.match(BURST_START_EVENT_ID_REGEX_PATTERN)?.[0]
 }
 
 function isEventBurstEvent(eventIdentifier: string) {
@@ -50,15 +58,22 @@ async function getRelevantEventsForParticipants(
   }>
 > {
   //transform ids into promises
-  const eventIdsForSchedule =
-    await ScheduleService.getEventsForScheduleByStudyId(
+  /* const eventIdsForSchedule =
+    await ScheduleService.getAllEventsForTimelineByStudyId(
       studyIdentifier,
       token
     ).then(result =>
       result.map(eventObject =>
         prefixCustomEventIdentifier(eventObject.eventId)
       )
+    )*/
+  const customEventsForStudy =
+    await ScheduleService.getAllEventsForTimelineByStudyId(
+      studyIdentifier,
+      token
     )
+
+  const customEventIdsForStudy = customEventsForStudy.map(e => e.eventId)
   const promises = participantId.map(async pId => {
     const endpoint = constants.endpoints.events
       .replace(':studyId', studyIdentifier)
@@ -77,7 +92,7 @@ async function getRelevantEventsForParticipants(
   return Promise.all(promises).then(result => {
     const items = result.reduce((acc, item) => {
       const relevantEvents = item.apiCall.data.items.filter(event => {
-        return eventIdsForSchedule.includes(event.eventId)
+        return customEventIdsForStudy.includes(event.eventId)
       })
       let joinedDate = item.apiCall.data.items.find(
         event => event.eventId === JOINED_EVENT_ID
@@ -112,7 +127,10 @@ async function updateParticipantCustomEvents(
 
   // get Events for schedule  - we need this in order to possibly delete userEvents
   const schedulingEventIds =
-    await ScheduleService.getEventsForScheduleByStudyId(studyIdentifier, token)
+    await ScheduleService.getAllEventsForTimelineByStudyId(
+      studyIdentifier,
+      token
+    )
 
   //ag: why date?  const customEventWithDate = eventsToUpdate.filter(event => !!event.timestamp)
   const customEventsToUpdate = eventsToUpdate.filter(
