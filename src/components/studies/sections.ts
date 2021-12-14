@@ -40,6 +40,7 @@ const SECTIONS: {
   isEditableLive?: boolean
   isHiddenLive?: boolean
   isHiddenDraft?: boolean
+  buttonName?: string
 }[] = [
   {
     name: 'Create Sessions',
@@ -84,7 +85,7 @@ const SECTIONS: {
 
   {
     name: 'Launch Study',
-
+    buttonName: 'Prepare to Launch Study',
     path: 'launch',
     isHiddenLive: true,
     navIcon: LaunchStudyRegularIcon,

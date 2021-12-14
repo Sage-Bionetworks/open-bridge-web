@@ -581,7 +581,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }
 
   const displayPlaceholderScreen =
-    !constants.constants.IS_TEST_MODE && study.phase != 'in_flight'
+    !constants.constants.IS_TEST_MODE &&
+    StudyService.getDisplayStatusForStudyPhase(study.phase) !== 'LIVE'
 
   const displayNoParticipantsPage =
     status !== 'PENDING' && data?.items.length == 0 && tab === 'WITHDRAWN'
