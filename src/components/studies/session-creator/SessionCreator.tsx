@@ -313,6 +313,7 @@ SessionCreatorProps) => {
         {children}
         <Dialog
           maxWidth="lg"
+          scroll="body"
           open={isAssessmentDialogOpen}
           scroll="body"
           onClose={cancelAssessmentSelector}
