@@ -28,6 +28,11 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: '#F7F7F7',
     padding: theme.spacing(0, 5),
   },
+  logo: {
+    '&:hover': {
+      opacity: 0.7,
+    },
+  },
   toolbarStudyHeader: {
     height: '104px',
     display: 'flex',
@@ -206,7 +211,12 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               key="/Studies"
               className={classes.toolbarLink}
               style={{paddingBottom: '0', paddingLeft: '4px'}}>
-              <img src={Logo} key="img_home" alt="home" />
+              <img
+                src={Logo}
+                className={classes.logo}
+                key="img_home"
+                alt="home"
+              />
             </NavLink>
             <HideWhen hideWhen={study === undefined && !error}>
               <BreadCrumb
