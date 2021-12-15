@@ -178,6 +178,7 @@ const ERROR_MSG = {
   duplicate: 'Duplicate event identifier.',
   // word: 'Sorry, event labels cannot have any blank spaces.',
   special: 'The event name may not contain a colon (:)',
+  empty: 'The name of the event cannot be blank',
 }
 
 const CalendarIconControl: React.FunctionComponent<any> = React.memo(() => {
@@ -279,6 +280,9 @@ const SessionStartTab: React.ForwardRefRenderFunction<
     const specialChars = /[;,:]/
     if (specialChars.test(eventId)) {
       return ERROR_MSG.special
+    }
+    if (eventId.trim() === '') {
+      return ERROR_MSG.empty
     }
 
     /* if (eventId !== eventId.replace(/ /gi, '')) {
@@ -394,7 +398,10 @@ const SessionStartTab: React.ForwardRefRenderFunction<
             <input
               key="new_event"
               value={newEvent}
-              onChange={e => setNewEvent(e.target.value)}
+              onChange={e => {
+                setNewEvent(e.target.value)
+                setError(undefined)
+              }}
               className={clsx(
                 classes.input,
                 error && classes.errorTextbox
