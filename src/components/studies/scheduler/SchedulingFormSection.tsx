@@ -104,8 +104,7 @@ const SchedulingFormSection: React.FunctionComponent<SchedulingFormSectionProps>
             border === false && 'no-border',
             disabled && classes.disabled
           )}
-          style={style}
-          title={`section ${typeof label === 'string' ? label : altLabel}`}>
+          style={style}>
           <div
             style={{justifyContent: justifyContent}}
             className={clsx(

@@ -221,8 +221,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
         handleError(e)
       }
 
-      const entity = (e as ExtendedError).entity
-      const errors = (e as ExtendedError).errors
+      const entity = (e as SchedulerErrorType).entity
+      const errors = (e as SchedulerErrorType).errors
       // This can occur when a request fails due to reasons besides bad user input.
       if (!errors || !entity) {
         window.scrollTo({
@@ -452,7 +452,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
       <Dialog open={openModal === 'EVENTS'} maxWidth="md" scroll="body">
         <DialogTitle>
           <EditIcon />
-          &nbsp;&nbsp; Edit Session Start Drop Down
+          &nbsp;&nbsp; Edit Session Start Dropdown
           <IconButton
             aria-label="close"
             className={classes.closeModalButton}
