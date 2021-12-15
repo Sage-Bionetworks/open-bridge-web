@@ -468,10 +468,11 @@ const SessionStartTab: React.ForwardRefRenderFunction<
                                     <InfoCircleWithToolTip
                                       tooltipDescription={
                                         <span>
-                                          This session is now part of a{' '}
-                                          <strong>Burst</strong>. To edit this
-                                          Start Session event, the session must
-                                          be removed from the Burst first.
+                                          This event is being used in one/more
+                                          session(s) as a Session Start event.
+                                          To <strong>rename or delete</strong>{' '}
+                                          this Event, please unselect it from
+                                          all Session Start events.
                                         </span>
                                       }
                                       variant="info"

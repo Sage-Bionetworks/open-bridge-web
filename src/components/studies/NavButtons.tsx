@@ -43,7 +43,7 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
       to={`/studies/builder/${study.identifier}/${prev.path}`}
       style={{textDecoration: 'none'}}>
       <PrevButton variant="outlined" color="primary">
-        <ArrowIcon /> {prev.name}
+        <ArrowIcon /> {prev.buttonName || prev.name}
       </PrevButton>
     </NavLink>
   ) : (
@@ -58,7 +58,7 @@ const NavButtons: React.FunctionComponent<NavButtonsProps> = ({
         variant="contained"
         color="primary"
         disabled={disabled || false}>
-        {next.name} <ArrowIcon />
+        {next.buttonName || next.name} <ArrowIcon />
       </NextButton>
     </NavLink>
   ) : (

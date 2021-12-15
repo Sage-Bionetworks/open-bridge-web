@@ -457,7 +457,11 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
         {routes
           .filter(r => r.isRhs)
           .map(route => (
-            <MenuItem key={route.name}>
+            <MenuItem
+              key={route.name}
+              disabled={
+                route.name === 'Edit Profile' || route.name === 'Settings'
+              }>
               <NavLink to={route.path}>{route.name}</NavLink>
             </MenuItem>
           ))}

@@ -133,7 +133,7 @@ const sections = [
   {
     studyStatus: ['design'] as StudyPhase[],
     title: 'Draft Studies',
-    filterTitle: 'Design',
+    filterTitle: 'Draft',
     sectionStatus: 'DRAFT' as DisplayStudyPhase,
   },
   {

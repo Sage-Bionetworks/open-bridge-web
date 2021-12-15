@@ -64,7 +64,7 @@ const LeadInvestigatorDropdown: React.FunctionComponent<LeadInvestigatorDropdown
     return (
       <div>
         <Box ml={1} className={clsx(hasError && classes.errorText)}>
-          Lead Principle Investigator*
+          Lead Principal Investigator*
         </Box>
         <BlackBorderDropdown
           id="lead-investigator-drop-down"
