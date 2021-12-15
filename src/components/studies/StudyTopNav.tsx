@@ -277,16 +277,25 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
             type="IN_STUDY"></MobileDrawerMenuHeader>
           {links
             .filter(section => section.name)
-            .map(section => (
-              <NavLink
-                to={section.path.replace(':id', study.identifier)}
-                key={section.path}
-                className={classes.mobileToolBarLink}
-                activeClassName={classes.mobileSelectedLink}
-                onClick={() => setIsMobileOpen(false)}>
-                {section.name}
-              </NavLink>
-            ))}
+            .map(section =>
+              section.status.includes(study?.phase) ? (
+                <NavLink
+                  to={section.path.replace(':id', study.identifier)}
+                  key={section.path}
+                  className={classes.mobileToolBarLink}
+                  activeClassName={classes.mobileSelectedLink}
+                  onClick={() => setIsMobileOpen(false)}>
+                  {section.name}
+                </NavLink>
+              ) : (
+                <span
+                  key={section.path}
+                  style={{opacity: 0.45}}
+                  className={classes.mobileToolBarLink}>
+                  {section.name}
+                </span>
+              )
+            )}
           <NavLink
             to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
               ':id',
