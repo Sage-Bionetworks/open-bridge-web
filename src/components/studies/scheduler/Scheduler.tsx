@@ -103,6 +103,12 @@ export const useStyles = makeStyles((theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'space-between',
     },
+    dialogTitle: {
+      '& h2': {
+        display: 'flex',
+        alignItems: 'center',
+      },
+    },
   })
 )
 
@@ -450,7 +456,11 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
         </Box>
       </Box>
       <Dialog open={openModal === 'EVENTS'} maxWidth="md" scroll="body">
-        <DialogTitle>
+        <DialogTitle
+          className={classes.dialogTitle}
+          style={{
+            backgroundColor: '#f8f8f8',
+          }}>
           <EditIcon />
           &nbsp;&nbsp; Edit Session Start Dropdown
           <IconButton
@@ -607,7 +617,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
         </DialogActions>
       </Dialog>
       <Dialog open={openModal === 'BURSTS'} maxWidth="md" scroll="body">
-        <DialogTitle>
+        <DialogTitle className={classes.dialogTitle}>
           <BurstIcon />
           &nbsp;&nbsp; Configure Study bursts
           <IconButton
