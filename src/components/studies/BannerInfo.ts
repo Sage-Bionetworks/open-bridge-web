@@ -1,5 +1,5 @@
 import {DisplayStudyPhase} from '@typedefs/types'
-import EditIcon from '../../assets/edit_icon.svg'
+import EditIcon from '../../assets/edit_pencil.svg'
 import NoEditIcon from '../../assets/no_edit_icon.svg'
 import SaveIcon from '../../assets/save_icon.svg'
 import Alert_Icon from '../../assets/scheduler/white_alert_icon.svg'

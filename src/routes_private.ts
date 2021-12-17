@@ -1,21 +1,30 @@
+import AccessSettings from '@components/access-settings/AccessSettings'
+import AccountSetup from '@components/account/AccountSetup'
+import Adherence from '@components/adherence/Adherence'
+import AdherenceParticipant from '@components/adherence/participant-detail/AdherenceParticipant'
+import AssessmentDetail from '@components/assessments/AssessmentDetail'
+import AssessmentLibrary from '@components/assessments/AssessmentLibrary'
+import AssessmentsPreview from '@components/assessments/AssessmentsPreview'
 import StudyLive from '@components/studies/launch/Live'
+import ParticipantManager from '@components/studies/participants/ParticipantManager'
+import StudyBuilder from '@components/studies/StudyBuilder'
 import StudyList from '@components/studies/StudyList'
-import AccessSettings from './components/access-settings/AccessSettings'
-import AccountSetup from './components/account/AccountSetup'
-import AssessmentDetail from './components/assessments/AssessmentDetail'
-import AssessmentLibrary from './components/assessments/AssessmentLibrary'
-import AssessmentsPreview from './components/assessments/AssessmentsPreview'
-import ParticipantManager from './components/studies/participants/ParticipantManager'
-import StudyBuilder from './components/studies/StudyBuilder'
-import constants from './types/constants'
+import constants from '@typedefs/constants'
 
 export default [
-  /* {
-    path: '/compliance-dashboard',
-    name: 'COMPLIANCE DASHBOARD',
-    Component: ComplianceDashboard,
+  {
+    path: constants.restrictedPaths.ADHERENCE_DATA,
+    name: '',
+    Component: Adherence,
     exact: true,
-  },*/
+  },
+  {
+    path: `${constants.restrictedPaths.ADHERENCE_DATA}/:userId`,
+    name: '',
+    Component: AdherenceParticipant,
+    exact: true,
+  },
+
   {
     path: '/studies',
     name: 'MY STUDIES',

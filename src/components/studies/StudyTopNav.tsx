@@ -168,16 +168,12 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
     {
       path: constants.restrictedPaths.ADHERENCE_DATA,
       name: 'ADHERENCE DATA',
-      status: ['in_flight', 'legacy'],
+      status: ['in_flight', 'legacy', 'recruitment'],
     },
   ]
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
-  // const studyData = useStudyInfoDataState()
 
-  // if (!studyData.study) {
-  // return <></>
-  //}
   const links = allLinks.filter(link =>
     Utility.isPathAllowed(study.identifier, link.path)
   )
