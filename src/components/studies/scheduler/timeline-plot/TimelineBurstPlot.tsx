@@ -160,6 +160,51 @@ const FrequencyBracket: React.FunctionComponent<{
   )
 }
 
+export function useGetPlotAndUnitWidth(
+  ref: React.RefObject<HTMLDivElement>,
+  nOfUnits: number,
+  padding = 0
+) {
+  // save current window width in the state object
+  let [width, setWidth] = React.useState(
+    ref?.current?.getBoundingClientRect()?.width
+  )
+  let [unitWidth, setUnitWidth] = React.useState(
+    getUnitWidth(
+      nOfUnits,
+      ref?.current?.getBoundingClientRect()?.width,
+      padding
+    )
+  )
+
+  // in this case useEffect will execute only once because
+  // it does not have any dependencies.
+
+  function getUnitWidth(nOfUnits: number, width = 0, padding = 0) {
+    return Math.round((width - padding) / nOfUnits)
+  }
+
+  React.useLayoutEffect(() => {
+    const handleResize = () => {
+      if (ref && ref.current) {
+        const {width} = ref?.current?.getBoundingClientRect()
+        const unitWidth = getUnitWidth(nOfUnits, width, padding)
+        setWidth(width)
+        setUnitWidth(unitWidth)
+      }
+    }
+    handleResize()
+
+    window.addEventListener('resize', handleResize)
+    return () => {
+      // remove resize listener
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  return {width, unitWidth}
+}
+
 const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   studyId,
   timeline,
@@ -171,10 +216,12 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
 
   const {data: study} = useStudy(studyId)
   const ref = React.useRef<HTMLDivElement>(null)
-  const [plotWidth, setPlotWidth] = React.useState<number | null>(null)
+
   const [plotData, setPlotData] = React.useState<
     Record<string, PlotData[]> | undefined
   >()
+
+  const {unitWidth} = useGetPlotAndUnitWidth(ref, 7, 180)
 
   //check if we are dealing with the sesison converted into a burst
   const isSessionBurst = (sessionGuid: string): boolean => {
@@ -189,13 +236,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   const getBurstIntervalInWeeks = (): number => {
     const burst = ScheduleService.getStudyBurst(timeline)
     return burst ? Number(burst.interval.replace(/[PW]/g, '')) : 0
-  }
-
-  function handleResize() {
-    if (ref && ref.current) {
-      const {width} = ref?.current?.getBoundingClientRect()
-      setPlotWidth(width)
-    }
   }
 
   React.useEffect(() => {
@@ -250,22 +290,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
       getEvents(timeline, study.customEvents || [])
     }
   }, [timeline, study?.customEvents])
-
-  React.useLayoutEffect(() => {
-    handleResize()
-    window.addEventListener('resize', handleResize)
-  })
-
-  if (!timeline?.schedule) {
-    return <></>
-  }
-
-  const unitWidth = getUnitWidth()
-
-  function getUnitWidth(): number {
-    const unitWidth = Math.round(((plotWidth || 0) - 180) / 7)
-    return unitWidth
-  }
 
   function unWrapSessions(items: TimelineScheduleItem[]) {
     /* const lastBurstSessionEndDay = Math.max(
