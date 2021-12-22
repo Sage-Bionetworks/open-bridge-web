@@ -160,6 +160,46 @@ const FrequencyBracket: React.FunctionComponent<{
   )
 }
 
+export const PlotDaysDisplay: React.FunctionComponent<{
+  unitWidth: number
+  title: string
+}> = ({unitWidth, title}) => {
+  const classes = useStyles()
+  return (
+    <div className={classes.week}>
+      <div
+        style={{
+          width: `${99 + unitWidth / 2}px`,
+          paddingLeft: '12px',
+          fontSize: '12px',
+        }}>
+        {title}
+      </div>
+      <div className={classes.graph}>
+        <div className={classes.sessionName}></div>
+        <div
+          style={{
+            position: 'relative',
+            top: '-10px',
+            left: `-${unitWidth / 2}px`,
+          }}>
+          {[...new Array(7)].map((_i, index) => (
+            <div
+              key={`day_number_${index}`}
+              className={classes.dayNumbers}
+              style={{
+                width: unitWidth + 'px',
+                left: unitWidth * index - 10 + 'px',
+              }}>
+              {index + 1}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function useGetPlotAndUnitWidth(
   ref: React.RefObject<HTMLDivElement>,
   nOfUnits: number,
@@ -215,12 +255,11 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   const [eventIds, setEventIds] = React.useState<string[]>([])
 
   const {data: study} = useStudy(studyId)
-  const ref = React.useRef<HTMLDivElement>(null)
 
   const [plotData, setPlotData] = React.useState<
     Record<string, PlotData[]> | undefined
   >()
-
+  const ref = React.useRef<HTMLDivElement>(null)
   const {unitWidth} = useGetPlotAndUnitWidth(ref, 7, 180)
 
   //check if we are dealing with the sesison converted into a burst
@@ -292,12 +331,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   }, [timeline, study?.customEvents])
 
   function unWrapSessions(items: TimelineScheduleItem[]) {
-    /* const lastBurstSessionEndDay = Math.max(
-      ...items.filter(s => isSessionBurst(s.refGuid)).map(s => s.endDay)
-    )*/
-    // const burstLength = Math.floor(lastBurstSessionEndDay / 7) * 7
     const unwrapped = items.map(i => {
-      // const burstNumber = getBurstNumberFromStartEventId(i.startEventId)
       //not burst -- return
       if (i.studyBurstNum === undefined) {
         return i
@@ -468,38 +502,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
 
   return (
     <div ref={ref} className={classes.plotContainer}>
-      <div className={classes.week}>
-        <div
-          style={{
-            width: `${99 + unitWidth / 2}px`,
-            paddingLeft: '12px',
-            fontSize: '12px',
-          }}>
-          {' '}
-          Schedule by week day
-        </div>
-        <div className={classes.graph}>
-          <div className={classes.sessionName}></div>
-          <div
-            style={{
-              position: 'relative',
-              top: '-10px',
-              left: `-${unitWidth / 2}px`,
-            }}>
-            {[...new Array(7)].map((_i, index) => (
-              <div
-                key={`day_number_${index}`}
-                className={classes.dayNumbers}
-                style={{
-                  width: unitWidth + 'px',
-                  left: unitWidth * index - 10 + 'px',
-                }}>
-                {index + 1}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <PlotDaysDisplay unitWidth={unitWidth} title="Schedule by week day" />
       <div style={{position: 'relative'}}>
         {!isLoading &&
           plotData &&
