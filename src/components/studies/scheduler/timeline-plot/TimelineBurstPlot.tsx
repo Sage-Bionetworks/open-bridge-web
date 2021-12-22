@@ -572,7 +572,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                           sessionIndex={sessionInfo.sessionIndex}
                           lineNumber={index}
                           xCoords={sessionInfo.coords}
-                          displayIndex={2}
                           sessionSymbol={sessionInfo.session.symbol}
                           unitPixelWidth={unitWidth}
                           sessionGuid={sessionInfo.session.guid!}
