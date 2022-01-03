@@ -74,7 +74,7 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
   selectionType,
 }) => {
   const classes = useStyles()
-  console.log('st', selectionType)
+
   const [selection, setSelection] = React.useState<SelectionType>(selectionType)
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null)
 

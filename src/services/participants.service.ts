@@ -267,34 +267,6 @@ async function getParticipants(
   return {items: resultItems, total: result.total}
 }
 
-async function getAllParticipantsInEnrollmentType(
-  studyId: string,
-  token: string,
-  enrollmentType: string,
-  includeTesters?: boolean,
-  pageSize?: number,
-  offsetBy?: number
-) {
-  if (!pageSize) {
-    return Utility.getAllPages<EnrolledAccountRecord>(
-      getAllParticipantsInEnrollmentType,
-      [studyId, token, enrollmentType, includeTesters || false]
-    )
-  }
-
-  const body = {
-    enrollmentFilter: enrollmentType,
-    includeTesters: includeTesters || false,
-    pageSize: pageSize,
-    offsetBy: offsetBy ? offsetBy : 0,
-  }
-  const result = await Utility.callEndpoint<{
-    items: EnrolledAccountRecord[]
-    total: number
-  }>(getStudyEnrollmentEndpoint(studyId), 'GET', body, token)
-  return {items: result.data.items, total: result.data.total}
-}
-
 async function getNumEnrolledParticipants(studyId: string, token: string) {
   const body = {
     enrollmentFilter: 'enrolled',
@@ -670,6 +642,34 @@ async function getRequestInfoForParticipant(
   return info.data
 }
 
+async function getEnrollmentByEnrollmentType(
+  studyId: string,
+  token: string,
+  enrollmentType: string,
+  includeTesters?: boolean,
+  pageSize?: number,
+  offsetBy?: number
+) {
+  if (!pageSize) {
+    return Utility.getAllPages<EnrolledAccountRecord>(
+      getEnrollmentByEnrollmentType,
+      [studyId, token, enrollmentType, includeTesters || false]
+    )
+  }
+
+  const body = {
+    enrollmentFilter: enrollmentType,
+    includeTesters: includeTesters || false,
+    pageSize: pageSize,
+    offsetBy: offsetBy ? offsetBy : 0,
+  }
+  const result = await Utility.callEndpoint<{
+    items: EnrolledAccountRecord[]
+    total: number
+  }>(getStudyEnrollmentEndpoint(studyId), 'GET', body, token)
+  return {items: result.data.items, total: result.data.total}
+}
+
 const ParticipantService = {
   addParticipant,
   addTestParticipant,
@@ -677,7 +677,7 @@ const ParticipantService = {
   formatExternalId,
 
   getNumEnrolledParticipants,
-  getAllParticipantsInEnrollmentType,
+  getEnrollmentByEnrollmentType,
   getEnrollmentById,
   getActiveParticipantById,
   getParticipants,
