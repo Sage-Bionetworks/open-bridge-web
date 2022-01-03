@@ -129,11 +129,17 @@ async function getTestParticipants(
   items: ParticipantAccountSummary[]
   total: number
 }> {
+  if (!pageSize) {
+    return Utility.getAllPages<ParticipantAccountSummary>(getTestParticipants, [
+      studyId,
+      token,
+    ])
+  }
+
   const endpoint = constants.endpoints.participantsSearch.replace(
     ':studyId',
     studyId
   )
-
   const data = {
     pageSize: pageSize,
     offsetBy: offsetBy,
@@ -204,35 +210,22 @@ async function deleteParticipant(
   return result.data.identifier
 }
 
-async function getParticipants(
+async function getActiveParticipants(
   studyId: string,
   token: string,
-  participantType: ParticipantActivityType,
   pageSize: number,
   offsetBy: number
 ): Promise<{items: ExtendedParticipantAccountSummary[]; total: number}> {
   // get enrollment for non test account
   if (!pageSize) {
-    return Utility.getAllPages<ParticipantAccountSummary>(getParticipants, [
-      studyId,
-      token,
-      participantType,
-    ])
+    return Utility.getAllPages<ParticipantAccountSummary>(
+      getActiveParticipants,
+      [studyId, token]
+    )
   }
-
-  if (participantType === 'TEST') {
-    return getTestParticipants(studyId, token, pageSize, offsetBy)
-  }
-
-  const queryFilter =
-    participantType === 'ACTIVE'
-      ? 'enrolled'
-      : participantType === 'WITHDRAWN'
-      ? 'withdrawn'
-      : 'all'
 
   const data = {
-    enrollmentFilter: queryFilter,
+    enrollmentFilter: 'enrolled',
     pageSize: pageSize,
     offsetBy: offsetBy,
     includeTesters: false,
@@ -246,25 +239,74 @@ async function getParticipants(
   ).data
 
   let resultItems: ParticipantAccountSummary[] = []
-  if (queryFilter === 'withdrawn') {
-    resultItems = result.items.map(p => mapWithdrawnParticipant(p, studyId))
-  }
-  if (queryFilter === 'enrolled') {
-    const participantPromises = result.items.map(i =>
-      getActiveParticipantById(studyId, token, i.participant.identifier)
-    )
-    const resolvedParticipants = await Promise.all(participantPromises)
-    resultItems = resolvedParticipants.filter(
-      p => p !== null
-    ) as ParticipantAccountSummary[]
 
-    resultItems.forEach(i => {
-      i.note =
-        result.items.find(p => p.participant.identifier === i.id)?.note || ''
-    })
-  }
+  const participantPromises = result.items.map(i =>
+    getActiveParticipantById(studyId, token, i.participant.identifier)
+  )
+  const resolvedParticipants = await Promise.all(participantPromises)
+  resultItems = resolvedParticipants.filter(
+    p => p !== null
+  ) as ParticipantAccountSummary[]
+
+  resultItems.forEach(i => {
+    i.note =
+      result.items.find(p => p.participant.identifier === i.id)?.note || ''
+  })
 
   return {items: resultItems, total: result.total}
+}
+
+async function getWithdrawnParticipants(
+  studyId: string,
+  token: string,
+
+  pageSize: number,
+  offsetBy: number
+): Promise<{items: ExtendedParticipantAccountSummary[]; total: number}> {
+  // get enrollment for non test account
+  if (!pageSize) {
+    return Utility.getAllPages<ParticipantAccountSummary>(
+      getWithdrawnParticipants,
+      [studyId, token]
+    )
+  }
+
+  const data = {
+    enrollmentFilter: 'withdrawn',
+    pageSize: pageSize,
+    offsetBy: offsetBy,
+    includeTesters: false,
+  }
+
+  const result = (
+    await Utility.callEndpoint<{
+      items: EnrolledAccountRecord[]
+      total: number
+    }>(getStudyEnrollmentEndpoint(studyId), 'GET', data, token)
+  ).data
+
+  let resultItems: ParticipantAccountSummary[] = []
+
+  resultItems = result.items.map(p => mapWithdrawnParticipant(p, studyId))
+
+  return {items: resultItems, total: result.total}
+}
+
+async function getParticipants(
+  studyId: string,
+  token: string,
+  participantType: ParticipantActivityType,
+  pageSize: number,
+  offsetBy: number
+): Promise<{items: ExtendedParticipantAccountSummary[]; total: number}> {
+  if (participantType == 'TEST') {
+    return getTestParticipants(studyId, token, pageSize, offsetBy)
+  } else {
+    return participantType === 'ACTIVE'
+      ? getActiveParticipants(studyId, token, pageSize, offsetBy)
+      : getWithdrawnParticipants(studyId, token, pageSize, offsetBy)
+  }
+  // get enrollment for non test account
 }
 
 async function getNumEnrolledParticipants(studyId: string, token: string) {
@@ -671,6 +713,9 @@ async function getEnrollmentByEnrollmentType(
 }
 
 const ParticipantService = {
+  getActiveParticipants,
+  getWithdrawnParticipants,
+
   addParticipant,
   addTestParticipant,
   deleteParticipant,
