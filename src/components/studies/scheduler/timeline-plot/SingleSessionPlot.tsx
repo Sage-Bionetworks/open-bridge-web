@@ -1,16 +1,11 @@
 import SessionIcon from '@components/widgets/SessionIcon'
 import {Tooltip} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
 import {CoordItem} from './utility'
-
-const useStyles = makeStyles(theme => ({}))
-
 export interface SingleSessionPlotProps {
   lineNumber?: number
   sessionIndex?: number
   sessionGuid: string
-
   unitPixelWidth: number
   topOffset?: number
   sessionSymbol?: string

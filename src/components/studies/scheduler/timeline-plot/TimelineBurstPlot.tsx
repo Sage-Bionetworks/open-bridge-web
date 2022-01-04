@@ -5,7 +5,7 @@ import {Tooltip} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ScheduleService from '@services/schedule.service'
-import {latoFont, poppinsFont} from '@style/theme'
+import {latoFont} from '@style/theme'
 import {
   ScheduleTimeline,
   SchedulingEvent,
@@ -28,24 +28,6 @@ const LayoutConstants = {
 }
 
 const useStyles = makeStyles(theme => ({
-  burstsInfoText: {
-    width: '420px',
-
-    margin: '0 auto',
-
-    display: 'flex',
-    '& p': {
-      fontFamily: poppinsFont,
-      fontSize: '14px',
-      lineHeight: '21px',
-    },
-  },
-  calendarIcon: {
-    width: '20px',
-    height: '20px',
-    marginTop: theme.spacing(2.4),
-    marginRight: theme.spacing(2.5),
-  },
   frequencyBracket: {
     display: 'flex',
     flexDirection: 'row',
@@ -73,8 +55,6 @@ const useStyles = makeStyles(theme => ({
     letterSpacing: '0em',
     textAlign: 'left',
   },
-
-  root: {width: '100%', position: 'relative'},
   plotContainer: {
     paddingRight: theme.spacing(8),
   },
@@ -163,7 +143,8 @@ const FrequencyBracket: React.FunctionComponent<{
 export const PlotDaysDisplay: React.FunctionComponent<{
   unitWidth: number
   title: string
-}> = ({unitWidth, title}) => {
+  endLabel?: React.ReactNode
+}> = ({unitWidth, title, endLabel}) => {
   const classes = useStyles()
   return (
     <div className={classes.week}>
@@ -188,12 +169,13 @@ export const PlotDaysDisplay: React.FunctionComponent<{
               key={`day_number_${index}`}
               className={classes.dayNumbers}
               style={{
-                width: unitWidth + 'px',
-                left: unitWidth * index - 10 + 'px',
+                width: `${unitWidth}px`,
+                left: `${unitWidth * index - 10}px`,
               }}>
               {index + 1}
             </div>
           ))}
+          {endLabel}
         </div>
       </div>
     </div>
