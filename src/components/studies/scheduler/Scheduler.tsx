@@ -22,6 +22,7 @@ import {
   Theme,
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
+import {JOINED_EVENT_ID} from '@services/event.service'
 import ScheduleService from '@services/schedule.service'
 import {latoFont, poppinsFont, theme} from '@style/theme'
 import {
@@ -122,6 +123,37 @@ type SchedulerProps = {
   onShowFeedback: Function
 }
 
+/* default schedule is each session only has:
+  -  one window without expiration that starts at 8am
+  - "startEventIds": ["timeline_retrieved"],
+  -  interval:  undefined
+  - occurences: undefined
+ */
+
+function isScheduleDefault(schedule: Schedule) {
+  for (var session of schedule.sessions) {
+    const onlyTimelineRetrieved =
+      session.startEventIds.length === 1 &&
+      session.startEventIds[0] === JOINED_EVENT_ID
+
+    const isSingleDefaultWindow =
+      session.timeWindows.length === 1 &&
+      session.timeWindows[0].startTime === '08:00' &&
+      !session.timeWindows[0].expiration
+
+    const isDefaultWindow =
+      onlyTimelineRetrieved &&
+      !session.interval &&
+      !session.occurrences &&
+      isSingleDefaultWindow
+
+    if (!isDefaultWindow) {
+      return false
+    }
+  }
+  return true
+}
+
 const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   id,
   isReadOnly,
@@ -149,7 +181,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   const [saveLoader, setSaveLoader] = React.useState(false)
 
   const [schedule, setSchedule] = React.useState<Schedule | undefined>()
-  // console.log('%c ---scheduler update--' + study?.version, 'color: red')
+  const [hasBeenSaved, setHasBeenSaved] = React.useState(false)
 
   const [schedulerErrorState, setSchedulerErrorState] = React.useState(
     new Map<
@@ -201,18 +233,15 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
       refetch()
       setHasObjectChanged(false)
     }
-    // setSchedule(_schedule)
-
     setScheduleErrors([])
     setOpenStudySession(undefined)
   }
 
   const onSave = async (isButtonPressed?: boolean) => {
-    console.log('starting save')
     setScheduleErrors([])
     setSaveLoader(true)
+    setHasBeenSaved(true)
     let error: Error | undefined = undefined
-    console.log('sacing', schedule.duration)
     try {
       const result = await mutateSchedule({
         studyId: id,
@@ -331,7 +360,6 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
     setSchedule(schedule)
     console.log('updated')
     setHasObjectChanged(true)
-    //ALINA TODO onUpdate(schedule)
   }
 
   const scheduleUpdateFn = (action: SessionScheduleAction) => {
@@ -436,6 +464,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
           <Box bgcolor="#fff" p={2} pb={0} mt={3} key="scheduler">
             {!isReadOnly && (
               <Button
+                disabled={isScheduleDefault(schedule) && !hasBeenSaved}
                 className={classes.burstButton}
                 onClick={() => setOpenModal('BURSTS')}>
                 <BurstIcon /> Configure Study Bursts
@@ -445,6 +474,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
               <LoadingComponent reqStatusLoading={true} variant="small" />
             ) : (
               <ScheduleTimelineDisplay
+                isDefault={isScheduleDefault(schedule) && !hasBeenSaved}
                 studyId={id}
                 timeline={timeline}
                 onSelectSession={(session: StudySession) => {
@@ -489,8 +519,6 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
 
           <DialogButtonPrimary
             onClick={() => {
-              console.log('about to save')
-              console.log(ref1.current)
               ref1.current?.save()
             }}>
             Save Changes
@@ -642,11 +670,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
 
           <DialogButtonPrimary
             onClick={() => {
-              console.log('about to save')
-              console.log(ref2.current)
               ref2.current?.save()
-
-              //setIsOpenEventsEditor(false)
             }}>
             Update burst to Schedule
           </DialogButtonPrimary>
