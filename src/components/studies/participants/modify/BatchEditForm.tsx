@@ -35,7 +35,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
     let participantIds = selectedParticipants
     if (isAllSelected) {
       const resultEnrolled =
-        await ParticipantService.getAllParticipantsInEnrollmentType(
+        await ParticipantService.getEnrollmentByEnrollmentType(
           studyId,
           token,
           'enrolled',

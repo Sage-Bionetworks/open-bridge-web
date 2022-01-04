@@ -16,7 +16,7 @@ export default {
     ACCESS_SETTINGS: '/studies/:id/access-settings',
     STUDY_BUILDER: '/studies/builder/:id',
     PARTICIPANT_MANAGER: '/studies/:id/participant-manager',
-    ADHERENCE_DATA: '/studies/:id/compliance',
+    ADHERENCE_DATA: '/studies/:id/adherence',
     STUDY_DATA: '/studies/:id/study-data',
   },
 
@@ -63,6 +63,8 @@ export default {
   },
 
   endpoints: {
+    adherenceDetail:
+      '/v5/studies/:studyId/participants/:userId/adherence/eventstream',
     assessment: '/v1/assessments/:id',
     assessments: '/v1/assessments?includeDeleted=false',
     assessmentShared: '/v1/sharedassessments/:id',

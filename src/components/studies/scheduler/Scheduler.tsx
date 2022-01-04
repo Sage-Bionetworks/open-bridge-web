@@ -103,6 +103,12 @@ export const useStyles = makeStyles((theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'space-between',
     },
+    dialogTitle: {
+      '& h2': {
+        display: 'flex',
+        alignItems: 'center',
+      },
+    },
   })
 )
 
@@ -221,8 +227,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
         handleError(e)
       }
 
-      const entity = (e as ExtendedError).entity
-      const errors = (e as ExtendedError).errors
+      const entity = (e as SchedulerErrorType).entity
+      const errors = (e as SchedulerErrorType).errors
       // This can occur when a request fails due to reasons besides bad user input.
       if (!errors || !entity) {
         window.scrollTo({
@@ -450,9 +456,13 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
         </Box>
       </Box>
       <Dialog open={openModal === 'EVENTS'} maxWidth="md" scroll="body">
-        <DialogTitle>
+        <DialogTitle
+          className={classes.dialogTitle}
+          style={{
+            backgroundColor: '#f8f8f8',
+          }}>
           <EditIcon />
-          &nbsp;&nbsp; Edit Session Start Drop Down
+          &nbsp;&nbsp; Edit Session Start Dropdown
           <IconButton
             aria-label="close"
             className={classes.closeModalButton}
@@ -607,7 +617,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
         </DialogActions>
       </Dialog>
       <Dialog open={openModal === 'BURSTS'} maxWidth="md" scroll="body">
-        <DialogTitle>
+        <DialogTitle className={classes.dialogTitle}>
           <BurstIcon />
           &nbsp;&nbsp; Configure Study bursts
           <IconButton

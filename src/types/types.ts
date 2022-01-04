@@ -294,6 +294,52 @@ export type Phone = {
   nationalFormat?: string
 }
 
+/* ----------------  Adherence Types ------------------ */
+export type AdherenceWindowState = 'not_applicable' | 'not_yet_available'
+
+export type EventStreamDay = {
+  sessionGuid: string
+  sessionName: string
+  sessionSymbol: string
+  week: number
+  studyBurstId: string
+  studyBurstNum: number
+  startDay: number
+  timeWindows: {
+    sessionInstanceGuid: string
+    timeWindowGuid: string
+    state: AdherenceWindowState
+    endDay: number
+  }[]
+}
+
+export type AdherenceByDayEntries = Record<string, EventStreamDay[]>
+
+export type AdherenceEventStream = {
+  startEventId: string
+  eventTimestamp: string
+  sessionGuids: [string]
+  byDayEntries: AdherenceByDayEntries
+  type: 'EventStream'
+}
+
+export type EventStreamAdherenceReport = {
+  timestamp: string
+  clientTimeZone: string
+  adherencePercent: number
+  dayRangeOfAllStreams: {
+    min: number
+    max: number
+  }
+  streams: AdherenceEventStream[]
+}
+
+export type SessionDisplayInfo = {
+  sessionName: string
+  sessionGuid: string
+  sessionSymbol: string
+}
+
 // POST MVP
 
 export type StudyArm = {

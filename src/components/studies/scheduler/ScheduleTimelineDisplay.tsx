@@ -4,7 +4,7 @@ import AssessmentImage from '@components/assessments/AssessmentImage'
 import SessionIcon from '@components/widgets/SessionIcon'
 import {Box} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
-import Tooltip from '@material-ui/core/Tooltip'
+import Tooltip, {TooltipProps} from '@material-ui/core/Tooltip'
 import {latoFont, poppinsFont} from '@style/theme'
 import {
   Schedule,
@@ -73,13 +73,14 @@ export interface TimelineProps {
 
 export const TooltipHoverDisplay: React.FunctionComponent<{
   session: StudySession
-
+  tooltipProps?: Partial<TooltipProps>
   children: React.ReactNode
-}> = ({session, children}) => {
+}> = ({session, tooltipProps, children}) => {
   const classes = useStyles()
   return (
     <Tooltip
       key={`session_${session.guid}`}
+      {...tooltipProps}
       title={
         <Box width="115px">
           {session.assessments?.map((assessment, index) => {
@@ -120,6 +121,9 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
   const handleError = useErrorHandler()
 
   const classes = useStyles()
+  const tooltipProps: Partial<TooltipProps> = {
+    placement: 'top',
+  }
 
   const getSession = (sessionGuid: string): StudySessionTimeline => {
     return timeline?.sessions.find(s => s.guid === sessionGuid)!
@@ -147,7 +151,10 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
       <Box display="flex" justifyContent="space-between">
         <Box className={classes.legend}>
           {schedFromDisplay?.sessions?.map((s, index) => (
-            <TooltipHoverDisplay key={s.guid} session={s}>
+            <TooltipHoverDisplay
+              key={s.guid}
+              session={s}
+              tooltipProps={tooltipProps}>
               <div
                 onClick={() => {
                   console.log('selecting')

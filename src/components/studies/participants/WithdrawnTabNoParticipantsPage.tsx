@@ -1,9 +1,9 @@
-import React from 'react'
+import BatchEditIcon from '@assets/edit_pencil.svg'
+import EditParticipantImage from '@assets/edit_pencil_red.svg'
+import JoinedCheckSymbol from '@assets/participants/joined_check_mark.svg'
 import {Box, makeStyles} from '@material-ui/core'
 import {latoFont, poppinsFont} from '@style/theme'
-import EditParticipantImage from '@assets/participants/edit_participant_details_image.svg'
-import JoinedCheckSymbol from '@assets/participants/joined_check_mark.svg'
-import BatchEditIcon from '@assets/participants/batch_edit_icon.svg'
+import React from 'react'
 
 const useStyles = makeStyles(theme => ({
   noParticipantsText: {

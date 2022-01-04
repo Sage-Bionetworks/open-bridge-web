@@ -1,4 +1,5 @@
 import CalendarIcon from '@assets/scheduler/calendar_icon.svg'
+import {ReactComponent as PhoneIcon} from '@assets/scheduler/login_phone.svg'
 import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
 import LoadingComponent from '@components/widgets/Loader'
 import {RedButton} from '@components/widgets/StyledComponents'
@@ -51,6 +52,10 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: 'left',
       marginRight: theme.spacing(4),
       flexGrow: 1,
+      '& p': {
+        fontFamily: latoFont,
+        fontSize: '15px',
+      },
     },
     rightCol: {
       width: theme.spacing(25),
@@ -74,6 +79,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     input: {
       width: '100%',
+      border: '1px solid black',
       height: theme.spacing(6),
       padding: theme.spacing(2),
     },
@@ -135,19 +141,18 @@ const useStyles = makeStyles((theme: Theme) =>
         border: '1px dashed #000',
         padding: '5px',
       },
+      '& $hoverImage': {
+        display: 'block',
+        position: 'absolute',
+        left: '12px',
+        width: '10px',
+        height: '20px',
+        top: '0',
+        bottom: '0',
+        margin: 'auto',
+      },
       '&:hover': {
         border: '2px solid #000',
-
-        '& $hoverImage': {
-          display: 'block',
-          position: 'absolute',
-          left: '5px',
-          width: '20px',
-          height: '20px',
-          top: '0',
-          bottom: '0',
-          margin: 'auto',
-        },
       },
     },
 
@@ -178,6 +183,7 @@ const ERROR_MSG = {
   duplicate: 'Duplicate event identifier.',
   // word: 'Sorry, event labels cannot have any blank spaces.',
   special: 'The event name may not contain a colon (:)',
+  empty: 'The name of the event cannot be blank',
 }
 
 const CalendarIconControl: React.FunctionComponent<any> = React.memo(() => {
@@ -255,7 +261,9 @@ const SessionStartTab: React.ForwardRefRenderFunction<
     await mutateStudy({study: updatedStudy})
   }
 
-  const [newEvent, setNewEvent] = React.useState('')
+  const [newEvent, setNewEvent] = React.useState(
+    `Event ${customEvents.length + 1}`
+  )
 
   if (!study) {
     return <>...loading</>
@@ -269,8 +277,9 @@ const SessionStartTab: React.ForwardRefRenderFunction<
     const evtError = checkForErrors(newEvent)
     setError(evtError)
     if (!evtError) {
+      const eventName = `Event ${customEvents.length + 2}`
       setCustomEvents(prev => [...(prev || []), _newEvent])
-      setNewEvent('')
+      setNewEvent(eventName)
     }
   }
 
@@ -279,6 +288,9 @@ const SessionStartTab: React.ForwardRefRenderFunction<
     const specialChars = /[;,:]/
     if (specialChars.test(eventId)) {
       return ERROR_MSG.special
+    }
+    if (eventId.trim() === '') {
+      return ERROR_MSG.empty
     }
 
     /* if (eventId !== eventId.replace(/ /gi, '')) {
@@ -348,12 +360,16 @@ const SessionStartTab: React.ForwardRefRenderFunction<
       <Box className={classes.columnContainer} bgcolor="#F8F8F8">
         <div className={classes.leftCol} style={{maxWidth: '300px'}}>
           <p>
+            <PhoneIcon />
+            <br />
             By default, sessions start once a participant logs into the study
             for the first time on their smart phone, known as{' '}
             <strong>Initial Login</strong>.
           </p>
 
           <p>
+            <img src={CalendarIcon} />
+            <br />
             To start a session on calendar date/appointment unique to each
             participant, create additional <strong>Events</strong> to this
             Dropdown menu.
@@ -394,7 +410,10 @@ const SessionStartTab: React.ForwardRefRenderFunction<
             <input
               key="new_event"
               value={newEvent}
-              onChange={e => setNewEvent(e.target.value)}
+              onChange={e => {
+                setNewEvent(e.target.value)
+                setError(undefined)
+              }}
               className={clsx(
                 classes.input,
                 error && classes.errorTextbox

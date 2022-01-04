@@ -30,17 +30,9 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'space-between',
   },
   logoImage: {
-    borderRadius: '50%',
-    backgroundColor: 'black',
-    backgroundPosition: '12px 4px',
-    backgroundRepeat: 'no-repeat',
-    border: '1px solid black',
-
-    backgroundImage: 'url(' + Logo + ')',
-    width: '45px',
-    height: '45px',
+    height: '30px',
     '&:hover': {
-      backgroundColor: 'white',
+      opacity: 0.7,
     },
   },
 }))
@@ -53,7 +45,7 @@ type MobileDrawHeaderProps = {
 const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> =
   ({setIsMobileOpen, type}) => {
     const classes = useStyles()
-    const logo = <div className={classes.logoImage}></div>
+    const logo = <img className={classes.logoImage} src={Logo} />
     const logoElement =
       type === 'IN_STUDY' || type === 'LOGGED_IN' ? (
         <NavLink

@@ -5,7 +5,7 @@ import {Tooltip} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ScheduleService from '@services/schedule.service'
-import {latoFont, poppinsFont} from '@style/theme'
+import {latoFont} from '@style/theme'
 import {
   ScheduleTimeline,
   SchedulingEvent,
@@ -28,24 +28,6 @@ const LayoutConstants = {
 }
 
 const useStyles = makeStyles(theme => ({
-  burstsInfoText: {
-    width: '420px',
-
-    margin: '0 auto',
-
-    display: 'flex',
-    '& p': {
-      fontFamily: poppinsFont,
-      fontSize: '14px',
-      lineHeight: '21px',
-    },
-  },
-  calendarIcon: {
-    width: '20px',
-    height: '20px',
-    marginTop: theme.spacing(2.4),
-    marginRight: theme.spacing(2.5),
-  },
   frequencyBracket: {
     display: 'flex',
     flexDirection: 'row',
@@ -73,8 +55,6 @@ const useStyles = makeStyles(theme => ({
     letterSpacing: '0em',
     textAlign: 'left',
   },
-
-  root: {width: '100%', position: 'relative'},
   plotContainer: {
     paddingRight: theme.spacing(8),
   },
@@ -160,6 +140,93 @@ const FrequencyBracket: React.FunctionComponent<{
   )
 }
 
+export const PlotDaysDisplay: React.FunctionComponent<{
+  unitWidth: number
+  title: string
+  endLabel?: React.ReactNode
+}> = ({unitWidth, title, endLabel}) => {
+  const classes = useStyles()
+  return (
+    <div className={classes.week}>
+      <div
+        style={{
+          width: `${99 + unitWidth / 2}px`,
+          paddingLeft: '12px',
+          fontSize: '12px',
+        }}>
+        {title}
+      </div>
+      <div className={classes.graph}>
+        <div className={classes.sessionName}></div>
+        <div
+          style={{
+            position: 'relative',
+            top: '-10px',
+            left: `-${unitWidth / 2}px`,
+          }}>
+          {[...new Array(7)].map((_i, index) => (
+            <div
+              key={`day_number_${index}`}
+              className={classes.dayNumbers}
+              style={{
+                width: `${unitWidth}px`,
+                left: `${unitWidth * index - 10}px`,
+              }}>
+              {index + 1}
+            </div>
+          ))}
+          {endLabel}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function useGetPlotAndUnitWidth(
+  ref: React.RefObject<HTMLDivElement>,
+  nOfUnits: number,
+  padding = 0
+) {
+  // save current window width in the state object
+  let [width, setWidth] = React.useState(
+    ref?.current?.getBoundingClientRect()?.width
+  )
+  let [unitWidth, setUnitWidth] = React.useState(
+    getUnitWidth(
+      nOfUnits,
+      ref?.current?.getBoundingClientRect()?.width,
+      padding
+    )
+  )
+
+  // in this case useEffect will execute only once because
+  // it does not have any dependencies.
+
+  function getUnitWidth(nOfUnits: number, width = 0, padding = 0) {
+    return Math.round((width - padding) / nOfUnits)
+  }
+
+  React.useLayoutEffect(() => {
+    const handleResize = () => {
+      if (ref && ref.current) {
+        const {width} = ref?.current?.getBoundingClientRect()
+        const unitWidth = getUnitWidth(nOfUnits, width, padding)
+        setWidth(width)
+        setUnitWidth(unitWidth)
+      }
+    }
+    handleResize()
+
+    window.addEventListener('resize', handleResize)
+    return () => {
+      // remove resize listener
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  return {width, unitWidth}
+}
+
 const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   studyId,
   timeline,
@@ -170,11 +237,12 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   const [eventIds, setEventIds] = React.useState<string[]>([])
 
   const {data: study} = useStudy(studyId)
-  const ref = React.useRef<HTMLDivElement>(null)
-  const [plotWidth, setPlotWidth] = React.useState<number | null>(null)
+
   const [plotData, setPlotData] = React.useState<
     Record<string, PlotData[]> | undefined
   >()
+  const ref = React.useRef<HTMLDivElement>(null)
+  const {unitWidth} = useGetPlotAndUnitWidth(ref, 7, 180)
 
   //check if we are dealing with the sesison converted into a burst
   const isSessionBurst = (sessionGuid: string): boolean => {
@@ -189,13 +257,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   const getBurstIntervalInWeeks = (): number => {
     const burst = ScheduleService.getStudyBurst(timeline)
     return burst ? Number(burst.interval.replace(/[PW]/g, '')) : 0
-  }
-
-  function handleResize() {
-    if (ref && ref.current) {
-      const {width} = ref?.current?.getBoundingClientRect()
-      setPlotWidth(width)
-    }
   }
 
   React.useEffect(() => {
@@ -251,29 +312,8 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
     }
   }, [timeline, study?.customEvents])
 
-  React.useLayoutEffect(() => {
-    handleResize()
-    window.addEventListener('resize', handleResize)
-  })
-
-  if (!timeline?.schedule) {
-    return <></>
-  }
-
-  const unitWidth = getUnitWidth()
-
-  function getUnitWidth(): number {
-    const unitWidth = Math.round(((plotWidth || 0) - 180) / 7)
-    return unitWidth
-  }
-
   function unWrapSessions(items: TimelineScheduleItem[]) {
-    /* const lastBurstSessionEndDay = Math.max(
-      ...items.filter(s => isSessionBurst(s.refGuid)).map(s => s.endDay)
-    )*/
-    // const burstLength = Math.floor(lastBurstSessionEndDay / 7) * 7
     const unwrapped = items.map(i => {
-      // const burstNumber = getBurstNumberFromStartEventId(i.startEventId)
       //not burst -- return
       if (i.studyBurstNum === undefined) {
         return i
@@ -444,38 +484,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
 
   return (
     <div ref={ref} className={classes.plotContainer}>
-      <div className={classes.week}>
-        <div
-          style={{
-            width: `${99 + unitWidth / 2}px`,
-            paddingLeft: '12px',
-            fontSize: '12px',
-          }}>
-          {' '}
-          Schedule by week day
-        </div>
-        <div className={classes.graph}>
-          <div className={classes.sessionName}></div>
-          <div
-            style={{
-              position: 'relative',
-              top: '-10px',
-              left: `-${unitWidth / 2}px`,
-            }}>
-            {[...new Array(7)].map((_i, index) => (
-              <div
-                key={`day_number_${index}`}
-                className={classes.dayNumbers}
-                style={{
-                  width: unitWidth + 'px',
-                  left: unitWidth * index - 10 + 'px',
-                }}>
-                {index + 1}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <PlotDaysDisplay unitWidth={unitWidth} title="Schedule by week day" />
       <div style={{position: 'relative'}}>
         {!isLoading &&
           plotData &&
@@ -545,7 +554,6 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
                           sessionIndex={sessionInfo.sessionIndex}
                           lineNumber={index}
                           xCoords={sessionInfo.coords}
-                          displayIndex={2}
                           sessionSymbol={sessionInfo.session.symbol}
                           unitPixelWidth={unitWidth}
                           sessionGuid={sessionInfo.session.guid!}

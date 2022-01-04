@@ -28,6 +28,11 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: '#F7F7F7',
     padding: theme.spacing(0, 5),
   },
+  logo: {
+    '&:hover': {
+      opacity: 0.7,
+    },
+  },
   toolbarStudyHeader: {
     height: '104px',
     display: 'flex',
@@ -163,16 +168,12 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
     {
       path: constants.restrictedPaths.ADHERENCE_DATA,
       name: 'ADHERENCE DATA',
-      status: ['in_flight', 'legacy'],
+      status: ['in_flight', 'legacy', 'recruitment'],
     },
   ]
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
-  // const studyData = useStudyInfoDataState()
 
-  // if (!studyData.study) {
-  // return <></>
-  //}
   const links = allLinks.filter(link =>
     Utility.isPathAllowed(study.identifier, link.path)
   )
@@ -206,7 +207,12 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               key="/Studies"
               className={classes.toolbarLink}
               style={{paddingBottom: '0', paddingLeft: '4px'}}>
-              <img src={Logo} key="img_home" alt="home" />
+              <img
+                src={Logo}
+                className={classes.logo}
+                key="img_home"
+                alt="home"
+              />
             </NavLink>
             <HideWhen hideWhen={study === undefined && !error}>
               <BreadCrumb
@@ -279,16 +285,25 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
             type="IN_STUDY"></MobileDrawerMenuHeader>
           {links
             .filter(section => section.name)
-            .map(section => (
-              <NavLink
-                to={section.path.replace(':id', study.identifier)}
-                key={section.path}
-                className={classes.mobileToolBarLink}
-                activeClassName={classes.mobileSelectedLink}
-                onClick={() => setIsMobileOpen(false)}>
-                {section.name}
-              </NavLink>
-            ))}
+            .map(section =>
+              section.status.includes(study?.phase) ? (
+                <NavLink
+                  to={section.path.replace(':id', study.identifier)}
+                  key={section.path}
+                  className={classes.mobileToolBarLink}
+                  activeClassName={classes.mobileSelectedLink}
+                  onClick={() => setIsMobileOpen(false)}>
+                  {section.name}
+                </NavLink>
+              ) : (
+                <span
+                  key={section.path}
+                  style={{opacity: 0.45}}
+                  className={classes.mobileToolBarLink}>
+                  {section.name}
+                </span>
+              )
+            )}
           <NavLink
             to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
               ':id',
