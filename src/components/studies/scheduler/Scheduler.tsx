@@ -462,7 +462,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
             backgroundColor: '#f8f8f8',
           }}>
           <EditIcon />
-          &nbsp;&nbsp; Edit Session Start Dropdown
+          &nbsp;&nbsp; Edit Event Drop Down
           <IconButton
             aria-label="close"
             className={classes.closeModalButton}
