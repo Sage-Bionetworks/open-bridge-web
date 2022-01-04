@@ -1,5 +1,5 @@
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import {FunctionComponent} from 'react'
+import React, {FunctionComponent} from 'react'
 import {useParams} from 'react-router-dom'
 import AdherenceParticipantsGrid from './AdherenceParticipantsGrid'
 
@@ -12,13 +12,12 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
     let {id: studyId} = useParams<{
       id: string
     }>()
-
     const {token} = useUserSessionDataState()
 
     return (
       <div>
         Adherence Participants2
-        <AdherenceParticipantsGrid />
+        <AdherenceParticipantsGrid studyId={studyId} token={token!} />
       </div>
     )
   }

@@ -334,6 +334,12 @@ export type EventStreamAdherenceReport = {
   streams: AdherenceEventStream[]
 }
 
+export type SessionDisplayInfo = {
+  sessionName: string
+  sessionGuid: string
+  sessionSymbol: string
+}
+
 // POST MVP
 
 export type StudyArm = {
