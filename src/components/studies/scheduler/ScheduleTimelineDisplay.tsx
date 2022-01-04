@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
       fontFamily: poppinsFont,
       fontSize: '14px',
       '&:hover': {
-        backgroundColor: '#f8f8f8',
+        backgroundColor: '#BCD5E4',
       },
     },
     maxWidth: '90%',
@@ -68,6 +68,7 @@ export interface TimelineProps {
   schedule: Schedule
   timeline: ScheduleTimeline
   studyId: string
+  isDefault?: boolean
   onSelectSession: (session: StudySession) => void
 }
 
@@ -116,6 +117,7 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
   studyId,
   schedule: schedFromDisplay,
   timeline,
+  isDefault,
   onSelectSession,
 }: TimelineProps) => {
   const handleError = useErrorHandler()
@@ -157,7 +159,6 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
               tooltipProps={tooltipProps}>
               <div
                 onClick={() => {
-                  console.log('selecting')
                   onSelectSession(s)
                 }}>
                 <SessionIcon index={index} key={s.guid} symbolKey={s.symbol}>
@@ -169,9 +170,15 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
         </Box>
       </Box>
       {timeline?.schedule && (
-        <TimelineBurstPlot
-          studyId={studyId}
-          timeline={timeline}></TimelineBurstPlot>
+        <TimelineBurstPlot studyId={studyId} timeline={timeline}>
+          {isDefault && (
+            <div>
+              Design the study's schedule/protocol by selecting each session
+              above.&nbsp;&nbsp;A summary of the schedule/protocol will be
+              visualized here.
+            </div>
+          )}
+        </TimelineBurstPlot>
       )}
     </Box>
   )

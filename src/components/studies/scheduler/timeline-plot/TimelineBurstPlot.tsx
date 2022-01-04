@@ -98,11 +98,28 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     position: 'absolute',
   },
+  defaultMessage: {
+    left: `${82 + 16 + 16}px`,
+    backgroundColor: '#fff',
+    height: '50px',
+    position: 'absolute',
+    top: theme.spacing(4),
+    justifyContent: 'space-around',
+    alignItems: 'center',
+
+    right: theme.spacing(1),
+    zIndex: 1000,
+    fontSize: '14px',
+    fontWeight: 'bold',
+    fontFamily: latoFont,
+    display: 'flex',
+  },
 }))
 
 export interface TimelineBurstPlotProps {
   timeline: ScheduleTimeline
   studyId: string
+  children?: React.ReactNode
 }
 
 type PlotData = {
@@ -230,6 +247,7 @@ export function useGetPlotAndUnitWidth(
 const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   studyId,
   timeline,
+  children,
 }) => {
   const classes = useStyles()
 
@@ -485,86 +503,102 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   return (
     <div ref={ref} className={classes.plotContainer}>
       <PlotDaysDisplay unitWidth={unitWidth} title="Schedule by week day" />
-      <div style={{position: 'relative'}}>
-        {!isLoading &&
-          plotData &&
-          eventIds.map((evt, evtIndex) => (
-            <div>
+      <div style={{position: 'relative', overflow: 'hidden'}}>
+        {!isLoading && plotData && (
+          <>
+            {children && (
               <div
-                className={classes.weekTitle}
+                className={classes.defaultMessage}
                 style={{
-                  width: 'auto',
-                  fontWeight: 'bold',
-                  padding: `${LayoutConstants.weekVPad}px 16px 0 16px`,
-                  backgroundColor: plotData[evt]?.[0]?.burst
-                    ? 'yellow'
-                    : '#eee',
+                  height:
+                    LayoutConstants.singleSessionGraphHeight *
+                      timeline.sessions.length +
+                    'px',
                 }}>
-                {' '}
-                {EventService.formatEventIdForDisplay(evt)}
+                {children}
               </div>
-
-              {plotData[evt]?.map((wk, index) => (
+            )}
+            {eventIds.map((evt, evtIndex) => (
+              <div>
                 <div
-                  className={classes.week}
-                  key={`week_${wk.name}_ ${wk.burstNum}`}
+                  className={classes.weekTitle}
                   style={{
-                    marginBottom:
-                      plotData[evt][index + 1] &&
-                      plotData[evt][index + 1].burstNum === wk.burstNum
-                        ? '0px'
-                        : `${LayoutConstants.marginGap}px`,
-                    padding: `${LayoutConstants.weekVPad}px 16px`,
-                    // height: `${LayoutConstants.height}px`,
-                    backgroundColor: wk.burst ? 'yellow' : '#eee',
-                    position: 'relative',
+                    width: 'auto',
+                    fontWeight: 'bold',
+                    padding: `${LayoutConstants.weekVPad}px 16px 0 16px`,
+                    backgroundColor: plotData[evt]?.[0]?.burst
+                      ? 'yellow'
+                      : '#eee',
                   }}>
-                  <FrequencyBracket
-                    intervalInWeeks={getBurstIntervalInWeeks()}
-                    heightInterval={calculateDistanceToNextBurst(
-                      plotData[evt],
-                      wk.name,
-                      wk.burstNum,
-                      plotData[evt]
-                    )}
-                  />
-
-                  <div className={classes.weekTitle} key="week_index">
-                    Week {wk.name}
-                    {wk.burst !== false ? '/ Burst' + wk.burstNum * 1 : ''}
-                  </div>
-                  <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
-                    {wk.sessions.map((sessionInfo, sIndex: number) => (
-                      <div className={classes.graph} key={`sessionA_${sIndex}`}>
-                        <Tooltip
-                          key="tooltip"
-                          placement="top"
-                          title={`Starts on: ${EventService.formatEventIdForDisplay(
-                            sessionInfo.startEventId!
-                          )}`}>
-                          <div className={classes.sessionName}>
-                            <SessionIcon
-                              symbolKey={sessionInfo.session.symbol}
-                              index={sessionInfo.sessionIndex}
-                            />
-                          </div>
-                        </Tooltip>
-
-                        <SessionPlot
-                          sessionIndex={sessionInfo.sessionIndex}
-                          lineNumber={index}
-                          xCoords={sessionInfo.coords}
-                          sessionSymbol={sessionInfo.session.symbol}
-                          unitPixelWidth={unitWidth}
-                          sessionGuid={sessionInfo.session.guid!}
-                        />
-                      </div>
-                    ))}
-                  </div>
+                  {' '}
+                  {EventService.formatEventIdForDisplay(evt)}
                 </div>
-              ))}
-            </div>
-          ))}
+
+                {plotData[evt]?.map((wk, index) => (
+                  <div
+                    className={classes.week}
+                    key={`week_${wk.name}_ ${wk.burstNum}`}
+                    style={{
+                      marginBottom:
+                        plotData[evt][index + 1] &&
+                        plotData[evt][index + 1].burstNum === wk.burstNum
+                          ? '0px'
+                          : `${LayoutConstants.marginGap}px`,
+                      padding: `${LayoutConstants.weekVPad}px 16px`,
+                      // height: `${LayoutConstants.height}px`,
+                      backgroundColor: wk.burst ? 'yellow' : '#eee',
+                      position: 'relative',
+                    }}>
+                    <FrequencyBracket
+                      intervalInWeeks={getBurstIntervalInWeeks()}
+                      heightInterval={calculateDistanceToNextBurst(
+                        plotData[evt],
+                        wk.name,
+                        wk.burstNum,
+                        plotData[evt]
+                      )}
+                    />
+
+                    <div className={classes.weekTitle} key="week_index">
+                      Week {wk.name}
+                      {wk.burst !== false ? '/ Burst' + wk.burstNum * 1 : ''}
+                    </div>
+                    <div style={{flexGrow: 1, flexShrink: 0}} key="week_graph">
+                      {wk.sessions.map((sessionInfo, sIndex: number) => (
+                        <div
+                          className={classes.graph}
+                          key={`sessionA_${sIndex}`}>
+                          <Tooltip
+                            key="tooltip"
+                            placement="top"
+                            title={`Starts on: ${EventService.formatEventIdForDisplay(
+                              sessionInfo.startEventId!
+                            )}`}>
+                            <div className={classes.sessionName}>
+                              <SessionIcon
+                                symbolKey={sessionInfo.session.symbol}
+                                index={sessionInfo.sessionIndex}
+                              />
+                            </div>
+                          </Tooltip>
+
+                          <SessionPlot
+                            sessionIndex={sessionInfo.sessionIndex}
+                            lineNumber={index}
+                            xCoords={sessionInfo.coords}
+                            sessionSymbol={sessionInfo.session.symbol}
+                            unitPixelWidth={unitWidth}
+                            sessionGuid={sessionInfo.session.guid!}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </div>
   )
