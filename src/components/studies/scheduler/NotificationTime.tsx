@@ -91,10 +91,30 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
     })
   }
 
+  const getDisplayOffset = () => {
+    if (!offset) {
+      return ''
+    }
+
+    if (isMultiday) {
+      return offset
+    }
+    const parsedOffset = moment.duration(offset)
+    if (
+      parsedOffset.days() ||
+      (parsedOffset.minutes() && parsedOffset.hours())
+    ) {
+      const result = `PT${parsedOffset.asMinutes()}M`
+      return result
+    }
+    return offset
+  }
+
   React.useEffect(() => {
     if (offset) {
       //get the offset
       const parsedOffset = moment.duration(offset)
+
       //get and remove the days
       const daysOffset = parsedOffset.days()
       parsedOffset.subtract(daysOffset, 'd')
@@ -110,6 +130,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
 
       var offsetTime = moment.duration(offsetTimeMinutes, 'minute')
       //if there is days overflow when you add the interval + start time
+
       setDaysForMultidayOffset(daysOffset + offsetTime.days())
       setTimeForMultidayOffset(
         `${offsetTime.hours().toString().padStart(2, '0')}:${offsetTime
@@ -118,7 +139,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
           .padStart(2, '0')}`
       )
     }
-  }, [])
+  }, [offset, isMultiday])
 
   //--- initial notification fns ----//
   const toggleOffsetForInitialNotification = (value: string) => {
@@ -179,7 +200,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
         onChange={e => {
           onChange({notifyAt: notifyAt, offset: e.target.value})
         }}
-        durationString={offset || ''}
+        durationString={getDisplayOffset()}
         unitLabel="Repeat Every"
         numberLabel="frequency number"
         unitDefault={MHDsEnum.H}
