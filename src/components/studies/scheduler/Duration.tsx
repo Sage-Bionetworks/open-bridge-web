@@ -98,7 +98,10 @@ const Duration: React.FunctionComponent<
 
   const triggerChange = (e: any) => {
     const time = unt === 'H' || unt === 'M' ? 'T' : ''
-    const p = `P${time}${num}${unt}`
+    const p =
+      unt === undefined || num === undefined
+        ? undefined
+        : `P${time}${num}${unt}`
 
     onChange({target: {value: p}})
   }
