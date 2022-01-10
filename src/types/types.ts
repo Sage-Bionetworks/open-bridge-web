@@ -248,6 +248,7 @@ export type EditableParticipantData = {
 
 export type ParticipantAccountSummary = {
   // isSelected?: boolean
+  healthCode?: string
   firstName?: string
   lastName?: string
   email?: string
@@ -295,7 +296,17 @@ export type Phone = {
 }
 
 /* ----------------  Adherence Types ------------------ */
-export type AdherenceWindowState = 'not_applicable' | 'not_yet_available'
+export type AdherenceWindowState =
+  | 'not_applicable'
+  | 'not_yet_available'
+  | 'unstarted'
+  | 'started'
+  | 'completed'
+  | 'abandoned'
+  | 'expired'
+  | 'not_yet_available'
+  | 'unstarted'
+  | 'declined'
 
 export type EventStreamDay = {
   sessionGuid: string

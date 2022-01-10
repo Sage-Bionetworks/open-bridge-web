@@ -1,5 +1,6 @@
 import {ReactComponent as Upcoming} from '@assets/symbols/empty.svg'
 import {useAdherence} from '@components/studies/adherenceHooks'
+import {useEnrollmentForParticipant} from '@components/studies/enrollmentHooks'
 import {useStudy} from '@components/studies/studyHooks'
 import BreadCrumb from '@components/widgets/BreadCrumb'
 import LoadingComponent from '@components/widgets/Loader'
@@ -132,15 +133,25 @@ function getParcipantSessions(
 const AdherenceParticipant: FunctionComponent<
   AdherenceParticipantProps & RouteComponentProps
 > = () => {
-  let {id: studyId} = useParams<{
+  let {id: studyId, userId} = useParams<{
     id: string
+    userId: string
   }>()
+
   const {token} = useUserSessionDataState()
   const {
     data: adherenceReport,
     error,
     isLoading: isAdherenceLoading,
-  } = useAdherence(studyId, '5jSdWKjevYMV47e7QPvlu7rx')
+  } = useAdherence(studyId, userId)
+
+  console.log('about to call with ', userId)
+  const {
+    data: enrollment,
+    error: enrollmentError,
+    isLoading: isEnrollmentLoading,
+  } = useEnrollmentForParticipant(studyId, userId)
+
   const {
     data: study,
     error: studyError,
@@ -150,6 +161,8 @@ const AdherenceParticipant: FunctionComponent<
   const [participantSessions, setParticipantSessions] = React.useState<
     SessionDisplayInfo[]
   >([])
+
+  console.log('e', enrollment)
 
   React.useEffect(() => {
     if (adherenceReport) {
@@ -173,7 +186,9 @@ const AdherenceParticipant: FunctionComponent<
   return (
     <Box bgcolor="#F8F8F8" px={5}>
       <LoadingComponent
-        reqStatusLoading={isStudyLoading || isAdherenceLoading}
+        reqStatusLoading={
+          isStudyLoading || isAdherenceLoading || isEnrollmentLoading
+        }
         variant="full">
         <Box px={3} py={2} display="flex" alignItems="center">
           <NonDraftHeaderFunctionComponent study={study} />
@@ -183,6 +198,12 @@ const AdherenceParticipant: FunctionComponent<
         <Paper
           elevation={2}
           style={{padding: '32px', backgroundColor: '#f8f8f8'}}>
+          {enrollment?.externalId}
+          <br />
+          Time in Study
+          <br />
+          Health Code <br />
+          {enrollment?.healthCode}
           <Box display="flex">
             {participantSessions?.map(s => (
               <SessionLegend
@@ -190,11 +211,6 @@ const AdherenceParticipant: FunctionComponent<
                 sessionName={s.sessionName}
               />
             ))}
-
-            {/*<SessionLegend symbolKey="Session1Circle" />
-          <SessionLegend symbolKey="Session2Triangle" />
-          <SessionLegend symbolKey="Session3Square" />
-         <SessionLegend symbolKey="Session4Diamond" />*/}
           </Box>
           <AdherenceParticipantGrid adherenceReport={adherenceReport!} />
         </Paper>

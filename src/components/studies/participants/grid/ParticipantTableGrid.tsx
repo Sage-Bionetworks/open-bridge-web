@@ -350,8 +350,8 @@ function getColumns(
     },
 
     {
-      field: 'id',
-      headerName: 'HealthCode',
+      field: 'healthCode',
+      headerName: 'Health Code',
       renderCell: params => renderCellExpand(params, 130),
       width: 130,
     },

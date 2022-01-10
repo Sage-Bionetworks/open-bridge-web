@@ -39,7 +39,7 @@ const CSV_EXPORT_ADDITIONAL_KEYS: Map<
   keyof ExtendedParticipantAccountSummary,
   string
 > = new Map([
-  ['id', 'Health Code'],
+  ['healthCode', 'Health Code'],
   ['joinedDate', 'Joined'],
   ['dateWithdrawn', 'Withdrew'],
   ['withdrawalNote', 'Withdrawal Note'],
@@ -168,7 +168,7 @@ async function getParticipantDataForDownload(
           studyId,
           p.externalIds[studyId] || ''
         ),
-        [columns.get('id')!]: p.id,
+        [columns.get('healthCode')!]: p.healthCode,
 
         // LEON TODO: Revisit when we have smsDate
         [columns.get('joinedDate')!]: dateToString(p.joinedDate),

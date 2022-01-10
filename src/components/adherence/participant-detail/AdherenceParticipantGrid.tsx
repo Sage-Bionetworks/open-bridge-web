@@ -2,15 +2,17 @@ import {
   PlotDaysDisplay,
   useGetPlotAndUnitWidth,
 } from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
-import SessionIcon from '@components/widgets/SessionIcon'
+import SessionIcon, {SessionSymbols} from '@components/widgets/SessionIcon'
 import {makeStyles} from '@material-ui/core'
 import EventService from '@services/event.service'
 import {
   AdherenceByDayEntries,
   AdherenceEventStream,
+  AdherenceWindowState,
   EventStreamAdherenceReport,
   SessionDisplayInfo,
 } from '@typedefs/types'
+import clsx from 'clsx'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
 
@@ -36,8 +38,14 @@ const useStyles = makeStyles(theme => ({
   },
   dayCell: {
     // borderLeft: '1px solid red',
+    padding: '0 8px',
     borderRight: '1px solid black',
-    position: 'relative',
+    display: 'flex',
+    flexDirection: 'row',
+    alignContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    // position: 'relative',
     '&:first-child': {
       borderLeft: '1px solid black',
     },
@@ -97,7 +105,52 @@ const useStyles = makeStyles(theme => ({
     zIndex: 100,
     top: `0`,
   },
+  dot: {
+    width: '6px',
+    height: '6px',
+    borderRadius: '50%',
+    border: '2px solid black',
+  },
+  plotElement: {
+    width: '10px',
+  },
+  empty: {
+    // backgroundColor: 'red',
+    overflow: 'visible',
+
+    '&> path, &> circle, &> rect': {
+      stroke: 'red',
+      overflow: 'visible',
+      fill: 'transparent',
+    },
+  },
 }))
+
+function getMaxNumberOfTimeWindows(
+  adherenceReport: EventStreamAdherenceReport
+): number {
+  const maxNumberOfWindowsInStreams = adherenceReport.streams.map(stream => {
+    const dayEntires = _.flatten(Object.values(stream.byDayEntries))
+    const maxWindowsInStream = Math.max(
+      ...dayEntires.map(entry => entry.timeWindows.length)
+    )
+    return maxWindowsInStream
+  })
+  console.log('max', Math.max(...maxNumberOfWindowsInStreams))
+  return Math.max(...maxNumberOfWindowsInStreams)
+}
+
+const SHAPE_CLASSES: Record<AdherenceWindowState, number> = {
+  not_applicable: -1,
+  not_yet_available: -1,
+  unstarted: -1,
+  started: 1,
+  completed: 0,
+  abandoned: 1,
+  expired: 2,
+
+  declined: 2,
+}
 
 type AdherenceParticipantGridProps = {
   adherenceReport: EventStreamAdherenceReport
@@ -108,8 +161,16 @@ const DayDisplayForSessions: FunctionComponent<{
   wkIndex: number
   dayIndex: number
   byDayEntries: AdherenceByDayEntries
+  maxNumberOfTimeWindows: number
   sessionGuid: string
-}> = ({dayWidthInPx, wkIndex, dayIndex, byDayEntries, sessionGuid}) => {
+}> = ({
+  dayWidthInPx,
+  wkIndex,
+  dayIndex,
+  byDayEntries,
+  sessionGuid,
+  maxNumberOfTimeWindows,
+}) => {
   const classes = useStyles()
   const dayNumber = wkIndex * 7 + dayIndex
   if (!byDayEntries[dayNumber]) {
@@ -124,8 +185,10 @@ const DayDisplayForSessions: FunctionComponent<{
             <>
               {entry.timeWindows.map((tw, itw) => (
                 <TimeWindowPlotElement
+                  maxNumberOfWindows={maxNumberOfTimeWindows}
                   windowIndex={itw}
                   dayWidthInPx={dayWidthInPx}
+                  windowState={tw.state}
                   sessionSymbol={entry.sessionSymbol}
                   numberOfWindows={entry.timeWindows.length}
                 />
@@ -186,8 +249,18 @@ const TimeWindowPlotElement: FunctionComponent<{
   windowIndex: number
   numberOfWindows: number
   sessionSymbol: string
+  windowState: AdherenceWindowState
   dayWidthInPx: number
-}> = ({windowIndex, numberOfWindows, sessionSymbol, dayWidthInPx}) => {
+  maxNumberOfWindows: number
+}> = ({
+  windowIndex,
+  numberOfWindows,
+  sessionSymbol,
+  dayWidthInPx,
+  windowState,
+  maxNumberOfWindows,
+}) => {
+  const classes = useStyles()
   const leftOffset =
     (dayWidthInPx / numberOfWindows) * windowIndex +
     dayWidthInPx / (2 * numberOfWindows) -
@@ -195,15 +268,36 @@ const TimeWindowPlotElement: FunctionComponent<{
 
   const topOffset = 4 //sessionsInStream.indexOf(sessionGuid) * 20
 
+  //these states will show empty dot
+  const isEmptyDot = SHAPE_CLASSES[windowState] === -1
+
+  //0 - filled, 1- partcial, 2 - empty
+  const variant = SHAPE_CLASSES[windowState]
+  if (variant === undefined) {
+    throw Error('unknown state')
+  }
+
+  var x = clsx({[classes.empty]: variant === 2, [classes.plotElement]: true})
+
+  const el = isEmptyDot ? (
+    <div className={classes.dot} />
+  ) : (
+    React.cloneElement(
+      SessionSymbols.get(sessionSymbol)![variant == 2 ? 0 : variant],
+      {className: x}
+    )
+  )
+
   return (
     <div
       id={'window_' + windowIndex}
       style={{
-        position: 'absolute',
-        top: `${topOffset}px`,
-        left: `${leftOffset}px`,
+        width: `${Math.floor(100 / maxNumberOfWindows)}%`,
+        //  position: 'absolute',
+        //  top: `${topOffset}px`,
+        //  left: `${leftOffset}px`,
       }}>
-      <SessionIcon symbolKey={sessionSymbol} />
+      {el}
     </div>
   )
 }
@@ -212,26 +306,11 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
   ({adherenceReport}) => {
     const ref = React.useRef<HTMLDivElement>(null)
     const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 200)
+
+    const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
     const classes = useStyles()
 
-    const weeks = Math.ceil(adherenceReport.dayRangeOfAllStreams.max / 7)
-
-    const getDayEntriesForWeek = (
-      weekNumber: number,
-      dayEntries: AdherenceByDayEntries
-    ): AdherenceByDayEntries => {
-      const result: AdherenceByDayEntries = {}
-
-      for (var dayKey in dayEntries) {
-        const entry = dayEntries[dayKey]
-        if (_.first(entry)?.week === weekNumber) {
-          console.log('fits')
-          result[dayKey] = entry
-        }
-      }
-
-      return result
-    }
+    // const weeks = Math.ceil(adherenceReport.dayRangeOfAllStreams.max / 7)
 
     const getWeeksForStream = (stream: AdherenceEventStream): number => {
       const maxDay = Math.max(
@@ -239,6 +318,12 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
       )
       return Math.ceil(maxDay / 7)
     }
+    React.useEffect(() => {
+      if (adherenceReport) {
+        console.log('ar')
+        setMaxNumberOfTimeWinsows(getMaxNumberOfTimeWindows(adherenceReport))
+      }
+    }, [adherenceReport])
 
     return (
       <div ref={ref} className={classes.adherenceGrid}>
@@ -270,14 +355,12 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                 id={stream.startEventId + '_' + wkIndex}>
                 <div className={classes.startEventId}>
                   {wkIndex === 0 && (
-                    <>
-                      <strong>
-                        {EventService.formatEventIdForDisplay(
-                          stream.startEventId
-                        )}
-                      </strong>{' '}
+                    <strong>
+                      {EventService.formatEventIdForDisplay(
+                        stream.startEventId
+                      )}{' '}
                       <br />
-                    </>
+                    </strong>
                   )}
                   Week {wkIndex + 1}
                 </div>
@@ -307,6 +390,7 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                             style={{width: dayWidthInPx + 'px'}}>
                             <DayDisplayForSessions
                               dayWidthInPx={dayWidthInPx}
+                              maxNumberOfTimeWindows={maxNumbrOfTimeWindows}
                               wkIndex={wkIndex}
                               dayIndex={dayIndex}
                               sessionGuid={guid}

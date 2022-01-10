@@ -322,56 +322,6 @@ async function getNumEnrolledParticipants(studyId: string, token: string) {
   return result.data.total
 }
 
-async function getEnrollmentById(
-  studyId: string,
-  token: string,
-  participantId: string,
-  participantType: ParticipantActivityType
-) {
-  try {
-    const participant = await getUserEnrollmentInfo(
-      studyId,
-      participantId,
-      token
-    )
-    const recordFromParticipantApi = await getActiveParticipantById(
-      studyId,
-      token,
-      participant.participant.identifier
-    )
-
-    const isWithdrawn = participant.withdrawnOn !== undefined
-    const isTestUser =
-      recordFromParticipantApi?.dataGroups?.includes('test_user')
-    if (participantType === 'WITHDRAWN' && (!isWithdrawn || isTestUser)) {
-      return null
-    }
-    if (participantType === 'ACTIVE' && (isWithdrawn || isTestUser)) {
-      return null
-    }
-
-    if (participantType === 'TEST' && !isTestUser) {
-      return null
-    }
-
-    if (participant.withdrawnOn && participantType !== 'TEST') {
-      return mapWithdrawnParticipant(participant, studyId)
-    } else {
-      return getActiveParticipantById(
-        studyId,
-        token,
-        participant.participant.identifier
-      )
-    }
-  } catch (error) {
-    // If the participant is not found, return null.
-    if ((error as ExtendedError).statusCode === 404) {
-      return null
-    }
-    throw new Error((error as ExtendedError).message)
-  }
-}
-
 async function getUserEnrollmentInfo(
   studyId: string,
   participantId: string,
@@ -723,7 +673,7 @@ const ParticipantService = {
 
   getNumEnrolledParticipants,
   getEnrollmentByEnrollmentType,
-  getEnrollmentById,
+
   getActiveParticipantById,
   getParticipants,
   participantSearch,
