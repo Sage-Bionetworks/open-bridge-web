@@ -159,7 +159,7 @@ const StudyPageBottomPhoneContent: React.FunctionComponent<StudyPageBottomPhoneC
               />
             )}
             <StudySummaryRoles
-              type="IRB/Ethics Board of Record"
+              type={ethicsBoardInfo.position!}
               name={getContactName(ethicsBoardInfo.name) || 'IRB/Ethics Board'}
             />
           </Box>

@@ -532,6 +532,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     if (!sourceStudy) {
       return
     }
+
     setStudy({...sourceStudy})
     setIrbNameSameAsInstitution(
       getContact(sourceStudy, 'irb')?.name ===
@@ -766,10 +767,18 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
         delete contact!.phone
       }
     })
-
-    //if using default message
-    if (newStudy.clientData?.welcomeScreenData?.isUsingDefaultMessage) {
-      updatedStudy.clientData!.welcomeScreenData!.useOptionalDisclaimer = true
+    //should always be true for newer studies - but just in case
+    if (newStudy.clientData?.welcomeScreenData !== undefined) {
+      //explicitly set boolean valkues
+      if (!newStudy.clientData.welcomeScreenData.isUsingDefaultMessage) {
+        newStudy.clientData.welcomeScreenData.isUsingDefaultMessage = false
+      }
+      if (newStudy.clientData.welcomeScreenData.isUsingDefaultMessage) {
+        updatedStudy.clientData!.welcomeScreenData.useOptionalDisclaimer = true
+      }
+      if (!updatedStudy.clientData!.welcomeScreenData.useOptionalDisclaimer) {
+        updatedStudy.clientData!.welcomeScreenData.useOptionalDisclaimer = false
+      }
     }
     //if using default message
     if (newStudy.clientData?.welcomeScreenData?.isUsingDefaultMessage) {
@@ -812,12 +821,16 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   }
 
   const getContactPersonObject = (type: ContactType): Contact => {
-    const defaultPerson = {role: type, name: DEFAULT_CONTACT_NAME}
+    const defaultPerson: Contact = {role: type, name: DEFAULT_CONTACT_NAME}
     if (!study) {
       return defaultPerson
     }
     const contact = getContact(study, type)
-    return contact || defaultPerson
+    const result = contact || defaultPerson
+    if (type === 'irb' && !result.position) {
+      result.position = 'IRB/Ethics Board of Record'
+    }
+    return result
   }
 
   function updateContactProperty(

@@ -322,7 +322,16 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       const newStudy = {
         identifier: id,
         version: 1,
-        clientData: {},
+        clientData: {
+          welcomeScreenData: {
+            welcomeScreenHeader: '',
+            welcomeScreenBody: '',
+            welcomeScreenFromText: '',
+            welcomeScreenSalutation: '',
+            useOptionalDisclaimer: true,
+            isUsingDefaultMessage: true,
+          },
+        },
         phase: 'design' as StudyPhase,
         name: constants.constants.NEW_STUDY_NAME,
         signInTypes: [],
