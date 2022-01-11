@@ -12,6 +12,7 @@ import ScheduleService from './schedule.service'
 
 const StudyService = {
   editStudyLogo,
+  getDefaultClientData,
   getDisplayStatusForStudyPhase,
   getStudies,
   getStudy,
@@ -39,6 +40,19 @@ function getDisplayStatusForStudyPhase(phase: StudyPhase): DisplayStudyPhase {
       return 'COMPLETED'
     default:
       return 'WITHDRAWN'
+  }
+}
+
+function getDefaultClientData() {
+  return {
+    welcomeScreenData: {
+      welcomeScreenHeader: '',
+      welcomeScreenBody: '',
+      welcomeScreenFromText: '',
+      welcomeScreenSalutation: '',
+      useOptionalDisclaimer: true,
+      isUsingDefaultMessage: true,
+    },
   }
 }
 
@@ -131,7 +145,7 @@ async function getStudy(id: string, token: string): Promise<Study | undefined> {
   )
   const study = response.data
   if (!study.clientData) {
-    study.clientData = {}
+    study.clientData = getDefaultClientData()
   }
   return study
 }
