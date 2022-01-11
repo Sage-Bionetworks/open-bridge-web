@@ -65,13 +65,14 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
     setTimeForMultidayOffset(time)
 
     let periodMinutes = 0
+    //convert it to the offset from the start of the window
     if (time) {
       const windowStartPeriodMinutes = moment
         .duration(`PT${windowStartTime?.replace(':', 'H')}M`)
-        .minutes()
+        .asMinutes()
       const timeOffsetPeriodMinutes = moment
         .duration(`PT${time?.replace(':', 'H')}M`)
-        .minutes()
+        .asMinutes()
       periodMinutes = timeOffsetPeriodMinutes - windowStartPeriodMinutes
     }
     const durationFirstPass = moment.duration({
@@ -90,22 +91,55 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
     })
   }
 
+  const getDisplayOffset = () => {
+    if (!offset) {
+      return ''
+    }
+
+    if (isMultiday) {
+      return offset
+    }
+    const parsedOffset = moment.duration(offset)
+    if (
+      parsedOffset.days() ||
+      (parsedOffset.minutes() && parsedOffset.hours())
+    ) {
+      const result = `PT${parsedOffset.asMinutes()}M`
+      return result
+    }
+    return offset
+  }
+
   React.useEffect(() => {
     if (offset) {
+      //get the offset
       const parsedOffset = moment.duration(offset)
 
-      const roundedMinutes = (
-        Math.round(parsedOffset.minutes() / 15) * 15
-      ).toString()
-      setDaysForMultidayOffset(parsedOffset.days())
+      //get and remove the days
+      const daysOffset = parsedOffset.days()
+      parsedOffset.subtract(daysOffset, 'd')
+      //get the window start time as duration
+      const offsetMinutes = parsedOffset.asMinutes()
+      const windowStartPeriodMinutes = moment
+        .duration(`PT${windowStartTime?.replace(':', 'H')}M`)
+        .asMinutes()
+
+      //round minutes to 15
+      const offsetTimeMinutes =
+        Math.round((windowStartPeriodMinutes + offsetMinutes) / 15) * 15
+
+      var offsetTime = moment.duration(offsetTimeMinutes, 'minute')
+      //if there is days overflow when you add the interval + start time
+
+      setDaysForMultidayOffset(daysOffset + offsetTime.days())
       setTimeForMultidayOffset(
-        `${parsedOffset
-          .hours()
+        `${offsetTime.hours().toString().padStart(2, '0')}:${offsetTime
+          .minutes()
           .toString()
-          .padStart(2, '0')}:${roundedMinutes.padStart(2, '0')}`
+          .padStart(2, '0')}`
       )
     }
-  }, [])
+  }, [offset, isMultiday])
 
   //--- initial notification fns ----//
   const toggleOffsetForInitialNotification = (value: string) => {
@@ -166,7 +200,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
         onChange={e => {
           onChange({notifyAt: notifyAt, offset: e.target.value})
         }}
-        durationString={offset || ''}
+        durationString={getDisplayOffset()}
         unitLabel="Repeat Every"
         numberLabel="frequency number"
         unitDefault={MHDsEnum.H}
