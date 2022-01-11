@@ -154,7 +154,7 @@ export type Study = {
   clientData: {
     generateIds?: boolean
     backgroundRecorders?: BackgroundRecorders
-    welcomeScreenData?: WelcomeScreenData
+    welcomeScreenData: WelcomeScreenData
     notifications?: StringDictionary<ScheduleNotification[]>
   }
   createdOn?: Date
