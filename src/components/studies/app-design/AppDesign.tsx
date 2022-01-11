@@ -780,10 +780,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
         updatedStudy.clientData!.welcomeScreenData.useOptionalDisclaimer = false
       }
     }
-    //if using default message
-    if (newStudy.clientData?.welcomeScreenData?.isUsingDefaultMessage) {
-      updatedStudy.clientData!.welcomeScreenData!.useOptionalDisclaimer = true
-    }
     return updatedStudy
   }
 
