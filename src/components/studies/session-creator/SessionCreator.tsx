@@ -315,7 +315,6 @@ SessionCreatorProps) => {
           maxWidth="lg"
           scroll="body"
           open={isAssessmentDialogOpen}
-          scroll="body"
           onClose={cancelAssessmentSelector}
           aria-labelledby="form-dialog-title">
           {isAddingAssessmentToSession && (

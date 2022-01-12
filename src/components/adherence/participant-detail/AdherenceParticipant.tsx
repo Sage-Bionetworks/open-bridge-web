@@ -1,10 +1,10 @@
-import {ReactComponent as Upcoming} from '@assets/symbols/empty.svg'
+import {ReactComponent as PersonIcon} from '@assets/adherence/person_icon.svg'
 import {useAdherence} from '@components/studies/adherenceHooks'
 import {useEnrollmentForParticipant} from '@components/studies/enrollmentHooks'
 import {useStudy} from '@components/studies/studyHooks'
 import BreadCrumb from '@components/widgets/BreadCrumb'
+import {MTBHeadingH4} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
-import SessionIcon, {SessionSymbols} from '@components/widgets/SessionIcon'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import {Box, makeStyles, Paper} from '@material-ui/core'
@@ -12,15 +12,21 @@ import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
 import {
   AdherenceByDayEntries,
+  AdherenceWindowState,
   EventStreamAdherenceReport,
   SessionDisplayInfo,
 } from '@typedefs/types'
-import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import AdherenceParticipantGrid from './AdherenceParticipantGrid'
+import AdherenceSessionIcon from './AdherenceSessionIcon'
 
 const useStyles = makeStyles(theme => ({
+  mainContainer: {
+    padding: theme.spacing(4),
+    marginTop: theme.spacing(4),
+    backgroundColor: '#f8f8f8',
+  },
   sessionLegend: {
     width: theme.spacing(17.5),
     padding: theme.spacing(1, 2),
@@ -28,44 +34,11 @@ const useStyles = makeStyles(theme => ({
     fontSize: '12px',
     border: '1px solid black',
     marginRight: theme.spacing(1),
-  },
-  iconRow: {
-    display: 'flex',
-    alignItems: 'center',
-
-    '& > svg': {
-      width: '10px',
-      height: '10px',
-      marginRight: '5px',
+    '& strong': {
+      marginLeft: '15px',
+      display: 'block',
     },
   },
-  upcomingIcon: {
-    display: 'flex',
-    alignItems: 'center',
-
-    '& svg': {
-      display: 'flex',
-      width: '10px',
-      height: '10px',
-      marginRight: '5px',
-    },
-  },
-  emptySvg: {
-    fill: 'none',
-    width: '10px',
-    height: '10px',
-    marginRight: '5px',
-    '&> path, &> circle, &> rect': {
-      fill: 'none',
-      stroke: 'black',
-    },
-    '&$red': {
-      '&> path, &> circle, &> rect': {
-        stroke: 'red',
-      },
-    },
-  },
-  red: {},
 }))
 
 type AdherenceParticipantProps = {
@@ -77,31 +50,22 @@ const SessionLegend: FunctionComponent<{
   sessionName: string
 }> = ({symbolKey, sessionName}) => {
   const classes = useStyles()
+  const arr: {label: string; state: AdherenceWindowState}[] = [
+    {label: 'Upcoming', state: 'not_yet_available'},
+    {label: 'Incomplete', state: 'expired'},
+    {label: 'Partial Complete', state: 'started'},
+    {label: 'Completed', state: 'completed'},
+  ]
   return (
     <Box className={classes.sessionLegend}>
-      <div style={{marginLeft: '15px'}}>
-        <strong>{sessionName}</strong>{' '}
-      </div>
-      <div className={classes.upcomingIcon}>
-        <Upcoming />
-        Upcoming
-      </div>
-      <SessionIcon
-        symbolIndex={0}
-        className={classes.emptySvg}
-        symbolKey={symbolKey}>
-        Incomplete
-      </SessionIcon>
-
-      <Box display="flex" className={clsx(classes.iconRow, classes.emptySvg)}>
-        {SessionSymbols.get(symbolKey!)![0]}
-      </Box>
-      <SessionIcon symbolIndex={1} symbolKey={symbolKey}>
-        Partial Complete
-      </SessionIcon>
-      <SessionIcon symbolIndex={0} symbolKey={symbolKey}>
-        Completed
-      </SessionIcon>
+      <strong>{sessionName}</strong>{' '}
+      {arr.map(e => (
+        <div>
+          <AdherenceSessionIcon sessionSymbol={symbolKey} windowState={e.state}>
+            {e.label}
+          </AdherenceSessionIcon>
+        </div>
+      ))}
     </Box>
   )
 }
@@ -195,16 +159,18 @@ const AdherenceParticipant: FunctionComponent<
         </Box>
 
         <BreadCrumb links={getBreadcrumbLinks()}></BreadCrumb>
-        <Paper
-          elevation={2}
-          style={{padding: '32px', backgroundColor: '#f8f8f8'}}>
-          {enrollment?.externalId}
+        <Paper className={classes.mainContainer} elevation={2}>
+          <Box display="flex" alignItems="center">
+            {' '}
+            <PersonIcon />
+            <MTBHeadingH4>{enrollment?.externalId}</MTBHeadingH4>
+          </Box>
           <br />
-          Time in Study
+          <MTBHeadingH4> Time in Study</MTBHeadingH4>
           <br />
-          Health Code <br />
+          <MTBHeadingH4>Health Code </MTBHeadingH4>
           {enrollment?.healthCode}
-          <Box display="flex">
+          <Box display="flex" mt={4} mb={2}>
             {participantSessions?.map(s => (
               <SessionLegend
                 symbolKey={s.sessionSymbol}

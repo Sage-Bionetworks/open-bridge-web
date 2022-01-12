@@ -316,6 +316,7 @@ export type EventStreamDay = {
   studyBurstId: string
   studyBurstNum: number
   startDay: number
+  startDate: string
   timeWindows: {
     sessionInstanceGuid: string
     timeWindowGuid: string
@@ -328,7 +329,7 @@ export type AdherenceByDayEntries = Record<string, EventStreamDay[]>
 
 export type AdherenceEventStream = {
   startEventId: string
-  eventTimestamp: string
+  eventTimestamp: Date
   sessionGuids: [string]
   byDayEntries: AdherenceByDayEntries
   type: 'EventStream'
