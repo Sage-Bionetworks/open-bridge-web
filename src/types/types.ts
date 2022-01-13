@@ -246,6 +246,11 @@ export type EditableParticipantData = {
   timeZone?: string
 }
 
+type EnrolledSubrecord = {
+  externalId: string
+  enrolledOn: string
+}
+
 export type ParticipantAccountSummary = {
   // isSelected?: boolean
   healthCode?: string
@@ -255,6 +260,7 @@ export type ParticipantAccountSummary = {
   phone?: Phone
   id: string
   studyIds?: string[]
+  enrollments?: Record<string, EnrolledSubrecord>
   externalIds: StringDictionary<string>
   externalId?: string
   studyExternalId?: string
