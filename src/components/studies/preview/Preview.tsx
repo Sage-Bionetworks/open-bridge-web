@@ -304,9 +304,6 @@ const PreviewIdGenerated: React.FunctionComponent<{
         Please download and/or open the <strong>Mobile Toolbox App</strong> and
         login with the following credentials below.
       </p>
-      <Box my={3} mx="auto" p={2} bgcolor="white" textAlign="center">
-        <img src={QrCode} width="95px" />
-      </Box>
     </>
   )
 
@@ -318,9 +315,6 @@ const PreviewIdGenerated: React.FunctionComponent<{
         <strong>Mobile Toolbox App</strong> and enter your personalized codes
         below to log in.
       </p>{' '}
-      <Box my={3} mx="auto" p={2} bgcolor="white" textAlign="center">
-        <img src={QrCode} width="95px" />
-      </Box>
     </>
   )
 
@@ -344,17 +338,20 @@ const PreviewIdGenerated: React.FunctionComponent<{
           )}
           <div>
             {isAssessmentDemo ? assessmentDemoIntro : studyDemoIntro}
+            <Box my={3} mx="auto" p={2} bgcolor="white" textAlign="center">
+              <img src={QrCode} width="95px" />
+            </Box>
             <div className={classes.storeButtons}>
-                <a
-                  href="https://apps.apple.com/us/app/mobile-toolbox-app/id1578358408"
-                  target="_blank">
-                  <img src={appStoreBtn} />
-                </a>
-                <a
-                  href="https://play.google.com/store/apps/details?id=org.sagebionetworks.research.mobiletoolbox.app"
-                  target="_blank">
-                  <img src={googlePlayBtn} />
-                </a>
+              <a
+                href="https://apps.apple.com/us/app/mobile-toolbox-app/id1578358408"
+                target="_blank">
+                <img src={appStoreBtn} />
+              </a>
+              <a
+                href="https://play.google.com/store/apps/details?id=org.sagebionetworks.research.mobiletoolbox.app"
+                target="_blank">
+                <img src={googlePlayBtn} />
+              </a>
             </div>
             <p className={classes.reminderOfUseText}>
               This login is only for preview purposes and allows you to view the
