@@ -48,12 +48,15 @@ export const SHAPE_CLASSES: Record<
 }
 
 const AdherenceSessionIcon: FunctionComponent<{
-  sessionSymbol: string
+  sessionSymbol?: string | undefined
   windowState: AdherenceWindowState
   isRed?: boolean
   children?: React.ReactNode
 }> = ({sessionSymbol, windowState, children, isRed = false}) => {
   const classes = useStyles()
+  if (!sessionSymbol) {
+    return <></>
+  }
 
   //these states will show empty dot
   const isEmptyDot = SHAPE_CLASSES[windowState].shapeIndex === -1

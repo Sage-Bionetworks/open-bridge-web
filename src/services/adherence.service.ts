@@ -2,9 +2,7 @@ import {EventStreamAdherenceReport} from '@typedefs/types'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
 
-const AdherenceService = {
-  getAdherenceForParticipant,
-}
+export const COMPLIANCE_THRESHOLD = 50
 
 async function getAdherenceForParticipant(
   studyId: string,
@@ -16,6 +14,11 @@ async function getAdherenceForParticipant(
     .replace(':userId', userId)
   const result = await Utility.callEndpoint<any>(endpoint, 'GET', {}, token)
   return result.data
+}
+
+const AdherenceService = {
+  getAdherenceForParticipant,
+  COMPLIANCE_THRESHOLD,
 }
 
 export default AdherenceService

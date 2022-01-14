@@ -3,17 +3,19 @@ import {
   useGetPlotAndUnitWidth,
 } from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
 import {makeStyles, Tooltip} from '@material-ui/core'
+import AdherenceService from '@services/adherence.service'
 import EventService from '@services/event.service'
 import {
   AdherenceByDayEntries,
   AdherenceEventStream,
-  AdherenceWindowState,
   EventStreamAdherenceReport,
   SessionDisplayInfo,
 } from '@typedefs/types'
+import clsx from 'clsx'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
 import AdherenceSessionIcon, {SHAPE_CLASSES} from './AdherenceSessionIcon'
+import DayDisplayForSessions from './DayDisplayForSessions'
 
 const useStyles = makeStyles(theme => ({
   adherenceGrid: {
@@ -92,7 +94,17 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     height: '20px',
   },
+  adherenceDisplay: {
+    fontSize: '14px',
+  },
+  red: {
+    color: 'red',
+  },
 }))
+
+type AdherenceParticipantGridProps = {
+  adherenceReport: EventStreamAdherenceReport
+}
 
 function getMaxNumberOfTimeWindows(
   adherenceReport: EventStreamAdherenceReport
@@ -106,53 +118,6 @@ function getMaxNumberOfTimeWindows(
   })
   console.log('max', Math.max(...maxNumberOfWindowsInStreams))
   return Math.max(...maxNumberOfWindowsInStreams)
-}
-
-type AdherenceParticipantGridProps = {
-  adherenceReport: EventStreamAdherenceReport
-}
-
-const DayDisplayForSessions: FunctionComponent<{
-  dayWidthInPx: number
-
-  sequentialDayNumber: number
-  byDayEntries: AdherenceByDayEntries
-  maxNumberOfTimeWindows: number
-  sessionGuid: string
-  isCompliant: boolean
-}> = ({
-  byDayEntries,
-  sessionGuid,
-  maxNumberOfTimeWindows,
-  sequentialDayNumber,
-  isCompliant,
-}) => {
-  //const dayNumber = wkIndex * 7 + dayIndex
-  if (!byDayEntries[sequentialDayNumber]) {
-    return <></>
-  }
-
-  return (
-    <>
-      {byDayEntries[sequentialDayNumber].map(
-        entry =>
-          entry.sessionGuid === sessionGuid && (
-            <>
-              {entry.timeWindows.map((tw, itw) => (
-                <TimeWindowPlotElement
-                  maxNumberOfWindows={maxNumberOfTimeWindows}
-                  windowIndex={itw}
-                  startDate={entry.startDate}
-                  windowState={tw.state}
-                  sessionSymbol={entry.sessionSymbol}
-                  isCompliant={isCompliant}
-                />
-              ))}
-            </>
-          )
-      )}
-    </>
-  )
 }
 
 function getSessionInfoFromStreamGuid(
@@ -172,53 +137,48 @@ function getSessionInfoFromStreamGuid(
   }
 }
 
-const SessionSymbolFromStream: FunctionComponent<{
-  byDayEntries: AdherenceByDayEntries
-  sessionGuid: string
-}> = ({byDayEntries, sessionGuid}) => {
-  const sessionInfo = getSessionInfoFromStreamGuid(byDayEntries, sessionGuid)
-  return sessionInfo ? (
-    <AdherenceSessionIcon
-      sessionSymbol={sessionInfo.sessionSymbol}
-      windowState="completed">
-      &nbsp;
-    </AdherenceSessionIcon>
-  ) : (
-    <></>
+function getWeeksForStream(stream: AdherenceEventStream): number {
+  /* this is another way to implement this. Not sure which one is better 
+ const maxDay = Math.max(
+    ...Object.keys(stream.byDayEntries).map(key => parseInt(key) + 1)
+    const result = Math.ceil(maxDay / 7)
+  )*/
+  const weeks = _.flatten(Object.values(stream.byDayEntries)).map(
+    eventStreamDay => eventStreamDay.week
   )
+  return Math.max(...weeks) + 1
 }
 
-const TimeWindowPlotElement: FunctionComponent<{
-  windowIndex: number
-
-  sessionSymbol: string
-  windowState: AdherenceWindowState
-  startDate: string
-  maxNumberOfWindows: number
-  isCompliant: boolean
-}> = ({
-  startDate,
-  windowIndex,
-  sessionSymbol,
-  windowState,
-  maxNumberOfWindows,
-  isCompliant,
-}) => {
-  return (
-    <Tooltip title={startDate}>
-      <div
-        id={'window_' + windowIndex}
-        style={{
-          width: `${Math.floor(100 / maxNumberOfWindows)}%`,
-        }}>
-        <AdherenceSessionIcon
-          sessionSymbol={sessionSymbol}
-          windowState={windowState}
-          isRed={!isCompliant}
-        />
-      </div>
-    </Tooltip>
+function getAdherenceForWeek(wkIndex: number, entries: AdherenceByDayEntries) {
+  const relevantWeek = _.flatten(Object.values(entries)).filter(
+    eventStreamDay => eventStreamDay.week === wkIndex
   )
+  const allTimewindows = _.flatten(relevantWeek.map(r => r.timeWindows))
+  const complianceStates = allTimewindows.map(
+    w => SHAPE_CLASSES[w.state].complianceState
+  )
+
+  const compliantSessions = complianceStates.filter(
+    state => state === 'COMPLIANT'
+  ).length
+  const noncompliantSessions = complianceStates.filter(
+    state => state === 'NONCOMPLIANT'
+  ).length
+  const unkSessions = complianceStates.filter(
+    state => state === 'UNKNOWN'
+  ).length
+
+  const totalSessions = compliantSessions + noncompliantSessions + unkSessions
+
+  let percentage = 1
+  if (totalSessions > 0) {
+    percentage = compliantSessions / totalSessions
+  }
+  return Math.round(percentage * 100)
+}
+
+function getSequentialDayNumber(wkIndex: number, dayIndex: number): number {
+  return wkIndex * 7 + dayIndex
 }
 
 //https://github.com/Sage-Bionetworks/BridgeServer2/blob/develop/src/main/java/org/sagebionetworks/bridge/models/schedules2/adherence/AdherenceUtils.java
@@ -230,67 +190,45 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
     const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 200)
 
     const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
-    // const [adherenceByWeek, setAdherenceByWeek]= React.useState<{weeks: number, adherence: number}>([])
+    //eventId: {weekNumber: adherence}
+    const [adherenceByWeekLookup, setAdherenceByWeekLookup] =
+      React.useState<Map<string, Map<number, number>>>()
     const classes = useStyles()
 
     // const weeks = Math.ceil(adherenceReport.dayRangeOfAllStreams.max / 7)
 
-    const getWeeksForStream = (stream: AdherenceEventStream): number => {
-      /* this is another way to implement this. Not sure which one is better 
-     const maxDay = Math.max(
-        ...Object.keys(stream.byDayEntries).map(key => parseInt(key) + 1)
-        const result = Math.ceil(maxDay / 7)
-      )*/
-      const weeks = _.flatten(Object.values(stream.byDayEntries)).map(
-        eventStreamDay => eventStreamDay.week
-      )
-      return Math.max(...weeks) + 1
-    }
     React.useEffect(() => {
       if (adherenceReport) {
-        console.log('ar')
+        let weeklyAdherence: Map<string, Map<number, number>> = new Map()
+
+        for (var stream of adherenceReport.streams) {
+          const weeksNumber = getWeeksForStream(stream)
+          const streamAdherenceMap: Map<number, number> = new Map()
+          for (var i = 0; i < weeksNumber; i++) {
+            streamAdherenceMap.set(
+              i,
+              getAdherenceForWeek(i, stream.byDayEntries)
+            )
+          }
+
+          weeklyAdherence.set(stream.startEventId, streamAdherenceMap)
+        }
+        setAdherenceByWeekLookup(weeklyAdherence)
         setMaxNumberOfTimeWinsows(getMaxNumberOfTimeWindows(adherenceReport))
-        const weeksArray = adherenceReport.streams.map(s =>
-          getWeeksForStream(s)
-        )
       }
     }, [adherenceReport])
 
-    function getAdherenceForWeek(
-      wkIndex: number,
-      entries: AdherenceByDayEntries
-    ) {
-      const relevantWeek = _.flatten(Object.values(entries)).filter(
-        eventStreamDay => eventStreamDay.week === wkIndex
-      )
-      const allTimewindows = _.flatten(relevantWeek.map(r => r.timeWindows))
-      const complianceStates = allTimewindows.map(
-        w => SHAPE_CLASSES[w.state].complianceState
-      )
-      //const countInCompliance = complianceStates.filter(state => state !== undefined)
-
-      const compliantSessions = complianceStates.filter(
-        state => state === 'COMPLIANT'
-      ).length
-      const noncompliantSessions = complianceStates.filter(
-        state => state === 'NONCOMPLIANT'
-      ).length
-      const unkSessions = complianceStates.filter(
-        state => state === 'UNKNOWN'
-      ).length
-
-      const totalSessions =
-        compliantSessions + noncompliantSessions + unkSessions
-
-      let percentage = 1
-      if (totalSessions > 0) {
-        percentage = compliantSessions / totalSessions
+    const getAdherenceForWeekForDisplay = (
+      stream: AdherenceEventStream,
+      wkIndex: number
+    ): {value: number; isCompliant: boolean} => {
+      const lookupValue =
+        adherenceByWeekLookup?.get(stream.startEventId)?.get(wkIndex) || 0
+      return {
+        value: lookupValue,
+        isCompliant: lookupValue > AdherenceService.COMPLIANCE_THRESHOLD,
       }
-      return Math.round(percentage * 100)
     }
-
-    const getSequentialDayNumber = (wkIndex: number, dayIndex: number) =>
-      wkIndex * 7 + dayIndex
 
     return (
       <div ref={ref} className={classes.adherenceGrid}>
@@ -340,10 +278,16 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                         className={classes.eventRowForWeekSingleSession}
                         id={'session' + guid}>
                         <div className={classes.sessionLegendIcon}>
-                          <SessionSymbolFromStream
-                            sessionGuid={guid}
-                            byDayEntries={stream.byDayEntries}
-                          />
+                          <AdherenceSessionIcon
+                            sessionSymbol={
+                              getSessionInfoFromStreamGuid(
+                                stream.byDayEntries,
+                                guid
+                              )?.sessionSymbol || undefined
+                            }
+                            windowState="completed">
+                            &nbsp;
+                          </AdherenceSessionIcon>
                         </div>
                         <div
                           id={'wk' + wkIndex + 'events'}
@@ -354,10 +298,8 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                               style={{width: `${dayWidthInPx}px`}}>
                               <DayDisplayForSessions
                                 isCompliant={
-                                  getAdherenceForWeek(
-                                    wkIndex,
-                                    stream.byDayEntries
-                                  ) > 50
+                                  getAdherenceForWeekForDisplay(stream, wkIndex)
+                                    .isCompliant
                                 }
                                 dayWidthInPx={dayWidthInPx}
                                 maxNumberOfTimeWindows={maxNumbrOfTimeWindows}
@@ -374,8 +316,13 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                       </div>
                     ))}
                   </div>
-                  <div>
-                    {getAdherenceForWeek(wkIndex, stream.byDayEntries)}%
+                  <div
+                    className={clsx(
+                      classes.adherenceDisplay,
+                      !getAdherenceForWeekForDisplay(stream, wkIndex)
+                        .isCompliant && classes.red
+                    )}>
+                    {getAdherenceForWeekForDisplay(stream, wkIndex).value}%
                   </div>
                 </div>
               </div>

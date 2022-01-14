@@ -13,7 +13,6 @@ import {
   DialogButtonPrimary,
   DialogButtonSecondary,
 } from '@components/widgets/StyledComponents'
-import {useUserSessionDataState} from '@helpers/AuthContext'
 import {
   Box,
   Button,
@@ -27,11 +26,9 @@ import {
   TextField,
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
-import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
 import {
   AdherenceByDayEntries,
-  AdherenceWindowState,
   EventStreamAdherenceReport,
   ParticipantEvent,
   SessionDisplayInfo,
@@ -39,7 +36,7 @@ import {
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import AdherenceParticipantGrid from './AdherenceParticipantGrid'
-import AdherenceSessionIcon from './AdherenceSessionIcon'
+import SessionLegend from './SessionLegend'
 
 const useStyles = makeStyles(theme => ({
   mainContainer: {
@@ -60,47 +57,10 @@ const useStyles = makeStyles(theme => ({
       alignItems: 'center',
     },
   },
-  sessionLegend: {
-    width: theme.spacing(17.5),
-    padding: theme.spacing(1, 2),
-    fontStyle: latoFont,
-    fontSize: '12px',
-    border: '1px solid black',
-    marginRight: theme.spacing(1),
-    '& strong': {
-      marginLeft: '15px',
-      display: 'block',
-    },
-  },
 }))
 
 type AdherenceParticipantProps = {
   studyId?: string
-}
-
-const SessionLegend: FunctionComponent<{
-  symbolKey: string
-  sessionName: string
-}> = ({symbolKey, sessionName}) => {
-  const classes = useStyles()
-  const arr: {label: string; state: AdherenceWindowState}[] = [
-    {label: 'Upcoming', state: 'not_yet_available'},
-    {label: 'Incomplete', state: 'expired'},
-    {label: 'Partial Complete', state: 'started'},
-    {label: 'Completed', state: 'completed'},
-  ]
-  return (
-    <Box className={classes.sessionLegend}>
-      <strong>{sessionName}</strong>{' '}
-      {arr.map(e => (
-        <div>
-          <AdherenceSessionIcon sessionSymbol={symbolKey} windowState={e.state}>
-            {e.label}
-          </AdherenceSessionIcon>
-        </div>
-      ))}
-    </Box>
-  )
 }
 
 function getParcipantSessions(
@@ -136,7 +96,6 @@ const AdherenceParticipant: FunctionComponent<
     userId: string
   }>()
 
-  const {token} = useUserSessionDataState()
   const {
     data: adherenceReport,
     error,
@@ -208,15 +167,13 @@ const AdherenceParticipant: FunctionComponent<
           </Box>
           <Box mb={2}>
             <MTBHeadingH4> Time in Study (Enrollment Date)</MTBHeadingH4>
-            {enrollment?.enrollments
-              ? new Date(
-                  enrollment.enrollments[studyId].enrolledOn
-                ).toLocaleDateString()
+            {enrollment
+              ? new Date(enrollment.enrolledOn).toLocaleDateString()
               : 'nothing'}
           </Box>
           <Box mb={2}>
             <MTBHeadingH4>Health Code </MTBHeadingH4>
-            {enrollment?.healthCode}
+            {enrollment?.participant.identifier}
             <Box display="flex" mt={4} mb={2}>
               {participantSessions?.map(s => (
                 <SessionLegend
@@ -251,14 +208,17 @@ const AdherenceParticipant: FunctionComponent<
           <EditParticipantEventsForm
             hideLoginEvent={true}
             scheduleEvents={scheduleEvents}
-            onChange={() => {}}
+            onChange={events => {
+              console.log('event change')
+              // onChange({...participant, events: events})
+            }}
             customParticipantEvents={
               participantEvents?.customEvents || ([] as ParticipantEvent[])
             }
           />
         </DialogContent>
         <DialogActions>
-          <DialogButtonSecondary onClick={() => {}}>
+          <DialogButtonSecondary onClick={() => setIsEditParticipant(false)}>
             Cancel
           </DialogButtonSecondary>
           <DialogButtonPrimary onClick={() => {}} color="primary">
