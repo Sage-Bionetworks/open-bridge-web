@@ -13,9 +13,6 @@ const ADHERENCE_KEYS = {
 
 export const useAdherence = (studyId: string, userId: string | undefined) => {
   const {token} = useUserSessionDataState()
-  if (!userId) {
-    console.log('NEED TO DO')
-  }
 
   return useQuery<EventStreamAdherenceReport, ExtendedError>(
     ADHERENCE_KEYS.detail(studyId, userId!),

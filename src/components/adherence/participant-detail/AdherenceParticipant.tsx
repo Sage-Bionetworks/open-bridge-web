@@ -1,11 +1,11 @@
 import {ReactComponent as PersonIcon} from '@assets/adherence/person_icon.svg'
-import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'
 import {useAdherence} from '@components/studies/adherenceHooks'
 import {useEnrollmentForParticipant} from '@components/studies/enrollmentHooks'
 import {useEvents, useEventsForUser} from '@components/studies/eventHooks'
 import EditParticipantEventsForm from '@components/studies/participants/modify/EditParticipantEventsForm'
 import {useStudy} from '@components/studies/studyHooks'
 import BreadCrumb from '@components/widgets/BreadCrumb'
+import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import {MTBHeadingH4} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
@@ -19,13 +19,10 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
-  IconButton,
   makeStyles,
   Paper,
   TextField,
 } from '@material-ui/core'
-import CloseIcon from '@material-ui/icons/Close'
 import constants from '@typedefs/constants'
 import {
   AdherenceByDayEntries,
@@ -43,19 +40,6 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(4),
     marginTop: theme.spacing(4),
     backgroundColor: '#f8f8f8',
-  },
-  closeModalButton: {
-    position: 'absolute',
-    right: theme.spacing(2),
-    top: theme.spacing(2),
-    padding: 0,
-    color: theme.palette.common.black,
-  },
-  dialogTitle: {
-    '& h2': {
-      display: 'flex',
-      alignItems: 'center',
-    },
   },
 }))
 
@@ -194,16 +178,11 @@ const AdherenceParticipant: FunctionComponent<
         </Paper>
       </LoadingComponent>
       <Dialog open={isEditParticipant} scroll="body">
-        <DialogTitle className={classes.dialogTitle}>
-          <EditIcon />
-          &nbsp;&nbsp; Edit Participant Event Date
-          <IconButton
-            aria-label="close"
-            className={classes.closeModalButton}
-            onClick={() => setIsEditParticipant(false)}>
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
+        <DialogTitleWithClose
+          onCancel={() => setIsEditParticipant(false)}
+          title="Edit Participant Event Date"
+          isSmallTitle={true}
+        />
         <DialogContent>
           <EditParticipantEventsForm
             hideLoginEvent={true}

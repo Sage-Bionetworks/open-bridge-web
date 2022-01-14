@@ -16,19 +16,10 @@ export const useEnrollmentForParticipant = (
   userId: string | undefined
 ) => {
   const {token} = useUserSessionDataState()
-  if (!userId) {
-    console.log('NEED TO DO')
-  }
 
   return useQuery<EnrolledAccountRecord | null, ExtendedError>(
     ENROLLMENT_KEYS.detail(studyId, userId!),
-    () =>
-      ParticipantService.getUserEnrollmentInfo(studyId, userId!, token!).then(
-        result => {
-          console.log('red', result)
-          return result
-        }
-      ),
+    () => ParticipantService.getUserEnrollmentInfo(studyId, userId!, token!),
     {
       enabled: !!studyId && !!userId && !!token,
       retry: false,
