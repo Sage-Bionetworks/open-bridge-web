@@ -1,7 +1,11 @@
 import {ReactComponent as PersonIcon} from '@assets/adherence/person_icon.svg'
 import {useAdherence} from '@components/studies/adherenceHooks'
 import {useEnrollmentForParticipant} from '@components/studies/enrollmentHooks'
-import {useEvents, useEventsForUser} from '@components/studies/eventHooks'
+import {
+  useEvents,
+  useEventsForUser,
+  useUpdateEventsForUser,
+} from '@components/studies/eventHooks'
 import EditParticipantEventsForm from '@components/studies/participants/modify/EditParticipantEventsForm'
 import {useStudy} from '@components/studies/studyHooks'
 import BreadCrumb from '@components/widgets/BreadCrumb'
@@ -75,7 +79,10 @@ const AdherenceParticipant: FunctionComponent<
   AdherenceParticipantProps & RouteComponentProps
 > = () => {
   const [isEditParticipant, setIsEditParticipant] = React.useState(false)
-  let {id: studyId, userId} = useParams<{
+  const [participantEvents, setParticipantEvents] = React.useState<
+    ParticipantEvent[]
+  >([])
+  let {id: studyId, userId: participantId} = useParams<{
     id: string
     userId: string
   }>()
@@ -84,14 +91,13 @@ const AdherenceParticipant: FunctionComponent<
     data: adherenceReport,
     error,
     isLoading: isAdherenceLoading,
-  } = useAdherence(studyId, userId)
+  } = useAdherence(studyId, participantId)
 
-  console.log('about to call with ', userId)
   const {
     data: enrollment,
     error: enrollmentError,
     isLoading: isEnrollmentLoading,
-  } = useEnrollmentForParticipant(studyId, userId)
+  } = useEnrollmentForParticipant(studyId, participantId)
 
   const {
     data: study,
@@ -100,20 +106,25 @@ const AdherenceParticipant: FunctionComponent<
   } = useStudy(studyId)
 
   const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
-  const {data: participantEvents} = useEventsForUser(studyId, userId)
-  console.log(participantEvents, 'pe')
+  const {data: events} = useEventsForUser(studyId, participantId)
 
   const [participantSessions, setParticipantSessions] = React.useState<
     SessionDisplayInfo[]
   >([])
 
-  console.log('e', enrollment)
-
   React.useEffect(() => {
     if (adherenceReport) {
       setParticipantSessions(getParcipantSessions(adherenceReport))
     }
+    console.log('updating adherence report')
+    console.log(adherenceReport?.streams[0].eventTimestamp)
   }, [adherenceReport])
+
+  React.useEffect(() => {
+    if (events) {
+      setParticipantEvents(events.customEvents)
+    }
+  }, [events])
 
   const classes = useStyles()
 
@@ -127,6 +138,13 @@ const AdherenceParticipant: FunctionComponent<
       text: 'Enrolled Participants',
     },
   ]
+
+  const {
+    isSuccess: scheduleUpdateSuccess,
+    isError: scheduleUpdateError,
+    mutateAsync: updateEvents,
+    data,
+  } = useUpdateEventsForUser()
 
   return (
     <Box bgcolor="#F8F8F8" px={5}>
@@ -161,6 +179,7 @@ const AdherenceParticipant: FunctionComponent<
             <Box display="flex" mt={4} mb={2}>
               {participantSessions?.map(s => (
                 <SessionLegend
+                  key={s.sessionGuid}
                   symbolKey={s.sessionSymbol}
                   sessionName={s.sessionName}
                 />
@@ -187,12 +206,11 @@ const AdherenceParticipant: FunctionComponent<
           <EditParticipantEventsForm
             hideLoginEvent={true}
             scheduleEvents={scheduleEvents}
-            onChange={events => {
-              console.log('event change')
-              // onChange({...participant, events: events})
+            onChange={customEvents => {
+              setParticipantEvents(customEvents)
             }}
             customParticipantEvents={
-              participantEvents?.customEvents || ([] as ParticipantEvent[])
+              participantEvents || ([] as ParticipantEvent[])
             }
           />
         </DialogContent>
@@ -200,7 +218,18 @@ const AdherenceParticipant: FunctionComponent<
           <DialogButtonSecondary onClick={() => setIsEditParticipant(false)}>
             Cancel
           </DialogButtonSecondary>
-          <DialogButtonPrimary onClick={() => {}} color="primary">
+          <DialogButtonPrimary
+            onClick={() => {
+              updateEvents({
+                studyId,
+                participantId,
+                customEvents: participantEvents,
+              }).then(
+                () => setIsEditParticipant(false),
+                e => alert(e.message)
+              )
+            }}
+            color="primary">
             Save Changes
           </DialogButtonPrimary>
         </DialogActions>

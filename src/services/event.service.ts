@@ -106,6 +106,7 @@ async function updateParticipantCustomEvents(
   participantId: string,
   eventsToUpdate: ParticipantEvent[]
 ) {
+  console.log('%c updating events', 'background: #222; color: #bada55')
   let eventEndpoint = constants.endpoints.events
     .replace(':studyId', studyIdentifier)
     .replace(':userId', participantId)
@@ -122,29 +123,44 @@ async function updateParticipantCustomEvents(
     e => e.eventId !== JOINED_EVENT_ID
   )
 
-  customEventsToUpdate.forEach(async event => {
+  //delete all of the vents
+
+  const deletePromises = customEventsToUpdate.map(event =>
+    Utility.callEndpoint<{identifier: string}>(
+      eventEndpoint + '/' + event.eventId,
+      'DELETE',
+      {},
+      token
+    )
+  )
+
+  /*const x = await Promise.all(deletePromises)
+  console.log('events deleted')*/
+
+  for (const event of customEventsToUpdate) {
     const d = await Utility.callEndpoint<{identifier: string}>(
       eventEndpoint + '/' + event.eventId,
       'DELETE',
       {},
       token
     )
-    console.log('deleted' + event.eventId)
     if (event.timestamp) {
       const data = {
         eventId: event.eventId,
         timestamp: new Date(event.timestamp!).toISOString(),
       }
 
-      const z = Utility.callEndpoint<{identifier: string}>(
+      const z = await Utility.callEndpoint<{identifier: string}>(
         `${eventEndpoint}?showError=true&updateBursts=false`,
         'POST',
         data,
         token
       )
-      console.log('added' + event.eventId)
+      console.log('update Call', z)
     }
-  })
+  }
+
+  console.log('done')
 
   return participantId
 }

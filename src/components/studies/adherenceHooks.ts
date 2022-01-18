@@ -3,7 +3,7 @@ import AdherenceService from '@services/adherence.service'
 import {EventStreamAdherenceReport, ExtendedError} from '@typedefs/types'
 import {useQuery} from 'react-query'
 
-const ADHERENCE_KEYS = {
+export const ADHERENCE_KEYS = {
   all: ['adherence'] as const,
   list: (studyId: string) => [...ADHERENCE_KEYS.all, 'list', studyId] as const,
 

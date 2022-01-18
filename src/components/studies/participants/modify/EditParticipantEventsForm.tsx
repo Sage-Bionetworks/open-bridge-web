@@ -195,7 +195,6 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
         pEvt => pEvt.eventId === currentEventId
       )
       if (matchingParticipantEvent) {
-        console.log('found event')
         return matchingParticipantEvent.timestamp || null
       }
       return null

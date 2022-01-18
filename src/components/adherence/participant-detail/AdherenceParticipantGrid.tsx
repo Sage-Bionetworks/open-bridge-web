@@ -186,17 +186,13 @@ function getSequentialDayNumber(wkIndex: number, dayIndex: number): number {
 
 const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps> =
   ({adherenceReport}) => {
+    console.log('adherenceReportUpdated')
     const ref = React.useRef<HTMLDivElement>(null)
     const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 200)
-
     const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
-    //eventId: {weekNumber: adherence}
     const [adherenceByWeekLookup, setAdherenceByWeekLookup] =
       React.useState<Map<string, Map<number, number>>>()
     const classes = useStyles()
-
-    // const weeks = Math.ceil(adherenceReport.dayRangeOfAllStreams.max / 7)
-
     React.useEffect(() => {
       if (adherenceReport) {
         let weeklyAdherence: Map<string, Map<number, number>> = new Map()
@@ -252,7 +248,9 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
         {adherenceReport.streams.map((stream, streamIndex) => (
           <div className={classes.eventRow} id={'event' + stream.startEventId}>
             {[...new Array(getWeeksForStream(stream))].map((_i2, wkIndex) => (
-              <div className={classes.eventRowForWeek}>
+              <div
+                className={classes.eventRowForWeek}
+                key={`${stream.startEventId}_${wkIndex}`}>
                 <div className={classes.startEventId}>
                   {wkIndex === 0 && (
                     <Tooltip
@@ -262,8 +260,8 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                       ).toLocaleDateString()}>
                       <strong>
                         {EventService.formatEventIdForDisplay(
-                          stream.startEventId
-                        )}{' '}
+                          stream?.startEventId
+                        )}
                       </strong>
                     </Tooltip>
                   )}

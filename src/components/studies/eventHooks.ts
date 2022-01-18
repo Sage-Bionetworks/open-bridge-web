@@ -4,7 +4,8 @@ import ScheduleService, {
   ExtendedScheduleEventObject,
 } from '@services/schedule.service'
 import {ExtendedError, ParticipantEvent} from '@typedefs/types'
-import {useQuery} from 'react-query'
+import {useMutation, useQuery, useQueryClient} from 'react-query'
+import {ADHERENCE_KEYS} from './adherenceHooks'
 
 const EVENTS_KEYS = {
   all: ['events'] as const,
@@ -26,6 +27,57 @@ export const useEvents = (studyId: string | undefined) => {
       refetchOnWindowFocus: false,
     }
   )
+}
+
+export const useUpdateEventsForUser = () => {
+  const {token} = useUserSessionDataState()
+  const queryClient = useQueryClient()
+
+  const update = async (props: {
+    studyId: string
+    participantId: string
+    customEvents: ParticipantEvent[]
+  }): Promise<string> => {
+    const participantId = await EventService.updateParticipantCustomEvents(
+      props.studyId,
+      token!,
+      props.participantId,
+      props.customEvents
+    )
+    return participantId
+  }
+  const mutation = useMutation(update, {
+    onMutate: async props => {
+      queryClient.cancelQueries(
+        EVENTS_KEYS.detail(props.studyId, props.participantId)
+      )
+    },
+    onError: (err, variables, context) => {
+      throw err
+    },
+    onSuccess: (data, props) => {
+      console.debug(
+        'invalidating',
+        EVENTS_KEYS.detail(props.studyId, props.participantId)
+      )
+      console.debug(
+        'inv',
+        ADHERENCE_KEYS.detail(props.studyId, props.participantId)
+      )
+      queryClient.invalidateQueries(
+        EVENTS_KEYS.detail(props.studyId, props.participantId)
+      )
+      queryClient.invalidateQueries(
+        ADHERENCE_KEYS.detail(props.studyId, props.participantId)
+      )
+      queryClient.refetchQueries(
+        ADHERENCE_KEYS.detail(props.studyId, props.participantId)
+      )
+      console.debug('refetch')
+    },
+  })
+
+  return mutation
 }
 
 export const useEventsForUser = (
