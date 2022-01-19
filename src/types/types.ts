@@ -155,7 +155,7 @@ export type Study = {
   clientData: {
     generateIds?: boolean
     backgroundRecorders?: BackgroundRecorders
-    welcomeScreenData?: WelcomeScreenData
+    welcomeScreenData: WelcomeScreenData
     notifications?: StringDictionary<ScheduleNotification[]>
   }
   createdOn?: Date
@@ -246,6 +246,11 @@ export type EditableParticipantData = {
   timeZone?: string
 }
 
+type EnrolledSubrecord = {
+  externalId: string
+  enrolledOn: string
+}
+
 export type ParticipantAccountSummary = {
   // isSelected?: boolean
   healthCode?: string
@@ -255,6 +260,7 @@ export type ParticipantAccountSummary = {
   phone?: Phone
   id: string
   studyIds?: string[]
+  enrollments?: Record<string, EnrolledSubrecord>
   externalIds: StringDictionary<string>
   externalId?: string
   studyExternalId?: string
@@ -316,6 +322,7 @@ export type EventStreamDay = {
   studyBurstId: string
   studyBurstNum: number
   startDay: number
+  startDate: string
   timeWindows: {
     sessionInstanceGuid: string
     timeWindowGuid: string
@@ -328,7 +335,7 @@ export type AdherenceByDayEntries = Record<string, EventStreamDay[]>
 
 export type AdherenceEventStream = {
   startEventId: string
-  eventTimestamp: string
+  eventTimestamp: Date
   sessionGuids: [string]
   byDayEntries: AdherenceByDayEntries
   type: 'EventStream'

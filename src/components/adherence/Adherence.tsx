@@ -90,7 +90,7 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
   const {token} = useUserSessionDataState()
   // Withdrawn or active participants
   const [tab, setTab] = React.useState<AdherenceTabType>(
-    isEnrolledTab ? 'ENROLLED' : 'SUMMARY'
+    isEnrolledTab || true ? 'ENROLLED' : 'SUMMARY'
   )
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {

@@ -211,13 +211,11 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
         maxWidth="sm"
         fullWidth
         aria-labelledby="form-dialog-title">
-        <DialogTitleWithClose onCancel={() => setIsOpenUpload(false)}>
-          <>
-            <CloudUploadIcon style={{width: '25px'}}></CloudUploadIcon>
-            <span style={{paddingLeft: '8px'}}>Upload file</span>
-          </>
-        </DialogTitleWithClose>
-
+        <DialogTitleWithClose
+          onCancel={() => setIsOpenUpload(false)}
+          icon={<CloudUploadIcon />}
+          title={'Upload file'}
+        />
         <DialogContent>
           <>
             <div

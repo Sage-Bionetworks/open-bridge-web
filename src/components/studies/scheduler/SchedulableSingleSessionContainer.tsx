@@ -443,9 +443,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                       isError={
                         sessionErrorState?.notificationErrors.has(index + 1) ||
                         false
-                      }
-                      //window={window}
-                    >
+                      }>
                       <NotificationTime
                         notifyAt={notification.notifyAt}
                         offset={notification.offset}
@@ -455,7 +453,10 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                             ? schedulableSession.timeWindows[0].startTime
                             : undefined
                         }
-                        isMultiday={hasWindowLongerThan24h()}
+                        isMultiday={
+                          hasWindowLongerThan24h() ||
+                          !_.first(schedulableSession.timeWindows)?.expiration
+                        }
                         onChange={e =>
                           updateNotification(
                             {

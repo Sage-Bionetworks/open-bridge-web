@@ -322,7 +322,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       const newStudy = {
         identifier: id,
         version: 1,
-        clientData: {},
+        clientData: StudyService.getDefaultClientData(),
         phase: 'design' as StudyPhase,
         name: constants.constants.NEW_STUDY_NAME,
         signInTypes: [],
