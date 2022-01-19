@@ -2,23 +2,32 @@ import {
   PlotDaysDisplay,
   useGetPlotAndUnitWidth,
 } from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
-import SessionIcon, {SessionSymbols} from '@components/widgets/SessionIcon'
-import {makeStyles} from '@material-ui/core'
+import {makeStyles, Tooltip} from '@material-ui/core'
+import AdherenceService from '@services/adherence.service'
 import EventService from '@services/event.service'
 import {
   AdherenceByDayEntries,
   AdherenceEventStream,
-  AdherenceWindowState,
   EventStreamAdherenceReport,
   SessionDisplayInfo,
 } from '@typedefs/types'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
+import AdherenceSessionIcon, {SHAPE_CLASSES} from './AdherenceSessionIcon'
+import DayDisplayForSessions from './DayDisplayForSessions'
 
 const useStyles = makeStyles(theme => ({
   adherenceGrid: {
     padding: theme.spacing(2, 0),
+  },
+  adherenceLabel: {
+    position: 'absolute',
+
+    top: '-16px',
+    fontSize: '12px',
+    fontWeight: 'bold',
+    textAlign: 'left',
   },
   daysList: {
     paddingLeft: '20px',
@@ -28,6 +37,11 @@ const useStyles = makeStyles(theme => ({
     width: '128px',
     fontSize: '12px',
     padding: theme.spacing(0, 2, 0, 1),
+    '& strong': {
+      display: 'block',
+      cursor: 'pointer',
+      width: 'fit-content',
+    },
   },
 
   eventRow: {
@@ -37,7 +51,6 @@ const useStyles = makeStyles(theme => ({
     padding: '10px 0',
   },
   dayCell: {
-    // borderLeft: '1px solid red',
     padding: '0 8px',
     borderRight: '1px solid black',
     display: 'flex',
@@ -45,41 +58,18 @@ const useStyles = makeStyles(theme => ({
     alignContent: 'center',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    // position: 'relative',
     '&:first-child': {
       borderLeft: '1px solid black',
     },
   },
 
   eventRowForWeek: {
-    // position: 'relative',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     '&:not(:last-child)': {
       marginBottom: '5px',
     },
-    // margin: '1px 0',
-    // border: '1px solid black',
-    //  borderBottom: 'none',
-    /*  '& > div:nth-child(1)': {
-      width: '80px',
-      overflowWrap: 'break-word',
-    },
-
-    '& > div:nth-child(2)': {
-      display: 'flex',
-      '& > div:nth-child(1)': {
-        width: '30px',
-        overflowWrap: 'break-word',
-      },
-      '& > div:nth-child(2)': {
-        position: 'relative',
-        backgroundColor: 'blue',
-        height: '40px',
-        width: '100%',
-      },
-    },*/
   },
   sessionLegendIcon: {
     display: 'flex',
@@ -89,42 +79,32 @@ const useStyles = makeStyles(theme => ({
   eventRowForWeekSessions: {
     // border: '1px solid blue',
     width: '100%',
-    '& >div': {
-      width: '100%',
-      position: 'relative',
-      //  border: '1px solid green',
-      display: 'flex',
-      height: '20px',
-    },
+    display: 'flex',
+    alignItems: 'center',
   },
-  plotNotch: {
-    width: '1px',
-    height: '100%',
-    backgroundColor: 'black',
-    position: 'absolute',
-    zIndex: 100,
-    top: `0`,
+  eventRowForWeekSingleSession: {
+    display: 'flex',
+    position: 'relative',
+    left: '-15px',
   },
-  dot: {
-    width: '6px',
-    height: '6px',
-    borderRadius: '50%',
-    border: '2px solid black',
-  },
-  plotElement: {
-    width: '10px',
-  },
-  empty: {
-    // backgroundColor: 'red',
-    overflow: 'visible',
 
-    '&> path, &> circle, &> rect': {
-      stroke: 'red',
-      overflow: 'visible',
-      fill: 'transparent',
-    },
+  sessionWindows: {
+    width: '100%',
+    position: 'relative',
+    display: 'flex',
+    height: '20px',
+  },
+  adherenceDisplay: {
+    fontSize: '14px',
+  },
+  red: {
+    color: 'red',
   },
 }))
+
+type AdherenceParticipantGridProps = {
+  adherenceReport: EventStreamAdherenceReport
+}
 
 function getMaxNumberOfTimeWindows(
   adherenceReport: EventStreamAdherenceReport
@@ -138,82 +118,6 @@ function getMaxNumberOfTimeWindows(
   })
   console.log('max', Math.max(...maxNumberOfWindowsInStreams))
   return Math.max(...maxNumberOfWindowsInStreams)
-}
-
-const SHAPE_CLASSES: Record<AdherenceWindowState, number> = {
-  not_applicable: -1,
-  not_yet_available: -1,
-  unstarted: -1,
-  started: 1,
-  completed: 0,
-  abandoned: 1,
-  expired: 2,
-
-  declined: 2,
-}
-
-type AdherenceParticipantGridProps = {
-  adherenceReport: EventStreamAdherenceReport
-}
-
-const DayDisplayForSessions: FunctionComponent<{
-  dayWidthInPx: number
-  wkIndex: number
-  dayIndex: number
-  byDayEntries: AdherenceByDayEntries
-  maxNumberOfTimeWindows: number
-  sessionGuid: string
-}> = ({
-  dayWidthInPx,
-  wkIndex,
-  dayIndex,
-  byDayEntries,
-  sessionGuid,
-  maxNumberOfTimeWindows,
-}) => {
-  const classes = useStyles()
-  const dayNumber = wkIndex * 7 + dayIndex
-  if (!byDayEntries[dayNumber]) {
-    return <></>
-  }
-
-  return (
-    <>
-      {byDayEntries[dayNumber].map(
-        entry =>
-          entry.sessionGuid === sessionGuid && (
-            <>
-              {entry.timeWindows.map((tw, itw) => (
-                <TimeWindowPlotElement
-                  maxNumberOfWindows={maxNumberOfTimeWindows}
-                  windowIndex={itw}
-                  dayWidthInPx={dayWidthInPx}
-                  windowState={tw.state}
-                  sessionSymbol={entry.sessionSymbol}
-                  numberOfWindows={entry.timeWindows.length}
-                />
-              ))}
-            </>
-          )
-      )}
-    </>
-  )
-}
-const DayNotchPlotElement: FunctionComponent<{
-  dayWidthInPx: number
-  index: number
-}> = ({dayWidthInPx, index}) => {
-  const classes = useStyles()
-  return (
-    <></>
-    /*   <div
-      key={`day_${index}_notch`}
-      id={index + 'day_notch'}
-      className={classes.plotNotch}
-      style={{
-        left: `${index * dayWidthInPx}px`,
-      }}></div>*/
-  )
 }
 
 function getSessionInfoFromStreamGuid(
@@ -233,97 +137,94 @@ function getSessionInfoFromStreamGuid(
   }
 }
 
-const SessionSymbolFromStream: FunctionComponent<{
-  byDayEntries: AdherenceByDayEntries
-  sessionGuid: string
-}> = ({byDayEntries, sessionGuid}) => {
-  const sessionInfo = getSessionInfoFromStreamGuid(byDayEntries, sessionGuid)
-  return sessionInfo ? (
-    <SessionIcon symbolKey={sessionInfo.sessionSymbol} />
-  ) : (
-    <></>
+function getWeeksForStream(stream: AdherenceEventStream): number {
+  /* this is another way to implement this. Not sure which one is better 
+ const maxDay = Math.max(
+    ...Object.keys(stream.byDayEntries).map(key => parseInt(key) + 1)
+    const result = Math.ceil(maxDay / 7)
+  )*/
+  const weeks = _.flatten(Object.values(stream.byDayEntries)).map(
+    eventStreamDay => eventStreamDay.week
   )
+  return Math.max(...weeks) + 1
 }
 
-const TimeWindowPlotElement: FunctionComponent<{
-  windowIndex: number
-  numberOfWindows: number
-  sessionSymbol: string
-  windowState: AdherenceWindowState
-  dayWidthInPx: number
-  maxNumberOfWindows: number
-}> = ({
-  windowIndex,
-  numberOfWindows,
-  sessionSymbol,
-  dayWidthInPx,
-  windowState,
-  maxNumberOfWindows,
-}) => {
-  const classes = useStyles()
-  const leftOffset =
-    (dayWidthInPx / numberOfWindows) * windowIndex +
-    dayWidthInPx / (2 * numberOfWindows) -
-    5
+function getAdherenceForWeek(wkIndex: number, entries: AdherenceByDayEntries) {
+  const relevantWeek = _.flatten(Object.values(entries)).filter(
+    eventStreamDay => eventStreamDay.week === wkIndex
+  )
+  const allTimewindows = _.flatten(relevantWeek.map(r => r.timeWindows))
+  const complianceStates = allTimewindows.map(
+    w => SHAPE_CLASSES[w.state].complianceState
+  )
 
-  const topOffset = 4 //sessionsInStream.indexOf(sessionGuid) * 20
+  const compliantSessions = complianceStates.filter(
+    state => state === 'COMPLIANT'
+  ).length
+  const noncompliantSessions = complianceStates.filter(
+    state => state === 'NONCOMPLIANT'
+  ).length
+  const unkSessions = complianceStates.filter(
+    state => state === 'UNKNOWN'
+  ).length
 
-  //these states will show empty dot
-  const isEmptyDot = SHAPE_CLASSES[windowState] === -1
+  const totalSessions = compliantSessions + noncompliantSessions + unkSessions
 
-  //0 - filled, 1- partcial, 2 - empty
-  const variant = SHAPE_CLASSES[windowState]
-  if (variant === undefined) {
-    throw Error('unknown state')
+  let percentage = 1
+  if (totalSessions > 0) {
+    percentage = compliantSessions / totalSessions
   }
-
-  var x = clsx({[classes.empty]: variant === 2, [classes.plotElement]: true})
-
-  const el = isEmptyDot ? (
-    <div className={classes.dot} />
-  ) : (
-    React.cloneElement(
-      SessionSymbols.get(sessionSymbol)![variant == 2 ? 0 : variant],
-      {className: x}
-    )
-  )
-
-  return (
-    <div
-      id={'window_' + windowIndex}
-      style={{
-        width: `${Math.floor(100 / maxNumberOfWindows)}%`,
-        //  position: 'absolute',
-        //  top: `${topOffset}px`,
-        //  left: `${leftOffset}px`,
-      }}>
-      {el}
-    </div>
-  )
+  return Math.round(percentage * 100)
 }
+
+function getSequentialDayNumber(wkIndex: number, dayIndex: number): number {
+  return wkIndex * 7 + dayIndex
+}
+
+//https://github.com/Sage-Bionetworks/BridgeServer2/blob/develop/src/main/java/org/sagebionetworks/bridge/models/schedules2/adherence/AdherenceUtils.java
+//https://github.com/Sage-Bionetworks/BridgeServer2/blob/develop/src/main/java/org/sagebionetworks/bridge/models/schedules2/adherence/SessionCompletionState.java
 
 const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps> =
   ({adherenceReport}) => {
+    console.log('adherenceReportUpdated')
     const ref = React.useRef<HTMLDivElement>(null)
     const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 200)
-
     const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
+    const [adherenceByWeekLookup, setAdherenceByWeekLookup] =
+      React.useState<Map<string, Map<number, number>>>()
     const classes = useStyles()
-
-    // const weeks = Math.ceil(adherenceReport.dayRangeOfAllStreams.max / 7)
-
-    const getWeeksForStream = (stream: AdherenceEventStream): number => {
-      const maxDay = Math.max(
-        ...Object.keys(stream.byDayEntries).map(key => parseInt(key) + 1)
-      )
-      return Math.ceil(maxDay / 7)
-    }
     React.useEffect(() => {
       if (adherenceReport) {
-        console.log('ar')
+        let weeklyAdherence: Map<string, Map<number, number>> = new Map()
+
+        for (var stream of adherenceReport.streams) {
+          const weeksNumber = getWeeksForStream(stream)
+          const streamAdherenceMap: Map<number, number> = new Map()
+          for (var i = 0; i < weeksNumber; i++) {
+            streamAdherenceMap.set(
+              i,
+              getAdherenceForWeek(i, stream.byDayEntries)
+            )
+          }
+
+          weeklyAdherence.set(stream.startEventId, streamAdherenceMap)
+        }
+        setAdherenceByWeekLookup(weeklyAdherence)
         setMaxNumberOfTimeWinsows(getMaxNumberOfTimeWindows(adherenceReport))
       }
     }, [adherenceReport])
+
+    const getAdherenceForWeekForDisplay = (
+      stream: AdherenceEventStream,
+      wkIndex: number
+    ): {value: number; isCompliant: boolean} => {
+      const lookupValue =
+        adherenceByWeekLookup?.get(stream.startEventId)?.get(wkIndex) || 0
+      return {
+        value: lookupValue,
+        isCompliant: lookupValue > AdherenceService.COMPLIANCE_THRESHOLD,
+      }
+    }
 
     return (
       <div ref={ref} className={classes.adherenceGrid}>
@@ -333,13 +234,10 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
             unitWidth={dayWidthInPx}
             endLabel={
               <div
+                className={classes.adherenceLabel}
                 style={{
-                  position: 'absolute',
                   width: `${dayWidthInPx}px`,
-                  top: '-16px',
-                  fontSize: '12px',
                   left: `${dayWidthInPx * 7 - 10}px`,
-                  textAlign: 'left',
                 }}>
                 Adherence
                 <br />%
@@ -347,61 +245,83 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
             }
           />
         </div>
-        {adherenceReport.streams.map((stream, streami) => (
+        {adherenceReport.streams.map((stream, streamIndex) => (
           <div className={classes.eventRow} id={'event' + stream.startEventId}>
             {[...new Array(getWeeksForStream(stream))].map((_i2, wkIndex) => (
               <div
                 className={classes.eventRowForWeek}
-                id={stream.startEventId + '_' + wkIndex}>
+                key={`${stream.startEventId}_${wkIndex}`}>
                 <div className={classes.startEventId}>
                   {wkIndex === 0 && (
-                    <strong>
-                      {EventService.formatEventIdForDisplay(
-                        stream.startEventId
-                      )}{' '}
-                      <br />
-                    </strong>
+                    <Tooltip
+                      placement="right-start"
+                      title={new Date(
+                        stream.eventTimestamp
+                      ).toLocaleDateString()}>
+                      <strong>
+                        {EventService.formatEventIdForDisplay(
+                          stream?.startEventId
+                        )}
+                      </strong>
+                    </Tooltip>
                   )}
                   Week {wkIndex + 1}
                 </div>
                 <div
                   id={'eventRowForWeek' + wkIndex}
                   className={classes.eventRowForWeekSessions}>
-                  {stream.sessionGuids.map(guid => (
-                    <div
-                      id={'session' + guid}
-                      style={{position: 'relative', height: '20px'}}>
-                      <div className={classes.sessionLegendIcon}>
-                        <SessionSymbolFromStream
-                          sessionGuid={guid}
-                          byDayEntries={stream.byDayEntries}
-                        />
-                      </div>
+                  <div id="guids">
+                    {stream.sessionGuids.map(guid => (
                       <div
-                        id={'wk' + wkIndex + 'events'}
-                        style={{
-                          display: 'flex',
-                          position: 'relative',
-                          left: '-15px',
-                        }}>
-                        {[...new Array(7)].map((i, dayIndex) => (
-                          <div
-                            className={classes.dayCell}
-                            style={{width: dayWidthInPx + 'px'}}>
-                            <DayDisplayForSessions
-                              dayWidthInPx={dayWidthInPx}
-                              maxNumberOfTimeWindows={maxNumbrOfTimeWindows}
-                              wkIndex={wkIndex}
-                              dayIndex={dayIndex}
-                              sessionGuid={guid}
-                              byDayEntries={stream.byDayEntries}
-                            />
-                          </div>
-                        ))}
-                        100%
+                        className={classes.eventRowForWeekSingleSession}
+                        id={'session' + guid}>
+                        <div className={classes.sessionLegendIcon}>
+                          <AdherenceSessionIcon
+                            sessionSymbol={
+                              getSessionInfoFromStreamGuid(
+                                stream.byDayEntries,
+                                guid
+                              )?.sessionSymbol || undefined
+                            }
+                            windowState="completed">
+                            &nbsp;
+                          </AdherenceSessionIcon>
+                        </div>
+                        <div
+                          id={'wk' + wkIndex + 'events'}
+                          className={classes.sessionWindows}>
+                          {[...new Array(7)].map((i, dayIndex) => (
+                            <div
+                              className={classes.dayCell}
+                              style={{width: `${dayWidthInPx}px`}}>
+                              <DayDisplayForSessions
+                                isCompliant={
+                                  getAdherenceForWeekForDisplay(stream, wkIndex)
+                                    .isCompliant
+                                }
+                                dayWidthInPx={dayWidthInPx}
+                                maxNumberOfTimeWindows={maxNumbrOfTimeWindows}
+                                sequentialDayNumber={getSequentialDayNumber(
+                                  wkIndex,
+                                  dayIndex
+                                )}
+                                sessionGuid={guid}
+                                byDayEntries={stream.byDayEntries}
+                              />
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                  <div
+                    className={clsx(
+                      classes.adherenceDisplay,
+                      !getAdherenceForWeekForDisplay(stream, wkIndex)
+                        .isCompliant && classes.red
+                    )}>
+                    {getAdherenceForWeekForDisplay(stream, wkIndex).value}%
+                  </div>
                 </div>
               </div>
             ))}

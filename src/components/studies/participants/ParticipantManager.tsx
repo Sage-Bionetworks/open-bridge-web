@@ -795,20 +795,20 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   dialogOpenRemove: false,
                   dialogOpenSMS: false,
                 })
-              }}>
-              <>
-                {dialogState.dialogOpenRemove ? (
-                  <DeleteIcon style={{width: '25px'}}></DeleteIcon>
+              }}
+              icon={
+                dialogState.dialogOpenRemove ? (
+                  <DeleteIcon />
                 ) : (
-                  <PinkSendSMSIcon style={{width: '25px'}}></PinkSendSMSIcon>
-                )}
-                <span style={{paddingLeft: '8px'}}>
-                  {dialogState.dialogOpenRemove
-                    ? 'Remove From Study'
-                    : 'Sending SMS Download Link'}
-                </span>
-              </>
-            </DialogTitleWithClose>
+                  <PinkSendSMSIcon />
+                )
+              }
+              title={
+                dialogState.dialogOpenRemove
+                  ? 'Remove From Study'
+                  : 'Sending SMS Download Link'
+              }
+            />
             <DialogContent style={{display: 'flex', justifyContent: 'center'}}>
               {(dialogState.dialogOpenRemove || dialogState.dialogOpenSMS) && (
                 <DialogContents

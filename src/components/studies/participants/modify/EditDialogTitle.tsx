@@ -21,12 +21,7 @@ const EditDialogTitle: FunctionComponent<EditDialogTitleProps> = ({
   const Icon = shouldWithdraw ? WithdrawIcon : PencilIcon
 
   return (
-    <DialogTitleWithClose onCancel={onCancel}>
-      <>
-        <Icon style={{width: '25px'}}></Icon>
-        <span style={{paddingLeft: '8px'}}>{title}</span>
-      </>
-    </DialogTitleWithClose>
+    <DialogTitleWithClose onCancel={onCancel} icon={<Icon />} title={title} />
   )
 }
 

@@ -1,109 +1,54 @@
-import {ReactComponent as Upcoming} from '@assets/symbols/empty.svg'
+import {ReactComponent as PersonIcon} from '@assets/adherence/person_icon.svg'
 import {useAdherence} from '@components/studies/adherenceHooks'
 import {useEnrollmentForParticipant} from '@components/studies/enrollmentHooks'
+import {
+  useEvents,
+  useEventsForUser,
+  useUpdateEventsForUser,
+} from '@components/studies/eventHooks'
+import EditParticipantEventsForm from '@components/studies/participants/modify/EditParticipantEventsForm'
 import {useStudy} from '@components/studies/studyHooks'
 import BreadCrumb from '@components/widgets/BreadCrumb'
+import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
+import {MTBHeadingH4} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
-import SessionIcon, {SessionSymbols} from '@components/widgets/SessionIcon'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
-import {useUserSessionDataState} from '@helpers/AuthContext'
-import {Box, makeStyles, Paper} from '@material-ui/core'
-import {latoFont} from '@style/theme'
+import {
+  DialogButtonPrimary,
+  DialogButtonSecondary,
+} from '@components/widgets/StyledComponents'
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  makeStyles,
+  Paper,
+  TextField,
+} from '@material-ui/core'
 import constants from '@typedefs/constants'
 import {
   AdherenceByDayEntries,
   EventStreamAdherenceReport,
+  ParticipantEvent,
   SessionDisplayInfo,
 } from '@typedefs/types'
-import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import AdherenceParticipantGrid from './AdherenceParticipantGrid'
+import SessionLegend from './SessionLegend'
 
 const useStyles = makeStyles(theme => ({
-  sessionLegend: {
-    width: theme.spacing(17.5),
-    padding: theme.spacing(1, 2),
-    fontStyle: latoFont,
-    fontSize: '12px',
-    border: '1px solid black',
-    marginRight: theme.spacing(1),
+  mainContainer: {
+    padding: theme.spacing(4),
+    marginTop: theme.spacing(4),
+    backgroundColor: '#f8f8f8',
   },
-  iconRow: {
-    display: 'flex',
-    alignItems: 'center',
-
-    '& > svg': {
-      width: '10px',
-      height: '10px',
-      marginRight: '5px',
-    },
-  },
-  upcomingIcon: {
-    display: 'flex',
-    alignItems: 'center',
-
-    '& svg': {
-      display: 'flex',
-      width: '10px',
-      height: '10px',
-      marginRight: '5px',
-    },
-  },
-  emptySvg: {
-    fill: 'none',
-    width: '10px',
-    height: '10px',
-    marginRight: '5px',
-    '&> path, &> circle, &> rect': {
-      fill: 'none',
-      stroke: 'black',
-    },
-    '&$red': {
-      '&> path, &> circle, &> rect': {
-        stroke: 'red',
-      },
-    },
-  },
-  red: {},
 }))
 
 type AdherenceParticipantProps = {
   studyId?: string
-}
-
-const SessionLegend: FunctionComponent<{
-  symbolKey: string
-  sessionName: string
-}> = ({symbolKey, sessionName}) => {
-  const classes = useStyles()
-  return (
-    <Box className={classes.sessionLegend}>
-      <div style={{marginLeft: '15px'}}>
-        <strong>{sessionName}</strong>{' '}
-      </div>
-      <div className={classes.upcomingIcon}>
-        <Upcoming />
-        Upcoming
-      </div>
-      <SessionIcon
-        symbolIndex={0}
-        className={classes.emptySvg}
-        symbolKey={symbolKey}>
-        Incomplete
-      </SessionIcon>
-
-      <Box display="flex" className={clsx(classes.iconRow, classes.emptySvg)}>
-        {SessionSymbols.get(symbolKey!)![0]}
-      </Box>
-      <SessionIcon symbolIndex={1} symbolKey={symbolKey}>
-        Partial Complete
-      </SessionIcon>
-      <SessionIcon symbolIndex={0} symbolKey={symbolKey}>
-        Completed
-      </SessionIcon>
-    </Box>
-  )
 }
 
 function getParcipantSessions(
@@ -133,24 +78,26 @@ function getParcipantSessions(
 const AdherenceParticipant: FunctionComponent<
   AdherenceParticipantProps & RouteComponentProps
 > = () => {
-  let {id: studyId, userId} = useParams<{
+  const [isEditParticipant, setIsEditParticipant] = React.useState(false)
+  const [participantEvents, setParticipantEvents] = React.useState<
+    ParticipantEvent[]
+  >([])
+  let {id: studyId, userId: participantId} = useParams<{
     id: string
     userId: string
   }>()
 
-  const {token} = useUserSessionDataState()
   const {
     data: adherenceReport,
     error,
     isLoading: isAdherenceLoading,
-  } = useAdherence(studyId, userId)
+  } = useAdherence(studyId, participantId)
 
-  console.log('about to call with ', userId)
   const {
     data: enrollment,
     error: enrollmentError,
     isLoading: isEnrollmentLoading,
-  } = useEnrollmentForParticipant(studyId, userId)
+  } = useEnrollmentForParticipant(studyId, participantId)
 
   const {
     data: study,
@@ -158,17 +105,26 @@ const AdherenceParticipant: FunctionComponent<
     isLoading: isStudyLoading,
   } = useStudy(studyId)
 
+  const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
+  const {data: events} = useEventsForUser(studyId, participantId)
+
   const [participantSessions, setParticipantSessions] = React.useState<
     SessionDisplayInfo[]
   >([])
-
-  console.log('e', enrollment)
 
   React.useEffect(() => {
     if (adherenceReport) {
       setParticipantSessions(getParcipantSessions(adherenceReport))
     }
+    console.log('updating adherence report')
+    console.log(adherenceReport?.streams[0].eventTimestamp)
   }, [adherenceReport])
+
+  React.useEffect(() => {
+    if (events) {
+      setParticipantEvents(events.customEvents)
+    }
+  }, [events])
 
   const classes = useStyles()
 
@@ -183,11 +139,21 @@ const AdherenceParticipant: FunctionComponent<
     },
   ]
 
+  const {
+    isSuccess: scheduleUpdateSuccess,
+    isError: scheduleUpdateError,
+    mutateAsync: updateEvents,
+    data,
+  } = useUpdateEventsForUser()
+
   return (
     <Box bgcolor="#F8F8F8" px={5}>
       <LoadingComponent
         reqStatusLoading={
-          isStudyLoading || isAdherenceLoading || isEnrollmentLoading
+          isStudyLoading ||
+          isAdherenceLoading ||
+          isEnrollmentLoading ||
+          !enrollment
         }
         variant="full">
         <Box px={3} py={2} display="flex" alignItems="center">
@@ -195,26 +161,79 @@ const AdherenceParticipant: FunctionComponent<
         </Box>
 
         <BreadCrumb links={getBreadcrumbLinks()}></BreadCrumb>
-        <Paper
-          elevation={2}
-          style={{padding: '32px', backgroundColor: '#f8f8f8'}}>
-          {enrollment?.externalId}
-          <br />
-          Time in Study
-          <br />
-          Health Code <br />
-          {enrollment?.healthCode}
-          <Box display="flex">
-            {participantSessions?.map(s => (
-              <SessionLegend
-                symbolKey={s.sessionSymbol}
-                sessionName={s.sessionName}
-              />
-            ))}
+        <Paper className={classes.mainContainer} elevation={2}>
+          <Box display="flex" alignItems="center" mb={2}>
+            {' '}
+            <PersonIcon />
+            <MTBHeadingH4>{enrollment?.externalId}</MTBHeadingH4>
+          </Box>
+          <Box mb={2}>
+            <MTBHeadingH4> Time in Study (Enrollment Date)</MTBHeadingH4>
+            {enrollment
+              ? new Date(enrollment.enrolledOn).toLocaleDateString()
+              : 'nothing'}
+          </Box>
+          <Box mb={2}>
+            <MTBHeadingH4>Health Code </MTBHeadingH4>
+            {enrollment?.participant.identifier}
+            <Box display="flex" mt={4} mb={2}>
+              {participantSessions?.map(s => (
+                <SessionLegend
+                  key={s.sessionGuid}
+                  symbolKey={s.sessionSymbol}
+                  sessionName={s.sessionName}
+                />
+              ))}
+            </Box>
           </Box>
           <AdherenceParticipantGrid adherenceReport={adherenceReport!} />
+          <Button variant="text" onClick={() => setIsEditParticipant(true)}>
+            Edit Participant Event Date Cumulative
+          </Button>
+          <Box>
+            Participant Notes
+            <TextField value={enrollment?.note} multiline={true} />
+          </Box>
         </Paper>
       </LoadingComponent>
+      <Dialog open={isEditParticipant} scroll="body">
+        <DialogTitleWithClose
+          onCancel={() => setIsEditParticipant(false)}
+          title="Edit Participant Event Date"
+          isSmallTitle={true}
+        />
+        <DialogContent>
+          <EditParticipantEventsForm
+            hideLoginEvent={true}
+            scheduleEvents={scheduleEvents}
+            onChange={customEvents => {
+              setParticipantEvents(customEvents)
+            }}
+            customParticipantEvents={
+              participantEvents || ([] as ParticipantEvent[])
+            }
+          />
+        </DialogContent>
+        <DialogActions>
+          <DialogButtonSecondary onClick={() => setIsEditParticipant(false)}>
+            Cancel
+          </DialogButtonSecondary>
+          <DialogButtonPrimary
+            onClick={() => {
+              updateEvents({
+                studyId,
+                participantId,
+                customEvents: participantEvents,
+              }).then(
+                () => setIsEditParticipant(false),
+                e => alert(e.message)
+              )
+            }}
+            color="primary">
+            Save Changes
+          </DialogButtonPrimary>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }

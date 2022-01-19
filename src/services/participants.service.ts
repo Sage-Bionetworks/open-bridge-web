@@ -665,7 +665,7 @@ async function getEnrollmentByEnrollmentType(
 const ParticipantService = {
   getActiveParticipants,
   getWithdrawnParticipants,
-
+  getUserEnrollmentInfo,
   addParticipant,
   addTestParticipant,
   deleteParticipant,
