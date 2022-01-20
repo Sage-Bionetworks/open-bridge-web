@@ -24,4 +24,7 @@ export const useCommonStyles = makeStyles(theme => ({
       borderLeft: '1px solid black',
     },
   },
+  red: {
+    color: 'red',
+  },
 }))
