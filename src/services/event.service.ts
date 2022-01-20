@@ -111,20 +111,11 @@ async function updateParticipantCustomEvents(
     .replace(':studyId', studyIdentifier)
     .replace(':userId', participantId)
 
-  // get Events for schedule  - we need this in order to possibly delete userEvents
-  const schedulingEventIds =
-    await ScheduleService.getAllEventsForTimelineByStudyId(
-      studyIdentifier,
-      token
-    )
-
-  //ag: why date?  const customEventWithDate = eventsToUpdate.filter(event => !!event.timestamp)
   const customEventsToUpdate = eventsToUpdate.filter(
     e => e.eventId !== JOINED_EVENT_ID
   )
 
-  //delete all of the vents
-
+  //delete all of the events
   const deletePromises = customEventsToUpdate.map(event =>
     Utility.callEndpoint<{identifier: string}>(
       eventEndpoint + '/' + event.eventId,
@@ -133,9 +124,6 @@ async function updateParticipantCustomEvents(
       token
     )
   )
-
-  /*const x = await Promise.all(deletePromises)
-  console.log('events deleted')*/
 
   for (const event of customEventsToUpdate) {
     const d = await Utility.callEndpoint<{identifier: string}>(
@@ -156,11 +144,8 @@ async function updateParticipantCustomEvents(
         data,
         token
       )
-      console.log('update Call', z)
     }
   }
-
-  console.log('done')
 
   return participantId
 }
