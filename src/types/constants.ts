@@ -65,6 +65,8 @@ export default {
   endpoints: {
     adherenceDetail:
       '/v5/studies/:studyId/participants/:userId/adherence/eventstream',
+    adherenceWeekly:
+      '/v5/studies/:studyId/participants/:userId/adherence/weekly',
     assessment: '/v1/assessments/:id',
     assessments: '/v1/assessments?includeDeleted=false',
     assessmentShared: '/v1/sharedassessments/:id',

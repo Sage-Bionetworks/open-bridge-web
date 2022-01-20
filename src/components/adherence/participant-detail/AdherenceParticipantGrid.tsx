@@ -14,11 +14,13 @@ import {
 import clsx from 'clsx'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
+import AdherenceUtility from '../adherenceUtility'
+import DayDisplayForSession from '../DayDisplayForSession'
+import {useCommonStyles} from '../styles'
 import AdherenceSessionIcon, {SHAPE_CLASSES} from './AdherenceSessionIcon'
-import DayDisplayForSessions from './DayDisplayForSessions'
 
 const useStyles = makeStyles(theme => ({
-  adherenceGrid: {
+  /* adherenceGrid: {
     padding: theme.spacing(2, 0),
   },
   adherenceLabel: {
@@ -28,7 +30,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: '12px',
     fontWeight: 'bold',
     textAlign: 'left',
-  },
+  },*/
   daysList: {
     paddingLeft: '20px',
     marginBottom: theme.spacing(0.5),
@@ -106,20 +108,6 @@ type AdherenceParticipantGridProps = {
   adherenceReport: EventStreamAdherenceReport
 }
 
-function getMaxNumberOfTimeWindows(
-  adherenceReport: EventStreamAdherenceReport
-): number {
-  const maxNumberOfWindowsInStreams = adherenceReport.streams.map(stream => {
-    const dayEntires = _.flatten(Object.values(stream.byDayEntries))
-    const maxWindowsInStream = Math.max(
-      ...dayEntires.map(entry => entry.timeWindows.length)
-    )
-    return maxWindowsInStream
-  })
-  console.log('max', Math.max(...maxNumberOfWindowsInStreams))
-  return Math.max(...maxNumberOfWindowsInStreams)
-}
-
 function getSessionInfoFromStreamGuid(
   byDayEntries: AdherenceByDayEntries,
   guid: string
@@ -186,13 +174,13 @@ function getSequentialDayNumber(wkIndex: number, dayIndex: number): number {
 
 const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps> =
   ({adherenceReport}) => {
-    console.log('adherenceReportUpdated')
     const ref = React.useRef<HTMLDivElement>(null)
     const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 200)
     const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
     const [adherenceByWeekLookup, setAdherenceByWeekLookup] =
       React.useState<Map<string, Map<number, number>>>()
-    const classes = useStyles()
+    const classes = {...useCommonStyles(), ...useStyles()}
+
     React.useEffect(() => {
       if (adherenceReport) {
         let weeklyAdherence: Map<string, Map<number, number>> = new Map()
@@ -210,7 +198,9 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
           weeklyAdherence.set(stream.startEventId, streamAdherenceMap)
         }
         setAdherenceByWeekLookup(weeklyAdherence)
-        setMaxNumberOfTimeWinsows(getMaxNumberOfTimeWindows(adherenceReport))
+        setMaxNumberOfTimeWinsows(
+          AdherenceUtility.getMaxNumberOfTimeWindows(adherenceReport.streams)
+        )
       }
     }, [adherenceReport])
 
@@ -246,7 +236,9 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
           />
         </div>
         {adherenceReport.streams.map((stream, streamIndex) => (
-          <div className={classes.eventRow} id={'event' + stream.startEventId}>
+          <div
+            className={classes.eventRow}
+            key={'event' + stream.startEventId + streamIndex}>
             {[...new Array(getWeeksForStream(stream))].map((_i2, wkIndex) => (
               <div
                 className={classes.eventRowForWeek}
@@ -294,18 +286,18 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                             <div
                               className={classes.dayCell}
                               style={{width: `${dayWidthInPx}px`}}>
-                              <DayDisplayForSessions
+                              <DayDisplayForSession
                                 isCompliant={
                                   getAdherenceForWeekForDisplay(stream, wkIndex)
                                     .isCompliant
                                 }
-                                dayWidthInPx={dayWidthInPx}
                                 maxNumberOfTimeWindows={maxNumbrOfTimeWindows}
                                 sequentialDayNumber={getSequentialDayNumber(
                                   wkIndex,
                                   dayIndex
                                 )}
-                                sessionGuid={guid}
+                                propertyValue={guid}
+                                propertyName="sessionGuid"
                                 byDayEntries={stream.byDayEntries}
                               />
                             </div>

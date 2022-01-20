@@ -20,6 +20,7 @@ import {
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -28,16 +29,13 @@ import {
   TextField,
 } from '@material-ui/core'
 import constants from '@typedefs/constants'
-import {
-  AdherenceByDayEntries,
-  EventStreamAdherenceReport,
-  ParticipantEvent,
-  SessionDisplayInfo,
-} from '@typedefs/types'
+import {ParticipantEvent, SessionDisplayInfo} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps, useParams} from 'react-router-dom'
+import AdherenceUtility from '../adherenceUtility'
+import SessionLegend from '../SessionLegend'
+import {useCommonStyles} from '../styles'
 import AdherenceParticipantGrid from './AdherenceParticipantGrid'
-import SessionLegend from './SessionLegend'
 
 const useStyles = makeStyles(theme => ({
   mainContainer: {
@@ -51,33 +49,10 @@ type AdherenceParticipantProps = {
   studyId?: string
 }
 
-function getParcipantSessions(
-  adherence: EventStreamAdherenceReport
-): SessionDisplayInfo[] {
-  var result: SessionDisplayInfo[] = []
-  const entries = adherence.streams.map(s => s.byDayEntries)
-
-  entries.forEach((adherenceByDayEntries: AdherenceByDayEntries) => {
-    for (var day in adherenceByDayEntries) {
-      const dayEntries = adherenceByDayEntries[day]
-
-      for (var windowEntry of dayEntries) {
-        if (!result.find(s => s.sessionGuid === windowEntry.sessionGuid)) {
-          result.push({
-            sessionGuid: windowEntry.sessionGuid,
-            sessionName: windowEntry.sessionName,
-            sessionSymbol: windowEntry.sessionSymbol,
-          })
-        }
-      }
-    }
-  })
-  return result
-}
-
 const AdherenceParticipant: FunctionComponent<
   AdherenceParticipantProps & RouteComponentProps
 > = () => {
+  const [isSavingEvents, setIsSavingEvents] = React.useState(false)
   const [isEditParticipant, setIsEditParticipant] = React.useState(false)
   const [participantEvents, setParticipantEvents] = React.useState<
     ParticipantEvent[]
@@ -114,10 +89,10 @@ const AdherenceParticipant: FunctionComponent<
 
   React.useEffect(() => {
     if (adherenceReport) {
-      setParticipantSessions(getParcipantSessions(adherenceReport))
+      setParticipantSessions(
+        AdherenceUtility.getUniqueSessionsInfo(adherenceReport.streams)
+      )
     }
-    console.log('updating adherence report')
-    console.log(adherenceReport?.streams[0].eventTimestamp)
   }, [adherenceReport])
 
   React.useEffect(() => {
@@ -126,7 +101,7 @@ const AdherenceParticipant: FunctionComponent<
     }
   }, [events])
 
-  const classes = useStyles()
+  const classes = {...useCommonStyles(), ...useStyles()}
 
   const getBreadcrumbLinks = () => [
     {
@@ -220,17 +195,21 @@ const AdherenceParticipant: FunctionComponent<
           </DialogButtonSecondary>
           <DialogButtonPrimary
             onClick={() => {
+              setIsSavingEvents(true)
               updateEvents({
                 studyId,
                 participantId,
                 customEvents: participantEvents,
               }).then(
-                () => setIsEditParticipant(false),
+                () => {
+                  setIsSavingEvents(false)
+                  setIsEditParticipant(false)
+                },
                 e => alert(e.message)
               )
             }}
             color="primary">
-            Save Changes
+            {isSavingEvents ? <CircularProgress /> : <> Save Changes</>}
           </DialogButtonPrimary>
         </DialogActions>
       </Dialog>
