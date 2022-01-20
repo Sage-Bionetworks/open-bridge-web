@@ -1,20 +1,24 @@
-import {AdherenceByDayEntries} from '@typedefs/types'
+import {
+  AdherenceByDayEntries,
+  WeeklyAdherenceByDayEntries,
+} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
-import TimeWindowPlotElement from './TimeWindowPlotElement'
+import TimeWindowPlotElement from './participant-detail/TimeWindowPlotElement'
 
-const DayDisplayForSessions: FunctionComponent<{
-  dayWidthInPx: number
+const DayDisplayForSession: FunctionComponent<{
   sequentialDayNumber: number
-  byDayEntries: AdherenceByDayEntries
+  byDayEntries: WeeklyAdherenceByDayEntries | AdherenceByDayEntries
   maxNumberOfTimeWindows: number
-  sessionGuid: string
+  propertyValue: string
   isCompliant: boolean
+  propertyName: string
 }> = ({
   byDayEntries,
-  sessionGuid,
+  propertyValue,
   maxNumberOfTimeWindows,
   sequentialDayNumber,
   isCompliant,
+  propertyName,
 }) => {
   if (!byDayEntries[sequentialDayNumber]) {
     return <></>
@@ -24,7 +28,8 @@ const DayDisplayForSessions: FunctionComponent<{
     <>
       {byDayEntries[sequentialDayNumber].map(
         entry =>
-          entry.sessionGuid === sessionGuid && (
+          //@ts-ignore
+          entry[propertyName] === propertyValue && (
             <>
               {entry.timeWindows.map((tw, itw) => (
                 <TimeWindowPlotElement
@@ -43,4 +48,4 @@ const DayDisplayForSessions: FunctionComponent<{
   )
 }
 
-export default DayDisplayForSessions
+export default DayDisplayForSession

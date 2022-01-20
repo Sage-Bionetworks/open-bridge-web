@@ -180,9 +180,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProp
     const [saveLoader, setSaveLoader] = React.useState(false)
 
     const onUpdate = async (updatedStudy: Study) => {
-      console.log('stargint update')
       const x = await mutateStudy({study: updatedStudy})
-      console.log('studyUpdated')
     }
 
     const updateStudy = (

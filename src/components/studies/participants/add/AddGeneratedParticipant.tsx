@@ -24,8 +24,6 @@ type AddGeneratedParticipantProps = {
 
 const AddGeneratedParticipant: FunctionComponent<AddGeneratedParticipantProps> =
   ({onAdded, studyIdentifier, token, isTestAccount}) => {
-    console.log('rerender')
-
     const [numOfIds, setNumOfIds] = React.useState(10)
     const [progress, setProgress] = React.useState(0)
     const [error, setError] = React.useState('')
@@ -47,7 +45,7 @@ const AddGeneratedParticipant: FunctionComponent<AddGeneratedParticipantProps> =
             isTestAccount
           )
         } catch (error) {
-          setError(error.toString())
+          setError((error as Error).toString())
         }
 
         setProgress(_prev => _prev + itemValue)

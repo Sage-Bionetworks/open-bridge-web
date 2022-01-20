@@ -2,7 +2,7 @@ import {Box, makeStyles} from '@material-ui/core'
 import {latoFont} from '@style/theme'
 import {AdherenceWindowState} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
-import AdherenceSessionIcon from './AdherenceSessionIcon'
+import AdherenceSessionIcon from './participant-detail/AdherenceSessionIcon'
 
 const useStyles = makeStyles(theme => ({
   sessionLegend: {

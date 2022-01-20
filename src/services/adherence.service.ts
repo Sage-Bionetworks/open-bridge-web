@@ -1,8 +1,28 @@
-import {EventStreamAdherenceReport} from '@typedefs/types'
+import {
+  AdherenceWeeklyReport,
+  EventStreamAdherenceReport,
+} from '@typedefs/types'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
 
 export const COMPLIANCE_THRESHOLD = 50
+
+async function getAdherenceForWeek(
+  studyId: string,
+  userIds: string[],
+  token: string
+): Promise<AdherenceWeeklyReport[]> {
+  const weeklyPromises = userIds.map(userId => {
+    const endpoint = constants.endpoints.adherenceWeekly
+      .replace(':studyId', studyId)
+      .replace(':userId', userId)
+    return Utility.callEndpoint<any>(endpoint, 'GET', {}, token)
+  })
+
+  const result = (await Promise.all(weeklyPromises)).map(result => result.data)
+
+  return result
+}
 
 async function getAdherenceForParticipant(
   studyId: string,
@@ -18,6 +38,7 @@ async function getAdherenceForParticipant(
 
 const AdherenceService = {
   getAdherenceForParticipant,
+  getAdherenceForWeek,
   COMPLIANCE_THRESHOLD,
 }
 
