@@ -8,6 +8,7 @@ import AdherenceService from '@services/adherence.service'
 import ParticipantService from '@services/participants.service'
 import {theme} from '@style/theme'
 import {AdherenceWeeklyReport} from '@typedefs/types'
+import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {Link} from 'react-router-dom'
 import AdherenceUtility from '../adherenceUtility'
@@ -164,9 +165,13 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                     <Box
                       key="adherence"
                       style={{borderRight: 'none'}}
-                      className={classes.dayCell}>
+                      className={clsx(
+                        classes.dayCell,
+                        a.weeklyAdherencePercent <
+                          AdherenceService.COMPLIANCE_THRESHOLD && classes.red
+                      )}>
                       {' '}
-                      {a.weeklyAdherencePercent}%
+                      1{a.weeklyAdherencePercent}%
                     </Box>
                   </div>
                 ))

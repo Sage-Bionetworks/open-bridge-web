@@ -53,17 +53,9 @@ export const useUpdateEventsForUser = () => {
       )
     },
     onError: (err, variables, context) => {
-      throw err
+      console.log('error updating events')
     },
     onSuccess: (data, props) => {
-      console.debug(
-        'invalidating',
-        EVENTS_KEYS.detail(props.studyId, props.participantId)
-      )
-      console.debug(
-        'inv',
-        ADHERENCE_KEYS.detail(props.studyId, props.participantId)
-      )
       queryClient.invalidateQueries(
         EVENTS_KEYS.detail(props.studyId, props.participantId)
       )
