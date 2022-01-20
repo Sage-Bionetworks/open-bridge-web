@@ -454,6 +454,13 @@ function getColumns(
     )
   }
 
+  // if no custom event / burst -- remove time zone column
+  if (scheduleEventIds.length === 1) {
+    participantColumns = participantColumns.filter(
+      el => el.headerName != 'Time Zone'
+    )
+  }
+
   const eventInsertionIndex = participantColumns.findIndex(
     column => column.field === 'clientTimeZone'
   )
