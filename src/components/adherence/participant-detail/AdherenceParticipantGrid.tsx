@@ -99,9 +99,6 @@ const useStyles = makeStyles(theme => ({
   adherenceDisplay: {
     fontSize: '14px',
   },
-  red: {
-    color: 'red',
-  },
 }))
 
 type AdherenceParticipantGridProps = {

@@ -1,41 +1,21 @@
 import {ReactComponent as PersonIcon} from '@assets/adherence/person_icon.svg'
 import {useAdherence} from '@components/studies/adherenceHooks'
 import {useEnrollmentForParticipant} from '@components/studies/enrollmentHooks'
-import {
-  useEvents,
-  useEventsForUser,
-  useUpdateEventsForUser,
-} from '@components/studies/eventHooks'
-import EditParticipantEventsForm from '@components/studies/participants/modify/EditParticipantEventsForm'
 import {useStudy} from '@components/studies/studyHooks'
 import BreadCrumb from '@components/widgets/BreadCrumb'
-import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import {MTBHeadingH4} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
-import {
-  DialogButtonPrimary,
-  DialogButtonSecondary,
-} from '@components/widgets/StyledComponents'
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  makeStyles,
-  Paper,
-  TextField,
-} from '@material-ui/core'
+import {Box, Button, makeStyles, Paper, TextField} from '@material-ui/core'
 import constants from '@typedefs/constants'
-import {ParticipantEvent, SessionDisplayInfo} from '@typedefs/types'
+import {SessionDisplayInfo} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import AdherenceUtility from '../adherenceUtility'
 import SessionLegend from '../SessionLegend'
 import {useCommonStyles} from '../styles'
 import AdherenceParticipantGrid from './AdherenceParticipantGrid'
+import EditParticipantEvents from './EditParticipantEvents'
 
 const useStyles = makeStyles(theme => ({
   mainContainer: {
@@ -45,18 +25,13 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-type AdherenceParticipantProps = {
-  studyId?: string
-}
+type AdherenceParticipantProps = {}
 
 const AdherenceParticipant: FunctionComponent<
   AdherenceParticipantProps & RouteComponentProps
 > = () => {
-  const [isSavingEvents, setIsSavingEvents] = React.useState(false)
   const [isEditParticipant, setIsEditParticipant] = React.useState(false)
-  const [participantEvents, setParticipantEvents] = React.useState<
-    ParticipantEvent[]
-  >([])
+
   let {id: studyId, userId: participantId} = useParams<{
     id: string
     userId: string
@@ -80,9 +55,6 @@ const AdherenceParticipant: FunctionComponent<
     isLoading: isStudyLoading,
   } = useStudy(studyId)
 
-  const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
-  const {data: events} = useEventsForUser(studyId, participantId)
-
   const [participantSessions, setParticipantSessions] = React.useState<
     SessionDisplayInfo[]
   >([])
@@ -94,12 +66,6 @@ const AdherenceParticipant: FunctionComponent<
       )
     }
   }, [adherenceReport])
-
-  React.useEffect(() => {
-    if (events) {
-      setParticipantEvents(events.customEvents)
-    }
-  }, [events])
 
   const classes = {...useCommonStyles(), ...useStyles()}
 
@@ -113,13 +79,6 @@ const AdherenceParticipant: FunctionComponent<
       text: 'Enrolled Participants',
     },
   ]
-
-  const {
-    isSuccess: scheduleUpdateSuccess,
-    isError: scheduleUpdateError,
-    mutateAsync: updateEvents,
-    data,
-  } = useUpdateEventsForUser()
 
   return (
     <Box bgcolor="#F8F8F8" px={5}>
@@ -171,48 +130,13 @@ const AdherenceParticipant: FunctionComponent<
           </Box>
         </Paper>
       </LoadingComponent>
-      <Dialog open={isEditParticipant} scroll="body">
-        <DialogTitleWithClose
-          onCancel={() => setIsEditParticipant(false)}
-          title="Edit Participant Event Date"
-          isSmallTitle={true}
+      {isEditParticipant && (
+        <EditParticipantEvents
+          studyId={studyId}
+          participantId={participantId}
+          onCloseDialog={() => setIsEditParticipant(false)}
         />
-        <DialogContent>
-          <EditParticipantEventsForm
-            hideLoginEvent={true}
-            scheduleEvents={scheduleEvents}
-            onChange={customEvents => {
-              setParticipantEvents(customEvents)
-            }}
-            customParticipantEvents={
-              participantEvents || ([] as ParticipantEvent[])
-            }
-          />
-        </DialogContent>
-        <DialogActions>
-          <DialogButtonSecondary onClick={() => setIsEditParticipant(false)}>
-            Cancel
-          </DialogButtonSecondary>
-          <DialogButtonPrimary
-            onClick={() => {
-              setIsSavingEvents(true)
-              updateEvents({
-                studyId,
-                participantId,
-                customEvents: participantEvents,
-              }).then(
-                () => {
-                  setIsSavingEvents(false)
-                  setIsEditParticipant(false)
-                },
-                e => alert(e.message)
-              )
-            }}
-            color="primary">
-            {isSavingEvents ? <CircularProgress /> : <> Save Changes</>}
-          </DialogButtonPrimary>
-        </DialogActions>
-      </Dialog>
+      )}
     </Box>
   )
 }
