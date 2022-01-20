@@ -110,7 +110,6 @@ const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps>
             hideLoginEvent={true}
             scheduleEvents={scheduleEvents}
             onChange={events => {
-              console.log('event change')
               onChange({...participant, events: events})
             }}
           />

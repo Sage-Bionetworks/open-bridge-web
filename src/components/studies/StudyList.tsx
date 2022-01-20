@@ -375,7 +375,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         await createStudy(study)
         return
       default: {
-        console.log('unknow study acgtion')
+        console.log('unknow study action')
       }
     }
   }

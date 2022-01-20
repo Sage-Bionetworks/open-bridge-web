@@ -36,7 +36,6 @@ const PasswordReset: FunctionComponent<PasswordResetProps> = ({
   const [username, setUsername] = useState(_username)
 
   const requestResetPassword = async (username: string) => {
-    console.log(username)
     const response = await UserService.requestResetPassword(username)
     const success = response.status === 200 || response.status === 202
     callbackFn(

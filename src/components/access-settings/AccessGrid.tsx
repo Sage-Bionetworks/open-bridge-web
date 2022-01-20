@@ -232,7 +232,7 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
     const nonAdmin = accessKeys.find(
       key => access[key as keyof Access] !== 'EDITOR'
     )
-    console.log('nonadmin' + nonAdmin)
+
     return nonAdmin === undefined
   }
 

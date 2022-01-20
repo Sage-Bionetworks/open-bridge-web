@@ -5,6 +5,7 @@ import TestAccountUnfocusIcon from '@assets/participants/test_account_unfocus_ic
 import WithdrawnParticipantsFocusIcon from '@assets/participants/withdrawn_participants_focus_icon.svg'
 import WithdrawnParticipantsUnfocusIcon from '@assets/participants/withdrawn_participants_unfocus_icon.svg'
 import {useStudy} from '@components/studies/studyHooks'
+import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import {Box, makeStyles, Tab, Tabs} from '@material-ui/core'
@@ -12,6 +13,7 @@ import {latoFont, poppinsFont} from '@style/theme'
 import {ExtendedParticipantAccountSummary} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
+import {ErrorBoundary} from 'react-error-boundary'
 import {RouteComponentProps, useLocation, useParams} from 'react-router-dom'
 import AdherenceParticipants from './participants/AdherenceParticipants'
 import AdherenceSummary from './summary/AdherenceSummary'
@@ -157,7 +159,15 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
           ))}
         </Tabs>
         <Box bgcolor="white">
-          {tab === 'SUMMARY' ? <AdherenceSummary /> : <AdherenceParticipants />}
+          <ErrorBoundary
+            FallbackComponent={ErrorFallback}
+            onError={ErrorHandler}>
+            {tab === 'SUMMARY' ? (
+              <AdherenceSummary />
+            ) : (
+              <AdherenceParticipants />
+            )}
+          </ErrorBoundary>
         </Box>
       </Box>
     </Box>

@@ -314,24 +314,33 @@ export type AdherenceWindowState =
   | 'unstarted'
   | 'declined'
 
-export type EventStreamDay = {
+type AdherenceSessionInfo = {
   sessionGuid: string
   sessionName: string
   sessionSymbol: string
   week: number
   studyBurstId: string
   studyBurstNum: number
-  startDay: number
   startDate: string
+}
+
+export type EventStreamDay = AdherenceSessionInfo & {
+  startDay: number
   timeWindows: {
     sessionInstanceGuid: string
     timeWindowGuid: string
     state: AdherenceWindowState
     endDay: number
+    endDate: string
   }[]
 }
 
 export type AdherenceByDayEntries = Record<string, EventStreamDay[]>
+
+export type WeeklyAdherenceByDayEntries = Record<
+  string,
+  (EventStreamDay & {label: string})[]
+>
 
 export type AdherenceEventStream = {
   startEventId: string
@@ -356,6 +365,16 @@ export type SessionDisplayInfo = {
   sessionName: string
   sessionGuid: string
   sessionSymbol: string
+}
+
+export type AdherenceWeeklyReport = {
+  participant: {identifier: string; externalId: string}
+  rowLabels: string[]
+  weeklyAdherencePercent: number
+  clientTimeZone: string
+  createdOn: string
+  byDayEntries: WeeklyAdherenceByDayEntries
+  nextActivity: AdherenceSessionInfo
 }
 
 // POST MVP
