@@ -15,7 +15,7 @@ import {StudyInfoDataProvider} from './helpers/StudyInfoContext'
 import Utility from './helpers/utility'
 import UserService from './services/user.service'
 import {cssVariables, theme} from './style/theme'
-import {UserSessionData} from './types/types'
+import {ExtendedError, UserSessionData} from './types/types'
 import UnauthenticatedApp from './UnauthenticatedApp'
 
 //const defaultTheme = createMuiTheme()
@@ -41,7 +41,6 @@ const detectSSOCode = async (
   const code = getCode()
   if (code && !sessionData.token) {
     try {
-      console.log('trying to log in')
       const env = UserService.getOathEnvironment()
       const loggedIn = await UserService.loginOauth(
         code,
@@ -69,7 +68,7 @@ const detectSSOCode = async (
       // window.location.replace(`${window.location.origin}/studies`)
       // window.location.replace(env.redirect+'/study-editor')
     } catch (e) {
-      alert(e.message)
+      alert((e as Error).message)
       return false
     }
   }
@@ -90,7 +89,7 @@ function App() {
         try {
           await UserService.getUserInfo(token)
         } catch (e) {
-          if (e.statusCode && e.statusCode >= 400) {
+          if ((e as ExtendedError).statusCode && e.statusCode >= 400) {
             sessionUpdateFn({
               type: 'LOGOUT',
             })
