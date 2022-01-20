@@ -110,7 +110,6 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
           studyId={studyId}
           adherenceWeeklyReport={adherenceWeeklyReport}
         />
-        {adherenceWeeklyReport.length}!TEST
       </div>
     )
   }
