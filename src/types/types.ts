@@ -314,7 +314,7 @@ export type AdherenceWindowState =
   | 'unstarted'
   | 'declined'
 
-type AdherenceSessionInfo = {
+export type AdherenceSessionInfo = {
   sessionGuid: string
   sessionName: string
   sessionSymbol: string
