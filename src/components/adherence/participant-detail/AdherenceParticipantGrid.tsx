@@ -244,9 +244,9 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                   {wkIndex === 0 && (
                     <Tooltip
                       placement="right-start"
-                      title={new Date(
+                      title={AdherenceUtility.getDateForDisplay(
                         stream.eventTimestamp
-                      ).toLocaleDateString()}>
+                      )}>
                       <strong>
                         {EventService.formatEventIdForDisplay(
                           stream?.startEventId

@@ -3,7 +3,7 @@ import {
   WeeklyAdherenceByDayEntries,
 } from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
-import TimeWindowPlotElement from './participant-detail/TimeWindowPlotElement'
+import TimeWindowPlotElement from './TimeWindowPlotElement'
 
 const DayDisplayForSession: FunctionComponent<{
   sequentialDayNumber: number

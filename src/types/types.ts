@@ -344,7 +344,7 @@ export type WeeklyAdherenceByDayEntries = Record<
 
 export type AdherenceEventStream = {
   startEventId: string
-  eventTimestamp: Date
+  eventTimestamp: string
   sessionGuids: [string]
   byDayEntries: AdherenceByDayEntries
   type: 'EventStream'
