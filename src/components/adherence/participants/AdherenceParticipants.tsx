@@ -1,4 +1,5 @@
 import {useAdherenceForWeek} from '@components/studies/adherenceHooks'
+import ParticipantSearch from '@components/studies/participants/ParticipantSearch'
 import Loader from '@components/widgets/Loader'
 import {useAsync} from '@helpers/AsyncHook'
 import {useUserSessionDataState} from '@helpers/AuthContext'
@@ -85,14 +86,11 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
       }
     }, [adherenceWeeklyReport])
 
-    if (status === 'PENDING') {
+    if (status === 'PENDING' || !adherenceWeeklyReport) {
       return <Loader reqStatusLoading={'PENDING'}></Loader>
     }
     if (status === 'REJECTED') {
       handleError(error!)
-    }
-    if (!adherenceWeeklyReport) {
-      return <>nothing</>
     }
 
     return (
@@ -105,7 +103,19 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
               sessionName={s.sessionName}
             />
           ))}
+          <div style={{marginLeft: 'auto'}}>
+            <ParticipantSearch
+              isSearchById={true}
+              onReset={() => {
+                /* handleSearchParticipantRequest(undefined)*/
+              }}
+              onSearch={(searchedValue: string) => {
+                /* handleSearchParticipantRequest(searchedValue)*/
+              }}
+            />
+          </div>
         </Box>
+
         <AdherenceParticipantsGrid
           studyId={studyId}
           adherenceWeeklyReport={adherenceWeeklyReport}

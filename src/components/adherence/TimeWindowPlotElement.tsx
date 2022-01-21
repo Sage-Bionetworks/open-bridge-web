@@ -1,7 +1,8 @@
 import {Tooltip} from '@material-ui/core'
 import {AdherenceWindowState} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
-import AdherenceSessionIcon from './AdherenceSessionIcon'
+import AdherenceUtility from './adherenceUtility'
+import AdherenceSessionIcon from './participant-detail/AdherenceSessionIcon'
 
 const TimeWindowPlotElement: FunctionComponent<{
   windowIndex: number
@@ -20,7 +21,7 @@ const TimeWindowPlotElement: FunctionComponent<{
   isCompliant,
 }) => {
   return (
-    <Tooltip title={startDate}>
+    <Tooltip title={AdherenceUtility.getDateForDisplay(startDate)}>
       <div
         id={'window_' + windowIndex}
         style={{

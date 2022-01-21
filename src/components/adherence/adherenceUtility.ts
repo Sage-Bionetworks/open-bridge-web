@@ -40,9 +40,16 @@ function getUniqueSessionsInfo(
   return result
 }
 
+function getDateForDisplay(date?: string) {
+  return date
+    ? new Date(date).toLocaleDateString()
+    : 'Event date is not defined'
+}
+
 const AdherenceUtility = {
   getMaxNumberOfTimeWindows,
   getUniqueSessionsInfo,
+  getDateForDisplay,
 }
 
 export default AdherenceUtility
