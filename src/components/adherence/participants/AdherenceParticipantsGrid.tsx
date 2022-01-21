@@ -1,4 +1,3 @@
-import {ReactComponent as Arrow} from '@assets/arrow_long.svg'
 import {
   PlotDaysDisplay,
   useGetPlotAndUnitWidth,
@@ -14,6 +13,7 @@ import {Link} from 'react-router-dom'
 import AdherenceUtility from '../adherenceUtility'
 import DayDisplayForSession from '../DayDisplayForSession'
 import {useCommonStyles} from '../styles'
+import NextActivity from './NextActivity'
 
 export const useStyles = makeStyles(theme => ({
   participantRow: {
@@ -22,27 +22,11 @@ export const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2),
     alignitems: 'center',
   },
-  sessionRow: {
-    margin: '4px 0',
-    display: 'flex',
-    alignItems: 'center',
-    height: '20px',
-  },
-  nextActivity: {
-    textAlign: 'center',
-    marginRight: theme.spacing(1),
-    background:
-      'linear-gradient(to bottom, #fff 10px, #333 10px 11px, #fff 11px )',
-    '& span': {
-      backgroundColor: '#fff',
-      padding: theme.spacing(0, 3),
-    },
-  },
 }))
 
 type AdherenceParticipantsGridProps = {
   studyId: string
-  //token: string
+
   adherenceWeeklyReport: AdherenceWeeklyReport[]
 }
 
@@ -112,72 +96,49 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
               </Link>
             </Box>
             <div key={'data'}>
-              {a.rowLabels.length === 0
-                ? a.nextActivity && (
-                    <div key={`nothing`} className={classes.sessionRow}>
-                      <Box key="label" width={theme.spacing(11)}>
-                        <Arrow style={{transform: 'scaleX(-1)'}} />
-                      </Box>
+              {a.rowLabels.length === 0 ? (
+                <NextActivity dayPxWidth={dayWidthInPx} info={a.nextActivity} />
+              ) : (
+                a.rowLabels.map((label, index) => (
+                  <div key={`${label}`} className={classes.sessionRow}>
+                    <Box
+                      key="label"
+                      width={theme.spacing(11)}
+                      borderRight={'1px solid black'}>
+                      {getLabel(label)}
+                    </Box>
+                    {[...new Array(7)].map((i, dayIndex) => (
                       <div
-                        className={classes.nextActivity}
-                        style={{
-                          width: `${dayWidthInPx * 7}px`,
-                        }}>
-                        <span>
-                          Up Next: {a.nextActivity.sessionName} on{' '}
-                          {new Date(
-                            a.nextActivity.startDate
-                          ).toLocaleDateString()}
-                        </span>
+                        key={dayIndex}
+                        className={classes.dayCell}
+                        style={{width: `${dayWidthInPx}px`}}>
+                        <DayDisplayForSession
+                          sequentialDayNumber={dayIndex}
+                          byDayEntries={a.byDayEntries}
+                          maxNumberOfTimeWindows={3}
+                          isCompliant={
+                            a.weeklyAdherencePercent >=
+                            AdherenceService.COMPLIANCE_THRESHOLD
+                          }
+                          propertyName="label"
+                          propertyValue={label}
+                        />
                       </div>
-                      <Box
-                        key="adherence"
-                        style={{borderRight: 'none'}}
-                        className={classes.dayCell}>
-                        {' '}
-                        -
-                      </Box>
-                    </div>
-                  )
-                : a.rowLabels.map((label, index) => (
-                    <div key={`${label}`} className={classes.sessionRow}>
-                      <Box
-                        key="label"
-                        width={theme.spacing(11)}
-                        borderRight={'1px solid black'}>
-                        {getLabel(label)}
-                      </Box>
-                      {[...new Array(7)].map((i, dayIndex) => (
-                        <div
-                          key={dayIndex}
-                          className={classes.dayCell}
-                          style={{width: `${dayWidthInPx}px`}}>
-                          <DayDisplayForSession
-                            sequentialDayNumber={dayIndex}
-                            byDayEntries={a.byDayEntries}
-                            maxNumberOfTimeWindows={3}
-                            isCompliant={
-                              a.weeklyAdherencePercent >=
-                              AdherenceService.COMPLIANCE_THRESHOLD
-                            }
-                            propertyName="label"
-                            propertyValue={label}
-                          />
-                        </div>
-                      ))}
-                      <Box
-                        key="adherence"
-                        style={{borderRight: 'none'}}
-                        className={clsx(
-                          classes.dayCell,
-                          a.weeklyAdherencePercent <
-                            AdherenceService.COMPLIANCE_THRESHOLD && classes.red
-                        )}>
-                        {' '}
-                        1{a.weeklyAdherencePercent}%
-                      </Box>
-                    </div>
-                  ))}
+                    ))}
+                    <Box
+                      key="adherence"
+                      style={{borderRight: 'none'}}
+                      className={clsx(
+                        classes.dayCell,
+                        a.weeklyAdherencePercent <
+                          AdherenceService.COMPLIANCE_THRESHOLD && classes.red
+                      )}>
+                      {' '}
+                      1{a.weeklyAdherencePercent}%
+                    </Box>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         ))}

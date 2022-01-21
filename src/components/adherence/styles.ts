@@ -11,6 +11,12 @@ export const useCommonStyles = makeStyles(theme => ({
     fontWeight: 'bold',
     textAlign: 'left',
   },
+  sessionRow: {
+    margin: '4px 0',
+    display: 'flex',
+    alignItems: 'center',
+    height: '20px',
+  },
   dayCell: {
     padding: '0 8px',
     borderRight: '1px solid black',
