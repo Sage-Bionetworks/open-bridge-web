@@ -676,7 +676,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         </Button>
                       </Box>
                       <ParticipantSearch
-                        isEnrolledById={Utility.isSignInById(study.signInTypes)}
+                        isSearchById={Utility.isSignInById(study.signInTypes)}
                         onReset={() => {
                           handleSearchParticipantRequest(undefined)
                         }}
