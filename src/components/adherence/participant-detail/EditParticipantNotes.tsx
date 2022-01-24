@@ -1,9 +1,45 @@
-import {makeStyles, Paper, TextField, Button} from '@material-ui/core'
-import {MTBHeadingH4} from '@components/widgets/Headings'
+import {makeStyles, Paper, TextField, Button, CircularProgress} from '@material-ui/core'
 import ParticipantService from '@services/participants.service'
 import { useUserSessionDataState } from '@helpers/AuthContext' 
 import {ExtendedError, ParticipantAccountSummary, EnrolledAccountRecord} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
+import { poppinsFont } from '@style/theme'
+
+const useStyles = makeStyles(theme => ({
+    notesContainer: {
+      marginTop: theme.spacing(8),
+      padding: theme.spacing(4)
+    },
+    notesText: {
+        "& .MuiOutlinedInput-inputMultiline": {
+            background: '#fff',
+            padding: theme.spacing(1),
+        },
+        "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: '#BBC3CD',
+        },
+        margin: theme.spacing(2,0),
+        width: '55%',
+    },      
+    saveBtn: {
+        backgroundColor: '#392D2D',
+        "&:hover": {
+            backgroundColor:'#392D2D',
+            fontWeight: 'bolder',            
+        },
+        color: '#FFFFFF',
+        display: 'block',
+        margin: 0,
+        borderRadius: 0,
+        fontFamily: poppinsFont,       
+    },
+    noteHeader: {
+        marginLeft:'10px',
+        fontWeight: 'bold', 
+        fontSize:'16px', 
+        fontFamily: poppinsFont,
+    }
+  }))
 
 type EditParticipantNotesProps = {
     participantId : string,
@@ -16,41 +52,9 @@ const EditParticipantNotes: FunctionComponent<EditParticipantNotesProps> = ({
     studyId,
     enrollment
 }) => {
-    const useStyles = makeStyles(theme => ({
-        notesContainer: {
-          marginTop: theme.spacing(8),
-          padding: theme.spacing(4)
-        },
-        notesText: {
-            "& .MuiOutlinedInput-inputMultiline": {
-                background: '#fff',
-                padding: theme.spacing(1),
-            },
-            "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: '#BBC3CD',
-            },
-            marginTop: theme.spacing(2),
-            marginBottom: theme.spacing(2),
-            // border:'1px solid #BBC3CD',
-            width: '55%',
-        },      
-        textArea: {
-            backgroundColor: '#f8f8f8',
-        },
-        saveBtn: {
-            backgroundColor: '#392D2D',
-            "&:hover": {
-                backgroundColor:'#392D2D',
-                fontWeight: 'bolder',            
-            },
-            color: '#FFFFFF',
-            display: 'block',
-            margin: 0,
-            borderRadius: 0,
-            fontFamily: 'Poppins',       }
-      }))
-    const classes = useStyles()
 
+    const classes = useStyles()
+    const [isSaving, setIsSaving] = React.useState(false)
     const [note, setNote] = React.useState(enrollment.note)
     const {token} = useUserSessionDataState()
 
@@ -61,19 +65,21 @@ const EditParticipantNotes: FunctionComponent<EditParticipantNotesProps> = ({
         }
     ) => {
         try {
+        setIsSaving(true)
         await ParticipantService.updateParticipant(
             studyId,
             token!,
             participantId,
             updatedFields
         ) 
+        setIsSaving(false)
         } catch (e) {
         alert((e as ExtendedError).message)
         }
     }
     return(
         <Paper className={classes.notesContainer}>
-            <MTBHeadingH4 style={{marginLeft:"10px", fontSize:'16px', lineHeight:'24px', fontFamily:'Poppins'}}>Participant Notes</MTBHeadingH4>
+            <div className={classes.noteHeader}>Participant Notes</div>
             <TextField 
             className={classes.notesText}
             value={note}
@@ -84,13 +90,13 @@ const EditParticipantNotes: FunctionComponent<EditParticipantNotesProps> = ({
             <Button 
             className={classes.saveBtn}
             variant='contained'
-            disableElevation
             size = 'large'
             onClick={()=>{
                 const data = {note: note}
                 updateNotes(participantId,data)
             }
-            }>Save</Button>
+            }>{isSaving ? <CircularProgress/>: <>Save</>  }</Button>
+
     </Paper>
     )
 }

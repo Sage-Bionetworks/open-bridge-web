@@ -19,31 +19,26 @@ import EditParticipantEvents from './EditParticipantEvents'
 import EditParticipantNotes from './EditParticipantNotes'
 
 import EditIcon from '@assets/edit_pencil_red.svg'
-
+import { latoFont } from '@style/theme'
 
 const useStyles = makeStyles(theme => ({
   mainContainer: {
     padding: theme.spacing(4),
-    marginTop: theme.spacing(4),
+    margin: theme.spacing(4,0),
     backgroundColor: '#f8f8f8',
   },
 
   editEventDate: {
     fontSize: '14px',
-    fontFamily: 'Lato',
+    fontFamily: latoFont,
     fontWeight: 600,
-    lineHeight: '16.8px',
   },
 
   cumulative:{
     borderBottom:'3px double',
-    // marginTop: theme.spacing(1),
-    paddingRight: theme.spacing(6),
-    paddingBottom: theme.spacing(1),
-    paddingLeft: theme.spacing(1),
+    padding: theme.spacing(0,6,1,1),
     fontSize: '12px',
     fontWeight: 700,
-    lineHeight: '14.4px',
   },
 }))
 
