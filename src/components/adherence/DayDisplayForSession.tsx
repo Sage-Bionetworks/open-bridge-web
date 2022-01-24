@@ -11,7 +11,7 @@ const DayDisplayForSession: FunctionComponent<{
   maxNumberOfTimeWindows: number
   propertyValue: string
   isCompliant: boolean
-  propertyName: string
+  propertyName: 'sessionGuid' | 'label'
 }> = ({
   byDayEntries,
   propertyValue,
@@ -23,13 +23,14 @@ const DayDisplayForSession: FunctionComponent<{
   if (!byDayEntries[sequentialDayNumber]) {
     return <></>
   }
-
+  const parsedValue =
+    propertyName === 'sessionGuid' ? propertyValue : propertyValue.split(':')[2]
   return (
     <>
       {byDayEntries[sequentialDayNumber].map(
         entry =>
           //@ts-ignore
-          entry[propertyName] === propertyValue && (
+          entry[propertyName].includes(parsedValue) && (
             <>
               {entry.timeWindows.map((tw, itw) => (
                 <TimeWindowPlotElement

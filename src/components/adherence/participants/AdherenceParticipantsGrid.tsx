@@ -115,7 +115,7 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                         <DayDisplayForSession
                           sequentialDayNumber={dayIndex}
                           byDayEntries={a.byDayEntries}
-                          maxNumberOfTimeWindows={3}
+                          maxNumberOfTimeWindows={maxNumbrOfTimeWindows}
                           isCompliant={
                             a.weeklyAdherencePercent >=
                             AdherenceService.COMPLIANCE_THRESHOLD
@@ -134,7 +134,7 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                           AdherenceService.COMPLIANCE_THRESHOLD && classes.red
                       )}>
                       {' '}
-                      1{a.weeklyAdherencePercent}%
+                      {a.weeklyAdherencePercent}%
                     </Box>
                   </div>
                 ))

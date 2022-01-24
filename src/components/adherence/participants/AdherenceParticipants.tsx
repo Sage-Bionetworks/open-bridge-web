@@ -1,11 +1,7 @@
 import {useAdherenceForWeek} from '@components/studies/adherenceHooks'
 import ParticipantSearch from '@components/studies/participants/ParticipantSearch'
-import Loader from '@components/widgets/Loader'
-import {useAsync} from '@helpers/AsyncHook'
-import {useUserSessionDataState} from '@helpers/AuthContext'
 import {Box, makeStyles} from '@material-ui/core'
-import ParticipantService from '@services/participants.service'
-import {EnrolledAccountRecord, SessionDisplayInfo} from '@typedefs/types'
+import {SessionDisplayInfo} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {useParams} from 'react-router-dom'
@@ -30,53 +26,16 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
     let {id: studyId} = useParams<{
       id: string
     }>()
-    const {token} = useUserSessionDataState()
-    const {
-      data: enrolledUsers,
-      status,
-      error,
-      run,
-      setData,
-    } = useAsync<{
-      items: EnrolledAccountRecord[]
-      total: number
-    }>({
-      status: 'PENDING',
-      data: {
-        items: [],
-        total: 0,
-      },
-    })
-    const [userIds, setUserIds] = React.useState<string[]>([])
+
     const [sessions, setSessions] = React.useState<SessionDisplayInfo[]>([])
 
     const {
       data: adherenceWeeklyReport,
-      refetch: refetchAdherence,
+
       status: adhStatus,
-    } = useAdherenceForWeek(studyId, userIds)
+    } = useAdherenceForWeek(studyId)
 
     const handleError = useErrorHandler()
-
-    React.useEffect(() => {
-      return run(
-        ParticipantService.getEnrollmentByEnrollmentType(
-          studyId,
-          token!,
-          'enrolled',
-          true
-        )
-      )
-    }, [run, studyId, token])
-
-    React.useEffect(() => {
-      if (enrolledUsers) {
-        const userIds = enrolledUsers.items.map(
-          user => user.participant.identifier
-        )
-        setUserIds(userIds)
-      }
-    }, [enrolledUsers?.items?.length, studyId])
 
     React.useEffect(() => {
       if (adherenceWeeklyReport) {
@@ -86,15 +45,13 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
       }
     }, [adherenceWeeklyReport])
 
-    if (status === 'PENDING' || !adherenceWeeklyReport) {
-      return <Loader reqStatusLoading={'PENDING'}></Loader>
+    /* if (!adherenceWeeklyReport) {
+      return adhStatus === 'error' ? <>error</> : <>no report</>
     }
-    if (status === 'REJECTED') {
-      handleError(error!)
-    }
-
+*/
     return (
       <div className={classes.mainContainer}>
+        {adhStatus}
         <Box display="flex" mt={0} mb={2}>
           {sessions?.map(s => (
             <SessionLegend
@@ -118,7 +75,7 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
 
         <AdherenceParticipantsGrid
           studyId={studyId}
-          adherenceWeeklyReport={adherenceWeeklyReport}
+          adherenceWeeklyReport={adherenceWeeklyReport || []}
         />
       </div>
     )

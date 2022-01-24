@@ -28,14 +28,34 @@ export const useAdherence = (studyId: string, userId: string | undefined) => {
     }
   )
 }
-export const useAdherenceForWeek = (studyId: string, userIds: string[]) => {
+export const useAdherenceForWeekForUsers = (
+  studyId: string,
+  userIds: string[]
+) => {
   const {token} = useUserSessionDataState()
 
   return useQuery<AdherenceWeeklyReport[], ExtendedError>(
     ADHERENCE_KEYS.list(studyId),
-    () => AdherenceService.getAdherenceForWeek(studyId, userIds, token!),
+
+    () =>
+      AdherenceService.getAdherenceForWeekForUsers(studyId, userIds, token!),
     {
       enabled: !!studyId && userIds.length > 0 && !!token,
+      retry: true,
+      refetchOnWindowFocus: true,
+    }
+  )
+}
+
+export const useAdherenceForWeek = (studyId: string) => {
+  const {token} = useUserSessionDataState()
+
+  return useQuery<AdherenceWeeklyReport[], ExtendedError>(
+    ADHERENCE_KEYS.list(studyId),
+
+    () => AdherenceService.getAdherenceForWeek(studyId, token!),
+    {
+      enabled: !!studyId && !!token,
       retry: true,
       refetchOnWindowFocus: true,
     }
