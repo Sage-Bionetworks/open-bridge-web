@@ -6,7 +6,7 @@ import BreadCrumb from '@components/widgets/BreadCrumb'
 import {MTBHeadingH4} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
-import {Box, Button, makeStyles, Paper, TextField} from '@material-ui/core'
+import {Box, Button, makeStyles, Paper} from '@material-ui/core'
 import constants from '@typedefs/constants'
 import {SessionDisplayInfo} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
@@ -16,12 +16,29 @@ import SessionLegend from '../SessionLegend'
 import {useCommonStyles} from '../styles'
 import AdherenceParticipantGrid from './AdherenceParticipantGrid'
 import EditParticipantEvents from './EditParticipantEvents'
+import EditParticipantNotes from './EditParticipantNotes'
+
+import EditIcon from '@assets/edit_pencil_red.svg'
+import { latoFont } from '@style/theme'
 
 const useStyles = makeStyles(theme => ({
   mainContainer: {
     padding: theme.spacing(4),
-    marginTop: theme.spacing(4),
+    margin: theme.spacing(4,0),
     backgroundColor: '#f8f8f8',
+  },
+
+  editEventDate: {
+    fontSize: '14px',
+    fontFamily: latoFont,
+    fontWeight: 600,
+  },
+
+  cumulative:{
+    borderBottom:'3px double',
+    padding: theme.spacing(0,6,1,1),
+    fontSize: '12px',
+    fontWeight: 700,
   },
 }))
 
@@ -121,13 +138,24 @@ const AdherenceParticipant: FunctionComponent<
             </Box>
           </Box>
           <AdherenceParticipantGrid adherenceReport={adherenceReport!} />
-          <Button variant="text" onClick={() => setIsEditParticipant(true)}>
-            Edit Participant Event Date Cumulative
-          </Button>
-          <Box>
-            Participant Notes
-            <TextField value={enrollment?.note} multiline={true} />
+          <Box display="flex">
+            <Button 
+              className={classes.editEventDate}
+              variant="text" 
+              onClick={() => setIsEditParticipant(true)}>
+              <img src={EditIcon}></img>
+              &nbsp;Edit Participant Details
+            </Button>
+            <Box marginLeft="auto" className={classes.cumulative}
+            >
+              Cumulative: &nbsp; &nbsp; &nbsp;{adherenceReport?.adherencePercent}%
+            </Box>
           </Box>
+          <EditParticipantNotes
+            participantId = {participantId}
+            studyId= {studyId}
+            enrollment={enrollment!}
+          />
         </Paper>
       </LoadingComponent>
       {isEditParticipant && (
