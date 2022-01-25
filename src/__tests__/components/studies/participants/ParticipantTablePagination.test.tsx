@@ -1,3 +1,4 @@
+import TablePagination from '@components/widgets/pagination/TablePagination'
 import {
   cleanup,
   queryByAttribute,
@@ -8,7 +9,6 @@ import {
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import ParticipantTablePagination from '../../../../components/studies/participants/grid/ParticipantTablePagination'
 
 const getById = queryByAttribute.bind(null, 'id')
 
@@ -31,16 +31,13 @@ const handlePageNavigationArrowPressed = jest.fn()
 // rerender the table pagination component
 const renderParticipantTableGrid = () => {
   participantTablePagination = render(
-    <ParticipantTablePagination
+    <TablePagination
       setPageSize={updatePageSize}
-      totalParticipants={totalParticipants}
+      totalItems={totalParticipants}
       currentPage={currentPage}
       pageSize={pageSize}
-      numberOfPages={numberOfPages}
-      onPageSelectedChanged={onPageSelectedChanged}
-      handlePageNavigationArrowPressed={
-        handlePageNavigationArrowPressed
-      }></ParticipantTablePagination>
+      counterTextSingular="participants"
+      onPageSelectedChanged={onPageSelectedChanged}></TablePagination>
   )
   forward_to_end_button = getById(
     participantTablePagination.container as HTMLElement,
@@ -95,16 +92,13 @@ afterAll(() => {
 test('should be rendering without crashing', () => {
   const div = document.createElement('div')
   ReactDOM.render(
-    <ParticipantTablePagination
+    <TablePagination
       setPageSize={updatePageSize}
-      totalParticipants={totalParticipants}
+      totalItems={totalParticipants}
       currentPage={currentPage}
       pageSize={pageSize}
-      numberOfPages={numberOfPages}
-      onPageSelectedChanged={onPageSelectedChanged}
-      handlePageNavigationArrowPressed={
-        handlePageNavigationArrowPressed
-      }></ParticipantTablePagination>,
+      counterTextSingular="participants"
+      onPageSelectedChanged={onPageSelectedChanged}></TablePagination>,
     div
   )
 })

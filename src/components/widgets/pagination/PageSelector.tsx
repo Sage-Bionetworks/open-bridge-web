@@ -1,10 +1,10 @@
+import BackToBeginningIcon from '@assets/participants/paging/back_to_beginning_icon.svg'
+import ForwardToEndIcon from '@assets/participants/paging/forward_to_end_icon.svg'
+import NextPageIcon from '@assets/participants/paging/next_page_icon.svg'
+import PreviousPageIcon from '@assets/participants/paging/previous_page_icon.svg'
 import {Button} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import React from 'react'
-import BackToBeginningIcon from '../../../../assets/participants/paging/back_to_beginning_icon.svg'
-import ForwardToEndIcon from '../../../../assets/participants/paging/forward_to_end_icon.svg'
-import NextPageIcon from '../../../../assets/participants/paging/next_page_icon.svg'
-import PreviousPageIcon from '../../../../assets/participants/paging/previous_page_icon.svg'
 import PageBox from './PageBox'
 
 const useStyles = makeStyles(theme => ({
@@ -25,6 +25,8 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(0.5),
   },
 }))
+
+export type PageSelectorValues = 'FF' | 'F' | 'B' | 'BB'
 
 type PageSelectorProps = {
   onPageSelected: Function
