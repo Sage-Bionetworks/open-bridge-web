@@ -18,7 +18,7 @@ import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
 import {useStudy} from '@components/studies/studyHooks'
 import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
-import HelpBox from '@components/widgets/HelpBox'
+import TablePagination from '@components/widgets/pagination/TablePagination'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
 import {
   DialogButtonPrimary,
@@ -49,7 +49,6 @@ import {
   ParticipantAccountSummary,
   ParticipantActivityType,
   ParticipantEvent,
-  RequestStatus,
   SelectionType,
 } from '@typedefs/types'
 import clsx from 'clsx'
@@ -62,7 +61,6 @@ import CsvUtility from './csv/csvUtility'
 import ParticipantDownloadTrigger from './csv/ParticipantDownloadTrigger'
 import DialogContents from './DialogContents'
 import ParticipantTableGrid from './grid/ParticipantTableGrid'
-import ParticipantTablePagination from './grid/ParticipantTablePagination'
 import BatchEditForm from './modify/BatchEditForm'
 import ParticipantManagerPlaceholder from './ParticipantManagerPlaceholder'
 import useStyles from './ParticipantManager_style'
@@ -99,31 +97,6 @@ const TAB_ICONS_UNFOCUS = [
   TestAccountUnfocusIcon,
 ]
 
-/*** general functions */
-const getCurrentPageFromPageNavigationArrowPressed = (
-  type: string,
-  currentPage: number,
-  totalParticipants: number,
-  pageSize: number
-): number => {
-  // "FF" = forward to last page
-  // "F" = forward to next pages
-  // "B" = back to previous page
-  // "BB" = back to beginning
-
-  const numberOfPages = Math.ceil(totalParticipants / pageSize)
-  if (type === 'F' && currentPage !== numberOfPages) {
-    return currentPage + 1
-  } else if (type === 'FF' && currentPage !== numberOfPages) {
-    return numberOfPages
-  } else if (type === 'B' && currentPage !== 1) {
-    return currentPage - 1
-  } else if (type === 'BB' && currentPage !== 1) {
-    return 1
-  }
-  return currentPage //should not happen
-}
-
 /***  subcomponents  */
 const UnderConstructionSC: FunctionComponent = () => (
   <Container maxWidth="md" fixed style={{minHeight: '90vh'}}>
@@ -159,47 +132,6 @@ const GoToDownloadPageLinkSC: FunctionComponent = () => {
       <img src={DownloadAppIcon} style={{marginRight: '10px'}}></img> App
       Download Link
     </Button>
-  )
-}
-const HelpBoxSC: FunctionComponent<{
-  numRows: number | undefined
-  status: RequestStatus
-  isAddOpen: boolean
-}> = ({numRows, status, isAddOpen}) => {
-  return (
-    <Box position="relative">
-      {!numRows && !isAddOpen && status !== 'PENDING' && (
-        <HelpBox
-          topOffset={90}
-          leftOffset={70}
-          arrowTailLength={110}
-          helpTextTopOffset={0}
-          helpTextLeftOffset={50}
-          arrowRotate={15}>
-          <div>
-            Currently there are no participants enrolled in this study. To add
-            participants, click 'Add Participant'.
-          </div>
-        </HelpBox>
-      )}
-
-      {!numRows && isAddOpen && status === 'RESOLVED' && (
-        <HelpBox
-          topOffset={340}
-          leftOffset={250}
-          arrowTailLength={150}
-          helpTextTopOffset={-70}
-          helpTextLeftOffset={140}
-          helpTextWidth={250}
-          arrowRotate={0}>
-          <div>
-            You can upload a .csv or enter each participant credentials one by
-            one. When you are done, return to “View” mode to send them an SMS
-            link to download the app.
-          </div>
-        </HelpBox>
-      )}
-    </Box>
   )
 }
 
@@ -478,13 +410,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       ) && <UnderConstructionSC />}
       {!displayPlaceholderScreen && (
         <>
-          {/* {tab === 'ACTIVE' && !isUserSearchingForParticipant && (
-            <HelpBoxSC
-              numRows={data?.items?.length}
-              status={status}
-              isAddOpen={isAddOpen}
-            />
-          )} */}
           <Box py={0} pr={3} pl={2}>
             <Tabs
               value={tab}
@@ -742,26 +667,15 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                             [tab]: selection,
                           }))
                         }}>
-                        <ParticipantTablePagination
-                          totalParticipants={data?.total || 0}
+                        <TablePagination
+                          totalItems={data?.total || 0}
                           onPageSelectedChanged={(pageSelected: number) => {
                             setCurrentPage(pageSelected)
                           }}
                           currentPage={currentPage}
                           pageSize={pageSize}
                           setPageSize={setPageSize}
-                          handlePageNavigationArrowPressed={(
-                            button: string
-                          ) => {
-                            const currPage =
-                              getCurrentPageFromPageNavigationArrowPressed(
-                                button,
-                                currentPage,
-                                data?.total || 0,
-                                pageSize
-                              )
-                            setCurrentPage(currPage)
-                          }}
+                          counterTextSingular="participant"
                         />
                       </ParticipantTableGrid>
                     </div>

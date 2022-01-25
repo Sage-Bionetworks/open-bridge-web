@@ -77,11 +77,21 @@ const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
         </DialogButtonSecondary>
         <DialogButtonPrimary
           onClick={() => {
+            const previousEvents = events?.customEvents
+            const updatedEvents = participantEvents
+            //only update changes events
+            const eventsToUpdate = updatedEvents.filter(ue => {
+              const matchedEvent = events?.customEvents.find(
+                e => e.eventId === ue.eventId
+              )
+              return !matchedEvent || matchedEvent.timestamp !== ue.timestamp
+            })
+            console.log(eventsToUpdate.map(e => e.eventId).join(','), 'update')
             updateEvents(
               {
                 studyId,
                 participantId,
-                customEvents: participantEvents,
+                customEvents: eventsToUpdate,
               },
               {
                 onSuccess: () => {

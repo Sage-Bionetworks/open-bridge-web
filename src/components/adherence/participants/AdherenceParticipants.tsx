@@ -1,11 +1,8 @@
 import {useAdherenceForWeek} from '@components/studies/adherenceHooks'
 import ParticipantSearch from '@components/studies/participants/ParticipantSearch'
-import Loader from '@components/widgets/Loader'
-import {useAsync} from '@helpers/AsyncHook'
-import {useUserSessionDataState} from '@helpers/AuthContext'
+import TablePagination from '@components/widgets/pagination/TablePagination'
 import {Box, makeStyles} from '@material-ui/core'
-import ParticipantService from '@services/participants.service'
-import {EnrolledAccountRecord, SessionDisplayInfo} from '@typedefs/types'
+import {SessionDisplayInfo} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {useParams} from 'react-router-dom'
@@ -30,71 +27,33 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
     let {id: studyId} = useParams<{
       id: string
     }>()
-    const {token} = useUserSessionDataState()
-    const {
-      data: enrolledUsers,
-      status,
-      error,
-      run,
-      setData,
-    } = useAsync<{
-      items: EnrolledAccountRecord[]
-      total: number
-    }>({
-      status: 'PENDING',
-      data: {
-        items: [],
-        total: 0,
-      },
-    })
-    const [userIds, setUserIds] = React.useState<string[]>([])
+    const [currentPage, setCurrentPage] = React.useState(1)
+    const [pageSize, setPageSize] = React.useState(5)
     const [sessions, setSessions] = React.useState<SessionDisplayInfo[]>([])
 
     const {
       data: adherenceWeeklyReport,
-      refetch: refetchAdherence,
+
       status: adhStatus,
-    } = useAdherenceForWeek(studyId, userIds)
+    } = useAdherenceForWeek(studyId, currentPage, pageSize)
 
     const handleError = useErrorHandler()
 
     React.useEffect(() => {
-      return run(
-        ParticipantService.getEnrollmentByEnrollmentType(
-          studyId,
-          token!,
-          'enrolled',
-          true
-        )
-      )
-    }, [run, studyId, token])
-
-    React.useEffect(() => {
-      if (enrolledUsers) {
-        const userIds = enrolledUsers.items.map(
-          user => user.participant.identifier
-        )
-        setUserIds(userIds)
-      }
-    }, [enrolledUsers?.items?.length, studyId])
-
-    React.useEffect(() => {
       if (adherenceWeeklyReport) {
         setSessions(
-          AdherenceUtility.getUniqueSessionsInfo(adherenceWeeklyReport)
+          AdherenceUtility.getUniqueSessionsInfo(adherenceWeeklyReport.items)
         )
       }
     }, [adherenceWeeklyReport])
 
-    if (status === 'PENDING' || !adherenceWeeklyReport) {
-      return <Loader reqStatusLoading={'PENDING'}></Loader>
+    /* if (!adherenceWeeklyReport) {
+      return adhStatus === 'error' ? <>error</> : <>no report</>
     }
-    if (status === 'REJECTED') {
-      handleError(error!)
-    }
-
+*/
     return (
       <div className={classes.mainContainer}>
+        {adhStatus}
         <Box display="flex" mt={0} mb={2}>
           {sessions?.map(s => (
             <SessionLegend
@@ -116,10 +75,25 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
           </div>
         </Box>
 
-        <AdherenceParticipantsGrid
-          studyId={studyId}
-          adherenceWeeklyReport={adherenceWeeklyReport}
-        />
+        {adherenceWeeklyReport && (
+          <div>
+            <AdherenceParticipantsGrid
+              studyId={studyId}
+              adherenceWeeklyReport={adherenceWeeklyReport}
+            />
+
+            <TablePagination
+              totalItems={adherenceWeeklyReport.total}
+              onPageSelectedChanged={(pageSelected: number) => {
+                setCurrentPage(pageSelected)
+              }}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              counterTextSingular="participant"
+            />
+          </div>
+        )}
       </div>
     )
   }

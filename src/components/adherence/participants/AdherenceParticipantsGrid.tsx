@@ -27,7 +27,7 @@ export const useStyles = makeStyles(theme => ({
 type AdherenceParticipantsGridProps = {
   studyId: string
 
-  adherenceWeeklyReport: AdherenceWeeklyReport[]
+  adherenceWeeklyReport: {items: AdherenceWeeklyReport[]; total: number}
 }
 
 const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProps> =
@@ -41,7 +41,9 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
     React.useEffect(() => {
       if (adherenceWeeklyReport) {
         setMaxNumberOfTimeWinsows(
-          AdherenceUtility.getMaxNumberOfTimeWindows(adherenceWeeklyReport)
+          AdherenceUtility.getMaxNumberOfTimeWindows(
+            adherenceWeeklyReport.items
+          )
         )
       }
     }, [adherenceWeeklyReport])
@@ -64,7 +66,7 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
         <div style={{display: 'flex', marginBottom: '16px'}}>
           <Box width={theme.spacing(11)}>Participant</Box>
           <Box width={theme.spacing(11)}>Schedule</Box>
-          <div style={{marginLeft: '-117px'}}>
+          <div style={{marginLeft: '-100px'}}>
             <PlotDaysDisplay
               title=""
               unitWidth={dayWidthInPx}
@@ -83,7 +85,7 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
             />
           </div>
         </div>
-        {adherenceWeeklyReport.map((a, index) => (
+        {adherenceWeeklyReport.items.map((a, index) => (
           <div
             key={`${a.participant}_${index}`}
             className={classes.participantRow}>
@@ -96,49 +98,60 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
               </Link>
             </Box>
             <div key={'data'}>
-              {a.rowLabels.length === 0 ? (
-                <NextActivity dayPxWidth={dayWidthInPx} info={a.nextActivity} />
-              ) : (
-                a.rowLabels.map((label, index) => (
-                  <div key={`${label}`} className={classes.sessionRow}>
-                    <Box
-                      key="label"
-                      width={theme.spacing(11)}
-                      borderRight={'1px solid black'}>
-                      {getLabel(label)}
-                    </Box>
-                    {[...new Array(7)].map((i, dayIndex) => (
-                      <div
-                        key={dayIndex}
-                        className={classes.dayCell}
-                        style={{width: `${dayWidthInPx}px`}}>
-                        <DayDisplayForSession
-                          sequentialDayNumber={dayIndex}
-                          byDayEntries={a.byDayEntries}
-                          maxNumberOfTimeWindows={3}
-                          isCompliant={
-                            a.weeklyAdherencePercent >=
-                            AdherenceService.COMPLIANCE_THRESHOLD
-                          }
-                          propertyName="label"
-                          propertyValue={label}
-                        />
-                      </div>
-                    ))}
-                    <Box
-                      key="adherence"
-                      style={{borderRight: 'none'}}
-                      className={clsx(
-                        classes.dayCell,
-                        a.weeklyAdherencePercent <
-                          AdherenceService.COMPLIANCE_THRESHOLD && classes.red
-                      )}>
-                      {' '}
-                      1{a.weeklyAdherencePercent}%
-                    </Box>
-                  </div>
-                ))
-              )}
+              {
+                /*a.rows.length*/ a.rowLabels.length === 0 ? (
+                  <NextActivity
+                    dayPxWidth={dayWidthInPx}
+                    info={a.nextActivity}
+                  />
+                ) : (
+                  /* a.rows*/ a.rowLabels.map((info, rowIndex) => (
+                    <div
+                      key={`${/*info.sessionGuid*/ info}_ind${rowIndex}`}
+                      className={classes.sessionRow}>
+                      <Box
+                        key="label"
+                        width={theme.spacing(11)}
+                        fontSize={'12px'}
+                        lineHeight={0.8}
+                        borderRight={'1px solid black'}>
+                        {getLabel(info) /*info.label*/}
+                      </Box>
+                      {[...new Array(7)].map((i, dayIndex) => (
+                        <div
+                          key={dayIndex}
+                          className={classes.dayCell}
+                          style={{width: `${dayWidthInPx}px`}}>
+                          <DayDisplayForSession
+                            sequentialDayNumber={dayIndex}
+                            byDayEntries={a.byDayEntries}
+                            sessionSymbol={/*info.sessionSymbol*/ undefined}
+                            maxNumberOfTimeWindows={maxNumbrOfTimeWindows}
+                            isCompliant={
+                              a.weeklyAdherencePercent >=
+                              AdherenceService.COMPLIANCE_THRESHOLD
+                            }
+                            entryIndex={/*rowIndex*/ undefined}
+                            propertyName="label"
+                            propertyValue={/*info.sessionGuid*/ info}
+                          />
+                        </div>
+                      ))}
+                      <Box
+                        key="adherence"
+                        style={{borderRight: 'none'}}
+                        className={clsx(
+                          classes.dayCell,
+                          a.weeklyAdherencePercent <
+                            AdherenceService.COMPLIANCE_THRESHOLD && classes.red
+                        )}>
+                        {' '}
+                        {a.weeklyAdherencePercent}%
+                      </Box>
+                    </div>
+                  ))
+                )
+              }
             </div>
           </div>
         ))}

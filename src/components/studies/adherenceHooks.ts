@@ -9,7 +9,8 @@ import {useQuery} from 'react-query'
 
 export const ADHERENCE_KEYS = {
   all: ['adherence'] as const,
-  list: (studyId: string) => [...ADHERENCE_KEYS.all, 'list', studyId] as const,
+  list: (studyId: string, currentPage: number = 0, pageSize: number = 0) =>
+    [...ADHERENCE_KEYS.all, 'list', studyId, currentPage, pageSize] as const,
 
   detail: (studyId: string, userId: string) =>
     [...ADHERENCE_KEYS.list(studyId), userId] as const,
@@ -28,14 +29,47 @@ export const useAdherence = (studyId: string, userId: string | undefined) => {
     }
   )
 }
-export const useAdherenceForWeek = (studyId: string, userIds: string[]) => {
+export const useAdherenceForWeekForUsers = (
+  studyId: string,
+  userIds: string[]
+) => {
   const {token} = useUserSessionDataState()
 
   return useQuery<AdherenceWeeklyReport[], ExtendedError>(
     ADHERENCE_KEYS.list(studyId),
-    () => AdherenceService.getAdherenceForWeek(studyId, userIds, token!),
+
+    () =>
+      AdherenceService.getAdherenceForWeekForUsers(studyId, userIds, token!),
     {
       enabled: !!studyId && userIds.length > 0 && !!token,
+      retry: true,
+      refetchOnWindowFocus: true,
+    }
+  )
+}
+
+export const useAdherenceForWeek = (
+  studyId: string,
+  currentPage: number,
+  pageSize: number
+) => {
+  const {token} = useUserSessionDataState()
+
+  return useQuery<
+    {items: AdherenceWeeklyReport[]; total: number},
+    ExtendedError
+  >(
+    ADHERENCE_KEYS.list(studyId, currentPage, pageSize),
+
+    () =>
+      AdherenceService.getAdherenceForWeek(
+        studyId,
+        currentPage,
+        pageSize,
+        token!
+      ),
+    {
+      enabled: !!studyId && !!token,
       retry: true,
       refetchOnWindowFocus: true,
     }
