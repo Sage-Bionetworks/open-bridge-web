@@ -1,5 +1,6 @@
 import {useAdherenceForWeek} from '@components/studies/adherenceHooks'
 import ParticipantSearch from '@components/studies/participants/ParticipantSearch'
+import TablePagination from '@components/widgets/pagination/TablePagination'
 import {Box, makeStyles} from '@material-ui/core'
 import {SessionDisplayInfo} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
@@ -26,21 +27,22 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
     let {id: studyId} = useParams<{
       id: string
     }>()
-
+    const [currentPage, setCurrentPage] = React.useState(1)
+    const [pageSize, setPageSize] = React.useState(5)
     const [sessions, setSessions] = React.useState<SessionDisplayInfo[]>([])
 
     const {
       data: adherenceWeeklyReport,
 
       status: adhStatus,
-    } = useAdherenceForWeek(studyId)
+    } = useAdherenceForWeek(studyId, currentPage, pageSize)
 
     const handleError = useErrorHandler()
 
     React.useEffect(() => {
       if (adherenceWeeklyReport) {
         setSessions(
-          AdherenceUtility.getUniqueSessionsInfo(adherenceWeeklyReport)
+          AdherenceUtility.getUniqueSessionsInfo(adherenceWeeklyReport.items)
         )
       }
     }, [adherenceWeeklyReport])
@@ -73,10 +75,25 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
           </div>
         </Box>
 
-        <AdherenceParticipantsGrid
-          studyId={studyId}
-          adherenceWeeklyReport={adherenceWeeklyReport || []}
-        />
+        {adherenceWeeklyReport && (
+          <div>
+            <AdherenceParticipantsGrid
+              studyId={studyId}
+              adherenceWeeklyReport={adherenceWeeklyReport}
+            />
+
+            <TablePagination
+              totalItems={adherenceWeeklyReport.total}
+              onPageSelectedChanged={(pageSelected: number) => {
+                setCurrentPage(pageSelected)
+              }}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              counterTextSingular="participant"
+            />
+          </div>
+        )}
       </div>
     )
   }

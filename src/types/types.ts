@@ -367,14 +367,27 @@ export type SessionDisplayInfo = {
   sessionSymbol: string
 }
 
+export type RowLabel = {
+  label: string
+  searchableLabel: string
+  sessionGuid: string
+  sessionName: string
+  sessionSymbol: string
+  week: number
+  studyBurstId?: string
+  studyBurstNum?: number
+  type: string
+}
+
 export type AdherenceWeeklyReport = {
   participant: {identifier: string; externalId: string}
   rowLabels: string[]
+  //ALINA TODO rows: RowLabel[]
   weeklyAdherencePercent: number
   clientTimeZone: string
   createdOn: string
   byDayEntries: WeeklyAdherenceByDayEntries
-  nextActivity: AdherenceSessionInfo
+  nextActivity?: AdherenceSessionInfo
 }
 
 // POST MVP

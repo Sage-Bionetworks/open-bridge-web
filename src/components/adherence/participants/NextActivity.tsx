@@ -37,7 +37,7 @@ export const useStyles = makeStyles(theme => ({
 
 type NextActivityProps = {
   dayPxWidth: number
-  info: AdherenceSessionInfo
+  info?: AdherenceSessionInfo
 }
 
 const NextActivity: FunctionComponent<NextActivityProps> = ({
