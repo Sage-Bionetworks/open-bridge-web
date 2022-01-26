@@ -264,7 +264,7 @@ SessionCreatorProps) => {
           {schedule.sessions.map((session, index) => (
             <Paper
               className={classes.sessionContainer}
-              key={session.guid! + index}>
+              key={session.guid! + '_' + index}>
               <SingleSessionContainer
                 key={session.guid}
                 sessionIndex={index}
@@ -294,6 +294,7 @@ SessionCreatorProps) => {
         </Box>
         <Box className={classes.actionButtons} key="actionButtons">
           <SessionActionButtons
+            disabled={saveLoader}
             key={'new_session'}
             sessions={schedule.sessions}
             onAddSession={(
@@ -309,6 +310,7 @@ SessionCreatorProps) => {
                 },
               })
             }></SessionActionButtons>
+          {saveLoader && <CircularProgress />}
         </Box>
         {children}
         <Dialog
