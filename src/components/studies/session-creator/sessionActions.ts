@@ -62,16 +62,15 @@ function addSession(
     : JOINED_EVENT_ID
 
   var symbolKeys = Array.from(SessionSymbols.keys())
-  debugger
-  var ndx = sessions.length
-  if (symbolKeys.length <= ndx) {
-    ndx = ndx % symbolKeys.length
+  const usedSymbols = sessions.map(s => s.symbol).filter(s => !!s)
+  let firstUnusedSymbolKey = symbolKeys.find(key => !usedSymbols.includes(key))
+  if (!firstUnusedSymbolKey) {
+    firstUnusedSymbolKey = _.last(symbolKeys)
   }
-  var symbol = symbolKeys[ndx]
 
   const session = ScheduleService.createEmptyScheduleSession(
     startEventId || JOINED_EVENT_ID,
-    symbol,
+    firstUnusedSymbolKey!,
     name
   )
 

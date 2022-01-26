@@ -28,11 +28,13 @@ const useStyles = makeStyles(theme => ({
 type SessionActionButtonsProps = {
   onAddSession: Function
   sessions: StudySession[]
+  disabled?: boolean
 }
 
 const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
   onAddSession,
   sessions,
+  disabled,
 }: SessionActionButtonsProps) => {
   const classes = useStyles()
   const [selectedSessionId, setSelectedSessionId] = React.useState<
@@ -61,6 +63,7 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
   return (
     <Box className={classes.root}>
       <BlueButton
+        disabled={disabled}
         key="add_session"
         variant="contained"
         onClick={() => onAddSession(sessions, [])}>
@@ -86,6 +89,7 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
           </ButtonWithSelectSelect>
 
           <ButtonWithSelectButton
+            disabled={disabled}
             key="duplicate_session"
             variant="contained"
             onClick={() => duplicateSession(selectedSessionId)}>
