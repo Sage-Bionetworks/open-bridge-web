@@ -8,13 +8,6 @@ import React, {FunctionComponent} from 'react'
 import {useCommonStyles} from '../styles'
 
 export const useStyles = makeStyles(theme => ({
-  participantRow: {
-    display: 'flex',
-    borderBottom: '4px solid #fbfbfb',
-    padding: theme.spacing(2),
-    alignitems: 'center',
-  },
-
   nextActivity: {
     textAlign: 'center',
     marginRight: theme.spacing(1),
