@@ -1,14 +1,22 @@
 import {ReactComponent as PersonIcon} from '@assets/adherence/person_icon.svg'
+import EditIcon from '@assets/edit_pencil_red.svg'
 import {useAdherence} from '@components/studies/adherenceHooks'
 import {useEnrollmentForParticipant} from '@components/studies/enrollmentHooks'
+import {useEventsForUser} from '@components/studies/eventHooks'
 import {useStudy} from '@components/studies/studyHooks'
 import BreadCrumb from '@components/widgets/BreadCrumb'
 import {MTBHeadingH4} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
 import {Box, Button, makeStyles, Paper} from '@material-ui/core'
+import ParticipantService from '@services/participants.service'
+import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
-import {SessionDisplayInfo} from '@typedefs/types'
+import {
+  EventStreamAdherenceReport,
+  ParticipantEvent,
+  SessionDisplayInfo,
+} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import AdherenceUtility from '../adherenceUtility'
@@ -18,13 +26,10 @@ import AdherenceParticipantGrid from './AdherenceParticipantGrid'
 import EditParticipantEvents from './EditParticipantEvents'
 import EditParticipantNotes from './EditParticipantNotes'
 
-import EditIcon from '@assets/edit_pencil_red.svg'
-import { latoFont } from '@style/theme'
-
 const useStyles = makeStyles(theme => ({
   mainContainer: {
     padding: theme.spacing(4),
-    margin: theme.spacing(4,0),
+    margin: theme.spacing(4, 0),
     backgroundColor: '#f8f8f8',
   },
 
@@ -34,9 +39,9 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 600,
   },
 
-  cumulative:{
-    borderBottom:'3px double',
-    padding: theme.spacing(0,6,1,1),
+  cumulative: {
+    borderBottom: '3px double',
+    padding: theme.spacing(0, 6, 1, 1),
     fontSize: '12px',
     fontWeight: 700,
   },
@@ -59,6 +64,8 @@ const AdherenceParticipant: FunctionComponent<
     error,
     isLoading: isAdherenceLoading,
   } = useAdherence(studyId, participantId)
+
+  const {data: events} = useEventsForUser(studyId, participantId)
 
   const {
     data: enrollment,
@@ -97,6 +104,24 @@ const AdherenceParticipant: FunctionComponent<
     },
   ]
 
+  const getDisplayJoinedTime = (
+    events?: {
+      timeline_retrieved: Date | undefined
+      customEvents: ParticipantEvent[]
+    },
+    adherenceReport?: EventStreamAdherenceReport
+  ) => {
+    if (!events?.timeline_retrieved) {
+      return '-'
+    }
+    const startDate = new Date(events.timeline_retrieved).toLocaleDateString()
+    //ALINA TODO: only show for completed participants
+    const endDate = adherenceReport
+      ? AdherenceUtility.getLastSchedleDate(adherenceReport.streams)
+      : ''
+    return `${startDate}-${endDate}`
+  }
+
   return (
     <Box bgcolor="#F8F8F8" px={5}>
       <LoadingComponent
@@ -116,17 +141,21 @@ const AdherenceParticipant: FunctionComponent<
           <Box display="flex" alignItems="center" mb={2}>
             {' '}
             <PersonIcon />
-            <MTBHeadingH4>{enrollment?.externalId}</MTBHeadingH4>
+            <MTBHeadingH4>
+              {ParticipantService.formatExternalId(
+                studyId,
+                enrollment?.externalId || '',
+                true
+              )}
+            </MTBHeadingH4>
           </Box>
           <Box mb={2}>
-            <MTBHeadingH4> Time in Study (Enrollment Date)</MTBHeadingH4>
-            {enrollment
-              ? new Date(enrollment.enrolledOn).toLocaleDateString()
-              : 'nothing'}
+            <MTBHeadingH4> Time in Study</MTBHeadingH4>
+            {getDisplayJoinedTime(events, adherenceReport)}
           </Box>
           <Box mb={2}>
             <MTBHeadingH4>Health Code </MTBHeadingH4>
-            {enrollment?.participant.identifier}
+            {enrollment ? enrollment.healthCode : ''}
             <Box display="flex" mt={4} mb={2}>
               {participantSessions?.map(s => (
                 <SessionLegend
@@ -139,21 +168,21 @@ const AdherenceParticipant: FunctionComponent<
           </Box>
           <AdherenceParticipantGrid adherenceReport={adherenceReport!} />
           <Box display="flex">
-            <Button 
+            <Button
               className={classes.editEventDate}
-              variant="text" 
+              variant="text"
               onClick={() => setIsEditParticipant(true)}>
               <img src={EditIcon}></img>
               &nbsp;Edit Participant Details
             </Button>
-            <Box marginLeft="auto" className={classes.cumulative}
-            >
-              Cumulative: &nbsp; &nbsp; &nbsp;{adherenceReport?.adherencePercent}%
+            <Box marginLeft="auto" className={classes.cumulative}>
+              Cumulative: &nbsp; &nbsp; &nbsp;
+              {adherenceReport?.adherencePercent}%
             </Box>
           </Box>
           <EditParticipantNotes
-            participantId = {participantId}
-            studyId= {studyId}
+            participantId={participantId}
+            studyId={studyId}
             enrollment={enrollment!}
           />
         </Paper>
@@ -170,3 +199,17 @@ const AdherenceParticipant: FunctionComponent<
 }
 
 export default AdherenceParticipant
+function getLastSchedleDate(
+  streams: import('@typedefs/types').AdherenceEventStream[] | undefined
+):
+  | string
+  | number
+  | boolean
+  | {}
+  | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+  | React.ReactNodeArray
+  | React.ReactPortal
+  | null
+  | undefined {
+  throw new Error('Function not implemented.')
+}
