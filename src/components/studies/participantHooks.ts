@@ -88,20 +88,3 @@ export const useUpdateParticipantInList = () => {
     })
     return mutation
 }
-
-export const useUpdateParticipant = () => {
-    const {token} = useUserSessionDataState()
-    const queryClient = useQueryClient()
-
-    const update = async(props:{
-        studyId: string
-        userId: string
-        updatedFields: {[Property in keyof ParticipantAccountSummary]?: ParticipantAccountSummary[Property]}
-        customEvents?: ParticipantEvent[]
-    }) => {
-        if(props.customEvents) await EventService.updateParticipantCustomEvents(props.studyId, token!, props.userId, props.customEvents)
-        return await ParticipantService.updateParticipant(props.studyId, token!, props.userId, props.updatedFields)
-    }
-
-    const mutation = useMutation(update)
-}
