@@ -14,19 +14,8 @@ const useStyles = makeStyles(theme => ({
   },
   plotElement: {
     width: '10px',
-    stroke: 'black',
-    overflow: 'visible',
-  },
-  emptySvg: {
-    '&> path, &> circle, &> rect': {
-      fill: 'transparent',
-    },
-  },
 
-  redSvg: {
-    '&> path, &> circle, &> rect': {
-      stroke: 'red',
-    },
+    overflow: 'visible',
   },
 }))
 
@@ -61,25 +50,28 @@ const AdherenceSessionIcon: FunctionComponent<{
   //these states will show empty dot
   const isEmptyDot = SHAPE_CLASSES[windowState].shapeIndex === -1
 
-  //0 - filled, 1- partcial, 2 - empty
-  const variant = SHAPE_CLASSES[windowState].shapeIndex
+  //0 - filled, 1- partcial, 2 - empty, 3 - partical-red, 4- empty-red
+
+  let variant = SHAPE_CLASSES[windowState].shapeIndex
+  if (isRed && variant > 0) {
+    variant = variant + 2
+  }
   if (variant === undefined) {
     throw Error('unknown state')
   }
 
   var classList = clsx({
-    [classes.emptySvg]: variant === 2,
+    //  [classes.emptySvg]: variant === 2,
     [classes.plotElement]: true,
-    [classes.redSvg]: isRed && variant !== 0,
+    // [classes.redSvg]: isRed && variant !== 0,
   })
 
   const el = isEmptyDot ? (
     <div className={classes.dot} />
   ) : (
-    React.cloneElement(
-      SessionSymbols.get(sessionSymbol)![variant == 2 ? 0 : variant],
-      {className: classList}
-    )
+    React.cloneElement(SessionSymbols.get(sessionSymbol)![variant], {
+      className: classList,
+    })
   )
 
   return !children ? (
@@ -87,6 +79,7 @@ const AdherenceSessionIcon: FunctionComponent<{
   ) : (
     <div style={{display: 'flex', alignItems: 'center'}}>
       {el}
+
       <div style={{marginLeft: '4px'}}>{children}</div>
     </div>
   )
