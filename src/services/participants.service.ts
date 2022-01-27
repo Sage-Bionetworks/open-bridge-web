@@ -564,6 +564,25 @@ async function addTestParticipant(
   return participantId
 }
 
+async function getParticipant(
+  studyIdentifier: string,
+  participantId: string,
+  token: string
+): Promise<ParticipantAccountSummary> {
+  const getParticipantEndpoint = `${constants.endpoints.participant.replace(
+    ':id',
+    studyIdentifier
+  )}/${participantId}`
+
+  const participantInfo = await Utility.callEndpoint<ParticipantAccountSummary>(
+    getParticipantEndpoint,
+    'GET',
+    {},
+    token
+  )
+  return participantInfo.data
+}
+
 async function updateParticipant(
   studyIdentifier: string,
   token: string,
@@ -572,14 +591,9 @@ async function updateParticipant(
     [Property in keyof ParticipantAccountSummary]?: ParticipantAccountSummary[Property]
   }
 ) {
-  const getParticipantEndpoint = `${constants.endpoints.participant.replace(
-    ':id',
-    studyIdentifier
-  )}/${participantId}`
-  const participantInfo = await Utility.callEndpoint<ParticipantAccountSummary>(
-    getParticipantEndpoint,
-    'GET',
-    {},
+  const participantInfo = await getParticipant(
+    studyIdentifier,
+    participantId,
     token
   )
 
@@ -588,7 +602,7 @@ async function updateParticipant(
 
   // updated participant object
   const data = {
-    ...participantInfo.data,
+    ...participantInfo,
     ...updatedParticipantFields,
   }
   const updateParticipantEndpoint = `${constants.endpoints.participant.replace(
@@ -667,6 +681,7 @@ const ParticipantService = {
   getWithdrawnParticipants,
   getUserEnrollmentInfo,
   addParticipant,
+  getParticipant,
   addTestParticipant,
   deleteParticipant,
   formatExternalId,

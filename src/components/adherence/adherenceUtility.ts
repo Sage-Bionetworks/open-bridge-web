@@ -19,6 +19,22 @@ function getMaxNumberOfTimeWindows(
   return Math.max(...maxNumberOfWindowsInStreams)
 }
 
+function getLastSchedleDate(
+  streams: (AdherenceEventStream | AdherenceWeeklyReport)[]
+): string {
+  const maxNumberOfWindowsInStreams = streams.map(stream => {
+    const dayEntires = _.flatten(Object.values(stream.byDayEntries))
+    const windowEndDates = _.flatten(
+      dayEntires.map(entry => entry.timeWindows.map(tw => tw.endDate))
+    )
+    const latestWindow = _.last(windowEndDates.sort()) || ''
+    return latestWindow
+  })
+
+  var result = _.last(maxNumberOfWindowsInStreams.sort()) || ''
+  return new Date(result).toLocaleDateString()
+}
+
 function getUniqueSessionsInfo(
   streams: (AdherenceEventStream | AdherenceWeeklyReport)[]
 ): SessionDisplayInfo[] {
@@ -50,6 +66,7 @@ const AdherenceUtility = {
   getMaxNumberOfTimeWindows,
   getUniqueSessionsInfo,
   getDateForDisplay,
+  getLastSchedleDate,
 }
 
 export default AdherenceUtility

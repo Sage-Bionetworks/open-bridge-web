@@ -1,5 +1,6 @@
 import {useAdherenceForWeek} from '@components/studies/adherenceHooks'
 import ParticipantSearch from '@components/studies/participants/ParticipantSearch'
+import LoadingComponent from '@components/widgets/Loader'
 import TablePagination from '@components/widgets/pagination/TablePagination'
 import {Box, makeStyles} from '@material-ui/core'
 import {SessionDisplayInfo} from '@typedefs/types'
@@ -10,6 +11,7 @@ import AdherenceUtility from '../adherenceUtility'
 import SessionLegend from '../SessionLegend'
 import {useCommonStyles} from '../styles'
 import AdherenceParticipantsGrid from './AdherenceParticipantsGrid'
+import Filter from './Filter'
 
 const useStyles = makeStyles(theme => ({
   mainContainer: {
@@ -53,15 +55,18 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
 */
     return (
       <div className={classes.mainContainer}>
-        {adhStatus}
         <Box display="flex" mt={0} mb={2}>
-          {sessions?.map(s => (
-            <SessionLegend
-              key={s.sessionGuid}
-              symbolKey={s.sessionSymbol}
-              sessionName={s.sessionName}
-            />
-          ))}
+          <LoadingComponent
+            reqStatusLoading={adherenceWeeklyReport === undefined}>
+            {sessions?.map(s => (
+              <SessionLegend
+                key={s.sessionGuid}
+                symbolKey={s.sessionSymbol}
+                sessionName={s.sessionName}
+              />
+            ))}
+          </LoadingComponent>
+
           <div style={{marginLeft: 'auto'}}>
             <ParticipantSearch
               isSearchById={true}
@@ -73,27 +78,40 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
               }}
             />
           </div>
+          <div>
+            <Filter
+              onFilterChange={(
+                a: string | undefined,
+                b: number | undefined
+              ) => {}}
+              adherenceWeeklyReport={
+                adherenceWeeklyReport?.items || []
+              }></Filter>
+          </div>
         </Box>
 
-        {adherenceWeeklyReport && (
-          <div>
-            <AdherenceParticipantsGrid
-              studyId={studyId}
-              adherenceWeeklyReport={adherenceWeeklyReport}
-            />
+        <LoadingComponent
+          reqStatusLoading={adherenceWeeklyReport === undefined}>
+          {adherenceWeeklyReport && (
+            <div>
+              <AdherenceParticipantsGrid
+                studyId={studyId}
+                adherenceWeeklyReport={adherenceWeeklyReport!}
+              />
 
-            <TablePagination
-              totalItems={adherenceWeeklyReport.total}
-              onPageSelectedChanged={(pageSelected: number) => {
-                setCurrentPage(pageSelected)
-              }}
-              currentPage={currentPage}
-              pageSize={pageSize}
-              setPageSize={setPageSize}
-              counterTextSingular="participant"
-            />
-          </div>
-        )}
+              <TablePagination
+                totalItems={adherenceWeeklyReport!.total}
+                onPageSelectedChanged={(pageSelected: number) => {
+                  setCurrentPage(pageSelected)
+                }}
+                currentPage={currentPage}
+                pageSize={pageSize}
+                setPageSize={setPageSize}
+                counterTextSingular="participant"
+              />
+            </div>
+          )}
+        </LoadingComponent>
       </div>
     )
   }
