@@ -1,6 +1,10 @@
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import ParticipantService from '@services/participants.service'
-import {EnrolledAccountRecord, ExtendedError} from '@typedefs/types'
+import {
+  EnrolledAccountRecord,
+  ExtendedError,
+  ParticipantAccountSummary,
+} from '@typedefs/types'
 import {useQuery} from 'react-query'
 
 const ENROLLMENT_KEYS = {
@@ -17,9 +21,27 @@ export const useEnrollmentForParticipant = (
 ) => {
   const {token} = useUserSessionDataState()
 
-  return useQuery<EnrolledAccountRecord | null, ExtendedError>(
+  return useQuery<
+    (EnrolledAccountRecord & ParticipantAccountSummary) | null,
+    ExtendedError
+  >(
     ENROLLMENT_KEYS.detail(studyId, userId!),
-    () => ParticipantService.getUserEnrollmentInfo(studyId, userId!, token!),
+    () => {
+      const enrollment = ParticipantService.getUserEnrollmentInfo(
+        studyId,
+        userId!,
+        token!
+      )
+      const participant = ParticipantService.getParticipant(
+        studyId,
+        userId!,
+        token!
+      )
+      return Promise.all([enrollment, participant]).then(result => ({
+        ...result[0],
+        ...result[1],
+      }))
+    },
     {
       enabled: !!studyId && !!userId && !!token,
       retry: false,
