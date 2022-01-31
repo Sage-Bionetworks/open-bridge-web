@@ -48,19 +48,6 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
       }
     }, [adherenceWeeklyReport])
 
-    const getLabel = (label: string): string => {
-      //label format:
-      //
-      // nonburst: "Week 4 : Session #1 Circle
-      //burst: ""custom_Event 2_burst 1 : Week 3 : Session #2 Triangl""
-
-      const labelArray = label.split(':')
-      const sessionName = labelArray[labelArray.length - 1]
-      const week = labelArray[labelArray.length - 2]
-      const event = labelArray.length === 3 ? labelArray[0] : undefined
-      return week
-    }
-
     return (
       <div ref={ref} style={{marginBottom: '32px'}}>
         <div style={{display: 'flex', marginBottom: '16px'}}>
@@ -115,7 +102,11 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                         fontSize={'12px'}
                         lineHeight={0.8}
                         borderRight={'1px solid black'}>
-                        {getLabel(info) /*info.label*/}
+                        {
+                          AdherenceUtility.getDisplayFromLabel(
+                            info
+                          ) /*info.label*/
+                        }
                       </Box>
                       {[...new Array(7)].map((i, dayIndex) => (
                         <div

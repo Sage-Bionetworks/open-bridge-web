@@ -39,7 +39,7 @@ const DayDisplayForSession: FunctionComponent<{
     <>
       {entry.timeWindows.map((tw, itw) => (
         <TimeWindowPlotElement
-          key={itw + 'indow'}
+          key={`${tw.timeWindowGuid}_window`}
           maxNumberOfWindows={maxNumberOfTimeWindows}
           windowIndex={itw}
           startDate={entry!.startDate}

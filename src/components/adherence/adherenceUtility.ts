@@ -35,6 +35,19 @@ function getLastSchedleDate(
   return new Date(result).toLocaleDateString()
 }
 
+function getDisplayFromLabel(label: string): string {
+  //label format:
+  //
+  // nonburst: "Week 4 : Session #1 Circle
+  //burst: ""custom_Event 2_burst 1 : Week 3 : Session #2 Triangl""
+
+  const labelArray = label.split(':')
+  const sessionName = labelArray[labelArray.length - 2]
+  const week = labelArray[labelArray.length - 3]
+  const event = labelArray.length === 3 ? labelArray[0] : undefined
+  return week
+}
+
 function getUniqueSessionsInfo(
   streams: (AdherenceEventStream | AdherenceWeeklyReport)[]
 ): SessionDisplayInfo[] {
@@ -67,6 +80,7 @@ const AdherenceUtility = {
   getUniqueSessionsInfo,
   getDateForDisplay,
   getLastSchedleDate,
+  getDisplayFromLabel,
 }
 
 export default AdherenceUtility
