@@ -489,7 +489,10 @@ export type ParticipantTableGridProps = {
   ) => void
   onWithdrawParticipant: (participantId: string, note: string) => void
   children: React.ReactNode //paging control
-  status: RequestStatus
+  // status: RequestStatus
+  status: 'loading' | 'success' | 'error' | 'idle'
+  isParticipantUpdating: boolean
+
 }
 
 const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
@@ -502,6 +505,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   selectedParticipantIds,
   isEnrolledById,
   isAllSelected,
+  isParticipantUpdating,
   onUpdateParticipant,
   onWithdrawParticipant,
   onRowSelected,
@@ -625,6 +629,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
           <div style={{flexGrow: 1}}>
             <DataGrid
               rows={rows}
+              loading = {isParticipantUpdating}
               classes={{columnHeader: classes.gridHeader}}
               density="standard"
               columns={participantColumns}
@@ -669,13 +674,14 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                 Footer: () => <>{children}</>,
                 NoRowsOverlay: () => (
                   <GridOverlay>
-                    {status === 'PENDING' ? (
+                    {status === 'loading' ? (
                       <CircularProgress id="circular_progress"></CircularProgress>
                     ) : (
                       <Box bgcolor="white" height="100%" width="100%"></Box>
                     )}
                   </GridOverlay>
                 ),
+                LoadingOverlay: () => <GridOverlay><CircularProgress id="circular_progress"/></GridOverlay>
               }}
             />
           </div>

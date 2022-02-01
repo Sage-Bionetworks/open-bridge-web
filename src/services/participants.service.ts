@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { pid } from 'process'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {
@@ -194,21 +195,26 @@ async function getActiveParticipantById(
 async function deleteParticipant(
   studyId: string,
   token: string,
-  participantId: string
-): Promise<string> {
-  const endpoint = `${constants.endpoints.participant.replace(
-    ':id',
-    studyId
-  )}/${participantId}`
-
-  const result = await Utility.callEndpoint<{identifier: string}>(
-    endpoint,
-    'DELETE',
-    {},
-    token
-  )
-  return result.data.identifier
-}
+  // participantId: string | string[] // check if anywhere else uses this function if not change to array
+  participantId: string[]
+): Promise<string[]> {
+  const promises = participantId.map(async pId => {
+    const endpoint = `${constants.endpoints.participant.replace(
+          ':id',
+          studyId
+        )}/${pId}`
+    const apiCall = await Utility.callEndpoint<{items: any[]}>(
+      endpoint,
+      'DELETE',
+      {},token
+    )
+    return {participantId: pId, apiCall: apiCall}
+  })
+  
+  return Promise.all(promises).then(result=>{
+    return result.map(item => item.participantId)
+  })
+  }
 
 async function getActiveParticipants(
   studyId: string,
@@ -425,7 +431,6 @@ async function withdrawParticipant(
     {},
     token
   )
-
   return result.data.identifier
 }
 
