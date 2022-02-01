@@ -38,18 +38,14 @@ import {
   Tab,
   Tabs,
 } from '@material-ui/core'
-import EventService from '@services/event.service'
-import ParticipantService from '@services/participants.service'
 import StudyService from '@services/study.service'
 import {theme} from '@style/theme'
 import constants from '@typedefs/constants'
 import {
-  ExtendedError,
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
   ParticipantEvent,
-  RequestStatus,
   SelectionType,
 } from '@typedefs/types'
 import clsx from 'clsx'
@@ -67,7 +63,6 @@ import BatchEditForm from './modify/BatchEditForm'
 import ParticipantManagerPlaceholder from './ParticipantManagerPlaceholder'
 import useStyles from './ParticipantManager_style'
 import ParticipantSearch from './ParticipantSearch'
-import ParticipantUtility from './participantUtility'
 import WithdrawnTabNoParticipantsPage from './WithdrawnTabNoParticipantsPage'
 
 /** types and constants  */
@@ -220,82 +215,47 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   // })
   // console.log("DATA",data?.items)
 
-  const {data: data, error : participantError, status: status} = useParticipants(study?.identifier,currentPage,pageSize,tab)
+  const {data, status, isLoading: participantLoading} = useParticipants(study?.identifier,currentPage,pageSize,tab,refreshParticipantsToggle)
   
   const {    
     mutate,
-    isSuccess,
-    isError,
     isLoading: isParticipantUpdating,
+    mutateAsync
   } = useUpdateParticipantInList()
-  
-  const [curStatus, setCurStatus] = React.useState<RequestStatus>('PENDING')
-  // console.log("data", curStatus)
 
-  React.useEffect(()=>{
-    if(isParticipantUpdating || status ==='loading') setCurStatus('PENDING')
-    else if(isError) setCurStatus('REJECTED')
-    else setCurStatus('RESOLVED')
-  },[isParticipantUpdating, status])
-  
   const onAction = async (
     studyId:string,
     type:'WITHDRAW' | 'DELETE' | 'UPDATE', 
-    currentPage?: number, 
-    pageSize?: number, 
-    tab?: ParticipantActivityType,
     userId?:string,  
     note?: string, 
     updatedFields?: any,
-    customEvents?: ParticipantEvent[]
+    customEvents?: ParticipantEvent[],
     ) => {
 
+    const userIdArr = [userId] as Array<string>
     switch(type){
       case 'WITHDRAW':
-        await mutate({
-          action: type, 
-          studyId, 
-          userId, 
-          note,
-          currentPage,
-          pageSize,
-          tab})
-        setRefreshParticipantsToggle(prev => !prev)
+        mutateAsync({action: type, studyId, userId: userIdArr, note,})
         return
+
       case 'DELETE':
         setLoadingIndicators(_ => ({isDeleting: true}))
-
-        for(let i = 0; i < selectedParticipantIds[tab!].length; i++){
-          await mutate({
-            action: type, 
-            studyId,
-            userId: selectedParticipantIds[tab!][i],
-            currentPage,
-            pageSize,
-            tab})
-        }
+        setParticipantsWithError([])
+        let isError = false
+        mutateAsync({action:type, studyId,userId: selectedParticipantIds[tab!]})
         setLoadingIndicators(_ => ({isDeleting: false}))
-        setDialogState({dialogOpenRemove: false, dialogOpenSMS: false})
-        setRefreshParticipantsToggle(prev => !prev)
+        if(!isError) setDialogState({dialogOpenRemove: false, dialogOpenSMS: false})
         return
+
       case 'UPDATE':
-        await mutate({
-          action:type, 
-          studyId:studyId, 
-          userId:userId,
-          currentPage:currentPage,
-          pageSize:pageSize,
-          tab:tab,
-          updatedFields:updatedFields,
-          customEvents:customEvents })
-        setRefreshParticipantsToggle(prev=>!prev)
+        mutateAsync({action:type, studyId:studyId, userId: userIdArr, updatedFields:updatedFields, customEvents:customEvents})
         return
+
       default:{
         console.log('unknown participant action')
       }
     }
   }
-
   // React.useEffect(() => {
   //   if (!study?.identifier) {
   //     return
@@ -340,7 +300,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       <></>
     )
   }
-
 
   // const handleSearchParticipantRequest = async (
   //   searchValue: string | undefined
@@ -412,9 +371,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     StudyService.getDisplayStatusForStudyPhase(study.phase) !== 'LIVE'
 
   const displayNoParticipantsPage =
-    // status !== 'PENDING' && data?.items.length == 0 && tab === 'WITHDRAWN'
-    curStatus !== 'PENDING' && data?.items.length == 0 && tab === 'WITHDRAWN'
-
+    status !== 'loading' && data?.items.length == 0 && tab === 'WITHDRAWN'
 
   return (
     <Box bgcolor="#F8F8F8">
@@ -644,8 +601,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       }}>
                       <ParticipantTableGrid
                         rows={data?.items || []}
-                        // status={status}
-                        status={curStatus}
+                        isParticipantUpdating = {isParticipantUpdating}
+                        status={status}
                         scheduleEventIds={
                           scheduleEvents.map(e => e.eventId) || []
                         }
@@ -657,7 +614,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         onWithdrawParticipant={(
                           participantId: string,
                           note: string
-                        ) => onAction(study.identifier, 'WITHDRAW',currentPage,pageSize,tab, participantId, note)}
+                        ) => onAction(study.identifier, 'WITHDRAW', participantId, note)}
                         onUpdateParticipant={(
                           participantId: string,
                           note: string,
@@ -674,9 +631,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           onAction(
                             study.identifier,
                             'UPDATE',
-                            currentPage,
-                            pageSize,
-                            tab,
                             participantId,
                             undefined,
                             data,
@@ -785,7 +739,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                 </DialogButtonSecondary>
 
                 <DialogButtonPrimary
-                  onClick={() => onAction(study.identifier, 'DELETE', currentPage, pageSize, tab)}
+                  onClick={() => onAction(study.identifier,'DELETE')}
                   autoFocus
                   className={classes.primaryDialogButton}>
                   {dialogState.dialogOpenRemove
