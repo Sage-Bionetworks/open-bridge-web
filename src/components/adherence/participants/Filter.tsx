@@ -1,37 +1,72 @@
 import {ReactComponent as FilterIcon} from '@assets/filter.svg'
-import {MTBHeadingH3} from '@components/widgets/Headings'
+import {MTBHeadingH5, MTBHeadingH6} from '@components/widgets/Headings'
+import {WhiteButton} from '@components/widgets/StyledComponents'
 import {
   Box,
   Button,
   Checkbox,
   Divider,
+  Drawer,
   FormControlLabel,
   FormGroup,
   makeStyles,
-  Popover,
-  Slider,
+  Radio,
+  RadioGroup,
 } from '@material-ui/core'
-import {AdherenceWeeklyReport} from '@typedefs/types'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
+import AdherenceUtility from '../adherenceUtility'
 import {useCommonStyles} from '../styles'
 
-export const useStyles = makeStyles(theme => ({}))
+export const useStyles = makeStyles(theme => ({
+  divider: {
+    backgroundColor: '#BBC3CD',
+    marginBottom: theme.spacing(1),
+  },
+  button: {
+    flexGrow: 1,
+    padding: theme.spacing(1.5),
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+
+    '&:first-child': {
+      marginRight: '4px',
+      border: '1px solid black',
+    },
+    '&:last-child': {
+      backgroundColor: '#8FCDE2',
+      border: '1px solid #8FCDE2',
+    },
+  },
+  checkbox: {
+    padding: theme.spacing(0.6, 1),
+  },
+  subheader: {
+    color: '#1C1C1C',
+  },
+  group: {
+    marginLeft: theme.spacing(6),
+    marginBottom: theme.spacing(3),
+  },
+}))
 
 type FilterProps = {
-  adherenceWeeklyReport: AdherenceWeeklyReport[]
-  onFilterChange: (
-    stringFilter: string | undefined,
-    adherenceFilter: number | undefined
-  ) => void
+  // adherenceWeeklyReport: AdherenceWeeklyReport[]
+  threshold?: number
+  displayLabels: string[]
+  onFilterChange: (arg: {labels: string[]; threshold: number}) => void
 }
 
 const Filter: FunctionComponent<FilterProps> = ({
-  adherenceWeeklyReport,
+  // adherenceWeeklyReport,
   onFilterChange,
+  displayLabels,
+  threshold: _threshold,
 }) => {
   const classes = {...useCommonStyles(), ...useStyles()}
+  const [threshold, setThreshold] = React.useState(_threshold || 0)
   const [anchorEl, setAnchorEl] = React.useState(null)
+  const [searchLabels, setSearchLabels] =
+    React.useState<string[]>(displayLabels)
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget)
@@ -41,11 +76,15 @@ const Filter: FunctionComponent<FilterProps> = ({
     setAnchorEl(null)
   }
 
-  const getLabels = () => {
-    const labels = _.uniq(
-      _.flatten(adherenceWeeklyReport.map(i => i.rowLabels))
-    )
-    return labels
+  const selectAll = () => {
+    setSearchLabels(displayLabels)
+  }
+  const selectLabel = (label: string, selected: boolean) => {
+    if (selected && !searchLabels.includes(label)) {
+      setSearchLabels(prev => [...prev, label])
+    } else {
+      setSearchLabels(prev => _.without(prev, label))
+    }
   }
 
   const open = Boolean(anchorEl)
@@ -56,35 +95,96 @@ const Filter: FunctionComponent<FilterProps> = ({
       <Button variant="text" onClick={handleClick}>
         <FilterIcon /> Filter
       </Button>
-      <Popover
-        id={id}
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}>
-        <Box p={3}>
-          <MTBHeadingH3>Schedule Visualizer</MTBHeadingH3>
-          <FormGroup>
-            {getLabels().map(label => (
+
+      <Drawer anchor={'right'} open={open} onClose={handleClose}>
+        <Box p={4} minWidth={416}>
+          <Box display="flex" mb={2}>
+            <FilterIcon />{' '}
+            <MTBHeadingH6 style={{color: '#3B4141'}}>
+              Filter Participants by:
+            </MTBHeadingH6>
+          </Box>
+
+          <MTBHeadingH5 className={classes.subheader}>
+            Schedule Visualizer
+          </MTBHeadingH5>
+          <Divider className={classes.divider} />
+          <FormGroup className={classes.group}>
+            <FormControlLabel
+              key={`all`}
+              value="end"
+              control={
+                <Checkbox
+                  className={classes.checkbox}
+                  checked={searchLabels.length === displayLabels.length}
+                  onChange={e => (e.target.checked ? selectAll() : {})}
+                />
+              }
+              label="ShowAll"
+              labelPlacement="end"
+            />
+            {displayLabels.map((label, index) => (
               <FormControlLabel
+                key={`${label}_${index}`}
                 value="end"
-                control={<Checkbox />}
-                label={label}
+                control={
+                  <Checkbox
+                    checked={searchLabels.includes(label)}
+                    className={classes.checkbox}
+                    onChange={e => selectLabel(label, e.target.checked)}
+                  />
+                }
+                label={AdherenceUtility.getDisplayFromLabel(label)}
                 labelPlacement="end"
               />
             ))}
           </FormGroup>
-          <Divider />
-          Adherence Levels
-          <Slider defaultValue={60} step={10} marks min={0} max={100} />
+          <MTBHeadingH5 className={classes.subheader}>
+            Adherence Levels
+          </MTBHeadingH5>
+          <Divider className={classes.divider} />
+          <RadioGroup
+            className={classes.group}
+            value={threshold}
+            onChange={e => {
+              //console.log(e)
+              console.log('target', e.target.value)
+              setThreshold(Number(e.target.value))
+            }}>
+            <FormControlLabel
+              control={
+                <Radio size="small" value={0} className={classes.checkbox} />
+              }
+              label="All"
+            />
+
+            <FormControlLabel
+              control={
+                <Radio size="small" value={0.6} className={classes.checkbox} />
+              }
+              label="x <= 60%"
+            />
+
+            <FormControlLabel
+              control={
+                <Radio size="small" value={0.9} className={classes.checkbox} />
+              }
+              label="x > 60%"
+            />
+          </RadioGroup>
+
           <Box display="flex">
-            <Button>Cancel</Button> <Button>Apply Filter</Button>
+            <WhiteButton className={classes.button} onClick={handleClose}>
+              Cancel
+            </WhiteButton>{' '}
+            <WhiteButton
+              className={classes.button}
+              onClick={() => onFilterChange({labels: searchLabels, threshold})}>
+              Apply Filter
+            </WhiteButton>
           </Box>
         </Box>
-      </Popover>
+      </Drawer>
     </div>
   )
 }

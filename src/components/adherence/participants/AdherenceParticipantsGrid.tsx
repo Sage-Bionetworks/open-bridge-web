@@ -22,6 +22,17 @@ export const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2),
     alignitems: 'center',
   },
+  adherenceCell: {
+    borderRight: 'none',
+    borderLeft: '1px solid black',
+    verticalAlign: 'middle',
+    display: 'flex',
+    alignItems: 'center',
+    paddingLeft: theme.spacing(1),
+  },
+  lastCell: {
+    borderRight: 'none',
+  },
 }))
 
 type AdherenceParticipantsGridProps = {
@@ -47,19 +58,6 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
         )
       }
     }, [adherenceWeeklyReport])
-
-    const getLabel = (label: string): string => {
-      //label format:
-      //
-      // nonburst: "Week 4 : Session #1 Circle
-      //burst: ""custom_Event 2_burst 1 : Week 3 : Session #2 Triangl""
-
-      const labelArray = label.split(':')
-      const sessionName = labelArray[labelArray.length - 1]
-      const week = labelArray[labelArray.length - 2]
-      const event = labelArray.length === 3 ? labelArray[0] : undefined
-      return week
-    }
 
     return (
       <div ref={ref} style={{marginBottom: '32px'}}>
@@ -115,13 +113,21 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                         fontSize={'12px'}
                         lineHeight={0.8}
                         borderRight={'1px solid black'}>
-                        {getLabel(info) /*info.label*/}
+                        {
+                          AdherenceUtility.getDisplayFromLabel(
+                            info
+                          ) /*info.label*/
+                        }
                       </Box>
                       {[...new Array(7)].map((i, dayIndex) => (
                         <div
                           key={dayIndex}
                           className={classes.dayCell}
-                          style={{width: `${dayWidthInPx}px`}}>
+                          style={{
+                            width: `${dayWidthInPx}px`,
+                            borderRight:
+                              dayIndex === 6 ? 'none' : '1px solid black',
+                          }}>
                           <DayDisplayForSession
                             sequentialDayNumber={dayIndex}
                             byDayEntries={a.byDayEntries}
@@ -133,26 +139,26 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                             }
                             entryIndex={/*rowIndex*/ undefined}
                             propertyName="label"
+                            timeZone={a.clientTimeZone}
                             propertyValue={/*info.sessionGuid*/ info}
                           />
                         </div>
                       ))}
-                      <Box
-                        key="adherence"
-                        style={{borderRight: 'none'}}
-                        className={clsx(
-                          classes.dayCell,
-                          a.weeklyAdherencePercent <
-                            AdherenceService.COMPLIANCE_THRESHOLD && classes.red
-                        )}>
-                        {' '}
-                        {a.weeklyAdherencePercent}%
-                      </Box>
                     </div>
                   ))
                 )
               }
             </div>
+            <Box
+              key="adherence"
+              className={clsx(
+                classes.adherenceCell,
+                a.weeklyAdherencePercent <
+                  AdherenceService.COMPLIANCE_THRESHOLD && classes.red
+              )}>
+              {' '}
+              {a.weeklyAdherencePercent}%
+            </Box>
           </div>
         ))}
       </div>

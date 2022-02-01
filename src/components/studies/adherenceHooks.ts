@@ -1,3 +1,4 @@
+import {CompletionStatus} from '@components/adherence/participants/CompletionFilter'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import AdherenceService from '@services/adherence.service'
 import {
@@ -9,8 +10,24 @@ import {useQuery} from 'react-query'
 
 export const ADHERENCE_KEYS = {
   all: ['adherence'] as const,
-  list: (studyId: string, currentPage: number = 0, pageSize: number = 0) =>
-    [...ADHERENCE_KEYS.all, 'list', studyId, currentPage, pageSize] as const,
+  list: (
+    studyId: string,
+    currentPage: number = 0,
+    pageSize: number = 0,
+    searchLabels: string = '',
+    adherenceThreshold: number = 0,
+    completionFilter: string = ''
+  ) =>
+    [
+      ...ADHERENCE_KEYS.all,
+      'list',
+      studyId,
+      currentPage,
+      pageSize,
+      searchLabels,
+      adherenceThreshold,
+      completionFilter,
+    ] as const,
 
   detail: (studyId: string, userId: string) =>
     [...ADHERENCE_KEYS.list(studyId), userId] as const,
@@ -51,21 +68,39 @@ export const useAdherenceForWeekForUsers = (
 export const useAdherenceForWeek = (
   studyId: string,
   currentPage: number,
-  pageSize: number
+  pageSize: number,
+  completionStatus: CompletionStatus[],
+  labelFilter?: string[],
+  adherenceThreshold?: number
 ) => {
   const {token} = useUserSessionDataState()
+  console.log('a', adherenceThreshold)
+  let filter = {
+    labelFilter: labelFilter || [],
+    completionStatus: completionStatus,
+    adherenceThreshold: adherenceThreshold || 0,
+  }
 
   return useQuery<
     {items: AdherenceWeeklyReport[]; total: number},
     ExtendedError
   >(
-    ADHERENCE_KEYS.list(studyId, currentPage, pageSize),
+    ADHERENCE_KEYS.list(
+      studyId,
+      currentPage,
+      pageSize,
+      labelFilter?.join(',') || '',
+      adherenceThreshold,
+      completionStatus?.join(',') || ''
+    ),
 
     () =>
       AdherenceService.getAdherenceForWeek(
         studyId,
+
         currentPage,
         pageSize,
+        filter,
         token!
       ),
     {

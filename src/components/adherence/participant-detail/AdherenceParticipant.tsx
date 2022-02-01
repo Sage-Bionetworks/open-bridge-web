@@ -104,7 +104,7 @@ const AdherenceParticipant: FunctionComponent<
     },
   ]
 
-  const getDisplayJoinedTime = (
+  const getDisplayTimeInStudyTime = (
     events?: {
       timeline_retrieved: Date | undefined
       customEvents: ParticipantEvent[]
@@ -112,7 +112,7 @@ const AdherenceParticipant: FunctionComponent<
     adherenceReport?: EventStreamAdherenceReport
   ) => {
     if (!events?.timeline_retrieved) {
-      return '-'
+      return 'not joined'
     }
     const startDate = new Date(events.timeline_retrieved).toLocaleDateString()
     //ALINA TODO: only show for completed participants
@@ -151,11 +151,16 @@ const AdherenceParticipant: FunctionComponent<
           </Box>
           <Box mb={2}>
             <MTBHeadingH4> Time in Study</MTBHeadingH4>
-            {getDisplayJoinedTime(events, adherenceReport)}
+            {getDisplayTimeInStudyTime(events, adherenceReport)}
+          </Box>
+          <Box mb={2}>
+            <MTBHeadingH4> Cient TimeZone</MTBHeadingH4>
+            {enrollment?.clientTimeZone}
           </Box>
           <Box mb={2}>
             <MTBHeadingH4>Health Code </MTBHeadingH4>
             {enrollment ? enrollment.healthCode : ''}
+
             <Box display="flex" mt={4} mb={2}>
               {participantSessions?.map(s => (
                 <SessionLegend
@@ -199,17 +204,3 @@ const AdherenceParticipant: FunctionComponent<
 }
 
 export default AdherenceParticipant
-function getLastSchedleDate(
-  streams: import('@typedefs/types').AdherenceEventStream[] | undefined
-):
-  | string
-  | number
-  | boolean
-  | {}
-  | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-  | React.ReactNodeArray
-  | React.ReactPortal
-  | null
-  | undefined {
-  throw new Error('Function not implemented.')
-}

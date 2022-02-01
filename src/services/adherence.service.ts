@@ -382,6 +382,11 @@ async function getAdherenceForWeek(
   studyId: string,
   currentPage: number,
   pageSize: number,
+  filter: {
+    labelFilter: string[]
+    completionStatus: string[]
+    adherenceThreshold: number
+  },
 
   token: string
 ): Promise<{total: number; items: AdherenceWeeklyReport[]}> {
@@ -404,18 +409,27 @@ async function getAdherenceForWeek(
     ':studyId',
     studyId
   )
+  //create query
+
+  const data: Record<string, any> = {
+    pageSize: pageSize || undefined,
+    offsetBy: pageSize > 0 ? (currentPage - 1) * pageSize : undefined,
+    labelFilter: filter?.labelFilter.length ? filter.labelFilter : undefined,
+    complianceNumber: filter?.adherenceThreshold || undefined,
+    //todo  labelFilter: filter?.completionStatus.length ? filter.completionStatus : undefined,
+  }
+
+  // remove empty keys
+  Object.keys(data).forEach(key => data[key] === undefined && delete data[key])
+  console.log('data', data)
 
   const result = await Utility.callEndpoint<{
     items: AdherenceWeeklyReport[]
     total: number
-  }>(
-    endpoint,
-    'GET',
-    {pageSize: pageSize, offsetBy: (currentPage - 1) * pageSize},
-    token
-  )
+  }>(endpoint, 'GET', data, token)
   console.log(result.data)
   //@ts-ignore
+  console.log('updated')
   return {items: result.data.items, total: result.data.total}
 }
 

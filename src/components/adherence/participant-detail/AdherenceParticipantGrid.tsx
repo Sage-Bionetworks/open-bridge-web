@@ -134,7 +134,10 @@ function getWeeksForStream(stream: AdherenceEventStream): number {
   return Math.max(...weeks) + 1
 }
 
-function getAdherenceForWeek(wkIndex: number, entries: AdherenceByDayEntries) {
+function getAdherenceForWeek(
+  wkIndex: number,
+  entries: AdherenceByDayEntries
+): number | undefined {
   const relevantWeek = _.flatten(Object.values(entries)).filter(
     eventStreamDay => eventStreamDay.week === wkIndex
   )
@@ -154,6 +157,10 @@ function getAdherenceForWeek(wkIndex: number, entries: AdherenceByDayEntries) {
   ).length
 
   const totalSessions = compliantSessions + noncompliantSessions + unkSessions
+
+  if (totalSessions === unkSessions) {
+    return undefined
+  }
 
   let percentage = 1
   if (totalSessions > 0) {
@@ -175,16 +182,19 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
     const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 200)
     const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
     const [adherenceByWeekLookup, setAdherenceByWeekLookup] =
-      React.useState<Map<string, Map<number, number>>>()
+      React.useState<Map<string, Map<number, number | undefined>>>()
     const classes = {...useCommonStyles(), ...useStyles()}
 
     React.useEffect(() => {
       if (adherenceReport) {
-        let weeklyAdherence: Map<string, Map<number, number>> = new Map()
+        let weeklyAdherence: Map<
+          string,
+          Map<number, number | undefined>
+        > = new Map()
 
         for (var stream of adherenceReport.streams) {
           const weeksNumber = getWeeksForStream(stream)
-          const streamAdherenceMap: Map<number, number> = new Map()
+          const streamAdherenceMap: Map<number, number | undefined> = new Map()
           for (var i = 0; i < weeksNumber; i++) {
             streamAdherenceMap.set(
               i,
@@ -204,13 +214,20 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
     const getAdherenceForWeekForDisplay = (
       stream: AdherenceEventStream,
       wkIndex: number
-    ): {value: number; isCompliant: boolean} => {
-      const lookupValue =
-        adherenceByWeekLookup?.get(stream.startEventId)?.get(wkIndex) || 0
-      return {
-        value: lookupValue,
-        isCompliant: lookupValue > AdherenceService.COMPLIANCE_THRESHOLD,
-      }
+    ): {value: number | undefined; isCompliant: boolean} => {
+      const lookupValue = adherenceByWeekLookup
+        ?.get(stream.startEventId)
+        ?.get(wkIndex)
+
+      return lookupValue === undefined
+        ? {
+            value: undefined,
+            isCompliant: true,
+          }
+        : {
+            value: lookupValue,
+            isCompliant: lookupValue > AdherenceService.COMPLIANCE_THRESHOLD,
+          }
     }
 
     return (
@@ -309,7 +326,12 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                       !getAdherenceForWeekForDisplay(stream, wkIndex)
                         .isCompliant && classes.red
                     )}>
-                    {getAdherenceForWeekForDisplay(stream, wkIndex).value}%
+                    {getAdherenceForWeekForDisplay(stream, wkIndex).value !==
+                    undefined
+                      ? `${
+                          getAdherenceForWeekForDisplay(stream, wkIndex).value
+                        }%`
+                      : '-'}
                   </div>
                 </div>
               </div>
