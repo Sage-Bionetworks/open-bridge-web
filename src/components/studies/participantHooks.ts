@@ -18,8 +18,8 @@ export const useParticipants = (
     currentPage: number, 
     pageSize: number,
     tab: ParticipantActivityType, 
-    searchValue: string | undefined,
-    isById: boolean
+    searchValue?: string | undefined,
+    isById?: boolean
     ) => {
     const {token} = useUserSessionDataState()
     let searchOptions:
