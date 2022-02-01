@@ -7,9 +7,8 @@ import EventService from "@services/event.service"
 
 export const PARTICIPANT_KEYS = {
     all: ['participants'] as const,
-    list: (studyId: string | undefined, currentPage: number = 0, pageSize: number = 0, tab: ParticipantActivityType = 'ACTIVE', toggle: boolean = false,) =>
-      [...PARTICIPANT_KEYS.all, 'list', studyId, currentPage, pageSize, tab, toggle] as const,
-  
+    list: (studyId: string | undefined, currentPage: number = 0, pageSize: number = 0, tab: ParticipantActivityType = 'ACTIVE', searchValue: string | undefined = undefined) =>
+    [...PARTICIPANT_KEYS.all, 'list', studyId, currentPage, pageSize, tab, searchValue] as const,
     detail: (studyId: string, userId: string) =>
       [...PARTICIPANT_KEYS.list(studyId), userId] as const,
 }
@@ -19,13 +18,20 @@ export const useParticipants = (
     currentPage: number, 
     pageSize: number,
     tab: ParticipantActivityType, 
-    toggle: boolean
+    searchValue: string | undefined,
+    isById: boolean
     ) => {
     const {token} = useUserSessionDataState()
-
+    let searchOptions:
+      | {searchParam: 'EXTERNAL_ID' | 'PHONE_NUMBER'; searchValue: string}
+      | undefined = undefined
+    if(searchValue){
+        const searchParam = isById ? 'EXTERNAL_ID' : 'PHONE_NUMBER'
+        searchOptions = {searchParam, searchValue}
+    }
     return useQuery<ParticipantData, ExtendedError>(
-        PARTICIPANT_KEYS.list(studyId, currentPage, pageSize,tab,toggle),
-        () => ParticipantUtility.getParticipants(studyId!,currentPage,pageSize,tab, token!),
+        PARTICIPANT_KEYS.list(studyId, currentPage, pageSize,tab, searchValue),
+        () => ParticipantUtility.getParticipants(studyId!,currentPage,pageSize,tab, token!,searchOptions),
         {
             enabled: !!studyId,
             retry: false,
@@ -33,6 +39,14 @@ export const useParticipants = (
         }
     )
 }
+
+export const useInvalidateParticipants = () => {
+    const queryClient = useQueryClient()
+    const invalidate = () => {
+      queryClient.invalidateQueries(PARTICIPANT_KEYS.all)
+    }
+    return invalidate
+  }
 
 export const useUpdateParticipantInList = () => {
     const {token} = useUserSessionDataState()

@@ -24,7 +24,6 @@ import {
   DialogButtonPrimary,
   DialogButtonSecondary,
 } from '@components/widgets/StyledComponents'
-import {useAsync} from '@helpers/AsyncHook'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
 import {
@@ -53,7 +52,7 @@ import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import {useEvents} from '../eventHooks'
-import { useParticipants, useUpdateParticipantInList } from '../participantHooks'
+import {useParticipants, useInvalidateParticipants, useUpdateParticipantInList} from '../participantHooks'
 import AddParticipants from './add/AddParticipants'
 import CsvUtility from './csv/csvUtility'
 import ParticipantDownloadTrigger from './csv/ParticipantDownloadTrigger'
@@ -197,32 +196,24 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     ParticipantAccountSummary[]
   >([])
 
-  //trigger data refresh on updates
-  const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
-    React.useState(false)
+  const [searchValue, setSearchValue] = React.useState<
+  string | undefined
+  >(undefined)
+    
 
+  const isById = Utility.isSignInById(study?.signInTypes)
+
+  // Hook to get scheduled events
   const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
 
-  // const {
-  //   data,
-  //   status,
-  //   error,
-  //   run,
-  //   setData: setParticipantData,
-  // } = useAsync<ParticipantData>({
-  //   status: 'PENDING',
-  //   data: null,
-  // })
-  // console.log("DATA",data?.items)
-
-  const {data, status, isLoading: participantLoading} = useParticipants(study?.identifier,currentPage,pageSize,tab,refreshParticipantsToggle)
+  // Hook to get participants
+  const {data, status} = useParticipants(study?.identifier, currentPage, pageSize, tab, searchValue, isById)
   
   const {    
-    mutate,
     isLoading: isParticipantUpdating,
     mutateAsync
   } = useUpdateParticipantInList()
-
+  const invalidateParticipants = useInvalidateParticipants()
   const onAction = async (
     studyId:string,
     type:'WITHDRAW' | 'DELETE' | 'UPDATE', 
@@ -256,23 +247,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       }
     }
   }
-  // React.useEffect(() => {
-  //   if (!study?.identifier) {
-  //     return
-  //   }
-  //   const fn = async () => {
-  //     const result: ParticipantData = await run(
-  //       ParticipantUtility.getParticipants(
-  //         study.identifier,
-  //         currentPage,
-  //         pageSize,
-  //         tab,
-  //         token!
-  //       )
-  //     )
-  //   }
-  //   fn()
-  // }, [study?.identifier, refreshParticipantsToggle, currentPage, pageSize, tab])
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
@@ -300,37 +274,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
       <></>
     )
   }
-
-  // const handleSearchParticipantRequest = async (
-  //   searchValue: string | undefined
-  // ) => {
-  //   let searchOptions:
-  //     | {searchParam: 'EXTERNAL_ID' | 'PHONE_NUMBER'; searchValue: string}
-  //     | undefined = undefined
-  //   if (searchValue) {
-  //     setIsUserSearchingForParticipant(true)
-  //     const isById = Utility.isSignInById(study.signInTypes)
-  //     const searchParam = isById ? 'EXTERNAL_ID' : 'PHONE_NUMBER'
-  //     searchOptions = {
-  //       searchParam,
-  //       searchValue,
-  //     }
-  //   } else {
-  //     setIsUserSearchingForParticipant(false)
-  //   }
-  //   const searchResult = await run(
-  //     ParticipantUtility.getParticipants(
-  //       study.identifier,
-  //       0,
-  //       pageSize,
-  //       tab,
-  //       token!,
-  //       searchOptions
-  //     )
-  //   )
-  //   const {items, total} = searchResult || {items: [], total: 0}
-  //   setParticipantData({items, total})
-  // }
 
   const downloadParticipants = async (selectionType: SelectionType) => {
     setLoadingIndicators({isDownloading: true})
@@ -469,7 +412,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     study={study}
                     token={token!}
                     onAdded={() => {
-                      setRefreshParticipantsToggle(prev => !prev)
+                      invalidateParticipants()
                     }}
                     isTestAccount={tab === 'TEST'}
                   />
@@ -580,12 +523,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       <ParticipantSearch
                         isSearchById={Utility.isSignInById(study.signInTypes)}
                         onReset={() => {
-                          // handleSearchParticipantRequest(undefined)
-                          return
+                          setSearchValue(undefined)
                         }}
                         onSearch={(searchedValue: string) => {
-                          // handleSearchParticipantRequest(searchedValue)
-                          return
+                          setSearchValue(searchedValue)
                         }}
                         tab={tab}
                       />
@@ -678,7 +619,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             token={token!}
             studyId={study.identifier}
             onToggleParticipantRefresh={() =>
-              setRefreshParticipantsToggle(prev => !prev)
+              invalidateParticipants()
             }
             isAllSelected={isAllSelected}></BatchEditForm>
           <Dialog
@@ -753,7 +694,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               <DialogActions>
                 <DialogButtonPrimary
                   onClick={() => {
-                    setRefreshParticipantsToggle(prev => !prev)
+                    invalidateParticipants()
                     setDialogState({
                       dialogOpenRemove: false,
                       dialogOpenSMS: false,
