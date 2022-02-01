@@ -7,7 +7,6 @@ import DownloadAppIcon from '@assets/participants/download_app_icon.svg'
 import SMSPhoneImg from '@assets/participants/joined_phone_icon.svg'
 import ParticipantListFocusIcon from '@assets/participants/participant_list_focus_icon.svg'
 import ParticipantListUnfocusIcon from '@assets/participants/participant_list_unfocus_icon.svg'
-import {ReactComponent as PinkSendSMSIcon} from '@assets/participants/send_sms_link_pink_icon.svg'
 import TestAccountFocusIcon from '@assets/participants/test_account_focus_icon.svg'
 import TestAccountUnfocusIcon from '@assets/participants/test_account_unfocus_icon.svg'
 import {ReactComponent as UnderConstructionCone} from '@assets/participants/under_construction_cone.svg'
@@ -17,13 +16,8 @@ import WithdrawnParticipantsUnfocusIcon from '@assets/participants/withdrawn_par
 import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
 import {useStudy} from '@components/studies/studyHooks'
 import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
-import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import TablePagination from '@components/widgets/pagination/TablePagination'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
-import {
-  DialogButtonPrimary,
-  DialogButtonSecondary,
-} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
 import {
@@ -31,9 +25,6 @@ import {
   Button,
   CircularProgress,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
   Tab,
   Tabs,
 } from '@material-ui/core'
@@ -56,13 +47,13 @@ import {useParticipants, useInvalidateParticipants, useUpdateParticipantInList} 
 import AddParticipants from './add/AddParticipants'
 import CsvUtility from './csv/csvUtility'
 import ParticipantDownloadTrigger from './csv/ParticipantDownloadTrigger'
-import DialogContents from './DialogContents'
 import ParticipantTableGrid from './grid/ParticipantTableGrid'
 import BatchEditForm from './modify/BatchEditForm'
 import ParticipantManagerPlaceholder from './ParticipantManagerPlaceholder'
 import useStyles from './ParticipantManager_style'
 import ParticipantSearch from './ParticipantSearch'
 import WithdrawnTabNoParticipantsPage from './WithdrawnTabNoParticipantsPage'
+import ParticipantDeleteModal from './ParticipantDeleteModal'
 
 /** types and constants  */
 type ParticipantData = {
@@ -619,90 +610,22 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               invalidateParticipants()
             }
             isAllSelected={isAllSelected}></BatchEditForm>
-          <Dialog
-            open={dialogState.dialogOpenSMS || dialogState.dialogOpenRemove}
-            maxWidth="xs"
-            scroll="body"
-            aria-labelledby="Remove Participant">
-            <DialogTitleWithClose
-              onCancel={() => {
-                setDialogState({
-                  dialogOpenRemove: false,
-                  dialogOpenSMS: false,
-                })
-              }}
-              icon={
-                dialogState.dialogOpenRemove ? (
-                  <DeleteIcon />
-                ) : (
-                  <PinkSendSMSIcon />
-                )
-              }
-              title={
-                dialogState.dialogOpenRemove
-                  ? 'Remove From Study'
-                  : 'Sending SMS Download Link'
-              }
-            />
-            <DialogContent style={{display: 'flex', justifyContent: 'center'}}>
-              {(dialogState.dialogOpenRemove || dialogState.dialogOpenSMS) && (
-                <DialogContents
-                  participantsWithError={participantsWithError}
-                  study={study}
-                  selectedParticipants={
-                    data?.items?.filter(participant =>
-                      selectedParticipantIds[tab].includes(participant.id)
-                    ) || []
-                  }
-                  isProcessing={!!loadingIndicators.isDeleting}
-                  isRemove={dialogState.dialogOpenRemove}
-                  selectingAll={isAllSelected}
-                  tab={tab}
-                  token={token!}
-                />
-              )}
-            </DialogContent>
-
-            {participantsWithError.length === 0 && (
-              <DialogActions>
-                <DialogButtonSecondary
-                  onClick={() =>
-                    setDialogState({
-                      dialogOpenRemove: false,
-                      dialogOpenSMS: false,
-                    })
-                  }
-                  style={{height: '48px'}}>
-                  Cancel
-                </DialogButtonSecondary>
-
-                <DialogButtonPrimary
-                  onClick={() => onAction(study.identifier,'DELETE')}
-                  autoFocus
-                  className={classes.primaryDialogButton}>
-                  {dialogState.dialogOpenRemove
-                    ? 'Permanently Remove'
-                    : 'Yes, send SMS'}
-                </DialogButtonPrimary>
-              </DialogActions>
-            )}
-
-            {participantsWithError.length > 0 && (
-              <DialogActions>
-                <DialogButtonPrimary
-                  onClick={() => {
-                    invalidateParticipants()
-                    setDialogState({
-                      dialogOpenRemove: false,
-                      dialogOpenSMS: false,
-                    })
-                  }}
-                  color="primary">
-                  Done
-                </DialogButtonPrimary>
-              </DialogActions>
-            )}
-          </Dialog>
+          <ParticipantDeleteModal
+            studyId={studyId}
+            dialogState={dialogState}
+            onClose = {setDialogState}
+            currentPage = {currentPage}
+            pageSize = {pageSize}
+            tab = {tab}
+            isAllSelected = {isAllSelected}
+            selectedParticipantIds = {selectedParticipantIds}
+            participantsWithError = {participantsWithError}
+            resetParticipantsWithError = {()=>setParticipantsWithError([])}
+            loadingIndicators = {loadingIndicators}
+            onLoadingIndicatorsChange = {(isDeleting: boolean) => {
+              setLoadingIndicators(_ => ({isDeleting: isDeleting}))
+            }}
+          />
         </>
       )}
     </Box>
