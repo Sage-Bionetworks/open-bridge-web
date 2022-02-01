@@ -139,6 +139,7 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                             }
                             entryIndex={/*rowIndex*/ undefined}
                             propertyName="label"
+                            timeZone={a.clientTimeZone}
                             propertyValue={/*info.sessionGuid*/ info}
                           />
                         </div>

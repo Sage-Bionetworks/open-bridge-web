@@ -14,6 +14,7 @@ const DayDisplayForSession: FunctionComponent<{
   propertyName: 'sessionGuid' | 'label'
   sessionSymbol?: string
   entryIndex?: number
+  timeZone?: string
 }> = ({
   byDayEntries,
   propertyValue,
@@ -23,6 +24,7 @@ const DayDisplayForSession: FunctionComponent<{
   propertyName,
   sessionSymbol,
   entryIndex,
+  timeZone,
 }) => {
   if (!byDayEntries[sequentialDayNumber]) {
     return <></>
@@ -34,18 +36,19 @@ const DayDisplayForSession: FunctionComponent<{
     entryIndex !== undefined
       ? byDayEntries[sequentialDayNumber][entryIndex]
       : undefined
-
+  //sessionGuid property name is for single Participant
   return entry ? (
     <>
       {entry.timeWindows.map((tw, itw) => (
         <TimeWindowPlotElement
-          key={`${tw.timeWindowGuid}_window`}
+          key={`${tw.timeWindowGuid}_window_all`}
           maxNumberOfWindows={maxNumberOfTimeWindows}
           windowIndex={itw}
           startDate={entry!.startDate}
           windowState={tw.state}
           sessionSymbol={sessionSymbol!}
           isCompliant={isCompliant}
+          timeZone={timeZone}
         />
       ))}
     </>
@@ -67,6 +70,7 @@ const DayDisplayForSession: FunctionComponent<{
                   windowState={tw.state}
                   sessionSymbol={sessionSymbol || entry.sessionSymbol}
                   isCompliant={isCompliant}
+                  timeZone={timeZone}
                 />
               ))}
             </>

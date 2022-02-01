@@ -12,6 +12,7 @@ const TimeWindowPlotElement: FunctionComponent<{
   startDate: string
   maxNumberOfWindows: number
   isCompliant: boolean
+  timeZone?: string
 }> = ({
   startDate,
   windowIndex,
@@ -19,9 +20,21 @@ const TimeWindowPlotElement: FunctionComponent<{
   windowState,
   maxNumberOfWindows,
   isCompliant,
+  timeZone,
 }) => {
   return (
-    <Tooltip title={AdherenceUtility.getDateForDisplay(startDate)}>
+    <Tooltip
+      title={
+        <>
+          {AdherenceUtility.getDateForDisplay(startDate)}
+          {timeZone && (
+            <>
+              <br />
+              {timeZone}
+            </>
+          )}
+        </>
+      }>
       <div
         id={'window_' + windowIndex}
         style={{
