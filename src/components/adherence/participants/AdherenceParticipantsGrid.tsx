@@ -22,6 +22,17 @@ export const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2),
     alignitems: 'center',
   },
+  adherenceCell: {
+    borderRight: 'none',
+    borderLeft: '1px solid black',
+    verticalAlign: 'middle',
+    display: 'flex',
+    alignItems: 'center',
+    paddingLeft: theme.spacing(1),
+  },
+  lastCell: {
+    borderRight: 'none',
+  },
 }))
 
 type AdherenceParticipantsGridProps = {
@@ -112,7 +123,11 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                         <div
                           key={dayIndex}
                           className={classes.dayCell}
-                          style={{width: `${dayWidthInPx}px`}}>
+                          style={{
+                            width: `${dayWidthInPx}px`,
+                            borderRight:
+                              dayIndex === 6 ? 'none' : '1px solid black',
+                          }}>
                           <DayDisplayForSession
                             sequentialDayNumber={dayIndex}
                             byDayEntries={a.byDayEntries}
@@ -128,22 +143,21 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                           />
                         </div>
                       ))}
-                      <Box
-                        key="adherence"
-                        style={{borderRight: 'none'}}
-                        className={clsx(
-                          classes.dayCell,
-                          a.weeklyAdherencePercent <
-                            AdherenceService.COMPLIANCE_THRESHOLD && classes.red
-                        )}>
-                        {' '}
-                        {a.weeklyAdherencePercent}%
-                      </Box>
                     </div>
                   ))
                 )
               }
             </div>
+            <Box
+              key="adherence"
+              className={clsx(
+                classes.adherenceCell,
+                a.weeklyAdherencePercent <
+                  AdherenceService.COMPLIANCE_THRESHOLD && classes.red
+              )}>
+              {' '}
+              {a.weeklyAdherencePercent}%
+            </Box>
           </div>
         ))}
       </div>

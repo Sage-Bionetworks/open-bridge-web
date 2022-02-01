@@ -54,19 +54,22 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
         studyId,
         currentPage,
         pageSize,
-        adherenceParams?.labels,
+        completionStatus,
+        adherenceParams?.labels || [],
         adherenceParams?.threshold
       )
 
     const {data: fullAdherenceWeeklyReport, status: fullAdhStatus} =
-      useAdherenceForWeek(studyId, currentPage, pageSize)
+      useAdherenceForWeek(studyId, currentPage, pageSize, [
+        'completed',
+        'progress',
+      ])
 
     const handleError = useErrorHandler()
 
     React.useEffect(() => {
       if (adherenceWeeklyReport) {
         setSessions(
-          // set_.uniq(_.flatten(adherenceWeeklyReport.map(i => i.rowLabels)))
           AdherenceUtility.getUniqueSessionsInfo(adherenceWeeklyReport.items)
         )
       }
