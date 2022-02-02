@@ -61,9 +61,14 @@ const ToolIcon: FunctionComponent<ToolIconProps> = ({
   const handleMouseOut = () => setIsHoveringEdit(false)
   return(
     <Tooltip title = "Edit Custom Event">
-      <IconButton className={classes.editIcon} onClick={()=>onOpenEventsEditor()} onMouseEnter={handleMouseOver} onMouseLeave={handleMouseOut}>
+      <IconButton 
+      className={classes.editIcon} 
+      onClick={()=>onOpenEventsEditor()} 
+      onMouseEnter={handleMouseOver} 
+      onMouseLeave={handleMouseOut}>
         {' '}
-        {isHoveringEdit? <EditIcon/> : <RedEditIcon/>}
+        {isHoveringEdit? <EditIcon /> : 
+        <RedEditIcon style={{position:'relative', bottom:'0.5px', right:'0.5px'}}/>}
       </IconButton>
     </Tooltip>
   )
