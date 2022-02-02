@@ -1,7 +1,7 @@
 // pick a date util library
 
 import Utility from '@helpers/utility'
-import EventService from '@services/event.service'
+import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ParticipantService from '@services/participants.service'
 import {
   EditableParticipantData,
@@ -143,6 +143,16 @@ async function uploadCsvRow(
   return result
 }
 
+const getJoinedEventDateString = (events?: ParticipantEvent[]) => {
+  if (!events || events.length === 0) {
+    return ''
+  }
+  const joinedEvent = events?.find(event => event.eventId === JOINED_EVENT_ID)
+  return joinedEvent?.timestamp
+    ? new Date(joinedEvent.timestamp).toLocaleDateString()
+    : ''
+}
+
 async function getParticipantDataForDownload(
   studyId: string,
   token: string,
@@ -171,7 +181,7 @@ async function getParticipantDataForDownload(
         [columns.get('healthCode')!]: p.healthCode,
 
         // LEON TODO: Revisit when we have smsDate
-        [columns.get('joinedDate')!]: dateToString(p.joinedDate),
+        [columns.get('joinedDate')!]: getJoinedEventDateString(p.events),
 
         [columns.get('note')!]:
           tab !== 'WITHDRAWN' ? p.note || '' : p.withdrawalNote,
