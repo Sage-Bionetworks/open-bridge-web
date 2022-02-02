@@ -1,8 +1,7 @@
 import AlertIcon from '@assets/alert_icon.svg'
-import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'
 import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
 import {AlertWithText, BlueButton} from '@components/widgets/StyledComponents'
-import {Box, IconButton, makeStyles, Switch, Tooltip} from '@material-ui/core'
+import {Box, makeStyles, Switch} from '@material-ui/core'
 import {DEFAULT_NOTIFICATION} from '@services/schedule.service'
 import {latoFont, ThemeType} from '@style/theme'
 import {
@@ -279,6 +278,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         <form noValidate autoComplete="off">
           <Box className={classes.formSection}>
             <StartDate
+              onOpenEventsEditor={onOpenEventsEditor}
               startEventId={
                 _.isEmpty(studySession.studyBurstIds)
                   ? _.first(schedulableSession.startEventIds)!
@@ -300,12 +300,6 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               onChangeDelay={(delay: string | undefined) => {
                 updateSessionSchedule({...schedulableSession, delay})
               }}>
-              <Tooltip title="Edit Custom Event">
-                <IconButton onClick={() => onOpenEventsEditor()}>
-                  {' '}
-                  <EditIcon />
-                </IconButton>
-              </Tooltip>
               <InfoCircleWithToolTip
                 tooltipDescription={
                   <span>
