@@ -268,33 +268,36 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const downloadParticipants = async (selectionType: SelectionType) => {
     setLoadingIndicators({isDownloading: true})
+    try {
+      //if getting all participants
+      const participantsData: ParticipantData | undefined =
+        selectionType === 'ALL'
+          ? undefined
+          : {
+              items:
+                data?.items?.filter(p =>
+                  selectedParticipantIds[tab].includes(p.id)
+                ) || [],
+              total: selectedParticipantIds[tab].length,
+            }
+      const participantBlob = await CsvUtility.getParticipantDataForDownload(
+        study.identifier,
+        token!,
+        tab,
+        scheduleEvents.map(e => e.eventId),
+        selectionType,
+        Utility.isSignInById(study.signInTypes),
+        participantsData
+      )
 
-    //if getting all participants
-    const participantsData: ParticipantData | undefined =
-      selectionType === 'ALL'
-        ? undefined
-        : {
-            items:
-              data?.items?.filter(p =>
-                selectedParticipantIds[tab].includes(p.id)
-              ) || [],
-            total: selectedParticipantIds[tab].length,
-          }
-    const participantBlob = await CsvUtility.getParticipantDataForDownload(
-      study.identifier,
-      token!,
-      tab,
-      scheduleEvents.map(e => e.eventId),
-      selectionType,
-      Utility.isSignInById(study.signInTypes),
-      participantsData
-    )
-
-    // get the fake link
-    const fileObjUrl = URL.createObjectURL(participantBlob)
-    setFileDownloadUrl(fileObjUrl)
-
-    setLoadingIndicators({isDownloading: false})
+      // get the fake link
+      const fileObjUrl = URL.createObjectURL(participantBlob)
+      setFileDownloadUrl(fileObjUrl)
+    } catch (error) {
+      alert(`Download error ${(error as Error).message.toString()}`)
+    } finally {
+      setLoadingIndicators({isDownloading: false})
+    }
   }
 
   const displayPlaceholderScreen =
