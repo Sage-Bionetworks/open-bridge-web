@@ -79,15 +79,17 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
           </MTBHeadingH3>
         </Box>
         <FormGroup className={classes.editForm}>
-          <EditParticipantEventsForm
-            customParticipantEvents={customParticipantEvents}
-            hideLoginEvent={false}
-            scheduleEvents={scheduleEvents}
-            onChange={e => {
-              console.log('event change')
-              setCustomParticipantEvents(_prev => e)
-            }}
-          />
+          {!isBatchEdit && (
+            <EditParticipantEventsForm
+              customParticipantEvents={customParticipantEvents}
+              hideLoginEvent={false}
+              scheduleEvents={scheduleEvents}
+              onChange={e => {
+                console.log('event change')
+                setCustomParticipantEvents(_prev => e)
+              }}
+            />
+          )}
           <Box width="375px" mb={3}>
             <TimezoneDropdown
               currentValue={currentTimeZone}
