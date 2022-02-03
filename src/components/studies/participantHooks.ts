@@ -3,10 +3,12 @@ import Utility from '@helpers/utility'
 import EventService from '@services/event.service'
 import ParticipantService from '@services/participants.service'
 import {
+  EditableParticipantData,
   ExtendedError,
   ParticipantAccountSummary,
   ParticipantActivityType,
   ParticipantEvent,
+  Phone,
 } from '@typedefs/types'
 import {useMutation, useQuery, useQueryClient} from 'react-query'
 import {EVENTS_KEYS} from './eventHooks'
@@ -195,6 +197,38 @@ export const useUpdateParticipantInList = () => {
         queryClient.invalidateQueries(EVENTS_KEYS.list(props.studyId))
       }
     },
+  })
+  return mutation
+}
+
+export const useAddParticipant = () => {
+  const {token} = useUserSessionDataState()
+  const queryClient = useQueryClient()
+
+  const update = async(props: {
+      studyId: string,
+      options: EditableParticipantData,
+      phone?: Phone
+  }): Promise<string> => {
+      const {studyId, options, phone} = props
+      return phone 
+      ? await ParticipantService.addParticipant(studyId, token!, {
+        ...options, 
+        phone
+      })
+      : await ParticipantService.addParticipant(studyId, token!, options)
+  }
+
+  const mutation = useMutation(update, {
+      onMutate: async props => {
+          queryClient.cancelQueries(PARTICIPANT_KEYS.all)
+      },
+      onError: (err, variables, context) => {
+          console.log(err, variables, context)
+      },
+      onSettled: async(data, error, props)=>{
+          queryClient.invalidateQueries(PARTICIPANT_KEYS.all)
+      }
   })
   return mutation
 }
