@@ -381,8 +381,8 @@ export type RowLabel = {
 
 export type AdherenceWeeklyReport = {
   participant: {identifier: string; externalId: string}
-  rowLabels: string[]
-  //ALINA TODO rows: RowLabel[]
+  //rowLabels: string[]
+  rows: RowLabel[]
   weeklyAdherencePercent: number
   clientTimeZone: string
   createdOn: string

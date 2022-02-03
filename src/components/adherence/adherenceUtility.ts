@@ -45,11 +45,11 @@ function getDisplayFromLabel(label: string): string {
   const sessionName = labelArray[labelArray.length - 2]
   const week = labelArray[labelArray.length - 3]
   const event = labelArray.length === 3 ? labelArray[0] : undefined
-  return week
+  return label //week
 }
 
 function getUniqueSessionsInfo(
-  streams: (AdherenceEventStream | AdherenceWeeklyReport)[]
+  streams: AdherenceEventStream[]
 ): SessionDisplayInfo[] {
   var result: SessionDisplayInfo[] = []
 

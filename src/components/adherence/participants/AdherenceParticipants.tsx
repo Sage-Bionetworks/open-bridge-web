@@ -3,12 +3,11 @@ import ParticipantSearch from '@components/studies/participants/ParticipantSearc
 import LoadingComponent from '@components/widgets/Loader'
 import TablePagination from '@components/widgets/pagination/TablePagination'
 import {Box, makeStyles} from '@material-ui/core'
-import {SessionDisplayInfo} from '@typedefs/types'
+import {AdherenceWeeklyReport, SessionDisplayInfo} from '@typedefs/types'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {useParams} from 'react-router-dom'
-import AdherenceUtility from '../adherenceUtility'
 import SessionLegend from '../SessionLegend'
 import {useCommonStyles} from '../styles'
 import AdherenceParticipantsGrid from './AdherenceParticipantsGrid'
@@ -32,6 +31,18 @@ const COMPLETION_STATUS: {label: string; value: CompletionStatus}[] = [
   {label: 'Completed', value: 'completed'},
 ]
 
+function getUniqueSessionsInfoForWeek(
+  items: AdherenceWeeklyReport[]
+): SessionDisplayInfo[] {
+  const labels = _.flatten(items.map(i => i.rows))
+  const result: SessionDisplayInfo[] = labels.map(label => ({
+    sessionGuid: label.sessionGuid,
+    sessionName: label.sessionName,
+    sessionSymbol: label.sessionSymbol,
+  }))
+  console.log(result)
+  return _.uniqBy(result, 'sessionGuid')
+}
 const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
   () => {
     const classes = {...useCommonStyles(), ...useStyles()}
@@ -69,9 +80,7 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
 
     React.useEffect(() => {
       if (adherenceWeeklyReport) {
-        setSessions(
-          AdherenceUtility.getUniqueSessionsInfo(adherenceWeeklyReport.items)
-        )
+        setSessions(getUniqueSessionsInfoForWeek(adherenceWeeklyReport.items))
       }
     }, [adherenceWeeklyReport])
 
@@ -79,7 +88,9 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
       if (fullAdherenceWeeklyReport) {
         setDisplayLabels(
           _.uniq(
-            _.flatten(fullAdherenceWeeklyReport.items.map(i => i.rowLabels))
+            _.flatten(fullAdherenceWeeklyReport.items.map(i => i.rows)).map(
+              i => i.label
+            )
           )
         )
       }
