@@ -18,11 +18,6 @@ type ReadOnlySessionCreatorProps = {
 }
 
 const useStyles = makeStyles(theme => ({
-  container: {
-    display: 'flex',
-    flexDirection: 'row',
-    padding: theme.spacing(4, 4),
-  },
   assessmentContainer: {
     marginRight: theme.spacing(2),
     backgroundColor: '#f2f2f2',
@@ -39,7 +34,7 @@ const ReadOnlySessionCreator: FunctionComponent<ReadOnlySessionCreatorProps> =
       return (
         <>
           <Box
-            className={clsx(sessionContainerClasses.root, classes.container)}
+            className={sessionCreatorClasses.root}
             key="sessions">
             {sessions.map((session, index) => (
               <Paper
@@ -48,6 +43,7 @@ const ReadOnlySessionCreator: FunctionComponent<ReadOnlySessionCreatorProps> =
                   classes.assessmentContainer
                 )}
                 key={session.guid! + index}>
+                {/* session header */}
                 <Box className={sessionContainerClasses.inner}>
                   <Box marginRight={2}>
                     <SessionIcon index={index} symbolKey={session.symbol}>
@@ -63,6 +59,7 @@ const ReadOnlySessionCreator: FunctionComponent<ReadOnlySessionCreatorProps> =
                       }}></ClockIcon>
                   </Box>
                 </Box>
+                {/* assessments inside each session */}
                 <div className={sessionContainerClasses.droppable}>
                   {session.assessments?.map((assessment, index) => (
                     <AssessmentSmall
