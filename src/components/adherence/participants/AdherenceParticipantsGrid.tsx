@@ -2,7 +2,7 @@ import {
   PlotDaysDisplay,
   useGetPlotAndUnitWidth,
 } from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
-import {Box, makeStyles} from '@material-ui/core'
+import {Box, makeStyles, Tooltip} from '@material-ui/core'
 import AdherenceService from '@services/adherence.service'
 import ParticipantService from '@services/participants.service'
 import {theme} from '@style/theme'
@@ -96,17 +96,14 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
               </Link>
             </Box>
             <div key={'data'}>
-              {
-                /*a.rows.length*/ a.rowLabels.length === 0 ? (
-                  <NextActivity
-                    dayPxWidth={dayWidthInPx}
-                    info={a.nextActivity}
-                  />
-                ) : (
-                  /* a.rows*/ a.rowLabels.map((info, rowIndex) => (
-                    <div
-                      key={`${/*info.sessionGuid*/ info}_ind${rowIndex}`}
-                      className={classes.sessionRow}>
+              {a.rows.length === 0 ? (
+                <NextActivity dayPxWidth={dayWidthInPx} info={a.nextActivity} />
+              ) : (
+                a.rows.map((info, rowIndex) => (
+                  <div
+                    key={`${/*info.sessionGuid*/ info}_ind${rowIndex}`}
+                    className={classes.sessionRow}>
+                    <Tooltip title={info.label}>
                       <Box
                         key="label"
                         width={theme.spacing(11)}
@@ -114,40 +111,39 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                         lineHeight={0.8}
                         borderRight={'1px solid black'}>
                         {
-                          AdherenceUtility.getDisplayFromLabel(
-                            info
-                          ) /*info.label*/
+                          /*AdherenceUtility.getDisplayFromLabel(info.label)*/
+                          `Week ${info.week}`
                         }
                       </Box>
-                      {[...new Array(7)].map((i, dayIndex) => (
-                        <div
-                          key={dayIndex}
-                          className={classes.dayCell}
-                          style={{
-                            width: `${dayWidthInPx}px`,
-                            borderRight:
-                              dayIndex === 6 ? 'none' : '1px solid black',
-                          }}>
-                          <DayDisplayForSession
-                            sequentialDayNumber={dayIndex}
-                            byDayEntries={a.byDayEntries}
-                            sessionSymbol={/*info.sessionSymbol*/ undefined}
-                            maxNumberOfTimeWindows={maxNumbrOfTimeWindows}
-                            isCompliant={
-                              a.weeklyAdherencePercent >=
-                              AdherenceService.COMPLIANCE_THRESHOLD
-                            }
-                            entryIndex={/*rowIndex*/ undefined}
-                            propertyName="label"
-                            timeZone={a.clientTimeZone}
-                            propertyValue={/*info.sessionGuid*/ info}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  ))
-                )
-              }
+                    </Tooltip>
+                    {[...new Array(7)].map((i, dayIndex) => (
+                      <div
+                        key={dayIndex}
+                        className={classes.dayCell}
+                        style={{
+                          width: `${dayWidthInPx}px`,
+                          borderRight:
+                            dayIndex === 6 ? 'none' : '1px solid black',
+                        }}>
+                        <DayDisplayForSession
+                          sequentialDayNumber={dayIndex}
+                          byDayEntries={a.byDayEntries}
+                          sessionSymbol={info.sessionSymbol}
+                          maxNumberOfTimeWindows={maxNumbrOfTimeWindows}
+                          isCompliant={
+                            a.weeklyAdherencePercent >=
+                            AdherenceService.COMPLIANCE_THRESHOLD
+                          }
+                          entryIndex={rowIndex}
+                          propertyName="sessionGuid"
+                          timeZone={a.clientTimeZone}
+                          propertyValue={info.sessionGuid}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ))
+              )}
             </div>
             <Box
               key="adherence"
