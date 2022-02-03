@@ -426,7 +426,7 @@ async function getAdherenceForWeek(
   const result = await Utility.callEndpoint<{
     items: AdherenceWeeklyReport[]
     total: number
-  }>(endpoint, 'GET', data, token)
+  }>(endpoint, 'POST', data, token)
   console.log(result.data)
   //@ts-ignore
   console.log('updated')
