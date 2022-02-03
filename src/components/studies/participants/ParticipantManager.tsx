@@ -28,6 +28,7 @@ import {
   Tab,
   Tabs,
 } from '@material-ui/core'
+import {JOINED_EVENT_ID} from '@services/event.service'
 import StudyService from '@services/study.service'
 import {theme} from '@style/theme'
 import constants from '@typedefs/constants'
@@ -42,18 +43,22 @@ import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useParams} from 'react-router-dom'
-import {useEvents} from '../eventHooks'
-import {useParticipants, useInvalidateParticipants, useUpdateParticipantInList} from '../participantHooks'
+import {useEvents, useEventsForUsers} from '../eventHooks'
+import {
+  useInvalidateParticipants,
+  useParticipants,
+  useUpdateParticipantInList,
+} from '../participantHooks'
 import AddParticipants from './add/AddParticipants'
 import CsvUtility from './csv/csvUtility'
 import ParticipantDownloadTrigger from './csv/ParticipantDownloadTrigger'
 import ParticipantTableGrid from './grid/ParticipantTableGrid'
 import BatchEditForm from './modify/BatchEditForm'
+import ParticipantDeleteModal from './ParticipantDeleteModal'
 import ParticipantManagerPlaceholder from './ParticipantManagerPlaceholder'
 import useStyles from './ParticipantManager_style'
 import ParticipantSearch from './ParticipantSearch'
 import WithdrawnTabNoParticipantsPage from './WithdrawnTabNoParticipantsPage'
-import ParticipantDeleteModal from './ParticipantDeleteModal'
 
 /** types and constants  */
 type ParticipantData = {
@@ -146,6 +151,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const handleError = useErrorHandler()
   const classes = useStyles()
+  const [pIds, setPIds] = React.useState<string[]>([])
 
   // The current page in the particpant grid the user is viewing
   const [currentPage, setCurrentPage] = React.useState(1)
@@ -187,53 +193,70 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     ParticipantAccountSummary[]
   >([])
 
-  const [searchValue, setSearchValue] = React.useState<
-  string | undefined
-  >(undefined)
-    
+  const [searchValue, setSearchValue] = React.useState<string | undefined>(
+    undefined
+  )
 
   const isById = Utility.isSignInById(study?.signInTypes)
+  const [data, setData] = React.useState<ParticipantData>()
 
   // Hook to get scheduled events
   const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
 
   // Hook to get participants
-  const {data, status} = useParticipants(study?.identifier, currentPage, pageSize, tab, searchValue, isById)
-  
-  const {    
-    isLoading: isParticipantUpdating,
-    mutateAsync
-  } = useUpdateParticipantInList()
+  const {data: pData, status} = useParticipants(
+    study?.identifier,
+    currentPage,
+    pageSize,
+    tab,
+    searchValue,
+    isById
+  )
+  const {data: pEventsMap} = useEventsForUsers(study?.identifier, pIds)
+
+  const {isLoading: isParticipantUpdating, mutateAsync} =
+    useUpdateParticipantInList()
+
   const invalidateParticipants = useInvalidateParticipants()
   const onAction = async (
-    studyId:string,
-    type:'WITHDRAW' | 'DELETE' | 'UPDATE', 
-    userId?:string,  
-    note?: string, 
+    studyId: string,
+    type: 'WITHDRAW' | 'DELETE' | 'UPDATE',
+    userId?: string,
+    note?: string,
     updatedFields?: any,
-    customEvents?: ParticipantEvent[],
-    ) => {
-
+    customEvents?: ParticipantEvent[]
+  ) => {
     const userIdArr = [userId] as Array<string>
-    switch(type){
+    switch (type) {
       case 'WITHDRAW':
-        mutateAsync({action: type, studyId, userId: userIdArr, note,})
+        mutateAsync({action: type, studyId, userId: userIdArr, note})
         return
 
       case 'DELETE':
         setLoadingIndicators(_ => ({isDeleting: true}))
         setParticipantsWithError([])
         let isError = false
-        mutateAsync({action:type, studyId,userId: selectedParticipantIds[tab!]})
+        mutateAsync({
+          action: type,
+          studyId,
+          userId: selectedParticipantIds[tab!],
+        })
         setLoadingIndicators(_ => ({isDeleting: false}))
-        if(!isError) setDialogState({dialogOpenRemove: false, dialogOpenSMS: false})
+        if (!isError)
+          setDialogState({dialogOpenRemove: false, dialogOpenSMS: false})
         return
 
       case 'UPDATE':
-        mutateAsync({action:type, studyId:studyId, userId: userIdArr, updatedFields:updatedFields, customEvents:customEvents})
+        mutateAsync({
+          action: type,
+          studyId: studyId,
+          userId: userIdArr,
+          updatedFields: updatedFields,
+          customEvents: customEvents,
+        })
         return
 
-      default:{
+      default: {
         console.log('unknown participant action')
       }
     }
@@ -245,6 +268,34 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setIsAllSelected(false)
   }
 
+  React.useEffect(() => {
+    console.log('setting PIDs', pData?.items.length)
+    if (pData && pData.items.length > 0) {
+      console.log('setting PIDs')
+      setPIds(pData.items.map(item => item.id))
+    }
+  }, [pData?.items])
+
+  React.useEffect(() => {
+    if (pData && pData.items.length > 0 && pEventsMap) {
+      const items = pData.items.map(item => {
+        const events = pEventsMap[item.id]
+        return events
+          ? {
+              ...item,
+              events: [
+                ...events.customEvents,
+                {
+                  eventId: JOINED_EVENT_ID,
+                  timestamp: events.timeline_retrieved,
+                },
+              ],
+            }
+          : item
+      })
+      setData({total: pData.total, items})
+    }
+  }, [pData, pEventsMap])
   React.useEffect(() => {
     if (isAllSelected) {
       setSelectedParticipantIds(prev => ({
@@ -533,7 +584,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       }}>
                       <ParticipantTableGrid
                         rows={data?.items || []}
-                        isParticipantUpdating = {isParticipantUpdating}
+                        isParticipantUpdating={isParticipantUpdating}
                         status={status}
                         scheduleEventIds={
                           scheduleEvents.map(e => e.eventId) || []
@@ -546,7 +597,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         onWithdrawParticipant={(
                           participantId: string,
                           note: string
-                        ) => onAction(study.identifier, 'WITHDRAW', participantId, note)}
+                        ) =>
+                          onAction(
+                            study.identifier,
+                            'WITHDRAW',
+                            participantId,
+                            note
+                          )
+                        }
                         onUpdateParticipant={(
                           participantId: string,
                           note: string,
@@ -609,23 +667,21 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             selectedParticipants={selectedParticipantIds[tab]}
             token={token!}
             studyId={study.identifier}
-            onToggleParticipantRefresh={() =>
-              invalidateParticipants()
-            }
+            onToggleParticipantRefresh={() => invalidateParticipants()}
             isAllSelected={isAllSelected}></BatchEditForm>
           <ParticipantDeleteModal
             studyId={studyId}
             dialogState={dialogState}
-            onClose = {setDialogState}
-            currentPage = {currentPage}
-            pageSize = {pageSize}
-            tab = {tab}
-            isAllSelected = {isAllSelected}
-            selectedParticipantIds = {selectedParticipantIds}
-            participantsWithError = {participantsWithError}
-            resetParticipantsWithError = {()=>setParticipantsWithError([])}
-            loadingIndicators = {loadingIndicators}
-            onLoadingIndicatorsChange = {(isDeleting: boolean) => {
+            onClose={setDialogState}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            tab={tab}
+            isAllSelected={isAllSelected}
+            selectedParticipantIds={selectedParticipantIds}
+            participantsWithError={participantsWithError}
+            resetParticipantsWithError={() => setParticipantsWithError([])}
+            loadingIndicators={loadingIndicators}
+            onLoadingIndicatorsChange={(isDeleting: boolean) => {
               setLoadingIndicators(_ => ({isDeleting: isDeleting}))
             }}
           />
