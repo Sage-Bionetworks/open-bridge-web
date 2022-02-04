@@ -13,9 +13,10 @@ import {
   Radio,
   RadioGroup,
 } from '@material-ui/core'
+import AdherenceService from '@services/adherence.service'
+import {AdherenceWeeklyReport} from '@typedefs/types'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
-import AdherenceUtility from '../adherenceUtility'
 import {useCommonStyles} from '../styles'
 
 export const useStyles = makeStyles(theme => ({
@@ -49,24 +50,60 @@ export const useStyles = makeStyles(theme => ({
   },
 }))
 
+type ThresholdValue = 'ALL' | 'UNDER' | 'OVER'
+
 type FilterProps = {
-  // adherenceWeeklyReport: AdherenceWeeklyReport[]
-  threshold?: number
-  displayLabels: string[]
-  onFilterChange: (arg: {labels: string[]; threshold: number}) => void
+  thresholdMin?: number
+  thresholdMax?: number
+  adherenceReportItems: AdherenceWeeklyReport[]
+  // displayLabels: Map<string, string>
+  selectedLabels?: string[]
+  onFilterChange: (arg: {
+    labels: string[] | undefined
+    min: number
+    max: number
+  }) => void
+}
+
+function getThreshold(min: number = 0, max: number = 100): ThresholdValue {
+  if (min > AdherenceService.COMPLIANCE_THRESHOLD) {
+    return 'OVER'
+  }
+  if (max <= AdherenceService.COMPLIANCE_THRESHOLD) {
+    return 'UNDER'
+  }
+  return 'ALL'
+}
+
+function getDisplayLabels(items: AdherenceWeeklyReport[]) {
+  const labels = new Map(
+    _.flatten(items.map(i => i.rows)).map(r => [r.searchableLabel, r.label])
+  )
+
+  return new Map(labels)
 }
 
 const Filter: FunctionComponent<FilterProps> = ({
-  // adherenceWeeklyReport,
   onFilterChange,
-  displayLabels,
-  threshold: _threshold,
+  adherenceReportItems,
+  selectedLabels,
+  thresholdMin: min,
+  thresholdMax: max,
 }) => {
   const classes = {...useCommonStyles(), ...useStyles()}
-  const [threshold, setThreshold] = React.useState(_threshold || 0)
+  const [threshold, setThreshold] = React.useState(getThreshold(min, max))
   const [anchorEl, setAnchorEl] = React.useState(null)
-  const [searchLabels, setSearchLabels] =
-    React.useState<string[]>(displayLabels)
+  const [isSelectAll, setIsSelectAll] = React.useState(!selectedLabels)
+  const [displayLabels, setDisplayLabels] = React.useState(
+    getDisplayLabels(adherenceReportItems)
+  )
+  const [searchLabels, setSearchLabels] = React.useState<string[]>(
+    selectedLabels || Array.from(getDisplayLabels(adherenceReportItems).keys())
+  )
+
+  if (!displayLabels) {
+    return <></>
+  }
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget)
@@ -76,15 +113,36 @@ const Filter: FunctionComponent<FilterProps> = ({
     setAnchorEl(null)
   }
 
-  const selectAll = () => {
-    setSearchLabels(displayLabels)
+  const selectAll = (isSelected: boolean) => {
+    setIsSelectAll(isSelectAll)
+    if (isSelected) {
+      setSearchLabels(Array.from(displayLabels.keys()))
+    }
   }
   const selectLabel = (label: string, selected: boolean) => {
-    if (selected && !searchLabels.includes(label)) {
+    if (selected) {
       setSearchLabels(prev => [...prev, label])
     } else {
+      if (isSelectAll) {
+        setIsSelectAll(false)
+      }
       setSearchLabels(prev => _.without(prev, label))
     }
+  }
+
+  const applyFilterChange = () => {
+    let labels =
+      searchLabels.length === displayLabels.size ? undefined : searchLabels
+    let thresh = {min: 0, max: 100}
+    if (threshold === 'OVER') {
+      thresh.min = AdherenceService.COMPLIANCE_THRESHOLD
+    }
+    if (threshold === 'UNDER') {
+      thresh.max = AdherenceService.COMPLIANCE_THRESHOLD
+    }
+
+    onFilterChange({labels, ...thresh})
+    handleClose()
   }
 
   const open = Boolean(anchorEl)
@@ -116,25 +174,25 @@ const Filter: FunctionComponent<FilterProps> = ({
               control={
                 <Checkbox
                   className={classes.checkbox}
-                  checked={searchLabels.length === displayLabels.length}
-                  onChange={e => (e.target.checked ? selectAll() : {})}
+                  checked={displayLabels.size === searchLabels.length}
+                  onChange={e => selectAll(e.target.checked)}
                 />
               }
               label="ShowAll"
               labelPlacement="end"
             />
-            {displayLabels.map((label, index) => (
+            {Array.from(displayLabels.keys()).map((searchKey, index) => (
               <FormControlLabel
-                key={`${label}_${index}`}
+                key={`${searchKey}_${index}`}
                 value="end"
                 control={
                   <Checkbox
-                    checked={searchLabels.includes(label)}
+                    checked={!searchLabels || searchLabels.includes(searchKey)}
                     className={classes.checkbox}
-                    onChange={e => selectLabel(label, e.target.checked)}
+                    onChange={e => selectLabel(searchKey, e.target.checked)}
                   />
                 }
-                label={AdherenceUtility.getDisplayFromLabel(label)}
+                label={displayLabels.get(searchKey)}
                 labelPlacement="end"
               />
             ))}
@@ -147,29 +205,39 @@ const Filter: FunctionComponent<FilterProps> = ({
             className={classes.group}
             value={threshold}
             onChange={e => {
-              //console.log(e)
-              console.log('target', e.target.value)
-              setThreshold(Number(e.target.value))
+              setThreshold(e.target.value as ThresholdValue)
             }}>
             <FormControlLabel
               control={
-                <Radio size="small" value={0} className={classes.checkbox} />
+                <Radio
+                  size="small"
+                  value={'ALL'}
+                  className={classes.checkbox}
+                />
               }
               label="All"
             />
 
             <FormControlLabel
               control={
-                <Radio size="small" value={0.6} className={classes.checkbox} />
+                <Radio
+                  size="small"
+                  value={'UNDER'}
+                  className={classes.checkbox}
+                />
               }
-              label="x <= 60%"
+              label={`x <= ${AdherenceService.COMPLIANCE_THRESHOLD}%`}
             />
 
             <FormControlLabel
               control={
-                <Radio size="small" value={0.9} className={classes.checkbox} />
+                <Radio
+                  size="small"
+                  value={'OVER'}
+                  className={classes.checkbox}
+                />
               }
-              label="x > 60%"
+              label={`x => ${AdherenceService.COMPLIANCE_THRESHOLD}%`}
             />
           </RadioGroup>
 
@@ -179,7 +247,7 @@ const Filter: FunctionComponent<FilterProps> = ({
             </WhiteButton>{' '}
             <WhiteButton
               className={classes.button}
-              onClick={() => onFilterChange({labels: searchLabels, threshold})}>
+              onClick={() => applyFilterChange()}>
               Apply Filter
             </WhiteButton>
           </Box>

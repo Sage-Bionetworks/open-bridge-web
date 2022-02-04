@@ -378,10 +378,13 @@ export type RowLabel = {
   studyBurstNum?: number
   type: string
 }
+export type ProgressionStatus = 'done' | 'in_progress' | 'unstarted'
 
 export type AdherenceWeeklyReport = {
   participant: {identifier: string; externalId: string}
   //rowLabels: string[]
+  testAccount?: boolean
+  progression: ProgressionStatus
   rows: RowLabel[]
   weeklyAdherencePercent: number
   clientTimeZone: string

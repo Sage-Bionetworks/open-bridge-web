@@ -97,7 +97,11 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
             </Box>
             <div key={'data'}>
               {a.rows.length === 0 ? (
-                <NextActivity dayPxWidth={dayWidthInPx} info={a.nextActivity} />
+                <NextActivity
+                  dayPxWidth={dayWidthInPx}
+                  info={a.nextActivity}
+                  completionStatus={a.progression}
+                />
               ) : (
                 a.rows.map((info, rowIndex) => (
                   <div
