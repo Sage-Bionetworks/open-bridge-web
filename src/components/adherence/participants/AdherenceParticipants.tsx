@@ -4,7 +4,11 @@ import LoadingComponent from '@components/widgets/Loader'
 import TablePagination from '@components/widgets/pagination/TablePagination'
 import {Box, makeStyles} from '@material-ui/core'
 import {WeeklyAdherenceFilter} from '@services/adherence.service'
-import {AdherenceWeeklyReport, SessionDisplayInfo} from '@typedefs/types'
+import {
+  AdherenceWeeklyReport,
+  ProgressionStatus,
+  SessionDisplayInfo,
+} from '@typedefs/types'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
@@ -12,8 +16,8 @@ import {useParams} from 'react-router-dom'
 import SessionLegend from '../SessionLegend'
 import {useCommonStyles} from '../styles'
 import AdherenceParticipantsGrid from './AdherenceParticipantsGrid'
-import CompletionFilter from './CompletionFilter'
 import Filter from './Filter'
+import ProgressionFilter from './ProgressionFilter'
 
 const useStyles = makeStyles(theme => ({
   mainContainer: {
@@ -25,13 +29,6 @@ type AdherenceParticipantsProps = {
   studyId?: string
 }
 
-type CompletionStatus = 'completed' | 'progress'
-
-const COMPLETION_STATUS: {label: string; value: CompletionStatus}[] = [
-  {label: 'In Progress', value: 'progress'},
-  {label: 'Completed', value: 'completed'},
-]
-
 function getUniqueSessionsInfoForWeek(
   items: AdherenceWeeklyReport[]
 ): SessionDisplayInfo[] {
@@ -41,7 +38,7 @@ function getUniqueSessionsInfoForWeek(
     sessionName: label.sessionName,
     sessionSymbol: label.sessionSymbol,
   }))
-  console.log(result)
+
   return _.uniqBy(result, 'sessionGuid')
 }
 const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
@@ -50,15 +47,12 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
     let {id: studyId} = useParams<{
       id: string
     }>()
-    const [completionStatus, setCompletionStatus] = React.useState<
-      CompletionStatus[]
-    >(['completed', 'progress'])
+
     const [adherenceParams, setAdherenceParams] =
       React.useState<WeeklyAdherenceFilter>({})
     const [currentPage, setCurrentPage] = React.useState(1)
     const [pageSize, setPageSize] = React.useState(5)
     const [sessions, setSessions] = React.useState<SessionDisplayInfo[]>([])
-    const [displayLabels, setDisplayLabels] = React.useState<string[]>([])
 
     const {
       data: adherenceWeeklyReport,
@@ -66,8 +60,12 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
       error: adhError,
     } = useAdherenceForWeek(studyId, currentPage, pageSize, adherenceParams)
 
-    const {data: fullAdherenceWeeklyReport, status: fullAdhStatus} =
-      useAdherenceForWeek(studyId, currentPage, pageSize, {})
+    const {data: fullAdherenceWeeklyReport} = useAdherenceForWeek(
+      studyId,
+      currentPage,
+      pageSize,
+      {}
+    )
 
     const handleError = useErrorHandler()
 
@@ -77,17 +75,6 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
       }
     }, [adherenceWeeklyReport])
 
-    React.useEffect(() => {
-      if (fullAdherenceWeeklyReport) {
-        setDisplayLabels(
-          _.uniq(
-            _.flatten(fullAdherenceWeeklyReport.items.map(i => i.rows)).map(
-              i => i.label
-            )
-          )
-        )
-      }
-    }, [fullAdherenceWeeklyReport])
     if (adhStatus === 'error') {
       handleError(adhError)
     }
@@ -95,40 +82,46 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
     return (
       <div className={classes.mainContainer}>
         <Box display="flex" mt={0} mb={2}>
-          <CompletionFilter
-            completionStatus={completionStatus}
-            onChange={setCompletionStatus}
+          <ProgressionFilter
+            progressionStatus={adherenceParams.progressionFilters}
+            onChange={(f: ProgressionStatus[] | undefined) => {
+              console.log('f', f)
+              setAdherenceParams(prev => ({...prev, progressionFilters: f}))
+            }}
           />
 
           <div style={{marginLeft: 'auto'}}>
             <ParticipantSearch
               isSearchById={true}
               onReset={() => {
-                /* handleSearchParticipantRequest(undefined)*/
-                setAdherenceParams({...adherenceParams, idFilter: undefined})
+                setAdherenceParams({})
                 setCurrentPage(1)
               }}
               onSearch={(searchedValue: string) => {
                 setAdherenceParams({
-                  ...adherenceParams,
                   idFilter: searchedValue,
                 })
                 setCurrentPage(1)
               }}
             />
           </div>
-          <div>
-            <Filter
-              displayLabels={displayLabels}
-              threshold={adherenceParams.adherenceMax}
-              onFilterChange={params => {
-                setAdherenceParams({
-                  ...adherenceParams,
-                  adherenceMax: params.threshold,
-                  labelFilters: params.labels,
-                })
-              }}></Filter>
-          </div>
+          {fullAdherenceWeeklyReport?.items && (
+            <div>
+              <Filter
+                adherenceReportItems={fullAdherenceWeeklyReport.items}
+                selectedLabels={adherenceParams.labelFilters}
+                thresholdMax={adherenceParams.adherenceMax}
+                thresholdMin={adherenceParams.adherenceMin}
+                onFilterChange={params => {
+                  setAdherenceParams({
+                    ...adherenceParams,
+                    adherenceMax: params.max,
+                    adherenceMin: params.min,
+                    labelFilters: params.labels,
+                  })
+                }}></Filter>
+            </div>
+          )}
         </Box>
         <LoadingComponent reqStatusLoading={adhStatus === 'loading'}>
           <Box display="flex" mt={0} mb={2}>

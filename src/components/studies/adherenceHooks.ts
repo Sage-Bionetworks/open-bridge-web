@@ -18,10 +18,9 @@ export const ADHERENCE_KEYS = {
     pageSize: number = 0,
     idFilter: string = '',
     labelFilters: string = '',
-    completionStatus: string = '',
+    progressionFilters: string = '',
     adherenceMin: number = 0,
-    adherenceMax: number = 0,
-    completionFilters: string = ''
+    adherenceMax: number = 0
   ) =>
     [
       ...ADHERENCE_KEYS.all,
@@ -31,10 +30,9 @@ export const ADHERENCE_KEYS = {
       pageSize,
       idFilter,
       labelFilters,
-      completionStatus,
+      progressionFilters,
       adherenceMin,
       adherenceMax,
-      completionFilters,
     ] as const,
 
   detail: (studyId: string, userId: string) =>
@@ -91,11 +89,10 @@ export const useAdherenceForWeek = (
       pageSize,
       filter.idFilter,
       filter.labelFilters?.join(',') || '',
+      filter.progressionFilters?.join(','),
 
-      filter.completionStatus?.join(',') || '',
       filter.adherenceMin,
-      filter.adherenceMax,
-      filter.progressionFilters?.join(',')
+      filter.adherenceMax
     ),
 
     () =>

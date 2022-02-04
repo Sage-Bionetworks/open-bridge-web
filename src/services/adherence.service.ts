@@ -2,6 +2,7 @@ import {
   AdherenceWeeklyReport,
   EventStreamAdherenceReport,
 } from '@typedefs/types'
+import _ from 'lodash'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
 
@@ -10,10 +11,10 @@ export const COMPLIANCE_THRESHOLD = 50
 export type WeeklyAdherenceFilter = {
   idFilter?: string
   labelFilters?: string[]
-  completionStatus?: string[]
+
   adherenceMax?: number
   adherenceMin?: number
-  progressionFilters?: string[]
+  progressionFilters?: ('done' | 'in_progress' | 'unstarted')[]
 }
 
 async function getAdherenceForWeekForUsers(
@@ -41,9 +42,8 @@ async function getAdherenceForWeek(
 
   token: string
 ): Promise<{total: number; items: AdherenceWeeklyReport[]}> {
-  console.log('getting adherence')
-  console.log('startint priming - only use if need immediate data for test')
-  /* const enr = await ParticipantService.getEnrollmentByEnrollmentType(
+  /*  console.log('startint priming - only use if need immediate data for test')
+  const enr = await ParticipantService.getEnrollmentByEnrollmentType(
     studyId,
     token!,
     'enrolled',
@@ -60,30 +60,21 @@ async function getAdherenceForWeek(
     ':studyId',
     studyId
   )
-  //create query
-  /*
-  adherenceMax: 100
-  adherenceMin: 0
-  idFilter: "123"
-  offsetBy: 0
-  labelFilters: ["Week #2"]
-offsetBy: 0
-pageSize: 50
-progressionFilters: ["unstarted", "in_progress", "done"]
-  pageSize: 50
-  testFilter: "both"*/
 
   const defaultFilters = {
     adherenceMax: 100,
     adherenceMin: 0,
     testFilter: 'both',
   }
-  console.log('filter', filter)
+
   const paging = {
     pageSize: pageSize || undefined,
     offsetBy: pageSize > 0 ? (currentPage - 1) * pageSize : undefined,
   }
-  console.log('paging', paging)
+
+  filter.labelFilters = filter.labelFilters?.map(label => {
+    return _.trim(label, ':')
+  })
 
   let data: Record<string, any> = {...paging, ...defaultFilters, ...filter}
 
@@ -95,9 +86,7 @@ progressionFilters: ["unstarted", "in_progress", "done"]
     items: AdherenceWeeklyReport[]
     total: number
   }>(endpoint, 'POST', data, token)
-  console.log(result.data)
-  //@ts-ignore
-  console.log('updated')
+
   return {items: result.data.items, total: result.data.total}
 }
 
