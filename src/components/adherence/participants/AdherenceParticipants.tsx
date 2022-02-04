@@ -3,6 +3,7 @@ import ParticipantSearch from '@components/studies/participants/ParticipantSearc
 import LoadingComponent from '@components/widgets/Loader'
 import TablePagination from '@components/widgets/pagination/TablePagination'
 import {Box, makeStyles} from '@material-ui/core'
+import {WeeklyAdherenceFilter} from '@services/adherence.service'
 import {AdherenceWeeklyReport, SessionDisplayInfo} from '@typedefs/types'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
@@ -52,29 +53,21 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
     const [completionStatus, setCompletionStatus] = React.useState<
       CompletionStatus[]
     >(['completed', 'progress'])
-    const [adherenceParams, setAdherenceParams] = React.useState<
-      {labels: string[]; threshold: number} | undefined
-    >()
+    const [adherenceParams, setAdherenceParams] =
+      React.useState<WeeklyAdherenceFilter>({})
     const [currentPage, setCurrentPage] = React.useState(1)
     const [pageSize, setPageSize] = React.useState(5)
     const [sessions, setSessions] = React.useState<SessionDisplayInfo[]>([])
     const [displayLabels, setDisplayLabels] = React.useState<string[]>([])
 
-    const {data: adherenceWeeklyReport, status: adhStatus} =
-      useAdherenceForWeek(
-        studyId,
-        currentPage,
-        pageSize,
-        completionStatus,
-        adherenceParams?.labels || [],
-        adherenceParams?.threshold
-      )
+    const {
+      data: adherenceWeeklyReport,
+      status: adhStatus,
+      error: adhError,
+    } = useAdherenceForWeek(studyId, currentPage, pageSize, adherenceParams)
 
     const {data: fullAdherenceWeeklyReport, status: fullAdhStatus} =
-      useAdherenceForWeek(studyId, currentPage, pageSize, [
-        'completed',
-        'progress',
-      ])
+      useAdherenceForWeek(studyId, currentPage, pageSize, {})
 
     const handleError = useErrorHandler()
 
@@ -95,6 +88,9 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
         )
       }
     }, [fullAdherenceWeeklyReport])
+    if (adhStatus === 'error') {
+      handleError(adhError)
+    }
 
     return (
       <div className={classes.mainContainer}>
@@ -109,23 +105,32 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
               isSearchById={true}
               onReset={() => {
                 /* handleSearchParticipantRequest(undefined)*/
+                setAdherenceParams({...adherenceParams, idFilter: undefined})
+                setCurrentPage(1)
               }}
               onSearch={(searchedValue: string) => {
-                /* handleSearchParticipantRequest(searchedValue)*/
+                setAdherenceParams({
+                  ...adherenceParams,
+                  idFilter: searchedValue,
+                })
+                setCurrentPage(1)
               }}
             />
           </div>
           <div>
             <Filter
               displayLabels={displayLabels}
-              threshold={adherenceParams?.threshold}
+              threshold={adherenceParams.adherenceMax}
               onFilterChange={params => {
-                setAdherenceParams(params)
+                setAdherenceParams({
+                  ...adherenceParams,
+                  adherenceMax: params.threshold,
+                  labelFilters: params.labels,
+                })
               }}></Filter>
           </div>
         </Box>
-        <LoadingComponent
-          reqStatusLoading={adherenceWeeklyReport === undefined}>
+        <LoadingComponent reqStatusLoading={adhStatus === 'loading'}>
           <Box display="flex" mt={0} mb={2}>
             {sessions?.map(s => (
               <SessionLegend
@@ -137,7 +142,7 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
           </Box>
         </LoadingComponent>
         <LoadingComponent
-          reqStatusLoading={adherenceWeeklyReport === undefined}>
+          reqStatusLoading={adhStatus === 'idle' || adhStatus === 'loading'}>
           {adherenceWeeklyReport && (
             <div>
               <AdherenceParticipantsGrid

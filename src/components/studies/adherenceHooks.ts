@@ -1,6 +1,7 @@
-import {CompletionStatus} from '@components/adherence/participants/CompletionFilter'
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import AdherenceService from '@services/adherence.service'
+import AdherenceService, {
+  WeeklyAdherenceFilter,
+} from '@services/adherence.service'
 import {
   AdherenceWeeklyReport,
   EventStreamAdherenceReport,
@@ -10,13 +11,17 @@ import {useQuery} from 'react-query'
 
 export const ADHERENCE_KEYS = {
   all: ['adherence'] as const,
+
   list: (
     studyId: string,
     currentPage: number = 0,
     pageSize: number = 0,
-    searchLabels: string = '',
-    adherenceThreshold: number = 0,
-    completionFilter: string = ''
+    idFilter: string = '',
+    labelFilters: string = '',
+    completionStatus: string = '',
+    adherenceMin: number = 0,
+    adherenceMax: number = 0,
+    completionFilters: string = ''
   ) =>
     [
       ...ADHERENCE_KEYS.all,
@@ -24,9 +29,12 @@ export const ADHERENCE_KEYS = {
       studyId,
       currentPage,
       pageSize,
-      searchLabels,
-      adherenceThreshold,
-      completionFilter,
+      idFilter,
+      labelFilters,
+      completionStatus,
+      adherenceMin,
+      adherenceMax,
+      completionFilters,
     ] as const,
 
   detail: (studyId: string, userId: string) =>
@@ -69,17 +77,9 @@ export const useAdherenceForWeek = (
   studyId: string,
   currentPage: number,
   pageSize: number,
-  completionStatus: CompletionStatus[],
-  labelFilter?: string[],
-  adherenceThreshold?: number
+  filter: WeeklyAdherenceFilter
 ) => {
   const {token} = useUserSessionDataState()
-  console.log('a', adherenceThreshold)
-  let filter = {
-    labelFilter: labelFilter || [],
-    completionStatus: completionStatus,
-    adherenceThreshold: adherenceThreshold || 0,
-  }
 
   return useQuery<
     {items: AdherenceWeeklyReport[]; total: number},
@@ -89,9 +89,13 @@ export const useAdherenceForWeek = (
       studyId,
       currentPage,
       pageSize,
-      labelFilter?.join(',') || '',
-      adherenceThreshold,
-      completionStatus?.join(',') || ''
+      filter.idFilter,
+      filter.labelFilters?.join(',') || '',
+
+      filter.completionStatus?.join(',') || '',
+      filter.adherenceMin,
+      filter.adherenceMax,
+      filter.progressionFilters?.join(',')
     ),
 
     () =>
