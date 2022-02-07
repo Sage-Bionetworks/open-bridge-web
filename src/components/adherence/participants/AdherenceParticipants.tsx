@@ -87,7 +87,7 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
           <ProgressionFilter
             progressionStatus={adherenceParams.progressionFilters}
             onChange={(f: ProgressionStatus[] | undefined) => {
-              console.log('f', f)
+              setCurrentPage(1)
               setAdherenceParams(prev => ({...prev, progressionFilters: f}))
             }}
           />
@@ -115,6 +115,7 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
                 thresholdMax={adherenceParams.adherenceMax}
                 thresholdMin={adherenceParams.adherenceMin}
                 onFilterChange={params => {
+                  setCurrentPage(1)
                   setAdherenceParams({
                     ...adherenceParams,
                     adherenceMax: params.max,
