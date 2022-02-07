@@ -33,11 +33,13 @@ function getUniqueSessionsInfoForWeek(
   items: AdherenceWeeklyReport[]
 ): SessionDisplayInfo[] {
   const labels = _.flatten(items.map(i => i.rows))
-  const result: SessionDisplayInfo[] = labels.map(label => ({
-    sessionGuid: label.sessionGuid,
-    sessionName: label.sessionName,
-    sessionSymbol: label.sessionSymbol,
-  }))
+  const result: SessionDisplayInfo[] = labels
+    .filter(label => !!label)
+    .map(label => ({
+      sessionGuid: label.sessionGuid,
+      sessionName: label.sessionName,
+      sessionSymbol: label.sessionSymbol,
+    }))
 
   return _.uniqBy(result, 'sessionGuid')
 }

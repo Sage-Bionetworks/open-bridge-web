@@ -77,7 +77,9 @@ function getThreshold(min: number = 0, max: number = 100): ThresholdValue {
 
 function getDisplayLabels(items: AdherenceWeeklyReport[]) {
   const labels = new Map(
-    _.flatten(items.map(i => i.rows)).map(r => [r.searchableLabel, r.label])
+    _.flatten(items.map(i => i.rows))
+      .filter(r => !!r)
+      .map(r => [r.searchableLabel, r.label])
   )
 
   return new Map(labels)
