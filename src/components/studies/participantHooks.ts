@@ -147,6 +147,7 @@ export const useUpdateParticipantInList = () => {
       [Property in keyof ParticipantAccountSummary]?: ParticipantAccountSummary[Property]
     }
     customEvents?: ParticipantEvent[]
+    isAllSelected?: boolean
   }): Promise<string | string[]> => {
     switch (props.action) {
       case 'WITHDRAW':
@@ -163,18 +164,20 @@ export const useUpdateParticipantInList = () => {
           props.userId!
         )
       case 'UPDATE':
-        if (props.customEvents)
+        if (props.customEvents){
           await EventService.updateParticipantCustomEvents(
             props.studyId,
             token!,
             props.userId![0],
             props.customEvents
           )
+        }         
         return await ParticipantService.updateParticipant(
           props.studyId,
           token!,
-          props.userId![0],
-          props.updatedFields!
+          props.userId!,
+          props.updatedFields!,
+          props.isAllSelected
         )
       default:
         throw Error('Unknown Action')

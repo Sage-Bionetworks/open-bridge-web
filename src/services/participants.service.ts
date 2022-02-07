@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { pid } from 'process'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {
@@ -591,17 +590,26 @@ async function getParticipant(
 async function updateParticipant(
   studyIdentifier: string,
   token: string,
-  participantId: string,
+  participantId: string[],
   updatedFields: {
     [Property in keyof ParticipantAccountSummary]?: ParticipantAccountSummary[Property]
+  },
+  isAllSelected?: boolean
+): Promise<string[]> {
+  if(isAllSelected){
+    const resultEnrolled =
+      await getEnrollmentByEnrollmentType(
+        studyIdentifier,
+        token,
+        'enrolled',
+          false
+      )
+    const enrolledNonTestParticipants = resultEnrolled.items
+    participantId = enrolledNonTestParticipants.map(
+      el => el.participant.identifier
+    )
   }
-) {
-  const participantInfo = await getParticipant(
-    studyIdentifier,
-    participantId,
-    token
-  )
-
+  const participantInfo = await participantId?.map(pId => getParticipant(studyIdentifier,pId,token))
   const updatedParticipantFields = {...updatedFields}
   delete updatedParticipantFields.note
 
@@ -610,28 +618,33 @@ async function updateParticipant(
     ...participantInfo,
     ...updatedParticipantFields,
   }
-  const updateParticipantEndpoint = `${constants.endpoints.participant.replace(
-    ':id',
-    studyIdentifier
-  )}/${participantId}`
-  await Utility.callEndpoint<ParticipantAccountSummary>(
-    updateParticipantEndpoint,
-    'POST',
-    data,
-    token
-  )
 
-  if (updatedFields.note !== undefined) {
-    //we update the enrollment note record
-    await updateEnrollmentNote(
-      studyIdentifier,
-      participantId,
-      updatedFields.note,
+  if (participantId.length < 2 && updatedFields.note !== undefined) {
+      //we update the enrollment note record
+      await updateEnrollmentNote(
+        studyIdentifier,
+        participantId[0], // updating single participants
+        updatedFields.note,
+        token
+      )
+    }
+
+  const promises = participantId.map(async pId => {
+    const endpoint = `${constants.endpoints.participant.replace(
+      ':id',
+      studyIdentifier
+    )}/${pId}`
+    const apiCall = await Utility.callEndpoint<ParticipantAccountSummary>(
+      endpoint,
+      'POST',
+      data,
       token
     )
-  }
-
-  return participantId
+    return {participantId: pId, apiCall: apiCall}
+  })
+  return Promise.all(promises).then(result=>{
+    return result.map(item => item.participantId)
+  })
 }
 
 async function getRequestInfoForParticipant(
