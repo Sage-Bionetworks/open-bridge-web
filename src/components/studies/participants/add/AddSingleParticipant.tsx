@@ -7,9 +7,10 @@ import {Box, CircularProgress} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
 import {ExtendedScheduleEventObject} from '@services/schedule.service'
-import {EditableParticipantData, ExtendedError, Phone} from '@typedefs/types'
+import {EditableParticipantData, Phone} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import AddSingleParticipantForm from './AddSingleParticipantForm'
+import ParticipantService from '@services/participants.service'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -21,6 +22,26 @@ type AddSingleParticipantProps = {
   scheduleEvents: ExtendedScheduleEventObject[]
   onAdded: Function
   studyIdentifier: string
+}
+
+export async function addParticipantById(
+  studyIdentifier: string,
+  token: string,
+  options: EditableParticipantData
+) {
+  await ParticipantService.addParticipant(studyIdentifier, token, options)
+}
+
+export async function addParticipantByPhone(
+  studyIdentifier: string,
+  token: string,
+  phone: Phone,
+  options: EditableParticipantData
+) {
+  await ParticipantService.addParticipant(studyIdentifier, token, {
+    ...options,
+    phone,
+  })
 }
 
 // -----------------  Add participant  tab control
