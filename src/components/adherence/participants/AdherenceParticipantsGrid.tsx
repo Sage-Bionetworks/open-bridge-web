@@ -83,84 +83,91 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
             />
           </div>
         </div>
-        {adherenceWeeklyReport.items.map((a, index) => (
-          <div
-            key={`${a.participant}_${index}`}
-            className={classes.participantRow}>
-            <Box width={theme.spacing(11)} key={'pIdentifier'}>
-              <Link to={`adherence/${a.participant.identifier}`}>
-                {ParticipantService.formatExternalId(
-                  studyId,
-                  a.participant.externalId
-                )}
-              </Link>
-            </Box>
-            <div key={'data'}>
-              {a.rows.length === 0 ? (
-                <NextActivity
-                  dayPxWidth={dayWidthInPx}
-                  info={a.nextActivity}
-                  completionStatus={a.progression}
-                />
-              ) : (
-                a.rows.map((info, rowIndex) => (
-                  <div
-                    key={`${/*info.sessionGuid*/ info}_ind${rowIndex}`}
-                    className={classes.sessionRow}>
-                    <Tooltip title={info.label}>
-                      <Box
-                        key="label"
-                        width={theme.spacing(11)}
-                        fontSize={'12px'}
-                        lineHeight={0.8}
-                        borderRight={'1px solid black'}>
-                        {
-                          /*AdherenceUtility.getDisplayFromLabel(info.label)*/
-                          `Week ${info.week}`
-                        }
-                      </Box>
-                    </Tooltip>
-                    {[...new Array(7)].map((i, dayIndex) => (
-                      <div
-                        key={dayIndex}
-                        className={classes.dayCell}
-                        style={{
-                          width: `${dayWidthInPx}px`,
-                          borderRight:
-                            dayIndex === 6 ? 'none' : '1px solid black',
-                        }}>
-                        <DayDisplayForSession
-                          sequentialDayNumber={dayIndex}
-                          byDayEntries={a.byDayEntries}
-                          sessionSymbol={info.sessionSymbol}
-                          maxNumberOfTimeWindows={maxNumbrOfTimeWindows}
-                          isCompliant={
-                            a.weeklyAdherencePercent >=
-                            AdherenceService.COMPLIANCE_THRESHOLD
-                          }
-                          entryIndex={rowIndex}
-                          propertyName="sessionGuid"
-                          timeZone={a.clientTimeZone}
-                          propertyValue={info.sessionGuid}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ))
-              )}
+        {adherenceWeeklyReport.items.map((a, index) =>
+          !a.participant ? (
+            <div className={classes.participantRow} key={'no_participant'}>
+              the participant withdrew
             </div>
-            <Box
-              key="adherence"
-              className={clsx(
-                classes.adherenceCell,
-                a.weeklyAdherencePercent <
-                  AdherenceService.COMPLIANCE_THRESHOLD && classes.red
-              )}>
-              {' '}
-              {a.weeklyAdherencePercent}%
-            </Box>
-          </div>
-        ))}
+          ) : (
+            <div
+              key={`${a.participant}_${index}`}
+              className={classes.participantRow}>
+              <Box width={theme.spacing(11)} key={'pIdentifier'}>
+                <Link
+                  to={`adherence/${a.participant?.identifier || 'nothing'}`}>
+                  {ParticipantService.formatExternalId(
+                    studyId,
+                    a.participant.externalId
+                  )}
+                </Link>
+              </Box>
+              <div key={'data'}>
+                {a.rows.length === 0 ? (
+                  <NextActivity
+                    dayPxWidth={dayWidthInPx}
+                    info={a.nextActivity}
+                    completionStatus={a.progression}
+                  />
+                ) : (
+                  a.rows.map((info, rowIndex) => (
+                    <div
+                      key={`${/*info.sessionGuid*/ info}_ind${rowIndex}`}
+                      className={classes.sessionRow}>
+                      <Tooltip title={info.label}>
+                        <Box
+                          key="label"
+                          width={theme.spacing(11)}
+                          fontSize={'12px'}
+                          lineHeight={0.8}
+                          borderRight={'1px solid black'}>
+                          {
+                            /*AdherenceUtility.getDisplayFromLabel(info.label)*/
+                            `Week ${info.week}`
+                          }
+                        </Box>
+                      </Tooltip>
+                      {[...new Array(7)].map((i, dayIndex) => (
+                        <div
+                          key={dayIndex}
+                          className={classes.dayCell}
+                          style={{
+                            width: `${dayWidthInPx}px`,
+                            borderRight:
+                              dayIndex === 6 ? 'none' : '1px solid black',
+                          }}>
+                          <DayDisplayForSession
+                            sequentialDayNumber={dayIndex}
+                            byDayEntries={a.byDayEntries}
+                            sessionSymbol={info.sessionSymbol}
+                            maxNumberOfTimeWindows={maxNumbrOfTimeWindows}
+                            isCompliant={
+                              a.weeklyAdherencePercent >=
+                              AdherenceService.COMPLIANCE_THRESHOLD
+                            }
+                            entryIndex={rowIndex}
+                            propertyName="sessionGuid"
+                            timeZone={a.clientTimeZone}
+                            propertyValue={info.sessionGuid}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ))
+                )}
+              </div>
+              <Box
+                key="adherence"
+                className={clsx(
+                  classes.adherenceCell,
+                  a.weeklyAdherencePercent <
+                    AdherenceService.COMPLIANCE_THRESHOLD && classes.red
+                )}>
+                {' '}
+                {a.weeklyAdherencePercent}%
+              </Box>
+            </div>
+          )
+        )}
       </div>
     )
   }
