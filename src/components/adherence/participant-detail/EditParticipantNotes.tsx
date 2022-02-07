@@ -1,9 +1,9 @@
 import {makeStyles, Paper, TextField, Button, CircularProgress} from '@material-ui/core'
-import ParticipantService from '@services/participants.service'
 import { useUserSessionDataState } from '@helpers/AuthContext' 
-import {ExtendedError, ParticipantAccountSummary, EnrolledAccountRecord} from '@typedefs/types'
+import {EnrolledAccountRecord} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import { poppinsFont } from '@style/theme'
+import { useUpdateParticipantInList } from '@components/studies/participantHooks'
 
 const useStyles = makeStyles(theme => ({
     notesContainer: {
@@ -58,24 +58,15 @@ const EditParticipantNotes: FunctionComponent<EditParticipantNotesProps> = ({
     const [note, setNote] = React.useState(enrollment.note)
     const {token} = useUserSessionDataState()
 
-    const updateNotes = async(
-        particpantId: string,
-        updatedFields: {
-        [Property in keyof ParticipantAccountSummary]?: ParticipantAccountSummary[Property]  
-        }
-    ) => {
-        try {
-        setIsSaving(true)
-        await ParticipantService.updateParticipant(
-            studyId,
-            token!,
-            participantId,
-            updatedFields
-        ) 
-        setIsSaving(false)
-        } catch (e) {
-        alert((e as ExtendedError).message)
-        }
+    const {isLoading, mutateAsync} = useUpdateParticipantInList()
+
+    const updateNotes = async(particpantId:string, updatedFields:any) => {
+        const userIdArr = [particpantId] as Array<string>
+        mutateAsync({
+            studyId, 
+            action:'UPDATE',
+            userId:userIdArr,
+            updatedFields})
     }
     return(
         <Paper className={classes.notesContainer}>
@@ -95,7 +86,7 @@ const EditParticipantNotes: FunctionComponent<EditParticipantNotesProps> = ({
                 const data = {note: note}
                 updateNotes(participantId,data)
             }
-            }>{isSaving ? <CircularProgress/>: <>Save</>  }</Button>
+            }>{isLoading ? <CircularProgress/>: <>Save</>  }</Button>
 
     </Paper>
     )

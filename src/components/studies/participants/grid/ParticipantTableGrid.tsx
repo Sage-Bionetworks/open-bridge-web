@@ -5,6 +5,7 @@ import {ReactComponent as HidePhoneIcon} from '@assets/participants/phone_hide_i
 import {ReactComponent as ShowPhoneIcon} from '@assets/participants/phone_show_icon.svg'
 import {ReactComponent as WithdrawIcon} from '@assets/withdraw.svg'
 import {useEvents} from '@components/studies/eventHooks'
+import {useUpdateParticipantInList} from '@components/studies/participantHooks'
 import EditDialogTitle from '@components/studies/participants/modify/EditDialogTitle'
 import EditParticipantForm from '@components/studies/participants/modify/EditParticipantForm'
 import WithdrawParticipantForm from '@components/studies/participants/modify/WithdrawParticipantForm'
@@ -45,7 +46,6 @@ import {
   ParticipantAccountSummary,
   ParticipantActivityType,
   ParticipantEvent,
-  RequestStatus,
   SelectionType,
 } from '@typedefs/types'
 import _ from 'lodash'
@@ -489,7 +489,9 @@ export type ParticipantTableGridProps = {
   ) => void
   onWithdrawParticipant: (participantId: string, note: string) => void
   children: React.ReactNode //paging control
-  status: RequestStatus
+  // status: RequestStatus
+  status: 'loading' | 'success' | 'error' | 'idle'
+  isParticipantUpdating: boolean
 }
 
 const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
@@ -502,6 +504,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   selectedParticipantIds,
   isEnrolledById,
   isAllSelected,
+  isParticipantUpdating,
   onUpdateParticipant,
   onWithdrawParticipant,
   onRowSelected,
@@ -510,6 +513,9 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   const classes = useStyles()
   const {token} = useUserSessionDataState()
   const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
+
+  const {isLoading: isParticipantUpdating2, mutate} =
+    useUpdateParticipantInList()
 
   //when we are editing the record this is where the info is stored
   const [participantToEdit, setParticipantToEdit] = React.useState<
@@ -563,6 +569,40 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
       return 'SOME'
     }
     return 'NONE'
+  }
+
+  const updateParticiant = (
+    note: string,
+    clientTimeZone?: string,
+    customEvents?: ParticipantEvent[]
+  ) => {
+    console.log('Ux')
+    const changedEvents = customEvents?.filter(ue => {
+      let prevEvents = participantToEdit!.participant.events || []
+      const matchedEvent = prevEvents.find(
+        e => e.eventId === ue.eventId && e.timestamp !== ue.timestamp
+      )
+      return matchedEvent !== undefined
+    })
+    console.log('changedEvents?:', changedEvents?.length)
+    mutate(
+      {
+        action: 'UPDATE',
+        studyId: studyId,
+        userId: [participantToEdit!.id!],
+        updatedFields: {
+          note: note,
+          clientTimeZone: clientTimeZone,
+        },
+        customEvents: changedEvents || [],
+      },
+      {
+        onSuccess: () => {
+          setParticipantToEdit(undefined)
+        },
+        onError: (e: any) => alert(e),
+      }
+    )
   }
 
   const checkBoxSelectColumn: GridColDef = {
@@ -625,6 +665,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
           <div style={{flexGrow: 1}}>
             <DataGrid
               rows={rows}
+              loading={isParticipantUpdating}
               classes={{columnHeader: classes.gridHeader}}
               density="standard"
               columns={participantColumns}
@@ -669,11 +710,16 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                 Footer: () => <>{children}</>,
                 NoRowsOverlay: () => (
                   <GridOverlay>
-                    {status === 'PENDING' ? (
+                    {status === 'loading' ? (
                       <CircularProgress id="circular_progress"></CircularProgress>
                     ) : (
                       <Box bgcolor="white" height="100%" width="100%"></Box>
                     )}
+                  </GridOverlay>
+                ),
+                LoadingOverlay: () => (
+                  <GridOverlay>
+                    <CircularProgress id="circular_progress" />
                   </GridOverlay>
                 ),
               }}
@@ -701,13 +747,14 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               clientTimeZone?: string,
               customEvents?: ParticipantEvent[]
             ) => {
-              onUpdateParticipant(
-                participantToEdit?.id!,
+              /*  onUpdateParticipant(
+                participantToEdit!.id!,
                 note,
                 customEvents || [],
                 clientTimeZone
               )
-              setParticipantToEdit(undefined)
+              setParticipantToEdit(undefined)*/
+              updateParticiant(note, clientTimeZone, customEvents)
             }}
             participant={participantToEdit?.participant || {}}>
             <Button

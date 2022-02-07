@@ -7,7 +7,6 @@ import DownloadAppIcon from '@assets/participants/download_app_icon.svg'
 import SMSPhoneImg from '@assets/participants/joined_phone_icon.svg'
 import ParticipantListFocusIcon from '@assets/participants/participant_list_focus_icon.svg'
 import ParticipantListUnfocusIcon from '@assets/participants/participant_list_unfocus_icon.svg'
-import {ReactComponent as PinkSendSMSIcon} from '@assets/participants/send_sms_link_pink_icon.svg'
 import TestAccountFocusIcon from '@assets/participants/test_account_focus_icon.svg'
 import TestAccountUnfocusIcon from '@assets/participants/test_account_unfocus_icon.svg'
 import {ReactComponent as UnderConstructionCone} from '@assets/participants/under_construction_cone.svg'
@@ -17,14 +16,8 @@ import WithdrawnParticipantsUnfocusIcon from '@assets/participants/withdrawn_par
 import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
 import {useStudy} from '@components/studies/studyHooks'
 import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
-import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import TablePagination from '@components/widgets/pagination/TablePagination'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
-import {
-  DialogButtonPrimary,
-  DialogButtonSecondary,
-} from '@components/widgets/StyledComponents'
-import {useAsync} from '@helpers/AsyncHook'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
 import {
@@ -32,19 +25,14 @@ import {
   Button,
   CircularProgress,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
   Tab,
   Tabs,
 } from '@material-ui/core'
-import EventService from '@services/event.service'
-import ParticipantService from '@services/participants.service'
+import {JOINED_EVENT_ID} from '@services/event.service'
 import StudyService from '@services/study.service'
 import {theme} from '@style/theme'
 import constants from '@typedefs/constants'
 import {
-  ExtendedError,
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
@@ -55,17 +43,21 @@ import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useParams} from 'react-router-dom'
-import {useEvents} from '../eventHooks'
+import {useEvents, useEventsForUsers} from '../eventHooks'
+import {
+  useInvalidateParticipants,
+  useParticipants,
+  useUpdateParticipantInList,
+} from '../participantHooks'
 import AddParticipants from './add/AddParticipants'
 import CsvUtility from './csv/csvUtility'
 import ParticipantDownloadTrigger from './csv/ParticipantDownloadTrigger'
-import DialogContents from './DialogContents'
 import ParticipantTableGrid from './grid/ParticipantTableGrid'
 import BatchEditForm from './modify/BatchEditForm'
+import ParticipantDeleteModal from './ParticipantDeleteModal'
 import ParticipantManagerPlaceholder from './ParticipantManagerPlaceholder'
 import useStyles from './ParticipantManager_style'
 import ParticipantSearch from './ParticipantSearch'
-import ParticipantUtility from './participantUtility'
 import WithdrawnTabNoParticipantsPage from './WithdrawnTabNoParticipantsPage'
 
 /** types and constants  */
@@ -159,6 +151,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const handleError = useErrorHandler()
   const classes = useStyles()
+  const [pIds, setPIds] = React.useState<string[]>([])
 
   // The current page in the particpant grid the user is viewing
   const [currentPage, setCurrentPage] = React.useState(1)
@@ -200,40 +193,74 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     ParticipantAccountSummary[]
   >([])
 
-  //trigger data refresh on updates
-  const [refreshParticipantsToggle, setRefreshParticipantsToggle] =
-    React.useState(false)
+  const [searchValue, setSearchValue] = React.useState<string | undefined>(
+    undefined
+  )
 
+  const isById = Utility.isSignInById(study?.signInTypes)
+  const [data, setData] = React.useState<ParticipantData>()
+
+  // Hook to get scheduled events
   const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
 
-  const {
-    data,
-    status,
-    error,
-    run,
-    setData: setParticipantData,
-  } = useAsync<ParticipantData>({
-    status: 'PENDING',
-    data: null,
-  })
+  // Hook to get participants
+  const {data: pData, status} = useParticipants(
+    study?.identifier,
+    currentPage,
+    pageSize,
+    tab,
+    searchValue,
+    isById
+  )
+  const {data: pEventsMap} = useEventsForUsers(study?.identifier, pIds)
 
-  React.useEffect(() => {
-    if (!study?.identifier) {
-      return
+  const {isLoading: isParticipantUpdating, mutateAsync} =
+    useUpdateParticipantInList()
+
+  const invalidateParticipants = useInvalidateParticipants()
+  const onAction = async (
+    studyId: string,
+    type: 'WITHDRAW' | 'DELETE' | 'UPDATE',
+    userId?: string,
+    note?: string,
+    updatedFields?: any,
+    customEvents?: ParticipantEvent[]
+  ) => {
+    const userIdArr = [userId] as Array<string>
+    switch (type) {
+      case 'WITHDRAW':
+        mutateAsync({action: type, studyId, userId: userIdArr, note})
+        return
+
+      case 'DELETE':
+        setLoadingIndicators(_ => ({isDeleting: true}))
+        setParticipantsWithError([])
+        let isError = false
+        mutateAsync({
+          action: type,
+          studyId,
+          userId: selectedParticipantIds[tab!],
+        })
+        setLoadingIndicators(_ => ({isDeleting: false}))
+        if (!isError)
+          setDialogState({dialogOpenRemove: false, dialogOpenSMS: false})
+        return
+
+      case 'UPDATE':
+        mutateAsync({
+          action: type,
+          studyId: studyId,
+          userId: userIdArr,
+          updatedFields: updatedFields,
+          customEvents: customEvents,
+        })
+        return
+
+      default: {
+        console.log('unknown participant action')
+      }
     }
-    const fn = async () => {
-      const result: ParticipantData = await run(
-        ParticipantUtility.getParticipants(
-          study.identifier,
-          currentPage,
-          pageSize,
-          tab,
-          token!
-        )
-      )
-    }
-    fn()
-  }, [study?.identifier, refreshParticipantsToggle, currentPage, pageSize, tab])
+  }
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
@@ -241,6 +268,34 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setIsAllSelected(false)
   }
 
+  React.useEffect(() => {
+    console.log('setting PIDs', pData?.items.length)
+    if (pData && pData.items.length > 0) {
+      console.log('setting PIDs')
+      setPIds(pData.items.map(item => item.id))
+    }
+  }, [pData?.items])
+
+  React.useEffect(() => {
+    if (pData && pData.items.length > 0 && pEventsMap) {
+      const items = pData.items.map(item => {
+        const events = pEventsMap[item.id]
+        return events
+          ? {
+              ...item,
+              events: [
+                ...events.customEvents,
+                {
+                  eventId: JOINED_EVENT_ID,
+                  timestamp: events.timeline_retrieved,
+                },
+              ],
+            }
+          : item
+      })
+      setData({total: pData.total, items})
+    }
+  }, [pData, pEventsMap])
   React.useEffect(() => {
     if (isAllSelected) {
       setSelectedParticipantIds(prev => ({
@@ -252,43 +307,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     }
   }, [data])
 
-  //callbacks from the participant grid
-  const withdrawParticipant = async (participantId: string, note: string) => {
-    await ParticipantService.withdrawParticipant(
-      study!.identifier,
-      token!,
-      participantId,
-      note
-    )
-    setRefreshParticipantsToggle(prev => !prev)
-  }
-
-  const updateParticipant = async (
-    participantId: string,
-    updatedFields: {
-      [Property in keyof ParticipantAccountSummary]?: ParticipantAccountSummary[Property]
-    },
-    customEvents: ParticipantEvent[]
-  ) => {
-    try {
-      await ParticipantService.updateParticipant(
-        study!.identifier,
-        token!,
-        participantId,
-        updatedFields
-      )
-      await EventService.updateParticipantCustomEvents(
-        study!.identifier,
-        token!,
-        participantId,
-        customEvents
-      )
-      setRefreshParticipantsToggle(prev => !prev)
-    } catch (e) {
-      alert((e as ExtendedError).message)
-    }
-  }
-
   if (!study) {
     return isStudyLoading ? (
       <Box mx="auto" my={5} textAlign="center">
@@ -297,65 +315,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     ) : (
       <></>
     )
-  }
-
-  const deleteSelectedParticipants = async () => {
-    setLoadingIndicators(_ => ({isDeleting: true}))
-    setParticipantsWithError([])
-    let isError = false
-    for (let i = 0; i < selectedParticipantIds[tab].length; i++) {
-      try {
-        const x = await ParticipantService.deleteParticipant(
-          study!.identifier,
-          token!,
-          selectedParticipantIds[tab][i]
-        )
-      } catch (e) {
-        isError = true
-        const errorParticipant = data?.items?.find(
-          p => p.id === selectedParticipantIds[tab][i]
-        )
-        if (errorParticipant) {
-          setParticipantsWithError(prev => [...prev, errorParticipant])
-        }
-      }
-    }
-    setLoadingIndicators(_ => ({isDeleting: false}))
-    if (!isError) {
-      setDialogState({dialogOpenRemove: false, dialogOpenSMS: false})
-      setRefreshParticipantsToggle(prev => !prev)
-    }
-  }
-
-  const handleSearchParticipantRequest = async (
-    searchValue: string | undefined
-  ) => {
-    let searchOptions:
-      | {searchParam: 'EXTERNAL_ID' | 'PHONE_NUMBER'; searchValue: string}
-      | undefined = undefined
-    if (searchValue) {
-      setIsUserSearchingForParticipant(true)
-      const isById = Utility.isSignInById(study.signInTypes)
-      const searchParam = isById ? 'EXTERNAL_ID' : 'PHONE_NUMBER'
-      searchOptions = {
-        searchParam,
-        searchValue,
-      }
-    } else {
-      setIsUserSearchingForParticipant(false)
-    }
-    const searchResult = await run(
-      ParticipantUtility.getParticipants(
-        study.identifier,
-        0,
-        pageSize,
-        tab,
-        token!,
-        searchOptions
-      )
-    )
-    const {items, total} = searchResult || {items: [], total: 0}
-    setParticipantData({items, total})
   }
 
   const downloadParticipants = async (selectionType: SelectionType) => {
@@ -397,7 +356,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     StudyService.getDisplayStatusForStudyPhase(study.phase) !== 'LIVE'
 
   const displayNoParticipantsPage =
-    status !== 'PENDING' && data?.items.length == 0 && tab === 'WITHDRAWN'
+    status !== 'loading' && data?.items.length == 0 && tab === 'WITHDRAWN'
 
   return (
     <Box bgcolor="#F8F8F8">
@@ -495,7 +454,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                     study={study}
                     token={token!}
                     onAdded={() => {
-                      setRefreshParticipantsToggle(prev => !prev)
+                      invalidateParticipants()
                     }}
                     isTestAccount={tab === 'TEST'}
                   />
@@ -606,10 +565,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       <ParticipantSearch
                         isSearchById={Utility.isSignInById(study.signInTypes)}
                         onReset={() => {
-                          handleSearchParticipantRequest(undefined)
+                          setSearchValue(undefined)
                         }}
                         onSearch={(searchedValue: string) => {
-                          handleSearchParticipantRequest(searchedValue)
+                          setSearchValue(searchedValue)
                         }}
                         tab={tab}
                       />
@@ -625,6 +584,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       }}>
                       <ParticipantTableGrid
                         rows={data?.items || []}
+                        isParticipantUpdating={isParticipantUpdating}
                         status={status}
                         scheduleEventIds={
                           scheduleEvents.map(e => e.eventId) || []
@@ -637,7 +597,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         onWithdrawParticipant={(
                           participantId: string,
                           note: string
-                        ) => withdrawParticipant(participantId, note)}
+                        ) =>
+                          onAction(
+                            study.identifier,
+                            'WITHDRAW',
+                            participantId,
+                            note
+                          )
+                        }
                         onUpdateParticipant={(
                           participantId: string,
                           note: string,
@@ -651,8 +618,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                           if ((clientTimeZone?.length || 0) < 2) {
                             delete data.clientTimeZone
                           }
-                          updateParticipant(
+                          onAction(
+                            study.identifier,
+                            'UPDATE',
                             participantId,
+                            undefined,
                             data,
                             customEvents || []
                           )
@@ -697,94 +667,24 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             selectedParticipants={selectedParticipantIds[tab]}
             token={token!}
             studyId={study.identifier}
-            onToggleParticipantRefresh={() =>
-              setRefreshParticipantsToggle(prev => !prev)
-            }
+            onToggleParticipantRefresh={() => invalidateParticipants()}
             isAllSelected={isAllSelected}></BatchEditForm>
-          <Dialog
-            open={dialogState.dialogOpenSMS || dialogState.dialogOpenRemove}
-            maxWidth="xs"
-            scroll="body"
-            aria-labelledby="Remove Participant">
-            <DialogTitleWithClose
-              onCancel={() => {
-                setDialogState({
-                  dialogOpenRemove: false,
-                  dialogOpenSMS: false,
-                })
-              }}
-              icon={
-                dialogState.dialogOpenRemove ? (
-                  <DeleteIcon />
-                ) : (
-                  <PinkSendSMSIcon />
-                )
-              }
-              title={
-                dialogState.dialogOpenRemove
-                  ? 'Remove From Study'
-                  : 'Sending SMS Download Link'
-              }
-            />
-            <DialogContent style={{display: 'flex', justifyContent: 'center'}}>
-              {(dialogState.dialogOpenRemove || dialogState.dialogOpenSMS) && (
-                <DialogContents
-                  participantsWithError={participantsWithError}
-                  study={study}
-                  selectedParticipants={
-                    data?.items?.filter(participant =>
-                      selectedParticipantIds[tab].includes(participant.id)
-                    ) || []
-                  }
-                  isProcessing={!!loadingIndicators.isDeleting}
-                  isRemove={dialogState.dialogOpenRemove}
-                  selectingAll={isAllSelected}
-                  tab={tab}
-                  token={token!}
-                />
-              )}
-            </DialogContent>
-
-            {participantsWithError.length === 0 && (
-              <DialogActions>
-                <DialogButtonSecondary
-                  onClick={() =>
-                    setDialogState({
-                      dialogOpenRemove: false,
-                      dialogOpenSMS: false,
-                    })
-                  }
-                  style={{height: '48px'}}>
-                  Cancel
-                </DialogButtonSecondary>
-
-                <DialogButtonPrimary
-                  onClick={() => deleteSelectedParticipants()}
-                  autoFocus
-                  className={classes.primaryDialogButton}>
-                  {dialogState.dialogOpenRemove
-                    ? 'Permanently Remove'
-                    : 'Yes, send SMS'}
-                </DialogButtonPrimary>
-              </DialogActions>
-            )}
-
-            {participantsWithError.length > 0 && (
-              <DialogActions>
-                <DialogButtonPrimary
-                  onClick={() => {
-                    setRefreshParticipantsToggle(prev => !prev)
-                    setDialogState({
-                      dialogOpenRemove: false,
-                      dialogOpenSMS: false,
-                    })
-                  }}
-                  color="primary">
-                  Done
-                </DialogButtonPrimary>
-              </DialogActions>
-            )}
-          </Dialog>
+          <ParticipantDeleteModal
+            studyId={studyId}
+            dialogState={dialogState}
+            onClose={setDialogState}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            tab={tab}
+            isAllSelected={isAllSelected}
+            selectedParticipantIds={selectedParticipantIds}
+            participantsWithError={participantsWithError}
+            resetParticipantsWithError={() => setParticipantsWithError([])}
+            loadingIndicators={loadingIndicators}
+            onLoadingIndicatorsChange={(isDeleting: boolean) => {
+              setLoadingIndicators(_ => ({isDeleting: isDeleting}))
+            }}
+          />
         </>
       )}
     </Box>

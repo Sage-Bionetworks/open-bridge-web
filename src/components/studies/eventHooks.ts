@@ -3,16 +3,22 @@ import EventService from '@services/event.service'
 import ScheduleService, {
   ExtendedScheduleEventObject,
 } from '@services/schedule.service'
-import {ExtendedError, ParticipantEvent} from '@typedefs/types'
+import {
+  ExtendedError,
+  ParticipantEvent,
+  StringDictionary,
+} from '@typedefs/types'
 import {useMutation, useQuery, useQueryClient} from 'react-query'
 import {ADHERENCE_KEYS} from './adherenceHooks'
 
-const EVENTS_KEYS = {
+export const EVENTS_KEYS = {
   all: ['events'] as const,
   list: (studyId: string | undefined) => [...EVENTS_KEYS.all, 'list'] as const,
 
   detail: (studyId: string | undefined, userId: string | undefined) =>
     [...EVENTS_KEYS.list(studyId), userId] as const,
+  details: (studyId: string | undefined, userIds: string[] | undefined) =>
+    [...EVENTS_KEYS.list(studyId), userIds] as const,
 }
 
 export const useEvents = (studyId: string | undefined) => {
@@ -92,6 +98,36 @@ export const useEventsForUser = (
       ]).then(result => result[userId!]),
     {
       enabled: !!studyId && !!userId,
+      retry: false,
+      refetchOnWindowFocus: false,
+    }
+  )
+}
+
+export const useEventsForUsers = (
+  studyId: string | undefined,
+  userIds: string[]
+) => {
+  const {token} = useUserSessionDataState()
+
+  return useQuery<
+    StringDictionary<{
+      timeline_retrieved: Date | undefined
+      customEvents: ParticipantEvent[]
+    }>,
+    ExtendedError
+  >(
+    EVENTS_KEYS.details(studyId, userIds),
+    () => {
+      console.log('getting hi' + userIds.join(','))
+      return EventService.getRelevantEventsForParticipants(
+        studyId!,
+        token!,
+        userIds
+      )
+    },
+    {
+      enabled: !!studyId,
       retry: false,
       refetchOnWindowFocus: false,
     }
