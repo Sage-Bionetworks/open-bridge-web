@@ -615,6 +615,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                 <CloseIcon />
               </IconButton>
               <ReadOnlyScheduler
+                originEventId={_.first(schedule.studyBursts)?.originEventId}
                 session={openStudySession}
                 studySessionIndex={schedule.sessions.findIndex(
                   s => s.guid === openStudySession.guid
