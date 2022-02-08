@@ -199,21 +199,22 @@ async function deleteParticipant(
 ): Promise<string[]> {
   const promises = participantId.map(async pId => {
     const endpoint = `${constants.endpoints.participant.replace(
-          ':id',
-          studyId
-        )}/${pId}`
+      ':id',
+      studyId
+    )}/${pId}`
     const apiCall = await Utility.callEndpoint<{items: any[]}>(
       endpoint,
       'DELETE',
-      {},token
+      {},
+      token
     )
     return {participantId: pId, apiCall: apiCall}
   })
-  
-  return Promise.all(promises).then(result=>{
+
+  return Promise.all(promises).then(result => {
     return result.map(item => item.participantId)
   })
-  }
+}
 
 async function getActiveParticipants(
   studyId: string,
@@ -393,21 +394,21 @@ async function participantSearch(
   // get withdrawn info if the participant is withdrawn, only get the note otherwise
   let resultItems: ParticipantAccountSummary[] =
     participantAccountSummaryResult.data.items
-    if (queryFilter === 'withdrawn') {
-      const participantEnrollmentPromises =
+  if (queryFilter === 'withdrawn') {
+    const participantEnrollmentPromises =
       participantAccountSummaryResult.data.items.map(participant => {
         return getUserEnrollmentInfo(studyId, participant.id, token)
       })
-      const enrollments = await Promise.all(participantEnrollmentPromises)
-      resultItems = enrollments.map(p => mapWithdrawnParticipant(p, studyId))
-    } else if (queryFilter === 'enrolled') {
-      const participantEnrollmentPromises =
+    const enrollments = await Promise.all(participantEnrollmentPromises)
+    resultItems = enrollments.map(p => mapWithdrawnParticipant(p, studyId))
+  } else if (queryFilter === 'enrolled') {
+    const participantEnrollmentPromises =
       participantAccountSummaryResult.data.items.map(participant => {
         return getUserEnrollmentInfo(studyId, participant.id, token)
       })
-      const enrollments = await Promise.all(participantEnrollmentPromises)
-    resultItems.forEach(i =>{
-      i.note = 
+    const enrollments = await Promise.all(participantEnrollmentPromises)
+    resultItems.forEach(i => {
+      i.note =
         enrollments.find(p => p.participant.identifier === i.id)?.note || ''
     })
   }
@@ -598,20 +599,25 @@ async function updateParticipant(
   },
   isAllSelected?: boolean
 ): Promise<string[]> {
-  if(isAllSelected){
-    const resultEnrolled =
-      await getEnrollmentByEnrollmentType(
-        studyIdentifier,
-        token,
-        'enrolled',
-          false
-      )
+  if (isAllSelected) {
+    const resultEnrolled = await getEnrollmentByEnrollmentType(
+      studyIdentifier,
+      token,
+      'enrolled',
+      false
+    )
     const enrolledNonTestParticipants = resultEnrolled.items
     participantId = enrolledNonTestParticipants.map(
       el => el.participant.identifier
     )
   }
-  const participantInfo = await participantId?.map(pId => getParticipant(studyIdentifier,pId,token))
+  if (updatedFields.clientTimeZone === '') {
+    updatedFields.clientTimeZone = undefined
+  }
+
+  const participantInfo = await participantId?.map(pId =>
+    getParticipant(studyIdentifier, pId, token)
+  )
   const updatedParticipantFields = {...updatedFields}
   delete updatedParticipantFields.note
 
@@ -622,14 +628,14 @@ async function updateParticipant(
   }
 
   if (participantId.length < 2 && updatedFields.note !== undefined) {
-      //we update the enrollment note record
-      await updateEnrollmentNote(
-        studyIdentifier,
-        participantId[0], // updating single participants
-        updatedFields.note,
-        token
-      )
-    }
+    //we update the enrollment note record
+    await updateEnrollmentNote(
+      studyIdentifier,
+      participantId[0], // updating single participants
+      updatedFields.note,
+      token
+    )
+  }
 
   const promises = participantId.map(async pId => {
     const endpoint = `${constants.endpoints.participant.replace(
@@ -644,7 +650,7 @@ async function updateParticipant(
     )
     return {participantId: pId, apiCall: apiCall}
   })
-  return Promise.all(promises).then(result=>{
+  return Promise.all(promises).then(result => {
     return result.map(item => item.participantId)
   })
 }

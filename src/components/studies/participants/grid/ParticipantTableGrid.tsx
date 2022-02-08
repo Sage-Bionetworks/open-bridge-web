@@ -489,7 +489,6 @@ export type ParticipantTableGridProps = {
   ) => void
   onWithdrawParticipant: (participantId: string, note: string) => void
   children: React.ReactNode //paging control
-  // status: RequestStatus
   status: 'loading' | 'success' | 'error' | 'idle'
   isParticipantUpdating: boolean
 }
@@ -504,7 +503,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   selectedParticipantIds,
   isEnrolledById,
   isAllSelected,
-  isParticipantUpdating,
+  isParticipantUpdating: isLoadingFromGrid,
   onUpdateParticipant,
   onWithdrawParticipant,
   onRowSelected,
@@ -514,7 +513,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   const {token} = useUserSessionDataState()
   const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
 
-  const {isLoading: isParticipantUpdating2, mutate} =
+  const {isLoading: isParticipantUpdating, mutate} =
     useUpdateParticipantInList()
 
   //when we are editing the record this is where the info is stored
@@ -578,6 +577,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   ) => {
     console.log('Ux')
     let prevEvents = participantToEdit!.participant.events || []
+    
     let changedEvents
     if (prevEvents.length < 2){
       changedEvents = customEvents
@@ -605,7 +605,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
         onSuccess: () => {
           setParticipantToEdit(undefined)
         },
-        onError: (e: any) => alert(e),
+        onError: (e: any) => alert(e.message),
       }
     )
   }
@@ -670,7 +670,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
           <div style={{flexGrow: 1}}>
             <DataGrid
               rows={rows}
-              loading={isParticipantUpdating}
+              loading={isLoadingFromGrid || isParticipantUpdating}
               classes={{columnHeader: classes.gridHeader}}
               density="standard"
               columns={participantColumns}
@@ -744,6 +744,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
         <HideWhen hideWhen={participantToEdit?.shouldWithdraw || false}>
           <EditParticipantForm
+            isLoading={isParticipantUpdating}
             scheduleEvents={scheduleEvents}
             isEnrolledById={isEnrolledById}
             onCancel={() => setParticipantToEdit(undefined)}
