@@ -9,7 +9,7 @@ type TimezoneInfoType = {
 
 const TimezoneDropdown: React.FunctionComponent<{
   currentValue: string
-  onValueChange: Function
+  onValueChange: (val: string) => void
 }> = ({currentValue, onValueChange}) => {
   function getAllTimezones() {
     const timezoneNames = moment.tz.names()
@@ -32,7 +32,7 @@ const TimezoneDropdown: React.FunctionComponent<{
       value={currentValue === '-' ? '' : currentValue}
       itemHeight="48px"
       isSearchable={true}
-      onChange={() => {}}
+      onChange={e => onValueChange(e.target.value as string)}
       searchableDescription={'Participant Time Zone'}
     />
   )
