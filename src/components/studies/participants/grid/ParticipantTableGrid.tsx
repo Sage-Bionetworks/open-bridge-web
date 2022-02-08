@@ -577,10 +577,11 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   ) => {
     const changedEvents = customEvents?.filter(ue => {
       let prevEvents = participantToEdit!.participant.events || []
-      const matchedEvent = prevEvents.find(
+      const updatedEvent = prevEvents.find(
         e => e.eventId === ue.eventId && e.timestamp !== ue.timestamp
       )
-      return matchedEvent !== undefined
+      const existingEvent = prevEvents.find(e => e.eventId === ue.eventId)
+      return updatedEvent || !existingEvent
     })
 
     mutate(
