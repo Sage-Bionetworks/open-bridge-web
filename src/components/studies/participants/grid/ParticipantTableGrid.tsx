@@ -575,21 +575,15 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     clientTimeZone?: string,
     customEvents?: ParticipantEvent[]
   ) => {
-    console.log('Ux')
-    let prevEvents = participantToEdit!.participant.events || []
-    
-    let changedEvents
-    if (prevEvents.length < 2){
-      changedEvents = customEvents
-    }else{
-      changedEvents = customEvents?.filter(ue => {
-      const matchedEvent = prevEvents.find(
+    const changedEvents = customEvents?.filter(ue => {
+      let prevEvents = participantToEdit!.participant.events || []
+      const updatedEvent = prevEvents.find(
         e => e.eventId === ue.eventId && e.timestamp !== ue.timestamp
       )
-        return matchedEvent !== undefined
-      })
-    }
-    // console.log('changedEvents?:', changedEvents?.length)
+      const existingEvent = prevEvents.find(e => e.eventId === ue.eventId)
+      return updatedEvent || !existingEvent
+    })
+
     mutate(
       {
         action: 'UPDATE',
