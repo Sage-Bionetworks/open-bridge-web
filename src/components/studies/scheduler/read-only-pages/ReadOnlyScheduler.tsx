@@ -1,14 +1,14 @@
 import {Box, makeStyles} from '@material-ui/core'
 import EventService from '@services/event.service'
-import clsx from 'clsx'
-import _ from 'lodash'
-import React from 'react'
-import {poppinsFont} from '../../../../style/theme'
+import {poppinsFont} from '@style/theme'
 import {
   NotificationTimeAtEnum,
   ScheduleNotification,
   StudySession,
-} from '../../../../types/scheduling'
+} from '@typedefs/scheduling'
+import clsx from 'clsx'
+import _ from 'lodash'
+import React from 'react'
 import AssessmentList from '../AssessmentList'
 import ReadOnlyAssessmentWindow from '../read-only-pages/ReadOnlyAssessmentWindow'
 import ReadOnlyNotificationWindow from '../read-only-pages/ReadOnlyNotificationWindow'
@@ -24,6 +24,7 @@ type ReadOnlySchedulerProps = {
   session: StudySession
 
   studySessionIndex: number
+  originEventId?: string
 }
 
 const useStyles = makeStyles(theme => ({
@@ -54,6 +55,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
   session,
 
   studySessionIndex,
+  originEventId,
 }) => {
   const schedulerClasses = sharedSchedulerStyles()
   const sessionContainerClasses = SchedulableSessionStyles()
@@ -115,7 +117,7 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
                 classes.readOnlyTextCentering
               )}>
               {EventService.formatEventIdForDisplay(
-                _.first(session.startEventIds) || 'Unknown'
+                _.first(session.startEventIds) || originEventId || 'Unknown'
               )}
             </strong>
           </SchedulingFormSection>
