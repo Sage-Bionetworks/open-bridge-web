@@ -119,6 +119,8 @@ const Filter: FunctionComponent<FilterProps> = ({
     setIsSelectAll(isSelectAll)
     if (isSelected) {
       setSearchLabels(Array.from(displayLabels.keys()))
+    } else {
+      setSearchLabels([])
     }
   }
   const selectLabel = (label: string, selected: boolean) => {
@@ -248,6 +250,7 @@ const Filter: FunctionComponent<FilterProps> = ({
               Cancel
             </WhiteButton>{' '}
             <WhiteButton
+              disabled={searchLabels.length === 0}
               className={classes.button}
               onClick={() => applyFilterChange()}>
               Apply Filter
