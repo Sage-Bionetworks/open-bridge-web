@@ -611,7 +611,10 @@ async function updateParticipant(
       el => el.participant.identifier
     )
   }
-  if (updatedFields.clientTimeZone === '') {
+  if (
+    updatedFields.clientTimeZone === '' ||
+    updatedFields.clientTimeZone === '-'
+  ) {
     updatedFields.clientTimeZone = undefined
   }
 
