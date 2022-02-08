@@ -489,7 +489,6 @@ export type ParticipantTableGridProps = {
   ) => void
   onWithdrawParticipant: (participantId: string, note: string) => void
   children: React.ReactNode //paging control
-  // status: RequestStatus
   status: 'loading' | 'success' | 'error' | 'idle'
   isParticipantUpdating: boolean
 }
@@ -504,7 +503,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   selectedParticipantIds,
   isEnrolledById,
   isAllSelected,
-  isParticipantUpdating,
+  isParticipantUpdating: isLoadingFromGrid,
   onUpdateParticipant,
   onWithdrawParticipant,
   onRowSelected,
@@ -514,7 +513,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   const {token} = useUserSessionDataState()
   const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
 
-  const {isLoading: isParticipantUpdating2, mutate} =
+  const {isLoading: isParticipantUpdating, mutate} =
     useUpdateParticipantInList()
 
   //when we are editing the record this is where the info is stored
@@ -576,7 +575,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     clientTimeZone?: string,
     customEvents?: ParticipantEvent[]
   ) => {
-    console.log('Ux')
     const changedEvents = customEvents?.filter(ue => {
       let prevEvents = participantToEdit!.participant.events || []
       const matchedEvent = prevEvents.find(
@@ -584,7 +582,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
       )
       return matchedEvent !== undefined
     })
-    console.log('changedEvents?:', changedEvents?.length)
+
     mutate(
       {
         action: 'UPDATE',
@@ -600,7 +598,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
         onSuccess: () => {
           setParticipantToEdit(undefined)
         },
-        onError: (e: any) => alert(e),
+        onError: (e: any) => alert(e.message),
       }
     )
   }
@@ -665,7 +663,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
           <div style={{flexGrow: 1}}>
             <DataGrid
               rows={rows}
-              loading={isParticipantUpdating}
+              loading={isLoadingFromGrid || isParticipantUpdating}
               classes={{columnHeader: classes.gridHeader}}
               density="standard"
               columns={participantColumns}
@@ -739,6 +737,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
         <HideWhen hideWhen={participantToEdit?.shouldWithdraw || false}>
           <EditParticipantForm
+            isLoading={isParticipantUpdating}
             scheduleEvents={scheduleEvents}
             isEnrolledById={isEnrolledById}
             onCancel={() => setParticipantToEdit(undefined)}
@@ -747,13 +746,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               clientTimeZone?: string,
               customEvents?: ParticipantEvent[]
             ) => {
-              /*  onUpdateParticipant(
-                participantToEdit!.id!,
-                note,
-                customEvents || [],
-                clientTimeZone
-              )
-              setParticipantToEdit(undefined)*/
               updateParticiant(note, clientTimeZone, customEvents)
             }}
             participant={participantToEdit?.participant || {}}>

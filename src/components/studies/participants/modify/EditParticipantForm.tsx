@@ -85,7 +85,6 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
               hideLoginEvent={false}
               scheduleEvents={scheduleEvents}
               onChange={e => {
-                console.log('event change')
                 setCustomParticipantEvents(_prev => e)
               }}
             />
@@ -93,7 +92,7 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
           <Box width="375px" mb={3}>
             <TimezoneDropdown
               currentValue={currentTimeZone}
-              onValueChange={setCurrentTimeZone}
+              onValueChange={e => setCurrentTimeZone(e)}
             />
           </Box>
           {!isBatchEdit && (
