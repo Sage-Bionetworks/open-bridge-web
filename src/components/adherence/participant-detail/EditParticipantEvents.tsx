@@ -43,12 +43,16 @@ const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
     }
   }, [events])
 
-  const r = useUpdateEventsForUser()
+  const {
+    isSuccess,
+    isError,
+    isIdle,
+    error,
+    mutate: updateEvents,
+  } = useUpdateEventsForUser()
 
-  const {isSuccess, isError, isIdle, error, mutate: updateEvents} = r
-  console.log('r', r)
   return (
-    <Dialog open={true} scroll="body">
+    <Dialog open={true} maxWidth="sm" fullWidth scroll="body">
       <DialogTitleWithClose
         onCancel={onCloseDialog}
         title="Edit Participant Event Date"

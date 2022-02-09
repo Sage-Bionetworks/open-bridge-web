@@ -178,7 +178,7 @@ const AdherenceParticipant: FunctionComponent<
               variant="text"
               onClick={() => setIsEditParticipant(true)}>
               <img src={EditIcon}></img>
-              &nbsp;Edit Participant Details
+              &nbsp;Edit Participant Events
             </Button>
             <Box marginLeft="auto" className={classes.cumulative}>
               Cumulative: &nbsp; &nbsp; &nbsp;

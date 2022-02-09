@@ -10,6 +10,7 @@ import {
   ParticipantActivityType,
   StringDictionary,
 } from '../types/types'
+import AdherenceService from './adherence.service'
 import EventService from './event.service'
 
 export const EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING = 'withdrawn'
@@ -548,7 +549,8 @@ async function addParticipant(
     const result = await Promise.all(updatePromises)
     console.log(result.length)
   }
-
+  //prime adherence. We are not waiting -- just firing it up
+  AdherenceService.getAdherenceForWeekForUsers(studyId, [userId], token)
   return userId
 }
 
@@ -630,7 +632,7 @@ async function updateParticipant(
     ...updatedParticipantFields,
   }
 
-  if (participantId.length < 2 && updatedFields.note !== undefined) {
+  if (participantId.length === 1 && updatedFields.note !== undefined) {
     //we update the enrollment note record
     await updateEnrollmentNote(
       studyIdentifier,
@@ -653,9 +655,16 @@ async function updateParticipant(
     )
     return {participantId: pId, apiCall: apiCall}
   })
-  return Promise.all(promises).then(result => {
+  const result = await Promise.all(promises).then(result => {
     return result.map(item => item.participantId)
   })
+  //we want to ping adherence to make sure data is refreshed
+  AdherenceService.getAdherenceForWeekForUsers(
+    studyIdentifier,
+    participantId,
+    token
+  )
+  return result
 }
 
 async function getRequestInfoForParticipant(
