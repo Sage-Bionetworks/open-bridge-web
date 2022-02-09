@@ -85,7 +85,9 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
         </div>
         {adherenceWeeklyReport.items.map((a, index) =>
           !a.participant ? (
-            <div className={classes.participantRow} key={'no_participant'}>
+            <div
+              className={classes.participantRow}
+              key={`no_participant_${index}`}>
               the participant withdrew
             </div>
           ) : (
