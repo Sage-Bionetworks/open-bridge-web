@@ -503,7 +503,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   return (
     <div ref={ref} className={classes.plotContainer}>
       <PlotDaysDisplay unitWidth={unitWidth} title="Schedule by week day" />
-      <div style={{position: 'relative', overflow: 'hidden'}}>
+      <div style={{position: 'relative' /*, overflow: 'hidden'*/}}>
         {!isLoading && plotData && (
           <>
             {children && (
