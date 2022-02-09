@@ -1,3 +1,5 @@
+import {ReactComponent as EditIcon} from '@assets/edit_pencil.svg'
+import {ReactComponent as RedEditIcon} from '@assets/edit_pencil_red.svg'
 import {
   FormControl,
   FormGroup,
@@ -15,8 +17,6 @@ import {HDWMEnum, SchedulingEvent} from '@typedefs/scheduling'
 import React, {FunctionComponent} from 'react'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
-import {ReactComponent as RedEditIcon} from '@assets/edit_pencil_red.svg'
-import {ReactComponent as EditIcon} from '@assets/edit_pencil.svg'
 
 const useStyles = makeStyles(theme => ({
   select: {padding: theme.spacing(1, 4, 1, 1), width: '150px'},
@@ -44,31 +44,34 @@ const useStyles = makeStyles(theme => ({
   },
   editIcon: {
     '&:hover': {
-      backgroundColor: 'transparent', 
-    }
+      backgroundColor: 'transparent',
+    },
   },
 }))
 
 type ToolIconProps = {
   onOpenEventsEditor: Function
 }
-const ToolIcon: FunctionComponent<ToolIconProps> = ({
-  onOpenEventsEditor
-}) => {
+const ToolIcon: FunctionComponent<ToolIconProps> = ({onOpenEventsEditor}) => {
   const classes = useStyles()
   const [isHoveringEdit, setIsHoveringEdit] = React.useState(false)
   const handleMouseOver = () => setIsHoveringEdit(true)
   const handleMouseOut = () => setIsHoveringEdit(false)
-  return(
-    <Tooltip title = "Edit Custom Event">
-      <IconButton 
-      className={classes.editIcon} 
-      onClick={()=>onOpenEventsEditor()} 
-      onMouseEnter={handleMouseOver} 
-      onMouseLeave={handleMouseOut}>
+  return (
+    <Tooltip title="Edit Custom Event">
+      <IconButton
+        className={classes.editIcon}
+        onClick={() => onOpenEventsEditor()}
+        onMouseEnter={handleMouseOver}
+        onMouseLeave={handleMouseOut}>
         {' '}
-        {isHoveringEdit? <EditIcon /> : 
-        <RedEditIcon style={{position:'relative', bottom:'0.5px', right:'0.5px'}}/>}
+        {isHoveringEdit ? (
+          <EditIcon />
+        ) : (
+          <RedEditIcon
+            style={{position: 'relative', bottom: '0.5px', right: '0.5px'}}
+          />
+        )}
       </IconButton>
     </Tooltip>
   )
@@ -151,13 +154,13 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
           <FormGroup row={true} style={{alignItems: 'center'}}>
             <Radio value={false} disabled={isBurst} />
             <SelectEventId
-              disabled={hasDelay}
+              disabled={hasDelay || isBurst}
               value={!hasDelay ? startEventId : ''}
               onChangeFn={(e: string) =>
                 onChangeStartEventId(e)
               }></SelectEventId>
-              <ToolIcon onOpenEventsEditor={onOpenEventsEditor}/>
-            {isBurst ? children : ''}          
+            <ToolIcon onOpenEventsEditor={onOpenEventsEditor} />
+            {isBurst ? children : ''}
           </FormGroup>
           <FormGroup row={true} style={{alignItems: 'center'}}>
             <Radio value={true} disabled={isBurst} />{' '}
@@ -179,7 +182,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
               onChangeFn={(e: string) =>
                 onChangeStartEventId(e)
               }></SelectEventId>
-            <ToolIcon onOpenEventsEditor={onOpenEventsEditor}/>
+            <ToolIcon onOpenEventsEditor={onOpenEventsEditor} />
           </FormGroup>
         </RadioGroup>
       </div>
