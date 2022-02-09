@@ -8,7 +8,7 @@ const useStyles = makeStyles(theme => ({
   dot: {
     width: '6px',
     height: '6px',
-    margin: '2px',
+    margin: '0 auto',
     borderRadius: '50%',
     border: '2px solid black',
   },

@@ -52,18 +52,6 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: '#fff',
     padding: '10px 0',
   },
-  dayCell: {
-    padding: '0 8px',
-    borderRight: '1px solid black',
-    display: 'flex',
-    flexDirection: 'row',
-    alignContent: 'center',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    '&:first-child': {
-      borderLeft: '1px solid black',
-    },
-  },
 
   eventRowForWeek: {
     display: 'flex',
