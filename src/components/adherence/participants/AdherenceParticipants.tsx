@@ -65,7 +65,7 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
 
     const {data: fullAdherenceWeeklyReport} = useAdherenceForWeek(
       studyId,
-      currentPage + 1,
+      currentPage,
       pageSize,
       {}
     )
