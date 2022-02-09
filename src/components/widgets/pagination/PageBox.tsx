@@ -41,7 +41,7 @@ const PageBox: React.FunctionComponent<PageBoxProps> = ({
       className={`${classes.pageBoxSurrounding} ${
         isSelected ? classes.withBlackBorder : classes.withGrayBorder
       }`}
-      onClick={() => onPageSelected(pageNumber)}>
+      onClick={() => onPageSelected(pageNumber-1)}>
       {pageNumber}
     </Button>
   )

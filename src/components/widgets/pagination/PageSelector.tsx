@@ -47,9 +47,9 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
     pageNumbers.push(i)
   }
 
-  const rotateAndDisableBackIcons = currentPageSelected === 1
+  const rotateAndDisableBackIcons = currentPageSelected === 0
   const rotateAndDisableForwardIcons =
-    currentPageSelected === numberOfPages || numberOfPages === 0
+    currentPageSelected + 1 === numberOfPages || numberOfPages === 0
 
   return (
     <div className={classes.container}>
@@ -85,7 +85,7 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
       {pageNumbers.map((element, index) => (
         <PageBox
           key={`page-box-${index}`}
-          isSelected={element == currentPageSelected}
+          isSelected={index == currentPageSelected}
           pageNumber={element}
           onPageSelected={onPageSelected}
           index={index}
