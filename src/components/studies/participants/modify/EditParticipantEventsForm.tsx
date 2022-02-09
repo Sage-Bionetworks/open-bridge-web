@@ -50,9 +50,9 @@ const useStyles = makeStyles(theme => ({
   },
   eventIdLabel: {
     paddingRight: '4px',
-    width: '70px',
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
+    // width: '70px',
+    // textOverflow: 'ellipsis',
+    /*  overflow: 'hidden',
     '&:hover': {
       overflow: 'visible',
       fontSize: '12px',
@@ -60,7 +60,7 @@ const useStyles = makeStyles(theme => ({
       width: '300px',
       zIndex: 1000,
       top: '27px',
-    },
+    },*/
   },
   burstEventField: {},
   burstOrigin: {},
@@ -130,16 +130,18 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
         e => e.originEventId === newBurstEvent.eventId
       )
       var newEvents = burstEvents.map(e => {
+        console.log(EventService.getBurstNumberFromEventId(e.eventId))
         const newEvent: ParticipantEvent = {
           eventId: e.eventId,
           timestamp: moment(newBurstEvent.timestamp!)
             .add(
-              EventService.getBurstNumberFromEventId(e.eventId) *
+              (EventService.getBurstNumberFromEventId(e.eventId) - 1) *
                 (e.interval?.value || 0),
               'week'
             )
             .toDate(),
         }
+
         return newEvent
       })
       newEvents.forEach(ne => {
