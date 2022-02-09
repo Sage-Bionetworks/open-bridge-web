@@ -303,9 +303,9 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               <InfoCircleWithToolTip
                 tooltipDescription={
                   <span>
-                    &nbsp;To <strong>rename or delete</strong> this Event,
-                    please unselect it from the Session Start that is currently
-                    mapped to it in the Create Scheduler step.
+                    This session is now part of a <strong>Burst</strong>. To
+                    edit this Start Session event, the session must be removed
+                    from the Burst first.
                   </span>
                 }
                 variant="info"
