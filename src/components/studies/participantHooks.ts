@@ -47,7 +47,7 @@ async function getParticipants(
     searchValue: string
   }
 ): Promise<ParticipantData> {
-  const offset = (currentPage - 1) * pageSize
+  const offset = currentPage * pageSize
   //const token = Utility.getSession()?.token
   if (!token) {
     throw Error('Need token')

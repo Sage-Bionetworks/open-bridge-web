@@ -206,7 +206,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   // Hook to get participants
   const {data: pData, status} = useParticipants(
     study?.identifier,
-    currentPage + 1,
+    currentPage,
     pageSize,
     tab,
     searchValue,
