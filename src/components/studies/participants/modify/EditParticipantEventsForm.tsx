@@ -95,7 +95,7 @@ const EventLabel: FunctionComponent<{
       {formattedEventId}:
       <br />
       <i style={{fontWeight: 'normal', fontSize: '12px'}}>
-        Week {(index + 1) * (eo.interval?.value || 0)}
+        Week {index * (eo.interval?.value || 0) + 1}
       </i>
     </div>
   )
