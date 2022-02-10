@@ -154,7 +154,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [pIds, setPIds] = React.useState<string[]>([])
 
   // The current page in the particpant grid the user is viewing
-  const [currentPage, setCurrentPage] = React.useState(1)
+  const [currentPage, setCurrentPage] = React.useState(0)
   // The current page size of the particpant grid
   const [pageSize, setPageSize] = React.useState(25)
   // Withdrawn or active participants
@@ -264,7 +264,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
-    setCurrentPage(1)
+    setCurrentPage(0)
     setIsAllSelected(false)
   }
 

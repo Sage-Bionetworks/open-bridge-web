@@ -52,7 +52,8 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
 
     const [adherenceParams, setAdherenceParams] =
       React.useState<WeeklyAdherenceFilter>({})
-    const [currentPage, setCurrentPage] = React.useState(1)
+    const [currentPage, setCurrentPage] = React.useState(0)
+
     const [pageSize, setPageSize] = React.useState(5)
     const [sessions, setSessions] = React.useState<SessionDisplayInfo[]>([])
 
@@ -87,7 +88,7 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
           <ProgressionFilter
             progressionStatus={adherenceParams.progressionFilters}
             onChange={(f: ProgressionStatus[] | undefined) => {
-              setCurrentPage(1)
+              setCurrentPage(0)
               setAdherenceParams(prev => ({...prev, progressionFilters: f}))
             }}
           />
@@ -97,13 +98,13 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
               isSearchById={true}
               onReset={() => {
                 setAdherenceParams({})
-                setCurrentPage(1)
+                setCurrentPage(0)
               }}
               onSearch={(searchedValue: string) => {
                 setAdherenceParams({
                   idFilter: searchedValue,
                 })
-                setCurrentPage(1)
+                setCurrentPage(0)
               }}
             />
           </div>
@@ -115,7 +116,7 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
                 thresholdMax={adherenceParams.adherenceMax}
                 thresholdMin={adherenceParams.adherenceMin}
                 onFilterChange={params => {
-                  setCurrentPage(1)
+                  setCurrentPage(0)
                   setAdherenceParams({
                     ...adherenceParams,
                     adherenceMax: params.max,

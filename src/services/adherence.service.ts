@@ -69,7 +69,7 @@ async function getAdherenceForWeek(
 
   const paging = {
     pageSize: pageSize || undefined,
-    offsetBy: pageSize > 0 ? (currentPage - 1) * pageSize : undefined,
+    offsetBy: pageSize > 0 ? currentPage * pageSize : undefined,
   }
 
   filter.labelFilters = filter.labelFilters?.map(label => {

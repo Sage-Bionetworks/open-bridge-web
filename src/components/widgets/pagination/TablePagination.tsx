@@ -69,11 +69,11 @@ const getCurrentPageFromPageNavigationArrowPressed = (
   if (type === 'F' && currentPage !== numberOfPages) {
     return currentPage + 1
   } else if (type === 'FF' && currentPage !== numberOfPages) {
-    return numberOfPages
-  } else if (type === 'B' && currentPage !== 1) {
+    return numberOfPages - 1
+  } else if (type === 'B' && currentPage !== 0) {
     return currentPage - 1
-  } else if (type === 'BB' && currentPage !== 1) {
-    return 1
+  } else if (type === 'BB' && currentPage !== 0) {
+    return 0
   }
   return currentPage //should not happen
 }
@@ -100,7 +100,7 @@ const TablePagination: React.FunctionComponent<TablePaginationProps> = ({
   counterTextPlural,
 }) => {
   const classes = useStyles()
-  let itemsShownMin = pageSize * (currentPage - 1) + 1
+  let itemsShownMin = pageSize * currentPage + 1
   let itemsShownMax = Math.min(pageSize + itemsShownMin - 1, totalItems)
   if (totalItems === 0) {
     return <></>
@@ -137,7 +137,7 @@ const TablePagination: React.FunctionComponent<TablePaginationProps> = ({
           select
           value={pageSize}
           onChange={event => {
-            onPageSelectedChanged(1)
+            onPageSelectedChanged(0)
             setPageSize(event.target.value)
           }}
           classes={{
