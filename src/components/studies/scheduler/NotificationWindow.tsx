@@ -116,7 +116,7 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
       </Box>
       <Box mx="auto" width="auto">
         <SchedulingFormSection
-          label={'Subject line:'}
+          label={'Subject line: (30 character limit)'}
           variant="small"
           border={false}>
           <TextField
@@ -127,12 +127,12 @@ const NotificationWindow: React.FunctionComponent<NotificationWindowProps> = ({
             defaultValue={_.first(notification.messages)?.subject || ''}
             onBlur={e => updateMessage({subject: e.target.value})}
             inputProps={{
-              maxLength: 40,
+              maxLength: 30,
             }}></TextField>
         </SchedulingFormSection>
 
         <SchedulingFormSection
-          label={'Body text (40 character limit)'}
+          label={'Body text: (40 character limit)'}
           variant="small"
           border={false}>
           <TextField
