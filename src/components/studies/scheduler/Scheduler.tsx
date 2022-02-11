@@ -231,6 +231,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   const onCancelSessionUpdate = () => {
     if (hasObjectChanged) {
       refetch()
+      setSchedule(_schedule)
       setHasObjectChanged(false)
     }
     setScheduleErrors([])

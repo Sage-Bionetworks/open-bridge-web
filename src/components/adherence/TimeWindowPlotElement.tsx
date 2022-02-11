@@ -38,6 +38,7 @@ const TimeWindowPlotElement: FunctionComponent<{
       <div
         id={'window_' + windowIndex}
         style={{
+          textAlign: 'center',
           width: `${Math.floor(100 / maxNumberOfWindows)}%`,
         }}>
         <AdherenceSessionIcon

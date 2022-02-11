@@ -35,7 +35,10 @@ const SessionLegend: FunctionComponent<{
       <strong>{sessionName}</strong>{' '}
       {arr.map(e => (
         <div key={e.label}>
-          <AdherenceSessionIcon sessionSymbol={symbolKey} windowState={e.state}>
+          <AdherenceSessionIcon
+            sessionSymbol={symbolKey}
+            windowState={e.state}
+            isInLegend={true}>
             {e.label}
           </AdherenceSessionIcon>
         </div>

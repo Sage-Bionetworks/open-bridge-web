@@ -18,7 +18,7 @@ export const useCommonStyles = makeStyles(theme => ({
     height: '20px',
   },
   dayCell: {
-    padding: '0 8px',
+    padding: '0',
     borderRight: '1px solid black',
     display: 'flex',
     flexDirection: 'row',
