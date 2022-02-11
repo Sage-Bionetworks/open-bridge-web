@@ -39,7 +39,6 @@ type StudySublistProps = {
     study: Study
     anchorEl: HTMLElement
   } | null
-  isStudyUpdating: boolean
 }
 
 type StudyAction =
@@ -187,7 +186,6 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   onStudyCardClick,
   highlightedStudyId,
   menuAnchor,
-  isStudyUpdating,
 }: StudySublistProps) => {
   const classes = useStyles()
   const item = sections.find(section => section.sectionStatus === status)!
@@ -224,7 +222,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
             style={{textDecoration: 'none'}}
             key={study.identifier || index}
             variant="body2"
-            onClick={() => isStudyUpdating ? '' : onStudyCardClick({...study}, 'VIEW')}>
+            onClick={() => study.identifier === '...' ? '' : onStudyCardClick({...study}, 'VIEW')}>
             <StudyCard
               study={study}
               onRename={(newName: string) => {
@@ -487,7 +485,6 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
                   }}
                   highlightedStudyId={highlightedStudyId}
                   menuAnchor={menuAnchor}
-                  isStudyUpdating={isStudyUpdating}
                 />
               </Box>
             ))}
