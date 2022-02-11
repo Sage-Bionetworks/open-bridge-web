@@ -11,12 +11,16 @@ const useStyles = makeStyles(theme => ({
     margin: '0 auto',
     borderRadius: '50%',
     border: '2px solid black',
+    '&$legend': {
+      margin: '2px',
+    },
   },
   plotElement: {
     width: '10px',
 
     overflow: 'visible',
   },
+  legend: {},
 }))
 
 export const SHAPE_CLASSES: Record<
@@ -41,7 +45,8 @@ const AdherenceSessionIcon: FunctionComponent<{
   windowState: AdherenceWindowState
   isRed?: boolean
   children?: React.ReactNode
-}> = ({sessionSymbol, windowState, children, isRed = false}) => {
+  isInLegend?: boolean
+}> = ({sessionSymbol, windowState, children, isRed = false, isInLegend}) => {
   const classes = useStyles()
   if (!sessionSymbol) {
     return <></>
@@ -67,7 +72,7 @@ const AdherenceSessionIcon: FunctionComponent<{
   })
 
   const el = isEmptyDot ? (
-    <div className={classes.dot} />
+    <div className={clsx(classes.dot, isInLegend && classes.legend)} />
   ) : (
     React.cloneElement(SessionSymbols.get(sessionSymbol)![variant], {
       className: classList,
