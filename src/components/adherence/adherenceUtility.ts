@@ -32,7 +32,7 @@ function getLastSchedleDate(
   })
 
   var result = _.last(maxNumberOfWindowsInStreams.sort()) || ''
-  return new Date(result).toLocaleDateString()
+  return new Date(result).toDateString()
 }
 
 function getDisplayFromLabel(label: string): string {
@@ -70,9 +70,7 @@ function getUniqueSessionsInfo(
 }
 
 function getDateForDisplay(date?: string) {
-  return date
-    ? new Date(date).toLocaleDateString()
-    : 'Event date is not defined'
+  return date ? new Date(date).toDateString() : 'Event date is not defined'
 }
 
 const AdherenceUtility = {

@@ -249,7 +249,7 @@ function getPhone(params: GridValueGetterParams) {
   } else return ''
 }
 function getDate(value: GridCellValue) {
-  return value ? new Date(value as string).toLocaleDateString() : undefined
+  return value ? new Date(value as string).toDateString() : undefined
 }
 
 function getJoinedDateWithIcons(params: GridValueGetterParams) {

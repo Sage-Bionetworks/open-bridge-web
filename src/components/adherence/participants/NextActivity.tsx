@@ -63,8 +63,7 @@ const NextActivity: FunctionComponent<NextActivityProps> = ({
         }}>
         {info ? (
           <span>
-            Up Next: {info.sessionName} on{' '}
-            {new Date(info.startDate).toLocaleDateString()}
+            Up Next: {info.sessionName} on {info.startDate}
           </span>
         ) : completionStatus === 'done' ? (
           <Celebration />

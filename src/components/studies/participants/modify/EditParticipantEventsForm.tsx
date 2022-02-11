@@ -107,7 +107,7 @@ const ReadOnlyDate: FunctionComponent<{
   value?: Date | null
 }> = ({eo, index, value}) => {
   const classes = useStyles()
-  var displayValue = value ? new Date(value).toLocaleDateString() : '--'
+  var displayValue = value ? new Date(value).toDateString() : '--'
   return (
     <div className="MuiFormControl-root">
       <label>
