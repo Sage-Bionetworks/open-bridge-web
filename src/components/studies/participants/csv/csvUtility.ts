@@ -149,7 +149,7 @@ const getJoinedEventDateString = (events?: ParticipantEvent[]) => {
   }
   const joinedEvent = events?.find(event => event.eventId === JOINED_EVENT_ID)
   return joinedEvent?.timestamp
-    ? new Date(joinedEvent.timestamp).toLocaleDateString()
+    ? new Date(joinedEvent.timestamp).toDateString()
     : ''
 }
 
@@ -170,7 +170,7 @@ async function getParticipantDataForDownload(
   //massage data
   const columns = getExportColumns(isEnrolledById)
   const dateToString = (d?: Date | string): string =>
-    d ? new Date(d).toLocaleString() : ''
+    d ? new Date(d).toString() : ''
   const transformedParticipantsData = participantsData.items.map(
     (p: ExtendedParticipantAccountSummary) => {
       const participant: Record<string, string | undefined> = {

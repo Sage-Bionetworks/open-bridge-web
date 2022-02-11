@@ -114,7 +114,7 @@ const AdherenceParticipant: FunctionComponent<
     if (!events?.timeline_retrieved) {
       return 'not joined'
     }
-    const startDate = new Date(events.timeline_retrieved).toLocaleDateString()
+    const startDate = new Date(events.timeline_retrieved).toDateString()
     //ALINA TODO: only show for completed participants
     const endDate = adherenceReport
       ? AdherenceUtility.getLastSchedleDate(adherenceReport.streams)
