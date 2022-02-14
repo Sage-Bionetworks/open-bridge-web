@@ -695,9 +695,11 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     }
 
     setIsSettingStudyLogo(true)
-    const file = event.target.files[0]
-    const previewForImage = getPreviewForImage(file)
-    setPreviewFile(previewForImage)
+    if(event.target.files[0]){
+      const file = event.target.files[0]
+      const previewForImage = getPreviewForImage(file)
+      setPreviewFile(previewForImage)
+    }
     setIsSettingStudyLogo(false)
   }
 
