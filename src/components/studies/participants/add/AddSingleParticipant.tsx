@@ -58,9 +58,13 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
       externalId: '',
     }
   )
-  const [error, setError] = React.useState('')
+  const [error, setError] = React.useState<Error>()
+  const {isLoading, error: participantAddError, mutateAsync} = useAddParticipant()
 
-  const {isLoading, mutateAsync} = useAddParticipant()
+  React.useEffect(()=>{
+    if(participantAddError) setError(participantAddError as Error)
+  },[participantAddError])
+
   const onAddParticipant = async(participant: EditableParticipantData) => {
     let options: EditableParticipantData = {
       externalId: participant.externalId,
@@ -87,7 +91,7 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
     <>
       <Box mx="auto" textAlign="center" mb={2}>
         {isLoading && <CircularProgress size="2em" />}
-        {error && <Alert color="error">{error}</Alert>}
+        {error && <Alert color="error" onClose={()=>setError(undefined)}>{error.message}</Alert>}
       </Box>
       <AddSingleParticipantForm
         scheduleEvents={scheduleEvents}

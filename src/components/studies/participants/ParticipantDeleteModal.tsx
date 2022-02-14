@@ -1,9 +1,10 @@
-import { FunctionComponent } from "react";
+import React, { FunctionComponent } from "react";
 import {
     Dialog,
     DialogActions,
     DialogContent,
   } from '@material-ui/core'
+import Alert from '@material-ui/lab/Alert'
 import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import {
@@ -73,22 +74,23 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> = (
     } = useStudy(studyId)
 
     const {data} = useParticipants(study?.identifier, currentPage, pageSize, tab,)
-    const {mutateAsync} = useUpdateParticipantInList()
+    const {mutateAsync, error: deleteParticipantError, isSuccess} = useUpdateParticipantInList()
     const invalidateParticipants = useInvalidateParticipants()
-      
+    const [error, setError] = React.useState<Error>()
+    React.useEffect(()=>{
+      if(deleteParticipantError) setError(deleteParticipantError as Error)
+    },[deleteParticipantError])
     const onAction = async (studyId:string,) => {
-        onLoadingIndicatorsChange(true)
-        resetParticipantsWithError()
-        let isError = false
-        mutateAsync({action:'DELETE', studyId,userId: selectedParticipantIds[tab!]})
-        onLoadingIndicatorsChange(false)
-        if(!isError) onClose({
-            dialogOpenRemove: false,
-            dialogOpenSMS: false,
-        })
-        return
+      onLoadingIndicatorsChange(true)
+      resetParticipantsWithError()
+      mutateAsync({action:'DELETE', studyId,userId: selectedParticipantIds[tab!]})
+      onLoadingIndicatorsChange(false)
+      isSuccess && onClose({
+          dialogOpenRemove: false,
+          dialogOpenSMS: false,
+      })
+      return
     }
-
     return(
         <Dialog
         open={dialogState.dialogOpenSMS || dialogState.dialogOpenRemove}
@@ -96,10 +98,13 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> = (
         scroll="body"
         aria-labelledby="Remove Participant">
         <DialogTitleWithClose
-          onCancel={()=>onClose({
+          onCancel={()=> {
+            onClose({
             dialogOpenRemove: false,
             dialogOpenSMS: false,
-        })}
+            })
+            setError(undefined)
+          }}
           icon={
             dialogState.dialogOpenRemove ? (
               <DeleteIcon />
@@ -113,6 +118,7 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> = (
               : 'Sending SMS Download Link'
           }
         />
+        {error && <Alert color="error" onClose={()=>setError(undefined)}>{error.message}</Alert>}
         <DialogContent style={{display: 'flex', justifyContent: 'center'}}>
           {(dialogState.dialogOpenSMS || dialogState.dialogOpenRemove) && (
             <DialogContents
@@ -137,9 +143,10 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> = (
             <DialogButtonSecondary
               onClick={() => {
                 onClose({
-                    dialogOpenRemove: false,
-                    dialogOpenSMS: false,
-                    })
+                  dialogOpenRemove: false,
+                  dialogOpenSMS: false,
+                  })
+                setError(undefined)
                 }}
               style={{height: '48px'}}>
               Cancel
