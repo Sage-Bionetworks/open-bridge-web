@@ -14,6 +14,7 @@ import {
   FormGroup,
   makeStyles,
 } from '@material-ui/core'
+import Alert from '@material-ui/lab/Alert'
 import {ExtendedScheduleEventObject} from '@services/schedule.service'
 import {EditableParticipantData, ParticipantEvent} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
@@ -37,6 +38,8 @@ type EditParticipantFormProps = {
   children?: React.ReactNode
   isBatchEdit?: boolean
   isLoading?: boolean
+  onError?: Error
+  onHandleError: Function
 }
 
 const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
@@ -48,6 +51,8 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
   children,
   isBatchEdit,
   isLoading,
+  onError,
+  onHandleError,
 }) => {
   const classes = useStyles()
   const [note, setNotes] = React.useState(participant.note)
@@ -79,6 +84,7 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
           </MTBHeadingH3>
         </Box>
         <FormGroup className={classes.editForm}>
+        {onError && <Alert color="error" onClose={()=> onHandleError(undefined)}>{onError.message}</Alert>}        
           {!isBatchEdit && (
             <EditParticipantEventsForm
               customParticipantEvents={customParticipantEvents}
@@ -114,7 +120,9 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
         {children && children}
         {!isLoading ? (
           <div>
-            <DialogButtonSecondary onClick={() => onCancel()} color="primary">
+            <DialogButtonSecondary
+            onClick={() => {onCancel(); onHandleError(undefined)}}
+            color="primary">
               Cancel
             </DialogButtonSecondary>
             <DialogButtonPrimary

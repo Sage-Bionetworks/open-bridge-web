@@ -488,6 +488,7 @@ export type ParticipantTableGridProps = {
     clientTimeZone?: string
   ) => void
   onWithdrawParticipant: (participantId: string, note: string) => void
+  onWithdrawParticipantError?: Error
   children: React.ReactNode //paging control
   status: 'loading' | 'success' | 'error' | 'idle'
   isParticipantUpdating: boolean
@@ -495,7 +496,6 @@ export type ParticipantTableGridProps = {
 
 const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   rows,
-
   studyId,
   totalParticipants,
   gridType,
@@ -505,6 +505,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   isAllSelected,
   isParticipantUpdating: isLoadingFromGrid,
   onUpdateParticipant,
+  onWithdrawParticipantError,
   onWithdrawParticipant,
   onRowSelected,
   children,
@@ -513,7 +514,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   const {token} = useUserSessionDataState()
   const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
 
-  const {isLoading: isParticipantUpdating, mutate} =
+  const {isLoading: isParticipantUpdating, isSuccess, error: participantUpdateError, mutate} =
     useUpdateParticipantInList()
 
   //when we are editing the record this is where the info is stored
@@ -531,6 +532,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     ...selectedParticipantIds,
   ])
   const [isGloballyHidePhone, setIsGloballyHidePhone] = React.useState(true)
+  const [error, setError] = React.useState<Error>()
 
   const participantColumns = getColumns(
     studyId,
@@ -553,6 +555,11 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
       ...selectedParticipantIds.filter(id => rows.find(row => row.id === id)),
     ])
   }, [selectedParticipantIds, rows])
+
+  React.useEffect(()=>{
+    if(participantUpdateError) setError(participantUpdateError as Error)
+    if(onWithdrawParticipantError) setError(onWithdrawParticipantError)
+  },[participantUpdateError, onWithdrawParticipantError])
 
   const allSelectedPage = () =>
     rows && !rows.find(row => !selectionModel.includes(row.id))
@@ -599,7 +606,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
         onSuccess: () => {
           setParticipantToEdit(undefined)
         },
-        onError: (e: any) => alert(e.message),
+        onError: (e: any) => console.log(e.message),
       }
     )
   }
@@ -732,7 +739,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
         fullWidth
         aria-labelledby="edit participant">
         <EditDialogTitle
-          onCancel={() => setParticipantToEdit(undefined)}
+          onCancel={() => {setParticipantToEdit(undefined); setError(undefined)}}
           shouldWithdraw={participantToEdit?.shouldWithdraw}
         />
 
@@ -741,6 +748,8 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             isLoading={isParticipantUpdating}
             scheduleEvents={scheduleEvents}
             isEnrolledById={isEnrolledById}
+            onError={error}
+            onHandleError = {setError}
             onCancel={() => setParticipantToEdit(undefined)}
             onOK={(
               note: string,
@@ -767,11 +776,14 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             onCancel={() => setParticipantToEdit(undefined)}
             onOK={(note: string) => {
               onWithdrawParticipant(participantToEdit?.id!, note)
-              setParticipantToEdit(undefined)
+              isSuccess && setParticipantToEdit(undefined)
             }}
             participant={
               participantToEdit?.participant || {}
-            }></WithdrawParticipantForm>
+            }
+            onError={error}
+            onHandleError={setError}
+            ></WithdrawParticipantForm>
         </HideWhen>
       </Dialog>
     </>

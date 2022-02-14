@@ -26,17 +26,26 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
 }) => {
   const [isLoading, setIsLoading] = React.useState(false)
   const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
+  const [error, setError] = React.useState<Error>()
 
-  const {mutateAsync} = useUpdateParticipantInList()
+  const {mutateAsync, error: batchUpdateError} = useUpdateParticipantInList()
+  
+  React.useEffect(()=>{
+    if(batchUpdateError) setError(batchUpdateError as Error)
+  },[batchUpdateError])
 
   const updateParticipant = async(clientTimeZone?: string)=> {
-    mutateAsync({
+    mutateAsync(
+      {
       studyId,
       action:"UPDATE",
       userId:selectedParticipants,
       updatedFields:{clientTimeZone:clientTimeZone},
-      isAllSelected})
-    onSetIsBatchEditOpen(false)
+      isAllSelected},
+      {
+        onSuccess:onSetIsBatchEditOpen(false)
+      }
+      )
   }
 
   return (
@@ -48,6 +57,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
       <EditDialogTitle
         onCancel={() => {
           onSetIsBatchEditOpen(false)
+          setError(undefined)
         }}
         shouldWithdraw={false}
         batchEdit
@@ -58,10 +68,11 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
         onCancel={() => {
           onSetIsBatchEditOpen(false)
         }}
-        onOK={(clientTimeZone?: string) => updateParticipant(clientTimeZone)
-        }
+        onOK={(clientTimeZone?: string) => updateParticipant(clientTimeZone)}
         participant={{}}
         isBatchEdit
+        onError={error}
+        onHandleError={setError}
         isLoading={isLoading}></EditParticipantForm>
     </Dialog>
   )

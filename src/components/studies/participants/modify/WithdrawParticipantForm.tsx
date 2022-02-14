@@ -12,6 +12,7 @@ import {
   FormGroup,
   makeStyles,
 } from '@material-ui/core'
+import Alert from '@material-ui/lab/Alert'
 import {EditableParticipantData} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {latoFont} from '../../../../style/theme'
@@ -33,16 +34,19 @@ type WithdrawParticipantFormProps = {
   participant: EditableParticipantData
   onOK: Function
   onCancel: Function
+  onError?: Error
+  onHandleError: Function
 }
 
 const WithdrawParticipantForm: FunctionComponent<WithdrawParticipantFormProps> =
-  ({isEnrolledById, participant, onOK, onCancel}) => {
+  ({isEnrolledById, participant, onOK, onCancel, onError, onHandleError}) => {
     const classes = useStyles()
     const [note, setNote] = React.useState('')
     return (
       <>
         <DialogContent>
           <Box className={classes.withdrawalNotice}>
+            {onError && <Alert color="error" onClose={()=> onHandleError(undefined)}>{onError.message}</Alert>}        
             <p>
               Withdrawing means you will no longer collect data on this
               participant and will not be able to contact them through the app.
@@ -76,7 +80,7 @@ const WithdrawParticipantForm: FunctionComponent<WithdrawParticipantFormProps> =
           </FormGroup>
         </DialogContent>
         <DialogActions>
-          <DialogButtonSecondary onClick={() => onCancel()} color="primary">
+          <DialogButtonSecondary onClick={() => {onCancel(); onHandleError(undefined)}} color="primary">
             Cancel
           </DialogButtonSecondary>
           <DialogButtonPrimary

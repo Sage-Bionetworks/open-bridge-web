@@ -28,6 +28,7 @@ import {
   Tab,
   Tabs,
 } from '@material-ui/core'
+import Alert from '@material-ui/lab/Alert'
 import {JOINED_EVENT_ID} from '@services/event.service'
 import StudyService from '@services/study.service'
 import {theme} from '@style/theme'
@@ -172,9 +173,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   })
 
   // True if the user is currently searching for a particpant using id
-  const [isUserSearchingForParticipant, setIsUserSearchingForParticipant] =
-    React.useState(false)
-
+  const [error, setError] = React.useState<Error>()
   const [fileDownloadUrl, setFileDownloadUrl] = React.useState<
     string | undefined
   >(undefined)
@@ -204,7 +203,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
 
   // Hook to get participants
-  const {data: pData, status} = useParticipants(
+  const {data: pData, status, error: participantError} = useParticipants(
     study?.identifier,
     currentPage,
     pageSize,
@@ -213,9 +212,8 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     isById
   )
   const {data: pEventsMap} = useEventsForUsers(study?.identifier, pIds)
-
-  const {isLoading: isParticipantUpdating, mutateAsync} =
-    useUpdateParticipantInList()
+  const {isLoading: isParticipantUpdating, error: participantWithdrawError, mutateAsync} =
+  useUpdateParticipantInList()
 
   const invalidateParticipants = useInvalidateParticipants()
   const onAction = async (
@@ -267,6 +265,10 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setCurrentPage(0)
     setIsAllSelected(false)
   }
+
+  React.useEffect(()=>{
+    if(participantError) setError(participantError)
+  },[participantError])
 
   React.useEffect(() => {
     console.log('setting PIDs', pData?.items.length)
@@ -582,6 +584,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         marginLeft:
                           !isAddOpen && tab !== 'WITHDRAWN' ? '-48px' : '0',
                       }}>
+                      {error && <Alert color="error" onClose={()=>setError(undefined)}>{error.message}</Alert>}
                       <ParticipantTableGrid
                         rows={data?.items || []}
                         isParticipantUpdating={isParticipantUpdating}
@@ -594,6 +597,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         isAllSelected={isAllSelected}
                         gridType={tab}
                         selectedParticipantIds={selectedParticipantIds[tab]}
+                        onWithdrawParticipantError={participantWithdrawError as Error}
                         onWithdrawParticipant={(
                           participantId: string,
                           note: string
