@@ -4,6 +4,7 @@ import {
   SessionDisplayInfo,
 } from '@typedefs/types'
 import _ from 'lodash'
+import moment from 'moment'
 
 function getMaxNumberOfTimeWindows(
   streams: (AdherenceEventStream | AdherenceWeeklyReport)[]
@@ -70,7 +71,7 @@ function getUniqueSessionsInfo(
 }
 
 function getDateForDisplay(date?: string) {
-  return date ? new Date(date).toDateString() : 'Event date is not defined'
+  return date ? moment(date).format('MM/DD/YYYY') : 'Event date is not defined'
 }
 
 const AdherenceUtility = {
