@@ -25,7 +25,7 @@ import {useCommonStyles} from '../styles'
 import AdherenceParticipantGrid from './AdherenceParticipantGrid'
 import EditParticipantEvents from './EditParticipantEvents'
 import EditParticipantNotes from './EditParticipantNotes'
-
+import {ReactComponent as CelebrationBg} from '@assets/adherence/celebration_bg.svg'
 const useStyles = makeStyles(theme => ({
   mainContainer: {
     padding: theme.spacing(4),
@@ -44,6 +44,12 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(0, 6, 1, 1),
     fontSize: '12px',
     fontWeight: 700,
+  },
+
+  celebration: {
+    position: 'absolute',
+    left: '20%',
+    maxWidth: '75%',
   },
 }))
 
@@ -138,6 +144,7 @@ const AdherenceParticipant: FunctionComponent<
 
         <BreadCrumb links={getBreadcrumbLinks()}></BreadCrumb>
         <Paper className={classes.mainContainer} elevation={2}>
+          {adherenceReport?.progression === 'done' && <CelebrationBg className={classes.celebration}/>}
           <Box display="flex" alignItems="center" mb={2}>
             {' '}
             <PersonIcon />
@@ -154,7 +161,7 @@ const AdherenceParticipant: FunctionComponent<
             {getDisplayTimeInStudyTime(events, adherenceReport)}
           </Box>
           <Box mb={2}>
-            <MTBHeadingH4> Cient TimeZone</MTBHeadingH4>
+            <MTBHeadingH4> Client TimeZone</MTBHeadingH4>
             {enrollment?.clientTimeZone}
           </Box>
           <Box mb={2}>
