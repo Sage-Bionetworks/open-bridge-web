@@ -31,6 +31,13 @@ export default [
     Component: StudyList,
     exact: true,
   },
+  /*
+  {
+    path: '/surveys',
+    name: 'MY SURVEYS',
+    Component: Surveys,
+    exact: true,
+  },*/
   {
     path: constants.restrictedPaths.STUDY_BUILDER,
     name: '',
