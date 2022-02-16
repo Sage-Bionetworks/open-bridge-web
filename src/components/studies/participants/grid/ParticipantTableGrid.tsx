@@ -49,6 +49,7 @@ import {
   SelectionType,
 } from '@typedefs/types'
 import _ from 'lodash'
+import moment from 'moment'
 import React, {FunctionComponent, ReactNode} from 'react'
 import Pluralize from 'react-pluralize'
 import GridCellExpand from './GridCellExpand'
@@ -249,7 +250,9 @@ function getPhone(params: GridValueGetterParams) {
   } else return ''
 }
 function getDate(value: GridCellValue) {
-  return value ? new Date(value as string).toDateString() : undefined
+  return value
+    ? moment(new Date(value as string)).format('MM/DD/YYYY')
+    : undefined
 }
 
 function getJoinedDateWithIcons(params: GridValueGetterParams) {
@@ -671,7 +674,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               checkboxSelection={false}
               onRowSelected={(row: GridRowSelectedParams) => {
                 let model: string[] = []
-                if (row.isSelected) {
+                if (!selectionModel.includes(row.data.id)) {
                   model = [...selectionModel, row.data.id]
                 } else {
                   model = selectionModel.filter(id => id != row.data.id)
