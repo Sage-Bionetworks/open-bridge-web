@@ -1,3 +1,4 @@
+import {ReactComponent as Dot} from '@assets/symbols/empty.svg'
 import {SessionSymbols} from '@components/widgets/SessionIcon'
 import {makeStyles} from '@material-ui/core'
 import {AdherenceWindowState} from '@typedefs/types'
@@ -6,11 +7,11 @@ import React, {FunctionComponent} from 'react'
 
 const useStyles = makeStyles(theme => ({
   dot: {
-    width: '6px',
-    height: '6px',
+    //  width: '6px',
+    //  height: '6px',
     margin: '0 auto',
-    borderRadius: '50%',
-    border: '2px solid black',
+    //  borderRadius: '50%',
+    //  border: '2px solid black',
     '&$legend': {
       margin: '2px',
     },
@@ -72,7 +73,9 @@ const AdherenceSessionIcon: FunctionComponent<{
   })
 
   const el = isEmptyDot ? (
-    <div className={clsx(classes.dot, isInLegend && classes.legend)} />
+    <div className={clsx(classes.dot, isInLegend && classes.legend)}>
+      <Dot />
+    </div>
   ) : (
     React.cloneElement(SessionSymbols.get(sessionSymbol)![variant], {
       className: classList,
