@@ -6,7 +6,6 @@ import {
   useLocation,
   withRouter,
 } from 'react-router-dom'
-import './App.css'
 import TopNav from './components/widgets/AppTopNav'
 import Utility from './helpers/utility'
 import PublicRoutes from './routes_public'
