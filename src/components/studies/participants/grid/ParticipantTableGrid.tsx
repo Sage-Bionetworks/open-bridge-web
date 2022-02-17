@@ -28,7 +28,7 @@ import {
   GridColumnMenuProps,
   GridColumnsMenuItem,
   GridOverlay,
-  GridRowSelectedParams,
+  GridSelectionModel,
   GridToolbarContainer,
   GridValueGetterParams,
   HideGridColMenuItem,
@@ -47,7 +47,7 @@ import {
   SelectionType,
 } from '@typedefs/types'
 import _ from 'lodash'
-import React, {FunctionComponent, ReactNode} from 'react'
+import React, {FunctionComponent, ReactNode, SyntheticEvent} from 'react'
 import Pluralize from 'react-pluralize'
 import GridCellExpand from './GridCellExpand'
 
@@ -170,7 +170,11 @@ const EditCell: FunctionComponent<{
     params.row['externalId'] === EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING
   return !isWithdrawn ? (
     <IconButton
-      onClick={onClick}
+      onClick={(e: SyntheticEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        onClick()
+      }}
       aria-label="edit participant"
       component="span">
       <PencilIcon />
@@ -323,7 +327,7 @@ function getColumns(
       valueGetter: getPhone,
       width: 152,
 
-      disableClickEventBubbling: true,
+      //disableClickEventBubbling: true,
 
       renderHeader: () => {
         return (
@@ -396,7 +400,7 @@ function getColumns(
   const editColumn: GridColDef = {
     field: 'edit',
     headerName: 'Edit',
-    disableClickEventBubbling: true,
+    // disableClickEventBubbling: true,
     disableColumnMenu: true,
     width: 70,
 
@@ -572,15 +576,11 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               density="standard"
               columns={participantColumns}
               checkboxSelection
-              onRowSelected={(row: GridRowSelectedParams) => {
-                let model: string[] = []
-                if (row.isSelected) {
-                  model = [...selectionModel, row.data.id]
-                } else {
-                  model = selectionModel.filter(id => id != row.data.id)
-                }
-
-                onRowSelected(model, false)
+              onSelectionModelChange={(model: GridSelectionModel) => {
+                onRowSelected(
+                  model.map(id => id.toString()),
+                  false
+                )
               }}
               selectionModel={selectionModel}
               components={{
