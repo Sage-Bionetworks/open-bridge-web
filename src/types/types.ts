@@ -251,6 +251,8 @@ type EnrolledSubrecord = {
   enrolledOn: string
 }
 
+export type ProgressionStatus = 'done' | 'in_progress' | 'unstarted'
+
 export type ParticipantAccountSummary = {
   // isSelected?: boolean
   healthCode?: string
@@ -354,6 +356,7 @@ export type EventStreamAdherenceReport = {
   timestamp: string
   clientTimeZone: string
   adherencePercent: number
+  progression: ProgressionStatus
   dayRangeOfAllStreams: {
     min: number
     max: number
@@ -378,7 +381,6 @@ export type RowLabel = {
   studyBurstNum?: number
   type: string
 }
-export type ProgressionStatus = 'done' | 'in_progress' | 'unstarted'
 
 export type AdherenceWeeklyReport = {
   participant: {identifier: string; externalId: string}
