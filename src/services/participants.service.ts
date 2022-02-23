@@ -493,7 +493,8 @@ async function addParticipant(
   studyId: string,
   token: string,
   options: EditableParticipantData,
-  isTestUser?: boolean
+  isTestUser?: boolean,
+  isPreview?: boolean
 ): Promise<string> {
   const participantEndpoint = constants.endpoints.participant.replace(
     ':id',
@@ -508,6 +509,9 @@ async function addParticipant(
 
   if (isTestUser) {
     data.dataGroups = ['test_user']
+  }
+  if (!isPreview) {
+    data.sharingScope = 'sponsors_and_partners'
   }
   let backEndFormatExternalId = undefined
   if (options.externalId) {
@@ -579,7 +583,7 @@ async function addParticipant(
 }
 
 // used for the preview screen in study builder
-async function addTestParticipant(
+async function addPreviewTestParticipant(
   studyId: string,
   token: string
 ): Promise<string> {
@@ -592,6 +596,7 @@ async function addTestParticipant(
       events: [],
     },
 
+    true,
     true
   )
   return participantId
@@ -669,7 +674,7 @@ async function getRequestInfoForParticipant(
 
 const ParticipantService = {
   addParticipant,
-  addTestParticipant,
+  addPreviewTestParticipant,
   deleteParticipant,
   formatExternalId,
   // getRelevantEventsForParticipants,
