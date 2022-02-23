@@ -9,6 +9,7 @@ import StudyLive from '@components/studies/launch/Live'
 import ParticipantManager from '@components/studies/participants/ParticipantManager'
 import StudyBuilder from '@components/studies/StudyBuilder'
 import StudyList from '@components/studies/StudyList'
+import Surveys from '@components/surveys/Surveys'
 import constants from '@typedefs/constants'
 
 export default [
@@ -31,13 +32,13 @@ export default [
     Component: StudyList,
     exact: true,
   },
-  /*
+
   {
     path: '/surveys',
     name: 'MY SURVEYS',
     Component: Surveys,
     exact: true,
-  },*/
+  },
   {
     path: constants.restrictedPaths.STUDY_BUILDER,
     name: '',

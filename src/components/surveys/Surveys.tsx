@@ -1,6 +1,7 @@
 import {Box, makeStyles, TextField} from '@material-ui/core'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps, useParams} from 'react-router-dom'
+import SurveyDisplay from './display/SurveyDisplay'
 import {Survey} from './types'
 
 const useStyles = makeStyles(theme => ({
@@ -59,6 +60,10 @@ const Surveys: FunctionComponent<SurveysProps> = () => {
           type="number"
           variant="outlined"
         />
+      </Box>
+
+      <Box>
+        <SurveyDisplay />
       </Box>
     </Box>
   )

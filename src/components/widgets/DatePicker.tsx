@@ -69,6 +69,7 @@ type DatePickerProps = {
   value: Date | null
   id: string
   disabled?: boolean
+  views?: ['year']
 }
 
 // -----------------  Add participant control
@@ -78,6 +79,7 @@ const DatePicker: FunctionComponent<DatePickerProps> = ({
   label,
   id,
   disabled,
+  views,
 }) => {
   const classes = useStyles()
   const [isDateControlFocused, setIsDateControlFocused] = React.useState(false)
@@ -102,6 +104,7 @@ const DatePicker: FunctionComponent<DatePickerProps> = ({
             position: 'end',
             className: classes.dateAdornment,
           }}
+          views={views || ['date']}
           clearable={true}
           format="MM/DD/yyyy"
           autoOk={true}

@@ -1,3 +1,43 @@
+export enum SurveyRuleOperator {
+  /**
+   * The answer value is equal to the matching answer.
+   */
+
+  Equal = 'eq',
+
+  /**
+   * The answer value is *not* equal to the matching answer.
+   */
+  NotEqual = 'ne',
+  /// The answer value is less than the matching answer.
+
+  LessThan = 'lt',
+
+  /// The answer value is greater than the matching answer.
+
+  GreaterThan = 'gt',
+
+  /// The answer value is less than or equal to the matching answer.
+
+  LessThanEqual = 'le',
+
+  /// The answer value is greater than or equal to the matching answer.
+
+  GreaterThanEqual = 'ge',
+
+  /**
+   * The rule should always evaluate to true.
+   */
+
+  Always = 'always',
+
+  /**
+   * Survey rule for checking if the answer was skipped.
+   */
+
+  Skip = 'de',
+}
+
 export type ActionButton = {
   type: string //"default",
   buttonTitle?: string //"Go, Dogs! Go!"
@@ -15,32 +55,53 @@ export type ImageAnimated = {
   imageNames: string[]
 }
 
-export type InputString = {
-  type: 'string'
+export type InputItem = {
+  type: 'string' | 'year' | 'checkbox'
   placeholder: string
+  fieldLabel: string
 }
+
 export type Skip = {
   type: 'skipCheckbox'
   fieldLabel: string
 }
 
-export type Question = Step & {
-  subtitle: string //"Subtitle goes here",
+export type ChoiceQuestion = Question & {
+  choices?: {
+    text: string
+    value: string | number
+    exclusive?: boolean
+    icon?: string
+  }[]
 
-  footnote: string //"This is a footnote.",
-
-  optional: boolean //true,
-  inputItem: InputString
-  skipCheckbox?: Skip
+  singleChoice?: boolean
 }
 
-export type Step = {
+export type Question = BaseStep & {
+  optional: boolean //true,
+  inputItem: InputItem
+  skipCheckbox?: Skip
+  baseType?: 'integer'
+  uiHint?: 'checkmark'
+}
+
+export type Instruction = BaseStep & {}
+
+export type BaseStep = {
   identifier: string //"step1",
-  type: 'instruction' | 'question'
+  type:
+    | 'instruction'
+    | 'simpleQuestion'
+    | 'multipleInputQuestion'
+    | 'choiceQuestion'
   title: string //Instruction Step 1",
-  detail: string //Here are the details for this instruction.",
+  subtitle?: string
+  detail?: string //Here are the details for this instruction.",
+  footnote?: string //"This is a footnote.",
   image: ImageAnimated | ImageFetchable
 }
+
+export type Step = Question | Instruction
 
 export type Survey = {
   type: string //"assessment",
