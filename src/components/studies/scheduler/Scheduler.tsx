@@ -32,13 +32,13 @@ import {
   SessionSchedule,
   StudySession,
 } from '@typedefs/scheduling'
-import {ExtendedError} from '@typedefs/types'
+import {ExtendedError, Study} from '@typedefs/types'
 import _ from 'lodash'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import {useSchedule, useTimeline, useUpdateSchedule} from '../scheduleHooks'
-import {useStudy} from '../studyHooks'
+import {useStudy, useUpdateStudyDetail} from '../studyHooks'
 import AssessmentList from './AssessmentList'
 import ConfigureBurstTab from './ConfigureBurstTab'
 import Duration from './Duration'
@@ -50,6 +50,7 @@ import actionsReducer, {
 } from './scheduleActions'
 import ScheduleTimelineDisplay from './ScheduleTimelineDisplay'
 import SessionStartTab from './SessionStartTab'
+import StudyStartEvent from './StudyStartEvent'
 import {getFormattedTimeDateFromPeriodString} from './utility'
 
 export const useStyles = makeStyles((theme: Theme) =>
@@ -161,7 +162,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
 }) => {
   const classes = useStyles()
 
-  const {data: study, error, isLoading} = useStudy(id)
+  const {data: _study, error, isLoading} = useStudy(id)
   const {data: _schedule, refetch} = useSchedule(id)
   const {data: timeline, isLoading: isTimelineLoading} = useTimeline(id)
 
@@ -169,8 +170,14 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
     isSuccess: scheduleUpdateSuccess,
     isError: scheduleUpdateError,
     mutateAsync: mutateSchedule,
-    data,
   } = useUpdateSchedule()
+
+  const {
+    isSuccess: studyeUpdateSuccess,
+    isError: studyUpdateError,
+    mutateAsync: mutateStudy,
+    data: studyUpdateData,
+  } = useUpdateStudyDetail()
 
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [schedulerErrors, setScheduleErrors] = React.useState<
@@ -181,6 +188,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   const [saveLoader, setSaveLoader] = React.useState(false)
 
   const [schedule, setSchedule] = React.useState<Schedule | undefined>()
+  const [study, setStudy] = React.useState<Study | undefined>()
   const [hasBeenSaved, setHasBeenSaved] = React.useState(false)
 
   const [schedulerErrorState, setSchedulerErrorState] = React.useState(
@@ -215,10 +223,15 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   React.useEffect(() => {
     if (_schedule) {
       console.log('----setting schedule----')
-
       setSchedule({..._schedule})
     }
   }, [_schedule])
+
+  React.useEffect(() => {
+    if (_study) {
+      setStudy({..._study})
+    }
+  }, [_study])
 
   if (!study || isTimelineLoading || !timeline || !schedule?.sessions) {
     return <LoadingComponent reqStatusLoading={true} />
@@ -249,6 +262,14 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
         schedule,
         action: 'UPDATE',
       })
+      if (_study && study.studyStartEventId !== _study.studyStartEventId) {
+        console.log('updating study start event')
+        const updatedStudy: Study = {
+          ..._study,
+          studyStartEventId: study.studyStartEventId,
+        }
+        const result = await mutateStudy({study: updatedStudy})
+      }
       setHasObjectChanged(false)
     } catch (e) {
       console.log('ERROR IN SCHEDULER', e)
@@ -369,6 +390,29 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
     updateScheduleData(newSchedule)
   }
 
+  const getEventsInSchedule = (): string[] => {
+    const startEventIds = schedule.sessions.reduce((prev, curr) => {
+      if (
+        curr.startEventIds?.length > 0 &&
+        curr.startEventIds[0] !== JOINED_EVENT_ID &&
+        !prev.includes(curr.startEventIds[0])
+      ) {
+        return [...prev, curr.startEventIds[0]]
+      } else {
+        return prev
+      }
+    }, [] as string[])
+
+    const studyBurstId =
+      schedule.studyBursts && schedule.studyBursts.length > 0
+        ? schedule.studyBursts[0].originEventId
+        : undefined
+    if (studyBurstId !== undefined) {
+      startEventIds.push(studyBurstId)
+    }
+    return startEventIds
+  }
+
   if (_.isEmpty(schedule.sessions)) {
     return (
       <Box textAlign="center" mx="auto">
@@ -401,7 +445,6 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                 <FormControlLabel
                   classes={{label: classes.labelDuration}}
                   label="Study duration:"
-                  style={{fontSize: '14px', marginRight: '4px'}}
                   labelPlacement="start"
                   control={
                     <Duration
@@ -418,13 +461,38 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                       numberLabel="study duration number"
                       unitData={DWsEnum}></Duration>
                   }
-                />
-
-                <Button variant="outlined" onClick={() => onSave(true)}>
+                />{' '}
+                {getEventsInSchedule().length > 0 && (
+                  <FormControlLabel
+                    classes={{label: classes.labelDuration}}
+                    label="Start Study on:"
+                    style={{marginRight: '8px'}}
+                    labelPlacement="start"
+                    control={
+                      <StudyStartEvent
+                        value={study.studyStartEventId || ''}
+                        eventIdsInSchedule={getEventsInSchedule()}
+                        eventsInStudy={study.customEvents?.map(e => e.eventId)}
+                        onChangeFn={(startEventId: string) =>
+                          setStudy({
+                            ...study,
+                            studyStartEventId: startEventId,
+                          })
+                        }
+                      />
+                    }
+                  />
+                )}
+                <DialogButtonPrimary
+                  onClick={() => onSave(true)}
+                  style={{
+                    padding: '4px 8px',
+                    marginTop: '-1px',
+                    borderColor: 'transparent',
+                  }}>
                   {' '}
-                  Save
-                </Button>
-
+                  Save Changes
+                </DialogButtonPrimary>
                 <Box
                   fontSize="12px"
                   ml={2}
