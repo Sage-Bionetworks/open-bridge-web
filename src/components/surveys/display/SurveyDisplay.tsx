@@ -16,7 +16,14 @@ import {
 import React, {FunctionComponent} from 'react'
 import {useParams} from 'react-router-dom'
 import test from '../sample.json'
-import {ChoiceQuestion, Instruction, Question, Step, Survey} from '../types'
+import {
+  ChoiceQuestion,
+  InputItem,
+  Instruction,
+  Question,
+  Step,
+  Survey,
+} from '../types'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -37,6 +44,8 @@ function Factory(step: Step) {
       const s = step as ChoiceQuestion
       return <SurveyChoiceQuestion {...s}></SurveyChoiceQuestion>
     }
+    case 'multipleInputQuestion': {
+    }
 
     default:
       return <div>unknown</div>
@@ -45,14 +54,21 @@ function Factory(step: Step) {
 
 type SurveyQuestionProps = SurveyQuestionOwnProps /*& RouteComponentProps*/
 
-const SkipCheckbox: FunctionComponent<{fieldLabel: string}> = args => {
+const SkipCheckbox: FunctionComponent<{
+  fieldLabel: string
+  onChecked: Function
+}> = args => {
   const [val, setVal] = React.useState(false)
   return (
     <FormControlLabel
       control={
         <Checkbox
           checked={val === true}
-          onChange={e => setVal(e.target.checked)}
+          onChange={e => {
+            setVal(e.target.checked)
+
+            args.onChecked(e.target.checked)
+          }}
           name={'skip'}
         />
       }
@@ -61,60 +77,100 @@ const SkipCheckbox: FunctionComponent<{fieldLabel: string}> = args => {
   )
 }
 
-const SimpleSurveyQuestion: FunctionComponent<Question> = inst => {
-  const [val, setVal] = React.useState(false)
+const TextSimpleQuestion: FunctionComponent<
+  InputItem & {isDisabled: boolean; identifier: string}
+> = inputItem => {
   const [textVal, setTextVal] = React.useState<string | Date | null>('')
-  const checkBox = (
+  return (
+    <TextField
+      id={inputItem.identifier}
+      label={inputItem.fieldLabel}
+      onChange={e => setTextVal(e.target.value)}
+      disabled={inputItem.isDisabled}
+      value={textVal || ''}
+      defaultValue={inputItem.placeholder}
+    />
+  )
+}
+
+const CheckboxSimpleQuestion: FunctionComponent<
+  InputItem & {isDisabled: boolean; identifier: string}
+> = inputItem => {
+  const [val, setVal] = React.useState<boolean | null>(false)
+  return (
     <FormControlLabel
       control={
         <Checkbox
           checked={val === true}
           onChange={e => setVal(e.target.checked)}
-          name={inst.identifier}
+          name={inputItem.identifier}
+          disabled={inputItem.isDisabled}
         />
       }
-      label={inst.inputItem.fieldLabel}
+      label={inputItem.fieldLabel}
     />
   )
+}
 
-  const textBox = (
-    <TextField
-      id={inst.identifier}
-      label={inst.inputItem.fieldLabel}
-      onChange={e => setTextVal(e.target.value)}
-      value={textVal}
-      defaultValue={inst.inputItem.placeholder}
-    />
-  )
-  const date = (
+const DateSimpleQuestion: FunctionComponent<
+  InputItem & {isDisabled: boolean; identifier: string}
+> = inputItem => {
+  const [val, setVal] = React.useState<Date | null>(null)
+  return (
     <DatePicker
-      views={['year']}
-      label={inst.inputItem.fieldLabel}
-      id={inst.identifier}
-      value={textVal as Date}
+      isYearOnly={true}
+      disabled={inputItem.isDisabled}
+      label={inputItem.fieldLabel}
+      id={inputItem.identifier}
+      value={val as Date}
       onChange={e => {
-        setTextVal(e?.toString() || null)
+        setVal(e || null)
       }}></DatePicker>
   )
+}
 
-  let control
-  switch (inst.inputItem.type) {
-    case 'checkbox':
-      control = checkBox
-      break
-    case 'string':
-      control = textBox
-      break
-    case 'year':
-      control = date
-      break
+const SimpleInputItem: FunctionComponent<Question & {isDisabled: boolean}> =
+  inst => {
+    const props = {
+      ...inst.inputItem,
+      isDisabled: inst.isDisabled,
+      identifier: inst.identifier,
+    }
+    switch (inst.inputItem.type) {
+      case 'checkbox':
+        return <CheckboxSimpleQuestion {...props} />
+      case 'string':
+        return <TextSimpleQuestion {...props} />
+      case 'year':
+        return <DateSimpleQuestion {...props} />
+      default:
+        return <></>
+    }
   }
+
+const SimpleSurveyQuestion: FunctionComponent<Question> = inst => {
+  const [val, setVal] = React.useState<boolean | null>(false)
+  const [textVal, setTextVal] = React.useState<string | Date | null>('')
+  const [isDisabled, setIsDisabled] = React.useState<boolean>(false)
 
   return (
     <>
-      {control}{' '}
-      {inst.skipCheckbox && (
-        <SkipCheckbox fieldLabel={inst.skipCheckbox.fieldLabel} />
+      {inst.skipCheckbox ? (
+        <Box display="flex">
+          <SimpleInputItem {...{...inst, isDisabled}} />
+          <SkipCheckbox
+            fieldLabel={inst.skipCheckbox.fieldLabel}
+            onChecked={(isChecked: boolean) => {
+              if (isChecked) {
+                setVal(null)
+                setTextVal(null)
+              }
+              setIsDisabled(isChecked)
+            }}
+          />
+        </Box>
+      ) : (
+        <SimpleInputItem {...{...inst, isDisabled}} />
       )}
     </>
   )
