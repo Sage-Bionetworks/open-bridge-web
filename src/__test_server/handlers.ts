@@ -1,7 +1,6 @@
+import constants from '@typedefs/constants'
+import {ParticipantAccountSummary} from '@typedefs/types'
 import {rest} from 'msw'
-import {setupServer} from 'msw/node'
-import constants from '../../types/constants'
-import {ParticipantAccountSummary} from '../../types/types'
 
 type Search = {
   pageSize: number
@@ -15,7 +14,8 @@ const getIndividualAccountEndpoint = constants.endpoints.bridgeAccount.replace(
   ':id',
   'testID'
 )
-const server = setupServer(
+
+export const handlers = [
   rest.post(`*${getAllAccountsEndpoint}`, async (req, res, ctx) => {
     const data = [
       {
@@ -78,7 +78,5 @@ const server = setupServer(
         items: [],
       })
     )
-  })
-)
-
-export default server
+  }),
+]
