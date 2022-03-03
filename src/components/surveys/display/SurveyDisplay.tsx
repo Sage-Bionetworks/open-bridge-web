@@ -78,31 +78,40 @@ const SkipCheckbox: FunctionComponent<{
 }
 
 const TextSimpleQuestion: FunctionComponent<
-  InputItem & {isDisabled: boolean; identifier: string}
+  InputItem & {
+    isDisabled: boolean
+    identifier: string
+    val: string
+    onChange: (e: string) => void
+  }
 > = inputItem => {
-  const [textVal, setTextVal] = React.useState<string | Date | null>('')
+  // const [textVal, setTextVal] = React.useState<string | Date | null>('')
   return (
     <TextField
       id={inputItem.identifier}
       label={inputItem.fieldLabel}
-      onChange={e => setTextVal(e.target.value)}
+      onChange={e => inputItem.onChange(e.target.value)}
       disabled={inputItem.isDisabled}
-      value={textVal || ''}
+      value={inputItem.val || ''}
       defaultValue={inputItem.placeholder}
     />
   )
 }
 
 const CheckboxSimpleQuestion: FunctionComponent<
-  InputItem & {isDisabled: boolean; identifier: string}
+  InputItem & {
+    isDisabled: boolean
+    identifier: string
+    val: boolean
+    onChange: (e: boolean) => void
+  }
 > = inputItem => {
-  const [val, setVal] = React.useState<boolean | null>(false)
   return (
     <FormControlLabel
       control={
         <Checkbox
-          checked={val === true}
-          onChange={e => setVal(e.target.checked)}
+          checked={inputItem.val === true}
+          onChange={e => inputItem.onChange(e.target.checked)}
           name={inputItem.identifier}
           disabled={inputItem.isDisabled}
         />
@@ -113,64 +122,96 @@ const CheckboxSimpleQuestion: FunctionComponent<
 }
 
 const DateSimpleQuestion: FunctionComponent<
-  InputItem & {isDisabled: boolean; identifier: string}
+  InputItem & {
+    isDisabled: boolean
+    identifier: string
+    val: Date | null
+    onChange: (e: Date | null) => void
+  }
 > = inputItem => {
-  const [val, setVal] = React.useState<Date | null>(null)
   return (
     <DatePicker
       isYearOnly={true}
       disabled={inputItem.isDisabled}
       label={inputItem.fieldLabel}
       id={inputItem.identifier}
-      value={val as Date}
-      onChange={e => {
-        setVal(e || null)
-      }}></DatePicker>
+      value={inputItem.val}
+      onChange={e => inputItem.onChange(e)}></DatePicker>
   )
 }
 
-const SimpleInputItem: FunctionComponent<Question & {isDisabled: boolean}> =
-  inst => {
-    const props = {
-      ...inst.inputItem,
-      isDisabled: inst.isDisabled,
-      identifier: inst.identifier,
-    }
-    switch (inst.inputItem.type) {
-      case 'checkbox':
-        return <CheckboxSimpleQuestion {...props} />
-      case 'string':
-        return <TextSimpleQuestion {...props} />
-      case 'year':
-        return <DateSimpleQuestion {...props} />
-      default:
-        return <></>
-    }
+const SimpleInputItem: FunctionComponent<
+  Question & {
+    isDisabled: boolean
+    val: Date | string | boolean | null
+    onChange: (e: any) => void
   }
+> = inst => {
+  const props = {
+    ...inst.inputItem,
+    isDisabled: inst.isDisabled,
+    identifier: inst.identifier,
+  }
+  switch (inst.inputItem.type) {
+    case 'checkbox':
+      return (
+        <CheckboxSimpleQuestion
+          {...{...props, val: inst.val as boolean, onChange: inst.onChange}}
+        />
+      )
+    case 'string':
+      return (
+        <TextSimpleQuestion
+          {...{...props, val: inst.val as string, onChange: inst.onChange}}
+        />
+      )
+    case 'year':
+      return (
+        <DateSimpleQuestion
+          {...{...props, val: inst.val as Date, onChange: inst.onChange}}
+        />
+      )
+    default:
+      return <></>
+  }
+}
 
 const SimpleSurveyQuestion: FunctionComponent<Question> = inst => {
-  const [val, setVal] = React.useState<boolean | null>(false)
-  const [textVal, setTextVal] = React.useState<string | Date | null>('')
+  const [val, setVal] = React.useState<boolean | string | Date | null>(false)
+
   const [isDisabled, setIsDisabled] = React.useState<boolean>(false)
 
   return (
     <>
       {inst.skipCheckbox ? (
         <Box display="flex">
-          <SimpleInputItem {...{...inst, isDisabled}} />
+          <SimpleInputItem
+            {...{
+              ...inst,
+              isDisabled,
+              val,
+              onChange: (e: boolean | string | Date | null) => setVal(e),
+            }}
+          />
           <SkipCheckbox
             fieldLabel={inst.skipCheckbox.fieldLabel}
             onChecked={(isChecked: boolean) => {
               if (isChecked) {
                 setVal(null)
-                setTextVal(null)
               }
               setIsDisabled(isChecked)
             }}
           />
         </Box>
       ) : (
-        <SimpleInputItem {...{...inst, isDisabled}} />
+        <SimpleInputItem
+          {...{
+            ...inst,
+            isDisabled,
+            val,
+            onChange: (e: boolean | string | Date | null) => setVal(e),
+          }}
+        />
       )}
     </>
   )
