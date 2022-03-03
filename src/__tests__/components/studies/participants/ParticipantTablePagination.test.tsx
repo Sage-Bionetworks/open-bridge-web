@@ -65,7 +65,7 @@ const resetVariables = (options: {
   totalParticipants?: number
 }) => {
   ;({
-    currentPage = 1,
+    currentPage = 0,
     pageSize = 25,
     numberOfPages = 4,
     totalParticipants = 100,
@@ -107,30 +107,30 @@ test('should be rendering without crashing', () => {
 test('should page forward and backward buttons function correctly', () => {
   // try to go back one page. nothing should happen
   userEvent.click(backward_one_page_button as HTMLElement)
-  expect(handlePageNavigationArrowPressed).not.toHaveBeenCalled()
+  expect(onPageSelectedChanged).not.toHaveBeenCalled()
   // go forward one page
   userEvent.click(forward_one_page_button as HTMLElement)
-  expect(handlePageNavigationArrowPressed).toHaveBeenLastCalledWith('F')
-  handlePageNavigationArrowPressed.mockReset()
+  expect(onPageSelectedChanged).toHaveBeenLastCalledWith(1)
+  onPageSelectedChanged.mockReset()
   userEvent.click(backward_to_beginning_button as HTMLElement)
-  expect(handlePageNavigationArrowPressed).not.toHaveBeenCalled()
-  handlePageNavigationArrowPressed.mockReset()
+  expect(onPageSelectedChanged).not.toHaveBeenCalled()
+  onPageSelectedChanged.mockReset()
   resetVariables({currentPage: 2})
   renderParticipantTableGrid()
   // go back one page
   userEvent.click(backward_one_page_button as HTMLElement)
-  expect(handlePageNavigationArrowPressed).toHaveBeenLastCalledWith('B')
+  expect(onPageSelectedChanged).toHaveBeenLastCalledWith(1)
   // go to the last page
   userEvent.click(forward_to_end_button as HTMLElement)
-  expect(handlePageNavigationArrowPressed).toHaveBeenLastCalledWith('FF')
+  expect(onPageSelectedChanged).toHaveBeenLastCalledWith(3)
   //when you are on the last page  try to go to next page. nothing should happen
-  resetVariables({currentPage: 4})
+  resetVariables({currentPage: 3})
   renderParticipantTableGrid()
-  handlePageNavigationArrowPressed.mockReset()
+  onPageSelectedChanged.mockReset()
   userEvent.click(forward_one_page_button as HTMLElement)
-  expect(handlePageNavigationArrowPressed).not.toHaveBeenCalled()
+  expect(onPageSelectedChanged).not.toHaveBeenCalled()
   userEvent.click(backward_to_beginning_button as HTMLElement)
-  expect(handlePageNavigationArrowPressed).toHaveBeenLastCalledWith('BB')
+  expect(onPageSelectedChanged).toHaveBeenLastCalledWith(0)
 })
 
 // test to see if the page changes as expected when page number is clicked
@@ -139,7 +139,7 @@ test('should page change when page number is clicked', () => {
     participantTablePagination.container.querySelector('#pagebox-button-3')
   expect(btn!.textContent).toBe('4')
   userEvent.click(btn!)
-  expect(onPageSelectedChanged).toHaveBeenLastCalledWith(4)
+  expect(onPageSelectedChanged).toHaveBeenLastCalledWith(3)
 })
 
 // test to see if changing the page size results in correct behavior

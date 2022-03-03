@@ -10,7 +10,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/pickers": "^3.2.10",
-    "@testing-library/jest-dom": "^5.11.9",
+    "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^11.0.0",
     "@testing-library/user-event": "^12.0.0",
     "@types/jest": "^26.0.0",
@@ -41,14 +41,25 @@
     "react-router-navigation-prompt": "^1.8.13",
     "react-scripts": "^5.0.0",
     "stream": "^0.0.2",
+    "ts-jest": "^27.1.3",
     "typescript": "^4.0.0",
     "use-deep-compare-effect": "^1.6.1"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^@components/(.*)$": "<rootDir>/src/components/$1",
+      "^@assets(.*)$": "<rootDir>/src/assets/$1",
+      "^@helpers(.*)$": "<rootDir>/src/helpers/$1",
+      "^@services(.*)$": "<rootDir>/src/services/$1",
+      "^@typedefs/(.*)$": "<rootDir>/src/types/$1",
+      "^@style/(.*)$": "<rootDir>/src/style/$1"
+    }
   },
   "scripts": {
     "start": "craco start",
     "start:arc": "PORT=3001 craco start",
     "build": "craco build",
-    "test": "craco test",
+    "test": "craco test --watch",
     "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
     "eject": "react-scripts eject",
     "prettier": "prettier --config .prettierrc --write '**/*.{ts,js,scss,html,tsx,json}'"
