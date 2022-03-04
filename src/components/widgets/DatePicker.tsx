@@ -69,7 +69,7 @@ type DatePickerProps = {
   value: Date | null
   id: string
   disabled?: boolean
-  views?: ['year']
+  isYearOnly?: boolean
 }
 
 // -----------------  Add participant control
@@ -79,10 +79,14 @@ const DatePicker: FunctionComponent<DatePickerProps> = ({
   label,
   id,
   disabled,
-  views,
+  isYearOnly,
 }) => {
   const classes = useStyles()
   const [isDateControlFocused, setIsDateControlFocused] = React.useState(false)
+
+  const getView = (): ('year' | 'date')[] => {
+    return isYearOnly ? ['year'] : ['date']
+  }
 
   const handleDateChange = (date: Date | null) => {
     onChange(date)
@@ -104,9 +108,9 @@ const DatePicker: FunctionComponent<DatePickerProps> = ({
             position: 'end',
             className: classes.dateAdornment,
           }}
-          views={views || ['date']}
+          views={getView()}
           clearable={true}
-          format="MM/DD/yyyy"
+          format={isYearOnly ? 'yyyy' : 'MM/DD/yyyy'}
           autoOk={true}
           disableToolbar={true}
           inputVariant="outlined"

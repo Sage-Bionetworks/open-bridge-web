@@ -166,6 +166,7 @@ export type Study = {
   irbDecisionOn?: string
   irbDecisionType?: 'exempt' | 'approved'
   irbName?: string
+  studyStartEventId?: string
 }
 
 export type WelcomeScreenData = {

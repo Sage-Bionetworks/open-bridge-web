@@ -57,6 +57,7 @@ type SchedulableSingleSessionContainerProps = {
   onUpdateSessionSchedule: Function
   customEvents?: SchedulingEvent[]
   onOpenEventsEditor: Function
+  hasCriticalStartEvent?: boolean
 
   sessionErrorState:
     | {
@@ -86,6 +87,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     customEvents,
     burstOriginEventId,
     onOpenEventsEditor,
+    hasCriticalStartEvent,
   }) => {
     const classes = useStyles()
 
@@ -163,7 +165,11 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
       newSession: StudySession,
       shouldInvalidateBurst?: boolean
     ) => {
-      onUpdateSessionSchedule(newSession, shouldInvalidateBurst)
+      onUpdateSessionSchedule(
+        newSession,
+        shouldInvalidateBurst,
+        shouldInvalidateBurst && hasCriticalStartEvent
+      )
     }
 
     const addNewWindow = () => {
