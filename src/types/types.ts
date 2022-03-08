@@ -261,6 +261,7 @@ export type ParticipantAccountSummary = {
   note?: string
   dataGroups?: string[]
   clientTimeZone?: string
+  healthCode?: string
 }
 
 export type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {
