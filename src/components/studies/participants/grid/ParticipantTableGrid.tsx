@@ -28,7 +28,7 @@ import {
   GridColumnMenuProps,
   GridColumnsMenuItem,
   GridOverlay,
-  GridSelectionModel,
+  GridRowSelectedParams,
   GridToolbarContainer,
   GridValueGetterParams,
   HideGridColMenuItem,
@@ -364,7 +364,7 @@ function getColumns(
     },
 
     {
-      field: 'id',
+      field: 'healthCode',
       headerName: 'HealthCode',
       renderCell: renderCellExpand,
       flex: 2,
@@ -576,11 +576,15 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               density="standard"
               columns={participantColumns}
               checkboxSelection
-              onSelectionModelChange={(model: GridSelectionModel) => {
-                onRowSelected(
-                  model.map(id => id.toString()),
-                  false
-                )
+              onRowSelected={(row: GridRowSelectedParams) => {
+                let model: string[] = []
+                if (!selectionModel.includes(row.data.id)) {
+                  model = [...selectionModel, row.data.id]
+                } else {
+                  model = selectionModel.filter(id => id != row.data.id)
+                }
+
+                onRowSelected(model, false)
               }}
               selectionModel={selectionModel}
               components={{
