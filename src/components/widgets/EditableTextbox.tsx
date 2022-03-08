@@ -98,6 +98,9 @@ const EditableTextbox: FunctionComponent<EditableTextboxProps> = ({
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [newValue, setNewValue] = React.useState('')
+  React.useEffect(() => {
+    setNewValue(initValue)
+  }, [initValue])
 
   return (
     <Editable
