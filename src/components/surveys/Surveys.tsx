@@ -1,8 +1,12 @@
-import {Box, makeStyles, TextField} from '@material-ui/core'
+import Utility from '@helpers/utility'
+import {Box, makeStyles} from '@material-ui/core'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps, useParams} from 'react-router-dom'
-import SurveyDisplay from './display/SurveyDisplay'
-import {Survey} from './types'
+import ControlSelector from './ControlSelector'
+import QuestionEdit from './QuestionEdit'
+import QuestionList from './QuestionList'
+import _survey from './sample.json'
+import {Step, Survey} from './types'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -20,50 +24,61 @@ const Surveys: FunctionComponent<SurveysProps> = () => {
   }>()
 
   const classes = useStyles()
-  const [survey, setSurvey] = React.useState<Survey>()
+  //@ts-ignore
+  const [survey, setSurvey] = React.useState<Survey>(_survey)
+  const [currentStepIndex, setCurrentStepIndex] = React.useState<
+    number | undefined
+  >()
+  const getQuestionList = (): Step[] => {
+    return survey.steps.map(s => ({
+      identifier: s.identifier,
+      title: s.title,
+      type: s.type,
+    }))
+  }
+  const addStep = (title: string) => {
+    const newStep: Step = {
+      identifier: Utility.generateNonambiguousCode(6, 'ALPHANUMERIC'),
+      title,
+      type: 'unkonwn',
+    }
+    const currentStepId = survey.steps.length
+    setSurvey(pre => ({...pre, steps: [...pre.steps, newStep]}))
+    setCurrentStepIndex(currentStepId)
+  }
+
+  const updateCurrentStep = (step: Step) => {
+    if (currentStepIndex) {
+      let steps = [...survey.steps]
+      steps[currentStepIndex] = step
+      setSurvey(prev => ({...prev, steps}))
+    }
+  }
 
   return (
-    <Box bgcolor="#F8F8F8" px={5}>
+    <Box bgcolor="#F8F8F8" px={5} display="flex">
+      <QuestionList
+        currentStepIndex={currentStepIndex}
+        steps={getQuestionList()}
+        onAdd={(title: string) => addStep(title)}
+        onNavigate={(identifier: string) => {
+          setCurrentStepIndex(
+            survey.steps.findIndex(s => s.identifier == identifier)
+          )
+        }}
+      />
       <Box py={0} pr={3} pl={2}>
-        Surveys
-      </Box>
-      <Box>
-        Survey name
-        <pre>
-          {`
-  "type": "assessment",
-  "identifier": "foo",
-  "versionString": "1.2.3",
-  "schemaIdentifier":"bar",
-  "title": "Hello World!",
-  "subtitle": "Subtitle",
-  "detail": "Some text. This is a test.",
-  "estimatedMinutes": 4,
-  "icon": "fooIcon",
-  "footnote": "This is a footnote.",
-  "actions": { "goForward": { "type": "default", "buttonTitle" : "Go, Dogs! Go!" },
-    "cancel": { "type": "default", "iconName" : "closeX" }
-  }`}
-        </pre>
-        <TextField id="title" label="Title" variant="outlined" />
-        <TextField id="subtitle" label="Subtitle" variant="outlined" />
-        <TextField id="detail" label="detail" variant="outlined" multiline />
-        <TextField
-          id="footnote"
-          label="footnote"
-          variant="outlined"
-          multiline
-        />
-        <TextField
-          id="estimatedMinutes"
-          label="estimatedMinutes"
-          type="number"
-          variant="outlined"
+        <QuestionEdit
+          onChange={step => updateCurrentStep(step)}
+          step={
+            currentStepIndex !== undefined
+              ? survey.steps[currentStepIndex]
+              : undefined
+          }
         />
       </Box>
-
       <Box>
-        <SurveyDisplay />
+        <ControlSelector />
       </Box>
     </Box>
   )

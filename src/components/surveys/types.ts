@@ -85,20 +85,28 @@ export type Question = BaseStep & {
   uiHint?: 'checkmark'
 }
 
+export type MultipleInputQuestion = BaseStep & {
+  optional: boolean
+  inputItems: InputItem[]
+  skipCheckbox?: Skip
+}
+
 export type Instruction = BaseStep & {}
 
 export type BaseStep = {
   identifier: string //"step1",
   type:
+    | 'unkonwn'
     | 'instruction'
     | 'simpleQuestion'
     | 'multipleInputQuestion'
     | 'choiceQuestion'
+    | 'comboBoxQuestion' //otherInputItem
   title: string //Instruction Step 1",
   subtitle?: string
   detail?: string //Here are the details for this instruction.",
   footnote?: string //"This is a footnote.",
-  image: ImageAnimated | ImageFetchable
+  image?: ImageAnimated | ImageFetchable
 }
 
 export type Step = Question | Instruction
@@ -115,6 +123,7 @@ export type Survey = {
   icon: string //"fooIcon", ALINA TODO where is it coming from
   footnote?: string //This is a footnote.",
   actions: {goForward: ActionButton; cancel: ActionButton}
-  houldHideActions: string[] //["goBackward"]
+  shouldHideActions?: string[] //["goBackward"]
   progressMarkers: string[] //["step1","step2"],
+  steps: Step[]
 }

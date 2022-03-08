@@ -5,11 +5,13 @@ import {
   AccordionSummary,
   Box,
   Checkbox,
+  FormControl,
   FormControlLabel,
   FormGroup,
+  FormLabel,
   makeStyles,
-  MenuItem,
-  Select,
+  Radio,
+  RadioGroup,
   TextField,
   Typography,
 } from '@material-ui/core'
@@ -20,6 +22,7 @@ import {
   ChoiceQuestion,
   InputItem,
   Instruction,
+  MultipleInputQuestion,
   Question,
   Step,
   Survey,
@@ -44,7 +47,13 @@ function Factory(step: Step) {
       const s = step as ChoiceQuestion
       return <SurveyChoiceQuestion {...s}></SurveyChoiceQuestion>
     }
+    case 'comboBoxQuestion': {
+      const s = step as ChoiceQuestion
+      return <SurveyChoiceQuestion {...s}></SurveyChoiceQuestion>
+    }
     case 'multipleInputQuestion': {
+      const s = step as MultipleInputQuestion
+      return <SurveyMultipleInputQuestion {...s}></SurveyMultipleInputQuestion>
     }
 
     default:
@@ -217,19 +226,14 @@ const SimpleSurveyQuestion: FunctionComponent<Question> = inst => {
   )
 }
 
-const SurveyChoiceQuestion: FunctionComponent<ChoiceQuestion> = inst => {
-  const [state, setState] = React.useState({
-    gilad: true,
-    jason: false,
-    antoine: false,
-  })
-  const [checkChoice, setCheckChoice] = React.useState<(string | undefined)[]>(
-    []
-  )
+const SurveyChoiceQuestion: FunctionComponent<
+  ChoiceQuestion & {isCombo?: boolean}
+> = inst => {
+  const [state, setState] = React.useState({})
+  const [checkChoice, setCheckChoice] = React.useState<
+    (string | undefined | null)[]
+  >([])
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setState({...state, [event.target.name]: event.target.checked})
-  }
   const handleCheckboxChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     isExclusive?: boolean
@@ -259,20 +263,27 @@ const SurveyChoiceQuestion: FunctionComponent<ChoiceQuestion> = inst => {
     console.log(checkChoice)
   }
 
-  /* "singleChoice": false,
-      "baseType": "integer",
-      "uiHint": "checkmark",*/
-
-  const selectControl = (
-    <Select
-      labelId="demo-simple-select-label"
-      id="demo-simple-select"
-      value={''}
-      onChange={e => {}}>
-      {inst.choices?.map(choice => (
-        <MenuItem value={choice.value}>{choice.text}</MenuItem>
-      ))}
-    </Select>
+  const radioControl = (
+    <FormControl>
+      <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
+      <RadioGroup
+        aria-labelledby={inst.title}
+        name={inst.identifier}
+        value={Number(checkChoice[0] || '0')}
+        onChange={e => {
+          console.log(e.target.value)
+          setCheckChoice([e.target.value])
+        }}>
+        {inst.choices?.map((choice, index) => (
+          <FormControlLabel
+            key={index}
+            value={choice.value || null}
+            control={<Radio />}
+            label={choice.text}
+          />
+        ))}
+      </RadioGroup>
+    </FormControl>
   )
 
   const checkboxList = (
@@ -297,7 +308,7 @@ const SurveyChoiceQuestion: FunctionComponent<ChoiceQuestion> = inst => {
 
   return (
     <SurveyInstruction {...inst} optional={inst.optional}>
-      {inst.singleChoice ? selectControl : checkboxList}
+      {inst.singleChoice ? radioControl : checkboxList}
     </SurveyInstruction>
   )
 }
@@ -318,6 +329,28 @@ const SurveyInstruction: FunctionComponent<
     </div>
   )
 }
+
+const SurveyMultipleInputQuestion: FunctionComponent<MultipleInputQuestion> =
+  inst => {
+    const [val, setVal] = React.useState<(boolean | string | Date | null)[]>([])
+
+    const [isDisabled, setIsDisabled] = React.useState<boolean>(false)
+
+    //  const items = inst.inputItems.map((item, index) => {
+    /*    <SimpleInputItem
+      {...{
+        ...item,
+        isDisabled,
+        val: val[index],
+        title: '',
+        identifier: item.fieldLabel
+
+        onChange: (e: boolean | string | Date | null) => setVal(e),
+      }
+
+    />}*/
+    return <>not supported</>
+  }
 
 const SurveyDisplay: FunctionComponent<SurveyQuestionProps> = () => {
   let {id: studyId} = useParams<{
