@@ -66,13 +66,14 @@ export type Skip = {
   fieldLabel: string
 }
 
+export type ChoiceQuestionChoice = {
+  text: string
+  value: string | number
+  exclusive?: boolean
+  icon?: string
+}
 export type ChoiceQuestion = Question & {
-  choices?: {
-    text: string
-    value: string | number
-    exclusive?: boolean
-    icon?: string
-  }[]
+  choices?: ChoiceQuestionChoice[]
 
   singleChoice?: boolean
 }
@@ -92,9 +93,17 @@ export type MultipleInputQuestion = BaseStep & {
 }
 
 export type Instruction = BaseStep & {}
+export type ControlType =
+  | 'radio'
+  | 'checkbox'
+  | 'text'
+  | 'likert'
+  | 'time'
+  | 'date'
 
 export type BaseStep = {
   identifier: string //"step1",
+  controlType?: ControlType
   type:
     | 'unkonwn'
     | 'instruction'

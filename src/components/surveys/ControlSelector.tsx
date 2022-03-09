@@ -2,7 +2,7 @@ import {Box, Button, makeStyles} from '@material-ui/core'
 import {latoFont} from '@style/theme'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
-import {useParams} from 'react-router-dom'
+import {ControlType, Question, Step} from './types'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -46,71 +46,129 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type ControlSelectorOwnProps = {
-  studyId?: string
+  step: Step
+  onChange: (step: Step) => void
 }
-
-type ControlType = 'radio' | 'checkbox' | 'text' | 'likert' | 'time' | 'date'
 
 type Control = {
   title: string
   type: ControlType
-  replace: ControlType[]
+  replacements: ControlType[]
 }
 
 const controls: Control[] = [
   {
     title: 'Select One',
     type: 'radio',
-    replace: ['likert', 'checkbox', 'radio'],
+    replacements: ['likert', 'checkbox', 'radio'],
   },
   {
     title: 'Checkbox',
     type: 'checkbox',
-    replace: ['likert', 'checkbox', 'radio'],
+    replacements: ['likert', 'checkbox', 'radio'],
   },
-  {title: 'Text input', type: 'text', replace: []},
+  {title: 'Text input', type: 'text', replacements: []},
   {
     title: 'Likert Scale',
     type: 'likert',
-    replace: ['likert', 'checkbox', 'radio'],
+    replacements: ['likert', 'checkbox', 'radio'],
   },
-  {title: 'Date', type: 'date', replace: ['time']},
-  {title: 'Time', type: 'time', replace: ['date']},
+  {title: 'Date', type: 'date', replacements: ['time']},
+  {title: 'Time', type: 'time', replacements: ['date']},
 ]
+
+const ControlToQuesitonType = {
+  radio: {
+    type: 'choiceQuestion',
+    singleChoice: true,
+    uiHint: 'radio',
+    inputItem: undefined,
+  },
+  checkbox: {
+    type: 'choiceQuestion',
+    singleChoice: false,
+    uiHint: 'checkmark',
+    inputItem: undefined,
+  },
+  text: {
+    type: 'simpleQuestion',
+    inputItem: {type: 'string', placeholder: 'Enter text'},
+  },
+  likert: {
+    type: 'choiceQuestion',
+    singleChoice: true,
+    uiHint: 'likert',
+    inputItem: undefined,
+  },
+
+  time: {
+    type: 'simpleQuestion',
+    inputItem: {type: 'time', placeholder: 'Enter time'},
+  },
+
+  date: {
+    type: 'simpleQuestion',
+    inputItem: {type: 'year', placeholder: 'Enter year'},
+  },
+}
 
 type ControlSelectorProps = ControlSelectorOwnProps
 
-const ControlSelector: FunctionComponent<ControlSelectorProps> = () => {
-  let {id: studyId} = useParams<{
-    id: string
-  }>()
-
+const ControlSelector: FunctionComponent<ControlSelectorProps> = ({
+  step,
+  onChange,
+}) => {
   const classes = useStyles()
-  const [selectedControl, setSelectedControl] = React.useState<
-    Control | undefined
-  >()
+  //const [selectedControl, setSelectedControl] = React.useState<
+  //   Control | undefined
+  // >(controls.find(c => c.type === step?.controlType))
 
   const clickControl = (control: Control) => {
-    selectedControl?.type === control.type
+    /* selectedControl?.type === control.type
       ? setSelectedControl(undefined)
-      : setSelectedControl(control)
+      : setSelectedControl(control)*/
+
+    if (control.type === step.controlType) {
+      onChange({...step, controlType: undefined})
+    } else {
+      const props = ControlToQuesitonType[control.type]
+      if (!props) {
+        throw 'ERROR'
+      }
+      const updatedStep = {
+        ...step,
+        ...props,
+        controlType: control.type,
+      } as Question
+
+      onChange(updatedStep)
+    }
+  }
+  const getSelectedControl = () =>
+    controls.find(c => c.type === step?.controlType)
+
+  const isControlDisabled = (type: ControlType) => {
+    const selectedControl = getSelectedControl()
+    if (!selectedControl) {
+      return false
+    }
+    return (
+      !selectedControl.replacements.includes(type) &&
+      selectedControl.type !== type
+    )
   }
 
   return (
     <Box className={classes.root} px={5}>
-      {controls.map(x => (
+      {controls.map(control => (
         <Button
-          key={x.type}
+          key={control.type}
           className={clsx(
             classes.control,
-            x.type === selectedControl?.type && 'selected'
+            control.type === getSelectedControl()?.type && 'selected'
           )}
-          onClick={() => clickControl(x)}
-          disabled={
-            selectedControl &&
-            !selectedControl.replace.includes(x.type) &&
-            selectedControl.type !== x.type
-          }>
+          onClick={() => clickControl(control)}
+          disabled={isControlDisabled(control.type)}>
           <Box
             width={23}
             height={23}
@@ -118,7 +176,7 @@ const ControlSelector: FunctionComponent<ControlSelectorProps> = () => {
             mb={1}
             borderColor="#fff"
             border={'1px solid white'}></Box>
-          {x.title}
+          {control.title}
         </Button>
       ))}
     </Box>

@@ -55,32 +55,39 @@ const Surveys: FunctionComponent<SurveysProps> = () => {
     }
   }
 
+  const getCurrentStep = () =>
+    currentStepIndex !== undefined ? survey.steps[currentStepIndex] : undefined
+
   return (
-    <Box bgcolor="#F8F8F8" px={5} display="flex">
-      <QuestionList
-        currentStepIndex={currentStepIndex}
-        steps={getQuestionList()}
-        onAdd={(title: string) => addStep(title)}
-        onNavigate={(identifier: string) => {
-          setCurrentStepIndex(
-            survey.steps.findIndex(s => s.identifier == identifier)
-          )
-        }}
-      />
-      <Box py={0} pr={3} pl={2}>
-        <QuestionEdit
-          onChange={step => updateCurrentStep(step)}
-          step={
-            currentStepIndex !== undefined
-              ? survey.steps[currentStepIndex]
-              : undefined
-          }
+    <>
+      <pre>{JSON.stringify(survey.steps[currentStepIndex || 0], null, 4)}</pre>
+      <Box bgcolor="#F8F8F8" px={5} display="flex">
+        <QuestionList
+          currentStepIndex={currentStepIndex}
+          steps={getQuestionList()}
+          onAdd={(title: string) => addStep(title)}
+          onNavigate={(identifier: string) => {
+            setCurrentStepIndex(
+              survey.steps.findIndex(s => s.identifier == identifier)
+            )
+          }}
         />
+        <Box py={0} pr={3} pl={2}>
+          <QuestionEdit
+            onChange={step => updateCurrentStep(step)}
+            step={getCurrentStep()}
+          />
+        </Box>
+        {currentStepIndex && (
+          <Box>
+            <ControlSelector
+              step={getCurrentStep()!}
+              onChange={step => updateCurrentStep(step)}
+            />
+          </Box>
+        )}
       </Box>
-      <Box>
-        <ControlSelector />
-      </Box>
-    </Box>
+    </>
   )
 }
 export default Surveys
