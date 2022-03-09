@@ -605,7 +605,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent style={{padding: 0}}>
+        <DialogContent style={{padding: 0, overflowY: 'visible'}}>
           <SessionStartTab
             ref={ref1}
             study={study!}
