@@ -28,6 +28,7 @@ import {
   GridColumnMenuProps,
   GridColumnsMenuItem,
   GridOverlay,
+  GridSelectionModel,
   //GridRowSelectedParams
   GridToolbarContainer,
   GridValueGetterParams,
@@ -577,15 +578,11 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               density="standard"
               columns={participantColumns}
               checkboxSelection
-              onRowSelected={(row: GridRowSelectedParams) => {
-                let model: string[] = []
-                if (!selectionModel.includes(row.data.id)) {
-                  model = [...selectionModel, row.data.id]
-                } else {
-                  model = selectionModel.filter(id => id != row.data.id)
-                }
-
-                onRowSelected(model, false)
+              onSelectionModelChange={(model: GridSelectionModel) => {
+                onRowSelected(
+                  model.map(id => id.toString()),
+                  false
+                )
               }}
               selectionModel={selectionModel}
               components={{
