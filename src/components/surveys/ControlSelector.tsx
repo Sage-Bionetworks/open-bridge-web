@@ -52,65 +52,97 @@ type ControlSelectorOwnProps = {
 
 type Control = {
   title: string
-  type: ControlType
+  // type: ControlType
   replacements: ControlType[]
 }
 
-const controls: Control[] = [
-  {
-    title: 'Select One',
-    type: 'radio',
-    replacements: ['likert', 'checkbox', 'radio'],
-  },
-  {
-    title: 'Checkbox',
-    type: 'checkbox',
-    replacements: ['likert', 'checkbox', 'radio'],
-  },
-  {title: 'Text input', type: 'text', replacements: []},
-  {
-    title: 'Likert Scale',
-    type: 'likert',
-    replacements: ['likert', 'checkbox', 'radio'],
-  },
-  {title: 'Date', type: 'date', replacements: ['time']},
-  {title: 'Time', type: 'time', replacements: ['date']},
-]
+const controls: Map<ControlType, Control> = new Map([
+  [
+    'radio',
+    {
+      title: 'Select One',
 
-const ControlToQuesitonType = {
-  radio: {
-    type: 'choiceQuestion',
-    singleChoice: true,
-    uiHint: 'radio',
-    inputItem: undefined,
-  },
-  checkbox: {
-    type: 'choiceQuestion',
-    singleChoice: false,
-    uiHint: 'checkmark',
-    inputItem: undefined,
-  },
-  text: {
-    type: 'simpleQuestion',
-    inputItem: {type: 'string', placeholder: 'Enter text'},
-  },
-  likert: {
-    type: 'choiceQuestion',
-    singleChoice: true,
-    uiHint: 'likert',
-    inputItem: undefined,
-  },
+      replacements: ['likert', 'checkbox', 'radio'],
+    },
+  ],
+  [
+    'checkbox',
+    {
+      title: 'Checkbox',
 
-  time: {
-    type: 'simpleQuestion',
-    inputItem: {type: 'time', placeholder: 'Enter time'},
-  },
+      replacements: ['likert', 'checkbox', 'radio'],
+    },
+  ],
+  [
+    'text',
+    {
+      title: 'Text input',
+      replacements: [],
+    },
+  ],
+  [
+    'likert',
+    {
+      title: 'Likert Scale',
+      replacements: ['likert', 'checkbox', 'radio'],
+    },
+  ],
+  ['date', {title: 'Date', replacements: ['time']}],
+  ['time', {title: 'Time', replacements: ['date']}],
+])
 
-  date: {
-    type: 'simpleQuestion',
-    inputItem: {type: 'year', placeholder: 'Enter year'},
-  },
-}
+const ControlToQuesitonType: Map<ControlType, any> = new Map([
+  [
+    'radio',
+    {
+      type: 'choiceQuestion',
+      singleChoice: true,
+      uiHint: 'radio',
+      inputItem: undefined,
+    },
+  ],
+  [
+    'checkbox',
+    {
+      type: 'choiceQuestion',
+      singleChoice: false,
+      uiHint: 'checkmark',
+      inputItem: undefined,
+    },
+  ],
+  [
+    'text',
+    {
+      type: 'simpleQuestion',
+      inputItem: {type: 'string', placeholder: 'Enter text'},
+    },
+  ],
+  [
+    'likert',
+    {
+      type: 'choiceQuestion',
+      singleChoice: true,
+      uiHint: 'likert',
+      inputItem: undefined,
+    },
+  ],
+
+  [
+    'time',
+    {
+      type: 'simpleQuestion',
+      inputItem: {type: 'time', placeholder: 'Enter time'},
+    },
+  ],
+
+  [
+    'date',
+    {
+      type: 'simpleQuestion',
+      inputItem: {type: 'year', placeholder: 'Enter year'},
+    },
+  ],
+])
 
 type ControlSelectorProps = ControlSelectorOwnProps
 
@@ -123,52 +155,49 @@ const ControlSelector: FunctionComponent<ControlSelectorProps> = ({
   //   Control | undefined
   // >(controls.find(c => c.type === step?.controlType))
 
-  const clickControl = (control: Control) => {
+  const clickControl = (control: Control, type: ControlType) => {
     /* selectedControl?.type === control.type
       ? setSelectedControl(undefined)
       : setSelectedControl(control)*/
 
-    if (control.type === step.controlType) {
+    if (type === step.controlType) {
       onChange({...step, controlType: undefined})
     } else {
-      const props = ControlToQuesitonType[control.type]
+      const props = ControlToQuesitonType.get(type)
       if (!props) {
         throw 'ERROR'
       }
       const updatedStep = {
         ...step,
         ...props,
-        controlType: control.type,
+        controlType: type,
       } as Question
 
       onChange(updatedStep)
     }
   }
-  const getSelectedControl = () =>
-    controls.find(c => c.type === step?.controlType)
 
   const isControlDisabled = (type: ControlType) => {
-    const selectedControl = getSelectedControl()
-    if (!selectedControl) {
+    if (!step?.controlType) {
       return false
     }
     return (
-      !selectedControl.replacements.includes(type) &&
-      selectedControl.type !== type
+      !controls.get(type)?.replacements.includes(type) &&
+      step?.controlType !== type
     )
   }
 
   return (
     <Box className={classes.root} px={5}>
-      {controls.map(control => (
+      {[...controls.keys()].map(type => (
         <Button
-          key={control.type}
+          key={type}
           className={clsx(
             classes.control,
-            control.type === getSelectedControl()?.type && 'selected'
+            type === step?.controlType && 'selected'
           )}
-          onClick={() => clickControl(control)}
-          disabled={isControlDisabled(control.type)}>
+          onClick={() => clickControl(controls.get(type)!, type)}
+          disabled={isControlDisabled(type)}>
           <Box
             width={23}
             height={23}
@@ -176,7 +205,7 @@ const ControlSelector: FunctionComponent<ControlSelectorProps> = ({
             mb={1}
             borderColor="#fff"
             border={'1px solid white'}></Box>
-          {control.title}
+          {controls.get(type)!.title}
         </Button>
       ))}
     </Box>
