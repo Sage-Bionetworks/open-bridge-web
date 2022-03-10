@@ -28,7 +28,7 @@ import {
   GridColumnMenuProps,
   GridColumnsMenuItem,
   GridOverlay,
-  GridRowSelectedParams,
+  //GridRowSelectedParams
   GridToolbarContainer,
   GridValueGetterParams,
   HideGridColMenuItem,
@@ -44,7 +44,6 @@ import {
   ParticipantActivityType,
   ParticipantEvent,
   RequestStatus,
-  //GridRowSelectedParams
   SelectionType,
 } from '@typedefs/types'
 //test GridRowSelectedParams
