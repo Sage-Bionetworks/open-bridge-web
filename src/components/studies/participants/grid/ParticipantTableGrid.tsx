@@ -364,7 +364,7 @@ function getColumns(
     },
 
     {
-      field: 'id',
+      field: 'healthCode',
       headerName: 'HealthCode',
       renderCell: renderCellExpand,
       flex: 2,

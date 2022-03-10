@@ -424,21 +424,31 @@ async function participantSearch(
   // get withdrawn info if the participant is withdrawn, only get the note otherwise
   let resultItems: ParticipantAccountSummary[] =
     participantAccountSummaryResult.data.items
+
+  const participantPromises = participantAccountSummaryResult.data.items.map(
+    i => getActiveParticipantById(studyId, token, i.id)
+  )
+  const resolvedParticipants = await Promise.all(participantPromises)
+
+  const participantEnrollmentPromises =
+    participantAccountSummaryResult.data.items.map(participant => {
+      return getUserEnrollmentInfo(studyId, participant.id, token)
+    })
+  const enrollments = await Promise.all(participantEnrollmentPromises)
+
   if (queryFilter === 'withdrawn') {
-    const participantEnrollmentPromises =
-      participantAccountSummaryResult.data.items.map(participant => {
-        return getUserEnrollmentInfo(studyId, participant.id, token)
-      })
-    const enrollments = await Promise.all(participantEnrollmentPromises)
     resultItems = enrollments.map(p => mapWithdrawnParticipant(p, studyId))
   } else if (queryFilter === 'enrolled') {
-    const participantPromises = participantAccountSummaryResult.data.items.map(
-      i => getActiveParticipantById(studyId, token, i.id)
+    const participantPromises = resultItems.map(i =>
+      getActiveParticipantById(studyId, token, i.id)
     )
     const resolvedParticipants = await Promise.all(participantPromises)
-    resultItems = resolvedParticipants.filter(
-      p => p !== null
-    ) as ParticipantAccountSummary[]
+    resultItems.forEach(i => {
+      i.note =
+        enrollments.find(p => p.participant.identifier === i.id)?.note || ''
+      i.healthCode =
+        resolvedParticipants.find(p => p?.id === i.id)?.healthCode || ''
+    })
   }
   return {items: resultItems, total: resultItems.length}
 }
