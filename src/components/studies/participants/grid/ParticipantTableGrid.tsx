@@ -28,7 +28,7 @@ import {
   GridColumnMenuProps,
   GridColumnsMenuItem,
   GridOverlay,
-  GridRowSelectedParams,
+  //GridRowSelectedParams
   GridToolbarContainer,
   GridValueGetterParams,
   HideGridColMenuItem,
@@ -46,6 +46,7 @@ import {
   RequestStatus,
   SelectionType,
 } from '@typedefs/types'
+//test GridRowSelectedParams
 import _ from 'lodash'
 import React, {FunctionComponent, ReactNode, SyntheticEvent} from 'react'
 import Pluralize from 'react-pluralize'
