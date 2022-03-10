@@ -44,8 +44,10 @@ import {
   ParticipantActivityType,
   ParticipantEvent,
   RequestStatus,
+  //GridRowSelectedParams
   SelectionType,
 } from '@typedefs/types'
+//test GridRowSelectedParams
 import _ from 'lodash'
 import React, {FunctionComponent, ReactNode, SyntheticEvent} from 'react'
 import Pluralize from 'react-pluralize'
