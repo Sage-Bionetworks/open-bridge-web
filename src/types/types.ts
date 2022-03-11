@@ -252,7 +252,11 @@ type EnrolledSubrecord = {
   enrolledOn: string
 }
 
-export type ProgressionStatus = 'done' | 'in_progress' | 'unstarted'
+export type ProgressionStatus =
+  | 'done'
+  | 'in_progress'
+  | 'unstarted'
+  | 'no_schedule'
 
 export type ParticipantAccountSummary = {
   // isSelected?: boolean
@@ -313,15 +317,13 @@ export type AdherenceWindowState =
   | 'completed'
   | 'abandoned'
   | 'expired'
-  | 'not_yet_available'
-  | 'unstarted'
   | 'declined'
 
 export type AdherenceSessionInfo = {
   sessionGuid: string
   sessionName: string
   sessionSymbol: string
-  week: number
+  weekInStudy: number
   studyBurstId: string
   studyBurstNum: number
   startDate: string
@@ -350,10 +352,9 @@ export type AdherenceEventStream = {
   eventTimestamp: string
   sessionGuids: [string]
   byDayEntries: AdherenceByDayEntries
-  type: 'EventStream'
 }
 
-export type EventStreamAdherenceReport = {
+/*export type AdherenceDetailReport = {
   timestamp: string
   clientTimeZone: string
   adherencePercent: number
@@ -363,6 +364,36 @@ export type EventStreamAdherenceReport = {
     max: number
   }
   streams: AdherenceEventStream[]
+}*/
+
+export type AdherenceDetailReportWeek = {
+  weekInStudy: number
+
+  startDate: string
+  adherencePercent: number
+  rows: RowLabel[]
+  byDayEntries: AdherenceByDayEntries
+}
+
+export type AdherenceDetailReport = {
+  participant: {identifier: string; externalId: string}
+  //rowLabels: string[]
+  testAccount?: boolean
+  progression: ProgressionStatus
+  dateRange: {
+    startDate: string //YYYY-MM-DD
+    endDate: string
+  }
+
+  adherencePercent: number
+  clientTimeZone: string
+  createdOn: string
+  weeks: AdherenceDetailReportWeek[]
+
+  nextActivity: AdherenceSessionInfo
+  unsetEventIds: string[]
+  unscheduledSessions: string[]
+  eventTimestamps: Record<string, string>
 }
 
 export type SessionDisplayInfo = {
@@ -380,7 +411,8 @@ export type RowLabel = {
   week: number
   studyBurstId?: string
   studyBurstNum?: number
-  type: string
+  startEventId: string
+  weekInStudy: number
 }
 
 export type AdherenceWeeklyReport = {

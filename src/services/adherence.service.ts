@@ -1,6 +1,7 @@
 import {
+  AdherenceDetailReport,
   AdherenceWeeklyReport,
-  EventStreamAdherenceReport,
+  ProgressionStatus,
 } from '@typedefs/types'
 import _ from 'lodash'
 import Utility from '../helpers/utility'
@@ -14,7 +15,7 @@ export type WeeklyAdherenceFilter = {
 
   adherenceMax?: number
   adherenceMin?: number
-  progressionFilters?: ('done' | 'in_progress' | 'unstarted')[]
+  progressionFilters?: ProgressionStatus[]
 }
 
 async function getAdherenceForWeekForUsers(
@@ -94,7 +95,7 @@ async function getAdherenceForParticipant(
   studyId: string,
   userId: string,
   token: string
-): Promise<EventStreamAdherenceReport> {
+): Promise<AdherenceDetailReport> {
   console.log('getting particiapnt')
   const endpoint = constants.endpoints.adherenceDetail
     .replace(':studyId', studyId)
