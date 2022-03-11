@@ -330,6 +330,7 @@ export type AdherenceSessionInfo = {
 }
 
 export type EventStreamDay = AdherenceSessionInfo & {
+  today?: boolean
   startDay: number
   timeWindows: {
     sessionInstanceGuid: string
@@ -342,30 +343,6 @@ export type EventStreamDay = AdherenceSessionInfo & {
 
 export type AdherenceByDayEntries = Record<string, EventStreamDay[]>
 
-export type WeeklyAdherenceByDayEntries = Record<
-  string,
-  (EventStreamDay & {label: string})[]
->
-
-export type AdherenceEventStream = {
-  startEventId: string
-  eventTimestamp: string
-  sessionGuids: [string]
-  byDayEntries: AdherenceByDayEntries
-}
-
-/*export type AdherenceDetailReport = {
-  timestamp: string
-  clientTimeZone: string
-  adherencePercent: number
-  progression: ProgressionStatus
-  dayRangeOfAllStreams: {
-    min: number
-    max: number
-  }
-  streams: AdherenceEventStream[]
-}*/
-
 export type AdherenceDetailReportWeek = {
   weekInStudy: number
 
@@ -377,7 +354,7 @@ export type AdherenceDetailReportWeek = {
 
 export type AdherenceDetailReport = {
   participant: {identifier: string; externalId: string}
-  //rowLabels: string[]
+
   testAccount?: boolean
   progression: ProgressionStatus
   dateRange: {
@@ -417,14 +394,14 @@ export type RowLabel = {
 
 export type AdherenceWeeklyReport = {
   participant: {identifier: string; externalId: string}
-  //rowLabels: string[]
+
   testAccount?: boolean
   progression: ProgressionStatus
   rows: RowLabel[]
   weeklyAdherencePercent: number
   clientTimeZone: string
   createdOn: string
-  byDayEntries: WeeklyAdherenceByDayEntries
+  byDayEntries: AdherenceByDayEntries
   nextActivity?: AdherenceSessionInfo
 }
 

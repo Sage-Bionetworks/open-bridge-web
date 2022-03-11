@@ -31,6 +31,9 @@ export const useCommonStyles = makeStyles(theme => ({
     alignItems: 'center',
     height: '100%',
     justifyContent: 'flex-start',
+    '&.today': {
+      backgroundColor: '#FFFF54',
+    },
     '&:first-child': {
       borderLeft: '1px solid black',
     },
