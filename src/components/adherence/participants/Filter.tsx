@@ -17,6 +17,7 @@ import AdherenceService from '@services/adherence.service'
 import {AdherenceWeeklyReport} from '@typedefs/types'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
+import AdherenceUtility from '../adherenceUtility'
 import {useCommonStyles} from '../styles'
 
 export const useStyles = makeStyles(theme => ({
@@ -79,7 +80,10 @@ function getDisplayLabels(items: AdherenceWeeklyReport[]) {
   const labels = new Map(
     _.flatten(items.map(i => i.rows))
       .filter(r => !!r)
-      .map(r => [r.searchableLabel, r.label])
+      .map(r => [
+        r.searchableLabel,
+        AdherenceUtility.getDisplayFromLabel(r.label, r.studyBurstNum),
+      ])
   )
 
   return new Map(labels)
@@ -96,16 +100,15 @@ const Filter: FunctionComponent<FilterProps> = ({
   const [threshold, setThreshold] = React.useState(getThreshold(min, max))
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [isSelectAll, setIsSelectAll] = React.useState(!selectedLabels)
-  const [displayLabels, setDisplayLabels] = React.useState(
+  /* const [displayLabels, setDisplayLabels] = React.useState(
     getDisplayLabels(adherenceReportItems)
-  )
+  )*/
+
   const [searchLabels, setSearchLabels] = React.useState<string[]>(
     selectedLabels || Array.from(getDisplayLabels(adherenceReportItems).keys())
   )
 
-  if (!displayLabels) {
-    return <></>
-  }
+  const displayLabels = getDisplayLabels(adherenceReportItems)
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget)

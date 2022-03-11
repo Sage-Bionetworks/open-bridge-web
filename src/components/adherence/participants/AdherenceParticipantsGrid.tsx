@@ -11,7 +11,8 @@ import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {Link} from 'react-router-dom'
 import AdherenceUtility from '../adherenceUtility'
-import DayDisplayForSession from '../DayDisplayForSession'
+import DayDisplay from '../DayDisplay'
+import AdherenceSessionIcon from '../participant-detail/AdherenceSessionIcon'
 import {useCommonStyles} from '../styles'
 import NextActivity from './NextActivity'
 
@@ -19,7 +20,7 @@ export const useStyles = makeStyles(theme => ({
   participantRow: {
     display: 'flex',
     borderBottom: '4px solid #fbfbfb',
-    padding: theme.spacing(2),
+    padding: theme.spacing(2, 0),
     alignitems: 'center',
   },
   adherenceCell: {
@@ -47,24 +48,14 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
 
     const ref = React.useRef<HTMLDivElement>(null)
     const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 250)
-    const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
-
-    React.useEffect(() => {
-      if (adherenceWeeklyReport) {
-        setMaxNumberOfTimeWinsows(
-          AdherenceUtility.getMaxNumberOfTimeWindows(
-            adherenceWeeklyReport.items
-          )
-        )
-      }
-    }, [adherenceWeeklyReport])
+    //  const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
 
     return (
       <div ref={ref} style={{marginBottom: '32px'}}>
         <div style={{display: 'flex', marginBottom: '16px'}}>
           <Box width={theme.spacing(11)}>Participant</Box>
-          <Box width={theme.spacing(11)}>Schedule</Box>
-          <div style={{marginLeft: '-100px'}}>
+          <Box width={theme.spacing(12)}>Schedule</Box>
+          <div style={{marginLeft: '-86px'}}>
             <PlotDaysDisplay
               title=""
               unitWidth={dayWidthInPx}
@@ -83,8 +74,8 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
             />
           </div>
         </div>
-        {adherenceWeeklyReport.items.map((a, index) =>
-          !a.participant ? (
+        {adherenceWeeklyReport.items.map((item, index) =>
+          !item.participant ? (
             <div
               className={classes.participantRow}
               key={`no_participant_${index}`}>
@@ -92,66 +83,78 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
             </div>
           ) : (
             <div
-              key={`${a.participant}_${index}`}
+              key={`${item.participant}_${index}`}
               className={classes.participantRow}>
               <Box width={theme.spacing(11)} key={'pIdentifier'}>
                 <Link
-                  to={`adherence/${a.participant?.identifier || 'nothing'}`}>
+                  to={`adherence/${item.participant?.identifier || 'nothing'}`}>
                   {ParticipantService.formatExternalId(
                     studyId,
-                    a.participant.externalId
+                    item.participant.externalId
                   )}
                 </Link>
               </Box>
               <div key={'data'}>
-                {a.rows.length === 0 ? (
+                {item.rows.length === 0 ? (
                   <NextActivity
                     dayPxWidth={dayWidthInPx}
-                    info={a.nextActivity}
-                    completionStatus={a.progression}
+                    info={item.nextActivity}
+                    completionStatus={item.progression}
                   />
                 ) : (
-                  a.rows.map((info, rowIndex) => (
+                  item.rows.map((info, rowIndex) => (
                     <div
                       key={`${/*info.sessionGuid*/ info}_ind${rowIndex}`}
                       className={classes.sessionRow}>
                       <Tooltip title={info.label}>
                         <Box
                           key="label"
-                          width={theme.spacing(11)}
+                          width={theme.spacing(12)}
                           fontSize={'12px'}
-                          lineHeight={0.8}
+                          lineHeight={1}
+                          paddingRight="12px"
+                          height="16px"
                           borderRight={'1px solid black'}>
-                          {
-                            /*AdherenceUtility.getDisplayFromLabel(info.label)*/
-                            `Week ${info.week}`
-                          }
+                          {info.studyBurstNum !== undefined
+                            ? AdherenceUtility.getDisplayFromLabel(
+                                info.label,
+                                info.studyBurstNum,
+                                true
+                              )[1]
+                            : AdherenceUtility.getDisplayFromLabel(
+                                info.label,
+                                info.studyBurstNum,
+                                true
+                              )[0]}
                         </Box>
                       </Tooltip>
+                      <div className={classes.sessionLegendIcon}>
+                        <AdherenceSessionIcon
+                          sessionSymbol={info.sessionSymbol}
+                          windowState="completed">
+                          &nbsp;
+                        </AdherenceSessionIcon>
+                      </div>
                       {[...new Array(7)].map((i, dayIndex) => (
-                        <div
+                        <DayDisplay
                           key={dayIndex}
-                          className={classes.dayCell}
-                          style={{
-                            width: `${dayWidthInPx}px`,
-                            borderRight:
-                              dayIndex === 6 ? 'none' : '1px solid black',
-                          }}>
-                          <DayDisplayForSession
-                            sequentialDayNumber={dayIndex}
-                            byDayEntries={a.byDayEntries}
-                            sessionSymbol={info.sessionSymbol}
-                            maxNumberOfTimeWindows={maxNumbrOfTimeWindows}
-                            isCompliant={
-                              a.weeklyAdherencePercent >=
-                              AdherenceService.COMPLIANCE_THRESHOLD
-                            }
-                            entryIndex={rowIndex}
-                            propertyName="sessionGuid"
-                            timeZone={a.clientTimeZone}
-                            propertyValue={info.sessionGuid}
-                          />
-                        </div>
+                          entry={AdherenceUtility.getItemFromByDayEntries(
+                            item.byDayEntries,
+                            dayIndex,
+                            rowIndex
+                          )}
+                          isCompliant={
+                            item.weeklyAdherencePercent >=
+                            AdherenceService.COMPLIANCE_THRESHOLD
+                          }
+                          timeZone={item.clientTimeZone}
+                          dayWidth={dayWidthInPx}
+                          sessionSymbol={info.sessionSymbol}
+                          numOfWin={AdherenceUtility.getMaxNumberOfTimeWindows(
+                            adherenceWeeklyReport.items
+                          )}
+                          border={dayIndex !== 6}
+                        />
                       ))}
                     </div>
                   ))
@@ -161,11 +164,12 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                 key="adherence"
                 className={clsx(
                   classes.adherenceCell,
-                  a.weeklyAdherencePercent <
+                  item.weeklyAdherencePercent <
                     AdherenceService.COMPLIANCE_THRESHOLD && classes.red
                 )}>
-                {' '}
-                {a.weeklyAdherencePercent}%
+                {item.progression === 'unstarted'
+                  ? '-! '
+                  : `${item.weeklyAdherencePercent}%`}
               </Box>
             </div>
           )

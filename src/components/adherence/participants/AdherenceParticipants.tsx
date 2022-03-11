@@ -4,15 +4,11 @@ import LoadingComponent from '@components/widgets/Loader'
 import TablePagination from '@components/widgets/pagination/TablePagination'
 import {Box, makeStyles} from '@material-ui/core'
 import {WeeklyAdherenceFilter} from '@services/adherence.service'
-import {
-  AdherenceWeeklyReport,
-  ProgressionStatus,
-  SessionDisplayInfo,
-} from '@typedefs/types'
-import _ from 'lodash'
+import {ProgressionStatus, SessionDisplayInfo} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {useParams} from 'react-router-dom'
+import AdherenceUtility from '../adherenceUtility'
 import SessionLegend from '../SessionLegend'
 import {useCommonStyles} from '../styles'
 import AdherenceParticipantsGrid from './AdherenceParticipantsGrid'
@@ -29,20 +25,6 @@ type AdherenceParticipantsProps = {
   studyId?: string
 }
 
-function getUniqueSessionsInfoForWeek(
-  items: AdherenceWeeklyReport[]
-): SessionDisplayInfo[] {
-  const labels = _.flatten(items.map(i => i.rows))
-  const result: SessionDisplayInfo[] = labels
-    .filter(label => !!label)
-    .map(label => ({
-      sessionGuid: label.sessionGuid,
-      sessionName: label.sessionName,
-      sessionSymbol: label.sessionSymbol,
-    }))
-
-  return _.uniqBy(result, 'sessionGuid')
-}
 const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
   () => {
     const classes = {...useCommonStyles(), ...useStyles()}
@@ -54,7 +36,7 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
       React.useState<WeeklyAdherenceFilter>({})
     const [currentPage, setCurrentPage] = React.useState(0)
 
-    const [pageSize, setPageSize] = React.useState(5)
+    const [pageSize, setPageSize] = React.useState(50)
     const [sessions, setSessions] = React.useState<SessionDisplayInfo[]>([])
 
     const {
@@ -74,7 +56,9 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
 
     React.useEffect(() => {
       if (adherenceWeeklyReport) {
-        setSessions(getUniqueSessionsInfoForWeek(adherenceWeeklyReport.items))
+        setSessions(
+          AdherenceUtility.getUniqueSessionsInfo(adherenceWeeklyReport.items)
+        )
       }
     }, [adherenceWeeklyReport])
 

@@ -29,7 +29,7 @@ import EditParticipantEvents from './EditParticipantEvents'
 import EditParticipantNotes from './EditParticipantNotes'
 const useStyles = makeStyles(theme => ({
   mainContainer: {
-    padding: theme.spacing(4),
+    padding: theme.spacing(3),
     margin: theme.spacing(4, 0),
     backgroundColor: '#f8f8f8',
   },
@@ -93,6 +93,7 @@ const AdherenceParticipant: FunctionComponent<
   React.useEffect(() => {
     if (adherenceReport) {
       // debugger
+
       setParticipantSessions(
         AdherenceUtility.getUniqueSessionsInfo(adherenceReport.weeks)
       )

@@ -4,33 +4,25 @@ import {
 } from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
 import {makeStyles, Tooltip} from '@material-ui/core'
 import AdherenceService from '@services/adherence.service'
+import {latoFont} from '@style/theme'
 import {AdherenceDetailReport} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
-import DayDisplayForSession from '../DayDisplayForSession'
+import AdherenceUtility from '../adherenceUtility'
+import DayDisplay from '../DayDisplay'
 import {useCommonStyles} from '../styles'
 import AdherenceSessionIcon from './AdherenceSessionIcon'
 
 const useStyles = makeStyles(theme => ({
-  /* adherenceGrid: {
-    padding: theme.spacing(2, 0),
-  },
-  adherenceLabel: {
-    position: 'absolute',
-
-    top: '-16px',
-    fontSize: '12px',
-    fontWeight: 'bold',
-    textAlign: 'left',
-  },*/
   daysList: {
-    paddingLeft: '20px',
+    paddingLeft: 0,
     marginBottom: theme.spacing(0.5),
   },
   startEventId: {
-    width: '128px',
+    width: theme.spacing(20),
     fontSize: '12px',
-    padding: theme.spacing(0, 2, 0, 1),
+    fontFamily: latoFont,
+    padding: theme.spacing(0, 1, 0, 2),
     '& strong': {
       display: 'block',
       cursor: 'pointer',
@@ -48,7 +40,10 @@ const useStyles = makeStyles(theme => ({
   eventRowForWeek: {
     display: 'flex',
     flexDirection: 'row',
+
     alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: theme.spacing(1, 0),
     '&:not(:last-child)': {
       marginBottom: '5px',
     },
@@ -62,27 +57,31 @@ const useStyles = makeStyles(theme => ({
   },
   eventRowForWeekSingleSession: {
     display: 'flex',
-    position: 'relative',
-    left: '-15px',
+    // position: 'relative',
+    // left: '-15px',
   },
 
   sessionWindows: {
     width: '100%',
     position: 'relative',
     display: 'flex',
-    height: '20px',
+    minHeight: '20px',
   },
   adherenceDisplay: {
     fontSize: '14px',
+  },
+  sessionLegendIcon: {
+    display: 'flex',
+    '& svg': {
+      width: '6px',
+    },
+    //position: 'relative',
+    // left: '-18px',
   },
 }))
 
 type AdherenceParticipantGridProps = {
   adherenceReport: AdherenceDetailReport
-}
-
-function getSequentialDayNumber(weekIndex: number, dayIndex: number): number {
-  return weekIndex * 7 + dayIndex
 }
 
 //https://github.com/Sage-Bionetworks/BridgeServer2/blob/develop/src/main/java/org/sagebionetworks/bridge/models/schedules2/adherence/AdherenceUtils.java
@@ -91,27 +90,36 @@ function getSequentialDayNumber(weekIndex: number, dayIndex: number): number {
 const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps> =
   ({adherenceReport}) => {
     const ref = React.useRef<HTMLDivElement>(null)
-    const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 200)
-    const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
-
+    const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 250)
     const classes = {...useCommonStyles(), ...useStyles()}
-
     const isCompliant = (adherence: number): boolean =>
       adherence > AdherenceService.COMPLIANCE_THRESHOLD
+
+    const dayListingTitleStyle: React.CSSProperties = {
+      fontWeight: 'bold',
+      paddingLeft: '16px',
+      fontSize: '14px',
+      width: '225px',
+    }
+
+    const adHerenceLabelStyle: React.CSSProperties = {
+      top: '-7px',
+      lineHeight: '1',
+      width: `${dayWidthInPx}px`,
+      left: `${dayWidthInPx * 7}px`,
+    }
 
     return (
       <div ref={ref} className={classes.adherenceGrid}>
         <div className={classes.daysList} key={'day_list'}>
           <PlotDaysDisplay
-            title="Schedule by week day"
+            title="Day in Study"
+            titleStyle={dayListingTitleStyle}
             unitWidth={dayWidthInPx}
             endLabel={
               <div
                 className={classes.adherenceLabel}
-                style={{
-                  width: `${dayWidthInPx}px`,
-                  left: `${dayWidthInPx * 7 - 10}px`,
-                }}>
+                style={adHerenceLabelStyle}>
                 Adherence
                 <br />%
               </div>
@@ -122,9 +130,6 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
           <div
             className={classes.eventRowForWeek}
             key={`${'inner' + week.weekInStudy}_${weekIndex}`}>
-            <div className={classes.startEventId} key={'wk_name'}>
-              Week {week.weekInStudy}
-            </div>
             <div
               key={'eventRowForWeek' + weekIndex}
               className={classes.eventRowForWeekSessions}>
@@ -133,6 +138,12 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                   <div
                     className={classes.eventRowForWeekSingleSession}
                     id={'session' + row.label}>
+                    <div className={classes.startEventId} key={'wk_name'}>
+                      Week {week.weekInStudy}/
+                      {row.studyBurstNum !== undefined
+                        ? `Burst ${row.studyBurstNum}`
+                        : row.sessionName}
+                    </div>
                     <Tooltip title={row.label}>
                       <div className={classes.sessionLegendIcon}>
                         <AdherenceSessionIcon
@@ -146,20 +157,21 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                       id={'wk' + weekIndex + 'events'}
                       className={classes.sessionWindows}>
                       {[...new Array(7)].map((i, dayIndex) => (
-                        <div
-                          className={classes.dayCell}
-                          style={{width: `${dayWidthInPx}px`}}>
-                          <DayDisplayForSession
-                            isCompliant={isCompliant(week.adherencePercent)}
-                            entryIndex={rowIndex}
-                            sessionSymbol={row.sessionSymbol}
-                            byDayEntries={week.byDayEntries}
-                            maxNumberOfTimeWindows={maxNumbrOfTimeWindows}
-                            sequentialDayNumber={dayIndex}
-                            propertyValue={row.sessionGuid}
-                            propertyName="sessionGuid"
-                          />
-                        </div>
+                        <DayDisplay
+                          key={dayIndex}
+                          entry={AdherenceUtility.getItemFromByDayEntries(
+                            week.byDayEntries,
+                            dayIndex,
+                            rowIndex
+                          )}
+                          isCompliant={isCompliant(week.adherencePercent)}
+                          dayWidth={dayWidthInPx}
+                          sessionSymbol={row.sessionSymbol}
+                          numOfWin={AdherenceUtility.getMaxNumberOfTimeWindows(
+                            adherenceReport.weeks
+                          )}
+                          timeZone={adherenceReport.clientTimeZone}
+                        />
                       ))}
                     </div>
                   </div>

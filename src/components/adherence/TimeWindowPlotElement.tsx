@@ -22,19 +22,18 @@ const TimeWindowPlotElement: FunctionComponent<{
   isCompliant,
   timeZone,
 }) => {
-  return (
-    <Tooltip
-      title={
+  const tooltipTitle = (
+    <>
+      {timeZone && (
         <>
-          {AdherenceUtility.getDateForDisplay(startDate)}
-          {timeZone && (
-            <>
-              <br />
-              {timeZone}
-            </>
-          )}
+          {timeZone} <br />
         </>
-      }>
+      )}{' '}
+      {AdherenceUtility.getDateForDisplay(startDate)}
+    </>
+  )
+  return (
+    <Tooltip title={tooltipTitle} arrow={true} placement="top">
       <div
         id={'window_' + windowIndex}
         style={{
