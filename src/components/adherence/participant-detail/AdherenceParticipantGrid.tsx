@@ -2,8 +2,8 @@ import {
   PlotDaysDisplay,
   useGetPlotAndUnitWidth,
 } from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
-import {makeStyles, Tooltip} from '@material-ui/core'
-import AdherenceService from '@services/adherence.service'
+import {Box, makeStyles, Tooltip} from '@material-ui/core'
+import EventService from '@services/event.service'
 import {latoFont} from '@style/theme'
 import {AdherenceDetailReport} from '@typedefs/types'
 import clsx from 'clsx'
@@ -70,18 +70,30 @@ const useStyles = makeStyles(theme => ({
   adherenceDisplay: {
     fontSize: '14px',
   },
-  sessionLegendIcon: {
-    display: 'flex',
-    '& svg': {
-      width: '6px',
-    },
-    //position: 'relative',
-    // left: '-18px',
-  },
 }))
 
 type AdherenceParticipantGridProps = {
   adherenceReport: AdherenceDetailReport
+}
+
+const UndefinedEvents: FunctionComponent<{startEventIds: string[]}> = ({
+  startEventIds,
+}) => {
+  const classes = useStyles()
+  return (
+    <>
+      {startEventIds.map(name => (
+        <div className={classes.eventRowForWeek}>
+          <Box px={2}>
+            <strong>{EventService.formatEventIdForDisplay(name)}</strong>
+            &nbsp; calendar date has not been defined for this participant.
+            Session(s) tied to this event will be displayed once date is
+            provided. Edit Participant Event Date below.
+          </Box>
+        </div>
+      ))}
+    </>
+  )
 }
 
 //https://github.com/Sage-Bionetworks/BridgeServer2/blob/develop/src/main/java/org/sagebionetworks/bridge/models/schedules2/adherence/AdherenceUtils.java
@@ -92,8 +104,6 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
     const ref = React.useRef<HTMLDivElement>(null)
     const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 250)
     const classes = {...useCommonStyles(), ...useStyles()}
-    const isCompliant = (adherence: number): boolean =>
-      adherence > AdherenceService.COMPLIANCE_THRESHOLD
 
     const dayListingTitleStyle: React.CSSProperties = {
       fontWeight: 'bold',
@@ -164,7 +174,9 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                             dayIndex,
                             rowIndex
                           )}
-                          isCompliant={isCompliant(week.adherencePercent)}
+                          isCompliant={AdherenceUtility.isCompliant(
+                            week.adherencePercent
+                          )}
                           dayWidth={dayWidthInPx}
                           sessionSymbol={row.sessionSymbol}
                           numOfWin={AdherenceUtility.getMaxNumberOfTimeWindows(
@@ -181,7 +193,8 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                 key={'adherence'}
                 className={clsx(
                   classes.adherenceDisplay,
-                  !isCompliant(week.adherencePercent) && classes.red
+                  !AdherenceUtility.isCompliant(week.adherencePercent) &&
+                    classes.red
                 )}>
                 {week.adherencePercent !== undefined
                   ? `${week.adherencePercent}%`
@@ -190,6 +203,7 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
             </div>
           </div>
         ))}
+        <UndefinedEvents startEventIds={adherenceReport.unsetEventIds} />
       </div>
     )
   }

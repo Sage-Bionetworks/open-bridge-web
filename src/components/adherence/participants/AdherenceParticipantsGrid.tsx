@@ -21,7 +21,7 @@ export const useStyles = makeStyles(theme => ({
     display: 'flex',
     borderBottom: '4px solid #fbfbfb',
     padding: theme.spacing(2, 0),
-    alignitems: 'center',
+    alignItems: 'center',
   },
   adherenceCell: {
     borderRight: 'none',
@@ -47,15 +47,15 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
     const classes = {...useCommonStyles(), ...useStyles()}
 
     const ref = React.useRef<HTMLDivElement>(null)
-    const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 250)
+    const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 300)
     //  const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
 
     return (
       <div ref={ref} style={{marginBottom: '32px'}}>
         <div style={{display: 'flex', marginBottom: '16px'}}>
           <Box width={theme.spacing(11)}>Participant</Box>
-          <Box width={theme.spacing(12)}>Schedule</Box>
-          <div style={{marginLeft: '-86px'}}>
+          <Box width={theme.spacing(12)}>Day in Study</Box>
+          <div style={{marginLeft: '-40px'}}>
             <PlotDaysDisplay
               title=""
               unitWidth={dayWidthInPx}
@@ -64,7 +64,7 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                   className={classes.adherenceLabel}
                   style={{
                     width: `${dayWidthInPx}px`,
-                    left: `${dayWidthInPx * 7 + 16}px`,
+                    left: `${dayWidthInPx * 7 + 12}px`,
                     top: '0px',
                   }}>
                   Adh
@@ -94,7 +94,10 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                   )}
                 </Link>
               </Box>
-              <div key={'data'}>
+              <div
+                key={'data'}
+                id="data"
+                style={{width: '100%', display: 'flex'}}>
                 {item.rows.length === 0 ? (
                   <NextActivity
                     dayPxWidth={dayWidthInPx}
@@ -102,62 +105,67 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                     completionStatus={item.progression}
                   />
                 ) : (
-                  item.rows.map((info, rowIndex) => (
-                    <div
-                      key={`${/*info.sessionGuid*/ info}_ind${rowIndex}`}
-                      className={classes.sessionRow}>
-                      <Tooltip title={info.label}>
-                        <Box
-                          key="label"
-                          width={theme.spacing(12)}
-                          fontSize={'12px'}
-                          lineHeight={1}
-                          paddingRight="12px"
-                          height="16px"
-                          borderRight={'1px solid black'}>
-                          {info.studyBurstNum !== undefined
-                            ? AdherenceUtility.getDisplayFromLabel(
+                  <>
+                    <div id="headers">
+                      {item.rows.map((info, rowIndex) => (
+                        <div
+                          key={`${/*info.sessionGuid*/ info}_ind${rowIndex}`}
+                          className={classes.sessionRow}>
+                          <Tooltip title={info.label}>
+                            <Box
+                              key="label"
+                              width={theme.spacing(16.5)}
+                              fontSize={'12px'}
+                              lineHeight={1}
+                              paddingRight="12px"
+                              height="16px">
+                              {AdherenceUtility.getDisplayFromLabel(
                                 info.label,
-                                info.studyBurstNum,
-                                true
-                              )[1]
-                            : AdherenceUtility.getDisplayFromLabel(
-                                info.label,
-                                info.studyBurstNum,
-                                true
-                              )[0]}
-                        </Box>
-                      </Tooltip>
-                      <div className={classes.sessionLegendIcon}>
-                        <AdherenceSessionIcon
-                          sessionSymbol={info.sessionSymbol}
-                          windowState="completed">
-                          &nbsp;
-                        </AdherenceSessionIcon>
-                      </div>
-                      {[...new Array(7)].map((i, dayIndex) => (
-                        <DayDisplay
-                          key={dayIndex}
-                          entry={AdherenceUtility.getItemFromByDayEntries(
-                            item.byDayEntries,
-                            dayIndex,
-                            rowIndex
-                          )}
-                          isCompliant={
-                            item.weeklyAdherencePercent >=
-                            AdherenceService.COMPLIANCE_THRESHOLD
-                          }
-                          timeZone={item.clientTimeZone}
-                          dayWidth={dayWidthInPx}
-                          sessionSymbol={info.sessionSymbol}
-                          numOfWin={AdherenceUtility.getMaxNumberOfTimeWindows(
-                            adherenceWeeklyReport.items
-                          )}
-                          border={dayIndex !== 6}
-                        />
+                                info.studyBurstNum
+                              )}
+                            </Box>
+                          </Tooltip>
+                          <div className={classes.sessionLegendIcon}>
+                            <AdherenceSessionIcon
+                              sessionSymbol={info.sessionSymbol}
+                              windowState="completed">
+                              &nbsp;
+                            </AdherenceSessionIcon>
+                          </div>
+                        </div>
                       ))}
                     </div>
-                  ))
+                    <div id="data">
+                      {item.rows.map((info, rowIndex) => (
+                        <div
+                          key={`${/*info.sessionGuid*/ info}_ind${rowIndex}`}
+                          className={classes.sessionRow}>
+                          {[...new Array(7)].map((i, dayIndex) => (
+                            <DayDisplay
+                              todayStyle={true}
+                              key={dayIndex}
+                              entry={AdherenceUtility.getItemFromByDayEntries(
+                                item.byDayEntries,
+                                dayIndex,
+                                rowIndex
+                              )}
+                              isCompliant={
+                                item.weeklyAdherencePercent >=
+                                AdherenceService.COMPLIANCE_THRESHOLD
+                              }
+                              timeZone={item.clientTimeZone}
+                              dayWidth={dayWidthInPx}
+                              sessionSymbol={info.sessionSymbol}
+                              numOfWin={AdherenceUtility.getMaxNumberOfTimeWindows(
+                                adherenceWeeklyReport.items
+                              )}
+                              border={dayIndex !== 6}
+                            />
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </>
                 )}
               </div>
               <Box

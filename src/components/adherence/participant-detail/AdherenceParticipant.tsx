@@ -18,6 +18,7 @@ import {
   ParticipantEvent,
   SessionDisplayInfo,
 } from '@typedefs/types'
+import clsx from 'clsx'
 import moment from 'moment'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps, useParams} from 'react-router-dom'
@@ -201,8 +202,23 @@ const AdherenceParticipant: FunctionComponent<
               <img src={EditIcon}></img>
               &nbsp;Edit Participant Events
             </Button>
-            <Box marginLeft="auto" className={classes.cumulative}>
+            <Box
+              marginLeft="auto"
+              className={clsx(
+                classes.cumulative,
+                !AdherenceUtility.isCompliant(
+                  adherenceReport?.adherencePercent
+                ) && classes.red
+              )}>
               Cumulative: &nbsp; &nbsp; &nbsp;
+              <span
+                className={
+                  !AdherenceUtility.isCompliant(
+                    adherenceReport?.adherencePercent
+                  )
+                    ? classes.red
+                    : ''
+                }></span>
               {adherenceReport?.adherencePercent}%
             </Box>
           </Box>

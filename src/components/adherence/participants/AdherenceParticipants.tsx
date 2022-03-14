@@ -17,7 +17,7 @@ import ProgressionFilter from './ProgressionFilter'
 
 const useStyles = makeStyles(theme => ({
   mainContainer: {
-    padding: theme.spacing(4),
+    padding: theme.spacing(4, 3),
   },
 }))
 

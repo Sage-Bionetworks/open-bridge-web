@@ -6,8 +6,10 @@ export const useCommonStyles = makeStyles(theme => ({
   },
   sessionLegendIcon: {
     display: 'flex',
-    position: 'relative',
-    left: '-18px',
+
+    '& svg': {
+      width: '6px',
+    },
   },
   adherenceLabel: {
     position: 'absolute',
@@ -39,6 +41,6 @@ export const useCommonStyles = makeStyles(theme => ({
     },
   },
   red: {
-    color: 'red',
+    color: '#E53828',
   },
 }))

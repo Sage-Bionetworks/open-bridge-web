@@ -1,3 +1,4 @@
+import AdherenceService from '@services/adherence.service'
 import {
   AdherenceByDayEntries,
   AdherenceDetailReportWeek,
@@ -37,6 +38,11 @@ function getLastSchedleDate(
   var result = _.last(maxNumberOfWindowsInStreams.sort()) || ''
   return new Date(result).toDateString()
 }*/
+function isCompliant(adherence: number | undefined): boolean {
+  return (
+    adherence === undefined || adherence > AdherenceService.COMPLIANCE_THRESHOLD
+  )
+}
 
 function getDisplayFromLabel(
   label: string,
@@ -83,7 +89,7 @@ const AdherenceUtility = {
   getMaxNumberOfTimeWindows,
   getUniqueSessionsInfo,
   getDateForDisplay,
-
+  isCompliant,
   getDisplayFromLabel,
   getItemFromByDayEntries,
 }

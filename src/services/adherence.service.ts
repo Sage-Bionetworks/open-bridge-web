@@ -6,6 +6,7 @@ import {
 import _ from 'lodash'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
+import ParticipantService from './participants.service'
 
 export const COMPLIANCE_THRESHOLD = 50
 
@@ -43,7 +44,7 @@ async function getAdherenceForWeek(
 
   token: string
 ): Promise<{total: number; items: AdherenceWeeklyReport[]}> {
-  /*  console.log('startint priming - only use if need immediate data for test')
+  console.log('startint priming - only use if need immediate data for test')
   const enr = await ParticipantService.getEnrollmentByEnrollmentType(
     studyId,
     token!,
@@ -51,8 +52,9 @@ async function getAdherenceForWeek(
     true
   )
 
-  // ALINA TODO: remove when batched report is done -- priming 
+  // ALINA TODO: remove when batched report is done -- priming
   const ids = enr.items.map(p => p.participant.identifier)
+  console.log('ds', ids)
   const prime = await getAdherenceForWeekForUsers(studyId, ids, token)
   console.log('starting all')
   /* end of priming */
