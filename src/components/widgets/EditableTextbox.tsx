@@ -1,16 +1,25 @@
 import {makeStyles} from '@material-ui/core'
+import {ThemeType} from '@style/theme'
 import React, {FunctionComponent, useEffect, useRef, useState} from 'react'
-const useStyles = makeStyles(theme => ({
-  wrapper: {
+
+interface StyleProps {
+  padding?: string
+}
+
+const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
+  wrapper: props => ({
     marginRight: theme.spacing(1),
 
     borderRadius: '5px',
+    padding: '8px',
+    ...props,
 
     '&:hover': {
       border: `1px solid ${theme.palette.divider}`,
-      padding: '8px',
+      // padding: '8px',
+      //  ...props,
     },
-  },
+  }),
 }))
 
 type EditableProps = {
@@ -22,6 +31,7 @@ type EditableProps = {
   childRef: React.MutableRefObject<any>
   onReset: Function
   onTriggerUpdate: Function
+  styleProps?: StyleProps
 }
 
 export const Editable: FunctionComponent<EditableProps> = ({
@@ -33,10 +43,12 @@ export const Editable: FunctionComponent<EditableProps> = ({
   onReset,
   onTriggerUpdate,
   component: WrapperElement = 'span',
+  styleProps,
   ...props
 }) => {
   const [isEditing, setEditing] = useState(false)
-  const classes = useStyles()
+
+  const classes = useStyles(styleProps || {})
 
   useEffect(() => {
     if (childRef && childRef.current && isEditing === true) {
@@ -72,7 +84,12 @@ export const Editable: FunctionComponent<EditableProps> = ({
           {children}
         </div>
       ) : (
-        <div className={classes.wrapper} onClick={() => setEditing(true)}>
+        <div
+          className={classes.wrapper}
+          onClick={e => {
+            setEditing(true)
+            e.stopPropagation()
+          }}>
           <WrapperElement style={{margin: 0}}>
             {text || placeholder || ' '}
           </WrapperElement>
@@ -87,6 +104,7 @@ type EditableTextboxProps = {
   onTriggerUpdate: Function
   component?: React.ElementType
   maxCharacters?: number
+  styleProps?: StyleProps
 }
 
 const EditableTextbox: FunctionComponent<EditableTextboxProps> = ({
@@ -98,6 +116,9 @@ const EditableTextbox: FunctionComponent<EditableTextboxProps> = ({
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [newValue, setNewValue] = React.useState('')
+  React.useEffect(() => {
+    setNewValue(initValue)
+  }, [initValue])
 
   return (
     <Editable

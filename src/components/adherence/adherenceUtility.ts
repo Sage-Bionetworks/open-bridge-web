@@ -1,5 +1,7 @@
+import AdherenceService from '@services/adherence.service'
 import {
-  AdherenceEventStream,
+  AdherenceByDayEntries,
+  AdherenceDetailReportWeek,
   AdherenceWeeklyReport,
   SessionDisplayInfo,
 } from '@typedefs/types'
@@ -7,7 +9,7 @@ import _ from 'lodash'
 import moment from 'moment'
 
 function getMaxNumberOfTimeWindows(
-  streams: (AdherenceEventStream | AdherenceWeeklyReport)[]
+  streams: (AdherenceDetailReportWeek | AdherenceWeeklyReport)[]
 ): number {
   const maxNumberOfWindowsInStreams = streams.map(stream => {
     const dayEntires = _.flatten(Object.values(stream.byDayEntries))
@@ -19,9 +21,10 @@ function getMaxNumberOfTimeWindows(
 
   return Math.max(...maxNumberOfWindowsInStreams)
 }
-
+/*
+// agendel: seems like this is retruned by the server
 function getLastSchedleDate(
-  streams: (AdherenceEventStream | AdherenceWeeklyReport)[]
+  streams: (AdherenceDetailReportWeek | AdherenceWeeklyReport)[]
 ): string {
   const maxNumberOfWindowsInStreams = streams.map(stream => {
     const dayEntires = _.flatten(Object.values(stream.byDayEntries))
@@ -34,52 +37,61 @@ function getLastSchedleDate(
 
   var result = _.last(maxNumberOfWindowsInStreams.sort()) || ''
   return new Date(result).toDateString()
+}*/
+function isCompliant(adherence: number | undefined): boolean {
+  return (
+    adherence === undefined || adherence > AdherenceService.COMPLIANCE_THRESHOLD
+  )
 }
 
-function getDisplayFromLabel(label: string): string {
-  //label format:
-  //
-  // nonburst: "Week 4 : Session #1 Circle
-  //burst: ""custom_Event 2_burst 1 : Week 3 : Session #2 Triangl""
+function getDisplayFromLabel(
+  label: string,
+  burstNumber: number | undefined,
+  isReturnArray?: boolean
+): string | string[] {
+  const arr = label.split('/')
+  const returnLabel =
+    burstNumber !== undefined
+      ? `${arr[1].trim()}/Burst ${burstNumber}`
+      : `${arr[1].trim()}/${arr[0].trim()}`
 
-  const labelArray = label.split(':')
-  const sessionName = labelArray[labelArray.length - 2]
-  const week = labelArray[labelArray.length - 3]
-  const event = labelArray.length === 3 ? labelArray[0] : undefined
-  return label //week
+  return isReturnArray ? returnLabel.split('/') : returnLabel
 }
 
 function getUniqueSessionsInfo(
-  streams: AdherenceEventStream[]
+  items: AdherenceWeeklyReport[] | AdherenceDetailReportWeek[]
 ): SessionDisplayInfo[] {
-  var result: SessionDisplayInfo[] = []
+  const labels = _.flatten(items.map(i => i.rows))
+  const result: SessionDisplayInfo[] = labels
+    .filter(label => !!label)
+    .map(label => ({
+      sessionGuid: label.sessionGuid,
+      sessionName: label.sessionName,
+      sessionSymbol: label.sessionSymbol,
+    }))
 
-  for (var stream of streams) {
-    const dayEntries = _.flatten(Object.values(stream.byDayEntries))
-    for (var dayEntry of dayEntries) {
-      if (!result.find(s => s.sessionGuid === dayEntry.sessionGuid)) {
-        result.push({
-          sessionGuid: dayEntry.sessionGuid,
-          sessionName: dayEntry.sessionName,
-          sessionSymbol: dayEntry.sessionSymbol,
-        })
-      }
-    }
-  }
-
-  return result
+  return _.uniqBy(result, 'sessionGuid')
 }
 
 function getDateForDisplay(date?: string) {
   return date ? moment(date).format('MM/DD/YYYY') : 'Event date is not defined'
 }
 
+function getItemFromByDayEntries(
+  byDayEntries: AdherenceByDayEntries,
+  dayIndex: number,
+  rowIndex: number
+) {
+  return byDayEntries[dayIndex][rowIndex]
+}
+
 const AdherenceUtility = {
   getMaxNumberOfTimeWindows,
   getUniqueSessionsInfo,
   getDateForDisplay,
-  getLastSchedleDate,
+  isCompliant,
   getDisplayFromLabel,
+  getItemFromByDayEntries,
 }
 
 export default AdherenceUtility

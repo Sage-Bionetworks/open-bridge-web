@@ -64,7 +64,7 @@ export default {
 
   endpoints: {
     adherenceDetail:
-      '/v5/studies/:studyId/participants/:userId/adherence/eventstream',
+      '/v5/studies/:studyId/participants/:userId/adherence/study',
     adherenceUserWeekly:
       '/v5/studies/:studyId/participants/:userId/adherence/weekly',
     adherenceWeekly: '/v5/studies/:studyId/adherence/weekly',

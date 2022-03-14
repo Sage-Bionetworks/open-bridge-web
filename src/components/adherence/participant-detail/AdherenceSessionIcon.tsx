@@ -14,6 +14,7 @@ const useStyles = makeStyles(theme => ({
     //  border: '2px solid black',
     '&$legend': {
       margin: '2px',
+      display: 'flex',
     },
   },
   plotElement: {
@@ -74,7 +75,7 @@ const AdherenceSessionIcon: FunctionComponent<{
 
   const el = isEmptyDot ? (
     <div className={clsx(classes.dot, isInLegend && classes.legend)}>
-      <Dot />
+      <Dot style={{margin: '4px 0'}} />
     </div>
   ) : (
     React.cloneElement(SessionSymbols.get(sessionSymbol)![variant], {

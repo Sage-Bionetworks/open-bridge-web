@@ -3,8 +3,8 @@ import AdherenceService, {
   WeeklyAdherenceFilter,
 } from '@services/adherence.service'
 import {
+  AdherenceDetailReport,
   AdherenceWeeklyReport,
-  EventStreamAdherenceReport,
   ExtendedError,
 } from '@typedefs/types'
 import {useQuery} from 'react-query'
@@ -41,8 +41,8 @@ export const ADHERENCE_KEYS = {
 
 export const useAdherence = (studyId: string, userId: string | undefined) => {
   const {token} = useUserSessionDataState()
-
-  return useQuery<EventStreamAdherenceReport, ExtendedError>(
+  console.log('loading')
+  return useQuery<AdherenceDetailReport, ExtendedError>(
     ADHERENCE_KEYS.detail(studyId, userId!),
     () => AdherenceService.getAdherenceForParticipant(studyId, userId!, token!),
     {

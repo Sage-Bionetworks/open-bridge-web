@@ -71,13 +71,13 @@ const NextActivity: FunctionComponent<NextActivityProps> = ({
           <span>Not started</span>
         )}
       </div>
-      <Box
+      {/* <Box
         key="adherence"
         style={{borderRight: 'none'}}
         className={classes.dayCell}>
         {' '}
         -
-      </Box>
+     </Box>*/}
     </div>
   )
 }

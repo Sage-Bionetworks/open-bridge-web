@@ -62,6 +62,42 @@
       ]
     },
     {
+      "identifier": "choice2",
+      "type": "choiceQuestion",
+      "title": "How are you feeling today?",
+      "subtitle": "Single Choice",
+      "detail": "Some text. This is a test.",
+      "footnote": "This is a footnote.",
+      "optional": false,
+      "singleChoice": true,
+      "baseType": "integer",
+      "uiHint": "checkmark",
+      "choices": [
+        {"text": "Fabulous!", "icon": "choice1", "value": 1},
+        {"text": "Neutral", "value": 2},
+        {"text": "Sleepy", "value": 3},
+        {"text": "None of the above", "exclusive": true}
+      ]
+    },
+    {
+      "identifier": "choice3",
+      "type": "comboBoxQuestion",
+      "title": "How are you feeling today?",
+      "subtitle": "Select all that apply or other",
+      "detail": "Some text. This is a test.",
+      "footnote": "This is a footnote.",
+      "optional": false,
+      "singleChoice": false,
+      "baseType": "integer",
+      "uiHint": "checkmark",
+      "choices": [
+        {"text": "Fabulous!", "icon": "choice1", "value": "fab"},
+        {"text": "Neutral", "value": "neutral"},
+        {"text": "Sleepy", "value": "sleepy"},
+        {"text": "None of the above", "exclusive": true}
+      ]
+    },
+    {
       "identifier": "checkboxQuestion",
       "type": "simpleQuestion",
       "title": "Yes or No?",
@@ -126,8 +162,7 @@
         {"type": "string", "placeholder": "What is your full name?"},
         {"type": "string", "placeholder": "Enter your first name"},
         {"type": "string", "placeholder": "Enter your middle name"},
-        {"type": "string", "placeholder": "Enter your last name"},
-        {"type": "string", "placeholder": "What are your pronouns?"}
+        {"type": "string", "placeholder": "Enter your last name"}
       ]
     }
   ]

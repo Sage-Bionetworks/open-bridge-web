@@ -4,6 +4,13 @@ export const useCommonStyles = makeStyles(theme => ({
   adherenceGrid: {
     padding: theme.spacing(2, 0),
   },
+  sessionLegendIcon: {
+    display: 'flex',
+
+    '& svg': {
+      width: '6px',
+    },
+  },
   adherenceLabel: {
     position: 'absolute',
     top: '-16px',
@@ -15,7 +22,7 @@ export const useCommonStyles = makeStyles(theme => ({
     margin: '4px 0',
     display: 'flex',
     alignItems: 'center',
-    height: '20px',
+    height: '16px',
   },
   dayCell: {
     padding: '0',
@@ -26,11 +33,14 @@ export const useCommonStyles = makeStyles(theme => ({
     alignItems: 'center',
     height: '100%',
     justifyContent: 'flex-start',
+    '&.today': {
+      backgroundColor: '#FFFF54',
+    },
     '&:first-child': {
       borderLeft: '1px solid black',
     },
   },
   red: {
-    color: 'red',
+    color: '#E53828',
   },
 }))

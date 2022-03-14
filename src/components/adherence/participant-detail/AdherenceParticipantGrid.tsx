@@ -2,43 +2,27 @@ import {
   PlotDaysDisplay,
   useGetPlotAndUnitWidth,
 } from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
-import {makeStyles, Tooltip} from '@material-ui/core'
-import AdherenceService from '@services/adherence.service'
+import {Box, makeStyles, Tooltip} from '@material-ui/core'
 import EventService from '@services/event.service'
-import {
-  AdherenceByDayEntries,
-  AdherenceEventStream,
-  EventStreamAdherenceReport,
-  SessionDisplayInfo,
-} from '@typedefs/types'
+import {latoFont} from '@style/theme'
+import {AdherenceDetailReport} from '@typedefs/types'
 import clsx from 'clsx'
-import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
 import AdherenceUtility from '../adherenceUtility'
-import DayDisplayForSession from '../DayDisplayForSession'
+import DayDisplay from '../DayDisplay'
 import {useCommonStyles} from '../styles'
-import AdherenceSessionIcon, {SHAPE_CLASSES} from './AdherenceSessionIcon'
+import AdherenceSessionIcon from './AdherenceSessionIcon'
 
 const useStyles = makeStyles(theme => ({
-  /* adherenceGrid: {
-    padding: theme.spacing(2, 0),
-  },
-  adherenceLabel: {
-    position: 'absolute',
-
-    top: '-16px',
-    fontSize: '12px',
-    fontWeight: 'bold',
-    textAlign: 'left',
-  },*/
   daysList: {
-    paddingLeft: '20px',
+    paddingLeft: 0,
     marginBottom: theme.spacing(0.5),
   },
   startEventId: {
-    width: '128px',
+    width: theme.spacing(20),
     fontSize: '12px',
-    padding: theme.spacing(0, 2, 0, 1),
+    fontFamily: latoFont,
+    padding: theme.spacing(0, 1, 0, 2),
     '& strong': {
       display: 'block',
       cursor: 'pointer',
@@ -56,16 +40,15 @@ const useStyles = makeStyles(theme => ({
   eventRowForWeek: {
     display: 'flex',
     flexDirection: 'row',
+
     alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: theme.spacing(1, 0),
     '&:not(:last-child)': {
       marginBottom: '5px',
     },
   },
-  sessionLegendIcon: {
-    display: 'flex',
-    position: 'relative',
-    left: '-15px',
-  },
+
   eventRowForWeekSessions: {
     // border: '1px solid blue',
     width: '100%',
@@ -74,15 +57,15 @@ const useStyles = makeStyles(theme => ({
   },
   eventRowForWeekSingleSession: {
     display: 'flex',
-    position: 'relative',
-    left: '-15px',
+    // position: 'relative',
+    // left: '-15px',
   },
 
   sessionWindows: {
     width: '100%',
     position: 'relative',
     display: 'flex',
-    height: '20px',
+    minHeight: '20px',
   },
   adherenceDisplay: {
     fontSize: '14px',
@@ -90,75 +73,27 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type AdherenceParticipantGridProps = {
-  adherenceReport: EventStreamAdherenceReport
+  adherenceReport: AdherenceDetailReport
 }
 
-function getSessionInfoFromStreamGuid(
-  byDayEntries: AdherenceByDayEntries,
-  guid: string
-): SessionDisplayInfo | undefined {
-  var eventStreamsArray = Object.values(byDayEntries)
-  for (var eventSteamArray of eventStreamsArray) {
-    var eventStream = eventSteamArray.find(es => es.sessionGuid === guid)
-    if (eventStream) {
-      return {
-        sessionName: eventStream.sessionName,
-        sessionGuid: eventStream.sessionGuid,
-        sessionSymbol: eventStream.sessionSymbol,
-      }
-    }
-  }
-}
-
-function getWeeksForStream(stream: AdherenceEventStream): number {
-  /* this is another way to implement this. Not sure which one is better 
- const maxDay = Math.max(
-    ...Object.keys(stream.byDayEntries).map(key => parseInt(key) + 1)
-    const result = Math.ceil(maxDay / 7)
-  )*/
-  const weeks = _.flatten(Object.values(stream.byDayEntries)).map(
-    eventStreamDay => eventStreamDay.week
+const UndefinedEvents: FunctionComponent<{startEventIds: string[]}> = ({
+  startEventIds,
+}) => {
+  const classes = useStyles()
+  return (
+    <>
+      {startEventIds.map(name => (
+        <div className={classes.eventRowForWeek}>
+          <Box px={2}>
+            <strong>{EventService.formatEventIdForDisplay(name)}</strong>
+            &nbsp; calendar date has not been defined for this participant.
+            Session(s) tied to this event will be displayed once date is
+            provided. Edit Participant Event Date below.
+          </Box>
+        </div>
+      ))}
+    </>
   )
-  return Math.max(...weeks) + 1
-}
-
-function getAdherenceForWeek(
-  wkIndex: number,
-  entries: AdherenceByDayEntries
-): number | undefined {
-  const relevantWeek = _.flatten(Object.values(entries)).filter(
-    eventStreamDay => eventStreamDay.week === wkIndex
-  )
-  const allTimewindows = _.flatten(relevantWeek.map(r => r.timeWindows))
-  const complianceStates = allTimewindows.map(
-    w => SHAPE_CLASSES[w.state].complianceState
-  )
-
-  const compliantSessions = complianceStates.filter(
-    state => state === 'COMPLIANT'
-  ).length
-  const noncompliantSessions = complianceStates.filter(
-    state => state === 'NONCOMPLIANT'
-  ).length
-  const unkSessions = complianceStates.filter(
-    state => state === 'UNKNOWN'
-  ).length
-
-  const totalSessions = compliantSessions + noncompliantSessions + unkSessions
-
-  if (totalSessions === unkSessions) {
-    return undefined
-  }
-
-  let percentage = 1
-  if (totalSessions > 0) {
-    percentage = compliantSessions / totalSessions
-  }
-  return Math.round(percentage * 100)
-}
-
-function getSequentialDayNumber(wkIndex: number, dayIndex: number): number {
-  return wkIndex * 7 + dayIndex
 }
 
 //https://github.com/Sage-Bionetworks/BridgeServer2/blob/develop/src/main/java/org/sagebionetworks/bridge/models/schedules2/adherence/AdherenceUtils.java
@@ -167,165 +102,108 @@ function getSequentialDayNumber(wkIndex: number, dayIndex: number): number {
 const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps> =
   ({adherenceReport}) => {
     const ref = React.useRef<HTMLDivElement>(null)
-    const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 200)
-    const [maxNumbrOfTimeWindows, setMaxNumberOfTimeWinsows] = React.useState(1)
-    const [adherenceByWeekLookup, setAdherenceByWeekLookup] =
-      React.useState<Map<string, Map<number, number | undefined>>>()
+    const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 250)
     const classes = {...useCommonStyles(), ...useStyles()}
 
-    React.useEffect(() => {
-      if (adherenceReport) {
-        let weeklyAdherence: Map<
-          string,
-          Map<number, number | undefined>
-        > = new Map()
+    const dayListingTitleStyle: React.CSSProperties = {
+      fontWeight: 'bold',
+      paddingLeft: '16px',
+      fontSize: '14px',
+      width: '225px',
+    }
 
-        for (var stream of adherenceReport.streams) {
-          const weeksNumber = getWeeksForStream(stream)
-          const streamAdherenceMap: Map<number, number | undefined> = new Map()
-          for (var i = 0; i < weeksNumber; i++) {
-            streamAdherenceMap.set(
-              i,
-              getAdherenceForWeek(i, stream.byDayEntries)
-            )
-          }
-
-          weeklyAdherence.set(stream.startEventId, streamAdherenceMap)
-        }
-        setAdherenceByWeekLookup(weeklyAdherence)
-        setMaxNumberOfTimeWinsows(
-          AdherenceUtility.getMaxNumberOfTimeWindows(adherenceReport.streams)
-        )
-      }
-    }, [adherenceReport])
-
-    const getAdherenceForWeekForDisplay = (
-      stream: AdherenceEventStream,
-      wkIndex: number
-    ): {value: number | undefined; isCompliant: boolean} => {
-      const lookupValue = adherenceByWeekLookup
-        ?.get(stream.startEventId)
-        ?.get(wkIndex)
-
-      return lookupValue === undefined
-        ? {
-            value: undefined,
-            isCompliant: true,
-          }
-        : {
-            value: lookupValue,
-            isCompliant: lookupValue > AdherenceService.COMPLIANCE_THRESHOLD,
-          }
+    const adHerenceLabelStyle: React.CSSProperties = {
+      top: '-7px',
+      lineHeight: '1',
+      width: `${dayWidthInPx}px`,
+      left: `${dayWidthInPx * 7}px`,
     }
 
     return (
       <div ref={ref} className={classes.adherenceGrid}>
-        <div className={classes.daysList}>
+        <div className={classes.daysList} key={'day_list'}>
           <PlotDaysDisplay
-            title="Schedule by week day"
+            title="Day in Study"
+            titleStyle={dayListingTitleStyle}
             unitWidth={dayWidthInPx}
             endLabel={
               <div
                 className={classes.adherenceLabel}
-                style={{
-                  width: `${dayWidthInPx}px`,
-                  left: `${dayWidthInPx * 7 - 10}px`,
-                }}>
+                style={adHerenceLabelStyle}>
                 Adherence
                 <br />%
               </div>
             }
           />
         </div>
-        {adherenceReport.streams.map((stream, streamIndex) => (
+        {adherenceReport.weeks.map((week, weekIndex) => (
           <div
-            className={classes.eventRow}
-            key={'event' + stream.startEventId + streamIndex}>
-            {[...new Array(getWeeksForStream(stream))].map((_i2, wkIndex) => (
-              <div
-                className={classes.eventRowForWeek}
-                key={`${stream.startEventId}_${wkIndex}`}>
-                <div className={classes.startEventId}>
-                  {wkIndex === 0 && (
-                    <Tooltip
-                      placement="right-start"
-                      title={AdherenceUtility.getDateForDisplay(
-                        stream.eventTimestamp
-                      )}>
-                      <strong>
-                        {EventService.formatEventIdForDisplay(
-                          stream?.startEventId
-                        )}
-                      </strong>
-                    </Tooltip>
-                  )}
-                  Week {wkIndex + 1}
-                </div>
-                <div
-                  id={'eventRowForWeek' + wkIndex}
-                  className={classes.eventRowForWeekSessions}>
-                  <div id="guids">
-                    {stream.sessionGuids.map(guid => (
-                      <div
-                        className={classes.eventRowForWeekSingleSession}
-                        id={'session' + guid}>
-                        <div className={classes.sessionLegendIcon}>
-                          <AdherenceSessionIcon
-                            sessionSymbol={
-                              getSessionInfoFromStreamGuid(
-                                stream.byDayEntries,
-                                guid
-                              )?.sessionSymbol || undefined
-                            }
-                            windowState="completed">
-                            &nbsp;
-                          </AdherenceSessionIcon>
-                        </div>
-                        <div
-                          id={'wk' + wkIndex + 'events'}
-                          className={classes.sessionWindows}>
-                          {[...new Array(7)].map((i, dayIndex) => (
-                            <div
-                              className={classes.dayCell}
-                              style={{width: `${dayWidthInPx}px`}}>
-                              <DayDisplayForSession
-                                isCompliant={
-                                  getAdherenceForWeekForDisplay(stream, wkIndex)
-                                    .isCompliant
-                                }
-                                maxNumberOfTimeWindows={maxNumbrOfTimeWindows}
-                                sequentialDayNumber={getSequentialDayNumber(
-                                  wkIndex,
-                                  dayIndex
-                                )}
-                                propertyValue={guid}
-                                propertyName="sessionGuid"
-                                byDayEntries={stream.byDayEntries}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+            className={classes.eventRowForWeek}
+            key={`${'inner' + week.weekInStudy}_${weekIndex}`}>
+            <div
+              key={'eventRowForWeek' + weekIndex}
+              className={classes.eventRowForWeekSessions}>
+              <div key="sessions">
+                {week.rows.map((row, rowIndex) => (
                   <div
-                    className={clsx(
-                      classes.adherenceDisplay,
-                      !getAdherenceForWeekForDisplay(stream, wkIndex)
-                        .isCompliant && classes.red
-                    )}>
-                    {getAdherenceForWeekForDisplay(stream, wkIndex).value !==
-                    undefined
-                      ? `${
-                          getAdherenceForWeekForDisplay(stream, wkIndex).value
-                        }%`
-                      : '-'}
+                    className={classes.eventRowForWeekSingleSession}
+                    id={'session' + row.label}>
+                    <div className={classes.startEventId} key={'wk_name'}>
+                      Week {week.weekInStudy}/
+                      {row.studyBurstNum !== undefined
+                        ? `Burst ${row.studyBurstNum}`
+                        : row.sessionName}
+                    </div>
+                    <Tooltip title={row.label}>
+                      <div className={classes.sessionLegendIcon}>
+                        <AdherenceSessionIcon
+                          sessionSymbol={row.sessionSymbol || undefined}
+                          windowState="completed">
+                          &nbsp;
+                        </AdherenceSessionIcon>
+                      </div>
+                    </Tooltip>
+                    <div
+                      id={'wk' + weekIndex + 'events'}
+                      className={classes.sessionWindows}>
+                      {[...new Array(7)].map((i, dayIndex) => (
+                        <DayDisplay
+                          key={dayIndex}
+                          entry={AdherenceUtility.getItemFromByDayEntries(
+                            week.byDayEntries,
+                            dayIndex,
+                            rowIndex
+                          )}
+                          isCompliant={AdherenceUtility.isCompliant(
+                            week.adherencePercent
+                          )}
+                          dayWidth={dayWidthInPx}
+                          sessionSymbol={row.sessionSymbol}
+                          numOfWin={AdherenceUtility.getMaxNumberOfTimeWindows(
+                            adherenceReport.weeks
+                          )}
+                          timeZone={adherenceReport.clientTimeZone}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
+              <div
+                key={'adherence'}
+                className={clsx(
+                  classes.adherenceDisplay,
+                  !AdherenceUtility.isCompliant(week.adherencePercent) &&
+                    classes.red
+                )}>
+                {week.adherencePercent !== undefined
+                  ? `${week.adherencePercent}%`
+                  : '-'}
+              </div>
+            </div>
           </div>
         ))}
+        <UndefinedEvents startEventIds={adherenceReport.unsetEventIds} />
       </div>
     )
   }

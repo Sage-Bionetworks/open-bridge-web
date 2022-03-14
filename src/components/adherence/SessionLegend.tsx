@@ -26,7 +26,7 @@ const SessionLegend: FunctionComponent<{
   const classes = useStyles()
   const arr: {label: string; state: AdherenceWindowState}[] = [
     {label: 'Upcoming', state: 'not_yet_available'},
-    {label: 'Incomplete', state: 'expired'},
+    {label: 'Did not do', state: 'expired'},
     {label: 'Partial Complete', state: 'started'},
     {label: 'Completed', state: 'completed'},
   ]

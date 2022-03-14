@@ -1,3 +1,4 @@
+import {ReactComponent as CelebrationBg} from '@assets/adherence/celebration_bg.svg'
 import {ReactComponent as PersonIcon} from '@assets/adherence/person_icon.svg'
 import EditIcon from '@assets/edit_pencil_red.svg'
 import {useAdherence} from '@components/studies/adherenceHooks'
@@ -13,10 +14,12 @@ import ParticipantService from '@services/participants.service'
 import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
 import {
-  EventStreamAdherenceReport,
+  AdherenceDetailReport,
   ParticipantEvent,
   SessionDisplayInfo,
 } from '@typedefs/types'
+import clsx from 'clsx'
+import moment from 'moment'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import AdherenceUtility from '../adherenceUtility'
@@ -25,10 +28,9 @@ import {useCommonStyles} from '../styles'
 import AdherenceParticipantGrid from './AdherenceParticipantGrid'
 import EditParticipantEvents from './EditParticipantEvents'
 import EditParticipantNotes from './EditParticipantNotes'
-import {ReactComponent as CelebrationBg} from '@assets/adherence/celebration_bg.svg'
 const useStyles = makeStyles(theme => ({
   mainContainer: {
-    padding: theme.spacing(4),
+    padding: theme.spacing(3),
     margin: theme.spacing(4, 0),
     backgroundColor: '#f8f8f8',
   },
@@ -91,8 +93,10 @@ const AdherenceParticipant: FunctionComponent<
 
   React.useEffect(() => {
     if (adherenceReport) {
+      // debugger
+
       setParticipantSessions(
-        AdherenceUtility.getUniqueSessionsInfo(adherenceReport.streams)
+        AdherenceUtility.getUniqueSessionsInfo(adherenceReport.weeks)
       )
     }
   }, [adherenceReport])
@@ -115,16 +119,25 @@ const AdherenceParticipant: FunctionComponent<
       timeline_retrieved: Date | undefined
       customEvents: ParticipantEvent[]
     },
-    adherenceReport?: EventStreamAdherenceReport
+    adherenceReport?: AdherenceDetailReport
   ) => {
     if (!events?.timeline_retrieved) {
       return 'not joined'
     }
-    const startDate = new Date(events.timeline_retrieved).toDateString()
+    // const startDate = new Date(events.timeline_retrieved).toDateString()
+    if (!adherenceReport) {
+      return ''
+    }
+    const startDate = moment(adherenceReport.dateRange.startDate).format(
+      'MM/DD/yyyy'
+    ) //new Date(adherenceReport.dateRange.startDate)
     //ALINA TODO: only show for completed participants
-    const endDate = adherenceReport
+    /* const endDate = adherenceReport
       ? AdherenceUtility.getLastSchedleDate(adherenceReport.streams)
-      : ''
+      : ''*/
+    const endDate = moment(adherenceReport.dateRange.endDate).format(
+      'MM/DD/yyyy'
+    ) //new Date(adherenceReport.dateRange.endDate)
     return `${startDate}-${endDate}`
   }
 
@@ -144,7 +157,9 @@ const AdherenceParticipant: FunctionComponent<
 
         <BreadCrumb links={getBreadcrumbLinks()}></BreadCrumb>
         <Paper className={classes.mainContainer} elevation={2}>
-          {adherenceReport?.progression === 'done' && <CelebrationBg className={classes.celebration}/>}
+          {adherenceReport?.progression === 'done' && (
+            <CelebrationBg className={classes.celebration} />
+          )}
           <Box display="flex" alignItems="center" mb={2}>
             {' '}
             <PersonIcon />
@@ -178,7 +193,7 @@ const AdherenceParticipant: FunctionComponent<
               ))}
             </Box>
           </Box>
-          <AdherenceParticipantGrid adherenceReport={adherenceReport!} />
+          {<AdherenceParticipantGrid adherenceReport={adherenceReport!} />}
           <Box display="flex">
             <Button
               className={classes.editEventDate}
@@ -187,8 +202,23 @@ const AdherenceParticipant: FunctionComponent<
               <img src={EditIcon}></img>
               &nbsp;Edit Participant Events
             </Button>
-            <Box marginLeft="auto" className={classes.cumulative}>
+            <Box
+              marginLeft="auto"
+              className={clsx(
+                classes.cumulative,
+                !AdherenceUtility.isCompliant(
+                  adherenceReport?.adherencePercent
+                ) && classes.red
+              )}>
               Cumulative: &nbsp; &nbsp; &nbsp;
+              <span
+                className={
+                  !AdherenceUtility.isCompliant(
+                    adherenceReport?.adherencePercent
+                  )
+                    ? classes.red
+                    : ''
+                }></span>
               {adherenceReport?.adherencePercent}%
             </Box>
           </Box>

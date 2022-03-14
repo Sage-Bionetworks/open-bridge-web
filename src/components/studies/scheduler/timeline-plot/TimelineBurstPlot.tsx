@@ -161,18 +161,17 @@ export const PlotDaysDisplay: React.FunctionComponent<{
   unitWidth: number
   title: string
   endLabel?: React.ReactNode
-}> = ({unitWidth, title, endLabel}) => {
+  titleStyle?: React.CSSProperties
+}> = ({unitWidth, title, endLabel, titleStyle}) => {
   const classes = useStyles()
+  const defaultTitleStyle = {
+    width: `${99 + unitWidth / 2}px`,
+    paddingLeft: '12px',
+    fontSize: '12px',
+  }
   return (
     <div className={classes.week}>
-      <div
-        style={{
-          width: `${99 + unitWidth / 2}px`,
-          paddingLeft: '12px',
-          fontSize: '12px',
-        }}>
-        {title}
-      </div>
+      <div style={{...defaultTitleStyle, ...titleStyle}}>{title}</div>
       <div className={classes.graph}>
         <div className={classes.sessionName}></div>
         <div
