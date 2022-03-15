@@ -121,7 +121,7 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                 {!item.rows?.length ? (
                   <NextActivity
                     dayPxWidth={dayWidthInPx}
-                    info={item.nextActivity}
+                    nextActivity={item.nextActivity}
                     completionStatus={item.progression}
                   />
                 ) : (
