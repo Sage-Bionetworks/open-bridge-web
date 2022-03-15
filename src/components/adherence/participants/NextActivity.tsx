@@ -3,7 +3,7 @@ import {ReactComponent as Arrow} from '@assets/arrow_long.svg'
 import {Box, makeStyles} from '@material-ui/core'
 import {theme} from '@style/theme'
 import {AdherenceSessionInfo, ProgressionStatus} from '@typedefs/types'
-import clsx from 'clsx'
+import moment from 'moment'
 import React, {FunctionComponent} from 'react'
 import {useCommonStyles} from '../styles'
 
@@ -31,17 +31,60 @@ export const useStyles = makeStyles(theme => ({
 type NextActivityProps = {
   dayPxWidth: number
   completionStatus: ProgressionStatus
-  info?: AdherenceSessionInfo
+  nextActivity?: AdherenceSessionInfo
+}
+
+const NoActivities: FunctionComponent<{
+  rowStyle: React.CSSProperties
+  isCompleted: boolean
+}> = ({rowStyle, isCompleted}) => {
+  const classes = {...useCommonStyles(), ...useStyles()}
+  return (
+    <div
+      className={isCompleted ? classes.completed : classes.nextActivity}
+      style={rowStyle}>
+      {isCompleted ? <Celebration /> : <span>Not started</span>}
+    </div>
+  )
 }
 
 const NextActivity: FunctionComponent<NextActivityProps> = ({
   dayPxWidth,
-  info,
+  nextActivity,
   completionStatus,
 }) => {
+  /* "nextActivity": {
+                "sessionGuid": "hbYwyc4ttidrltxQ20ZPd7AQ",
+                "sessionName": "Everyday",
+                "sessionSymbol": "Session2Triangle",
+                "weekInStudy": 25,
+                "studyBurstId": "custom_RemoteActivities_burst",
+                "studyBurstNum": 2,
+                "startDate": "2022-07-29",
+                "type": "NextActivity"
+            },*/
   const classes = {...useCommonStyles(), ...useStyles()}
   const leftMargin = 8 //-16 px negative mart
-  console.log(info)
+  const rowStyle: React.CSSProperties = {
+    width: `${dayPxWidth * 7 + leftMargin}px`,
+    height: '20px',
+  }
+  /*
+Nonburst Week: 
+“Up Next: Week N/Session X on MM/DD/YYYY”
+
+If it contains a burst: 
+“Up Next: Week N/Burst Y on MM/DD/YYYY*/
+  let upNext = ''
+  if (nextActivity) {
+    upNext = nextActivity.studyBurstNum
+      ? `Week ${nextActivity.weekInStudy}/Burst ${nextActivity.studyBurstNum}`
+      : `Week ${nextActivity.weekInStudy}/Burst ${nextActivity.sessionName}`
+    upNext = `${upNext} on ${moment(nextActivity.startDate).format(
+      'MM/DD/YYYY'
+    )}`
+  }
+
   return (
     <div key={`next_activity`} className={classes.sessionRow}>
       <Box key="label" width={theme.spacing(17 - leftMargin / 8)}>
@@ -53,33 +96,16 @@ const NextActivity: FunctionComponent<NextActivityProps> = ({
           ''
         )}
       </Box>
-      <div
-        className={clsx(
-          info || completionStatus !== 'done'
-            ? classes.nextActivity
-            : classes.completed
-        )}
-        style={{
-          width: `${dayPxWidth * 7 + leftMargin}px`,
-          height: '20px',
-        }}>
-        {info ? (
-          <span>
-            Up Next: {info.sessionName} on {info.startDate}
-          </span>
-        ) : completionStatus === 'done' ? (
-          <Celebration />
-        ) : (
-          <span>Not started</span>
-        )}
-      </div>
-      {/* <Box
-        key="adherence"
-        style={{borderRight: 'none'}}
-        className={classes.dayCell}>
-        {' '}
-        -
-     </Box>*/}
+      {nextActivity ? (
+        <div className={classes.nextActivity} style={rowStyle}>
+          <span>Up Next: {upNext}</span>
+        </div>
+      ) : (
+        <NoActivities
+          isCompleted={completionStatus === 'done'}
+          rowStyle={rowStyle}
+        />
+      )}
     </div>
   )
 }
