@@ -49,26 +49,9 @@ const useStyles = makeStyles(theme => ({
     },
   },
 
-  eventRowForWeekSessions: {
-    // border: '1px solid blue',
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  eventRowForWeekSingleSession: {
-    display: 'flex',
-    // position: 'relative',
-    // left: '-15px',
-  },
-
-  sessionWindows: {
-    width: '100%',
-    position: 'relative',
-    display: 'flex',
-    minHeight: '20px',
-  },
   adherenceDisplay: {
     fontSize: '14px',
+    paddingLeft: theme.spacing(1),
   },
 }))
 
@@ -109,7 +92,7 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
       fontWeight: 'bold',
       paddingLeft: '16px',
       fontSize: '14px',
-      width: '225px',
+      width: '245px',
     }
 
     const adHerenceLabelStyle: React.CSSProperties = {

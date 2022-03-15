@@ -22,7 +22,24 @@ export const useCommonStyles = makeStyles(theme => ({
     margin: '4px 0',
     display: 'flex',
     alignItems: 'center',
-    height: '16px',
+    //  height: '16px',
+  },
+  eventRowForWeekSessions: {
+    //  width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  eventRowForWeekSingleSession: {
+    display: 'flex',
+    // position: 'relative',
+    // left: '-15px',
+  },
+  sessionWindows: {
+    width: '100%',
+    position: 'relative',
+    justifyContent: 'flex-end',
+    display: 'flex',
+    minHeight: '20px',
   },
   dayCell: {
     padding: '0',

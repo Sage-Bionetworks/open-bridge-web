@@ -166,7 +166,7 @@ const AdherenceParticipant: FunctionComponent<
             <MTBHeadingH4>
               {ParticipantService.formatExternalId(
                 studyId,
-                enrollment?.externalId || '',
+                adherenceReport?.participant?.externalId || '',
                 true
               )}
             </MTBHeadingH4>
@@ -177,7 +177,7 @@ const AdherenceParticipant: FunctionComponent<
           </Box>
           <Box mb={2}>
             <MTBHeadingH4> Client TimeZone</MTBHeadingH4>
-            {enrollment?.clientTimeZone}
+            {adherenceReport?.clientTimeZone || 'Unknown'}
           </Box>
           <Box mb={2}>
             <MTBHeadingH4>Health Code </MTBHeadingH4>
@@ -219,7 +219,9 @@ const AdherenceParticipant: FunctionComponent<
                     ? classes.red
                     : ''
                 }></span>
-              {adherenceReport?.adherencePercent}%
+              {adherenceReport?.progression === 'unstarted'
+                ? '-'
+                : `${adherenceReport?.adherencePercent} %`}
             </Box>
           </Box>
           <EditParticipantNotes
