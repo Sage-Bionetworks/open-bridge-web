@@ -34,7 +34,7 @@ const DayDisplay: FunctionComponent<{
     backgroundColor: '#FFFF54',
     paddingBottom: '10px',
     marginLeft: '-1px',
-    marginRight: '-1px',
+    //marginRight: '-1px',
     borderLeft: '1px solid black',
   }
 

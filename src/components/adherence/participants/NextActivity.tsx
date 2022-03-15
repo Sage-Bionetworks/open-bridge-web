@@ -10,7 +10,7 @@ import {useCommonStyles} from '../styles'
 export const useStyles = makeStyles(theme => ({
   nextActivity: {
     textAlign: 'center',
-    marginRight: theme.spacing(1),
+    // marginRight: theme.spacing(1),
     background:
       'linear-gradient(to bottom, #fff 10px, #333 10px 11px, #fff 11px )',
     '& span': {
@@ -40,10 +40,12 @@ const NextActivity: FunctionComponent<NextActivityProps> = ({
   completionStatus,
 }) => {
   const classes = {...useCommonStyles(), ...useStyles()}
+  const leftMargin = 8 //-16 px negative mart
+  console.log(info)
   return (
     <div key={`next_activity`} className={classes.sessionRow}>
-      <Box key="label" width={theme.spacing(11)}>
-        {info ? (
+      <Box key="label" width={theme.spacing(17 - leftMargin / 8)}>
+        {completionStatus === 'in_progress' ? (
           <Arrow style={{transform: 'scaleX(-1)'}} />
         ) : completionStatus === 'done' ? (
           'Completed'
@@ -58,7 +60,7 @@ const NextActivity: FunctionComponent<NextActivityProps> = ({
             : classes.completed
         )}
         style={{
-          width: `${dayPxWidth * 7}px`,
+          width: `${dayPxWidth * 7 + leftMargin}px`,
           height: '20px',
         }}>
         {info ? (

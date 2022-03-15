@@ -65,8 +65,8 @@ async function getAdherenceForWeek(
   )
 
   const defaultFilters = {
-    adherenceMax: 100,
-    adherenceMin: 0,
+    // adherenceMax: 100,
+    /* adherenceMin: 0,*/
     testFilter: 'both',
   }
 
