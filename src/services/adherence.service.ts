@@ -99,7 +99,6 @@ async function getAdherenceForParticipant(
   userId: string,
   token: string
 ): Promise<AdherenceDetailReport> {
-  console.log('getting particiapnt')
   const endpoint = constants.endpoints.adherenceDetail
     .replace(':studyId', studyId)
     .replace(':userId', userId)

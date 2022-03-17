@@ -41,7 +41,7 @@ export const ADHERENCE_KEYS = {
 
 export const useAdherence = (studyId: string, userId: string | undefined) => {
   const {token} = useUserSessionDataState()
-  console.log('loading')
+
   return useQuery<AdherenceDetailReport, ExtendedError>(
     ADHERENCE_KEYS.detail(studyId, userId!),
     () => AdherenceService.getAdherenceForParticipant(studyId, userId!, token!),
