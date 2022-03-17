@@ -121,11 +121,12 @@ const AdherenceParticipant: FunctionComponent<
     },
     adherenceReport?: AdherenceDetailReport
   ) => {
-    if (!events?.timeline_retrieved) {
+    // AGENDEL 5/17 we now get this from Alx
+    /* if (!events?.timeline_retrieved) {
       return 'not joined'
-    }
+    }*/
     // const startDate = new Date(events.timeline_retrieved).toDateString()
-    if (!adherenceReport) {
+    if (!adherenceReport?.dateRange) {
       return ''
     }
     const startDate = moment(adherenceReport.dateRange.startDate).format(

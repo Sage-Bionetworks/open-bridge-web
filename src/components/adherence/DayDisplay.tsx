@@ -54,6 +54,7 @@ const DayDisplay: FunctionComponent<{
           maxNumberOfWindows={numOfWin}
           windowIndex={itw}
           startDate={entry!.startDate}
+          endDate={tw.endDate}
           windowState={tw.state}
           sessionSymbol={sessionSymbol!}
           isCompliant={isCompliant}
