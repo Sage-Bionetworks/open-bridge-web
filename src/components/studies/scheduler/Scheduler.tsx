@@ -22,7 +22,7 @@ import {
   Theme,
 } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
-import {JOINED_EVENT_ID} from '@services/event.service'
+import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ScheduleService from '@services/schedule.service'
 import {latoFont, poppinsFont, theme} from '@style/theme'
 import {
@@ -538,19 +538,39 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                 </Box>
               </Box>
             ) : (
-              <FormControlLabel
-                classes={{label: classes.labelDuration}}
-                label="Study duration:"
-                style={{fontSize: '14px', marginRight: '4px'}}
-                labelPlacement="start"
-                control={
-                  <strong style={{fontSize: '16px', paddingTop: '8px'}}>
-                    {schedule.duration
-                      ? getFormattedTimeDateFromPeriodString(schedule.duration)
-                      : 'No duration set'}
-                  </strong>
-                }
-              />
+              <>
+                <FormControlLabel
+                  classes={{label: classes.labelDuration}}
+                  label="Study duration:"
+                  style={{fontSize: '14px', marginRight: '4px'}}
+                  labelPlacement="start"
+                  control={
+                    <strong style={{fontSize: '16px', paddingTop: '8px'}}>
+                      {schedule.duration
+                        ? getFormattedTimeDateFromPeriodString(
+                            schedule.duration
+                          )
+                        : 'No duration set'}
+                    </strong>
+                  }
+                />
+
+                <FormControlLabel
+                  classes={{label: classes.labelDuration}}
+                  label="Study starts on:"
+                  style={{fontSize: '14px', marginRight: '4px'}}
+                  labelPlacement="start"
+                  control={
+                    <strong style={{fontSize: '16px', paddingTop: '8px'}}>
+                      {study.studyStartEventId
+                        ? EventService.formatEventIdForDisplay(
+                            study.studyStartEventId
+                          )
+                        : 'unkonwn'}
+                    </strong>
+                  }
+                />
+              </>
             )}
 
             {hasObjectChanged && (
