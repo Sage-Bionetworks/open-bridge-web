@@ -22,7 +22,6 @@ type CompletionFilterProps = {
 const COMPLETION_STATUS: {label: string; value: ProgressionStatus}[] = [
   {label: 'In Progress', value: 'in_progress'},
   {label: 'Completed', value: 'done'},
-  {label: 'Not Started', value: 'unstarted'},
 ]
 
 const ProgressionFilter: FunctionComponent<CompletionFilterProps> = ({
