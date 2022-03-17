@@ -135,7 +135,7 @@ async function updateParticipantCustomEvents(
     if (event.timestamp) {
       const data = {
         eventId: event.eventId,
-        timestamp: new Date(event.timestamp!).toISOString(),
+        timestamp: new Date(event.timestamp!.toDateString()).toISOString(),
       }
 
       const z = await Utility.callEndpoint<{identifier: string}>(
