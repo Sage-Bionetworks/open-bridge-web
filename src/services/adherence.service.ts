@@ -53,10 +53,10 @@ async function getAdherenceForWeek(
   )
 
   // ALINA TODO: remove when batched report is done -- priming
-  const ids = enr.items.map(p => p.participant.identifier)
+  /* const ids = enr.items.map(p => p.participant.identifier)
   console.log('ds', ids)
   const prime = await getAdherenceForWeekForUsers(studyId, ids, token)
-  console.log('starting all')
+  console.log('starting all')*/
   /* end of priming */
 
   const endpoint = constants.endpoints.adherenceWeekly.replace(
@@ -67,6 +67,7 @@ async function getAdherenceForWeek(
   const defaultFilters = {
     // adherenceMax: 100,
     /* adherenceMin: 0,*/
+    progressionFilters: ['in_progress', 'done'],
     testFilter: 'both',
   }
 

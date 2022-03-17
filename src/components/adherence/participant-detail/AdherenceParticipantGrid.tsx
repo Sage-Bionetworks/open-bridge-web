@@ -177,9 +177,11 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                 className={clsx(
                   classes.adherenceDisplay,
                   !AdherenceUtility.isCompliant(week.adherencePercent) &&
+                    adherenceReport.progression === 'in_progress' &&
                     classes.red
                 )}>
-                {week.adherencePercent !== undefined
+                {week.adherencePercent !== undefined &&
+                adherenceReport.progression !== 'unstarted'
                   ? `${week.adherencePercent}%`
                   : '-'}
               </div>

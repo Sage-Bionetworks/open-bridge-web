@@ -28,7 +28,7 @@ export const useStyles = makeStyles(theme => ({
   },
 }))
 
-type NextActivityProps = {
+type NoRowsProps = {
   dayPxWidth: number
   completionStatus: ProgressionStatus
   nextActivity?: AdherenceSessionInfo
@@ -43,38 +43,29 @@ const NoActivities: FunctionComponent<{
     <div
       className={isCompleted ? classes.completed : classes.nextActivity}
       style={rowStyle}>
-      {isCompleted ? <Celebration /> : <span>Not started</span>}
+      {isCompleted ? (
+        <Celebration />
+      ) : (
+        <span>
+          <i>continued from previous week</i>
+        </span>
+      )}
     </div>
   )
 }
 
-const NextActivity: FunctionComponent<NextActivityProps> = ({
+const NoRows: FunctionComponent<NoRowsProps> = ({
   dayPxWidth,
   nextActivity,
   completionStatus,
 }) => {
-  /* "nextActivity": {
-                "sessionGuid": "hbYwyc4ttidrltxQ20ZPd7AQ",
-                "sessionName": "Everyday",
-                "sessionSymbol": "Session2Triangle",
-                "weekInStudy": 25,
-                "studyBurstId": "custom_RemoteActivities_burst",
-                "studyBurstNum": 2,
-                "startDate": "2022-07-29",
-                "type": "NextActivity"
-            },*/
   const classes = {...useCommonStyles(), ...useStyles()}
-  const leftMargin = 8 //-16 px negative mart
+  const leftMargin = 8
   const rowStyle: React.CSSProperties = {
     width: `${dayPxWidth * 7 + leftMargin}px`,
     height: '20px',
   }
-  /*
-Nonburst Week: 
-“Up Next: Week N/Session X on MM/DD/YYYY”
 
-If it contains a burst: 
-“Up Next: Week N/Burst Y on MM/DD/YYYY*/
   let upNext = ''
   if (nextActivity) {
     upNext = nextActivity.studyBurstNum
@@ -110,4 +101,4 @@ If it contains a burst:
   )
 }
 
-export default NextActivity
+export default NoRows
