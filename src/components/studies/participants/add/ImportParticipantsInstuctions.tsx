@@ -1,6 +1,6 @@
 import {ReactComponent as DownloadIcon} from '@assets/download.svg'
 import {Box, makeStyles} from '@material-ui/core'
-import EventService from '@services/event.service'
+import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import React, {FunctionComponent} from 'react'
 import {jsonToCSV} from 'react-papaparse'
 import CsvUtility from '../csv/csvUtility'
@@ -50,8 +50,8 @@ const ImportParticipantsInstructions: FunctionComponent<{
 
   const instructionItems = scheduleEventIds.map((eventId, i) => (
     <li key={i}>
-      <strong>{EventService.formatEventIdForDisplay(eventId)}</strong> (can be
-      updated later)
+      <strong>{EventService.formatEventIdForDisplay(eventId)}</strong>{' '}
+      {eventId !== JOINED_EVENT_ID ? '(can be updated later)' : ''}
     </li>
   ))
 
