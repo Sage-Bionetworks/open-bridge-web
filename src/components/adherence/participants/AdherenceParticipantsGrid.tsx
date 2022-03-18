@@ -31,6 +31,14 @@ export const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     paddingLeft: theme.spacing(1),
   },
+  labelDisplay: {
+    width: theme.spacing(16.5),
+    display: 'flex',
+    fontSize: '12px',
+    lineHeight: 1,
+    alignItems: 'center',
+    paddingRight: '12px',
+  },
   lastCell: {
     borderRight: 'none',
   },
@@ -132,12 +140,7 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                           key={`${/*info.sessionGuid*/ info}_ind${rowIndex}`}
                           className={classes.eventRowForWeekSingleSession}>
                           <Tooltip title={info.label}>
-                            <Box
-                              key="label"
-                              width={theme.spacing(16.5)}
-                              fontSize={'12px'}
-                              lineHeight={1}
-                              paddingRight="12px">
+                            <Box key="label" className={classes.labelDisplay}>
                               {AdherenceUtility.getDisplayFromLabel(
                                 info.label,
                                 info.studyBurstNum
