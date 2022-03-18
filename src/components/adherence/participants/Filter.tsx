@@ -145,7 +145,7 @@ const Filter: FunctionComponent<FilterProps> = ({
       thresh.min = AdherenceService.COMPLIANCE_THRESHOLD
     }
     if (threshold === 'UNDER') {
-      thresh.max = AdherenceService.COMPLIANCE_THRESHOLD
+      thresh.max = AdherenceService.COMPLIANCE_THRESHOLD - 1
     }
 
     onFilterChange({labels, ...thresh})
@@ -233,7 +233,7 @@ const Filter: FunctionComponent<FilterProps> = ({
                   className={classes.checkbox}
                 />
               }
-              label={`x <= ${AdherenceService.COMPLIANCE_THRESHOLD}%`}
+              label={`x </= ${AdherenceService.COMPLIANCE_THRESHOLD}%`}
             />
 
             <FormControlLabel
@@ -244,7 +244,7 @@ const Filter: FunctionComponent<FilterProps> = ({
                   className={classes.checkbox}
                 />
               }
-              label={`x => ${AdherenceService.COMPLIANCE_THRESHOLD}%`}
+              label={`x > ${AdherenceService.COMPLIANCE_THRESHOLD}%`}
             />
           </RadioGroup>
 
