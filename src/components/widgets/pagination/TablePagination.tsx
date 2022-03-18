@@ -32,6 +32,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
   },
   rootStyles: {
+    textAlign: 'center',
     backgroundColor: 'white',
     border: '1px solid black',
     width: '60px',
