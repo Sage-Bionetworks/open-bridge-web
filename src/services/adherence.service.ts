@@ -8,7 +8,7 @@ import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import ParticipantService from './participants.service'
 
-export const COMPLIANCE_THRESHOLD = 50
+export const COMPLIANCE_THRESHOLD = 60
 
 export type WeeklyAdherenceFilter = {
   idFilter?: string
@@ -65,8 +65,6 @@ async function getAdherenceForWeek(
   )
 
   const defaultFilters = {
-    // adherenceMax: 100,
-    /* adherenceMin: 0,*/
     progressionFilters: ['in_progress', 'done'],
     testFilter: 'both',
   }

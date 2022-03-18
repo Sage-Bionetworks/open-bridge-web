@@ -55,10 +55,10 @@ const ProgressionFilter: FunctionComponent<CompletionFilterProps> = ({
 
   return (
     <>
-      {COMPLETION_STATUS.map(status => (
+      {COMPLETION_STATUS.map((status, index) => (
         <FormGroup>
           <FormControlLabel
-            key={status.value}
+            key={status.value + index}
             value={status.value}
             control={
               <Checkbox
