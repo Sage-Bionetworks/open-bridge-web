@@ -18,7 +18,9 @@ export function getUnitFromPeriodString(
 export function getFormattedTimeDateFromPeriodString(periodString: string) {
   const time = getValueFromPeriodString(periodString)
   const unit = getUnitFromPeriodString(periodString)
-  return `${time} ${HDWMEnum[unit]}`
+  return time !== 1
+    ? `${time} ${HDWMEnum[unit]}`
+    : `${time} ${HDWMEnum[unit].slice(0, -1)}`
 }
 
 export function getFormattedTimeDateFromTimePeriod(period: TimePeriod) {
