@@ -50,25 +50,19 @@ const useStyles = makeStyles(theme => ({
   },
   eventIdLabel: {
     paddingRight: '4px',
-    // width: '70px',
-    // textOverflow: 'ellipsis',
-    /*  overflow: 'hidden',
-    '&:hover': {
-      overflow: 'visible',
-      fontSize: '12px',
-      position: 'absolute',
-      width: '300px',
-      zIndex: 1000,
-      top: '27px',
-    },*/
+  },
+  eventIdLabelNormal: {
+    fontWeight: 'normal',
+    fontSize: '12px',
   },
   burstEventField: {},
   burstOrigin: {},
   emptyDate: {
     margin: theme.spacing(2, 0),
+    padding: theme.spacing(0, 2),
     height: theme.spacing(4),
     width: theme.spacing(22),
-    textAlign: 'center',
+    fontSize: '14px',
     lineHeight: 2,
   },
 }))
@@ -86,15 +80,33 @@ const EventLabel: FunctionComponent<{
 }> = ({eo, index}) => {
   const classes = useStyles()
   const formattedEventId = EventService.formatEventIdForDisplay(eo.eventId)
+  const parentEventId = eo.originEventId
+    ? EventService.formatEventIdForDisplay(eo.originEventId)
+    : ''
   // not a burst
   if (!eo.originEventId) {
     return <div className={classes.eventIdLabel}>{formattedEventId}</div>
   }
+  const lineOne = (
+    <div>
+      {index > 0 ? (
+        formattedEventId
+      ) : (
+        <>
+          {formattedEventId}{' '}
+          <span className={classes.eventIdLabelNormal}>
+            (Same as {parentEventId})
+          </span>
+        </>
+      )}
+    </div>
+  )
+
   return (
     <div>
-      {formattedEventId}:
-      <br />
-      <i style={{fontWeight: 'normal', fontSize: '12px'}}>
+      {lineOne}
+
+      <i className={classes.eventIdLabelNormal}>
         Week {index * (eo.interval?.value || 0) + 1}
       </i>
     </div>
@@ -107,13 +119,42 @@ const ReadOnlyDate: FunctionComponent<{
   value?: Date | null
 }> = ({eo, index, value}) => {
   const classes = useStyles()
-  var displayValue = value ? new Date(value).toDateString() : '--'
+  var displayValue = value ? moment(value).format('MM/DD/YYYY') : '--'
   return (
     <div className="MuiFormControl-root">
       <label>
         <EventLabel eo={eo} index={index} />
       </label>
-      <div className={classes.emptyDate}>{displayValue}</div>
+      <div
+        className={classes.emptyDate}
+        style={{textAlign: value ? 'left' : 'center'}}>
+        {displayValue}
+      </div>
+    </div>
+  )
+}
+
+const BurstEvent: FunctionComponent<{
+  burstEvent: ExtendedScheduleEventObject
+  eventDate: Date | null
+  index: number
+  onChange: (date: Date | null) => void
+}> = ({burstEvent, onChange, eventDate, index}) => {
+  const classes = useStyles()
+  return (
+    <div
+      className={clsx(classes.eventField, classes.burstEventField)}
+      style={{}}
+      key={burstEvent.eventId}>
+      {eventDate !== null && index !== 0 ? (
+        <DatePicker
+          label={<EventLabel eo={burstEvent} index={index} />}
+          id={burstEvent.eventId}
+          value={eventDate}
+          onChange={e => onChange(e)}></DatePicker>
+      ) : (
+        <ReadOnlyDate eo={burstEvent} index={index} value={eventDate} />
+      )}
     </div>
   )
 }
@@ -245,38 +286,21 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
                       <></>
                     )}
                   </div>
+                  {/* display the burst event related to that*/}
                   {scheduleEvents
                     .filter(e => e.originEventId === nonBurstEvent.eventId)
                     .map((burstEvent, index) => (
-                      <div
-                        className={clsx(
-                          classes.eventField,
-                          classes.burstEventField
-                        )}
-                        style={{}}
-                        key={burstEvent.eventId}>
-                        {getEventDateValue(
+                      <BurstEvent
+                        burstEvent={burstEvent}
+                        index={index}
+                        onChange={e =>
+                          handleEventDateChange(burstEvent.eventId, e)
+                        }
+                        eventDate={getEventDateValue(
                           customParticipantEvents,
-                          nonBurstEvent.eventId
-                        ) !== null ? (
-                          <DatePicker
-                            label={<EventLabel eo={burstEvent} index={index} />}
-                            id={burstEvent.eventId}
-                            value={getEventDateValue(
-                              customParticipantEvents,
-                              burstEvent.eventId
-                            )}
-                            onChange={e =>
-                              handleEventDateChange(burstEvent.eventId, e)
-                            }></DatePicker>
-                        ) : (
-                          <ReadOnlyDate
-                            eo={burstEvent}
-                            index={index}
-                            value={null}
-                          />
+                          burstEvent.eventId
                         )}
-                      </div>
+                      />
                     ))}
                 </div>
               )
