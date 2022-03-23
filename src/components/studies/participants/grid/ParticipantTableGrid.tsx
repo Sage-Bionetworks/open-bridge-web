@@ -391,7 +391,7 @@ function getColumns(
     headerName: 'Edit',
     disableClickEventBubbling: true,
     disableColumnMenu: true,
-    width: 70,
+    width: 80,
 
     renderCell: (params: GridCellParams) => (
       <EditCell
@@ -403,15 +403,39 @@ function getColumns(
     ),
   }
 
+  //not a burst custom event and has bursts
+  const getEventHeader = (scheduleEventIds: string[], eventId: string) => {
+    const formattedEventId = EventService.formatEventIdForDisplay(eventId)
+    const isBurstEvent = EventService.isEventBurstEvent(eventId)
+    const hasConnectedBursts =
+      scheduleEventIds.find(e =>
+        e.includes(`study_burst:custom_${formattedEventId}_burst:`)
+      ) !== undefined
+
+    const sourceOfBurstEvents = !isBurstEvent && hasConnectedBursts
+
+    return sourceOfBurstEvents
+      ? `${formattedEventId}/Burst 1`
+      : formattedEventId
+  }
+
+  const shouldShowEvent = (eventId: string) => {
+    const isBurstEvent = EventService.isEventBurstEvent(eventId)
+    const isLoginEvent = eventId == JOINED_EVENT_ID
+    const isFirstBurst = EventService.getBurstNumberFromEventId(eventId) === 1
+    return !isLoginEvent && (!isBurstEvent || !isFirstBurst)
+  }
+
   const customEventColumns = scheduleEventIds
-    //we display join
-    .filter(eventId => eventId !== JOINED_EVENT_ID)
+    //filter out joined event. As well as: if there is a custom event that has a burst
+    // if there are burst events -- hide 1st burst
+    .filter(eventId => shouldShowEvent(eventId))
     .map((eventId, index) => {
       const col: GridColDef = {
         field: eventId + index,
         width: 100,
 
-        headerName: EventService.formatEventIdForDisplay(eventId),
+        headerName: getEventHeader(scheduleEventIds, eventId), //+
         valueGetter: params => {
           const foundEvent = params.row.events.find(
             (event: any) =>
@@ -517,8 +541,12 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   const {token} = useUserSessionDataState()
   const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
 
-  const {isLoading: isParticipantUpdating, isSuccess, error: participantUpdateError, mutate} =
-    useUpdateParticipantInList()
+  const {
+    isLoading: isParticipantUpdating,
+    isSuccess,
+    error: participantUpdateError,
+    mutate,
+  } = useUpdateParticipantInList()
 
   //when we are editing the record this is where the info is stored
   const [participantToEdit, setParticipantToEdit] = React.useState<
@@ -559,10 +587,10 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     ])
   }, [selectedParticipantIds, rows])
 
-  React.useEffect(()=>{
-    if(participantUpdateError) setError(participantUpdateError as Error)
-    if(onWithdrawParticipantError) setError(onWithdrawParticipantError)
-  },[participantUpdateError, onWithdrawParticipantError])
+  React.useEffect(() => {
+    if (participantUpdateError) setError(participantUpdateError as Error)
+    if (onWithdrawParticipantError) setError(onWithdrawParticipantError)
+  }, [participantUpdateError, onWithdrawParticipantError])
 
   const allSelectedPage = () =>
     rows && !rows.find(row => !selectionModel.includes(row.id))
@@ -742,7 +770,10 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
         fullWidth
         aria-labelledby="edit participant">
         <EditDialogTitle
-          onCancel={() => {setParticipantToEdit(undefined); setError(undefined)}}
+          onCancel={() => {
+            setParticipantToEdit(undefined)
+            setError(undefined)
+          }}
           shouldWithdraw={participantToEdit?.shouldWithdraw}
         />
 
@@ -752,7 +783,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             scheduleEvents={scheduleEvents}
             isEnrolledById={isEnrolledById}
             onError={error}
-            onHandleError = {setError}
+            onHandleError={setError}
             onCancel={() => setParticipantToEdit(undefined)}
             onOK={(
               note: string,
@@ -781,12 +812,9 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               onWithdrawParticipant(participantToEdit?.id!, note)
               isSuccess && setParticipantToEdit(undefined)
             }}
-            participant={
-              participantToEdit?.participant || {}
-            }
+            participant={participantToEdit?.participant || {}}
             onError={error}
-            onHandleError={setError}
-            ></WithdrawParticipantForm>
+            onHandleError={setError}></WithdrawParticipantForm>
         </HideWhen>
       </Dialog>
     </>
