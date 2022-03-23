@@ -9,6 +9,7 @@ import ParticipantDownloadTrigger from '../csv/ParticipantDownloadTrigger'
 
 const useStyles = makeStyles(theme => ({
   root: {},
+  recList: {listStyle: 'none'},
   templateLink: {
     margin: theme.spacing(2, 'auto', 5, 'auto'),
     display: 'flex',
@@ -56,20 +57,20 @@ const ImportParticipantsInstructions: FunctionComponent<{
   ))
 
   const recList = isEnrolledById ? (
-    <ul>
+    <ul className={classes.recList}>
       <li>
         <strong>ParticipantID* </strong>
       </li>
       {instructionItems.map(i => i)}
       <li>
-        <strong>Participant Time Zone</strong>(can be updated later)
+        <strong>Participant Time Zone</strong> (can be updated later)
       </li>
       <li>
         <strong>Note</strong> (for your reference)
       </li>
     </ul>
   ) : (
-    <ul>
+    <ul className={classes.recList}>
       <li>
         <strong>Phone Number* </strong>
       </li>
@@ -93,8 +94,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
         following information by columns:
       </p>
       {recList}
-      Please include only new participants in the .csv. Your file should match
-      this template:
+      Your file should match this template:
       <br />
       <ParticipantDownloadTrigger
         onDownload={() => createDownloadTemplate()}
@@ -107,9 +107,12 @@ const ImportParticipantsInstructions: FunctionComponent<{
         }}>
         <Box className={classes.templateLink}> </Box>
         <DownloadIcon width="20px" />
-        &nbsp;
-        {'Participant Import Template'}{' '}
+        &nbsp;&nbsp;
+        <strong>Participant Import Template</strong>
       </ParticipantDownloadTrigger>
+      *Required info. Please include only <strong>new participants</strong> in
+      the .csv.
+      <p>&nbsp;</p>
       <Box mx="auto" my={2} textAlign="center">
         {children}
       </Box>
