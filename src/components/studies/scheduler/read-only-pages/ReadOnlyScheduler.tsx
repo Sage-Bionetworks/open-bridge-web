@@ -106,13 +106,21 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
         <Box className={sessionContainerClasses.formSection}>
           <SchedulingFormSection
             label={
-              <Box className={classes.rowHeader}>{`${session.name} ${
-                session.delay
-                  ? 'starts ' +
-                    getFormattedTimeDateFromPeriodString(session.delay) +
-                    ' from:'
-                  : 'starts on:'
-              }`}</Box>
+              <Box className={classes.rowHeader}>
+                {session.name}&nbsp;
+                {session.delay ? (
+                  <span>
+                    starts
+                    <br />
+                    <strong>
+                      {getFormattedTimeDateFromPeriodString(session.delay)}
+                    </strong>{' '}
+                    from:{' '}
+                  </span>
+                ) : (
+                  'starts on:'
+                )}
+              </Box>
             }>
             <strong
               className={clsx(
