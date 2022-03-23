@@ -90,7 +90,7 @@ const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
               )
               return !matchedEvent || matchedEvent.timestamp !== ue.timestamp
             })
-            console.log(eventsToUpdate.map(e => e.eventId).join(','), 'update')
+
             updateEvents(
               {
                 studyId,
