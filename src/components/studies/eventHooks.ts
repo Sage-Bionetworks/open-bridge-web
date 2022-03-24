@@ -119,7 +119,6 @@ export const useEventsForUsers = (
   >(
     EVENTS_KEYS.details(studyId, userIds),
     () => {
-      console.log('getting hi' + userIds.join(','))
       return EventService.getRelevantEventsForParticipants(
         studyId!,
         token!,
