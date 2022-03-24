@@ -1,13 +1,11 @@
-import ParticipantListFocusIcon from '@assets/participants/participant_list_focus_icon.svg'
-import ParticipantListUnfocusIcon from '@assets/participants/participant_list_unfocus_icon.svg'
-import TestAccountFocusIcon from '@assets/participants/test_account_focus_icon.svg'
-import TestAccountUnfocusIcon from '@assets/participants/test_account_unfocus_icon.svg'
-import WithdrawnParticipantsFocusIcon from '@assets/participants/withdrawn_participants_focus_icon.svg'
-import WithdrawnParticipantsUnfocusIcon from '@assets/participants/withdrawn_participants_unfocus_icon.svg'
+import AdherenceUnfocusIcon from '@assets/adherence/adh_tab_off.svg'
+import AdherenceFocusIcon from '@assets/adherence/adh_tab_on.svg'
+import SummaryUnfocusIcon from '@assets/adherence/sum_tab_off.svg'
+import SummaryFocusIcon from '@assets/adherence/sum_tab_on.svg'
+import {useAdherenceForWeek} from '@components/studies/adherenceHooks'
 import {useStudy} from '@components/studies/studyHooks'
 import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
-import {useUserSessionDataState} from '@helpers/AuthContext'
 import {Box, makeStyles, Tab, Tabs} from '@material-ui/core'
 import {latoFont, poppinsFont} from '@style/theme'
 import {ExtendedParticipantAccountSummary} from '@typedefs/types'
@@ -61,19 +59,11 @@ type ParticipantData = {
 
 const TAB_DEFs = [
   {type: 'SUMMARY', label: 'Adherence Summary'},
-  {type: 'ENROLLED', label: 'Enrolled Participants'},
+  {type: 'ENROLLED', label: 'Active Participants'},
 ]
 
-const TAB_ICONS_FOCUS = [
-  ParticipantListFocusIcon,
-  WithdrawnParticipantsFocusIcon,
-  TestAccountFocusIcon,
-]
-const TAB_ICONS_UNFOCUS = [
-  ParticipantListUnfocusIcon,
-  WithdrawnParticipantsUnfocusIcon,
-  TestAccountUnfocusIcon,
-]
+const TAB_ICONS_FOCUS = [SummaryFocusIcon, AdherenceFocusIcon]
+const TAB_ICONS_UNFOCUS = [SummaryUnfocusIcon, AdherenceUnfocusIcon]
 export type AdherenceTabType = 'SUMMARY' | 'ENROLLED'
 
 type AdherenceOwnProps = {
@@ -88,8 +78,8 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
   }>()
   const isEnrolledTab =
     new URLSearchParams(useLocation().search)?.get('tab') === 'ENROLLED'
+  const {data: adherenceWeeklyReport} = useAdherenceForWeek(studyId, 0, 5, {})
 
-  const {token} = useUserSessionDataState()
   // Withdrawn or active participants
   const [tab, setTab] = React.useState<AdherenceTabType>(
     isEnrolledTab || true ? 'ENROLLED' : 'SUMMARY'
@@ -145,8 +135,11 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
                     }
                     style={{marginRight: '6px'}}></img>
                   <div>
-                    {`${tabDef.label} ${
-                      tab === tabDef.type ? 'n' : '0'
+                    {`${tabDef.label}${
+                      tab === tabDef.type
+                        ? '(' + (adherenceWeeklyReport?.total || '...') + ')'
+                        : ''
+
                       /*? data 
                               ? `(${data.total})`
                               : '(...)'

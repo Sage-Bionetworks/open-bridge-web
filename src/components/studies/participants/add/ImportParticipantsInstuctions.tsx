@@ -108,7 +108,9 @@ const ImportParticipantsInstructions: FunctionComponent<{
         <Box className={classes.templateLink}> </Box>
         <DownloadIcon width="20px" />
         &nbsp;&nbsp;
-        <strong>Participant Import Template</strong>
+        <strong>
+          <u>Participant Import Template</u>
+        </strong>
       </ParticipantDownloadTrigger>
       *Required info. Please include only <strong>new participants</strong> in
       the .csv.
