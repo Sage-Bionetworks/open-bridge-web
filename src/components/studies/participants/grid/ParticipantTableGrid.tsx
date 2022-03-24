@@ -250,8 +250,8 @@ function getPhone(params: GridValueGetterParams) {
   } else return ''
 }
 function getDate(value: GridCellValue) {
-  return value
-    ? moment(new Date(value as string)).format('MM/DD/YYYY')
+  return value && moment(value.toString()).isValid
+    ? moment(value.toString()).format('MM/DD/YYYY')
     : undefined
 }
 
@@ -261,7 +261,7 @@ function getJoinedDateWithIcons(params: GridValueGetterParams) {
   const foundEvent = params.row.events.find(
     (event: any) => event.eventId === JOINED_EVENT_ID
   )
-  const joinedDate = foundEvent ? getDate(foundEvent.timestamp) : ' '
+  const joinedDate = foundEvent ? getDate(foundEvent.timestamp) : undefined
 
   const dateToDisplay = joinedDate //|| smsDate
   const formattedDate = getDate(dateToDisplay)

@@ -203,7 +203,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
 
   // Hook to get participants
-  const {data: pData, status, error: participantError} = useParticipants(
+  const {
+    data: pData,
+    status,
+    error: participantError,
+  } = useParticipants(
     study?.identifier,
     currentPage,
     pageSize,
@@ -212,13 +216,16 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     isById
   )
   const {data: pEventsMap} = useEventsForUsers(study?.identifier, pIds)
-  const {isLoading: isParticipantUpdating, error: participantWithdrawError, mutateAsync} =
-  useUpdateParticipantInList()
+  const {
+    isLoading: isParticipantUpdating,
+    error: participantWithdrawError,
+    mutateAsync,
+  } = useUpdateParticipantInList()
 
   const invalidateParticipants = useInvalidateParticipants()
   const onAction = async (
     studyId: string,
-    type: 'WITHDRAW' | 'DELETE' | 'UPDATE',
+    type: 'WITHDRAW' | 'UPDATE',
     userId?: string,
     note?: string,
     updatedFields?: any,
@@ -228,20 +235,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     switch (type) {
       case 'WITHDRAW':
         mutateAsync({action: type, studyId, userId: userIdArr, note})
-        return
-
-      case 'DELETE':
-        setLoadingIndicators(_ => ({isDeleting: true}))
-        setParticipantsWithError([])
-        let isError = false
-        mutateAsync({
-          action: type,
-          studyId,
-          userId: selectedParticipantIds[tab!],
-        })
-        setLoadingIndicators(_ => ({isDeleting: false}))
-        if (!isError)
-          setDialogState({dialogOpenRemove: false, dialogOpenSMS: false})
         return
 
       case 'UPDATE':
@@ -266,20 +259,18 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     setIsAllSelected(false)
   }
 
-  React.useEffect(()=>{
-    if(participantError) setError(participantError)
-  },[participantError])
+  React.useEffect(() => {
+    if (participantError) setError(participantError)
+  }, [participantError])
 
   React.useEffect(() => {
-    console.log('setting PIDs', pData?.items.length)
-    if (pData && pData.items.length > 0) {
-      console.log('setting PIDs')
+    if (pData && pData.items) {
       setPIds(pData.items.map(item => item.id))
     }
   }, [pData?.items])
 
   React.useEffect(() => {
-    if (pData && pData.items.length > 0 && pEventsMap) {
+    if (pData && pData.items && pEventsMap) {
       const items = pData.items.map(item => {
         const events = pEventsMap[item.id]
         return events
@@ -358,7 +349,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     StudyService.getDisplayStatusForStudyPhase(study.phase) !== 'LIVE'
 
   const displayNoParticipantsPage =
-    status !== 'loading' && data?.items.length == 0 && tab === 'WITHDRAWN'
+    status !== 'loading' && data?.items.length === 0 && tab === 'WITHDRAWN'
 
   return (
     <Box bgcolor="#F8F8F8">
@@ -584,7 +575,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         marginLeft:
                           !isAddOpen && tab !== 'WITHDRAWN' ? '-48px' : '0',
                       }}>
-                      {error && <Alert color="error" onClose={()=>setError(undefined)}>{error.message}</Alert>}
+                      {error && (
+                        <Alert
+                          color="error"
+                          onClose={() => setError(undefined)}>
+                          {error.message}
+                        </Alert>
+                      )}
                       <ParticipantTableGrid
                         rows={data?.items || []}
                         isParticipantUpdating={isParticipantUpdating}
@@ -597,7 +594,9 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         isAllSelected={isAllSelected}
                         gridType={tab}
                         selectedParticipantIds={selectedParticipantIds[tab]}
-                        onWithdrawParticipantError={participantWithdrawError as Error}
+                        onWithdrawParticipantError={
+                          participantWithdrawError as Error
+                        }
                         onWithdrawParticipant={(
                           participantId: string,
                           note: string

@@ -1,19 +1,19 @@
+import Utility from '@helpers/utility'
 import {Box, CircularProgress, Paper} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
-import clsx from 'clsx'
-import React, {useEffect} from 'react'
-import Utility from '../../../helpers/utility'
 import ParticipantService, {
   formatExternalId,
-} from '../../../services/participants.service'
-import {latoFont} from '../../../style/theme'
+} from '@services/participants.service'
+import {latoFont} from '@style/theme'
 import {
   EnrolledAccountRecord,
   ParticipantAccountSummary,
   ParticipantActivityType,
   Phone,
   Study,
-} from '../../../types/types'
+} from '@typedefs/types'
+import clsx from 'clsx'
+import React, {useEffect} from 'react'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -141,7 +141,7 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
     }
     const formattedData = finalResult.map(participant => {
       return {
-        identifier: participant.participant.identifier,
+        identifier: participant.participant?.identifier,
         externalId: participant.externalId || '',
         phone: participant.participant.phone,
       } as ParticipantDisplayType
