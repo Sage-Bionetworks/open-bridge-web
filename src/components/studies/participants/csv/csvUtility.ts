@@ -174,10 +174,12 @@ async function getParticipantDataForDownload(
   const transformedParticipantsData = participantsData.items.map(
     (p: ExtendedParticipantAccountSummary) => {
       const participant: Record<string, string | undefined> = {
-        [columns.get('externalId')!]: ParticipantService.formatExternalId(
-          studyId,
-          p.externalIds[studyId] || ''
-        ),
+        [columns.get('externalId')!]:
+          "'" +
+          ParticipantService.formatExternalId(
+            studyId,
+            p.externalIds[studyId] || ''
+          ),
         [columns.get('healthCode')!]: p.healthCode,
 
         // LEON TODO: Revisit when we have smsDate

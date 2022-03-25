@@ -190,19 +190,7 @@ const SelectionControl: FunctionComponent<{
   selectionModel: string[]
   isAllSelected: boolean
   totalParticipants: number
-  onSelectAllPage: Function
-  onSelectAll: Function
-  onDeselect: Function
-  selectionType: any
-}> = ({
-  selectionModel,
-  isAllSelected,
-  totalParticipants,
-  selectionType,
-  onSelectAll,
-  onSelectAllPage,
-  onDeselect,
-}) => {
+}> = ({selectionModel, isAllSelected, totalParticipants}) => {
   const classes = useStyles()
 
   return (
@@ -508,17 +496,8 @@ export type ParticipantTableGridProps = {
   studyId: string
   totalParticipants: number
   onRowSelected: (participantIds: string[], isAll?: boolean) => void
-  onUpdateParticipant: (
-    pId: string,
-    note: string,
-    customEvents: ParticipantEvent[],
-    clientTimeZone?: string
-  ) => void
-  onWithdrawParticipant: (participantId: string, note: string) => void
-  onWithdrawParticipantError?: Error
   children: React.ReactNode //paging control
   status: 'loading' | 'success' | 'error' | 'idle'
-  isParticipantUpdating: boolean
 }
 
 const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
@@ -530,10 +509,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   selectedParticipantIds,
   isEnrolledById,
   isAllSelected,
-  isParticipantUpdating: isLoadingFromGrid,
-  onUpdateParticipant,
-  onWithdrawParticipantError,
-  onWithdrawParticipant,
   onRowSelected,
   children,
 }: ParticipantTableGridProps) => {
@@ -543,7 +518,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
   const {
     isLoading: isParticipantUpdating,
-    isSuccess,
     error: participantUpdateError,
     mutate,
   } = useUpdateParticipantInList()
@@ -587,11 +561,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     ])
   }, [selectedParticipantIds, rows])
 
-  React.useEffect(() => {
-    if (participantUpdateError) setError(participantUpdateError as Error)
-    if (onWithdrawParticipantError) setError(onWithdrawParticipantError)
-  }, [participantUpdateError, onWithdrawParticipantError])
-
   const allSelectedPage = () =>
     rows && !rows.find(row => !selectionModel.includes(row.id))
 
@@ -608,11 +577,33 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     return 'NONE'
   }
 
+  const withdrawParticipant = (id: string, note: string) => {
+    setError(undefined)
+    mutate(
+      {
+        action: 'WITHDRAW',
+        studyId: studyId,
+        userId: [id],
+        note,
+      },
+      {
+        onSuccess: () => {
+          setParticipantToEdit(undefined)
+        },
+        onError: (e: any) => {
+          setError(e as Error)
+          console.log(e.message)
+        },
+      }
+    )
+  }
+
   const updateParticiant = (
     note: string,
     clientTimeZone?: string,
     customEvents?: ParticipantEvent[]
   ) => {
+    setError(undefined)
     const changedEvents = customEvents?.filter(ue => {
       let prevEvents = participantToEdit!.participant.events || []
       const updatedEvent = prevEvents.find(
@@ -637,7 +628,10 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
         onSuccess: () => {
           setParticipantToEdit(undefined)
         },
-        onError: (e: any) => console.log(e.message),
+        onError: (e: any) => {
+          setError(e as Error)
+          console.log(e.message)
+        },
       }
     )
   }
@@ -702,7 +696,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
           <div style={{flexGrow: 1}}>
             <DataGrid
               rows={rows}
-              loading={isLoadingFromGrid || isParticipantUpdating}
+              loading={isParticipantUpdating}
               classes={{columnHeader: classes.gridHeader}}
               density="standard"
               columns={participantColumns}
@@ -727,19 +721,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                       selectionModel={selectionModel}
                       isAllSelected={isAllSelected}
                       totalParticipants={totalParticipants}
-                      selectionType={getSelectionType()}
-                      onSelectAllPage={() => {
-                        const ids = rows.map(row => row.id)
-                        onRowSelected(
-                          _.uniq([...selectionModel, ...ids]),
-                          false
-                        )
-                      }}
-                      onDeselect={() => onRowSelected([], false)}
-                      onSelectAll={() => {
-                        const ids = rows.map(row => row.id)
-                        onRowSelected(ids, true)
-                      }}
                     />
                   </>
                 ),
@@ -767,6 +748,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
       <Dialog
         open={participantToEdit !== undefined}
         maxWidth="sm"
+        scroll="body"
         fullWidth
         aria-labelledby="edit participant">
         <EditDialogTitle
@@ -783,7 +765,6 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
             scheduleEvents={scheduleEvents}
             isEnrolledById={isEnrolledById}
             onError={error}
-            onHandleError={setError}
             onCancel={() => setParticipantToEdit(undefined)}
             onOK={(
               note: string,
@@ -808,10 +789,9 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
           <WithdrawParticipantForm
             isEnrolledById={isEnrolledById}
             onCancel={() => setParticipantToEdit(undefined)}
-            onOK={(note: string) => {
-              onWithdrawParticipant(participantToEdit?.id!, note)
-              isSuccess && setParticipantToEdit(undefined)
-            }}
+            onOK={(note: string) =>
+              withdrawParticipant(participantToEdit?.id!, note)
+            }
             participant={participantToEdit?.participant || {}}
             onError={error}
             onHandleError={setError}></WithdrawParticipantForm>

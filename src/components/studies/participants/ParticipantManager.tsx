@@ -37,7 +37,6 @@ import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
-  ParticipantEvent,
   SelectionType,
 } from '@typedefs/types'
 import clsx from 'clsx'
@@ -45,11 +44,7 @@ import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import {useEvents, useEventsForUsers} from '../eventHooks'
-import {
-  useInvalidateParticipants,
-  useParticipants,
-  useUpdateParticipantInList,
-} from '../participantHooks'
+import {useInvalidateParticipants, useParticipants} from '../participantHooks'
 import AddParticipants from './add/AddParticipants'
 import CsvUtility from './csv/csvUtility'
 import ParticipantDownloadTrigger from './csv/ParticipantDownloadTrigger'
@@ -216,47 +211,21 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     isById
   )
   const {data: pEventsMap} = useEventsForUsers(study?.identifier, pIds)
-  const {
-    isLoading: isParticipantUpdating,
-    error: participantWithdrawError,
-    mutateAsync,
-  } = useUpdateParticipantInList()
 
   const invalidateParticipants = useInvalidateParticipants()
-  const onAction = async (
-    studyId: string,
-    type: 'WITHDRAW' | 'UPDATE',
-    userId?: string,
-    note?: string,
-    updatedFields?: any,
-    customEvents?: ParticipantEvent[]
-  ) => {
-    const userIdArr = [userId] as Array<string>
-    switch (type) {
-      case 'WITHDRAW':
-        mutateAsync({action: type, studyId, userId: userIdArr, note})
-        return
-
-      case 'UPDATE':
-        mutateAsync({
-          action: type,
-          studyId: studyId,
-          userId: userIdArr,
-          updatedFields: updatedFields,
-          customEvents: customEvents,
-        })
-        return
-
-      default: {
-        console.log('unknown participant action')
-      }
-    }
-  }
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: any) => {
     setTab(newValue)
     setCurrentPage(0)
     setIsAllSelected(false)
+  }
+
+  const resetSelectAll = () => {
+    setIsAllSelected(false)
+    setSelectedParticipantIds(prev => ({
+      ...prev,
+      [tab]: [],
+    }))
   }
 
   React.useEffect(() => {
@@ -559,8 +528,11 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         isSearchById={Utility.isSignInById(study.signInTypes)}
                         onReset={() => {
                           setSearchValue(undefined)
+                          resetSelectAll()
                         }}
                         onSearch={(searchedValue: string) => {
+                          resetSelectAll()
+
                           setSearchValue(searchedValue)
                         }}
                         tab={tab}
@@ -584,7 +556,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       )}
                       <ParticipantTableGrid
                         rows={data?.items || []}
-                        isParticipantUpdating={isParticipantUpdating}
                         status={status}
                         scheduleEventIds={
                           scheduleEvents.map(e => e.eventId) || []
@@ -594,42 +565,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                         isAllSelected={isAllSelected}
                         gridType={tab}
                         selectedParticipantIds={selectedParticipantIds[tab]}
-                        onWithdrawParticipantError={
-                          participantWithdrawError as Error
-                        }
-                        onWithdrawParticipant={(
-                          participantId: string,
-                          note: string
-                        ) =>
-                          onAction(
-                            study.identifier,
-                            'WITHDRAW',
-                            participantId,
-                            note
-                          )
-                        }
-                        onUpdateParticipant={(
-                          participantId: string,
-                          note: string,
-                          customEvents?: ParticipantEvent[],
-                          clientTimeZone?: string
-                        ) => {
-                          const data = {
-                            note: note,
-                            clientTimeZone: clientTimeZone,
-                          } //timezone empty  || '-'
-                          if ((clientTimeZone?.length || 0) < 2) {
-                            delete data.clientTimeZone
-                          }
-                          onAction(
-                            study.identifier,
-                            'UPDATE',
-                            participantId,
-                            undefined,
-                            data,
-                            customEvents || []
-                          )
-                        }}
                         isEnrolledById={Utility.isSignInById(study.signInTypes)}
                         onRowSelected={(
                           /*id: string, isSelected: boolean*/ selection,
@@ -668,7 +603,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             isBatchEditOpen={isBatchEditOpen}
             onSetIsBatchEditOpen={setIsBatchEditOpen}
             selectedParticipants={selectedParticipantIds[tab]}
-            token={token!}
             studyId={study.identifier}
             onToggleParticipantRefresh={() => invalidateParticipants()}
             isAllSelected={isAllSelected}></BatchEditForm>

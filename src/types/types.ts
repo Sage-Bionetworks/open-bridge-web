@@ -236,6 +236,7 @@ export type ParticipantActivityType = 'ACTIVE' | 'WITHDRAWN' | 'TEST'
 export type ParticipantEvent = {
   eventId: string
   timestamp?: Date
+  clientTimeZone?: string
 }
 export type EditableParticipantData = {
   events?: ParticipantEvent[]

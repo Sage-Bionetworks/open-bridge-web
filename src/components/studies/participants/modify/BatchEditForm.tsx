@@ -1,5 +1,5 @@
 import {useEvents} from '@components/studies/eventHooks'
-import { useUpdateParticipantInList } from '@components/studies/participantHooks'
+import {useUpdateParticipantInList} from '@components/studies/participantHooks'
 import EditDialogTitle from '@components/studies/participants/modify/EditDialogTitle'
 import {Dialog} from '@material-ui/core'
 import React from 'react'
@@ -10,7 +10,6 @@ type BatchEditFormProps = {
   isBatchEditOpen: boolean
   onSetIsBatchEditOpen: Function
   selectedParticipants: string[]
-  token: string
   studyId: string
   onToggleParticipantRefresh: Function
   isAllSelected: boolean
@@ -29,23 +28,24 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
   const [error, setError] = React.useState<Error>()
 
   const {mutateAsync, error: batchUpdateError} = useUpdateParticipantInList()
-  
-  React.useEffect(()=>{
-    if(batchUpdateError) setError(batchUpdateError as Error)
-  },[batchUpdateError])
 
-  const updateParticipant = async(clientTimeZone?: string)=> {
+  React.useEffect(() => {
+    if (batchUpdateError) setError(batchUpdateError as Error)
+  }, [batchUpdateError])
+
+  const updateParticipant = async (clientTimeZone?: string) => {
     mutateAsync(
       {
-      studyId,
-      action:"UPDATE",
-      userId:selectedParticipants,
-      updatedFields:{clientTimeZone:clientTimeZone},
-      isAllSelected},
+        studyId,
+        action: 'UPDATE',
+        userId: selectedParticipants,
+        updatedFields: {clientTimeZone: clientTimeZone},
+        isAllSelected: false, // AG there is currently no way to distinguish between truly 'all'or 'all on the page
+      },
       {
-        onSuccess:onSetIsBatchEditOpen(false)
+        onSuccess: onSetIsBatchEditOpen(false),
       }
-      )
+    )
   }
 
   return (
@@ -62,6 +62,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
         shouldWithdraw={false}
         batchEdit
       />
+      {isAllSelected ? 'true' : 'false'}
       <EditParticipantForm
         scheduleEvents={scheduleEvents}
         isEnrolledById={isEnrolledById}
@@ -72,7 +73,6 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
         participant={{}}
         isBatchEdit
         onError={error}
-        onHandleError={setError}
         isLoading={isLoading}></EditParticipantForm>
     </Dialog>
   )

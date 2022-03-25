@@ -90,7 +90,8 @@ export interface BlackBorderDropdownStyleProps {
   hasError?: boolean
   searchableOnChange?: Function
   isSearchable?: boolean
-  searchableDescription?: string
+  controlLabel?: string
+  isRequired?: boolean
 }
 
 const BlackBorderDropdown: React.FunctionComponent<
@@ -106,7 +107,8 @@ const BlackBorderDropdown: React.FunctionComponent<
   hasError,
   searchableOnChange,
   isSearchable,
-  searchableDescription,
+  controlLabel,
+  isRequired,
   ...other
 }) => {
   const classes = useStyles({width, itemHeight})
@@ -160,7 +162,7 @@ const BlackBorderDropdown: React.FunctionComponent<
   const searchableDropdown = (
     <Box>
       <Box style={{fontSize: '14px', fontFamily: poppinsFont}}>
-        {searchableDescription || ''}
+        {`${controlLabel || ''}${isRequired ? '*' : ''}`}
       </Box>
       <Autocomplete
         value={{value: value, label: value}}

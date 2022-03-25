@@ -9,8 +9,9 @@ type TimezoneInfoType = {
 
 const TimezoneDropdown: React.FunctionComponent<{
   currentValue: string
+  isRequired?: boolean
   onValueChange: (val: string) => void
-}> = ({currentValue, onValueChange}) => {
+}> = ({currentValue, onValueChange, isRequired}) => {
   function getAllTimezones() {
     const timezoneNames = moment.tz.names()
     const filtered = timezoneNames.filter(el => el.includes('America'))
@@ -27,13 +28,14 @@ const TimezoneDropdown: React.FunctionComponent<{
     <BlackBorderDropdown
       width="100%"
       dropdown={timezones}
+      isRequired={isRequired}
       searchableOnChange={onValueChange}
       emptyValueLabel="Select a timezone"
       value={currentValue === '-' ? '' : currentValue}
       itemHeight="48px"
       isSearchable={true}
       onChange={e => onValueChange(e.target.value as string)}
-      searchableDescription={'Participant Time Zone'}
+      controlLabel={'Participant Time Zone'}
     />
   )
 }

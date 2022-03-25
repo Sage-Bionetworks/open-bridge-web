@@ -110,7 +110,7 @@ const AdherenceParticipant: FunctionComponent<
         studyId
       )}?tab=ENROLLED`,
 
-      text: 'Enrolled Participants',
+      text: 'Active Participants',
     },
   ]
 
@@ -236,6 +236,7 @@ const AdherenceParticipant: FunctionComponent<
         <EditParticipantEvents
           studyId={studyId}
           participantId={participantId}
+          clientTimeZone={adherenceReport?.clientTimeZone}
           onCloseDialog={() => setIsEditParticipant(false)}
         />
       )}
