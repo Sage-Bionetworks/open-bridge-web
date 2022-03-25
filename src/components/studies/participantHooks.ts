@@ -147,6 +147,7 @@ export const useUpdateParticipantInList = () => {
       [Property in keyof ParticipantAccountSummary]?: ParticipantAccountSummary[Property]
     }
     customEvents?: ParticipantEvent[]
+
     isAllSelected?: boolean
   }): Promise<string | string[]> => {
     switch (props.action) {
@@ -164,14 +165,21 @@ export const useUpdateParticipantInList = () => {
           props.userId!
         )
       case 'UPDATE':
-        if (props.customEvents){
+        if (props.customEvents?.length) {
+          if (
+            !props.updatedFields?.clientTimeZone ||
+            props.updatedFields.clientTimeZone.length < 3
+          ) {
+            throw new Error('Please enter the time zone to update the events')
+          }
           await EventService.updateParticipantCustomEvents(
             props.studyId,
             token!,
             props.userId![0],
-            props.customEvents
+            props.customEvents,
+            props.updatedFields.clientTimeZone
           )
-        }         
+        }
         return await ParticipantService.updateParticipant(
           props.studyId,
           token!,
@@ -208,30 +216,30 @@ export const useAddParticipant = () => {
   const {token} = useUserSessionDataState()
   const queryClient = useQueryClient()
 
-  const update = async(props: {
-      studyId: string,
-      options: EditableParticipantData,
-      phone?: Phone
+  const update = async (props: {
+    studyId: string
+    options: EditableParticipantData
+    phone?: Phone
   }): Promise<string> => {
-      const {studyId, options, phone} = props
-      return phone 
+    const {studyId, options, phone} = props
+    return phone
       ? await ParticipantService.addParticipant(studyId, token!, {
-        ...options, 
-        phone
-      })
+          ...options,
+          phone,
+        })
       : await ParticipantService.addParticipant(studyId, token!, options)
   }
 
   const mutation = useMutation(update, {
-      onMutate: async props => {
-          queryClient.cancelQueries(PARTICIPANT_KEYS.all)
-      },
-      onError: (err, variables, context) => {
-          console.log(err, variables, context)
-      },
-      onSettled: async(data, error, props)=>{
-          queryClient.invalidateQueries(PARTICIPANT_KEYS.all)
-      }
+    onMutate: async props => {
+      queryClient.cancelQueries(PARTICIPANT_KEYS.all)
+    },
+    onError: (err, variables, context) => {
+      console.log(err, variables, context)
+    },
+    onSettled: async (data, error, props) => {
+      queryClient.invalidateQueries(PARTICIPANT_KEYS.all)
+    },
   })
   return mutation
 }

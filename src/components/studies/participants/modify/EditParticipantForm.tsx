@@ -39,7 +39,6 @@ type EditParticipantFormProps = {
   isBatchEdit?: boolean
   isLoading?: boolean
   onError?: Error
-  onHandleError: Function
 }
 
 const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
@@ -50,9 +49,8 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
   onCancel,
   children,
   isBatchEdit,
-  isLoading,
   onError,
-  onHandleError,
+  isLoading,
 }) => {
   const classes = useStyles()
   const [note, setNotes] = React.useState(participant.note)
@@ -84,7 +82,6 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
           </MTBHeadingH3>
         </Box>
         <FormGroup className={classes.editForm}>
-        {onError && <Alert color="error" onClose={()=> onHandleError(undefined)}>{onError.message}</Alert>}        
           {!isBatchEdit && (
             <EditParticipantEventsForm
               customParticipantEvents={customParticipantEvents}
@@ -97,6 +94,7 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
           )}
           <Box width="375px" mb={3}>
             <TimezoneDropdown
+              isRequired={true}
               currentValue={currentTimeZone}
               onValueChange={e => setCurrentTimeZone(e)}
             />
@@ -116,13 +114,16 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
           )}
         </FormGroup>
       </DialogContent>
+      {onError && <Alert color="error">{onError.message}</Alert>}
       <DialogActions style={{justifyContent: 'space-between'}}>
         {children && children}
         {!isLoading ? (
           <div>
             <DialogButtonSecondary
-            onClick={() => {onCancel(); onHandleError(undefined)}}
-            color="primary">
+              onClick={() => {
+                onCancel()
+              }}
+              color="primary">
               Cancel
             </DialogButtonSecondary>
             <DialogButtonPrimary
@@ -132,6 +133,7 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
                   : onOK(note, currentTimeZone, customParticipantEvents)
               }}
               color="primary"
+              disabled={currentTimeZone?.length < 3}
               autoFocus>
               Save Changes
             </DialogButtonPrimary>

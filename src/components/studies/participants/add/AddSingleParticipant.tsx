@@ -6,11 +6,11 @@ import Utility from '@helpers/utility'
 import {Box, CircularProgress} from '@material-ui/core'
 import {makeStyles} from '@material-ui/core/styles'
 import Alert from '@material-ui/lab/Alert'
+import ParticipantService from '@services/participants.service'
 import {ExtendedScheduleEventObject} from '@services/schedule.service'
 import {EditableParticipantData, Phone} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import AddSingleParticipantForm from './AddSingleParticipantForm'
-import ParticipantService from '@services/participants.service'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -59,22 +59,30 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
     }
   )
   const [error, setError] = React.useState<Error>()
-  const {isLoading, error: participantAddError, mutateAsync} = useAddParticipant()
+  const {
+    isLoading,
+    error: participantAddError,
+    mutateAsync,
+  } = useAddParticipant()
 
-  React.useEffect(()=>{
-    if(participantAddError) setError(participantAddError as Error)
-  },[participantAddError])
+  React.useEffect(() => {
+    if (participantAddError) setError(participantAddError as Error)
+  }, [participantAddError])
 
-  const onAddParticipant = async(participant: EditableParticipantData) => {
+  const onAddParticipant = async (participant: EditableParticipantData) => {
     let options: EditableParticipantData = {
       externalId: participant.externalId,
       events: participant.events,
       clientTimeZone: participant.clientTimeZone,
       note: participant.note,
     }
-    isEnrolledById 
-    ? mutateAsync({studyId:studyIdentifier,options}) 
-    : mutateAsync({studyId:studyIdentifier,options,phone:Utility.makePhone(participant.phoneNumber || '')}) 
+    isEnrolledById
+      ? mutateAsync({studyId: studyIdentifier, options})
+      : mutateAsync({
+          studyId: studyIdentifier,
+          options,
+          phone: Utility.makePhone(participant.phoneNumber || ''),
+        })
     setParticipant({externalId: ''})
   }
 
@@ -83,7 +91,8 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
       (!isEnrolledById &&
         (!participant.phoneNumber ||
           Utility.isInvalidPhone(participant.phoneNumber))) ||
-      (isEnrolledById && !participant.externalId)
+      (isEnrolledById && !participant.externalId) ||
+      (participant.clientTimeZone || '').length < 3
     )
   }
 
@@ -91,7 +100,11 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
     <>
       <Box mx="auto" textAlign="center" mb={2}>
         {isLoading && <CircularProgress size="2em" />}
-        {error && <Alert color="error" onClose={()=>setError(undefined)}>{error.message}</Alert>}
+        {error && (
+          <Alert color="error" onClose={() => setError(undefined)}>
+            {error.message}
+          </Alert>
+        )}
       </Box>
       <AddSingleParticipantForm
         scheduleEvents={scheduleEvents}
@@ -110,7 +123,6 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
           variant="contained"
           disabled={isAddDisabled()}
           onClick={() => onAddParticipant(participant)}>
-
           +Add to study
         </BlueButton>
       </Box>

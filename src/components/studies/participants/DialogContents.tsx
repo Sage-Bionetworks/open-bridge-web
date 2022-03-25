@@ -143,7 +143,7 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
       return {
         identifier: participant.participant?.identifier,
         externalId: participant.externalId || '',
-        phone: participant.participant.phone,
+        phone: participant.participant?.phone,
       } as ParticipantDisplayType
     })
     setParticipantData(formattedData)

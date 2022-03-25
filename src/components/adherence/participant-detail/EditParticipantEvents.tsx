@@ -16,18 +16,21 @@ import {
   DialogActions,
   DialogContent,
 } from '@material-ui/core'
+import {Alert} from '@material-ui/lab'
 import {ParticipantEvent} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 
 type EditParticipantEventsProps = {
   studyId: string
   participantId: string
+  clientTimeZone?: string
   onCloseDialog: () => void
 }
 
 const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
   studyId,
   participantId,
+  clientTimeZone,
   onCloseDialog,
 }) => {
   const [participantEvents, setParticipantEvents] = React.useState<
@@ -75,14 +78,19 @@ const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
           {(error as Error).message}
         </ErrorDisplay>
       )}
+      {!clientTimeZone && (
+        <Alert>You must select a time zone for this participant</Alert>
+      )}
       <DialogActions>
         <DialogButtonSecondary onClick={onCloseDialog}>
           Cancel
         </DialogButtonSecondary>
         <DialogButtonPrimary
+          disabled={!clientTimeZone}
           onClick={() => {
             const previousEvents = events?.customEvents
             const updatedEvents = participantEvents
+
             //only update changes events
             const eventsToUpdate = updatedEvents.filter(ue => {
               const matchedEvent = events?.customEvents.find(
@@ -96,6 +104,7 @@ const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
                 studyId,
                 participantId,
                 customEvents: eventsToUpdate,
+                clientTimeZone: clientTimeZone!,
               },
               {
                 onSuccess: () => {

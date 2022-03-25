@@ -99,7 +99,8 @@ const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps>
           )}
           <FormControl>
             <TimezoneDropdown
-              currentValue={participant.clientTimeZone || ''}
+              isRequired={true}
+              currentValue={participant.clientTimeZone || '-'}
               onValueChange={(clientTimeZone: string) =>
                 onChange({...participant, clientTimeZone})
               }
