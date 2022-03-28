@@ -32,6 +32,7 @@ import {
   StudySession,
 } from '@typedefs/scheduling'
 import {ExtendedError, Study} from '@typedefs/types'
+import clsx from 'clsx'
 import _ from 'lodash'
 import React from 'react'
 import {useErrorHandler} from 'react-error-boundary'
@@ -89,6 +90,12 @@ export const useStyles = makeStyles((theme: Theme) =>
       alignItems: 'center',
       justifyContent: 'space-between',
       paddingRight: theme.spacing(2),
+      '&.readOnly': {
+        justifyContent: 'flex-start',
+        '& label:not(:first-child)': {
+          marginLeft: theme.spacing(3),
+        },
+      },
     },
 
     assessments: {
@@ -478,7 +485,9 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
         <div>{saveLoader && <CircularProgress />}</div>
 
         <Box textAlign="left" key="content">
-          <div className={classes.scheduleHeader} key="intro">
+          <div
+            className={clsx(classes.scheduleHeader, isReadOnly && 'readOnly')}
+            key="intro">
             {!isReadOnly ? (
               <Box>
                 <FormControlLabel
