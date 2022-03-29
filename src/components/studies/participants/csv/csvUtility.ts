@@ -21,7 +21,6 @@ import ParticipantUtility, {ParticipantData} from '../participantUtility'
 const CSV_BY_ID_IMPORT_KEY: Map<keyof EditableParticipantData, string> =
   new Map([
     ['externalId', 'Participant ID'],
-    ['timeZone', 'Time Zone'],
     ['clientTimeZone', 'Participant Time Zone'],
     ['note', 'Notes'],
   ])
@@ -29,7 +28,6 @@ const CSV_BY_ID_IMPORT_KEY: Map<keyof EditableParticipantData, string> =
 const CSV_BY_PHONE_IMPORT_KEY: Map<keyof EditableParticipantData, string> =
   new Map([
     ['phoneNumber', 'Phone#'],
-    ['timeZone', 'Time Zone'],
     ['externalId', 'Reference ID'],
     ['clientTimeZone', 'Participant Time Zone'],
     ['note', 'Notes'],
@@ -80,7 +78,7 @@ function isImportFileValid(
   isEnrolledById: boolean,
   scheduleEventIds: string[],
   firstRow: object
-): boolean {
+): {isValid: boolean; requiredFields?: string; receivedFields?: string} {
   //expected columns
   const templateKeys = Object.keys(
     getDownloadTemplateRow(isEnrolledById, scheduleEventIds)
@@ -93,7 +91,10 @@ function isImportFileValid(
     .filter(v => !!v)
     .join(',')
   const isValid = templateKeys === keysString
+
   return isValid
+    ? {isValid}
+    : {isValid, requiredFields: templateKeys, receivedFields: keysString}
 }
 
 async function uploadCsvRow(
@@ -112,7 +113,7 @@ async function uploadCsvRow(
   const columns = getImportColumns(isEnrolledById)
 
   const options: EditableParticipantData = {
-    externalId: data[columns.get('externalId')!],
+    externalId: data[columns.get('externalId')!]?.replace("'", ''),
     note: data[columns.get('note')!],
     events: pEvents,
   }
@@ -174,15 +175,12 @@ async function getParticipantDataForDownload(
   const transformedParticipantsData = participantsData.items.map(
     (p: ExtendedParticipantAccountSummary) => {
       const participant: Record<string, string | undefined> = {
-        [columns.get('externalId')!]:
-          "'" +
-          ParticipantService.formatExternalId(
-            studyId,
-            p.externalIds[studyId] || ''
-          ),
-        [columns.get('healthCode')!]: p.healthCode,
+        [columns.get('externalId')!]: `'${ParticipantService.formatExternalId(
+          studyId,
+          p.externalIds[studyId] || ''
+        )}`,
+        [columns.get('healthCode')!]: `'${p.healthCode}`,
 
-        // LEON TODO: Revisit when we have smsDate
         [columns.get('joinedDate')!]: getJoinedEventDateString(p.events),
 
         [columns.get('note')!]:
