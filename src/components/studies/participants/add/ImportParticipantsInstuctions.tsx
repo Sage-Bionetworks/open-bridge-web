@@ -66,7 +66,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
         <strong>Participant Time Zone</strong> (can be updated later)
       </li>
       <li>
-        <strong>Note</strong> (for your reference)
+        <strong>Notes</strong> (for your reference)
       </li>
     </ul>
   ) : (
@@ -82,7 +82,7 @@ const ImportParticipantsInstructions: FunctionComponent<{
         <strong>Participant Time Zone</strong> (can be updated later)
       </li>
       <li>
-        <strong>Note</strong> (for your reference)
+        <strong>Notes</strong> (for your reference)
       </li>
     </ul>
   )

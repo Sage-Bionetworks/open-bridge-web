@@ -148,7 +148,10 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
   const handleOnDrop = async (rows: any) => {
     setImportError([])
     if (!rows[0]?.data) {
-      setImportError([...importError, 'Please check the format of your file'])
+      setImportError([
+        ...importError,
+        'Please check the format of your file. No data',
+      ])
       return
     }
 
@@ -158,13 +161,16 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
       })
     )
 
-    const isValid = CsvUtility.isImportFileValid(
+    const validityCheck = CsvUtility.isImportFileValid(
       isEnrolledById,
       scheduleEvents.map(e => e.eventId),
       rows[0].data
     )
-    if (!isValid) {
-      setImportError([...importError, 'Please check the format of your file'])
+    if (!validityCheck.isValid) {
+      setImportError([
+        ...importError,
+        `Please check the format of your file. Required fields are: ${validityCheck.requiredFields}. Received fields: ${validityCheck.receivedFields}`,
+      ])
       return
     }
     const progressTick = 100 / rows.length
