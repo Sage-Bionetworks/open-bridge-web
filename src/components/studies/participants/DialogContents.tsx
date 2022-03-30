@@ -167,17 +167,6 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
     setLoadingData(false)
   }, [selectingAll, selectedParticipants])
 
-  if (selectedParticipants.length === 0) {
-    // this should never happen
-    return (
-      <Box className={classes.root}>
-        {`Please select participants you would like to ${
-          isRemove ? 'removed' : 'send message to'
-        }`}
-      </Box>
-    )
-  }
-
   if (isProcessing || loadingData) {
     return (
       <Box className={classes.root}>
@@ -217,7 +206,7 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
                 width="90%"
                 alignSelf="center"
                 mb={1}>
-                Welcome to Sleep & Cognition. Please get started by{' '}
+                Please get started by{' '}
                 <strong style={{textDecoration: 'underline'}}>
                   downloading the app here
                 </strong>{' '}

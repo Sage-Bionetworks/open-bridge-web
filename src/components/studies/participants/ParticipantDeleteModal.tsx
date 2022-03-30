@@ -95,18 +95,22 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> =
       onLoadingIndicatorsChange(true)
       resetParticipantsWithError()
 
-      await mutateAsync({
-        action: 'DELETE',
-        studyId,
-        userId: selectedParticipantIds[tab!],
-      })
-      onLoadingIndicatorsChange(false)
-      isSuccess &&
+      try {
+        await mutateAsync({
+          action: 'DELETE',
+          studyId,
+          userId: selectedParticipantIds[tab!],
+        })
+        onLoadingIndicatorsChange(false)
         onClose({
           dialogOpenRemove: false,
           dialogOpenSMS: false,
         })
-      return
+
+        return
+      } catch (e) {
+        alert(e)
+      }
     }
     return (
       <Dialog
@@ -128,7 +132,9 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> =
           title={
             dialogState.dialogOpenRemove
               ? 'Remove From Study'
-              : 'Sending SMS Download Link'
+              : dialogState.dialogOpenSMS
+              ? 'Sending SMS Download Link'
+              : ''
           }
         />
         {error && (
