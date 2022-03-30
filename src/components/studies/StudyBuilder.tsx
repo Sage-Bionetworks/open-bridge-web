@@ -304,6 +304,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
             style={{
               backgroundColor:
                 section === 'session-creator' ||
+                section === 'scheduler' ||
                 section === 'enrollment-type-selector' ||
                 section === 'preview'
                   ? '#f7f7f7'
@@ -368,7 +369,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                               id={id}
                               onShowFeedback={showFeedback}
                               isReadOnly={!StudyService.isStudyInDesign(study)}>
-                              {navButtonsArray}
+                              {navButtons}
                             </Scheduler>
                           </Route>
                           <Route

@@ -93,24 +93,13 @@ type SessionCreatorProps = {
   id: string
   children: React.ReactNode
   onShowFeedback?: Function
-  // sessions: StudySession[]
-  // onSave: Function
-  // study: Study
 }
 
 const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   id,
   children,
   onShowFeedback,
-}: /*sessions,
-
-  onUpdate,
-  hasObjectChanged,
-  saveLoader,
-
-  onSave,
-  study,*/
-SessionCreatorProps) => {
+}: SessionCreatorProps) => {
   const classes = useStyles()
 
   const {

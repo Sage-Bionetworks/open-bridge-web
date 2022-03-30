@@ -163,6 +163,7 @@ function isScheduleDefault(schedule: Schedule) {
 
 const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   id,
+  children,
   isReadOnly,
   onShowFeedback,
 }) => {
@@ -618,6 +619,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
             )}
           </Box>
         </Box>
+        {children}
       </Box>
       <Dialog open={openModal === 'EVENTS'} maxWidth="md" scroll="body">
         <DialogTitle
