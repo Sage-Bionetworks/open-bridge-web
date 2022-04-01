@@ -1,9 +1,9 @@
-import {createStyles} from '@material-ui/core'
-import Card from '@material-ui/core/Card'
-import CardActions from '@material-ui/core/CardActions'
-import CardContent from '@material-ui/core/CardContent'
-import {makeStyles} from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
+import createStyles from '@mui/styles/createStyles';
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography'
 import React, {FunctionComponent} from 'react'
 import validated from '../../assets/validated.svg'
 import {playfairDisplayFont, poppinsFont} from '../../style/theme'

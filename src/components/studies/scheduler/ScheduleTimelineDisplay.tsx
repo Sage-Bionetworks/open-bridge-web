@@ -2,9 +2,9 @@ import {ReactComponent as NotificationsIcon} from '@assets/scheduler/notificatio
 import {ReactComponent as TimerIcon} from '@assets/scheduler/timer_icon.svg'
 import AssessmentImage from '@components/assessments/AssessmentImage'
 import SessionIcon from '@components/widgets/SessionIcon'
-import {Box} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
-import Tooltip, {TooltipProps} from '@material-ui/core/Tooltip'
+import {Box} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
+import Tooltip, {TooltipProps} from '@mui/material/Tooltip'
 import {latoFont, poppinsFont} from '@style/theme'
 import {
   Schedule,

@@ -7,11 +7,11 @@ import {
   Menu,
   MenuItem,
   Paper,
-} from '@material-ui/core'
-import Button from '@material-ui/core/Button'
-import {makeStyles} from '@material-ui/core/styles'
-import Toolbar from '@material-ui/core/Toolbar'
-import MenuIcon from '@material-ui/icons/Menu'
+} from '@mui/material'
+import Button from '@mui/material/Button'
+import makeStyles from '@mui/styles/makeStyles';
+import Toolbar from '@mui/material/Toolbar'
+import MenuIcon from '@mui/icons-material/Menu'
 import {latoFont} from '@style/theme'
 import {UserSessionData} from '@typedefs/types'
 import clsx from 'clsx'
@@ -302,176 +302,175 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
     return location.pathname.endsWith('/sign-in')
   }, [location])
 
-  return (
-    <>
-      {' '}
-      <Hidden lgUp>
-        <IconButton
-          color="inherit"
-          aria-label="Open drawer"
-          edge="end"
-          onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className={classes.menuButton}>
-          <MenuIcon></MenuIcon>
-        </IconButton>
-      </Hidden>
-      <Hidden mdDown>
-        <Paper className={classes.toolbarWrapper} elevation={0}>
-          <img
-            src={Logo}
-            key="Mobile Toolbox"
-            className={classes.toolbar}
-            alt="logo"
-          />
-          <Toolbar
-            component="nav"
-            variant="dense"
-            disableGutters
-            className={classes.toolbar}>
-            <MenuLinks
-              appId={appId}
-              className={classes.toolbarLink}
-              activeClassName={classes.selectedLink}
-              routes={routes.filter(route => route.name && !route.isRhs)}
-              setIsMobileOpen={setIsMobileOpen}
-            />
-          </Toolbar>
-          <Toolbar
-            component="nav"
-            variant="dense"
-            disableGutters
-            className={classes.toolbar}>
-            {!sessionData && (
-              <MenuLinksRhs
-                appId={appId}
-                className={classes.toolbarLink}
-                activeClassName={classes.selectedLink}
-                routes={routes.filter(route => route.name && route.isRhs)}
-                sessionData={sessionData}
-                setIsMobileOpen={setIsMobileOpen}>
-                <></>
-                {window.location.pathname !== '/' && (
-                  <div className={classes.login}>
-                    <Button
-                      disabled={isLoginButtonDisabled}
-                      variant="text"
-                      className={classes.toolbarLink}
-                      href={'/sign-in'}>
-                      LOG IN
-                    </Button>
-                  </div>
-                )}
-              </MenuLinksRhs>
-            )}
-            {sessionData && (
-              <div
-                onClick={event => setMenuAnchor(event.currentTarget)}
-                style={{paddingLeft: '8px'}}>
-                <div
-                  className={clsx(
-                    classes.userCircle,
-                    !!menuAnchor && classes.userCircleActive
-                  )}>
-                  {getInitials()}
-                </div>
-              </div>
-            )}
-          </Toolbar>
-        </Paper>
-      </Hidden>
-      <nav className={classes.drawer}>
-        <Drawer
-          variant="temporary"
-          anchor="right"
-          open={isMobileOpen}
-          onClose={() => setIsMobileOpen(false)}
-          classes={{
-            paper: classes.drawerPaper,
-          }}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}>
-          <MobileDrawerMenuHeader
-            setIsMobileOpen={setIsMobileOpen}
-            type={
-              sessionData ? 'LOGGED_IN' : 'NOT_LOGGED_IN'
-            }></MobileDrawerMenuHeader>
+  return <>
+    {' '}
+    <Hidden lgUp>
+      <IconButton
+        color="inherit"
+        aria-label="Open drawer"
+        edge="end"
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+        className={classes.menuButton}
+        size="large">
+        <MenuIcon></MenuIcon>
+      </IconButton>
+    </Hidden>
+    <Hidden lgDown>
+      <Paper className={classes.toolbarWrapper} elevation={0}>
+        <img
+          src={Logo}
+          key="Mobile Toolbox"
+          className={classes.toolbar}
+          alt="logo"
+        />
+        <Toolbar
+          component="nav"
+          variant="dense"
+          disableGutters
+          className={classes.toolbar}>
           <MenuLinks
             appId={appId}
-            className={classes.drawerMenuItem}
-            activeClassName={classes.drawerMenuSelectedLink}
+            className={classes.toolbarLink}
+            activeClassName={classes.selectedLink}
             routes={routes.filter(route => route.name && !route.isRhs)}
             setIsMobileOpen={setIsMobileOpen}
           />
-          {sessionData && <Divider className={classes.divider}></Divider>}
-          <MenuLinksRhs
-            appId={appId}
-            className={classes.drawerMenuItem}
-            activeClassName={classes.drawerMenuSelectedLink}
-            routes={routes.filter(route => route.name && route.isRhs)}
-            sessionData={sessionData}
-            isRightHandSide={true}
-            setIsMobileOpen={setIsMobileOpen}>
-            <Logout
-              element={
-                <Button
-                  variant="text"
-                  className={clsx(
-                    classes.drawerMenuItem,
-                    classes.drawerProfileOptions
-                  )}>
-                  Sign out
-                </Button>
-              }></Logout>
-            {window.location.pathname !== '/' && (
+        </Toolbar>
+        <Toolbar
+          component="nav"
+          variant="dense"
+          disableGutters
+          className={classes.toolbar}>
+          {!sessionData && (
+            <MenuLinksRhs
+              appId={appId}
+              className={classes.toolbarLink}
+              activeClassName={classes.selectedLink}
+              routes={routes.filter(route => route.name && route.isRhs)}
+              sessionData={sessionData}
+              setIsMobileOpen={setIsMobileOpen}>
+              <></>
+              {window.location.pathname !== '/' && (
+                <div className={classes.login}>
+                  <Button
+                    disabled={isLoginButtonDisabled}
+                    variant="text"
+                    className={classes.toolbarLink}
+                    href={'/sign-in'}>
+                    LOG IN
+                  </Button>
+                </div>
+              )}
+            </MenuLinksRhs>
+          )}
+          {sessionData && (
+            <div
+              onClick={event => setMenuAnchor(event.currentTarget)}
+              style={{paddingLeft: '8px'}}>
+              <div
+                className={clsx(
+                  classes.userCircle,
+                  !!menuAnchor && classes.userCircleActive
+                )}>
+                {getInitials()}
+              </div>
+            </div>
+          )}
+        </Toolbar>
+      </Paper>
+    </Hidden>
+    <nav className={classes.drawer}>
+      <Drawer
+        variant="temporary"
+        anchor="right"
+        open={isMobileOpen}
+        onClose={() => setIsMobileOpen(false)}
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}>
+        <MobileDrawerMenuHeader
+          setIsMobileOpen={setIsMobileOpen}
+          type={
+            sessionData ? 'LOGGED_IN' : 'NOT_LOGGED_IN'
+          }></MobileDrawerMenuHeader>
+        <MenuLinks
+          appId={appId}
+          className={classes.drawerMenuItem}
+          activeClassName={classes.drawerMenuSelectedLink}
+          routes={routes.filter(route => route.name && !route.isRhs)}
+          setIsMobileOpen={setIsMobileOpen}
+        />
+        {sessionData && <Divider className={classes.divider}></Divider>}
+        <MenuLinksRhs
+          appId={appId}
+          className={classes.drawerMenuItem}
+          activeClassName={classes.drawerMenuSelectedLink}
+          routes={routes.filter(route => route.name && route.isRhs)}
+          sessionData={sessionData}
+          isRightHandSide={true}
+          setIsMobileOpen={setIsMobileOpen}>
+          <Logout
+            element={
               <Button
-                disabled={isLoginButtonDisabled}
                 variant="text"
                 className={clsx(
-                  classes.drawerAuthOptions,
-                  classes.drawerMenuItem
-                )}
-                href={'/sign-in'}>
-                Log in
+                  classes.drawerMenuItem,
+                  classes.drawerProfileOptions
+                )}>
+                Sign out
               </Button>
-            )}
-          </MenuLinksRhs>
-        </Drawer>
-      </nav>
-      <Menu
-        classes={{list: classes.l}}
-        id="simple-menu"
-        anchorEl={menuAnchor}
-        keepMounted
-        getContentAnchorEl={null}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        open={Boolean(menuAnchor)}
-        onClose={handleMenuClose}>
-        {routes
-          .filter(r => r.isRhs)
-          .map(route => (
-            <MenuItem
-              key={route.name}
-              disabled={
-                route.name === 'Edit Profile' || route.name === 'Settings'
-              }>
-              <NavLink to={route.path}>{route.name}</NavLink>
-            </MenuItem>
-          ))}
+            }></Logout>
+          {window.location.pathname !== '/' && (
+            <Button
+              disabled={isLoginButtonDisabled}
+              variant="text"
+              className={clsx(
+                classes.drawerAuthOptions,
+                classes.drawerMenuItem
+              )}
+              href={'/sign-in'}>
+              Log in
+            </Button>
+          )}
+        </MenuLinksRhs>
+      </Drawer>
+    </nav>
+    <Menu
+      classes={{list: classes.l}}
+      id="simple-menu"
+      anchorEl={menuAnchor}
+      keepMounted
+      getContentAnchorEl={null}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'left',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      open={Boolean(menuAnchor)}
+      onClose={handleMenuClose}>
+      {routes
+        .filter(r => r.isRhs)
+        .map(route => (
+          <MenuItem
+            key={route.name}
+            disabled={
+              route.name === 'Edit Profile' || route.name === 'Settings'
+            }>
+            <NavLink to={route.path}>{route.name}</NavLink>
+          </MenuItem>
+        ))}
 
-        <MenuItem key={'logout'}>
-          <Logout element={<div>Log out</div>}></Logout>
-        </MenuItem>
-      </Menu>
-    </>
-  )
+      <MenuItem key={'logout'}>
+        <Logout element={<div>Log out</div>}></Logout>
+      </MenuItem>
+    </Menu>
+  </>;
 }
 
 export default AppTopNav

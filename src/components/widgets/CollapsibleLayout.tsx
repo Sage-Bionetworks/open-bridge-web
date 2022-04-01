@@ -1,7 +1,7 @@
-import {Box, Drawer, IconButton} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import {Box, Drawer, IconButton} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {ThemeType} from '../../style/theme'
@@ -67,20 +67,20 @@ const useStyles = makeStyles<ThemeType, StyleProps>((theme: ThemeType) => ({
   },
   mainAreaNormal: {
     width: `${280 * 3 + 16 * 3}px`,
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       width: `${280 * 2 + 16 * 2}px`,
     },
   },
 
   mainAreaWider: {
     width: `${280 * 4 + 16 * 3}px`,
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       width: `760px`,
     },
   },
   mainAreaWide: {
     width: `${280 * 4 + 16 * 4}px`,
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       width: `${280 * 3 + 16 * 3}px`,
     },
   },
@@ -134,47 +134,43 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
       onToggleClick(isOpen)
     }
   }, [isOpen])
-  return (
-    <>
-      <Box display="flex" position="relative">
-        <Drawer
-          variant="permanent"
-          elevation={1}
-          className={clsx(classes.drawer, {
+  return <>
+    <Box display="flex" position="relative">
+      <Drawer
+        variant="permanent"
+        elevation={1}
+        className={clsx(classes.drawer, {
+          [classes.drawerOpen]: isOpen,
+          [classes.drawerClose]: !isOpen,
+        })}
+        classes={{
+          paper: clsx(classes.drawerPaper, {
             [classes.drawerOpen]: isOpen,
             [classes.drawerClose]: !isOpen,
+          }),
+        }}
+        style={isDrawerHidden ? {display: 'none'} : {}}>
+        <Box className={classes.drawerToolbar}>
+          {children.length === 3 && isOpen && children[2]}
+          <IconButton onClick={() => setIsOpen(prev => !prev)} style={toggleStyle} size="large">
+            {isOpen ? closeIcon : openIcon}
+          </IconButton>
+        </Box>
+        <Box style={isOpen ? {} : {display: 'none'}}>{children[0]}</Box>
+      </Drawer>
+      <Box className={classes.mainAreaWrapper}>
+        <Box
+          className={clsx(classes.mainArea, {
+            [classes.mainAreaNormal]: isOpen,
+            [classes.mainAreaWider]: isOpen && isWide,
+            [classes.mainAreaWide]: !isOpen,
           })}
-          classes={{
-            paper: clsx(classes.drawerPaper, {
-              [classes.drawerOpen]: isOpen,
-              [classes.drawerClose]: !isOpen,
-            }),
-          }}
-          style={isDrawerHidden ? {display: 'none'} : {}}>
-          <Box className={classes.drawerToolbar}>
-            {children.length === 3 && isOpen && children[2]}
-            <IconButton
-              onClick={() => setIsOpen(prev => !prev)}
-              style={toggleStyle}>
-              {isOpen ? closeIcon : openIcon}
-            </IconButton>
-          </Box>
-          <Box style={isOpen ? {} : {display: 'none'}}>{children[0]}</Box>
-        </Drawer>
-        <Box className={classes.mainAreaWrapper}>
-          <Box
-            className={clsx(classes.mainArea, {
-              [classes.mainAreaNormal]: isOpen,
-              [classes.mainAreaWider]: isOpen && isWide,
-              [classes.mainAreaWide]: !isOpen,
-            })}
-            style={isFullWidth ? {width: '100%'} : {}}>
-            {children[1]}
-          </Box>
+          style={isFullWidth ? {width: '100%'} : {}}>
+          {children[1]}
         </Box>
       </Box>
-    </>
-  )
+    </Box>
+  </>;
 }
 
 export default CollapsibleLayout

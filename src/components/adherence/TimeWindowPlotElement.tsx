@@ -1,4 +1,4 @@
-import {Tooltip} from '@material-ui/core'
+import {Tooltip} from '@mui/material'
 import {AdherenceWindowState} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import AdherenceUtility from './adherenceUtility'

@@ -1,6 +1,6 @@
 import Preview from '@components/studies/preview/Preview'
 import BreadCrumb from '@components/widgets/BreadCrumb'
-import {Box, Container} from '@material-ui/core'
+import {Box, Container} from '@mui/material'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps} from 'react-router-dom'
 

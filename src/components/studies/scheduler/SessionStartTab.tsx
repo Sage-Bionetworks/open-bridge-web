@@ -3,15 +3,10 @@ import {ReactComponent as PhoneIcon} from '@assets/scheduler/login_phone.svg'
 import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
 import LoadingComponent from '@components/widgets/Loader'
 import {RedButton} from '@components/widgets/StyledComponents'
-import {
-  Box,
-  createStyles,
-  FormGroup,
-  IconButton,
-  makeStyles,
-  Theme,
-} from '@material-ui/core'
-import DeleteIcon from '@material-ui/icons/Close'
+import { Box, FormGroup, IconButton, Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import DeleteIcon from '@mui/icons-material/Close'
 import EventService from '@services/event.service'
 import {latoFont} from '@style/theme'
 import {SchedulingEvent} from '@typedefs/scheduling'

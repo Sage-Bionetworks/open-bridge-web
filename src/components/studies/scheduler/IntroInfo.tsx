@@ -1,15 +1,8 @@
 import {SessionSymbols} from '@components/widgets/SessionIcon'
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import {
-  Box,
-  Button,
-  Container,
-  createStyles,
-  Divider,
-  FormControlLabel,
-  Theme,
-} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+import { Box, Button, Container, Divider, FormControlLabel, Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import ScheduleService from '@services/schedule.service'
 import {Study} from '@typedefs/types'
 import React from 'react'

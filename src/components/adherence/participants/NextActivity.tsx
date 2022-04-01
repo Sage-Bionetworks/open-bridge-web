@@ -1,6 +1,7 @@
 import {ReactComponent as Celebration} from '@assets/adherence/celebration_row.svg'
 import {ReactComponent as Arrow} from '@assets/arrow_long.svg'
-import {Box, makeStyles} from '@material-ui/core'
+import { Box } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import {theme} from '@style/theme'
 import {AdherenceSessionInfo, ProgressionStatus} from '@typedefs/types'
 import moment from 'moment'

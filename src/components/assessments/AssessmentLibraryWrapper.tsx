@@ -1,6 +1,7 @@
 import {ReactComponent as DemoPhone} from '@assets/preview/demo_phone.svg'
 import {WhiteButton} from '@components/widgets/StyledComponents'
-import {Box, Container, makeStyles} from '@material-ui/core'
+import { Box, Container } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import {Assessment, StringDictionary} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent, ReactNode} from 'react'
@@ -23,12 +24,12 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: '#BCD5E4',
     },
     /*paddingTop: theme.spacing(4),*/
-    // margin: `0 ${theme.spacing(4)}px`,
+    // margin: `0 ${theme.spacing(4)}`,
     minWidth: '1000px',
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       minWidth: '750px',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       maxWidth: '400px',
     },
     paddingTop: theme.spacing(1),
@@ -38,7 +39,7 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1),
     textAlign: 'center',
     color: theme.palette.text.secondary,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       maxWidth: '600px',
     },
   },
@@ -50,7 +51,7 @@ const useStyles = makeStyles(theme => ({
     gridColumnGap: theme.spacing(2),
     justifyContent: 'center',
     gridRowGap: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       padding: theme.spacing(3),
       justifyContent: 'center',
       gridRowGap: theme.spacing(4),

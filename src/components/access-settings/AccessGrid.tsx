@@ -1,11 +1,6 @@
-import {
-  Box,
-  FormControlLabel,
-  makeStyles,
-  Radio,
-  Switch,
-} from '@material-ui/core'
-import CheckIcon from '@material-ui/icons/Check'
+import CheckIcon from '@mui/icons-material/Check'
+import {Box, FormControlLabel, Radio, Switch} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {latoFont} from '../../style/theme'
@@ -176,6 +171,7 @@ const AccessGridRadioComponents: React.FunctionComponent<AccessGridRadioComponen
     }
     return (
       <Radio
+        color="secondary"
         checked={checkboxChecked || isAllowedAccess}
         disabled={restriction === 'VIEWER'}
         value={restriction}

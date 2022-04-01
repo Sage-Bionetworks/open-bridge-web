@@ -11,17 +11,17 @@ import {
   Box,
   Button,
   CircularProgress,
-  createStyles,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControlLabel,
   IconButton,
-  makeStyles,
   Theme,
-} from '@material-ui/core'
-import CloseIcon from '@material-ui/icons/Close'
+} from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import CloseIcon from '@mui/icons-material/Close'
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ScheduleService from '@services/schedule.service'
 import {latoFont, poppinsFont, theme} from '@style/theme'
@@ -470,363 +470,365 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
     )
   }
 
-  return (
-    <>
-      <Box>
-        <NavigationPrompt when={hasObjectChanged} key="prompt">
-          {({onConfirm, onCancel}) => (
-            <ConfirmationDialog
-              isOpen={hasObjectChanged}
-              type={'NAVIGATE'}
-              onCancel={onCancel}
-              onConfirm={onConfirm}
-            />
-          )}
-        </NavigationPrompt>
-        <div>{saveLoader && <CircularProgress />}</div>
-
-        <Box textAlign="left" key="content">
-          <div
-            className={clsx(classes.scheduleHeader, isReadOnly && 'readOnly')}
-            key="intro">
-            {!isReadOnly ? (
-              <Box>
-                <FormControlLabel
-                  classes={{label: classes.labelDuration}}
-                  label="Study duration:"
-                  labelPlacement="start"
-                  control={
-                    <Duration
-                      maxDurationDays={1825}
-                      isShowClear={false}
-                      onChange={e => {
-                        updateScheduleData({
-                          ...schedule,
-                          duration: e.target.value,
-                        })
-                      }}
-                      durationString={schedule.duration || ''}
-                      unitLabel="study duration unit"
-                      numberLabel="study duration number"
-                      unitData={DWsEnum}></Duration>
-                  }
-                />{' '}
-                {getEventsInSchedule().length > 0 && (
-                  <FormControlLabel
-                    classes={{label: classes.labelDuration}}
-                    label="Start Study on:"
-                    style={{marginRight: '8px'}}
-                    labelPlacement="start"
-                    control={
-                      <StudyStartEvent
-                        value={study.studyStartEventId || ''}
-                        eventIdsInSchedule={getEventsInSchedule()}
-                        eventsInStudy={study.customEvents?.map(e => e.eventId)}
-                        onChangeFn={(startEventId: string) =>
-                          updateStudyStartEventId(startEventId)
-                        }
-                      />
-                    }
-                  />
-                )}
-                <DialogButtonPrimary
-                  onClick={() => onSave(true)}
-                  style={{
-                    padding: '4px 8px',
-                    marginTop: '-1px',
-                    borderColor: 'transparent',
-                  }}>
-                  {' '}
-                  Save Changes
-                </DialogButtonPrimary>
-                <Box
-                  fontSize="12px"
-                  ml={2}
-                  fontFamily={latoFont}
-                  fontWeight="bold">
-                  The study duration must be shorter than 5 years.
-                </Box>
-              </Box>
-            ) : (
-              <>
-                <FormControlLabel
-                  classes={{label: classes.labelDuration}}
-                  label="Study duration:"
-                  style={{fontSize: '14px', marginRight: '4px'}}
-                  labelPlacement="start"
-                  control={
-                    <strong style={{fontSize: '16px', paddingTop: '8px'}}>
-                      {schedule.duration
-                        ? getFormattedTimeDateFromPeriodString(
-                            schedule.duration
-                          )
-                        : 'No duration set'}
-                    </strong>
-                  }
-                />
-
-                <FormControlLabel
-                  classes={{label: classes.labelDuration}}
-                  label="Study starts on:"
-                  style={{fontSize: '14px', marginRight: '4px'}}
-                  labelPlacement="start"
-                  control={
-                    <strong style={{fontSize: '16px', paddingTop: '8px'}}>
-                      {study.studyStartEventId
-                        ? EventService.formatEventIdForDisplay(
-                            study.studyStartEventId
-                          )
-                        : 'unkonwn'}
-                    </strong>
-                  }
-                />
-              </>
-            )}
-
-            {hasObjectChanged && (
-              <div
-                style={{
-                  position: 'fixed',
-                  zIndex: 2000,
-                  right: '10px',
-                  top: '5px',
-                  fontSize: '12px',
-                }}>
-                schedule changed ...
-              </div>
-            )}
-          </div>
-          <Box bgcolor="#fff" p={2} pb={0} mt={3} key="scheduler">
-            {!isReadOnly && (
-              <Button
-                disabled={isScheduleDefault(schedule) && !hasBeenSaved}
-                className={classes.burstButton}
-                onClick={() => setOpenModal('BURSTS')}>
-                <BurstIcon /> Configure Study Bursts
-              </Button>
-            )}
-            {!timeline ? (
-              <LoadingComponent reqStatusLoading={true} variant="small" />
-            ) : (
-              <ScheduleTimelineDisplay
-                isDefault={isScheduleDefault(schedule) && !hasBeenSaved}
-                studyId={id}
-                timeline={timeline}
-                onSelectSession={(session: StudySession) => {
-                  setOpenStudySession(session)
-                }}
-                schedule={schedule}></ScheduleTimelineDisplay>
-            )}
-          </Box>
-        </Box>
-        {children}
-      </Box>
-      <Dialog open={openModal === 'EVENTS'} maxWidth="md" scroll="body">
-        <DialogTitle
-          className={classes.dialogTitle}
-          style={{
-            backgroundColor: '#f8f8f8',
-          }}>
-          <EditIcon />
-          &nbsp;&nbsp; Edit Event Drop Down
-          <IconButton
-            aria-label="close"
-            className={classes.closeModalButton}
-            onClick={() => setOpenModal(undefined)}>
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent style={{padding: 0, overflowY: 'visible'}}>
-          <SessionStartTab
-            ref={ref1}
-            study={study!}
-            eventIdsInSchedule={_.uniq(
-              ScheduleService.getEventsForTimeline(timeline!).map(
-                e => e.eventId
-              )
-            )}
-            onNavigate={() => setOpenModal(undefined)}
+  return <>
+    <Box>
+      <NavigationPrompt when={hasObjectChanged} key="prompt">
+        {({onConfirm, onCancel}) => (
+          <ConfirmationDialog
+            isOpen={hasObjectChanged}
+            type={'NAVIGATE'}
+            onCancel={onCancel}
+            onConfirm={onConfirm}
           />
-        </DialogContent>
-        <DialogActions>
-          <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>
-            Cancel
-          </DialogButtonSecondary>
+        )}
+      </NavigationPrompt>
+      <div>{saveLoader && <CircularProgress />}</div>
 
-          <DialogButtonPrimary
-            onClick={() => {
-              ref1.current?.save()
-            }}>
-            Save Changes
-          </DialogButtonPrimary>
-        </DialogActions>
-      </Dialog>
-      <Dialog open={openStudySession !== undefined} maxWidth="lg" scroll="body">
-        <DialogContent style={{padding: 0}}>
-          {openStudySession && !isReadOnly && (
-            <Box
-              className={classes.sessionContainer}
-              key={getOpenStudySession().guid}
-              border={
-                schedulerErrorState.get(
-                  `${openStudySession.name}-${
-                    schedule.sessions.findIndex(
-                      s => s.guid === openStudySession.guid
-                    ) + 1
-                  }`
-                )
-                  ? `1px solid ${theme.palette.error.main}`
-                  : ''
-              }>
-              <IconButton
-                aria-label="close"
-                className={classes.closeModalButton}
-                onClick={() => onCancelSessionUpdate()}>
-                <CloseIcon />
-              </IconButton>
-              <Box className={classes.assessments}>
-                <AssessmentList
-                  studySessionIndex={schedule.sessions.findIndex(
-                    s => s.guid === openStudySession.guid
-                  )}
-                  studySession={getOpenStudySession()}
-                  onChangePerformanceOrder={(
-                    performanceOrder: PerformanceOrder
-                  ) => {
-                    const schedule = {
-                      ...getOpenStudySession(),
-                      performanceOrder,
-                    }
-
-                    scheduleUpdateFn({
-                      type: ActionTypes.UpdateSessionSchedule,
-                      payload: {
-                        sessionId: getOpenStudySession().guid!,
-                        schedule,
-                      },
-                    })
-                  }}
-                  performanceOrder={
-                    getOpenStudySession().performanceOrder || 'sequential'
+      <Box textAlign="left" key="content">
+        <div
+          className={clsx(classes.scheduleHeader, isReadOnly && 'readOnly')}
+          key="intro">
+          {!isReadOnly ? (
+            <Box>
+              <FormControlLabel
+                classes={{label: classes.labelDuration}}
+                label="Study duration:"
+                labelPlacement="start"
+                control={
+                  <Duration
+                    maxDurationDays={1825}
+                    isShowClear={false}
+                    onChange={e => {
+                      updateScheduleData({
+                        ...schedule,
+                        duration: e.target.value,
+                      })
+                    }}
+                    durationString={schedule.duration || ''}
+                    unitLabel="study duration unit"
+                    numberLabel="study duration number"
+                    unitData={DWsEnum}></Duration>
+                }
+              />{' '}
+              {getEventsInSchedule().length > 0 && (
+                <FormControlLabel
+                  classes={{label: classes.labelDuration}}
+                  label="Start Study on:"
+                  style={{marginRight: '8px'}}
+                  labelPlacement="start"
+                  control={
+                    <StudyStartEvent
+                      value={study.studyStartEventId || ''}
+                      eventIdsInSchedule={getEventsInSchedule()}
+                      eventsInStudy={study.customEvents?.map(e => e.eventId)}
+                      onChangeFn={(startEventId: string) =>
+                        updateStudyStartEventId(startEventId)
+                      }
+                    />
                   }
                 />
+              )}
+              <DialogButtonPrimary
+                onClick={() => onSave(true)}
+                style={{
+                  padding: '4px 8px',
+                  marginTop: '-1px',
+                  borderColor: 'transparent',
+                }}>
+                {' '}
+                Save Changes
+              </DialogButtonPrimary>
+              <Box
+                fontSize="12px"
+                ml={2}
+                fontFamily={latoFont}
+                fontWeight="bold">
+                The study duration must be shorter than 5 years.
               </Box>
-              {/* This is what is being displayed as the card */}
-              <SchedulableSingleSessionContainer
-                onOpenEventsEditor={() => setOpenModal('EVENTS')}
-                key={getOpenStudySession().guid}
-                customEvents={study?.customEvents}
-                studySession={getOpenStudySession()}
-                hasCriticalStartEvent={sessionHasCriticalStudyStartEvent(
-                  getOpenStudySession()
-                )}
-                burstOriginEventId={
-                  _.first(schedule.studyBursts)?.originEventId
+            </Box>
+          ) : (
+            <>
+              <FormControlLabel
+                classes={{label: classes.labelDuration}}
+                label="Study duration:"
+                style={{fontSize: '14px', marginRight: '4px'}}
+                labelPlacement="start"
+                control={
+                  <strong style={{fontSize: '16px', paddingTop: '8px'}}>
+                    {schedule.duration
+                      ? getFormattedTimeDateFromPeriodString(
+                          schedule.duration
+                        )
+                      : 'No duration set'}
+                  </strong>
                 }
-                onUpdateSessionSchedule={(
-                  session: StudySession,
-                  shouldInvalidateBurst: boolean,
-                  shouldUpdaeStudyStartEvent: boolean
+              />
+
+              <FormControlLabel
+                classes={{label: classes.labelDuration}}
+                label="Study starts on:"
+                style={{fontSize: '14px', marginRight: '4px'}}
+                labelPlacement="start"
+                control={
+                  <strong style={{fontSize: '16px', paddingTop: '8px'}}>
+                    {study.studyStartEventId
+                      ? EventService.formatEventIdForDisplay(
+                          study.studyStartEventId
+                        )
+                      : 'unkonwn'}
+                  </strong>
+                }
+              />
+            </>
+          )}
+
+          {hasObjectChanged && (
+            <div
+              style={{
+                position: 'fixed',
+                zIndex: 2000,
+                right: '10px',
+                top: '5px',
+                fontSize: '12px',
+              }}>
+              schedule changed ...
+            </div>
+          )}
+        </div>
+        <Box bgcolor="#fff" p={2} pb={0} mt={3} key="scheduler">
+          {!isReadOnly && (
+            <Button
+              disabled={isScheduleDefault(schedule) && !hasBeenSaved}
+              className={classes.burstButton}
+              onClick={() => setOpenModal('BURSTS')}>
+              <BurstIcon /> Configure Study Bursts
+            </Button>
+          )}
+          {!timeline ? (
+            <LoadingComponent reqStatusLoading={true} variant="small" />
+          ) : (
+            <ScheduleTimelineDisplay
+              isDefault={isScheduleDefault(schedule) && !hasBeenSaved}
+              studyId={id}
+              timeline={timeline}
+              onSelectSession={(session: StudySession) => {
+                setOpenStudySession(session)
+              }}
+              schedule={schedule}></ScheduleTimelineDisplay>
+          )}
+        </Box>
+      </Box>
+      {children}
+    </Box>
+    <Dialog open={openModal === 'EVENTS'} maxWidth="md" scroll="body">
+      <DialogTitle
+        className={classes.dialogTitle}
+        style={{
+          backgroundColor: '#f8f8f8',
+        }}>
+        <EditIcon />
+        &nbsp;&nbsp; Edit Event Drop Down
+        <IconButton
+          aria-label="close"
+          className={classes.closeModalButton}
+          onClick={() => setOpenModal(undefined)}
+          size="large">
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent style={{padding: 0, overflowY: 'visible'}}>
+        <SessionStartTab
+          ref={ref1}
+          study={study!}
+          eventIdsInSchedule={_.uniq(
+            ScheduleService.getEventsForTimeline(timeline!).map(
+              e => e.eventId
+            )
+          )}
+          onNavigate={() => setOpenModal(undefined)}
+        />
+      </DialogContent>
+      <DialogActions>
+        <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>
+          Cancel
+        </DialogButtonSecondary>
+
+        <DialogButtonPrimary
+          onClick={() => {
+            ref1.current?.save()
+          }}>
+          Save Changes
+        </DialogButtonPrimary>
+      </DialogActions>
+    </Dialog>
+    <Dialog open={openStudySession !== undefined} maxWidth="lg" scroll="body">
+      <DialogContent style={{padding: 0}}>
+        {openStudySession && !isReadOnly && (
+          <Box
+            className={classes.sessionContainer}
+            key={getOpenStudySession().guid}
+            border={
+              schedulerErrorState.get(
+                `${openStudySession.name}-${
+                  schedule.sessions.findIndex(
+                    s => s.guid === openStudySession.guid
+                  ) + 1
+                }`
+              )
+                ? `1px solid ${theme.palette.error.main}`
+                : ''
+            }>
+            <IconButton
+              aria-label="close"
+              className={classes.closeModalButton}
+              onClick={() => onCancelSessionUpdate()}
+              size="large">
+              <CloseIcon />
+            </IconButton>
+            <Box className={classes.assessments}>
+              <AssessmentList
+                studySessionIndex={schedule.sessions.findIndex(
+                  s => s.guid === openStudySession.guid
+                )}
+                studySession={getOpenStudySession()}
+                onChangePerformanceOrder={(
+                  performanceOrder: PerformanceOrder
                 ) => {
-                  if (
-                    shouldUpdaeStudyStartEvent &&
-                    session.startEventIds.length > 0 &&
-                    session.startEventIds[0]
-                  ) {
-                    console.log('UPDAING')
-                    updateStudyStartEventId(session.startEventIds[0])
+                  const schedule = {
+                    ...getOpenStudySession(),
+                    performanceOrder,
                   }
+
                   scheduleUpdateFn({
                     type: ActionTypes.UpdateSessionSchedule,
                     payload: {
                       sessionId: getOpenStudySession().guid!,
-                      schedule: session,
-                      shouldInvalidateBurst,
+                      schedule,
                     },
                   })
                 }}
-                sessionErrorState={schedulerErrorState.get(
-                  `${getOpenStudySession().name}-${
-                    schedule.sessions.findIndex(
-                      s => s.guid === openStudySession.guid
-                    ) + 1
-                  }`
-                )}></SchedulableSingleSessionContainer>
-            </Box>
-          )}
-          {openStudySession && isReadOnly && (
-            <>
-              <IconButton
-                aria-label="close"
-                className={classes.closeModalButton}
-                onClick={() => onCancelSessionUpdate()}>
-                <CloseIcon />
-              </IconButton>
-              <ReadOnlyScheduler
-                originEventId={_.first(schedule.studyBursts)?.originEventId}
-                session={openStudySession}
-                studySessionIndex={schedule.sessions.findIndex(
-                  s => s.guid === openStudySession.guid
-                )}
+                performanceOrder={
+                  getOpenStudySession().performanceOrder || 'sequential'
+                }
               />
-            </>
-          )}
-        </DialogContent>
-        <DialogActions>
-          {!isReadOnly ? (
-            <DialogButtonSecondary onClick={() => onCancelSessionUpdate()}>
-              Cancel
-            </DialogButtonSecondary>
-          ) : (
-            <DialogButtonPrimary onClick={() => onCancelSessionUpdate()}>
-              Close
-            </DialogButtonPrimary>
-          )}
-
-          {!isReadOnly && (
-            <DialogButtonPrimary
-              onClick={() => {
-                onSave(true).then(() => setOpenStudySession(undefined))
-              }}>
-              {saveLoader ? <CircularProgress /> : <span>Save Changes</span>}
-            </DialogButtonPrimary>
-          )}
-        </DialogActions>
-      </Dialog>
-      <Dialog open={openModal === 'BURSTS'} maxWidth="md" scroll="body">
-        <DialogTitle className={classes.dialogTitle}>
-          <BurstIcon />
-          &nbsp;&nbsp; Configure Study bursts
-          <IconButton
-            aria-label="close"
-            className={classes.closeModalButton}
-            onClick={() => setOpenModal(undefined)}>
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent style={{padding: 0}}>
-          <ConfigureBurstTab
-            schedule={schedule}
-            ref={ref2}
-            id={study!.identifier}
-            onNavigate={() => setOpenModal(undefined)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>
+            </Box>
+            {/* This is what is being displayed as the card */}
+            <SchedulableSingleSessionContainer
+              onOpenEventsEditor={() => setOpenModal('EVENTS')}
+              key={getOpenStudySession().guid}
+              customEvents={study?.customEvents}
+              studySession={getOpenStudySession()}
+              hasCriticalStartEvent={sessionHasCriticalStudyStartEvent(
+                getOpenStudySession()
+              )}
+              burstOriginEventId={
+                _.first(schedule.studyBursts)?.originEventId
+              }
+              onUpdateSessionSchedule={(
+                session: StudySession,
+                shouldInvalidateBurst: boolean,
+                shouldUpdaeStudyStartEvent: boolean
+              ) => {
+                if (
+                  shouldUpdaeStudyStartEvent &&
+                  session.startEventIds.length > 0 &&
+                  session.startEventIds[0]
+                ) {
+                  console.log('UPDAING')
+                  updateStudyStartEventId(session.startEventIds[0])
+                }
+                scheduleUpdateFn({
+                  type: ActionTypes.UpdateSessionSchedule,
+                  payload: {
+                    sessionId: getOpenStudySession().guid!,
+                    schedule: session,
+                    shouldInvalidateBurst,
+                  },
+                })
+              }}
+              sessionErrorState={schedulerErrorState.get(
+                `${getOpenStudySession().name}-${
+                  schedule.sessions.findIndex(
+                    s => s.guid === openStudySession.guid
+                  ) + 1
+                }`
+              )}></SchedulableSingleSessionContainer>
+          </Box>
+        )}
+        {openStudySession && isReadOnly && (
+          <>
+            <IconButton
+              aria-label="close"
+              className={classes.closeModalButton}
+              onClick={() => onCancelSessionUpdate()}
+              size="large">
+              <CloseIcon />
+            </IconButton>
+            <ReadOnlyScheduler
+              originEventId={_.first(schedule.studyBursts)?.originEventId}
+              session={openStudySession}
+              studySessionIndex={schedule.sessions.findIndex(
+                s => s.guid === openStudySession.guid
+              )}
+            />
+          </>
+        )}
+      </DialogContent>
+      <DialogActions>
+        {!isReadOnly ? (
+          <DialogButtonSecondary onClick={() => onCancelSessionUpdate()}>
             Cancel
           </DialogButtonSecondary>
+        ) : (
+          <DialogButtonPrimary onClick={() => onCancelSessionUpdate()}>
+            Close
+          </DialogButtonPrimary>
+        )}
 
+        {!isReadOnly && (
           <DialogButtonPrimary
             onClick={() => {
-              ref2.current?.save()
+              onSave(true).then(() => setOpenStudySession(undefined))
             }}>
-            Update burst to Schedule
+            {saveLoader ? <CircularProgress /> : <span>Save Changes</span>}
           </DialogButtonPrimary>
-        </DialogActions>
-      </Dialog>
-    </>
-  )
+        )}
+      </DialogActions>
+    </Dialog>
+    <Dialog open={openModal === 'BURSTS'} maxWidth="md" scroll="body">
+      <DialogTitle className={classes.dialogTitle}>
+        <BurstIcon />
+        &nbsp;&nbsp; Configure Study bursts
+        <IconButton
+          aria-label="close"
+          className={classes.closeModalButton}
+          onClick={() => setOpenModal(undefined)}
+          size="large">
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent style={{padding: 0}}>
+        <ConfigureBurstTab
+          schedule={schedule}
+          ref={ref2}
+          id={study!.identifier}
+          onNavigate={() => setOpenModal(undefined)}
+        />
+      </DialogContent>
+      <DialogActions>
+        <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>
+          Cancel
+        </DialogButtonSecondary>
+
+        <DialogButtonPrimary
+          onClick={() => {
+            ref2.current?.save()
+          }}>
+          Update burst to Schedule
+        </DialogButtonPrimary>
+      </DialogActions>
+    </Dialog>
+  </>;
 }
 
 export default Scheduler

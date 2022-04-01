@@ -12,9 +12,9 @@ import {
   DialogContent,
   FormControl,
   FormGroup,
-  makeStyles,
-} from '@material-ui/core'
-import Alert from '@material-ui/lab/Alert'
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import Alert from '@mui/material/Alert'
 import {ExtendedScheduleEventObject} from '@services/schedule.service'
 import {EditableParticipantData, ParticipantEvent} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'

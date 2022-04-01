@@ -2,9 +2,9 @@ import {useSchedule} from '@components/studies/scheduleHooks'
 import {useStudy} from '@components/studies/studyHooks'
 import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
 import StudyIdWithPhaseImage from '@components/widgets/StudyIdWithPhaseImage'
-import {Box, Container} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
-import {Alert} from '@material-ui/lab'
+import {Box, Container} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
+import { Alert } from '@mui/material';
 import StudyService from '@services/study.service'
 import {ThemeType} from '@style/theme'
 import clsx from 'clsx'
@@ -56,39 +56,39 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
   mainAreaNormalWithLeftNav: {
     width: `1200px`,
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down('xl')]: {
       width: `905px`,
     },
 
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       width: `610px`,
     },
   },
 
   mainAreaWideWithLeftNav: {
     width: `1600px`,
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down('xl')]: {
       width: `1100px`,
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       width: `768px`,
     },
   },
   mainAreaNoLeftNav: {
     width: `1500px`,
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down('xl')]: {
       width: '1200px', //`${(280+32) * 4 + 16 * 4}px`,
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       width: `910px`,
     },
   },
   mainAreaWideNoLeftNav: {
     width: `1700px`,
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down('xl')]: {
       width: '1200px', //`${(280+32) * 4 + 16 * 4}px`,
     },
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       width: `910px`,
     },
   },

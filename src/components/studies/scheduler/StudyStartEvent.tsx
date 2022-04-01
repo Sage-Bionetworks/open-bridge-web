@@ -1,4 +1,5 @@
-import {makeStyles, MenuItem, Select} from '@material-ui/core'
+import { MenuItem, Select } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import React from 'react'
 

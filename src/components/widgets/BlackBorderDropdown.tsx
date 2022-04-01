@@ -1,12 +1,6 @@
-import {
-  Box,
-  makeStyles,
-  MenuItem,
-  Select,
-  SelectProps,
-  TextField,
-} from '@material-ui/core'
-import Autocomplete from '@material-ui/lab/Autocomplete'
+import { Box, MenuItem, Select, SelectProps, TextField } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import Autocomplete from '@mui/material/Autocomplete'
 import clsx from 'clsx'
 import React from 'react'
 import {poppinsFont, ThemeType} from '../../style/theme'

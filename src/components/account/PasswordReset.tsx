@@ -1,11 +1,5 @@
-import {
-  Button,
-  Container,
-  Grid,
-  makeStyles,
-  TextField,
-  Typography,
-} from '@material-ui/core'
+import { Button, Container, Grid, TextField, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import React, {FunctionComponent, useState} from 'react'
 import UserService from '../../services/user.service'
 

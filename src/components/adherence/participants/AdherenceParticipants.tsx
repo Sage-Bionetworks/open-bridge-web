@@ -2,7 +2,8 @@ import {useAdherenceForWeek} from '@components/studies/adherenceHooks'
 import ParticipantSearch from '@components/studies/participants/ParticipantSearch'
 import LoadingComponent from '@components/widgets/Loader'
 import TablePagination from '@components/widgets/pagination/TablePagination'
-import {Box, makeStyles} from '@material-ui/core'
+import { Box } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import {WeeklyAdherenceFilter} from '@services/adherence.service'
 import {ProgressionStatus, SessionDisplayInfo} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'

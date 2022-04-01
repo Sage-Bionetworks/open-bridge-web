@@ -1,5 +1,5 @@
-import {Box, Button} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+import {Box, Button} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
 import {latoFont} from '@style/theme'
 import React from 'react'
 

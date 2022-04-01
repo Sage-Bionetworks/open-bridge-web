@@ -1,12 +1,6 @@
-import {
-  Box,
-  createStyles,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  Theme,
-} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+import { Box, FormControlLabel, Radio, RadioGroup, Theme } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import moment from 'moment'
 import React from 'react'
 import {MHDsEnum, NotificationTimeAtEnum} from '../../../types/scheduling'

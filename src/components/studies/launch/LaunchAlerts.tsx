@@ -1,5 +1,5 @@
-import {Box, Button, Container} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+import {Box, Button, Container} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
 import StudyService from '@services/study.service'
 import _ from 'lodash'
 import React from 'react'

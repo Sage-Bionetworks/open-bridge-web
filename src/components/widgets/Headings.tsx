@@ -1,18 +1,19 @@
-import {styled} from '@material-ui/core/styles'
-import Heading, {TypographyProps} from '@material-ui/core/Typography'
+import {styled} from '@mui/material/styles'
+import Heading from '@mui/material/Typography'
 import {latoFont, playfairDisplayFont, poppinsFont} from '../../style/theme'
 
-export const MTBHeading = styled(Heading)({
+export const MTBHeading = styled(Heading, {
+  shouldForwardProp: prop => prop !== 'variant',
+})<{variant: string}>(({variant}) => ({
+  fontSize: variant === 'h1' ? '34px' : '14px',
+  marginBottom: variant === 'h1' ? '24px' : '16px',
   fontFamily: playfairDisplayFont,
+
   fontStyle: 'italic',
   fontWeight: 'normal',
-  fontSize: (props: TypographyProps) =>
-    props.variant === 'h1' ? '34px' : '14px',
-  marginBottom: (props: TypographyProps) =>
-    props.variant === 'h1' ? '24px' : '16px',
-
   color: 'rgba(40, 40, 40, 0.75)',
-})
+  lineHeight: '28px',
+}))
 
 export const MTBHeadingH1 = styled(Heading)({
   fontFamily: playfairDisplayFont,

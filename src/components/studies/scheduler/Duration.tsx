@@ -1,8 +1,9 @@
 import SelectWithEnum from '@components/widgets/SelectWithEnum'
 import SmallTextBox from '@components/widgets/SmallTextBox'
 import Utility from '@helpers/utility'
-import {IconButton, makeStyles, StandardTextFieldProps} from '@material-ui/core'
-import ClearIcon from '@material-ui/icons/HighlightOff'
+import { IconButton, StandardTextFieldProps } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import ClearIcon from '@mui/icons-material/HighlightOff'
 import moment from 'moment'
 import React from 'react'
 import {getValueFromPeriodString} from './utility'
@@ -135,12 +136,13 @@ const Duration: React.FunctionComponent<
       {isShowClear && (
         <IconButton
           className={classes.clear}
-          onClick={_e => onChange({target: {value: undefined}})}>
+          onClick={_e => onChange({target: {value: undefined}})}
+          size="large">
           <ClearIcon />
         </IconButton>
       )}
     </div>
-  )
+  );
 }
 
 export default Duration

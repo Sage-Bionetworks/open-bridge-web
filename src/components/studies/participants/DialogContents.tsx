@@ -1,6 +1,6 @@
 import Utility from '@helpers/utility'
-import {Box, CircularProgress, Paper} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+import {Box, CircularProgress, Paper} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
 import ParticipantService, {
   formatExternalId,
 } from '@services/participants.service'

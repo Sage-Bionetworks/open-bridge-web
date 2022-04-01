@@ -1,5 +1,5 @@
-import {makeStyles} from '@material-ui/core'
-import {Alert} from '@material-ui/lab'
+import makeStyles from '@mui/styles/makeStyles';
+import { Alert } from '@mui/material';
 import clsx from 'clsx'
 import React from 'react'
 import {latoFont, ThemeType} from '../../style/theme'

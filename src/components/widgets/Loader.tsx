@@ -1,5 +1,5 @@
-import {makeStyles} from '@material-ui/core'
-import CircularProgress from '@material-ui/core/CircularProgress/CircularProgress'
+import {CircularProgress} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React from 'react'
 import {ThemeType} from '../../style/theme'

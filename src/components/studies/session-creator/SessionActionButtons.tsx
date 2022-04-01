@@ -1,4 +1,5 @@
-import {Box, makeStyles, MenuItem} from '@material-ui/core'
+import {Box, MenuItem} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import React, {FunctionComponent, useEffect} from 'react'
 import {StudySession} from '../../../types/scheduling'
 import {
@@ -66,6 +67,7 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
         disabled={disabled}
         key="add_session"
         variant="contained"
+        color="secondary"
         onClick={() => onAddSession(sessions, [])}>
         + Create new session
       </BlueButton>
@@ -77,6 +79,8 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
             value={selectedSessionId}
             onChange={e => setSelectedSessionId(e.target.value as string)}
             displayEmpty
+            color="secondary"
+            variant="filled"
             inputProps={{'aria-label': 'Select Sessions'}}
             disableUnderline={true}>
             {sessions.map((session, index) => (
@@ -92,6 +96,7 @@ const SessionActionButtons: FunctionComponent<SessionActionButtonsProps> = ({
             disabled={disabled}
             key="duplicate_session"
             variant="contained"
+            color="secondary"
             onClick={() => duplicateSession(selectedSessionId)}>
             Duplicate
           </ButtonWithSelectButton>

@@ -1,5 +1,6 @@
 import Utility from '@helpers/utility'
-import {Box, makeStyles} from '@material-ui/core'
+import { Box } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import ControlSelector from './ControlSelector'

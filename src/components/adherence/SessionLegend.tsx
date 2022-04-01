@@ -1,4 +1,5 @@
-import {Box, makeStyles} from '@material-ui/core'
+import { Box } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import {latoFont} from '@style/theme'
 import {AdherenceWindowState} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'

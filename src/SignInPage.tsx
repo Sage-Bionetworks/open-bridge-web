@@ -1,4 +1,5 @@
-import {Box, makeStyles} from '@material-ui/core'
+import { Box } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx'
 import React from 'react'
 import ArcLogo from './assets/arc_main_logo.svg'
@@ -38,7 +39,7 @@ const useStyles = makeStyles(theme => ({
   mtbContainer: {
     height: 'calc(100vh - 104px)',
     minHeight: '200px',
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       height: 'calc(100vh - 46px)',
     },
   },

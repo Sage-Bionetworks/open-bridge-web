@@ -7,8 +7,8 @@ import {
   DialogButtonSecondary,
 } from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import {Dialog, DialogActions, DialogContent} from '@material-ui/core'
-import Alert from '@material-ui/lab/Alert'
+import {Dialog, DialogActions, DialogContent} from '@mui/material'
+import Alert from '@mui/material/Alert'
 import {
   ParticipantAccountSummary,
   ParticipantActivityType,

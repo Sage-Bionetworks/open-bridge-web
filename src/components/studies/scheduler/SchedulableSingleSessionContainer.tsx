@@ -1,7 +1,8 @@
 import AlertIcon from '@assets/alert_icon.svg'
 import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
 import {AlertWithText, BlueButton} from '@components/widgets/StyledComponents'
-import {Box, makeStyles, Switch} from '@material-ui/core'
+import {Box, Switch} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import {DEFAULT_NOTIFICATION} from '@services/schedule.service'
 import {latoFont, ThemeType} from '@style/theme'
 import {
@@ -376,6 +377,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
                 <BlueButton
                   style={{marginLeft: 0}}
+                  color="secondary"
                   onClick={addNewWindow}
                   variant="contained"
                   disabled={hasWindowLongerThan24h()}>
@@ -475,6 +477,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                 {!schedulableSession.notifications && (
                   <BlueButton
                     onClick={addNewNotification}
+                    color="secondary"
                     style={{marginLeft: 0}}
                     variant="contained">
                     +Add new notification
@@ -484,6 +487,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                 {schedulableSession.notifications?.length === 1 && (
                   <BlueButton
                     onClick={addNewNotification}
+                    color="secondary"
                     style={{marginLeft: 0}}
                     variant="contained">
                     +Add a reminder notification

@@ -2,7 +2,7 @@ import WithdrawnIcon from '@assets/cancelled_study_icon.svg'
 import CompletedIcon from '@assets/completed_study_icon.svg'
 import LiveIcon from '@assets/live_study_icon.svg'
 import Utility from '@helpers/utility'
-import {makeStyles} from '@material-ui/core/styles'
+import makeStyles from '@mui/styles/makeStyles';
 import StudyService from '@services/study.service'
 import React, {FunctionComponent} from 'react'
 import {DisplayStudyPhase, Study} from '../../types/types'

@@ -1,7 +1,7 @@
-import Paper from '@material-ui/core/Paper'
-import Popper from '@material-ui/core/Popper'
-import Typography from '@material-ui/core/Typography'
-import {createStyles, makeStyles} from '@material-ui/styles'
+import Paper from '@mui/material/Paper'
+import Popper from '@mui/material/Popper'
+import Typography from '@mui/material/Typography'
+import {createStyles, makeStyles} from '@mui/styles'
 import * as React from 'react'
 
 interface GridCellExpandProps {

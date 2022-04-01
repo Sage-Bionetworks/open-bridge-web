@@ -4,9 +4,9 @@ import {
   InputBase,
   InputLabel,
   Select,
-} from '@material-ui/core'
-import {withStyles} from '@material-ui/core/styles'
-import Alert from '@material-ui/lab/Alert'
+} from '@mui/material'
+import Alert from '@mui/material/Alert'
+import withStyles from '@mui/styles/withStyles'
 import {latoFont, poppinsFont} from '../../style/theme'
 
 export const ButtonWithSelectButton = withStyles(theme => ({
@@ -30,20 +30,21 @@ export const ButtonWithSelectButton = withStyles(theme => ({
 }))(Button)
 
 export const ButtonWithSelectSelect = withStyles(theme => ({
-  root: {
+  select: {
     marginTop: 0,
+
     padding: '12px 16px',
     fontSize: '14px',
-    borderRadius: '2px 0 0 2px',
     height: '40px',
+    borderRadius: '2px 0 0 2px',
+
     boxShadow: `1px 2px 2px rgba(0, 0, 0, 0.25)`,
     outline: 'none',
-    boxSizing: 'border-box',
+    // boxSizing: 'border-box',
     backgroundColor: '#F2F2F2',
     fontFamily: 'Lato',
     cursor: 'pointer',
   },
-  selectMenu: {},
 }))(Select)
 
 export const BlueButton = withStyles(theme => ({
@@ -55,6 +56,8 @@ export const BlueButton = withStyles(theme => ({
     marginBottom: theme.spacing(1),
     marginLeft: theme.spacing(1),
     color: 'black',
+    border: 'none',
+
     backgroundColor: theme.palette.primary.dark,
     '&:hover': {
       fontWeight: 'bolder',

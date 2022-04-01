@@ -1,5 +1,5 @@
 import DatePicker from '@components/widgets/DatePicker'
-import {makeStyles} from '@material-ui/core'
+import makeStyles from '@mui/styles/makeStyles';
 import EventService from '@services/event.service'
 import {
   ExtendedScheduleEventObject,

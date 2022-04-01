@@ -1,7 +1,8 @@
 import {ReactComponent as SynapseLogo} from '@assets/synapse_logo_blue.svg'
 import Utility from '@helpers/utility'
-import {Box, Button, Container, makeStyles, Snackbar} from '@material-ui/core'
-import Alert, {AlertProps} from '@material-ui/lab/Alert'
+import { Box, Button, Container, Snackbar } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import Alert, {AlertProps} from '@mui/material/Alert'
 import {poppinsFont} from '@style/theme'
 import clsx from 'clsx'
 import React, {FunctionComponent, useState} from 'react'

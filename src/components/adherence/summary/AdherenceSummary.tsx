@@ -1,5 +1,5 @@
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import {Box} from '@material-ui/core'
+import {Box} from '@mui/material'
 import {FunctionComponent} from 'react'
 import {useParams} from 'react-router-dom'
 import AdherenceAlerts from './AdherenceAlerts'

@@ -1,9 +1,5 @@
-import {
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  makeStyles,
-} from '@material-ui/core'
+import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import {ProgressionStatus} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useCommonStyles} from '../styles'

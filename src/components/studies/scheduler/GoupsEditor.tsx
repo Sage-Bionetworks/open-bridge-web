@@ -1,5 +1,5 @@
-import {makeStyles} from '@material-ui/core'
-import {CSSProperties} from '@material-ui/core/styles/withStyles'
+import makeStyles from '@mui/styles/makeStyles';
+import { CSSProperties } from '@mui/material/styles';
 import React, {FunctionComponent} from 'react'
 import {StudyArm} from '../../../types/types'
 import TabsMtb from '../../widgets/TabsMtb'

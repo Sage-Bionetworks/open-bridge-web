@@ -1,7 +1,7 @@
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import SaveButton from '@components/widgets/SaveButton'
-import {Box, Button, Paper} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+import {Box, Button, Paper} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
 import {Schedule} from '@typedefs/scheduling'
 import React, {useState} from 'react'
 import {useErrorHandler} from 'react-error-boundary'

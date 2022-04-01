@@ -1,4 +1,6 @@
 import {useStudy} from '@components/studies/studyHooks'
+import CloseIcon from '@mui/icons-material/Close'
+import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import {
   Box,
   Button,
@@ -7,11 +9,9 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  makeStyles,
   Paper,
-} from '@material-ui/core'
-import CloseIcon from '@material-ui/icons/Close'
-import MailOutlineIcon from '@material-ui/icons/MailOutline'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import ParticipantService from '@services/participants.service'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
@@ -45,15 +45,19 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(2),
     backgroundColor: '#FFE500',
     borderRadius: '0px',
+    color: '#000',
     fontFamily: latoFont,
     fontSize: '15px',
     padding: theme.spacing(1, 2),
+    '&:hover': {
+      backgroundColor: '#d5d5d5',
+    },
   },
   newOrgAccount: {
     position: 'relative',
     marginBottom: theme.spacing(2),
     padding: theme.spacing(6, 4, 8, 4),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       padding: theme.spacing(6, 0, 8, 0),
     },
     '&$error': {
@@ -225,6 +229,7 @@ const AccessSettings: FunctionComponent<
               <Button
                 onClick={() => setIsOpenInvite(true)}
                 variant="contained"
+                color="secondary"
                 className={classes.yellowButton}>
                 + Invite a Member
               </Button>
@@ -237,7 +242,7 @@ const AccessSettings: FunctionComponent<
         maxWidth="md"
         fullWidth
         aria-labelledby="form-dialog-title">
-        <DialogTitle className={classes.addNewDialogHeader} disableTypography>
+        <DialogTitle className={classes.addNewDialogHeader}>
           <MailOutlineIcon style={{width: '25px'}}></MailOutlineIcon>
 
           <div className={classes.heading}>
@@ -249,7 +254,8 @@ const AccessSettings: FunctionComponent<
             className={classes.iconButton}
             onClick={() => {
               closeInviteDialog()
-            }}>
+            }}
+            size="large">
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -292,7 +298,8 @@ const AccessSettings: FunctionComponent<
                   <IconButton
                     aria-label="delete"
                     className={classes.iconButton}
-                    onClick={() => removeNewOrgAccount(newOrgAccount.id)}>
+                    onClick={() => removeNewOrgAccount(newOrgAccount.id)}
+                    size="large">
                     <Delete></Delete>
                   </IconButton>
                 )}

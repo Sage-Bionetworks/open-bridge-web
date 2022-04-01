@@ -1,4 +1,5 @@
-import {Box, makeStyles, Tooltip} from '@material-ui/core'
+import { Box, Tooltip } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import React, {CSSProperties} from 'react'
 import ItalicI from '../../assets/italic_i_icon.svg'
 import {latoFont, ThemeType} from '../../style/theme'

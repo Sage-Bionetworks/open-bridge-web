@@ -2,7 +2,8 @@ import {
   PlotDaysDisplay,
   useGetPlotAndUnitWidth,
 } from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
-import {Box, makeStyles, Tooltip} from '@material-ui/core'
+import { Box, Tooltip } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import AdherenceService from '@services/adherence.service'
 import ParticipantService from '@services/participants.service'
 import {theme} from '@style/theme'

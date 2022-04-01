@@ -1,5 +1,5 @@
-import {Box, Button, makeStyles, Theme} from '@material-ui/core'
-import {Alert} from '@material-ui/lab'
+import {Alert, Box, Button, Theme} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import ParticipantService from '@services/participants.service'
 import React, {FunctionComponent, ReactNode} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   list: {
     ...globals.listReset,
-    marginLeft: -theme.spacing(3.5),
+    marginLeft: theme.spacing(-3.5),
     marginTop: theme.spacing(3),
     '&::-webkit-scrollbar': {
       width: '4px',
