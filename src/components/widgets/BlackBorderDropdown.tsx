@@ -1,6 +1,6 @@
-import { Box, MenuItem, Select, SelectProps, TextField } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box, MenuItem, Select, SelectProps, TextField} from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React from 'react'
 import {poppinsFont, ThemeType} from '../../style/theme'
@@ -10,15 +10,17 @@ interface StyleProps {
   itemHeight: string
 }
 const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
-  root: props => ({
+  selectBase: props => ({
+    height: props.itemHeight,
+    backgroundColor: theme.palette.common.white,
     width: props.width,
     '& .MuiSelect-icon': {
       marginRight: theme.spacing(1),
     },
-  }),
-  select: props => ({
-    height: props.itemHeight,
-    backgroundColor: 'white',
+    '& input': {
+      backgroundColor: 'white',
+    },
+
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -26,13 +28,32 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
     outline: 'none',
     transition: '0.25s ease',
     fontSize: '14px',
-    //width: '100%',
     boxSizing: 'border-box',
     '&:hover': {
       backgroundColor: theme.palette.primary.dark,
     },
+    '&:focus': {
+      backgroundColor: theme.palette.common.white,
+    },
+
     paddingLeft: theme.spacing(2),
   }),
+
+  listPadding: {
+    padding: theme.spacing(0),
+    '& .MuiInputBase-input': {
+      backgroundColor: 'inherit',
+    },
+  },
+  listBorder: {
+    borderRadius: '0px',
+  },
+  errorBorder: {
+    border: `1px solid ${theme.palette.error.main}`,
+  },
+  regularBorder: {
+    border: '1px solid black',
+  },
 
   optionClass: props => ({
     width: props.width,
@@ -55,22 +76,6 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
     '&:focus': {
       backgroundColor: 'white',
     },
-  },
-
-  listPadding: {
-    padding: theme.spacing(0),
-    '& .MuiInputBase-input': {
-      backgroundColor: 'inherit',
-    },
-  },
-  listBorder: {
-    borderRadius: '0px',
-  },
-  errorBorder: {
-    border: `1px solid ${theme.palette.error.main}`,
-  },
-  regularBorder: {
-    border: '1px solid black',
   },
 }))
 
@@ -105,21 +110,22 @@ const BlackBorderDropdown: React.FunctionComponent<
   isRequired,
   ...other
 }) => {
+  console.log(hasError)
   const classes = useStyles({width, itemHeight})
   const selectMenu = (
     <Select
       labelId={id}
-      className={classes.root}
       id={id}
+      color="secondary"
+      variant="filled"
       value={value}
       onChange={onChange}
       disableUnderline
       classes={{
-        selectMenu: classes.selectMenu,
-        root: clsx(
+        select: clsx(
+          true && classes.selectBase,
           hasError && classes.errorBorder,
-          !hasError && classes.regularBorder,
-          classes.select
+          !hasError && classes.regularBorder
         ),
       }}
       MenuProps={{
@@ -127,7 +133,7 @@ const BlackBorderDropdown: React.FunctionComponent<
           list: classes.listPadding,
           paper: classes.listBorder,
         },
-        getContentAnchorEl: null,
+
         anchorOrigin: {
           vertical: 'bottom',
           horizontal: 'center',

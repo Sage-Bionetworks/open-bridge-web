@@ -504,7 +504,6 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                             )}
                           </>
                         </ParticipantDownloadTrigger>
-
                         <Button
                           aria-label="delete"
                           onClick={() => {
@@ -611,7 +610,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
           <ParticipantDeleteModal
             studyId={studyId}
             dialogState={dialogState}
-            onClose={setDialogState}
+            onClose={(_dialogState: {
+              dialogOpenRemove: boolean
+              dialogOpenSMS: boolean
+            }) => {
+              setDialogState(_dialogState)
+              resetSelectAll()
+            }}
             currentPage={currentPage}
             pageSize={pageSize}
             tab={tab}
