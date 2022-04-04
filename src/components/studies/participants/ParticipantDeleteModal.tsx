@@ -82,7 +82,7 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> =
       tab
     )
     const {
-      mutateAsync,
+      mutate,
       error: deleteParticipantError,
       isSuccess,
     } = useUpdateParticipantInList()
@@ -95,22 +95,23 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> =
       onLoadingIndicatorsChange(true)
       resetParticipantsWithError()
 
-      try {
-        await mutateAsync({
+      mutate(
+        {
           action: 'DELETE',
           studyId,
           userId: selectedParticipantIds[tab!],
-        })
-        onLoadingIndicatorsChange(false)
-        onClose({
-          dialogOpenRemove: false,
-          dialogOpenSMS: false,
-        })
-
-        return
-      } catch (e) {
-        alert(e)
-      }
+        },
+        {
+          onSuccess: data => {
+            onLoadingIndicatorsChange(false)
+            onClose({
+              dialogOpenRemove: false,
+              dialogOpenSMS: false,
+            })
+          },
+          onError: e => alert(e),
+        }
+      )
     }
     return (
       <Dialog
