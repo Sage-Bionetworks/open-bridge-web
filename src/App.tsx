@@ -24,19 +24,7 @@ import {cssVariables, theme} from './style/theme'
 import {ExtendedError, LoggedInUserData} from './types/types'
 import UnauthenticatedApp from './UnauthenticatedApp'
 
-declare module '@mui/styles/defaultTheme' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface (remove this line if you don't have the rule enabled)
-  interface DefaultTheme extends Theme {}
-}
-const theme2 = createTheme(deepmerge(theme, cssVariables))
-console.log('t2', theme2)
-
-//const defaultTheme = createMuiTheme()
-
-/*function getRootURL() {
-  const portString = window.location.port ? `:${window.location.port}` : ''
-  return `${window.location.protocol}//${window.location.hostname}${portString}/`
-}*/
+const theTheme = createTheme(deepmerge(theme, cssVariables))
 
 const getCode = (): string | null => {
   // 'code' handling (from SSO) should be preformed on the root page, and then redirect to original route.
@@ -44,6 +32,10 @@ const getCode = (): string | null => {
   // in test environment the searchParams isn't defined
   const {searchParams} = code
   return searchParams?.get('code')
+}
+// tslint:disable-next-line
+declare module '@mui/styles/defaultTheme' {
+  interface DefaultTheme extends Theme {}
 }
 
 const attemptLogin = async (code: string): Promise<LoggedInUserData> => {
@@ -59,8 +51,6 @@ const attemptLogin = async (code: string): Promise<LoggedInUserData> => {
     )
 
     return loggedIn.data
-    // window.location.replace(`${window.location.origin}/studies`)
-    // window.location.replace(env.redirect+'/study-editor')
   } catch (e) {
     alert((e as Error).message)
     throw e
@@ -140,7 +130,7 @@ function App() {
 
   return (
     <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme2}>
+      <ThemeProvider theme={theTheme}>
         <Typography component={'div'}>
           <CssBaseline />
 
@@ -150,17 +140,17 @@ function App() {
                 FallbackComponent={ErrorFallback}
                 onError={ErrorHandler}>
                 {redirect && <Redirect to={redirect}></Redirect>}
-                {/* <React.StrictMode>*/}
-                {sessionData.id ? (
-                  <StudyInfoDataProvider>
-                    <AuthenticatedApp sessionData={sessionData} />
-                  </StudyInfoDataProvider>
-                ) : (
-                  <Loader reqStatusLoading={getCode() !== null}>
-                    <UnauthenticatedApp appId={Utility.getAppId()} />
-                  </Loader>
-                )}
-                {/* </React.StrictMode>*/}
+                <React.StrictMode>
+                  {sessionData.id ? (
+                    <StudyInfoDataProvider>
+                      <AuthenticatedApp sessionData={sessionData} />
+                    </StudyInfoDataProvider>
+                  ) : (
+                    <Loader reqStatusLoading={getCode() !== null}>
+                      <UnauthenticatedApp appId={Utility.getAppId()} />
+                    </Loader>
+                  )}
+                </React.StrictMode>
               </ErrorBoundary>
             </QueryClientProvider>
           </Router>

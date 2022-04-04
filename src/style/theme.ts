@@ -94,10 +94,11 @@ const theme: Theme = createTheme({
       },
       styleOverrides: {
         colorPrimary: '#000',
-        checked: {
-          color: '#000',
+        root: {
+          '&.Mui-checked': {
+            color: '#000',
+          },
         },
-        colorSecondary: '#000',
       },
     },
     MuiTab: {
@@ -109,7 +110,6 @@ const theme: Theme = createTheme({
             color: '#000',
           },
         },
-        selected: {color: 'yellow'},
       },
     },
     MuiButton: {
@@ -299,6 +299,9 @@ const theme: Theme = createTheme({
         root: {borderRadius: 0},
         notchedOutline: {
           borderColor: '#6e6e6e',
+        },
+        input: {
+          padding: '9px 14px',
         },
       },
     },
