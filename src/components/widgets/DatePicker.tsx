@@ -54,7 +54,7 @@ const DatePicker2: FunctionComponent<DatePickerProps> = ({
         <SimpleTextLabel
           htmlFor={id}
           className={isDateControlFocused ? 'Mui-focused' : ''}>
-          {label} Simple
+          {label}
         </SimpleTextLabel>
         <DesktopDatePicker
           clearable={true}
