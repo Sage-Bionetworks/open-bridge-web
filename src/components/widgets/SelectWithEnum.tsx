@@ -4,8 +4,8 @@ import {
   MenuItem,
   Select,
   SelectProps,
-} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx'
 import React from 'react'
 import Utility from '../../helpers/utility'

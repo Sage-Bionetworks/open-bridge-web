@@ -7,21 +7,21 @@ import {
   DialogButtonPrimary,
   DialogButtonSecondary,
 } from '@components/widgets/StyledComponents'
+import CloseIcon from '@mui/icons-material/Close'
 import {
   Box,
   Button,
   CircularProgress,
-  createStyles,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControlLabel,
   IconButton,
-  makeStyles,
   Theme,
-} from '@material-ui/core'
-import CloseIcon from '@material-ui/icons/Close'
+} from '@mui/material'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ScheduleService from '@services/schedule.service'
 import {latoFont, poppinsFont, theme} from '@style/theme'
@@ -163,6 +163,7 @@ function isScheduleDefault(schedule: Schedule) {
 
 const Scheduler: React.FunctionComponent<SchedulerProps> = ({
   id,
+  children,
   isReadOnly,
   onShowFeedback,
 }) => {
@@ -483,7 +484,6 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
           )}
         </NavigationPrompt>
         <div>{saveLoader && <CircularProgress />}</div>
-
         <Box textAlign="left" key="content">
           <div
             className={clsx(classes.scheduleHeader, isReadOnly && 'readOnly')}
@@ -618,6 +618,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
             )}
           </Box>
         </Box>
+        {children}
       </Box>
       <Dialog open={openModal === 'EVENTS'} maxWidth="md" scroll="body">
         <DialogTitle
@@ -630,7 +631,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
           <IconButton
             aria-label="close"
             className={classes.closeModalButton}
-            onClick={() => setOpenModal(undefined)}>
+            onClick={() => setOpenModal(undefined)}
+            size="large">
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -679,7 +681,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
               <IconButton
                 aria-label="close"
                 className={classes.closeModalButton}
-                onClick={() => onCancelSessionUpdate()}>
+                onClick={() => onCancelSessionUpdate()}
+                size="large">
                 <CloseIcon />
               </IconButton>
               <Box className={classes.assessments}>
@@ -757,7 +760,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
               <IconButton
                 aria-label="close"
                 className={classes.closeModalButton}
-                onClick={() => onCancelSessionUpdate()}>
+                onClick={() => onCancelSessionUpdate()}
+                size="large">
                 <CloseIcon />
               </IconButton>
               <ReadOnlyScheduler
@@ -798,7 +802,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
           <IconButton
             aria-label="close"
             className={classes.closeModalButton}
-            onClick={() => setOpenModal(undefined)}>
+            onClick={() => setOpenModal(undefined)}
+            size="large">
             <CloseIcon />
           </IconButton>
         </DialogTitle>

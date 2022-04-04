@@ -9,12 +9,12 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-  makeStyles,
   Radio,
   RadioGroup,
   TextField,
   Typography,
-} from '@material-ui/core'
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import React, {FunctionComponent} from 'react'
 import {useParams} from 'react-router-dom'
 import test from '../sample.json'
@@ -61,7 +61,7 @@ function Factory(step: Step) {
   }
 }
 
-type SurveyQuestionProps = SurveyQuestionOwnProps /*& RouteComponentProps*/
+type SurveyQuestionProps = SurveyQuestionOwnProps/*& RouteComponentProps*/
 
 const SkipCheckbox: FunctionComponent<{
   fieldLabel: string

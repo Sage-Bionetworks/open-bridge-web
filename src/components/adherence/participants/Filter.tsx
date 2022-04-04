@@ -9,10 +9,10 @@ import {
   Drawer,
   FormControlLabel,
   FormGroup,
-  makeStyles,
   Radio,
   RadioGroup,
-} from '@material-ui/core'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import AdherenceService from '@services/adherence.service'
 import {AdherenceWeeklyReport} from '@typedefs/types'
 import _ from 'lodash'
@@ -217,6 +217,7 @@ const Filter: FunctionComponent<FilterProps> = ({
             <FormControlLabel
               control={
                 <Radio
+                  color="secondary"
                   size="small"
                   value={'ALL'}
                   className={classes.checkbox}
@@ -228,6 +229,7 @@ const Filter: FunctionComponent<FilterProps> = ({
             <FormControlLabel
               control={
                 <Radio
+                  color="secondary"
                   size="small"
                   value={'UNDER'}
                   className={classes.checkbox}
@@ -239,6 +241,7 @@ const Filter: FunctionComponent<FilterProps> = ({
             <FormControlLabel
               control={
                 <Radio
+                  color="secondary"
                   size="small"
                   value={'OVER'}
                   className={classes.checkbox}

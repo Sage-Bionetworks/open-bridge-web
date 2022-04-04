@@ -15,8 +15,8 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-} from '@material-ui/core'
-import {Alert} from '@material-ui/lab'
+} from '@mui/material'
+import { Alert } from '@mui/material';
 import {ParticipantEvent} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 

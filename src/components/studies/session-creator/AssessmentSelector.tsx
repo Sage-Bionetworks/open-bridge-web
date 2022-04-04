@@ -1,6 +1,6 @@
-import {makeStyles} from '@material-ui/core'
-import CheckIcon from '@material-ui/icons/Check'
-import {ToggleButton, ToggleButtonGroup} from '@material-ui/lab'
+import makeStyles from '@mui/styles/makeStyles';
+import CheckIcon from '@mui/icons-material/Check'
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import React, {FunctionComponent, useState} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {useAsync} from '../../../helpers/AsyncHook'

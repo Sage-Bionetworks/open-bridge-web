@@ -12,7 +12,7 @@ export const BURST_START_EVENT_ID_REGEX_PATTERN =
   /(?<=study_burst:custom_)[^:]+(?=_burst:[0-9]+)/
 
 function getBurstNumberFromEventId(eventIdentifier: string): number {
-  return Number(eventIdentifier.match(/([0-9]+)\b/)?.[0] || '-1')
+  return Number(eventIdentifier.match(/([0-9]+)\b/)?.[0] || '-1');
 }
 
 function isEventBurstEvent(eventIdentifier: string) {

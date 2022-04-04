@@ -1,13 +1,8 @@
-import {
-  Box,
-  Button,
-  FormControlLabel,
-  makeStyles,
-  Switch,
-} from '@material-ui/core'
-import ClockIcon from '@material-ui/icons/AccessTime'
-import AddIcon from '@material-ui/icons/Add'
-import ClearIcon from '@material-ui/icons/Clear'
+import ClockIcon from '@mui/icons-material/AccessTime'
+import AddIcon from '@mui/icons-material/Add'
+import ClearIcon from '@mui/icons-material/Clear'
+import {Box, Button, FormControlLabel, Switch} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
@@ -289,6 +284,7 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> =
               disabled={_.isEmpty(studySession.assessments)}
               control={
                 <Switch
+                  color="secondary"
                   value={isEditable}
                   onChange={e => setIsEditable(e.target.checked)}
                 />

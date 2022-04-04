@@ -1,6 +1,6 @@
 import {ReactComponent as Dot} from '@assets/symbols/empty.svg'
 import {SessionSymbols} from '@components/widgets/SessionIcon'
-import {makeStyles} from '@material-ui/core'
+import makeStyles from '@mui/styles/makeStyles';
 import {AdherenceWindowState} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'

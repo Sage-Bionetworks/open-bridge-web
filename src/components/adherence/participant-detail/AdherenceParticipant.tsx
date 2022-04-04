@@ -9,7 +9,8 @@ import BreadCrumb from '@components/widgets/BreadCrumb'
 import {MTBHeadingH4} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
-import {Box, Button, makeStyles, Paper} from '@material-ui/core'
+import { Box, Button, Paper } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import ParticipantService from '@services/participants.service'
 import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'

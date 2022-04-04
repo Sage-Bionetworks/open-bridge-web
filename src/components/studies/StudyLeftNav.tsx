@@ -1,4 +1,5 @@
-import {Box, Drawer, IconButton, makeStyles} from '@material-ui/core'
+import { Box, Drawer, IconButton } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import StudyService from '@services/study.service'
 import {Study} from '@typedefs/types'
 import clsx from 'clsx'
@@ -133,7 +134,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
         }),
       }}>
       <Box textAlign="right" height="48px" bgcolor="#F2F2F2">
-        <IconButton onClick={toggleDrawer} className={classes.drawerButton}>
+        <IconButton onClick={toggleDrawer} className={classes.drawerButton} size="large">
           <img
             style={{width: '12px', height: '22px'}}
             src={open ? CloseIcon : OpenIcon}
@@ -200,7 +201,7 @@ const StudyLeftNav: FunctionComponent<StudyLeftNavProps> = ({
           )}
       </ul>
     </Drawer>
-  )
+  );
 }
 
 export default StudyLeftNav

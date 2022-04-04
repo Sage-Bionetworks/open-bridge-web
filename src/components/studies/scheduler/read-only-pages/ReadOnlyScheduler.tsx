@@ -1,4 +1,5 @@
-import {Box, makeStyles} from '@material-ui/core'
+import { Box } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import EventService from '@services/event.service'
 import {poppinsFont} from '@style/theme'
 import {

@@ -1,5 +1,5 @@
-import {Box, Container} from '@material-ui/core'
-import Alert from '@material-ui/lab/Alert/Alert'
+import {Box, Container} from '@mui/material'
+import Alert from '@mui/lab/Alert/Alert'
 import * as React from 'react'
 import Utility from '../../helpers/utility'
 import CONSTANTS from '../../types/constants'

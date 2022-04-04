@@ -4,13 +4,13 @@ import {
   FormControl,
   FormGroup,
   IconButton,
-  makeStyles,
   MenuItem,
   Radio,
   RadioGroup,
   Select,
   Tooltip,
-} from '@material-ui/core'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import {JOINED_EVENT_ID} from '@services/event.service'
 import constants from '@typedefs/constants'
 import {HDWMEnum, SchedulingEvent} from '@typedefs/scheduling'
@@ -63,7 +63,8 @@ const ToolIcon: FunctionComponent<ToolIconProps> = ({onOpenEventsEditor}) => {
         className={classes.editIcon}
         onClick={() => onOpenEventsEditor()}
         onMouseEnter={handleMouseOver}
-        onMouseLeave={handleMouseOut}>
+        onMouseLeave={handleMouseOut}
+        size="large">
         {' '}
         {isHoveringEdit ? (
           <EditIcon />
@@ -129,7 +130,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
         <Select
           variant="outlined"
           disabled={disabled}
-          classes={{root: classes.select}}
+          classes={{select: classes.select}}
           onChange={e => onChangeFn(e.target.value)}
           id={'id'}
           value={value}>
@@ -152,7 +153,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
           value={hasDelay}
           onChange={e => changeStartDelayType(e.target.value === 'true')}>
           <FormGroup row={true} style={{alignItems: 'center'}}>
-            <Radio value={false} disabled={isBurst} />
+            <Radio value={false} disabled={isBurst} color="secondary" />
             <SelectEventId
               disabled={hasDelay || isBurst}
               value={!hasDelay ? startEventId : ''}
@@ -163,7 +164,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
             {isBurst ? children : ''}
           </FormGroup>
           <FormGroup row={true} style={{alignItems: 'center'}}>
-            <Radio value={true} disabled={isBurst} />{' '}
+            <Radio value={true} color="secondary" disabled={isBurst} />{' '}
             <Duration
               onChange={e => {
                 onChangeDelay(e.target.value)

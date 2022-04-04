@@ -14,9 +14,9 @@ import {
   Paper,
   Tab,
   Tabs,
-} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
-import CloudUploadIcon from '@material-ui/icons/CloudUpload'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import EventService from '@services/event.service'
 import {ExtendedScheduleEventObject} from '@services/schedule.service'
 import {poppinsFont, theme} from '@style/theme'
@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
         marginRight: '6px',
       },
     },
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down('xl')]: {
       minWidth: `110px`,
     },
   },
@@ -54,7 +54,7 @@ const useStyles = makeStyles(theme => ({
   },
   titleBar: {
     height: theme.spacing(6),
-    lineHeight: `${theme.spacing(6)}px`,
+    lineHeight: theme.spacing(6),
     textAlign: 'center',
     fontSize: '12px',
     fontWeight: 500,

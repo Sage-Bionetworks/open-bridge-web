@@ -1,5 +1,6 @@
 import {ReactComponent as DownloadIcon} from '@assets/download.svg'
-import {Box, makeStyles} from '@material-ui/core'
+import { Box } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import React, {FunctionComponent} from 'react'
 import {jsonToCSV} from 'react-papaparse'

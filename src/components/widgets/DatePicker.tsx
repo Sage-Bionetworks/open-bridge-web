@@ -1,62 +1,18 @@
 // pick a date util library
-import MomentUtils from '@date-io/moment'
-import {FormControl} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
-import {KeyboardDatePicker, MuiPickersUtilsProvider} from '@material-ui/pickers'
+import AdapterMoment from '@mui/lab/AdapterMoment'
+import DesktopDatePicker from '@mui/lab/DesktopDatePicker'
+//import {KeyboardDatePicker, MuiPickersUtilsProvider} from '@material-ui/pickers'
+import LocalizationProvider from '@mui/lab/LocalizationProvider'
+import {FormControl, TextField} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import React, {FunctionComponent} from 'react'
-import {latoFont} from '../../style/theme'
 import {SimpleTextLabel} from './StyledComponents'
 
 const useStyles = makeStyles(theme => ({
-  dateAdornment: {
-    position: 'absolute',
-    right: '0px',
-    top: '20px',
-    zIndex: 10,
-    ' & button': {
-      padding: theme.spacing(1),
-      '&:hover': {
-        backgroundColor: 'transparent',
-        color: theme.palette.primary.light,
-      },
-    },
-  },
   datePicker: {
-    '& .MuiOutlinedInput-root': {
-      borderRadius: 0,
-      paddingRight: 0,
-      boxShadow: 'none',
-      display: 'block',
-      position: 'relative',
-      border: '1px solid #ced4da',
-
-      '&:hover .MuiOutlinedInput-notchedOutline': {
-        borderStyle: 'none',
-      },
-
-      '& .MuiOutlinedInput-notchedOutline': {
-        borderStyle: 'none',
-      },
-
-      '&.Mui-focused': {
-        borderColor: theme.palette.primary.light,
-      },
-    },
     '& input': {
-      borderRadius: 0,
-      position: 'relative',
-      backgroundColor: theme.palette.common.white,
-      borderStyle: 'none',
-      fontSize: '14px',
-      width: 'auto',
-      padding: '10px 12px',
-      transition: theme.transitions.create(['border-color', 'box-shadow']),
-      fontFamily: [latoFont, 'Roboto'].join(','),
-
-      '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active':
-        {
-          ' -webkit-box-shadow': '0 0 0 30px white inset !important',
-        },
+      backgroundColor: 'transparent',
+      padding: theme.spacing(1.5, 2, 1.5, 1),
     },
   },
 }))
@@ -73,7 +29,7 @@ type DatePickerProps = {
 }
 
 // -----------------  Add participant control
-const DatePicker: FunctionComponent<DatePickerProps> = ({
+const DatePicker2: FunctionComponent<DatePickerProps> = ({
   onChange,
   value,
   label,
@@ -93,39 +49,29 @@ const DatePicker: FunctionComponent<DatePickerProps> = ({
   }
 
   return (
-    <MuiPickersUtilsProvider utils={MomentUtils}>
+    <LocalizationProvider dateAdapter={AdapterMoment}>
       <FormControl>
         <SimpleTextLabel
           htmlFor={id}
           className={isDateControlFocused ? 'Mui-focused' : ''}>
-          {label}
+          {label} Simple
         </SimpleTextLabel>
-        <KeyboardDatePicker
-          className={classes.datePicker}
-          onFocus={_ => setIsDateControlFocused(true)}
-          onBlur={_ => setIsDateControlFocused(false)}
-          InputAdornmentProps={{
-            position: 'end',
-            className: classes.dateAdornment,
-          }}
-          views={getView()}
+        <DesktopDatePicker
           clearable={true}
-          format={isYearOnly ? 'yyyy' : 'MM/DD/yyyy'}
-          autoOk={true}
-          disableToolbar={true}
-          inputVariant="outlined"
-          margin="normal"
-          id={id}
           value={value}
-          onChange={e => handleDateChange(e?.toDate() || null)}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-          disabled={disabled}
+          onChange={e => handleDateChange(e || null)}
+          renderInput={params => (
+            <TextField
+              {...params}
+              id={id}
+              disabled={disabled}
+              className={classes.datePicker}
+            />
+          )}
         />
       </FormControl>
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   )
 }
 
-export default DatePicker
+export default DatePicker2

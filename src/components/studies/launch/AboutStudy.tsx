@@ -1,3 +1,4 @@
+import Autocomplete from '@mui/lab/Autocomplete/Autocomplete'
 import {
   Box,
   Chip,
@@ -5,9 +6,8 @@ import {
   Radio,
   RadioGroup,
   TextField,
-} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
-import Autocomplete from '@material-ui/lab/Autocomplete/Autocomplete'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
 import {latoFont, ThemeType} from '../../../style/theme'
 import {Study} from '../../../types/types'
@@ -158,7 +158,7 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
         }>
         <FormControlLabel
           value="observation"
-          control={<Radio />}
+          control={<Radio color="secondary" />}
           label={
             <StudyTypeLabel
               formLabelText="Observational/Natural History"
@@ -169,7 +169,7 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
         <FormControlLabel
           control={
             <>
-              <Radio value="intervention" />{' '}
+              <Radio value="intervention" color="secondary" />{' '}
             </>
           }
           label={
@@ -182,7 +182,7 @@ const AboutStudy: React.FunctionComponent<AboutStudyProps> = ({
         <FormControlLabel
           control={
             <>
-              <Radio value="validate" />{' '}
+              <Radio value="validate" color="secondary" />{' '}
             </>
           }
           label={

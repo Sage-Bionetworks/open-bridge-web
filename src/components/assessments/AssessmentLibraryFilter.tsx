@@ -1,4 +1,5 @@
-import {Checkbox, FormControlLabel, makeStyles, Paper} from '@material-ui/core'
+import { Checkbox, FormControlLabel, Paper } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import React, {FunctionComponent} from 'react'
 import {Assessment, StringDictionary} from '../../types/types'
 

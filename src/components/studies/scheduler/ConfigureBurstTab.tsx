@@ -10,18 +10,18 @@ import SmallTextBox from '@components/widgets/SmallTextBox'
 import {
   Box,
   Checkbox,
-  createStyles,
   FormControl,
   FormControlLabel,
   FormGroup,
   InputLabel,
-  makeStyles,
   Paper,
   Switch,
   Theme,
   Typography,
-} from '@material-ui/core'
-import {Alert} from '@material-ui/lab'
+} from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { Alert } from '@mui/material';
 import EventService from '@services/event.service'
 import ScheduleService from '@services/schedule.service'
 import {poppinsFont} from '@style/theme'
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: '#fff',
       padding: theme.spacing(2, 12, 3, 11),
       textAlign: 'left',
-      [theme.breakpoints.down('md')]: {
+      [theme.breakpoints.down('lg')]: {
         padding: theme.spacing(13, 3, 3, 3),
       },
     },
@@ -103,7 +103,7 @@ const useStyles = makeStyles((theme: Theme) =>
           marginRight: theme.spacing(2),
         },
       },
-      [theme.breakpoints.down('md')]: {
+      [theme.breakpoints.down('lg')]: {
         padding: theme.spacing(5, 0, 0, 0),
       },
     },

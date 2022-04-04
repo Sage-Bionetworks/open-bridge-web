@@ -3,10 +3,10 @@ import {
   CircularProgress,
   FormControl,
   FormControlLabel,
-  makeStyles,
   Radio,
   RadioGroup,
-} from '@material-ui/core'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React from 'react'
 import Utility from '../../../helpers/utility'
@@ -118,13 +118,13 @@ const IrbBoardContactSection: React.FunctionComponent<IrbBoardContactSectionProp
               style={{marginBottom: '8px'}}>
               <FormControlLabel
                 value="affiliation_same"
-                control={<Radio />}
+                control={<Radio color="secondary" />}
                 label="Same Institutional Affiliation"
                 id="affiliation-same-radio-button"
               />
               <FormControlLabel
                 value="affiliation_other"
-                control={<Radio />}
+                control={<Radio color="secondary" />}
                 label="Other"
                 id="affiliation-other-radio-button"
               />

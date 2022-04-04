@@ -1,7 +1,7 @@
 import {useEvents} from '@components/studies/eventHooks'
 import {useUpdateParticipantInList} from '@components/studies/participantHooks'
 import EditDialogTitle from '@components/studies/participants/modify/EditDialogTitle'
-import {Dialog} from '@material-ui/core'
+import {Dialog} from '@mui/material'
 import React from 'react'
 import EditParticipantForm from './EditParticipantForm'
 

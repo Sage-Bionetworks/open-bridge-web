@@ -1,5 +1,5 @@
-import {Button} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+import {Button} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React from 'react'
 import {poppinsFont, ThemeType} from '../../style/theme'
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
     height: theme.spacing(9),
     display: 'flex',
     color: theme.palette.common.white,
-    '& $linkLabel': {
+    '& button': {
       color: theme.palette.common.white,
     },
 
@@ -63,6 +63,8 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
   link: {
     fontFamily: poppinsFont,
+    justifyContent: 'flex-start',
+    color: '#282828',
 
     width: '100%',
     textDecoration: 'none',
@@ -72,10 +74,6 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
-  },
-  linkLabel: {
-    justifyContent: 'flex-start',
-    color: '#282828',
   },
 }))
 
@@ -115,8 +113,7 @@ const SideBarListItem: React.FunctionComponent<SideBarListItemProps> = ({
       })}>
       <Button
         onClick={handleClick}
-        className={clsx(classes.link, styleProps && styleProps)}
-        classes={{label: classes.linkLabel}}>
+        className={clsx(classes.link, styleProps && styleProps)}>
         {children}
       </Button>
     </li>

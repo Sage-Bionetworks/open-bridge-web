@@ -20,8 +20,8 @@ import {
   Dialog,
   IconButton,
   Paper,
-} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import {
   DataGrid,
   GridCellParams,
@@ -31,11 +31,12 @@ import {
   GridColumnMenuProps,
   GridColumnsMenuItem,
   GridOverlay,
-  GridRowSelectedParams,
+  GridRowParams,
+  // GridRowSelectedParams,
   GridToolbarContainer,
   GridValueGetterParams,
   HideGridColMenuItem,
-} from '@material-ui/data-grid'
+} from '@mui/x-data-grid'
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ParticipantService, {
   EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING,
@@ -176,7 +177,8 @@ const EditCell: FunctionComponent<{
     <IconButton
       onClick={onClick}
       aria-label="edit participant"
-      component="span">
+      component="span"
+      size="large">
       <PencilIcon />
     </IconButton>
   ) : (
@@ -304,7 +306,7 @@ function getColumns(
       valueGetter: getPhone,
       width: 152,
 
-      disableClickEventBubbling: true,
+      //AGv5 disableClickEventBubbling: true,
 
       renderHeader: () => {
         return (
@@ -377,7 +379,7 @@ function getColumns(
   const editColumn: GridColDef = {
     field: 'edit',
     headerName: 'Edit',
-    disableClickEventBubbling: true,
+    //AGv5  disableClickEventBubbling: true,
     disableColumnMenu: true,
     width: 80,
 
@@ -639,7 +641,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   const checkBoxSelectColumn: GridColDef = {
     field: 'selectCheckboxColumn',
 
-    disableClickEventBubbling: true,
+    //AGv5 disableClickEventBubbling: true,
     disableColumnMenu: true,
     width: 70,
     align: 'left',
@@ -701,12 +703,12 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               density="standard"
               columns={participantColumns}
               checkboxSelection={false}
-              onRowSelected={(row: GridRowSelectedParams) => {
+              onRowClick={(params: GridRowParams) => {
                 let model: string[] = []
-                if (!selectionModel.includes(row.data.id)) {
-                  model = [...selectionModel, row.data.id]
+                if (!selectionModel.includes(params.row.id)) {
+                  model = [...selectionModel, params.row.id]
                 } else {
-                  model = selectionModel.filter(id => id != row.data.id)
+                  model = selectionModel.filter(id => id != params.row.id)
                 }
 
                 onRowSelected(model, false)

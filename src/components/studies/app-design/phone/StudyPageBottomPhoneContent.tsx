@@ -1,5 +1,5 @@
-import {Box, Divider} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+import {Box, Divider} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
 import {latoFont, poppinsFont} from '@style/theme'
 import {Contact} from '@typedefs/types'
 import React from 'react'

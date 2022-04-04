@@ -14,8 +14,8 @@ import {
   FormControl,
   Paper,
   Switch,
-} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
 import StudyService from '@services/study.service'
 import {latoFont, playfairDisplayFont, ThemeType} from '@style/theme'
 import constants from '@typedefs/constants'
@@ -53,7 +53,7 @@ export const useStyles = makeStyles((theme: ThemeType) => ({
     display: 'flex',
     justifyContent: 'space-between',
     marginBottom: theme.spacing(2),
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       paddingLeft: theme.spacing(9),
       paddingRight: theme.spacing(2),
     },

@@ -3,9 +3,9 @@
 import {useAddParticipant} from '@components/studies/participantHooks'
 import {BlueButton} from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
-import {Box, CircularProgress} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
-import Alert from '@material-ui/lab/Alert'
+import {Box, CircularProgress} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
+import Alert from '@mui/material/Alert'
 import ParticipantService from '@services/participants.service'
 import {ExtendedScheduleEventObject} from '@services/schedule.service'
 import {EditableParticipantData, Phone} from '@typedefs/types'

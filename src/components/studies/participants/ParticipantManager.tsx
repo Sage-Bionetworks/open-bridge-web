@@ -27,8 +27,8 @@ import {
   Container,
   Tab,
   Tabs,
-} from '@material-ui/core'
-import Alert from '@material-ui/lab/Alert'
+} from '@mui/material'
+import Alert from '@mui/material/Alert'
 import {JOINED_EVENT_ID} from '@services/event.service'
 import StudyService from '@services/study.service'
 import {theme} from '@style/theme'
@@ -336,6 +336,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         <>
           <Box py={0} pr={3} pl={2}>
             <Tabs
+              color="secondary"
               value={tab}
               variant="standard"
               onChange={handleTabChange}
@@ -346,6 +347,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                   key={`tab_${tabDef.label}`}
                   value={tabDef.type}
                   classes={{
+                    labelIcon: 'ALINA',
                     root: clsx(
                       classes.tab,
                       tab === tabDef.type && classes.selectedTab,

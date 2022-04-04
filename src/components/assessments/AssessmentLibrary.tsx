@@ -1,4 +1,4 @@
-import {makeStyles} from '@material-ui/core'
+import makeStyles from '@mui/styles/makeStyles';
 import React, {FunctionComponent, useState} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {Link, RouteComponentProps} from 'react-router-dom'

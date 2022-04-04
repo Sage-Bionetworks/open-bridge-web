@@ -1,10 +1,6 @@
-import {
-  Box,
-  IconButton,
-  makeStyles,
-  Paper,
-} from '@material-ui/core'
-import DeleteIcon from '@material-ui/icons/Close'
+import { Box, IconButton, Paper } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import DeleteIcon from '@mui/icons-material/Close'
 import clsx from 'clsx'
 import React from 'react'
 import {

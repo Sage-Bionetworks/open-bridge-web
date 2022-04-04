@@ -1,12 +1,6 @@
-import {
-  Box,
-  FormControlLabel,
-  Paper,
-  Radio,
-  RadioGroup,
-} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
-import CheckIcon from '@material-ui/icons/Check'
+import CheckIcon from '@mui/icons-material/Check'
+import {Box, FormControlLabel, Paper, Radio, RadioGroup} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
 import clsx from 'clsx'
 import _ from 'lodash'
@@ -359,13 +353,13 @@ const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProp
                             }}>
                             <FormControlLabel
                               value={false}
-                              control={<Radio size="small" />}
+                              control={<Radio color="secondary" size="small" />}
                               label="Define my own IDs"
                             />
 
                             <FormControlLabel
                               value={true}
-                              control={<Radio size="small" />}
+                              control={<Radio color="secondary" size="small" />}
                               label="Generate IDs for me"
                             />
                           </RadioGroup>

@@ -2,8 +2,8 @@ import motion from '@assets/passive-features/recorders_motion.svg'
 import noise from '@assets/passive-features/recorders_noise.svg'
 import weather from '@assets/passive-features/recorders_weather.svg'
 import {MTBHeadingH3} from '@components/widgets/Headings'
-import {Box, Switch} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+import {Box, Switch} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
 import {latoFont, ThemeType} from '@style/theme'
 import {BackgroundRecorders} from '@typedefs/types'
@@ -173,18 +173,23 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
             alt={sensors[recorderType]!.title}
             style={{marginRight: 'auto'}}
           />
-
-          <span className={classes.featureHeading}>
-            {sensors[recorderType]!.title}
-          </span>
-          {!isReadOnly && (
-            <div className={classes.toggle}>
-              <Switch
-                color="primary"
-                checked={value}
-                onChange={e => callbackFn(e.target.checked)}></Switch>
-            </div>
-          )}
+          <Box
+            display="flex"
+            alignItems="center"
+            flexDirection="row"
+            height="30px">
+            <span className={classes.featureHeading}>
+              {sensors[recorderType]!.title}
+            </span>
+            {!isReadOnly && (
+              <div className={classes.toggle}>
+                <Switch
+                  color="primary"
+                  checked={value}
+                  onChange={e => callbackFn(e.target.checked)}></Switch>
+              </div>
+            )}
+          </Box>
         </Box>
         <table className={classes.featureTable}>
           <thead>

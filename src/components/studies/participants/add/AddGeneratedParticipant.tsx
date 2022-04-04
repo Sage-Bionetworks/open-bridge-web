@@ -1,6 +1,6 @@
-import {Box, FormControl, FormGroup, LinearProgress} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
-import Alert from '@material-ui/lab/Alert'
+import {Box, FormControl, FormGroup, LinearProgress} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
+import Alert from '@mui/material/Alert'
 import React, {FunctionComponent} from 'react'
 import Utility from '../../../../helpers/utility'
 import ParticipantService from '../../../../services/participants.service'

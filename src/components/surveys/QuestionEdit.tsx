@@ -7,11 +7,11 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
-  makeStyles,
   Radio,
   RadioGroup,
   TextField,
-} from '@material-ui/core'
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import {latoFont} from '@style/theme'
 import React, {FunctionComponent} from 'react'
 import {ChoiceQuestion, ChoiceQuestionChoice, InputItem, Step} from './types'

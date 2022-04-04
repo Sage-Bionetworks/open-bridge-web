@@ -7,16 +7,9 @@ import Loader from '@components/widgets/Loader'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import {useStudyInfoDataDispatch} from '@helpers/StudyInfoContext'
 import Utility from '@helpers/utility'
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  makeStyles,
-  Menu,
-  MenuItem,
-} from '@material-ui/core'
-import Link from '@material-ui/core/Link'
+import {Box, Button, Container, Divider, Menu, MenuItem} from '@mui/material'
+import Link from '@mui/material/Link'
+import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
 import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
@@ -59,7 +52,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: '#F3EFE5',
     height: '100%',
     minHeight: 'calc(100vh - 104px)',
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       minHeight: '100vh',
     },
   },
@@ -67,7 +60,7 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1),
     textAlign: 'center',
     color: theme.palette.text.secondary,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       maxWidth: '600px',
     },
     height: '100%',
@@ -79,14 +72,14 @@ const useStyles = makeStyles(theme => ({
     gridTemplateColumns: `repeat(auto-fill,${studyCardWidth}px)`,
     gridColumnGap: theme.spacing(2),
     gridRowGap: theme.spacing(2),
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       padding: theme.spacing(3),
       justifyContent: 'center',
       gridRowGap: theme.spacing(4),
     },
   },
   divider: {
-    margin: `${theme.spacing(1)}px 0 ${theme.spacing(5)}px 0`,
+    margin: `${theme.spacing(1)} 0 ${theme.spacing(5)} 0`,
   },
 
   filters: {
@@ -102,8 +95,10 @@ const useStyles = makeStyles(theme => ({
 
   createStudyButton: {
     margin: theme.spacing(5, 2, 3),
+    borderRadius: '4px',
     width: '160px',
     height: '49px',
+    fontSize: '12px',
     backgroundColor: '#3A3A3A',
     color: 'white',
     '&:hover': {
@@ -212,8 +207,7 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
   }
   return (
     <>
-      <MTBHeading variant={'h2'} align={'left'}>
-        {' '}
+      <MTBHeading variant="h2" align={'left'}>
         {item.title}
       </MTBHeading>
       <Box className={classes.cardGrid}>
@@ -222,7 +216,12 @@ const StudySublist: FunctionComponent<StudySublistProps> = ({
             style={{textDecoration: 'none'}}
             key={study.identifier || index}
             variant="body2"
-            onClick={() => study.identifier === '...' ? '' : onStudyCardClick({...study}, 'VIEW')}>
+            onClick={() =>
+              study.identifier === '...'
+                ? ''
+                : onStudyCardClick({...study}, 'VIEW')
+            }
+            underline="hover">
             <StudyCard
               study={study}
               onRename={(newName: string) => {
@@ -410,7 +409,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
       variant="full">
       <Box className={classes.root}>
         <Container maxWidth="lg" className={classes.studyContainer}>
-          <Box display="flex" justifyContent="space-between">
+          <Box display="flex" justifyContent="space-between" area-lable="f1">
             <ul className={classes.filters} aria-label="filters">
               <li className={classes.filterItem}>View by:</li>
 

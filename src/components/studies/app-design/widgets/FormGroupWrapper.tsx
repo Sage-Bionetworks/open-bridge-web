@@ -1,5 +1,5 @@
-import {FormGroup} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+import {FormGroup} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react'
 import {poppinsFont} from '../../../../style/theme'
 

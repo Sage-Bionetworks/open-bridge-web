@@ -1,4 +1,4 @@
-import {FormControlLabel, Radio, RadioGroup} from '@material-ui/core'
+import {FormControlLabel, Radio, RadioGroup} from '@mui/material'
 import React from 'react'
 import SmallTextBox from '../../widgets/SmallTextBox'
 import {FormControlLabelHidden} from '../../widgets/StyledComponents'
