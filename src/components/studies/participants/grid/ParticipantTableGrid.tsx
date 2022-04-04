@@ -51,7 +51,7 @@ import {
 } from '@typedefs/types'
 import _ from 'lodash'
 import moment from 'moment'
-import React, {FunctionComponent, ReactNode} from 'react'
+import React, {FunctionComponent, ReactNode, SyntheticEvent} from 'react'
 import Pluralize from 'react-pluralize'
 import GridCellExpand from './GridCellExpand'
 
@@ -120,27 +120,29 @@ const EditCell: FunctionComponent<{
   token: string
   onSetParticipantToEdit: Function
 }> = ({params, studyId, token, onSetParticipantToEdit}) => {
-  const onClick = async () => {
+  const onClick = async (e: SyntheticEvent) => {
     try {
+      e.preventDefault()
+      e.stopPropagation()
       const getValString = (column: string): string | undefined => {
-        const result = params.getValue(params.id, column)?.toString()
+        const result = params.row[column]
 
         return result
       }
 
       const getValDate = (column: string): Date | undefined => {
-        const result = params.getValue(params.id, column)?.toString()
+        const result = params.row[column]?.toString()
         const d = result ? new Date(result) : undefined
         return d
       }
 
       const getValPhone = (column: string): string | undefined => {
-        const result = params.getValue(params.id, column)?.toString()
+        const result = params.row[column]?.toString()
         return result?.replace('+1', '') || ''
       }
 
       const getEvents = (column: string): ParticipantEvent[] => {
-        const result = params.getValue(params.id, column)
+        const result = params.row[column]
         return result as ParticipantEvent[]
       }
 
