@@ -1,8 +1,8 @@
-import { Box, Tooltip } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box, Tooltip} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
+import {latoFont} from '@style/theme'
 import React, {CSSProperties} from 'react'
 import ItalicI from '../../assets/italic_i_icon.svg'
-import {latoFont, ThemeType} from '../../style/theme'
 
 enum VariantEnum {
   info = '#8FD6FF',
@@ -11,8 +11,43 @@ enum VariantEnum {
 interface StyleProps {
   variant: keyof typeof VariantEnum
 }
+const useStyles = makeStyles(theme => ({
+  root: {},
+  container: {
+    backgroundColor: VariantEnum.info,
+    width: '18px',
+    height: '18px',
+    borderRadius: '9px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontStyle: 'italic',
+    boxShadow: '0 2px 2px rgb(0, 0, 0, 0.25)',
+  },
+  toolTip: {
+    backgroundColor: VariantEnum.info,
+    boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.2)',
+  },
+  arrow: {
+    backgroundColor: 'transparent',
+    color: VariantEnum.info,
+    fontSize: '15px',
+  },
+  descriptionContainer: {
+    backgroundColor: VariantEnum.info,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: 'black',
+    fontFamily: latoFont,
+    fontStyle: 'italic',
+    fontSize: '15px',
+    lineHeight: '18px',
+    padding: theme.spacing(1.25, 1.25),
+  },
+}))
 
-const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
+/*const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
   container: props => ({
     backgroundColor: VariantEnum[props.variant],
     width: '18px',
@@ -46,14 +81,14 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
     padding: theme.spacing(1.25, 1.25),
   }),
 }))
-
+*/
 const InfoCircleWithToolTip: React.FunctionComponent<
   {
     tooltipDescription: React.ReactNode
 
     style?: CSSProperties
   } & StyleProps
-> = ({tooltipDescription, style, variant = 'info'}) => {
+> = ({tooltipDescription, style = {}, variant = 'info'}) => {
   const classes = useStyles({variant: 'info'})
   return (
     <Box style={style}>

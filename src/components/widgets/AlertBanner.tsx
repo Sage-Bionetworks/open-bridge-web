@@ -1,5 +1,5 @@
-import makeStyles from '@mui/styles/makeStyles';
-import { Alert } from '@mui/material';
+import {Alert} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React from 'react'
 import {latoFont, ThemeType} from '../../style/theme'
@@ -9,8 +9,8 @@ type StyleProps = {
   textColor: string
 }
 
-const useStyles = makeStyles<ThemeType, StyleProps>((theme: ThemeType) => ({
-  container: props => ({
+const useStyles = makeStyles<ThemeType>((theme: ThemeType) => ({
+  container: {
     position: 'fixed',
     left: theme.spacing(2),
     right: theme.spacing(2),
@@ -26,9 +26,8 @@ const useStyles = makeStyles<ThemeType, StyleProps>((theme: ThemeType) => ({
       width: '28px',
       height: '28px',
     },
-    backgroundColor: props.backgroundColor,
-    color: props.textColor,
-  }),
+  },
+  ////  }),
   animation: {
     animation: '$fade-in 0.5s ease',
   },
@@ -74,10 +73,7 @@ const AlertBanner: React.FunctionComponent<AlertBannerProps> = ({
   icon,
   isSelfClosing,
 }) => {
-  const classes = useStyles({
-    backgroundColor: backgroundColor,
-    textColor: textColor,
-  })
+  const classes = useStyles()
 
   React.useEffect(() => {
     clearTimeout(timeout)
@@ -92,6 +88,7 @@ const AlertBanner: React.FunctionComponent<AlertBannerProps> = ({
     <Alert
       onClose={() => onClose()}
       severity="error"
+      style={{color: textColor, backgroundColor: backgroundColor}}
       className={clsx(
         classes.container,
         classes.animation,
