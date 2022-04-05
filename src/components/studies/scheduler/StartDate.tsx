@@ -169,7 +169,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
               onChange={e => {
                 onChangeDelay(e.target.value)
               }}
-              durationString={delay}
+              durationString={delay || 'PXD'}
               unitLabel="Repeat Every"
               numberLabel="frequency number"
               unitDefault={HDWMEnum.D}
@@ -179,7 +179,8 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
             <span>from:&nbsp;</span>
             <SelectEventId
               disabled={!hasDelay || !!isBurst}
-              value={hasDelay ? startEventId : ''}
+              // value={hasDelay ? startEventId : ''}
+              value={startEventId}
               onChangeFn={(e: string) =>
                 onChangeStartEventId(e)
               }></SelectEventId>
