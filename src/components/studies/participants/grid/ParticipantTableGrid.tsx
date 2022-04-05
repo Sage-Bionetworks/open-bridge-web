@@ -708,7 +708,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               onRowClick={(params: GridRowParams) => {
                 let model: string[] = []
                 if (!selectionModel.includes(params.row.id)) {
-                  model = [...selectionModel, params.row.id]
+                  model = [...selectionModel, params.row.id]              
                 } else {
                   model = selectionModel.filter(id => id != params.row.id)
                 }
