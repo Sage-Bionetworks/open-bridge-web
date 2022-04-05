@@ -1,22 +1,28 @@
+import {ReactComponent as Dot} from '@assets/symbols/empty.svg'
 import {SessionSymbols} from '@components/widgets/SessionIcon'
-import {makeStyles} from '@material-ui/core'
+import makeStyles from '@mui/styles/makeStyles';
 import {AdherenceWindowState} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 
 const useStyles = makeStyles(theme => ({
   dot: {
-    width: '6px',
-    height: '6px',
-    margin: '2px',
-    borderRadius: '50%',
-    border: '2px solid black',
+    //  width: '6px',
+    //  height: '6px',
+    margin: '0 auto',
+    //  borderRadius: '50%',
+    //  border: '2px solid black',
+    '&$legend': {
+      margin: '2px',
+      display: 'flex',
+    },
   },
   plotElement: {
     width: '10px',
 
     overflow: 'visible',
   },
+  legend: {},
 }))
 
 export const SHAPE_CLASSES: Record<
@@ -41,7 +47,8 @@ const AdherenceSessionIcon: FunctionComponent<{
   windowState: AdherenceWindowState
   isRed?: boolean
   children?: React.ReactNode
-}> = ({sessionSymbol, windowState, children, isRed = false}) => {
+  isInLegend?: boolean
+}> = ({sessionSymbol, windowState, children, isRed = false, isInLegend}) => {
   const classes = useStyles()
   if (!sessionSymbol) {
     return <></>
@@ -67,7 +74,9 @@ const AdherenceSessionIcon: FunctionComponent<{
   })
 
   const el = isEmptyDot ? (
-    <div className={classes.dot} />
+    <div className={clsx(classes.dot, isInLegend && classes.legend)}>
+      <Dot style={{margin: '4px 0'}} />
+    </div>
   ) : (
     React.cloneElement(SessionSymbols.get(sessionSymbol)![variant], {
       className: classList,

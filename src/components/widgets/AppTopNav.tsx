@@ -1,4 +1,5 @@
 import Logo from '@assets/logo_mtb.svg'
+import MenuIcon from '@mui/icons-material/Menu'
 import {
   Divider,
   Drawer,
@@ -7,11 +8,10 @@ import {
   Menu,
   MenuItem,
   Paper,
-} from '@material-ui/core'
-import Button from '@material-ui/core/Button'
-import {makeStyles} from '@material-ui/core/styles'
-import Toolbar from '@material-ui/core/Toolbar'
-import MenuIcon from '@material-ui/icons/Menu'
+} from '@mui/material'
+import Button from '@mui/material/Button'
+import Toolbar from '@mui/material/Toolbar'
+import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
 import {UserSessionData} from '@typedefs/types'
 import clsx from 'clsx'
@@ -311,11 +311,12 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
           aria-label="Open drawer"
           edge="end"
           onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className={classes.menuButton}>
+          className={classes.menuButton}
+          size="large">
           <MenuIcon></MenuIcon>
         </IconButton>
       </Hidden>
-      <Hidden mdDown>
+      <Hidden lgDown>
         <Paper className={classes.toolbarWrapper} elevation={0}>
           <img
             src={Logo}
@@ -443,7 +444,6 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
         id="simple-menu"
         anchorEl={menuAnchor}
         keepMounted
-        getContentAnchorEl={null}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'left',

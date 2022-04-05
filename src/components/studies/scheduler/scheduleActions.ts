@@ -1,4 +1,4 @@
-import {SessionSchedule, StudySession} from '@typedefs/scheduling'
+import {StudySession} from '@typedefs/scheduling'
 
 type ActionMap<M extends {[index: string]: any}> = {
   [Key in keyof M]: M[Key] extends undefined
@@ -18,7 +18,7 @@ export enum ActionTypes {
 export type ActionPayload = {
   [ActionTypes.UpdateSessionSchedule]: {
     sessionId: string
-    schedule: SessionSchedule
+    schedule: StudySession
     shouldInvalidateBurst?: boolean
   }
 }
@@ -29,7 +29,7 @@ export type SessionScheduleAction =
 function updateSessionSchedule(
   sessions: StudySession[],
   sessionId: string,
-  updatedSession: SessionSchedule,
+  updatedSession: StudySession,
   shouldInvalidateBurst?: boolean
 ): StudySession[] {
   if (shouldInvalidateBurst) {

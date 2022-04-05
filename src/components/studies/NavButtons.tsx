@@ -1,4 +1,4 @@
-import {Box} from '@material-ui/core'
+import {Box} from '@mui/material'
 import StudyService from '@services/study.service'
 import {Study} from '@typedefs/types'
 import React from 'react'

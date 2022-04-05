@@ -9,14 +9,15 @@ import {
   Drawer,
   FormControlLabel,
   FormGroup,
-  makeStyles,
   Radio,
   RadioGroup,
-} from '@material-ui/core'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import AdherenceService from '@services/adherence.service'
 import {AdherenceWeeklyReport} from '@typedefs/types'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
+import AdherenceUtility from '../adherenceUtility'
 import {useCommonStyles} from '../styles'
 
 export const useStyles = makeStyles(theme => ({
@@ -79,7 +80,10 @@ function getDisplayLabels(items: AdherenceWeeklyReport[]) {
   const labels = new Map(
     _.flatten(items.map(i => i.rows))
       .filter(r => !!r)
-      .map(r => [r.searchableLabel, r.label])
+      .map(r => [
+        r.searchableLabel,
+        AdherenceUtility.getDisplayFromLabel(r.label, r.studyBurstNum),
+      ])
   )
 
   return new Map(labels)
@@ -96,16 +100,15 @@ const Filter: FunctionComponent<FilterProps> = ({
   const [threshold, setThreshold] = React.useState(getThreshold(min, max))
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [isSelectAll, setIsSelectAll] = React.useState(!selectedLabels)
-  const [displayLabels, setDisplayLabels] = React.useState(
+  /* const [displayLabels, setDisplayLabels] = React.useState(
     getDisplayLabels(adherenceReportItems)
-  )
+  )*/
+
   const [searchLabels, setSearchLabels] = React.useState<string[]>(
     selectedLabels || Array.from(getDisplayLabels(adherenceReportItems).keys())
   )
 
-  if (!displayLabels) {
-    return <></>
-  }
+  const displayLabels = getDisplayLabels(adherenceReportItems)
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget)
@@ -142,7 +145,7 @@ const Filter: FunctionComponent<FilterProps> = ({
       thresh.min = AdherenceService.COMPLIANCE_THRESHOLD
     }
     if (threshold === 'UNDER') {
-      thresh.max = AdherenceService.COMPLIANCE_THRESHOLD
+      thresh.max = AdherenceService.COMPLIANCE_THRESHOLD - 1
     }
 
     onFilterChange({labels, ...thresh})
@@ -214,6 +217,7 @@ const Filter: FunctionComponent<FilterProps> = ({
             <FormControlLabel
               control={
                 <Radio
+                  color="secondary"
                   size="small"
                   value={'ALL'}
                   className={classes.checkbox}
@@ -225,23 +229,25 @@ const Filter: FunctionComponent<FilterProps> = ({
             <FormControlLabel
               control={
                 <Radio
+                  color="secondary"
                   size="small"
                   value={'UNDER'}
                   className={classes.checkbox}
                 />
               }
-              label={`x <= ${AdherenceService.COMPLIANCE_THRESHOLD}%`}
+              label={`x </= ${AdherenceService.COMPLIANCE_THRESHOLD}%`}
             />
 
             <FormControlLabel
               control={
                 <Radio
+                  color="secondary"
                   size="small"
                   value={'OVER'}
                   className={classes.checkbox}
                 />
               }
-              label={`x => ${AdherenceService.COMPLIANCE_THRESHOLD}%`}
+              label={`x > ${AdherenceService.COMPLIANCE_THRESHOLD}%`}
             />
           </RadioGroup>
 

@@ -22,8 +22,8 @@ import {
   Divider,
   FormControl,
   FormLabel,
-} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
 import ParticipantService from '@services/participants.service'
 import {
   latoFont,
@@ -509,7 +509,10 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
         }
         testExternalId = (demoExternalId || newId).split(':')[0]
       } else {
-        testExternalId = await ParticipantService.addTestParticipant(id, token!)
+        testExternalId = await ParticipantService.addPreviewTestParticipant(
+          id,
+          token!
+        )
       }
       setTestParticipantId(testExternalId)
     } catch (e) {

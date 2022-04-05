@@ -1,5 +1,6 @@
 import NotifcationIcon from '@assets/bell.svg'
-import {Box, makeStyles} from '@material-ui/core'
+import { Box } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import {latoFont, poppinsFont} from '@style/theme'
 import React from 'react'
 import {useStyles as SharedSchedulerStyles} from '../Scheduler'

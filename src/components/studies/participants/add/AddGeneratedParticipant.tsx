@@ -1,6 +1,6 @@
-import {Box, FormControl, FormGroup, LinearProgress} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
-import Alert from '@material-ui/lab/Alert'
+import {Box, FormControl, FormGroup, LinearProgress} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
+import Alert from '@mui/material/Alert'
 import React, {FunctionComponent} from 'react'
 import Utility from '../../../../helpers/utility'
 import ParticipantService from '../../../../services/participants.service'
@@ -26,14 +26,14 @@ const AddGeneratedParticipant: FunctionComponent<AddGeneratedParticipantProps> =
   ({onAdded, studyIdentifier, token, isTestAccount}) => {
     const [numOfIds, setNumOfIds] = React.useState(10)
     const [progress, setProgress] = React.useState(0)
-    const [error, setError] = React.useState('')
+    const [error, setError] = React.useState<Error | undefined>()
 
     const enrollWithGeneratedIds = async (
       numberToEnroll: number,
       isTestAccount?: boolean
     ) => {
       setProgress(0)
-      setError('')
+      setError(undefined)
       let itemValue = 100 / numberToEnroll
 
       for (let i = 0; i < numberToEnroll; i++) {
@@ -45,7 +45,7 @@ const AddGeneratedParticipant: FunctionComponent<AddGeneratedParticipantProps> =
             isTestAccount
           )
         } catch (error) {
-          setError((error as Error).toString())
+          setError(error as Error)
         }
 
         setProgress(_prev => _prev + itemValue)
@@ -58,7 +58,7 @@ const AddGeneratedParticipant: FunctionComponent<AddGeneratedParticipantProps> =
     return (
       <>
         <Box mx="auto" textAlign="center" my={2}>
-          {error && <Alert color="error">{error}</Alert>}
+          {error && <Alert color="error">{error?.message}</Alert>}
         </Box>
         <HideWhen hideWhen={progress > 0 && progress < 100}>
           <FormGroup>

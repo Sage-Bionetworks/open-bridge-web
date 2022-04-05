@@ -1,4 +1,5 @@
-import {Box, makeStyles} from '@material-ui/core'
+import { Box } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import {latoFont} from '@style/theme'
 import {AdherenceWindowState} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
@@ -26,7 +27,7 @@ const SessionLegend: FunctionComponent<{
   const classes = useStyles()
   const arr: {label: string; state: AdherenceWindowState}[] = [
     {label: 'Upcoming', state: 'not_yet_available'},
-    {label: 'Incomplete', state: 'expired'},
+    {label: 'Did not do', state: 'expired'},
     {label: 'Partial Complete', state: 'started'},
     {label: 'Completed', state: 'completed'},
   ]
@@ -35,7 +36,10 @@ const SessionLegend: FunctionComponent<{
       <strong>{sessionName}</strong>{' '}
       {arr.map(e => (
         <div key={e.label}>
-          <AdherenceSessionIcon sessionSymbol={symbolKey} windowState={e.state}>
+          <AdherenceSessionIcon
+            sessionSymbol={symbolKey}
+            windowState={e.state}
+            isInLegend={true}>
             {e.label}
           </AdherenceSessionIcon>
         </div>

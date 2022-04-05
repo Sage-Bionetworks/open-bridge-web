@@ -1,12 +1,6 @@
-import {
-  Box,
-  makeStyles,
-  MenuItem,
-  Select,
-  SelectProps,
-  TextField,
-} from '@material-ui/core'
-import Autocomplete from '@material-ui/lab/Autocomplete'
+import {Box, MenuItem, Select, SelectProps, TextField} from '@mui/material'
+import Autocomplete from '@mui/material/Autocomplete'
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React from 'react'
 import {poppinsFont, ThemeType} from '../../style/theme'
@@ -16,15 +10,17 @@ interface StyleProps {
   itemHeight: string
 }
 const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
-  root: props => ({
+  selectBase: props => ({
+    height: props.itemHeight,
+    backgroundColor: theme.palette.common.white,
     width: props.width,
     '& .MuiSelect-icon': {
       marginRight: theme.spacing(1),
     },
-  }),
-  select: props => ({
-    height: props.itemHeight,
-    backgroundColor: 'white',
+    '& input': {
+      backgroundColor: 'white',
+    },
+
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -32,13 +28,32 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
     outline: 'none',
     transition: '0.25s ease',
     fontSize: '14px',
-    //width: '100%',
     boxSizing: 'border-box',
     '&:hover': {
       backgroundColor: theme.palette.primary.dark,
     },
+    '&:focus': {
+      backgroundColor: theme.palette.common.white,
+    },
+
     paddingLeft: theme.spacing(2),
   }),
+
+  listPadding: {
+    padding: theme.spacing(0),
+    '& .MuiInputBase-input': {
+      backgroundColor: 'inherit',
+    },
+  },
+  listBorder: {
+    borderRadius: '0px',
+  },
+  errorBorder: {
+    border: `1px solid ${theme.palette.error.main}`,
+  },
+  regularBorder: {
+    border: '1px solid black',
+  },
 
   optionClass: props => ({
     width: props.width,
@@ -62,22 +77,6 @@ const useStyles = makeStyles<ThemeType, StyleProps>(theme => ({
       backgroundColor: 'white',
     },
   },
-
-  listPadding: {
-    padding: theme.spacing(0),
-    '& .MuiInputBase-input': {
-      backgroundColor: 'inherit',
-    },
-  },
-  listBorder: {
-    borderRadius: '0px',
-  },
-  errorBorder: {
-    border: `1px solid ${theme.palette.error.main}`,
-  },
-  regularBorder: {
-    border: '1px solid black',
-  },
 }))
 
 export interface BlackBorderDropdownStyleProps {
@@ -90,7 +89,8 @@ export interface BlackBorderDropdownStyleProps {
   hasError?: boolean
   searchableOnChange?: Function
   isSearchable?: boolean
-  searchableDescription?: string
+  controlLabel?: string
+  isRequired?: boolean
 }
 
 const BlackBorderDropdown: React.FunctionComponent<
@@ -106,24 +106,26 @@ const BlackBorderDropdown: React.FunctionComponent<
   hasError,
   searchableOnChange,
   isSearchable,
-  searchableDescription,
+  controlLabel,
+  isRequired,
   ...other
 }) => {
+  console.log(hasError)
   const classes = useStyles({width, itemHeight})
   const selectMenu = (
     <Select
       labelId={id}
-      className={classes.root}
       id={id}
+      color="secondary"
+      variant="filled"
       value={value}
       onChange={onChange}
       disableUnderline
       classes={{
-        selectMenu: classes.selectMenu,
-        root: clsx(
+        select: clsx(
+          true && classes.selectBase,
           hasError && classes.errorBorder,
-          !hasError && classes.regularBorder,
-          classes.select
+          !hasError && classes.regularBorder
         ),
       }}
       MenuProps={{
@@ -131,7 +133,7 @@ const BlackBorderDropdown: React.FunctionComponent<
           list: classes.listPadding,
           paper: classes.listBorder,
         },
-        getContentAnchorEl: null,
+
         anchorOrigin: {
           vertical: 'bottom',
           horizontal: 'center',
@@ -160,7 +162,7 @@ const BlackBorderDropdown: React.FunctionComponent<
   const searchableDropdown = (
     <Box>
       <Box style={{fontSize: '14px', fontFamily: poppinsFont}}>
-        {searchableDescription || ''}
+        {`${controlLabel || ''}${isRequired ? '*' : ''}`}
       </Box>
       <Autocomplete
         value={{value: value, label: value}}

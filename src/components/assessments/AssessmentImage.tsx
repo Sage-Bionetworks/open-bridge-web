@@ -1,5 +1,6 @@
-import {CardMedia} from '@material-ui/core'
-import {createStyles, makeStyles} from '@material-ui/core/styles'
+import {CardMedia} from '@mui/material'
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import React, {FunctionComponent, ReactNode} from 'react'
 import DefaultImg from '../../assets/sage.svg'
 import {AssessmentResource} from '../../types/types'
@@ -8,7 +9,7 @@ const useStyles = makeStyles(theme =>
   createStyles({
     media: {
       height: 180,
-      padding: `${theme.spacing(2)}px ${theme.spacing(2)}px 0 ${theme.spacing(
+      padding: `${theme.spacing(2)} ${theme.spacing(2)} 0 ${theme.spacing(
         2
       )}px`,
       backgroundPositionY: 'top',

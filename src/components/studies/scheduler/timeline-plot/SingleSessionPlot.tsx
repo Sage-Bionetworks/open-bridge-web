@@ -1,5 +1,5 @@
 import SessionIcon from '@components/widgets/SessionIcon'
-import {Tooltip} from '@material-ui/core'
+import {Tooltip} from '@mui/material'
 import React from 'react'
 import {CoordItem} from './utility'
 export interface SingleSessionPlotProps {

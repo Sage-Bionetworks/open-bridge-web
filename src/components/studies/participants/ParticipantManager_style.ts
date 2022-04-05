@@ -1,4 +1,4 @@
-import {makeStyles} from '@material-ui/core/styles'
+import makeStyles from '@mui/styles/makeStyles'
 import {latoFont, poppinsFont} from '@style/theme'
 
 const useStyles = makeStyles(theme => ({
@@ -15,12 +15,18 @@ const useStyles = makeStyles(theme => ({
   tab: {
     marginRight: theme.spacing(2),
     width: '250px',
+
     clipPath: 'polygon(10% 0%, 90% 0, 98% 100%,0 100%)',
     marginLeft: theme.spacing(-3.5),
     zIndex: 0,
     backgroundColor: '#F0F0F0',
     fontSize: '12px',
     fontFamily: poppinsFont,
+
+    '& >div': {
+      display: 'flex',
+      alignItems: 'center',
+    },
   },
   gridToolBar: {
     backgroundColor: theme.palette.common.white,

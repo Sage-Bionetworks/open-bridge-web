@@ -1,8 +1,8 @@
 import {ReactComponent as SessionStartIcon} from '@assets/scheduler/calendar_icon.svg'
 import {useStudy} from '@components/studies/studyHooks'
 import SessionIcon from '@components/widgets/SessionIcon'
-import {Tooltip} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+import {Tooltip} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ScheduleService from '@services/schedule.service'
 import {latoFont} from '@style/theme'
@@ -161,18 +161,17 @@ export const PlotDaysDisplay: React.FunctionComponent<{
   unitWidth: number
   title: string
   endLabel?: React.ReactNode
-}> = ({unitWidth, title, endLabel}) => {
+  titleStyle?: React.CSSProperties
+}> = ({unitWidth, title, endLabel, titleStyle}) => {
   const classes = useStyles()
+  const defaultTitleStyle = {
+    width: `${99 + unitWidth / 2}px`,
+    paddingLeft: '12px',
+    fontSize: '12px',
+  }
   return (
     <div className={classes.week}>
-      <div
-        style={{
-          width: `${99 + unitWidth / 2}px`,
-          paddingLeft: '12px',
-          fontSize: '12px',
-        }}>
-        {title}
-      </div>
+      <div style={{...defaultTitleStyle, ...titleStyle}}>{title}</div>
       <div className={classes.graph}>
         <div className={classes.sessionName}></div>
         <div
@@ -274,7 +273,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
 
   const getBurstIntervalInWeeks = (): number => {
     const burst = ScheduleService.getStudyBurst(timeline)
-    return burst ? Number(burst.interval.replace(/[PW]/g, '')) : 0
+    return burst ? Number(burst.interval.replace(/[PW]/g, '')) : 0;
   }
 
   React.useEffect(() => {
@@ -503,7 +502,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
   return (
     <div ref={ref} className={classes.plotContainer}>
       <PlotDaysDisplay unitWidth={unitWidth} title="Schedule by week day" />
-      <div style={{position: 'relative', overflow: 'hidden'}}>
+      <div style={{position: 'relative' /*, overflow: 'hidden'*/}}>
         {!isLoading && plotData && (
           <>
             {children && (

@@ -43,12 +43,14 @@ export const useUpdateEventsForUser = () => {
     studyId: string
     participantId: string
     customEvents: ParticipantEvent[]
+    clientTimeZone: string
   }): Promise<string> => {
     const participantId = await EventService.updateParticipantCustomEvents(
       props.studyId,
       token!,
       props.participantId,
-      props.customEvents
+      props.customEvents,
+      props.clientTimeZone
     )
     return participantId
   }
@@ -119,7 +121,6 @@ export const useEventsForUsers = (
   >(
     EVENTS_KEYS.details(studyId, userIds),
     () => {
-      console.log('getting hi' + userIds.join(','))
       return EventService.getRelevantEventsForParticipants(
         studyId!,
         token!,

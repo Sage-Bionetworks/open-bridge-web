@@ -1,12 +1,14 @@
 import {
+  AdherenceDetailReport,
   AdherenceWeeklyReport,
-  EventStreamAdherenceReport,
+  ProgressionStatus,
 } from '@typedefs/types'
 import _ from 'lodash'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
+import ParticipantService from './participants.service'
 
-export const COMPLIANCE_THRESHOLD = 50
+export const COMPLIANCE_THRESHOLD = 60
 
 export type WeeklyAdherenceFilter = {
   idFilter?: string
@@ -14,7 +16,7 @@ export type WeeklyAdherenceFilter = {
 
   adherenceMax?: number
   adherenceMin?: number
-  progressionFilters?: ('done' | 'in_progress' | 'unstarted')[]
+  progressionFilters?: ProgressionStatus[]
 }
 
 async function getAdherenceForWeekForUsers(
@@ -42,7 +44,7 @@ async function getAdherenceForWeek(
 
   token: string
 ): Promise<{total: number; items: AdherenceWeeklyReport[]}> {
-  /*  console.log('startint priming - only use if need immediate data for test')
+  console.log('startint priming - only use if need immediate data for test')
   const enr = await ParticipantService.getEnrollmentByEnrollmentType(
     studyId,
     token!,
@@ -50,10 +52,11 @@ async function getAdherenceForWeek(
     true
   )
 
-  // ALINA TODO: remove when batched report is done -- priming 
-  const ids = enr.items.map(p => p.participant.identifier)
+  // ALINA TODO: remove when batched report is done -- priming
+  /* const ids = enr.items.map(p => p.participant.identifier)
+  console.log('ds', ids)
   const prime = await getAdherenceForWeekForUsers(studyId, ids, token)
-  console.log('starting all')
+  console.log('starting all')*/
   /* end of priming */
 
   const endpoint = constants.endpoints.adherenceWeekly.replace(
@@ -62,8 +65,7 @@ async function getAdherenceForWeek(
   )
 
   const defaultFilters = {
-    adherenceMax: 100,
-    adherenceMin: 0,
+    progressionFilters: ['in_progress', 'done'],
     testFilter: 'both',
   }
 
@@ -94,8 +96,7 @@ async function getAdherenceForParticipant(
   studyId: string,
   userId: string,
   token: string
-): Promise<EventStreamAdherenceReport> {
-  console.log('getting particiapnt')
+): Promise<AdherenceDetailReport> {
   const endpoint = constants.endpoints.adherenceDetail
     .replace(':studyId', studyId)
     .replace(':userId', userId)

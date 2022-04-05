@@ -4,15 +4,9 @@ import {
   SimpleTextInput,
   SimpleTextLabel,
 } from '@components/widgets/StyledComponents'
-import {
-  Box,
-  DialogActions,
-  DialogContent,
-  FormControl,
-  FormGroup,
-  makeStyles,
-} from '@material-ui/core'
-import Alert from '@material-ui/lab/Alert'
+import { Box, DialogActions, DialogContent, FormControl, FormGroup } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import Alert from '@mui/material/Alert'
 import {EditableParticipantData} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {latoFont} from '../../../../style/theme'

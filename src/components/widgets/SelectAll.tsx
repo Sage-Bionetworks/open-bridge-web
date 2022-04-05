@@ -1,6 +1,6 @@
-import {Box, Button, Checkbox, Menu, MenuItem} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
-import CheckIcon from '@material-ui/icons/Check'
+import {Box, Button, Checkbox, Menu, MenuItem} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
+import CheckIcon from '@mui/icons-material/Check'
 import {SelectionType} from '@typedefs/types'
 import clsx from 'clsx'
 import React from 'react'

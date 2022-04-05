@@ -9,8 +9,8 @@ import {
   Grid,
   Radio,
   RadioGroup,
-} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import moment from 'moment'
 import React, {useEffect} from 'react'
 import {NavLink, Redirect} from 'react-router-dom'
@@ -441,13 +441,13 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                       setIrbRecordSameInstAffiliation(isSameAsInstitution)
                     }}>
                     <FormControlLabel
-                      control={<Radio />}
+                      control={<Radio color="secondary" />}
                       label="Same Institutional Affiliation"
                       value="aff_same"
                       id="aff_same_irb_record"
                     />
                     <FormControlLabel
-                      control={<Radio />}
+                      control={<Radio color="secondary" />}
                       label="Other:"
                       value="aff_other"
                       id="aff_other_irb_record"

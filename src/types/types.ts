@@ -166,6 +166,7 @@ export type Study = {
   irbDecisionOn?: string
   irbDecisionType?: 'exempt' | 'approved'
   irbName?: string
+  studyStartEventId?: string
 }
 
 export type WelcomeScreenData = {
@@ -235,6 +236,7 @@ export type ParticipantActivityType = 'ACTIVE' | 'WITHDRAWN' | 'TEST'
 export type ParticipantEvent = {
   eventId: string
   timestamp?: Date
+  clientTimeZone?: string
 }
 export type EditableParticipantData = {
   events?: ParticipantEvent[]
@@ -250,6 +252,12 @@ type EnrolledSubrecord = {
   externalId: string
   enrolledOn: string
 }
+
+export type ProgressionStatus =
+  | 'done'
+  | 'in_progress'
+  | 'unstarted'
+  | 'no_schedule'
 
 export type ParticipantAccountSummary = {
   // isSelected?: boolean
@@ -310,21 +318,20 @@ export type AdherenceWindowState =
   | 'completed'
   | 'abandoned'
   | 'expired'
-  | 'not_yet_available'
-  | 'unstarted'
   | 'declined'
 
 export type AdherenceSessionInfo = {
   sessionGuid: string
   sessionName: string
   sessionSymbol: string
-  week: number
+  weekInStudy: number
   studyBurstId: string
   studyBurstNum: number
   startDate: string
 }
 
 export type EventStreamDay = AdherenceSessionInfo & {
+  today?: boolean
   startDay: number
   timeWindows: {
     sessionInstanceGuid: string
@@ -337,28 +344,34 @@ export type EventStreamDay = AdherenceSessionInfo & {
 
 export type AdherenceByDayEntries = Record<string, EventStreamDay[]>
 
-export type WeeklyAdherenceByDayEntries = Record<
-  string,
-  (EventStreamDay & {label: string})[]
->
+export type AdherenceDetailReportWeek = {
+  weekInStudy: number
 
-export type AdherenceEventStream = {
-  startEventId: string
-  eventTimestamp: string
-  sessionGuids: [string]
+  startDate: string
+  adherencePercent: number
+  rows: RowLabel[]
   byDayEntries: AdherenceByDayEntries
-  type: 'EventStream'
 }
 
-export type EventStreamAdherenceReport = {
-  timestamp: string
-  clientTimeZone: string
-  adherencePercent: number
-  dayRangeOfAllStreams: {
-    min: number
-    max: number
+export type AdherenceDetailReport = {
+  participant: {identifier: string; externalId: string}
+
+  testAccount?: boolean
+  progression: ProgressionStatus
+  dateRange: {
+    startDate: string //YYYY-MM-DD
+    endDate: string
   }
-  streams: AdherenceEventStream[]
+
+  adherencePercent: number
+  clientTimeZone: string
+  createdOn: string
+  weeks: AdherenceDetailReportWeek[]
+
+  nextActivity: AdherenceSessionInfo
+  unsetEventIds: string[]
+  unscheduledSessions: string[]
+  eventTimestamps: Record<string, string>
 }
 
 export type SessionDisplayInfo = {
@@ -376,20 +389,20 @@ export type RowLabel = {
   week: number
   studyBurstId?: string
   studyBurstNum?: number
-  type: string
+  startEventId: string
+  weekInStudy: number
 }
-export type ProgressionStatus = 'done' | 'in_progress' | 'unstarted'
 
 export type AdherenceWeeklyReport = {
   participant: {identifier: string; externalId: string}
-  //rowLabels: string[]
+
   testAccount?: boolean
   progression: ProgressionStatus
   rows: RowLabel[]
   weeklyAdherencePercent: number
   clientTimeZone: string
   createdOn: string
-  byDayEntries: WeeklyAdherenceByDayEntries
+  byDayEntries: AdherenceByDayEntries
   nextActivity?: AdherenceSessionInfo
 }
 

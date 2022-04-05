@@ -4,9 +4,10 @@ import {
   SimpleTextLabel,
 } from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
-import {FormHelperText, makeStyles} from '@material-ui/core'
-import FormControl from '@material-ui/core/FormControl'
-import FormGroup from '@material-ui/core/FormGroup'
+import { FormHelperText } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import FormControl from '@mui/material/FormControl'
+import FormGroup from '@mui/material/FormGroup'
 import {ExtendedScheduleEventObject} from '@services/schedule.service'
 import {EditableParticipantData} from '@typedefs/types'
 import clsx from 'clsx'
@@ -99,7 +100,8 @@ const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps>
           )}
           <FormControl>
             <TimezoneDropdown
-              currentValue={participant.clientTimeZone || ''}
+              isRequired={true}
+              currentValue={participant.clientTimeZone || '-'}
               onValueChange={(clientTimeZone: string) =>
                 onChange({...participant, clientTimeZone})
               }

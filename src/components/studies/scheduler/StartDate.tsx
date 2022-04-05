@@ -1,22 +1,22 @@
+import {ReactComponent as EditIcon} from '@assets/edit_pencil.svg'
+import {ReactComponent as RedEditIcon} from '@assets/edit_pencil_red.svg'
 import {
   FormControl,
   FormGroup,
   IconButton,
-  makeStyles,
   MenuItem,
   Radio,
   RadioGroup,
   Select,
   Tooltip,
-} from '@material-ui/core'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import {JOINED_EVENT_ID} from '@services/event.service'
 import constants from '@typedefs/constants'
 import {HDWMEnum, SchedulingEvent} from '@typedefs/scheduling'
 import React, {FunctionComponent} from 'react'
 import Duration from './Duration'
 import SchedulingFormSection from './SchedulingFormSection'
-import {ReactComponent as RedEditIcon} from '@assets/edit_pencil_red.svg'
-import {ReactComponent as EditIcon} from '@assets/edit_pencil.svg'
 
 const useStyles = makeStyles(theme => ({
   select: {padding: theme.spacing(1, 4, 1, 1), width: '150px'},
@@ -44,31 +44,35 @@ const useStyles = makeStyles(theme => ({
   },
   editIcon: {
     '&:hover': {
-      backgroundColor: 'transparent', 
-    }
+      backgroundColor: 'transparent',
+    },
   },
 }))
 
 type ToolIconProps = {
   onOpenEventsEditor: Function
 }
-const ToolIcon: FunctionComponent<ToolIconProps> = ({
-  onOpenEventsEditor
-}) => {
+const ToolIcon: FunctionComponent<ToolIconProps> = ({onOpenEventsEditor}) => {
   const classes = useStyles()
   const [isHoveringEdit, setIsHoveringEdit] = React.useState(false)
   const handleMouseOver = () => setIsHoveringEdit(true)
   const handleMouseOut = () => setIsHoveringEdit(false)
-  return(
-    <Tooltip title = "Edit Custom Event">
-      <IconButton 
-      className={classes.editIcon} 
-      onClick={()=>onOpenEventsEditor()} 
-      onMouseEnter={handleMouseOver} 
-      onMouseLeave={handleMouseOut}>
+  return (
+    <Tooltip title="Edit Custom Event">
+      <IconButton
+        className={classes.editIcon}
+        onClick={() => onOpenEventsEditor()}
+        onMouseEnter={handleMouseOver}
+        onMouseLeave={handleMouseOut}
+        size="large">
         {' '}
-        {isHoveringEdit? <EditIcon /> : 
-        <RedEditIcon style={{position:'relative', bottom:'0.5px', right:'0.5px'}}/>}
+        {isHoveringEdit ? (
+          <EditIcon />
+        ) : (
+          <RedEditIcon
+            style={{position: 'relative', bottom: '0.5px', right: '0.5px'}}
+          />
+        )}
       </IconButton>
     </Tooltip>
   )
@@ -126,7 +130,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
         <Select
           variant="outlined"
           disabled={disabled}
-          classes={{root: classes.select}}
+          classes={{select: classes.select}}
           onChange={e => onChangeFn(e.target.value)}
           id={'id'}
           value={value}>
@@ -149,18 +153,18 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
           value={hasDelay}
           onChange={e => changeStartDelayType(e.target.value === 'true')}>
           <FormGroup row={true} style={{alignItems: 'center'}}>
-            <Radio value={false} disabled={isBurst} />
+            <Radio value={false} disabled={isBurst} color="secondary" />
             <SelectEventId
-              disabled={hasDelay}
+              disabled={hasDelay || isBurst}
               value={!hasDelay ? startEventId : ''}
               onChangeFn={(e: string) =>
                 onChangeStartEventId(e)
               }></SelectEventId>
-              <ToolIcon onOpenEventsEditor={onOpenEventsEditor}/>
-            {isBurst ? children : ''}          
+            <ToolIcon onOpenEventsEditor={onOpenEventsEditor} />
+            {isBurst ? children : ''}
           </FormGroup>
           <FormGroup row={true} style={{alignItems: 'center'}}>
-            <Radio value={true} disabled={isBurst} />{' '}
+            <Radio value={true} color="secondary" disabled={isBurst} />{' '}
             <Duration
               onChange={e => {
                 onChangeDelay(e.target.value)
@@ -179,7 +183,7 @@ const StartDate: React.FunctionComponent<StartDateProps> = ({
               onChangeFn={(e: string) =>
                 onChangeStartEventId(e)
               }></SelectEventId>
-            <ToolIcon onOpenEventsEditor={onOpenEventsEditor}/>
+            <ToolIcon onOpenEventsEditor={onOpenEventsEditor} />
           </FormGroup>
         </RadioGroup>
       </div>

@@ -1,4 +1,4 @@
-import {makeStyles} from '@material-ui/core/styles'
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx'
 import React, {ReactNode} from 'react'
 import {latoFont, poppinsFont} from '../../../style/theme'
@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 600,
     flexShrink: 0,
     textAlign: 'left',
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       fontSize: '16px',
       width: theme.spacing(10),
     },
@@ -54,7 +54,7 @@ const useStyles = makeStyles(theme => ({
       fontWeight: 400,
       fontSize: '14px',
       fontFamily: latoFont,
-      [theme.breakpoints.down('md')]: {
+      [theme.breakpoints.down('lg')]: {
         '&.collapseLabelSmall': {
           width: 0,
         },

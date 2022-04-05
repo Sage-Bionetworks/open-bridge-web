@@ -1,4 +1,4 @@
-import {FormControlLabel} from '@material-ui/core'
+import {FormControlLabel} from '@mui/material'
 import React from 'react'
 import {DWsEnum} from '../../../types/scheduling'
 import Duration from './Duration'

@@ -4,12 +4,12 @@ import LiveIcon from '@assets/live_study_icon.svg'
 import participants_icon from '@assets/participants_icon.svg'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import {Box, IconButton, TextField} from '@material-ui/core'
-import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
-import {makeStyles} from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
+import {Box, IconButton, TextField} from '@mui/material'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
 import ParticipantService from '@services/participants.service'
 import {ThemeType} from '@style/theme'
 import {Study} from '@typedefs/types'
@@ -227,7 +227,8 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
         onClick={e => {
           cancelPropagation(e)
           onSetAnchor(e.currentTarget)
-        }}>
+        }}
+        size="large">
         <Box
           className={classes.menuBox}
           style={
@@ -245,7 +246,7 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
         <div className={classes.cardStatus}>Draft</div>
       )}
     </Box>
-  )
+  );
 }
 
 type StudyCardProps = {

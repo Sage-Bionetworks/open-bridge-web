@@ -1,4 +1,5 @@
-import {Box, makeStyles} from '@material-ui/core'
+import { Box } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import EventService from '@services/event.service'
 import {poppinsFont} from '@style/theme'
 import {
@@ -106,10 +107,21 @@ const ReadOnlyScheduler: React.FunctionComponent<ReadOnlySchedulerProps> = ({
         <Box className={sessionContainerClasses.formSection}>
           <SchedulingFormSection
             label={
-              <Box
-                className={
-                  classes.rowHeader
-                }>{`${session.name} starts on:`}</Box>
+              <Box className={classes.rowHeader}>
+                {session.name}&nbsp;
+                {session.delay ? (
+                  <span>
+                    starts
+                    <br />
+                    <strong>
+                      {getFormattedTimeDateFromPeriodString(session.delay)}
+                    </strong>{' '}
+                    from:{' '}
+                  </span>
+                ) : (
+                  'starts on:'
+                )}
+              </Box>
             }>
             <strong
               className={clsx(

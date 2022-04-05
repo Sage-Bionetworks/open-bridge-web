@@ -1,14 +1,15 @@
 import {ReactComponent as CloseStudy} from '@assets/dialogs/close_study.svg'
 import {ReactComponent as WithdrawStudy} from '@assets/dialogs/withdraw_study.svg'
 import {ReactComponent as Delete} from '@assets/trash.svg'
-import {IconButton, makeStyles} from '@material-ui/core'
-import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import CloseIcon from '@material-ui/icons/Close'
+import CloseIcon from '@mui/icons-material/Close'
+import {IconButton} from '@mui/material'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
+import makeStyles from '@mui/styles/makeStyles'
 import {latoFont, poppinsFont} from '@style/theme'
 import React, {FunctionComponent} from 'react'
 
@@ -43,6 +44,7 @@ const useStyles = makeStyles(theme => ({
     lineHeight: '19px',
   },
   confirmButton: {
+    color: '#000',
     whiteSpace: 'nowrap',
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
@@ -71,10 +73,13 @@ const useStyles = makeStyles(theme => ({
     borderRadius: '0px',
     border: '1px solid black',
     background: '#FCFCFC',
+    color: 'black',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
     fontFamily: 'Lato',
     '&:hover': {
       transform: 'translateY(1px)',
+      backgroundColor: '#d5d5d5',
+      color: '#000',
     },
   },
   dialogButtonsContainer: {
@@ -147,16 +152,14 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
             ? classes.dialogPaperWide
             : classes.dialogPaper,
       }}>
-      <DialogTitle
-        id="alert-dialog-title"
-        disableTypography={true}
-        className={classes.title}>
+      <DialogTitle id="alert-dialog-title" className={classes.title}>
         {getImage()}
         <div>{title}</div>
         <IconButton
           aria-label="close"
           className={classes.closeButton}
-          onClick={() => onCancel()}>
+          onClick={() => onCancel()}
+          size="large">
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -168,8 +171,8 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
       <DialogActions className={classes.dialogButtonsContainer}>
         <Button
           onClick={() => onCancel()}
-          color="default"
           variant="contained"
+          color="primary"
           className={classes.cancelButton}>
           {cancelText}
         </Button>
@@ -177,6 +180,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
           onClick={() => onConfirm()}
           className={classes.confirmButton}
           variant="contained"
+          color="secondary"
           autoFocus>
           {type === 'NAVIGATE' ? 'Continue' : actionText}
         </Button>

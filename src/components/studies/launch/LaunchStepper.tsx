@@ -1,15 +1,13 @@
-import {StepButton} from '@material-ui/core'
-import Step from '@material-ui/core/Step'
-import StepConnector from '@material-ui/core/StepConnector'
-import {StepIconProps} from '@material-ui/core/StepIcon'
-import StepLabel from '@material-ui/core/StepLabel'
-import Stepper from '@material-ui/core/Stepper'
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  withStyles,
-} from '@material-ui/core/styles'
+import {StepButton} from '@mui/material'
+import Step from '@mui/material/Step'
+import StepConnector from '@mui/material/StepConnector'
+import {StepIconProps} from '@mui/material/StepIcon'
+import StepLabel from '@mui/material/StepLabel'
+import Stepper from '@mui/material/Stepper'
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import withStyles from '@mui/styles/withStyles';
 import clsx from 'clsx'
 import React from 'react'
 import {ReactComponent as IrbIcon} from '../../../assets/launch/irb_icon.svg'

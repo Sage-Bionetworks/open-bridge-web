@@ -10,12 +10,12 @@ import {
   Hidden,
   IconButton,
   LinearProgress,
-} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
-import Toolbar from '@material-ui/core/Toolbar'
-import MenuIcon from '@material-ui/icons/Menu'
-import PeopleIcon from '@material-ui/icons/People'
-import {Alert} from '@material-ui/lab'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
+import Toolbar from '@mui/material/Toolbar'
+import MenuIcon from '@mui/icons-material/Menu'
+import PeopleIcon from '@mui/icons-material/People'
+import { Alert } from '@mui/material';
 import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
 import {ExtendedError, Study, StudyPhase} from '@typedefs/types'
@@ -186,11 +186,12 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
           aria-label="Open drawer"
           edge="end"
           onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className={classes.menuButton}>
+          className={classes.menuButton}
+          size="large">
           <MenuIcon></MenuIcon>
         </IconButton>
       </Hidden>
-      <Hidden mdDown>
+      <Hidden lgDown>
         <Box className={classes.toolbarStudyHeader}>
           <Toolbar
             component="nav"
@@ -203,8 +204,8 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               alignItems: 'center',
             }}>
             <NavLink
-              to="/Studies"
-              key="/Studies"
+              to="/studies"
+              key="/studies"
               className={classes.toolbarLink}
               style={{paddingBottom: '0', paddingLeft: '4px'}}>
               <img
@@ -216,7 +217,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
             </NavLink>
             <HideWhen hideWhen={study === undefined && !error}>
               <BreadCrumb
-                links={[{url: '/Studies', text: ''}]}
+                links={[{url: '/studies', text: ''}]}
                 currentItem={
                   study?.name &&
                   study?.name !== constants.constants.NEW_STUDY_NAME
@@ -336,7 +337,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
         </Box>
       )}
     </Box>
-  )
+  );
 }
 
 export default StudyTopNav

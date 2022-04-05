@@ -1,4 +1,5 @@
-import {Box, FormControl, makeStyles} from '@material-ui/core'
+import { Box, FormControl } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx'
 import React from 'react'
 import Utility from '../../../helpers/utility'

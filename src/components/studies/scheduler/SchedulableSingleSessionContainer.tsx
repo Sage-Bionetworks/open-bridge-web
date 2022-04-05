@@ -1,7 +1,8 @@
 import AlertIcon from '@assets/alert_icon.svg'
 import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
 import {AlertWithText, BlueButton} from '@components/widgets/StyledComponents'
-import {Box, makeStyles, Switch} from '@material-ui/core'
+import {Box, Switch} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import {DEFAULT_NOTIFICATION} from '@services/schedule.service'
 import {latoFont, ThemeType} from '@style/theme'
 import {
@@ -57,6 +58,7 @@ type SchedulableSingleSessionContainerProps = {
   onUpdateSessionSchedule: Function
   customEvents?: SchedulingEvent[]
   onOpenEventsEditor: Function
+  hasCriticalStartEvent?: boolean
 
   sessionErrorState:
     | {
@@ -86,6 +88,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     customEvents,
     burstOriginEventId,
     onOpenEventsEditor,
+    hasCriticalStartEvent,
   }) => {
     const classes = useStyles()
 
@@ -163,7 +166,11 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
       newSession: StudySession,
       shouldInvalidateBurst?: boolean
     ) => {
-      onUpdateSessionSchedule(newSession, shouldInvalidateBurst)
+      onUpdateSessionSchedule(
+        newSession,
+        shouldInvalidateBurst,
+        shouldInvalidateBurst && hasCriticalStartEvent
+      )
     }
 
     const addNewWindow = () => {
@@ -303,9 +310,9 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
               <InfoCircleWithToolTip
                 tooltipDescription={
                   <span>
-                    &nbsp;To <strong>rename or delete</strong> this Event,
-                    please unselect it from the Session Start that is currently
-                    mapped to it in the Create Scheduler step.
+                    This session is now part of a <strong>Burst</strong>. To
+                    edit this Start Session event, the session must be removed
+                    from the Burst first.
                   </span>
                 }
                 variant="info"
@@ -370,6 +377,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
                 <BlueButton
                   style={{marginLeft: 0}}
+                  color="secondary"
                   onClick={addNewWindow}
                   variant="contained"
                   disabled={hasWindowLongerThan24h()}>
@@ -469,6 +477,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                 {!schedulableSession.notifications && (
                   <BlueButton
                     onClick={addNewNotification}
+                    color="secondary"
                     style={{marginLeft: 0}}
                     variant="contained">
                     +Add new notification
@@ -478,6 +487,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
                 {schedulableSession.notifications?.length === 1 && (
                   <BlueButton
                     onClick={addNewNotification}
+                    color="secondary"
                     style={{marginLeft: 0}}
                     variant="contained">
                     +Add a reminder notification

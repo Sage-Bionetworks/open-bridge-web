@@ -1,6 +1,6 @@
 import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
-import {Box, Button, CircularProgress, IconButton} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+import {Box, Button, CircularProgress, IconButton} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react'
 import Subsection from './widgets/Subsection'
 
@@ -59,7 +59,8 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> =
             {studyLogoUrl && (
               <IconButton
                 style={{height: '40px'}}
-                onClick={e => handleFileChange(undefined)}>
+                onClick={e => handleFileChange(undefined)}
+                size="large">
                 <DeleteIcon />
               </IconButton>
             )}
@@ -91,7 +92,7 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> =
           </Button>
         )}
       </Subsection>
-    )
+    );
   }
 
 export default UploadStudyLogoSection

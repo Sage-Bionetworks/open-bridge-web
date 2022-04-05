@@ -1,5 +1,6 @@
 import React from 'react'
-import {makeStyles, Box} from '@material-ui/core'
+import { Box } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import RocketIcon from '../../../assets/participants/participant_manager_rocket_icon.svg'
 import LiveCard from '../../../assets/participants/participant_manager_live_card_draft_icon.svg'
 import DraftCard from '../../../assets/participants/participant_manager_study_card_draft_icon.svg'

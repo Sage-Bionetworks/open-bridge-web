@@ -1,9 +1,5 @@
-import {
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  makeStyles,
-} from '@material-ui/core'
+import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import {ProgressionStatus} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useCommonStyles} from '../styles'
@@ -22,7 +18,6 @@ type CompletionFilterProps = {
 const COMPLETION_STATUS: {label: string; value: ProgressionStatus}[] = [
   {label: 'In Progress', value: 'in_progress'},
   {label: 'Completed', value: 'done'},
-  {label: 'Not Started', value: 'unstarted'},
 ]
 
 const ProgressionFilter: FunctionComponent<CompletionFilterProps> = ({
@@ -56,10 +51,10 @@ const ProgressionFilter: FunctionComponent<CompletionFilterProps> = ({
 
   return (
     <>
-      {COMPLETION_STATUS.map(status => (
+      {COMPLETION_STATUS.map((status, index) => (
         <FormGroup>
           <FormControlLabel
-            key={status.value}
+            key={status.value + index}
             value={status.value}
             control={
               <Checkbox

@@ -1,4 +1,4 @@
-import {Tooltip} from '@material-ui/core'
+import {Tooltip} from '@mui/material'
 import {AdherenceWindowState} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import AdherenceUtility from './adherenceUtility'
@@ -10,11 +10,13 @@ const TimeWindowPlotElement: FunctionComponent<{
   sessionSymbol: string
   windowState: AdherenceWindowState
   startDate: string
+  endDate: string
   maxNumberOfWindows: number
   isCompliant: boolean
   timeZone?: string
 }> = ({
   startDate,
+  endDate,
   windowIndex,
   sessionSymbol,
   windowState,
@@ -22,22 +24,21 @@ const TimeWindowPlotElement: FunctionComponent<{
   isCompliant,
   timeZone,
 }) => {
+  const tooltipTitle = (
+    <div>
+      {timeZone && <div>{timeZone}</div>}{' '}
+      {AdherenceUtility.getDateForDisplay(startDate)}
+      <div style={{marginTop: '8px'}}>
+        <i>Expires on: {AdherenceUtility.getDateForDisplay(endDate)}</i>
+      </div>
+    </div>
+  )
   return (
-    <Tooltip
-      title={
-        <>
-          {AdherenceUtility.getDateForDisplay(startDate)}
-          {timeZone && (
-            <>
-              <br />
-              {timeZone}
-            </>
-          )}
-        </>
-      }>
+    <Tooltip title={tooltipTitle} arrow={true} placement="top">
       <div
         id={'window_' + windowIndex}
         style={{
+          textAlign: 'center',
           width: `${Math.floor(100 / maxNumberOfWindows)}%`,
         }}>
         <AdherenceSessionIcon

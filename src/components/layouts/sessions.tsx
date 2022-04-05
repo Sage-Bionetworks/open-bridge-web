@@ -1,15 +1,16 @@
-import {Box, makeStyles} from '@material-ui/core'
-import Divider from '@material-ui/core/Divider'
-import Drawer from '@material-ui/core/Drawer'
-import IconButton from '@material-ui/core/IconButton'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ListItemText from '@material-ui/core/ListItemText'
-import {useTheme} from '@material-ui/core/styles'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import ChevronRightIcon from '@material-ui/icons/ChevronRight'
-import SomeIcon from '@material-ui/icons/FaceOutlined'
+import { Box } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import Divider from '@mui/material/Divider'
+import Drawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import {useTheme} from '@mui/material/styles'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import SomeIcon from '@mui/icons-material/FaceOutlined'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps} from 'react-router-dom'
@@ -34,7 +35,7 @@ const useStyles = makeStyles(theme => ({
   },
   mainAreaWide: {
     width: `${280 * 4 + 16 * 4}px`,
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down('lg')]: {
       width: `${280 * 3 + 16 * 3}px`,
     },
   },
@@ -136,7 +137,7 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
           }),
         }}>
         <div>
-          <IconButton onClick={toggleDrawer}>
+          <IconButton onClick={toggleDrawer} size="large">
             {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </div>
@@ -176,8 +177,8 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
             display="grid"
             padding="8px"
             gridTemplateColumns="repeat(auto-fill,280px)"
-            gridColumnGap="16px"
-            gridRowGap="16px">
+            columnGap="16px"
+            rowGap="16px">
             {cards.map(card => (
               <Box
                 width="280px"
@@ -191,7 +192,7 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
         </Box>
       </Box>
     </Box>
-  )
+  );
 }
 
 export default SessionsLayout

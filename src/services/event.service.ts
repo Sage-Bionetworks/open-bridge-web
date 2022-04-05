@@ -104,7 +104,8 @@ async function updateParticipantCustomEvents(
   studyIdentifier: string,
   token: string,
   participantId: string,
-  eventsToUpdate: ParticipantEvent[]
+  eventsToUpdate: ParticipantEvent[],
+  clientTimeZone: string
 ) {
   console.log('%c updating events', 'background: #222; color: #bada55')
   let eventEndpoint = constants.endpoints.events
@@ -135,10 +136,11 @@ async function updateParticipantCustomEvents(
     if (event.timestamp) {
       const data = {
         eventId: event.eventId,
-        timestamp: new Date(event.timestamp!).toISOString(),
+        timestamp: new Date(event.timestamp).toISOString(),
+        clientTimeZone: clientTimeZone,
       }
 
-      const z = await Utility.callEndpoint<{identifier: string}>(
+      await Utility.callEndpoint<{identifier: string}>(
         `${eventEndpoint}?showError=true&updateBursts=false`,
         'POST',
         data,

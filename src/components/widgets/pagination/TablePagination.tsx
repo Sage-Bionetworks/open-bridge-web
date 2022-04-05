@@ -1,5 +1,5 @@
-import {MenuItem, TextField} from '@material-ui/core'
-import {makeStyles} from '@material-ui/core/styles'
+import {MenuItem, TextField} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react'
 import Pluralize from 'react-pluralize'
 import PageSelector, {PageSelectorValues} from './PageSelector'
@@ -32,6 +32,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
   },
   rootStyles: {
+    textAlign: 'center',
     backgroundColor: 'white',
     border: '1px solid black',
     width: '60px',

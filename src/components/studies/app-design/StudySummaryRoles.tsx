@@ -1,6 +1,6 @@
 import React from 'react'
 import {MTBHeadingH4} from '../../widgets/Headings'
-import {Box} from '@material-ui/core'
+import {Box} from '@mui/material'
 
 type StudySummaryRoleProps = {
   type: String

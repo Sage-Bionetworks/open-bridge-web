@@ -1,12 +1,6 @@
-import {
-  Box,
-  Container,
-  createStyles,
-  Divider,
-  makeStyles,
-  Paper,
-  Typography,
-} from '@material-ui/core'
+import { Box, Container, Divider, Paper, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
