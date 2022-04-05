@@ -1,5 +1,5 @@
 import {MenuItem, TextField} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
 import Pluralize from 'react-pluralize'
 import PageSelector, {PageSelectorValues} from './PageSelector'
@@ -33,9 +33,15 @@ const useStyles = makeStyles(theme => ({
   },
   rootStyles: {
     textAlign: 'center',
-    backgroundColor: 'white',
-    border: '1px solid black',
-    width: '60px',
+
+    // border: '1px solid black',
+    width: '70px',
+
+    '& .MuiSelect-select': {
+      paddingLeft: theme.spacing(1),
+      backgroundColor: 'white',
+      '& input': {},
+    },
   },
 }))
 
@@ -135,6 +141,7 @@ const TablePagination: React.FunctionComponent<TablePaginationProps> = ({
         <div className={classes.showEntryText}>{'show entries: '}</div>
         <TextField
           id="page-selector"
+          color="secondary"
           select
           value={pageSize}
           onChange={event => {
@@ -144,7 +151,6 @@ const TablePagination: React.FunctionComponent<TablePaginationProps> = ({
           classes={{
             root: classes.rootStyles,
           }}
-          InputProps={{disableUnderline: true}}
           data-testid="button-select">
           {PAGE_SIZES.map(pagesize => (
             <MenuItem key={pagesize.value} value={pagesize.value}>

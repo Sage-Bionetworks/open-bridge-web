@@ -4,6 +4,7 @@ import AdherenceService, {
 } from '@services/adherence.service'
 import {
   AdherenceDetailReport,
+  AdherenceStatistics,
   AdherenceWeeklyReport,
   ExtendedError,
 } from '@typedefs/types'
@@ -52,6 +53,9 @@ export const useAdherence = (studyId: string, userId: string | undefined) => {
     }
   )
 }
+/*
+
+AG 4/4: not used:
 export const useAdherenceForWeekForUsers = (
   studyId: string,
   userIds: string[]
@@ -65,6 +69,20 @@ export const useAdherenceForWeekForUsers = (
       AdherenceService.getAdherenceForWeekForUsers(studyId, userIds, token!),
     {
       enabled: !!studyId && userIds.length > 0 && !!token,
+      retry: true,
+      refetchOnWindowFocus: true,
+    }
+  )
+}*/
+
+export const useAdherenceStatsForWeek = (studyId: string) => {
+  const {token} = useUserSessionDataState()
+
+  return useQuery<AdherenceStatistics, ExtendedError>(
+    ADHERENCE_KEYS.list(studyId),
+    () => AdherenceService.getAdherenceStatsForWeek(studyId, token!),
+    {
+      enabled: !!studyId && !!token,
       retry: true,
       refetchOnWindowFocus: true,
     }

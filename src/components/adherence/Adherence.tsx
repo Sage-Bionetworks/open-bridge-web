@@ -6,8 +6,8 @@ import {useAdherenceForWeek} from '@components/studies/adherenceHooks'
 import {useStudy} from '@components/studies/studyHooks'
 import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
-import { Box, Tab, Tabs } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box, Tab, Tabs} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import {latoFont, poppinsFont} from '@style/theme'
 import {ExtendedParticipantAccountSummary} from '@typedefs/types'
 import clsx from 'clsx'
@@ -136,7 +136,7 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
                     }
                     style={{marginRight: '6px'}}></img>
                   <div>
-                    {`${tabDef.label}${
+                    {`${tabDef.label} ${
                       tab === tabDef.type
                         ? '(' + (adherenceWeeklyReport?.total || '...') + ')'
                         : ''

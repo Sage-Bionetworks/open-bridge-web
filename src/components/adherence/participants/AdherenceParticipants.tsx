@@ -1,9 +1,12 @@
-import {useAdherenceForWeek} from '@components/studies/adherenceHooks'
+import {
+  useAdherenceForWeek,
+  useAdherenceStatsForWeek,
+} from '@components/studies/adherenceHooks'
 import ParticipantSearch from '@components/studies/participants/ParticipantSearch'
 import LoadingComponent from '@components/widgets/Loader'
 import TablePagination from '@components/widgets/pagination/TablePagination'
-import { Box } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import {WeeklyAdherenceFilter} from '@services/adherence.service'
 import {ProgressionStatus, SessionDisplayInfo} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
@@ -53,6 +56,8 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
       {}
     )
 
+    const {data: weeklyStats} = useAdherenceStatsForWeek(studyId)
+
     const handleError = useErrorHandler()
 
     React.useEffect(() => {
@@ -93,9 +98,10 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
               }}
             />
           </div>
-          {fullAdherenceWeeklyReport?.items && (
+          {fullAdherenceWeeklyReport?.items && weeklyStats && (
             <div>
               <Filter
+                adherenceStats={weeklyStats}
                 adherenceReportItems={fullAdherenceWeeklyReport.items}
                 selectedLabels={adherenceParams.labelFilters}
                 thresholdMax={adherenceParams.adherenceMax}
