@@ -1,31 +1,19 @@
-import {Box, Drawer, IconButton} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import {Box, Drawer, IconButton} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
-import {ThemeType} from '../../style/theme'
+import {theme, ThemeType} from '../../style/theme'
 
 interface StyleProps {
-  maxWidth: string
+  maxWidth: number
   height: string
   collapsedHight: string
   overflow: 'auto' | 'visible' | 'hidden'
 }
 
-const useStyles = makeStyles<ThemeType, StyleProps>((theme: ThemeType) => ({
-  drawer: props => ({
-    width: props.maxWidth,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-  }),
-  drawerOpen: props => ({
-    width: props.maxWidth,
-    /*transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),*/
-  }),
+const useStyles = makeStyles<ThemeType>((theme: ThemeType) => ({
   drawerToolbar: {
     display: 'flex',
     height: theme.spacing(9),
@@ -34,19 +22,13 @@ const useStyles = makeStyles<ThemeType, StyleProps>((theme: ThemeType) => ({
     alignItems: 'center',
     textAlign: 'center',
   },
-  drawerClose: props => ({
-    /* transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),*/
-    height: props.collapsedHight,
-    overflowY: props.overflow,
+  drawerClose: {
     overflowX: 'hidden',
     width: theme.spacing(6),
     [theme.breakpoints.up('sm')]: {
       width: theme.spacing(6),
     },
-  }),
+  },
   drawerPaper: {
     fontSize: '14px',
     position: 'static',
@@ -114,12 +96,12 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
   onToggleClick,
 }) => {
   const styleProps: StyleProps = {
-    maxWidth: expandedWidth + 'px',
+    maxWidth: expandedWidth, //+ 'px',
     collapsedHight: isHideContentOnClose ? '72px' : 'auto',
     overflow: isHideContentOnClose ? 'hidden' : 'auto',
     height: isFullHeight ? '100%' : 'auto',
   }
-  const classes = useStyles(styleProps)
+  const classes = useStyles()
   const [isOpen, setIsOpen] = React.useState(false)
   const closeIcon = collapseButton || <ChevronLeftIcon />
   const openIcon = expandButton || <ChevronRightIcon />
@@ -134,43 +116,53 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
       onToggleClick(isOpen)
     }
   }, [isOpen])
-  return <>
-    <Box display="flex" position="relative">
-      <Drawer
-        variant="permanent"
-        elevation={1}
-        className={clsx(classes.drawer, {
-          [classes.drawerOpen]: isOpen,
-          [classes.drawerClose]: !isOpen,
-        })}
-        classes={{
-          paper: clsx(classes.drawerPaper, {
-            [classes.drawerOpen]: isOpen,
+  return (
+    <>
+      <Box display="flex" position="relative">
+        <Drawer
+          variant="permanent"
+          elevation={1}
+          className={clsx({
             [classes.drawerClose]: !isOpen,
-          }),
-        }}
-        style={isDrawerHidden ? {display: 'none'} : {}}>
-        <Box className={classes.drawerToolbar}>
-          {children.length === 3 && isOpen && children[2]}
-          <IconButton onClick={() => setIsOpen(prev => !prev)} style={toggleStyle} size="large">
-            {isOpen ? closeIcon : openIcon}
-          </IconButton>
-        </Box>
-        <Box style={isOpen ? {} : {display: 'none'}}>{children[0]}</Box>
-      </Drawer>
-      <Box className={classes.mainAreaWrapper}>
-        <Box
-          className={clsx(classes.mainArea, {
-            [classes.mainAreaNormal]: isOpen,
-            [classes.mainAreaWider]: isOpen && isWide,
-            [classes.mainAreaWide]: !isOpen,
           })}
-          style={isFullWidth ? {width: '100%'} : {}}>
-          {children[1]}
+          classes={{
+            paper: clsx(classes.drawerPaper, {
+              [classes.drawerClose]: !isOpen,
+            }),
+          }}
+          sx={{
+            width: isOpen ? styleProps.maxWidth : theme.spacing(6),
+            flexShrink: 0,
+            height: !isOpen ? styleProps.collapsedHight : 'inherit',
+            overflowY: !isOpen ? styleProps.overflow : 'inherit',
+            whiteSpace: 'nowrap',
+            display: isDrawerHidden ? 'none' : 'inherit',
+          }}>
+          <Box className={classes.drawerToolbar}>
+            {children.length === 3 && isOpen && children[2]}
+            <IconButton
+              onClick={() => setIsOpen(prev => !prev)}
+              style={toggleStyle}
+              size="large">
+              {isOpen ? closeIcon : openIcon}
+            </IconButton>
+          </Box>
+          <Box style={isOpen ? {} : {display: 'none'}}>{children[0]}</Box>
+        </Drawer>
+        <Box className={classes.mainAreaWrapper}>
+          <Box
+            className={clsx(classes.mainArea, {
+              [classes.mainAreaNormal]: isOpen,
+              [classes.mainAreaWider]: isOpen && isWide,
+              [classes.mainAreaWide]: !isOpen,
+            })}
+            style={isFullWidth ? {width: '100%'} : {}}>
+            {children[1]}
+          </Box>
         </Box>
       </Box>
-    </Box>
-  </>;
+    </>
+  )
 }
 
 export default CollapsibleLayout
