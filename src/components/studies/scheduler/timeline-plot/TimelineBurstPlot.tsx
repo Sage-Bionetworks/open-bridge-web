@@ -2,7 +2,7 @@ import {ReactComponent as SessionStartIcon} from '@assets/scheduler/calendar_ico
 import {useStudy} from '@components/studies/studyHooks'
 import SessionIcon from '@components/widgets/SessionIcon'
 import {Tooltip} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import ScheduleService from '@services/schedule.service'
 import {latoFont} from '@style/theme'
@@ -273,7 +273,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
 
   const getBurstIntervalInWeeks = (): number => {
     const burst = ScheduleService.getStudyBurst(timeline)
-    return burst ? Number(burst.interval.replace(/[PW]/g, '')) : 0;
+    return burst ? Number(burst.interval.replace(/[PW]/g, '')) : 0
   }
 
   React.useEffect(() => {
@@ -518,7 +518,7 @@ const TimelineBurstPlot: React.FunctionComponent<TimelineBurstPlotProps> = ({
               </div>
             )}
             {eventIds.map((evt, evtIndex) => (
-              <div>
+              <div key={`${evt}_${evtIndex}`}>
                 <div
                   className={classes.weekTitle}
                   style={{
