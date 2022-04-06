@@ -49,6 +49,19 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
       error: adhError,
     } = useAdherenceForWeek(studyId, currentPage, pageSize, adherenceParams)
 
+    const {data: adherenceWeeklyInProcessCount} = useAdherenceForWeek(
+      studyId,
+      0,
+      5,
+      {progressionFilters: ['in_progress']}
+    )
+    const {data: adherenceWeeklyDoneCount} = useAdherenceForWeek(
+      studyId,
+      0,
+      5,
+      {progressionFilters: ['done']}
+    )
+
     const {data: fullAdherenceWeeklyReport} = useAdherenceForWeek(
       studyId,
       currentPage,
@@ -72,16 +85,27 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
       handleError(adhError)
     }
 
+    const isDataLoaded = () =>
+      adherenceWeeklyInProcessCount && adherenceWeeklyDoneCount
+
     return (
       <div className={classes.mainContainer}>
         <Box display="flex" mt={0} mb={2}>
-          <ProgressionFilter
-            progressionStatus={adherenceParams.progressionFilters}
-            onChange={(f: ProgressionStatus[] | undefined) => {
-              setCurrentPage(0)
-              setAdherenceParams(prev => ({...prev, progressionFilters: f}))
-            }}
-          />
+          {isDataLoaded() && (
+            <ProgressionFilter
+              counts={
+                new Map([
+                  ['in_progress', adherenceWeeklyInProcessCount!.total],
+                  ['done', adherenceWeeklyDoneCount!.total],
+                ])
+              }
+              progressionStatus={adherenceParams.progressionFilters}
+              onChange={(f: ProgressionStatus[] | undefined) => {
+                setCurrentPage(0)
+                setAdherenceParams(prev => ({...prev, progressionFilters: f}))
+              }}
+            />
+          )}
 
           <div style={{marginLeft: 'auto'}}>
             <ParticipantSearch

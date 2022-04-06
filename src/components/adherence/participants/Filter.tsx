@@ -122,11 +122,6 @@ const Filter: FunctionComponent<FilterProps> = ({
   const [searchLabels, setSearchLabels] = React.useState<string[]>(
     selectedLabels || Array.from(getDisplayLabels(adherenceReportItems).keys())
   )
-
-  //function setSearchLabels
-
-  console.log('as', adherenceStats)
-
   const displayLabels = getDisplayLabels(adherenceReportItems)
 
   const handleClick = (event: any) => {

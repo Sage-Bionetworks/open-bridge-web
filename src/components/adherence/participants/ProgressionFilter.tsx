@@ -12,6 +12,7 @@ const useStyles = makeStyles(theme => ({
 
 type CompletionFilterProps = {
   progressionStatus: ProgressionStatus[] | undefined
+  counts: Map<ProgressionStatus, number>
   onChange: (arg: ProgressionStatus[] | undefined) => void
 }
 
@@ -23,6 +24,7 @@ const COMPLETION_STATUS: {label: string; value: ProgressionStatus}[] = [
 const ProgressionFilter: FunctionComponent<CompletionFilterProps> = ({
   progressionStatus,
   onChange,
+  counts,
 }) => {
   const classes = {...useCommonStyles(), ...useStyles()}
 
@@ -66,7 +68,7 @@ const ProgressionFilter: FunctionComponent<CompletionFilterProps> = ({
                 }
               />
             }
-            label={status.label}
+            label={`${status.label} (${counts.get(status.value)})`}
             labelPlacement="end"
           />
         </FormGroup>

@@ -1,5 +1,5 @@
 import DatePicker from '@components/widgets/DatePicker'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import EventService from '@services/event.service'
 import {
   ExtendedScheduleEventObject,
@@ -243,14 +243,23 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
       return null
     }
 
+    const shouldDisplayEvent = (
+      e: ExtendedScheduleEventObject,
+      hideLoginEvent: boolean
+    ) => {
+      if (isBurstOriginEvent(e.eventId)) {
+        return true
+      }
+      return !(e.eventId === TIMELINE_RETRIEVED_EVENT.eventId && hideLoginEvent)
+    }
+
     return (
       <>
         {scheduleEvents
           .filter(e => e.originEventId === undefined)
           .map(
             (nonBurstEvent, index) =>
-              (nonBurstEvent.eventId !== TIMELINE_RETRIEVED_EVENT.eventId ||
-                !hideLoginEvent) && (
+              shouldDisplayEvent(nonBurstEvent, hideLoginEvent) && (
                 <div
                   style={{marginBottom: '8px'}}
                   key={nonBurstEvent.eventId + index}>
