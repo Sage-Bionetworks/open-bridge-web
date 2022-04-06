@@ -2,8 +2,8 @@ import {
   PlotDaysDisplay,
   useGetPlotAndUnitWidth,
 } from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
-import { Box, Tooltip } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box, Tooltip} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import AdherenceService from '@services/adherence.service'
 import ParticipantService from '@services/participants.service'
 import {theme} from '@style/theme'
@@ -33,7 +33,7 @@ export const useStyles = makeStyles(theme => ({
     paddingLeft: theme.spacing(1),
   },
   labelDisplay: {
-    width: theme.spacing(16.5),
+    width: theme.spacing(16),
     display: 'flex',
     fontSize: '12px',
     lineHeight: 1,
@@ -57,16 +57,15 @@ const AdherenceCell: FunctionComponent<{
 }> = ({progression, adherencePercent}) => {
   const classes = {...useCommonStyles(), ...useStyles()}
 
-  return progression === 'unstarted' || adherencePercent === undefined ? (
-    <></>
-  ) : (
+  return (
     <Box
       key="adherence"
       className={clsx(
         classes.adherenceCell,
-        adherencePercent < AdherenceService.COMPLIANCE_THRESHOLD && classes.red
+        adherencePercent ??
+          (100 < AdherenceService.COMPLIANCE_THRESHOLD && classes.red)
       )}>
-      {`${adherencePercent}%`}
+      {adherencePercent !== undefined ? `${adherencePercent}%` : '-'}
     </Box>
   )
 }
@@ -114,7 +113,9 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
             <div
               key={`${item.participant}_${index}`}
               className={classes.participantRow}>
-              <Box width={theme.spacing(11)} key={'pIdentifier'}>
+              <Box
+                sx={{width: theme.spacing(11), flexShrink: 0}}
+                key={'pIdentifier'}>
                 <Link
                   to={`adherence/${item.participant?.identifier || 'nothing'}`}>
                   {ParticipantService.formatExternalId(
@@ -187,7 +188,6 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                     </div>
                   </div>
                 )}
-
                 <AdherenceCell
                   progression={item.progression}
                   adherencePercent={item.weeklyAdherencePercent}
