@@ -406,6 +406,26 @@ export type AdherenceWeeklyReport = {
   nextActivity?: AdherenceSessionInfo
 }
 
+/* Adherence statistics*/
+
+export type AdherenceStatisticsEntry = {
+  label: string
+  searchableLabel: string
+  sessionName: string
+  weekInStudy: number
+  studyBurstId: string
+  studyBurstNum: number
+  totalActive: number
+}
+
+export type AdherenceStatistics = {
+  adherenceThresholdPercentage: number
+  compliant: number
+  noncompliant: number
+  totalActive: number
+  entries: AdherenceStatisticsEntry[]
+}
+
 // POST MVP
 
 export type StudyArm = {

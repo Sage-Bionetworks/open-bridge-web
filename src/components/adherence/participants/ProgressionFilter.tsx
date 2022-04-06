@@ -1,5 +1,5 @@
-import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Checkbox, FormControlLabel, FormGroup} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import {ProgressionStatus} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useCommonStyles} from '../styles'
@@ -52,9 +52,8 @@ const ProgressionFilter: FunctionComponent<CompletionFilterProps> = ({
   return (
     <>
       {COMPLETION_STATUS.map((status, index) => (
-        <FormGroup>
+        <FormGroup key={status.value + index}>
           <FormControlLabel
-            key={status.value + index}
             value={status.value}
             control={
               <Checkbox
