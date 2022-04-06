@@ -34,7 +34,7 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
               if (disabled) return
               onChange(e.target.value)
             }}
-            durationString={interval || ''}
+            durationString={interval || 'PXD'}
             unitDefault={DWsEnum.D}
             unitLabel="Repeat Every"
             numberLabel="frequency number"

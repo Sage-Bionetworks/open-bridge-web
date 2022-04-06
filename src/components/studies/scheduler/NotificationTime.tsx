@@ -172,7 +172,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
                   })
                 }}
                 onFocus={() => toggleOffsetForInitialNotification('true')}
-                durationString={offset || ''}
+                durationString={offset || 'PXM'}
                 unitLabel="Notification Offset"
                 numberLabel="notification offset"
                 unitDefault={MHDsEnum.M}
@@ -244,7 +244,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
 
       <Box mx={0.5}>day(s) after at:</Box>
       <SelectWithEnum
-        value={timeForMultidayOffset}
+        value={timeForMultidayOffset || windowStartTime}
         style={{marginLeft: 0}}
         sourceData={getDropdownTimeItems()}
         id="from"
