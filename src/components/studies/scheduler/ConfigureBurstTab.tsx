@@ -147,6 +147,8 @@ type ConfigureBurstTabProps = {
   id: string
   schedule: Schedule
   onNavigate: Function
+  hasBursts: boolean
+  setHasBursts: (hasBursts: boolean) => void
 }
 
 type SaveHandle = {
@@ -323,7 +325,7 @@ const BurstScheduleSC: React.FunctionComponent<{
 const ConfigureBurstTab: React.ForwardRefRenderFunction<
   SaveHandle,
   ConfigureBurstTabProps
-> = ({onNavigate, id, schedule}: ConfigureBurstTabProps, ref) => {
+> = ({onNavigate, id, schedule, hasBursts, setHasBursts}: ConfigureBurstTabProps, ref) => {
   const classes = useStyles()
 
   const {
@@ -334,7 +336,6 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
   } = useUpdateSchedule()
   const [saveLoader, setSaveLoader] = React.useState(false)
   const [error, setError] = React.useState<string | undefined>()
-  const [hasBursts, setHasBursts] = React.useState(false)
   const [originEventId, setOriginEventId] = React.useState<string | undefined>()
   const [burstSessionGuids, setBurstSessionGuids] = React.useState<string[]>([])
   const [burstNumber, setBurstNumber] = React.useState<number | undefined>()
