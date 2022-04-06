@@ -1,7 +1,7 @@
 import {ReactComponent as Celebration} from '@assets/adherence/celebration_row.svg'
 import {ReactComponent as Arrow} from '@assets/arrow_long.svg'
-import { Box } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import {theme} from '@style/theme'
 import {AdherenceSessionInfo, ProgressionStatus} from '@typedefs/types'
 import moment from 'moment'
@@ -37,20 +37,37 @@ type NoRowsProps = {
 
 const NoActivities: FunctionComponent<{
   rowStyle: React.CSSProperties
-  isCompleted: boolean
-}> = ({rowStyle, isCompleted}) => {
+  completionStatus: ProgressionStatus
+}> = ({rowStyle, completionStatus}) => {
   const classes = {...useCommonStyles(), ...useStyles()}
-  return (
-    <div
-      className={isCompleted ? classes.completed : classes.nextActivity}
-      style={rowStyle}>
-      {isCompleted ? (
-        <Celebration />
-      ) : (
+
+  let innerElement = <></>
+  switch (completionStatus) {
+    case 'done':
+      innerElement = <Celebration />
+      break
+    case 'in_progress':
+      innerElement = (
         <span>
           <i>continued from previous week</i>
         </span>
-      )}
+      )
+      break
+    default:
+      innerElement = (
+        <span>
+          <i>unstarted</i>
+        </span>
+      )
+  }
+
+  return (
+    <div
+      className={
+        completionStatus === 'done' ? classes.completed : classes.nextActivity
+      }
+      style={rowStyle}>
+      {innerElement}
     </div>
   )
 }
@@ -93,10 +110,7 @@ const NoRows: FunctionComponent<NoRowsProps> = ({
           <span>Up Next: {upNext}</span>
         </div>
       ) : (
-        <NoActivities
-          isCompleted={completionStatus === 'done'}
-          rowStyle={rowStyle}
-        />
+        <NoActivities completionStatus={completionStatus} rowStyle={rowStyle} />
       )}
     </div>
   )

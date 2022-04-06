@@ -60,6 +60,9 @@ const ProgressionFilter: FunctionComponent<CompletionFilterProps> = ({
             control={
               <Checkbox
                 checked={isChecked(status.value)}
+                disabled={
+                  isChecked(status.value) && progressionStatus?.length === 1
+                }
                 onChange={e =>
                   updateProgressionStatus(
                     e.target.value as ProgressionStatus,
