@@ -117,6 +117,9 @@ export const useStyles = makeStyles((theme: Theme) =>
         alignItems: 'center',
       },
     },
+    dialogAction: {
+      paddingBottom: theme.spacing(8)
+    }
   })
 )
 
@@ -649,7 +652,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
             onNavigate={() => setOpenModal(undefined)}
           />
         </DialogContent>
-        <DialogActions>
+        <DialogActions className={classes.dialogAction}>
           <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>
             Cancel
           </DialogButtonSecondary>
