@@ -814,7 +814,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
         <DialogContent style={{padding: 0}}>
           <ConfigureBurstTab
             hasBursts={hasBursts}
-            setHasBursts={setHasBursts}
+            onSetHasBursts={setHasBursts}
             schedule={schedule}
             ref={ref2}
             id={study!.identifier}

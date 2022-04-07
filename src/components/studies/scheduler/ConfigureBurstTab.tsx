@@ -148,7 +148,7 @@ type ConfigureBurstTabProps = {
   schedule: Schedule
   onNavigate: Function
   hasBursts: boolean
-  setHasBursts: (hasBursts: boolean) => void
+  onSetHasBursts: (hasBursts: boolean) => void
 }
 
 type SaveHandle = {
@@ -325,7 +325,7 @@ const BurstScheduleSC: React.FunctionComponent<{
 const ConfigureBurstTab: React.ForwardRefRenderFunction<
   SaveHandle,
   ConfigureBurstTabProps
-> = ({onNavigate, id, schedule, hasBursts, setHasBursts}: ConfigureBurstTabProps, ref) => {
+> = ({onNavigate, id, schedule, hasBursts, onSetHasBursts}: ConfigureBurstTabProps, ref) => {
   const classes = useStyles()
 
   const {
@@ -365,13 +365,13 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
 
     const burst = ScheduleService.getStudyBurst(schedule)
     if (!burst) {
-      setHasBursts(false)
+      onSetHasBursts(false)
       setBurstFrequency(undefined)
       setBurstNumber(undefined)
       setOriginEventId(undefined)
       return
     }
-    setHasBursts(true)
+    onSetHasBursts(true)
     setOriginEventId(burst.originEventId)
     setBurstNumber(burst.occurrences)
     setBurstSessionGuids([])
@@ -478,7 +478,7 @@ const ConfigureBurstTab: React.ForwardRefRenderFunction<
         variant={'small'}
       />
       {error && <Alert color="error">{error}</Alert>}
-      <HasBurstsSC hasBursts={hasBursts} setHasBursts={setHasBursts} />
+      <HasBurstsSC hasBursts={hasBursts} setHasBursts={onSetHasBursts} />
 
       {hasBursts && schedule && (
         <Box textAlign="center" mb={4}>
