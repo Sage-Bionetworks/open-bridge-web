@@ -117,6 +117,9 @@ export const useStyles = makeStyles((theme: Theme) =>
         alignItems: 'center',
       },
     },
+    dialogAction: {
+      paddingBottom: theme.spacing(8)
+    }
   })
 )
 
@@ -186,6 +189,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
     data: studyUpdateData,
   } = useUpdateStudyDetail()
 
+  const [hasBursts, setHasBursts] = React.useState(false)
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [schedulerErrors, setScheduleErrors] = React.useState<
     SchedulerErrorType[]
@@ -648,7 +652,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
             onNavigate={() => setOpenModal(undefined)}
           />
         </DialogContent>
-        <DialogActions>
+        <DialogActions className={classes.dialogAction}>
           <DialogButtonSecondary onClick={() => setOpenModal(undefined)}>
             Cancel
           </DialogButtonSecondary>
@@ -809,6 +813,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
         </DialogTitle>
         <DialogContent style={{padding: 0}}>
           <ConfigureBurstTab
+            hasBursts={hasBursts}
+            onSetHasBursts={setHasBursts}
             schedule={schedule}
             ref={ref2}
             id={study!.identifier}
@@ -821,6 +827,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
           </DialogButtonSecondary>
 
           <DialogButtonPrimary
+            disabled={!!!hasBursts}
             onClick={() => {
               ref2.current?.save()
             }}>

@@ -1,7 +1,9 @@
 // pick a date util library
 
 import {ReactComponent as PencilIcon} from '@assets/edit_pencil.svg'
+import {ReactComponent as RedPencilIcon} from '@assets/edit_pencil_red.svg'
 import {ReactComponent as UploadIcon} from '@assets/upload.svg'
+import {ReactComponent as RedUploadIcon} from '@assets/upload_red.svg'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import Utility from '@helpers/utility'
 import {
@@ -307,12 +309,12 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
               }}>
               <Tab
                 label="Upload .csv "
-                icon={<UploadIcon />}
+                icon={tab===0 ? <RedUploadIcon/> : <UploadIcon />}
                 className={classes.tab}
               />
               <Tab
                 label="Enter details"
-                icon={<PencilIcon />}
+                icon={tab===1 ? <RedPencilIcon /> : <PencilIcon/>}
                 className={classes.tab}
               />
             </Tabs>
