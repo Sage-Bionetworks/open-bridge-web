@@ -38,8 +38,12 @@ const DayDisplay: FunctionComponent<{
     borderLeft: '1px solid black',
   }
 
-  if (todayStyle && entry.today) {
+  if (todayStyle && entry?.today) {
     divStyle = {...divStyle, ...weeklyTodayStyle}
+  }
+  if (!entry) {
+    console.log('no entry')
+    return <div className={clsx(classes.dayCell)} style={divStyle}></div>
   }
 
   // style={{...divStyle, ...(todayStyle ? weeklyTodayStyle : {})}}
