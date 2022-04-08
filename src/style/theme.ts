@@ -133,7 +133,7 @@ const theme: Theme = createTheme({
           fontWeight: 600,
           fontSize: '14px',
           lineHeight: '17px',
-          padding: '16px',
+          padding: '16px 14px',
 
           color: '#FCFCFC',
           '&:hover': {

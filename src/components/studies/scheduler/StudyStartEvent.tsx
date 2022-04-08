@@ -1,5 +1,5 @@
-import { MenuItem, Select } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {MenuItem, Select} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import EventService, {JOINED_EVENT_ID} from '@services/event.service'
 import React from 'react'
 
@@ -51,7 +51,7 @@ const StudyStartEvent: React.FunctionComponent<StudyStartEventProps> = ({
   return (
     <Select
       variant="outlined"
-      classes={{root: classes.select}}
+      classes={{select: classes.select}}
       onChange={e => onChangeFn(e.target.value as string)}
       id={'id'}
       value={value}>

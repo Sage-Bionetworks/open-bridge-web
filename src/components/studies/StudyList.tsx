@@ -493,6 +493,14 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
               id="study-menu"
               anchorEl={menuAnchor.anchorEl}
               keepMounted
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
               open={Boolean(menuAnchor.anchorEl)}
               onClose={handleMenuClose}
               classes={{paper: classes.paper, list: classes.list}}>

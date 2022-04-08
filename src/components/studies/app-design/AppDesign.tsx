@@ -15,7 +15,7 @@ import {
   Paper,
   Switch,
 } from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
 import {latoFont, playfairDisplayFont, ThemeType} from '@style/theme'
 import constants from '@typedefs/constants'
@@ -695,7 +695,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     }
 
     setIsSettingStudyLogo(true)
-    if(event.target.files[0]){
+    if (event.target.files[0]) {
       const file = event.target.files[0]
       const previewForImage = getPreviewForImage(file)
       setPreviewFile(previewForImage)
@@ -1051,7 +1051,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
                             }
                             multiline
                             rows={4}
-                            rowsMax={6}
                             placeholder="What are the first things you want participants to know about the study."
                             titleText="Body Copy (maximum 250 characters)"
                             alternativeTextInputClassName={'none'}

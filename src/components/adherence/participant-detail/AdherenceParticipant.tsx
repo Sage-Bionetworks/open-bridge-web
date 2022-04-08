@@ -9,8 +9,8 @@ import BreadCrumb from '@components/widgets/BreadCrumb'
 import {MTBHeadingH4} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
-import { Box, Button, Paper } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box, Button, Paper} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import ParticipantService from '@services/participants.service'
 import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
@@ -122,24 +122,16 @@ const AdherenceParticipant: FunctionComponent<
     },
     adherenceReport?: AdherenceDetailReport
   ) => {
-    // AGENDEL 5/17 we now get this from Alx
-    /* if (!events?.timeline_retrieved) {
-      return 'not joined'
-    }*/
-    // const startDate = new Date(events.timeline_retrieved).toDateString()
     if (!adherenceReport?.dateRange) {
       return ''
     }
     const startDate = moment(adherenceReport.dateRange.startDate).format(
       'MM/DD/yyyy'
-    ) //new Date(adherenceReport.dateRange.startDate)
-    //ALINA TODO: only show for completed participants
-    /* const endDate = adherenceReport
-      ? AdherenceUtility.getLastSchedleDate(adherenceReport.streams)
-      : ''*/
+    )
+
     const endDate = moment(adherenceReport.dateRange.endDate).format(
       'MM/DD/yyyy'
-    ) //new Date(adherenceReport.dateRange.endDate)
+    )
     return `${startDate}-${endDate}`
   }
 
