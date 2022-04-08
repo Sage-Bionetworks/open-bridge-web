@@ -5,9 +5,11 @@ import {
 import ParticipantSearch from '@components/studies/participants/ParticipantSearch'
 import LoadingComponent from '@components/widgets/Loader'
 import TablePagination from '@components/widgets/pagination/TablePagination'
-import {Box} from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
+import {Box, Button, darken} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {WeeklyAdherenceFilter} from '@services/adherence.service'
+import {latoFont} from '@style/theme'
 import {ProgressionStatus, SessionDisplayInfo} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
@@ -22,6 +24,23 @@ import ProgressionFilter from './ProgressionFilter'
 const useStyles = makeStyles(theme => ({
   mainContainer: {
     padding: theme.spacing(4, 3),
+  },
+  clearFiltersButton: {
+    fontFamily: latoFont,
+    margin: theme.spacing(0, 0, 2, 'auto'),
+    fontSize: '14px',
+    fontWeight: '500',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: theme.spacing(1, 2),
+    borderRadius: 0,
+    background: '#8FCDE2',
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+    '&:hover': {
+      backgroundColor: darken('#8FCDE2', 0.1),
+    },
   },
 }))
 
@@ -87,10 +106,9 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
 
     const isDataLoaded = () =>
       adherenceWeeklyInProcessCount && adherenceWeeklyDoneCount
-
     return (
       <div className={classes.mainContainer}>
-        <Box display="flex" mt={0} mb={2}>
+        <Box display="flex" mt={0} mb={1}>
           {isDataLoaded() && (
             <ProgressionFilter
               counts={
@@ -143,6 +161,13 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
           )}
         </Box>
         <LoadingComponent reqStatusLoading={adhStatus === 'loading'}>
+          <Button
+            variant="text"
+            onClick={() => setAdherenceParams({})}
+            className={classes.clearFiltersButton}>
+            Clear all filters&nbsp;&nbsp;
+            <CloseIcon />
+          </Button>
           <Box display="flex" mt={0} mb={2}>
             {sessions?.map(s => (
               <SessionLegend
