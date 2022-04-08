@@ -28,11 +28,14 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
   },
   thankYouText: {
-    maxWidth: '300px',
+    maxWidth: '420px',
     fontFamily: latoFont,
     fontSize: '16px',
     lineHeight: '20px',
     marginTop: theme.spacing(3),
+  },
+  listText: {
+    margin: '16px 0'
   },
 }))
 
@@ -46,16 +49,27 @@ const DownloadAppLandingPage: React.FunctionComponent<{}> = ({}) => {
         style={{width: '100px', height: '100px'}}
       />
       <Box className={classes.downloadText}>
-        Download the <strong>Mobile Toolbox App</strong>
+        <strong><i>App Download Instructions</i></strong>
       </Box>
 
       <p className={classes.thankYouText}>
-        Thank you for participating.
+        Thank you for participating in this study.
         <br></br>
         <br></br>
-        Please scan the QR code with your phone camera and open the link, or
-        select the store button that works best for your smartphone to download
-        the Mobile Toolbox App.
+
+        <ol>
+          <li>To download the <strong>Mobile Toolbox App</strong>, search for "Mobile Toolbox App" in your phone's app store or do one of the following:
+            <ul>
+              <li className={classes.listText}>
+                If you're viewing this page from a laptop, <strong>scan the QR code</strong> below with your phone's camera to be directed to the app.
+              </li>
+              <li className={classes.listText}>
+                If you're viewing this page from the phone that you will be using for the study, <strong>select your app store</strong> below to be redirected to the iOS or Android app store.
+              </li>
+            </ul>
+          </li>
+          <li>To log into the app, your Research team will need to provide you with a Study ID and Participant ID.</li>
+        </ol>
       </p>
 
       <Box m={2} textAlign="center" bgcolor="white" style={{padding: '16px'}}>
