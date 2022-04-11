@@ -15,6 +15,9 @@ const useStyles = makeStyles(theme => ({
   formControl: {
     margin: theme.spacing(1),
   },
+  inputLabel:{
+    top: '-8px'
+  },
   small: {
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
@@ -70,10 +73,9 @@ const SelectWithEnum: React.FunctionComponent<
       return result
     }
   }
-
   return (
     <FormControl className={classes.formControl} style={style}>
-      {label && <InputLabel htmlFor={id}>{label}</InputLabel>}
+      {!!!value && <InputLabel className={classes.inputLabel} shrink={false} htmlFor={id}>{label}</InputLabel>}
       <Select
         variant={variant}
         classes={{select: clsx(size === 'small' && classes.small)}}

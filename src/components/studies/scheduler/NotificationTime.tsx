@@ -172,10 +172,11 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
                   })
                 }}
                 onFocus={() => toggleOffsetForInitialNotification('true')}
-                durationString={offset || 'PXM'}
+                durationString={offset || ''}
                 unitLabel="Notification Offset"
                 numberLabel="notification offset"
                 unitDefault={MHDsEnum.M}
+                placeHolder="minutes"
                 unitData={MHDsEnum}></Duration>
             </>
           }
@@ -197,6 +198,7 @@ const NotificationTime: React.FunctionComponent<NotificationTimeProps> = ({
         durationString={getDisplayOffset()}
         unitLabel="Repeat Every"
         numberLabel="frequency number"
+        placeHolder='hours'
         unitDefault={MHDsEnum.H}
         unitData={MHDsEnum}></Duration>
 
