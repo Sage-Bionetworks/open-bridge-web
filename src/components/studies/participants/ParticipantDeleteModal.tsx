@@ -154,9 +154,7 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> =
                 ) || []
               }
               isProcessing={!!loadingIndicators.isDeleting}
-              isRemove={
-                dialogState.dialogOpenSMS || dialogState.dialogOpenRemove
-              }
+              mode={dialogState.dialogOpenSMS ? 'SMS' : 'DELETE'}
               selectingAll={isAllSelected}
               tab={tab}
               token={token!}

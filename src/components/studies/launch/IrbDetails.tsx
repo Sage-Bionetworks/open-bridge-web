@@ -536,7 +536,6 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     <Box style={{display: 'flex', flexDirection: 'row'}}>
                       <FormControl style={{marginRight: '8px'}}>
                         <DatePicker
-                          label="Date of IRB Approval"
                           id="approvalDate"
                           value={irbDecisionIsApproved ? irbDecisionDate : null}
                           onChange={e => {
@@ -551,7 +550,6 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                       </FormControl>
                       <FormControl>
                         <DatePicker
-                          label="Date of Expiration"
                           id="expirationDate"
                           value={
                             irbDecisionIsApproved ? irbExpirationDate : null
@@ -582,7 +580,6 @@ const IrbDetails: React.FunctionComponent<IrbDetailsProps> = ({
                     />
                     <FormControl>
                       <DatePicker
-                        label="Date of Exemption"
                         id="exemptionDate"
                         value={
                           !irbDecisionIsApproved
