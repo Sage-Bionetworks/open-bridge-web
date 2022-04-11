@@ -33,6 +33,7 @@ export interface DurationProps {
   disabled?: boolean
   isShowClear?: boolean
   placeHolder? :string
+  selectWidth? : number
 }
 
 const Duration: React.FunctionComponent<
@@ -48,6 +49,7 @@ const Duration: React.FunctionComponent<
   maxDurationDays,
   disabled,
   placeHolder,
+  selectWidth,
   isShowClear = true,
   ...props
 }: DurationProps) => {
@@ -135,7 +137,7 @@ const Duration: React.FunctionComponent<
         onChange={e =>
           changeValue(num, e.target.value as moment.unitOfTime.Base)
         }
-        style={{width: '100px'}}>
+        style={selectWidth ? {width: `${selectWidth}px`} : {width: '100px'}}>
 
         </SelectWithEnum>
       {isShowClear && (
