@@ -68,7 +68,16 @@ export const useStyles = makeStyles((theme: Theme) =>
       fontFamily: poppinsFont,
       fontSize: '18px',
       fontStyle: 'normal',
-      fontWeight: 600,
+      fontWeight: 700,
+      '&$readOnly': {
+        '& > span ': {
+          paddingRight: '8px',
+        },
+        '& > strong': {
+          fontSize: '14px',
+          paddingTop: '8px',
+        },
+      },
     },
     burstButton: {
       fontFamily: poppinsFont,
@@ -118,8 +127,9 @@ export const useStyles = makeStyles((theme: Theme) =>
       },
     },
     dialogAction: {
-      paddingBottom: theme.spacing(8)
-    }
+      paddingBottom: theme.spacing(8),
+    },
+    readOnly: {},
   })
 )
 
@@ -552,37 +562,25 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
               </Box>
             ) : (
               <>
-                <FormControlLabel
-                  classes={{label: classes.labelDuration}}
-                  label="Study duration:"
-                  style={{fontSize: '14px', marginRight: '4px'}}
-                  labelPlacement="start"
-                  control={
-                    <strong style={{fontSize: '16px', paddingTop: '8px'}}>
-                      {schedule.duration
-                        ? getFormattedTimeDateFromPeriodString(
-                            schedule.duration
-                          )
-                        : 'No duration set'}
-                    </strong>
-                  }
-                />
+                <div className={clsx(classes.labelDuration, classes.readOnly)}>
+                  <span>Study duration:</span>
+                  <strong>
+                    {schedule.duration
+                      ? getFormattedTimeDateFromPeriodString(schedule.duration)
+                      : 'No duration set'}
+                  </strong>
+                </div>
 
-                <FormControlLabel
-                  classes={{label: classes.labelDuration}}
-                  label="Study starts on:"
-                  style={{fontSize: '14px', marginRight: '4px'}}
-                  labelPlacement="start"
-                  control={
-                    <strong style={{fontSize: '16px', paddingTop: '8px'}}>
-                      {study.studyStartEventId
-                        ? EventService.formatEventIdForDisplay(
-                            study.studyStartEventId
-                          )
-                        : 'unkonwn'}
-                    </strong>
-                  }
-                />
+                <div className={clsx(classes.labelDuration, classes.readOnly)}>
+                  <span>Study starts on:</span>
+                  <strong>
+                    {study.studyStartEventId
+                      ? EventService.formatEventIdForDisplay(
+                          study.studyStartEventId
+                        )
+                      : 'unkonwn'}
+                  </strong>
+                </div>
               </>
             )}
 
