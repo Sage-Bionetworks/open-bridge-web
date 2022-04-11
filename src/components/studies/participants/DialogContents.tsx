@@ -1,6 +1,6 @@
 import Utility from '@helpers/utility'
 import {Box, CircularProgress, Paper} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import ParticipantService, {
   formatExternalId,
 } from '@services/participants.service'
@@ -46,7 +46,7 @@ type DialogContentsProps = {
   study: Study
   isProcessing: boolean
   // if this is false, then sms is implied to be true
-  isRemove: boolean
+  mode?: 'DELETE' | 'SMS'
   selectingAll: boolean
   tab: ParticipantActivityType
   token: string
@@ -85,7 +85,7 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
   selectedParticipants,
   study,
   isProcessing,
-  isRemove,
+  mode,
   selectingAll,
   tab,
   token,
@@ -195,11 +195,18 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
         {!isProcessing && participantsWithError.length === 0 && (
           <Box display="flex" flexDirection="column">
             <Box mb={1}>
-              {isRemove
-                ? 'Are you sure you would like to permanently remove the following participant(s):'
-                : `You will be sending the following SMS to the following ${participantData.length} participant(s) listed below:`}
+              {mode === 'DELETE' && (
+                <>
+                  {' '}
+                  'Are you sure you would like to permanently remove the
+                  following participant(s):'
+                </>
+              )}
+              {mode === 'SMS'
+                ? `You will be sending the following SMS to the following ${participantData.length} participant(s) listed below:`
+                : ''}
             </Box>
-            {!isRemove && (
+            {mode === 'SMS' && (
               <Box
                 fontSize="15px"
                 fontStyle="italic"
@@ -217,14 +224,14 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
             <Paper
               className={clsx(
                 classes.idList,
-                !isRemove && classes.smsIdListContainer
+                mode === 'SMS' && classes.smsIdListContainer
               )}
               elevation={0}>
               {selectedIds.map((id, index) => (
                 <span key={'selected-id' + index}>{id}</span>
               ))}
             </Paper>
-            {isRemove ? (
+            {mode === 'DELETE' ? (
               <strong>This action cannot be undone.</strong>
             ) : (
               <Box>Please confirm this action.</Box>
@@ -240,7 +247,7 @@ const DialogContents: React.FunctionComponent<DialogContentsProps> = ({
         <div
           className={clsx(
             classes.idList,
-            !isRemove && classes.smsIdListContainer
+            mode === 'SMS' && classes.smsIdListContainer
           )}>
           {idsWithErrorsList.map(id => (
             <span>{id}</span>
