@@ -4,18 +4,18 @@ import BreadCrumb from '@components/widgets/BreadCrumb'
 import HideWhen from '@components/widgets/HideWhen'
 import MobileDrawerMenuHeader from '@components/widgets/MobileDrawerMenuHeader'
 import Utility from '@helpers/utility'
+import MenuIcon from '@mui/icons-material/Menu'
+import PeopleIcon from '@mui/icons-material/People'
 import {
+  Alert,
   Box,
   Drawer,
   Hidden,
   IconButton,
   LinearProgress,
 } from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles';
 import Toolbar from '@mui/material/Toolbar'
-import MenuIcon from '@mui/icons-material/Menu'
-import PeopleIcon from '@mui/icons-material/People'
-import { Alert } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
 import {ExtendedError, Study, StudyPhase} from '@typedefs/types'
@@ -26,7 +26,8 @@ import {NavLink} from 'react-router-dom'
 const useStyles = makeStyles(theme => ({
   rootStudyTopNav: {
     backgroundColor: '#F7F7F7',
-    padding: theme.spacing(0, 5),
+    padding: theme.spacing(0),
+    borderBottom: `1px solid #DFDFDF`,
   },
   logo: {
     '&:hover': {
@@ -34,32 +35,30 @@ const useStyles = makeStyles(theme => ({
     },
   },
   toolbarStudyHeader: {
-    height: '104px',
+    padding: theme.spacing(2.5, 5, 0, 5),
+    height: theme.spacing(9),
     display: 'flex',
     backgroundColor: '#F7F7F7', //'#F8F8F8',
 
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    borderBottom: `1px solid ${theme.palette.divider}`,
   },
 
   toolbar: {
-    overflowX: 'auto',
-    alignItems: 'baseline',
+    alignItems: 'center',
     minHeight: 'auto',
     display: 'flex',
     justifyContent: 'space-between',
-    paddingTop: theme.spacing(8.5),
+
     '&:last-child': {
       paddingRight: 0,
     },
   },
 
   selectedLink: {
-    borderBottom: '2px solid black',
+    borderBottom: '4px solid black',
     paddingBottom: theme.spacing(2),
-    marginButtom: '-1px',
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -95,7 +94,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: '#F8F8F8',
   },
   toolbarLink: {
-    padding: theme.spacing(0, 2, 2, 2),
+    padding: theme.spacing(2),
     flexGrow: 1,
     fontFamily: latoFont,
     fontSize: '15px',
@@ -110,6 +109,9 @@ const useStyles = makeStyles(theme => ({
     '&:last-child': {
       paddingRight: theme.spacing(0.5),
       paddingLeft: theme.spacing(0.5),
+    },
+    '&$selectedLink': {
+      paddingTop: '20px',
     },
   },
   mobileToolBarLink: {
@@ -199,7 +201,6 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
             disableGutters={true}
             className={classes.toolbar}
             style={{
-              marginTop: '48px',
               paddingTop: '0',
               alignItems: 'center',
             }}>
@@ -207,7 +208,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               to="/studies"
               key="/studies"
               className={classes.toolbarLink}
-              style={{paddingBottom: '0', paddingLeft: '4px'}}>
+              style={{padding: '0 24px 0 0'}}>
               <img
                 src={Logo}
                 className={classes.logo}
@@ -337,7 +338,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
         </Box>
       )}
     </Box>
-  );
+  )
 }
 
 export default StudyTopNav
