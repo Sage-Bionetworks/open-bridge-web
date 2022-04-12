@@ -1,4 +1,4 @@
-import BackIcon from '@mui/icons-material/ArrowBack'
+import {ReactComponent as BackIcon} from '@assets/arrow_l.svg'
 import {Breadcrumbs, Typography} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
@@ -39,7 +39,7 @@ const BreadCrumb: React.FunctionComponent<BreadCrumbProps> = ({
       {links.map((link, index) => (
         <NavLink to={link.url} key={link.url} className={classes.link}>
           {index === 0 && <BackIcon className={classes.backIcon} />}
-          <div className={clsx(classes.text, classes.addMargin)}>
+          <div className={clsx(classes.text, index > 0 && classes.addMargin)}>
             {link.text}
           </div>
         </NavLink>
