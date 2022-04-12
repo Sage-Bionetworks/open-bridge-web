@@ -53,6 +53,7 @@ import _ from 'lodash'
 import moment from 'moment'
 import React, {FunctionComponent, ReactNode, SyntheticEvent} from 'react'
 import Pluralize from 'react-pluralize'
+import {Link} from 'react-router-dom'
 import GridCellExpand from './GridCellExpand'
 
 const useStyles = makeStyles(theme => ({
@@ -341,13 +342,16 @@ function getColumns(
       headerName: isEnrolledById
         ? 'Participant ID'
         : `${gridType === 'TEST' ? 'Log in' : 'Reference'} ID`,
+      renderCell: params => (
+        <Link to={`adherence/${params.row['id']}`}>{params.value}</Link>
+      ),
       width: 125,
     },
 
     {
       field: 'healthCode',
       headerName: 'Health Code',
-      renderCell: params => renderCellExpand(params, 130),
+      renderCell: params => renderCellExpand(params, 190),
       width: 130,
     },
     {
@@ -708,7 +712,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               onRowClick={(params: GridRowParams) => {
                 let model: string[] = []
                 if (!selectionModel.includes(params.row.id)) {
-                  model = [...selectionModel, params.row.id]              
+                  model = [...selectionModel, params.row.id]
                 } else {
                   model = selectionModel.filter(id => id != params.row.id)
                 }
