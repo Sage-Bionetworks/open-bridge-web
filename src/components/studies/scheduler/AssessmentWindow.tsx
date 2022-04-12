@@ -102,10 +102,11 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
                   expiration: e.target.value as string,
                 })
               }
-              durationString={window.expiration || 'PXH'}
+              durationString={window.expiration || ''}
               unitDefault={HDWMEnum.H}
               unitLabel="Expire after"
               numberLabel="expiration"
+              placeHolder='hours'
               unitData={HDWMEnum}></Duration>
           </Box>
         </SchedulingFormSection>

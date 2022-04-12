@@ -32,6 +32,8 @@ export interface DurationProps {
   maxDurationDays?: number
   disabled?: boolean
   isShowClear?: boolean
+  placeHolder? :string
+  selectWidth? : number
 }
 
 const Duration: React.FunctionComponent<
@@ -46,6 +48,8 @@ const Duration: React.FunctionComponent<
   unitDefault,
   maxDurationDays,
   disabled,
+  placeHolder,
+  selectWidth,
   isShowClear = true,
   ...props
 }: DurationProps) => {
@@ -127,12 +131,15 @@ const Duration: React.FunctionComponent<
         aria-label={unitLabel}
         {...props}
         value={unt}
+        label={placeHolder}
         sourceData={unitData}
         id={unitLabel.replace(' ', '')}
         onChange={e =>
           changeValue(num, e.target.value as moment.unitOfTime.Base)
         }
-        style={isIntro ? {width: '100px'} : undefined}></SelectWithEnum>
+        style={selectWidth ? {width: `${selectWidth}px`} : {width: '100px'}}>
+
+        </SelectWithEnum>
       {isShowClear && (
         <IconButton
           className={classes.clear}
