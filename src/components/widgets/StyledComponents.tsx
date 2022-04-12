@@ -148,7 +148,7 @@ export const SimpleTextLabel = withStyles(theme => ({
     fontWeight: 500,
     fontSize: '14px',
     transform: 'none',
-    paddingLeft: theme.spacing(1),
+    paddingLeft: theme.spacing(0),
 
     '.error > &': {
       color: theme.palette.error.main,
@@ -162,7 +162,7 @@ export const SimpleTextInput = withStyles(theme => ({
     borderRadius: '1px',
 
     'label + &': {
-      marginTop: theme.spacing(2),
+      marginTop: theme.spacing(2.5),
     },
     '&.Mui-focused': {
       borderColor: theme.palette.primary.light,
