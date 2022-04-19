@@ -8,21 +8,6 @@ import {styled} from '@mui/material/styles'
 import {latoFont, theme} from '@style/theme'
 import React, {FunctionComponent} from 'react'
 
-/*
-const useStyles = makeStyles(theme => ({
-  root: {},
-  active: {
-    border: '1px solid blue',
-  },
-  phone: {
-    height: '590px',
-    width: '307px',
-    border: '1px solid black',
-    borderRadius: '25px',
-    padding: theme.spacing(5, 2),
-  },
-}))*/
-
 const ITEM_HEIGHT = 48
 
 const PhoneDiv = styled('div')(({theme}) => ({
