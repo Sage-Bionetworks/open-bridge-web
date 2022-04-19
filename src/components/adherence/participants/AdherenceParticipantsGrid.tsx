@@ -162,6 +162,10 @@ const AdherenceParticipantsGrid: FunctionComponent<AdherenceParticipantsGridProp
                             className={classes.sessionWindows}>
                             {[...new Array(7)].map((i, dayIndex) => (
                               <DayDisplay
+                                relevantReportStartDate={
+                                  //only care about the first day of weekly report
+                                  dayIndex === 0 ? item.startDate : undefined
+                                }
                                 todayStyle={true}
                                 key={dayIndex}
                                 entry={AdherenceUtility.getItemFromByDayEntries(
