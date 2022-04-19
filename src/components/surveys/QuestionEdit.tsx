@@ -10,11 +10,12 @@ import {
   Radio,
   RadioGroup,
   TextField,
-} from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
 import React, {FunctionComponent} from 'react'
 import {ChoiceQuestion, ChoiceQuestionChoice, InputItem, Step} from './types'
+import PhoneDisplay from './widgets/PhoneDisplay'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -309,7 +310,7 @@ const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
 
   return (
     <Box bgcolor="#F8F8F8" px={5}>
-      <Box className={classes.phone}>
+      <PhoneDisplay>
         {step ? (
           <Box>
             <div className={classes.title}>
@@ -326,7 +327,7 @@ const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
         ) : (
           <></>
         )}
-      </Box>
+      </PhoneDisplay>
     </Box>
   )
 }
