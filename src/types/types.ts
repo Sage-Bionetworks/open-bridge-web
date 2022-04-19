@@ -396,6 +396,9 @@ export type RowLabel = {
 export type AdherenceWeeklyReport = {
   participant: {identifier: string; externalId: string}
 
+  weekInStudy: number
+  startDate: string
+
   testAccount?: boolean
   progression: ProgressionStatus
   rows: RowLabel[]

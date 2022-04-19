@@ -11,6 +11,7 @@ const DayDisplay: FunctionComponent<{
   numOfWin: number
   sessionSymbol: string
   dayWidth: number
+  relevantReportStartDate?: string
   border?: boolean
   todayStyle?: boolean
 }> = ({
@@ -21,6 +22,7 @@ const DayDisplay: FunctionComponent<{
   sessionSymbol,
   dayWidth,
   todayStyle,
+  relevantReportStartDate,
   border = true,
 }) => {
   const classes = {...useCommonStyles()}
@@ -46,7 +48,24 @@ const DayDisplay: FunctionComponent<{
     return <div className={clsx(classes.dayCell)} style={divStyle}></div>
   }
 
-  // style={{...divStyle, ...(todayStyle ? weeklyTodayStyle : {})}}
+  //we have a carry over from previous week if it's the first day and the date is diff. from the report start date
+  const carryOver =
+    relevantReportStartDate && entry.startDate !== relevantReportStartDate
+
+  if (carryOver) {
+    return (
+      <div
+        className={clsx(classes.dayCell)}
+        style={{
+          ...divStyle,
+          fontSize: '9px',
+          fontStyle: 'italic',
+          paddingLeft: '4px',
+        }}>
+        continued from previous week
+      </div>
+    )
+  }
 
   return (
     <div
