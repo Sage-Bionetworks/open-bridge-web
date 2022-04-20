@@ -1,5 +1,3 @@
-/*import { createMuiTheme, Theme } from '@mui/material'
-/*ag*/
 import {createTheme, Theme} from '@mui/material/styles'
 import {CSSProperties} from '@mui/styles'
 
@@ -33,7 +31,7 @@ export const poppinsFont = ['Poppins', 'sans-serif'].join(',')
 
 export type CssVariablesType = {
   shadowing: any
-  testColor: string
+
   activeBorder: string
 }
 
@@ -43,20 +41,11 @@ const cssVariables = {
   shadowing: {
     boxShadow: '0 2px 5px -1px rgba(0, 0, 0, 0.3)',
   },
-  testColor: 'red',
   activeBorder: `1px solid #2196f3`,
 }
 
 //those are global css classes
 const globals: cssGlobalClasses = {
-  /* '.assesmentContainer': {
-    justifyContent: 'flex-start',
-    fontSize: '26px',
-
-    display: 'flex',
-    flexWrap: 'wrap',
-    overflowWrap: 'normal',
-  },*/
   a: {
     color: 'black',
   },
@@ -185,45 +174,6 @@ const theme: Theme = createTheme({
 
     MuiSwitch: {
       styleOverrides: {
-        /* root: {
-          padding: 0,
-          margin: 2,
-          width: 32,
-          height: 18,
-          transitionDuration: '300ms',
-          '&.Mui-checked': {
-            transform: 'translateX(16px)',
-            color: '#fff',
-            '& + .MuiSwitch-track': {
-              backgroundColor: '#65C466',
-              opacity: 1,
-              border: 0,
-            },
-            '&.Mui-disabled + .MuiSwitch-track': {
-              opacity: 0.5,
-            },
-          },
-          '&.Mui-focusVisible .MuiSwitch-thumb': {
-            color: '#33cf4d',
-            border: '6px solid #fff',
-          },
-          '&.Mui-disabled .MuiSwitch-thumb': {
-            color: '#ccc',
-          },
-          '&.Mui-disabled + .MuiSwitch-track': {
-            opacity: 0.7,
-          },
-        },
-        thumb: {
-          boxSizing: 'border-box',
-          width: 14,
-          height: 14,
-        },
-        track: {
-          borderRadius: 16 / 2,
-          backgroundColor: '#E9E9EA',
-          opacity: 1,
-        },*/
         root: {
           width: 32,
           height: 18,
@@ -236,19 +186,6 @@ const theme: Theme = createTheme({
           '&.Mui-checked': {
             transform: 'translateX(80%)',
           },
-          /*  color: '#fff',
-          '& + $track': {
-            opacity: 1,
-            backgroundColor: '#ddd',
-          },
-          '&$checked': {
-            transform: 'translateX(14px)',
-            color: '#fff',
-            '& + $track': {
-              opacity: 1,
-              backgroundColor: '#7FC7F0',
-            },
-          },*/
         },
         thumb: {
           width: 14,

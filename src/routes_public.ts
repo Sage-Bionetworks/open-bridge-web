@@ -1,3 +1,4 @@
+import Home from 'static/Home'
 import AssessmentDetail from './components/assessments/AssessmentDetail'
 import AssessmentLibrary from './components/assessments/AssessmentLibrary'
 import DownloadAppLandingPage from './components/static/DownloadAppLandingPage'
@@ -65,4 +66,88 @@ export default [
     Component: SignInPage,
     isRhs: true,
   },
+  {path: '/home', name: '', Component: Home, exact: true, noToolbar: true},
+]
+
+export const routes = [
+  {
+    path: '/',
+    name: '',
+    Component: SignInPage,
+    exact: true,
+    noToolbar: false,
+  },
+  {
+    path: '/app-store-download',
+    name: '',
+    Component: DownloadAppLandingPage,
+    exact: true,
+    noToolbar: true,
+  },
+  {
+    path: '/about-us',
+    name: 'About Us',
+    Component: Home,
+    exact: true,
+  },
+  {
+    path: '/assessments',
+    name: 'Assessments',
+    Component: AssessmentLibrary,
+    exact: false,
+  },
+  {
+    path: '/assessments/:id',
+    name: '',
+    Component: AssessmentDetail,
+    exact: true,
+  },
+  {
+    path: '/documentation',
+    name: 'Documentation',
+    Component: Home,
+    exact: true,
+  },
+  {
+    path: '/download',
+    name: 'Download',
+    Component: Home,
+    exact: true,
+  },
+  {
+    path: '/data',
+    name: 'Data',
+    Component: Home,
+    exact: true,
+  },
+  /* {
+    path: '/plans',
+    name: 'PLANS',
+    Component: Plans,
+    exact: true,
+  },
+  {
+    path: '/layouts',
+    name: '',
+    Component: SessionsLayout,
+    exact: true,
+  },
+  {
+    path: '/development-team',
+    name: 'DEVELOPMENT TEAM',
+    Component: DevelopmentTeam,
+  },
+  {
+    path: '/create-account',
+    name: 'CREATE ACCOUNT',
+    Component: AccountCreate,
+    isRhs: true,
+  },*/
+  {
+    path: '/sign-in',
+    name: 'Login',
+    Component: SignInPage,
+    isRhs: true,
+  },
+  {path: '/home', name: '', Component: Home, exact: true, noToolbar: true},
 ]
