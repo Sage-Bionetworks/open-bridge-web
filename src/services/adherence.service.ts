@@ -102,7 +102,6 @@ async function getAdherenceForWeek(
 
   // remove empty keys
   Object.keys(data).forEach(key => data[key] === undefined && delete data[key])
-  console.log('data', data)
 
   const result = await Utility.callEndpoint<{
     items: AdherenceWeeklyReport[]
