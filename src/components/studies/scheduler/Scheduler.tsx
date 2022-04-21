@@ -106,7 +106,10 @@ export const useStyles = makeStyles((theme: Theme) =>
         },
       },
     },
-
+    inactiveBurstSaveButton: {
+      border: 0,
+      opacity: 0.7
+    },
     assessments: {
       width: '286px',
       flexGrow: 0,
@@ -603,7 +606,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                 disabled={isScheduleDefault(schedule) && !hasBeenSaved}
                 className={classes.burstButton}
                 onClick={() => setOpenModal('BURSTS')}>
-                <BurstIcon /> Configure Study Bursts
+                <BurstIcon style={isScheduleDefault(schedule) && !hasBeenSaved ? {opacity:'0.3'}:{}} /> Configure Study Bursts
               </Button>
             )}
             {!timeline ? (
@@ -825,7 +828,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
           </DialogButtonSecondary>
 
           <DialogButtonPrimary
-            disabled={!!!hasBursts}
+            disabled={!!!hasBursts && schedule.studyBursts?.length===0}
+            className={!!!hasBursts && schedule.studyBursts?.length===0 ? classes.inactiveBurstSaveButton : ''}
             onClick={() => {
               ref2.current?.save()
             }}>
