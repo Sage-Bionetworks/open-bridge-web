@@ -44,7 +44,6 @@ const DayDisplay: FunctionComponent<{
     divStyle = {...divStyle, ...weeklyTodayStyle}
   }
   if (!entry) {
-    console.log('no entry')
     return <div className={clsx(classes.dayCell)} style={divStyle}></div>
   }
 

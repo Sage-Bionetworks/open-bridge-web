@@ -63,10 +63,9 @@ async function getAdherenceForWeek(
 
   token: string
 ): Promise<{total: number; items: AdherenceWeeklyReport[]}> {
-  console.log('startint priming - only use if need immediate data for test')
-
   // ALINA TODO: remove when batched report is done -- priming
   /* 
+    console.log('starting priming - only use if need immediate data for test')
   const enr = await ParticipantService.getEnrollmentByEnrollmentType(
     studyId,
     token!,
@@ -103,7 +102,6 @@ async function getAdherenceForWeek(
 
   // remove empty keys
   Object.keys(data).forEach(key => data[key] === undefined && delete data[key])
-  console.log('data', data)
 
   const result = await Utility.callEndpoint<{
     items: AdherenceWeeklyReport[]
