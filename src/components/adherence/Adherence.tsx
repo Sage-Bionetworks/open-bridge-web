@@ -99,7 +99,7 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
   } = useStudy(studyId)
 
   return (
-    <Box bgcolor="#F8F8F8" px={5}>
+    <Box bgcolor="#F8F8F8" px={5} minHeight="100vh">
       <Box px={3} py={2} display="flex" alignItems="center">
         <NonDraftHeaderFunctionComponent study={study} />
       </Box>
