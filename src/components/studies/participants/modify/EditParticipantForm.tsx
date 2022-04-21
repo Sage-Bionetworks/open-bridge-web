@@ -12,9 +12,10 @@ import {
   DialogContent,
   FormControl,
   FormGroup,
-} from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+} from '@mui/material'
 import Alert from '@mui/material/Alert'
+import makeStyles from '@mui/styles/makeStyles'
+import {JOINED_EVENT_ID} from '@services/event.service'
 import {ExtendedScheduleEventObject} from '@services/schedule.service'
 import {EditableParticipantData, ParticipantEvent} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
@@ -65,6 +66,14 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
     setCustomParticipantEvents(participant.events || [])
   }, [])
 
+  const isTimeZoneRequired = (): boolean => {
+    return (
+      customParticipantEvents?.filter(
+        event => event.eventId !== JOINED_EVENT_ID
+      ).length > 0
+    )
+  }
+
   return (
     <>
       <DialogContent>
@@ -94,7 +103,7 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
           )}
           <Box width="375px" mb={3}>
             <TimezoneDropdown
-              isRequired={true}
+              isRequired={isTimeZoneRequired()}
               currentValue={currentTimeZone}
               onValueChange={e => setCurrentTimeZone(e)}
             />
@@ -133,7 +142,7 @@ const EditParticipantForm: FunctionComponent<EditParticipantFormProps> = ({
                   : onOK(note, currentTimeZone, customParticipantEvents)
               }}
               color="primary"
-              disabled={currentTimeZone?.length < 3}
+              disabled={currentTimeZone?.length < 3 && isTimeZoneRequired()}
               autoFocus>
               Save Changes
             </DialogButtonPrimary>
