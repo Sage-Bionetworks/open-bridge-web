@@ -605,7 +605,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                 disabled={isScheduleDefault(schedule) && !hasBeenSaved}
                 className={classes.burstButton}
                 onClick={() => setOpenModal('BURSTS')}>
-                <BurstIcon /> Configure Study Bursts
+                <BurstIcon style={isScheduleDefault(schedule) && !hasBeenSaved ? {opacity:'0.3'}:{}} /> Configure Study Bursts
               </Button>
             )}
             {!timeline ? (
@@ -827,7 +827,8 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
           </DialogButtonSecondary>
 
           <DialogButtonPrimary
-            disabled={!!!hasBursts}
+            disabled={!!!hasBursts && schedule.studyBursts?.length===0}
+            style={!!!hasBursts && schedule.studyBursts?.length===0 ? {border:'0',opacity:'0.7'} : {}}
             onClick={() => {
               ref2.current?.save()
             }}>
