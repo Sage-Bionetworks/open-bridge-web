@@ -106,6 +106,22 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
 
     const isDataLoaded = () =>
       adherenceWeeklyInProcessCount && adherenceWeeklyDoneCount
+
+    const hasNoFilter = () => {
+      const allAdherence =
+        (adherenceParams.adherenceMax === 100 &&
+          adherenceParams.adherenceMin === 0) ||
+        (adherenceParams.adherenceMin === undefined &&
+          adherenceParams.adherenceMax === undefined)
+      const allCompletion =
+        !adherenceParams.progressionFilters ||
+        adherenceParams.progressionFilters.length === 2
+
+      const result =
+        Object.keys(adherenceParams).length === 0 ||
+        (allCompletion && allAdherence && !adherenceParams.labelFilters)
+      return result
+    }
     return (
       <div className={classes.mainContainer}>
         <Box display="flex" mt={0} mb={1}>
@@ -161,13 +177,15 @@ const AdherenceParticipants: FunctionComponent<AdherenceParticipantsProps> =
           )}
         </Box>
         <LoadingComponent reqStatusLoading={adhStatus === 'loading'}>
-          <Button
-            variant="text"
-            onClick={() => setAdherenceParams({})}
-            className={classes.clearFiltersButton}>
-            Clear all filters&nbsp;&nbsp;
-            <CloseIcon />
-          </Button>
+          {!hasNoFilter() && (
+            <Button
+              variant="text"
+              onClick={() => setAdherenceParams({})}
+              className={classes.clearFiltersButton}>
+              Clear all filters&nbsp;&nbsp;
+              <CloseIcon />
+            </Button>
+          )}
           <Box display="flex" mt={0} mb={2}>
             {sessions?.map(s => (
               <SessionLegend
