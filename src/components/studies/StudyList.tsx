@@ -294,18 +294,20 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     handleError(studyError)
   }
 
-  const resetStatusFilters = () =>
+  const resetStatusFilters = () => {
     setStatusFilters(sections.map(section => section.sectionStatus))
+  }
+  React.useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }, [statusFilters])
 
   const createStudy = async (study?: Study) => {
     //if study is provided -- we are duplicating
 
     if (study) {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      })
-
       mutateAsync({study, action: 'COPY'}).then(e => {
         const newStudy = e[0]
         if (newStudy) {
@@ -370,6 +372,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         return
 
       case 'DUPLICATE':
+        resetStatusFilters()
         await createStudy(study)
         return
       default: {
