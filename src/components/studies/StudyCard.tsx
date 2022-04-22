@@ -4,18 +4,18 @@ import LiveIcon from '@assets/live_study_icon.svg'
 import participants_icon from '@assets/participants_icon.svg'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
 import {Box, IconButton, TextField} from '@mui/material'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import ParticipantService from '@services/participants.service'
+import makeStyles from '@mui/styles/makeStyles'
 import {ThemeType} from '@style/theme'
 import {Study} from '@typedefs/types'
 import clsx from 'clsx'
 import moment from 'moment'
 import React, {FunctionComponent} from 'react'
+import {useAdherenceForWeek} from './adherenceHooks'
 
 const DraftIcon = () => {
   return (
@@ -148,24 +148,17 @@ const CardBottom: FunctionComponent<{
   study: Study
 }> = ({study}: {study: Study}) => {
   const classes = useStyles()
-  const [numParticipants, setNumParticipants] = React.useState('--')
+  //const [numParticipants, setNumParticipants] = React.useState('--')
   const date = new Date(
     study.phase === 'design' ? study.modifiedOn! : study.createdOn!
   )
   const {token} = useUserSessionDataState()
-
-  React.useEffect(() => {
-    //AGENDEL TODO: only for live studies
-    const getParticipantCount = async () => {
-      const newParticipantNumber =
-        await ParticipantService.getNumEnrolledParticipants(
-          study.identifier,
-          token!
-        )
-      setNumParticipants('' + newParticipantNumber)
-    }
-    getParticipantCount()
-  }, [token])
+  const {data: adherenceWeeklyInProcessCount} = useAdherenceForWeek(
+    study.identifier,
+    0,
+    5,
+    {progressionFilters: ['in_progress']}
+  )
 
   return (
     <Box
@@ -186,7 +179,7 @@ const CardBottom: FunctionComponent<{
               className={classes.participantsIcon}
               alt="participant number"
             />
-            {numParticipants}
+            {adherenceWeeklyInProcessCount?.total.toString() || '--'}
           </div>
         )}
 
@@ -246,7 +239,7 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
         <div className={classes.cardStatus}>Draft</div>
       )}
     </Box>
-  );
+  )
 }
 
 type StudyCardProps = {
