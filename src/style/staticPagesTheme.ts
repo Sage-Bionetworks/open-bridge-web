@@ -48,7 +48,9 @@ const staticPagesTheme: Theme = createTheme({
     text: {
       primary: colors.neutralsWhite,
     },
-    background: colors.primaryBlue,
+    background: {
+      default: colors.primaryBlue,
+    },
     common: {
       white: '#fff', //Neutrals_White
       black: '#383948', //Neutrals_Black
