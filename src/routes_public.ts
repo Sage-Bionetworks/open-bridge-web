@@ -1,8 +1,8 @@
-import Home from 'static/Home'
 import AssessmentDetail from './components/assessments/AssessmentDetail'
 import AssessmentLibrary from './components/assessments/AssessmentLibrary'
 import DownloadAppLandingPage from './components/static/DownloadAppLandingPage'
 import SignInPage from './SignInPage'
+import Home from './static/Home'
 
 export default [
   {
@@ -66,7 +66,13 @@ export default [
     Component: SignInPage,
     isRhs: true,
   },
-  {path: '/home', name: '', Component: Home, exact: true, noToolbar: true},
+  {
+    path: '/home',
+    name: 'New Static Pages',
+    Component: Home,
+    exact: true,
+    noToolbar: true,
+  },
 ]
 
 export const routes = [
@@ -147,7 +153,6 @@ export const routes = [
     path: '/sign-in',
     name: 'Login',
     Component: SignInPage,
-    isRhs: true,
   },
   {path: '/home', name: '', Component: Home, exact: true, noToolbar: true},
 ]
