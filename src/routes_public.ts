@@ -2,7 +2,7 @@ import AssessmentDetail from './components/assessments/AssessmentDetail'
 import AssessmentLibrary from './components/assessments/AssessmentLibrary'
 import DownloadAppLandingPage from './components/static/DownloadAppLandingPage'
 import SignInPage from './SignInPage'
-import Home from './static/Home'
+import Home from './static/home/Home'
 
 export default [
   {

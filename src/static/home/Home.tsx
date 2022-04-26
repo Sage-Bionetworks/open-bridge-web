@@ -1,12 +1,12 @@
 import Utility from '@helpers/utility'
-import {Box, Container, Grid, Typography} from '@mui/material'
+import {Box, Container, Grid, Hidden, Typography} from '@mui/material'
 import {styled, ThemeProvider} from '@mui/material/styles'
 import staticPagesTheme, {colors} from '@style/staticPagesTheme'
 import * as React from 'react'
 import {FunctionComponent} from 'react'
-import {routes} from '../routes_public'
-import HowItWorks from './HowItWorks'
-import TopNav from './nav/TopNav'
+import TopNav from 'static/nav/TopNav'
+import {routes} from '../../routes_public'
+import {HowItWorksDesktop, HowItWorksMobile} from './HowItWorks'
 
 const Item = styled(Box)<{test?: number}>(({theme, test}) => ({
   //backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -44,7 +44,12 @@ const Home: FunctionComponent = () => {
             </Grid>
           </Grid>
           {/*how it works */}
-          <HowItWorks />
+          <Hidden lgUp>
+            <HowItWorksMobile />
+          </Hidden>
+          <Hidden lgDown>
+            <HowItWorksDesktop />
+          </Hidden>
 
           <Grid container direction="row" justifyContent="center">
             <Grid item xs={12} md={10}>
@@ -61,6 +66,7 @@ const Home: FunctionComponent = () => {
           </Grid>
         </Container>
       </div>
+      <Box height={600}></Box>
     </ThemeProvider>
   )
 }

@@ -162,7 +162,7 @@ type AppTopNavProps = {
   sessionData?: UserSessionData
 }
 
-const AppTopNav: FunctionComponent<AppTopNavProps> = ({
+const TopNav: FunctionComponent<AppTopNavProps> = ({
   routes,
   appId,
   sessionData,
@@ -286,4 +286,15 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
   )
 }
 
-export default AppTopNav
+const TopNav2: FunctionComponent<AppTopNavProps> = ({
+  routes,
+  appId,
+  sessionData,
+  ...props
+}: AppTopNavProps) => {
+  const classes = useStyles()
+  const location = useLocation()
+  return <>HELLO</>
+}
+
+export default TopNav
