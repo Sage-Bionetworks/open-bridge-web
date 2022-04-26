@@ -29,9 +29,11 @@ export const colors = {
   primaryBlue: '#154078', //Primary_Blue
   lightBlue: '#2E84F6', // Primary_LightBlue
   primaryGreenBlue: '#5CB4D3', //Primary_GreenBlue
+  accent: '#37E7E7', //Accent
   neutralsWhite: '#fff',
   neutralsBlack: '#383948',
   neutralsWhiteBlue: '#F6F5FF',
+  neutralsGray: '#375074', //Neutrals_Gray
 }
 
 const staticPagesTheme: Theme = createTheme({
