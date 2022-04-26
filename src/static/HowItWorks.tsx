@@ -30,7 +30,7 @@ const info = [
       'A Study Designer selects the assessments and designs the schedule for a study.',
     body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Venenatis bibendum senectus amet diam dui felis est dolor tincidunt. Blandit penatibus odio viverra est nisl ut velit feugiat donec. Pulvinar nullam amet suspendisse faucibus auctor ac tellus. Sed cras dictum at volutpat. Scelerisque sem pharetra ac turpis ipsum condimentum a mattis amet.',
     link: 'www.google.com',
-    image: <Step1 />,
+    image: <Step1 width="100%" />,
   },
   {
     title: 'How it works',
@@ -38,7 +38,7 @@ const info = [
       ' A Study Coordinator recruits participants to the study and auto-distributes the study to the App Store',
     body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Venenatis bibendum senectus amet diam dui felis est dolor tincidunt. Blandit penatibus odio viverra est nisl ut velit feugiat donec. Pulvinar nullam amet suspendisse faucibus auctor ac tellus. Sed cras dictum at volutpat. Scelerisque sem pharetra ac turpis ipsum condimentum a mattis amet.',
     link: 'www.google.com',
-    image: <Step2 />,
+    image: <Step2 width="100%" />,
   },
   {
     title: 'How it works',
@@ -46,14 +46,14 @@ const info = [
       'Study participants download the App and perform remote cognitive assessments using their own smartphone.',
     body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Venenatis bibendum senectus amet diam dui felis est dolor tincidunt. Blandit penatibus odio viverra est nisl ut velit feugiat donec. Pulvinar nullam amet suspendisse faucibus auctor ac tellus. Sed cras dictum at volutpat. Scelerisque sem pharetra ac turpis ipsum condimentum a mattis amet.',
     link: 'www.google.com',
-    image: <Step3 />,
+    image: <Step3 width="100%" />,
   },
   {
     title: 'How it works',
     intro: 'Data is uploaded to the Sage platform and made ready for analysis.',
     body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Venenatis bibendum senectus amet diam dui felis est dolor tincidunt. Blandit penatibus odio viverra est nisl ut velit feugiat donec. Pulvinar nullam amet suspendisse faucibus auctor ac tellus. Sed cras dictum at volutpat. Scelerisque sem pharetra ac turpis ipsum condimentum a mattis amet.',
     link: 'www.google.com',
-    image: <Step4 />,
+    image: <Step4 width="100%" />,
   },
 ]
 
