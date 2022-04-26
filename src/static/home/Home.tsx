@@ -6,6 +6,7 @@ import * as React from 'react'
 import {FunctionComponent} from 'react'
 import TopNav from 'static/nav/TopNav'
 import {routes} from '../../routes_public'
+import Experiences from './Experiences'
 import {HowItWorksDesktop, HowItWorksMobile} from './HowItWorks'
 
 const Item = styled(Box)<{test?: number}>(({theme, test}) => ({
@@ -53,15 +54,7 @@ const Home: FunctionComponent = () => {
 
           <Grid container direction="row" justifyContent="center">
             <Grid item xs={12} md={10}>
-              <Item>Experiences</Item>
-              <Grid container>
-                <Grid item xs={12} md={6}>
-                  P1
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  P2
-                </Grid>
-              </Grid>
+              <Experiences />
             </Grid>
           </Grid>
         </Container>

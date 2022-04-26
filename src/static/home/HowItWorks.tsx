@@ -10,6 +10,7 @@ import Button from '@mui/material/Button'
 import MobileStepper from '@mui/material/MobileStepper'
 import {styled, useTheme} from '@mui/material/styles'
 import makeStyles from '@mui/styles/makeStyles'
+import {colors} from '@style/staticPagesTheme'
 import {latoFont} from '@style/theme'
 import * as React from 'react'
 import {FunctionComponent} from 'react'
@@ -66,7 +67,7 @@ const Intro = styled('p')(({theme}) => ({
 }))
 
 const LearnMoreLink = styled(Link)(({theme}) => ({
-  color: '#37E7E7',
+  color: colors.accent,
   fontSize: '14px',
   textDecoration: 'none',
 
