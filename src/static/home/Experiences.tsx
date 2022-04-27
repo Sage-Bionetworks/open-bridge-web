@@ -1,21 +1,41 @@
+import {default as Experiences1} from '@assets/static/experiences1.png'
+import {default as Experiences2} from '@assets/static/experiences2.png'
 import {Box, Grid, Tab, Tabs, Typography} from '@mui/material'
-import {styled} from '@mui/styles'
+import {styled} from '@mui/material/styles' //vs mui/styles
 import {colors} from '@style/staticPagesTheme'
 import React, {FunctionComponent} from 'react'
 
-const HomeTabs = styled(Tabs)(({theme}) => ({
-  '& .root': {
-    borderBottomWidth: theme.spacing(1),
-    borderBottomColor: colors.neutralsGray,
-    borderBottomStyle: 'solid',
+const ExperienceTabItem = styled(Box, {
+  shouldForwardProp: prop => prop !== 'test',
+})<{test?: boolean}>(({theme, test}) => ({
+  opacity: test ? 1 : 0.3,
+  marginBottom: theme.spacing(20),
+  '&:hover': {
+    opacity: 1,
   },
+  transition: 'opacity 1s',
+  '& > h4': {
+    marginBottom: theme.spacing(5),
+  },
+}))
+
+const ExperienceTabContainer = styled(Box)(({theme}) => ({
+  minWidth: theme.spacing(70),
+  maxWidth: theme.spacing(80),
+  flexGrow: 0,
+  flexShrink: 0,
+}))
+
+const HomeTabs = styled(Tabs)(({theme}) => ({
+  boxShadow: `inset 0px ${theme.spacing(-1)} 0px ${colors.neutralsGray}`,
+  marginBottom: theme.spacing(30),
   '& .MuiTab-root': {
     fontWeight: '700',
     fontSize: '24px',
     lineHeight: '29px',
     color: colors.neutralsGray,
     paddingLeft: 0,
-    poaddingRight: theme.spacing(10),
+    paddingRight: theme.spacing(10),
     textTransform: 'none',
     '&.Mui-selected': {
       color: colors.accent,
@@ -33,10 +53,82 @@ interface TabPanelProps {
   value: number
 }
 
+const imageList = [Experiences1, Experiences2]
+const info = [
+  {
+    title: 'Activity Home Screen',
+    body: (
+      <>
+        <p>
+          Activity schedule is automatically updated for each participant,
+          including due dates to help keep them on track.
+        </p>
+      </>
+    ),
+    image: Experiences1,
+  },
+  {
+    title: 'De-identified login',
+    body: (
+      <>
+        <p>
+          Participants login with a unique identifier known only to Study
+          Coordinators. No other uniquely identifying information is collected.
+        </p>
+      </>
+    ),
+    image: Experiences2,
+  },
+  {
+    title: 'History of Activities',
+    body: (
+      <>
+        <p>Participants can see the activities they have completed.</p>
+      </>
+    ),
+    image: Experiences1,
+  },
+  {
+    title: 'Opt-in settings for notifications and background data monitoring',
+    body: (
+      <>
+        <p>
+          Participants can control their reminders and background data
+          collection settings
+        </p>
+      </>
+    ),
+    image: Experiences2,
+  },
+  {
+    title: 'Study contact information and Participants Rights',
+    body: (
+      <>
+        <p>
+          Study and IRB information is transparently available for participants
+          to understand their rights.
+        </p>
+      </>
+    ),
+    image: Experiences2,
+  },
+  {
+    title: 'Privacy Dashboard',
+    body: (
+      <>
+        <p>
+          Privacy practices are explicitly and clearly stated in a simple
+          dashboard
+        </p>
+      </>
+    ),
+    image: Experiences2,
+  },
+]
 function a11yProps(index: number) {
   return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
+    id: `experiences-tab-${index}`,
+    'aria-controls': `experiences-tabpanel-${index}`,
   }
 }
 
@@ -51,16 +143,41 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}>
       {value === index && (
-        <Box sx={{p: 3}}>
-          <Typography>{children}</Typography>
+        <Box sx={{p: 0}}>
+          <Typography component="div">{children}</Typography>
         </Box>
       )}
     </div>
   )
 }
 
+const ExperienceColumn: FunctionComponent<{
+  startIndex: number
+  endIndex?: number
+  currentItemIndex: number
+  onChangeItem: (n: number) => void
+}> = ({startIndex, endIndex, onChangeItem, currentItemIndex}) => {
+  console.log(currentItemIndex)
+  return (
+    <ExperienceTabContainer>
+      {info.slice(startIndex, endIndex).map((item, index) => (
+        <ExperienceTabItem
+          onClick={() => {
+            alert(index + startIndex)
+            onChangeItem(index + startIndex)
+          }}
+          test={index + startIndex === currentItemIndex}>
+          <Typography variant="h4">{item.title}</Typography>
+          {item.body}
+        </ExperienceTabItem>
+      ))}
+    </ExperienceTabContainer>
+  )
+}
+
 const Experiences: FunctionComponent<{}> = () => {
   const [value, setValue] = React.useState(0)
+  const [step, setStep] = React.useState(0)
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
@@ -101,7 +218,27 @@ const Experiences: FunctionComponent<{}> = () => {
             </HomeTabs>
           </Box>
           <TabPanel value={value} index={0}>
-            Item One
+            <Box display="flex">
+              <ExperienceColumn
+                startIndex={0}
+                endIndex={4}
+                currentItemIndex={step}
+                onChangeItem={itemIndex => setStep(itemIndex)}
+              />
+
+              <Box mx={4}>
+                <img
+                  src={info[step].image}
+                  width="326px"
+                  alt={info[step].title}
+                />
+              </Box>
+              <ExperienceColumn
+                startIndex={4}
+                currentItemIndex={step}
+                onChangeItem={itemIndex => setStep(itemIndex)}
+              />
+            </Box>
           </TabPanel>
           <TabPanel value={value} index={1}>
             Item Two
