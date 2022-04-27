@@ -87,10 +87,13 @@ const staticPagesTheme: Theme = createTheme({
       fontWeight: '700',
       fontSize: '32px',
       lineHeight: '38px',
-      //  color: '#323142',
-      //styleName: Headline 3;
+    },
+    h4: {
+      fontWeight: '700',
+      fontSize: '24px',
     },
   },
+
   components: {
     MuiCssBaseline: {
       styleOverrides: globals,
