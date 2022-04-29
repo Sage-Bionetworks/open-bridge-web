@@ -27,7 +27,7 @@ const UnauthenticatedApp: FunctionComponent<
   return (
     <>
       {!route?.noToolbar && <TopNav routes={PublicRoutes} appId={appId} />}
-      <main>
+      <main style={{overflowX: 'hidden'}}>
         <Switch>
           {PublicRoutes.map(({path, Component}, key) => (
             <Route
