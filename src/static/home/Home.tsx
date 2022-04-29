@@ -6,14 +6,23 @@ import * as React from 'react'
 import {FunctionComponent} from 'react'
 import TopNav from 'static/nav/TopNav'
 import {routes} from '../../routes_public'
+import About from './About'
+import Contribute from './Contribute'
 import Experiences from './Experiences'
 import {HowItWorksDesktop, HowItWorksMobile} from './HowItWorks'
+import Partners from './Partners'
+import Project from './Project'
+import Science from './Science'
+import Security from './Security'
 
 const Item = styled(Box)<{test?: number}>(({theme, test}) => ({
   //backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
   //...theme.typography.body1,
   /*  ...theme.typography.body2,*/
-  padding: theme.spacing(1),
+  // padding: theme.spacing(1),
+  /*[theme.breakpoints.down('lg')]: {
+    padding: theme.spacing()
+  },*/
   //border: '1px solid black',
 
   color: theme.palette.text.primary,
@@ -21,27 +30,33 @@ const Item = styled(Box)<{test?: number}>(({theme, test}) => ({
   borderRadius: 0,
 }))
 
+const Section = styled(Box)(({theme}) => ({
+  padding: theme.spacing(10, 6),
+  maxWidth: '1180px',
+  margin: '0, auto',
+  [theme.breakpoints.up('lg')]: {
+    padding: theme.spacing(24),
+  },
+}))
+
 const Home: FunctionComponent = () => {
   return (
     <ThemeProvider theme={staticPagesTheme}>
       <div style={{backgroundColor: colors.primaryDarkBlue, color: '#FFF'}}>
-        <Container maxWidth={'lg'} component={'div'}>
+        <Container maxWidth={'lg'} disableGutters={true} component={'div'}>
           <TopNav routes={routes} appId={Utility.getAppId()} />
-          <Grid container rowSpacing={1} columnSpacing={{xs: 1, sm: 2, md: 3}}>
+          <Grid container rowSpacing={1} columnSpacing={{xs: 4, lg: 5}}>
             {/*header */}
-            <Grid item xs={12} md={12}>
-              <Grid container>
-                <Grid item xs={12} md={6}>
-                  <Item my={32}>
-                    <Typography variant="h1">Mobile Toolbox</Typography>
-                    <Typography variant="h3" sx={{opacity: 0.6}}>
-                      A comprehensive research and analytics platform to launch
-                      fully remote, smartphone app-based cognitive assessment
-                      studies.
-                    </Typography>
-                  </Item>
-                </Grid>
-              </Grid>
+
+            <Grid item xs={12} lg={6}>
+              <Item my={32} mx={1}>
+                <Typography variant="h1">Mobile Toolbox!</Typography>
+                <Typography variant="h3" sx={{opacity: 0.6}}>
+                  A comprehensive research and analytics platform to launch
+                  fully remote, smartphone app-based cognitive assessment
+                  studies.
+                </Typography>
+              </Item>
             </Grid>
           </Grid>
           {/*how it works */}
@@ -52,9 +67,34 @@ const Home: FunctionComponent = () => {
             <HowItWorksDesktop />
           </Hidden>
 
-          <Grid container direction="row" justifyContent="center">
-            <Grid item xs={12} md={10}>
-              <Experiences />
+          <Grid
+            container
+
+            // direction="row"
+            // justifyContent="center"
+          >
+            <Grid item xs={12}>
+              <Section>
+                <Experiences />
+              </Section>
+              <Section bgcolor="#2E84F6">
+                <Security />
+              </Section>
+              <Section>
+                <Science />
+              </Section>
+              <Section>
+                <About />
+              </Section>
+              <Section>
+                <Partners />
+              </Section>
+              <Section>
+                <Project />
+              </Section>
+              <Section>
+                <Contribute />
+              </Section>
             </Grid>
           </Grid>
         </Container>
