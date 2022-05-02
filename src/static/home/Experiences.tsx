@@ -1,5 +1,3 @@
-import {default as bgLeft} from '@assets/static/bg_left_box.svg'
-import {default as bgRight} from '@assets/static/bg_right_box.svg'
 import {
   Box,
   Container,
@@ -35,11 +33,11 @@ const ExperienceContainer = styled(Box)(({theme}) => ({
   backgroundPositionY: 'bottom',
   backgroundPositionX: 'right',
   backgroundRepeat: 'no-repeat',
-  [theme.breakpoints.up('lg')]: {
-    backgroundImage: 'url(' + bgRight + ')',
+  /* [theme.breakpoints.up('lg')]: {
+   backgroundImage: 'url(' + bgRight + ')',
     marginRight: '-200px',
     paddingRight: '200px',
-  },
+  },*/
 }))
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews)
@@ -48,7 +46,7 @@ const ExperienceTabContainer = styled(Box)(({theme}) => ({
   minWidth: theme.spacing(70),
   maxWidth: theme.spacing(80),
   flexGrow: 0,
-  flexShrink: 0,
+  // flexShrink: 0,
 }))
 
 const HomeTabs = styled(Tabs)(({theme}) => ({
@@ -142,18 +140,19 @@ const Experiences: FunctionComponent<{}> = () => {
       <Grid
         container
         rowSpacing={5}
-        sx={{
-          backgroundImage: {lg: 'url(' + bgLeft + ')'},
+        sx={
+          {
+            /*   backgroundImage: {lg: 'url(' + bgLeft + ')'},
           backgroundPositionY: 'bottom',
           backgroundPositionX: 'left',
-          backgroundRepeat: 'no-repeat',
-
-          marginLeft: {lg: -50},
-          paddingLeft: {lg: 50},
-        }}>
+          backgroundRepeat: 'no-repeat',*/
+            // marginLeft: {lg: -50},
+            //  paddingLeft: {lg: 50},
+          }
+        }>
         <Grid item xs={12} lg={6}>
           <Box>
-            <Typography component="p">
+            <Typography component="p" mb={4}>
               Mobile toolbox has a web experience for researchers and a mobile
               app experience for study participants. You don't have to have a
               software engineering team to create your own custom app.

@@ -3,6 +3,7 @@ import Logout from '@components/account/Logout'
 import {Box, Button, Hidden, Menu, MenuItem} from '@mui/material'
 import Toolbar from '@mui/material/Toolbar'
 import makeStyles from '@mui/styles/makeStyles'
+import {colors} from '@style/staticPagesTheme'
 import {latoFont} from '@style/theme'
 import {UserSessionData} from '@typedefs/types'
 import clsx from 'clsx'
@@ -18,7 +19,7 @@ const useStyles = makeStyles(theme => ({
   toolbarWrapper: {
     height: '104px',
     display: 'flex',
-
+    backgroundColor: colors.primaryDarkBlue,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -78,7 +79,7 @@ const useStyles = makeStyles(theme => ({
   },
   selectedLink: {
     fontWeight: 'bold',
-    color: '#393434;',
+    // color: '#393434;',
   },
 
   drawerMenuSelectedLink: {
@@ -178,9 +179,17 @@ const TopNav: FunctionComponent<AppTopNavProps> = ({
   }
 
   // Hide the app store download page and also the sign in page from the nav.
-  routes = routes.filter(
-    route => route.name !== 'APP STORE' && route.name !== 'SIGN IN'
-  )
+  routes = routes
+    .filter(route => route.name !== 'APP STORE' && route.name !== 'SIGN IN')
+    .map(route => {
+      return route.path === '/assessments'
+        ? {
+            ...route,
+
+            path: '/assessments?isStatic=true',
+          }
+        : route
+    })
 
   const isLoginButtonDisabled = React.useMemo(() => {
     return location.pathname.endsWith('/sign-in')
@@ -219,7 +228,6 @@ const TopNav: FunctionComponent<AppTopNavProps> = ({
 
   return (
     <>
-      {' '}
       <Hidden lgUp>
         <MobileNav sessionData={sessionData}>
           <MenuLinks
@@ -284,17 +292,6 @@ const TopNav: FunctionComponent<AppTopNavProps> = ({
       </Hidden>
     </>
   )
-}
-
-const TopNav2: FunctionComponent<AppTopNavProps> = ({
-  routes,
-  appId,
-  sessionData,
-  ...props
-}: AppTopNavProps) => {
-  const classes = useStyles()
-  const location = useLocation()
-  return <>HELLO</>
 }
 
 export default TopNav

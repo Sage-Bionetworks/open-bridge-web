@@ -1,18 +1,16 @@
-import {default as bgLeft} from '@assets/static/bg_left_box.svg'
-import {default as bgRight} from '@assets/static/bg_right_box.svg'
 import {Box, Grid, Typography} from '@mui/material'
 import {styled} from '@mui/material/styles' //vs mui/styles
 import React, {FunctionComponent} from 'react'
 
 const AboutContainer = styled(Box)(({theme}) => ({
-  backgroundPositionY: 'bottom',
+  /* backgroundPositionY: 'bottom',
   backgroundPositionX: 'right',
   backgroundRepeat: 'no-repeat',
   [theme.breakpoints.up('lg')]: {
     backgroundImage: 'url(' + bgRight + ')',
     marginRight: '-200px',
     paddingRight: '200px',
-  },
+  },*/
 }))
 
 const About: FunctionComponent<{}> = () => {
@@ -22,15 +20,17 @@ const About: FunctionComponent<{}> = () => {
       <Grid
         container
         rowSpacing={5}
-        sx={{
-          backgroundImage: {lg: 'url(' + bgLeft + ')'},
+        sx={
+          {
+            /*  backgroundImage: {lg: 'url(' + bgLeft + ')'},
           backgroundPositionY: 'bottom',
           backgroundPositionX: 'left',
           backgroundRepeat: 'no-repeat',
 
           marginLeft: {lg: -50},
-          paddingLeft: {lg: 50},
-        }}>
+          paddingLeft: {lg: 50},*/
+          }
+        }>
         <Grid item xs={12} lg={6}>
           <Box>
             <Typography component="p">

@@ -18,7 +18,7 @@ const Item = styled('div')<{test?: number}>(({theme, test}) => ({
   //...theme.typography.body1,
   /*  ...theme.typography.body2,*/
   padding: theme.spacing(1),
-  border: '1px solid black',
+  //border: '1px solid black',
   textAlign: 'left',
   color: theme.palette.text.primary,
   background: test,

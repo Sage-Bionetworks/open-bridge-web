@@ -1,7 +1,7 @@
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import React, {FunctionComponent, useState} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import {Link, RouteComponentProps} from 'react-router-dom'
+import {Link, RouteComponentProps, useLocation} from 'react-router-dom'
 import {useAsync} from '../../helpers/AsyncHook'
 import {useUserSessionDataState} from '../../helpers/AuthContext'
 import AssessmentService from '../../services/assessment.service'
@@ -29,7 +29,9 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
   const classes = useStyles()
 
   const {token} = useUserSessionDataState()
-
+  const isFromNewStaticPages = new URLSearchParams(useLocation().search)?.get(
+    'isStatic'
+  )
   const handleError = useErrorHandler()
 
   const [filteredAssessments, setFilteredAssessments] = useState<
@@ -62,6 +64,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
       {data && (
         <AssessmentLibraryWrapper
           tags={data.tags}
+          isFromNewStaticPages={isFromNewStaticPages}
           token={token}
           assessments={data.assessments}
           onChangeTags={
