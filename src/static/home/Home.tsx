@@ -48,7 +48,11 @@ const Home: FunctionComponent = () => {
   return (
     <ThemeProvider theme={staticPagesTheme}>
       <div style={{backgroundColor: colors.primaryDarkBlue, color: '#FFF'}}>
-        <Container maxWidth={'lg'} disableGutters={true} component={'div'}>
+        <Container
+          maxWidth={'lg'}
+          fixed={true}
+          disableGutters={false}
+          component={'div'}>
           <TopNav routes={routes} appId={Utility.getAppId()} />
           <Grid container rowSpacing={1} columnSpacing={{xs: 4, lg: 5}}>
             {/*header */}
