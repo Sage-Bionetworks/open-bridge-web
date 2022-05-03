@@ -98,12 +98,42 @@ const staticPagesTheme: Theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: globals,
     },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: colors.accent,
+          fontSize: '14px',
+          textDecoration: 'none',
+
+          display: 'flex',
+          lineHeight: '14px',
+          flexDirection: 'row',
+        },
+      },
+    },
+    MuiButtonBase: {
+      defaultProps: {
+        // The props to change the default for.
+        disableRipple: true, // No more ripple, on the whole application 💣!
+      },
+    },
     MuiButton: {
       styleOverrides: {
-        containedPrimary: {
-          border: '1px solid #072751',
+        outlinedPrimary: {
+          border: `1px solid ${colors.primaryDarkBlue}`,
           borderRadius: '54px',
-          color: '072751',
+          backgroundColor: 'transparent',
+          textTransform: 'none',
+          color: colors.primaryDarkBlue,
+          '&:hover': {
+            backgroundColor: colors.primaryDarkBlue,
+            color: colors.neutralsWhite,
+          },
+          '&:focus': {
+            backgroundColor: colors.neutralsBlack,
+            borderColor: colors.neutralsBlack,
+            color: colors.neutralsWhite,
+          },
         },
       },
     },

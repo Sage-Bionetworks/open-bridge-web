@@ -1,7 +1,8 @@
 import {ReactComponent as DemoPhone} from '@assets/preview/demo_phone.svg'
 import {WhiteButton} from '@components/widgets/StyledComponents'
-import { Box, Container } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box, Container} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
+import {colors} from '@style/staticPagesTheme'
 import {Assessment, StringDictionary} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent, ReactNode} from 'react'
@@ -14,6 +15,7 @@ type AssessmentLibraryWrapperProps = {
   onChangeTags: Function
   isAssessmentLibrary?: boolean
   token?: string
+  isFromNewStaticPages?: boolean
 }
 
 const useStyles = makeStyles(theme => ({
@@ -22,6 +24,9 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.default,
     '&$blue': {
       backgroundColor: '#BCD5E4',
+    },
+    '&$static': {
+      backgroundColor: colors.primaryDarkBlue,
     },
     /*paddingTop: theme.spacing(4),*/
     // margin: `0 ${theme.spacing(4)}`,
@@ -35,6 +40,7 @@ const useStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(1),
   },
   blue: {},
+  static: {},
   assessmentContainer: {
     padding: theme.spacing(1),
     textAlign: 'center',
@@ -68,6 +74,7 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
     assessments,
     onChangeTags,
     token,
+    isFromNewStaticPages,
   }: AssessmentLibraryWrapperProps) => {
     const classes = useStyles()
 
@@ -75,7 +82,14 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
       <Box
         className={clsx(
           classes.root,
-          !token && isAssessmentLibrary && classes.blue
+          !token &&
+            isAssessmentLibrary &&
+            !isFromNewStaticPages &&
+            classes.blue,
+          !token &&
+            isAssessmentLibrary &&
+            isFromNewStaticPages &&
+            classes.static
         )}>
         {/* Filtering will not be present in the october release */}
         {/* <AssessmentLibraryFilter
@@ -96,7 +110,11 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
               </NavLink>
             </Box>
           )}
-          <Box className={classes.cardGrid}>{children}</Box>
+          <Box
+            className={classes.cardGrid}
+            sx={{margin: isFromNewStaticPages ? '40px 60px' : 0}}>
+            {children}
+          </Box>
         </Container>
       </Box>
     )

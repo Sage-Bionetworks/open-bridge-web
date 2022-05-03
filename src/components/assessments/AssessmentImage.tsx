@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme =>
       flexDirection: 'row',
     },
     detailImageContainer: {
-      padding: theme.spacing(2),
+      padding: theme.spacing(0),
       '& img': {
         width: '100%',
       },

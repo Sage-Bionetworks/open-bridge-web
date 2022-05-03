@@ -1,3 +1,5 @@
+import {default as bgExperiences} from '@assets/static/bg_home_experiences.svg'
+import {default as bgSecurity} from '@assets/static/bg_home_security.svg'
 import Utility from '@helpers/utility'
 import {Box, Container, Grid, Hidden, Typography} from '@mui/material'
 import {styled, ThemeProvider} from '@mui/material/styles'
@@ -32,10 +34,13 @@ const Item = styled(Box)<{test?: number}>(({theme, test}) => ({
 
 const Section = styled(Box)(({theme}) => ({
   padding: theme.spacing(10, 6),
+  position: 'relative',
   maxWidth: '1180px',
-  margin: '0, auto',
+
+  margin: '0 auto',
   [theme.breakpoints.up('lg')]: {
     padding: theme.spacing(24),
+    // minWidth: '1500px',
   },
 }))
 
@@ -74,11 +79,26 @@ const Home: FunctionComponent = () => {
             // justifyContent="center"
           >
             <Grid item xs={12}>
-              <Section>
+              <Section
+                sx={{
+                  backgroundSize: '100%',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'left bottom 80px',
+                  backgroundImage: {lg: 'url(' + bgExperiences + ')'},
+                }}>
                 <Experiences />
               </Section>
-              <Section bgcolor="#2E84F6">
-                <Security />
+              <Section
+                bgcolor="#2E84F6"
+                sx={{
+                  backgroundSize: '100%',
+                  backgroundRepeat: 'no-repeat',
+
+                  backgroundImage: {lg: 'url(' + bgSecurity + ')'},
+                }}>
+                <>
+                  <Security />
+                </>
               </Section>
               <Section>
                 <Science />

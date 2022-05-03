@@ -1,9 +1,10 @@
-import createStyles from '@mui/styles/createStyles';
 import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import {colors} from '@style/staticPagesTheme'
 import React, {FunctionComponent} from 'react'
 import validated from '../../assets/validated.svg'
 import {playfairDisplayFont, poppinsFont} from '../../style/theme'
@@ -15,6 +16,17 @@ const useStyles = makeStyles(theme =>
     root: {
       width: theme.spacing(28),
       height: theme.spacing(47),
+      textAlign: 'left',
+      // border: '1px solid gray',
+      padding: 0,
+
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    newRoot: {
+      width: theme.spacing(28),
+      height: theme.spacing(47),
+      borderTop: `5px solid ${colors.accent}`,
       textAlign: 'left',
       // border: '1px solid gray',
       padding: 0,
@@ -74,18 +86,20 @@ const useStyles = makeStyles(theme =>
 type AssessmentCardOwnProps = {
   assessment: Assessment
   index: number
+  isNewDesign?: boolean
 }
 
 type AssessmentCardProps = AssessmentCardOwnProps
 
 const AssessmentCard: FunctionComponent<AssessmentCardProps> = ({
   assessment,
+  isNewDesign,
   index,
 }) => {
   const classes = useStyles()
 
   return (
-    <Card className={classes.root}>
+    <Card className={isNewDesign ? classes.newRoot : classes.root}>
       <AssessmentImage
         resources={assessment.resources}
         variant="normal"

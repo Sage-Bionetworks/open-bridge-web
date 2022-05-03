@@ -17,6 +17,7 @@ export const MenuLinks: FunctionComponent<MenuLinksProps> = ({
   className,
   activeClassName,
 }) => {
+  console.log('menulink', routes)
   let links = routes.map(route => (
     <NavLink
       to={route.path}
