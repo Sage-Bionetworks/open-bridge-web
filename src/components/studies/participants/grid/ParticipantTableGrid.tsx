@@ -157,8 +157,9 @@ const EditCell: FunctionComponent<{
 
       const event = await ParticipantService.getRequestInfoForParticipant(
         studyId,
-        token!,
-        getValString('id')!
+
+        getValString('id')!,
+        token!
       )
 
       const hasSignedIn = event.signedInOn !== undefined

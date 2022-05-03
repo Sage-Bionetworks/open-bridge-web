@@ -8,6 +8,7 @@ import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
+  ParticipantRequestInfo,
   StringDictionary,
 } from '../types/types'
 import AdherenceService from './adherence.service'
@@ -674,15 +675,15 @@ async function updateParticipant(
 
 async function getRequestInfoForParticipant(
   studyIdentifier: string,
-  token: string,
-  participantId: string
-) {
+  participantId: string,
+  token: string
+): Promise<ParticipantRequestInfo> {
   //transform ids into promises
   const endpoint = constants.endpoints.requestInfo
     .replace(':studyId', studyIdentifier)
     .replace(':userId', participantId)
 
-  const info = await Utility.callEndpoint<{signedInOn: any}>(
+  const info = await Utility.callEndpoint<ParticipantRequestInfo>(
     endpoint,
     'GET',
     {},

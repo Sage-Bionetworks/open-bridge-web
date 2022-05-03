@@ -244,7 +244,8 @@ const Experiences: FunctionComponent<{}> = () => {
                 <Grid
                   item
                   key={`${index}`}
-                  xs={3}
+                  xs={4}
+                  lg={3}
                   onClick={() => setStep(prev => ({...prev, web: index}))}>
                   <ExperienceTabItem isActive={index === step.web}>
                     <Typography variant="h4">{item.title}</Typography>
@@ -256,6 +257,7 @@ const Experiences: FunctionComponent<{}> = () => {
                 <Container>
                   <Box mx={4} textAlign="center">
                     <img
+                      width="90%"
                       alt={webTabInfo[step.web].title}
                       src={webTabInfo[step.web].image}
                     />

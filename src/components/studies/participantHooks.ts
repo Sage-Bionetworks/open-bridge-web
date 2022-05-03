@@ -32,8 +32,8 @@ export const PARTICIPANT_KEYS = {
       tab,
       searchValue,
     ] as const,
-  detail: (studyId: string, userId: string) =>
-    [...PARTICIPANT_KEYS.list(studyId), userId] as const,
+  detail: (studyId: string, participantId: string) =>
+    [...PARTICIPANT_KEYS.list(studyId), participantId] as const,
 }
 
 async function getParticipants(
@@ -242,4 +242,28 @@ export const useAddParticipant = () => {
     },
   })
   return mutation
+}
+
+export const useGetParticipantInfo = (
+  studyId: string,
+  participantId: string
+) => {
+  const {token} = useUserSessionDataState()
+
+  return useQuery<any, ExtendedError>(
+    PARTICIPANT_KEYS.detail(studyId, participantId),
+    () =>
+      ParticipantService.getRequestInfoForParticipant(
+        studyId,
+
+        participantId,
+        token!
+      ),
+    {
+      enabled: !!studyId && !!participantId,
+      retry: false,
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+    }
+  )
 }

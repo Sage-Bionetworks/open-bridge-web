@@ -4,6 +4,7 @@ import EditIcon from '@assets/edit_pencil_red.svg'
 import {useAdherence} from '@components/studies/adherenceHooks'
 import {useEnrollmentForParticipant} from '@components/studies/enrollmentHooks'
 import {useEventsForUser} from '@components/studies/eventHooks'
+import {useGetParticipantInfo} from '@components/studies/participantHooks'
 import {useStudy} from '@components/studies/studyHooks'
 import BreadCrumb from '@components/widgets/BreadCrumb'
 import {MTBHeadingH4} from '@components/widgets/Headings'
@@ -27,6 +28,7 @@ import AdherenceUtility from '../adherenceUtility'
 import SessionLegend from '../SessionLegend'
 import {useCommonStyles} from '../styles'
 import AdherenceParticipantGrid from './AdherenceParticipantGrid'
+import DeviceInfo from './DeviceInfo'
 import EditParticipantEvents from './EditParticipantEvents'
 import EditParticipantNotes from './EditParticipantNotes'
 const useStyles = makeStyles(theme => ({
@@ -73,6 +75,11 @@ const AdherenceParticipant: FunctionComponent<
     error,
     isLoading: isAdherenceLoading,
   } = useAdherence(studyId, participantId)
+
+  const {data: participantRequestInfo} = useGetParticipantInfo(
+    studyId,
+    participantId
+  )
 
   const {data: events} = useEventsForUser(studyId, participantId)
 
@@ -218,11 +225,16 @@ const AdherenceParticipant: FunctionComponent<
                 : `${adherenceReport?.adherencePercent} %`}
             </Box>
           </Box>
-          <EditParticipantNotes
-            participantId={participantId}
-            studyId={studyId}
-            enrollment={enrollment!}
-          />
+          <Box display="flex" marginTop={8} justifyContent="space-around">
+            <EditParticipantNotes
+              participantId={participantId}
+              studyId={studyId}
+              enrollment={enrollment!}
+            />
+            {participantRequestInfo && (
+              <DeviceInfo {...participantRequestInfo} />
+            )}
+          </Box>
         </Paper>
       </LoadingComponent>
       {isEditParticipant && (

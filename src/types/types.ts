@@ -429,6 +429,27 @@ export type AdherenceStatistics = {
   entries: AdherenceStatisticsEntry[]
 }
 
+export type ParticipantRequestInfo = {
+  userId: string
+  clientInfo: {
+    appName: string
+    appVersion: number
+    deviceName: string
+    osName: string
+    osVersion: string
+    sdkName: string
+    sdkVersion: number
+  }
+  userAgent: string
+  languages: string[]
+  userDataGroups: string[]
+  userStudyIds: string[]
+  signedInOn: string
+  uploadedOn: string //eg "2022-04-02T04:44:20.086Z",
+  timeZone: string
+  timelineAccessedOn: string
+}
+
 // POST MVP
 
 export type StudyArm = {
