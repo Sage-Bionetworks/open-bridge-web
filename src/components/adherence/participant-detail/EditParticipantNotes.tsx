@@ -9,8 +9,10 @@ import React, {FunctionComponent} from 'react'
 
 const useStyles = makeStyles(theme => ({
   notesContainer: {
-    marginTop: theme.spacing(8),
+    // marginTop: theme.spacing(8),
     padding: theme.spacing(4),
+    width: '50%',
+    marginRight: theme.spacing(5),
   },
   notesText: {
     '& .MuiOutlinedInput-inputMultiline': {
@@ -21,7 +23,7 @@ const useStyles = makeStyles(theme => ({
       borderColor: '#BBC3CD',
     },
     margin: theme.spacing(2, 0),
-    width: '55%',
+    width: '100%',
   },
   saveBtn: {
     backgroundColor: '#392D2D',
