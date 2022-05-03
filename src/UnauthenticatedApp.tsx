@@ -21,10 +21,10 @@ const UnauthenticatedApp: FunctionComponent<
   Utility.setBodyClass()
   const loc = useLocation()
   const route = PublicRoutes.find(r => r.path === loc.pathname)
-  const isFromNewStaticPages = new URLSearchParams(useLocation().search)?.get(
+  const isFromNewStaticPages = !!new URLSearchParams(useLocation().search)?.get(
     'isStatic'
   )
-  console.log(PublicRoutes)
+
   if (appId === constants.constants.ARC_APP_ID) {
     return <SignInPage isARCApp={true} />
   }

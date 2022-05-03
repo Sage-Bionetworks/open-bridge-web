@@ -1,12 +1,12 @@
+import Loader from '@components/widgets/Loader'
+import {useAsync} from '@helpers/AsyncHook'
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import makeStyles from '@mui/styles/makeStyles'
+import AssessmentService from '@services/assessment.service'
+import {Assessment, StringDictionary} from '@typedefs/types'
 import React, {FunctionComponent, useState} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {Link, RouteComponentProps, useLocation} from 'react-router-dom'
-import {useAsync} from '../../helpers/AsyncHook'
-import {useUserSessionDataState} from '../../helpers/AuthContext'
-import AssessmentService from '../../services/assessment.service'
-import {Assessment, StringDictionary} from '../../types/types'
-import Loader from '../widgets/Loader'
 import AssessmentCard from './AssessmentCard'
 import AssessmentLibraryWrapper from './AssessmentLibraryWrapper'
 
@@ -29,7 +29,7 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
   const classes = useStyles()
 
   const {token} = useUserSessionDataState()
-  const isFromNewStaticPages = new URLSearchParams(useLocation().search)?.get(
+  const isFromNewStaticPages = !!new URLSearchParams(useLocation().search)?.get(
     'isStatic'
   )
   const handleError = useErrorHandler()
@@ -73,10 +73,13 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
           }>
           {(filteredAssessments || data.assessments).map((a, index) => (
             <Link
-              to={`${match.url}/${a.guid}`}
+              to={`${match.url}/${a.guid}${
+                isFromNewStaticPages ? '?isStatic=true' : ''
+              }`}
               className={classes.cardLink}
               key={a.guid}>
               <AssessmentCard
+                isNewDesign={isFromNewStaticPages}
                 index={index}
                 assessment={a}
                 key={a.guid}></AssessmentCard>

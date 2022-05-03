@@ -7,7 +7,7 @@ import {Box} from '@mui/material'
 const Footer: React.FunctionComponent = () => {
   return (
     <Box
-      p={7.5}
+      p={6}
       display="flex"
       bgcolor={'#fff'}
       justifyContent="space-between"

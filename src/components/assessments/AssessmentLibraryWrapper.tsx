@@ -15,7 +15,7 @@ type AssessmentLibraryWrapperProps = {
   onChangeTags: Function
   isAssessmentLibrary?: boolean
   token?: string
-  isFromNewStaticPages?: string | null
+  isFromNewStaticPages?: boolean
 }
 
 const useStyles = makeStyles(theme => ({
@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: '#BCD5E4',
     },
     '&$static': {
-      backgroundColor: colors.neutralsWhite,
+      backgroundColor: colors.primaryDarkBlue,
     },
     /*paddingTop: theme.spacing(4),*/
     // margin: `0 ${theme.spacing(4)}`,
