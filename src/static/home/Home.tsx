@@ -54,28 +54,6 @@ const Home: FunctionComponent = () => {
           disableGutters={false}
           component={'div'}>
           <TopNav routes={routes} appId={Utility.getAppId()} />
-          <Grid container rowSpacing={1} columnSpacing={{xs: 4, lg: 5}}>
-            {/*header */}
-
-            <Grid item xs={12} lg={6}>
-              <Item my={32} mx={1}>
-                <Typography variant="h1">Mobile Toolbox!</Typography>
-                <Typography variant="h3" sx={{opacity: 0.6}}>
-                  A comprehensive research and analytics platform to launch
-                  fully remote, smartphone app-based cognitive assessment
-                  studies.
-                </Typography>
-              </Item>
-            </Grid>
-          </Grid>
-          {/*how it works */}
-          <Hidden lgUp>
-            <HowItWorksMobile />
-          </Hidden>
-          <Hidden lgDown>
-            <HowItWorksDesktop />
-          </Hidden>
-
           <Grid
             container
 
@@ -83,6 +61,30 @@ const Home: FunctionComponent = () => {
             // justifyContent="center"
           >
             <Grid item xs={12}>
+              <Section>
+                <Grid container rowSpacing={1} columnSpacing={{xs: 4, lg: 5}}>
+                  {/*header */}
+
+                  <Grid item xs={12} lg={6}>
+                    <Item my={32} mx={1}>
+                      <Typography variant="h1">Mobile Toolbox!</Typography>
+                      <Typography variant="h3" sx={{opacity: 0.6}}>
+                        A comprehensive research and analytics platform to
+                        launch fully remote, smartphone app-based cognitive
+                        assessment studies.
+                      </Typography>
+                    </Item>
+                  </Grid>
+                </Grid>
+                {/*how it works */}
+                <Hidden lgUp>
+                  <HowItWorksMobile />
+                </Hidden>
+                <Hidden lgDown>
+                  <HowItWorksDesktop />
+                </Hidden>
+              </Section>
+
               <Section
                 sx={{
                   backgroundSize: '100%',
