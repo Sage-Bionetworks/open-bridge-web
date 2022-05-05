@@ -1,6 +1,7 @@
-import { Box, Container, Divider, Paper, Typography } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import Loader from '@components/widgets/Loader'
+import {Box, Container, Divider, Paper, Typography} from '@mui/material'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
@@ -64,7 +65,7 @@ const useStyles = makeStyles(theme =>
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
-      marginLeft: theme.spacing(-3.5),
+      //  marginLeft: theme.spacing(-3.5),
       marginTop: theme.spacing(2.5),
       marginBottom: theme.spacing(2.5),
     },
@@ -92,7 +93,7 @@ const useStyles = makeStyles(theme =>
       height: '24px',
     },
     imageTextRowValidatedIcon: {
-      marginLeft: theme.spacing(-3.9),
+      //marginLeft: theme.spacing(-3.9),
     },
   })
 )
@@ -135,7 +136,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
     )
   }, [run, id, token])
   if (status === 'PENDING' || !data) {
-    return <>loading component here</>
+    return <Loader reqStatusLoading={true} />
   } else if (status === 'REJECTED') {
     handleError(error!)
   } else {
@@ -191,7 +192,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                     {data.minutesToComplete} min
                   </div>
                 </div>
-                <div className={classes.informationText}>[Age: 18 +]</div>
+                {/*<div className={classes.informationText}>[Age: 18 +]</div>*/}
                 <div className={clsx(classes.informationText, classes.row)}>
                   <div style={{width: '100px'}}>Designed By:</div>
                   <div>
@@ -200,12 +201,12 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
                       : ''}
                   </div>
                 </div>
-                <div className={classes.informationText}>
+                {/* <div className={classes.informationText}>
                   [Used in <u>15 published studies</u>]
                 </div>
                 <div className={classes.informationText}>
                   [2840 participants]
-                </div>
+                    </div>*/}
               </Box>
             </Box>
           </Paper>
