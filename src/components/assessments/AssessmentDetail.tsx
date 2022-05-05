@@ -1,21 +1,10 @@
-import Loader from '@components/widgets/Loader'
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Grid,
-  Paper,
-  ThemeProvider,
-  Typography,
-} from '@mui/material'
-import createStyles from '@mui/styles/createStyles'
-import makeStyles from '@mui/styles/makeStyles'
-import staticPagesTheme from '@style/staticPagesTheme'
+import { Box, Container, Divider, Paper, Typography } from '@mui/material';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import {RouteComponentProps, useLocation, useParams} from 'react-router-dom'
+import {RouteComponentProps, useParams} from 'react-router-dom'
 import ClockIcon from '../../assets/clock.svg'
 import OfficialMobileToolboxVersion from '../../assets/official_mobile_toolbox_icon.svg'
 import ScientificallyValidatedIcon from '../../assets/validated.svg'
@@ -30,11 +19,13 @@ import AssessmentImage from './AssessmentImage'
 const useStyles = makeStyles(theme =>
   createStyles({
     breadCrumbs: {
-      // backgroundColor: '#F8F8F8',
+      backgroundColor: '#F8F8F8',
       padding: theme.spacing(5, 5, 8, 3),
       boxShadow: '0 0 0 0',
     },
-
+    container: {
+      padding: theme.spacing(6),
+    },
     categories: {
       fontFamily: playfairDisplayFont,
       fontStyle: 'italic',
@@ -73,8 +64,7 @@ const useStyles = makeStyles(theme =>
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
-      marginLeft: theme.spacing(2),
-      // marginLeft: theme.spacing(-3.5),
+      marginLeft: theme.spacing(-3.5),
       marginTop: theme.spacing(2.5),
       marginBottom: theme.spacing(2.5),
     },
@@ -94,8 +84,7 @@ const useStyles = makeStyles(theme =>
     },
     overallBackground: {
       textAlign: 'center',
-      //backgroundColor: '#F8F8F8',
-      paddingBottom: theme.spacing(6),
+      backgroundColor: '#F8F8F8',
     },
     validatedIcon: {
       marginRight: theme.spacing(1),
@@ -103,8 +92,7 @@ const useStyles = makeStyles(theme =>
       height: '24px',
     },
     imageTextRowValidatedIcon: {
-      marginLeft: theme.spacing(2),
-      // marginLeft: theme.spacing(-3.9),
+      marginLeft: theme.spacing(-3.9),
     },
   })
 )
@@ -116,16 +104,8 @@ type AssessmentDetailProps = AssessmentDetailOwnProps & RouteComponentProps
 const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
   const {token} = useUserSessionDataState()
   const classes = useStyles()
-  const isFromNewStaticPages = !!new URLSearchParams(useLocation().search)?.get(
-    'isStatic'
-  )
 
-  const links = [
-    {
-      url: `/assessments${isFromNewStaticPages ? '?isStatic=true' : ''}`,
-      text: 'Assessments',
-    },
-  ]
+  const links = [{url: '/assessments', text: 'Assessments'}]
 
   let {id} = useParams<{id: string}>()
 
@@ -155,106 +135,82 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
     )
   }, [run, id, token])
   if (status === 'PENDING' || !data) {
-    return <Loader reqStatusLoading={status} variant="full" />
+    return <>loading component here</>
   } else if (status === 'REJECTED') {
     handleError(error!)
   } else {
     return (
-      <Box
-        className={classes.overallContainer}
-        style={isFromNewStaticPages ? {backgroundColor: '#fff'} : {}}>
-        <Box className={classes.breadCrumbs}>
+      <div className={classes.overallContainer}>
+        <Paper className={classes.breadCrumbs}>
           <BreadCrumb links={links} currentItem={data.title}></BreadCrumb>
-        </Box>
+        </Paper>
         <Container maxWidth="lg" className={classes.overallBackground}>
-          <Paper>
-            <Grid container spacing={'32px'} className={classes.informationBox}>
-              <Grid item xs={12} lg={6}>
-                <Box maxWidth="530px" style={{textAlign: 'left'}}>
-                  <AssessmentImage
-                    name={`${data.title}_img`}
-                    resources={data.resources}
-                    variant="detail"></AssessmentImage>
-
-                  {!token && (
-                    <ThemeProvider theme={staticPagesTheme}>
-                      <Box>
-                        <p className={classes.informationTextInContainer}>
-                          {' '}
-                          To learn more about this assessment and try it out
-                          please log into Mobile Toolbox.
-                        </p>
-                        <Button variant="outlined" color="primary">
-                          Go to Login
-                        </Button>
-                      </Box>
-                    </ThemeProvider>
-                  )}
-                </Box>
-              </Grid>
-              <Grid item xs={12} lg={6}>
-                <Box textAlign="left">
-                  <Typography
-                    variant="subtitle2"
-                    className={classes.categories}>
-                    {data.tags.join(', ')}
-                  </Typography>
-                  <div className={classes.titleText}>{data.title}</div>
-                  <Box>{data.summary}</Box>
-                  <Divider className={classes.divider} />
-                  <div
-                    className={clsx(
-                      classes.imageTextRow,
-                      classes.imageTextRowValidatedIcon
-                    )}>
-                    <img
-                      className={classes.validatedIcon}
-                      src={ScientificallyValidatedIcon}
-                      alt="scientifically_validated_icon"></img>
-                    <div className={classes.informationTextInContainer}>
-                      Scientifically Validated
-                    </div>
+          <Paper className="classes.container">
+            <Box display="flex" className={classes.informationBox}>
+              <Box width="530px" marginRight="32px" style={{textAlign: 'left'}}>
+                <AssessmentImage
+                  name={`${data.title}_img`}
+                  resources={data.resources}
+                  variant="detail"></AssessmentImage>
+              </Box>
+              <Box textAlign="left">
+                <Typography variant="subtitle2" className={classes.categories}>
+                  {data.tags.join(', ')}
+                </Typography>
+                <div className={classes.titleText}>{data.title}</div>
+                <Box>{data.summary}</Box>
+                <Divider className={classes.divider} />
+                <div
+                  className={clsx(
+                    classes.imageTextRow,
+                    classes.imageTextRowValidatedIcon
+                  )}>
+                  <img
+                    className={classes.validatedIcon}
+                    src={ScientificallyValidatedIcon}
+                    alt="scientifically_validated_icon"></img>
+                  <div className={classes.informationTextInContainer}>
+                    Scientifically Validated
                   </div>
-                  <div className={classes.imageTextRow}>
-                    <img
-                      className={classes.icon}
-                      src={OfficialMobileToolboxVersion}
-                      alt="official_mobile_toolbox_icon"></img>
-                    <div className={classes.informationTextInContainer}>
-                      Official Mobile Toolbox version
-                    </div>
+                </div>
+                <div className={classes.imageTextRow}>
+                  <img
+                    className={classes.icon}
+                    src={OfficialMobileToolboxVersion}
+                    alt="official_mobile_toolbox_icon"></img>
+                  <div className={classes.informationTextInContainer}>
+                    Official Mobile Toolbox version
                   </div>
-                  <div className={classes.imageTextRow}>
-                    <img
-                      className={classes.icon}
-                      src={ClockIcon}
-                      alt="clock_icon"></img>
-                    <div className={classes.informationTextInContainer}>
-                      {data.minutesToComplete} min
-                    </div>
+                </div>
+                <div className={classes.imageTextRow}>
+                  <img
+                    className={classes.icon}
+                    src={ClockIcon}
+                    alt="clock_icon"></img>
+                  <div className={classes.informationTextInContainer}>
+                    {data.minutesToComplete} min
                   </div>
-                  {/* <div className={classes.informationText}>[Age: 18 +]</div>*/}
-                  <div className={clsx(classes.informationText, classes.row)}>
-                    <div style={{width: '100px'}}>Designed By:</div>
-                    <div>
-                      {correctResource && correctResource.creators
-                        ? correctResource.creators.join(', ')
-                        : ''}
-                    </div>
+                </div>
+                <div className={classes.informationText}>[Age: 18 +]</div>
+                <div className={clsx(classes.informationText, classes.row)}>
+                  <div style={{width: '100px'}}>Designed By:</div>
+                  <div>
+                    {correctResource && correctResource.creators
+                      ? correctResource.creators.join(', ')
+                      : ''}
                   </div>
-                  {/*
-                  <div className={classes.informationText}>
-                    [Used in <u>15 published studies</u>]
-                  </div>
-                  <div className={classes.informationText}>
-                    [2840 participants]
-                      </div>*/}
-                </Box>
-              </Grid>
-            </Grid>
+                </div>
+                <div className={classes.informationText}>
+                  [Used in <u>15 published studies</u>]
+                </div>
+                <div className={classes.informationText}>
+                  [2840 participants]
+                </div>
+              </Box>
+            </Box>
           </Paper>
         </Container>
-      </Box>
+      </div>
     )
   }
   return <></>
