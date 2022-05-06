@@ -1,6 +1,6 @@
 import BlackXIcon from '@assets/black_x_icon.svg'
 import Logo from '@assets/logo_mtb.svg'
-import makeStyles from '@mui/styles/makeStyles'
+import makeStyles from '@mui/styles/makeStyles';
 import {latoFont} from '@style/theme'
 import React from 'react'
 import {NavLink} from 'react-router-dom'
@@ -40,13 +40,12 @@ const useStyles = makeStyles(theme => ({
 type MobileDrawHeaderProps = {
   setIsMobileOpen: Function
   type: 'IN_STUDY' | 'LOGGED_IN' | 'NOT_LOGGED_IN'
-  logoImage?: JSX.Element
 }
 
 const MobileDrawerMenuHeader: React.FunctionComponent<MobileDrawHeaderProps> =
-  ({setIsMobileOpen, type, logoImage}) => {
+  ({setIsMobileOpen, type}) => {
     const classes = useStyles()
-    const logo = logoImage || <img className={classes.logoImage} src={Logo} />
+    const logo = <img className={classes.logoImage} src={Logo} />
     const logoElement =
       type === 'IN_STUDY' || type === 'LOGGED_IN' ? (
         <NavLink

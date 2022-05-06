@@ -10,7 +10,6 @@ import React, {useEffect, useRef} from 'react'
 import {ErrorBoundary} from 'react-error-boundary'
 import {QueryClient, QueryClientProvider} from 'react-query'
 import {BrowserRouter as Router, Redirect} from 'react-router-dom'
-import Footer from 'static/Footer'
 import AuthenticatedApp from './AuthenticatedApp'
 import {ErrorFallback, ErrorHandler} from './components/widgets/ErrorHandler'
 import Loader from './components/widgets/Loader'
@@ -151,7 +150,6 @@ function App() {
                       <UnauthenticatedApp appId={Utility.getAppId()} />
                     </Loader>
                   )}
-                  <Footer />
                 </React.StrictMode>
               </ErrorBoundary>
             </QueryClientProvider>
