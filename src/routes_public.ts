@@ -1,3 +1,5 @@
+import AssessmentDetail from '@components/assessments/AssessmentDetail'
+import AssessmentLibrary from '@components/assessments/AssessmentLibrary'
 import DownloadAppLandingPage from './components/static/DownloadAppLandingPage'
 import SignInPage from './SignInPage'
 
@@ -16,7 +18,7 @@ export default [
     exact: true,
     noToolbar: true,
   },
-  /*
+
   {
     path: '/assessments',
     name: 'ASSESSMENT LIBRARY',
@@ -28,7 +30,7 @@ export default [
     name: '',
     Component: AssessmentDetail,
     exact: true,
-  },*/
+  },
 
   {
     path: '/sign-in',
