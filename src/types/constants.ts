@@ -60,6 +60,16 @@ export default {
       vendor: 'arc-dev',
       redirect: 'http://127.0.0.1:3001',
     },
+    staging_arc: {
+      client: '100162',
+      vendor: 'arc-stage',
+      redirect: 'https://staging.dashboard.sagebridge.org',
+    },
+    production_arc: {
+      client: '',
+      vendor: 'arc-prod',
+      redirect: 'https://dashboard.sagebridge.org',
+    },
   },
 
   endpoints: {
