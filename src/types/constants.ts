@@ -1,8 +1,8 @@
 export default {
   constants: {
     MTB_APP_ID: 'mobile-toolbox',
-    ARC_APP_ID: 'dian-validation',
-    SESSION_NAME: 'bridge-session-mtb-user-testing',
+    ARC_APP_ID: 'arc',
+    SESSION_NAME: 'mtb-user-session',
     ENDPOINT: 'https://webservices.sagebridge.org',
     SYNAPSE_ENDPOINT: 'https://repo-prod.prod.sagebase.org',
     NEW_STUDY_NAME: 'Untitled Study',
