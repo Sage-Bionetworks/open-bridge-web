@@ -40,12 +40,12 @@ export default {
       vendor: 'mtb',
       redirect: 'http://127.0.0.1:3000',
     },
-    staging_mtb: {
+    /* staging_mtb: {
       client: '100069',
       vendor: 'mtb-staging',
       redirect: 'https://staging.mobiletoolbox.org',
-    },
-    staging_mtb_studies: {
+    },*/
+    stage_mtb_studies: {
       client: '100122',
       vendor: 'mtb-staging-studies',
       redirect: 'https://staging.studies.mobiletoolbox.org',
@@ -60,12 +60,12 @@ export default {
       vendor: 'arc-dev',
       redirect: 'http://127.0.0.1:3001',
     },
-    staging_arc: {
+    stage_arc_studies: {
       client: '100162',
       vendor: 'arc-stage',
       redirect: 'https://staging.dashboard.sagebridge.org',
     },
-    production_arc: {
+    prod_arc_studies: {
       client: '100164',
       vendor: 'arc-prod',
       redirect: 'https://dashboard.sagebridge.org',
