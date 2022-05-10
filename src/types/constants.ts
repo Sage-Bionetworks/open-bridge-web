@@ -66,7 +66,7 @@ export default {
       redirect: 'https://staging.dashboard.sagebridge.org',
     },
     production_arc: {
-      client: '',
+      client: '100164',
       vendor: 'arc-prod',
       redirect: 'https://dashboard.sagebridge.org',
     },
