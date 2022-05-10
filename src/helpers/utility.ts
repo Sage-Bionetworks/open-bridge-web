@@ -146,7 +146,10 @@ const setSession = (data: UserSessionData) => {
 }
 
 const getAppId = () => {
-  if (document.location.port === '3001') {
+  if (
+    document.location.port === '3001' ||
+    document.location.host.includes('dashboard.sagebridge.org')
+  ) {
     return CONSTANTS.constants.ARC_APP_ID
   } else {
     return CONSTANTS.constants.MTB_APP_ID
