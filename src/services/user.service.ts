@@ -5,8 +5,13 @@ import {LoggedInUserData, Response} from '../types/types'
 const isLocalhost = (): boolean =>
   document.location.origin.indexOf('127.0.0.1') > -1
 
-const isStaging = (): boolean =>
-  document.location.origin.indexOf('staging.') > -1
+const isStaging = (): boolean => document.location.host.indexOf('staging.') > -1
+
+const isArc = (): boolean =>
+  document.location.host.indexOf('dashboard.sagebridge.org') > -1
+
+const isMTB = (): boolean =>
+  document.location.host.indexOf('studies.mobiletoolbox') > -1
 
 const getOathEnvironment = (): {
   client: string
@@ -21,17 +26,21 @@ const getOathEnvironment = (): {
     if (document.location.port === '3001') {
       return constants.oauth.local_arc
     }
-  } else if (isStaging()) {
-    return document.location.origin.indexOf('staging.studies.mobiletoolbox') >
-      -1
-      ? constants.oauth.staging_mtb_studies
-      : constants.oauth.staging_mtb
+    throw Error('unknown local environment')
+  } else {
+    if (!isMTB() && !isArc()) {
+      throw new Error('unknown environment')
+    }
+    if (isStaging()) {
+      return isArc()
+        ? constants.oauth.stage_arc_studies
+        : constants.oauth.stage_mtb_studies
+    } else {
+      return isArc()
+        ? constants.oauth.prod_arc_studies
+        : constants.oauth.prod_mtb_studies
+    }
   }
-  if (document.location.origin.indexOf('studies.mobiletoolbox') > 1) {
-    return constants.oauth.prod_mtb_studies
-  }
-
-  throw new Error('unknown')
 }
 
 const requestResetPassword = async (email: string): Promise<Response<{}>> => {
