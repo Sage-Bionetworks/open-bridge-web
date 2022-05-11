@@ -8,6 +8,7 @@ import {
   ParticipantAccountSummary,
   ParticipantActivityType,
   ParticipantEvent,
+  ParticipantRequestInfo,
   Phone,
 } from '@typedefs/types'
 import {useMutation, useQuery, useQueryClient} from 'react-query'
@@ -250,7 +251,7 @@ export const useGetParticipantInfo = (
 ) => {
   const {token} = useUserSessionDataState()
 
-  return useQuery<any, ExtendedError>(
+  return useQuery<ParticipantRequestInfo, ExtendedError>(
     PARTICIPANT_KEYS.detail(studyId, participantId),
     () =>
       ParticipantService.getRequestInfoForParticipant(
