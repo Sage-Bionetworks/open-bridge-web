@@ -35,10 +35,11 @@ export default [
 
   {
     path: '/surveys',
-    name: 'MY SURVEYS',
+    name: 'SURVEY BUILDER',
     Component: Surveys,
     exact: true,
   },
+
   {
     path: constants.restrictedPaths.STUDY_BUILDER,
     name: '',
