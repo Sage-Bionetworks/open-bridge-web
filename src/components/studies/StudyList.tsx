@@ -247,7 +247,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   const handleError = useErrorHandler()
 
-  const { token, roles } = useUserSessionDataState()
+  const { roles } = useUserSessionDataState()
   const [menuAnchor, setMenuAnchor] = React.useState<null | {
     study: Study
     anchorEl: HTMLElement
@@ -272,9 +272,6 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
     string | null
   >(null)
   const [redirectLink, setRedirectLink] = React.useState('')
-
-  let resetNewlyAddedStudyID: NodeJS.Timeout
-
   const {
     data: studies,
     error: studyError,
@@ -283,10 +280,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   const {
     mutate,
-    isSuccess,
-    isError,
     mutateAsync,
-    data,
     isLoading: isStudyUpdating,
     variables: mutateData,
   } = useUpdateStudyInList()
@@ -312,7 +306,7 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
         const newStudy = e[0]
         if (newStudy) {
           setHighlightedStudyId(newStudy.identifier)
-          resetNewlyAddedStudyID = setTimeout(() => {
+          setTimeout(() => {
             setHighlightedStudyId(null)
           }, 2000)
         }
@@ -355,7 +349,6 @@ const StudyList: FunctionComponent<StudyListProps> = () => {
 
   const onAction = async (study: Study, type: StudyAction) => {
     handleMenuClose()
-    let result
     switch (type) {
       case 'RENAME':
         await mutate({ action: 'RENAME', study: { ...study, name: study.name } })
