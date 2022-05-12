@@ -1,35 +1,37 @@
-import {StudySection} from '@components/studies/sections'
-import {useStudy} from '@components/studies/studyHooks'
-import {useUserSessionDataState} from '@helpers/AuthContext'
-import {useStudyInfoDataDispatch} from '@helpers/StudyInfoContext'
-import React, {FunctionComponent, ReactNode} from 'react'
-import {useErrorHandler} from 'react-error-boundary'
+import { StudySection } from '@components/studies/sections'
+import { useStudy } from '@components/studies/studyHooks'
+import StudyTopNav from '@components/studies/StudyTopNav'
+import SurveyTopNav from '@components/surveys/SurveyTopNav'
+import TopNav from '@components/widgets/AppTopNav'
+import { useUserSessionDataState } from '@helpers/AuthContext'
+import Utility from '@helpers/utility'
+import { UserSessionData } from '@typedefs/types'
+import React, { FunctionComponent, ReactNode } from 'react'
+import { useErrorHandler } from 'react-error-boundary'
 import {
   Route,
   RouteComponentProps,
   Switch,
   useLocation,
   useParams,
-  withRouter,
+  withRouter
 } from 'react-router-dom'
-import StudyTopNav from './components/studies/StudyTopNav'
-import TopNav from './components/widgets/AppTopNav'
-import Utility from './helpers/utility'
 import PrivateRoutes from './routes_private'
-import {UserSessionData} from './types/types'
+
 
 const Wrapper: FunctionComponent<
-  RouteComponentProps & {sessionData: UserSessionData; children: ReactNode}
-> = ({children, sessionData}) => {
-  let {id: studyId, section: studySection} = useParams<{
+  RouteComponentProps & { sessionData: UserSessionData; children: ReactNode }
+> = ({ children, sessionData }) => {
+  let { id: studyId, section: studySection } = useParams<{
     id: string
     section: StudySection
   }>()
   //only use studyId in study builder or
   const notStudyId = useLocation().pathname.includes(`/assessments/${studyId}`)
-  const {data: study, error} = useStudy(notStudyId ? undefined : studyId)
+  const isSurveyPath = useLocation().pathname.includes(`/surveys`)
+  const { data: study, error } = useStudy(notStudyId ? undefined : studyId)
   const handleError = useErrorHandler()
-  const studyDataUpdateFn = useStudyInfoDataDispatch()
+
   if (error) {
     handleError(error)
   }
@@ -37,40 +39,35 @@ const Wrapper: FunctionComponent<
   React.useEffect(() => {
     Utility.setBodyClass(studySection)
   }, [studySection])
-  React.useEffect(() => {
-    if (study) {
-      studyDataUpdateFn({type: 'SET_STUDY', payload: {study}})
-    }
-  }, [study, studyDataUpdateFn])
+
 
   return (
     <>
-      {!study && (
-        <TopNav
-          routes={PrivateRoutes}
-          sessionData={sessionData}
-          appId={sessionData.appId}
-        />
-      )}
-      {study && (
-        <StudyTopNav
-          study={study}
-          error={error}
-          currentSection={studySection}></StudyTopNav>
-      )}
+      {isSurveyPath ? <SurveyTopNav></SurveyTopNav> :
+
+        (!study ? (
+          <TopNav
+            routes={PrivateRoutes}
+            sessionData={sessionData}
+            appId={sessionData.appId}
+          />
+        ) : (
+          <StudyTopNav
+            study={study}
+            error={error}
+            currentSection={studySection}></StudyTopNav>
+        ))}
       <main>{children}</main>
     </>
   )
 }
 
-const AuthenticatedApp: FunctionComponent<
-  {
-    sessionData: UserSessionData
-  } & RouteComponentProps
-> = ({sessionData, location, match}) => {
-  const {token} = useUserSessionDataState()
+const AuthenticatedApp: FunctionComponent<RouteComponentProps
+> = ({ location, match }) => {
+  const sessionData = useUserSessionDataState()
 
-  if (!token) {
+
+  if (!sessionData.token) {
     //save location and redirect
     if (location.pathname !== '/') {
       sessionStorage.setItem('location', location.pathname)
@@ -80,7 +77,7 @@ const AuthenticatedApp: FunctionComponent<
   return (
     <>
       <Switch>
-        {PrivateRoutes.map(({path, Component}, key) => (
+        {PrivateRoutes.map(({ path, Component }, key) => (
           <Route
             exact
             path={path}

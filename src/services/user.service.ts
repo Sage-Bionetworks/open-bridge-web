@@ -29,7 +29,7 @@ const getOathEnvironment = (): {
     throw Error('unknown local environment')
   } else {
     if (!isMTB() && !isArc()) {
-      throw new Error('unknown environment')
+      throw new Error(`${document.location} is an unknown environment`)
     }
     if (isStaging()) {
       return isArc()

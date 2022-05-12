@@ -2,26 +2,25 @@ import {
   CssBaseline,
   StyledEngineProvider,
   ThemeProvider,
-  Typography,
+  Typography
 } from '@mui/material'
-import {createTheme, Theme} from '@mui/material/styles'
-import {deepmerge} from '@mui/utils'
-import React, {useEffect, useRef} from 'react'
-import {ErrorBoundary} from 'react-error-boundary'
-import {QueryClient, QueryClientProvider} from 'react-query'
-import {BrowserRouter as Router, Redirect} from 'react-router-dom'
+import { createTheme, Theme } from '@mui/material/styles'
+import { deepmerge } from '@mui/utils'
+import React, { useEffect, useRef } from 'react'
+import { ErrorBoundary } from 'react-error-boundary'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { BrowserRouter as Router, Redirect } from 'react-router-dom'
 import AuthenticatedApp from './AuthenticatedApp'
-import {ErrorFallback, ErrorHandler} from './components/widgets/ErrorHandler'
+import { ErrorFallback, ErrorHandler } from './components/widgets/ErrorHandler'
 import Loader from './components/widgets/Loader'
 import {
   useUserSessionDataDispatch,
-  useUserSessionDataState,
+  useUserSessionDataState
 } from './helpers/AuthContext'
-import {StudyInfoDataProvider} from './helpers/StudyInfoContext'
 import Utility from './helpers/utility'
 import UserService from './services/user.service'
-import {cssVariables, theme} from './style/theme'
-import {ExtendedError, LoggedInUserData} from './types/types'
+import { cssVariables, theme } from './style/theme'
+import { ExtendedError, LoggedInUserData } from './types/types'
 import UnauthenticatedApp from './UnauthenticatedApp'
 
 const theTheme = createTheme(deepmerge(theme, cssVariables))
@@ -30,12 +29,12 @@ const getCode = (): string | null => {
   // 'code' handling (from SSO) should be preformed on the root page, and then redirect to original route.
   let code: URL | null | string = new URL(window.location.href)
   // in test environment the searchParams isn't defined
-  const {searchParams} = code
+  const { searchParams } = code
   return searchParams?.get('code')
 }
 // tslint:disable-next-line
 declare module '@mui/styles/defaultTheme' {
-  interface DefaultTheme extends Theme {}
+  interface DefaultTheme extends Theme { }
 }
 
 const attemptLogin = async (code: string): Promise<LoggedInUserData> => {
@@ -142,9 +141,9 @@ function App() {
                 {redirect && <Redirect to={redirect}></Redirect>}
                 <React.StrictMode>
                   {sessionData.id ? (
-                    <StudyInfoDataProvider>
-                      <AuthenticatedApp sessionData={sessionData} />
-                    </StudyInfoDataProvider>
+
+                    <AuthenticatedApp />
+
                   ) : (
                     <Loader reqStatusLoading={getCode() !== null}>
                       <UnauthenticatedApp appId={Utility.getAppId()} />

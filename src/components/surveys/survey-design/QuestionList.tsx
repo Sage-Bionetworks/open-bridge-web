@@ -1,8 +1,8 @@
 import { Box, Button } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx'
-import React, {FunctionComponent} from 'react'
-import {Step} from './types'
+import clsx from 'clsx';
+import React, { FunctionComponent } from 'react';
+import { Step } from '../types';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -30,8 +30,8 @@ const QuestionList: FunctionComponent<QuestionListProps> = ({
   console.log(currentStepIndex)
   const getNonEmptySteps = () => steps.filter(s => s.title)
   return (
-    <Box bgcolor="#F8F8F8" px={5}>
-      Question here
+    <Box bgcolor="#F8F8F8" px={5} border="1px solid black">
+      Question here QuestionList
       <ul>
         {getNonEmptySteps().map((step, index) => (
           <li key={step.identifier}>

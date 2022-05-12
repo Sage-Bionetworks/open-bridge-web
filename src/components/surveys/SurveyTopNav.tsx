@@ -1,7 +1,6 @@
 import ParticipantsIcon from '@assets/group_participants_icon.svg'
 import Logo from '@assets/logo_mtb.svg'
 import BreadCrumb from '@components/widgets/BreadCrumb'
-import HideWhen from '@components/widgets/HideWhen'
 import MobileDrawerMenuHeader from '@components/widgets/MobileDrawerMenuHeader'
 import Utility from '@helpers/utility'
 import MenuIcon from '@mui/icons-material/Menu'
@@ -11,21 +10,20 @@ import {
   Box,
   Drawer,
   Hidden,
-  IconButton,
-  LinearProgress
+  IconButton
 } from '@mui/material'
 import Toolbar from '@mui/material/Toolbar'
 import makeStyles from '@mui/styles/makeStyles'
 import { latoFont } from '@style/theme'
 import constants from '@typedefs/constants'
-import { ExtendedError, Study, StudyPhase } from '@typedefs/types'
+import { ExtendedError } from '@typedefs/types'
 import clsx from 'clsx'
 import React, { FunctionComponent } from 'react'
 import { NavLink } from 'react-router-dom'
 
 
 const useStyles = makeStyles(theme => ({
-  rootStudyTopNav: {
+  rootSurveyTopNav: {
     backgroundColor: '#F7F7F7',
     padding: theme.spacing(0),
     borderBottom: `1px solid #DFDFDF`,
@@ -145,44 +143,26 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-type StudyTopNavProps = {
-  study: Study
-  error?: ExtendedError | null
-  currentSection?: string
+type SurveyTopNavProps = {
+  surveyId?: string
+  error?: ExtendedError
+
 }
 
-const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
-  study,
-  error,
-}: StudyTopNavProps) => {
-  const allLinks: { path: string; name: string; status: StudyPhase[] }[] = [
-    {
-      path: `${constants.restrictedPaths.STUDY_BUILDER}`,
-      name: 'STUDY BUILDER',
-      status: ['design', 'in_flight', 'recruitment', 'completed', 'withdrawn'],
-    },
-    {
-      path: constants.restrictedPaths.PARTICIPANT_MANAGER,
-      name: 'PARTICIPANT MANAGER',
-      status: constants.constants.IS_TEST_MODE
-        ? ['in_flight', 'legacy', 'recruitment', 'design', 'completed']
-        : ['in_flight', 'completed', 'withdrawn', 'recruitment'],
-    },
-    {
-      path: constants.restrictedPaths.ADHERENCE_DATA,
-      name: 'ADHERENCE DATA',
-      status: ['in_flight', 'legacy', 'recruitment'],
-    },
-  ]
+const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
+  surveyId,
+  error
+}: SurveyTopNavProps) => {
+
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
 
-  const links = allLinks.filter(link =>
-    Utility.isPathAllowed(study.identifier, link.path)
-  )
+  const links = [{ name: 'SURVEY DESIGN', path: '/surveys' }, { name: 'BRANCHING LOGIC', path: '/surveys/branching' }]
+
 
   return (
-    <Box className={classes.rootStudyTopNav}>
+    <Box className={classes.rootSurveyTopNav}>
+      SURVEYPP
       <Hidden lgUp>
         <IconButton
           color="inherit"
@@ -217,39 +197,25 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
                 alt="home"
               />
             </NavLink>
-            <HideWhen hideWhen={study === undefined && !error}>
-              <BreadCrumb
-                links={[{ url: '/studies', text: '' }]}
-                currentItem={
-                  study?.name &&
-                    study?.name !== constants.constants.NEW_STUDY_NAME
-                    ? study?.name
-                    : ''
-                }></BreadCrumb>
 
-              <LinearProgress style={{ width: '50px' }} />
-            </HideWhen>
+            <BreadCrumb
+              links={[{ url: '/', text: '' }]}
+            ></BreadCrumb>
+
+
+
           </Toolbar>
           <Toolbar className={classes.toolbar}>
             {links
               .filter(section => section.name)
-              .map(section =>
-                section.status.includes(study?.phase) ? (
-                  <NavLink
-                    to={section.path.replace(':id', study.identifier)}
-                    key={section.path}
-                    className={classes.toolbarLink}
-                    activeClassName={classes.selectedLink}>
-                    {section.name}
-                  </NavLink>
-                ) : (
-                  <span
-                    key={section.path}
-                    style={{ opacity: 0.45 }}
-                    className={classes.toolbarLink}>
-                    {section.name}
-                  </span>
-                )
+              .map(section => (<NavLink
+                to={section.path.replace(':id', surveyId ?? '')}
+                key={section.path}
+                className={classes.toolbarLink}
+                activeClassName={classes.selectedLink}>
+                {section.name}
+              </NavLink>)
+
               )}
           </Toolbar>
           <Toolbar
@@ -259,7 +225,7 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
               <NavLink
                 to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
                   ':id',
-                  study.identifier
+                  surveyId ?? ''
                 )}
                 key={'path-to-access-settings'}
                 className={classes.toolbarLink}
@@ -289,28 +255,21 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
           {links
             .filter(section => section.name)
             .map(section =>
-              section.status.includes(study?.phase) ? (
-                <NavLink
-                  to={section.path.replace(':id', study.identifier)}
-                  key={section.path}
-                  className={classes.mobileToolBarLink}
-                  activeClassName={classes.mobileSelectedLink}
-                  onClick={() => setIsMobileOpen(false)}>
-                  {section.name}
-                </NavLink>
-              ) : (
-                <span
-                  key={section.path}
-                  style={{ opacity: 0.45 }}
-                  className={classes.mobileToolBarLink}>
-                  {section.name}
-                </span>
-              )
+
+              <NavLink
+                to={section.path.replace(':id', surveyId ?? '')}
+                key={section.path}
+                className={classes.mobileToolBarLink}
+                activeClassName={classes.mobileSelectedLink}
+                onClick={() => setIsMobileOpen(false)}>
+                {section.name}
+              </NavLink>
+
             )}
           <NavLink
             to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
               ':id',
-              study.identifier
+              surveyId ?? ''
             )}
             key={'path-to-access-settings'}
             className={clsx(
@@ -342,4 +301,4 @@ const StudyTopNav: FunctionComponent<StudyTopNavProps> = ({
   )
 }
 
-export default StudyTopNav
+export default SurveyTopNav
