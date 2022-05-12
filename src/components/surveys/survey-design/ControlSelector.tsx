@@ -1,9 +1,9 @@
 import { Box, Button } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import {latoFont} from '@style/theme'
-import clsx from 'clsx'
-import React, {FunctionComponent} from 'react'
-import {ControlType, Question, Step} from './types'
+import { latoFont } from '@style/theme';
+import clsx from 'clsx';
+import React, { FunctionComponent } from 'react';
+import { ControlType, Question, Step } from '../types';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -12,6 +12,7 @@ const useStyles = makeStyles(theme => ({
     display: 'grid',
     gridTemplateColumns: 'repeat(2, 1fr)',
     gap: '10px',
+    color: 'white'
   },
   control: {
     backgroundColor: '#3A3939',
@@ -88,8 +89,8 @@ const controls: Map<ControlType, Control> = new Map([
       replacements: ['likert', 'checkbox', 'radio'],
     },
   ],
-  ['date', {title: 'Date', replacements: ['time']}],
-  ['time', {title: 'Time', replacements: ['date']}],
+  ['date', { title: 'Date', replacements: ['time'] }],
+  ['time', { title: 'Time', replacements: ['date'] }],
 ])
 
 const ControlToQuesitonType: Map<ControlType, any> = new Map([
@@ -115,7 +116,7 @@ const ControlToQuesitonType: Map<ControlType, any> = new Map([
     'text',
     {
       type: 'simpleQuestion',
-      inputItem: {type: 'string', placeholder: 'Enter text'},
+      inputItem: { type: 'string', placeholder: 'Enter text' },
     },
   ],
   [
@@ -132,7 +133,7 @@ const ControlToQuesitonType: Map<ControlType, any> = new Map([
     'time',
     {
       type: 'simpleQuestion',
-      inputItem: {type: 'time', placeholder: 'Enter time'},
+      inputItem: { type: 'time', placeholder: 'Enter time' },
     },
   ],
 
@@ -140,7 +141,7 @@ const ControlToQuesitonType: Map<ControlType, any> = new Map([
     'date',
     {
       type: 'simpleQuestion',
-      inputItem: {type: 'year', placeholder: 'Enter year'},
+      inputItem: { type: 'year', placeholder: 'Enter year' },
     },
   ],
 ])
@@ -162,7 +163,7 @@ const ControlSelector: FunctionComponent<ControlSelectorProps> = ({
       : setSelectedControl(control)*/
 
     if (type === step.controlType) {
-      onChange({...step, controlType: undefined})
+      onChange({ ...step, controlType: undefined })
     } else {
       const props = ControlToQuesitonType.get(type)
       if (!props) {
@@ -189,7 +190,8 @@ const ControlSelector: FunctionComponent<ControlSelectorProps> = ({
   }
 
   return (
-    <Box className={classes.root} px={5}>
+    <Box className={classes.root} px={5} border="1px solid black">
+      ControlSelector
       {[...controls.keys()].map(type => (
         <Button
           key={type}
