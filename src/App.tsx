@@ -142,7 +142,7 @@ function App() {
                 <React.StrictMode>
                   {sessionData.id ? (
 
-                    <AuthenticatedApp sessionData={sessionData} />
+                    <AuthenticatedApp />
 
                   ) : (
                     <Loader reqStatusLoading={getCode() !== null}>

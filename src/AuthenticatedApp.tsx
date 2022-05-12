@@ -1,7 +1,11 @@
 import { StudySection } from '@components/studies/sections'
 import { useStudy } from '@components/studies/studyHooks'
+import StudyTopNav from '@components/studies/StudyTopNav'
 import SurveyTopNav from '@components/surveys/SurveyTopNav'
+import TopNav from '@components/widgets/AppTopNav'
 import { useUserSessionDataState } from '@helpers/AuthContext'
+import Utility from '@helpers/utility'
+import { UserSessionData } from '@typedefs/types'
 import React, { FunctionComponent, ReactNode } from 'react'
 import { useErrorHandler } from 'react-error-boundary'
 import {
@@ -12,11 +16,7 @@ import {
   useParams,
   withRouter
 } from 'react-router-dom'
-import StudyTopNav from './components/studies/StudyTopNav'
-import TopNav from './components/widgets/AppTopNav'
-import Utility from './helpers/utility'
 import PrivateRoutes from './routes_private'
-import { UserSessionData } from './types/types'
 
 
 const Wrapper: FunctionComponent<
@@ -29,7 +29,6 @@ const Wrapper: FunctionComponent<
   //only use studyId in study builder or
   const notStudyId = useLocation().pathname.includes(`/assessments/${studyId}`)
   const isSurveyPath = useLocation().pathname.includes(`/surveys`)
-  console.log(isSurveyPath)
   const { data: study, error } = useStudy(notStudyId ? undefined : studyId)
   const handleError = useErrorHandler()
 
@@ -63,14 +62,12 @@ const Wrapper: FunctionComponent<
   )
 }
 
-const AuthenticatedApp: FunctionComponent<
-  {
-    sessionData: UserSessionData
-  } & RouteComponentProps
-> = ({ sessionData, location, match }) => {
-  const { token } = useUserSessionDataState()
+const AuthenticatedApp: FunctionComponent<RouteComponentProps
+> = ({ location, match }) => {
+  const sessionData = useUserSessionDataState()
 
-  if (!token) {
+
+  if (!sessionData.token) {
     //save location and redirect
     if (location.pathname !== '/') {
       sessionStorage.setItem('location', location.pathname)
