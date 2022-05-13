@@ -4,6 +4,7 @@ import {Assessment} from '../types/types'
 
 const MTB_TAG = 'Mobile Toolbox'
 const ARC_TAG = 'Arc'
+const SURVEY_TAG = 'Alina Survey Test'
 
 const isArcApp = (appId: string) => appId === constants.constants.ARC_APP_ID
 
@@ -120,7 +121,22 @@ async function getAssessmentsWithResources(
   })
 }
 
+async function createSurveyAssessment(
+  assessment: Assessment,
+  token: string
+): Promise<number> {
+  const newVersion = await Utility.callEndpoint<{version: number}>(
+    constants.endpoints.assessment.replace(':id', ''),
+    'POST', // once we add things to the study -- we can change this to actual object
+    assessment,
+    token
+  )
+
+  return newVersion.data.version
+}
+
 const AssessmentService = {
+  createSurveyAssessment,
   getAssessments,
   getAssessmentsWithResources,
   getResource,
