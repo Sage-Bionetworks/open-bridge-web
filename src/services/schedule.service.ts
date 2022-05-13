@@ -104,6 +104,7 @@ async function createSchedule(
 
 async function saveSchedule(
   studyId: string,
+  appId: string,
   schedule: Schedule,
   token: string
 ): Promise<Schedule> {
@@ -120,12 +121,13 @@ async function saveSchedule(
   } catch (error: any) {
     //we might need to retry if there is a verison mismatch
     if (error.statusCode === 409) {
-      const updatedSchedule = await getSchedule(studyId, token, false)
+      const updatedSchedule = await getSchedule(studyId, appId, token, false)
       if (!updatedSchedule) {
         throw 'No schedule found'
       }
       return saveSchedule(
         studyId,
+        appId,
         {...schedule, version: updatedSchedule.version},
         token
       )
@@ -136,6 +138,8 @@ async function saveSchedule(
 }
 
 async function addAssessmentResourcesToSchedule(
+  appId: string,
+  token: string,
   schedule: Schedule
 ): Promise<Schedule> {
   //try from storage first
@@ -143,7 +147,7 @@ async function addAssessmentResourcesToSchedule(
 
   const assessmentData = localA
     ? (JSON.parse(localA) as {assessments: Assessment[]; tags: string[]})
-    : await AssessmentService.getAssessmentsWithResources()
+    : await AssessmentService.getAssessmentsWithResources(appId, token)
   schedule.sessions.forEach(session => {
     const assmntWithResources = session.assessments?.map(assmnt => {
       assmnt.resources = assessmentData.assessments.find(
@@ -160,6 +164,7 @@ async function addAssessmentResourcesToSchedule(
 //returns scehdule and sessions
 async function getSchedule(
   studyId: string,
+  appId: string,
   token: string,
   addResources = true
 ): Promise<Schedule | undefined> {
@@ -173,7 +178,7 @@ async function getSchedule(
     return undefined
   }
   return addResources
-    ? addAssessmentResourcesToSchedule(schedule.data)
+    ? addAssessmentResourcesToSchedule(appId, token, schedule.data)
     : schedule.data
 }
 

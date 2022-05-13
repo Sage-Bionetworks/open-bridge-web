@@ -1,14 +1,12 @@
+import { useAssessmentsWithResources } from '@components/studies/assessmentHooks';
 import makeStyles from '@mui/styles/makeStyles';
-import React, {FunctionComponent, useState} from 'react'
-import {useErrorHandler} from 'react-error-boundary'
-import {Link, RouteComponentProps} from 'react-router-dom'
-import {useAsync} from '../../helpers/AsyncHook'
-import {useUserSessionDataState} from '../../helpers/AuthContext'
-import AssessmentService from '../../services/assessment.service'
-import {Assessment, StringDictionary} from '../../types/types'
-import Loader from '../widgets/Loader'
-import AssessmentCard from './AssessmentCard'
-import AssessmentLibraryWrapper from './AssessmentLibraryWrapper'
+import React, { FunctionComponent, useState } from 'react';
+import { useErrorHandler } from 'react-error-boundary';
+import { Link, RouteComponentProps } from 'react-router-dom';
+import { Assessment } from '../../types/types';
+import Loader from '../widgets/Loader';
+import AssessmentCard from './AssessmentCard';
+import AssessmentLibraryWrapper from './AssessmentLibraryWrapper';
 
 type AssessmentLibraryOwnProps = {
   assessments?: Assessment[]
@@ -27,42 +25,27 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
   match,
 }: AssessmentLibraryProps) => {
   const classes = useStyles()
-
-  const {token} = useUserSessionDataState()
-
   const handleError = useErrorHandler()
 
   const [filteredAssessments, setFilteredAssessments] = useState<
     Assessment[] | undefined
   >(undefined)
 
-  const {data, status, error, run} = useAsync<{
-    assessments: Assessment[]
-    tags: StringDictionary<number>
-  }>({
-    status: 'PENDING',
-    data: null,
-  })
+  const { data, isError, error, status, isLoading } = useAssessmentsWithResources()
 
-  React.useEffect(() => {
-    ///your async call
-    return run(AssessmentService.getAssessmentsWithResources())
-  }, [run, token])
-
-  if (status === 'REJECTED') {
+  if (isError) {
     handleError(error!)
   }
 
-  if (status === 'RESOLVED' && (!data?.assessments || !data?.tags)) {
+
+  if (status === 'success' && (!data?.assessments || !data?.tags)) {
     return <>No Data </>
   }
 
   return (
-    <Loader reqStatusLoading={status} variant="full">
+    <Loader reqStatusLoading={isLoading} variant="full">
       {data && (
         <AssessmentLibraryWrapper
-          tags={data.tags}
-          token={token}
           assessments={data.assessments}
           onChangeTags={
             (assessments: Assessment[]) =>
