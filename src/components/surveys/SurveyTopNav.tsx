@@ -157,7 +157,7 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
 
-  const links = [{ name: 'SURVEY DESIGN', path: '/surveys' }, { name: 'BRANCHING LOGIC', path: '/surveys/branching' }]
+  const links = [{ name: 'SURVEY DESIGN', path: '/surveys/:id/design' }, { name: 'BRANCHING LOGIC', path: '/surveys/:id/branching' }]
 
 
   return (
