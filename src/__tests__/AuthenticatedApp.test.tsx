@@ -1,6 +1,6 @@
 
-import * as useStudy from '@components/studies/studyHooks'
 import * as useUserSessionDataState from '@helpers/AuthContext'
+import * as useStudy from '@services/studyHooks'
 import { cleanup, render } from '@testing-library/react'
 import { ExtendedError, Study } from '@typedefs/types'
 import React from 'react'
@@ -10,7 +10,7 @@ import AuthenticatedApp from '../AuthenticatedApp'
 import { loggedInSessionData, notLoggedInSessionData } from '../__mocks/user'
 import { noStudy, studyData } from '../__mocks/useStudyResponses'
 jest.mock('@helpers/AuthContext')
-jest.mock('@components/studies/studyHooks')
+jest.mock('@services/studyHooks')
 
 const mockedAuth = (useUserSessionDataState as jest.Mocked<typeof useUserSessionDataState>)
 const mockedUseStudy = (useStudy as jest.Mocked<typeof useStudy>)

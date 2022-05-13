@@ -1,15 +1,15 @@
 import motion from '@assets/passive-features/recorders_motion.svg'
 import noise from '@assets/passive-features/recorders_noise.svg'
 import weather from '@assets/passive-features/recorders_weather.svg'
-import {MTBHeadingH3} from '@components/widgets/Headings'
-import {Box, Switch} from '@mui/material'
+import { MTBHeadingH3 } from '@components/widgets/Headings'
+import { Box, Switch } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
-import {latoFont, ThemeType} from '@style/theme'
-import {BackgroundRecorders} from '@typedefs/types'
+import { latoFont, ThemeType } from '@style/theme'
+import { BackgroundRecorders } from '@typedefs/types'
 import React from 'react'
-import {useErrorHandler} from 'react-error-boundary'
-import {useStudy, useUpdateStudyDetail} from '../studyHooks'
+import { useErrorHandler } from 'react-error-boundary'
+import { useStudy, useUpdateStudyDetail } from '../../../services/studyHooks'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -112,7 +112,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
   children,
 }) => {
   const classes = useStyles()
-  const {data: study, error, isLoading} = useStudy(id)
+  const { data: study, error, isLoading } = useStudy(id)
 
   const {
     isSuccess: scheduleUpdateSuccess,
@@ -137,7 +137,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
 
     updatedStudy.clientData.backgroundRecorders = recorders
     try {
-      const result = await mutateStudy({study: updatedStudy})
+      const result = await mutateStudy({ study: updatedStudy })
     } catch (e) {
       alert(e)
     } finally {
@@ -171,7 +171,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
           <img
             src={sensors[recorderType]!.img}
             alt={sensors[recorderType]!.title}
-            style={{marginRight: 'auto'}}
+            style={{ marginRight: 'auto' }}
           />
           <Box
             display="flex"
@@ -201,10 +201,10 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
           </thead>
           <tbody>
             <tr>
-              <td style={{width: '40%'}}>
+              <td style={{ width: '40%' }}>
                 {sensors[recorderType]!.description}
               </td>
-              <td style={{width: '20%'}}>{sensors[recorderType]!.frequency}</td>
+              <td style={{ width: '20%' }}>{sensors[recorderType]!.frequency}</td>
               <td>{sensors[recorderType]!.burden}</td>
             </tr>
           </tbody>
@@ -221,7 +221,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
     <>
       <div className={classes.root}>
         {isReadOnly ? (
-          <MTBHeadingH3 style={{marginBottom: '24px'}}>
+          <MTBHeadingH3 style={{ marginBottom: '24px' }}>
             {Object.values(features).filter(o => o === true).length > 0
               ? 'You’ve added the following Optional Monitoring to your study:'
               : 'No Optional Monitoring was added to your study.'}
@@ -247,8 +247,8 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
             recorderType={'motion'}
             value={features?.motion}
             callbackFn={(e: boolean) => {
-              const result = {...features, motion: e}
-              onUpdate({...features, motion: e})
+              const result = { ...features, motion: e }
+              onUpdate({ ...features, motion: e })
             }}></PFSection>
         )}
         {displayMicrophoneSection && (
@@ -256,7 +256,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
             recorderType={'microphone'}
             value={features?.microphone}
             callbackFn={(e: boolean) => {
-              onUpdate({...features, microphone: e})
+              onUpdate({ ...features, microphone: e })
             }}></PFSection>
         )}
         {displayWeatherSection && (
@@ -264,7 +264,7 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
             recorderType={'weather'}
             value={features?.weather}
             callbackFn={(e: boolean) => {
-              onUpdate({...features, weather: e})
+              onUpdate({ ...features, weather: e })
             }}></PFSection>
         )}
       </div>

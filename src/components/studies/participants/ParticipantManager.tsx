@@ -1,24 +1,23 @@
-import {ReactComponent as CollapseIcon} from '@assets/collapse.svg'
+import { ReactComponent as CollapseIcon } from '@assets/collapse.svg'
 import DownloadIcon from '@assets/download_icon.svg'
 import BatchEditIcon from '@assets/edit_pencil_red.svg'
-import {ReactComponent as AddParticipantsIcon} from '@assets/participants/add_participants.svg'
-import {ReactComponent as AddTestParticipantsIcon} from '@assets/participants/add_test_participants.svg'
+import { ReactComponent as AddParticipantsIcon } from '@assets/participants/add_participants.svg'
+import { ReactComponent as AddTestParticipantsIcon } from '@assets/participants/add_test_participants.svg'
 import DownloadAppIcon from '@assets/participants/download_app_icon.svg'
 import SMSPhoneImg from '@assets/participants/joined_phone_icon.svg'
 import ParticipantListFocusIcon from '@assets/participants/participant_list_focus_icon.svg'
 import ParticipantListUnfocusIcon from '@assets/participants/participant_list_unfocus_icon.svg'
 import TestAccountFocusIcon from '@assets/participants/test_account_focus_icon.svg'
 import TestAccountUnfocusIcon from '@assets/participants/test_account_unfocus_icon.svg'
-import {ReactComponent as UnderConstructionCone} from '@assets/participants/under_construction_cone.svg'
-import {ReactComponent as UnderConstructionGirl} from '@assets/participants/under_construction_girl.svg'
+import { ReactComponent as UnderConstructionCone } from '@assets/participants/under_construction_cone.svg'
+import { ReactComponent as UnderConstructionGirl } from '@assets/participants/under_construction_girl.svg'
 import WithdrawnParticipantsFocusIcon from '@assets/participants/withdrawn_participants_focus_icon.svg'
 import WithdrawnParticipantsUnfocusIcon from '@assets/participants/withdrawn_participants_unfocus_icon.svg'
-import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
-import {useStudy} from '@components/studies/studyHooks'
+import { ReactComponent as DeleteIcon } from '@assets/trash.svg'
 import CollapsibleLayout from '@components/widgets/CollapsibleLayout'
 import TablePagination from '@components/widgets/pagination/TablePagination'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
-import {useUserSessionDataState} from '@helpers/AuthContext'
+import { useUserSessionDataState } from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
 import {
   Box,
@@ -26,25 +25,26 @@ import {
   CircularProgress,
   Container,
   Tab,
-  Tabs,
+  Tabs
 } from '@mui/material'
 import Alert from '@mui/material/Alert'
-import {JOINED_EVENT_ID} from '@services/event.service'
+import { JOINED_EVENT_ID } from '@services/event.service'
 import StudyService from '@services/study.service'
-import {theme} from '@style/theme'
+import { useStudy } from '@services/studyHooks'
+import { theme } from '@style/theme'
 import constants from '@typedefs/constants'
 import {
   ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
-  SelectionType,
+  SelectionType
 } from '@typedefs/types'
 import clsx from 'clsx'
-import React, {FunctionComponent} from 'react'
-import {useErrorHandler} from 'react-error-boundary'
-import {RouteComponentProps, useParams} from 'react-router-dom'
-import {useEvents, useEventsForUsers} from '../eventHooks'
-import {useInvalidateParticipants, useParticipants} from '../participantHooks'
+import React, { FunctionComponent } from 'react'
+import { useErrorHandler } from 'react-error-boundary'
+import { RouteComponentProps, useParams } from 'react-router-dom'
+import { useEvents, useEventsForUsers } from '../../../services/eventHooks'
+import { useInvalidateParticipants, useParticipants } from '../../../services/participantHooks'
 import AddParticipants from './add/AddParticipants'
 import CsvUtility from './csv/csvUtility'
 import ParticipantDownloadTrigger from './csv/ParticipantDownloadTrigger'
@@ -69,9 +69,9 @@ type SelectedParticipantIdsType = {
 }
 
 const TAB_DEFs = [
-  {type: 'ACTIVE', label: 'Participant List'},
-  {type: 'WITHDRAWN', label: 'Withdrawn Participants'},
-  {type: 'TEST', label: 'Test Accounts'},
+  { type: 'ACTIVE', label: 'Participant List' },
+  { type: 'WITHDRAWN', label: 'Withdrawn Participants' },
+  { type: 'TEST', label: 'Test Accounts' },
 ]
 
 const TAB_ICONS_FOCUS = [
@@ -87,7 +87,7 @@ const TAB_ICONS_UNFOCUS = [
 
 /***  subcomponents  */
 const UnderConstructionSC: FunctionComponent = () => (
-  <Container maxWidth="md" fixed style={{minHeight: '90vh'}}>
+  <Container maxWidth="md" fixed style={{ minHeight: '90vh' }}>
     <Box textAlign="center" my={7}>
       <UnderConstructionCone />
       <Box lineHeight="21px" py={5}>
@@ -99,7 +99,7 @@ const UnderConstructionSC: FunctionComponent = () => (
   </Container>
 )
 
-const AddTestParticipantsIconSC: FunctionComponent<{title: string}> = ({
+const AddTestParticipantsIconSC: FunctionComponent<{ title: string }> = ({
   title,
 }) => {
   const classes = useStyles()
@@ -117,7 +117,7 @@ const GoToDownloadPageLinkSC: FunctionComponent = () => {
       target="_blank"
       aria-label="downloadApp"
       className={classes.downloadPageLinkButton}>
-      <img src={DownloadAppIcon} style={{marginRight: '10px'}}></img> App
+      <img src={DownloadAppIcon} style={{ marginRight: '10px' }}></img> App
       Download Link
     </Button>
   )
@@ -134,11 +134,11 @@ type ParticipantManagerOwnProps = {
 type ParticipantManagerProps = ParticipantManagerOwnProps & RouteComponentProps
 
 const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
-  let {id: studyId} = useParams<{
+  let { id: studyId } = useParams<{
     id: string
   }>()
 
-  const {token} = useUserSessionDataState()
+  const { token } = useUserSessionDataState()
   const {
     data: study,
     error: studyError,
@@ -195,7 +195,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   const [data, setData] = React.useState<ParticipantData>()
 
   // Hook to get scheduled events
-  const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
+  const { data: scheduleEvents = [], error: eventError } = useEvents(studyId)
 
   // Hook to get participants
   const {
@@ -210,7 +210,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     searchValue,
     isById
   )
-  const {data: pEventsMap} = useEventsForUsers(study?.identifier, pIds)
+  const { data: pEventsMap } = useEventsForUsers(study?.identifier, pIds)
 
   const invalidateParticipants = useInvalidateParticipants()
 
@@ -244,18 +244,18 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         const events = pEventsMap[item.id]
         return events
           ? {
-              ...item,
-              events: [
-                ...events.customEvents,
-                {
-                  eventId: JOINED_EVENT_ID,
-                  timestamp: events.timeline_retrieved,
-                },
-              ],
-            }
+            ...item,
+            events: [
+              ...events.customEvents,
+              {
+                eventId: JOINED_EVENT_ID,
+                timestamp: events.timeline_retrieved,
+              },
+            ],
+          }
           : item
       })
-      setData({total: pData.total, items})
+      setData({ total: pData.total, items })
     }
   }, [pData, pEventsMap])
   React.useEffect(() => {
@@ -265,7 +265,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
         [tab]: data?.items?.map(p => p.id) || [],
       }))
     } else {
-      setSelectedParticipantIds(prev => ({...prev}))
+      setSelectedParticipantIds(prev => ({ ...prev }))
     }
   }, [data])
 
@@ -280,19 +280,19 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
   }
 
   const downloadParticipants = async (selectionType: SelectionType) => {
-    setLoadingIndicators({isDownloading: true})
+    setLoadingIndicators({ isDownloading: true })
     try {
       //if getting all participants
       const participantsData: ParticipantData | undefined =
         selectionType === 'ALL'
           ? undefined
           : {
-              items:
-                data?.items?.filter(p =>
-                  selectedParticipantIds[tab].includes(p.id)
-                ) || [],
-              total: selectedParticipantIds[tab].length,
-            }
+            items:
+              data?.items?.filter(p =>
+                selectedParticipantIds[tab].includes(p.id)
+              ) || [],
+            total: selectedParticipantIds[tab].length,
+          }
       const participantBlob = await CsvUtility.getParticipantDataForDownload(
         study.identifier,
         token!,
@@ -309,7 +309,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
     } catch (error) {
       alert(`Download error ${(error as Error).message.toString()}`)
     } finally {
-      setLoadingIndicators({isDownloading: false})
+      setLoadingIndicators({ isDownloading: false })
     }
   }
 
@@ -340,7 +340,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
               value={tab}
               variant="standard"
               onChange={handleTabChange}
-              TabIndicatorProps={{hidden: true}}>
+              TabIndicatorProps={{ hidden: true }}>
               <GoToDownloadPageLinkSC />
               {TAB_DEFs.map((tabDef, index) => (
                 <Tab
@@ -352,7 +352,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                       classes.tab,
                       tab === tabDef.type && classes.selectedTab,
                       tabDef.type === 'WITHDRAWN' &&
-                        classes.withdrawnParticipants
+                      classes.withdrawnParticipants
                     ),
                   }}
                   icon={
@@ -369,15 +369,14 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                             ? TAB_ICONS_FOCUS[index]
                             : TAB_ICONS_UNFOCUS[index]
                         }
-                        style={{marginRight: '6px'}}></img>
+                        style={{ marginRight: '6px' }}></img>
                       <div>
-                        {`${tabDef.label} ${
-                          tab === tabDef.type
+                        {`${tabDef.label} ${tab === tabDef.type
                             ? data
                               ? `(${data.total})`
                               : '(...)'
                             : ''
-                        }`}
+                          }`}
                       </div>
                     </Box>
                   }
@@ -443,13 +442,13 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                                 dialogOpenSMS: true,
                               })
                             }}
-                            style={{marginRight: theme.spacing(1)}}
+                            style={{ marginRight: theme.spacing(1) }}
                             disabled={selectedParticipantIds[tab].length === 0}>
                             <img
                               src={SMSPhoneImg}
                               className={clsx(
                                 selectedParticipantIds[tab].length === 0 &&
-                                  classes.disabledImage,
+                                classes.disabledImage,
                                 classes.topRowImage
                               )}></img>
                             Send SMS link
@@ -461,12 +460,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                             onClick={() => {
                               setIsBatchEditOpen(true)
                             }}
-                            style={{marginRight: theme.spacing(2)}}
+                            style={{ marginRight: theme.spacing(2) }}
                             disabled={selectedParticipantIds[tab].length <= 1}>
                             <img
                               className={clsx(
                                 selectedParticipantIds[tab].length <= 1 &&
-                                  classes.disabledImage,
+                                classes.disabledImage,
                                 classes.topRowImage
                               )}
                               src={BatchEditIcon}></img>
@@ -513,12 +512,12 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
                               dialogOpenSMS: false,
                             })
                           }}
-                          style={{marginLeft: theme.spacing(3)}}
+                          style={{ marginLeft: theme.spacing(3) }}
                           disabled={selectedParticipantIds[tab].length === 0}>
                           <DeleteIcon
                             className={clsx(
                               selectedParticipantIds[tab].length === 0 &&
-                                classes.disabledImage,
+                              classes.disabledImage,
                               classes.topRowImage,
                               classes.deleteIcon
                             )}></DeleteIcon>
@@ -626,7 +625,7 @@ const ParticipantManager: FunctionComponent<ParticipantManagerProps> = () => {
             resetParticipantsWithError={() => setParticipantsWithError([])}
             loadingIndicators={loadingIndicators}
             onLoadingIndicatorsChange={(isDeleting: boolean) => {
-              setLoadingIndicators(_ => ({isDeleting: isDeleting}))
+              setLoadingIndicators(_ => ({ isDeleting: isDeleting }))
             }}
           />
         </>

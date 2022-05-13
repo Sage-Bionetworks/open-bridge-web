@@ -1,3 +1,4 @@
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Button,
@@ -7,28 +8,27 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  Paper,
+  Paper
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import CloseIcon from '@mui/icons-material/Close'
-import StudyService from '@services/study.service'
-import React, {FunctionComponent, useState} from 'react'
-import {useErrorHandler} from 'react-error-boundary'
-import NavigationPrompt from 'react-router-navigation-prompt'
-import AssessmentService from '../../../services/assessment.service'
-import {poppinsFont} from '../../../style/theme'
-import {StudySession} from '../../../types/scheduling'
-import {Assessment} from '../../../types/types'
-import ConfirmationDialog from '../../widgets/ConfirmationDialog'
-import {MTBHeadingH1} from '../../widgets/Headings'
-import {PrevButton} from '../../widgets/StyledComponents'
-import {useSchedule, useUpdateSchedule} from '../scheduleHooks'
-import {useStudy} from '../studyHooks'
-import AssessmentSelector from './AssessmentSelector'
-import ReadOnlySessionCreator from './read-only-pages/ReadOnlySessionCreator'
-import SessionActionButtons from './SessionActionButtons'
-import actionsReducer, {SessionAction, Types} from './sessionActions'
-import SingleSessionContainer from './SingleSessionContainer'
+import StudyService from '@services/study.service';
+import React, { FunctionComponent, useState } from 'react';
+import { useErrorHandler } from 'react-error-boundary';
+import NavigationPrompt from 'react-router-navigation-prompt';
+import AssessmentService from '../../../services/assessment.service';
+import { useSchedule, useUpdateSchedule } from '../../../services/scheduleHooks';
+import { useStudy } from '../../../services/studyHooks';
+import { poppinsFont } from '../../../style/theme';
+import { StudySession } from '../../../types/scheduling';
+import { Assessment } from '../../../types/types';
+import ConfirmationDialog from '../../widgets/ConfirmationDialog';
+import { MTBHeadingH1 } from '../../widgets/Headings';
+import { PrevButton } from '../../widgets/StyledComponents';
+import AssessmentSelector from './AssessmentSelector';
+import ReadOnlySessionCreator from './read-only-pages/ReadOnlySessionCreator';
+import SessionActionButtons from './SessionActionButtons';
+import actionsReducer, { SessionAction, Types } from './sessionActions';
+import SingleSessionContainer from './SingleSessionContainer';
 
 export const useStyles = makeStyles(theme => ({
   root: {
@@ -108,7 +108,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     isLoading: isScheduleLoading,
   } = useSchedule(id)
 
-  const {data: study, error, isLoading} = useStudy(id)
+  const { data: study, error, isLoading } = useStudy(id)
 
   const {
     isSuccess: scheduleUpdateSuccess,
@@ -132,7 +132,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   const [activeSession, setActiveSession] = React.useState<string | undefined>()
 
   const onUpdate = async (newState: StudySession[]) => {
-    const updatedSchedule = {...schedule!, sessions: newState}
+    const updatedSchedule = { ...schedule!, sessions: newState }
     setSaveLoader(true)
     try {
       await mutateSchedule({
@@ -174,7 +174,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   ) => {
     sessionsUpdateFn({
       type: Types.UpdateAssessments,
-      payload: {sessionId, assessments},
+      payload: { sessionId, assessments },
     })
   }
 
@@ -228,7 +228,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   if (schedule?.sessions) {
     return <>
       <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
-        {({onConfirm, onCancel}) => (
+        {({ onConfirm, onCancel }) => (
           <ConfirmationDialog
             isOpen={hasObjectChanged}
             type={'NAVIGATE'}
@@ -264,13 +264,13 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
               onRemoveSession={(sessionId: string) =>
                 sessionsUpdateFn({
                   type: Types.RemoveSession,
-                  payload: {sessionId},
+                  payload: { sessionId },
                 })
               }
               onUpdateSessionName={(sessionId: string, sessionName: string) =>
                 sessionsUpdateFn({
                   type: Types.UpdateSessionName,
-                  payload: {sessionId, sessionName},
+                  payload: { sessionId, sessionName },
                 })
               }
               onUpdateAssessmentList={updateAssessmentList}

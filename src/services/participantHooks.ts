@@ -12,8 +12,8 @@ import {
   Phone,
 } from '@typedefs/types'
 import {useMutation, useQuery, useQueryClient} from 'react-query'
+import {ParticipantData} from '../components/studies/participants/participantUtility'
 import {EVENTS_KEYS} from './eventHooks'
-import {ParticipantData} from './participants/participantUtility'
 
 export const PARTICIPANT_KEYS = {
   all: ['participants'] as const,

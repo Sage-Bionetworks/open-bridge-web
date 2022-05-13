@@ -1,24 +1,24 @@
-import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
-import SaveButton from '@components/widgets/SaveButton'
-import {Box, Button, Paper} from '@mui/material'
+import ConfirmationDialog from '@components/widgets/ConfirmationDialog';
+import SaveButton from '@components/widgets/SaveButton';
+import { Box, Button, Paper } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import {Schedule} from '@typedefs/scheduling'
-import React, {useState} from 'react'
-import {useErrorHandler} from 'react-error-boundary'
-import NavigationPrompt from 'react-router-navigation-prompt'
-import {ReactComponent as ArrowIcon} from '../../../assets/arrow_long.svg'
-import {ReactComponent as LockIcon} from '../../../assets/launch/lock_icon.svg'
-import StudyService from '../../../services/study.service'
-import {ThemeType} from '../../../style/theme'
-import {Study} from '../../../types/types'
-import {NextButton, PrevButton} from '../../widgets/StyledComponents'
-import {useSchedule} from '../scheduleHooks'
-import {useStudy, useUpdateStudyDetail} from '../studyHooks'
-import AboutStudy from './AboutStudy'
-import IrbDetails from './IrbDetails'
-import LaunchAlerts from './LaunchAlerts'
-import LaunchStepper from './LaunchStepper'
-import ReadOnlyIrbDetails from './read-only-components/ReadOnlyIrbDetails'
+import { Schedule } from '@typedefs/scheduling';
+import React, { useState } from 'react';
+import { useErrorHandler } from 'react-error-boundary';
+import NavigationPrompt from 'react-router-navigation-prompt';
+import { ReactComponent as ArrowIcon } from '../../../assets/arrow_long.svg';
+import { ReactComponent as LockIcon } from '../../../assets/launch/lock_icon.svg';
+import { useSchedule } from '../../../services/scheduleHooks';
+import StudyService from '../../../services/study.service';
+import { useStudy, useUpdateStudyDetail } from '../../../services/studyHooks';
+import { ThemeType } from '../../../style/theme';
+import { Study } from '../../../types/types';
+import { NextButton, PrevButton } from '../../widgets/StyledComponents';
+import AboutStudy from './AboutStudy';
+import IrbDetails from './IrbDetails';
+import LaunchAlerts from './LaunchAlerts';
+import LaunchStepper from './LaunchStepper';
+import ReadOnlyIrbDetails from './read-only-components/ReadOnlyIrbDetails';
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -41,13 +41,13 @@ export interface LaunchProps {
 
 function getSteps(isLive: boolean) {
   if (isLive) {
-    return [{label: 'About Study'}, {label: 'IRB Details'}]
+    return [{ label: 'About Study' }, { label: 'IRB Details' }]
   }
   return [
-    {label: 'Review Alerts'},
-    {label: 'About Study'},
-    {label: 'IRB Details'},
-    {label: 'Study is live'},
+    { label: 'Review Alerts' },
+    { label: 'About Study' },
+    { label: 'IRB Details' },
+    { label: 'Study is live' },
   ]
 }
 
@@ -111,7 +111,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
   onShowFeedback,
 }: LaunchProps) => {
   const classes = useStyles()
-  const {data: sourceStudy, error, isLoading} = useStudy(id)
+  const { data: sourceStudy, error, isLoading } = useStudy(id)
   const {
     data: schedule,
     error: scheduleError,
@@ -133,7 +133,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
   const [saveLoader, setSaveLoader] = React.useState(false)
   const [isStudyLive, setIsStudyLive] = React.useState(false)
 
-  const [steps, setSteps] = useState<{label: string}[]>(getSteps(false))
+  const [steps, setSteps] = useState<{ label: string }[]>(getSteps(false))
   const [activeStep, setActiveStep] = React.useState(0)
   const [isFinished, setIsFinished] = React.useState(false)
   const [isNextEnabled, setIsNextEnabled] = React.useState(false)
@@ -168,7 +168,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
       }
 
       try {
-        const result = await mutateStudy({study: study})
+        const result = await mutateStudy({ study: study })
         setHasObjectChanged(false)
       } catch (e) {
         alert(e)
@@ -185,7 +185,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
 
   const handleNext = () => {
     const newSteps = steps.map((s, i) =>
-      i === activeStep ? {...s, isComplete: true} : s
+      i === activeStep ? { ...s, isComplete: true } : s
     )
     setSteps(newSteps)
     setActiveStep(prevActiveStep => prevActiveStep + 1)
@@ -219,7 +219,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
   return (
     <Paper className={classes.root} elevation={2} id="container">
       <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
-        {({onConfirm, onCancel}) => (
+        {({ onConfirm, onCancel }) => (
           <ConfirmationDialog
             isOpen={hasObjectChanged}
             type={'NAVIGATE'}
@@ -283,7 +283,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
                   color="primary"
                   onClick={() => submitAndLock()}
                   disabled={!isNextEnabled}>
-                  <LockIcon style={{marginRight: '4px'}} />
+                  <LockIcon style={{ marginRight: '4px' }} />
                   Submit and lock the study
                 </Button>
               )}

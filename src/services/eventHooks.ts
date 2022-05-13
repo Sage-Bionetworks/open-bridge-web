@@ -9,7 +9,7 @@ import {
   StringDictionary,
 } from '@typedefs/types'
 import {useMutation, useQuery, useQueryClient} from 'react-query'
-import {ADHERENCE_KEYS} from './adherenceHooks'
+import {ADHERENCE_KEYS} from '../components/studies/adherenceHooks'
 
 export const EVENTS_KEYS = {
   all: ['events'] as const,

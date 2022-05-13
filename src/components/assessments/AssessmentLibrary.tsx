@@ -1,5 +1,5 @@
-import { useAssessmentsWithResources } from '@components/studies/assessmentHooks';
 import makeStyles from '@mui/styles/makeStyles';
+import { useAssessmentsWithResources } from '@services/assessmentHooks';
 import React, { FunctionComponent, useState } from 'react';
 import { useErrorHandler } from 'react-error-boundary';
 import { Link, RouteComponentProps } from 'react-router-dom';
