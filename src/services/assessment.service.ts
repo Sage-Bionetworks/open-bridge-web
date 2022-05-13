@@ -1,17 +1,13 @@
-import _ from 'lodash'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
 import {Assessment} from '../types/types'
 
 const MTB_TAG = 'Mobile Toolbox'
+const ARC_TAG = 'Arc'
 
-const AssessmentService = {
-  getAssessments,
-  getAssessmentsWithResources,
+const isArcApp = (appId: string) => appId === constants.constants.ARC_APP_ID
 
-  getResource,
-  MTB_TAG,
-}
+/*
 
 const isArcApp = (): {isArc: boolean; token?: string} => {
   const sessionData = Utility.getSession()
@@ -19,53 +15,56 @@ const isArcApp = (): {isArc: boolean; token?: string} => {
     isArc: sessionData?.appId === constants.constants.ARC_APP_ID,
     token: sessionData?.token,
   }
-}
+}*/
 
 async function getAssessment(
+  appId: string,
+  token: string,
   guid: string
   /* token?: string,*/
 ): Promise<Assessment[]> {
-  const {isArc, token} = isArcApp()
-  let endPoint = isArc
-    ? constants.endpoints.assessment
-    : constants.endpoints.assessmentShared
+  const isArc = isArcApp(appId)
+  let endPoint = constants.endpoints.assessmentShared
   const result = await Utility.callEndpoint<Assessment>(
     `${endPoint.replace(':id', guid)}`,
     'GET',
     {},
     token
   )
-
-  const returnResult = isArc
-    ? [result.data]
-    : [{...result.data, tags: _.without(result.data.tags, MTB_TAG)}]
+  const filterTag = isArc ? ARC_TAG : MTB_TAG
+  const returnResult = [
+    {...result.data, tags: result.data.tags?.filter(tag => tag !== filterTag)},
+  ]
   return returnResult
 }
 
-async function getAssessments(): Promise<Assessment[]> {
-  const {isArc, token} = isArcApp()
+async function getAssessments(
+  appId: string,
+  token: string
+): Promise<Assessment[]> {
+  const isArc = isArcApp(appId)
   const result = await Utility.callEndpoint<{items: Assessment[]}>(
-    isArc
-      ? constants.endpoints.assessments
-      : constants.endpoints.assessmentsShared,
+    constants.endpoints.assessmentsShared,
     'GET',
     {},
     token
   )
 
-  const returnResult = isArc
-    ? result.data.items
-    : result.data.items
-        .filter(item => item.tags.includes(MTB_TAG))
-        .map(item => ({...item, tags: _.without(item.tags, MTB_TAG)}))
+  const filterTag = isArc ? ARC_TAG : MTB_TAG
+  const returnResult = result.data.items
+    .filter(item => item.tags && item.tags.includes(filterTag))
+    .map(item => ({
+      ...item,
+      tags: item.tags?.filter(tag => tag !== filterTag),
+    }))
   return returnResult
 }
 
-async function getResource(assessment: Assessment): Promise<Assessment> {
-  const {isArc, token} = isArcApp()
-  const endPoint = isArc
-    ? constants.endpoints.assessmentResources
-    : constants.endpoints.assessmentSharedResources
+async function getResource(
+  assessment: Assessment,
+  token: string
+): Promise<Assessment> {
+  const endPoint = constants.endpoints.assessmentSharedResources
   const response = await Utility.callEndpoint<{items: any[]}>(
     endPoint.replace(':identifier', assessment.identifier),
     'GET',
@@ -79,10 +78,16 @@ async function getResource(assessment: Assessment): Promise<Assessment> {
 }
 
 async function getAssessmentsWithResources(
+  appId: string,
+  token: string,
   guid?: string
 ): Promise<{assessments: Assessment[]; tags: string[]}> {
-  const assessments = guid ? await getAssessment(guid) : await getAssessments()
-  const resourcePromises = assessments.map(async asmnt => getResource(asmnt))
+  const assessments = guid
+    ? await getAssessment(appId, token, guid)
+    : await getAssessments(appId, token)
+  const resourcePromises = assessments.map(async asmnt =>
+    getResource(asmnt, token)
+  )
   return Promise.allSettled(resourcePromises).then(items1 => {
     const items = items1
       .filter(i => i.status === 'fulfilled')
@@ -113,6 +118,13 @@ async function getAssessmentsWithResources(
 
     return result
   })
+}
+
+const AssessmentService = {
+  getAssessments,
+  getAssessmentsWithResources,
+  getResource,
+  MTB_TAG,
 }
 
 export default AssessmentService

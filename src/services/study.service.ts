@@ -177,6 +177,7 @@ async function renameStudy(
 
 async function copyStudy(
   studyId: string,
+  appId: string,
   token: string
 ): Promise<{study: Study; schedule?: Schedule}> {
   // get original study
@@ -189,6 +190,7 @@ async function copyStudy(
   try {
     scheduleToCopy = await ScheduleService.getSchedule(
       studyToCopy.identifier,
+      appId,
       token!
     )
   } catch (error) {

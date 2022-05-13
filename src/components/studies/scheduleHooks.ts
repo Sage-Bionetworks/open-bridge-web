@@ -20,11 +20,11 @@ export const useSchedule = (
   studyId: string | undefined,
   withResources: boolean = true
 ) => {
-  const {token} = useUserSessionDataState()
+  const {token, appId} = useUserSessionDataState()
 
   return useQuery<Schedule | undefined, ExtendedError>(
     SCHEDULE_KEYS.detail(studyId),
-    () => ScheduleService.getSchedule(studyId!, token!, withResources),
+    () => ScheduleService.getSchedule(studyId!, appId, token!, withResources),
     {
       enabled: !!studyId,
       retry: false,
@@ -33,7 +33,7 @@ export const useSchedule = (
   )
 }
 export const useUpdateSchedule = () => {
-  const {token} = useUserSessionDataState()
+  const {token, appId} = useUserSessionDataState()
   const queryClient = useQueryClient()
 
   const update = async (props: {
@@ -44,7 +44,7 @@ export const useUpdateSchedule = () => {
   }): Promise<Schedule> => {
     const {studyId, schedule, action} = props
     if (action === 'UPDATE') {
-      return ScheduleService.saveSchedule(studyId, schedule, token!)
+      return ScheduleService.saveSchedule(studyId, appId, schedule, token!)
     } else {
       return ScheduleService.createSchedule(studyId, schedule, token!)
     }

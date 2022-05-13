@@ -99,25 +99,33 @@ export type AssessmentResource = {
   version: number
 }
 export type Assessment = {
-  createdOn: string
-  customizationFields: object
-  deleted: boolean
-  guid: string
   identifier: string
-  modifiedOn?: string
-  normingStatus: string
-  osName: string //iPhone OS"
-  ownerId: string //sage-bionetworks"
   revision: number
-  summary: string
-  tags: string[]
+  osName: 'Android' | 'iPhone OS' | 'Both' //iPhone OS"
+  ownerId: string //sage-bionetworks"
   title: string
-  type: string
-  version: number
-  validationStatus: string
-  minutesToComplete: number
+
+  createdOn?: string
+  customizationFields?: object
+  deleted?: boolean
+  guid?: string
+
+  modifiedOn?: string
+  normingStatus?: string
+
+  summary?: string
+  tags: string[]
+
+  version?: number
+  validationStatus?: string
+  minutesToComplete?: number
   resources?: any[]
   originGuid?: string
+}
+
+export type AssessmentConfig = {
+  guid: string
+  config: JSON
 }
 
 /* *** Study ********************************/

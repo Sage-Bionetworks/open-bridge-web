@@ -125,7 +125,7 @@ function App() {
         }
       )
     }
-  }, [sessionData.token, code])
+  }, [sessionData.token, code, sessionUpdateFn])
 
   return (
     <StyledEngineProvider injectFirst>

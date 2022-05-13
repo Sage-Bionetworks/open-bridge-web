@@ -1,5 +1,6 @@
 import { ReactComponent as DemoPhone } from '@assets/preview/demo_phone.svg';
 import { WhiteButton } from '@components/widgets/StyledComponents';
+import { useUserSessionDataState } from '@helpers/AuthContext';
 import { Box, Container } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { Assessment, StringDictionary } from '@typedefs/types';
@@ -9,11 +10,10 @@ import { NavLink } from 'react-router-dom';
 
 type AssessmentLibraryWrapperProps = {
   assessments: Assessment[]
-  tags: StringDictionary<number>
+  tags?: StringDictionary<number>
   children: ReactNode[]
   onChangeTags: Function
   isAssessmentLibrary?: boolean
-  token?: string
 }
 
 const useStyles = makeStyles(theme => ({
@@ -67,9 +67,10 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
     tags,
     assessments,
     onChangeTags,
-    token,
+
   }: AssessmentLibraryWrapperProps) => {
     const classes = useStyles()
+    const { token } = useUserSessionDataState()
 
     return (
       <Box

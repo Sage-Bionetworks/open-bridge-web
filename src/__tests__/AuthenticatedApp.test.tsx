@@ -66,7 +66,7 @@ test('should show app top nav if user logged in without a study link and now sho
 
     mockedAuth.useUserSessionDataState.mockImplementation(() => loggedInSessionData)
     mockedUseStudy.useStudy.mockImplementation((x) => (noStudy as UseQueryResult<Study | undefined, ExtendedError>))
-    const app = renderControl('/surveys')
+    const app = renderControl('/surveys/:id/design')
     expect(app.queryAllByText('Study List')).toHaveLength(0)
 })
 

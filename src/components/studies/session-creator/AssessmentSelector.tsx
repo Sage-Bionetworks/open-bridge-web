@@ -1,16 +1,13 @@
-import makeStyles from '@mui/styles/makeStyles';
-import CheckIcon from '@mui/icons-material/Check'
+import AssessmentCard from '@components/assessments/AssessmentCard';
+import AssessmentLibraryWrapper from '@components/assessments/AssessmentLibraryWrapper';
+import { useAssessmentsWithResources } from '@components/studies/assessmentHooks';
+import Loader from '@components/widgets/Loader';
+import CheckIcon from '@mui/icons-material/Check';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
-import React, {FunctionComponent, useState} from 'react'
-import {useErrorHandler} from 'react-error-boundary'
-import {useAsync} from '../../../helpers/AsyncHook'
-import {useUserSessionDataState} from '../../../helpers/AuthContext'
-import AssessmentService from '../../../services/assessment.service'
-import {StudySession} from '../../../types/scheduling'
-import {Assessment, StringDictionary} from '../../../types/types'
-import AssessmentCard from '../../assessments/AssessmentCard'
-import AssessmentLibraryWrapper from '../../assessments/AssessmentLibraryWrapper'
-import Loader from '../../widgets/Loader'
+import makeStyles from '@mui/styles/makeStyles';
+import { StudySession } from '@typedefs/scheduling';
+import { Assessment } from '@typedefs/types';
+import React, { FunctionComponent, useState } from 'react';
 
 const useStyles = makeStyles({
   toggleA: {
@@ -86,34 +83,16 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
   selectedAssessments,
   onUpdateAssessments,
 }: AssessmentSelectorProps) => {
-  const {token} = useUserSessionDataState()
 
-  const handleError = useErrorHandler()
   const classes = useStyles()
 
   const [filteredAssessments, setFilteredAssessments] = useState<
     Assessment[] | undefined
   >(undefined)
 
-  const {data, status, error, run, setData} = useAsync<{
-    assessments: Assessment[]
-    tags: StringDictionary<number>
-  }>({
-    status: 'PENDING',
-    data: null,
-  })
+  const { data, isLoading, status } = useAssessmentsWithResources()
 
-  React.useEffect(() => {
-    return run(AssessmentService.getAssessmentsWithResources())
-  }, [run])
-  if (status === 'PENDING') {
-    return <Loader reqStatusLoading={'PENDING'}></Loader>
-  }
-  if (status === 'REJECTED') {
-    handleError(error!)
-  }
-
-  if (!data?.assessments || (!data?.tags && status === 'RESOLVED')) {
+  if ((!data?.assessments || !data?.tags) && status === 'success') {
     return <>No Data </>
   }
 
@@ -131,47 +110,50 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
     onUpdateAssessments(selectedAssessments)
   }
   return (
-    <div>
-      <AssessmentLibraryWrapper
-        tags={data.tags}
-        isAssessmentLibrary={false}
-        assessments={data.assessments}
-        onChangeTags={
-          (assessments: Assessment[]) =>
-            setFilteredAssessments(assessments) /*setFilterTags(tags)*/
-        }>
-        {(filteredAssessments || data.assessments).map((a, index) => (
-          <ToggleButtonGroup
-            value={selectedAssessments}
-            onChange={toggleAssessment}
-            aria-label={a.title}
-            key={a.guid}>
-            <ToggleButton
-              aria-label="bold"
-              value={a}
-              disabled={
-                !activeSession || isAssessmentInSession(activeSession, a.guid)
-              }
-              classes={{
-                root: classes.toggleA,
-                selected: classes.toggleASelected,
-                disabled: classes.toggleADisabled,
-              }}>
-              <AssessmentCard
-                index={index}
-                assessment={a}
-                key={a.guid}></AssessmentCard>
-              <div className={classes.overlay}>
-                <div className={classes.overlayBackdrop}></div>
-                <div className={classes.overlayBg}>
-                  <CheckIcon className={classes.check}></CheckIcon>
-                </div>
-              </div>
-            </ToggleButton>
-          </ToggleButtonGroup>
-        ))}
-      </AssessmentLibraryWrapper>
-    </div>
+    <Loader reqStatusLoading={isLoading} variant="full">
+      {data && (
+        <div>
+          <AssessmentLibraryWrapper
+
+            isAssessmentLibrary={false}
+            assessments={data.assessments}
+            onChangeTags={
+              (assessments: Assessment[]) =>
+                setFilteredAssessments(assessments) /*setFilterTags(tags)*/
+            }>
+            {(filteredAssessments || data.assessments).map((a, index) => (
+              <ToggleButtonGroup
+                value={selectedAssessments}
+                onChange={toggleAssessment}
+                aria-label={a.title}
+                key={a.guid}>
+                <ToggleButton
+                  aria-label="bold"
+                  value={a}
+                  disabled={
+                    !activeSession || isAssessmentInSession(activeSession, a.guid!)
+                  }
+                  classes={{
+                    root: classes.toggleA,
+                    selected: classes.toggleASelected,
+                    disabled: classes.toggleADisabled,
+                  }}>
+                  <AssessmentCard
+                    index={index}
+                    assessment={a}
+                    key={a.guid}></AssessmentCard>
+                  <div className={classes.overlay}>
+                    <div className={classes.overlayBackdrop}></div>
+                    <div className={classes.overlayBg}>
+                      <CheckIcon className={classes.check}></CheckIcon>
+                    </div>
+                  </div>
+                </ToggleButton>
+              </ToggleButtonGroup>
+            ))}
+          </AssessmentLibraryWrapper>
+        </div>)}
+    </Loader>
   )
 }
 

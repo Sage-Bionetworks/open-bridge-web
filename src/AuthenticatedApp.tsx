@@ -27,8 +27,9 @@ const Wrapper: FunctionComponent<
     section: StudySection
   }>()
   //only use studyId in study builder or
-  const notStudyId = useLocation().pathname.includes(`/assessments/${studyId}`)
+  const isAssessmentPath = useLocation().pathname.includes(`/assessments/${studyId}`)
   const isSurveyPath = useLocation().pathname.includes(`/surveys`)
+  const notStudyId = isAssessmentPath || isSurveyPath
   const { data: study, error } = useStudy(notStudyId ? undefined : studyId)
   const handleError = useErrorHandler()
 

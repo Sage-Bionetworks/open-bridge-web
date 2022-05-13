@@ -1,19 +1,16 @@
+import { useAssessmentWithResources } from '@components/studies/assessmentHooks'
 import Loader from '@components/widgets/Loader'
-import {Box, Container, Divider, Paper, Typography} from '@mui/material'
+import { Box, Container, Divider, Paper, Typography } from '@mui/material'
 import createStyles from '@mui/styles/createStyles'
 import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
-import React, {FunctionComponent} from 'react'
-import {useErrorHandler} from 'react-error-boundary'
-import {RouteComponentProps, useParams} from 'react-router-dom'
+import React, { FunctionComponent } from 'react'
+import { useErrorHandler } from 'react-error-boundary'
+import { RouteComponentProps, useParams } from 'react-router-dom'
 import ClockIcon from '../../assets/clock.svg'
 import OfficialMobileToolboxVersion from '../../assets/official_mobile_toolbox_icon.svg'
 import ScientificallyValidatedIcon from '../../assets/validated.svg'
-import {useAsync} from '../../helpers/AsyncHook'
-import {useUserSessionDataState} from '../../helpers/AuthContext'
-import AssessmentService from '../../services/assessment.service'
-import {playfairDisplayFont, poppinsFont} from '../../style/theme'
-import {Assessment} from '../../types/types'
+import { playfairDisplayFont, poppinsFont } from '../../style/theme'
 import BreadCrumb from '../widgets/BreadCrumb'
 import AssessmentImage from './AssessmentImage'
 
@@ -103,118 +100,99 @@ type AssessmentDetailOwnProps = {}
 type AssessmentDetailProps = AssessmentDetailOwnProps & RouteComponentProps
 
 const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
-  const {token} = useUserSessionDataState()
+
   const classes = useStyles()
-
-  const links = [{url: '/assessments', text: 'Assessments'}]
-
-  let {id} = useParams<{id: string}>()
-
+  const links = [{ url: '/assessments', text: 'Assessments' }]
+  let { id } = useParams<{ id: string }>()
   const handleError = useErrorHandler()
 
-  const {data, status, error, run} = useAsync<Assessment>({
-    status: 'PENDING',
-    data: null,
-  })
+  const { data, isError, error, isLoading } = useAssessmentWithResources(id)
+
+  if (isError) {
+    handleError(error!)
+  }
+  if (isLoading || !data) {
+    return <Loader reqStatusLoading={true} />
+  }
 
   const correctResource = data?.resources?.find(
     resource => resource.category === 'website'
   )
 
-  React.useEffect(() => {
-    ///your async call
-    return run(
-      (async function (id, token) {
-        const {assessments} =
-          await AssessmentService.getAssessmentsWithResources(id)
-        if (assessments.length === 0) {
-          throw new Error('no assessment found')
-        } else {
-          return assessments[0]
-        }
-      })(id, token)
-    )
-  }, [run, id, token])
-  if (status === 'PENDING' || !data) {
-    return <Loader reqStatusLoading={true} />
-  } else if (status === 'REJECTED') {
-    handleError(error!)
-  } else {
-    return (
-      <div className={classes.overallContainer}>
-        <Paper className={classes.breadCrumbs}>
-          <BreadCrumb links={links} currentItem={data.title}></BreadCrumb>
-        </Paper>
-        <Container maxWidth="lg" className={classes.overallBackground}>
-          <Paper className="classes.container">
-            <Box display="flex" className={classes.informationBox}>
-              <Box width="530px" marginRight="32px" style={{textAlign: 'left'}}>
-                <AssessmentImage
-                  name={`${data.title}_img`}
-                  resources={data.resources}
-                  variant="detail"></AssessmentImage>
-              </Box>
-              <Box textAlign="left">
-                <Typography variant="subtitle2" className={classes.categories}>
-                  {data.tags.join(', ')}
-                </Typography>
-                <div className={classes.titleText}>{data.title}</div>
-                <Box>{data.summary}</Box>
-                <Divider className={classes.divider} />
-                <div
-                  className={clsx(
-                    classes.imageTextRow,
-                    classes.imageTextRowValidatedIcon
-                  )}>
-                  <img
-                    className={classes.validatedIcon}
-                    src={ScientificallyValidatedIcon}
-                    alt="scientifically_validated_icon"></img>
-                  <div className={classes.informationTextInContainer}>
-                    Scientifically Validated
-                  </div>
+  return (
+    <div className={classes.overallContainer}>
+      <Paper className={classes.breadCrumbs}>
+        <BreadCrumb links={links} currentItem={data.title}></BreadCrumb>
+      </Paper>
+      <Container maxWidth="lg" className={classes.overallBackground}>
+        <Paper className="classes.container">
+          <Box display="flex" className={classes.informationBox}>
+            <Box width="530px" marginRight="32px" style={{ textAlign: 'left' }}>
+              <AssessmentImage
+                name={`${data.title}_img`}
+                resources={data.resources}
+                variant="detail"></AssessmentImage>
+            </Box>
+            <Box textAlign="left">
+              <Typography variant="subtitle2" className={classes.categories}>
+                {data.tags.join(', ')}
+              </Typography>
+              <div className={classes.titleText}>{data.title}</div>
+              <Box>{data.summary}</Box>
+              <Divider className={classes.divider} />
+              <div
+                className={clsx(
+                  classes.imageTextRow,
+                  classes.imageTextRowValidatedIcon
+                )}>
+                <img
+                  className={classes.validatedIcon}
+                  src={ScientificallyValidatedIcon}
+                  alt="scientifically_validated_icon"></img>
+                <div className={classes.informationTextInContainer}>
+                  Scientifically Validated
                 </div>
-                <div className={classes.imageTextRow}>
-                  <img
-                    className={classes.icon}
-                    src={OfficialMobileToolboxVersion}
-                    alt="official_mobile_toolbox_icon"></img>
-                  <div className={classes.informationTextInContainer}>
-                    Official Mobile Toolbox version
-                  </div>
+              </div>
+              <div className={classes.imageTextRow}>
+                <img
+                  className={classes.icon}
+                  src={OfficialMobileToolboxVersion}
+                  alt="official_mobile_toolbox_icon"></img>
+                <div className={classes.informationTextInContainer}>
+                  Official Mobile Toolbox version
                 </div>
-                <div className={classes.imageTextRow}>
-                  <img
-                    className={classes.icon}
-                    src={ClockIcon}
-                    alt="clock_icon"></img>
-                  <div className={classes.informationTextInContainer}>
-                    {data.minutesToComplete} min
-                  </div>
+              </div>
+              <div className={classes.imageTextRow}>
+                <img
+                  className={classes.icon}
+                  src={ClockIcon}
+                  alt="clock_icon"></img>
+                <div className={classes.informationTextInContainer}>
+                  {data.minutesToComplete} min
                 </div>
-                {/*<div className={classes.informationText}>[Age: 18 +]</div>*/}
-                <div className={clsx(classes.informationText, classes.row)}>
-                  <div style={{width: '100px'}}>Designed By:</div>
-                  <div>
-                    {correctResource && correctResource.creators
-                      ? correctResource.creators.join(', ')
-                      : ''}
-                  </div>
+              </div>
+              {/*<div className={classes.informationText}>[Age: 18 +]</div>*/}
+              <div className={clsx(classes.informationText, classes.row)}>
+                <div style={{ width: '100px' }}>Designed By:</div>
+                <div>
+                  {correctResource && correctResource.creators
+                    ? correctResource.creators.join(', ')
+                    : ''}
                 </div>
-                {/* <div className={classes.informationText}>
+              </div>
+              {/* <div className={classes.informationText}>
                   [Used in <u>15 published studies</u>]
                 </div>
                 <div className={classes.informationText}>
                   [2840 participants]
                     </div>*/}
-              </Box>
             </Box>
-          </Paper>
-        </Container>
-      </div>
-    )
-  }
-  return <></>
+          </Box>
+        </Paper>
+      </Container>
+    </div>
+  )
+
 }
 
 export default AssessmentDetail

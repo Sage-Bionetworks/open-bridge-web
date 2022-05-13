@@ -36,7 +36,7 @@ export const useStudies = () => {
 }
 
 export const useUpdateStudyInList = () => {
-  const {token} = useUserSessionDataState()
+  const {token, appId} = useUserSessionDataState()
   const queryClient = useQueryClient()
 
   const update = async (props: {
@@ -65,6 +65,7 @@ export const useUpdateStudyInList = () => {
       case 'COPY':
         const {study: newStudy} = await StudyService.copyStudy(
           study.identifier!,
+          appId,
           token!
         )
         return [newStudy]
