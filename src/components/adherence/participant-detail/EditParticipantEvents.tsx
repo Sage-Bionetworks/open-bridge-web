@@ -1,24 +1,23 @@
-import {
-  useEvents,
-  useEventsForUser,
-  useUpdateEventsForUser,
-} from '@components/studies/eventHooks'
 import EditParticipantEventsForm from '@components/studies/participants/modify/EditParticipantEventsForm'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import ErrorDisplay from '@components/widgets/ErrorDisplay'
 import {
   DialogButtonPrimary,
-  DialogButtonSecondary,
+  DialogButtonSecondary
 } from '@components/widgets/StyledComponents'
 import {
-  CircularProgress,
+  Alert, CircularProgress,
   Dialog,
   DialogActions,
-  DialogContent,
+  DialogContent
 } from '@mui/material'
-import { Alert } from '@mui/material';
-import {ParticipantEvent} from '@typedefs/types'
-import React, {FunctionComponent} from 'react'
+import {
+  useEvents,
+  useEventsForUser,
+  useUpdateEventsForUser
+} from '@services/eventHooks'
+import { ParticipantEvent } from '@typedefs/types'
+import React, { FunctionComponent } from 'react'
 
 type EditParticipantEventsProps = {
   studyId: string
@@ -37,8 +36,8 @@ const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
     ParticipantEvent[]
   >([])
 
-  const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
-  const {data: events} = useEventsForUser(studyId, participantId)
+  const { data: scheduleEvents = [], error: eventError } = useEvents(studyId)
+  const { data: events } = useEventsForUser(studyId, participantId)
 
   React.useEffect(() => {
     if (events) {
@@ -74,7 +73,7 @@ const EditParticipantEvents: FunctionComponent<EditParticipantEventsProps> = ({
         />
       </DialogContent>
       {isError && (
-        <ErrorDisplay style={{padding: '0 24px'}}>
+        <ErrorDisplay style={{ padding: '0 24px' }}>
           {(error as Error).message}
         </ErrorDisplay>
       )}

@@ -8,10 +8,12 @@ const isLocalhost = (): boolean =>
 const isStaging = (): boolean => document.location.host.indexOf('staging.') > -1
 
 const isArc = (): boolean =>
-  document.location.host.indexOf('dashboard.sagebridge.org') > -1
+  document.location.host.indexOf('dashboard.sagebridge.org') > -1 ||
+  (isLocalhost() && document.location.port === '3001')
 
 const isMTB = (): boolean =>
-  document.location.host.indexOf('studies.mobiletoolbox') > -1
+  document.location.host.indexOf('studies.mobiletoolbox') > -1 ||
+  (isLocalhost() && document.location.port === '3000')
 
 const getOathEnvironment = (): {
   client: string
@@ -107,6 +109,8 @@ const UserService = {
   loginWithPassword,
   loginOauth,
   getUserInfo,
+  isArc,
+  isMTB,
 }
 
 export default UserService

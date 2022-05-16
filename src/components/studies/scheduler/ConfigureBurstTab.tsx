@@ -29,7 +29,7 @@ import { ExtendedError } from '@typedefs/types';
 import clsx from 'clsx';
 import _ from 'lodash';
 import React from 'react';
-import { useUpdateSchedule } from '../scheduleHooks';
+import { useUpdateSchedule } from '../../../services/scheduleHooks';
 import { TooltipHoverDisplay } from './ScheduleTimelineDisplay';
 
 const useStyles = makeStyles((theme: Theme) =>

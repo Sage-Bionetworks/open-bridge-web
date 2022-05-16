@@ -1,11 +1,11 @@
 // pick a date util library
 
-import { useAddParticipant } from '@components/studies/participantHooks';
 import { BlueButton } from '@components/widgets/StyledComponents';
 import Utility from '@helpers/utility';
 import { Box, CircularProgress } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import makeStyles from '@mui/styles/makeStyles';
+import { useAddParticipant } from '@services/participantHooks';
 import ParticipantService from '@services/participants.service';
 import { ExtendedScheduleEventObject } from '@services/schedule.service';
 import { EditableParticipantData, Phone } from '@typedefs/types';

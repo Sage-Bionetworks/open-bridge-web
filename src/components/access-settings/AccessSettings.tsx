@@ -1,4 +1,3 @@
-import {useStudy} from '@components/studies/studyHooks'
 import CloseIcon from '@mui/icons-material/Close'
 import MailOutlineIcon from '@mui/icons-material/MailOutline'
 import {
@@ -9,22 +8,23 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  Paper,
+  Paper
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import ParticipantService from '@services/participants.service'
+import { useStudy } from '@services/studyHooks'
 import clsx from 'clsx'
-import React, {FunctionComponent} from 'react'
-import {RouteComponentProps, useParams} from 'react-router-dom'
-import {ReactComponent as Delete} from '../../assets/trash.svg'
-import {useUserSessionDataState} from '../../helpers/AuthContext'
+import React, { FunctionComponent } from 'react'
+import { RouteComponentProps, useParams } from 'react-router-dom'
+import { ReactComponent as Delete } from '../../assets/trash.svg'
+import { useUserSessionDataState } from '../../helpers/AuthContext'
 import Utility from '../../helpers/utility'
 import AccessService from '../../services/access.service'
-import {latoFont, poppinsFont} from '../../style/theme'
-import {MTBHeadingH1} from '../widgets/Headings'
-import {Access, getRolesFromAccess, NO_ACCESS} from './AccessGrid'
+import { latoFont, poppinsFont } from '../../style/theme'
+import { MTBHeadingH1 } from '../widgets/Headings'
+import { Access, getRolesFromAccess, NO_ACCESS } from './AccessGrid'
 import AccountListing from './AccountListing'
-import MemberInvite, {NewOrgAccount} from './MemberInvite'
+import MemberInvite, { NewOrgAccount } from './MemberInvite'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -122,7 +122,7 @@ async function createNewAccount(
   currentUserOrg: string
 ) {
   try {
-    const {principalId, firstName, lastName} =
+    const { principalId, firstName, lastName } =
       await AccessService.getAliasFromSynapseByEmail(email)
 
     const demoExternalId =
@@ -135,7 +135,7 @@ async function createNewAccount(
       firstName,
       lastName,
       currentUserOrg,
-      {demoExternalId},
+      { demoExternalId },
       getRolesFromAccess(access)
     )
 
@@ -155,11 +155,11 @@ function filterNewAccountsByAdded(
 const AccessSettings: FunctionComponent<
   AccessSettingsProps & RouteComponentProps
 > = () => {
-  let {id} = useParams<{
+  let { id } = useParams<{
     id: string
   }>()
 
-  const {data: study, error: studyError} = useStudy(id)
+  const { data: study, error: studyError } = useStudy(id)
 
   const classes = useStyles()
 
@@ -169,7 +169,7 @@ const AccessSettings: FunctionComponent<
   ])
 
   const sessionData = useUserSessionDataState()
-  const {token, orgMembership} = sessionData
+  const { token, orgMembership } = sessionData
   const [updateToggle, setUpdateToggle] = React.useState(false)
 
   const closeInviteDialog = () => {
@@ -193,7 +193,7 @@ const AccessSettings: FunctionComponent<
   const inviteUsers = async (newAccounts: NewOrgAccount[]) => {
     for (const account of newAccounts.filter(a => !a.isAdded)) {
       if (!account.email) {
-        updateNewOrgAccount({...account, error: 'No email provided'})
+        updateNewOrgAccount({ ...account, error: 'No email provided' })
         return
       }
       const [success, error] = await createNewAccount(
@@ -203,10 +203,10 @@ const AccessSettings: FunctionComponent<
         orgMembership!
       )
       if (success) {
-        updateNewOrgAccount({...account, isAdded: true})
+        updateNewOrgAccount({ ...account, isAdded: true })
       } else {
         const errorString = error.message || error.reason
-        updateNewOrgAccount({...account, error: errorString})
+        updateNewOrgAccount({ ...account, error: errorString })
       }
     }
     setUpdateToggle(prev => !prev)
@@ -220,7 +220,7 @@ const AccessSettings: FunctionComponent<
   return (
     <Box pb={8}>
       <Container maxWidth="md" className={classes.root}>
-        <Paper elevation={2} style={{width: '100%'}}>
+        <Paper elevation={2} style={{ width: '100%' }}>
           <AccountListing
             sessionData={sessionData}
             updateToggle={updateToggle}
@@ -243,7 +243,7 @@ const AccessSettings: FunctionComponent<
         fullWidth
         aria-labelledby="form-dialog-title">
         <DialogTitle className={classes.addNewDialogHeader}>
-          <MailOutlineIcon style={{width: '25px'}}></MailOutlineIcon>
+          <MailOutlineIcon style={{ width: '25px' }}></MailOutlineIcon>
 
           <div className={classes.heading}>
             Invite Team Members to:
@@ -270,7 +270,7 @@ const AccessSettings: FunctionComponent<
                 elevation={2}
                 key={'success'}
                 className={clsx(classes.newOrgAccount)}>
-                <strong style={{marginRight: '16px'}}>
+                <strong style={{ marginRight: '16px' }}>
                   Added Successfully:
                 </strong>
                 <Box

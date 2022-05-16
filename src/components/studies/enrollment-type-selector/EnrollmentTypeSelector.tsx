@@ -1,17 +1,17 @@
 import CheckIcon from '@mui/icons-material/Check'
-import {Box, FormControlLabel, Paper, Radio, RadioGroup} from '@mui/material'
+import { Box, FormControlLabel, Paper, Radio, RadioGroup } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React from 'react'
-import {useErrorHandler} from 'react-error-boundary'
+import { useErrorHandler } from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
-import {latoFont, poppinsFont, ThemeType} from '../../../style/theme'
-import {SignInType, Study} from '../../../types/types'
+import { useStudy, useUpdateStudyDetail } from '../../../services/studyHooks'
+import { latoFont, poppinsFont, ThemeType } from '../../../style/theme'
+import { SignInType, Study } from '../../../types/types'
 import ConfirmationDialog from '../../widgets/ConfirmationDialog'
-import {MTBHeadingH1} from '../../widgets/Headings'
-import {useStudy, useUpdateStudyDetail} from '../studyHooks'
+import { MTBHeadingH1 } from '../../widgets/Headings'
 import ReadOnlyEnrollmentTypeSelector from './read-only-pages/ReadOnlyEnrollmentTypeSelector'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -156,10 +156,10 @@ export interface EnrollmentTypeSelectorProps {
 }
 
 const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProps> =
-  ({id, children}: EnrollmentTypeSelectorProps) => {
+  ({ id, children }: EnrollmentTypeSelectorProps) => {
     const classes = useStyles()
 
-    const {data: study, error, isLoading} = useStudy(id)
+    const { data: study, error, isLoading } = useStudy(id)
 
     const {
       isSuccess: scheduleUpdateSuccess,
@@ -174,7 +174,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProp
     const [saveLoader, setSaveLoader] = React.useState(false)
 
     const onUpdate = async (updatedStudy: Study) => {
-      const x = await mutateStudy({study: updatedStudy})
+      const x = await mutateStudy({ study: updatedStudy })
     }
 
     const updateStudy = (
@@ -223,7 +223,7 @@ const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProp
     return (
       <>
         <NavigationPrompt when={hasObjectChanged}>
-          {({onConfirm, onCancel}) => (
+          {({ onConfirm, onCancel }) => (
             <ConfirmationDialog
               isOpen={hasObjectChanged}
               type={'NAVIGATE'}
@@ -266,12 +266,12 @@ const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProp
                 classes.notFirstColumnDisabled,
 
                 study.signInTypes &&
-                  study.signInTypes[0] === 'phone_password' &&
-                  classes.selectedColumn
+                study.signInTypes[0] === 'phone_password' &&
+                classes.selectedColumn
               )}
               elevation={2}
 
-              /*onClick={() => updateStudy(['phone_password'] as SignInType[])}*/
+            /*onClick={() => updateStudy(['phone_password'] as SignInType[])}*/
             >
               <div>
                 <table width="100%" className={classes.table}>
@@ -318,28 +318,28 @@ const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProp
                 classes.column,
                 classes.notFirstColumn,
                 study.signInTypes.includes('external_id_password') &&
-                  classes.selectedColumn
+                classes.selectedColumn
               )}
               onClick={() => updateStudy(['external_id_password'])}>
               <div>
                 <table width="100%" className={classes.table}>
                   <thead>
                     <tr>
-                      <th style={{height: '186px'}}>
+                      <th style={{ height: '186px' }}>
                         <span className={classes.heading}>
                           ENROLL WITH <br />
                           PARTICIPANT CODE
                         </span>
                         <Box
                           className={classes.additionalInfo}
-                          style={{textAlign: 'left'}}
+                          style={{ textAlign: 'left' }}
                           hidden={
                             !study.signInTypes.includes('external_id_password')
                           }>
                           <RadioGroup
                             aria-label="How to generate Id"
                             name="generateIds"
-                            style={{marginTop: '8px'}}
+                            style={{ marginTop: '8px' }}
                             value={study.clientData.generateIds || false}
                             onClick={e => e.stopPropagation()}
                             onChange={e => {

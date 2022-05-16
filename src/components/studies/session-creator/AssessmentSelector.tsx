@@ -1,10 +1,10 @@
 import AssessmentCard from '@components/assessments/AssessmentCard';
 import AssessmentLibraryWrapper from '@components/assessments/AssessmentLibraryWrapper';
-import { useAssessmentsWithResources } from '@components/studies/assessmentHooks';
 import Loader from '@components/widgets/Loader';
 import CheckIcon from '@mui/icons-material/Check';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
+import { useAssessmentsWithResources } from '@services/assessmentHooks';
 import { StudySession } from '@typedefs/scheduling';
 import { Assessment } from '@typedefs/types';
 import React, { FunctionComponent, useState } from 'react';

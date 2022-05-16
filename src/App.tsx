@@ -59,7 +59,7 @@ const attemptLogin = async (code: string): Promise<LoggedInUserData> => {
 const queryClient = new QueryClient()
 
 function App() {
-  console.log('loading app')
+
   const firstUpdate = useRef(true)
   const sessionData = useUserSessionDataState()
   const sessionUpdateFn = useUserSessionDataDispatch()
@@ -126,6 +126,25 @@ function App() {
       )
     }
   }, [sessionData.token, code, sessionUpdateFn])
+
+  //dynamically set favicon and app depending on domain
+  useEffect(() => {
+    const $manifest = document.createElement("link");
+    document.head.appendChild($manifest);
+    $manifest.rel = "manifest"
+    const $icon = document.createElement("link");
+    document.head.appendChild($icon);
+    $icon.rel = "icon"
+    if (UserService.isArc()) {
+      $manifest.href = process.env.PUBLIC_URL + "/arc_manifest.json"
+      $icon.href = process.env.PUBLIC_URL + "/arc_favicon.ico"
+    } else {
+      $manifest.href = process.env.PUBLIC_URL + "/manifest.json"
+      $icon.href = process.env.PUBLIC_URL + "/favicon.ico"
+    }
+
+  }, []);
+
 
   return (
     <StyledEngineProvider injectFirst>

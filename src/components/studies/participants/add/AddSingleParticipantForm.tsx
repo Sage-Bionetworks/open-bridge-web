@@ -1,17 +1,17 @@
 import TextMask from '@components/widgets/MaskedInput'
 import {
   SimpleTextInput,
-  SimpleTextLabel,
+  SimpleTextLabel
 } from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
-import {FormHelperText} from '@mui/material'
+import { FormHelperText } from '@mui/material'
 import FormControl from '@mui/material/FormControl'
 import FormGroup from '@mui/material/FormGroup'
 import makeStyles from '@mui/styles/makeStyles'
-import {ExtendedScheduleEventObject} from '@services/schedule.service'
-import {EditableParticipantData} from '@typedefs/types'
+import { ExtendedScheduleEventObject } from '@services/schedule.service'
+import { EditableParticipantData } from '@typedefs/types'
 import clsx from 'clsx'
-import React, {FunctionComponent} from 'react'
+import React, { FunctionComponent } from 'react'
 import EditParticipantEventsForm from '../modify/EditParticipantEventsForm'
 import TimezoneDropdown from '../TimezoneDropdown'
 
@@ -32,7 +32,7 @@ type AddSingleParticipantFormProps = {
 }
 
 const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps> =
-  ({participant, isEnrolledById, scheduleEvents, onChange}) => {
+  ({ participant, isEnrolledById, scheduleEvents, onChange }) => {
     const classes = useStyles()
     const [validationErrors, setValidationErrors] = React.useState({
       phone: false,
@@ -75,7 +75,7 @@ const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps>
                     maskType: 'PHONE',
                     placeholder: '(xxx)xxx-xxx',
                     onAccept: (v: string) => {
-                      onChange({...participant, phoneNumber: v})
+                      onChange({ ...participant, phoneNumber: v })
                     },
                   }}
                   inputComponent={TextMask as any}
@@ -106,23 +106,24 @@ const AddSingleParticipantForm: FunctionComponent<AddSingleParticipantFormProps>
               }
               currentValue={participant.clientTimeZone || '-'}
               onValueChange={(clientTimeZone: string) =>
-                onChange({...participant, clientTimeZone})
+                onChange({ ...participant, clientTimeZone })
               }
             />
           </FormControl>
           <EditParticipantEventsForm
+            labelsAbove={true}
             customParticipantEvents={participant.events || []}
             hideLoginEvent={true}
             scheduleEvents={scheduleEvents}
             onChange={events => {
-              onChange({...participant, events: events})
+              onChange({ ...participant, events: events })
             }}
           />
           <FormControl>
             <SimpleTextLabel htmlFor="note">Notes</SimpleTextLabel>
             <SimpleTextInput
               value={participant.note || ''}
-              onChange={e => onChange({...participant, note: e.target.value})}
+              onChange={e => onChange({ ...participant, note: e.target.value })}
               placeholder="comments"
               id="note"
               multiline={true}

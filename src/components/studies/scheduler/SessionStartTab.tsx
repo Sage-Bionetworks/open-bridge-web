@@ -1,16 +1,16 @@
 import CalendarIcon from '@assets/scheduler/calendar_icon.svg'
-import {ReactComponent as PhoneIcon} from '@assets/scheduler/login_phone.svg'
+import { ReactComponent as PhoneIcon } from '@assets/scheduler/login_phone.svg'
 import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
 import LoadingComponent from '@components/widgets/Loader'
-import {RedButton} from '@components/widgets/StyledComponents'
-import { Box, FormGroup, IconButton, Theme } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { RedButton } from '@components/widgets/StyledComponents'
 import DeleteIcon from '@mui/icons-material/Close'
+import { Box, FormGroup, IconButton, Theme } from '@mui/material'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
 import EventService from '@services/event.service'
-import {latoFont} from '@style/theme'
-import {SchedulingEvent} from '@typedefs/scheduling'
-import {ExtendedError, Study} from '@typedefs/types'
+import { latoFont } from '@style/theme'
+import { SchedulingEvent } from '@typedefs/scheduling'
+import { ExtendedError, Study } from '@typedefs/types'
 import clsx from 'clsx'
 import React from 'react'
 import {
@@ -18,9 +18,9 @@ import {
   Draggable,
   DraggableLocation,
   Droppable,
-  DropResult,
+  DropResult
 } from 'react-beautiful-dnd'
-import {useUpdateStudyDetail} from '../studyHooks'
+import { useUpdateStudyDetail } from '../../../services/studyHooks'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -160,7 +160,7 @@ const useStyles = makeStyles((theme: Theme) =>
       border: '1px solid red',
     },
     droppable: {},
-    hoverImage: {display: 'none'},
+    hoverImage: { display: 'none' },
     withCalendar: {},
   })
 )
@@ -190,7 +190,7 @@ const FakeSelect: React.FunctionComponent<{
   evtName: string
   hasCalendar: boolean
   hasCarret?: boolean
-}> = ({evtName, hasCalendar, hasCarret = false}) => {
+}> = ({ evtName, hasCalendar, hasCarret = false }) => {
   const classes = useStyles()
   var x = <span>{evtName}</span>
 
@@ -213,7 +213,7 @@ const FakeSelect: React.FunctionComponent<{
 const SessionStartTab: React.ForwardRefRenderFunction<
   SaveHandle,
   SessionStartTabProps
-> = ({study, onNavigate, eventIdsInSchedule}: SessionStartTabProps, ref) => {
+> = ({ study, onNavigate, eventIdsInSchedule }: SessionStartTabProps, ref) => {
   const classes = useStyles()
 
   React.useImperativeHandle(ref, () => ({
@@ -253,7 +253,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
       customEvents,
     }
 
-    await mutateStudy({study: updatedStudy})
+    await mutateStudy({ study: updatedStudy })
   }
 
   const [newEvent, setNewEvent] = React.useState(
@@ -353,7 +353,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
         variant={'small'}
       />
       <Box className={classes.columnContainer} bgcolor="#F8F8F8">
-        <div className={classes.leftCol} style={{maxWidth: '300px'}}>
+        <div className={classes.leftCol} style={{ maxWidth: '300px' }}>
           <p>
             <PhoneIcon />
             <br />
@@ -377,7 +377,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
         <div className={classes.rightCol}>
           <p
             className={classes.small}
-            style={{width: '170px', marginLeft: '28px'}}>
+            style={{ width: '170px', marginLeft: '28px' }}>
             Example: A clinical study might have 2 Events: a Baseline Visit and
             Final Visit.
           </p>
@@ -400,7 +400,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
           className={classes.leftCol}
           display="flex"
           justifyContent="space-between">
-          <div style={{width: '165px'}}>
+          <div style={{ width: '165px' }}>
             {error && <Box className={classes.errorText}>{error}</Box>}
             <input
               key="new_event"
@@ -426,7 +426,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
             </Box>
           )}
         </Box>
-        <div className={classes.rightCol} style={{width: '250px'}}>
+        <div className={classes.rightCol} style={{ width: '250px' }}>
           <DragDropContext
             onDragEnd={(dropResult: DropResult) => {
               reorderEvents(customEvents, dropResult)
@@ -474,7 +474,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
                                     <IconButton
                                       edge="end"
                                       size="small"
-                                      style={{padding: 0}}
+                                      style={{ padding: 0 }}
                                       onClick={() => deleteEvent(index)}>
                                       <DeleteIcon></DeleteIcon>
                                     </IconButton>

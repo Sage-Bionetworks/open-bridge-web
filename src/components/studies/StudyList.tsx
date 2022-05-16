@@ -1,4 +1,3 @@
-import { useStudies, useUpdateStudyInList } from '@components/studies/studyHooks'
 import ConfirmationDialog, {
   ConfirmationDialogType
 } from '@components/widgets/ConfirmationDialog'
@@ -10,6 +9,7 @@ import { Box, Button, Container, Divider, Menu, MenuItem } from '@mui/material'
 import Link from '@mui/material/Link'
 import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
+import { useStudies, useUpdateStudyInList } from '@services/studyHooks'
 import { latoFont } from '@style/theme'
 import constants from '@typedefs/constants'
 import { AdminRole, DisplayStudyPhase, Study, StudyPhase } from '@typedefs/types'
