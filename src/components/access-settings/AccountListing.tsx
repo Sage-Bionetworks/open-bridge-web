@@ -1,22 +1,22 @@
+import {ReactComponent as Delete} from '@assets/trash.svg'
+import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
+import {MTBHeadingH1, MTBHeadingH6} from '@components/widgets/Headings'
+import Loader from '@components/widgets/Loader'
+import SideBarListItem from '@components/widgets/SideBarListItem'
+import Utility from '@helpers/utility'
 import {Alert, Box, Button, Theme} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+import AccessService from '@services/access.service'
 import ParticipantService from '@services/participants.service'
-import React, {FunctionComponent, ReactNode} from 'react'
-import {useErrorHandler} from 'react-error-boundary'
-import {ReactComponent as Delete} from '../../assets/trash.svg'
-import Utility from '../../helpers/utility'
-import AccessService from '../../services/access.service'
-import {globals, poppinsFont} from '../../style/theme'
+import {globals, poppinsFont} from '@style/theme'
 import {
   LoggedInUserClientData,
   OrgUser,
   Study,
   UserSessionData,
-} from '../../types/types'
-import ConfirmationDialog from '../widgets/ConfirmationDialog'
-import {MTBHeadingH1, MTBHeadingH6} from '../widgets/Headings'
-import Loader from '../widgets/Loader'
-import SideBarListItem from '../widgets/SideBarListItem'
+} from '@typedefs/types'
+import React, {FunctionComponent, ReactNode} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
 import AccessGrid, {
   Access,
   getAccessFromRoles,
@@ -30,7 +30,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   listing: {
     width: theme.spacing(39),
-    // marginRight: theme.spacing(15),
     backgroundColor: theme.palette.common.black,
     color: theme.palette.common.white,
     padding: theme.spacing(4, 0, 3, 3.5),
@@ -336,8 +335,6 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                 onCancel={() => setIsConfirmDeleteOpen(false)}
                 onConfirm={() => {
                   const member = {...currentMemberAccess!.member}
-                  // setCurrentMemberId(members[0].id)
-
                   deleteExistingAccount(member)
                     .then(() => setIsConfirmDeleteOpen(false))
                     .catch(e => setUpdateError(e.message))
