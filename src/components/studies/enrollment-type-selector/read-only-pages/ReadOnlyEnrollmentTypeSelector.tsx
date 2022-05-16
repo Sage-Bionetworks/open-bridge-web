@@ -1,5 +1,5 @@
-import { Box } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
 import {NavLink} from 'react-router-dom'
 import StudyEnrollmentAdditionIcon from '../../../../assets/study_enrollment_addition_icon.svg'

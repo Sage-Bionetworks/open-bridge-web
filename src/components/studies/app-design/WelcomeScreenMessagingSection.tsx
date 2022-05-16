@@ -1,5 +1,5 @@
-import { Box, Checkbox, FormControl } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box, Checkbox, FormControl} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import {playfairDisplayFont} from '@style/theme'
 import React from 'react'
 import FormGroupWrapper from './widgets/FormGroupWrapper'

@@ -1,8 +1,8 @@
-import createStyles from '@mui/styles/createStyles';
+import createStyles from '@mui/styles/createStyles'
 import Card from '@mui/material/Card'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import Typography from '@mui/material/Typography'
 import React, {FunctionComponent} from 'react'
 import validated from '../../assets/validated.svg'

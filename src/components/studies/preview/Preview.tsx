@@ -1,8 +1,8 @@
 import LinkIcon from '@assets/link_icon.svg'
 import appStoreBtn from '@assets/preview/appStoreBtn.png'
 import googlePlayBtn from '@assets/preview/googlePlayBtn.png'
-import { ReactComponent as PhoneImg } from '@assets/preview/preview_phone.svg'
-import { ReactComponent as PhoneImgAssmnt } from '@assets/preview/preview_phone_assessment.svg'
+import {ReactComponent as PhoneImg} from '@assets/preview/preview_phone.svg'
+import {ReactComponent as PhoneImgAssmnt} from '@assets/preview/preview_phone_assessment.svg'
 import AuthorizedIcon from '@assets/preview/reminder_of_use_authorization_icon.svg'
 import MedicalIcon from '@assets/preview/reminder_of_use_medical_icon.svg'
 import ProtectionIcon from '@assets/preview/reminder_of_use_protect_icon.svg'
@@ -10,10 +10,10 @@ import SampleAssessmentDataImg from '@assets/preview/sample_assessment_data.svg'
 import ScheduleSessionsIcon from '@assets/preview/schedule_session_icon_no_padding.svg'
 import QrCode from '@assets/qr_code.png'
 import AssessmentSmall from '@components/assessments/AssessmentSmall'
-import { ErrorFallback, ErrorHandler } from '@components/widgets/ErrorHandler'
-import { MTBHeadingH1, MTBHeadingH2 } from '@components/widgets/Headings'
-import { PrevButton, SimpleTextInput } from '@components/widgets/StyledComponents'
-import { useUserSessionDataState } from '@helpers/AuthContext'
+import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
+import {MTBHeadingH1, MTBHeadingH2} from '@components/widgets/Headings'
+import {PrevButton, SimpleTextInput} from '@components/widgets/StyledComponents'
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
 import {
   Box,
@@ -21,7 +21,7 @@ import {
   Container,
   Divider,
   FormControl,
-  FormLabel
+  FormLabel,
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import ParticipantService from '@services/participants.service'
@@ -29,14 +29,14 @@ import {
   latoFont,
   playfairDisplayFont,
   poppinsFont,
-  ThemeType
+  ThemeType,
 } from '@style/theme'
-import { Assessment } from '@typedefs/types'
+import {Assessment} from '@typedefs/types'
 import clsx from 'clsx'
-import React, { useEffect } from 'react'
-import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
-import { NavLink } from 'react-router-dom'
-import { useSchedule } from '../../../services/scheduleHooks'
+import React, {useEffect} from 'react'
+import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
+import {NavLink} from 'react-router-dom'
+import {useSchedule} from '../../../services/scheduleHooks'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -201,7 +201,7 @@ export interface PreviewProps {
   children?: React.ReactNode
 }
 
-const Reminder: React.FunctionComponent<{ text: string; img: string }> = ({
+const Reminder: React.FunctionComponent<{text: string; img: string}> = ({
   text,
   img,
 }) => {
@@ -216,7 +216,7 @@ const Reminder: React.FunctionComponent<{ text: string; img: string }> = ({
 
 const PreviewAssessments: React.FunctionComponent<{
   studyId: string
-}> = ({ studyId }) => {
+}> = ({studyId}) => {
   const classes = useStyles()
   const {
     data: schedule,
@@ -272,7 +272,7 @@ const PreviewAssessments: React.FunctionComponent<{
           </p>
           {uniqueAssessments.map((assessment, index) => {
             return (
-              <Box onClick={() => { }} mb={2}>
+              <Box onClick={() => {}} mb={2}>
                 <AssessmentSmall
                   hasHover={false}
                   assessment={assessment}
@@ -292,7 +292,7 @@ const PreviewIdGenerated: React.FunctionComponent<{
   studyId: string
   isAssessmentDemo?: boolean
   children?: React.ReactNode
-}> = ({ testParticipantId, studyId, isAssessmentDemo, children }) => {
+}> = ({testParticipantId, studyId, isAssessmentDemo, children}) => {
   const classes = useStyles()
   const studyDemoIntro = (
     <>
@@ -391,9 +391,9 @@ const PreviewIdGenerated: React.FunctionComponent<{
 const PreviewIntroScreen: React.FunctionComponent<{
   isAssessmentDemo?: boolean
   onGetParticipantId: Function
-}> = ({ onGetParticipantId, isAssessmentDemo }) => {
+}> = ({onGetParticipantId, isAssessmentDemo}) => {
   const classes = useStyles()
-  const { token } = useUserSessionDataState()
+  const {token} = useUserSessionDataState()
 
   const text = [
     'Only use the Mobile Toolbox for authorized purposes.',
@@ -415,11 +415,11 @@ const PreviewIntroScreen: React.FunctionComponent<{
           className={classes.tosButton}
           variant="outlined"
           color="primary"
-          onClick={() => { }}>
+          onClick={() => {}}>
           <img className={classes.linkIcon} src={LinkIcon}></img>
           <Box className={classes.tosText}>
             <a
-              style={{ textDecoration: 'none' }}
+              style={{textDecoration: 'none'}}
               href="/MTB-ToS-v2-210923.pdf"
               target="_blank">
               Full terms of service
@@ -490,7 +490,7 @@ const Preview: React.FunctionComponent<PreviewProps> = ({
   children,
 }: PreviewProps) => {
   const classes = useStyles()
-  const { token, demoExternalId } = useUserSessionDataState()
+  const {token, demoExternalId} = useUserSessionDataState()
 
   const [testParticipantId, setTestParticipantId] = React.useState('')
 

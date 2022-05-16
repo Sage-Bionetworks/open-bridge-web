@@ -4,8 +4,14 @@ import {
   SimpleTextInput,
   SimpleTextLabel,
 } from '@components/widgets/StyledComponents'
-import { Box, DialogActions, DialogContent, FormControl, FormGroup } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {
+  Box,
+  DialogActions,
+  DialogContent,
+  FormControl,
+  FormGroup,
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import Alert from '@mui/material/Alert'
 import {EditableParticipantData} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
@@ -40,7 +46,11 @@ const WithdrawParticipantForm: FunctionComponent<WithdrawParticipantFormProps> =
       <>
         <DialogContent>
           <Box className={classes.withdrawalNotice}>
-            {onError && <Alert color="error" onClose={()=> onHandleError(undefined)}>{onError.message}</Alert>}        
+            {onError && (
+              <Alert color="error" onClose={() => onHandleError(undefined)}>
+                {onError.message}
+              </Alert>
+            )}
             <p>
               Withdrawing means you will no longer collect data on this
               participant and will not be able to contact them through the app.
@@ -74,7 +84,12 @@ const WithdrawParticipantForm: FunctionComponent<WithdrawParticipantFormProps> =
           </FormGroup>
         </DialogContent>
         <DialogActions>
-          <DialogButtonSecondary onClick={() => {onCancel(); onHandleError(undefined)}} color="primary">
+          <DialogButtonSecondary
+            onClick={() => {
+              onCancel()
+              onHandleError(undefined)
+            }}
+            color="primary">
             Cancel
           </DialogButtonSecondary>
           <DialogButtonPrimary

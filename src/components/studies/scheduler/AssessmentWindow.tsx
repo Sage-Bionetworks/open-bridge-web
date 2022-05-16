@@ -1,5 +1,5 @@
-import { Box, IconButton, Paper } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box, IconButton, Paper} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import DeleteIcon from '@mui/icons-material/Close'
 import clsx from 'clsx'
 import React from 'react'
@@ -106,7 +106,7 @@ const AssessmentWindow: React.FunctionComponent<AssessmentWindowProps> = ({
               unitDefault={HDWMEnum.H}
               unitLabel="Expire after"
               numberLabel="expiration"
-              placeHolder='hours'
+              placeHolder="hours"
               unitData={HDWMEnum}></Duration>
           </Box>
         </SchedulingFormSection>

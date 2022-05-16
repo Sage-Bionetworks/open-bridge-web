@@ -1,12 +1,12 @@
-import { ReactComponent as DemoPhone } from '@assets/preview/demo_phone.svg';
-import { WhiteButton } from '@components/widgets/StyledComponents';
-import { useUserSessionDataState } from '@helpers/AuthContext';
-import { Box, Container } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import { Assessment, StringDictionary } from '@typedefs/types';
-import clsx from 'clsx';
-import React, { FunctionComponent, ReactNode } from 'react';
-import { NavLink } from 'react-router-dom';
+import {ReactComponent as DemoPhone} from '@assets/preview/demo_phone.svg'
+import {WhiteButton} from '@components/widgets/StyledComponents'
+import {useUserSessionDataState} from '@helpers/AuthContext'
+import {Box, Container} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
+import {Assessment, StringDictionary} from '@typedefs/types'
+import clsx from 'clsx'
+import React, {FunctionComponent, ReactNode} from 'react'
+import {NavLink} from 'react-router-dom'
 
 type AssessmentLibraryWrapperProps = {
   assessments: Assessment[]
@@ -67,10 +67,9 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
     tags,
     assessments,
     onChangeTags,
-
   }: AssessmentLibraryWrapperProps) => {
     const classes = useStyles()
-    const { token } = useUserSessionDataState()
+    const {token} = useUserSessionDataState()
 
     return (
       <Box
@@ -89,8 +88,8 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
             <Box textAlign="right" mx={3.5} mb={6}>
               <NavLink
                 to={'assessments/preview'}
-                style={{ textDecoration: 'none' }}>
-                <WhiteButton variant="contained" style={{ fontSize: '15px' }}>
+                style={{textDecoration: 'none'}}>
+                <WhiteButton variant="contained" style={{fontSize: '15px'}}>
                   <DemoPhone />
                   Demo all assessments
                 </WhiteButton>

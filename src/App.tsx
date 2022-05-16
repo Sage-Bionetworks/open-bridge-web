@@ -2,25 +2,25 @@ import {
   CssBaseline,
   StyledEngineProvider,
   ThemeProvider,
-  Typography
+  Typography,
 } from '@mui/material'
-import { createTheme, Theme } from '@mui/material/styles'
-import { deepmerge } from '@mui/utils'
-import React, { useEffect, useRef } from 'react'
-import { ErrorBoundary } from 'react-error-boundary'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { BrowserRouter as Router, Redirect } from 'react-router-dom'
+import {createTheme, Theme} from '@mui/material/styles'
+import {deepmerge} from '@mui/utils'
+import React, {useEffect, useRef} from 'react'
+import {ErrorBoundary} from 'react-error-boundary'
+import {QueryClient, QueryClientProvider} from 'react-query'
+import {BrowserRouter as Router, Redirect} from 'react-router-dom'
 import AuthenticatedApp from './AuthenticatedApp'
-import { ErrorFallback, ErrorHandler } from './components/widgets/ErrorHandler'
+import {ErrorFallback, ErrorHandler} from './components/widgets/ErrorHandler'
 import Loader from './components/widgets/Loader'
 import {
   useUserSessionDataDispatch,
-  useUserSessionDataState
+  useUserSessionDataState,
 } from './helpers/AuthContext'
 import Utility from './helpers/utility'
 import UserService from './services/user.service'
-import { cssVariables, theme } from './style/theme'
-import { ExtendedError, LoggedInUserData } from './types/types'
+import {cssVariables, theme} from './style/theme'
+import {ExtendedError, LoggedInUserData} from './types/types'
 import UnauthenticatedApp from './UnauthenticatedApp'
 
 const theTheme = createTheme(deepmerge(theme, cssVariables))
@@ -29,12 +29,12 @@ const getCode = (): string | null => {
   // 'code' handling (from SSO) should be preformed on the root page, and then redirect to original route.
   let code: URL | null | string = new URL(window.location.href)
   // in test environment the searchParams isn't defined
-  const { searchParams } = code
+  const {searchParams} = code
   return searchParams?.get('code')
 }
 // tslint:disable-next-line
 declare module '@mui/styles/defaultTheme' {
-  interface DefaultTheme extends Theme { }
+  interface DefaultTheme extends Theme {}
 }
 
 const attemptLogin = async (code: string): Promise<LoggedInUserData> => {
@@ -59,7 +59,6 @@ const attemptLogin = async (code: string): Promise<LoggedInUserData> => {
 const queryClient = new QueryClient()
 
 function App() {
-
   const firstUpdate = useRef(true)
   const sessionData = useUserSessionDataState()
   const sessionUpdateFn = useUserSessionDataDispatch()
@@ -129,22 +128,20 @@ function App() {
 
   //dynamically set favicon and app depending on domain
   useEffect(() => {
-    const $manifest = document.createElement("link");
-    document.head.appendChild($manifest);
-    $manifest.rel = "manifest"
-    const $icon = document.createElement("link");
-    document.head.appendChild($icon);
-    $icon.rel = "icon"
+    const $manifest = document.createElement('link')
+    document.head.appendChild($manifest)
+    $manifest.rel = 'manifest'
+    const $icon = document.createElement('link')
+    document.head.appendChild($icon)
+    $icon.rel = 'icon'
     if (UserService.isArc()) {
-      $manifest.href = process.env.PUBLIC_URL + "/arc_manifest.json"
-      $icon.href = process.env.PUBLIC_URL + "/arc_favicon.ico"
+      $manifest.href = process.env.PUBLIC_URL + '/arc_manifest.json'
+      $icon.href = process.env.PUBLIC_URL + '/arc_favicon.ico'
     } else {
-      $manifest.href = process.env.PUBLIC_URL + "/manifest.json"
-      $icon.href = process.env.PUBLIC_URL + "/favicon.ico"
+      $manifest.href = process.env.PUBLIC_URL + '/manifest.json'
+      $icon.href = process.env.PUBLIC_URL + '/favicon.ico'
     }
-
-  }, []);
-
+  }, [])
 
   return (
     <StyledEngineProvider injectFirst>
@@ -160,9 +157,7 @@ function App() {
                 {redirect && <Redirect to={redirect}></Redirect>}
                 <React.StrictMode>
                   {sessionData.id ? (
-
                     <AuthenticatedApp />
-
                   ) : (
                     <Loader reqStatusLoading={getCode() !== null}>
                       <UnauthenticatedApp appId={Utility.getAppId()} />

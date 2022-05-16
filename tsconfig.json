@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -21,10 +17,8 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": "src",
     "downlevelIteration": true,
-    "useUnknownInCatchVariables": false,
+    "useUnknownInCatchVariables": false
   },
   "extends": "./tsconfig.paths.json",
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

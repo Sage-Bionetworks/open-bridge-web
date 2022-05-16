@@ -1,11 +1,11 @@
-import { ReactComponent as PhoneTopImgLeftHighlighted } from '@assets/appdesign/CustomizeAppTopbarLeft.svg'
-import { ReactComponent as PhoneTopImgRightHighlighted } from '@assets/appdesign/CustomizeAppTopbarRight.svg'
+import {ReactComponent as PhoneTopImgLeftHighlighted} from '@assets/appdesign/CustomizeAppTopbarLeft.svg'
+import {ReactComponent as PhoneTopImgRightHighlighted} from '@assets/appdesign/CustomizeAppTopbarRight.svg'
 import PhoneBg from '@assets/appdesign/phone_bg.svg'
-import { ReactComponent as PhoneBottomImg } from '@assets/appdesign/phone_buttons.svg'
+import {ReactComponent as PhoneBottomImg} from '@assets/appdesign/phone_buttons.svg'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
-import { MTBHeadingH1, MTBHeadingH2 } from '@components/widgets/Headings'
+import {MTBHeadingH1, MTBHeadingH2} from '@components/widgets/Headings'
 import SaveButton from '@components/widgets/SaveButton'
-import { useUserSessionDataState } from '@helpers/AuthContext'
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
 import {
   Box,
@@ -13,20 +13,20 @@ import {
   CircularProgress,
   FormControl,
   Paper,
-  Switch
+  Switch,
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
-import { useStudy, useUpdateStudyDetail } from '@services/studyHooks'
-import { latoFont, playfairDisplayFont, ThemeType } from '@style/theme'
+import {useStudy, useUpdateStudyDetail} from '@services/studyHooks'
+import {latoFont, playfairDisplayFont, ThemeType} from '@style/theme'
 import constants from '@typedefs/constants'
-import { Contact, Study, SubType, WelcomeScreenData } from '@typedefs/types'
+import {Contact, Study, SubType, WelcomeScreenData} from '@typedefs/types'
 import clsx from 'clsx'
 import _ from 'lodash'
-import React, { ChangeEvent, useEffect, useState } from 'react'
-import { HexColorPicker } from 'react-colorful'
-import { useErrorHandler } from 'react-error-boundary'
-import { useLocation } from 'react-router-dom'
+import React, {ChangeEvent, useEffect, useState} from 'react'
+import {HexColorPicker} from 'react-colorful'
+import {useErrorHandler} from 'react-error-boundary'
+import {useLocation} from 'react-router-dom'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
 import IrbBoardContactSection from './IrbBoardContactSection'
@@ -46,7 +46,7 @@ const imgHeight = 80
 const DEFAULT_CONTACT_NAME = constants.constants.DEFAULT_PLACEHOLDER
 
 export const useStyles = makeStyles((theme: ThemeType) => ({
-  root: { counterReset: 'orderedlist' },
+  root: {counterReset: 'orderedlist'},
   section: {
     backgroundColor: '#fefefe',
     padding: theme.spacing(9, 9, 10, 17),
@@ -291,16 +291,16 @@ function getPreviewForImage(file: File): PreviewFile {
 const PhoneTopBar: React.FunctionComponent<{
   color?: string
   studyLogoUrl?: string
-}> = ({ color = 'transparent', studyLogoUrl }) => {
+}> = ({color = 'transparent', studyLogoUrl}) => {
   const classes = useStyles()
   return (
     <div
       className={classes.phoneTopBar}
-      style={{ backgroundColor: color || 'transparent' }}>
+      style={{backgroundColor: color || 'transparent'}}>
       {studyLogoUrl ? (
         <img
           src={studyLogoUrl}
-          style={{ height: `${imgHeight - 8}px` }}
+          style={{height: `${imgHeight - 8}px`}}
           alt="study-logo"
         />
       ) : (
@@ -314,7 +314,7 @@ export const WelcomeScreenDisplay: React.FunctionComponent<{
   study: Study
   isReadOnly?: boolean
   studyLogoUrl?: string
-}> = ({ study, isReadOnly, studyLogoUrl }) => {
+}> = ({study, isReadOnly, studyLogoUrl}) => {
   const classes = useStyles()
   return (
     <>
@@ -348,7 +348,7 @@ export const WelcomeScreenDisplay: React.FunctionComponent<{
             classes.optionalDisclaimerTextOnPhone
           )}>
           {!study.clientData.welcomeScreenData?.isUsingDefaultMessage &&
-            study.clientData.welcomeScreenData?.useOptionalDisclaimer
+          study.clientData.welcomeScreenData?.useOptionalDisclaimer
             ? 'This is a research study and does not provide medical advice, diagnosis, or treatment'
             : ''}
         </Box>
@@ -362,7 +362,7 @@ export const StudyPageTopPhone: React.FunctionComponent<{
   getContactPersonObject: Function
   isReadOnly?: boolean
   studyLogoUrl?: string
-}> = ({ study, getContactPersonObject, isReadOnly, studyLogoUrl }) => {
+}> = ({study, getContactPersonObject, isReadOnly, studyLogoUrl}) => {
   const classes = useStyles()
   return (
     <>
@@ -402,32 +402,32 @@ export const StudyPageBottomPhone: React.FunctionComponent<{
   getContactPersonObject,
   isReadOnly,
 }) => {
-    const classes = useStyles()
-    return (
-      <>
-        <Box
-          className={classes.phone}
-          style={{ marginTop: isReadOnly ? '30px' : '134px' }}>
-          <Box className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
-            <PhoneTopImgRightHighlighted title="phone top image" width="312px" />
-          </Box>
-          <StudyPageBottomPhoneContent
-            generalContactPhoneNumber={generalContactPhoneNumber}
-            irbPhoneNumber={irbPhoneNumber}
-            studyID={study.identifier}
-            irbProtocolId={study.irbProtocolId || ''}
-            ethicsBoardInfo={getContactPersonObject('irb')}
-            contactLead={getContactPersonObject('study_support')}
-            getContactName={getContactName}
-            isReadOnly={isReadOnly || false}
-          />
-          <div className={classes.phoneBottom}>
-            <PhoneBottomImg title="phone bottom image" />
-          </div>
+  const classes = useStyles()
+  return (
+    <>
+      <Box
+        className={classes.phone}
+        style={{marginTop: isReadOnly ? '30px' : '134px'}}>
+        <Box className={clsx(classes.phoneTopBar, classes.studyPageTopBar)}>
+          <PhoneTopImgRightHighlighted title="phone top image" width="312px" />
         </Box>
-      </>
-    )
-  }
+        <StudyPageBottomPhoneContent
+          generalContactPhoneNumber={generalContactPhoneNumber}
+          irbPhoneNumber={irbPhoneNumber}
+          studyID={study.identifier}
+          irbProtocolId={study.irbProtocolId || ''}
+          ethicsBoardInfo={getContactPersonObject('irb')}
+          contactLead={getContactPersonObject('study_support')}
+          getContactName={getContactName}
+          isReadOnly={isReadOnly || false}
+        />
+        <div className={classes.phoneBottom}>
+          <PhoneBottomImg title="phone bottom image" />
+        </div>
+      </Box>
+    </>
+  )
+}
 
 export function getContact(
   study: Study | undefined,
@@ -438,7 +438,7 @@ export function getContact(
     return undefined
   }
   var person = contacts.find(el => el.role === role)
-  return person ? { ...person } : undefined
+  return person ? {...person} : undefined
 }
 
 export const formatPhoneNumber = (phoneNumber: string | undefined) => {
@@ -479,7 +479,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
 
   const [study, setStudy] = React.useState<Study>()
 
-  const { data: sourceStudy, error, isLoading } = useStudy(id)
+  const {data: sourceStudy, error, isLoading} = useStudy(id)
   const [previewFile, setPreviewFile] = React.useState<
     PreviewFile | undefined
   >()
@@ -495,7 +495,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   const [saveLoader, setSaveLoader] = React.useState(false)
   const showError = params.get('from') !== null
   const anchor = params.get('anchor') || ''
-  const { token, orgMembership } = useUserSessionDataState()
+  const {token, orgMembership} = useUserSessionDataState()
   const classes = useStyles()
 
   const [isSettingStudyLogo, setIsSettingStudyLogo] = useState(false)
@@ -533,10 +533,10 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
       return
     }
 
-    setStudy({ ...sourceStudy })
+    setStudy({...sourceStudy})
     setIrbNameSameAsInstitution(
       getContact(sourceStudy, 'irb')?.name ===
-      getContact(sourceStudy, 'principal_investigator')?.affiliation
+        getContact(sourceStudy, 'principal_investigator')?.affiliation
     )
 
     setGeneralContactPhoneNumber(
@@ -617,7 +617,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     const areObjectsSame = _.isEqual(study, updatedStudy)
     if (!areObjectsSame) {
       setHasObjectChanged(true)
-      setStudy({ ...updatedStudy })
+      setStudy({...updatedStudy})
     }
   }
 
@@ -684,7 +684,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     setHasObjectChanged(true)
     if (!event) {
       if (study?.studyLogoUrl) {
-        handleUpdate({ ...study, studyLogoUrl: undefined })
+        handleUpdate({...study, studyLogoUrl: undefined})
       }
       setPreviewFile(undefined)
       return
@@ -754,7 +754,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   }
 
   const formatStudy = (newStudy: Study) => {
-    const updatedStudy = { ...newStudy }
+    const updatedStudy = {...newStudy}
     const roles = ['irb', 'study_support']
     roles.forEach(role => {
       //remove empty email and phone
@@ -794,7 +794,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     if (!study) {
       return
     }
-    const updatedStudy = { ...study }
+    const updatedStudy = {...study}
     updatedStudy.colorScheme = {
       ...updatedStudy.colorScheme,
       background: color,
@@ -823,7 +823,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   }
 
   const getContactPersonObject = (type: ContactType): Contact => {
-    const defaultPerson: Contact = { role: type, name: DEFAULT_CONTACT_NAME }
+    const defaultPerson: Contact = {role: type, name: DEFAULT_CONTACT_NAME}
     if (!study) {
       return defaultPerson
     }
@@ -853,7 +853,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     } else {
       contacts[contactIndex] = newContactObject
     }
-    handleUpdate({ ...study, contacts })
+    handleUpdate({...study, contacts})
   }
 
   function updateWelcomeScreenMessaging(
@@ -901,17 +901,17 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
 
     const currentWelcomeScreenData = study.clientData.welcomeScreenData
       ? {
-        ...study.clientData.welcomeScreenData,
-        isUsingDefaultMessage: !isCustomize,
-      }
+          ...study.clientData.welcomeScreenData,
+          isUsingDefaultMessage: !isCustomize,
+        }
       : {
-        welcomeScreenBody: '',
-        welcomeScreenFromText: '',
-        welcomeScreenSalutation: '',
-        welcomeScreenHeader: '',
-        useOptionalDisclaimer: false,
-        isUsingDefaultMessage: !isCustomize,
-      }
+          welcomeScreenBody: '',
+          welcomeScreenFromText: '',
+          welcomeScreenSalutation: '',
+          welcomeScreenHeader: '',
+          useOptionalDisclaimer: false,
+          isUsingDefaultMessage: !isCustomize,
+        }
     const updatedStudy = {
       ...study,
       clientData: {
@@ -928,7 +928,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
     <>
       <Box className={classes.root}>
         <NavigationPrompt when={hasObjectChanged} key="prompt">
-          {({ onConfirm, onCancel }) => (
+          {({onConfirm, onCancel}) => (
             <ConfirmationDialog
               isOpen={hasObjectChanged}
               type={'NAVIGATE'}
@@ -977,10 +977,10 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
                     {!isAppBackgroundColorValid(
                       study.colorScheme?.background
                     ) && (
-                        <Box ml={1.5} color="red">
-                          Please enter a valid hexcode
-                        </Box>
-                      )}
+                      <Box ml={1.5} color="red">
+                        Please enter a valid hexcode
+                      </Box>
+                    )}
                   </Box>
                 </Subsection>
                 <Subsection heading="Welcome screen messaging">
@@ -1002,121 +1002,121 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
                   </div>
                   {!study.clientData.welcomeScreenData
                     ?.isUsingDefaultMessage && (
-                      <>
-                        <FormGroupWrapper>
-                          <FormControl className={classes.firstFormElement}>
-                            <TextInputWrapper
-                              SimpleTextInputStyles={
-                                {
-                                  fontSize: '24px',
-                                  width: '100%',
-                                } as React.CSSProperties
-                              }
-                              id="headline-input"
-                              placeholder="Main Header"
-                              value={
-                                study.clientData.welcomeScreenData
-                                  ?.welcomeScreenHeader || ''
-                              }
-                              onChange={e =>
-                                updateWelcomeScreenMessaging(
-                                  'welcomeScreenHeader',
-                                  e.target.value
-                                )
-                              }
-                              multiline
-                              rows={2}
-                              rowsMax={4}
-                              titleText="Main Header"
-                              alternativeTextInputClassName={
-                                classes.headlineStyle
-                              }
-                            />
-                          </FormControl>
-                          <FormControl>
-                            <TextInputWrapper
-                              SimpleTextInputStyles={
-                                { width: '100%' } as React.CSSProperties
-                              }
-                              id="outlined-textarea"
-                              value={
-                                study.clientData.welcomeScreenData
-                                  ?.welcomeScreenBody || ''
-                              }
-                              onChange={e =>
-                                updateWelcomeScreenMessaging(
-                                  'welcomeScreenBody',
-                                  e.target.value
-                                )
-                              }
-                              multiline
-                              rows={4}
-                              placeholder="What are the first things you want participants to know about the study."
-                              titleText="Body Copy (maximum 250 characters)"
-                              alternativeTextInputClassName={'none'}
-                              maxWordCount={250}
-                            />
-                          </FormControl>
-                          <FormControl>
-                            <TextInputWrapper
-                              SimpleTextInputStyles={SimpleTextInputStyles}
-                              id="salutations"
-                              value={
-                                study.clientData.welcomeScreenData
-                                  ?.welcomeScreenSalutation || ''
-                              }
-                              onChange={e =>
-                                updateWelcomeScreenMessaging(
-                                  'welcomeScreenSalutation',
-                                  e.target.value
-                                )
-                              }
-                              placeholder="Thank you for your contribution"
-                              titleText="Salutations"
-                            />
-                          </FormControl>
-                          <FormControl>
-                            <TextInputWrapper
-                              SimpleTextInputStyles={SimpleTextInputStyles}
-                              id="signature-textarea"
-                              value={
-                                study.clientData.welcomeScreenData
-                                  ?.welcomeScreenFromText || ''
-                              }
-                              onChange={e =>
-                                updateWelcomeScreenMessaging(
-                                  'welcomeScreenFromText',
-                                  e.target.value
-                                )
-                              }
-                              placeholder="Study team name"
-                              titleText="From"
-                            />
-                          </FormControl>
-                          <Box mt={2.5}>Add optional disclaimer:</Box>
-                          <div className={classes.optionalDisclaimerRow}>
-                            <Checkbox
-                              checked={
-                                study.clientData.welcomeScreenData
-                                  ?.useOptionalDisclaimer || false
-                              }
-                              inputProps={{ 'aria-label': 'primary checkbox' }}
-                              className={classes.checkBox}
-                              id="disclaimer-check-box"
-                              onChange={e =>
-                                updateWelcomeScreenMessaging(
-                                  'useOptionalDisclaimer',
-                                  e.target.checked
-                                )
-                              }></Checkbox>
-                            <div className={classes.optionalDisclaimerText}>
-                              This is a research study and does not provide
-                              medical advice, diagnosis, or treatment.
-                            </div>
+                    <>
+                      <FormGroupWrapper>
+                        <FormControl className={classes.firstFormElement}>
+                          <TextInputWrapper
+                            SimpleTextInputStyles={
+                              {
+                                fontSize: '24px',
+                                width: '100%',
+                              } as React.CSSProperties
+                            }
+                            id="headline-input"
+                            placeholder="Main Header"
+                            value={
+                              study.clientData.welcomeScreenData
+                                ?.welcomeScreenHeader || ''
+                            }
+                            onChange={e =>
+                              updateWelcomeScreenMessaging(
+                                'welcomeScreenHeader',
+                                e.target.value
+                              )
+                            }
+                            multiline
+                            rows={2}
+                            rowsMax={4}
+                            titleText="Main Header"
+                            alternativeTextInputClassName={
+                              classes.headlineStyle
+                            }
+                          />
+                        </FormControl>
+                        <FormControl>
+                          <TextInputWrapper
+                            SimpleTextInputStyles={
+                              {width: '100%'} as React.CSSProperties
+                            }
+                            id="outlined-textarea"
+                            value={
+                              study.clientData.welcomeScreenData
+                                ?.welcomeScreenBody || ''
+                            }
+                            onChange={e =>
+                              updateWelcomeScreenMessaging(
+                                'welcomeScreenBody',
+                                e.target.value
+                              )
+                            }
+                            multiline
+                            rows={4}
+                            placeholder="What are the first things you want participants to know about the study."
+                            titleText="Body Copy (maximum 250 characters)"
+                            alternativeTextInputClassName={'none'}
+                            maxWordCount={250}
+                          />
+                        </FormControl>
+                        <FormControl>
+                          <TextInputWrapper
+                            SimpleTextInputStyles={SimpleTextInputStyles}
+                            id="salutations"
+                            value={
+                              study.clientData.welcomeScreenData
+                                ?.welcomeScreenSalutation || ''
+                            }
+                            onChange={e =>
+                              updateWelcomeScreenMessaging(
+                                'welcomeScreenSalutation',
+                                e.target.value
+                              )
+                            }
+                            placeholder="Thank you for your contribution"
+                            titleText="Salutations"
+                          />
+                        </FormControl>
+                        <FormControl>
+                          <TextInputWrapper
+                            SimpleTextInputStyles={SimpleTextInputStyles}
+                            id="signature-textarea"
+                            value={
+                              study.clientData.welcomeScreenData
+                                ?.welcomeScreenFromText || ''
+                            }
+                            onChange={e =>
+                              updateWelcomeScreenMessaging(
+                                'welcomeScreenFromText',
+                                e.target.value
+                              )
+                            }
+                            placeholder="Study team name"
+                            titleText="From"
+                          />
+                        </FormControl>
+                        <Box mt={2.5}>Add optional disclaimer:</Box>
+                        <div className={classes.optionalDisclaimerRow}>
+                          <Checkbox
+                            checked={
+                              study.clientData.welcomeScreenData
+                                ?.useOptionalDisclaimer || false
+                            }
+                            inputProps={{'aria-label': 'primary checkbox'}}
+                            className={classes.checkBox}
+                            id="disclaimer-check-box"
+                            onChange={e =>
+                              updateWelcomeScreenMessaging(
+                                'useOptionalDisclaimer',
+                                e.target.checked
+                              )
+                            }></Checkbox>
+                          <div className={classes.optionalDisclaimerText}>
+                            This is a research study and does not provide
+                            medical advice, diagnosis, or treatment.
                           </div>
-                        </FormGroupWrapper>
-                      </>
-                    )}{' '}
+                        </div>
+                      </FormGroupWrapper>
+                    </>
+                  )}{' '}
                 </Subsection>
               </ol>
               <Box textAlign="left">
@@ -1156,7 +1156,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
               <StudySummarySection
                 SimpleTextInputStyles={SimpleTextInputStyles}
                 onUpdate={(studyTitle: string, studySummaryBody: string) => {
-                  const updatedStudy = { ...study }
+                  const updatedStudy = {...study}
                   updatedStudy.name = studyTitle
                   updatedStudy.details = studySummaryBody
                   handleUpdate(updatedStudy)
@@ -1185,7 +1185,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
                     ethicsBoardContact,
                     getContactPersonObject('study_support')
                   )
-                  const updatedStudy = { ...study }
+                  const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
                   handleUpdate(updatedStudy)
                 }}
@@ -1221,7 +1221,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
                     getContactPersonObject('irb'),
                     contactLead
                   )
-                  const updatedStudy = { ...study }
+                  const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
                   handleUpdate(updatedStudy)
                 }}
@@ -1253,7 +1253,7 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
                     irbInfo,
                     getContactPersonObject('study_support')
                   )
-                  const updatedStudy = { ...study }
+                  const updatedStudy = {...study}
                   updatedStudy.contacts = updatedContacts
                   updatedStudy.irbProtocolId = protocolId
                   handleUpdate(updatedStudy)

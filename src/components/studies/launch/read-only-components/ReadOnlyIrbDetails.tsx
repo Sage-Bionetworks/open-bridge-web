@@ -1,6 +1,6 @@
 import {Box, Checkbox, FormControlLabel} from '@mui/material'
 import React from 'react'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import {latoFont, poppinsFont, ThemeType} from '../../../../style/theme'
 import {Study} from '../../../../types/types'
 import ReadOnlyTextbox from './ReadOnlyTextbox'

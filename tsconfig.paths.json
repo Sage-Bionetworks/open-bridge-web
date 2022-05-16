@@ -1,28 +1,14 @@
 {
-    "compilerOptions": {
-        "paths": {
-            "@components/*": [
-                "./components/*"
-            ],
-            "@assets/*": [
-                "./assets/*"
-            ],
-            "@helpers/*": [
-                "./helpers/*"
-            ],
-            "@services/*": [
-                "./services/*"
-            ],
-            "@typedefs/*": [
-                "./types/*"
-            ],
-            "@style/*": [
-                "./style/*"
-            ]
-        },
-        "baseUrl": "src",
+  "compilerOptions": {
+    "paths": {
+      "@components/*": ["./components/*"],
+      "@assets/*": ["./assets/*"],
+      "@helpers/*": ["./helpers/*"],
+      "@services/*": ["./services/*"],
+      "@typedefs/*": ["./types/*"],
+      "@style/*": ["./style/*"]
     },
-    "include": [
-        "src"
-    ]
+    "baseUrl": "src"
+  },
+  "include": ["src"]
 }

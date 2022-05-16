@@ -35,7 +35,7 @@ export default [
 
   {
     path: '/surveys/:id/design',
-    name: '' /*'SURVEY BUILDER',*/,
+    name: 'SURVEY BUILDER',
     Component: Surveys,
   },
 

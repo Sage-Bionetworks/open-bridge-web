@@ -4,17 +4,17 @@ import LiveIcon from '@assets/live_study_icon.svg'
 import participants_icon from '@assets/participants_icon.svg'
 import Utility from '@helpers/utility'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import { Box, IconButton, TextField } from '@mui/material'
+import {Box, IconButton, TextField} from '@mui/material'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import makeStyles from '@mui/styles/makeStyles'
-import { ThemeType } from '@style/theme'
-import { Study } from '@typedefs/types'
+import {ThemeType} from '@style/theme'
+import {Study} from '@typedefs/types'
 import clsx from 'clsx'
 import moment from 'moment'
-import React, { FunctionComponent } from 'react'
-import { useAdherenceForWeek } from './adherenceHooks'
+import React, {FunctionComponent} from 'react'
+import {useAdherenceForWeek} from './adherenceHooks'
 
 const DraftIcon = () => {
   return (
@@ -145,17 +145,17 @@ const getFormattedDate = (date: Date) => {
 
 const CardBottom: FunctionComponent<{
   study: Study
-}> = ({ study }: { study: Study }) => {
+}> = ({study}: {study: Study}) => {
   const classes = useStyles()
   //const [numParticipants, setNumParticipants] = React.useState('--')
   const date = new Date(
     study.phase === 'design' ? study.modifiedOn! : study.createdOn!
   )
-  const { data: adherenceWeeklyInProcessCount } = useAdherenceForWeek(
+  const {data: adherenceWeeklyInProcessCount} = useAdherenceForWeek(
     study.identifier,
     0,
     5,
-    { progressionFilters: ['in_progress'] }
+    {progressionFilters: ['in_progress']}
   )
 
   return (
@@ -223,7 +223,7 @@ const CardTop: FunctionComponent<StudyCardProps> = ({
         <Box
           className={classes.menuBox}
           style={
-            isMenuOpen ? { boxShadow: '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)' } : {}
+            isMenuOpen ? {boxShadow: '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)'} : {}
           }>
           <MoreVertIcon />
         </Box>
@@ -269,7 +269,7 @@ const StudyCard: FunctionComponent<StudyCardProps> = ({
     if (!onRename) {
       return
     }
-    const { key } = event
+    const {key} = event
 
     const enterKey = 'Enter'
 

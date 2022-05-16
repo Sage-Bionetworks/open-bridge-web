@@ -1,6 +1,6 @@
 import React from 'react'
-import { Box } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import {latoFont, poppinsFont} from '../../../../style/theme'
 
 const useStyles = makeStyles(theme => ({

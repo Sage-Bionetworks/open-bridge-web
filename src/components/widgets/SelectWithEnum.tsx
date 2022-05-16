@@ -5,7 +5,7 @@ import {
   Select,
   SelectProps,
 } from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React from 'react'
 import Utility from '../../helpers/utility'
@@ -15,8 +15,8 @@ const useStyles = makeStyles(theme => ({
   formControl: {
     margin: theme.spacing(1),
   },
-  inputLabel:{
-    top: '-8px'
+  inputLabel: {
+    top: '-8px',
   },
   small: {
     paddingTop: theme.spacing(1),
@@ -75,7 +75,11 @@ const SelectWithEnum: React.FunctionComponent<
   }
   return (
     <FormControl className={classes.formControl} style={style}>
-      {!!!value && <InputLabel className={classes.inputLabel} shrink={false} htmlFor={id}>{label}</InputLabel>}
+      {!!!value && (
+        <InputLabel className={classes.inputLabel} shrink={false} htmlFor={id}>
+          {label}
+        </InputLabel>
+      )}
       <Select
         variant={variant}
         classes={{select: clsx(size === 'small' && classes.small)}}

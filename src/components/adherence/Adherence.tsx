@@ -2,18 +2,18 @@ import AdherenceUnfocusIcon from '@assets/adherence/adh_tab_off.svg'
 import AdherenceFocusIcon from '@assets/adherence/adh_tab_on.svg'
 import SummaryUnfocusIcon from '@assets/adherence/sum_tab_off.svg'
 import SummaryFocusIcon from '@assets/adherence/sum_tab_on.svg'
-import { useAdherenceForWeek } from '@components/studies/adherenceHooks'
-import { ErrorFallback, ErrorHandler } from '@components/widgets/ErrorHandler'
+import {useAdherenceForWeek} from '@components/studies/adherenceHooks'
+import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
-import { Box, Tab, Tabs } from '@mui/material'
+import {Box, Tab, Tabs} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import { useStudy } from '@services/studyHooks'
-import { latoFont, poppinsFont } from '@style/theme'
-import { ExtendedParticipantAccountSummary } from '@typedefs/types'
+import {useStudy} from '@services/studyHooks'
+import {latoFont, poppinsFont} from '@style/theme'
+import {ExtendedParticipantAccountSummary} from '@typedefs/types'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { ErrorBoundary } from 'react-error-boundary'
-import { RouteComponentProps, useLocation, useParams } from 'react-router-dom'
+import React, {FunctionComponent} from 'react'
+import {ErrorBoundary} from 'react-error-boundary'
+import {RouteComponentProps, useLocation, useParams} from 'react-router-dom'
 import AdherenceParticipants from './participants/AdherenceParticipants'
 import AdherenceSummary from './summary/AdherenceSummary'
 
@@ -59,8 +59,8 @@ type ParticipantData = {
 }
 
 const TAB_DEFs = [
-  { type: 'SUMMARY', label: 'Adherence Summary' },
-  { type: 'ENROLLED', label: 'Active Participants' },
+  {type: 'SUMMARY', label: 'Adherence Summary'},
+  {type: 'ENROLLED', label: 'Active Participants'},
 ]
 
 const TAB_ICONS_FOCUS = [SummaryFocusIcon, AdherenceFocusIcon]
@@ -74,12 +74,12 @@ type AdherenceOwnProps = {
 type AdherenceProps = AdherenceOwnProps & RouteComponentProps
 
 const Adherence: FunctionComponent<AdherenceProps> = () => {
-  let { id: studyId } = useParams<{
+  let {id: studyId} = useParams<{
     id: string
   }>()
   const isEnrolledTab =
     new URLSearchParams(useLocation().search)?.get('tab') === 'ENROLLED'
-  const { data: adherenceWeeklyReport } = useAdherenceForWeek(studyId, 0, 5, {})
+  const {data: adherenceWeeklyReport} = useAdherenceForWeek(studyId, 0, 5, {})
 
   // Withdrawn or active participants
   const [tab, setTab] = React.useState<AdherenceTabType>(
@@ -109,7 +109,7 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
           value={tab}
           variant="standard"
           onChange={handleTabChange}
-          TabIndicatorProps={{ hidden: true }}>
+          TabIndicatorProps={{hidden: true}}>
           {TAB_DEFs.map((tabDef, index) => (
             <Tab
               key={`tab_${tabDef.label}`}
@@ -134,9 +134,10 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
                         ? TAB_ICONS_FOCUS[index]
                         : TAB_ICONS_UNFOCUS[index]
                     }
-                    style={{ marginRight: '6px' }}></img>
+                    style={{marginRight: '6px'}}></img>
                   <div>
-                    {`${tabDef.label} ${tab === tabDef.type
+                    {`${tabDef.label} ${
+                      tab === tabDef.type
                         ? '(' + (adherenceWeeklyReport?.total || '...') + ')'
                         : ''
 
@@ -144,7 +145,7 @@ const Adherence: FunctionComponent<AdherenceProps> = () => {
                               ? `(${data.total})`
                               : '(...)'
                             : ''*/
-                      }`}
+                    }`}
                   </div>
                 </Box>
               }

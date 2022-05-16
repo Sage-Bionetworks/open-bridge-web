@@ -1,13 +1,13 @@
-import AssessmentCard from '@components/assessments/AssessmentCard';
-import AssessmentLibraryWrapper from '@components/assessments/AssessmentLibraryWrapper';
-import Loader from '@components/widgets/Loader';
-import CheckIcon from '@mui/icons-material/Check';
-import { ToggleButton, ToggleButtonGroup } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import { useAssessmentsWithResources } from '@services/assessmentHooks';
-import { StudySession } from '@typedefs/scheduling';
-import { Assessment } from '@typedefs/types';
-import React, { FunctionComponent, useState } from 'react';
+import AssessmentCard from '@components/assessments/AssessmentCard'
+import AssessmentLibraryWrapper from '@components/assessments/AssessmentLibraryWrapper'
+import Loader from '@components/widgets/Loader'
+import CheckIcon from '@mui/icons-material/Check'
+import {ToggleButton, ToggleButtonGroup} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
+import {useAssessmentsWithResources} from '@services/assessmentHooks'
+import {StudySession} from '@typedefs/scheduling'
+import {Assessment} from '@typedefs/types'
+import React, {FunctionComponent, useState} from 'react'
 
 const useStyles = makeStyles({
   toggleA: {
@@ -83,14 +83,13 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
   selectedAssessments,
   onUpdateAssessments,
 }: AssessmentSelectorProps) => {
-
   const classes = useStyles()
 
   const [filteredAssessments, setFilteredAssessments] = useState<
     Assessment[] | undefined
   >(undefined)
 
-  const { data, isLoading, status } = useAssessmentsWithResources()
+  const {data, isLoading, status} = useAssessmentsWithResources()
 
   if ((!data?.assessments || !data?.tags) && status === 'success') {
     return <>No Data </>
@@ -114,7 +113,6 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
       {data && (
         <div>
           <AssessmentLibraryWrapper
-
             isAssessmentLibrary={false}
             assessments={data.assessments}
             onChangeTags={
@@ -131,7 +129,8 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
                   aria-label="bold"
                   value={a}
                   disabled={
-                    !activeSession || isAssessmentInSession(activeSession, a.guid!)
+                    !activeSession ||
+                    isAssessmentInSession(activeSession, a.guid!)
                   }
                   classes={{
                     root: classes.toggleA,
@@ -152,7 +151,8 @@ const AssessmentSelector: FunctionComponent<AssessmentSelectorProps> = ({
               </ToggleButtonGroup>
             ))}
           </AssessmentLibraryWrapper>
-        </div>)}
+        </div>
+      )}
     </Loader>
   )
 }

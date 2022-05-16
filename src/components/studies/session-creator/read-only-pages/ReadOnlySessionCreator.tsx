@@ -1,7 +1,7 @@
 import AssessmentSmall from '@components/assessments/AssessmentSmall'
 import SessionIcon from '@components/widgets/SessionIcon'
-import { Box, Paper } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box, Paper} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import ClockIcon from '@mui/icons-material/AccessTime'
 import {StudySession} from '@typedefs/scheduling'
 import clsx from 'clsx'
@@ -34,9 +34,7 @@ const ReadOnlySessionCreator: FunctionComponent<ReadOnlySessionCreatorProps> =
     if (sessions) {
       return (
         <>
-          <Box
-            className={sessionCreatorClasses.root}
-            key="sessions">
+          <Box className={sessionCreatorClasses.root} key="sessions">
             {sessions.map((session, index) => (
               <Paper
                 className={clsx(

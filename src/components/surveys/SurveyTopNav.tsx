@@ -5,22 +5,15 @@ import MobileDrawerMenuHeader from '@components/widgets/MobileDrawerMenuHeader'
 import Utility from '@helpers/utility'
 import MenuIcon from '@mui/icons-material/Menu'
 import PeopleIcon from '@mui/icons-material/People'
-import {
-  Alert,
-  Box,
-  Drawer,
-  Hidden,
-  IconButton
-} from '@mui/material'
+import {Alert, Box, Drawer, Hidden, IconButton} from '@mui/material'
 import Toolbar from '@mui/material/Toolbar'
 import makeStyles from '@mui/styles/makeStyles'
-import { latoFont } from '@style/theme'
+import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
-import { ExtendedError } from '@typedefs/types'
+import {ExtendedError} from '@typedefs/types'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { NavLink } from 'react-router-dom'
-
+import React, {FunctionComponent} from 'react'
+import {NavLink} from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
   rootSurveyTopNav: {
@@ -146,19 +139,19 @@ const useStyles = makeStyles(theme => ({
 type SurveyTopNavProps = {
   surveyId?: string
   error?: ExtendedError
-
 }
 
 const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
   surveyId,
-  error
+  error,
 }: SurveyTopNavProps) => {
-
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const classes = useStyles()
 
-  const links = [{ name: 'SURVEY DESIGN', path: '/surveys/:id/design' }, { name: 'BRANCHING LOGIC', path: '/surveys/:id/branching' }]
-
+  const links = [
+    {name: 'SURVEY DESIGN', path: '/surveys/:id/design'},
+    {name: 'BRANCHING LOGIC', path: '/surveys/:id/branching'},
+  ]
 
   return (
     <Box className={classes.rootSurveyTopNav}>
@@ -189,7 +182,7 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
               to="/studies"
               key="/studies"
               className={classes.toolbarLink}
-              style={{ padding: '0 24px 0 0' }}>
+              style={{padding: '0 24px 0 0'}}>
               <img
                 src={Logo}
                 className={classes.logo}
@@ -198,29 +191,24 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
               />
             </NavLink>
 
-            <BreadCrumb
-              links={[{ url: '/', text: '' }]}
-            ></BreadCrumb>
-
-
-
+            <BreadCrumb links={[{url: '/', text: ''}]}></BreadCrumb>
           </Toolbar>
           <Toolbar className={classes.toolbar}>
             {links
               .filter(section => section.name)
-              .map(section => (<NavLink
-                to={section.path.replace(':id', surveyId ?? '')}
-                key={section.path}
-                className={classes.toolbarLink}
-                activeClassName={classes.selectedLink}>
-                {section.name}
-              </NavLink>)
-
-              )}
+              .map(section => (
+                <NavLink
+                  to={section.path.replace(':id', surveyId ?? '')}
+                  key={section.path}
+                  className={classes.toolbarLink}
+                  activeClassName={classes.selectedLink}>
+                  {section.name}
+                </NavLink>
+              ))}
           </Toolbar>
           <Toolbar
             className={classes.toolbar}
-            style={{ width: '160px', overflow: 'hidden' }}>
+            style={{width: '160px', overflow: 'hidden'}}>
             {(Utility.isInAdminRole() || true) /* enable all aggess*/ && (
               <NavLink
                 to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
@@ -230,7 +218,7 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
                 key={'path-to-access-settings'}
                 className={classes.toolbarLink}
                 activeClassName={classes.selectedLink}
-                style={{ display: 'flex' }}>
+                style={{display: 'flex'}}>
                 <PeopleIcon></PeopleIcon>&nbsp;&nbsp;Access settings
               </NavLink>
             )}
@@ -254,8 +242,7 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
             type="IN_STUDY"></MobileDrawerMenuHeader>
           {links
             .filter(section => section.name)
-            .map(section =>
-
+            .map(section => (
               <NavLink
                 to={section.path.replace(':id', surveyId ?? '')}
                 key={section.path}
@@ -264,8 +251,7 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
                 onClick={() => setIsMobileOpen(false)}>
                 {section.name}
               </NavLink>
-
-            )}
+            ))}
           <NavLink
             to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
               ':id',
@@ -278,18 +264,17 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
             )}
             activeClassName={classes.mobileSelectedLink}
             onClick={() => setIsMobileOpen(false)}>
-            <img src={ParticipantsIcon} style={{ marginRight: '20px' }}></img>
+            <img src={ParticipantsIcon} style={{marginRight: '20px'}}></img>
             Access settings
           </NavLink>
         </Drawer>
       </nav>
-
       {error && (
         <Box mx="auto" textAlign="center">
           <Alert
             variant="outlined"
             color="error"
-            style={{ marginBottom: '10px' }}>
+            style={{marginBottom: '10px'}}>
             {' '}
             {error.statusCode}
             You do not have the permission to access this feature. Please

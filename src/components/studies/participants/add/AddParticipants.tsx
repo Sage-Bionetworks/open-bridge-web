@@ -17,7 +17,7 @@ import {
   Tab,
   Tabs,
 } from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import EventService from '@services/event.service'
 import {ExtendedScheduleEventObject} from '@services/schedule.service'
@@ -309,12 +309,12 @@ const AddParticipants: FunctionComponent<AddParticipantsProps> = ({
               }}>
               <Tab
                 label="Upload .csv "
-                icon={tab===0 ? <RedUploadIcon/> : <UploadIcon />}
+                icon={tab === 0 ? <RedUploadIcon /> : <UploadIcon />}
                 className={classes.tab}
               />
               <Tab
                 label="Enter details"
-                icon={tab===1 ? <RedPencilIcon /> : <PencilIcon/>}
+                icon={tab === 1 ? <RedPencilIcon /> : <PencilIcon />}
                 className={classes.tab}
               />
             </Tabs>

@@ -1,5 +1,5 @@
 import {Box, Button, ButtonProps, CircularProgress} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React from 'react'
 import {ReactComponent as SaveIcon} from '../../assets/save_icon.svg'

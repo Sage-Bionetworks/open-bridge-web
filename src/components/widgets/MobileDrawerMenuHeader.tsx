@@ -1,6 +1,6 @@
 import BlackXIcon from '@assets/black_x_icon.svg'
 import Logo from '@assets/logo_mtb.svg'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
 import React from 'react'
 import {NavLink} from 'react-router-dom'

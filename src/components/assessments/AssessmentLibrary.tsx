@@ -1,12 +1,12 @@
-import makeStyles from '@mui/styles/makeStyles';
-import { useAssessmentsWithResources } from '@services/assessmentHooks';
-import React, { FunctionComponent, useState } from 'react';
-import { useErrorHandler } from 'react-error-boundary';
-import { Link, RouteComponentProps } from 'react-router-dom';
-import { Assessment } from '../../types/types';
-import Loader from '../widgets/Loader';
-import AssessmentCard from './AssessmentCard';
-import AssessmentLibraryWrapper from './AssessmentLibraryWrapper';
+import makeStyles from '@mui/styles/makeStyles'
+import {useAssessmentsWithResources} from '@services/assessmentHooks'
+import React, {FunctionComponent, useState} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import {Link, RouteComponentProps} from 'react-router-dom'
+import {Assessment} from '../../types/types'
+import Loader from '../widgets/Loader'
+import AssessmentCard from './AssessmentCard'
+import AssessmentLibraryWrapper from './AssessmentLibraryWrapper'
 
 type AssessmentLibraryOwnProps = {
   assessments?: Assessment[]
@@ -31,12 +31,12 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
     Assessment[] | undefined
   >(undefined)
 
-  const { data, isError, error, status, isLoading } = useAssessmentsWithResources()
+  const {data, isError, error, status, isLoading} =
+    useAssessmentsWithResources()
 
   if (isError) {
     handleError(error!)
   }
-
 
   if (status === 'success' && (!data?.assessments || !data?.tags)) {
     return <>No Data </>

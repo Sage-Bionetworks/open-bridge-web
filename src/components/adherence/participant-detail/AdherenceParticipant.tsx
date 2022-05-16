@@ -1,32 +1,32 @@
-import { ReactComponent as CelebrationBg } from '@assets/adherence/celebration_bg.svg'
-import { ReactComponent as PersonIcon } from '@assets/adherence/person_icon.svg'
+import {ReactComponent as CelebrationBg} from '@assets/adherence/celebration_bg.svg'
+import {ReactComponent as PersonIcon} from '@assets/adherence/person_icon.svg'
 import EditIcon from '@assets/edit_pencil_red.svg'
-import { useAdherence } from '@components/studies/adherenceHooks'
+import {useAdherence} from '@components/studies/adherenceHooks'
 import BreadCrumb from '@components/widgets/BreadCrumb'
-import { MTBHeadingH4 } from '@components/widgets/Headings'
+import {MTBHeadingH4} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
-import { Box, Button, Paper } from '@mui/material'
+import {Box, Button, Paper} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import { useEnrollmentForParticipant } from '@services/enrollmentHooks'
-import { useEventsForUser } from '@services/eventHooks'
-import { useGetParticipantInfo } from '@services/participantHooks'
+import {useEnrollmentForParticipant} from '@services/enrollmentHooks'
+import {useEventsForUser} from '@services/eventHooks'
+import {useGetParticipantInfo} from '@services/participantHooks'
 import ParticipantService from '@services/participants.service'
-import { useStudy } from '@services/studyHooks'
-import { latoFont } from '@style/theme'
+import {useStudy} from '@services/studyHooks'
+import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
 import {
   AdherenceDetailReport,
   ParticipantEvent,
-  SessionDisplayInfo
+  SessionDisplayInfo,
 } from '@typedefs/types'
 import clsx from 'clsx'
 import moment from 'moment'
-import React, { FunctionComponent } from 'react'
-import { RouteComponentProps, useParams } from 'react-router-dom'
+import React, {FunctionComponent} from 'react'
+import {RouteComponentProps, useParams} from 'react-router-dom'
 import AdherenceUtility from '../adherenceUtility'
 import SessionLegend from '../SessionLegend'
-import { useCommonStyles } from '../styles'
+import {useCommonStyles} from '../styles'
 import AdherenceParticipantGrid from './AdherenceParticipantGrid'
 import DeviceInfo from './DeviceInfo'
 import EditParticipantEvents from './EditParticipantEvents'
@@ -65,7 +65,7 @@ const AdherenceParticipant: FunctionComponent<
 > = () => {
   const [isEditParticipant, setIsEditParticipant] = React.useState(false)
 
-  let { id: studyId, userId: participantId } = useParams<{
+  let {id: studyId, userId: participantId} = useParams<{
     id: string
     userId: string
   }>()
@@ -76,12 +76,12 @@ const AdherenceParticipant: FunctionComponent<
     isLoading: isAdherenceLoading,
   } = useAdherence(studyId, participantId)
 
-  const { data: participantRequestInfo } = useGetParticipantInfo(
+  const {data: participantRequestInfo} = useGetParticipantInfo(
     studyId,
     participantId
   )
 
-  const { data: events } = useEventsForUser(studyId, participantId)
+  const {data: events} = useEventsForUser(studyId, participantId)
 
   const {
     data: enrollment,
@@ -109,7 +109,7 @@ const AdherenceParticipant: FunctionComponent<
     }
   }, [adherenceReport])
 
-  const classes = { ...useCommonStyles(), ...useStyles() }
+  const classes = {...useCommonStyles(), ...useStyles()}
 
   const getBreadcrumbLinks = () => [
     {

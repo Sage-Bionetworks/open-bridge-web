@@ -1,15 +1,15 @@
-import { ReactComponent as PencilIcon } from '@assets/edit_pencil_red.svg'
+import {ReactComponent as PencilIcon} from '@assets/edit_pencil_red.svg'
 import JoinedCheckSymbol from '@assets/participants/joined_check_mark.svg'
 import JoinedPhoneSymbol from '@assets/participants/joined_phone_icon.svg'
-import { ReactComponent as HidePhoneIcon } from '@assets/participants/phone_hide_icon.svg'
-import { ReactComponent as ShowPhoneIcon } from '@assets/participants/phone_show_icon.svg'
-import { ReactComponent as WithdrawIcon } from '@assets/withdraw.svg'
+import {ReactComponent as HidePhoneIcon} from '@assets/participants/phone_hide_icon.svg'
+import {ReactComponent as ShowPhoneIcon} from '@assets/participants/phone_show_icon.svg'
+import {ReactComponent as WithdrawIcon} from '@assets/withdraw.svg'
 import EditDialogTitle from '@components/studies/participants/modify/EditDialogTitle'
 import EditParticipantForm from '@components/studies/participants/modify/EditParticipantForm'
 import WithdrawParticipantForm from '@components/studies/participants/modify/WithdrawParticipantForm'
 import HideWhen from '@components/widgets/HideWhen'
 import SelectAll from '@components/widgets/SelectAll'
-import { useUserSessionDataState } from '@helpers/AuthContext'
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import {
   Box,
   Button,
@@ -17,7 +17,7 @@ import {
   CircularProgress,
   Dialog,
   IconButton,
-  Paper
+  Paper,
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {
@@ -33,27 +33,27 @@ import {
   // GridRowSelectedParams,
   GridToolbarContainer,
   GridValueGetterParams,
-  HideGridColMenuItem
+  HideGridColMenuItem,
 } from '@mui/x-data-grid'
-import EventService, { JOINED_EVENT_ID } from '@services/event.service'
-import { useEvents } from '@services/eventHooks'
-import { useUpdateParticipantInList } from '@services/participantHooks'
+import EventService, {JOINED_EVENT_ID} from '@services/event.service'
+import {useEvents} from '@services/eventHooks'
+import {useUpdateParticipantInList} from '@services/participantHooks'
 import ParticipantService, {
-  EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING
+  EXTERNAL_ID_WITHDRAWN_REPLACEMENT_STRING,
 } from '@services/participants.service'
-import { latoFont } from '@style/theme'
+import {latoFont} from '@style/theme'
 import {
   EditableParticipantData,
   ParticipantAccountSummary,
   ParticipantActivityType,
   ParticipantEvent,
-  SelectionType
+  SelectionType,
 } from '@typedefs/types'
 import _ from 'lodash'
 import moment from 'moment'
-import React, { FunctionComponent, ReactNode, SyntheticEvent } from 'react'
+import React, {FunctionComponent, ReactNode, SyntheticEvent} from 'react'
 import Pluralize from 'react-pluralize'
-import { Link } from 'react-router-dom'
+import {Link} from 'react-router-dom'
 import GridCellExpand from './GridCellExpand'
 
 const useStyles = makeStyles(theme => ({
@@ -85,7 +85,7 @@ const useStyles = makeStyles(theme => ({
 const PhoneCell: FunctionComponent<{
   params: GridCellParams
   hidePhone: boolean
-}> = ({ params, hidePhone }) => {
+}> = ({params, hidePhone}) => {
   const [isHidden, setIsHidden] = React.useState(hidePhone)
   React.useEffect(() => {
     setIsHidden(hidePhone)
@@ -100,11 +100,11 @@ const PhoneCell: FunctionComponent<{
   }
 
   return params.formattedValue ? (
-    <div style={{ textAlign: 'center', width: '115px' }}>
+    <div style={{textAlign: 'center', width: '115px'}}>
       {!isHidden && params.formattedValue}
       <Button
         onClick={onClick}
-        style={{ minWidth: 'auto', margin: '0 auto', padding: '4px' }}>
+        style={{minWidth: 'auto', margin: '0 auto', padding: '4px'}}>
         {isHidden ? <ShowPhoneIcon /> : <HidePhoneIcon />}
       </Button>
     </div>
@@ -120,7 +120,7 @@ const EditCell: FunctionComponent<{
   studyId: string
   token: string
   onSetParticipantToEdit: Function
-}> = ({ params, studyId, token, onSetParticipantToEdit }) => {
+}> = ({params, studyId, token, onSetParticipantToEdit}) => {
   const onClick = async (e: SyntheticEvent) => {
     try {
       e.preventDefault()
@@ -196,12 +196,12 @@ const SelectionControl: FunctionComponent<{
   selectionModel: string[]
   isAllSelected: boolean
   totalParticipants: number
-}> = ({ selectionModel, isAllSelected, totalParticipants }) => {
+}> = ({selectionModel, isAllSelected, totalParticipants}) => {
   const classes = useStyles()
 
   return (
     <GridToolbarContainer>
-      <div style={{ position: 'relative' }}>
+      <div style={{position: 'relative'}}>
         <Box
           className={classes.selectionDisplay}
           style={{
@@ -220,10 +220,10 @@ const SelectionControl: FunctionComponent<{
 }
 
 export function CustomColumnMenuComponent(
-  props: GridColumnMenuProps & { color: string }
+  props: GridColumnMenuProps & {color: string}
 ) {
   const classes = useStyles()
-  const { hideMenu, currentColumn, color, ...other } = props
+  const {hideMenu, currentColumn, color, ...other} = props
   // more info here: https://material-ui.com/components/data-grid/components/#components
   /*if (currentColumn.field === 'name') { }*/
 
@@ -240,7 +240,7 @@ export function CustomColumnMenuComponent(
 
 function getPhone(params: GridValueGetterParams) {
   if (params.value) {
-    return (params.value as { nationalFormat: string }).nationalFormat
+    return (params.value as {nationalFormat: string}).nationalFormat
   } else return ''
 }
 function getDate(value: GridCellValue) {
@@ -265,7 +265,7 @@ function getJoinedDateWithIcons(params: GridValueGetterParams) {
       {dateToDisplay && (
         <img
           src={hasJoined ? JoinedCheckSymbol : JoinedPhoneSymbol}
-          style={{ marginRight: '6px', width: '16px' }}></img>
+          style={{marginRight: '6px', width: '16px'}}></img>
       )}
       {formattedDate}
     </Box>
@@ -275,7 +275,7 @@ function getJoinedDateWithIcons(params: GridValueGetterParams) {
 function renderColumnHeaderWithIcon(icon: string, headerName: string) {
   return (
     <Box display="flex" flexDirection="row">
-      <img src={icon} style={{ marginRight: '6px', width: '16px' }}></img>
+      <img src={icon} style={{marginRight: '6px', width: '16px'}}></img>
       {headerName}
     </Box>
   ) as ReactNode
@@ -369,7 +369,7 @@ function getColumns(
       renderCell: getJoinedDateWithIcons,
       width: 110,
     },
-    { field: 'note', headerName: 'Notes', width: 200 },
+    {field: 'note', headerName: 'Notes', width: 200},
     {
       field: 'dateWithdrawn',
       headerName: 'Withdrawn',
@@ -522,8 +522,8 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   children,
 }: ParticipantTableGridProps) => {
   const classes = useStyles()
-  const { token } = useUserSessionDataState()
-  const { data: scheduleEvents = [], error: eventError } = useEvents(studyId)
+  const {token} = useUserSessionDataState()
+  const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
 
   const {
     isLoading: isParticipantUpdating,
@@ -534,11 +534,11 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   //when we are editing the record this is where the info is stored
   const [participantToEdit, setParticipantToEdit] = React.useState<
     | {
-      id: string
-      participant: EditableParticipantData
-      hasSignedIn: boolean
-      shouldWithdraw: boolean
-    }
+        id: string
+        participant: EditableParticipantData
+        hasSignedIn: boolean
+        shouldWithdraw: boolean
+      }
     | undefined
   >(undefined)
 
@@ -654,7 +654,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
     align: 'left',
     renderHeader: () => {
       return (
-        <div style={{ marginLeft: '-6px' }}>
+        <div style={{marginLeft: '-6px'}}>
           <SelectAll
             selectionType={getSelectionType()}
             allText={`Select all ${totalParticipants}`}
@@ -701,12 +701,12 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
   return (
     <>
       <Paper elevation={0}>
-        <div style={{ display: 'flex', height: '90vh' }}>
-          <div style={{ flexGrow: 1 }}>
+        <div style={{display: 'flex', height: '90vh'}}>
+          <div style={{flexGrow: 1}}>
             <DataGrid
               rows={rows}
               loading={isParticipantUpdating}
-              classes={{ columnHeader: classes.gridHeader }}
+              classes={{columnHeader: classes.gridHeader}}
               density="standard"
               columns={participantColumns}
               checkboxSelection={false}

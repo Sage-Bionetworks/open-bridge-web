@@ -1,7 +1,7 @@
 import EmailIcon from '@assets/email_icon.svg'
 import PhoneIcon from '@assets/phone_icon.svg'
 import {Box} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
 
 const useStyles = makeStyles(theme => ({

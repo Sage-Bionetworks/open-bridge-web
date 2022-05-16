@@ -1,5 +1,5 @@
-import { Box } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -192,7 +192,7 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
         </Box>
       </Box>
     </Box>
-  );
+  )
 }
 
 export default SessionsLayout

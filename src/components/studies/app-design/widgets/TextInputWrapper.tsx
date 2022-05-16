@@ -1,4 +1,4 @@
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React, {ChangeEventHandler} from 'react'
 import {playfairDisplayFont} from '../../../../style/theme'

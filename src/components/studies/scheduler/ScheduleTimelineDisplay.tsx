@@ -3,7 +3,7 @@ import {ReactComponent as TimerIcon} from '@assets/scheduler/timer_icon.svg'
 import AssessmentImage from '@components/assessments/AssessmentImage'
 import SessionIcon from '@components/widgets/SessionIcon'
 import {Box} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import Tooltip, {TooltipProps} from '@mui/material/Tooltip'
 import {latoFont, poppinsFont} from '@style/theme'
 import {

@@ -1,36 +1,37 @@
-import { StudySection } from '@components/studies/sections'
+import {StudySection} from '@components/studies/sections'
 import StudyTopNav from '@components/studies/StudyTopNav'
 import SurveyTopNav from '@components/surveys/SurveyTopNav'
 import TopNav from '@components/widgets/AppTopNav'
-import { useUserSessionDataState } from '@helpers/AuthContext'
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
-import { useStudy } from '@services/studyHooks'
-import { UserSessionData } from '@typedefs/types'
-import React, { FunctionComponent, ReactNode } from 'react'
-import { useErrorHandler } from 'react-error-boundary'
+import {useStudy} from '@services/studyHooks'
+import {UserSessionData} from '@typedefs/types'
+import React, {FunctionComponent, ReactNode} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
 import {
   Route,
   RouteComponentProps,
   Switch,
   useLocation,
   useParams,
-  withRouter
+  withRouter,
 } from 'react-router-dom'
 import PrivateRoutes from './routes_private'
 
-
 const Wrapper: FunctionComponent<
-  RouteComponentProps & { sessionData: UserSessionData; children: ReactNode }
-> = ({ children, sessionData }) => {
-  let { id: studyId, section: studySection } = useParams<{
+  RouteComponentProps & {sessionData: UserSessionData; children: ReactNode}
+> = ({children, sessionData}) => {
+  let {id: studyId, section: studySection} = useParams<{
     id: string
     section: StudySection
   }>()
   //only use studyId in study builder or
-  const isAssessmentPath = useLocation().pathname.includes(`/assessments/${studyId}`)
+  const isAssessmentPath = useLocation().pathname.includes(
+    `/assessments/${studyId}`
+  )
   const isSurveyPath = useLocation().pathname.includes(`/surveys`)
   const notStudyId = isAssessmentPath || isSurveyPath
-  const { data: study, error } = useStudy(notStudyId ? undefined : studyId)
+  const {data: study, error} = useStudy(notStudyId ? undefined : studyId)
   const handleError = useErrorHandler()
 
   if (error) {
@@ -41,32 +42,32 @@ const Wrapper: FunctionComponent<
     Utility.setBodyClass(studySection)
   }, [studySection])
 
-
   return (
     <>
-      {isSurveyPath ? <SurveyTopNav></SurveyTopNav> :
-
-        (!study ? (
-          <TopNav
-            routes={PrivateRoutes}
-            sessionData={sessionData}
-            appId={sessionData.appId}
-          />
-        ) : (
-          <StudyTopNav
-            study={study}
-            error={error}
-            currentSection={studySection}></StudyTopNav>
-        ))}
+      {isSurveyPath ? (
+        <SurveyTopNav></SurveyTopNav>
+      ) : !study ? (
+        <TopNav
+          routes={PrivateRoutes}
+          sessionData={sessionData}
+          appId={sessionData.appId}
+        />
+      ) : (
+        <StudyTopNav
+          study={study}
+          error={error}
+          currentSection={studySection}></StudyTopNav>
+      )}
       <main>{children}</main>
     </>
   )
 }
 
-const AuthenticatedApp: FunctionComponent<RouteComponentProps
-> = ({ location, match }) => {
+const AuthenticatedApp: FunctionComponent<RouteComponentProps> = ({
+  location,
+  match,
+}) => {
   const sessionData = useUserSessionDataState()
-
 
   if (!sessionData.token) {
     //save location and redirect
@@ -78,7 +79,7 @@ const AuthenticatedApp: FunctionComponent<RouteComponentProps
   return (
     <>
       <Switch>
-        {PrivateRoutes.map(({ path, Component }, key) => (
+        {PrivateRoutes.map(({path, Component}, key) => (
           <Route
             exact
             path={path}

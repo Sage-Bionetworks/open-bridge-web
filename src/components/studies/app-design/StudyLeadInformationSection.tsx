@@ -1,5 +1,5 @@
-import { FormControl } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {FormControl} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
 import constants from '../../../types/constants'
 import {Contact} from '../../../types/types'

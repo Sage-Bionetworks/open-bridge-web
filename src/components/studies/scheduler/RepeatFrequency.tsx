@@ -38,7 +38,7 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
             unitDefault={DWsEnum.D}
             unitLabel="Repeat Every"
             numberLabel="frequency number"
-            placeHolder='days'
+            placeHolder="days"
             unitData={DWsEnum}></Duration>
         }
         label={disabled ? '' : label}

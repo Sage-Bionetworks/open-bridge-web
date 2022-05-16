@@ -1,7 +1,7 @@
 import EditDialogTitle from '@components/studies/participants/modify/EditDialogTitle'
-import { Dialog } from '@mui/material'
-import { useEvents } from '@services/eventHooks'
-import { useUpdateParticipantInList } from '@services/participantHooks'
+import {Dialog} from '@mui/material'
+import {useEvents} from '@services/eventHooks'
+import {useUpdateParticipantInList} from '@services/participantHooks'
 import React from 'react'
 import EditParticipantForm from './EditParticipantForm'
 
@@ -24,10 +24,10 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
   isAllSelected,
 }) => {
   const [isLoading, setIsLoading] = React.useState(false)
-  const { data: scheduleEvents = [], error: eventError } = useEvents(studyId)
+  const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
   const [error, setError] = React.useState<Error>()
 
-  const { mutateAsync, error: batchUpdateError } = useUpdateParticipantInList()
+  const {mutateAsync, error: batchUpdateError} = useUpdateParticipantInList()
 
   React.useEffect(() => {
     if (batchUpdateError) setError(batchUpdateError as Error)
@@ -39,7 +39,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
         studyId,
         action: 'UPDATE',
         userId: selectedParticipants,
-        updatedFields: { clientTimeZone: clientTimeZone },
+        updatedFields: {clientTimeZone: clientTimeZone},
         isAllSelected: false, // AG there is currently no way to distinguish between truly 'all'or 'all on the page
       },
       {

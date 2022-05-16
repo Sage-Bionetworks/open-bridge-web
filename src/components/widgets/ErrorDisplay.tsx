@@ -1,4 +1,4 @@
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import WarningIcon from '@mui/icons-material/Warning'
 import React, {FunctionComponent, ReactNode} from 'react'
 import {ThemeType} from '../../style/theme'

@@ -4,10 +4,10 @@ import StepConnector from '@mui/material/StepConnector'
 import {StepIconProps} from '@mui/material/StepIcon'
 import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
-import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import withStyles from '@mui/styles/withStyles';
+import {Theme} from '@mui/material/styles'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import withStyles from '@mui/styles/withStyles'
 import clsx from 'clsx'
 import React from 'react'
 import {ReactComponent as IrbIcon} from '../../../assets/launch/irb_icon.svg'
