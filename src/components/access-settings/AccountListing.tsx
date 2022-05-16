@@ -192,6 +192,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
       setMembers(result)
     } catch (e) {
       setUpdateError((e as Error).message)
+      throw e
     }
   }
 
@@ -310,6 +311,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                   <Button
                     aria-label="delete"
                     onClick={() => {
+                      setUpdateError('')
                       setIsConfirmDeleteOpen(true)
                     }}
                     startIcon={<Delete />}>
@@ -329,17 +331,27 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
 
               <ConfirmationDialog
                 isOpen={isConfirmDeleteOpen}
-                title={'Delete Study'}
+                title={'Delete Member'}
                 type={'DELETE'}
                 onCancel={() => setIsConfirmDeleteOpen(false)}
                 onConfirm={() => {
                   const member = {...currentMemberAccess!.member}
                   // setCurrentMemberId(members[0].id)
-                  deleteExistingAccount(member)
 
-                  setIsConfirmDeleteOpen(false)
+                  deleteExistingAccount(member)
+                    .then(() => setIsConfirmDeleteOpen(false))
+                    .catch(e => setUpdateError(e.message))
                 }}>
                 <div>
+                  {updateError && (
+                    <Alert
+                      variant="outlined"
+                      color="error"
+                      style={{marginBottom: '8px'}}>
+                      {updateError}
+                    </Alert>
+                  )}
+
                   <strong>
                     Are you sure you would like to permanently delete{' '}
                     {getNameDisplay(currentMemberAccess!.member)}
