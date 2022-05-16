@@ -1,6 +1,6 @@
 import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
 import {Box, Button, CircularProgress, IconButton} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
 import Subsection from './widgets/Subsection'
 
@@ -92,7 +92,7 @@ const UploadStudyLogoSection: React.FunctionComponent<UploadStudyLogoSection> =
           </Button>
         )}
       </Subsection>
-    );
+    )
   }
 
 export default UploadStudyLogoSection

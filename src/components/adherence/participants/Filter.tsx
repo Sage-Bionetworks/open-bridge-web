@@ -1,6 +1,6 @@
-import { ReactComponent as FilterIcon } from '@assets/filter.svg'
-import { MTBHeadingH5, MTBHeadingH6 } from '@components/widgets/Headings'
-import { WhiteButton } from '@components/widgets/StyledComponents'
+import {ReactComponent as FilterIcon} from '@assets/filter.svg'
+import {MTBHeadingH5, MTBHeadingH6} from '@components/widgets/Headings'
+import {WhiteButton} from '@components/widgets/StyledComponents'
 import {
   Box,
   Button,
@@ -10,15 +10,15 @@ import {
   FormControlLabel,
   FormGroup,
   Radio,
-  RadioGroup
+  RadioGroup,
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import AdherenceService from '@services/adherence.service'
-import { AdherenceStatistics, AdherenceWeeklyReport } from '@typedefs/types'
+import {AdherenceStatistics, AdherenceWeeklyReport} from '@typedefs/types'
 import _ from 'lodash'
-import React, { FunctionComponent } from 'react'
+import React, {FunctionComponent} from 'react'
 import AdherenceUtility from '../adherenceUtility'
-import { useCommonStyles } from '../styles'
+import {useCommonStyles} from '../styles'
 
 export const useStyles = makeStyles(theme => ({
   divider: {
@@ -98,8 +98,8 @@ function getDisplayLabels(items: AdherenceWeeklyReport[]) {
 
 const FilterLabel: FunctionComponent<{
   label?: string | string[]
-  count?: { totalActive: number }
-}> = ({ label, count }) => {
+  count?: {totalActive: number}
+}> = ({label, count}) => {
   return (
     <>
       <div>{label}</div>
@@ -116,27 +116,25 @@ const Filter: FunctionComponent<FilterProps> = ({
   thresholdMin: min,
   thresholdMax: max,
 }) => {
-  const classes = { ...useCommonStyles(), ...useStyles() }
+  const classes = {...useCommonStyles(), ...useStyles()}
 
   const [threshold, setThreshold] = React.useState<ThresholdValue>()
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [isSelectAll, setIsSelectAll] = React.useState(true)
-  const [searchLabels, setSearchLabels] = React.useState<string[]>([]
-  )
+  const [searchLabels, setSearchLabels] = React.useState<string[]>([])
 
   React.useEffect(() => {
     setThreshold(getThreshold(min, max))
   }, [min, max, adherenceReportItems])
 
   React.useEffect(() => {
-    const isAllSelected = (selectedLabels === undefined || selectedLabels.length === 0)
+    const isAllSelected =
+      selectedLabels === undefined || selectedLabels.length === 0
     setIsSelectAll(isAllSelected)
     if (isAllSelected) {
       setSearchLabels(Array.from(getDisplayLabels(adherenceReportItems).keys()))
     }
-
   }, [selectedLabels, adherenceReportItems])
-
 
   const displayLabels = getDisplayLabels(adherenceReportItems)
 
@@ -170,7 +168,7 @@ const Filter: FunctionComponent<FilterProps> = ({
   const applyFilterChange = () => {
     let labels =
       searchLabels.length === displayLabels.size ? undefined : searchLabels
-    let thresh = { min: 0, max: 100 }
+    let thresh = {min: 0, max: 100}
     if (threshold === 'OVER') {
       thresh.min = AdherenceService.COMPLIANCE_THRESHOLD
     }
@@ -178,7 +176,7 @@ const Filter: FunctionComponent<FilterProps> = ({
       thresh.max = AdherenceService.COMPLIANCE_THRESHOLD - 1
     }
 
-    onFilterChange({ labels, ...thresh })
+    onFilterChange({labels, ...thresh})
     handleClose()
   }
 
@@ -195,7 +193,7 @@ const Filter: FunctionComponent<FilterProps> = ({
         <Box p={4} minWidth={416}>
           <Box display="flex" mb={2}>
             <FilterIcon />{' '}
-            <MTBHeadingH6 style={{ color: '#3B4141' }}>
+            <MTBHeadingH6 style={{color: '#3B4141'}}>
               Filter Participants by:
             </MTBHeadingH6>
           </Box>
@@ -208,7 +206,7 @@ const Filter: FunctionComponent<FilterProps> = ({
             <FormControlLabel
               key={`all`}
               value="end"
-              classes={{ label: classes.label }}
+              classes={{label: classes.label}}
               control={
                 <Checkbox
                   className={classes.checkbox}
@@ -223,7 +221,7 @@ const Filter: FunctionComponent<FilterProps> = ({
               <FormControlLabel
                 key={`${searchKey}_${index}`}
                 value="end"
-                classes={{ label: classes.label }}
+                classes={{label: classes.label}}
                 control={
                   <Checkbox
                     checked={!searchLabels || searchLabels.includes(searchKey)}
@@ -254,7 +252,7 @@ const Filter: FunctionComponent<FilterProps> = ({
               setThreshold(e.target.value as ThresholdValue)
             }}>
             <FormControlLabel
-              classes={{ label: classes.label }}
+              classes={{label: classes.label}}
               control={
                 <Radio
                   color="secondary"
@@ -267,7 +265,7 @@ const Filter: FunctionComponent<FilterProps> = ({
             />
 
             <FormControlLabel
-              classes={{ label: classes.label }}
+              classes={{label: classes.label}}
               control={
                 <Radio
                   color="secondary"
@@ -279,13 +277,13 @@ const Filter: FunctionComponent<FilterProps> = ({
               label={
                 <FilterLabel
                   label={`x </= ${AdherenceService.COMPLIANCE_THRESHOLD}%`}
-                  count={{ totalActive: adherenceStats.noncompliant }}
+                  count={{totalActive: adherenceStats.noncompliant}}
                 />
               }
             />
 
             <FormControlLabel
-              classes={{ label: classes.label }}
+              classes={{label: classes.label}}
               control={
                 <Radio
                   color="secondary"
@@ -297,7 +295,7 @@ const Filter: FunctionComponent<FilterProps> = ({
               label={
                 <FilterLabel
                   label={`x > ${AdherenceService.COMPLIANCE_THRESHOLD}%`}
-                  count={{ totalActive: adherenceStats.compliant }}
+                  count={{totalActive: adherenceStats.compliant}}
                 />
               }
             />

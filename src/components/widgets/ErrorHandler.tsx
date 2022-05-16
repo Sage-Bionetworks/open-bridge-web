@@ -1,9 +1,8 @@
-import { Alert } from '@mui/lab'
-import { Box, Container } from '@mui/material'
+import {Alert} from '@mui/lab'
+import {Box, Container} from '@mui/material'
 import Utility from '../../helpers/utility'
 import CONSTANTS from '../../types/constants'
 import AccountLogin from '../account/AccountLogin'
-
 
 export function ErrorFallback(props: any) {
   console.log('ERROR:', props.error.message)
@@ -25,7 +24,7 @@ export function ErrorFallback(props: any) {
           <Alert
             variant="outlined"
             color="error"
-            style={{ marginBottom: '40px' }}>
+            style={{marginBottom: '40px'}}>
             You do not have the permission to access this feature. Please
             contact your study administrator
           </Alert>
@@ -33,7 +32,7 @@ export function ErrorFallback(props: any) {
           <a href="/studies"> Back to study listings</a>
         </Box>
       ) : (
-        <Alert variant="outlined" color="error" style={{ marginBottom: '40px' }}>
+        <Alert variant="outlined" color="error" style={{marginBottom: '40px'}}>
           <pre>
             {props.error.statusCode}:&nbsp;
             {props.error.message}
@@ -44,7 +43,7 @@ export function ErrorFallback(props: any) {
   )
 }
 
-export const ErrorHandler = (error: Error, info: { componentStack: string }) => {
+export const ErrorHandler = (error: Error, info: {componentStack: string}) => {
   console.log(
     '%cError Caught by Boundary:' + error.message,
     'color:red',

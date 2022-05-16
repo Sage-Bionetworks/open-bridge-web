@@ -1,23 +1,23 @@
-import { ReactComponent as PinkSendSMSIcon } from '@assets/participants/send_sms_link_pink_icon.svg'
-import { ReactComponent as DeleteIcon } from '@assets/trash.svg'
+import {ReactComponent as PinkSendSMSIcon} from '@assets/participants/send_sms_link_pink_icon.svg'
+import {ReactComponent as DeleteIcon} from '@assets/trash.svg'
 import DialogTitleWithClose from '@components/widgets/DialogTitleWithClose'
 import {
   DialogButtonPrimary,
-  DialogButtonSecondary
+  DialogButtonSecondary,
 } from '@components/widgets/StyledComponents'
-import { useUserSessionDataState } from '@helpers/AuthContext'
-import { Dialog, DialogActions, DialogContent } from '@mui/material'
+import {useUserSessionDataState} from '@helpers/AuthContext'
+import {Dialog, DialogActions, DialogContent} from '@mui/material'
 import Alert from '@mui/material/Alert'
-import { useStudy } from '@services/studyHooks'
+import {useStudy} from '@services/studyHooks'
 import {
   ParticipantAccountSummary,
-  ParticipantActivityType
+  ParticipantActivityType,
 } from '@typedefs/types'
-import React, { FunctionComponent } from 'react'
+import React, {FunctionComponent} from 'react'
 import {
   useInvalidateParticipants,
   useParticipants,
-  useUpdateParticipantInList
+  useUpdateParticipantInList,
 } from '../../../services/participantHooks'
 import DialogContents from './DialogContents'
 import useStyles from './ParticipantManager_style'
@@ -72,10 +72,10 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> =
       WITHDRAWN: string[]
     }
 
-    const { token } = useUserSessionDataState()
-    const { data: study } = useStudy(studyId)
+    const {token} = useUserSessionDataState()
+    const {data: study} = useStudy(studyId)
 
-    const { data } = useParticipants(
+    const {data} = useParticipants(
       study?.identifier,
       currentPage,
       pageSize,
@@ -134,8 +134,8 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> =
             dialogState.dialogOpenRemove
               ? 'Remove From Study'
               : dialogState.dialogOpenSMS
-                ? 'Sending SMS Download Link'
-                : ''
+              ? 'Sending SMS Download Link'
+              : ''
           }
         />
         {error && (
@@ -143,7 +143,7 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> =
             {error.message}
           </Alert>
         )}
-        <DialogContent style={{ display: 'flex', justifyContent: 'center' }}>
+        <DialogContent style={{display: 'flex', justifyContent: 'center'}}>
           {(dialogState.dialogOpenSMS || dialogState.dialogOpenRemove) && (
             <DialogContents
               participantsWithError={participantsWithError}
@@ -172,7 +172,7 @@ const ParticipantDeleteModal: FunctionComponent<ParticipantDeleteModalProps> =
                 })
                 setError(undefined)
               }}
-              style={{ height: '48px' }}>
+              style={{height: '48px'}}>
               Cancel
             </DialogButtonSecondary>
 

@@ -1,5 +1,5 @@
-import { Box, Paper } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box, Paper} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import React, {FunctionComponent} from 'react'
 
 const useStyles = makeStyles(theme => ({

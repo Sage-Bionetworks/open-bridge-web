@@ -1,5 +1,5 @@
 import {Box, Divider} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import {latoFont, playfairDisplayFont} from '@style/theme'
 import {Contact} from '@typedefs/types'
 import React from 'react'

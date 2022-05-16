@@ -1,5 +1,5 @@
-import { Box } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import {Survey} from './types'

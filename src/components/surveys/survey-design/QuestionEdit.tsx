@@ -9,12 +9,12 @@ import {
   FormGroup,
   Radio,
   RadioGroup,
-  TextField
+  TextField,
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import { latoFont } from '@style/theme'
-import React, { FunctionComponent } from 'react'
-import { ChoiceQuestion, ChoiceQuestionChoice, InputItem, Step } from '../types'
+import {latoFont} from '@style/theme'
+import React, {FunctionComponent} from 'react'
+import {ChoiceQuestion, ChoiceQuestionChoice, InputItem, Step} from '../types'
 import PhoneDisplay from '../widgets/PhoneDisplay'
 
 const useStyles = makeStyles(theme => ({
@@ -94,7 +94,9 @@ const CheckboxQuestion: FunctionComponent<InputItem> = inputItem => {
     value: 'New Input',
   }
   return (
-    <Box border="1px solid black"> QuestionEdit
+    <Box border="1px solid black">
+      {' '}
+      QuestionEdit
       <FormGroup>
         {choices.map((choice, index) => (
           <FormControlLabel
@@ -102,10 +104,10 @@ const CheckboxQuestion: FunctionComponent<InputItem> = inputItem => {
             control={<Checkbox defaultChecked />}
             label={
               <EditableTextbox
-                styleProps={{ padding: '8px 0' }}
+                styleProps={{padding: '8px 0'}}
                 initValue={choice.text}
                 onTriggerUpdate={(newText: string) => {
-                  const _choice = { ...choice, text: newText, value: newText }
+                  const _choice = {...choice, text: newText, value: newText}
                   const _choices = [...choices]
                   _choices[index] = _choice
                   setChoices(_choices)
@@ -117,7 +119,7 @@ const CheckboxQuestion: FunctionComponent<InputItem> = inputItem => {
       <Button
         className={classes.checkboxButton}
         onClick={() => {
-          setChoices(prev => [...prev, { ...newChoice }])
+          setChoices(prev => [...prev, {...newChoice}])
         }}>
         + Add Input
       </Button>
@@ -130,7 +132,7 @@ const RadioQuestion: FunctionComponent<
     choices: ChoiceQuestionChoice[]
     onChange: (c: ChoiceQuestionChoice[]) => void
   }
-> = ({ onChange, choices, ...props }) => {
+> = ({onChange, choices, ...props}) => {
   const classes = useStyles()
   //const [choices, setChoices] = React.useState<ChoiceQuestionChoice[]>([])
   const [checkChoice, setCheckChoice] = React.useState<
@@ -170,10 +172,10 @@ const RadioQuestion: FunctionComponent<
               control={<Radio value={choice.value || null} />}
               label={
                 <EditableTextbox
-                  styleProps={{ padding: '8px 0' }}
+                  styleProps={{padding: '8px 0'}}
                   initValue={choice.text}
                   onTriggerUpdate={(newText: string) => {
-                    const _choice = { ...choice, text: newText, value: newText }
+                    const _choice = {...choice, text: newText, value: newText}
                     const _choices = [...choices]
                     _choices[index] = _choice
                     setChoices(_choices)
@@ -187,21 +189,21 @@ const RadioQuestion: FunctionComponent<
       <Button
         className={classes.radioSelectButton}
         onClick={() => {
-          setChoices([...choices, { ...newChoice }])
+          setChoices([...choices, {...newChoice}])
         }}>
         + Add Input
       </Button>
       <Button
         className={classes.radioSelectButton}
         onClick={() => {
-          setChoices([...choices, { ...allChoice }])
+          setChoices([...choices, {...allChoice}])
         }}>
         + Add All of the above
       </Button>
       <Button
         className={classes.radioSelectButton}
         onClick={() => {
-          setChoices([...choices, { ...noneChoice }])
+          setChoices([...choices, {...noneChoice}])
         }}>
         + Add none of the above
       </Button>
@@ -219,7 +221,7 @@ const DateQuestion: FunctionComponent<InputItem> = inputItem => {
       isYearOnly={true}
       id={'any'}
       value={null}
-      onChange={() => { }}
+      onChange={() => {}}
       label={inputItem.fieldLabel}></DatePicker>
   )
 }
@@ -229,7 +231,7 @@ const TimeQuestion: FunctionComponent<InputItem> = inputItem => {
       isYearOnly={true}
       id={'any'}
       value={null}
-      onChange={() => { }}
+      onChange={() => {}}
       label={inputItem.fieldLabel}></DatePicker>
   )
 }
@@ -257,7 +259,7 @@ const LikertQuestion: FunctionComponent<InputItem> = inputItem => {
 
 type QuestionEditProps = QuestionEditOwnProps
 
-function Factory(args: { step: Step; onChange: (step: Step) => void }) {
+function Factory(args: {step: Step; onChange: (step: Step) => void}) {
   const type = args.step.controlType === 'checkbox' ? 'checkbox' : 'string'
   const props: InputItem = {
     type: type,
@@ -266,7 +268,7 @@ function Factory(args: { step: Step; onChange: (step: Step) => void }) {
   }
   const updateStepWithChoices = (choices: ChoiceQuestionChoice[]) => {
     console.log('update')
-    let result = { ...args.step } as ChoiceQuestion
+    let result = {...args.step} as ChoiceQuestion
     result.choices = [...choices]
     console.log(result)
     args.onChange(result)
@@ -316,14 +318,14 @@ const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
           <Box>
             <div className={classes.title}>
               <EditableTextbox
-                styleProps={{ padding: '8px 0' }}
+                styleProps={{padding: '8px 0'}}
                 initValue={step.title}
                 onTriggerUpdate={(newText: string) =>
-                  onChange({ ...step, title: newText })
+                  onChange({...step, title: newText})
                 }></EditableTextbox>
             </div>
 
-            <Factory {...{ step: { ...step }, onChange: onChange }}></Factory>
+            <Factory {...{step: {...step}, onChange: onChange}}></Factory>
           </Box>
         ) : (
           <></>

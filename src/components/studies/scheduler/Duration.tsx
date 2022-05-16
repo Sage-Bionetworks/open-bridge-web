@@ -1,8 +1,8 @@
 import SelectWithEnum from '@components/widgets/SelectWithEnum'
 import SmallTextBox from '@components/widgets/SmallTextBox'
 import Utility from '@helpers/utility'
-import { IconButton, StandardTextFieldProps } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {IconButton, StandardTextFieldProps} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import ClearIcon from '@mui/icons-material/HighlightOff'
 import moment from 'moment'
 import React from 'react'
@@ -32,8 +32,8 @@ export interface DurationProps {
   maxDurationDays?: number
   disabled?: boolean
   isShowClear?: boolean
-  placeHolder? :string
-  selectWidth? : number
+  placeHolder?: string
+  selectWidth?: number
 }
 
 const Duration: React.FunctionComponent<
@@ -137,9 +137,9 @@ const Duration: React.FunctionComponent<
         onChange={e =>
           changeValue(num, e.target.value as moment.unitOfTime.Base)
         }
-        style={selectWidth ? {width: `${selectWidth}px`} : {width: '100px'}}>
-
-        </SelectWithEnum>
+        style={
+          selectWidth ? {width: `${selectWidth}px`} : {width: '100px'}
+        }></SelectWithEnum>
       {isShowClear && (
         <IconButton
           className={classes.clear}
@@ -149,7 +149,7 @@ const Duration: React.FunctionComponent<
         </IconButton>
       )}
     </div>
-  );
+  )
 }
 
 export default Duration

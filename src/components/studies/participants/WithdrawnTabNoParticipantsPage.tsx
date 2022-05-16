@@ -1,8 +1,8 @@
 import BatchEditIcon from '@assets/edit_pencil.svg'
 import EditParticipantImage from '@assets/edit_pencil_red.svg'
 import JoinedCheckSymbol from '@assets/participants/joined_check_mark.svg'
-import { Box } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import {latoFont, poppinsFont} from '@style/theme'
 import React from 'react'
 

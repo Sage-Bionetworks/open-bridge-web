@@ -1,5 +1,11 @@
-import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Typography,
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import React, {FunctionComponent} from 'react'
 import {useParams} from 'react-router-dom'
 import test from '../sample.json'
@@ -13,7 +19,7 @@ type ChoiceQuestionOwnProps = {
   studyId?: string
 }
 
-type ChoiceQuestionProps = ChoiceQuestionOwnProps/*& RouteComponentProps*/
+type ChoiceQuestionProps = ChoiceQuestionOwnProps /*& RouteComponentProps*/
 
 const SurveyDisplay: FunctionComponent<ChoiceQuestionProps> = () => {
   let {id: studyId} = useParams<{

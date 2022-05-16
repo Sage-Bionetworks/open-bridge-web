@@ -1,11 +1,11 @@
-import { SimpleTextInput } from '@components/widgets/StyledComponents'
-import { useUserSessionDataState } from '@helpers/AuthContext'
-import { Button, CircularProgress, Paper } from '@mui/material'
+import {SimpleTextInput} from '@components/widgets/StyledComponents'
+import {useUserSessionDataState} from '@helpers/AuthContext'
+import {Button, CircularProgress, Paper} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import { useUpdateParticipantInList } from '@services/participantHooks'
-import { poppinsFont } from '@style/theme'
-import { EnrolledAccountRecord } from '@typedefs/types'
-import React, { FunctionComponent } from 'react'
+import {useUpdateParticipantInList} from '@services/participantHooks'
+import {poppinsFont} from '@style/theme'
+import {EnrolledAccountRecord} from '@typedefs/types'
+import React, {FunctionComponent} from 'react'
 
 const useStyles = makeStyles(theme => ({
   notesContainer: {
@@ -59,9 +59,9 @@ const EditParticipantNotes: FunctionComponent<EditParticipantNotesProps> = ({
   const classes = useStyles()
   const [isSaving, setIsSaving] = React.useState(false)
   const [note, setNote] = React.useState(enrollment.note)
-  const { token } = useUserSessionDataState()
+  const {token} = useUserSessionDataState()
 
-  const { isLoading, mutateAsync } = useUpdateParticipantInList()
+  const {isLoading, mutateAsync} = useUpdateParticipantInList()
 
   const updateNotes = async (particpantId: string, updatedFields: any) => {
     const userIdArr = [particpantId] as Array<string>
@@ -88,7 +88,7 @@ const EditParticipantNotes: FunctionComponent<EditParticipantNotesProps> = ({
         size="large"
         color="primary"
         onClick={() => {
-          const data = { note: note }
+          const data = {note: note}
           updateNotes(participantId, data)
         }}>
         {isLoading ? <CircularProgress /> : <>Save</>}

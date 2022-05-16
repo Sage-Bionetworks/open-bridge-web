@@ -1,8 +1,8 @@
-import { Box, Button } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
-import React, { FunctionComponent } from 'react';
-import { Step } from '../types';
+import {Box, Button} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
+import clsx from 'clsx'
+import React, {FunctionComponent} from 'react'
+import {Step} from '../types'
 
 const useStyles = makeStyles(theme => ({
   root: {},

@@ -1,16 +1,16 @@
 // pick a date util library
 
-import { BlueButton } from '@components/widgets/StyledComponents';
-import Utility from '@helpers/utility';
-import { Box, CircularProgress } from '@mui/material';
-import Alert from '@mui/material/Alert';
-import makeStyles from '@mui/styles/makeStyles';
-import { useAddParticipant } from '@services/participantHooks';
-import ParticipantService from '@services/participants.service';
-import { ExtendedScheduleEventObject } from '@services/schedule.service';
-import { EditableParticipantData, Phone } from '@typedefs/types';
-import React, { FunctionComponent } from 'react';
-import AddSingleParticipantForm from './AddSingleParticipantForm';
+import {BlueButton} from '@components/widgets/StyledComponents'
+import Utility from '@helpers/utility'
+import {Box, CircularProgress} from '@mui/material'
+import Alert from '@mui/material/Alert'
+import makeStyles from '@mui/styles/makeStyles'
+import {useAddParticipant} from '@services/participantHooks'
+import ParticipantService from '@services/participants.service'
+import {ExtendedScheduleEventObject} from '@services/schedule.service'
+import {EditableParticipantData, Phone} from '@typedefs/types'
+import React, {FunctionComponent} from 'react'
+import AddSingleParticipantForm from './AddSingleParticipantForm'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -77,25 +77,30 @@ const AddSingleParticipant: FunctionComponent<AddSingleParticipantProps> = ({
       note: participant.note,
     }
     isEnrolledById
-      ? mutateAsync({ studyId: studyIdentifier, options })
+      ? mutateAsync({studyId: studyIdentifier, options})
       : mutateAsync({
-        studyId: studyIdentifier,
-        options,
-        phone: Utility.makePhone(participant.phoneNumber || ''),
-      })
-    setParticipant({ externalId: '' })
+          studyId: studyIdentifier,
+          options,
+          phone: Utility.makePhone(participant.phoneNumber || ''),
+        })
+    setParticipant({externalId: ''})
   }
 
   const isAddDisabled = (): boolean => {
-    const enrolledByPhoneWithoutNumber = !isEnrolledById &&
+    const enrolledByPhoneWithoutNumber =
+      !isEnrolledById &&
       (!participant.phoneNumber ||
         Utility.isInvalidPhone(participant.phoneNumber))
     const enrolledNyIdWithoutId = isEnrolledById && !participant.externalId
-    const noTimeZoneForStudiesWithCustomEvents = (scheduleEvents.find(e => e.eventId.includes('custom')) !==
-      undefined) && (participant.clientTimeZone || '').length < 3
+    const noTimeZoneForStudiesWithCustomEvents =
+      scheduleEvents.find(e => e.eventId.includes('custom')) !== undefined &&
+      (participant.clientTimeZone || '').length < 3
 
-
-    return enrolledByPhoneWithoutNumber || enrolledNyIdWithoutId || noTimeZoneForStudiesWithCustomEvents
+    return (
+      enrolledByPhoneWithoutNumber ||
+      enrolledNyIdWithoutId ||
+      noTimeZoneForStudiesWithCustomEvents
+    )
   }
 
   return (

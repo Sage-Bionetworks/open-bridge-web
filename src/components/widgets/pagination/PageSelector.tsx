@@ -3,7 +3,7 @@ import ForwardToEndIcon from '@assets/participants/paging/forward_to_end_icon.sv
 import NextPageIcon from '@assets/participants/paging/next_page_icon.svg'
 import PreviousPageIcon from '@assets/participants/paging/previous_page_icon.svg'
 import {Button} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
 import PageBox from './PageBox'
 

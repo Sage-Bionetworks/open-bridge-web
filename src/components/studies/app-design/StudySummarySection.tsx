@@ -1,5 +1,5 @@
-import { FormControl } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {FormControl} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
 import FormGroupWrapper from './widgets/FormGroupWrapper'
 import Subsection from './widgets/Subsection'

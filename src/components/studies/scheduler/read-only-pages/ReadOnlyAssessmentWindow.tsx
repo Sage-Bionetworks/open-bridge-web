@@ -1,6 +1,6 @@
 import ClockIcon from '@assets/clock.svg'
-import { Box } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
 import moment from 'moment'
 import React from 'react'

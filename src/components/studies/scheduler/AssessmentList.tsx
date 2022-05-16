@@ -1,7 +1,7 @@
 import BlackBorderDropdown from '@components/widgets/BlackBorderDropdown'
 import SessionIcon from '@components/widgets/SessionIcon'
-import { Box, FormControlLabel, FormGroup } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box, FormControlLabel, FormGroup} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import ClockIcon from '@mui/icons-material/AccessTime'
 import {latoFont, poppinsFont, ThemeType} from '@style/theme'
 import {PerformanceOrder, StudySession} from '@typedefs/scheduling'

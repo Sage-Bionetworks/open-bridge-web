@@ -1,5 +1,5 @@
-import { Box } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React, {useEffect, useState} from 'react'
 import Utility from '../../../helpers/utility'

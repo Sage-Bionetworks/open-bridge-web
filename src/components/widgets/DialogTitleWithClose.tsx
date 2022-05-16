@@ -1,6 +1,6 @@
 import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'
-import { IconButton } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import {IconButton} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import DialogTitle from '@mui/material/DialogTitle'
 import CloseIcon from '@mui/icons-material/Close'
 import clsx from 'clsx'
@@ -64,7 +64,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
         <CloseIcon />
       </IconButton>
     </DialogTitle>
-  );
+  )
 }
 
 export default ConfirmationDialog

@@ -1,23 +1,23 @@
-import { ErrorFallback, ErrorHandler } from '@components/widgets/ErrorHandler'
+import {ErrorFallback, ErrorHandler} from '@components/widgets/ErrorHandler'
 import StudyIdWithPhaseImage from '@components/widgets/StudyIdWithPhaseImage'
-import { Alert, Box, Container } from '@mui/material'
+import {Alert, Box, Container} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import { useSchedule } from '@services/scheduleHooks'
+import {useSchedule} from '@services/scheduleHooks'
 import StudyService from '@services/study.service'
-import { useStudy } from '@services/studyHooks'
-import { ThemeType } from '@style/theme'
+import {useStudy} from '@services/studyHooks'
+import {ThemeType} from '@style/theme'
 import clsx from 'clsx'
 import _ from 'lodash'
-import React, { FunctionComponent } from 'react'
-import { ErrorBoundary, useErrorHandler } from 'react-error-boundary'
-import { Route, RouteComponentProps, Switch, useParams } from 'react-router-dom'
-import { Schedule } from '../../types/scheduling'
-import { ExtendedError, StringDictionary, Study } from '../../types/types'
+import React, {FunctionComponent} from 'react'
+import {ErrorBoundary, useErrorHandler} from 'react-error-boundary'
+import {Route, RouteComponentProps, Switch, useParams} from 'react-router-dom'
+import {Schedule} from '../../types/scheduling'
+import {ExtendedError, StringDictionary, Study} from '../../types/types'
 import AlertBanner from '../widgets/AlertBanner'
-import { MTBHeadingH1 } from '../widgets/Headings'
+import {MTBHeadingH1} from '../widgets/Headings'
 import LoadingComponent from '../widgets/Loader'
 import AppDesign from './app-design/AppDesign'
-import BannerInfo, { BannerInfoType } from './BannerInfo'
+import BannerInfo, {BannerInfoType} from './BannerInfo'
 import EnrollmentTypeSelector from './enrollment-type-selector/EnrollmentTypeSelector'
 import Launch from './launch/Launch'
 import NavButtons from './NavButtons'
@@ -25,7 +25,7 @@ import PassiveFeatures from './passive-features/PassiveFeatures'
 import Preview from './preview/Preview'
 import IntroInfo from './scheduler/IntroInfo'
 import Scheduler from './scheduler/Scheduler'
-import { isSectionEditableWhenLive, StudySection } from './sections'
+import {isSectionEditableWhenLive, StudySection} from './sections'
 import SessionCreator from './session-creator/SessionCreator'
 import StudyLeftNav from './StudyLeftNav'
 
@@ -116,7 +116,7 @@ export type SchedulerErrorType = {
 const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
   () => {
     const classes = useStyles()
-    let { id, section = 'session-creator' } = useParams<{
+    let {id, section = 'session-creator'} = useParams<{
       id: string
       section: StudySection
     }>()
@@ -275,7 +275,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                 isVisible={displayEditabilityBanner}
                 icon={
                   isSectionEditableWhenLive(section) &&
-                    StudyService.getDisplayStatusForStudyPhase(study.phase) ===
+                  StudyService.getDisplayStatusForStudyPhase(study.phase) ===
                     'LIVE'
                     ? editabilityBannerType?.icon[1]!
                     : editabilityBannerType?.icon[0]!
@@ -284,7 +284,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                 displayBottomOfPage={true}
                 displayText={
                   isSectionEditableWhenLive(section) &&
-                    StudyService.getDisplayStatusForStudyPhase(study.phase) ===
+                  StudyService.getDisplayStatusForStudyPhase(study.phase) ===
                     'LIVE'
                     ? editabilityBannerType?.displayText[1]!
                     : editabilityBannerType?.displayText[0]!
@@ -303,9 +303,9 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
             style={{
               backgroundColor:
                 section === 'session-creator' ||
-                  section === 'scheduler' ||
-                  section === 'enrollment-type-selector' ||
-                  section === 'preview'
+                section === 'scheduler' ||
+                section === 'enrollment-type-selector' ||
+                section === 'preview'
                   ? '#f7f7f7'
                   : 'inherit',
             }}>
@@ -333,7 +333,7 @@ const StudyBuilder: FunctionComponent<StudyBuilderProps & RouteComponentProps> =
                       <Alert
                         variant="outlined"
                         color="error"
-                        style={{ marginBottom: '16px' }}>
+                        style={{marginBottom: '16px'}}>
                         {Array.isArray(error) ? (
                           error.map(e => (
                             <div

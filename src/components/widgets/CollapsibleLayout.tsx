@@ -1,10 +1,10 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import { Box, Drawer, IconButton } from '@mui/material'
+import {Box, Drawer, IconButton} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { theme, ThemeType } from '../../style/theme'
+import React, {FunctionComponent} from 'react'
+import {theme, ThemeType} from '../../style/theme'
 
 interface StyleProps {
   maxWidth: number
@@ -148,7 +148,7 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
               {isOpen ? closeIcon : openIcon}
             </IconButton>
           </Box>
-          <Box style={isOpen ? {} : { display: 'none' }}>{children[0]}</Box>
+          <Box style={isOpen ? {} : {display: 'none'}}>{children[0]}</Box>
         </Drawer>
         <Box className={classes.mainAreaWrapper}>
           <Box
@@ -157,7 +157,7 @@ const CollapsibleLayout: FunctionComponent<CollapsibleLayoutProps> = ({
               [classes.mainAreaWider]: isOpen && isWide,
               [classes.mainAreaWide]: !isOpen,
             })}
-            style={isFullWidth ? { width: '100%' } : {}}>
+            style={isFullWidth ? {width: '100%'} : {}}>
             {children[1]}
           </Box>
         </Box>

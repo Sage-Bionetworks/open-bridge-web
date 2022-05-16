@@ -1,16 +1,16 @@
 import Loader from '@components/widgets/Loader'
-import { Box, Container, Divider, Paper, Typography } from '@mui/material'
+import {Box, Container, Divider, Paper, Typography} from '@mui/material'
 import createStyles from '@mui/styles/createStyles'
 import makeStyles from '@mui/styles/makeStyles'
-import { useAssessmentWithResources } from '@services/assessmentHooks'
+import {useAssessmentWithResources} from '@services/assessmentHooks'
 import clsx from 'clsx'
-import React, { FunctionComponent } from 'react'
-import { useErrorHandler } from 'react-error-boundary'
-import { RouteComponentProps, useParams } from 'react-router-dom'
+import React, {FunctionComponent} from 'react'
+import {useErrorHandler} from 'react-error-boundary'
+import {RouteComponentProps, useParams} from 'react-router-dom'
 import ClockIcon from '../../assets/clock.svg'
 import OfficialMobileToolboxVersion from '../../assets/official_mobile_toolbox_icon.svg'
 import ScientificallyValidatedIcon from '../../assets/validated.svg'
-import { playfairDisplayFont, poppinsFont } from '../../style/theme'
+import {playfairDisplayFont, poppinsFont} from '../../style/theme'
 import BreadCrumb from '../widgets/BreadCrumb'
 import AssessmentImage from './AssessmentImage'
 
@@ -100,13 +100,12 @@ type AssessmentDetailOwnProps = {}
 type AssessmentDetailProps = AssessmentDetailOwnProps & RouteComponentProps
 
 const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
-
   const classes = useStyles()
-  const links = [{ url: '/assessments', text: 'Assessments' }]
-  let { id } = useParams<{ id: string }>()
+  const links = [{url: '/assessments', text: 'Assessments'}]
+  let {id} = useParams<{id: string}>()
   const handleError = useErrorHandler()
 
-  const { data, isError, error, isLoading } = useAssessmentWithResources(id)
+  const {data, isError, error, isLoading} = useAssessmentWithResources(id)
 
   if (isError) {
     handleError(error!)
@@ -127,7 +126,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
       <Container maxWidth="lg" className={classes.overallBackground}>
         <Paper className="classes.container">
           <Box display="flex" className={classes.informationBox}>
-            <Box width="530px" marginRight="32px" style={{ textAlign: 'left' }}>
+            <Box width="530px" marginRight="32px" style={{textAlign: 'left'}}>
               <AssessmentImage
                 name={`${data.title}_img`}
                 resources={data.resources}
@@ -173,7 +172,7 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
               </div>
               {/*<div className={classes.informationText}>[Age: 18 +]</div>*/}
               <div className={clsx(classes.informationText, classes.row)}>
-                <div style={{ width: '100px' }}>Designed By:</div>
+                <div style={{width: '100px'}}>Designed By:</div>
                 <div>
                   {correctResource && correctResource.creators
                     ? correctResource.creators.join(', ')
@@ -192,7 +191,6 @@ const AssessmentDetail: FunctionComponent<AssessmentDetailProps> = () => {
       </Container>
     </div>
   )
-
 }
 
 export default AssessmentDetail

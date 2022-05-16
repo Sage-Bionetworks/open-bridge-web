@@ -1,6 +1,6 @@
-import { Box, FormControlLabel, Radio, RadioGroup } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import {Box, FormControlLabel, Radio, RadioGroup} from '@mui/material'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React, {ReactNode} from 'react'
 import SchedulingFormSection from './SchedulingFormSection'

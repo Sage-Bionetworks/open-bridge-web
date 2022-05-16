@@ -1,18 +1,25 @@
-import { SessionSymbols } from '@components/widgets/SessionIcon';
-import { useUserSessionDataState } from '@helpers/AuthContext';
-import { Box, Button, Container, Divider, FormControlLabel, Theme } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import ScheduleService from '@services/schedule.service';
-import { Study } from '@typedefs/types';
-import React from 'react';
-import { useUpdateSchedule } from '../../../services/scheduleHooks';
-import { useStudy, useUpdateStudyDetail } from '../../../services/studyHooks';
-import { latoFont, poppinsFont } from '../../../style/theme';
-import constants from '../../../types/constants';
-import { DWsEnum, Schedule } from '../../../types/scheduling';
-import { SimpleTextInput } from '../../widgets/StyledComponents';
-import Duration from './Duration';
+import {SessionSymbols} from '@components/widgets/SessionIcon'
+import {useUserSessionDataState} from '@helpers/AuthContext'
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  FormControlLabel,
+  Theme,
+} from '@mui/material'
+import createStyles from '@mui/styles/createStyles'
+import makeStyles from '@mui/styles/makeStyles'
+import ScheduleService from '@services/schedule.service'
+import {Study} from '@typedefs/types'
+import React from 'react'
+import {useUpdateSchedule} from '../../../services/scheduleHooks'
+import {useStudy, useUpdateStudyDetail} from '../../../services/studyHooks'
+import {latoFont, poppinsFont} from '../../../style/theme'
+import constants from '../../../types/constants'
+import {DWsEnum, Schedule} from '../../../types/scheduling'
+import {SimpleTextInput} from '../../widgets/StyledComponents'
+import Duration from './Duration'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -97,12 +104,12 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
   id: studyId,
 }: IntroInfoProps) => {
   const classes = useStyles()
-  const { token } = useUserSessionDataState()
+  const {token} = useUserSessionDataState()
   const [studyName, setStudyName] = React.useState<any>(
     name === constants.constants.NEW_STUDY_NAME ? '' : name
   )
   const [duration, setDuration] = React.useState<any>('')
-  const { data: study, error: studyError } = useStudy(studyId)
+  const {data: study, error: studyError} = useStudy(studyId)
   const {
     isSuccess: scheduleUpdateSuccess,
     isError: scheduleUpdateError,
@@ -152,7 +159,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
       action: 'CREATE',
     }).then(s => console.log('schedule created'))
 
-    mutateStudy({ study: updatedStudy }).then(e => {
+    mutateStudy({study: updatedStudy}).then(e => {
       console.log('study updated')
     })
   }
@@ -161,8 +168,8 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
     <Container maxWidth="md" className={classes.container}>
       <div>
         <FormControlLabel
-          style={{ marginBottom: '35px', marginLeft: 0 }}
-          classes={{ labelPlacementStart: classes.labelDuration }}
+          style={{marginBottom: '35px', marginLeft: 0}}
+          classes={{labelPlacementStart: classes.labelDuration}}
           label={
             <Box width="210px" marginRight="40px">
               <strong className={classes.headerText}>Study Name</strong>

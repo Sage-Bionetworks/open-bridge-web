@@ -98,7 +98,7 @@ import {ReactComponent as _20iR} from '@assets/symbols/20_i-1.svg'
 import {ReactComponent as _20i} from '@assets/symbols/20_i.svg'
 import {ReactComponent as _20pR} from '@assets/symbols/20_p-1.svg'
 import {ReactComponent as _20p} from '@assets/symbols/20_p.svg'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
 
 const useStyles = makeStyles({

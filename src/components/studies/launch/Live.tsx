@@ -1,20 +1,20 @@
-import { Button } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import { useStudy } from '@services/studyHooks';
-import clsx from 'clsx';
-import React from 'react';
-import { RouteComponentProps } from 'react-router';
-import { useParams } from 'react-router-dom';
-import confetti from '../../../assets/launch/confetti.svg';
-import LiveIcon from '../../../assets/live_study_icon.svg';
+import {Button} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
+import {useStudy} from '@services/studyHooks'
+import clsx from 'clsx'
+import React from 'react'
+import {RouteComponentProps} from 'react-router'
+import {useParams} from 'react-router-dom'
+import confetti from '../../../assets/launch/confetti.svg'
+import LiveIcon from '../../../assets/live_study_icon.svg'
 import {
   latoFont,
   playfairDisplayFont,
   poppinsFont,
-  ThemeType
-} from '../../../style/theme';
-import constants from '../../../types/constants';
-import { MTBHeadingH1 } from '../../widgets/Headings';
+  ThemeType,
+} from '../../../style/theme'
+import constants from '../../../types/constants'
+import {MTBHeadingH1} from '../../widgets/Headings'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -81,20 +81,20 @@ const useStyles = makeStyles((theme: ThemeType) => ({
 }))
 
 const Live: React.FunctionComponent<RouteComponentProps> =
-  ({ }: RouteComponentProps) => {
+  ({}: RouteComponentProps) => {
     const classes = useStyles()
-    let { id } = useParams<{
+    let {id} = useParams<{
       id: string
     }>()
 
-    const { data: study, error: studyError } = useStudy(id)
+    const {data: study, error: studyError} = useStudy(id)
     if (!study) {
       return <></>
     }
     return (
       <div className={classes.root}>
         <div className={classes.inner}>
-          <div style={{ marginLeft: '-50px' }}>
+          <div style={{marginLeft: '-50px'}}>
             <MTBHeadingH1 className={classes.congratsText}>
               Congratulations!
             </MTBHeadingH1>

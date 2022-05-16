@@ -1,5 +1,5 @@
 import {Button} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
 
 const useStyles = makeStyles(theme => ({
@@ -41,7 +41,7 @@ const PageBox: React.FunctionComponent<PageBoxProps> = ({
       className={`${classes.pageBoxSurrounding} ${
         isSelected ? classes.withBlackBorder : classes.withGrayBorder
       }`}
-      onClick={() => onPageSelected(pageNumber-1)}>
+      onClick={() => onPageSelected(pageNumber - 1)}>
       {pageNumber}
     </Button>
   )

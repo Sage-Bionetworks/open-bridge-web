@@ -1,15 +1,15 @@
 import DatePicker from '@components/widgets/DatePicker'
-import { Box } from '@mui/material'
+import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import EventService from '@services/event.service'
 import {
   ExtendedScheduleEventObject,
-  TIMELINE_RETRIEVED_EVENT
+  TIMELINE_RETRIEVED_EVENT,
 } from '@services/schedule.service'
-import { ParticipantEvent } from '@typedefs/types'
+import {ParticipantEvent} from '@typedefs/types'
 import clsx from 'clsx'
 import moment from 'moment'
-import React, { FunctionComponent } from 'react'
+import React, {FunctionComponent} from 'react'
 
 const useStyles = makeStyles(theme => ({
   eventField: {
@@ -67,21 +67,20 @@ const useStyles = makeStyles(theme => ({
     lineHeight: 2,
   },
   blockLabels: {
-    '& $eventField >.MuiFormControl-root':
-    {
+    '& $eventField >.MuiFormControl-root': {
       padding: 0,
       display: 'block',
       paddingTop: '8px',
       '& > label': {
-        display: 'block'
+        display: 'block',
       },
       '&>.MuiFormControl-root': {
         margin: theme.spacing(1, 0, 2, 0),
-        width: '100%'
+        width: '100%',
       },
-    }
+    },
   },
-  normal: {}
+  normal: {},
 }))
 
 type EditParticipantEventsFormProps = {
@@ -95,7 +94,7 @@ type EditParticipantEventsFormProps = {
 const EventLabel: FunctionComponent<{
   eo: ExtendedScheduleEventObject
   index: number
-}> = ({ eo, index }) => {
+}> = ({eo, index}) => {
   const classes = useStyles()
   const formattedEventId = EventService.formatEventIdForDisplay(eo.eventId)
   const parentEventId = eo.originEventId
@@ -135,7 +134,7 @@ const ReadOnlyDate: FunctionComponent<{
   eo: ExtendedScheduleEventObject
   index: number
   value?: Date | null
-}> = ({ eo, index, value }) => {
+}> = ({eo, index, value}) => {
   const classes = useStyles()
   var displayValue = value ? moment(value).format('MM/DD/YYYY') : '--'
   return (
@@ -145,7 +144,7 @@ const ReadOnlyDate: FunctionComponent<{
       </label>
       <div
         className={classes.emptyDate}
-        style={{ textAlign: value ? 'left' : 'center' }}>
+        style={{textAlign: value ? 'left' : 'center'}}>
         {displayValue}
       </div>
     </div>
@@ -157,7 +156,7 @@ const BurstEvent: FunctionComponent<{
   eventDate: Date | null
   index: number
   onChange: (date: Date | null) => void
-}> = ({ burstEvent, onChange, eventDate, index }) => {
+}> = ({burstEvent, onChange, eventDate, index}) => {
   const classes = useStyles()
   return (
     <div
@@ -178,7 +177,13 @@ const BurstEvent: FunctionComponent<{
 }
 
 const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProps> =
-  ({ customParticipantEvents, scheduleEvents, onChange, hideLoginEvent, labelsAbove }) => {
+  ({
+    customParticipantEvents,
+    scheduleEvents,
+    onChange,
+    hideLoginEvent,
+    labelsAbove,
+  }) => {
     const classes = useStyles()
 
     const reCalculateBursts = (
@@ -195,7 +200,7 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
           timestamp: moment(newBurstEvent.timestamp!)
             .add(
               (EventService.getBurstNumberFromEventId(e.eventId) - 1) *
-              (e.interval?.value || 0),
+                (e.interval?.value || 0),
               'week'
             )
             .toDate(),
@@ -279,17 +284,17 @@ const EditParticipantEventsForm: FunctionComponent<EditParticipantEventsFormProp
             (nonBurstEvent, index) =>
               shouldDisplayEvent(nonBurstEvent, hideLoginEvent) && (
                 <div
-                  style={{ marginBottom: '8px' }}
+                  style={{marginBottom: '8px'}}
                   key={nonBurstEvent.eventId + index}>
                   <div
                     className={clsx(
                       classes.eventField,
                       isBurstOriginEvent(nonBurstEvent.eventId) &&
-                      classes.burstOrigin
+                        classes.burstOrigin
                     )}
                     key={nonBurstEvent.eventId}>
                     {nonBurstEvent.eventId !==
-                      TIMELINE_RETRIEVED_EVENT.eventId ? (
+                    TIMELINE_RETRIEVED_EVENT.eventId ? (
                       <DatePicker
                         label={<EventLabel eo={nonBurstEvent} index={index} />}
                         id={nonBurstEvent.eventId}
