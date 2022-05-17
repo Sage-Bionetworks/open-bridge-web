@@ -4,7 +4,6 @@ import ParticipantService from '@services/participants.service'
 import React, {FunctionComponent, ReactNode} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {ReactComponent as Delete} from '../../assets/trash.svg'
-import {useAsync} from '../../helpers/AsyncHook'
 import Utility from '../../helpers/utility'
 import AccessService from '../../services/access.service'
 import {globals, poppinsFont} from '../../style/theme'
@@ -148,17 +147,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   const [isAccessLoading, setIsAccessLoading] = React.useState(true)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false)
   const [updateError, setUpdateError] = React.useState('')
-
-  const {
-    data: members,
-    status,
-    error,
-    run,
-    setData,
-  } = useAsync<any>({
-    status: 'PENDING',
-    data: [],
-  })
+  const [members, setMembers] = React.useState<OrgUser[]>([])
 
   const getMembers = React.useCallback(
     async (orgMembership: string, token: string) => {
@@ -178,23 +167,32 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
   )
 
   React.useEffect(() => {
-    return run(
-      (async function (orgMembership, token) {
-        const result = getMembers(orgMembership!, token!)
-
-        return result
-      })(orgMembership, token)
-    )
-  }, [run, orgMembership, token, updateToggle, getMembers])
+    let isSubscribed = true
+    const fetchData = async () => {
+      setIsAccessLoading(true)
+      const result = await getMembers(orgMembership!, token!)
+      if (isSubscribed) {
+        setMembers(result)
+      }
+      setIsAccessLoading(true)
+    }
+    fetchData()
+      .catch(error => handleError(error))
+      .finally(() => setIsAccessLoading(false))
+    return () => {
+      isSubscribed = false
+    }
+  }, [orgMembership, token, updateToggle, getMembers, handleError])
 
   const deleteExistingAccount = async (member: OrgUser) => {
     setUpdateError('')
     try {
       await AccessService.deleteIndividualAccount(token!, member.id)
       const result = await getMembers(orgMembership!, token!)
-      setData(result)
+      setMembers(result)
     } catch (e) {
       setUpdateError((e as Error).message)
+      throw e
     }
   }
 
@@ -226,21 +224,18 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
         clientData
       )
       const result = await getMembers(orgMembership!, token!)
-      setData(result)
+      setMembers(result)
     } catch (e) {
       setUpdateError((e as Error).message)
     }
   }
 
-  const updateAccess = React.useCallback(
-    async (member: OrgUser) => {
-      setIsAccessLoading(true)
-      const access = getAccessFromRoles(member.roles)
-      setCurrentMemberAccess({access, member})
-      setIsAccessLoading(false)
-    },
-    [token]
-  )
+  const updateAccess = React.useCallback(async (member: OrgUser) => {
+    setIsAccessLoading(true)
+    const access = getAccessFromRoles(member.roles)
+    setCurrentMemberAccess({access, member})
+    setIsAccessLoading(false)
+  }, [])
 
   React.useEffect(() => {
     ;(async function (member) {
@@ -251,10 +246,6 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     })(members ? members[0] : undefined)
   }, [members, updateAccess])
 
-  if (status === 'REJECTED') {
-    handleError(error!)
-  }
-
   return (
     <Box className={classes.root}>
       <Box className={classes.listing}>
@@ -262,7 +253,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
           Study ID: {Utility.formatStudyId(study.identifier)}{' '}
         </MTBHeadingH6>
         <MTBHeadingH1 style={{color: ' #FCFCFC'}}>{study.name}</MTBHeadingH1>
-        {status === 'PENDING' && <Loader reqStatusLoading={true}></Loader>}{' '}
+        <Loader reqStatusLoading={isAccessLoading}></Loader>
         <ul className={classes.list}>
           {members &&
             members.map((member: any, index: number) => (
@@ -320,6 +311,7 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                   <Button
                     aria-label="delete"
                     onClick={() => {
+                      setUpdateError('')
                       setIsConfirmDeleteOpen(true)
                     }}
                     startIcon={<Delete />}>
@@ -339,17 +331,27 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
 
               <ConfirmationDialog
                 isOpen={isConfirmDeleteOpen}
-                title={'Delete Study'}
+                title={'Delete Member'}
                 type={'DELETE'}
                 onCancel={() => setIsConfirmDeleteOpen(false)}
                 onConfirm={() => {
                   const member = {...currentMemberAccess!.member}
                   // setCurrentMemberId(members[0].id)
-                  deleteExistingAccount(member)
 
-                  setIsConfirmDeleteOpen(false)
+                  deleteExistingAccount(member)
+                    .then(() => setIsConfirmDeleteOpen(false))
+                    .catch(e => setUpdateError(e.message))
                 }}>
                 <div>
+                  {updateError && (
+                    <Alert
+                      variant="outlined"
+                      color="error"
+                      style={{marginBottom: '8px'}}>
+                      {updateError}
+                    </Alert>
+                  )}
+
                   <strong>
                     Are you sure you would like to permanently delete{' '}
                     {getNameDisplay(currentMemberAccess!.member)}
