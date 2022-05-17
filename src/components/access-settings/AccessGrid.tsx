@@ -306,7 +306,7 @@ const AccessGrid: FunctionComponent<AccessGridProps> = ({
                     restriction={restriction}
                     role_key={role_key}
                     isCoAdmin={hasCoadminAccess()}
-                    currentUserIsAdmin={currentUserIsAdmin}
+                    currentUserIsAdmin={currentUserIsAdmin && !isThisMe}
                     onUpdate={(e: React.ChangeEvent<HTMLInputElement>) => {
                       let restriction = e.target.value as
                         | typeof AccessRestriction[number]
