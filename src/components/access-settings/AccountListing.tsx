@@ -245,6 +245,10 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
     })(members ? members[0] : undefined)
   }, [members, updateAccess])
 
+  const isSelf = (): boolean => {
+    return currentMemberAccess?.member.id === id
+  }
+
   return (
     <Box className={classes.root}>
       <Box className={classes.listing}>
@@ -303,9 +307,9 @@ const AccountListing: FunctionComponent<AccountListingProps> = ({
                     access: _access,
                   })
                 }
-                isThisMe={currentMemberAccess.member.id === id}
+                isThisMe={isSelf()}
                 currentUserIsAdmin={Utility.isInAdminRole()}></AccessGrid>
-              {Utility.isInAdminRole() && (
+              {Utility.isInAdminRole() && !isSelf() && (
                 <Box className={classes.buttons}>
                   <Button
                     aria-label="delete"
