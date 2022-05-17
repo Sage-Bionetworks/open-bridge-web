@@ -121,7 +121,6 @@ async function createIndividualAccount(
     appId: Utility.getAppId(),
     email,
     synapseUserId,
-    // dataGroups: ['test_user'],
     firstName,
     lastName,
     orgMembership,
