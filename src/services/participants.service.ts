@@ -450,7 +450,7 @@ async function signUpForAssessmentDemoStudy(token: string): Promise<string> {
     appId: Utility.getAppId(),
     externalIds: {[studyId]: backEndFormatExternalId},
     password: backEndFormatExternalId,
-    dataGroups: ['test_user'],
+    dataGroups: ['preview_user'],
   }
 
   const result = await Utility.callEndpoint<any>(endpoint, 'POST', data, token)
@@ -480,12 +480,15 @@ async function addParticipant(
 
   data.phone = options.phone
 
-  if (isTestUser) {
-    data.dataGroups = ['test_user']
-  }
-  if (!isPreview) {
+  if (isPreview) {
+    data.dataGroups = ['preview_user']
+  } else {
     data.sharingScope = 'sponsors_and_partners'
+    if (isTestUser) {
+      data.dataGroups = ['test_user']
+    }
   }
+
   let backEndFormatExternalId = undefined
   if (options.externalId) {
     backEndFormatExternalId = makeBackendExternalId(studyId, options.externalId)
