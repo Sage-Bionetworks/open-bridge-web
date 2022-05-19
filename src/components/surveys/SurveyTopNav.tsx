@@ -191,7 +191,7 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
               />
             </NavLink>
 
-            <BreadCrumb links={[{url: '/', text: ''}]}></BreadCrumb>
+            <BreadCrumb links={[{url: '/surveys', text: ''}]}></BreadCrumb>
           </Toolbar>
           <Toolbar className={classes.toolbar}>
             {links

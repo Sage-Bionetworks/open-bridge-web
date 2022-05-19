@@ -1,9 +1,9 @@
 import {Box, Button} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
+import {ControlType, Question, Step} from '@typedefs/surveys'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
-import {ControlType, Question, Step} from '../types'
 
 const useStyles = makeStyles(theme => ({
   root: {

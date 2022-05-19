@@ -15,6 +15,7 @@ export default {
   restrictedPaths: {
     ACCESS_SETTINGS: '/studies/:id/access-settings',
     STUDY_BUILDER: '/studies/builder/:id',
+    SURVEY_BUILDER: '/surveys/:id/design',
     PARTICIPANT_MANAGER: '/studies/:id/participant-manager',
     ADHERENCE_DATA: '/studies/:id/adherence',
     STUDY_DATA: '/studies/:id/study-data',

@@ -1,5 +1,6 @@
 import constants from './constants'
 import {Schedule, ScheduleNotification, SchedulingEvent} from './scheduling'
+import {Survey} from './surveys'
 
 /* *** General Types ********************************/
 //usage example type JsonPrimitive = SubType<Person, number | string>;
@@ -110,17 +111,18 @@ export type Assessment = {
   deleted?: boolean
   guid?: string
 
-  modifiedOn?: string
+  modifiedOn?: Date
   normingStatus?: string
 
   summary?: string
   tags: string[]
 
-  version?: number
+  version: number
   validationStatus?: string
   minutesToComplete?: number
   resources?: any[]
   originGuid?: string
+  config?: Survey
 }
 
 export type AssessmentConfig = {
