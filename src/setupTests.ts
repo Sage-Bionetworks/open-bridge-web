@@ -6,7 +6,9 @@ import '@testing-library/jest-dom/extend-expect'
 import server from '__test_server/server'
 
 // Establish API mocking before all tests.
-beforeAll(() => server.listen())
+beforeAll(() => {
+  server.listen({onUnhandledRequest: 'error'})
+})
 
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests.
