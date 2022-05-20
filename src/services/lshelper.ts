@@ -1,7 +1,7 @@
-import * as Assessments from '../data/assessments'
 import Schedule from '../data/schedule.json'
 import Sessions from '../data/sessions.json'
 import Studies from '../data/studies.json'
+import * as Assessments from '../__test_utils/mocks/assessments'
 
 export const KEYS = {
   STUDIES: 'STUDIES',

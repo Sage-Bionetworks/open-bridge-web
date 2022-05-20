@@ -1,7 +1,7 @@
 import constants from '@typedefs/constants'
 import {ParticipantAccountSummary} from '@typedefs/types'
 import {rest} from 'msw'
-import * as assessments from '../data/assessments'
+import * as assessments from '../mocks/assessments'
 
 const mtbAppId = constants.constants.MTB_APP_ID
 const arcAppId = constants.constants.ARC_APP_ID

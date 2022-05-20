@@ -3,7 +3,7 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect'
-import server from '__test_server/server'
+import server from '__test_utils/test_server/server'
 
 // Establish API mocking before all tests.
 beforeAll(() => {

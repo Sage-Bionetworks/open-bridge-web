@@ -6,8 +6,11 @@ import React from 'react'
 import {UseQueryResult} from 'react-query'
 import {MemoryRouter} from 'react-router-dom'
 import AuthenticatedApp from '../AuthenticatedApp'
-import {loggedInSessionData, notLoggedInSessionData} from '../__mocks/user'
-import {noStudy, studyData} from '../__mocks/useStudyResponses'
+import {
+  loggedInSessionData,
+  notLoggedInSessionData,
+} from '../__test_utils/mocks/user'
+import {noStudy, studyData} from '../__test_utils/mocks/useStudyResponses'
 jest.mock('@helpers/AuthContext')
 jest.mock('@services/studyHooks')
 

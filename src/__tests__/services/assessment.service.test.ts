@@ -1,7 +1,7 @@
 import AssessmentService from '@services/assessment.service'
 import constants from '@typedefs/constants'
 import {Assessment} from '@typedefs/types'
-import * as assessmentData from '../../data/assessments'
+import * as assessmentData from '../../__test_utils/mocks/assessments'
 
 const token = 'token_123'
 const appId = constants.constants.MTB_APP_ID
