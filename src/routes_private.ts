@@ -35,7 +35,7 @@ export default [
   },
   {
     path: '/surveys',
-    name: 'SURVEY BUILDER',
+    name: '',
     Component: SurveyList,
     exact: true,
   },
