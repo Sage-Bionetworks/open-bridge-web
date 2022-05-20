@@ -1,6 +1,10 @@
 import constants from '@typedefs/constants'
 import {ParticipantAccountSummary} from '@typedefs/types'
 import {rest} from 'msw'
+import * as assessments from '../data/assessments'
+
+const mtbAppId = constants.constants.MTB_APP_ID
+const arcAppId = constants.constants.ARC_APP_ID
 
 type Search = {
   pageSize: number
@@ -68,6 +72,39 @@ export const handlers = [
           total: 100,
         })
       )
+    }
+  ),
+  //shared assessments
+  rest.get(
+    `*${constants.endpoints.assessmentsShared.split('/?')[0]}/*`,
+    (req, res, ctx) => {
+      console.log('REQ', req)
+      return res(
+        ctx.json({
+          items: [assessments.SharedAssessmentsArc],
+        }),
+        ctx.status(200)
+      )
+    }
+  ),
+
+  //local Assessments
+  rest.get(
+    `*${constants.endpoints.assessments.split('/?')[0]}/*`,
+    (req, res, ctx) => {
+      return res(
+        ctx.json({
+          items: [...assessments.LocalAssessmentsMTB],
+        }),
+        ctx.status(200)
+      )
+    }
+  ),
+
+  rest.post(
+    `*${constants.endpoints.assessment.replace(':id', '')}`,
+    (req, res, ctx) => {
+      return res(ctx.json(req.body), ctx.status(200))
     }
   ),
 

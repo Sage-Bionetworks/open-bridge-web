@@ -81,8 +81,8 @@ export default {
       '/v5/studies/:studyId/participants/:userId/adherence/weekly',
     adherenceWeekly: '/v5/studies/:studyId/adherence/weekly',
     assessment: '/v1/assessments/:id',
-    assessments: '/v1/assessments?includeDeleted=false',
     assessmentShared: '/v1/sharedassessments/:id',
+    assessments: '/v1/assessments/?includeDeleted=false',
     assessmentsShared: '/v1/sharedassessments/?includeDeleted=false',
     assessmentResources: '/v1/assessments/identifier::identifier/resources', //'/v1/sharedassessments',
     assessmentSharedResources:

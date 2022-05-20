@@ -1,0 +1,202 @@
+import AssessmentService from '@services/assessment.service'
+import constants from '@typedefs/constants'
+
+const mtbAppId = constants.constants.MTB_APP_ID
+const arcAppId = constants.constants.ARC_APP_ID
+
+export const LocalAssessmentsMTB = [
+  {
+    guid: 'dokxPxeR-JjCZA370eGctQly',
+    identifier: 'memory-for-sequences',
+    revision: 1,
+    ownerId: 'sage-bionetworks',
+    title: 'Memory for Sequences',
+    summary:
+      'Recall an alphanumeric string and reorganize/cognitively manipulate it and produce a new output.',
+    osName: 'iPhone OS',
+    validationStatus: '',
+    normingStatus: '',
+    tags: [
+      'cognitive',
+      'working-memory',
+      'mobile',
+      AssessmentService.SURVEY_APP_TAG[mtbAppId],
+    ],
+    customizationFields: {},
+    createdOn: '2020-10-05T20:44:53.727Z',
+    modifiedOn: '2020-10-05T20:44:53.727Z',
+    deleted: false,
+    version: 1,
+    type: 'Assessment',
+  },
+  {
+    guid: 'DbSbKtRbbPpDS_Vb8ttzNNPA',
+    identifier: 'dccs',
+    revision: 1,
+    ownerId: 'sage-bionetworks',
+    title: 'Dimensional Change Card Sort (DCCS)',
+    summary:
+      'Tapping on one of the two pictures presented in response to either the SHAPE or COLOR prompt as fast as possible.',
+    osName: 'iPhone OS',
+    validationStatus: '',
+    normingStatus: '',
+    tags: ['cognitive', 'executive-function'],
+    customizationFields: {},
+    createdOn: '2020-10-05T20:41:26.648Z',
+    modifiedOn: '2020-10-05T20:41:26.648Z',
+    deleted: false,
+    version: 1,
+    type: 'Assessment',
+  },
+]
+
+export const SharedAssessmentsMTB = [
+  {
+    guid: 'X5-W9S2flYzjI6tkr7AslYFZ',
+    identifier: 'psm',
+    revision: 1,
+    ownerId: 'sage-bionetworks',
+    title: 'Picture Sequence Memory (PSM)',
+    summary:
+      'Dragging the picture/item in the correct order of the sequence to assess episodic memory.',
+    osName: 'iPhone OS',
+    validationStatus: '',
+    normingStatus: '',
+    tags: ['cognitive', 'episodic-memory'],
+    customizationFields: {},
+    createdOn: '2020-10-05T20:38:05.956Z',
+    modifiedOn: '2020-10-05T20:38:05.956Z',
+    deleted: false,
+    version: 1,
+    type: 'Assessment',
+  },
+  {
+    guid: '7g-e13Km5yHrtjifvhtVN60-',
+    identifier: 'number-match',
+    revision: 1,
+    ownerId: 'sage-bionetworks',
+    title: 'Number Match',
+    summary:
+      'Fill in items, one row at a time, according to a code/legend on the top of the screen.',
+    osName: 'iPhone OS',
+    validationStatus: '',
+    normingStatus: '',
+    tags: [
+      'cognitive',
+      'episodic-memory',
+      AssessmentService.ASSESSMENT_APP_TAG[mtbAppId],
+    ],
+    customizationFields: {},
+    createdOn: '2020-10-05T20:34:41.421Z',
+    modifiedOn: '2020-10-05T20:34:41.421Z',
+    deleted: false,
+    version: 1,
+    type: 'Assessment',
+  },
+]
+
+export const LocalAssessmentsArc = [
+  {
+    guid: 'xe8KsZ66UNozGdx8nQmV_54L',
+    identifier: 'vocabulary',
+    revision: 1,
+    ownerId: 'sage-bionetworks',
+    title: 'Vocabulary',
+    summary: 'Identify word synonyms.',
+    osName: 'iPhone OS',
+    validationStatus: '',
+    normingStatus: '',
+    tags: ['cognitive', 'language', AssessmentService.SURVEY_APP_TAG[arcAppId]],
+    customizationFields: {},
+    createdOn: '2020-10-05T20:30:55.803Z',
+    modifiedOn: '2020-10-05T20:30:55.803Z',
+    deleted: false,
+    version: 1,
+    type: 'Assessment',
+  },
+  {
+    guid: 'cniY7sXfA9HOzfx-7WF3akWp',
+    identifier: 'spelling',
+    revision: 1,
+    ownerId: 'sage-bionetworks',
+    title: 'Spelling',
+    summary: 'Type spelling of orally presented English words.',
+    osName: 'iPhone OS',
+    validationStatus: '',
+    normingStatus: '',
+    tags: ['cognitive', 'language'],
+    customizationFields: {},
+    createdOn: '2020-10-05T20:26:05.866Z',
+    modifiedOn: '2020-10-05T20:26:05.866Z',
+    deleted: false,
+    version: 1,
+    type: 'Assessment',
+  },
+]
+
+export const SharedAssessmentsArc = [
+  {
+    guid: 'tlgX9Xlr_NZ8LVfWx1RfhvLC',
+    identifier: 'flanker',
+    revision: 1,
+    ownerId: 'sage-bionetworks',
+    title: 'Flanker',
+    summary:
+      'Indicate the direction of a central arrow flanked by foils on each side presented in the same (congruent) and opposite (incongruent) orientations',
+    osName: 'iPhone OS',
+    validationStatus:
+      'To be validated in 2020 through the mobiletoolbox consortium',
+    normingStatus: '',
+    tags: ['cognitive', 'executive-function', 'inhibitory-control'],
+    customizationFields: {},
+    createdOn: '2020-10-05T20:21:44.603Z',
+    modifiedOn: '2020-10-05T21:00:42.172Z',
+    deleted: false,
+    version: 2,
+    type: 'Assessment',
+  },
+  {
+    guid: 'NpjoAByj83eqWH4mJxduH0Tr',
+    identifier: 'fname',
+    revision: 1,
+    ownerId: 'sage-bionetworks',
+    title: 'Face Name Associative Memory Exam (FNAME)',
+    summary:
+      'Participants see a series of facial photos and names and are asked to remember the face-name pairs.',
+    osName: 'Universal',
+    validationStatus:
+      'To be validated in 2020 through the mobiletoolbox consortium.',
+    normingStatus: '',
+    tags: [
+      'associative-memory',
+      'cognitive',
+      AssessmentService.ASSESSMENT_APP_TAG[arcAppId],
+    ],
+    customizationFields: {},
+    createdOn: '2020-10-05T20:15:05.353Z',
+    modifiedOn: '2020-10-05T20:15:05.353Z',
+    deleted: false,
+    version: 1,
+    type: 'Assessment',
+  },
+  {
+    guid: 'h47dKmai4qOcm6rhV-FCr7NA',
+    identifier: 'digital-jar-open',
+    revision: 1,
+    ownerId: 'sage-bionetworks',
+    title: 'Digital Jar Open',
+    summary:
+      'The Digital Jar Open assessment measures the functional range of motion without pain for the joints of the arm (wrist, elbow, shoulder) on each arm while rotating inward and outward. Data collected from this assessment includes x,y,z accelerometer readings (at ~100Hz) and rotation rates from the gyroscope as well as the overall degrees of rotation in each direction for each arm.',
+    osName: 'iPhone OS',
+    validationStatus:
+      'A validation study is in progress in the context of psoriatic arthritis.',
+    normingStatus: '',
+    tags: ['interactive', AssessmentService.ASSESSMENT_APP_TAG[arcAppId]],
+    customizationFields: {},
+    createdOn: '2020-10-05T20:11:20.397Z',
+    modifiedOn: '2020-10-05T20:11:20.397Z',
+    deleted: false,
+    version: 1,
+    type: 'Assessment',
+  },
+]
