@@ -6,10 +6,10 @@ import {
   Typography,
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+import {Survey} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
 import {useParams} from 'react-router-dom'
 import test from '../sample.json'
-import {Survey} from '../types'
 
 const useStyles = makeStyles(theme => ({
   root: {},

@@ -13,8 +13,13 @@ import {
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
+import {
+  ChoiceQuestion,
+  ChoiceQuestionChoice,
+  InputItem,
+  Step,
+} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
-import {ChoiceQuestion, ChoiceQuestionChoice, InputItem, Step} from '../types'
 import PhoneDisplay from '../widgets/PhoneDisplay'
 
 const useStyles = makeStyles(theme => ({

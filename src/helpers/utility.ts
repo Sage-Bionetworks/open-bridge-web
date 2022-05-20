@@ -304,7 +304,10 @@ const isPathAllowed = (studyId: string, path: string) => {
   const pathToCheck = path.replace(':id', studyId)
   const access = {
     org_admin: [CONSTANTS.restrictedPaths.ACCESS_SETTINGS],
-    study_designer: [CONSTANTS.restrictedPaths.STUDY_BUILDER],
+    study_designer: [
+      CONSTANTS.restrictedPaths.STUDY_BUILDER,
+      CONSTANTS.restrictedPaths.SURVEY_BUILDER,
+    ],
     study_coordinator: [
       CONSTANTS.restrictedPaths.PARTICIPANT_MANAGER,
       CONSTANTS.restrictedPaths.ADHERENCE_DATA,

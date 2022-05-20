@@ -9,6 +9,7 @@ import {
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import {ProvideTheme} from '__test_utils/utils'
 
 const getById = queryByAttribute.bind(null, 'id')
 
@@ -31,13 +32,15 @@ const handlePageNavigationArrowPressed = jest.fn()
 // rerender the table pagination component
 const renderParticipantTableGrid = () => {
   participantTablePagination = render(
-    <TablePagination
-      setPageSize={updatePageSize}
-      totalItems={totalParticipants}
-      currentPage={currentPage}
-      pageSize={pageSize}
-      counterTextSingular="participants"
-      onPageSelectedChanged={onPageSelectedChanged}></TablePagination>
+    <ProvideTheme>
+      <TablePagination
+        setPageSize={updatePageSize}
+        totalItems={totalParticipants}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        counterTextSingular="participants"
+        onPageSelectedChanged={onPageSelectedChanged}></TablePagination>
+    </ProvideTheme>
   )
   forward_to_end_button = getById(
     participantTablePagination.container as HTMLElement,
@@ -80,7 +83,7 @@ beforeEach(() => {
 afterEach(() => cleanup())
 
 afterAll(() => {
-  participantTablePagination.unmount()
+  participantTablePagination?.unmount()
   cleanup()
 })
 

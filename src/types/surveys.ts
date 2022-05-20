@@ -121,6 +121,7 @@ export type BaseStep = {
 export type Step = Question | Instruction
 
 export type Survey = {
+  webConfig: any
   type: string //"assessment",
   identifier: string //"foo",
   versionString: string //"1.2.3",

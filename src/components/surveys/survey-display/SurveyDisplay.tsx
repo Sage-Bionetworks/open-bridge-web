@@ -15,9 +15,6 @@ import {
   Typography,
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import React, {FunctionComponent} from 'react'
-import {useParams} from 'react-router-dom'
-import test from '../sample.json'
 import {
   ChoiceQuestion,
   InputItem,
@@ -26,7 +23,10 @@ import {
   Question,
   Step,
   Survey,
-} from '../types'
+} from '@typedefs/surveys'
+import React, {FunctionComponent} from 'react'
+import {useParams} from 'react-router-dom'
+import test from '../sample.json'
 
 const useStyles = makeStyles(theme => ({
   root: {},

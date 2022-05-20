@@ -1,6 +1,5 @@
-import React, {useState} from 'react'
-import {Redirect} from 'react-router'
-import {useUserSessionDataDispatch} from '../../helpers/AuthContext'
+import {useUserSessionDataDispatch} from '@helpers/AuthContext'
+import React from 'react'
 
 type LogoutProps = {
   element: JSX.Element
@@ -9,19 +8,18 @@ type LogoutProps = {
 export const Logout: React.FunctionComponent<LogoutProps> = ({
   element,
 }: LogoutProps) => {
-  const [navigate, setNavigate] = useState(false)
-
   const sessionUpdateFn = useUserSessionDataDispatch()
   const logout = () => {
+    var win = window.open(
+      'https://signin.synapse.org/logout',
+      '_blank',
+      'left=100,top=100,width=420,height=160'
+    )
     sessionUpdateFn({type: 'LOGOUT'})
-    setNavigate(true)
   }
-  if (navigate) {
-    return <Redirect to={'/'} push={true} />
-  } else {
-    const e = React.cloneElement(element, {onClick: logout})
-    return e
-  }
+
+  const e = React.cloneElement(element, {onClick: logout})
+  return e
 }
 
 export default Logout
