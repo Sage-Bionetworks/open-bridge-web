@@ -5,7 +5,7 @@ import {Assessment, ExtendedError} from '@typedefs/types'
 
 /* AG: BOTH survey and assessments would include arb/mtb tag, but surveys would include survey tag while other assessments won't*/
 const ASSESSMENT_APP_TAG = {
-  [constants.constants.ARC_APP_ID]: 'Arc',
+  [constants.constants.ARC_APP_ID]: 'ARC',
   [constants.constants.MTB_APP_ID]: 'Mobile Toolbox',
 }
 
@@ -188,6 +188,7 @@ async function updateSurveyAssessment(
     assessment.guid!
   )
   const tags = Array.from(new Set([...assessment.tags, SURVEY_APP_TAG[appId]]))
+  const assessmentToUpdate = {...assessment, tags}
   const update = async (a: Assessment): Promise<Assessment> => {
     console.log('trying update', a)
     const assessmentResponse = await Utility.callEndpoint<Assessment>(
@@ -201,14 +202,14 @@ async function updateSurveyAssessment(
   }
 
   try {
-    return update(assessment)
+    return update(assessmentToUpdate)
   } catch (error) {
     console.log('!!error')
     if ((error as ExtendedError).statusCode === 409) {
       console.log('409')
-      const _assessment = {...assessment, version: ++assessment.version}
-      console.log(_assessment)
-      return update(_assessment)
+      assessmentToUpdate.version = assessmentToUpdate.version + 1
+
+      return update(assessmentToUpdate)
     } else {
       throw error
     }
