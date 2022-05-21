@@ -1,6 +1,6 @@
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import UtilityObject from '@helpers/utility'
-import {Box, Button, FormControlLabel, Theme} from '@mui/material'
+import {Alert, Box, Button, FormControlLabel, Theme} from '@mui/material'
 import createStyles from '@mui/styles/createStyles'
 import makeStyles from '@mui/styles/makeStyles'
 import {useUpdateSurveyAssessment} from '@services/assessmentHooks'
@@ -84,6 +84,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export interface IntroInfoProps {
   survey?: Assessment
+  onUpdate: (guid?: string) => void
 }
 
 /*type BasicInfo = {
@@ -99,9 +100,10 @@ export interface IntroInfoProps {
 }*/
 const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
   survey: _survey,
+  onUpdate,
 }: IntroInfoProps) => {
   // const [survey, setSurvey] = React.useState<Assessment|undefined>(_survey)
-  const [reloadGuid, setReloadGuid] = React.useState('')
+
   const {token, orgMembership} = useUserSessionDataState()
 
   const [basicInfo, setBasicInfo] = React.useState<Assessment>({
@@ -126,20 +128,25 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
     mutate: mutateAssessment,
   } = useUpdateSurveyAssessment()
 
+  const [error, setError] = React.useState('')
+
   const saveAssessment = async () => {
     console.log('bi', basicInfo)
+    setError('')
+    const action = basicInfo.guid ? 'UPDATE' : 'CREATE'
     mutateAssessment(
-      {survey: basicInfo, action: basicInfo.guid ? 'UPDATE' : 'CREATE'},
+      {survey: basicInfo, action},
       {
         onSuccess: info => {
           console.log('success')
           console.log(info)
-          //  setReloadGuid(info.guid!)
+
+          onUpdate(action === 'CREATE' ? info.guid! : '')
+
           console.log('reloading')
         },
         onError: info => {
-          console.log('error')
-          console.log(info)
+          setError((info as any).toString())
         },
       }
     )
@@ -147,12 +154,9 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
   console.log(_survey, 's')
   console.log(basicInfo)
 
-  /* if (reloadGuid) {
-    return <Redirect to={`/surveys/${reloadGuid}/design`} />
-  }*/
-
   return (
     <Box>
+      {error && <Alert color="error">{error}</Alert>}
       <div>
         <FormControlLabel
           /*classes={{labelPlacementStart: classes.labelDuration}}*/
