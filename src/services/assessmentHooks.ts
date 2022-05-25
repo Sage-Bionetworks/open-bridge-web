@@ -45,7 +45,7 @@ export const useAssessmentWithResources = (guid: string) => {
           }
         }
       ),
-    {retry: 1}
+    {retry: 1, enabled: guid !== ':id'}
   )
 }
 
@@ -80,7 +80,7 @@ export const useSurveyAssessment = (guid?: string) => {
         ? AssessmentService.getSurveyAssessment(guid, token!)
         : Promise.resolve(undefined),
     {
-      enabled: !!guid,
+      enabled: !!guid && guid !== ':id',
       retry: 1,
       refetchOnWindowFocus: false,
     }

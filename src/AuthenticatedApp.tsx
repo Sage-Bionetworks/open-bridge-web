@@ -4,6 +4,7 @@ import SurveyTopNav from '@components/surveys/SurveyTopNav'
 import TopNav from '@components/widgets/AppTopNav'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import Utility from '@helpers/utility'
+import {useSurveyAssessment} from '@services/assessmentHooks'
 import {useStudy} from '@services/studyHooks'
 import {UserSessionData} from '@typedefs/types'
 import React, {FunctionComponent, ReactNode} from 'react'
@@ -31,11 +32,16 @@ const Wrapper: FunctionComponent<
   )
   const isSurveyPath = useLocation().pathname.includes(`/surveys`)
   const notStudyId = isAssessmentPath || isSurveyPath
-  const {data: study, error} = useStudy(notStudyId ? undefined : studyId)
+  const {data: study, error: studyError} = useStudy(
+    notStudyId ? undefined : studyId
+  )
+  const {data: survey, error: surveyError} = useSurveyAssessment(
+    isSurveyPath ? studyId : undefined
+  )
   const handleError = useErrorHandler()
 
-  if (error) {
-    handleError(error)
+  if (studyError || surveyError) {
+    handleError(studyError || surveyError)
   }
 
   React.useEffect(() => {
@@ -45,7 +51,7 @@ const Wrapper: FunctionComponent<
   return (
     <>
       {isSurveyPath ? (
-        <SurveyTopNav></SurveyTopNav>
+        <SurveyTopNav survey={survey} error={surveyError}></SurveyTopNav>
       ) : !study ? (
         <TopNav
           routes={PrivateRoutes}
@@ -55,7 +61,7 @@ const Wrapper: FunctionComponent<
       ) : (
         <StudyTopNav
           study={study}
-          error={error}
+          error={studyError}
           currentSection={studySection}></StudyTopNav>
       )}
       <main>{children}</main>

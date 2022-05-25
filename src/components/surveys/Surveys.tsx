@@ -20,8 +20,7 @@ const Surveys: FunctionComponent<SurveysProps> = props => {
   }>()
 
   return (
-    <Box border="1px solid black">
-      Surveys
+    <Box>
       <SurveyDesign {...props} />
     </Box>
   )

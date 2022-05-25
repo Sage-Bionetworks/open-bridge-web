@@ -10,7 +10,7 @@ import Toolbar from '@mui/material/Toolbar'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
 import constants from '@typedefs/constants'
-import {ExtendedError} from '@typedefs/types'
+import {Assessment, ExtendedError} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {NavLink} from 'react-router-dom'
@@ -137,12 +137,12 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type SurveyTopNavProps = {
-  surveyId?: string
-  error?: ExtendedError
+  survey?: Assessment
+  error: ExtendedError | null
 }
 
 const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
-  surveyId,
+  survey,
   error,
 }: SurveyTopNavProps) => {
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
@@ -155,7 +155,6 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
 
   return (
     <Box className={classes.rootSurveyTopNav}>
-      SURVEYPP
       <Hidden lgUp>
         <IconButton
           color="inherit"
@@ -191,14 +190,23 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
               />
             </NavLink>
 
-            <BreadCrumb links={[{url: '/surveys', text: ''}]}></BreadCrumb>
+            {survey?.title && (
+              <BreadCrumb
+                links={[{url: '/surveys', text: ''}]}
+                currentItem={
+                  survey?.title &&
+                  survey?.title !== constants.constants.NEW_STUDY_NAME
+                    ? survey?.title
+                    : ''
+                }></BreadCrumb>
+            )}
           </Toolbar>
           <Toolbar className={classes.toolbar}>
             {links
               .filter(section => section.name)
               .map(section => (
                 <NavLink
-                  to={section.path.replace(':id', surveyId ?? '')}
+                  to={section.path.replace(':id', survey?.guid ?? '')}
                   key={section.path}
                   className={classes.toolbarLink}
                   activeClassName={classes.selectedLink}>
@@ -213,7 +221,7 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
               <NavLink
                 to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
                   ':id',
-                  surveyId ?? ''
+                  survey?.guid ?? ''
                 )}
                 key={'path-to-access-settings'}
                 className={classes.toolbarLink}
@@ -244,7 +252,7 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
             .filter(section => section.name)
             .map(section => (
               <NavLink
-                to={section.path.replace(':id', surveyId ?? '')}
+                to={section.path.replace(':id', survey?.guid ?? '')}
                 key={section.path}
                 className={classes.mobileToolBarLink}
                 activeClassName={classes.mobileSelectedLink}
@@ -255,7 +263,7 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
           <NavLink
             to={constants.restrictedPaths.ACCESS_SETTINGS.replace(
               ':id',
-              surveyId ?? ''
+              survey?.guid ?? ''
             )}
             key={'path-to-access-settings'}
             className={clsx(
