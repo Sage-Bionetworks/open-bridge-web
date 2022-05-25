@@ -39,18 +39,18 @@ export enum SurveyRuleOperator {
 }
 
 export type ActionButton = {
-  type: string //"default",
-  buttonTitle?: string //"Go, Dogs! Go!"
-  iconName?: string //"fooIcon", ALINA TODO where is it coming from
+  type: string //'default',
+  buttonTitle?: string //'Go, Dogs! Go!'
+  iconName?: string //'fooIcon', ALINA TODO where is it coming from
 }
 
 export type ImageFetchable = {
   type: 'fetchable'
-  imageName: string //"crf_seated"
+  imageName: string //'crf_seated'
 }
 export type ImageAnimated = {
   type: 'animated'
-  compositeImageName: string //"crf_stair_step_start_animation",
+  compositeImageName: string //'crf_stair_step_start_animation',
   animationDuration: number //0.5,
   imageNames: string[]
 }
@@ -102,7 +102,7 @@ export type ControlType =
   | 'date'
 
 export type BaseStep = {
-  identifier: string //"step1",
+  identifier: string //'step1',
   controlType?: ControlType
   type:
     | 'unkonwn'
@@ -111,29 +111,37 @@ export type BaseStep = {
     | 'multipleInputQuestion'
     | 'choiceQuestion'
     | 'comboBoxQuestion' //otherInputItem
-  title: string //Instruction Step 1",
+  title: string //Instruction Step 1',
   subtitle?: string
-  detail?: string //Here are the details for this instruction.",
-  footnote?: string //"This is a footnote.",
+  detail?: string //Here are the details for this instruction.',
+  footnote?: string //'This is a footnote.',
   image?: ImageAnimated | ImageFetchable
 }
 
 export type Step = Question | Instruction
 
+export type SkipButton =
+  | 'goForward' /* Navigate to the next step.*/
+  | 'goBackward' /* Navigate to the previous step.*/
+  | 'skip' /*Skip the step and immediately go forward.*/
+;('cancel') /*Exit the assessment.*/
+;('pause')
+
 export type Survey = {
   webConfig: any
-  type: string //"assessment",
-  identifier: string //"foo",
-  versionString: string //"1.2.3",
-  schemaIdentifier: string //"bar",
-  title: string //"Hello World!",
-  subtitle?: string //Subtitle",
-  detail: string //"Some text. This is a test.",
+  type: string //'assessment',
+  identifier: string //'foo',
+
+  versionString: string //'1.2.3',
+  schemaIdentifier: string //'bar',
+  title: string //'Hello World!',
+  subtitle?: string //Subtitle',
+  detail: string //'Some text. This is a test.',
   estimatedMinutes: number //4,
-  icon: string //"fooIcon", ALINA TODO where is it coming from
-  footnote?: string //This is a footnote.",
+  icon: string //'fooIcon', ALINA TODO where is it coming from
+  footnote?: string //This is a footnote.',
   actions: {goForward: ActionButton; cancel: ActionButton}
-  shouldHideActions?: string[] //["goBackward"]
-  progressMarkers: string[] //["step1","step2"],
+  shouldHideActions?: SkipButton[] //['goBackward']
+  progressMarkers: string[] //['step1','step2'],
   steps: Step[]
 }
