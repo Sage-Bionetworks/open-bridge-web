@@ -110,6 +110,7 @@ const AddQuestionMenu: React.FunctionComponent = () => {
         onClose={handleClose}>
         {Array.from(QUESTION_TYPE_ICONS.keys()).map(name => (
           <MenuItem
+            key={name}
             onClick={() =>
               onSelect(<QuestionTypeDisplay name={name} isSelected={false} />)
             }

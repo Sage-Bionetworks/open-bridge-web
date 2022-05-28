@@ -1,12 +1,14 @@
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import AssessmentService from '@services/assessment.service'
 import {Survey} from '@typedefs/surveys'
-import {Assessment, ExtendedError} from '@typedefs/types'
+import {Assessment, AssessmentResource, ExtendedError} from '@typedefs/types'
 import {useMutation, useQuery, useQueryClient} from 'react-query'
 
 export const ASSESSMENT_KEYS = {
   all: ['assessments'] as const,
   list: (appId: string) => [...ASSESSMENT_KEYS.all, 'list', appId] as const,
+  assessment: (guid: string) =>
+    [...ASSESSMENT_KEYS.all, 'assessment', guid] as const,
   survey: (guid: string) => [...ASSESSMENT_KEYS.all, 'survey', guid] as const,
   detailWithResources: (appId: string, guid: string) =>
     [...ASSESSMENT_KEYS.all, 'detail_resources', appId, guid] as const,
@@ -74,7 +76,7 @@ export const useSurveyAssessment = (guid?: string) => {
   const {token, appId} = useUserSessionDataState()
 
   return useQuery<Assessment | undefined, ExtendedError>(
-    ASSESSMENT_KEYS.survey(guid || ''),
+    ASSESSMENT_KEYS.assessment(guid || ''),
     () =>
       guid
         ? AssessmentService.getSurveyAssessment(guid, token!)
@@ -89,15 +91,16 @@ export const useSurveyAssessment = (guid?: string) => {
 
 export const useSurveyConfig = (guid?: string) => {
   const {token, appId} = useUserSessionDataState()
-
+  console.log('getting config with guid:', guid)
   return useQuery<Survey | undefined, ExtendedError>(
     ASSESSMENT_KEYS.survey(guid || ''),
-    () =>
-      guid
+    () => {
+      console.log('!!!!guid!!!', guid)
+      return guid
         ? AssessmentService.getSurveyAssessmentConfig(guid, token!)
-        : Promise.resolve(undefined),
+        : Promise.resolve(undefined)
+    },
     {
-      enabled: !!guid,
       retry: 1,
       refetchOnWindowFocus: false,
     }
@@ -114,6 +117,7 @@ export const useUpdateSurveyConfig = () => {
     const {survey, guid} = props
 
     console.log('updating config', survey)
+
     return AssessmentService.updateSurveyAssessmentConfig(guid, survey, token!)
   }
 
@@ -137,16 +141,55 @@ export const useUpdateSurveyConfig = () => {
   return mutation
 }
 
+export const useUpdateSurveyResource = () => {
+  const {token, appId} = useUserSessionDataState()
+  const queryClient = useQueryClient()
+
+  const update = async (props: {
+    assessment: Assessment
+    resource: AssessmentResource
+  }): Promise<AssessmentResource> => {
+    const {resource, assessment} = props
+
+    return AssessmentService.updateSurveyAssessmentResource(
+      assessment.identifier,
+      resource,
+      token!
+    )
+  }
+
+  const mutation = useMutation(update, {
+    onMutate: async props => {
+      queryClient.cancelQueries(ASSESSMENT_KEYS.survey(props.assessment.guid!))
+    },
+    onError: (err, variables, context) => {
+      console.log(err, variables, context)
+      throw err
+    },
+    onSettled: async (data, error, props) => {
+      queryClient.invalidateQueries(ASSESSMENT_KEYS.list(appId))
+      queryClient.invalidateQueries(
+        ASSESSMENT_KEYS.survey(props.assessment.guid!)
+      )
+      queryClient.invalidateQueries(
+        ASSESSMENT_KEYS.detailWithResources(appId, props.assessment.guid!)
+      )
+    },
+  })
+
+  return mutation
+}
+
 export const useUpdateSurveyAssessment = () => {
   const {token, appId} = useUserSessionDataState()
   const queryClient = useQueryClient()
 
   const update = async (props: {
-    survey: Assessment
+    assessment: Assessment
 
     action: 'COPY' | 'CREATE' | 'DELETE' | 'UPDATE'
   }): Promise<Assessment> => {
-    const {survey, action} = props
+    const {assessment, action} = props
 
     switch (action) {
       case 'DELETE':
@@ -160,10 +203,18 @@ export const useUpdateSurveyAssessment = () => {
         )
         return [newStudy]*/
       case 'UPDATE':
-        console.log('updating', survey)
-        return AssessmentService.updateSurveyAssessment(survey, token!, appId)
+        console.log('updating', assessment)
+        return AssessmentService.updateSurveyAssessment(
+          assessment,
+          token!,
+          appId
+        )
       case 'CREATE':
-        return AssessmentService.createSurveyAssessment(survey, token!, appId)
+        return AssessmentService.createSurveyAssessment(
+          assessment,
+          token!,
+          appId
+        )
 
       default:
         throw Error('Unknown Survey Action')
@@ -181,10 +232,13 @@ export const useUpdateSurveyAssessment = () => {
     onSettled: async (data, error, props) => {
       queryClient.invalidateQueries(ASSESSMENT_KEYS.list(appId))
       queryClient.invalidateQueries(
-        ASSESSMENT_KEYS.survey(props.survey.guid || '')
+        ASSESSMENT_KEYS.assessment(props.assessment.guid || '')
       )
       queryClient.invalidateQueries(
-        ASSESSMENT_KEYS.detailWithResources(appId, props.survey.guid || '')
+        ASSESSMENT_KEYS.survey(props.assessment.guid || '')
+      )
+      queryClient.invalidateQueries(
+        ASSESSMENT_KEYS.detailWithResources(appId, props.assessment.guid || '')
       )
     },
   })

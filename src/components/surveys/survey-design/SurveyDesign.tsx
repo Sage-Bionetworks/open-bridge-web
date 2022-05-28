@@ -3,7 +3,9 @@ import Utility from '@helpers/utility'
 import {Alert, Box, styled} from '@mui/material'
 import {
   useSurveyAssessment,
+  useSurveyConfig,
   useUpdateSurveyAssessment,
+  useUpdateSurveyConfig,
 } from '@services/assessmentHooks'
 import {Step, Survey} from '@typedefs/surveys'
 import {Assessment} from '@typedefs/types'
@@ -44,30 +46,32 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   const isNewSurvey = () => guid === ':id'
 
   const [error, setError] = React.useState('')
-  const {data: assessment, status} = useSurveyAssessment(
+  const {data: assessment, status: aStatus} = useSurveyAssessment(
+    isNewSurvey() ? undefined : guid
+  )
+  const {data: survey, status: cStatus} = useSurveyConfig(
     isNewSurvey() ? undefined : guid
   )
 
   const {
-    isSuccess: surveyUpdateSuccess,
-    isError: surveyUpdateError,
-    mutate: mutateAssessment,
+    isSuccess: asmntUpdateSuccess,
+    isError: asmntUpdateError,
+    mutateAsync: mutateAssessment,
   } = useUpdateSurveyAssessment()
 
-  const [survey, setSurvey] = React.useState<Survey>()
+  const {
+    isSuccess: surveyUpdateSuccess,
+    isError: surveyUpdateError,
+    mutateAsync: mutateSurvey,
+  } = useUpdateSurveyConfig()
+
   const [currentStepIndex, setCurrentStepIndex] = React.useState<
     number | undefined
   >()
 
-  React.useEffect(() => {
-    if (assessment?.config) {
-      setSurvey(assessment.config)
-    }
-  }, [assessment])
-
   const getQuestionList = (): Step[] => {
     //@ts-ignore
-    return survey?.steps
+    return survey?.config.steps
       .filter(s => !!s)
       .map(s => ({
         identifier: s.identifier,
@@ -84,8 +88,8 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       title,
       type: 'unkonwn',
     }
-    const currentStepId = survey?.steps.length
-    setSurvey(prev => ({...prev!, steps: [...prev!.steps, newStep]}))
+    const currentStepId = survey?.config.steps.length
+    //setSurvey(prev => ({...prev!, steps: [...prev!.steps, newStep]}))
     setCurrentStepIndex(currentStepId)
   }
 
@@ -94,37 +98,34 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       return
     }
     if (currentStepIndex) {
-      let steps = [...survey!.steps]
+      let steps = [...survey!.config.steps]
       steps[currentStepIndex] = step
-      setSurvey(prev => ({...prev!, steps}))
+      // setSurvey(prev => ({...prev!, steps}))
     }
   }
 
   const getCurrentStep = () =>
-    currentStepIndex !== undefined ? survey?.steps[currentStepIndex] : undefined
+    currentStepIndex !== undefined
+      ? survey?.config.steps[currentStepIndex]
+      : undefined
 
   const saveAssessment = async (
     asmnt: Assessment,
+    survey: Survey,
     action: 'UPDATE' | 'CREATE'
   ) => {
     setError('')
+    try {
+      const result = await mutateAssessment({assessment: asmnt, action})
+      await mutateSurvey({guid: result.guid!, survey})
 
-    mutateAssessment(
-      {survey: asmnt, action},
-      {
-        onSuccess: info => {
-          console.log('success')
-          console.log(info)
-
-          history.push(`/surveys/${info.guid}/design/title`)
-
-          console.log('reloading')
-        },
-        onError: info => {
-          setError((info as any).toString())
-        },
-      }
-    )
+      console.log('success')
+      console.log(result)
+      history.push(`/surveys/${result.guid}/design/title`)
+      console.log('reloading')
+    } catch (error) {
+      setError((error as any).toString())
+    }
   }
 
   return (
@@ -132,14 +133,14 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       <SurveyDesignContainerBox>
         <LeftPanel surveyId={guid}>
           left
-          {survey?.steps && (
+          {survey?.config.steps && (
             <QuestionList
               currentStepIndex={currentStepIndex}
               steps={getQuestionList()}
               onAdd={(title: string) => addStep(title)}
               onNavigate={(identifier: string) => {
                 setCurrentStepIndex(
-                  survey.steps.findIndex(s => s.identifier == identifier)
+                  survey.config.steps.findIndex(s => s.identifier == identifier)
                 )
               }}
             />
@@ -172,9 +173,10 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
             <Route path={`/surveys/:id/design/completion`}>
               <div>!!!completion</div>
             </Route>
-            <Route path={`/surveys/:id/design`}>
+            <Route path="">
               <IntroInfo
-                survey={assessment}
+                surveyAssessment={assessment}
+                survey={survey}
                 onUpdate={saveAssessment}></IntroInfo>
             </Route>
           </Switch>

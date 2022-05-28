@@ -39,8 +39,9 @@ export default [
     Component: SurveyList,
   },
   {
-    path: `${constants.restrictedPaths.SURVEY_BUILDER}/:section`,
+    path: `${constants.restrictedPaths.SURVEY_BUILDER}*`,
     name: '',
+    exact: false,
     Component: SurveyDesign,
   },
 

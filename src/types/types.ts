@@ -1,6 +1,5 @@
 import constants from './constants'
 import {Schedule, ScheduleNotification, SchedulingEvent} from './scheduling'
-import {Survey} from './surveys'
 
 /* *** General Types ********************************/
 //usage example type JsonPrimitive = SubType<Person, number | string>;
@@ -88,16 +87,16 @@ export type ResourceFormat = 'image/png'
 export type AssessmentCategory = 'screenshot' | 'icon'
 export type AssessmentResource = {
   category: AssessmentCategory
-  deleted: boolean
-  format: ResourceFormat
-  guid: string
-  language: string
-  minRevision: 1
-  modifiedOn: string
+
+  format?: ResourceFormat
+  guid?: string
+  language?: string
+  minRevision?: 1
+  modifiedOn?: string
   title: string
-  upToDate: boolean
+  upToDate?: boolean
   url: string
-  version: number
+  version?: number
 }
 export type Assessment = {
   identifier: string
@@ -122,7 +121,6 @@ export type Assessment = {
   minutesToComplete?: number
   resources?: any[]
   originGuid?: string
-  config?: Survey
 }
 
 export type AssessmentConfig = {

@@ -15,7 +15,7 @@ import {
 } from '@mui/material'
 import {styled} from '@mui/material/styles'
 import {latoFont, poppinsFont, theme} from '@style/theme'
-import {Survey} from '@typedefs/surveys'
+import {SkipButton, Survey, webUISkipOptions} from '@typedefs/surveys'
 import {Assessment} from '@typedefs/types'
 import React from 'react'
 import {SimpleTextInput} from '../../widgets/StyledComponents'
@@ -97,8 +97,6 @@ const QuestionSettings = styled('div')(({theme}) => ({
   backgroundColor: ' #BCD5E4',
 }))
 
-type SkipOptions = 'SKIP' | 'NO_SKIP' | 'CUSTOM'
-
 const StyledInput = styled(SimpleTextInput)(({theme}) => ({
   marginRight: theme.spacing(3),
   marginBottom: '0 !important',
@@ -106,35 +104,86 @@ const StyledInput = styled(SimpleTextInput)(({theme}) => ({
 
 export interface IntroInfoProps {
   surveyAssessment?: Assessment
-  onUpdate: (a: Assessment, act: 'UPDATE' | 'CREATE') => void
+  survey?: Survey
+  onUpdate: (a: Assessment, s: Survey, act: 'UPDATE' | 'CREATE') => void
 }
+const getDefaultSurvey = (newSurveyId: string): Survey => ({
+  config: {
+    type: 'assessment',
+    identifier: newSurveyId,
+    shouldHideActions: [],
+    steps: [],
+    webConfig: {
+      skipOption: 'CUSTOM',
+    },
+  },
+})
+const getDefaultAssessment = (
+  newSurveyId: string,
+  orgMembership: string
+): Assessment => ({
+  title: '',
+  tags: [],
+  version: 0,
+  revision: 1,
+  osName: 'Both',
+  identifier: newSurveyId,
+  ownerId: orgMembership,
+})
 
 const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
   surveyAssessment: _surveyAssessment,
+  survey,
+
   onUpdate,
 }: IntroInfoProps) => {
+  const newSurveyId = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
   const {orgMembership} = useUserSessionDataState()
-  const [skip, setSkip] = React.useState<SkipOptions | undefined>('SKIP')
+  const [skip, setSkip] = React.useState<webUISkipOptions | undefined>('SKIP')
   const [hideBack, setHideBack] = React.useState(false)
-  const [suveyConfig, setSurveyConfig] = React.useState<Survey | null>()
-  const [basicInfo, setBasicInfo] = React.useState<Assessment>({
-    title: '',
-    tags: [],
-    version: 0,
-    revision: 1,
-    osName: 'Both',
-    identifier: UtilityObject.generateNonambiguousCode(6, 'CONSONANTS'),
-    ownerId: orgMembership!,
-  })
+  const [surveyConfig, setSurveyConfig] = React.useState<Survey>(
+    getDefaultSurvey(newSurveyId)
+  )
+
+  const [basicInfo, setBasicInfo] = React.useState<Assessment>(
+    getDefaultAssessment(newSurveyId, orgMembership!)
+  )
   React.useEffect(() => {
-    console.log('setting basic info')
     if (_surveyAssessment) {
       setBasicInfo(_surveyAssessment)
+
+      if (survey) {
+        console.log('sur', survey)
+        let skipOption: webUISkipOptions
+        if (survey.config.shouldHideActions?.includes('skip')) {
+          skipOption = 'NO_SKIP'
+        } else {
+          skipOption = survey.config.webConfig?.skipOption || 'SKIP'
+        }
+        const goBackHidden =
+          survey.config.shouldHideActions?.includes('goBackward')
+        setHideBack(!!goBackHidden)
+        setSkip(skipOption)
+        setSurveyConfig(survey)
+      } else {
+        setSurveyConfig(getDefaultSurvey(_surveyAssessment.identifier))
+      }
     }
-  }, [_surveyAssessment])
+    console.log(surveyConfig, 'config')
+  }, [_surveyAssessment, survey])
 
   const triggerUpdate = () => {
-    onUpdate(basicInfo, basicInfo.guid ? 'UPDATE' : 'CREATE')
+    const shouldHideActions: SkipButton[] = []
+    if (skip === 'NO_SKIP') {
+      shouldHideActions.push('skip')
+    }
+    if (hideBack) {
+      shouldHideActions.push('goBackward')
+    }
+    surveyConfig.config.shouldHideActions = shouldHideActions
+    surveyConfig.config.webConfig!.skipOption = skip
+
+    onUpdate(basicInfo, surveyConfig, basicInfo.guid ? 'UPDATE' : 'CREATE')
   }
 
   return (
@@ -144,7 +193,6 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
         <Box display="flex" alignItems="center">
           <StyledInput
             className="compact"
-            defaultValue=""
             id="survey_name"
             fullWidth
             value={basicInfo?.title}
@@ -167,7 +215,6 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
         <Box display="flex" alignItems="center">
           <StyledInput
             className="compact"
-            defaultValue=""
             id="duration"
             sx={{width: '60px'}}
             onChange={e =>
@@ -191,7 +238,9 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
           id="skip"
           value={skip}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            setSkip((event.target as HTMLInputElement).value as SkipOptions)
+            setSkip(
+              (event.target as HTMLInputElement).value as webUISkipOptions
+            )
           }>
           <FormControlLabel
             value="SKIP"

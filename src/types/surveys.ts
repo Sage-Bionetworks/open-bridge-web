@@ -124,24 +124,28 @@ export type SkipButton =
   | 'goForward' /* Navigate to the next step.*/
   | 'goBackward' /* Navigate to the previous step.*/
   | 'skip' /*Skip the step and immediately go forward.*/
-;('cancel') /*Exit the assessment.*/
-;('pause')
+  | 'cancel' /*Exit the assessment.*/
+  | 'pause'
 
+export type webUISkipOptions = 'SKIP' | 'NO_SKIP' | 'CUSTOM'
 export type Survey = {
-  webConfig: any
-  type: string //'assessment',
-  identifier: string //'foo',
+  version?: number
+  config: {
+    webConfig?: {skipOption?: webUISkipOptions}
+    type: string //'assessment',
+    identifier: string //'foo',
 
-  versionString: string //'1.2.3',
-  schemaIdentifier: string //'bar',
-  title: string //'Hello World!',
-  subtitle?: string //Subtitle',
-  detail: string //'Some text. This is a test.',
-  estimatedMinutes: number //4,
-  icon: string //'fooIcon', ALINA TODO where is it coming from
-  footnote?: string //This is a footnote.',
-  actions: {goForward: ActionButton; cancel: ActionButton}
-  shouldHideActions?: SkipButton[] //['goBackward']
-  progressMarkers: string[] //['step1','step2'],
-  steps: Step[]
+    versionString?: string //'1.2.3',
+    schemaIdentifier?: string //'bar',
+    title?: string //'Hello World!',
+    subtitle?: string //Subtitle',
+    detail?: string //'Some text. This is a test.',
+    estimatedMinutes?: number //4,
+    icon?: string //'fooIcon', ALINA TODO where is it coming from
+    footnote?: string //This is a footnote.',
+    actions?: {goForward: ActionButton; cancel: ActionButton}
+    shouldHideActions?: SkipButton[] //['goBackward']
+    progressMarkers?: string[] //['step1','step2'],
+    steps: Step[]
+  }
 }
