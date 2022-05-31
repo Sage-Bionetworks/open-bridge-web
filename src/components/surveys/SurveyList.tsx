@@ -1,6 +1,6 @@
 import Loader from '@components/widgets/Loader'
 import Utility from '@helpers/utility'
-import {Button} from '@mui/material'
+import {Box, Button} from '@mui/material'
 import {useAssessments} from '@services/assessmentHooks'
 import constants from '@typedefs/constants'
 import React from 'react'
@@ -15,7 +15,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
     handleError(error)
   }
   if (isNew) {
-    return <Redirect to={constants.restrictedPaths.SURVEY_BUILDER} />
+    return <Redirect to={`${constants.restrictedPaths.SURVEY_BUILDER}/intro`} />
   }
   return (
     <>
@@ -36,7 +36,9 @@ const SurveyList: React.FunctionComponent<{}> = () => {
             style={{textDecoration: 'none'}}
             key={survey.identifier || index}
             to={`/surveys/${survey.guid!}/design`}>
-            {survey.title}: {survey.identifier}
+            <Box p={4} m={4} sx={{border: 1}}>
+              {survey.title}: {survey.identifier}
+            </Box>
           </Link>
         ))}
       </Loader>

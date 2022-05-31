@@ -1,7 +1,7 @@
 import Utility from '@helpers/utility'
 import constants from '@typedefs/constants'
 import {Survey} from '@typedefs/surveys'
-import {Assessment, ExtendedError} from '@typedefs/types'
+import {Assessment, AssessmentResource, ExtendedError} from '@typedefs/types'
 
 /* AG: BOTH survey and assessments would include arb/mtb tag, but surveys would include survey tag while other assessments won't*/
 const ASSESSMENT_APP_TAG = {
@@ -149,6 +149,7 @@ async function createSurveyAssessment(
   return response.data
 }
 
+//returns assessment with config and resources
 async function getSurveyAssessment(
   guid: string,
   token: string
@@ -160,19 +161,12 @@ async function getSurveyAssessment(
     {},
     token
   )
-  const assessmentConfigResponse = await Utility.callEndpoint<Survey>(
-    `${endpoint}/config`,
-    'GET', // once we add things to the study -- we can change this to actual object
-    {},
-    token
-  )
 
   const assessment = {
     ...assessmentResponse.data,
     tags: assessmentResponse.data.tags.filter(
       tag => !TAGS_TO_HIDE.includes(tag)
     ),
-    config: assessmentConfigResponse.data,
   }
 
   return assessment
@@ -217,9 +211,9 @@ async function updateSurveyAssessment(
 }
 async function getSurveyAssessmentConfig(
   guid: string,
-
   token: string
 ): Promise<Survey> {
+  console.log('getting survey')
   const endpoint = `${constants.endpoints.assessment.replace(
     ':id',
     guid
@@ -230,23 +224,50 @@ async function getSurveyAssessmentConfig(
     {},
     token
   )
-
+  console.log('returning survey', response.data)
   return response.data
 }
 
+//updates a particularLocal resource for assessment
+async function updateSurveyAssessmentResource(
+  assessmentId: string,
+  resource: AssessmentResource,
+  token: string
+): Promise<AssessmentResource> {
+  const endpoint = `${constants.endpoints.assessmentResources.replace(
+    ':identifier',
+    assessmentId
+  )}/${resource.guid || ''}`
+
+  const response = await Utility.callEndpoint<AssessmentResource>(
+    endpoint,
+    'POST', // once we add things to the study -- we can change this to actual object
+    resource,
+    token
+  )
+
+  return response.data
+}
 async function updateSurveyAssessmentConfig(
   guid: string,
-  config: Survey,
+  survey: Survey,
   token: string
 ): Promise<Survey> {
   const endpoint = `${constants.endpoints.assessment.replace(
     ':id',
     guid
   )}/config`
+
+  const result = await Utility.callEndpoint<Survey>(endpoint, 'GET', {}, token)
+  const data = {
+    config: survey.config,
+    version: result.data.version,
+  }
+
   const response = await Utility.callEndpoint<Survey>(
     endpoint,
-    'POST', // once we add things to the study -- we can change this to actual object
-    config,
+    'POST',
+    data,
     token
   )
 
@@ -256,6 +277,7 @@ async function updateSurveyAssessmentConfig(
 const AssessmentService = {
   createSurveyAssessment,
   updateSurveyAssessment,
+  updateSurveyAssessmentResource,
   updateSurveyAssessmentConfig,
   getSurveyAssessmentConfig,
   getSurveyAssessment,

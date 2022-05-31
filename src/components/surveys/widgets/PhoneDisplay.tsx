@@ -23,6 +23,7 @@ const PhoneDiv = styled('div')(({theme}) => ({
   flexDirection: 'column',
   justifyContent: 'space-between',
   marginBottom: '40px',
+  margin: '64px auto 0 auto',
 }))
 
 const Label = styled('label')({
