@@ -481,7 +481,7 @@ async function addParticipant(
   data.phone = options.phone
 
   if (isPreview) {
-    data.dataGroups = ['preview_user']
+    data.dataGroups = ['test_user'] //preview_user
   } else {
     data.sharingScope = 'sponsors_and_partners'
     if (isTestUser) {
