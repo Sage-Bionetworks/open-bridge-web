@@ -56,9 +56,17 @@ export type ImageAnimated = {
 }
 
 export type InputItem = {
-  type: 'string' | 'year' | 'checkbox'
+  type:
+    | 'string'
+    | 'year'
+    | 'checkbox'
+    | 'duration'
+    | 'integer'
+    | 'time'
+    | 'year'
   placeholder: string
   fieldLabel: string
+  displayUnits?: string[]
 }
 
 export type Skip = {
@@ -74,7 +82,6 @@ export type ChoiceQuestionChoice = {
 }
 export type ChoiceQuestion = Question & {
   choices?: ChoiceQuestionChoice[]
-
   singleChoice?: boolean
 }
 
@@ -83,7 +90,7 @@ export type Question = BaseStep & {
   inputItem: InputItem
   skipCheckbox?: Skip
   baseType?: 'integer'
-  uiHint?: 'checkmark'
+  uiHint?: 'checkmark' | 'likert' | 'textfield' | 'slider'
 }
 
 export type MultipleInputQuestion = BaseStep & {
@@ -128,24 +135,26 @@ export type SkipButton =
   | 'pause'
 
 export type webUISkipOptions = 'SKIP' | 'NO_SKIP' | 'CUSTOM'
+export type SurveyConfig = {
+  webConfig?: {skipOption?: webUISkipOptions}
+  type: string //'assessment',
+
+  identifier: string //'foo',
+
+  versionString?: string //'1.2.3',
+  schemaIdentifier?: string //'bar',
+  title?: string //'Hello World!',
+  subtitle?: string //Subtitle',
+  detail?: string //'Some text. This is a test.',
+  estimatedMinutes?: number //4,
+  icon?: string //'fooIcon', ALINA TODO where is it coming from
+  footnote?: string //This is a footnote.',
+  actions?: {goForward: ActionButton; cancel: ActionButton}
+  shouldHideActions?: SkipButton[] //['goBackward']
+  progressMarkers?: string[] //['step1','step2'],
+  steps: Step[]
+}
 export type Survey = {
   version?: number
-  config: {
-    webConfig?: {skipOption?: webUISkipOptions}
-    type: string //'assessment',
-    identifier: string //'foo',
-
-    versionString?: string //'1.2.3',
-    schemaIdentifier?: string //'bar',
-    title?: string //'Hello World!',
-    subtitle?: string //Subtitle',
-    detail?: string //'Some text. This is a test.',
-    estimatedMinutes?: number //4,
-    icon?: string //'fooIcon', ALINA TODO where is it coming from
-    footnote?: string //This is a footnote.',
-    actions?: {goForward: ActionButton; cancel: ActionButton}
-    shouldHideActions?: SkipButton[] //['goBackward']
-    progressMarkers?: string[] //['step1','step2'],
-    steps: Step[]
-  }
+  config: SurveyConfig
 }

@@ -181,7 +181,10 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
       shouldHideActions.push('goBackward')
     }
     surveyConfig.config.shouldHideActions = shouldHideActions
-    surveyConfig.config.webConfig!.skipOption = skip
+    surveyConfig.config.webConfig = {
+      ...(surveyConfig.config.webConfig || {}),
+      skipOption: skip,
+    }
 
     onUpdate(basicInfo, surveyConfig, basicInfo.guid ? 'UPDATE' : 'CREATE')
   }
