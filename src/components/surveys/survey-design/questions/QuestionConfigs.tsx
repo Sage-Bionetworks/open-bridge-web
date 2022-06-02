@@ -163,7 +163,7 @@ const QUESTIONS = new Map<
       default: {
         type: 'simpleQuestion',
         identifier: 'sliderQ',
-
+        title: 'New Question',
         uiHint: 'slider',
         inputItem: {
           type: 'integer',

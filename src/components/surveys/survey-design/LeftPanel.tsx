@@ -1,4 +1,5 @@
 import {ReactComponent as CompletionIcon} from '@assets/surveys/completion.svg'
+import {ReactComponent as DraggableIcon} from '@assets/surveys/draggable.svg'
 import {ReactComponent as PreviewIcon} from '@assets/surveys/preview.svg'
 import {ReactComponent as SettingsIcon} from '@assets/surveys/settings.svg'
 import {Box, styled} from '@mui/material'
@@ -13,10 +14,8 @@ import {
 } from 'react-beautiful-dnd'
 import {NavLink} from 'react-router-dom'
 import {SURVEY_ICONS} from '../widgets/SurveyIcon'
-import {getQuestionId} from './questions/QuestionConfigs'
-import QuestionTypeDisplay, {
-  DivContainer,
-} from './questions/QuestionTypeDisplay'
+import QUESTIONS, {getQuestionId} from './questions/QuestionConfigs'
+import {DivContainer} from './questions/QuestionTypeDisplay'
 
 const Container = styled('div')(({theme}) => ({
   display: 'flex',
@@ -38,7 +37,6 @@ const Row = styled('div')(({theme}) => ({
   //backgroundColor: 'transparent',
   color: '#3A3A3A',
   textDecoration: 'none',
-  backgroundColor: 'beige',
 }))
 
 const StyledNavLink = styled(NavLink)(({theme}) => ({
@@ -59,11 +57,13 @@ const getTitleImageSrc = (imageName?: string): string => {
 const reorder = (
   steps: Step[],
   startIndex: number,
-  endIndex: number
+  endIndex?: number
 ): Step[] => {
+  console.log('end', endIndex)
   const [removed] = steps.splice(startIndex, 1)
-  steps.splice(endIndex, 0, removed)
-
+  if (endIndex !== undefined) {
+    steps.splice(endIndex, 0, removed)
+  }
   return steps
 }
 
@@ -80,14 +80,14 @@ const LeftPanel: React.FunctionComponent<{
     surveyConfig?.steps.map(s => s.identifier)
   )
   const onDragEnd = (result: DropResult) => {
-    if (!result.destination || !surveyConfig?.steps) {
+    if (!surveyConfig?.steps) {
       return
     }
 
     const items = reorder(
       [...surveyConfig!.steps],
       result.source.index,
-      result.destination.index
+      result.destination?.index
     )
 
     onUpdateSteps(items)
@@ -137,10 +137,18 @@ const LeftPanel: React.FunctionComponent<{
           </StyledNavLink>
           <Droppable droppableId="questions">
             {provided => (
-              <Box ref={provided.innerRef} {...provided.droppableProps}>
+              <Box
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                sx={{
+                  maxHeight: 'calc(100vh - 200px)',
+                  overflow: 'scroll',
+                  bgColor: 'beige',
+                }}>
                 {surveyConfig?.steps.map((step, index) => (
                   <Draggable
                     draggableId={step.identifier}
+                    isDragDisabled={surveyConfig?.steps.length < 2}
                     index={index}
                     key={step.identifier}>
                     {provided => (
@@ -150,10 +158,26 @@ const LeftPanel: React.FunctionComponent<{
                         ref={provided.innerRef}>
                         <StyledNavLink
                           to={`/surveys/${guid}/design/question?q=${index}`}>
-                          <QuestionTypeDisplay
-                            name={getQuestionId(step)}
-                            title={step.title}
-                          />
+                          <DivContainer sx={{paddingRight: '20px'}}>
+                            <DivContainer sx={{height: '100%'}}>
+                              {QUESTIONS.get(getQuestionId(step))?.img}
+                              <Box
+                                sx={{
+                                  whiteSpace: 'nowrap',
+                                  width: '200px',
+                                  textOverflow: 'ellipsis',
+                                  overflow: 'hidden',
+                                }}>
+                                {' '}
+                                {`${index < 9 ? '0' : ''}${index + 1}. ${
+                                  step.title
+                                }`}
+                              </Box>
+                            </DivContainer>
+                            {surveyConfig?.steps.length > 1 && (
+                              <DraggableIcon />
+                            )}
+                          </DivContainer>
                         </StyledNavLink>
                       </Row>
                     )}

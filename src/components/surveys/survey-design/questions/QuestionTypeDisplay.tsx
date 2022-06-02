@@ -22,9 +22,7 @@ export const DivContainer = styled('div')(({theme}) => ({
     fontWeight: 500,
     fontSize: '14px',
   },
-  '&> svg:nth-of-type(2)': {
-    display: 'none',
-  },
+
   '&:hover': {
     backgroundColor: '#565656',
 
@@ -33,7 +31,7 @@ export const DivContainer = styled('div')(({theme}) => ({
     },
 
     '& >svg, img ': {
-      '-webkit-filter': 'invert(1)',
+      WebkitFilter: 'invert(1)',
       filter: 'invert(1)',
     },
   },
@@ -51,7 +49,7 @@ const QuestionTypeDisplay: React.FunctionComponent<QuestionTypeDisplayProps> =
     return (
       <DivContainer>
         {QUESTIONS.get(name)?.img}
-        {QUESTIONS.get(name)?.active}
+
         <div>{title || QUESTIONS.get(name)?.title}</div>
       </DivContainer>
     )
