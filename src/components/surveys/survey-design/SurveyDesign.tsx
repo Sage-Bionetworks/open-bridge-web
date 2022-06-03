@@ -21,12 +21,12 @@ import {
   useLocation,
   useParams,
 } from 'react-router-dom'
+import ControlSelector from './ControlSelector'
 import IntroInfo from './IntroInfo'
-import LeftPanel from './LeftPanel'
+import AddQuestionMenu from './left-panel/AddQuestionMenu'
+import LeftPanel from './left-panel/LeftPanel'
+import QUESTIONS, {QuestionTypeKey} from './left-panel/QuestionConfigs'
 import QuestionEdit from './QuestionEdit'
-import AddQuestionMenu from './questions/AddQuestionMenu'
-import ControlSelector from './questions/ControlSelector'
-import QUESTIONS, {QuestionTypeKey} from './questions/QuestionConfigs'
 import SurveyTitle from './SurveyTitle'
 
 const SurveyDesignContainerBox = styled(Box)(({theme}) => ({
@@ -214,6 +214,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   return (
     <Loader reqStatusLoading={!isNewSurvey() && !survey}>
       <SurveyDesignContainerBox>
+        {/* LEFT PANEL*/}
         <LeftPanel
           surveyId={assessment?.identifier}
           titleImage={
@@ -226,7 +227,9 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
             <AddQuestionMenu onSelectQuestion={qType => addStep(qType)} />
           </AddQuestion>
         </LeftPanel>
-        <Box display="flex" flexGrow={1}>
+
+        {/* CEDNTRAL PHONE AREA*/}
+        <Box display="flex" flexGrow={1} justifyContent="space-between">
           {error && <Alert color="error">{error}</Alert>}
           <Switch>
             <Route path={`/surveys/:id/design/title`}>
@@ -248,21 +251,25 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
               )}
             </Route>
             <Route path={`/surveys/:id/design/question`}>
-              <div>
-                {' '}
-                <Box py={0} pr={3} pl={2}>
-                  <QuestionEdit
-                    onChange={step => updateCurrentStep(step)}
-                    step={getCurrentStep()}
-                  />
-                </Box>
-                <Box>
-                  <ControlSelector
-                    step={getCurrentStep()!}
-                    onChange={step => updateCurrentStep(step)}
-                  />
-                </Box>
-              </div>
+              <Box
+                py={0}
+                pr={3}
+                pl={2}
+                textAlign="center"
+                height="100%"
+                flexGrow="1"
+                bgcolor={'#fff'}>
+                <QuestionEdit
+                  onChange={step => updateCurrentStep(step)}
+                  step={getCurrentStep()}
+                />
+              </Box>
+              <Box height="100%" bgcolor={'#f8f8f8'}>
+                <ControlSelector
+                  step={getCurrentStep()!}
+                  onChange={step => updateCurrentStep(step)}
+                />
+              </Box>
             </Route>
 
             <Route path={`/surveys/:id/design/completion`}>
@@ -279,7 +286,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
             </Route>
           </Switch>
         </Box>
-
+        {/* SAVE BUTTON AREA*/}
         {!isIntroScreen() && (
           <SaveButton startIcon={<SaveIcon />} variant="text">
             Save Changes

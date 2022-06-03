@@ -4,7 +4,7 @@ import Menu, {MenuProps} from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import {alpha, styled} from '@mui/material/styles'
 import * as React from 'react'
-import QUESTIONS from './QuestionConfigs'
+import QUESTIONS, {QuestionTypeKey} from './QuestionConfigs'
 import QuestionTypeDisplay from './QuestionTypeDisplay'
 
 const SelectButton = styled(Button)(({theme}) => ({
@@ -22,8 +22,6 @@ const SelectButton = styled(Button)(({theme}) => ({
   '&:hover': {
     fontWeight: 'bold',
     backgroundColor: '#F2F2F2',
-    //border: '1px solid black',
-    //color: 'blue',
   },
 }))
 
@@ -88,9 +86,8 @@ const AddQuestionMenu: React.FunctionComponent<{
   onSelectQuestion: (a: any) => void
 }> = ({onSelectQuestion}) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const [selected, setSelected] = React.useState<null | React.ReactNode>(null)
   const [selectedQuestionName, setSelectedQuestionName] = React.useState<
-    string | undefined
+    QuestionTypeKey | undefined
   >()
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -100,10 +97,7 @@ const AddQuestionMenu: React.FunctionComponent<{
     setAnchorEl(null)
   }
 
-  const onSelect = (option: React.ReactNode, name: string) => {
-    console.log(option, 'p')
-
-    setSelected(option)
+  const onSelect = (option: React.ReactNode, name: QuestionTypeKey) => {
     setSelectedQuestionName(name)
     handleClose()
   }
@@ -119,7 +113,11 @@ const AddQuestionMenu: React.FunctionComponent<{
         disableElevation
         onClick={handleClick}
         endIcon={<KeyboardArrowUpIcon />}>
-        {selected || 'Select Option'}
+        {selectedQuestionName ? (
+          <QuestionTypeDisplay hover={false} name={selectedQuestionName} />
+        ) : (
+          'Select Option'
+        )}
       </SelectButton>
       <StyledMenu
         id="select-survey-question-menu"
@@ -151,6 +149,7 @@ const AddQuestionMenu: React.FunctionComponent<{
       </StyledMenu>
       <StyledButton
         color="primary"
+        disabled={!selectedQuestionName}
         onClick={() => {
           onSelectQuestion(selectedQuestionName)
         }}>

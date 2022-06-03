@@ -3,7 +3,7 @@ import makeStyles from '@mui/styles/makeStyles'
 import {Step} from '@typedefs/surveys'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
-import {QuestionTypeKey} from './questions/QuestionConfigs'
+import {QuestionTypeKey} from './left-panel/QuestionConfigs'
 
 const useStyles = makeStyles(theme => ({
   root: {},

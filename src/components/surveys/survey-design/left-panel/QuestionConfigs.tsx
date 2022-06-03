@@ -37,7 +37,7 @@ const QUESTIONS = new Map<
       default: {
         type: 'simpleQuestion',
         identifier: 'durationQ',
-
+        title: 'New Question',
         inputItem: {
           type: 'duration',
         },
@@ -53,7 +53,7 @@ const QUESTIONS = new Map<
       default: {
         type: 'simpleQuestion',
         identifier: 'textQ',
-
+        title: 'New Question',
         inputItem: {
           type: 'string',
         },
@@ -69,6 +69,7 @@ const QUESTIONS = new Map<
       default: {
         type: 'instruction',
         identifier: 'instruction',
+        title: 'New Instruction',
       },
     },
   ],
@@ -81,7 +82,7 @@ const QUESTIONS = new Map<
       default: {
         type: 'simpleQuestion',
         identifier: 'likertQ',
-        title: 'Title',
+        title: 'New Question',
         uiHint: 'likert',
         inputItem: {
           type: 'integer',
@@ -186,7 +187,7 @@ const QUESTIONS = new Map<
       default: {
         type: 'simpleQuestion',
         identifier: 'timeQ',
-
+        title: 'New Question',
         inputItem: {
           type: 'time',
           formatOptions: {
@@ -205,7 +206,7 @@ const QUESTIONS = new Map<
       default: {
         type: 'simpleQuestion',
         identifier: 'yearQ',
-
+        title: 'New Question',
         inputItem: {
           type: 'year',
           formatOptions: {
