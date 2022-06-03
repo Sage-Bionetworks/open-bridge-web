@@ -87,7 +87,7 @@ export type ResourceFormat = 'image/png'
 export type AssessmentCategory = 'screenshot' | 'icon'
 export type AssessmentResource = {
   category: AssessmentCategory
-
+  deleted?: boolean
   format?: ResourceFormat
   guid?: string
   language?: string
@@ -119,7 +119,7 @@ export type Assessment = {
   version: number
   validationStatus?: string
   minutesToComplete?: number
-  resources?: any[]
+  resources?: AssessmentResource[]
   originGuid?: string
 }
 

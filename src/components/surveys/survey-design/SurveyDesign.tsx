@@ -1,38 +1,59 @@
+import {ReactComponent as SaveIcon} from '@assets/surveys/save.svg'
 import Loader from '@components/widgets/Loader'
-import Utility from '@helpers/utility'
-import {Alert, Box, styled} from '@mui/material'
+import UtilityObject from '@helpers/utility'
+import {Alert, Box, Button, styled} from '@mui/material'
 import {
   useSurveyAssessment,
   useSurveyConfig,
   useUpdateSurveyAssessment,
   useUpdateSurveyConfig,
+  useUpdateSurveyResource,
 } from '@services/assessmentHooks'
 import {Step, Survey} from '@typedefs/surveys'
 import {Assessment} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {
+  Redirect,
   Route,
   RouteComponentProps,
   Switch,
   useHistory,
+  useLocation,
   useParams,
 } from 'react-router-dom'
 import ControlSelector from './ControlSelector'
 import IntroInfo from './IntroInfo'
-import LeftPanel from './LeftPanel'
+import AddQuestionMenu from './left-panel/AddQuestionMenu'
+import LeftPanel from './left-panel/LeftPanel'
+import QUESTIONS, {QuestionTypeKey} from './left-panel/QuestionConfigs'
 import QuestionEdit from './QuestionEdit'
-import QuestionList from './QuestionList'
 import SurveyTitle from './SurveyTitle'
 
 const SurveyDesignContainerBox = styled(Box)(({theme}) => ({
+  position: 'relative',
   backgroundColor: 'pink',
   display: 'flex',
-  minHeight: 'calc(100vh - 64px)',
+
+  minHeight: 'calc(100vh - 70px)',
 }))
 
-type SurveyDesignOwnProps = {
-  studyId?: string
-}
+const SaveButton = styled(Button)(({theme}) => ({
+  position: 'absolute',
+  top: theme.spacing(3),
+  right: theme.spacing(3),
+  textAlign: 'right',
+  '&:hover': {
+    backgroundColor: 'transparent',
+    fontWeight: 900,
+  },
+}))
+
+const AddQuestion = styled('div')(({theme}) => ({
+  borderTop: '1px solid #f2f2f2',
+  display: 'flex',
+}))
+
+type SurveyDesignOwnProps = {}
 
 type SurveyDesignProps = SurveyDesignOwnProps & RouteComponentProps
 
@@ -41,15 +62,19 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     id: string
   }>()
 
-  const history = useHistory()
-
   const isNewSurvey = () => guid === ':id'
 
+  const history = useHistory()
+  const location = useLocation()
+  const [assessment, setAssessment] = React.useState<Assessment | undefined>()
+  const [survey, setSurvey] = React.useState<Survey | undefined>()
   const [error, setError] = React.useState('')
-  const {data: assessment, status: aStatus} = useSurveyAssessment(
+
+  //rq get and modify data hooks
+  const {data: _assessment, status: aStatus} = useSurveyAssessment(
     isNewSurvey() ? undefined : guid
   )
-  const {data: survey, status: cStatus} = useSurveyConfig(
+  const {data: _survey, status: cStatus} = useSurveyConfig(
     isNewSurvey() ? undefined : guid
   )
 
@@ -65,49 +90,36 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     mutateAsync: mutateSurvey,
   } = useUpdateSurveyConfig()
 
-  const [currentStepIndex, setCurrentStepIndex] = React.useState<
-    number | undefined
-  >()
+  const {
+    isSuccess: resourceUpdateSuccess,
+    isError: resourceUpdateError,
+    mutateAsync: mutateResource,
+  } = useUpdateSurveyResource()
 
-  const getQuestionList = (): Step[] => {
-    //@ts-ignore
-    return survey?.config.steps
-      .filter(s => !!s)
-      .map(s => ({
-        identifier: s.identifier,
-        title: s.title,
-        type: s.type,
-      }))
-  }
-  const addStep = (title: string) => {
-    if (!survey) {
-      return
-    }
-    const newStep: Step = {
-      identifier: Utility.generateNonambiguousCode(6, 'ALPHANUMERIC'),
-      title,
-      type: 'unkonwn',
-    }
-    const currentStepId = survey?.config.steps.length
-    //setSurvey(prev => ({...prev!, steps: [...prev!.steps, newStep]}))
-    setCurrentStepIndex(currentStepId)
-  }
+  //effects to populate local copies
 
-  const updateCurrentStep = (step: Step) => {
-    if (!survey) {
-      return
+  React.useEffect(() => {
+    if (_assessment) {
+      setAssessment(_assessment)
     }
-    if (currentStepIndex) {
-      let steps = [...survey!.config.steps]
-      steps[currentStepIndex] = step
-      // setSurvey(prev => ({...prev!, steps}))
+  }, [_assessment])
+
+  React.useEffect(() => {
+    if (_survey) {
+      setSurvey(_survey)
+    }
+  }, [_survey])
+
+  // fns used  to subcomponent callbackss
+  const saveIconResource = async () => {
+    if (assessment) {
+      const r = assessment.resources?.find(r => r.category === 'icon')
+      if (!r) {
+        throw new Error('no resource')
+      }
+      return mutateResource({assessment, resource: r})
     }
   }
-
-  const getCurrentStep = () =>
-    currentStepIndex !== undefined
-      ? survey?.config.steps[currentStepIndex]
-      : undefined
 
   const saveAssessment = async (
     asmnt: Assessment,
@@ -128,59 +140,158 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     }
   }
 
+  const [currentStepIndex, setCurrentStepIndex] = React.useState<
+    number | undefined
+  >()
+
+  const getQuestionList = (): Step[] => {
+    //@ts-ignore
+    return survey?.config.steps
+      .filter(s => !!s)
+      .map(s => ({
+        identifier: s.identifier,
+        title: s.title,
+        type: s.type,
+      }))
+  }
+
+  const updateSteps = (steps: Step[]) => {
+    console.log('updating steps', steps)
+    setSurvey(prev => ({
+      ...prev!,
+      config: {
+        ...prev!.config,
+        steps,
+      },
+    }))
+  }
+
+  const addStep = (title: QuestionTypeKey) => {
+    if (!survey) {
+      return
+    }
+    /*const newStep: Step = {
+      identifier: Utility.generateNonambiguousCode(6, 'ALPHANUMERIC'),
+      title,
+      type: 'unkonwn',
+    }*/
+    console.log('adding')
+    const id = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
+    const q = QUESTIONS.get(title)
+    if (q && q.default) {
+      const newStep: Step = {...q.default} as Step
+      newStep.identifier = `${newStep.identifier}_${id}`
+      console.log('adding step', newStep.identifier)
+      const steps = [...survey.config.steps, newStep]
+      updateSteps(steps)
+
+      const currentStepId = survey?.config.steps.length
+
+      setCurrentStepIndex(currentStepId)
+    }
+  }
+
+  const updateCurrentStep = (step: Step) => {
+    if (!survey) {
+      return
+    }
+    if (currentStepIndex) {
+      let steps = [...survey!.config.steps]
+      steps[currentStepIndex] = step
+      // setSurvey(prev => ({...prev!, steps}))
+    }
+  }
+
+  const getCurrentStep = () =>
+    currentStepIndex !== undefined
+      ? survey?.config.steps[currentStepIndex]
+      : undefined
+
+  const isIntroScreen = () => {
+    return location.pathname.includes('design/intro')
+  }
+
   return (
     <Loader reqStatusLoading={!isNewSurvey() && !survey}>
       <SurveyDesignContainerBox>
-        <LeftPanel surveyId={guid}>
-          left
-          {survey?.config.steps && (
-            <QuestionList
-              currentStepIndex={currentStepIndex}
-              steps={getQuestionList()}
-              onAdd={(title: string) => addStep(title)}
-              onNavigate={(identifier: string) => {
-                setCurrentStepIndex(
-                  survey.config.steps.findIndex(s => s.identifier == identifier)
-                )
-              }}
-            />
-          )}
+        {/* LEFT PANEL*/}
+        <LeftPanel
+          surveyId={assessment?.identifier}
+          titleImage={
+            assessment?.resources?.find(r => r.category === 'icon')?.url
+          }
+          guid={guid}
+          surveyConfig={survey?.config}
+          onUpdateSteps={(steps: Step[]) => updateSteps(steps)}>
+          <AddQuestion>
+            <AddQuestionMenu onSelectQuestion={qType => addStep(qType)} />
+          </AddQuestion>
         </LeftPanel>
-        <Box display="flex" flexGrow={1}>
+
+        {/* CEDNTRAL PHONE AREA*/}
+        <Box display="flex" flexGrow={1} justifyContent="space-between">
           {error && <Alert color="error">{error}</Alert>}
           <Switch>
             <Route path={`/surveys/:id/design/title`}>
-              <SurveyTitle />
+              {assessment && survey && (
+                <SurveyTitle
+                  onSave={() => {
+                    saveIconResource()
+                    mutateSurvey({guid: assessment.guid!, survey})
+                  }}
+                  onUpdateResource={r => {
+                    setAssessment(_prev => ({...assessment, resources: r}))
+                  }}
+                  onUpdateSurveyConfig={c => {
+                    setSurvey(prev => ({...prev, config: c}))
+                  }}
+                  resources={assessment.resources}
+                  surveyConfig={survey?.config}
+                />
+              )}
             </Route>
             <Route path={`/surveys/:id/design/question`}>
-              <div>
-                {' '}
-                <Box py={0} pr={3} pl={2}>
-                  <QuestionEdit
-                    onChange={step => updateCurrentStep(step)}
-                    step={getCurrentStep()}
-                  />
-                </Box>
-                <Box>
-                  <ControlSelector
-                    step={getCurrentStep()!}
-                    onChange={step => updateCurrentStep(step)}
-                  />
-                </Box>
-              </div>
+              <Box
+                py={0}
+                pr={3}
+                pl={2}
+                textAlign="center"
+                height="100%"
+                flexGrow="1"
+                bgcolor={'#fff'}>
+                <QuestionEdit
+                  onChange={step => updateCurrentStep(step)}
+                  step={getCurrentStep()}
+                />
+              </Box>
+              <Box height="100%" bgcolor={'#f8f8f8'}>
+                <ControlSelector
+                  step={getCurrentStep()!}
+                  onChange={step => updateCurrentStep(step)}
+                />
+              </Box>
             </Route>
 
             <Route path={`/surveys/:id/design/completion`}>
               <div>!!!completion</div>
             </Route>
-            <Route path="">
+            <Route path={`/surveys/:id/design/intro`}>
               <IntroInfo
                 surveyAssessment={assessment}
                 survey={survey}
                 onUpdate={saveAssessment}></IntroInfo>
             </Route>
+            <Route path="">
+              <Redirect to={`/surveys/${guid}/design/intro`}></Redirect>
+            </Route>
           </Switch>
         </Box>
+        {/* SAVE BUTTON AREA*/}
+        {!isIntroScreen() && (
+          <SaveButton startIcon={<SaveIcon />} variant="text">
+            Save Changes
+          </SaveButton>
+        )}
       </SurveyDesignContainerBox>
     </Loader>
   )

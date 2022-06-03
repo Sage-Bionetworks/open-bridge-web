@@ -1,13 +1,13 @@
-<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M16 15H28.8563L28.8563 27.1089C29.1811 27.0462 29.5152 27.0097 29.8563 27.0017V15C29.8563 14.4477 29.4086 14 28.8563 14H16C15.4477 14 15 14.4477 15 15V33.5703C15 34.1226 15.4477 34.5703 16 34.5703H24.2076C24.1201 34.247 24.059 33.9128 24.0268 33.5703H16V15Z" fill="#3A3A3A"/>
-<circle cx="30" cy="33" r="4.5" stroke="#3A3A3A"/>
-<path d="M28.1582 32.9994L29.281 34.3152L32.3687 31.6836" stroke="#3A3A3A" stroke-linecap="round"/>
-<circle cx="18.5" cy="21.5" r="0.5" fill="#3A3A3A"/>
-<circle cx="18.5" cy="19.5" r="0.5" fill="#3A3A3A"/>
-<circle cx="18.5" cy="23.5" r="0.5" fill="#3A3A3A"/>
-<circle cx="18.5" cy="25.5" r="0.5" fill="#3A3A3A"/>
-<path d="M20 21.5H26.5" stroke="#3A3A3A" stroke-linecap="round"/>
-<path d="M20 19.5H26.5" stroke="#3A3A3A" stroke-linecap="round"/>
-<path d="M20 23.5H26.5" stroke="#3A3A3A" stroke-linecap="round"/>
-<path d="M20 25.5H24" stroke="#3A3A3A" stroke-linecap="round"/>
+<svg width="20" height="24" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M1 1H13.8563L13.8563 13.1089C14.1811 13.0462 14.5152 13.0097 14.8563 13.0017V1C14.8563 0.447715 14.4086 0 13.8563 0H1C0.447715 0 0 0.447715 0 1V19.5703C0 20.1226 0.447716 20.5703 1 20.5703H9.20758C9.12014 20.247 9.05905 19.9128 9.02675 19.5703H1V1Z" fill="#3A3A3A"/>
+<circle cx="15" cy="19" r="4.5" stroke="#3A3A3A"/>
+<path d="M13.1582 18.9994L14.281 20.3152L17.3687 17.6836" stroke="#3A3A3A" stroke-linecap="round"/>
+<circle cx="3.5" cy="7.5" r="0.5" fill="#3A3A3A"/>
+<circle cx="3.5" cy="5.5" r="0.5" fill="#3A3A3A"/>
+<circle cx="3.5" cy="9.5" r="0.5" fill="#3A3A3A"/>
+<circle cx="3.5" cy="11.5" r="0.5" fill="#3A3A3A"/>
+<path d="M5 7.5H11.5" stroke="#3A3A3A" stroke-linecap="round"/>
+<path d="M5 5.5H11.5" stroke="#3A3A3A" stroke-linecap="round"/>
+<path d="M5 9.5H11.5" stroke="#3A3A3A" stroke-linecap="round"/>
+<path d="M5 11.5H9" stroke="#3A3A3A" stroke-linecap="round"/>
 </svg>

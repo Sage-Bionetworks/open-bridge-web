@@ -3,6 +3,7 @@ import makeStyles from '@mui/styles/makeStyles'
 import {Step} from '@typedefs/surveys'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
+import {QuestionTypeKey} from './left-panel/QuestionConfigs'
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -14,7 +15,7 @@ const useStyles = makeStyles(theme => ({
 type QuestionListOwnProps = {
   steps: Step[]
   currentStepIndex?: number
-  onAdd: (a: string) => void
+  onAdd: (a: QuestionTypeKey) => void
   onNavigate: (id: string) => void
 }
 
@@ -45,11 +46,6 @@ const QuestionList: FunctionComponent<QuestionListProps> = ({
             </Button>
           </li>
         ))}
-        <Button
-          onClick={() => onAdd('New Question')}
-          disabled={getNonEmptySteps().length < steps.length}>
-          +
-        </Button>
       </ul>
     </Box>
   )

@@ -316,7 +316,7 @@ const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
   console.log('step changed')
 
   return (
-    <Box bgcolor="#F8F8F8" px={5} border="1px solid black">
+    <Box bgcolor="#F8F8F8" px={5} border="1px solid black" margin="0 auto">
       QuestionEdit
       <PhoneDisplay>
         {step ? (

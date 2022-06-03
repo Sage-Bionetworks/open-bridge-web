@@ -10,6 +10,8 @@ export const ASSESSMENT_KEYS = {
   assessment: (guid: string) =>
     [...ASSESSMENT_KEYS.all, 'assessment', guid] as const,
   survey: (guid: string) => [...ASSESSMENT_KEYS.all, 'survey', guid] as const,
+  surveyResource: (guid: string) =>
+    [...ASSESSMENT_KEYS.all, 'resource', guid] as const,
   detailWithResources: (appId: string, guid: string) =>
     [...ASSESSMENT_KEYS.all, 'detail_resources', appId, guid] as const,
   listWithResources: (appId: string) =>
@@ -79,7 +81,9 @@ export const useSurveyAssessment = (guid?: string) => {
     ASSESSMENT_KEYS.assessment(guid || ''),
     () =>
       guid
-        ? AssessmentService.getSurveyAssessment(guid, token!)
+        ? AssessmentService.getSurveyAssessment(guid, token!).then(assessment =>
+            AssessmentService.getResource(assessment, token!, true)
+          )
         : Promise.resolve(undefined),
     {
       enabled: !!guid && guid !== ':id',

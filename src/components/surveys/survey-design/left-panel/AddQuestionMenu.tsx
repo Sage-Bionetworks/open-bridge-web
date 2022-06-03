@@ -4,11 +4,11 @@ import Menu, {MenuProps} from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import {alpha, styled} from '@mui/material/styles'
 import * as React from 'react'
-import QuestionTypeDisplay, {
-  QUESTION_TYPE_ICONS,
-} from '../widgets/QuestionTypeDisplay'
+import QUESTIONS, {QuestionTypeKey} from './QuestionConfigs'
+import QuestionTypeDisplay from './QuestionTypeDisplay'
 
 const SelectButton = styled(Button)(({theme}) => ({
+  flexGrow: 1,
   backgroundColor: '#F2F2F2',
   color: '#3A3A3A',
   border: 'none',
@@ -22,9 +22,20 @@ const SelectButton = styled(Button)(({theme}) => ({
   '&:hover': {
     fontWeight: 'bold',
     backgroundColor: '#F2F2F2',
-    border: '1px solid black',
-    //color: 'blue',
   },
+}))
+
+const StyledButton = styled(Button)(({theme}) => ({
+  width: '94px',
+  height: '48px',
+  margin: 0,
+  borderRadius: 0,
+  backgroundColor: theme.palette.primary.dark,
+  '&:hover': {
+    fontWeight: 'bolder',
+    backgroundColor: theme.palette.primary.dark,
+  },
+  fontFamily: 'Lato',
 }))
 
 const StyledMenu = styled((props: MenuProps) => (
@@ -71,9 +82,13 @@ const StyledMenu = styled((props: MenuProps) => (
   },
 }))
 
-const AddQuestionMenu: React.FunctionComponent = () => {
+const AddQuestionMenu: React.FunctionComponent<{
+  onSelectQuestion: (a: any) => void
+}> = ({onSelectQuestion}) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const [selected, setSelected] = React.useState<null | React.ReactNode>(null)
+  const [selectedQuestionName, setSelectedQuestionName] = React.useState<
+    QuestionTypeKey | undefined
+  >()
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -82,44 +97,65 @@ const AddQuestionMenu: React.FunctionComponent = () => {
     setAnchorEl(null)
   }
 
-  const onSelect = (option: React.ReactNode) => {
-    setSelected(option)
+  const onSelect = (option: React.ReactNode, name: QuestionTypeKey) => {
+    setSelectedQuestionName(name)
     handleClose()
   }
 
   return (
-    <div>
+    <>
       <SelectButton
-        id="demo-customized-button"
-        aria-controls={open ? 'demo-customized-menu' : undefined}
+        id="select-survey-question"
+        aria-controls={open ? 'select-survey-question' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         variant="contained"
         disableElevation
         onClick={handleClick}
         endIcon={<KeyboardArrowUpIcon />}>
-        {selected || 'Select Option'}
+        {selectedQuestionName ? (
+          <QuestionTypeDisplay hover={false} name={selectedQuestionName} />
+        ) : (
+          'Select Option'
+        )}
       </SelectButton>
       <StyledMenu
-        id="demo-customized-menu"
+        id="select-survey-question-menu"
         MenuListProps={{
-          'aria-labelledby': 'demo-customized-button',
+          'aria-labelledby': 'select-survey-question-button',
         }}
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}>
-        {Array.from(QUESTION_TYPE_ICONS.keys()).map(name => (
+        {Array.from(QUESTIONS.keys()).map(name => (
           <MenuItem
             key={name}
             onClick={() =>
-              onSelect(<QuestionTypeDisplay name={name} isSelected={false} />)
+              onSelect(
+                <QuestionTypeDisplay
+                  name={name}
+                  isSelected={name === selectedQuestionName}
+                />,
+                name
+              )
             }
             disableRipple>
-            <QuestionTypeDisplay name={name} isSelected={false} />
+            <QuestionTypeDisplay
+              name={name}
+              isSelected={name === selectedQuestionName}
+            />
           </MenuItem>
         ))}
       </StyledMenu>
-    </div>
+      <StyledButton
+        color="primary"
+        disabled={!selectedQuestionName}
+        onClick={() => {
+          onSelectQuestion(selectedQuestionName)
+        }}>
+        Add
+      </StyledButton>
+    </>
   )
 }
 

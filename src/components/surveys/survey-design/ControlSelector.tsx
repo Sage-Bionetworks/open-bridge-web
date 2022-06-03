@@ -7,7 +7,7 @@ import React, {FunctionComponent} from 'react'
 
 const useStyles = makeStyles(theme => ({
   root: {
-    backgroundColor: '#464646',
+    // backgroundColor: '#464646',
     padding: theme.spacing(5),
     display: 'grid',
     gridTemplateColumns: 'repeat(2, 1fr)',
@@ -190,7 +190,7 @@ const ControlSelector: FunctionComponent<ControlSelectorProps> = ({
   }
 
   return (
-    <Box className={classes.root} px={5} border="1px solid black">
+    <Box className={classes.root} px={5}>
       ControlSelector
       {[...controls.keys()].map(type => (
         <Button
