@@ -84,7 +84,7 @@ export interface OrgUser extends LoggedInUserData {
 
 /* *** Assessment ********************************/
 export type ResourceFormat = 'image/png'
-export type AssessmentCategory = 'screenshot' | 'icon'
+export type AssessmentCategory = 'screenshot' | 'icon' | 'website'
 export type AssessmentResource = {
   category: AssessmentCategory
   deleted?: boolean
@@ -95,6 +95,7 @@ export type AssessmentResource = {
   modifiedOn?: string
   title: string
   upToDate?: boolean
+  creators?: string[]
   url: string
   version?: number
 }
