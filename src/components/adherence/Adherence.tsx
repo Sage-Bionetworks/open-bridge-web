@@ -59,7 +59,7 @@ type ParticipantData = {
 }
 
 const TAB_DEFs = [
-  {type: 'SUMMARY', label: 'Adherence Summary'},
+  // {type: 'SUMMARY', label: 'Adherence Summary'},
   {type: 'ENROLLED', label: 'Active Participants'},
 ]
 
