@@ -15,7 +15,7 @@ export const DivContainer = styled('div')<{hover?: boolean}>(
       flexGrow: 0,
       maxWidth: theme.spacing(6),
       maxHeight: theme.spacing(6),
-      margin: theme.spacing(2),
+      // margin: theme.spacing(2),
     },
     '> div': {
       color: '#3A3A3A',
@@ -23,20 +23,6 @@ export const DivContainer = styled('div')<{hover?: boolean}>(
       fontWeight: 500,
       fontSize: '14px',
     },
-
-    '&:hover': hover
-      ? {
-          backgroundColor: '#565656',
-          '& >div': {
-            color: '#fff',
-          },
-
-          '& >svg, img ': {
-            WebkitFilter: 'invert(1)',
-            filter: 'invert(1)',
-          },
-        }
-      : {},
   })
 )
 

@@ -1,6 +1,7 @@
-import {ReactComponent as CompletionIcon} from '@assets/surveys/completion.svg'
 import {ReactComponent as DraggableIcon} from '@assets/surveys/draggable.svg'
+import {ReactComponent as CompletionIcon} from '@assets/surveys/iconcomplete.svg'
 import {ReactComponent as PreviewIcon} from '@assets/surveys/preview.svg'
+import {ReactComponent as InstructionIcon} from '@assets/surveys/q_type_icons/icontitle.svg'
 import {ReactComponent as SettingsIcon} from '@assets/surveys/settings.svg'
 import {Box, styled} from '@mui/material'
 import {Step, SurveyConfig} from '@typedefs/surveys'
@@ -19,6 +20,7 @@ import QuestionTypeDisplay, {DivContainer} from './QuestionTypeDisplay'
 const Container = styled('div')(({theme}) => ({
   display: 'flex',
   flexGrow: 0,
+  flexShrink: 0,
   width: theme.spacing(37),
 
   backgroundColor: '#FCFCFC',
@@ -36,6 +38,18 @@ const Row = styled('div')(({theme}) => ({
 
   color: '#3A3A3A',
   textDecoration: 'none',
+  '&:hover': {
+    backgroundColor: '#565656',
+    color: '#fff',
+
+    '& div': {
+      color: '#fff',
+    },
+    '& svg, img ': {
+      WebkitFilter: 'invert(1)',
+      filter: 'invert(1)',
+    },
+  },
 }))
 
 const TitleStyledRow = styled('div')(({theme}) => ({
@@ -176,7 +190,7 @@ const LeftPanel: React.FunctionComponent<{
           <StyledNavLink to={`/surveys/${guid}/design/title`}>
             <Row>
               <QuestionTypeDisplay>
-                <img src={getTitleImageSrc(titleImage)} />
+                <InstructionIcon />
                 <div>Title Page</div>
               </QuestionTypeDisplay>
             </Row>
@@ -220,7 +234,7 @@ const LeftPanel: React.FunctionComponent<{
           <StyledNavLink to={`/surveys/${guid}/design/completion`}>
             <Row>
               <QuestionTypeDisplay>
-                <CompletionIcon />
+                <CompletionIcon style={{margin: '4px 0'}} />
                 <div>Completion Screen</div>
               </QuestionTypeDisplay>
             </Row>
