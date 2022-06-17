@@ -27,7 +27,7 @@ const SelectButton = styled(Button)(({theme}) => ({
 
 const StyledButton = styled(Button)(({theme}) => ({
   width: '94px',
-  height: '48px',
+  height: '49px',
   margin: 0,
   borderRadius: 0,
   backgroundColor: theme.palette.primary.dark,
@@ -134,7 +134,7 @@ const AddQuestionMenu: React.FunctionComponent<{
               onSelect(
                 <QuestionTypeDisplay
                   name={name}
-                  isSelected={name === selectedQuestionName}
+                  /* isSelected={name === selectedQuestionName}*/
                 />,
                 name
               )
@@ -142,7 +142,7 @@ const AddQuestionMenu: React.FunctionComponent<{
             disableRipple>
             <QuestionTypeDisplay
               name={name}
-              isSelected={name === selectedQuestionName}
+              /* isSelected={name === selectedQuestionName}*/
             />
           </MenuItem>
         ))}

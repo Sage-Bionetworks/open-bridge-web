@@ -1,7 +1,7 @@
-import {ReactComponent as SaveIcon} from '@assets/surveys/save.svg'
+import {ReactComponent as SaveIcon} from '@assets/surveys/actions/save.svg'
 import Loader from '@components/widgets/Loader'
 import UtilityObject from '@helpers/utility'
-import {Alert, Box, Button, styled} from '@mui/material'
+import {Alert, Box, styled} from '@mui/material'
 import {
   useSurveyAssessment,
   useSurveyConfig,
@@ -9,6 +9,7 @@ import {
   useUpdateSurveyConfig,
   useUpdateSurveyResource,
 } from '@services/assessmentHooks'
+import {theme} from '@style/theme'
 import {Step, Survey} from '@typedefs/surveys'
 import {Assessment} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
@@ -21,12 +22,13 @@ import {
   useLocation,
   useParams,
 } from 'react-router-dom'
-import ControlSelector from './ControlSelector'
+import {ActionButton} from '../widgets/SharedStyled'
 import IntroInfo from './IntroInfo'
 import AddQuestionMenu from './left-panel/AddQuestionMenu'
 import LeftPanel from './left-panel/LeftPanel'
 import QUESTIONS, {QuestionTypeKey} from './left-panel/QuestionConfigs'
-import QuestionEdit from './QuestionEdit'
+import QuestionEdit from './question-edit/QuestionEdit'
+import QuestionEditRhs from './QuestionEditRhs'
 import SurveyTitle from './SurveyTitle'
 
 const SurveyDesignContainerBox = styled(Box)(({theme}) => ({
@@ -35,17 +37,6 @@ const SurveyDesignContainerBox = styled(Box)(({theme}) => ({
   display: 'flex',
 
   minHeight: 'calc(100vh - 70px)',
-}))
-
-const SaveButton = styled(Button)(({theme}) => ({
-  position: 'absolute',
-  top: theme.spacing(3),
-  right: theme.spacing(3),
-  textAlign: 'right',
-  '&:hover': {
-    backgroundColor: 'transparent',
-    fontWeight: 900,
-  },
 }))
 
 const AddQuestion = styled('div')(({theme}) => ({
@@ -62,6 +53,14 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     id: string
   }>()
 
+  const getIndex = (a: string | null) => {
+    if (!a) {
+      return undefined
+    } else {
+      return parseInt(a)
+    }
+  }
+
   const isNewSurvey = () => guid === ':id'
 
   const history = useHistory()
@@ -69,6 +68,20 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   const [assessment, setAssessment] = React.useState<Assessment | undefined>()
   const [survey, setSurvey] = React.useState<Survey | undefined>()
   const [error, setError] = React.useState('')
+  const [currentStepIndex, setCurrentStepIndex] = React.useState<
+    number | undefined
+  >(getIndex(new URLSearchParams(location.search)?.get('q')))
+
+  console.log(
+    'reloading' +
+      new URLSearchParams(location.search)?.get('q') +
+      currentStepIndex
+  )
+  React.useEffect(() => {
+    console.log('location change')
+    const result = new URLSearchParams(location.search)?.get('q')
+    setCurrentStepIndex(getIndex(result))
+  }, [location])
 
   //rq get and modify data hooks
   const {data: _assessment, status: aStatus} = useSurveyAssessment(
@@ -110,6 +123,13 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     }
   }, [_survey])
 
+  /*React.useEffect(() => {
+    let qIndex = new URLSearchParams(useLocation().search)?.get('q')
+
+    setCurrentStepIndex(qIndex ? parseInt(qIndex) : undefined)
+    console.log('changing index')
+  }, [])
+*/
   // fns used  to subcomponent callbackss
   const saveIconResource = async () => {
     if (assessment) {
@@ -139,10 +159,6 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       setError((error as any).toString())
     }
   }
-
-  const [currentStepIndex, setCurrentStepIndex] = React.useState<
-    number | undefined
-  >()
 
   const getQuestionList = (): Step[] => {
     //@ts-ignore
@@ -186,8 +202,9 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       updateSteps(steps)
 
       const currentStepId = survey?.config.steps.length
-
-      setCurrentStepIndex(currentStepId)
+      console.log('wantto set current step')
+      // setCurrentStepIndex(currentStepId)
+      history.push(`/surveys/${guid}/design/question?q=${currentStepId}`)
     }
   }
 
@@ -207,16 +224,17 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       ? survey?.config.steps[currentStepIndex]
       : undefined
 
-  const isIntroScreen = () => {
-    return location.pathname.includes('design/intro')
+  const isTitleScreen = () => {
+    return location.pathname.includes('design/title')
   }
 
   return (
     <Loader reqStatusLoading={!isNewSurvey() && !survey}>
       <SurveyDesignContainerBox>
-        {/* LEFT PANEL*/}
+        {/* LEFT PANEL*/}y
         <LeftPanel
           surveyId={assessment?.identifier}
+          currentStepIndex={currentStepIndex}
           titleImage={
             assessment?.resources?.find(r => r.category === 'icon')?.url
           }
@@ -227,7 +245,6 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
             <AddQuestionMenu onSelectQuestion={qType => addStep(qType)} />
           </AddQuestion>
         </LeftPanel>
-
         {/* CEDNTRAL PHONE AREA*/}
         <Box display="flex" flexGrow={1} justifyContent="space-between">
           {error && <Alert color="error">{error}</Alert>}
@@ -265,10 +282,14 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                 />
               </Box>
               <Box height="100%" bgcolor={'#f8f8f8'}>
-                <ControlSelector
+                <QuestionEditRhs
+                  step={getCurrentStep()!}
+                  onChange={(step: Step) => updateCurrentStep(step)}
+                />
+                {/*<ControlSelector
                   step={getCurrentStep()!}
                   onChange={step => updateCurrentStep(step)}
-                />
+                />*/}
               </Box>
             </Route>
 
@@ -287,10 +308,18 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           </Switch>
         </Box>
         {/* SAVE BUTTON AREA*/}
-        {!isIntroScreen() && (
-          <SaveButton startIcon={<SaveIcon />} variant="text">
+        {isTitleScreen() && (
+          <ActionButton
+            startIcon={<SaveIcon />}
+            variant="text"
+            sx={{
+              position: 'absolute',
+              top: theme.spacing(3),
+              right: theme.spacing(3),
+              textAlign: 'right',
+            }}>
             Save Changes
-          </SaveButton>
+          </ActionButton>
         )}
       </SurveyDesignContainerBox>
     </Loader>

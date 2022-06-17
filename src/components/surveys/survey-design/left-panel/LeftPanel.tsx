@@ -4,6 +4,7 @@ import {ReactComponent as PreviewIcon} from '@assets/surveys/preview.svg'
 import {ReactComponent as InstructionIcon} from '@assets/surveys/q_type_icons/icontitle.svg'
 import {ReactComponent as SettingsIcon} from '@assets/surveys/settings.svg'
 import {Box, styled} from '@mui/material'
+import {theme} from '@style/theme'
 import {Step, SurveyConfig} from '@typedefs/surveys'
 import React from 'react'
 import {
@@ -25,7 +26,7 @@ const Container = styled('div')(({theme}) => ({
 
   backgroundColor: '#FCFCFC',
   flexDirection: 'column',
-  justifyContent: 'space-between',
+  // justifyContent: 'space-between',
   boxShadow: '2px 5px 5px rgba(42, 42, 42, 0.1)',
   borderRight: '1px solid #DFDFDF',
 }))
@@ -136,7 +137,8 @@ const StepLink: React.FunctionComponent<{
   index: number
   step: Step
   size: number
-}> = ({guid, index, step, size}) => (
+  isCurrent?: boolean
+}> = ({guid, index, step, size, isCurrent}) => (
   <StyledNavLink to={`/surveys/${guid}/design/question?q=${index}`}>
     <DivContainer sx={{paddingRight: '20px'}}>
       <DivContainer sx={{height: '100%'}}>
@@ -149,7 +151,9 @@ const StepLink: React.FunctionComponent<{
             overflow: 'hidden',
           }}>
           {' '}
-          {`${index < 9 ? '0' : ''}${index + 1}. ${step.title}`}
+          {`${index < 9 ? '0' : ''}${index + 1}. ${step.title}${
+            isCurrent ? 'current' : ''
+          }`}
         </Box>
       </DivContainer>
       {size > 1 && <DraggableIcon />}
@@ -163,8 +167,17 @@ const LeftPanel: React.FunctionComponent<{
   surveyId?: string
   titleImage?: string
   surveyConfig?: SurveyConfig
+  currentStepIndex?: number
   onUpdateSteps: (s: Step[]) => void
-}> = ({guid, surveyConfig, children, titleImage, surveyId, onUpdateSteps}) => {
+}> = ({
+  guid,
+  surveyConfig,
+  children,
+  titleImage,
+  surveyId,
+  currentStepIndex,
+  onUpdateSteps,
+}) => {
   console.log(
     'rerender steps',
     surveyConfig?.steps.map(s => s.identifier)
@@ -183,66 +196,76 @@ const LeftPanel: React.FunctionComponent<{
     onUpdateSteps(items)
   }
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Container id="left">
+    <Container id="left">
+      <DragDropContext onDragEnd={onDragEnd}>
         <Box id="questions">
           <TitleRow surveyId={surveyId} guid={guid} />
-          <StyledNavLink to={`/surveys/${guid}/design/title`}>
-            <Row>
-              <QuestionTypeDisplay>
-                <InstructionIcon />
-                <div>Title Page</div>
-              </QuestionTypeDisplay>
-            </Row>
-          </StyledNavLink>
-          <Droppable droppableId="questions">
-            {provided => (
-              <Box
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                sx={{
-                  maxHeight: 'calc(100vh - 200px)',
-                  overflow: 'scroll',
-                  bgColor: 'beige',
-                }}>
-                {surveyConfig?.steps.map((step, index) => (
-                  <Draggable
-                    draggableId={step.identifier}
-                    isDragDisabled={surveyConfig?.steps.length < 2}
-                    index={index}
-                    key={step.identifier}>
-                    {provided => (
-                      <Row
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        ref={provided.innerRef}>
-                        <StepLink
-                          guid={guid}
-                          size={surveyConfig?.steps.length}
-                          index={index}
-                          step={step}
-                        />
-                      </Row>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </Box>
-            )}
-          </Droppable>
+          <Box
+            sx={{
+              height: 'calc(100vh - 150px)',
+              overflow: 'scroll',
+              bgColor: 'beige',
+            }}>
+            <StyledNavLink to={`/surveys/${guid}/design/title`}>
+              <Row>
+                <QuestionTypeDisplay>
+                  <InstructionIcon />
+                  <div>Title Page</div>
+                </QuestionTypeDisplay>
+              </Row>
+            </StyledNavLink>
+            <Droppable droppableId="questions">
+              {provided => (
+                <Box ref={provided.innerRef} {...provided.droppableProps}>
+                  {surveyConfig?.steps.map((step, index) => (
+                    <Draggable
+                      draggableId={step.identifier}
+                      isDragDisabled={surveyConfig?.steps.length < 2}
+                      index={index}
+                      key={step.identifier}>
+                      {provided => (
+                        <Row
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          ref={provided.innerRef}>
+                          <StepLink
+                            guid={guid}
+                            size={surveyConfig?.steps.length}
+                            index={index}
+                            step={step}
+                            isCurrent={currentStepIndex === index}
+                          />
+                        </Row>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </Box>
+              )}
+            </Droppable>
 
-          <StyledNavLink to={`/surveys/${guid}/design/completion`}>
-            <Row>
-              <QuestionTypeDisplay>
-                <CompletionIcon style={{margin: '4px 0'}} />
-                <div>Completion Screen</div>
-              </QuestionTypeDisplay>
-            </Row>
-          </StyledNavLink>
+            <StyledNavLink to={`/surveys/${guid}/design/completion`}>
+              <Row>
+                <QuestionTypeDisplay>
+                  <CompletionIcon style={{margin: '4px 0'}} />
+                  <div>Completion Screen</div>
+                </QuestionTypeDisplay>
+              </Row>
+            </StyledNavLink>
+          </Box>
         </Box>
-        {children}
-      </Container>
-    </DragDropContext>
+        <Box
+          sx={{
+            width: theme.spacing(37),
+            position: 'fixed',
+            bottom: '0px',
+
+            height: '50px',
+          }}>
+          {children}
+        </Box>
+      </DragDropContext>
+    </Container>
   )
 }
 export default LeftPanel

@@ -4,8 +4,8 @@ import {poppinsFont} from '@style/theme'
 import {SurveyConfig} from '@typedefs/surveys'
 import {AssessmentResource} from '@typedefs/types'
 import React from 'react'
-import PhoneDisplay from '../widgets/PhoneDisplay'
 import SurveyIcon, {SURVEY_ICONS} from '../widgets/SurveyIcon'
+import PhoneDisplay from './question-edit/PhoneDisplay'
 
 const DisappearingInput = styled(OutlinedInput)(({theme}) => ({
   padding: '0px',

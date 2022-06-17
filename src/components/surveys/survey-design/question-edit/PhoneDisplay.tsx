@@ -1,6 +1,6 @@
 import {Button} from '@mui/material'
 import Box from '@mui/material/Box'
-import {styled} from '@mui/material/styles'
+import {styled, SxProps} from '@mui/material/styles'
 import {latoFont} from '@style/theme'
 import React, {FunctionComponent} from 'react'
 import QuestionPhoneBottom from './QuestionPhoneBottom'
@@ -34,6 +34,7 @@ const StyledButton = styled(Button)(({theme}) => ({
 }))
 
 type PhoneDisplayProps = {
+  sx?: SxProps
   isQuestion?: boolean
   onAction?: () => void
 }
@@ -42,9 +43,10 @@ const PhoneDisplay: FunctionComponent<PhoneDisplayProps> = ({
   isQuestion,
   onAction,
   children,
+  sx,
 }) => {
   return (
-    <PhoneDiv>
+    <PhoneDiv sx={sx}>
       <Box height="100%" pb={5}>
         {children}
       </Box>

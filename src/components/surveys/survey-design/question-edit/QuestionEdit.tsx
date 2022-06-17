@@ -1,18 +1,5 @@
-import DatePicker from '@components/widgets/DatePicker'
 import EditableTextbox from '@components/widgets/EditableTextbox'
-import {
-  Box,
-  Button,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  Radio,
-  RadioGroup,
-  TextField,
-} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
-import {latoFont} from '@style/theme'
+import {Box} from '@mui/material'
 import {
   ChoiceQuestion,
   ChoiceQuestionChoice,
@@ -20,17 +7,15 @@ import {
   Step,
 } from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
-import PhoneDisplay from '../widgets/PhoneDisplay'
+import {getQuestionId} from '../left-panel/QuestionConfigs'
+import PhoneDisplay from './PhoneDisplay'
+import RequiredToggle from './RequiredToggle'
+
+/*
 
 const useStyles = makeStyles(theme => ({
-  root: {},
-  phone: {
-    height: '590px',
-    width: '307px',
-    border: '1px solid black',
-    borderRadius: '25px',
-    padding: theme.spacing(5, 2),
-  },
+
+
   title: {
     fontFamily: latoFont,
 
@@ -39,9 +24,9 @@ const useStyles = makeStyles(theme => ({
     lineHeight: '1.1',
     textAlign: 'center',
 
-    /* Black: Dark Font */
 
-    color: theme.palette.text.secondary,
+
+  //  color: theme.palette.text.secondary,
   },
   checkboxButton: {
     width: '100%',
@@ -82,17 +67,18 @@ const useStyles = makeStyles(theme => ({
     color: '#2A2A2A',
     margin: theme.spacing(1, 0),
   },
-}))
+}))*/
 
-type QuestionEditOwnProps = {
+type QuestionEditProps = {
   step?: Step
   onChange: (step: Step) => void
+
   //  onAdd: (a: string) => void
   // onNavigate: (id: string) => void
 }
-
+/*
 const CheckboxQuestion: FunctionComponent<InputItem> = inputItem => {
-  const classes = useStyles()
+
   const [choices, setChoices] = React.useState<ChoiceQuestionChoice[]>([])
   const newChoice: ChoiceQuestionChoice = {
     text: 'New Input',
@@ -261,8 +247,8 @@ const LikertQuestion: FunctionComponent<InputItem> = inputItem => {
     </FormControl>
   )
 }
-
-type QuestionEditProps = QuestionEditOwnProps
+*/
+//type QuestionEditProps = QuestionEditOwnProps
 
 function Factory(args: {step: Step; onChange: (step: Step) => void}) {
   const type = args.step.controlType === 'checkbox' ? 'checkbox' : 'string'
@@ -282,7 +268,7 @@ function Factory(args: {step: Step; onChange: (step: Step) => void}) {
   switch (args.step.controlType) {
     case 'radio': {
       let _step = args.step as ChoiceQuestion
-      return (
+      /*  return (
         <RadioQuestion
           {...{
             ...props,
@@ -290,19 +276,26 @@ function Factory(args: {step: Step; onChange: (step: Step) => void}) {
             choices: _step.choices || [],
           }}
         />
-      )
+      )*/
+      return <>RADIO</>
     }
 
     case 'checkbox':
-      return <CheckboxQuestion {...props} />
+      //  return <CheckboxQuestion {...props} />
+      return <>CHECKBOX</>
     case 'text':
-      return <TextQuestion {...props} />
+      return <>TEXT</>
+    // return <TextQuestion {...props} />
     case 'time':
-      return <TimeQuestion {...props} />
+      return <>TIME</>
+    // return <TimeQuestion {...props} />
+
     case 'date':
-      return <DateQuestion {...props} />
+      return <>DATE</>
+    // return <DateQuestion {...props} />
     case 'likert':
-      return <LikertQuestion {...props} />
+      return <>LIKERT</>
+    // return <LikertQuestion {...props} />
     default:
       return <>nothing</>
   }
@@ -312,16 +305,17 @@ const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
   step,
   onChange,
 }) => {
-  const classes = useStyles()
-  console.log('step changed')
+  console.log('step changed', step)
+  const [isRequired, setIsRequired] = React.useState(false)
 
   return (
     <Box bgcolor="#F8F8F8" px={5} border="1px solid black" margin="0 auto">
-      QuestionEdit
-      <PhoneDisplay>
+      QuestionEdit {step?.type}
+      {step?.identifier}
+      <PhoneDisplay isQuestion={true} sx={{marginBottom: '20px'}}>
         {step ? (
           <Box>
-            <div className={classes.title}>
+            <div>
               <EditableTextbox
                 styleProps={{padding: '8px 0'}}
                 initValue={step.title}
@@ -329,13 +323,14 @@ const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
                   onChange({...step, title: newText})
                 }></EditableTextbox>
             </div>
-
-            <Factory {...{step: {...step}, onChange: onChange}}></Factory>
+            {getQuestionId(step)}
+            {/*<Factory {...{step: {...step}, onChange: onChange}}></Factory>*/}
           </Box>
         ) : (
           <></>
         )}
       </PhoneDisplay>
+      <RequiredToggle isRequired={isRequired} onChange={setIsRequired} />
     </Box>
   )
 }
