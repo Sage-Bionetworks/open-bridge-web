@@ -231,7 +231,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   return (
     <Loader reqStatusLoading={!isNewSurvey() && !survey}>
       <SurveyDesignContainerBox>
-        {/* LEFT PANEL*/}y
+        {/* LEFT PANEL*/}
         <LeftPanel
           surveyId={assessment?.identifier}
           currentStepIndex={currentStepIndex}

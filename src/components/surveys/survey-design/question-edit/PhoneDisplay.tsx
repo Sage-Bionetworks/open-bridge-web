@@ -1,11 +1,8 @@
-import {Button} from '@mui/material'
 import Box from '@mui/material/Box'
 import {styled, SxProps} from '@mui/material/styles'
-import {latoFont} from '@style/theme'
-import React, {FunctionComponent} from 'react'
-import QuestionPhoneBottom from './QuestionPhoneBottom'
+import React, {FunctionComponent, ReactNode} from 'react'
 
-const PhoneDiv = styled('div')(({theme}) => ({
+const PhoneDiv = styled('div', {label: 'phoneDiv'})(({theme}) => ({
   position: 'relative',
   height: '504px',
   width: '264px',
@@ -21,28 +18,15 @@ const PhoneDiv = styled('div')(({theme}) => ({
   margin: '64px auto 0 auto',
 }))
 
-const StyledButton = styled(Button)(({theme}) => ({
-  height: theme.spacing(5),
-  // backgroundColor: '#2A2A2A',
-  borderRadius: '100px',
-  textAlign: 'center',
-
-  fontFamily: latoFont,
-  fontWeight: 600,
-  fontSize: '16px',
-  // color: '#fff',
-}))
-
 type PhoneDisplayProps = {
   sx?: SxProps
-  isQuestion?: boolean
-  onAction?: () => void
+
+  phoneBottom?: ReactNode
 }
 
 const PhoneDisplay: FunctionComponent<PhoneDisplayProps> = ({
-  isQuestion,
-  onAction,
   children,
+  phoneBottom,
   sx,
 }) => {
   return (
@@ -51,13 +35,7 @@ const PhoneDisplay: FunctionComponent<PhoneDisplayProps> = ({
         {children}
       </Box>
 
-      {isQuestion ? (
-        <QuestionPhoneBottom />
-      ) : (
-        <StyledButton color="primary" variant="contained" onClick={onAction}>
-          Start
-        </StyledButton>
-      )}
+      {phoneBottom}
     </PhoneDiv>
   )
 }

@@ -9,6 +9,7 @@ import {
 import React, {FunctionComponent} from 'react'
 import {getQuestionId} from '../left-panel/QuestionConfigs'
 import PhoneDisplay from './PhoneDisplay'
+import QuestionPhoneBottom from './QuestionPhoneBottom'
 import RequiredToggle from './RequiredToggle'
 
 /*
@@ -307,12 +308,21 @@ const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
 }) => {
   console.log('step changed', step)
   const [isRequired, setIsRequired] = React.useState(false)
+  const questionId = step ? getQuestionId(step) : 0
 
   return (
     <Box bgcolor="#F8F8F8" px={5} border="1px solid black" margin="0 auto">
       QuestionEdit {step?.type}
       {step?.identifier}
-      <PhoneDisplay isQuestion={true} sx={{marginBottom: '20px'}}>
+      <PhoneDisplay
+        sx={{marginBottom: '20px'}}
+        phoneBottom={
+          questionId === 'MULTISELECT' || questionId === 'SINGLE_SELECT' ? (
+            <QuestionPhoneBottom />
+          ) : (
+            <></>
+          )
+        }>
         {step ? (
           <Box>
             <div>

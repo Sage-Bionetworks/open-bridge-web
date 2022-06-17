@@ -9,7 +9,7 @@ import React, {FunctionComponent} from 'react'
 
 const ITEM_HEIGHT = 48
 
-const PhoneBottom = styled('div')({
+const PhoneBottom = styled('div', {label: 'phoneBottom'})({
   position: 'absolute',
   left: '0px',
   bottom: '-3px',
@@ -26,10 +26,18 @@ const PhoneBottom = styled('div')({
     borderBottom: '3px solid #2A2A2A',
     bordeLeft: '3px solid #2A2A2A',
     borderRadius: '0px 0px 0px 25px',
+
+    '&:hover': {
+      background: '#BCD5E4',
+      fontWeight: 900,
+      '& label': {
+        cursor: 'pointer',
+      },
+    },
   },
 })
 
-const SideMenu = styled('div')({
+const SideMenu = styled('div', {label: 'sideMenu'})({
   marginRight: '3px',
   height: '48px',
   width: '40px',
@@ -38,22 +46,15 @@ const SideMenu = styled('div')({
   borderRadius: '0px 0 25px 0',
   borderBottom: '3px solid #2A2A2A',
   borderRight: '3px solid #2A2A2A',
+  '&  svg': {
+    color: '#fff',
+  },
 })
 const Label = styled('label')({
   fontFamily: latoFont,
   fontWeight: 600,
   fontSize: '16px',
 })
-
-const PhoneBottomDiv = styled('div')(({theme}) => ({
-  /*height: theme.spacing(5),
-  backgroundColor: '#2A2A2A',
-  borderRadius: '100px',
-  textAlign: 'center',
-  color: '#fff',
-  width: '100%',
-  lineHeight: theme.spacing(5),*/
-}))
 
 const QuestionPhoneBottom: FunctionComponent<{}> = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)

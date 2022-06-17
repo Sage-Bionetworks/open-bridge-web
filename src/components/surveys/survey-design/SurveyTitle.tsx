@@ -1,6 +1,6 @@
-import {Box, FormControl, OutlinedInput} from '@mui/material'
+import {Box, Button, FormControl, OutlinedInput} from '@mui/material'
 import {styled} from '@mui/material/styles'
-import {poppinsFont} from '@style/theme'
+import {latoFont, poppinsFont} from '@style/theme'
 import {SurveyConfig} from '@typedefs/surveys'
 import {AssessmentResource} from '@typedefs/types'
 import React from 'react'
@@ -28,6 +28,18 @@ const DisappearingInput = styled(OutlinedInput)(({theme}) => ({
     padding: '8px',
     backgroundColor: 'transparent',
   },
+}))
+
+const StyledStartButton = styled(Button)(({theme}) => ({
+  height: theme.spacing(5),
+  // backgroundColor: '#2A2A2A',
+  borderRadius: '100px',
+  textAlign: 'center',
+
+  fontFamily: latoFont,
+  fontWeight: 600,
+  fontSize: '16px',
+  // color: '#fff',
 }))
 
 const TitleIcon = styled('div')(({theme}) => ({
@@ -108,7 +120,15 @@ const SurveyTitle: React.FunctionComponent<SurveyTitleProps> = ({
   return (
     <>
       <Box bgcolor={'#fff'} flexGrow={1} textAlign="center">
-        <PhoneDisplay isQuestion={false} onAction={onSave}>
+        <PhoneDisplay
+          phoneBottom={
+            <StyledStartButton
+              color="primary"
+              variant="contained"
+              onClick={onSave}>
+              Start
+            </StyledStartButton>
+          }>
           <Box
             display="flex"
             flexDirection="column"

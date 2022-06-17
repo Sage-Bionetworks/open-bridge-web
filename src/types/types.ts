@@ -100,9 +100,11 @@ export type AssessmentResource = {
   version?: number
 }
 export type Assessment = {
+  appId?: string
+  labels?: string[]
   identifier: string
   revision: number
-  osName: 'Android' | 'iPhone OS' | 'Both' //iPhone OS"
+  osName: 'Android' | 'iPhone OS' | 'Both' | 'Universal' //iPhone OS"
   ownerId: string //sage-bionetworks"
   title: string
 

@@ -13,7 +13,7 @@ import {
   Droppable,
   DropResult,
 } from 'react-beautiful-dnd'
-import {NavLink} from 'react-router-dom'
+import {NavLink, useLocation} from 'react-router-dom'
 import {SURVEY_ICONS} from '../../widgets/SurveyIcon'
 import QUESTIONS, {getQuestionId} from './QuestionConfigs'
 import QuestionTypeDisplay, {DivContainer} from './QuestionTypeDisplay'
@@ -137,10 +137,12 @@ const StepLink: React.FunctionComponent<{
   index: number
   step: Step
   size: number
-  isCurrent?: boolean
-}> = ({guid, index, step, size, isCurrent}) => (
+}> = ({guid, index, step, size}) => (
   <StyledNavLink to={`/surveys/${guid}/design/question?q=${index}`}>
-    <DivContainer sx={{paddingRight: '20px'}}>
+    <DivContainer
+      sx={{
+        paddingRight: '20px',
+      }}>
       <DivContainer sx={{height: '100%'}}>
         {QUESTIONS.get(getQuestionId(step))?.img}
         <Box
@@ -151,9 +153,7 @@ const StepLink: React.FunctionComponent<{
             overflow: 'hidden',
           }}>
           {' '}
-          {`${index < 9 ? '0' : ''}${index + 1}. ${step.title}${
-            isCurrent ? 'current' : ''
-          }`}
+          {`${index < 9 ? '0' : ''}${index + 1}. ${step.title}`}
         </Box>
       </DivContainer>
       {size > 1 && <DraggableIcon />}
@@ -182,6 +182,7 @@ const LeftPanel: React.FunctionComponent<{
     'rerender steps',
     surveyConfig?.steps.map(s => s.identifier)
   )
+  const location = useLocation()
   const onDragEnd = (result: DropResult) => {
     if (!surveyConfig?.steps) {
       return
@@ -207,7 +208,12 @@ const LeftPanel: React.FunctionComponent<{
               bgColor: 'beige',
             }}>
             <StyledNavLink to={`/surveys/${guid}/design/title`}>
-              <Row>
+              <Row
+                sx={{
+                  backgroundColor: location.pathname.includes('/design/title')
+                    ? 'red'
+                    : 'inherit',
+                }}>
                 <QuestionTypeDisplay>
                   <InstructionIcon />
                   <div>Title Page</div>
@@ -225,6 +231,10 @@ const LeftPanel: React.FunctionComponent<{
                       key={step.identifier}>
                       {provided => (
                         <Row
+                          sx={{
+                            backgroundColor:
+                              currentStepIndex === index ? 'red' : 'inherit',
+                          }}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
                           ref={provided.innerRef}>
@@ -233,7 +243,6 @@ const LeftPanel: React.FunctionComponent<{
                             size={surveyConfig?.steps.length}
                             index={index}
                             step={step}
-                            isCurrent={currentStepIndex === index}
                           />
                         </Row>
                       )}
@@ -245,7 +254,14 @@ const LeftPanel: React.FunctionComponent<{
             </Droppable>
 
             <StyledNavLink to={`/surveys/${guid}/design/completion`}>
-              <Row>
+              <Row
+                sx={{
+                  backgroundColor: location.pathname.includes(
+                    '/design/completion'
+                  )
+                    ? 'red'
+                    : 'inherit',
+                }}>
                 <QuestionTypeDisplay>
                   <CompletionIcon style={{margin: '4px 0'}} />
                   <div>Completion Screen</div>
