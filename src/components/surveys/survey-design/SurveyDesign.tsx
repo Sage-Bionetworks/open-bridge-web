@@ -28,6 +28,7 @@ import AddQuestionMenu from './left-panel/AddQuestionMenu'
 import LeftPanel from './left-panel/LeftPanel'
 import QUESTIONS, {QuestionTypeKey} from './left-panel/QuestionConfigs'
 import QuestionEdit from './question-edit/QuestionEdit'
+import QuestionEditToolbar from './question-edit/QuestionEditToolbar'
 import QuestionEditRhs from './QuestionEditRhs'
 import SurveyTitle from './SurveyTitle'
 
@@ -49,19 +50,18 @@ type SurveyDesignOwnProps = {}
 type SurveyDesignProps = SurveyDesignOwnProps & RouteComponentProps
 
 const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
-  let {id: guid} = useParams<{
+  let {id: surveyGuid} = useParams<{
     id: string
   }>()
 
-  const getIndex = (a: string | null) => {
-    if (!a) {
-      return undefined
-    } else {
-      return parseInt(a)
-    }
+  const getQuestionIndexFromSearchString = (): //  search: string
+  number | undefined => {
+    const qValue = new URLSearchParams(location.search)?.get('q')
+    const qNum = parseInt(qValue || '')
+    return isNaN(qNum) ? undefined : qNum
   }
 
-  const isNewSurvey = () => guid === ':id'
+  const isNewSurvey = () => surveyGuid === ':id'
 
   const history = useHistory()
   const location = useLocation()
@@ -70,25 +70,14 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   const [error, setError] = React.useState('')
   const [currentStepIndex, setCurrentStepIndex] = React.useState<
     number | undefined
-  >(getIndex(new URLSearchParams(location.search)?.get('q')))
-
-  console.log(
-    'reloading' +
-      new URLSearchParams(location.search)?.get('q') +
-      currentStepIndex
-  )
-  React.useEffect(() => {
-    console.log('location change')
-    const result = new URLSearchParams(location.search)?.get('q')
-    setCurrentStepIndex(getIndex(result))
-  }, [location])
+  >(getQuestionIndexFromSearchString())
 
   //rq get and modify data hooks
   const {data: _assessment, status: aStatus} = useSurveyAssessment(
-    isNewSurvey() ? undefined : guid
+    isNewSurvey() ? undefined : surveyGuid
   )
   const {data: _survey, status: cStatus} = useSurveyConfig(
-    isNewSurvey() ? undefined : guid
+    isNewSurvey() ? undefined : surveyGuid
   )
 
   const {
@@ -119,9 +108,15 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
 
   React.useEffect(() => {
     if (_survey) {
+      console.log('%c surveyChanged', 'background: #222; color: #bada55')
       setSurvey(_survey)
     }
   }, [_survey])
+
+  React.useEffect(() => {
+    console.log('location change')
+    setCurrentStepIndex(getQuestionIndexFromSearchString())
+  }, [location])
 
   /*React.useEffect(() => {
     let qIndex = new URLSearchParams(useLocation().search)?.get('q')
@@ -160,29 +155,46 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     }
   }
 
-  const getQuestionList = (): Step[] => {
-    //@ts-ignore
-    return survey?.config.steps
-      .filter(s => !!s)
-      .map(s => ({
-        identifier: s.identifier,
-        title: s.title,
-        type: s.type,
-      }))
-  }
-
-  const updateSteps = (steps: Step[]) => {
+  const reorderOrAddSteps = async (steps: Step[]) => {
     console.log('updating steps', steps)
-    setSurvey(prev => ({
-      ...prev!,
+    const updatedSurvey = {
+      ...survey,
       config: {
-        ...prev!.config,
+        ...survey!.config,
         steps,
       },
-    }))
+    }
+    setSurvey(updatedSurvey)
+
+    await mutateSurvey({guid: surveyGuid, survey: updatedSurvey})
   }
 
-  const addStep = (title: QuestionTypeKey) => {
+  const navigateStep = async (
+    id: number | 'title' | 'completion',
+    shouldSave = true
+  ) => {
+    console.log('type of id' + typeof id)
+    try {
+      console.log('about to update survey')
+      if (shouldSave) {
+        //  await mutateSurvey({guid: surveyGuid, survey: survey!})
+      }
+      if (typeof id === 'number') {
+        console.log('redirecting')
+
+        //  history.push(`/surveys/${surveyGuid}/design/question?q=${id}`)
+        console.log('survey: ', survey?.config.steps)
+        history.replace(`/surveys/${surveyGuid}/design/question?q=${id}`)
+        // setCurrentStepIndex(id)
+      } else {
+        history.push(`/surveys/${surveyGuid}/design/${id}`)
+      }
+    } catch (e) {
+      alert(e)
+    }
+  }
+
+  const addStep = async (title: QuestionTypeKey) => {
     if (!survey) {
       return
     }
@@ -199,12 +211,13 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       newStep.identifier = `${newStep.identifier}_${id}`
       console.log('adding step', newStep.identifier)
       const steps = [...survey.config.steps, newStep]
-      updateSteps(steps)
+      await reorderOrAddSteps(steps)
 
       const currentStepId = survey?.config.steps.length
       console.log('wantto set current step')
       // setCurrentStepIndex(currentStepId)
-      history.push(`/surveys/${guid}/design/question?q=${currentStepId}`)
+      console.log('surveysteps' + survey.config.steps)
+      navigateStep(currentStepId, false)
     }
   }
 
@@ -212,10 +225,18 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     if (!survey) {
       return
     }
-    if (currentStepIndex) {
+    console.log('thinking')
+    if (currentStepIndex !== undefined) {
+      console.log('updating step to ', step)
       let steps = [...survey!.config.steps]
       steps[currentStepIndex] = step
-      // setSurvey(prev => ({...prev!, steps}))
+      setSurvey(prev => ({
+        ...prev!,
+        config: {
+          ...survey!.config,
+          steps,
+        },
+      }))
     }
   }
 
@@ -228,19 +249,37 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     return location.pathname.includes('design/title')
   }
 
+  const save = async () => {
+    console.log('!!!saving', survey)
+    await mutateSurvey({guid: surveyGuid, survey: survey!})
+    console.log('done')
+  }
+  const deleteCurrentStep = async () => {
+    const steps = [...survey!.config.steps]
+    steps.splice(currentStepIndex!, 1)
+    await mutateSurvey({
+      guid: surveyGuid,
+      survey: {
+        ...survey,
+        config: {
+          ...survey!.config,
+          steps,
+        },
+      },
+    })
+  }
+
   return (
     <Loader reqStatusLoading={!isNewSurvey() && !survey}>
       <SurveyDesignContainerBox>
         {/* LEFT PANEL*/}
         <LeftPanel
+          onNavigateStep={navigateStep}
           surveyId={assessment?.identifier}
           currentStepIndex={currentStepIndex}
-          titleImage={
-            assessment?.resources?.find(r => r.category === 'icon')?.url
-          }
-          guid={guid}
+          guid={surveyGuid}
           surveyConfig={survey?.config}
-          onUpdateSteps={(steps: Step[]) => updateSteps(steps)}>
+          onUpdateSteps={(steps: Step[]) => reorderOrAddSteps(steps)}>
           <AddQuestion>
             <AddQuestionMenu onSelectQuestion={qType => addStep(qType)} />
           </AddQuestion>
@@ -248,6 +287,8 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
         {/* CEDNTRAL PHONE AREA*/}
         <Box display="flex" flexGrow={1} justifyContent="space-between">
           {error && <Alert color="error">{error}</Alert>}
+
+          <pre>{JSON.stringify(survey?.config, null, 2)}</pre>
           <Switch>
             <Route path={`/surveys/:id/design/title`}>
               {assessment && survey && (
@@ -276,20 +317,35 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                 height="100%"
                 flexGrow="1"
                 bgcolor={'#fff'}>
-                <QuestionEdit
-                  onChange={step => updateCurrentStep(step)}
-                  step={getCurrentStep()}
-                />
+                {survey && (
+                  <QuestionEdit
+                    globalSkipConfiguration={
+                      survey!.config.webConfig!.skipOption!
+                    }
+                    onChange={step => {
+                      console.log('got step!!!!!', step)
+                      updateCurrentStep(step)
+                    }}
+                    step={getCurrentStep()}
+                  />
+                )}
               </Box>
               <Box height="100%" bgcolor={'#f8f8f8'}>
                 <QuestionEditRhs
                   step={getCurrentStep()!}
-                  onChange={(step: Step) => updateCurrentStep(step)}
-                />
-                {/*<ControlSelector
-                  step={getCurrentStep()!}
-                  onChange={step => updateCurrentStep(step)}
-                />*/}
+                  onChange={(step: Step) => updateCurrentStep(step)}>
+                  <QuestionEditToolbar
+                    onAction={action => {
+                      console.log(action)
+                      if (action === 'save') {
+                        save()
+                      }
+                      if (action === 'delete') {
+                        deleteCurrentStep()
+                      }
+                    }}
+                  />
+                </QuestionEditRhs>
               </Box>
             </Route>
 
@@ -303,7 +359,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                 onUpdate={saveAssessment}></IntroInfo>
             </Route>
             <Route path="">
-              <Redirect to={`/surveys/${guid}/design/intro`}></Redirect>
+              <Redirect to={`/surveys/${surveyGuid}/design/intro`}></Redirect>
             </Route>
           </Switch>
         </Box>

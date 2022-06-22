@@ -1,34 +1,12 @@
-import {Box, Button, FormControl, OutlinedInput} from '@mui/material'
+import {Box, Button, FormControl} from '@mui/material'
 import {styled} from '@mui/material/styles'
 import {latoFont, poppinsFont} from '@style/theme'
 import {SurveyConfig} from '@typedefs/surveys'
 import {AssessmentResource} from '@typedefs/types'
 import React from 'react'
+import {DisappearingInput} from '../widgets/SharedStyled'
 import SurveyIcon, {SURVEY_ICONS} from '../widgets/SurveyIcon'
 import PhoneDisplay from './question-edit/PhoneDisplay'
-
-const DisappearingInput = styled(OutlinedInput)(({theme}) => ({
-  padding: '0px',
-
-  '&.MuiInputBase-multiline': {
-    padding: '0px',
-    '&:focus-visible': {
-      outline: 0,
-    },
-  },
-
-  '& fieldset.MuiOutlinedInput-notchedOutline': {
-    border: '1px solid transparent',
-  },
-  '&:hover fieldset.MuiOutlinedInput-notchedOutline': {
-    border: '1px solid #8FD6FF',
-  },
-
-  '& input, textarea': {
-    padding: '8px',
-    backgroundColor: 'transparent',
-  },
-}))
 
 const StyledStartButton = styled(Button)(({theme}) => ({
   height: theme.spacing(5),

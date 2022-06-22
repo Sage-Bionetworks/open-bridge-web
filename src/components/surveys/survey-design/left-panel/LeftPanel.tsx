@@ -10,19 +10,29 @@ import React from 'react'
 import {
   DragDropContext,
   Draggable,
+  DraggableProvided,
   Droppable,
   DropResult,
 } from 'react-beautiful-dnd'
 import {NavLink, useLocation} from 'react-router-dom'
-import {SURVEY_ICONS} from '../../widgets/SurveyIcon'
 import QUESTIONS, {getQuestionId} from './QuestionConfigs'
 import QuestionTypeDisplay, {DivContainer} from './QuestionTypeDisplay'
+
+const linkStyle = {
+  cursor: 'pointer',
+  textDecoration: 'none',
+  '&:focus, &:hover, &:visited, &:link, &:active': {
+    textDecoration: 'none',
+  },
+}
+
+const leftSideWidth = theme.spacing(37)
 
 const Container = styled('div')(({theme}) => ({
   display: 'flex',
   flexGrow: 0,
   flexShrink: 0,
-  width: theme.spacing(37),
+  width: leftSideWidth,
 
   backgroundColor: '#FCFCFC',
   flexDirection: 'column',
@@ -30,6 +40,16 @@ const Container = styled('div')(({theme}) => ({
   boxShadow: '2px 5px 5px rgba(42, 42, 42, 0.1)',
   borderRight: '1px solid #DFDFDF',
 }))
+
+const AddStepMenuContainer = styled('div', {label: 'addStepMenuContainer'})(
+  ({theme}) => ({
+    width: leftSideWidth,
+    position: 'fixed',
+    bottom: '0px',
+
+    height: '50px',
+  })
+)
 
 const Row = styled('div')(({theme}) => ({
   height: theme.spacing(6),
@@ -80,19 +100,17 @@ const TitleStyledRow = styled('div')(({theme}) => ({
   },
 }))
 
-const StyledNavLink = styled(NavLink)(({theme}) => ({
-  textDecoration: 'none',
+const StyledNavLink = styled(NavLink)(({theme}) => linkStyle)
+const StyledNavAnchor = styled('a')(({theme}) => linkStyle)
 
-  '&:focus, &:hover, &:visited, &:link, &:active': {
-    textDecoration: 'none',
-  },
-}))
-
-const getTitleImageSrc = (imageName?: string): string => {
-  return (
-    SURVEY_ICONS.get(imageName || '')?.img || SURVEY_ICONS.get('GENERAL')!.img
-  )
-}
+const StyledQuestionText = styled('div', {label: 'styledQuestionText'})(
+  ({theme}) => ({
+    whiteSpace: 'nowrap',
+    width: '200px',
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
+  })
+)
 
 // a little function to help us with reordering the result
 const reorder = (
@@ -115,9 +133,7 @@ const TitleRow: React.FunctionComponent<{surveyId?: string; guid?: string}> = ({
   return (
     <TitleStyledRow id="top">
       <div>
-        <StyledNavLink
-          to={`/surveys/${guid}/design/intro`}
-          sx={{'& hover': {bgcolor: 'blue'}}}>
+        <StyledNavLink to={`/surveys/${guid}/design/intro`}>
           <SettingsIcon style={{margin: '10px', maxWidth: '20px'}} />
           <div>Survey ID: {surveyId}</div>
         </StyledNavLink>
@@ -132,50 +148,70 @@ const TitleRow: React.FunctionComponent<{surveyId?: string; guid?: string}> = ({
   )
 }
 
+const StaticStepLink: React.FunctionComponent<{
+  isCurrentStep: boolean
+  // path: string
+  onClick: () => void
+}> = ({isCurrentStep, children, onClick}) => {
+  return (
+    <StyledNavAnchor onClick={onClick}>
+      <Row
+        sx={{
+          backgroundColor: isCurrentStep ? 'red' : 'inherit',
+        }}>
+        <QuestionTypeDisplay>{children}</QuestionTypeDisplay>
+      </Row>
+    </StyledNavAnchor>
+  )
+}
+
 const StepLink: React.FunctionComponent<{
-  guid: string
+  //guid: string
   index: number
   step: Step
   size: number
-}> = ({guid, index, step, size}) => (
-  <StyledNavLink to={`/surveys/${guid}/design/question?q=${index}`}>
-    <DivContainer
-      sx={{
-        paddingRight: '20px',
-      }}>
-      <DivContainer sx={{height: '100%'}}>
-        {QUESTIONS.get(getQuestionId(step))?.img}
-        <Box
-          sx={{
-            whiteSpace: 'nowrap',
-            width: '200px',
-            textOverflow: 'ellipsis',
-            overflow: 'hidden',
-          }}>
-          {' '}
-          {`${index < 9 ? '0' : ''}${index + 1}. ${step.title}`}
-        </Box>
+  isCurrent: boolean
+  provided: DraggableProvided
+  onClick: () => void
+}> = ({index, step, size, isCurrent, provided, onClick}) => (
+  <Row
+    sx={{
+      backgroundColor: isCurrent ? 'red' : 'inherit',
+    }}
+    {...provided.draggableProps}
+    {...provided.dragHandleProps}
+    ref={provided.innerRef}>
+    <StyledNavAnchor onClick={onClick}>
+      <DivContainer
+        sx={{
+          paddingRight: '20px',
+        }}>
+        <DivContainer sx={{height: '100%'}}>
+          {QUESTIONS.get(getQuestionId(step))?.img}
+          <StyledQuestionText>
+            {`${index < 9 ? '0' : ''}${index + 1}. ${step.title}`}
+          </StyledQuestionText>
+        </DivContainer>
+        {size > 1 && <DraggableIcon />}
       </DivContainer>
-      {size > 1 && <DraggableIcon />}
-    </DivContainer>
-  </StyledNavLink>
+    </StyledNavAnchor>
+  </Row>
 )
 
 const LeftPanel: React.FunctionComponent<{
-  //children: React.ReactNode
   guid: string
   surveyId?: string
-  titleImage?: string
   surveyConfig?: SurveyConfig
   currentStepIndex?: number
   onUpdateSteps: (s: Step[]) => void
+  onNavigateStep: (id: number | 'title' | 'completion') => void
 }> = ({
   guid,
   surveyConfig,
   children,
-  titleImage,
   surveyId,
   currentStepIndex,
+  onNavigateStep,
   onUpdateSteps,
 }) => {
   console.log(
@@ -205,21 +241,14 @@ const LeftPanel: React.FunctionComponent<{
             sx={{
               height: 'calc(100vh - 150px)',
               overflow: 'scroll',
-              bgColor: 'beige',
             }}>
-            <StyledNavLink to={`/surveys/${guid}/design/title`}>
-              <Row
-                sx={{
-                  backgroundColor: location.pathname.includes('/design/title')
-                    ? 'red'
-                    : 'inherit',
-                }}>
-                <QuestionTypeDisplay>
-                  <InstructionIcon />
-                  <div>Title Page</div>
-                </QuestionTypeDisplay>
-              </Row>
-            </StyledNavLink>
+            <StaticStepLink
+              onClick={() => onNavigateStep('title')}
+              //  path={`/surveys/${guid}/design/title`}
+              isCurrentStep={location.pathname.includes('/design/title')}>
+              <InstructionIcon />
+              <div>Title Page</div>
+            </StaticStepLink>
             <Droppable droppableId="questions">
               {provided => (
                 <Box ref={provided.innerRef} {...provided.droppableProps}>
@@ -230,21 +259,15 @@ const LeftPanel: React.FunctionComponent<{
                       index={index}
                       key={step.identifier}>
                       {provided => (
-                        <Row
-                          sx={{
-                            backgroundColor:
-                              currentStepIndex === index ? 'red' : 'inherit',
-                          }}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          ref={provided.innerRef}>
-                          <StepLink
-                            guid={guid}
-                            size={surveyConfig?.steps.length}
-                            index={index}
-                            step={step}
-                          />
-                        </Row>
+                        <StepLink
+                          provided={provided}
+                          isCurrent={currentStepIndex === index}
+                          //  guid={guid}
+                          onClick={() => onNavigateStep(index)}
+                          size={surveyConfig?.steps.length}
+                          index={index}
+                          step={step}
+                        />
                       )}
                     </Draggable>
                   ))}
@@ -252,34 +275,15 @@ const LeftPanel: React.FunctionComponent<{
                 </Box>
               )}
             </Droppable>
-
-            <StyledNavLink to={`/surveys/${guid}/design/completion`}>
-              <Row
-                sx={{
-                  backgroundColor: location.pathname.includes(
-                    '/design/completion'
-                  )
-                    ? 'red'
-                    : 'inherit',
-                }}>
-                <QuestionTypeDisplay>
-                  <CompletionIcon style={{margin: '4px 0'}} />
-                  <div>Completion Screen</div>
-                </QuestionTypeDisplay>
-              </Row>
-            </StyledNavLink>
+            <StaticStepLink
+              onClick={() => onNavigateStep('completion')}
+              isCurrentStep={location.pathname.includes('/design/completion')}>
+              <CompletionIcon style={{margin: '4px 0'}} />
+              <div>Completion Screen</div>
+            </StaticStepLink>
           </Box>
         </Box>
-        <Box
-          sx={{
-            width: theme.spacing(37),
-            position: 'fixed',
-            bottom: '0px',
-
-            height: '50px',
-          }}>
-          {children}
-        </Box>
+        <AddStepMenuContainer>{children}</AddStepMenuContainer>
       </DragDropContext>
     </Container>
   )

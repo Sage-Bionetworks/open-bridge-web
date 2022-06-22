@@ -34,7 +34,6 @@ const PhoneDisplay: FunctionComponent<PhoneDisplayProps> = ({
       <Box height="100%" pb={5}>
         {children}
       </Box>
-
       {phoneBottom}
     </PhoneDiv>
   )

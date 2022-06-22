@@ -114,7 +114,7 @@ const AddQuestionMenu: React.FunctionComponent<{
         onClick={handleClick}
         endIcon={<KeyboardArrowUpIcon />}>
         {selectedQuestionName ? (
-          <QuestionTypeDisplay hover={false} name={selectedQuestionName} />
+          <QuestionTypeDisplay name={selectedQuestionName} />
         ) : (
           'Select Option'
         )}
@@ -130,20 +130,9 @@ const AddQuestionMenu: React.FunctionComponent<{
         {Array.from(QUESTIONS.keys()).map(name => (
           <MenuItem
             key={name}
-            onClick={() =>
-              onSelect(
-                <QuestionTypeDisplay
-                  name={name}
-                  /* isSelected={name === selectedQuestionName}*/
-                />,
-                name
-              )
-            }
+            onClick={() => onSelect(<QuestionTypeDisplay name={name} />, name)}
             disableRipple>
-            <QuestionTypeDisplay
-              name={name}
-              /* isSelected={name === selectedQuestionName}*/
-            />
+            <QuestionTypeDisplay name={name} />
           </MenuItem>
         ))}
       </StyledMenu>

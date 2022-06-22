@@ -1,13 +1,11 @@
+import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
 import EditableTextbox from '@components/widgets/EditableTextbox'
 import {Box} from '@mui/material'
-import {
-  ChoiceQuestion,
-  ChoiceQuestionChoice,
-  InputItem,
-  Step,
-} from '@typedefs/surveys'
+import {ChoiceQuestion, Step, WebUISkipOptions} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
-import {getQuestionId} from '../left-panel/QuestionConfigs'
+import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
+import FreeText from './phone-subcontrols/FreeText'
+import Select from './phone-subcontrols/Select'
 import PhoneDisplay from './PhoneDisplay'
 import QuestionPhoneBottom from './QuestionPhoneBottom'
 import RequiredToggle from './RequiredToggle'
@@ -72,6 +70,7 @@ const useStyles = makeStyles(theme => ({
 
 type QuestionEditProps = {
   step?: Step
+  globalSkipConfiguration: WebUISkipOptions
   onChange: (step: Step) => void
 
   //  onAdd: (a: string) => void
@@ -251,9 +250,13 @@ const LikertQuestion: FunctionComponent<InputItem> = inputItem => {
 */
 //type QuestionEditProps = QuestionEditOwnProps
 
-function Factory(args: {step: Step; onChange: (step: Step) => void}) {
-  const type = args.step.controlType === 'checkbox' ? 'checkbox' : 'string'
-  const props: InputItem = {
+function Factory(args: {
+  step: Step
+  onChange: (step: Step) => void
+  q_type: QuestionTypeKey
+}) {
+  // const type = args.step.controlType === 'checkbox' ? 'checkbox' : 'string'
+  /* const props: InputItem = {
     type: type,
     placeholder: 'enter data',
     fieldLabel: args.step.title,
@@ -264,10 +267,10 @@ function Factory(args: {step: Step; onChange: (step: Step) => void}) {
     result.choices = [...choices]
     console.log(result)
     args.onChange(result)
-  }
+  }*/
 
-  switch (args.step.controlType) {
-    case 'radio': {
+  switch (args.q_type) {
+    case 'SINGLE_SELECT': {
       let _step = args.step as ChoiceQuestion
       /*  return (
         <RadioQuestion
@@ -278,16 +281,16 @@ function Factory(args: {step: Step; onChange: (step: Step) => void}) {
           }}
         />
       )*/
-      return <>RADIO</>
+      return <Select step={args.step} onChange={args.onChange} />
     }
 
-    case 'checkbox':
-      //  return <CheckboxQuestion {...props} />
+    case 'MULTISELECT':
+      return <Select step={args.step} onChange={args.onChange} isMulti={true} />
       return <>CHECKBOX</>
-    case 'text':
-      return <>TEXT</>
+    case 'FREE_TEXT':
+      return <FreeText step={args.step} onChange={args.onChange} />
     // return <TextQuestion {...props} />
-    case 'time':
+    /* case 'time':
       return <>TIME</>
     // return <TimeQuestion {...props} />
 
@@ -296,7 +299,7 @@ function Factory(args: {step: Step; onChange: (step: Step) => void}) {
     // return <DateQuestion {...props} />
     case 'likert':
       return <>LIKERT</>
-    // return <LikertQuestion {...props} />
+    // return <LikertQuestion {...props} />*/
     default:
       return <>nothing</>
   }
@@ -304,43 +307,90 @@ function Factory(args: {step: Step; onChange: (step: Step) => void}) {
 
 const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
   step,
+  globalSkipConfiguration,
   onChange,
 }) => {
-  console.log('step changed', step)
-  const [isRequired, setIsRequired] = React.useState(false)
+  console.log('step changed', step, globalSkipConfiguration)
+  // const [isRequired, setIsRequired] = React.useState(false)
   const questionId = step ? getQuestionId(step) : 0
+
+  const shouldShowSkipButton = (): boolean => {
+    return (
+      globalSkipConfiguration === 'SKIP' ||
+      !step!.shouldHideActions?.includes('skip')
+    )
+  }
 
   return (
     <Box bgcolor="#F8F8F8" px={5} border="1px solid black" margin="0 auto">
-      QuestionEdit {step?.type}
+      QuestionEdit {step?.type}+{JSON.stringify(step?.subtitle)}
       {step?.identifier}
-      <PhoneDisplay
-        sx={{marginBottom: '20px'}}
-        phoneBottom={
-          questionId === 'MULTISELECT' || questionId === 'SINGLE_SELECT' ? (
-            <QuestionPhoneBottom />
-          ) : (
-            <></>
-          )
-        }>
-        {step ? (
-          <Box>
-            <div>
-              <EditableTextbox
-                styleProps={{padding: '8px 0'}}
-                initValue={step.title}
-                onTriggerUpdate={(newText: string) =>
-                  onChange({...step, title: newText})
-                }></EditableTextbox>
-            </div>
-            {getQuestionId(step)}
-            {/*<Factory {...{step: {...step}, onChange: onChange}}></Factory>*/}
-          </Box>
-        ) : (
-          <></>
-        )}
-      </PhoneDisplay>
-      <RequiredToggle isRequired={isRequired} onChange={setIsRequired} />
+      {step ? (
+        <>
+          <PhoneDisplay
+            sx={{marginBottom: '20px'}}
+            phoneBottom={
+              questionId === 'MULTISELECT' || questionId === 'SINGLE_SELECT' ? (
+                <QuestionPhoneBottom />
+              ) : (
+                <></>
+              )
+            }>
+            <Box>
+              {shouldShowSkipButton() && <> Skip Question</>}
+              <div>
+                <DisappearingInput
+                  area-label="subtitle"
+                  sx={{fontWeight: 'bold'}}
+                  id="subtitle"
+                  value={step.subtitle || ''}
+                  placeholder="Subtitle"
+                  onChange={e => onChange({...step, subtitle: e.target.value})}
+                />
+              </div>
+              <div>
+                <EditableTextbox
+                  styleProps={{padding: '8px 0'}}
+                  initValue={step.title}
+                  onTriggerUpdate={(newText: string) =>
+                    onChange({...step, title: newText})
+                  }></EditableTextbox>
+              </div>
+              <div>
+                <EditableTextbox
+                  styleProps={{padding: '8px 0'}}
+                  initValue={step.detail || 'Detail'}
+                  onTriggerUpdate={(newText: string) =>
+                    onChange({...step, detail: newText})
+                  }></EditableTextbox>
+              </div>
+              {getQuestionId(step)}
+              {
+                <Factory
+                  {...{
+                    step: {...step},
+                    onChange: onChange,
+                    q_type: getQuestionId(step),
+                  }}></Factory>
+              }
+            </Box>
+          </PhoneDisplay>
+
+          {globalSkipConfiguration === 'CUSTOMIZE' && (
+            <RequiredToggle
+              shouldHideActionsArray={step.shouldHideActions || []}
+              onChange={shouldHideActions =>
+                onChange({
+                  ...step,
+                  shouldHideActions,
+                })
+              }
+            />
+          )}
+        </>
+      ) : (
+        <></>
+      )}
     </Box>
   )
 }

@@ -2,6 +2,7 @@ import {ReactComponent as RequiredIcon} from '@assets/surveys/actions/require.sv
 import {ReactComponent as SkipIcon} from '@assets/surveys/actions/skip.svg'
 import {styled, ToggleButton, ToggleButtonGroup} from '@mui/material'
 import {latoFont} from '@style/theme'
+import {ActionButtonName} from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({theme}) => ({
@@ -31,19 +32,32 @@ const StyledToggleButton = styled(ToggleButton)(({theme}) => ({
 }))
 
 type RequiredToggleProps = {
-  isRequired: boolean
-  onChange: (r: boolean) => void
+  shouldHideActionsArray: ActionButtonName[]
+  onChange: (hideActions: ActionButtonName[]) => void
 }
 
 const RequiredToggle: FunctionComponent<RequiredToggleProps> = ({
-  isRequired,
+  shouldHideActionsArray,
   onChange,
 }) => {
+  const sendUpdate = (value: boolean | null) => {
+    if (value === null) {
+      return
+    }
+    if (value === true && !shouldHideActionsArray.includes('skip')) {
+      onChange([...shouldHideActionsArray, 'skip'])
+    }
+    if (value === false && shouldHideActionsArray.includes('skip')) {
+      onChange(shouldHideActionsArray.filter(a => a !== 'skip'))
+    }
+  }
   return (
     <StyledToggleButtonGroup
-      value={isRequired}
+      value={shouldHideActionsArray.includes('skip')}
       exclusive
-      onChange={(e, _val) => onChange(_val)}
+      onChange={(e, _val) => {
+        sendUpdate(_val)
+      }}
       aria-label="text alignment">
       <StyledToggleButton value={true} aria-label="make required">
         <RequiredIcon />
