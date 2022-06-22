@@ -9,7 +9,7 @@ import React, {FunctionComponent} from 'react'
 
 const ITEM_HEIGHT = 48
 
-const PhoneBottom = styled('div')({
+const PhoneBottom = styled('div', {label: 'phoneBottom'})({
   position: 'absolute',
   left: '0px',
   bottom: '-3px',
@@ -26,10 +26,18 @@ const PhoneBottom = styled('div')({
     borderBottom: '3px solid #2A2A2A',
     bordeLeft: '3px solid #2A2A2A',
     borderRadius: '0px 0px 0px 25px',
+
+    '&:hover': {
+      background: '#BCD5E4',
+      fontWeight: 900,
+      '& label': {
+        cursor: 'pointer',
+      },
+    },
   },
 })
 
-const SideMenu = styled('div')({
+const SideMenu = styled('div', {label: 'sideMenu'})({
   marginRight: '3px',
   height: '48px',
   width: '40px',
@@ -38,21 +46,15 @@ const SideMenu = styled('div')({
   borderRadius: '0px 0 25px 0',
   borderBottom: '3px solid #2A2A2A',
   borderRight: '3px solid #2A2A2A',
+  '&  svg': {
+    color: '#fff',
+  },
 })
 const Label = styled('label')({
   fontFamily: latoFont,
   fontWeight: 600,
   fontSize: '16px',
 })
-
-const PhoneBottomDiv = styled('div')(({theme}) => ({
-  height: theme.spacing(5),
-  backgroundColor: '#2A2A2A',
-  borderRadius: '100px',
-  textAlign: 'center',
-  color: '#fff',
-  lineHeight: theme.spacing(5),
-}))
 
 const QuestionPhoneBottom: FunctionComponent<{}> = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
@@ -66,46 +68,46 @@ const QuestionPhoneBottom: FunctionComponent<{}> = () => {
   const options = ['option1', 'option2', 'option3']
   return (
     <PhoneBottom>
-      <PhoneBottomDiv>
-        <Button variant="text">
-          <Label sx={{color: '#2A2A2A'}}> + Add Response </Label>
-        </Button>
+      {/*  <PhoneBottomDiv id="phoneBottom">*/}
+      <Button variant="text">
+        <Label sx={{color: '#2A2A2A'}}> + Add Response </Label>
+      </Button>
 
-        <SideMenu>
-          <IconButton
-            aria-label="more"
-            id="long-button"
-            aria-controls={open ? 'long-menu' : undefined}
-            aria-expanded={open ? 'true' : undefined}
-            aria-haspopup="true"
-            onClick={handleClick}>
-            <MoreVertIcon />
-          </IconButton>
-          <Menu
-            id="long-menu"
-            MenuListProps={{
-              'aria-labelledby': 'long-button',
-            }}
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            PaperProps={{
-              style: {
-                maxHeight: ITEM_HEIGHT * 4.5,
-                width: '20ch',
-              },
-            }}>
-            {options.map(option => (
-              <MenuItem
-                key={option}
-                selected={option === 'Pyxis'}
-                onClick={handleClose}>
-                {option}
-              </MenuItem>
-            ))}
-          </Menu>
-        </SideMenu>
-      </PhoneBottomDiv>
+      <SideMenu>
+        <IconButton
+          aria-label="more"
+          id="long-button"
+          aria-controls={open ? 'long-menu' : undefined}
+          aria-expanded={open ? 'true' : undefined}
+          aria-haspopup="true"
+          onClick={handleClick}>
+          <MoreVertIcon />
+        </IconButton>
+        <Menu
+          id="long-menu"
+          MenuListProps={{
+            'aria-labelledby': 'long-button',
+          }}
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          PaperProps={{
+            style: {
+              maxHeight: ITEM_HEIGHT * 4.5,
+              width: '20ch',
+            },
+          }}>
+          {options.map(option => (
+            <MenuItem
+              key={option}
+              selected={option === 'Pyxis'}
+              onClick={handleClose}>
+              {option}
+            </MenuItem>
+          ))}
+        </Menu>
+      </SideMenu>
+      {/*</PhoneBottomDiv>*/}
     </PhoneBottom>
   )
 }

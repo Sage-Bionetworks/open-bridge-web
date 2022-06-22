@@ -3,7 +3,6 @@ import {ReactComponent as Free_text} from '@assets/surveys/q_type_icons/free_tex
 import {ReactComponent as Instruction} from '@assets/surveys/q_type_icons/instruction.svg'
 import {ReactComponent as Likert} from '@assets/surveys/q_type_icons/likert.svg'
 import {ReactComponent as MultiSelect} from '@assets/surveys/q_type_icons/multi_select.svg'
-import {ReactComponent as MultiSelectActive} from '@assets/surveys/q_type_icons/multi_select_active.svg'
 import {ReactComponent as Numeric} from '@assets/surveys/q_type_icons/numeric.svg'
 import {ReactComponent as SingleSelect} from '@assets/surveys/q_type_icons/single_select.svg'
 import {ReactComponent as Slider} from '@assets/surveys/q_type_icons/slider.svg'
@@ -32,7 +31,7 @@ const QUESTIONS = new Map<
     'DURATION',
     {
       img: <Duration />,
-      active: <MultiSelectActive />,
+
       title: 'Duration input',
       default: {
         type: 'simpleQuestion',
@@ -48,7 +47,7 @@ const QUESTIONS = new Map<
     'FREE_TEXT',
     {
       img: <Free_text />,
-      active: <MultiSelectActive />,
+
       title: 'Free Text',
       default: {
         type: 'simpleQuestion',
@@ -64,7 +63,7 @@ const QUESTIONS = new Map<
     'INSTRUCTION',
     {
       img: <Instruction />,
-      active: <MultiSelectActive />,
+
       title: 'Instruction',
       default: {
         type: 'instruction',
@@ -77,7 +76,7 @@ const QUESTIONS = new Map<
     'LIKERT',
     {
       img: <Likert />,
-      active: <MultiSelectActive />,
+
       title: 'Likert Scale',
       default: {
         type: 'simpleQuestion',
@@ -100,7 +99,7 @@ const QUESTIONS = new Map<
     'MULTISELECT',
     {
       img: <MultiSelect />,
-      active: <MultiSelectActive />,
+
       title: 'Multi-select',
       default: {
         type: 'choiceQuestion',
@@ -121,7 +120,7 @@ const QUESTIONS = new Map<
     'NUMERIC',
     {
       img: <Numeric />,
-      active: <MultiSelectActive />,
+
       title: 'Integer input',
       default: {
         type: 'simpleQuestion',
@@ -138,7 +137,7 @@ const QUESTIONS = new Map<
     'SINGLE_SELECT',
     {
       img: <SingleSelect />,
-      active: <MultiSelectActive />,
+
       title: 'Single Select',
       default: {
         type: 'choiceQuestion',
@@ -159,7 +158,7 @@ const QUESTIONS = new Map<
     'SLIDER',
     {
       img: <Slider />,
-      active: <MultiSelectActive />,
+
       title: 'Slide Scale',
       default: {
         type: 'simpleQuestion',
@@ -182,7 +181,7 @@ const QUESTIONS = new Map<
     'TIME',
     {
       img: <Time />,
-      active: <MultiSelectActive />,
+
       title: 'Time input',
       default: {
         type: 'simpleQuestion',
@@ -201,7 +200,7 @@ const QUESTIONS = new Map<
     'YEAR',
     {
       img: <Year />,
-      active: <MultiSelectActive />,
+
       title: 'Year input',
       default: {
         type: 'simpleQuestion',

@@ -90,6 +90,7 @@ export type Question = BaseStep & {
   inputItem: InputItem
   skipCheckbox?: Skip
   baseType?: 'integer'
+
   uiHint?: 'checkmark' | 'likert' | 'textfield' | 'slider'
 }
 
@@ -123,20 +124,21 @@ export type BaseStep = {
   detail?: string //Here are the details for this instruction.',
   footnote?: string //'This is a footnote.',
   image?: ImageAnimated | ImageFetchable
+  shouldHideActions?: ActionButtonName[]
 }
 
 export type Step = Question | Instruction
 
-export type SkipButton =
+export type ActionButtonName =
   | 'goForward' /* Navigate to the next step.*/
   | 'goBackward' /* Navigate to the previous step.*/
   | 'skip' /*Skip the step and immediately go forward.*/
   | 'cancel' /*Exit the assessment.*/
   | 'pause'
 
-export type webUISkipOptions = 'SKIP' | 'NO_SKIP' | 'CUSTOM'
+export type WebUISkipOptions = 'SKIP' | 'NO_SKIP' | 'CUSTOMIZE'
 export type SurveyConfig = {
-  webConfig?: {skipOption?: webUISkipOptions}
+  webConfig?: {skipOption?: WebUISkipOptions}
   type: string //'assessment',
 
   identifier: string //'foo',
@@ -150,7 +152,7 @@ export type SurveyConfig = {
   icon?: string //'fooIcon', ALINA TODO where is it coming from
   footnote?: string //This is a footnote.',
   actions?: {goForward: ActionButton; cancel: ActionButton}
-  shouldHideActions?: SkipButton[] //['goBackward']
+  shouldHideActions?: ActionButtonName[] //['goBackward']
   progressMarkers?: string[] //['step1','step2'],
   steps: Step[]
 }

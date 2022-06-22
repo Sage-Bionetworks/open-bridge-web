@@ -15,7 +15,7 @@ import {
 } from '@mui/material'
 import {styled} from '@mui/material/styles'
 import {latoFont, poppinsFont, theme} from '@style/theme'
-import {SkipButton, Survey, webUISkipOptions} from '@typedefs/surveys'
+import {ActionButtonName, Survey, WebUISkipOptions} from '@typedefs/surveys'
 import {Assessment} from '@typedefs/types'
 import React from 'react'
 import {SimpleTextInput} from '../../widgets/StyledComponents'
@@ -114,7 +114,7 @@ const getDefaultSurvey = (newSurveyId: string): Survey => ({
     shouldHideActions: [],
     steps: [],
     webConfig: {
-      skipOption: 'CUSTOM',
+      skipOption: 'CUSTOMIZE',
     },
   },
 })
@@ -139,7 +139,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
 }: IntroInfoProps) => {
   const newSurveyId = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
   const {orgMembership} = useUserSessionDataState()
-  const [skip, setSkip] = React.useState<webUISkipOptions | undefined>('SKIP')
+  const [skip, setSkip] = React.useState<WebUISkipOptions | undefined>('SKIP')
   const [hideBack, setHideBack] = React.useState(false)
   const [surveyConfig, setSurveyConfig] = React.useState<Survey>(
     getDefaultSurvey(newSurveyId)
@@ -154,7 +154,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
 
       if (survey) {
         console.log('sur', survey)
-        let skipOption: webUISkipOptions
+        let skipOption: WebUISkipOptions
         if (survey.config.shouldHideActions?.includes('skip')) {
           skipOption = 'NO_SKIP'
         } else {
@@ -173,7 +173,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
   }, [_surveyAssessment, survey])
 
   const triggerUpdate = () => {
-    const shouldHideActions: SkipButton[] = []
+    const shouldHideActions: ActionButtonName[] = []
     if (skip === 'NO_SKIP') {
       shouldHideActions.push('skip')
     }
@@ -242,7 +242,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
           value={skip}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
             setSkip(
-              (event.target as HTMLInputElement).value as webUISkipOptions
+              (event.target as HTMLInputElement).value as WebUISkipOptions
             )
           }>
           <FormControlLabel

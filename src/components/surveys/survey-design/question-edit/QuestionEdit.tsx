@@ -1,36 +1,20 @@
-import DatePicker from '@components/widgets/DatePicker'
+import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
 import EditableTextbox from '@components/widgets/EditableTextbox'
-import {
-  Box,
-  Button,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  Radio,
-  RadioGroup,
-  TextField,
-} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
-import {latoFont} from '@style/theme'
-import {
-  ChoiceQuestion,
-  ChoiceQuestionChoice,
-  InputItem,
-  Step,
-} from '@typedefs/surveys'
+import {Box} from '@mui/material'
+import {ChoiceQuestion, Step, WebUISkipOptions} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
-import PhoneDisplay from '../widgets/PhoneDisplay'
+import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
+import FreeText from './phone-subcontrols/FreeText'
+import Select from './phone-subcontrols/Select'
+import PhoneDisplay from './PhoneDisplay'
+import QuestionPhoneBottom from './QuestionPhoneBottom'
+import RequiredToggle from './RequiredToggle'
+
+/*
 
 const useStyles = makeStyles(theme => ({
-  root: {},
-  phone: {
-    height: '590px',
-    width: '307px',
-    border: '1px solid black',
-    borderRadius: '25px',
-    padding: theme.spacing(5, 2),
-  },
+
+
   title: {
     fontFamily: latoFont,
 
@@ -39,9 +23,9 @@ const useStyles = makeStyles(theme => ({
     lineHeight: '1.1',
     textAlign: 'center',
 
-    /* Black: Dark Font */
 
-    color: theme.palette.text.secondary,
+
+  //  color: theme.palette.text.secondary,
   },
   checkboxButton: {
     width: '100%',
@@ -82,17 +66,19 @@ const useStyles = makeStyles(theme => ({
     color: '#2A2A2A',
     margin: theme.spacing(1, 0),
   },
-}))
+}))*/
 
-type QuestionEditOwnProps = {
+type QuestionEditProps = {
   step?: Step
+  globalSkipConfiguration: WebUISkipOptions
   onChange: (step: Step) => void
+
   //  onAdd: (a: string) => void
   // onNavigate: (id: string) => void
 }
-
+/*
 const CheckboxQuestion: FunctionComponent<InputItem> = inputItem => {
-  const classes = useStyles()
+
   const [choices, setChoices] = React.useState<ChoiceQuestionChoice[]>([])
   const newChoice: ChoiceQuestionChoice = {
     text: 'New Input',
@@ -261,12 +247,16 @@ const LikertQuestion: FunctionComponent<InputItem> = inputItem => {
     </FormControl>
   )
 }
+*/
+//type QuestionEditProps = QuestionEditOwnProps
 
-type QuestionEditProps = QuestionEditOwnProps
-
-function Factory(args: {step: Step; onChange: (step: Step) => void}) {
-  const type = args.step.controlType === 'checkbox' ? 'checkbox' : 'string'
-  const props: InputItem = {
+function Factory(args: {
+  step: Step
+  onChange: (step: Step) => void
+  q_type: QuestionTypeKey
+}) {
+  // const type = args.step.controlType === 'checkbox' ? 'checkbox' : 'string'
+  /* const props: InputItem = {
     type: type,
     placeholder: 'enter data',
     fieldLabel: args.step.title,
@@ -277,12 +267,12 @@ function Factory(args: {step: Step; onChange: (step: Step) => void}) {
     result.choices = [...choices]
     console.log(result)
     args.onChange(result)
-  }
+  }*/
 
-  switch (args.step.controlType) {
-    case 'radio': {
+  switch (args.q_type) {
+    case 'SINGLE_SELECT': {
       let _step = args.step as ChoiceQuestion
-      return (
+      /*  return (
         <RadioQuestion
           {...{
             ...props,
@@ -290,19 +280,26 @@ function Factory(args: {step: Step; onChange: (step: Step) => void}) {
             choices: _step.choices || [],
           }}
         />
-      )
+      )*/
+      return <Select step={args.step} onChange={args.onChange} />
     }
 
-    case 'checkbox':
-      return <CheckboxQuestion {...props} />
-    case 'text':
-      return <TextQuestion {...props} />
-    case 'time':
-      return <TimeQuestion {...props} />
+    case 'MULTISELECT':
+      return <Select step={args.step} onChange={args.onChange} isMulti={true} />
+      return <>CHECKBOX</>
+    case 'FREE_TEXT':
+      return <FreeText step={args.step} onChange={args.onChange} />
+    // return <TextQuestion {...props} />
+    /* case 'time':
+      return <>TIME</>
+    // return <TimeQuestion {...props} />
+
     case 'date':
-      return <DateQuestion {...props} />
+      return <>DATE</>
+    // return <DateQuestion {...props} />
     case 'likert':
-      return <LikertQuestion {...props} />
+      return <>LIKERT</>
+    // return <LikertQuestion {...props} />*/
     default:
       return <>nothing</>
   }
@@ -310,32 +307,90 @@ function Factory(args: {step: Step; onChange: (step: Step) => void}) {
 
 const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
   step,
+  globalSkipConfiguration,
   onChange,
 }) => {
-  const classes = useStyles()
-  console.log('step changed')
+  console.log('step changed', step, globalSkipConfiguration)
+  // const [isRequired, setIsRequired] = React.useState(false)
+  const questionId = step ? getQuestionId(step) : 0
+
+  const shouldShowSkipButton = (): boolean => {
+    return (
+      globalSkipConfiguration === 'SKIP' ||
+      !step!.shouldHideActions?.includes('skip')
+    )
+  }
 
   return (
     <Box bgcolor="#F8F8F8" px={5} border="1px solid black" margin="0 auto">
-      QuestionEdit
-      <PhoneDisplay>
-        {step ? (
-          <Box>
-            <div className={classes.title}>
-              <EditableTextbox
-                styleProps={{padding: '8px 0'}}
-                initValue={step.title}
-                onTriggerUpdate={(newText: string) =>
-                  onChange({...step, title: newText})
-                }></EditableTextbox>
-            </div>
+      QuestionEdit {step?.type}+{JSON.stringify(step?.subtitle)}
+      {step?.identifier}
+      {step ? (
+        <>
+          <PhoneDisplay
+            sx={{marginBottom: '20px'}}
+            phoneBottom={
+              questionId === 'MULTISELECT' || questionId === 'SINGLE_SELECT' ? (
+                <QuestionPhoneBottom />
+              ) : (
+                <></>
+              )
+            }>
+            <Box>
+              {shouldShowSkipButton() && <> Skip Question</>}
+              <div>
+                <DisappearingInput
+                  area-label="subtitle"
+                  sx={{fontWeight: 'bold'}}
+                  id="subtitle"
+                  value={step.subtitle || ''}
+                  placeholder="Subtitle"
+                  onChange={e => onChange({...step, subtitle: e.target.value})}
+                />
+              </div>
+              <div>
+                <EditableTextbox
+                  styleProps={{padding: '8px 0'}}
+                  initValue={step.title}
+                  onTriggerUpdate={(newText: string) =>
+                    onChange({...step, title: newText})
+                  }></EditableTextbox>
+              </div>
+              <div>
+                <EditableTextbox
+                  styleProps={{padding: '8px 0'}}
+                  initValue={step.detail || 'Detail'}
+                  onTriggerUpdate={(newText: string) =>
+                    onChange({...step, detail: newText})
+                  }></EditableTextbox>
+              </div>
+              {getQuestionId(step)}
+              {
+                <Factory
+                  {...{
+                    step: {...step},
+                    onChange: onChange,
+                    q_type: getQuestionId(step),
+                  }}></Factory>
+              }
+            </Box>
+          </PhoneDisplay>
 
-            <Factory {...{step: {...step}, onChange: onChange}}></Factory>
-          </Box>
-        ) : (
-          <></>
-        )}
-      </PhoneDisplay>
+          {globalSkipConfiguration === 'CUSTOMIZE' && (
+            <RequiredToggle
+              shouldHideActionsArray={step.shouldHideActions || []}
+              onChange={shouldHideActions =>
+                onChange({
+                  ...step,
+                  shouldHideActions,
+                })
+              }
+            />
+          )}
+        </>
+      ) : (
+        <></>
+      )}
     </Box>
   )
 }

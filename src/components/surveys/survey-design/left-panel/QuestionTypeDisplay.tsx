@@ -15,7 +15,7 @@ export const DivContainer = styled('div')<{hover?: boolean}>(
       flexGrow: 0,
       maxWidth: theme.spacing(6),
       maxHeight: theme.spacing(6),
-      margin: theme.spacing(2),
+      // margin: theme.spacing(2),
     },
     '> div': {
       color: '#3A3A3A',
@@ -23,20 +23,6 @@ export const DivContainer = styled('div')<{hover?: boolean}>(
       fontWeight: 500,
       fontSize: '14px',
     },
-
-    '&:hover': hover
-      ? {
-          backgroundColor: '#565656',
-          '& >div': {
-            color: '#fff',
-          },
-
-          '& >svg, img ': {
-            WebkitFilter: 'invert(1)',
-            filter: 'invert(1)',
-          },
-        }
-      : {},
   })
 )
 
@@ -49,24 +35,21 @@ function isPropsQuestionTypeDisplayProps(
 
 type QuestionTypeDisplayProps = {
   name: QuestionTypeKey
-
-  hover?: boolean
 }
 type QuestionTypeWrappedDisplayProps = {
   children: React.ReactNode
-  hover?: boolean
 }
 
 const QuestionTypeDisplay: React.FunctionComponent<
   QuestionTypeDisplayProps | QuestionTypeWrappedDisplayProps
 > = props => {
   return isPropsQuestionTypeDisplayProps(props) ? (
-    <DivContainer hover={props.hover}>
+    <DivContainer>
       {QUESTIONS.get(props.name)?.img}
       <div>{QUESTIONS.get(props.name)?.title}</div>
     </DivContainer>
   ) : (
-    <DivContainer hover={props.hover}>{props.children}</DivContainer>
+    <DivContainer>{props.children}</DivContainer>
   )
 }
 

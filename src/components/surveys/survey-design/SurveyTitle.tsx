@@ -1,33 +1,23 @@
-import {Box, FormControl, OutlinedInput} from '@mui/material'
+import {Box, Button, FormControl} from '@mui/material'
 import {styled} from '@mui/material/styles'
-import {poppinsFont} from '@style/theme'
+import {latoFont, poppinsFont} from '@style/theme'
 import {SurveyConfig} from '@typedefs/surveys'
 import {AssessmentResource} from '@typedefs/types'
 import React from 'react'
-import PhoneDisplay from '../widgets/PhoneDisplay'
+import {DisappearingInput} from '../widgets/SharedStyled'
 import SurveyIcon, {SURVEY_ICONS} from '../widgets/SurveyIcon'
+import PhoneDisplay from './question-edit/PhoneDisplay'
 
-const DisappearingInput = styled(OutlinedInput)(({theme}) => ({
-  padding: '0px',
+const StyledStartButton = styled(Button)(({theme}) => ({
+  height: theme.spacing(5),
+  // backgroundColor: '#2A2A2A',
+  borderRadius: '100px',
+  textAlign: 'center',
 
-  '&.MuiInputBase-multiline': {
-    padding: '0px',
-    '&:focus-visible': {
-      outline: 0,
-    },
-  },
-
-  '& fieldset.MuiOutlinedInput-notchedOutline': {
-    border: '1px solid transparent',
-  },
-  '&:hover fieldset.MuiOutlinedInput-notchedOutline': {
-    border: '1px solid #8FD6FF',
-  },
-
-  '& input, textarea': {
-    padding: '8px',
-    backgroundColor: 'transparent',
-  },
+  fontFamily: latoFont,
+  fontWeight: 600,
+  fontSize: '16px',
+  // color: '#fff',
 }))
 
 const TitleIcon = styled('div')(({theme}) => ({
@@ -108,7 +98,15 @@ const SurveyTitle: React.FunctionComponent<SurveyTitleProps> = ({
   return (
     <>
       <Box bgcolor={'#fff'} flexGrow={1} textAlign="center">
-        <PhoneDisplay isQuestion={false} onAction={onSave}>
+        <PhoneDisplay
+          phoneBottom={
+            <StyledStartButton
+              color="primary"
+              variant="contained"
+              onClick={onSave}>
+              Start
+            </StyledStartButton>
+          }>
           <Box
             display="flex"
             flexDirection="column"

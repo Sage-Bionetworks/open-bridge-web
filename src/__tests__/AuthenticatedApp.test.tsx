@@ -1,10 +1,12 @@
 import * as useUserSessionDataState from '@helpers/AuthContext'
+import * as useSurveyAssessment from '@services/assessmentHooks'
 import * as useStudy from '@services/studyHooks'
 import {cleanup, render} from '@testing-library/react'
-import {ExtendedError, Study} from '@typedefs/types'
+import {Assessment, ExtendedError, Study} from '@typedefs/types'
 import React from 'react'
-import {UseQueryResult} from 'react-query'
+import {UseBaseQueryResult, UseQueryResult} from 'react-query'
 import {MemoryRouter} from 'react-router-dom'
+import {surveyList} from '__test_utils/mocks/useAssessmentResponses'
 import AuthenticatedApp from '../AuthenticatedApp'
 import {
   loggedInSessionData,
@@ -13,11 +15,15 @@ import {
 import {noStudy, studyData} from '../__test_utils/mocks/useStudyResponses'
 jest.mock('@helpers/AuthContext')
 jest.mock('@services/studyHooks')
+jest.mock('@services/assessmentHooks')
 
 const mockedAuth = useUserSessionDataState as jest.Mocked<
   typeof useUserSessionDataState
 >
 const mockedUseStudy = useStudy as jest.Mocked<typeof useStudy>
+const mockedUseAssessment = useSurveyAssessment as jest.Mocked<
+  typeof useSurveyAssessment
+>
 
 jest.mock('@components/widgets/AppTopNav', () => ({}) => <div>App Top Nav</div>)
 
@@ -69,7 +75,14 @@ test('should show app top nav if user logged in without a study link and now sho
   mockedUseStudy.useStudy.mockImplementation(
     x => noStudy as UseQueryResult<Study | undefined, ExtendedError>
   )
-  const app = renderControl('/surveys/:id/design')
+  const surveys = {...noStudy, data: surveyList}
+  mockedUseAssessment.useAssessments.mockImplementation(
+    x => surveys as UseBaseQueryResult<Assessment[], ExtendedError>
+  )
+  mockedUseAssessment.useSurveyAssessment.mockImplementation(
+    x => noStudy as UseQueryResult<Assessment | undefined, ExtendedError>
+  )
+  const app = renderControl('/surveys/')
   expect(app.queryAllByText('Study List')).toHaveLength(0)
 })
 
@@ -80,15 +93,21 @@ test('should show study list and app top nave if user logged in with a study lin
   mockedUseStudy.useStudy.mockImplementation(
     x => noStudy as UseQueryResult<Study | undefined, ExtendedError>
   )
+  mockedUseAssessment.useSurveyAssessment.mockImplementation(
+    x => noStudy as UseQueryResult<Assessment | undefined, ExtendedError>
+  )
   const app = renderControl('/studies')
   expect(app.queryAllByText('App Top Nav')).toHaveLength(1)
   expect(app.queryAllByText('Study List')).toHaveLength(1)
 })
+
 test('show study builder if and study top nav user logged in with a study link with a study', () => {
   mockedAuth.useUserSessionDataState.mockImplementation(
     () => loggedInSessionData
   )
-
+  mockedUseAssessment.useSurveyAssessment.mockImplementation(
+    x => noStudy as UseQueryResult<Assessment | undefined, ExtendedError>
+  )
   const study = {...noStudy, data: studyData}
   mockedUseStudy.useStudy.mockImplementation(
     x => study as UseQueryResult<Study | undefined, ExtendedError>

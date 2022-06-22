@@ -13,6 +13,7 @@ const useStyles = makeStyles(theme => ({
     gridTemplateColumns: 'repeat(2, 1fr)',
     gap: '10px',
     color: 'white',
+    width: '380px',
   },
   control: {
     backgroundColor: '#3A3939',
