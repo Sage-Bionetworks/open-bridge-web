@@ -650,6 +650,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 
     //AGv5 disableClickEventBubbling: true,
     disableColumnMenu: true,
+    sortable: false,
     width: 70,
     align: 'left',
     renderHeader: () => {
