@@ -1,14 +1,30 @@
 import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
-import EditableTextbox from '@components/widgets/EditableTextbox'
-import {Box} from '@mui/material'
+import {Box, styled} from '@mui/material'
+import {latoFont} from '@style/theme'
 import {ChoiceQuestion, Step, WebUISkipOptions} from '@typedefs/surveys'
-import React, {FunctionComponent} from 'react'
+import {FunctionComponent} from 'react'
 import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
 import FreeText from './phone-subcontrols/FreeText'
 import Select from './phone-subcontrols/Select'
 import PhoneDisplay from './PhoneDisplay'
-import QuestionPhoneBottom from './QuestionPhoneBottom'
+import QuestionPhoneBottomMenu from './QuestionPhoneBottomMenu'
 import RequiredToggle from './RequiredToggle'
+
+const StyledP2 = styled(DisappearingInput, {label: 'StyledP2'})(({theme}) => ({
+  fontFamily: latoFont,
+  fontWeight: 400,
+  fontSize: '12px',
+  color: '#2A2A2A',
+}))
+
+const StyledH1 = styled(DisappearingInput, {label: 'StyledH1'})(({theme}) => ({
+  fontFamily: latoFont,
+
+  fontWeight: 700,
+  fontSize: '16px',
+
+  color: '#2A2A2A',
+}))
 
 /*
 
@@ -331,7 +347,7 @@ const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
             sx={{marginBottom: '20px'}}
             phoneBottom={
               questionId === 'MULTISELECT' || questionId === 'SINGLE_SELECT' ? (
-                <QuestionPhoneBottom />
+                <QuestionPhoneBottomMenu question={step} />
               ) : (
                 <></>
               )
@@ -339,9 +355,8 @@ const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
             <Box>
               {shouldShowSkipButton() && <> Skip Question</>}
               <div>
-                <DisappearingInput
+                <StyledP2
                   area-label="subtitle"
-                  sx={{fontWeight: 'bold'}}
                   id="subtitle"
                   value={step.subtitle || ''}
                   placeholder="Subtitle"
@@ -349,20 +364,24 @@ const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
                 />
               </div>
               <div>
-                <EditableTextbox
-                  styleProps={{padding: '8px 0'}}
-                  initValue={step.title}
-                  onTriggerUpdate={(newText: string) =>
-                    onChange({...step, title: newText})
-                  }></EditableTextbox>
+                <StyledH1
+                  area-label="title"
+                  id="title"
+                  value={step.title || ''}
+                  placeholder="Title"
+                  onChange={e => onChange({...step, title: e.target.value})}
+                />
               </div>
               <div>
-                <EditableTextbox
-                  styleProps={{padding: '8px 0'}}
-                  initValue={step.detail || 'Detail'}
-                  onTriggerUpdate={(newText: string) =>
-                    onChange({...step, detail: newText})
-                  }></EditableTextbox>
+                <StyledP2
+                  area-label="detail"
+                  id="detail"
+                  maxRows={4}
+                  multiline={true}
+                  value={step.detail || ''}
+                  placeholder="Description"
+                  onChange={e => onChange({...step, detail: e.target.value})}
+                />
               </div>
               {getQuestionId(step)}
               {

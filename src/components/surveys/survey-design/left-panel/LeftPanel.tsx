@@ -3,6 +3,7 @@ import {ReactComponent as CompletionIcon} from '@assets/surveys/iconcomplete.svg
 import {ReactComponent as PreviewIcon} from '@assets/surveys/preview.svg'
 import {ReactComponent as InstructionIcon} from '@assets/surveys/q_type_icons/icontitle.svg'
 import {ReactComponent as SettingsIcon} from '@assets/surveys/settings.svg'
+import SurveyUtils from '@components/surveys/SurveyUtils'
 import {Box, styled} from '@mui/material'
 import {theme} from '@style/theme'
 import {Step, SurveyConfig} from '@typedefs/surveys'
@@ -112,20 +113,6 @@ const StyledQuestionText = styled('div', {label: 'styledQuestionText'})(
   })
 )
 
-// a little function to help us with reordering the result
-const reorder = (
-  steps: Step[],
-  startIndex: number,
-  endIndex?: number
-): Step[] => {
-  console.log('end', endIndex)
-  const [removed] = steps.splice(startIndex, 1)
-  if (endIndex !== undefined) {
-    steps.splice(endIndex, 0, removed)
-  }
-  return steps
-}
-
 const TitleRow: React.FunctionComponent<{surveyId?: string; guid?: string}> = ({
   surveyId,
   guid,
@@ -224,7 +211,7 @@ const LeftPanel: React.FunctionComponent<{
       return
     }
 
-    const items = reorder(
+    const items = SurveyUtils.reorder(
       [...surveyConfig!.steps],
       result.source.index,
       result.destination?.index

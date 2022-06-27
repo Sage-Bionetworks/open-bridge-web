@@ -83,6 +83,9 @@ export type ChoiceQuestionChoice = {
 export type ChoiceQuestion = Question & {
   choices?: ChoiceQuestionChoice[]
   singleChoice?: boolean
+  other?: {
+    type: 'string'
+  }
 }
 
 export type Question = BaseStep & {

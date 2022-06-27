@@ -287,8 +287,9 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
         {/* CEDNTRAL PHONE AREA*/}
         <Box display="flex" flexGrow={1} justifyContent="space-between">
           {error && <Alert color="error">{error}</Alert>}
-
-          <pre>{JSON.stringify(survey?.config, null, 2)}</pre>
+          <div style={{width: '200px'}}>
+            <pre>{JSON.stringify(survey?.config, null, 2)}</pre>
+          </div>
           <Switch>
             <Route path={`/surveys/:id/design/title`}>
               {assessment && survey && (

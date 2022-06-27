@@ -1,13 +1,13 @@
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import {styled} from '@mui/material/styles'
 import {latoFont} from '@style/theme'
+import {Step} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
-
-const ITEM_HEIGHT = 48
 
 const PhoneBottom = styled('div', {label: 'phoneBottom'})({
   position: 'absolute',
@@ -50,22 +50,60 @@ const SideMenu = styled('div', {label: 'sideMenu'})({
     color: '#fff',
   },
 })
+
+const StyledMenu = styled(Menu, {label: 'StyledMenu'})(({theme}) => ({
+  '& .MuiPaper-root > ul': {
+    padding: 0,
+  },
+}))
 const Label = styled('label')({
   fontFamily: latoFont,
   fontWeight: 600,
   fontSize: '16px',
 })
+const OPTIONS = new Map([
+  ['ALL', '+ All of the above'],
+  ['NONE', '+ None of the above'],
+  ['OTHER', '+ Add "Other"'],
+])
 
-const QuestionPhoneBottom: FunctionComponent<{}> = () => {
+const QuestionPhoneBottomMenu: FunctionComponent<{question: Step}> = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
+  }
+
+  const handleMenuItemClick = (optionKey: string) => {
+    switch (optionKey) {
+      case 'ALL':
+        break
+      case 'NONE':
+        break
+      case 'OTHER':
+        break
+    }
+    setAnchorEl(null)
   }
   const handleClose = () => {
     setAnchorEl(null)
   }
-  const options = ['option1', 'option2', 'option3']
+  /* 	"type": "choiceQuestion",
+  "other" : { "type" : "string" }  
+  {
+    "text" : "All of the above",
+    "selectorType" : "all"
+  },
+  {
+    "text" : "None of the above",
+    "selectorType" : "exclusive"
+  }*/
+  const OPTIONS = new Map([
+    ['ALL', '+ All of the above'],
+    [' NONE', '+ None of the above'],
+    [' OTHER', '+ Add "Other"'],
+  ])
+
   return (
     <PhoneBottom>
       {/*  <PhoneBottomDiv id="phoneBottom">*/}
@@ -73,43 +111,58 @@ const QuestionPhoneBottom: FunctionComponent<{}> = () => {
         <Label sx={{color: '#2A2A2A'}}> + Add Response </Label>
       </Button>
 
-      <SideMenu>
+      <SideMenu sx={{borderRadius: anchorEl ? '0' : '0px 0 25px 0'}}>
         <IconButton
           aria-label="more"
           id="long-button"
           aria-controls={open ? 'long-menu' : undefined}
           aria-expanded={open ? 'true' : undefined}
           aria-haspopup="true"
-          onClick={handleClick}>
+          onClick={handleMenuClick}>
           <MoreVertIcon />
         </IconButton>
-        <Menu
+        <StyledMenu
           id="long-menu"
           MenuListProps={{
             'aria-labelledby': 'long-button',
           }}
+          sx={{padding: 0}}
           anchorEl={anchorEl}
           open={open}
           onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
           PaperProps={{
             style: {
-              maxHeight: ITEM_HEIGHT * 4.5,
-              width: '20ch',
+              padding: 0,
             },
           }}>
-          {options.map(option => (
+          {Array.from(OPTIONS.keys()).map(optionKey => (
             <MenuItem
-              key={option}
-              selected={option === 'Pyxis'}
-              onClick={handleClose}>
-              {option}
+              key={optionKey}
+              sx={{
+                height: '48px',
+                backgroundColor: '#565656',
+                color: '#fff',
+                '&:hover': {
+                  backgroundColor: '#848484',
+                },
+              }}
+              onClick={() => handleMenuItemClick(optionKey)}>
+              {OPTIONS.get(optionKey)}
             </MenuItem>
           ))}
-        </Menu>
+        </StyledMenu>
       </SideMenu>
       {/*</PhoneBottomDiv>*/}
     </PhoneBottom>
   )
 }
 
-export default QuestionPhoneBottom
+export default QuestionPhoneBottomMenu
