@@ -76,6 +76,19 @@ const Label = styled('label')({
   fontWeight: 600,
   fontSize: '16px',
 })
+
+/* Note:
+  	"type": "choiceQuestion",
+  "other" : { "type" : "string" }  
+  {
+    "text" : "All of the above",
+    "selectorType" : "all"
+  },
+  {
+    "text" : "None of the above",
+    "selectorType" : "exclusive"
+  }*/
+
 const OPTIONS = new Map([
   ['ALL', '+ All of the above'],
   ['NONE', '+ None of the above'],
@@ -92,7 +105,7 @@ const QuestionPhoneBottomMenu: FunctionComponent<{
     setAnchorEl(event.currentTarget)
   }
 
-  const handleMenuItemClick = (optionKey: string) => {
+  const addGenericResponse = (optionKey: string) => {
     switch (optionKey) {
       case 'ALL':
         let newChoicesAll: ChoiceQuestionChoice[] = [
@@ -119,24 +132,20 @@ const QuestionPhoneBottomMenu: FunctionComponent<{
     }
     setAnchorEl(null)
   }
+
+  const addResponse = () => {
+    const choices = [...(step.choices || [])]
+    const numberOfChoices = choices.filter(c => c.value !== undefined).length
+
+    const nextLetter = String.fromCharCode(numberOfChoices + 65)
+    const text = 'Choice ' + nextLetter.toUpperCase()
+
+    onChange({...step, choices: [...choices, {text: text, value: text}]})
+  }
+
   const handleClose = () => {
     setAnchorEl(null)
   }
-  /* 	"type": "choiceQuestion",
-  "other" : { "type" : "string" }  
-  {
-    "text" : "All of the above",
-    "selectorType" : "all"
-  },
-  {
-    "text" : "None of the above",
-    "selectorType" : "exclusive"
-  }*/
-  let OPTIONS = new Map([
-    ['ALL', '+ All of the above'],
-    ['NONE', '+ None of the above'],
-    ['OTHER', '+ Add "Other"'],
-  ])
 
   const isDisabled = (optionKey: string): boolean => {
     switch (optionKey) {
@@ -171,7 +180,10 @@ const QuestionPhoneBottomMenu: FunctionComponent<{
     <PhoneBottom>
       {/*  <PhoneBottomDiv id="phoneBottom">*/}
       <Button variant="text">
-        <Label sx={{color: '#2A2A2A'}}> + Add Response </Label>
+        <Label sx={{color: '#2A2A2A'}} onClick={() => addResponse()}>
+          {' '}
+          + Add Response{' '}
+        </Label>
       </Button>
 
       <SideMenu sx={{borderRadius: anchorEl ? '0' : '0px 0 25px 0'}}>
@@ -210,7 +222,7 @@ const QuestionPhoneBottomMenu: FunctionComponent<{
             <StyledMenuItem
               key={optionKey}
               disabled={isDisabled(optionKey)}
-              onClick={() => handleMenuItemClick(optionKey)}>
+              onClick={() => addGenericResponse(optionKey)}>
               {OPTIONS.get(optionKey)}
             </StyledMenuItem>
           ))}

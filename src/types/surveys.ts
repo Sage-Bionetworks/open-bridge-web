@@ -78,7 +78,7 @@ export type ChoiceQuestionChoice = {
   text: string
   value?: string | number
   //  exclusive?: boolean
-  selectorType: 'all' | 'exclusive'
+  selectorType?: 'all' | 'exclusive' | 'default'
   icon?: string
 }
 export type ChoiceQuestion = Question & {
