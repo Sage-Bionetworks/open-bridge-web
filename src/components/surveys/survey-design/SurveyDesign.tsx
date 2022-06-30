@@ -27,9 +27,9 @@ import IntroInfo from './IntroInfo'
 import AddQuestionMenu from './left-panel/AddQuestionMenu'
 import LeftPanel from './left-panel/LeftPanel'
 import QUESTIONS, {QuestionTypeKey} from './left-panel/QuestionConfigs'
-import QuestionEdit from './question-edit/QuestionEdit'
+import QuestionEditPhone from './question-edit/QuestionEditPhone'
+import QuestionEditRhs from './question-edit/QuestionEditRhs'
 import QuestionEditToolbar from './question-edit/QuestionEditToolbar'
-import QuestionEditRhs from './QuestionEditRhs'
 import SurveyTitle from './SurveyTitle'
 
 const SurveyDesignContainerBox = styled(Box)(({theme}) => ({
@@ -319,7 +319,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                 flexGrow="1"
                 bgcolor={'#fff'}>
                 {survey && (
-                  <QuestionEdit
+                  <QuestionEditPhone
                     globalSkipConfiguration={
                       survey!.config.webConfig!.skipOption!
                     }
@@ -332,21 +332,23 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                 )}
               </Box>
               <Box height="100%" bgcolor={'#f8f8f8'}>
-                <QuestionEditRhs
-                  step={getCurrentStep()!}
-                  onChange={(step: Step) => updateCurrentStep(step)}>
-                  <QuestionEditToolbar
-                    onAction={action => {
-                      console.log(action)
-                      if (action === 'save') {
-                        save()
-                      }
-                      if (action === 'delete') {
-                        deleteCurrentStep()
-                      }
-                    }}
-                  />
-                </QuestionEditRhs>
+                {survey && (
+                  <QuestionEditRhs
+                    step={getCurrentStep()!}
+                    onChange={(step: Step) => updateCurrentStep(step)}>
+                    <QuestionEditToolbar
+                      onAction={action => {
+                        console.log(action)
+                        if (action === 'save') {
+                          save()
+                        }
+                        if (action === 'delete') {
+                          deleteCurrentStep()
+                        }
+                      }}
+                    />
+                  </QuestionEditRhs>
+                )}
               </Box>
             </Route>
 

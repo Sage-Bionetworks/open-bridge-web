@@ -1,7 +1,7 @@
 import {ReactComponent as DraggableIcon} from '@assets/surveys/draggable.svg'
 import SurveyUtils from '@components/surveys/SurveyUtils'
 import {Box, styled} from '@mui/material'
-import {ChoiceQuestion, Step} from '@typedefs/surveys'
+import {ChoiceQuestion} from '@typedefs/surveys'
 import {
   DragDropContext,
   Draggable,
@@ -33,8 +33,17 @@ const Option = styled('div')(({theme}) => ({
   },
 }))
 
+/*
+NOTE:
+ “selectorType” has a default value of “default”. If and only if the selectorType is default then “value” is required and that is what is added to the array.
+ For both “exclusive” and “all”, selection/deselection is handled within the UI. For “all” that means “select all default choices
+ (ie. does not select “other” or “exclusive” or “all”) and add their “value” to the array”. For “exclusive”, that means “deselect all other values”. 
+ If these objects (exclusive, all) have a value, that value is also added to the array in addition to either selecting or deselecting the order of the “all of the above” 
+ and “none of the above” is incorrect b/c “all of the above” will not select “none of the above” even though it is above it.
+*/
+
 const Select: React.FunctionComponent<{
-  step: Step
+  step: ChoiceQuestion
   isMulti?: boolean
   onChange: (step: ChoiceQuestion) => void
 }> = ({step, onChange}) => {
@@ -57,27 +66,43 @@ const Select: React.FunctionComponent<{
       <Droppable droppableId="options">
         {provided => (
           <Box ref={provided.innerRef} {...provided.droppableProps}>
-            {stepData.choices!.map((choice, index) => (
-              <Draggable
-                draggableId={choice.value.toString()}
-                isDragDisabled={index % 2 > 0}
-                index={index}
-                key={choice.value}>
-                {provided => (
-                  <Option
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    ref={provided.innerRef}>
-                    <div /> {choice.text}
-                    {index % 2 === 0 && <DraggableIcon />}
-                  </Option>
-                )}
-              </Draggable>
-            ))}
+            {stepData
+              .choices!.filter(choice => !choice.selectorType)
+              .map((choice, index) => (
+                <Draggable
+                  draggableId={choice.value?.toString() || ''}
+                  isDragDisabled={false}
+                  index={index}
+                  key={choice.value}>
+                  {provided => (
+                    <Option
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      ref={provided.innerRef}>
+                      <div /> {choice.text}
+                      <DraggableIcon />
+                    </Option>
+                  )}
+                </Draggable>
+              ))}
             {provided.placeholder}
           </Box>
         )}
       </Droppable>
+
+      {stepData
+        .choices!.filter(choice => choice.selectorType)
+        .sort((a, b) => (a.text < b.text ? -1 : 1))
+        .map((choice, index) => (
+          <Option>
+            <div /> {choice.text}
+          </Option>
+        ))}
+      {step.other && (
+        <Option>
+          <div /> Other _________
+        </Option>
+      )}
     </DragDropContext>
   )
 }

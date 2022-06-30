@@ -6,7 +6,7 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import {styled} from '@mui/material/styles'
 import {latoFont} from '@style/theme'
-import {Step} from '@typedefs/surveys'
+import {ChoiceQuestion, ChoiceQuestionChoice} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
 
 const PhoneBottom = styled('div', {label: 'phoneBottom'})({
@@ -52,10 +52,25 @@ const SideMenu = styled('div', {label: 'sideMenu'})({
 })
 
 const StyledMenu = styled(Menu, {label: 'StyledMenu'})(({theme}) => ({
-  '& .MuiPaper-root > ul': {
-    padding: 0,
+  '& .MuiPaper-root': {
+    borderRadius: 0,
+    ' & > ul': {
+      padding: 0,
+    },
   },
 }))
+
+const StyledMenuItem = styled(MenuItem, {label: 'StyledMenuItem'})(
+  ({theme}) => ({
+    height: '48px',
+    backgroundColor: '#565656',
+    color: '#fff',
+    '&:hover': {
+      backgroundColor: '#848484',
+    },
+  })
+)
+
 const Label = styled('label')({
   fontFamily: latoFont,
   fontWeight: 600,
@@ -67,7 +82,10 @@ const OPTIONS = new Map([
   ['OTHER', '+ Add "Other"'],
 ])
 
-const QuestionPhoneBottomMenu: FunctionComponent<{question: Step}> = () => {
+const QuestionPhoneBottomMenu: FunctionComponent<{
+  step: ChoiceQuestion
+  onChange: (s: ChoiceQuestion) => void
+}> = ({step, onChange}) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -77,10 +95,26 @@ const QuestionPhoneBottomMenu: FunctionComponent<{question: Step}> = () => {
   const handleMenuItemClick = (optionKey: string) => {
     switch (optionKey) {
       case 'ALL':
+        let newChoicesAll: ChoiceQuestionChoice[] = [
+          ...(step.choices || []),
+          {
+            text: 'All of the above',
+            selectorType: 'all',
+          },
+        ]
+
+        onChange({...step, choices: newChoicesAll})
         break
       case 'NONE':
+        let newChoicesNone: ChoiceQuestionChoice[] = [
+          ...(step.choices || []),
+          {text: 'None of the above', selectorType: 'exclusive'},
+        ]
+
+        onChange({...step, choices: newChoicesNone})
         break
       case 'OTHER':
+        onChange({...step, other: {type: 'string'}})
         break
     }
     setAnchorEl(null)
@@ -98,11 +132,40 @@ const QuestionPhoneBottomMenu: FunctionComponent<{question: Step}> = () => {
     "text" : "None of the above",
     "selectorType" : "exclusive"
   }*/
-  const OPTIONS = new Map([
+  let OPTIONS = new Map([
     ['ALL', '+ All of the above'],
-    [' NONE', '+ None of the above'],
-    [' OTHER', '+ Add "Other"'],
+    ['NONE', '+ None of the above'],
+    ['OTHER', '+ Add "Other"'],
   ])
+
+  const isDisabled = (optionKey: string): boolean => {
+    switch (optionKey) {
+      case 'ALL':
+        return (
+          step.choices?.find(q => q.text === 'All of the above') !== undefined
+        )
+      case 'NONE':
+        return (
+          step.choices?.find(q => q.text === 'None of the above') !== undefined
+        )
+      case 'OTHER':
+        return step.other !== undefined
+      default: {
+        return false
+      }
+    }
+  }
+
+  const getOptions = (): string[] => {
+    const keyArray = Array.from(OPTIONS.keys())
+    if (step.singleChoice) {
+      console.log(keyArray)
+      const result = keyArray.filter(optionKey => optionKey === 'OTHER')
+      console.log('result', result)
+      return result
+    }
+    return keyArray
+  }
 
   return (
     <PhoneBottom>
@@ -143,20 +206,13 @@ const QuestionPhoneBottomMenu: FunctionComponent<{question: Step}> = () => {
               padding: 0,
             },
           }}>
-          {Array.from(OPTIONS.keys()).map(optionKey => (
-            <MenuItem
+          {getOptions().map(optionKey => (
+            <StyledMenuItem
               key={optionKey}
-              sx={{
-                height: '48px',
-                backgroundColor: '#565656',
-                color: '#fff',
-                '&:hover': {
-                  backgroundColor: '#848484',
-                },
-              }}
+              disabled={isDisabled(optionKey)}
               onClick={() => handleMenuItemClick(optionKey)}>
               {OPTIONS.get(optionKey)}
-            </MenuItem>
+            </StyledMenuItem>
           ))}
         </StyledMenu>
       </SideMenu>

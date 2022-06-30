@@ -76,8 +76,9 @@ export type Skip = {
 
 export type ChoiceQuestionChoice = {
   text: string
-  value: string | number
-  exclusive?: boolean
+  value?: string | number
+  //  exclusive?: boolean
+  selectorType: 'all' | 'exclusive'
   icon?: string
 }
 export type ChoiceQuestion = Question & {

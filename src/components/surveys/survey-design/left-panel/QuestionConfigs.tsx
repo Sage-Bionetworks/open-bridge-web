@@ -16,7 +16,7 @@ export type QuestionTypeKey =
   | 'FREE_TEXT'
   | 'INSTRUCTION'
   | 'LIKERT'
-  | 'MULTISELECT'
+  | 'MULTI_SELECT'
   | 'NUMERIC'
   | 'SINGLE_SELECT'
   | 'SLIDER'
@@ -96,7 +96,7 @@ const QUESTIONS = new Map<
     },
   ],
   [
-    'MULTISELECT',
+    'MULTI_SELECT',
     {
       img: <MultiSelect />,
 
@@ -226,7 +226,7 @@ export const getQuestionId = (step: Step): QuestionTypeKey => {
   if (step.type === 'choiceQuestion') {
     return (step as ChoiceQuestion).singleChoice
       ? 'SINGLE_SELECT'
-      : 'MULTISELECT'
+      : 'MULTI_SELECT'
   }
   const uiHint = (step as Question).uiHint
   const inputItemType = (step as Question).inputItem?.type

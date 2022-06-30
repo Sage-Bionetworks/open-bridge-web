@@ -297,11 +297,19 @@ function Factory(args: {
           }}
         />
       )*/
-      return <Select step={args.step} onChange={args.onChange} />
+      return (
+        <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
+      )
     }
 
-    case 'MULTISELECT':
-      return <Select step={args.step} onChange={args.onChange} isMulti={true} />
+    case 'MULTI_SELECT':
+      return (
+        <Select
+          step={args.step as ChoiceQuestion}
+          onChange={args.onChange}
+          isMulti={true}
+        />
+      )
       return <>CHECKBOX</>
     case 'FREE_TEXT':
       return <FreeText step={args.step} onChange={args.onChange} />
@@ -321,7 +329,7 @@ function Factory(args: {
   }
 }
 
-const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
+const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
   step,
   globalSkipConfiguration,
   onChange,
@@ -346,8 +354,12 @@ const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
           <PhoneDisplay
             sx={{marginBottom: '20px'}}
             phoneBottom={
-              questionId === 'MULTISELECT' || questionId === 'SINGLE_SELECT' ? (
-                <QuestionPhoneBottomMenu question={step} />
+              questionId === 'MULTI_SELECT' ||
+              questionId === 'SINGLE_SELECT' ? (
+                <QuestionPhoneBottomMenu
+                  step={step as ChoiceQuestion}
+                  onChange={s => onChange(s)}
+                />
               ) : (
                 <></>
               )
@@ -413,4 +425,4 @@ const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
     </Box>
   )
 }
-export default QuestionEdit
+export default QuestionEditPhone
