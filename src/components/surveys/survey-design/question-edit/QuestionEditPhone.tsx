@@ -1,6 +1,7 @@
+import {ReactComponent as PauseIcon} from '@assets/surveys/pause.svg'
 import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
-import {Box, styled} from '@mui/material'
-import {latoFont} from '@style/theme'
+import {Box, styled, Typography} from '@mui/material'
+import {latoFont, theme} from '@style/theme'
 import {ChoiceQuestion, Step, WebUISkipOptions} from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
@@ -15,6 +16,10 @@ const StyledP2 = styled(DisappearingInput, {label: 'StyledP2'})(({theme}) => ({
   fontWeight: 400,
   fontSize: '12px',
   color: '#2A2A2A',
+  width: '100%',
+  '& > input, textarea': {
+    padding: theme.spacing(0.125, 1),
+  },
 }))
 
 const StyledH1 = styled(DisappearingInput, {label: 'StyledH1'})(({theme}) => ({
@@ -24,6 +29,9 @@ const StyledH1 = styled(DisappearingInput, {label: 'StyledH1'})(({theme}) => ({
   fontSize: '16px',
 
   color: '#2A2A2A',
+  '& > input': {
+    padding: theme.spacing(0.125, 1),
+  },
 }))
 
 /*
@@ -304,11 +312,7 @@ function Factory(args: {
 
     case 'MULTI_SELECT':
       return (
-        <Select
-          step={args.step as ChoiceQuestion}
-          onChange={args.onChange}
-          isMulti={true}
-        />
+        <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
       )
       return <>CHECKBOX</>
     case 'FREE_TEXT':
@@ -351,7 +355,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
       {step ? (
         <>
           <PhoneDisplay
-            sx={{marginBottom: '20px'}}
+            sx={{marginBottom: '20px', textAlign: 'left'}}
             phoneBottom={
               questionId === 'MULTI_SELECT' ||
               questionId === 'SINGLE_SELECT' ? (
@@ -364,26 +368,68 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
               )
             }>
             <Box>
-              {shouldShowSkipButton() && <> Skip Question</>}
-              <div>
-                <StyledP2
-                  area-label="subtitle"
-                  id="subtitle"
-                  value={step.subtitle || ''}
-                  placeholder="Subtitle"
-                  onChange={e => onChange({...step, subtitle: e.target.value})}
-                />
-              </div>
-              <div>
-                <StyledH1
-                  area-label="title"
-                  id="title"
-                  value={step.title || ''}
-                  placeholder="Title"
-                  onChange={e => onChange({...step, title: e.target.value})}
-                />
-              </div>
-              <div>
+              <Box
+                sx={{
+                  //  width: '100%',
+                  position: 'relative',
+                  height: '3px',
+                  margin: '-3px -25px 8px -25px',
+                  backgroundColor: ' #A7A19C',
+                }}>
+                <Box
+                  sx={{
+                    width: '25%',
+                    height: '100%',
+
+                    backgroundColor: '#8FD6FF',
+                  }}></Box>
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  margin: '0 -15px 20px -15px',
+                  justifyContent: 'space-between',
+                }}>
+                {' '}
+                <PauseIcon />
+                {shouldShowSkipButton() && (
+                  <Typography
+                    component="p"
+                    sx={{
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      lineHeight: '18px',
+                      textDecoration: 'underline',
+                    }}>
+                    {' '}
+                    Skip question
+                  </Typography>
+                )}
+              </Box>
+
+              <StyledP2
+                area-label="subtitle"
+                id="subtitle"
+                value={step.subtitle || ''}
+                placeholder="Subtitle"
+                onChange={e => onChange({...step, subtitle: e.target.value})}
+              />
+
+              <StyledH1
+                area-label="title"
+                id="title"
+                value={step.title || ''}
+                placeholder="Title"
+                onChange={e => onChange({...step, title: e.target.value})}
+              />
+              <Box
+                sx={{
+                  height: '330px',
+                  marginLeft: '-10px',
+                  marginRight: '-10px',
+                  padding: '0 10px',
+                  overflowY: 'scroll',
+                }}>
                 <StyledP2
                   area-label="detail"
                   id="detail"
@@ -391,17 +437,19 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                   multiline={true}
                   value={step.detail || ''}
                   placeholder="Description"
+                  sx={{marginBottom: theme.spacing(2.5)}}
                   onChange={e => onChange({...step, detail: e.target.value})}
                 />
-              </div>
-              {
-                <Factory
-                  {...{
-                    step: {...step},
-                    onChange: onChange,
-                    q_type: getQuestionId(step),
-                  }}></Factory>
-              }
+
+                {
+                  <Factory
+                    {...{
+                      step: {...step},
+                      onChange: onChange,
+                      q_type: getQuestionId(step),
+                    }}></Factory>
+                }
+              </Box>
             </Box>
           </PhoneDisplay>
 

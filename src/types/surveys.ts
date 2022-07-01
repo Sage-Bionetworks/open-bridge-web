@@ -56,14 +56,8 @@ export type ImageAnimated = {
 }
 
 export type InputItem = {
-  type:
-    | 'string'
-    | 'year'
-    | 'checkbox'
-    | 'duration'
-    | 'integer'
-    | 'time'
-    | 'year'
+  type: 'string' | 'year' | 'checkbox' | 'duration' | 'integer' | 'time'
+
   placeholder: string
   fieldLabel: string
   displayUnits?: string[]
@@ -82,7 +76,15 @@ export type ChoiceQuestionChoice = {
   icon?: string
 }
 export type ChoiceQuestion = Question & {
-  choices?: ChoiceQuestionChoice[]
+  baseType: 'string' | 'integer' | 'number' | 'boolean"'
+  nextStepIdentifier?: string
+  surveyRules?: {
+    matchingAnswer?: number
+    skipToIdentifier: string
+    ruleOperator?: SurveyRuleOperator
+  }[]
+
+  choices: ChoiceQuestionChoice[]
   singleChoice?: boolean
   other?: {
     type: 'string'
@@ -93,7 +95,7 @@ export type Question = BaseStep & {
   optional: boolean //true,
   inputItem: InputItem
   skipCheckbox?: Skip
-  baseType?: 'integer'
+  baseType?: 'integer' | 'string'
 
   uiHint?: 'checkmark' | 'likert' | 'textfield' | 'slider'
 }

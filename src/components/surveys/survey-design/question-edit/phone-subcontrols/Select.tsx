@@ -3,6 +3,7 @@ import SurveyUtils from '@components/surveys/SurveyUtils'
 import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
 import ClearIcon from '@mui/icons-material/Clear'
 import {Box, IconButton, styled, Typography} from '@mui/material'
+import {theme} from '@style/theme'
 import {ChoiceQuestion, ChoiceQuestionChoice} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
 import {
@@ -14,41 +15,45 @@ import {
 } from 'react-beautiful-dnd'
 
 const OptionList = styled('div', {label: 'OptionList'})(({theme}) => ({
-  height: '300px',
-  marginLeft: '-10px',
-  marginRight: '-10px',
-  padding: '0 10px',
-  overflowY: 'scroll',
+  // height: '300px',
+  // marginLeft: '-10px',
+  // marginRight: '-10px',
+  //  padding: '0 10px',
+  // overflowY: 'scroll',
 }))
 
-const Option = styled('div')(({theme}) => ({
-  background: '#FFFFFF',
-  boxShadow: '1px 2px 3px rgba(42, 42, 42, 0.1)',
-  borderRadius: '2px',
-  padding: theme.spacing(1.5, 1),
-  fontSize: '15px',
-  fontWeight: 700,
-  marginBottom: '6px',
-  textAlign: 'left',
-  display: 'flex',
+const Option = styled('div')<{isSingleChoice?: boolean}>(
+  ({theme, isSingleChoice}) => ({
+    background: '#FFFFFF',
+    boxShadow: '1px 2px 3px rgba(42, 42, 42, 0.1)',
 
-  alignItems: 'center',
-  //checkbox square
-  '& div:first-of-type': {
-    width: '14px',
-    height: '14px',
-    border: '2px solid black',
-    flexShrink: 0,
-    marginRight: '6px',
-  },
-  '& div:last-of-type': {
-    marginLeft: 'auto',
-    marginRight: 0,
-
+    padding: theme.spacing(0.75, 1.5),
+    fontSize: '15px',
+    fontWeight: 700,
+    marginBottom: '6px',
+    textAlign: 'left',
     display: 'flex',
+
     alignItems: 'center',
-  },
-}))
+    borderRadius: isSingleChoice ? '28px' : '2px',
+    //checkbox square
+    '& div:first-of-type': {
+      width: '16px',
+      height: '16px',
+      border: '2px solid black',
+      flexShrink: 0,
+      marginRight: '6px',
+      borderRadius: isSingleChoice ? '7px' : '0px',
+    },
+    '& div:last-of-type': {
+      marginLeft: 'auto',
+      marginRight: 0,
+
+      display: 'flex',
+      alignItems: 'center',
+    },
+  })
+)
 
 /*
 NOTE1:
@@ -72,18 +77,21 @@ const SelectOption: FunctionComponent<{
   onRename: (t: string) => void
   provided?: DraggableProvided
   isStatic?: boolean
-}> = ({provided, choice, onDelete, onRename, isStatic}) => {
+  isSingleChoice?: boolean
+}> = ({provided, choice, onDelete, onRename, isStatic, isSingleChoice}) => {
   const [title, setTitle] = React.useState(choice.text)
   return (
     <Option
       {...provided?.draggableProps}
       {...provided?.dragHandleProps}
-      ref={provided?.innerRef}>
+      ref={provided?.innerRef}
+      isSingleChoice={isSingleChoice}>
       <div />
       {isStatic ? (
-        <Typography sx={{padding: '8px'}}>{title}</Typography>
+        <Typography sx={{padding: theme.spacing(0.5, 0.5)}}>{title}</Typography>
       ) : (
         <DisappearingInput
+          sx={{'& input': {padding: theme.spacing(0.25, 0.5)}}}
           value={title}
           onChange={e => setTitle(e.target.value)}
           onBlur={e => onRename(e.target.value)}
@@ -94,7 +102,7 @@ const SelectOption: FunctionComponent<{
         <IconButton
           onClick={() => onDelete(title)}
           sx={{padding: 0, marginLeft: '4px'}}>
-          <ClearIcon />
+          <ClearIcon fontSize="small" />
         </IconButton>
       </div>
     </Option>
@@ -103,7 +111,7 @@ const SelectOption: FunctionComponent<{
 
 const Select: React.FunctionComponent<{
   step: ChoiceQuestion
-  isMulti?: boolean
+
   onChange: (step: ChoiceQuestion) => void
 }> = ({step, onChange}) => {
   const stepData = step as ChoiceQuestion
@@ -212,6 +220,7 @@ const Select: React.FunctionComponent<{
                     key={choice.value}>
                     {provided => (
                       <SelectOption
+                        isSingleChoice={step.singleChoice}
                         onRename={qText => renameOption(qText, index)}
                         provided={provided}
                         choice={choice}
@@ -231,6 +240,7 @@ const Select: React.FunctionComponent<{
             //  .sort((a, b) => (a.text < b.text ? -1 : 1))
             .map((choice, index) => (
               <SelectOption
+                isSingleChoice={step.singleChoice}
                 onRename={qText => renameOption(qText, -1, choice.selectorType)}
                 choice={choice}
                 key={choice.text}
@@ -239,6 +249,7 @@ const Select: React.FunctionComponent<{
             ))}
         {step.other && (
           <SelectOption
+            isSingleChoice={step.singleChoice}
             isStatic={true}
             onRename={() => {}}
             choice={{text: 'Other _________'}}
