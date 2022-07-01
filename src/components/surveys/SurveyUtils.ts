@@ -3,8 +3,8 @@ function reorder<Type>(
   startIndex: number,
   endIndex?: number
 ): Type[] {
-  const [removed] = steps.splice(startIndex, 1)
   if (endIndex !== undefined) {
+    const [removed] = steps.splice(startIndex, 1)
     steps.splice(endIndex, 0, removed)
   }
   return steps

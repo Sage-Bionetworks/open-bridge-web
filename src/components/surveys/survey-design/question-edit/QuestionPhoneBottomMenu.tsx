@@ -95,6 +95,17 @@ const OPTIONS = new Map([
   ['OTHER', '+ Add "Other"'],
 ])
 
+function getNumberOfRegularQuestions(
+  choices: ChoiceQuestionChoice[] | undefined
+): number {
+  if (!choices) {
+    return 0
+  }
+  return choices.filter(
+    c => c.selectorType === undefined || c.selectorType === 'default'
+  ).length
+}
+
 const QuestionPhoneBottomMenu: FunctionComponent<{
   step: ChoiceQuestion
   onChange: (s: ChoiceQuestion) => void
@@ -105,20 +116,27 @@ const QuestionPhoneBottomMenu: FunctionComponent<{
     setAnchorEl(event.currentTarget)
   }
 
+  const addAfterRegularQuestions = (
+    choices: ChoiceQuestionChoice[],
+    newChoice: ChoiceQuestionChoice
+  ): ChoiceQuestionChoice[] => {
+    const numbRegularQuestions = getNumberOfRegularQuestions(choices)
+
+    choices.splice(numbRegularQuestions, 0, newChoice)
+    return choices
+  }
+
   const addGenericResponse = (optionKey: string) => {
     switch (optionKey) {
       case 'ALL':
-        let newChoicesAll: ChoiceQuestionChoice[] = [
-          ...(step.choices || []),
-          {
-            text: 'All of the above',
-            selectorType: 'all',
-          },
-        ]
-
-        onChange({...step, choices: newChoicesAll})
+        const choices = addAfterRegularQuestions([...(step.choices || [])], {
+          text: 'All of the above',
+          selectorType: 'all',
+        })
+        onChange({...step, choices})
         break
       case 'NONE':
+        // NONE is always the last
         let newChoicesNone: ChoiceQuestionChoice[] = [
           ...(step.choices || []),
           {text: 'None of the above', selectorType: 'exclusive'},
@@ -134,13 +152,16 @@ const QuestionPhoneBottomMenu: FunctionComponent<{
   }
 
   const addResponse = () => {
-    const choices = [...(step.choices || [])]
-    const numberOfChoices = choices.filter(c => c.value !== undefined).length
-
+    const numberOfChoices = getNumberOfRegularQuestions(step.choices)
     const nextLetter = String.fromCharCode(numberOfChoices + 65)
-    const text = 'Choice ' + nextLetter.toUpperCase()
+    const text = `Choice ${nextLetter.toUpperCase()}`
 
-    onChange({...step, choices: [...choices, {text: text, value: text}]})
+    const choices = addAfterRegularQuestions([...(step.choices || [])], {
+      text: text,
+      value: text,
+    })
+
+    onChange({...step, choices})
   }
 
   const handleClose = () => {

@@ -1,3 +1,4 @@
+import {ReactComponent as GenerateId} from '@assets/surveys/actions/generate_id.svg'
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
 import {Box, Button, styled} from '@mui/material'
@@ -109,7 +110,7 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({
           id="q_id"
           value={step?.identifier}></StyledSimpleTextInput>
         <StyledButton variant="text" onClick={matchIdentifier}>
-          Match Identifier to Question
+          <GenerateId /> Match Identifier to Question
         </StyledButton>
       </Box>
       {

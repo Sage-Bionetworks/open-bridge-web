@@ -1,4 +1,4 @@
-import SurveyUtils from '@components/surveys/SurveyUtils'
+import {ReactComponent as GenerateId} from '@assets/surveys/actions/generate_id.svg'
 import {
   StyledFormControl,
   StyledLabel14,
@@ -13,7 +13,6 @@ import {SelectChangeEvent} from '@mui/material/Select'
 import {theme} from '@style/theme'
 import {ChoiceQuestion} from '@typedefs/surveys'
 import React from 'react'
-import {DropResult} from 'react-beautiful-dnd'
 import QUESTIONS, {QuestionTypeKey} from '../../left-panel/QuestionConfigs'
 
 const Select: React.FunctionComponent<{
@@ -51,19 +50,7 @@ const Select: React.FunctionComponent<{
   }
 
   const stepData = step as ChoiceQuestion
-  const onDragEnd = (result: DropResult) => {
-    if (!stepData.choices) {
-      return
-    }
 
-    const items = SurveyUtils.reorder(
-      [...stepData.choices],
-      result.source.index,
-      result.destination?.index
-    )
-
-    onChange({...stepData, choices: items})
-  }
   return (
     <Box sx={{padding: theme.spacing(14, 3)}}>
       <StyledFormControl mb={2}>
@@ -96,7 +83,7 @@ const Select: React.FunctionComponent<{
           //@ts-ignore
           onChange={handleDataTypeChange}
           input={<OutlinedInput />}
-          inputProps={{'aria-label': 'et Response Value Pairing:'}}>
+          inputProps={{'aria-label': 'Set Response Value Pairing:'}}>
           {answerDataTypeOptions.map(opt => (
             <MenuItem value={opt.toString()}>
               <StyledDropDownItem width="100px">
@@ -115,7 +102,10 @@ const Select: React.FunctionComponent<{
         as defined below.
       </Typography>
       <Box bgcolor={'#fff'}>
-        <Button>Match All Response Labels</Button>
+        <Button>
+          <GenerateId />
+          Match All Response Labels
+        </Button>
         <table>
           <tr>
             <th>Response</th> <th></th> <th>Value={answerDataType}</th>

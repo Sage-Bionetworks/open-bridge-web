@@ -1,11 +1,14 @@
 import {ReactComponent as DraggableIcon} from '@assets/surveys/draggable.svg'
 import SurveyUtils from '@components/surveys/SurveyUtils'
+import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
 import ClearIcon from '@mui/icons-material/Clear'
-import {Box, IconButton, styled} from '@mui/material'
-import {ChoiceQuestion} from '@typedefs/surveys'
+import {Box, IconButton, styled, Typography} from '@mui/material'
+import {ChoiceQuestion, ChoiceQuestionChoice} from '@typedefs/surveys'
+import React, {FunctionComponent} from 'react'
 import {
   DragDropContext,
   Draggable,
+  DraggableProvided,
   Droppable,
   DropResult,
 } from 'react-beautiful-dnd'
@@ -16,7 +19,6 @@ const OptionList = styled('div', {label: 'OptionList'})(({theme}) => ({
   marginRight: '-10px',
   padding: '0 10px',
   overflowY: 'scroll',
-  backgroundColor: 'beige',
 }))
 
 const Option = styled('div')(({theme}) => ({
@@ -31,15 +33,20 @@ const Option = styled('div')(({theme}) => ({
   display: 'flex',
 
   alignItems: 'center',
-  '& >div': {
+  //checkbox square
+  '& div:first-of-type': {
     width: '14px',
     height: '14px',
     border: '2px solid black',
+    flexShrink: 0,
     marginRight: '6px',
   },
-  '& svg': {
+  '& div:last-of-type': {
     marginLeft: 'auto',
     marginRight: 0,
+
+    display: 'flex',
+    alignItems: 'center',
   },
 }))
 
@@ -58,6 +65,41 @@ order should be:
   other,  "All of the above",  "None of the above
 
   */
+
+const SelectOption: FunctionComponent<{
+  choice: ChoiceQuestionChoice
+  onDelete: (t: string, type?: string) => void
+  onRename: (t: string) => void
+  provided?: DraggableProvided
+  isStatic?: boolean
+}> = ({provided, choice, onDelete, onRename, isStatic}) => {
+  const [title, setTitle] = React.useState(choice.text)
+  return (
+    <Option
+      {...provided?.draggableProps}
+      {...provided?.dragHandleProps}
+      ref={provided?.innerRef}>
+      <div />
+      {isStatic ? (
+        <Typography sx={{padding: '8px'}}>{title}</Typography>
+      ) : (
+        <DisappearingInput
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+          onBlur={e => onRename(e.target.value)}
+        />
+      )}
+      <div>
+        {provided !== undefined && <DraggableIcon />}
+        <IconButton
+          onClick={() => onDelete(title)}
+          sx={{padding: 0, marginLeft: '4px'}}>
+          <ClearIcon />
+        </IconButton>
+      </div>
+    </Option>
+  )
+}
 
 const Select: React.FunctionComponent<{
   step: ChoiceQuestion
@@ -79,10 +121,27 @@ const Select: React.FunctionComponent<{
     onChange({...stepData, choices: items})
   }
 
-  const deleteOption = (index: number) => {
+  const deleteOtherOption = () => {
+    if (stepData.choices) {
+      onChange({...step, other: undefined})
+    }
+  }
+
+  const deleteOption = (
+    index: number,
+    selectorType?: 'all' | 'exclusive' | 'default'
+  ) => {
     if (stepData.choices) {
       const newChoices = [...stepData.choices]
-      newChoices.splice(index, 1)
+      if ((index > -1 && selectorType) || (index == -1 && !selectorType)) {
+        throw new Error('question badly formed')
+      }
+
+      const deleteIndex = selectorType
+        ? stepData.choices.findIndex(c => c.selectorType === selectorType)
+        : index
+
+      newChoices.splice(deleteIndex, 1)
 
       onChange({
         ...stepData,
@@ -90,14 +149,61 @@ const Select: React.FunctionComponent<{
       })
     }
   }
+
+  const renameOption = (
+    newName: string,
+    index: number,
+    selectorType?: 'all' | 'exclusive' | 'default'
+  ) => {
+    console.log('chaning to ', newName)
+    if (stepData.choices) {
+      const newChoices = [...stepData.choices]
+      if ((index > -1 && selectorType) || (index == -1 && !selectorType)) {
+        throw new Error('question badly formed')
+      }
+
+      const changeIndex = selectorType
+        ? stepData.choices.findIndex(c => c.selectorType === selectorType)
+        : index
+
+      newChoices[changeIndex].text = newName
+
+      onChange({
+        ...stepData,
+        choices: newChoices,
+      })
+    }
+  }
+
+  const shouldShowExclusiveQuestion = () => {
+    return (
+      stepData.choices &&
+      getIndexOfTheLastRealQuestion() < stepData.choices.length - 1
+    )
+  }
+  const getIndexOfTheLastRealQuestion = (): number => {
+    if (!stepData.choices) {
+      return -1
+    }
+    const firstExclusiveQIndex =
+      stepData.choices.findIndex(
+        o => o.selectorType === 'all' || o.selectorType === 'exclusive'
+      ) ?? -1
+    //if index=== -1 -- all questions are real questions
+    if (firstExclusiveQIndex === -1) {
+      return stepData.choices.length - 1
+    }
+    return firstExclusiveQIndex - 1
+  }
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <OptionList>
         <Droppable droppableId="options">
           {provided => (
             <Box ref={provided.innerRef} {...provided.droppableProps}>
-              {stepData
-                .choices!.filter(choice => !choice.selectorType)
+              {[...stepData.choices!]
+                .slice(0, getIndexOfTheLastRealQuestion() + 1)
                 .map((choice, index) => (
                   <Draggable
                     draggableId={choice.value?.toString() || ''}
@@ -105,17 +211,12 @@ const Select: React.FunctionComponent<{
                     index={index}
                     key={choice.value}>
                     {provided => (
-                      <Option
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        ref={provided.innerRef}>
-                        <div /> {choice.text}
-                        <DraggableIcon />
-                        <IconButton
-                          component={ClearIcon}
-                          onClick={() => deleteOption(index)}
-                        />
-                      </Option>
+                      <SelectOption
+                        onRename={qText => renameOption(qText, index)}
+                        provided={provided}
+                        choice={choice}
+                        onDelete={() => deleteOption(index)}
+                      />
                     )}
                   </Draggable>
                 ))}
@@ -124,18 +225,25 @@ const Select: React.FunctionComponent<{
           )}
         </Droppable>
 
-        {stepData
-          .choices!.filter(choice => choice.selectorType)
-          .sort((a, b) => (a.text < b.text ? -1 : 1))
-          .map((choice, index) => (
-            <Option>
-              <div /> {choice.text}
-            </Option>
-          ))}
+        {shouldShowExclusiveQuestion() &&
+          [...stepData.choices!]
+            .slice(getIndexOfTheLastRealQuestion() + 1)
+            //  .sort((a, b) => (a.text < b.text ? -1 : 1))
+            .map((choice, index) => (
+              <SelectOption
+                onRename={qText => renameOption(qText, -1, choice.selectorType)}
+                choice={choice}
+                key={choice.text}
+                onDelete={() => deleteOption(-1, choice.selectorType)}
+              />
+            ))}
         {step.other && (
-          <Option>
-            <div /> Other _________
-          </Option>
+          <SelectOption
+            isStatic={true}
+            onRename={() => {}}
+            choice={{text: 'Other _________'}}
+            onDelete={qText => deleteOtherOption()}
+          />
         )}
       </OptionList>
     </DragDropContext>

@@ -348,7 +348,6 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
   return (
     <Box bgcolor="#F8F8F8" px={5} border="1px solid black" margin="0 auto">
       QuestionEdit {step?.type}+{JSON.stringify(step?.subtitle)}
-      {step?.identifier}
       {step ? (
         <>
           <PhoneDisplay
@@ -395,7 +394,6 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                   onChange={e => onChange({...step, detail: e.target.value})}
                 />
               </div>
-              {getQuestionId(step)}
               {
                 <Factory
                   {...{
