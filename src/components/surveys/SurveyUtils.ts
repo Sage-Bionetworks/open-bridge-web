@@ -1,3 +1,5 @@
+import {ChoiceQuestionChoice} from '@typedefs/surveys'
+
 function reorder<Type>(
   steps: Type[],
   startIndex: number,
@@ -10,7 +12,19 @@ function reorder<Type>(
   return steps
 }
 
+function getNumberOfRegularQuestions(
+  choices: ChoiceQuestionChoice[] | undefined
+): number {
+  if (!choices) {
+    return 0
+  }
+  return choices.filter(
+    c => c.selectorType === undefined || c.selectorType === 'default'
+  ).length
+}
+
 const SurveyUtils = {
   reorder,
+  getNumberOfRegularQuestions,
 }
 export default SurveyUtils

@@ -325,11 +325,15 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                     globalSkipConfiguration={
                       survey!.config.webConfig!.skipOption!
                     }
-                    onChange={step => {
+                    onChange={(step: Step) => {
                       console.log('got step!!!!!', step)
                       updateCurrentStep(step)
                     }}
                     step={getCurrentStep()}
+                    metric={{
+                      total: survey?.config.steps.length,
+                      current: currentStepIndex,
+                    }}
                   />
                 )}
               </Box>
