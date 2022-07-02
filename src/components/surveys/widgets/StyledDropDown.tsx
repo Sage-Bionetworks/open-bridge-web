@@ -44,6 +44,8 @@ const MenuProps = {
   },
 }
 
+//props example
+
 export const StyledDropDown = styled(
   (props: SelectProps) => (
     <Select

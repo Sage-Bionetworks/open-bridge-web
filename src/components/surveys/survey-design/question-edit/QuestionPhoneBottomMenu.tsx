@@ -1,3 +1,4 @@
+import SurveyUtils from '@components/surveys/SurveyUtils'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 
 import Button from '@mui/material/Button'
@@ -95,17 +96,6 @@ const OPTIONS = new Map([
   ['OTHER', '+ Add "Other"'],
 ])
 
-function getNumberOfRegularQuestions(
-  choices: ChoiceQuestionChoice[] | undefined
-): number {
-  if (!choices) {
-    return 0
-  }
-  return choices.filter(
-    c => c.selectorType === undefined || c.selectorType === 'default'
-  ).length
-}
-
 const QuestionPhoneBottomMenu: FunctionComponent<{
   step: ChoiceQuestion
   onChange: (s: ChoiceQuestion) => void
@@ -120,7 +110,8 @@ const QuestionPhoneBottomMenu: FunctionComponent<{
     choices: ChoiceQuestionChoice[],
     newChoice: ChoiceQuestionChoice
   ): ChoiceQuestionChoice[] => {
-    const numbRegularQuestions = getNumberOfRegularQuestions(choices)
+    const numbRegularQuestions =
+      SurveyUtils.getNumberOfRegularQuestions(choices)
 
     choices.splice(numbRegularQuestions, 0, newChoice)
     return choices
@@ -152,7 +143,9 @@ const QuestionPhoneBottomMenu: FunctionComponent<{
   }
 
   const addResponse = () => {
-    const numberOfChoices = getNumberOfRegularQuestions(step.choices)
+    const numberOfChoices = SurveyUtils.getNumberOfRegularQuestions(
+      step.choices
+    )
     const nextLetter = String.fromCharCode(numberOfChoices + 65)
     const text = `Choice ${nextLetter.toUpperCase()}`
 

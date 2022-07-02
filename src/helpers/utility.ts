@@ -380,8 +380,12 @@ async function getAllPages<T>(
     return {items: allItems, total: result[0].total}
   })
 }
+function capitalize(s: string) {
+  return s && s[0].toUpperCase() + s.slice(1)
+}
 
 const UtilityObject = {
+  capitalize,
   formatStudyId,
   setBodyClass,
   isSignInById,

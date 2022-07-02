@@ -269,6 +269,14 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     })
   }
 
+  const getSurveyProgress = () => {
+    if (!survey?.config.steps || currentStepIndex === undefined) {
+      return 0
+    }
+
+    return (currentStepIndex + 1) / survey!.config.steps.length
+  }
+
   return (
     <Loader reqStatusLoading={!isNewSurvey() && !survey}>
       <SurveyDesignContainerBox>
@@ -330,10 +338,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                       updateCurrentStep(step)
                     }}
                     step={getCurrentStep()}
-                    metric={{
-                      total: survey?.config.steps.length,
-                      current: currentStepIndex,
-                    }}
+                    completionProgress={getSurveyProgress()}
                   />
                 )}
               </Box>

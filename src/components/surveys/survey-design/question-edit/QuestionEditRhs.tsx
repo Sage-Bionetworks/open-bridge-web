@@ -55,11 +55,7 @@ function Factory(args: {
 
     case 'MULTI_SELECT':
       return (
-        <Select
-          step={args.step as ChoiceQuestion}
-          onChange={args.onChange}
-          isMulti={true}
-        />
+        <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
       )
       return <>CHECKBOX</>
     case 'FREE_TEXT':

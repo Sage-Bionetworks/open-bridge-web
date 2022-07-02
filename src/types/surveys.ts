@@ -75,9 +75,11 @@ export type ChoiceQuestionChoice = {
   selectorType?: 'all' | 'exclusive' | 'default'
   icon?: string
 }
+
+export type QuestionDataType = 'string' | 'integer' | 'number' | 'boolean'
 export type ChoiceQuestion = Question & {
-  baseType: 'string' | 'integer' | 'number' | 'boolean"'
-  nextStepIdentifier?: string
+  baseType: QuestionDataType
+
   surveyRules?: {
     matchingAnswer?: number
     skipToIdentifier: string
@@ -95,7 +97,8 @@ export type Question = BaseStep & {
   optional: boolean //true,
   inputItem: InputItem
   skipCheckbox?: Skip
-  baseType?: 'integer' | 'string'
+  baseType?: QuestionDataType
+  nextStepIdentifier?: string
 
   uiHint?: 'checkmark' | 'likert' | 'textfield' | 'slider'
 }

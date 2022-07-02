@@ -1,28 +1,28 @@
 import {ReactComponent as DeleteIcon} from '@assets/surveys/actions/delete.svg'
 import {ReactComponent as DuplicateIcon} from '@assets/surveys/actions/duplicate.svg'
 import {ReactComponent as SaveIcon} from '@assets/surveys/actions/save.svg'
-import {Box} from '@mui/material'
-import {theme} from '@style/theme'
+import {styled} from '@mui/material'
 import {FunctionComponent} from 'react'
 import {ActionButton} from '../../widgets/SharedStyled'
+
+const ToolbarContainer = styled('div')(({theme}) => ({
+  bottom: '0',
+  position: 'fixed',
+  height: '54px',
+  display: 'flex',
+  backgroundColor: '#f7f7f7',
+  flexDirection: 'row',
+  alignItems: 'center',
+  width: '425px',
+  justifyContent: 'space-between',
+  padding: theme.spacing(0, 2.5),
+}))
 
 const QuestionEditToolbar: FunctionComponent<{
   onAction: (action: 'save' | 'duplicate' | 'delete') => void
 }> = ({onAction}) => {
   return (
-    <Box
-      sx={{
-        bottom: '0',
-        position: 'fixed',
-        height: '54px',
-        display: 'flex',
-        // border: '1px solid black',
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: '425px',
-        justifyContent: 'space-between',
-        padding: theme.spacing(0, 2.5),
-      }}>
+    <ToolbarContainer>
       <ActionButton
         startIcon={<SaveIcon />}
         variant="text"
@@ -43,7 +43,7 @@ const QuestionEditToolbar: FunctionComponent<{
           Delete
         </ActionButton>
       </div>
-    </Box>
+    </ToolbarContainer>
   )
 }
 
