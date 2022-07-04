@@ -9,6 +9,7 @@ import StudyLive from '@components/studies/launch/Live'
 import ParticipantManager from '@components/studies/participants/ParticipantManager'
 import StudyBuilder from '@components/studies/StudyBuilder'
 import StudyList from '@components/studies/StudyList'
+import SurveyBranching from '@components/surveys/survey-branching/SurveyBranching'
 import SurveyDesign from '@components/surveys/survey-design/SurveyDesign'
 import SurveyList from '@components/surveys/SurveyList'
 import constants from '@typedefs/constants'
@@ -37,6 +38,13 @@ export default [
     path: '/surveys',
     name: '',
     Component: SurveyList,
+  },
+
+  {
+    path: `${constants.restrictedPaths.SURVEY_BRANCHING}*`,
+    name: '',
+    exact: false,
+    Component: SurveyBranching,
   },
   {
     path: `${constants.restrictedPaths.SURVEY_BUILDER}*`,

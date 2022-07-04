@@ -94,8 +94,8 @@ export type ChoiceQuestion = Question & {
 }
 
 export type Question = BaseStep & {
-  optional: boolean //true,
-  inputItem: InputItem
+  optional?: boolean //true,
+  inputItem?: InputItem
   skipCheckbox?: Skip
   baseType?: QuestionDataType
   nextStepIdentifier?: string
