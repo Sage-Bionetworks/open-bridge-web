@@ -1,4 +1,3 @@
-import UtilityObject from '@helpers/utility'
 import {Box, styled} from '@mui/material'
 import {
   useSurveyAssessment,
@@ -86,7 +85,7 @@ function getNodeLabel(title: string, index: number) {
             fontSize: '12px',
             position: 'absolute',
             left: 0,
-            top: '40px',
+            top: '70px',
           }}>
           {title}
         </div>
@@ -94,7 +93,7 @@ function getNodeLabel(title: string, index: number) {
     </div>
   )
 }
-
+/*
 const initialNodes: Node[] = [
   {
     id: '1',
@@ -166,7 +165,7 @@ const initialEdges: Edge[] = [
   {id: 'e2-3', source: '2', target: '3', type: 'straight'},
   {id: 'e3-4', source: '3', target: '4', type: 'straight'},
 ]
-
+*/
 const q: ChoiceQuestion = {
   type: 'choiceQuestion',
   identifier: 'singleChoiceQ_xrbrbf',
@@ -206,30 +205,104 @@ const fitViewOptions: FitViewOptions = {
 function getQuestions() {
   const questions = [...Array(11)].map((v, i) => ({
     ...q,
-    identifier:
-      'singleChoiceQ_' +
-      UtilityObject.generateNonambiguousCode(3, 'CONSONANTS'),
+    identifier: 'singleChoiceQ_' + i + i,
     title: q.title + 'Q ' + i,
   }))
+  questions[1].nextStepIdentifier = questions[7].identifier
+  questions[2].nextStepIdentifier = questions[7].identifier
   questions[3].nextStepIdentifier = questions[7].identifier
   questions[9].nextStepIdentifier = questions[4].identifier
   questions[6].nextStepIdentifier = questions[10].identifier
+
+  questions[0].surveyRules = [
+    {
+      skipToIdentifier: questions[3].identifier,
+    },
+    {
+      matchingAnswer: 1,
+      skipToIdentifier: questions[1].identifier,
+    },
+    {
+      matchingAnswer: 2,
+      skipToIdentifier: questions[2].identifier,
+    },
+  ]
+
   return questions
 }
 
-const questions = getQuestions()
+//const questions = getQuestions()
 
-function getPosition(index: number) {
-  const max = 800
-  const numPerRow = Math.floor(800 / 190)
-  const x = (index % numPerRow) * 190
-  const y = Math.floor(index / numPerRow)
-  return {x: x, y: y * 180}
-}
-
-const getNodes = () => {
+const getNodes = (questions: ChoiceQuestion[]) => {
   const nodes: Node[] = []
   const edges: Edge[] = []
+
+  function getCoordiatesForNextNode(
+    x: number,
+    y: number,
+    childNumber: number,
+    totalChildren: number
+  ) {
+    const WIDTH = 800
+    const HWIDTH = 190
+    const HHEIGHT = 180
+
+    const getChildOffset = () => {
+      //odd
+      if (totalChildren % 2 === 1) {
+        console.log('odd')
+        const middleNode = Math.floor(totalChildren / 2)
+        if (childNumber === middleNode) {
+          return 0
+        } else {
+          return (middleNode - childNumber) * 180
+        }
+      }
+      // even
+      else {
+        const middleNode = totalChildren / 2
+        return (middleNode - (childNumber + 1)) * 180
+      }
+    }
+
+    const nextRow = x + HWIDTH + 80 > WIDTH
+    console.log('x ' + x, x + 190, nextRow)
+    const cx = nextRow ? 0 : x + HWIDTH
+    const cy = nextRow ? y + HHEIGHT + 100 : y + getChildOffset()
+
+    return {x: cx, y: cy}
+  }
+
+  function getEdge(i1: string, i2: string) {
+    return {
+      id: i1 + '-' + i2,
+      source: i1,
+      target: i2,
+      type: 'straight', // 'straight',
+      markerEnd: {type: MarkerType.ArrowClosed, color: '#000'},
+    }
+  }
+
+  function getChildNodes(q: ChoiceQuestion) {
+    let nextQs: ChoiceQuestion[] = []
+    if (q.surveyRules) {
+      const nextIds = q.surveyRules.map(rule => rule.skipToIdentifier)
+      nextQs = questions.filter(q1 => nextIds.includes(q1.identifier))
+      console.log('nextQs', nextQs)
+    }
+    if (q.nextStepIdentifier) {
+      const next = questions.find(q1 => q1.identifier === q.nextStepIdentifier)
+      if (next) {
+        nextQs.push(next)
+      }
+    } else {
+      const qIndex = questions.findIndex(q1 => q1.identifier === q.identifier)
+      if (qIndex < questions.length - 1 && qIndex !== -1) {
+        nextQs.push(questions[qIndex + 1])
+      }
+    }
+    return nextQs
+  }
 
   function addNode(q: ChoiceQuestion, index: number, x: number, y: number) {
     //  console.log('node', q, index)
@@ -241,35 +314,31 @@ const getNodes = () => {
       targetPosition: Position.Left,
     }
     nodes.push(n)
-    let nextQ: ChoiceQuestion | undefined
-    if (q.nextStepIdentifier) {
-      nextQ = questions.find(q1 => q1.identifier === q.nextStepIdentifier)
-    } else {
-      const qIndex = questions.findIndex(q1 => q1.identifier === q.identifier)
-      nextQ =
-        qIndex === questions.length - 1 || qIndex === -1
-          ? undefined
-          : questions[qIndex + 1]
-    }
-    // console.log('next: ' + nextQ?.title)
+    let nextQs = getChildNodes(q)
 
-    if (nextQ) {
-      const qIndex = questions.findIndex(
-        q1 => q1.identifier === nextQ!.identifier
-      )
-      const nextRow = x + 250 > 800
-      console.log('x ' + x, x + 190, nextRow)
-      const cx = nextRow ? 0 : x + 190
-      const cy = nextRow ? y + 180 : y
-      console.log('next: ' + nextQ?.title, cx, cy)
-      edges.push({
-        id: q.identifier + '-' + nextQ.identifier,
-        source: q.identifier,
-        target: nextQ.identifier,
-        type: 'default', // 'straight',
-        markerEnd: {type: MarkerType.Arrow, color: '#000'},
-      })
-      addNode(nextQ, qIndex, cx, cy)
+    if (nextQs.length) {
+      //add it if it hasn't been added, otherwise just add edge
+
+      // addNode if it doesnt exist
+      var i = 0
+      for (var child of nextQs) {
+        const qIndex = questions.findIndex(
+          //find index of the quesiton
+          q1 => q1.identifier === child.identifier
+        )
+
+        const edge = getEdge(q.identifier, child.identifier)
+        console.log('adding edge', edge, nextQs.length)
+        if (edges.findIndex(e => e.id === edge.id) === -1) {
+          edges.push(edge)
+        }
+        const uniqs = new Set(nextQs.map(q => q.identifier))
+        const {x: cx, y: cy} = getCoordiatesForNextNode(x, y, i, uniqs.size)
+        i++
+        if (nodes.find(q1 => q1.id === child.identifier) === undefined) {
+          addNode(child, qIndex, cx, cy)
+        }
+      }
     }
   }
 
@@ -281,6 +350,12 @@ const getNodes = () => {
     targetPosition: Position.Left,
   }))*/
   addNode(questions[0], 0, 0, 0)
+  const minT = Math.min(...nodes.map(n => n.position.y))
+  console.log(minT, 'MIN')
+  if (minT < 0) {
+    console.log('negativey')
+    nodes.forEach(n => (n.position.y = n.position.y + Math.abs(minT)))
+  }
   return {nodes, edges}
 }
 /*
@@ -326,8 +401,8 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     number | undefined
   >(getQuestionIndexFromSearchString())
 
-  const [nodes, setNodes] = React.useState<Node[]>(getNodes().nodes)
-  const [edges, setEdges] = React.useState<Edge[]>(getNodes().edges)
+  const [nodes, setNodes] = React.useState<Node[]>([])
+  const [edges, setEdges] = React.useState<Edge[]>([])
   console.log('nodes', nodes)
   console.log('edges', edges)
 
@@ -382,6 +457,9 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     if (_survey) {
       console.log('%c surveyChanged', 'background: #222; color: #bada55')
       setSurvey(_survey)
+      const result = getNodes(_survey.config.steps as ChoiceQuestion[])
+      setNodes(result.nodes)
+      setEdges(result.edges)
     }
   }, [_survey])
 
@@ -403,18 +481,32 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
       setError((error as any).toString())
     }
   }
+  const onNodeClick = (x: any, node: Node) => {
+    console.log('CLICKIN', node)
+    //  alert(node.id)
+    const q = survey?.config.steps.find(q => q.identifier === node.id)
+    alert(q?.title)
+  }
 
   return (
-    <div style={{width: '800px', height: '800px', border: '1px solid black'}}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        // fitView
-        fitViewOptions={fitViewOptions}
-      />
+    <div ref={ref}>
+      <div
+        style={{
+          width: width + 'px',
+          height: '800px',
+          border: '1px solid black',
+        }}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodeClick={onNodeClick}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          // fitView
+          fitViewOptions={fitViewOptions}
+        />
+      </div>
     </div>
   )
 }
