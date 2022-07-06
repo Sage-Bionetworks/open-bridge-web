@@ -81,7 +81,7 @@ export type ChoiceQuestion = Question & {
   baseType: QuestionDataType
 
   surveyRules?: {
-    matchingAnswer?: number
+    matchingAnswer?: number | string
     skipToIdentifier: string
     ruleOperator?: SurveyRuleOperator
   }[]

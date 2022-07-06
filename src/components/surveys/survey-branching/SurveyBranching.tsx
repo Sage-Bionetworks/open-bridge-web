@@ -1,12 +1,40 @@
-import {Box, styled} from '@mui/material'
+/*
+function getQuestions() {
+  const questions = [...Array(11)].map((v, i) => ({
+    ...q,
+    identifier: 'singleChoiceQ_' + i + i,
+    title: q.title + 'Q ' + i,
+  }))
+  questions[1].nextStepIdentifier = questions[7].identifier
+  questions[2].nextStepIdentifier = questions[7].identifier
+  questions[3].nextStepIdentifier = questions[7].identifier
+  questions[9].nextStepIdentifier = questions[4].identifier
+  questions[6].nextStepIdentifier = questions[10].identifier
+
+  questions[0].surveyRules = [
+    {
+      skipToIdentifier: questions[3].identifier,
+    },
+    {
+      matchingAnswer: 1,
+      skipToIdentifier: questions[1].identifier,
+    },
+    {
+      matchingAnswer: 2,
+      skipToIdentifier: questions[2].identifier,
+    },
+  ]
+
+  return questions
+}*/
+
+import {Box, Button, styled} from '@mui/material'
 import {
   useSurveyAssessment,
   useSurveyConfig,
-  useUpdateSurveyAssessment,
   useUpdateSurveyConfig,
-  useUpdateSurveyResource,
 } from '@services/assessmentHooks'
-import {ChoiceQuestion, Survey} from '@typedefs/surveys'
+import {ChoiceQuestion, Step, Survey} from '@typedefs/surveys'
 import {Assessment} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import ReactFlow, {
@@ -22,14 +50,12 @@ import ReactFlow, {
   NodeChange,
   Position,
 } from 'react-flow-renderer'
-import {
-  RouteComponentProps,
-  useHistory,
-  useLocation,
-  useParams,
-} from 'react-router-dom'
-import QUESTIONS from '../survey-design/left-panel/QuestionConfigs'
+import {RouteComponentProps, useLocation, useParams} from 'react-router-dom'
+import QUESTIONS, {
+  getQuestionId,
+} from '../survey-design/left-panel/QuestionConfigs'
 import {DivContainer} from '../survey-design/left-panel/QuestionTypeDisplay'
+import BranchingConfig from './BranchingConfig'
 
 const SurveyBranchingContainerBox = styled(Box)(({theme}) => ({
   position: 'relative',
@@ -74,12 +100,12 @@ export function useGetPlotWidth(
 
 type SurveyBranchingOwnProps = {}
 
-function getNodeLabel(title: string, index: number) {
+function getNodeLabel(q: Step, index: number) {
   return (
     <div style={{position: 'relative'}}>
       <DivContainer>
-        {QUESTIONS.get('LIKERT')?.img}
-        <div style={{fontSize: '12px'}}>{index}</div>
+        {QUESTIONS.get(getQuestionId(q))?.img}
+        <div style={{fontSize: '12px'}}>{index + 1}</div>
         <div
           style={{
             fontSize: '12px',
@@ -87,153 +113,20 @@ function getNodeLabel(title: string, index: number) {
             left: 0,
             top: '70px',
           }}>
-          {title}
+          {'id:' + q.identifier + ' ' + q.title}
         </div>
       </DivContainer>
     </div>
   )
-}
-/*
-const initialNodes: Node[] = [
-  {
-    id: '1',
-    data: {
-      label: (
-        <div style={{position: 'relative'}}>
-          {' '}
-          <DivContainer>
-            {QUESTIONS.get('LIKERT')?.img}
-            <div style={{fontSize: '12px'}}>3</div>
-            <div
-              style={{
-                fontSize: '12px',
-                position: 'absolute',
-                left: 0,
-                top: '40px',
-              }}>
-              How often have you been upset because of something that happened
-              unexpectedly?{' '}
-            </div>
-          </DivContainer>
-        </div>
-      ),
-    },
-    position: {x: 5, y: 5},
-    sourcePosition: Position.Right,
-  },
-  {
-    id: '2',
-    data: {label: 'Node 2'},
-    position: {x: 250, y: 5},
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-  },
-  {
-    id: '21',
-    data: {label: 'Node 2'},
-    position: {x: 250, y: -50},
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-  },
-  {
-    id: '22',
-    data: {label: 'Node 2'},
-    position: {x: 250, y: 50},
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-  },
-  {
-    id: '3',
-    data: {label: 'Node 3'},
-    position: {x: 450, y: 5},
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-  },
-  {
-    id: '4',
-    data: {label: 'Node 4'},
-    position: {x: 950, y: 150},
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
-  },
-]
-
-const initialEdges: Edge[] = [
-  {id: 'e1-2', source: '1', target: '2', type: 'straight'},
-  {id: 'e1-21', source: '1', target: '21', type: 'straight'},
-  {id: 'e1-22', source: '1', target: '22', type: 'straight'},
-  {id: 'e2-3', source: '2', target: '3', type: 'straight'},
-  {id: 'e3-4', source: '3', target: '4', type: 'straight'},
-]
-*/
-const q: ChoiceQuestion = {
-  type: 'choiceQuestion',
-  identifier: 'singleChoiceQ_xrbrbf',
-  subtitle: 'Subtitle',
-  title:
-    'How often have you been upset because of something that happened  unexpectedly?',
-  detail: 'Detail',
-  baseType: 'string',
-  singleChoice: true,
-  choices: [
-    {
-      value: 'Choice A',
-      text: 'Choice A',
-    },
-    {
-      value: 'Choice B',
-      text: 'Choice B',
-    },
-    {
-      text: 'Choice D',
-      value: 'Choice D',
-    },
-    {
-      text: 'Choice C',
-      value: 'Choice C',
-    },
-  ],
-  other: {
-    type: 'string',
-  },
 }
 
 const fitViewOptions: FitViewOptions = {
   padding: 0.2,
 }
 
-function getQuestions() {
-  const questions = [...Array(11)].map((v, i) => ({
-    ...q,
-    identifier: 'singleChoiceQ_' + i + i,
-    title: q.title + 'Q ' + i,
-  }))
-  questions[1].nextStepIdentifier = questions[7].identifier
-  questions[2].nextStepIdentifier = questions[7].identifier
-  questions[3].nextStepIdentifier = questions[7].identifier
-  questions[9].nextStepIdentifier = questions[4].identifier
-  questions[6].nextStepIdentifier = questions[10].identifier
-
-  questions[0].surveyRules = [
-    {
-      skipToIdentifier: questions[3].identifier,
-    },
-    {
-      matchingAnswer: 1,
-      skipToIdentifier: questions[1].identifier,
-    },
-    {
-      matchingAnswer: 2,
-      skipToIdentifier: questions[2].identifier,
-    },
-  ]
-
-  return questions
-}
-
 //const questions = getQuestions()
 
-const getNodes = (questions: ChoiceQuestion[]) => {
+const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
   const nodes: Node[] = []
   const edges: Edge[] = []
 
@@ -241,35 +134,42 @@ const getNodes = (questions: ChoiceQuestion[]) => {
     x: number,
     y: number,
     childNumber: number,
-    totalChildren: number
+    totalChildren: number,
+    id: string
   ) {
-    const WIDTH = 800
     const HWIDTH = 190
     const HHEIGHT = 180
+    const PADDING_X = 20
 
     const getChildOffset = () => {
       //odd
+      console.log('doing', id)
       if (totalChildren % 2 === 1) {
-        console.log('odd')
         const middleNode = Math.floor(totalChildren / 2)
         if (childNumber === middleNode) {
           return 0
         } else {
-          return (middleNode - childNumber) * 180
+          return (middleNode - childNumber) * HHEIGHT
         }
       }
       // even
       else {
+        console.log('%cEVEN', 'background: #222; color: rgb(218, 85, 105)')
         const middleNode = totalChildren / 2
-        return (middleNode - (childNumber + 1)) * 180
+        const y = (middleNode - (childNumber + 1)) * HHEIGHT
+
+        return y
       }
     }
 
-    const nextRow = x + HWIDTH + 80 > WIDTH
-    console.log('x ' + x, x + 190, nextRow)
-    const cx = nextRow ? 0 : x + HWIDTH
-    const cy = nextRow ? y + HHEIGHT + 100 : y + getChildOffset()
+    const yOffset = getChildOffset()
+    console.log('yOffset for ' + id + ' ' + yOffset)
 
+    const nextRow = x + HWIDTH + 80 > plotWidth
+
+    const cx = nextRow ? PADDING_X : x + HWIDTH
+    const cy = nextRow ? y + HHEIGHT + 100 + yOffset : y + yOffset
+    console.log('cy ', cy)
     return {x: cx, y: cy}
   }
 
@@ -278,7 +178,7 @@ const getNodes = (questions: ChoiceQuestion[]) => {
       id: i1 + '-' + i2,
       source: i1,
       target: i2,
-      type: 'straight', // 'straight',
+      type: 'default', // 'straight',
       markerEnd: {type: MarkerType.ArrowClosed, color: '#000'},
     }
   }
@@ -286,6 +186,7 @@ const getNodes = (questions: ChoiceQuestion[]) => {
   function getChildNodes(q: ChoiceQuestion) {
     let nextQs: ChoiceQuestion[] = []
     if (q.surveyRules) {
+      console.log('doing rules')
       const nextIds = q.surveyRules.map(rule => rule.skipToIdentifier)
       nextQs = questions.filter(q1 => nextIds.includes(q1.identifier))
       console.log('nextQs', nextQs)
@@ -296,19 +197,27 @@ const getNodes = (questions: ChoiceQuestion[]) => {
         nextQs.push(next)
       }
     } else {
-      const qIndex = questions.findIndex(q1 => q1.identifier === q.identifier)
-      if (qIndex < questions.length - 1 && qIndex !== -1) {
-        nextQs.push(questions[qIndex + 1])
+      if (!q.surveyRules?.length) {
+        const qIndex = questions.findIndex(q1 => q1.identifier === q.identifier)
+        if (qIndex < questions.length - 1 && qIndex !== -1) {
+          nextQs.push(questions[qIndex + 1])
+        }
       }
     }
     return nextQs
   }
 
-  function addNode(q: ChoiceQuestion, index: number, x: number, y: number) {
+  function addNode(
+    q: ChoiceQuestion,
+    index: number,
+    x: number,
+    y: number,
+    runNumber: number
+  ) {
     //  console.log('node', q, index)
     const n = {
       id: q.identifier,
-      data: {label: getNodeLabel(q.title, index)},
+      data: {label: getNodeLabel(q, index)},
       position: {x, y},
       sourcePosition: Position.Right,
       targetPosition: Position.Left,
@@ -333,10 +242,33 @@ const getNodes = (questions: ChoiceQuestion[]) => {
           edges.push(edge)
         }
         const uniqs = new Set(nextQs.map(q => q.identifier))
-        const {x: cx, y: cy} = getCoordiatesForNextNode(x, y, i, uniqs.size)
+        const result = getCoordiatesForNextNode(
+          x,
+          y,
+          i,
+          uniqs.size,
+          child.identifier
+        )
+        console.log(child.identifier + ' ' + result)
+        console.log(
+          'coordinates in: ' +
+            child.identifier +
+            ' x:' +
+            result.x +
+            ', y:' +
+            result.y
+        )
         i++
-        if (nodes.find(q1 => q1.id === child.identifier) === undefined) {
-          addNode(child, qIndex, cx, cy)
+        //  if (nodes.find(q1 => q1.id === child.identifier) === undefined) {
+        if (runNumber > questions.length * 10) {
+          //stack overflow
+          //  alert('Stack overflow, Please refresh the page')
+        } else {
+          addNode(child, qIndex, result.x, result.y, ++runNumber)
+          console.log('adding node', child.identifier)
+          //    } else {
+          //    console.log('skipping node', child.identifier)
+          //  }
         }
       }
     }
@@ -349,12 +281,12 @@ const getNodes = (questions: ChoiceQuestion[]) => {
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   }))*/
-  addNode(questions[0], 0, 0, 0)
+  addNode(questions[0], 0, 20, 20, 0)
   const minT = Math.min(...nodes.map(n => n.position.y))
   console.log(minT, 'MIN')
-  if (minT < 0) {
+  if (minT < 20) {
     console.log('negativey')
-    nodes.forEach(n => (n.position.y = n.position.y + Math.abs(minT)))
+    nodes.forEach(n => (n.position.y = n.position.y + Math.abs(minT) + 20))
   }
   return {nodes, edges}
 }
@@ -391,15 +323,15 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   const isNewSurvey = () => surveyGuid === ':id'
   const ref = React.useRef<HTMLDivElement>(null)
   const {width} = useGetPlotWidth(ref, 7, 180)
-  console.log('WIDTH is,', width)
-  const history = useHistory()
+
   const location = useLocation()
-  const [assessment, setAssessment] = React.useState<Assessment | undefined>()
+
   const [survey, setSurvey] = React.useState<Survey | undefined>()
   const [error, setError] = React.useState('')
   const [currentStepIndex, setCurrentStepIndex] = React.useState<
     number | undefined
-  >(getQuestionIndexFromSearchString())
+  >(-1)
+  const [isHideInput, setIsHideInput] = React.useState(false)
 
   const [nodes, setNodes] = React.useState<Node[]>([])
   const [edges, setEdges] = React.useState<Edge[]>([])
@@ -428,55 +360,53 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   )
 
   const {
-    isSuccess: asmntUpdateSuccess,
-    isError: asmntUpdateError,
-    mutateAsync: mutateAssessment,
-  } = useUpdateSurveyAssessment()
-
-  const {
     isSuccess: surveyUpdateSuccess,
     isError: surveyUpdateError,
     mutateAsync: mutateSurvey,
   } = useUpdateSurveyConfig()
 
-  const {
-    isSuccess: resourceUpdateSuccess,
-    isError: resourceUpdateError,
-    mutateAsync: mutateResource,
-  } = useUpdateSurveyResource()
-
-  //effects to populate local copies
-
-  React.useEffect(() => {
-    if (_assessment) {
-      setAssessment(_assessment)
-    }
-  }, [_assessment])
-
   React.useEffect(() => {
     if (_survey) {
       console.log('%c surveyChanged', 'background: #222; color: #bada55')
+      const steps = [..._survey.config.steps] as ChoiceQuestion[]
+      steps[0].surveyRules = [
+        {
+          skipToIdentifier: steps[1].identifier,
+        },
+        {
+          matchingAnswer: 1,
+          skipToIdentifier: steps[3].identifier,
+        },
+      ]
+      setSurvey({..._survey, config: {..._survey.config, steps: steps}})
+
       setSurvey(_survey)
-      const result = getNodes(_survey.config.steps as ChoiceQuestion[])
-      setNodes(result.nodes)
-      setEdges(result.edges)
     }
   }, [_survey])
 
-  const saveAssessment = async (
+  React.useEffect(() => {
+    if (survey) {
+      console.log('%c surveyChanged', 'background: #222; color: #bada55')
+
+      const plotWidth = isHideInput ? width || 0 : (width || 0) - 620
+
+      const result = getNodes(
+        survey?.config.steps as ChoiceQuestion[],
+        plotWidth
+      )
+      setNodes(result.nodes)
+      setEdges(result.edges)
+    }
+  }, [survey?.config.steps, width, isHideInput])
+
+  const saveSurvey = async (
     asmnt: Assessment,
     survey: Survey,
     action: 'UPDATE' | 'CREATE'
   ) => {
     setError('')
     try {
-      const result = await mutateAssessment({assessment: asmnt, action})
-      await mutateSurvey({guid: result.guid!, survey})
-
-      console.log('success')
-      console.log(result)
-      history.push(`/surveys/${result.guid}/design/title`)
-      console.log('reloading')
+      await mutateSurvey({guid: surveyGuid, survey})
     } catch (error) {
       setError((error as any).toString())
     }
@@ -484,30 +414,69 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   const onNodeClick = (x: any, node: Node) => {
     console.log('CLICKIN', node)
     //  alert(node.id)
-    const q = survey?.config.steps.find(q => q.identifier === node.id)
-    alert(q?.title)
+    const qIndex = survey?.config.steps.findIndex(q => q.identifier === node.id)
+
+    setCurrentStepIndex(qIndex)
+    setIsHideInput(false)
+  }
+
+  const getNextSequentialQuestion = (id: string) => {
+    if (survey) {
+      const qIndex = survey.config.steps.findIndex(q => q.identifier === id)
+      if (qIndex < 0 || qIndex === survey?.config.steps.length - 1) {
+        return undefined
+      }
+      return survey.config.steps[qIndex + 1]
+    }
   }
 
   return (
-    <div ref={ref}>
-      <div
-        style={{
-          width: width + 'px',
-          height: '800px',
-          border: '1px solid black',
-        }}>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodeClick={onNodeClick}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          // fitView
-          fitViewOptions={fitViewOptions}
-        />
-      </div>
-    </div>
+    <Box width="100%" sx={{display: 'block', position: 'relative'}}>
+      <Box ref={ref} sx={{border: '1px solid blue'}}>
+        <div
+          style={{
+            width: isHideInput ? width || 0 : (width || 0) - 520 + 'px',
+            height: '800px',
+            border: '1px solid red',
+          }}>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodeClick={onNodeClick}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            // fitView
+            fitViewOptions={fitViewOptions}
+          />
+        </div>
+      </Box>
+      CI ={currentStepIndex}
+      {survey?.config.steps &&
+        currentStepIndex !== undefined &&
+        !isHideInput &&
+        survey.config.steps[currentStepIndex] && (
+          <Box
+            sx={{
+              width: '424px',
+              border: '1px solid black',
+              position: 'absolute',
+              top: '0',
+              right: '0',
+            }}>
+            <BranchingConfig
+              onChange={steps => {
+                console.log('steps', steps)
+                setSurvey({...survey, config: {...survey.config, steps: steps}})
+              }}
+              questions={survey.config.steps as ChoiceQuestion[]}
+              step={survey.config.steps[currentStepIndex] as ChoiceQuestion}
+            />
+
+            <Button onClick={() => setIsHideInput(true)}>Hide input</Button>
+          </Box>
+        )}
+    </Box>
   )
 }
 export default SurveyBranching
