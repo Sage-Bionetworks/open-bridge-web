@@ -369,7 +369,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     if (_survey) {
       console.log('%c surveyChanged', 'background: #222; color: #bada55')
       const steps = [..._survey.config.steps] as ChoiceQuestion[]
-      steps[0].surveyRules = [
+      /* steps[0].surveyRules = [
         {
           skipToIdentifier: steps[1].identifier,
         },
@@ -377,7 +377,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
           matchingAnswer: 1,
           skipToIdentifier: steps[3].identifier,
         },
-      ]
+      ]*/
       setSurvey({..._survey, config: {..._survey.config, steps: steps}})
 
       setSurvey(_survey)

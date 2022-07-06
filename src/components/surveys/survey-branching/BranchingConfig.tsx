@@ -84,6 +84,35 @@ const BranchingConfig: FunctionComponent<{
     }
     onChange(newSteps)
   }
+
+  const changeRuleMapping = (
+    optionValue: string | number | undefined,
+    nextStepId: string
+  ) => {
+    let rules = [...(step.surveyRules || [])]
+    const i = rules?.findIndex(r => r.matchingAnswer === optionValue)
+    const rule = {
+      matchingAnswer: optionValue,
+      ruleOperator: SurveyRuleOperator.Equal,
+      skipToIdentifier: nextStepId,
+    }
+
+    if (i === -1) {
+      rules.push(rule)
+    } else {
+      rules[i] = rule
+    }
+    const newSteps = questions.map(_question =>
+      _question.identifier === step.identifier
+        ? {
+            ..._question,
+            surveyRules: rules,
+          }
+        : _question
+    )
+    console.log(newSteps)
+    onChange(newSteps)
+  }
   return (
     <Box>
       id: {step.identifier} title: {step.title}
@@ -121,7 +150,7 @@ const BranchingConfig: FunctionComponent<{
           {getNextSequentialQuestion(step.identifier, questions)?.identifier}
           {step.choices &&
             step.choices.map(c => (
-              <div>
+              <div key={c.value}>
                 <div>{c.value + '-->'}</div>
                 <QMenu
                   questions={questions}
@@ -130,33 +159,9 @@ const BranchingConfig: FunctionComponent<{
                       rule => rule.matchingAnswer === c.value
                     )?.skipToIdentifier || ''
                   }
-                  onChangeSelected={nextStepId => {
-                    let rules = [...(step.surveyRules || [])]
-                    const i = rules?.findIndex(
-                      r => r.matchingAnswer === c.value
-                    )
-                    const rule = {
-                      matchingAnswer: c.value,
-                      ruleOperator: SurveyRuleOperator.Equal,
-                      skipToIdentifier: nextStepId,
-                    }
-
-                    if (i === undefined) {
-                      rules.push(rule)
-                    } else {
-                      rules[i] = rule
-                    }
-                    const qs = questions.map(_question =>
-                      _question.identifier === step.identifier
-                        ? {
-                            ..._question,
-                            nextStepIdentifier: questions[i + 1].identifier,
-                          }
-                        : _question
-                    )
-
-                    onChange(qs)
-                  }}
+                  onChangeSelected={nextStepId =>
+                    changeRuleMapping(c.value, nextStepId)
+                  }
                 />
               </div>
             ))}
