@@ -198,22 +198,29 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     if (!survey) {
       return
     }
-    /*const newStep: Step = {
-      identifier: Utility.generateNonambiguousCode(6, 'ALPHANUMERIC'),
-      title,
-      type: 'unkonwn',
-    }*/
-    console.log('adding')
+
+    const isFirstStep = (survey.config.steps?.length || 0) === 0
     const id = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
     const q = QUESTIONS.get(title)
     if (q && q.default) {
+      const steps = survey.config?.steps ? [...survey.config?.steps] : []
+
+      //if we are adding first step, also add completion
+      if (isFirstStep) {
+        const completion = QUESTIONS.get('COMPLETION')?.default
+        //  const completion1 = {...(COMPLETION_DEFAULT.default as Step)}
+        steps.push({...completion} as Step)
+      }
+
       const newStep: Step = {...q.default} as Step
       newStep.identifier = `${newStep.identifier}_${id}`
       console.log('adding step', newStep.identifier)
-      const steps = [...survey.config.steps, newStep]
+      //since completion is always the last step -- push to l-2
+      steps.splice(steps.length - 1, 0, newStep)
+
       await reorderOrAddSteps(steps)
 
-      const currentStepId = survey?.config.steps.length
+      const currentStepId = steps.length - 2
       console.log('wantto set current step')
       // setCurrentStepIndex(currentStepId)
       console.log('surveysteps' + survey.config.steps)
@@ -255,8 +262,12 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     console.log('done')
   }
   const deleteCurrentStep = async () => {
-    const steps = [...survey!.config.steps]
+    let steps = [...survey!.config.steps]
     steps.splice(currentStepIndex!, 1)
+    //if we only have one step left -- it is completion-- delete it as well
+    if (steps.length === 1) {
+      steps = []
+    }
     await mutateSurvey({
       guid: surveyGuid,
       survey: {

@@ -1,3 +1,4 @@
+import {ReactComponent as Completion} from '@assets/surveys/iconcomplete.svg'
 import {ReactComponent as Duration} from '@assets/surveys/q_type_icons/duration.svg'
 import {ReactComponent as Free_text} from '@assets/surveys/q_type_icons/free_text.svg'
 import {ReactComponent as Instruction} from '@assets/surveys/q_type_icons/instruction.svg'
@@ -22,6 +23,7 @@ export type QuestionTypeKey =
   | 'SLIDER'
   | 'TIME'
   | 'YEAR'
+  | 'COMPLETION'
 
 const QUESTIONS = new Map<
   QuestionTypeKey,
@@ -211,6 +213,27 @@ const QUESTIONS = new Map<
           formatOptions: {
             minimumYear: 1900,
             allowFuture: false,
+          },
+        },
+      },
+    },
+  ],
+  [
+    'COMPLETION',
+
+    {
+      img: <Completion />,
+
+      title: 'COMPLETION',
+      default: {
+        type: 'completion',
+        identifier: 'completion',
+        title: 'Well Done!',
+        detail: 'Thank you for being part of our survey',
+        actions: {
+          goForward: {
+            buttonTitle: 'Exit Survey',
+            type: 'default',
           },
         },
       },

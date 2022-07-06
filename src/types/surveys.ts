@@ -122,6 +122,7 @@ export type BaseStep = {
   identifier: string //'step1',
   controlType?: ControlType
   type:
+    | 'completion'
     | 'unkonwn'
     | 'instruction'
     | 'simpleQuestion'
