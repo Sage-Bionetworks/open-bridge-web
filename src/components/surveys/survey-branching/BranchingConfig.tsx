@@ -1,3 +1,4 @@
+import SurveyUtils from '@components/surveys/SurveyUtils'
 import {
   Box,
   FormControlLabel,
@@ -13,22 +14,33 @@ import QUESTIONS, {
 } from '../survey-design/left-panel/QuestionConfigs'
 import {StyledDropDown, StyledDropDownItem} from '../widgets/StyledDropDown'
 
-const getNextSequentialQuestion = (id: string, questions: Step[]) => {
-  const qIndex = questions.findIndex(q => q.identifier === id)
-  if (qIndex < 0 || qIndex === questions.length - 1) {
-    return undefined
+const NextQ: FunctionComponent<{questions: Step[]; id: string}> = ({
+  id,
+  questions,
+}) => {
+  const {index, isLast} = SurveyUtils.getSequentialQuestionIndex(id, questions)
+  if (isLast || index === -1) {
+    return <></>
   }
-  return questions[qIndex + 1]
+  const q = questions[index + 1]
+  return (
+    <StyledDropDownItem width="170px">
+      {QUESTIONS.get(getQuestionId(q))?.img}
+      <div>{index + 2}</div>
+    </StyledDropDownItem>
+  )
 }
 
 const QMenu: FunctionComponent<{
   questions: Step[]
+  excludeIds: string[]
   selectedIdentifier?: string
+
   onChangeSelected: (qIs: string) => void
-}> = ({questions, selectedIdentifier, onChangeSelected}) => {
+}> = ({questions, selectedIdentifier, excludeIds, onChangeSelected}) => {
   return (
     <StyledDropDown
-      value={selectedIdentifier}
+      value={selectedIdentifier || ''}
       width="200px"
       height="48px"
       //@ts-ignore
@@ -37,14 +49,17 @@ const QMenu: FunctionComponent<{
       }}
       input={<OutlinedInput />}
       inputProps={{'aria-label': 'Question Type:'}}>
-      {questions.map((opt, index) => (
-        <MenuItem value={opt.identifier} key={opt.identifier}>
-          <StyledDropDownItem width="170px">
-            {QUESTIONS.get(getQuestionId(opt))?.img}
-            <div>{index + 1}</div>
-          </StyledDropDownItem>
-        </MenuItem>
-      ))}
+      {questions.map(
+        (opt, index) =>
+          !excludeIds.includes(opt.identifier) && (
+            <MenuItem value={opt.identifier} key={opt.identifier}>
+              <StyledDropDownItem width="170px">
+                {QUESTIONS.get(getQuestionId(opt))?.img}
+                <div>{index + 1}</div>
+              </StyledDropDownItem>
+            </MenuItem>
+          )
+      )}
     </StyledDropDown>
   )
 }
@@ -52,9 +67,11 @@ const QMenu: FunctionComponent<{
 const BranchingConfig: FunctionComponent<{
   step: ChoiceQuestion
   questions: ChoiceQuestion[]
+  sourceNodesIds: string[]
   onChange: (step: ChoiceQuestion[]) => void
-}> = ({step, questions, onChange}) => {
+}> = ({step, questions, sourceNodesIds, onChange}) => {
   const qTypeId = getQuestionId(step)
+  console.log('sourceIds', sourceNodesIds)
 
   const onChangeNextId = (stepId: string) => {
     onChange(
@@ -66,8 +83,6 @@ const BranchingConfig: FunctionComponent<{
     )
   }
   const onChangeNextOption = (hasNextDefined: string) => {
-    alert(hasNextDefined)
-
     let newSteps: ChoiceQuestion[]
     if (hasNextDefined === 'false') {
       newSteps = questions.map(_question =>
@@ -125,7 +140,8 @@ const BranchingConfig: FunctionComponent<{
             control={<Radio />}
             label={
               <div>
-                Go to next screen in sequence :<span>hello</span>
+                Go to next screen in sequence :
+                <NextQ questions={questions} id={step.identifier} />
               </div>
             }
           />
@@ -138,7 +154,8 @@ const BranchingConfig: FunctionComponent<{
                 Skip To:{' '}
                 <QMenu
                   questions={questions}
-                  selectedIdentifier={step.nextStepIdentifier}
+                  excludeIds={sourceNodesIds}
+                  selectedIdentifier={step.nextStepIdentifier || ''}
                   onChangeSelected={nextStepId => onChangeNextId(nextStepId)}
                 />
               </div>
@@ -147,13 +164,17 @@ const BranchingConfig: FunctionComponent<{
         </RadioGroup>
       ) : (
         <Box>
-          {getNextSequentialQuestion(step.identifier, questions)?.identifier}
+          {
+            SurveyUtils.getNextSequentialQuestion(step.identifier, questions)
+              ?.identifier
+          }
           {step.choices &&
             step.choices.map(c => (
               <div key={c.value}>
                 <div>{c.value + '-->'}</div>
                 <QMenu
                   questions={questions}
+                  excludeIds={sourceNodesIds}
                   selectedIdentifier={
                     step.surveyRules?.find(
                       rule => rule.matchingAnswer === c.value

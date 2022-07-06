@@ -384,7 +384,22 @@ function capitalize(s: string) {
   return s && s[0].toUpperCase() + s.slice(1)
 }
 
+function areArraysEqual<T>(array1: T[], array2: T[]) {
+  if (array1.length === array2.length) {
+    return array1.every((element, index) => {
+      if (element === array2[index]) {
+        return true
+      }
+
+      return false
+    })
+  }
+
+  return false
+}
+
 const UtilityObject = {
+  areArraysEqual,
   capitalize,
   formatStudyId,
   setBodyClass,

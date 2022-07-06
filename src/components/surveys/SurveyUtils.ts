@@ -1,4 +1,4 @@
-import {ChoiceQuestionChoice} from '@typedefs/surveys'
+import {ChoiceQuestionChoice, Step} from '@typedefs/surveys'
 
 function reorder<Type>(
   steps: Type[],
@@ -12,7 +12,7 @@ function reorder<Type>(
   return steps
 }
 
-function getNumberOfRegularQuestions(
+function getNumberOfRegularSelectChoices(
   choices: ChoiceQuestionChoice[] | undefined
 ): number {
   if (!choices) {
@@ -23,8 +23,26 @@ function getNumberOfRegularQuestions(
   ).length
 }
 
+//get question next in the list
+const getNextSequentialQuestion = (id: string, questions: Step[]) => {
+  const qIndex = questions.findIndex(q => q.identifier === id)
+  if (qIndex < 0 || qIndex === questions.length - 1) {
+    return undefined
+  }
+  return questions[qIndex + 1]
+}
+
+//get question next in the list
+const getSequentialQuestionIndex = (id: string, questions: Step[]) => {
+  const qIndex = questions.findIndex(q => q.identifier === id)
+
+  return {index: qIndex, isLast: qIndex === questions.length - 1}
+}
+
 const SurveyUtils = {
   reorder,
-  getNumberOfRegularQuestions,
+  getNumberOfRegularSelectChoices,
+  getNextSequentialQuestion,
+  getSequentialQuestionIndex,
 }
 export default SurveyUtils
