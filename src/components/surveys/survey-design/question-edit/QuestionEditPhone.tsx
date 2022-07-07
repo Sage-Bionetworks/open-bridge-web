@@ -420,7 +420,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
     choiceQ: ChoiceQuestion,
     direction: 1 | -1
   ): ChoiceQuestionChoice[] => {
-    const qNum = SurveyUtils.getNumberOfRegularQuestions(choiceQ.choices)
+    const qNum = SurveyUtils.getNumberOfRegularSelectChoices(choiceQ.choices)
     const sortableOptions = choiceQ.choices.splice(0, qNum)
     sortableOptions.sort((a, b) => {
       return (a.text > b.text ? 1 : -1) * direction

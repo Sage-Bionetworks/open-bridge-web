@@ -111,7 +111,7 @@ const QuestionPhoneBottomMenu: FunctionComponent<{
     newChoice: ChoiceQuestionChoice
   ): ChoiceQuestionChoice[] => {
     const numbRegularQuestions =
-      SurveyUtils.getNumberOfRegularQuestions(choices)
+      SurveyUtils.getNumberOfRegularSelectChoices(choices)
 
     choices.splice(numbRegularQuestions, 0, newChoice)
     return choices
@@ -143,7 +143,7 @@ const QuestionPhoneBottomMenu: FunctionComponent<{
   }
 
   const addResponse = () => {
-    const numberOfChoices = SurveyUtils.getNumberOfRegularQuestions(
+    const numberOfChoices = SurveyUtils.getNumberOfRegularSelectChoices(
       step.choices
     )
     const nextLetter = String.fromCharCode(numberOfChoices + 65)
