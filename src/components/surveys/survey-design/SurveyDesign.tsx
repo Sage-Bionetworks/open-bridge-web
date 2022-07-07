@@ -27,9 +27,9 @@ import IntroInfo from './IntroInfo'
 import AddQuestionMenu from './left-panel/AddQuestionMenu'
 import LeftPanel from './left-panel/LeftPanel'
 import QUESTIONS, {QuestionTypeKey} from './left-panel/QuestionConfigs'
-import QuestionEdit from './question-edit/QuestionEdit'
+import QuestionEditPhone from './question-edit/QuestionEditPhone'
+import QuestionEditRhs from './question-edit/QuestionEditRhs'
 import QuestionEditToolbar from './question-edit/QuestionEditToolbar'
-import QuestionEditRhs from './QuestionEditRhs'
 import SurveyTitle from './SurveyTitle'
 
 const SurveyDesignContainerBox = styled(Box)(({theme}) => ({
@@ -198,22 +198,29 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     if (!survey) {
       return
     }
-    /*const newStep: Step = {
-      identifier: Utility.generateNonambiguousCode(6, 'ALPHANUMERIC'),
-      title,
-      type: 'unkonwn',
-    }*/
-    console.log('adding')
+
+    const isFirstStep = (survey.config.steps?.length || 0) === 0
     const id = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
     const q = QUESTIONS.get(title)
     if (q && q.default) {
+      const steps = survey.config?.steps ? [...survey.config?.steps] : []
+
+      //if we are adding first step, also add completion
+      if (isFirstStep) {
+        const completion = QUESTIONS.get('COMPLETION')?.default
+        //  const completion1 = {...(COMPLETION_DEFAULT.default as Step)}
+        steps.push({...completion} as Step)
+      }
+
       const newStep: Step = {...q.default} as Step
       newStep.identifier = `${newStep.identifier}_${id}`
       console.log('adding step', newStep.identifier)
-      const steps = [...survey.config.steps, newStep]
+      //since completion is always the last step -- push to l-2
+      steps.splice(steps.length - 1, 0, newStep)
+
       await reorderOrAddSteps(steps)
 
-      const currentStepId = survey?.config.steps.length
+      const currentStepId = steps.length - 2
       console.log('wantto set current step')
       // setCurrentStepIndex(currentStepId)
       console.log('surveysteps' + survey.config.steps)
@@ -255,8 +262,12 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     console.log('done')
   }
   const deleteCurrentStep = async () => {
-    const steps = [...survey!.config.steps]
+    let steps = [...survey!.config.steps]
     steps.splice(currentStepIndex!, 1)
+    //if we only have one step left -- it is completion-- delete it as well
+    if (steps.length === 1) {
+      steps = []
+    }
     await mutateSurvey({
       guid: surveyGuid,
       survey: {
@@ -267,6 +278,14 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
         },
       },
     })
+  }
+
+  const getSurveyProgress = () => {
+    if (!survey?.config.steps || currentStepIndex === undefined) {
+      return 0
+    }
+
+    return (currentStepIndex + 1) / survey!.config.steps.length
   }
 
   return (
@@ -287,8 +306,11 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
         {/* CEDNTRAL PHONE AREA*/}
         <Box display="flex" flexGrow={1} justifyContent="space-between">
           {error && <Alert color="error">{error}</Alert>}
-
-          <pre>{JSON.stringify(survey?.config, null, 2)}</pre>
+          <div style={{width: '200px'}}>
+            <pre style={{fontSize: '11px'}}>
+              {JSON.stringify(survey?.config, null, 2)}
+            </pre>
+          </div>
           <Switch>
             <Route path={`/surveys/:id/design/title`}>
               {assessment && survey && (
@@ -318,34 +340,37 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                 flexGrow="1"
                 bgcolor={'#fff'}>
                 {survey && (
-                  <QuestionEdit
+                  <QuestionEditPhone
                     globalSkipConfiguration={
                       survey!.config.webConfig!.skipOption!
                     }
-                    onChange={step => {
+                    onChange={(step: Step) => {
                       console.log('got step!!!!!', step)
                       updateCurrentStep(step)
                     }}
                     step={getCurrentStep()}
+                    completionProgress={getSurveyProgress()}
                   />
                 )}
               </Box>
               <Box height="100%" bgcolor={'#f8f8f8'}>
-                <QuestionEditRhs
-                  step={getCurrentStep()!}
-                  onChange={(step: Step) => updateCurrentStep(step)}>
-                  <QuestionEditToolbar
-                    onAction={action => {
-                      console.log(action)
-                      if (action === 'save') {
-                        save()
-                      }
-                      if (action === 'delete') {
-                        deleteCurrentStep()
-                      }
-                    }}
-                  />
-                </QuestionEditRhs>
+                {survey && (
+                  <QuestionEditRhs
+                    step={getCurrentStep()!}
+                    onChange={(step: Step) => updateCurrentStep(step)}>
+                    <QuestionEditToolbar
+                      onAction={action => {
+                        console.log(action)
+                        if (action === 'save') {
+                          save()
+                        }
+                        if (action === 'delete') {
+                          deleteCurrentStep()
+                        }
+                      }}
+                    />
+                  </QuestionEditRhs>
+                )}
               </Box>
             </Route>
 

@@ -1,8 +1,9 @@
 import {ReactComponent as DraggableIcon} from '@assets/surveys/draggable.svg'
-import {ReactComponent as CompletionIcon} from '@assets/surveys/iconcomplete.svg'
+
 import {ReactComponent as PreviewIcon} from '@assets/surveys/preview.svg'
 import {ReactComponent as InstructionIcon} from '@assets/surveys/q_type_icons/icontitle.svg'
 import {ReactComponent as SettingsIcon} from '@assets/surveys/settings.svg'
+import SurveyUtils from '@components/surveys/SurveyUtils'
 import {Box, styled} from '@mui/material'
 import {theme} from '@style/theme'
 import {Step, SurveyConfig} from '@typedefs/surveys'
@@ -112,20 +113,6 @@ const StyledQuestionText = styled('div', {label: 'styledQuestionText'})(
   })
 )
 
-// a little function to help us with reordering the result
-const reorder = (
-  steps: Step[],
-  startIndex: number,
-  endIndex?: number
-): Step[] => {
-  console.log('end', endIndex)
-  const [removed] = steps.splice(startIndex, 1)
-  if (endIndex !== undefined) {
-    steps.splice(endIndex, 0, removed)
-  }
-  return steps
-}
-
 const TitleRow: React.FunctionComponent<{surveyId?: string; guid?: string}> = ({
   surveyId,
   guid,
@@ -214,17 +201,13 @@ const LeftPanel: React.FunctionComponent<{
   onNavigateStep,
   onUpdateSteps,
 }) => {
-  console.log(
-    'rerender steps',
-    surveyConfig?.steps.map(s => s.identifier)
-  )
   const location = useLocation()
   const onDragEnd = (result: DropResult) => {
     if (!surveyConfig?.steps) {
       return
     }
 
-    const items = reorder(
+    const items = SurveyUtils.reorder(
       [...surveyConfig!.steps],
       result.source.index,
       result.destination?.index
@@ -249,38 +232,48 @@ const LeftPanel: React.FunctionComponent<{
               <InstructionIcon />
               <div>Title Page</div>
             </StaticStepLink>
-            <Droppable droppableId="questions">
-              {provided => (
-                <Box ref={provided.innerRef} {...provided.droppableProps}>
-                  {surveyConfig?.steps.map((step, index) => (
-                    <Draggable
-                      draggableId={step.identifier}
-                      isDragDisabled={surveyConfig?.steps.length < 2}
-                      index={index}
-                      key={step.identifier}>
-                      {provided => (
-                        <StepLink
-                          provided={provided}
-                          isCurrent={currentStepIndex === index}
-                          //  guid={guid}
-                          onClick={() => onNavigateStep(index)}
-                          size={surveyConfig?.steps.length}
-                          index={index}
-                          step={step}
-                        />
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </Box>
-              )}
-            </Droppable>
-            <StaticStepLink
-              onClick={() => onNavigateStep('completion')}
-              isCurrentStep={location.pathname.includes('/design/completion')}>
-              <CompletionIcon style={{margin: '4px 0'}} />
-              <div>Completion Screen</div>
-            </StaticStepLink>
+            {surveyConfig?.steps && (
+              <>
+                <Droppable droppableId="questions">
+                  {provided => (
+                    <Box ref={provided.innerRef} {...provided.droppableProps}>
+                      {surveyConfig!
+                        .steps!.filter(s => s.type !== 'completion')
+                        .map((step, index) => (
+                          <Draggable
+                            draggableId={step.identifier}
+                            isDragDisabled={surveyConfig?.steps!.length < 2}
+                            index={index}
+                            key={step.identifier}>
+                            {provided => (
+                              <StepLink
+                                provided={provided}
+                                isCurrent={currentStepIndex === index}
+                                //  guid={guid}
+                                onClick={() => onNavigateStep(index)}
+                                size={surveyConfig?.steps!.length}
+                                index={index}
+                                step={step}
+                              />
+                            )}
+                          </Draggable>
+                        ))}
+                      {provided.placeholder}
+                    </Box>
+                  )}
+                </Droppable>
+                {surveyConfig!.steps!.find(s => s.type === 'completion') && (
+                  <StaticStepLink
+                    onClick={() => onNavigateStep('completion')}
+                    isCurrentStep={location.pathname.includes(
+                      '/design/completion'
+                    )}>
+                    {QUESTIONS.get('COMPLETION')?.img}
+                    <div>Completion Screen</div>
+                  </StaticStepLink>
+                )}
+              </>
+            )}
           </Box>
         </Box>
         <AddStepMenuContainer>{children}</AddStepMenuContainer>

@@ -31,6 +31,7 @@
     "react-colorful": "^5.2.3",
     "react-dom": "^18.0.0",
     "react-error-boundary": "^3.0.2",
+    "react-flow-renderer": "^10.3.8",
     "react-imask": "^6.0.7",
     "react-papaparse": "^3.11.1",
     "react-pluralize": "^1.6.3",

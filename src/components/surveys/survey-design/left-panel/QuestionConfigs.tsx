@@ -1,3 +1,4 @@
+import {ReactComponent as Completion} from '@assets/surveys/iconcomplete.svg'
 import {ReactComponent as Duration} from '@assets/surveys/q_type_icons/duration.svg'
 import {ReactComponent as Free_text} from '@assets/surveys/q_type_icons/free_text.svg'
 import {ReactComponent as Instruction} from '@assets/surveys/q_type_icons/instruction.svg'
@@ -16,12 +17,13 @@ export type QuestionTypeKey =
   | 'FREE_TEXT'
   | 'INSTRUCTION'
   | 'LIKERT'
-  | 'MULTISELECT'
+  | 'MULTI_SELECT'
   | 'NUMERIC'
   | 'SINGLE_SELECT'
   | 'SLIDER'
   | 'TIME'
   | 'YEAR'
+  | 'COMPLETION'
 
 const QUESTIONS = new Map<
   QuestionTypeKey,
@@ -96,7 +98,7 @@ const QUESTIONS = new Map<
     },
   ],
   [
-    'MULTISELECT',
+    'MULTI_SELECT',
     {
       img: <MultiSelect />,
 
@@ -216,6 +218,27 @@ const QUESTIONS = new Map<
       },
     },
   ],
+  [
+    'COMPLETION',
+
+    {
+      img: <Completion />,
+
+      title: 'COMPLETION',
+      default: {
+        type: 'completion',
+        identifier: 'completion',
+        title: 'Well Done!',
+        detail: 'Thank you for being part of our survey',
+        actions: {
+          goForward: {
+            buttonTitle: 'Exit Survey',
+            type: 'default',
+          },
+        },
+      },
+    },
+  ],
 ])
 type QuestionConfigFields = {type: string; inputItemType?: string}
 
@@ -226,7 +249,7 @@ export const getQuestionId = (step: Step): QuestionTypeKey => {
   if (step.type === 'choiceQuestion') {
     return (step as ChoiceQuestion).singleChoice
       ? 'SINGLE_SELECT'
-      : 'MULTISELECT'
+      : 'MULTI_SELECT'
   }
   const uiHint = (step as Question).uiHint
   const inputItemType = (step as Question).inputItem?.type

@@ -56,14 +56,8 @@ export type ImageAnimated = {
 }
 
 export type InputItem = {
-  type:
-    | 'string'
-    | 'year'
-    | 'checkbox'
-    | 'duration'
-    | 'integer'
-    | 'time'
-    | 'year'
+  type: 'string' | 'year' | 'checkbox' | 'duration' | 'integer' | 'time'
+
   placeholder: string
   fieldLabel: string
   displayUnits?: string[]
@@ -76,20 +70,35 @@ export type Skip = {
 
 export type ChoiceQuestionChoice = {
   text: string
-  value: string | number
-  exclusive?: boolean
+  value?: string | number
+  //  exclusive?: boolean
+  selectorType?: 'all' | 'exclusive' | 'default'
   icon?: string
 }
+
+export type QuestionDataType = 'string' | 'integer' | 'number' | 'boolean'
 export type ChoiceQuestion = Question & {
-  choices?: ChoiceQuestionChoice[]
+  baseType: QuestionDataType
+
+  surveyRules?: {
+    matchingAnswer?: number | string
+    skipToIdentifier: string
+    ruleOperator?: SurveyRuleOperator
+  }[]
+
+  choices: ChoiceQuestionChoice[]
   singleChoice?: boolean
+  other?: {
+    type: 'string'
+  }
 }
 
 export type Question = BaseStep & {
-  optional: boolean //true,
-  inputItem: InputItem
+  optional?: boolean //true,
+  inputItem?: InputItem
   skipCheckbox?: Skip
-  baseType?: 'integer'
+  baseType?: QuestionDataType
+  nextStepIdentifier?: string
 
   uiHint?: 'checkmark' | 'likert' | 'textfield' | 'slider'
 }
@@ -113,6 +122,7 @@ export type BaseStep = {
   identifier: string //'step1',
   controlType?: ControlType
   type:
+    | 'completion'
     | 'unkonwn'
     | 'instruction'
     | 'simpleQuestion'

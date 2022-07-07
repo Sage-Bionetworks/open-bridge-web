@@ -1,14 +1,77 @@
+import {ReactComponent as PauseIcon} from '@assets/surveys/pause.svg'
+import SurveyUtils from '@components/surveys/SurveyUtils'
 import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
-import EditableTextbox from '@components/widgets/EditableTextbox'
-import {Box} from '@mui/material'
-import {ChoiceQuestion, Step, WebUISkipOptions} from '@typedefs/surveys'
-import React, {FunctionComponent} from 'react'
+import {Box, styled, Typography, TypographyProps} from '@mui/material'
+import {latoFont, theme} from '@style/theme'
+import {
+  ChoiceQuestion,
+  ChoiceQuestionChoice,
+  Step,
+  WebUISkipOptions,
+} from '@typedefs/surveys'
+import {FunctionComponent} from 'react'
 import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
 import FreeText from './phone-subcontrols/FreeText'
 import Select from './phone-subcontrols/Select'
+import SelectExtraActions from './phone-subcontrols/SelectExtraActions'
 import PhoneDisplay from './PhoneDisplay'
-import QuestionPhoneBottom from './QuestionPhoneBottom'
+import QuestionPhoneBottomMenu from './QuestionPhoneBottomMenu'
 import RequiredToggle from './RequiredToggle'
+
+const OuterContainer = styled('div')(({theme}) => ({
+  bgcolor: '#F8F8F8',
+  padding: theme.spacing(0, 5),
+  border: '1px solid black',
+  margin: '0 auto',
+  position: 'relative',
+}))
+
+const SkipQuestion = styled(
+  (props: TypographyProps) => <Typography {...props}>Skip question</Typography>,
+  {label: 'skipQuestion'}
+)(({}) => ({
+  fontWeight: 400,
+  fontSize: '12px',
+  lineHeight: '18px',
+  textDecoration: 'underline',
+}))
+
+const PhoneTop = styled('div')(({}) => ({
+  display: 'flex',
+  margin: '0 -15px 20px -15px',
+  justifyContent: 'space-between',
+}))
+
+const StyledP2 = styled(DisappearingInput, {label: 'StyledP2'})(({theme}) => ({
+  fontFamily: latoFont,
+  fontWeight: 400,
+  fontSize: '12px',
+  color: '#2A2A2A',
+  width: '100%',
+  '& > input, textarea': {
+    padding: theme.spacing(0.125, 1),
+  },
+}))
+
+const StyledH1 = styled(DisappearingInput, {label: 'StyledH1'})(({theme}) => ({
+  fontFamily: latoFont,
+
+  fontWeight: 700,
+  fontSize: '16px',
+
+  color: '#2A2A2A',
+  '& > input': {
+    padding: theme.spacing(0.125, 1),
+  },
+}))
+
+const ScrollableArea = styled('div')(({}) => ({
+  height: '330px',
+  marginLeft: '-10px',
+  marginRight: '-10px',
+  padding: '0 10px',
+  overflowY: 'scroll',
+}))
 
 /*
 
@@ -71,6 +134,8 @@ const useStyles = makeStyles(theme => ({
 type QuestionEditProps = {
   step?: Step
   globalSkipConfiguration: WebUISkipOptions
+  completionProgress: number
+
   onChange: (step: Step) => void
 
   //  onAdd: (a: string) => void
@@ -250,6 +315,10 @@ const LikertQuestion: FunctionComponent<InputItem> = inputItem => {
 */
 //type QuestionEditProps = QuestionEditOwnProps
 
+function isSelectQuestion(questionType: QuestionTypeKey | 0): boolean {
+  return questionType === 'MULTI_SELECT' || questionType === 'SINGLE_SELECT'
+}
+
 function Factory(args: {
   step: Step
   onChange: (step: Step) => void
@@ -281,11 +350,15 @@ function Factory(args: {
           }}
         />
       )*/
-      return <Select step={args.step} onChange={args.onChange} />
+      return (
+        <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
+      )
     }
 
-    case 'MULTISELECT':
-      return <Select step={args.step} onChange={args.onChange} isMulti={true} />
+    case 'MULTI_SELECT':
+      return (
+        <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
+      )
       return <>CHECKBOX</>
     case 'FREE_TEXT':
       return <FreeText step={args.step} onChange={args.onChange} />
@@ -305,13 +378,35 @@ function Factory(args: {
   }
 }
 
-const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
+const PhoneProgressLine: FunctionComponent<{
+  completionProgress: number
+}> = ({completionProgress}) => {
+  return (
+    <Box
+      sx={{
+        //  width: '100%',
+        position: 'relative',
+        height: '3px',
+        margin: '-3px -25px 8px -25px',
+        backgroundColor: ' #A7A19C',
+      }}>
+      <Box
+        sx={{
+          width: `${completionProgress * 100}%`,
+          height: '100%',
+          backgroundColor: '#8FD6FF',
+        }}></Box>
+    </Box>
+  )
+}
+
+const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
   step,
   globalSkipConfiguration,
+  completionProgress,
   onChange,
 }) => {
   console.log('step changed', step, globalSkipConfiguration)
-  // const [isRequired, setIsRequired] = React.useState(false)
   const questionId = step ? getQuestionId(step) : 0
 
   const shouldShowSkipButton = (): boolean => {
@@ -321,58 +416,92 @@ const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
     )
   }
 
+  const sortSelectChoices = (
+    choiceQ: ChoiceQuestion,
+    direction: 1 | -1
+  ): ChoiceQuestionChoice[] => {
+    const qNum = SurveyUtils.getNumberOfRegularQuestions(choiceQ.choices)
+    const sortableOptions = choiceQ.choices.splice(0, qNum)
+    sortableOptions.sort((a, b) => {
+      return (a.text > b.text ? 1 : -1) * direction
+    })
+    const opts = [...sortableOptions, ...choiceQ.choices]
+    return opts
+  }
+
   return (
-    <Box bgcolor="#F8F8F8" px={5} border="1px solid black" margin="0 auto">
-      QuestionEdit {step?.type}+{JSON.stringify(step?.subtitle)}
-      {step?.identifier}
+    <OuterContainer>
+      {isSelectQuestion(questionId) && (
+        <SelectExtraActions
+          onSort={dir => {
+            const opts = sortSelectChoices(step as ChoiceQuestion, dir)
+            const updatedStep: ChoiceQuestion = {
+              ...(step as ChoiceQuestion),
+              choices: opts,
+            }
+            onChange(updatedStep)
+          }}
+        />
+      )}
+
+      {/* QuestionEdit {step?.type}+{JSON.stringify(step?.subtitle)}*/}
       {step ? (
         <>
           <PhoneDisplay
-            sx={{marginBottom: '20px'}}
+            sx={{marginBottom: '20px', textAlign: 'left'}}
             phoneBottom={
-              questionId === 'MULTISELECT' || questionId === 'SINGLE_SELECT' ? (
-                <QuestionPhoneBottom />
+              isSelectQuestion(questionId) ? (
+                <QuestionPhoneBottomMenu
+                  step={step as ChoiceQuestion}
+                  onChange={s => onChange(s)}
+                />
               ) : (
                 <></>
               )
             }>
             <Box>
-              {shouldShowSkipButton() && <> Skip Question</>}
-              <div>
-                <DisappearingInput
-                  area-label="subtitle"
-                  sx={{fontWeight: 'bold'}}
-                  id="subtitle"
-                  value={step.subtitle || ''}
-                  placeholder="Subtitle"
-                  onChange={e => onChange({...step, subtitle: e.target.value})}
+              <PhoneProgressLine completionProgress={completionProgress} />
+              <PhoneTop>
+                <PauseIcon />
+                {shouldShowSkipButton() && <SkipQuestion />}
+              </PhoneTop>
+
+              <StyledP2
+                area-label="subtitle"
+                id="subtitle"
+                value={step.subtitle || ''}
+                placeholder="Subtitle"
+                onChange={e => onChange({...step, subtitle: e.target.value})}
+              />
+
+              <StyledH1
+                area-label="title"
+                id="title"
+                value={step.title || ''}
+                placeholder="Title"
+                onChange={e => onChange({...step, title: e.target.value})}
+              />
+              <ScrollableArea>
+                <StyledP2
+                  area-label="detail"
+                  id="detail"
+                  maxRows={4}
+                  multiline={true}
+                  value={step.detail || ''}
+                  placeholder="Description"
+                  sx={{marginBottom: theme.spacing(2.5)}}
+                  onChange={e => onChange({...step, detail: e.target.value})}
                 />
-              </div>
-              <div>
-                <EditableTextbox
-                  styleProps={{padding: '8px 0'}}
-                  initValue={step.title}
-                  onTriggerUpdate={(newText: string) =>
-                    onChange({...step, title: newText})
-                  }></EditableTextbox>
-              </div>
-              <div>
-                <EditableTextbox
-                  styleProps={{padding: '8px 0'}}
-                  initValue={step.detail || 'Detail'}
-                  onTriggerUpdate={(newText: string) =>
-                    onChange({...step, detail: newText})
-                  }></EditableTextbox>
-              </div>
-              {getQuestionId(step)}
-              {
-                <Factory
-                  {...{
-                    step: {...step},
-                    onChange: onChange,
-                    q_type: getQuestionId(step),
-                  }}></Factory>
-              }
+
+                {
+                  <Factory
+                    {...{
+                      step: {...step},
+                      onChange: onChange,
+                      q_type: getQuestionId(step),
+                    }}></Factory>
+                }
+              </ScrollableArea>
             </Box>
           </PhoneDisplay>
 
@@ -391,7 +520,8 @@ const QuestionEdit: FunctionComponent<QuestionEditProps> = ({
       ) : (
         <></>
       )}
-    </Box>
+    </OuterContainer>
   )
 }
-export default QuestionEdit
+
+export default QuestionEditPhone
