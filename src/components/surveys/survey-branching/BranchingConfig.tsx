@@ -170,7 +170,7 @@ const BranchingConfig: FunctionComponent<{
           }
           {step.choices &&
             step.choices.map(c => (
-              <div key={c.value}>
+              <div key={c.value} style={{display: 'flex'}}>
                 <div>{c.value + '-->'}</div>
                 <QMenu
                   questions={questions}

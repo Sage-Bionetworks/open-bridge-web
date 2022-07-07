@@ -6,8 +6,8 @@ import QUESTIONS, {
 } from '../survey-design/left-panel/QuestionConfigs'
 import {DivContainer} from '../survey-design/left-panel/QuestionTypeDisplay'
 
-const HWIDTH = 250
-const HHEIGHT = 180
+const HWIDTH = 120
+const HHEIGHT = 100
 const PADDING_X = 20
 
 function createNode(
@@ -27,10 +27,14 @@ function createNode(
             fontSize: '12px',
             position: 'absolute',
             left: 0,
-            top: '70px',
+            top: '60px',
+            width: '90px',
+            lineHeight: '15px',
+
+            textAlign: 'left',
             color: isUnconnected ? 'red' : 'black',
           }}>
-          {'id:' + q.identifier + ' ' + q.title}
+          {q.title}
         </div>
       </DivContainer>
     </div>

@@ -1,5 +1,6 @@
 import {Box, Button, styled} from '@mui/material'
 import {useSurveyConfig, useUpdateSurveyConfig} from '@services/assessmentHooks'
+import {latoFont} from '@style/theme'
 import {ChoiceQuestion, Survey} from '@typedefs/surveys'
 import {Assessment} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
@@ -22,9 +23,36 @@ import {useGetPlotWidth} from './UseGetPlotWidth'
 const SurveyBranchingContainerBox = styled(Box)(({theme}) => ({
   position: 'relative',
 
-  display: 'flex',
+  // display: 'flex',
+  width: '100%',
 
   minHeight: 'calc(100vh - 70px)',
+  '& .react-flow': {
+    backgroundColor: '#fcfcfc',
+  },
+  '& .react-flow__node-default': {
+    borderRadius: 0,
+    background: '#F2F2F2',
+    border: 'none',
+    padding: 0,
+    textAlign: 'center',
+
+    boxShadow: '1px 2px 3px rgba(42, 42, 42, 0.1)',
+    width: '85px',
+    height: '48px',
+    fontFamily: latoFont,
+    fontWeight: 700,
+    fontSize: '14px',
+    color: ' #4d4d4d',
+    '& .react-flow__handle': {
+      backgroundColor: 'transparent',
+      borderRadius: '0',
+      border: 'none',
+    },
+    '&.selected': {
+      border: '1px solid black',
+    },
+  },
 }))
 
 type SurveyBranchingOwnProps = {}
@@ -124,7 +152,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   }
 
   return (
-    <Box width="100%" sx={{display: 'block', position: 'relative'}}>
+    <SurveyBranchingContainerBox width="100%" sx={{}}>
       {error && <span>{error.toString()}</span>}
       <Box ref={ref} sx={{border: '1px solid blue'}}>
         <div
@@ -180,7 +208,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
             <Button onClick={() => setIsHideInput(true)}>Hide input</Button>
           </Box>
         )}
-    </Box>
+    </SurveyBranchingContainerBox>
   )
 }
 export default SurveyBranching
