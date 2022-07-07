@@ -7,11 +7,13 @@ import {
   Radio,
   RadioGroup,
 } from '@mui/material'
+import {theme} from '@style/theme'
 import {ChoiceQuestion, Step, SurveyRuleOperator} from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 import QUESTIONS, {
   getQuestionId,
 } from '../survey-design/left-panel/QuestionConfigs'
+import {DivContainer} from '../survey-design/left-panel/QuestionTypeDisplay'
 import {StyledDropDown, StyledDropDownItem} from '../widgets/StyledDropDown'
 
 const NextQ: FunctionComponent<{questions: Step[]; id: string}> = ({
@@ -24,10 +26,12 @@ const NextQ: FunctionComponent<{questions: Step[]; id: string}> = ({
   }
   const q = questions[index + 1]
   return (
-    <StyledDropDownItem width="170px">
-      {QUESTIONS.get(getQuestionId(q))?.img}
-      <div>{index + 2}</div>
-    </StyledDropDownItem>
+    <Box sx={{backgroundColor: '#F2F2F2', width: '80px', height: '48px'}}>
+      <DivContainer>
+        {QUESTIONS.get(getQuestionId(q))?.img}
+        <div>{index + 2}</div>
+      </DivContainer>
+    </Box>
   )
 }
 
@@ -129,66 +133,90 @@ const BranchingConfig: FunctionComponent<{
     onChange(newSteps)
   }
   return (
-    <Box>
-      id: {step.identifier} title: {step.title}
-      {qTypeId !== 'SINGLE_SELECT' ? (
-        <RadioGroup
-          onChange={e => onChangeNextOption(e.target.value)}
-          value={Boolean(step.nextStepIdentifier)}>
-          <FormControlLabel
-            value={false}
-            control={<Radio />}
-            label={
-              <div>
-                Go to next screen in sequence :
-                <NextQ questions={questions} id={step.identifier} />
-              </div>
+    <Box sx={{backgroundColor: '#FBFBFB'}}>
+      <Box
+        sx={{
+          background: ' #565656',
+          color: '#fff',
+          padding: theme.spacing(3),
+          fontSize: '16px',
+          fontWeight: 700,
+        }}>
+        {/*step.identifier*/} {step.title}
+      </Box>
+      <Box sx={{padding: theme.spacing(3)}}>
+        {qTypeId !== 'SINGLE_SELECT' ? (
+          <RadioGroup
+            onChange={e => onChangeNextOption(e.target.value)}
+            value={Boolean(step.nextStepIdentifier)}>
+            <FormControlLabel
+              value={false}
+              control={<Radio />}
+              label={
+                <div style={{display: 'flex'}}>
+                  <div
+                    style={{
+                      width: '88px',
+                      margin: '12px 8px',
+                      alignItems: 'center',
+                    }}>
+                    Go to next screen in sequence :
+                  </div>
+                  <NextQ questions={questions} id={step.identifier} />
+                </div>
+              }
+            />
+            <FormControlLabel
+              value={true}
+              control={<Radio />}
+              label={
+                <div style={{display: 'flex'}}>
+                  <div
+                    style={{
+                      width: '88px',
+                      margin: '12px 8px',
+                      alignItems: 'center',
+                    }}>
+                    Skip To:{' '}
+                  </div>
+                  <QMenu
+                    questions={questions}
+                    excludeIds={sourceNodesIds}
+                    selectedIdentifier={step.nextStepIdentifier || ''}
+                    onChangeSelected={nextStepId => onChangeNextId(nextStepId)}
+                  />
+                </div>
+              }
+            />
+          </RadioGroup>
+        ) : (
+          <Box>
+            {
+              SurveyUtils.getNextSequentialQuestion(step.identifier, questions)
+                ?.identifier
             }
-          />
-          <FormControlLabel
-            value={true}
-            control={<Radio />}
-            label={
-              <div>
-                {' '}
-                Skip To:{' '}
-                <QMenu
-                  questions={questions}
-                  excludeIds={sourceNodesIds}
-                  selectedIdentifier={step.nextStepIdentifier || ''}
-                  onChangeSelected={nextStepId => onChangeNextId(nextStepId)}
-                />
-              </div>
-            }
-          />
-        </RadioGroup>
-      ) : (
-        <Box>
-          {
-            SurveyUtils.getNextSequentialQuestion(step.identifier, questions)
-              ?.identifier
-          }
-          {step.choices &&
-            step.choices.map(c => (
-              <div key={c.value} style={{display: 'flex'}}>
-                <div>{c.value + '-->'}</div>
-                <QMenu
-                  questions={questions}
-                  excludeIds={sourceNodesIds}
-                  selectedIdentifier={
-                    step.surveyRules?.find(
-                      rule => rule.matchingAnswer === c.value
-                    )?.skipToIdentifier || ''
-                  }
-                  onChangeSelected={nextStepId =>
-                    changeRuleMapping(c.value, nextStepId)
-                  }
-                />
-              </div>
-            ))}
-          {step.other && <div>{'OTHER'}</div>}
-        </Box>
-      )}
+            {step.choices &&
+              step.choices.map(c => (
+                <div key={c.value} style={{display: 'flex'}}>
+                  <div>{c.value + '-->'}</div>
+                  <QMenu
+                    questions={questions}
+                    excludeIds={sourceNodesIds}
+                    selectedIdentifier={
+                      step.surveyRules?.find(
+                        rule => rule.matchingAnswer === c.value
+                      )?.skipToIdentifier || ''
+                    }
+                    onChangeSelected={nextStepId =>
+                      changeRuleMapping(c.value, nextStepId)
+                    }
+                  />
+                </div>
+              ))}
+            {step.other && <div>{'OTHER'}</div>}
+          </Box>
+        )}
+      </Box>
     </Box>
   )
 }

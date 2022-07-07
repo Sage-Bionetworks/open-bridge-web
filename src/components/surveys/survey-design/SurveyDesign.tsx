@@ -306,7 +306,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
         {/* CEDNTRAL PHONE AREA*/}
         <Box display="flex" flexGrow={1} justifyContent="space-between">
           {error && <Alert color="error">{error}</Alert>}
-          <div style={{width: '200px'}}>
+          <div style={{width: '0px'}}>
             <pre style={{fontSize: '11px'}}>
               {JSON.stringify(survey?.config, null, 2)}
             </pre>

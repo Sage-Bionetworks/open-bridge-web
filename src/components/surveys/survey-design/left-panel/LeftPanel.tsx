@@ -52,15 +52,15 @@ const AddStepMenuContainer = styled('div', {label: 'addStepMenuContainer'})(
   })
 )
 
-const Row = styled('div')(({theme}) => ({
+const Row = styled('div', {label: 'Row'})(({theme}) => ({
   height: theme.spacing(6),
 
   width: '100%',
   borderTop: '1px solid #DFDFDF',
 
-  color: '#3A3A3A',
   textDecoration: 'none',
-  '&:hover': {
+
+  '&:hover, &.current': {
     backgroundColor: '#565656',
     color: '#fff',
 
@@ -102,7 +102,9 @@ const TitleStyledRow = styled('div')(({theme}) => ({
 }))
 
 const StyledNavLink = styled(NavLink)(({theme}) => linkStyle)
-const StyledNavAnchor = styled('a')(({theme}) => linkStyle)
+const StyledNavAnchor = styled('a', {label: 'styledNavAnchor'})(
+  ({theme}) => linkStyle
+)
 
 const StyledQuestionText = styled('div', {label: 'styledQuestionText'})(
   ({theme}) => ({
@@ -142,10 +144,7 @@ const StaticStepLink: React.FunctionComponent<{
 }> = ({isCurrentStep, children, onClick}) => {
   return (
     <StyledNavAnchor onClick={onClick}>
-      <Row
-        sx={{
-          backgroundColor: isCurrentStep ? 'red' : 'inherit',
-        }}>
+      <Row className={isCurrentStep ? 'current' : ''}>
         <QuestionTypeDisplay>{children}</QuestionTypeDisplay>
       </Row>
     </StyledNavAnchor>
@@ -157,14 +156,12 @@ const StepLink: React.FunctionComponent<{
   index: number
   step: Step
   size: number
-  isCurrent: boolean
+  isCurrentStep: boolean
   provided: DraggableProvided
   onClick: () => void
-}> = ({index, step, size, isCurrent, provided, onClick}) => (
+}> = ({index, step, size, isCurrentStep, provided, onClick}) => (
   <Row
-    sx={{
-      backgroundColor: isCurrent ? 'red' : 'inherit',
-    }}
+    className={isCurrentStep ? 'current' : ''}
     {...provided.draggableProps}
     {...provided.dragHandleProps}
     ref={provided.innerRef}>
@@ -248,7 +245,7 @@ const LeftPanel: React.FunctionComponent<{
                             {provided => (
                               <StepLink
                                 provided={provided}
-                                isCurrent={currentStepIndex === index}
+                                isCurrentStep={currentStepIndex === index}
                                 //  guid={guid}
                                 onClick={() => onNavigateStep(index)}
                                 size={surveyConfig?.steps!.length}
