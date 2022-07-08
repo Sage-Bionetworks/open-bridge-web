@@ -54,7 +54,7 @@ function createEdge(i1: string, i2: string) {
     id: i1 + '-' + i2,
     source: i1,
     target: i2,
-    type: 'default', // 'straight',
+    type: 'step', // 'straight',
     markerEnd: {type: MarkerType.ArrowClosed, color: '#000'},
   }
 }
@@ -92,6 +92,7 @@ function getCoordiatesForNextNode(
   //console.log('yOffset for ' + id + ' ' + yOffset)
 
   const nextRow = x + HWIDTH + 80 > plotWidth
+  console.log('PLOTW', plotWidth)
 
   const cx = nextRow ? PADDING_X : x + HWIDTH
   const cy = nextRow ? y + HHEIGHT + 100 + yOffset : y + yOffset
