@@ -22,9 +22,10 @@ import {useGetPlotWidth} from './UseGetPlotWidth'
 
 const SurveyBranchingContainerBox = styled(Box)(({theme}) => ({
   position: 'relative',
-
+  backgroundColor: '#fcfcfc',
   // display: 'flex',
   width: '100%',
+  border: '1px solid black',
 
   minHeight: 'calc(100vh - 70px)',
   '& .react-flow': {
@@ -75,7 +76,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   const [currentStepIndex, setCurrentStepIndex] = React.useState<
     number | undefined
   >(-1)
-  const [isHideInput, setIsHideInput] = React.useState(false)
+  const [isHideInput, setIsHideInput] = React.useState(true)
 
   const [nodes, setNodes] = React.useState<Node[]>([])
   const [edges, setEdges] = React.useState<Edge[]>([])
@@ -112,7 +113,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     if (survey) {
       console.log('%c surveyStepsChanged', 'background: #222; color: #bada55')
 
-      const plotWidth = isHideInput ? width || 0 : (width || 0) - 620
+      const plotWidth = isHideInput ? width || 0 : (width || 0) - 500
 
       const result = getNodes(
         survey?.config.steps as ChoiceQuestion[],
@@ -157,8 +158,8 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
       <Box ref={ref} sx={{border: '1px solid blue'}}>
         <div
           style={{
-            width: isHideInput ? width || 0 : (width || 0) - 520 + 'px',
-            height: '800px',
+            width: isHideInput ? width || 0 : (width || 0) - 420 + 'px',
+            height: '500px',
             border: '1px solid red',
           }}>
           <ReactFlow

@@ -95,7 +95,7 @@ export const useSurveyAssessment = (guid?: string) => {
 
 export const useSurveyConfig = (guid?: string) => {
   const {token, appId} = useUserSessionDataState()
-  console.log('useSurveyConfig: getting config with guid:', guid)
+
   return useQuery<Survey | undefined, ExtendedError>(
     ASSESSMENT_KEYS.survey(guid || ''),
     () => {
