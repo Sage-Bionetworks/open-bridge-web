@@ -1,6 +1,7 @@
 import {Box, Button, styled} from '@mui/material'
 import {useSurveyConfig, useUpdateSurveyConfig} from '@services/assessmentHooks'
 import {latoFont} from '@style/theme'
+import {SmartStepEdge} from '@tisoap/react-flow-smart-edge'
 import {ChoiceQuestion, Survey} from '@typedefs/surveys'
 import {Assessment} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
@@ -15,10 +16,15 @@ import ReactFlow, {
   Node,
   NodeChange,
 } from 'react-flow-renderer'
+
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import BranchingConfig from './BranchingConfig'
 import getNodes, {getDryRunEdges} from './GetNodesToPlot'
 import {useGetPlotWidth} from './UseGetPlotWidth'
+
+const edgeTypes = {
+  smart: SmartStepEdge,
+}
 
 const SurveyBranchingContainerBox = styled(Box)(({theme}) => ({
   position: 'relative',
@@ -49,6 +55,7 @@ const SurveyBranchingContainerBox = styled(Box)(({theme}) => ({
       backgroundColor: 'transparent',
       borderRadius: '0',
       border: 'none',
+      //border: '1px solid black',
     },
     '&.selected': {
       border: '1px solid black',
@@ -158,7 +165,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
       <Box ref={ref} sx={{border: '1px solid blue'}}>
         <div
           style={{
-            width: isHideInput ? width || 0 : (width || 0) - 420 + 'px',
+            width: isHideInput ? width || 0 : (width || 0) - 424 + 'px',
             height: '500px',
             border: '1px solid red',
           }}>
@@ -169,12 +176,13 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            edgeTypes={edgeTypes}
             // fitView
             fitViewOptions={fitViewOptions}
           />
         </div>
       </Box>
-      CI ={currentStepIndex}
+
       {survey?.config.steps &&
         currentStepIndex !== undefined &&
         !isHideInput &&
