@@ -15,7 +15,9 @@ function createNode(
   qSequentialIndex: number,
   xCoord: number,
   yCoord: number,
-  isUnconnected?: boolean
+  isUnconnected: boolean,
+  isFirstInRow: boolean,
+  isLastInRow: boolean
 ): Node {
   const label = (
     <div style={{position: 'relative'}}>
@@ -30,6 +32,7 @@ function createNode(
             top: '60px',
             width: '90px',
             lineHeight: '15px',
+            backgroundColor: '#fcfcfc',
 
             textAlign: 'left',
             color: isUnconnected ? 'red' : 'black',
@@ -44,17 +47,17 @@ function createNode(
     id: q.identifier,
     data: {label: label},
     position: {x: xCoord, y: yCoord},
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
+    sourcePosition: isLastInRow ? Position.Bottom : Position.Right,
+    targetPosition: isFirstInRow ? Position.Top : Position.Left,
   }
 }
 
-function createEdge(i1: string, i2: string) {
+function createEdge(i1: string, i2: string, isLastInRow?: boolean) {
   return {
     id: i1 + '-' + i2,
     source: i1,
     target: i2,
-    type: 'step', // 'straight',
+    type: 'default', // isLastInRow ? 'smart' : 'default',
     markerEnd: {type: MarkerType.ArrowClosed, color: '#000'},
   }
 }
@@ -68,8 +71,7 @@ function getCoordiatesForNextNode(
   id: string
 ) {
   const getChildOffset = () => {
-    //odd
-    // console.log('doing', id)
+    //odd number of children
     if (totalChildren % 2 === 1) {
       const middleNode = Math.floor(totalChildren / 2)
       if (childNumber === middleNode) {
@@ -81,23 +83,27 @@ function getCoordiatesForNextNode(
     // even
     else {
       //   console.log('%cEVEN', 'background: #222; color: rgb(218, 85, 105)')
-      const middleNode = totalChildren / 2
-      const y = (middleNode - (childNumber + 1)) * HHEIGHT
+      //  middle node = 1
+      // mode ): 2
+      //if child node <
+      const middleNode = (totalChildren - 1) / 2
+      const y = middleNode - childNumber * HHEIGHT
+      // const y = (middleNode - (childNumber + 1)) * HHEIGHT
 
-      return y
+      return Math.round(y)
     }
   }
 
-  const yOffset = getChildOffset()
+  const newHeight = y + getChildOffset()
   //console.log('yOffset for ' + id + ' ' + yOffset)
 
   const nextRow = x + HWIDTH + 80 > plotWidth
-  console.log('PLOTW', plotWidth)
+  const lastInRow = !nextRow && x + HWIDTH * 2 + 80 > plotWidth
 
   const cx = nextRow ? PADDING_X : x + HWIDTH
-  const cy = nextRow ? y + HHEIGHT + 100 + yOffset : y + yOffset
+  const cy = nextRow ? HHEIGHT + 100 + newHeight : newHeight
   // console.log('cy ', cy)
-  return {x: cx, y: cy}
+  return {x: cx, y: cy, nextRow: nextRow, lastInRow: lastInRow}
 }
 
 function getCoordiatesForNextDisconnectedNode(
@@ -121,8 +127,10 @@ function getChildNodes(questions: ChoiceQuestion[], q: ChoiceQuestion) {
   let nextQs: ChoiceQuestion[] = []
   //if surveyRules
   if (q.surveyRules) {
-    //find ids we are going to next
-    const nextIds = q.surveyRules.map(rule => rule.skipToIdentifier)
+    //find ids we are going to next/create a set to remove dups
+    const nextIds = [
+      ...new Set(q.surveyRules.map(rule => rule.skipToIdentifier)),
+    ]
     //find questions correcponding to those ids
     nextQs = questions.filter(q1 => nextIds.includes(q1.identifier))
 
@@ -158,11 +166,13 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
     index: number,
     x: number,
     y: number,
+    isFirstInRow: boolean,
+    isLastInRow: boolean,
     runNumber: number,
     error: Error | undefined
   ) {
     //  console.log('node', q, index)
-    const node = createNode(q, index, x, y)
+    const node = createNode(q, index, x, y, false, isFirstInRow, isLastInRow)
     nodes.push(node)
     let nextQs = getChildNodes(questions, q)
 
@@ -176,11 +186,6 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
           q1 => q1.identifier === child.identifier
         )
 
-        const edge = createEdge(q.identifier, child.identifier)
-        // console.log('adding edge', edge, nextQs.length)
-        if (edges.findIndex(e => e.id === edge.id) === -1) {
-          edges.push(edge)
-        }
         const uniqs = new Set(nextQs.map(q => q.identifier))
         const result = getCoordiatesForNextNode(
           plotWidth,
@@ -190,6 +195,15 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
           uniqs.size,
           child.identifier
         )
+        const edge = createEdge(
+          q.identifier,
+          child.identifier,
+          result.lastInRow
+        )
+        // console.log('adding edge', edge, nextQs.length)
+        if (edges.findIndex(e => e.id === edge.id) === -1) {
+          edges.push(edge)
+        }
 
         i++
         //
@@ -199,9 +213,28 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
           //stack overflow
           //  alert('Stack overflow, Please refresh the page')
         } else {
-          if (nodes.find(q1 => q1.id === child.identifier) === undefined) {
-            addNode(child, qIndex, result.x, result.y, ++runNumber, error)
+          const indexOfNode = nodes.findIndex(q1 => q1.id === child.identifier)
+
+          if (indexOfNode === -1) {
+            addNode(
+              child,
+              qIndex,
+              result.x,
+              result.y,
+              result.nextRow,
+              result.lastInRow,
+              ++runNumber,
+              error
+            )
             //  console.log('adding node', child.identifier)
+          } else {
+            if (result.x > nodes[indexOfNode].position.x) {
+              // nodes[indexOfNode].position.x = result.x
+            }
+            /*  if (result.y > nodes[indexOfNode].position.y) {*/
+            //  nodes[indexOfNode].position.y = result.y
+            /* }*/
+            // nodes[indexOfNode].position.y = result.y
           }
           //    } else {
           //    console.log('skipping node', child.identifier)
@@ -211,14 +244,48 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
     }
   }
 
-  addNode(questions[0], 0, 20, 20, 0, undefined)
+  addNode(questions[0], 0, 20, 20, false, false, 0, undefined)
 
+  edges.forEach(e => {
+    const source = e.source
+    //find all of the childeren of that node
+    const sourceNode = nodes.find(n => n.id === source)
+    console.log(sourceNode?.position.y)
+    const childEdges = edges.filter(e => e.source === source).map(e => e.target)
+    const childNodes = nodes.filter(
+      n =>
+        childEdges.includes(n.id) &&
+        Math.abs(n.position.y - (sourceNode?.position.y || 0)) < 10
+    )
+    if (childNodes.length > 1) {
+      console.log(
+        'CHILD NODE of  ' + source + 'y=' + sourceNode?.position.y,
+        childNodes.map(n => n.position.y).join(',')
+      )
+      childNodes.forEach((childNode, index) => {
+        //for each child
+        const nToUpdate = nodes.findIndex(n => n.id === childNode.id)
+        const coords = getCoordiatesForNextNode(
+          plotWidth,
+          0,
+
+          sourceNode?.position.y || 0,
+          index,
+          childNodes.length,
+          'some'
+        )
+        console.log('UPDATING', coords.y)
+        nodes[nToUpdate].position.y = coords.y
+      })
+    }
+  })
   //adjust y positions
   const minY = Math.min(...nodes.map(n => n.position.y))
 
   if (minY < 20) {
     nodes.forEach(n => (n.position.y = n.position.y + Math.abs(minY) + 20))
   }
+
   //get nodes that don't have connections
   const nodeIds = nodes.map(n => n.id)
 
@@ -237,7 +304,9 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
       qIndex,
       result.x + 20,
       result.y + maxY + 100,
-      true
+      true,
+      false,
+      false
     )
     nodes.push(node)
   })
