@@ -35,7 +35,7 @@ const NextQ: FunctionComponent<{questions: Step[]; id: string}> = ({
   )
 }
 
-const QMenu: FunctionComponent<{
+const NextQuestionDropdown: FunctionComponent<{
   questions: Step[]
   excludeIds: string[]
   selectedIdentifier?: string
@@ -45,19 +45,26 @@ const QMenu: FunctionComponent<{
   return (
     <StyledDropDown
       value={selectedIdentifier || ''}
-      width="200px"
+      width="112px"
       height="48px"
+      mode="light"
       //@ts-ignore
       onChange={(e: SelectChangeEvent<string>) => {
         onChangeSelected(e.target.value)
       }}
       input={<OutlinedInput />}
       inputProps={{'aria-label': 'Question Type:'}}>
+      <MenuItem value={''} key="undefined">
+        <DivContainer
+          sx={{backgroundColor: '#F2F2F2', width: '112px', height: '48px'}}>
+          <div>...</div>
+        </DivContainer>
+      </MenuItem>
       {questions.map(
         (opt, index) =>
           !excludeIds.includes(opt.identifier) && (
             <MenuItem value={opt.identifier} key={opt.identifier}>
-              <StyledDropDownItem width="170px">
+              <StyledDropDownItem width="112px" mode="light">
                 {QUESTIONS.get(getQuestionId(opt))?.img}
                 <div>{index + 1}</div>
               </StyledDropDownItem>
@@ -145,74 +152,81 @@ const BranchingConfig: FunctionComponent<{
         {/*step.identifier*/} {step.title}
       </Box>
       <Box sx={{padding: theme.spacing(3)}}>
-        {qTypeId !== 'SINGLE_SELECT' ? (
-          <RadioGroup
-            onChange={e => onChangeNextOption(e.target.value)}
-            value={Boolean(step.nextStepIdentifier)}>
-            <FormControlLabel
-              value={false}
-              control={<Radio />}
-              label={
-                <div style={{display: 'flex'}}>
-                  <div
-                    style={{
-                      width: '88px',
-                      margin: '12px 8px',
-                      alignItems: 'center',
-                    }}>
-                    Go to next screen in sequence :
-                  </div>
-                  <NextQ questions={questions} id={step.identifier} />
+        <RadioGroup
+          onChange={e => onChangeNextOption(e.target.value)}
+          value={Boolean(step.nextStepIdentifier)}>
+          <FormControlLabel
+            value={false}
+            control={<Radio />}
+            label={
+              <div style={{display: 'flex'}}>
+                <div
+                  style={{
+                    width: '88px',
+                    margin: '12px 8px',
+                    alignItems: 'center',
+                  }}>
+                  Go to next screen in sequence :
                 </div>
-              }
-            />
-            <FormControlLabel
-              value={true}
-              control={<Radio />}
-              label={
-                <div style={{display: 'flex'}}>
-                  <div
-                    style={{
-                      width: '88px',
-                      margin: '12px 8px',
-                      alignItems: 'center',
-                    }}>
-                    Skip To:{' '}
-                  </div>
-                  <QMenu
-                    questions={questions}
-                    excludeIds={sourceNodesIds}
-                    selectedIdentifier={step.nextStepIdentifier || ''}
-                    onChangeSelected={nextStepId => onChangeNextId(nextStepId)}
-                  />
+                <NextQ questions={questions} id={step.identifier} />
+              </div>
+            }
+          />
+          <FormControlLabel
+            value={true}
+            control={<Radio />}
+            label={
+              <div style={{display: 'flex'}}>
+                <div
+                  style={{
+                    width: '88px',
+                    margin: '12px 8px',
+                    alignItems: 'center',
+                  }}>
+                  Skip To:{' '}
                 </div>
-              }
-            />
-          </RadioGroup>
-        ) : (
+                <NextQuestionDropdown
+                  questions={questions}
+                  excludeIds={sourceNodesIds}
+                  selectedIdentifier={step.nextStepIdentifier || ''}
+                  onChangeSelected={nextStepId => onChangeNextId(nextStepId)}
+                />
+              </div>
+            }
+          />
+        </RadioGroup>
+        {qTypeId === 'SINGLE_SELECT' && (
           <Box>
             {
               SurveyUtils.getNextSequentialQuestion(step.identifier, questions)
                 ?.identifier
             }
-            {step.choices &&
-              step.choices.map(c => (
-                <div key={c.value} style={{display: 'flex'}}>
-                  <div>{c.value + '-->'}</div>
-                  <QMenu
-                    questions={questions}
-                    excludeIds={sourceNodesIds}
-                    selectedIdentifier={
-                      step.surveyRules?.find(
-                        rule => rule.matchingAnswer === c.value
-                      )?.skipToIdentifier || ''
-                    }
-                    onChangeSelected={nextStepId =>
-                      changeRuleMapping(c.value, nextStepId)
-                    }
-                  />
-                </div>
-              ))}
+            {step.choices && (
+              <table>
+                {step.choices.map(c => (
+                  <tr key={c.value}>
+                    <td>{c.value}</td>
+                    <td>&rarr;</td>
+
+                    <td>
+                      {' '}
+                      <NextQuestionDropdown
+                        questions={questions}
+                        excludeIds={sourceNodesIds}
+                        selectedIdentifier={
+                          step.surveyRules?.find(
+                            rule => rule.matchingAnswer === c.value
+                          )?.skipToIdentifier || ''
+                        }
+                        onChangeSelected={nextStepId =>
+                          changeRuleMapping(c.value, nextStepId)
+                        }
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </table>
+            )}
             {step.other && <div>{'OTHER'}</div>}
           </Box>
         )}

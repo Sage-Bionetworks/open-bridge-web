@@ -2,6 +2,49 @@ import {OutlinedInput, Select, SelectProps, styled} from '@mui/material'
 import SvgIcon, {SvgIconProps} from '@mui/material/SvgIcon'
 import {poppinsFont} from '@style/theme'
 
+const getBgColor = (mode: 'light' | 'dark' = 'dark') => {
+  return mode === 'light' ? '#F2F2F2' : '#565656'
+}
+const getColor = (mode: 'light' | 'dark' = 'dark') => {
+  return mode === 'light' ? '#4D4D4D' : '#fff'
+}
+
+const getSvgFilter = (mode: 'light' | 'dark' = 'dark') => {
+  return mode === 'light'
+    ? {}
+    : {
+        WebkitFilter: 'invert(1)',
+        filter: 'invert(1)',
+      }
+}
+
+const getMenuProps = (mode: 'light' | 'dark' = 'dark') => {
+  return {
+    PaperProps: {
+      sx: {
+        //  width: '200px',
+        borderRadius: 0,
+        '& ul': {
+          padding: 0,
+          '& li.MuiButtonBase-root': {
+            backgroundColor: getBgColor(mode),
+            paddingLeft: '0',
+
+            color: getColor(mode),
+            '& svg, img ': getSvgFilter(mode),
+          },
+          '& li.MuiButtonBase-root.Mui-selected': {
+            backgroundColor: getBgColor(mode),
+          },
+          '& li.MuiButtonBase-root:hover': {
+            backgroundColor: mode === 'light' ? '#ececec' : '#6e6b6b',
+          },
+        },
+      },
+    },
+  }
+}
+
 function Caret(props: SvgIconProps) {
   return (
     <SvgIcon {...props}>
@@ -15,7 +58,20 @@ function Caret(props: SvgIconProps) {
     </SvgIcon>
   )
 }
-
+function CaretBlack(props: SvgIconProps) {
+  return (
+    <SvgIcon {...props}>
+      <path
+        d="M1 1L8 8L15 1"
+        stroke="#4d4d4d"
+        width="16"
+        height="16"
+        fill="none"
+      />
+    </SvgIcon>
+  )
+}
+/*
 const MenuProps = {
   PaperProps: {
     sx: {
@@ -44,64 +100,104 @@ const MenuProps = {
   },
 }
 
+const MenuPropsLight = {
+  PaperProps: {
+    sx: {
+      //  width: '200px',
+      borderRadius: 0,
+      '& ul': {
+        padding: 0,
+        '& li.MuiButtonBase-root': {
+          backgroundColor: '#F2F2F2',
+          paddingLeft: '0',
+
+          color: '#4D4D4D',
+        },
+        '& li.MuiButtonBase-root.Mui-selected': {
+          backgroundColor: '#F2F2F2',
+        },
+        '& li.MuiButtonBase-root:hover': {
+          backgroundColor: '#F2F2F2',
+        },
+      },
+    },
+  },
+}
+*/
 //props example
 
 export const StyledDropDown = styled(
-  (props: SelectProps) => (
+  (
+    props: SelectProps & {
+      width: string
+      height: string
+      mode?: 'light' | 'dark'
+    }
+  ) => (
     <Select
       displayEmpty
-      IconComponent={Caret}
+      IconComponent={props.mode === 'light' ? CaretBlack : Caret}
       input={<OutlinedInput />}
-      MenuProps={MenuProps}
+      MenuProps={getMenuProps(props.mode)}
       {...props}
     />
   ),
   {label: 'StyledDropDown'}
-)<{width: string; height: string}>(({theme, width, height}) => ({
-  width: width,
-  height: height,
-  '& ul': {padding: '0'},
+)<{width: string; height: string; mode?: 'light' | 'dark'}>(
+  ({theme, width, height, mode = 'dark'}) => ({
+    width: width,
+    height: height,
+    '& ul': {padding: '0'},
 
-  '& .MuiSvgIcon-root': {
-    top: 'calc(50% - 0.2em)',
-    '&.MuiSelect-iconOpen': {
-      top: 'calc(50% - 0.8em)',
-      right: '13px',
-    },
-  },
-  '& .MuiOutlinedInput-input.MuiInputBase-input': {
-    padding: 0,
-    backgroundColor: '#565656',
-    color: '#fff',
-    fontFamily: poppinsFont,
-    borderRadius: 0,
-    fontWeight: 500,
-    fontSize: '14px',
-    '&> svg, img': {
-      flexShrink: 0,
-      flexGrow: 0,
-      stroke: '#fff',
-      maxWidth: theme.spacing(6),
-      maxHeight: theme.spacing(6),
-      '& *': {
-        color: '#fff',
-        stroke: '#fff',
+    '& .MuiSvgIcon-root': {
+      top: 'calc(50% - 0.2em)',
+      '&.MuiSelect-iconOpen': {
+        top: 'calc(50% - 0.8em)',
+        right: '13px',
       },
     },
-    '&>div >div': {
-      color: '#fff',
+    '& fieldset': {
+      border: mode === 'light' ? 'none' : 'inherit',
+      boxShadow:
+        mode === 'light' ? '1px 2px 3px rgba(42, 42, 42, 0.1)' : 'none',
+    },
+
+    '& .MuiOutlinedInput-input.MuiInputBase-input': {
+      padding: 0,
+      backgroundColor: getBgColor(mode),
+      height: height,
+      color: mode === 'light' ? '#4D4D4D' : '#fff',
       fontFamily: poppinsFont,
+      borderRadius: 0,
       fontWeight: 500,
       fontSize: '14px',
+      '&> svg, img': {
+        flexShrink: 0,
+        flexGrow: 0,
+        stroke: getColor(mode),
+        maxWidth: theme.spacing(6),
+        maxHeight: theme.spacing(6),
+        '& *': {
+          color: getColor(mode),
+          stroke: getColor(mode),
+        },
+      },
+      '&>div >div': {
+        color: getColor(mode),
+        fontFamily: poppinsFont,
+        fontWeight: 500,
+        fontSize: '14px',
+      },
     },
-  },
-}))
+  })
+)
 
 export const StyledDropDownItem = styled('div', {
   label: 'StyledSelectItem',
 })<{
   width: string
-}>(({theme, width}) => ({
+  mode?: 'light' | 'dark'
+}>(({theme, width, mode = 'dark'}) => ({
   height: theme.spacing(6),
   width: width,
 
@@ -113,11 +209,11 @@ export const StyledDropDownItem = styled('div', {
     flexGrow: 0,
     maxWidth: theme.spacing(6),
     maxHeight: theme.spacing(6),
-    WebkitFilter: 'invert(1)',
-    filter: 'invert(1)',
+    WebkitFilter: mode == 'light' ? '' : 'invert(1)',
+    filter: mode == 'light' ? '' : 'invert(1)',
   },
   '> div': {
-    color: '#fff',
+    color: getColor(mode),
     fontFamily: poppinsFont,
     fontWeight: 500,
     fontSize: '14px',
