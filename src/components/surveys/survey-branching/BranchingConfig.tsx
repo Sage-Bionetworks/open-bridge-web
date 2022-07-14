@@ -1,4 +1,5 @@
 import SurveyUtils from '@components/surveys/SurveyUtils'
+import CloseIcon from '@mui/icons-material/Close'
 import {
   Box,
   FormControlLabel,
@@ -6,8 +7,10 @@ import {
   OutlinedInput,
   Radio,
   RadioGroup,
+  styled,
+  Typography,
 } from '@mui/material'
-import {theme} from '@style/theme'
+import {latoFont, theme} from '@style/theme'
 import {ChoiceQuestion, Step, SurveyRuleOperator} from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 import QUESTIONS, {
@@ -16,22 +19,96 @@ import QUESTIONS, {
 import {DivContainer} from '../survey-design/left-panel/QuestionTypeDisplay'
 import {StyledDropDown, StyledDropDownItem} from '../widgets/StyledDropDown'
 
-const NextQ: FunctionComponent<{questions: Step[]; id: string}> = ({
-  id,
-  questions,
-}) => {
+// agendel TODO: refactor duplicate
+const getBgColor = (mode: 'light' | 'dark' = 'dark') => {
+  return mode === 'light' ? '#F2F2F2' : '#565656'
+}
+const getColor = (mode: 'light' | 'dark' = 'dark') => {
+  return mode === 'light' ? '#4D4D4D' : '#fff'
+}
+
+const getSvgFilter = (mode: 'light' | 'dark' = 'dark') => {
+  return mode === 'light'
+    ? {}
+    : {
+        WebkitFilter: 'invert(1)',
+        filter: 'invert(1)',
+      }
+}
+
+const getBoxShadow = (mode: 'light' | 'dark' = 'dark') => {
+  return mode === 'light' ? ' 1px 2px 3px rgba(42, 42, 42, 0.1);' : 'none'
+}
+
+const StyledQuestionDisplay = styled(Box, {label: 'StyledQuestionDisplay'})<{
+  mode?: 'dark' | 'light'
+}>(({theme, mode = 'dark'}) => ({
+  backgroundColor: getBgColor(mode),
+  width: '80px',
+  height: '48px',
+  boxShadow: getBoxShadow(mode),
+  '& > div, > div div ': {
+    backgroundColor: getBgColor(mode),
+
+    color: getColor(mode),
+  },
+  '& svg, img ': getSvgFilter(mode),
+}))
+
+const StyledSmallFont = styled(Typography, {label: 'StyledSmallFont'})(
+  ({theme}) => ({
+    fontFamily: latoFont,
+    fontWeight: 400,
+    fontSize: '12px',
+    color: '#fff',
+    width: '100%',
+    padding: theme.spacing(1, 0, 0.5, 0),
+    '&:last-child': {
+      padding: theme.spacing(1.5, 0, 0, 0),
+    },
+  })
+)
+
+const StyledTopArea = styled('div', {label: 'StyledTopArea'})(({theme}) => ({
+  background: ' #565656',
+  color: '#fff',
+  padding: theme.spacing(3, 3, 2, 3),
+  fontSize: '16px',
+  fontWeight: 700,
+  position: 'relative',
+}))
+
+const StyledTable = styled('table', {label: 'StyledTable'})(({theme}) => ({
+  marginTop: theme.spacing(2.5),
+  padding: theme.spacing(1),
+  backgroundColor: '#fff',
+  '& td': {
+    borderBottom: '1px solid #BBC3CD',
+    width: '100%',
+    borderSpacing: 0,
+    verticalAlign: 'middle',
+    padding: theme.spacing(1),
+  },
+}))
+
+const QuestionDisplay: FunctionComponent<{
+  questions: Step[]
+  id: string
+  isNext: boolean
+  mode: 'light' | 'dark'
+}> = ({id, questions, isNext, mode}) => {
   const {index, isLast} = SurveyUtils.getSequentialQuestionIndex(id, questions)
-  if (isLast || index === -1) {
+  if ((isLast && isNext) || index === -1) {
     return <></>
   }
-  const q = questions[index + 1]
+  const q = isNext ? questions[index + 1] : questions[index]
   return (
-    <Box sx={{backgroundColor: '#F2F2F2', width: '80px', height: '48px'}}>
+    <StyledQuestionDisplay mode={mode}>
       <DivContainer>
         {QUESTIONS.get(getQuestionId(q))?.img}
         <div>{index + 2}</div>
       </DivContainer>
-    </Box>
+    </StyledQuestionDisplay>
   )
 }
 
@@ -54,12 +131,12 @@ const NextQuestionDropdown: FunctionComponent<{
       }}
       input={<OutlinedInput />}
       inputProps={{'aria-label': 'Question Type:'}}>
-      <MenuItem value={''} key="undefined">
+      {/* <MenuItem value={''} key="undefined">
         <DivContainer
           sx={{backgroundColor: '#F2F2F2', width: '112px', height: '48px'}}>
           <div>...</div>
         </DivContainer>
-      </MenuItem>
+      </MenuItem> */}
       {questions.map(
         (opt, index) =>
           !excludeIds.includes(opt.identifier) && (
@@ -79,8 +156,9 @@ const BranchingConfig: FunctionComponent<{
   step: ChoiceQuestion
   questions: ChoiceQuestion[]
   sourceNodesIds: string[]
+  onHide: () => void
   onChange: (step: ChoiceQuestion[]) => void
-}> = ({step, questions, sourceNodesIds, onChange}) => {
+}> = ({step, questions, sourceNodesIds, onChange, onHide}) => {
   const qTypeId = getQuestionId(step)
   console.log('sourceIds', sourceNodesIds)
 
@@ -141,16 +219,26 @@ const BranchingConfig: FunctionComponent<{
   }
   return (
     <Box sx={{backgroundColor: '#FBFBFB'}}>
-      <Box
-        sx={{
-          background: ' #565656',
-          color: '#fff',
-          padding: theme.spacing(3),
-          fontSize: '16px',
-          fontWeight: 700,
-        }}>
-        {/*step.identifier*/} {step.title}
-      </Box>
+      <StyledTopArea>
+        <CloseIcon
+          onClick={onHide}
+          fontSize="large"
+          sx={{
+            color: '#fff',
+            position: 'absolute',
+            top: '10px',
+
+            right: '10px',
+          }}></CloseIcon>
+        <QuestionDisplay
+          questions={questions}
+          id={step.identifier}
+          isNext={false}
+          mode={'dark'}
+        />
+        <StyledSmallFont> {step.subtitle}</StyledSmallFont> {step.title}
+        <StyledSmallFont> {step.detail}</StyledSmallFont>
+      </StyledTopArea>
       <Box sx={{padding: theme.spacing(3)}}>
         <RadioGroup
           onChange={e => onChangeNextOption(e.target.value)}
@@ -162,13 +250,20 @@ const BranchingConfig: FunctionComponent<{
               <div style={{display: 'flex'}}>
                 <div
                   style={{
-                    width: '88px',
+                    width: '148px',
                     margin: '12px 8px',
                     alignItems: 'center',
                   }}>
-                  Go to next screen in sequence :
+                  Go to next
+                  <br />
+                  screen in sequence:
                 </div>
-                <NextQ questions={questions} id={step.identifier} />
+                {/*    <QuestionDisplay
+                  questions={questions}
+                  id={step.identifier}
+                  isNext={true}
+                  mode={'light'}
+                />*/}
               </div>
             }
           />
@@ -197,16 +292,12 @@ const BranchingConfig: FunctionComponent<{
         </RadioGroup>
         {qTypeId === 'SINGLE_SELECT' && (
           <Box>
-            {
-              SurveyUtils.getNextSequentialQuestion(step.identifier, questions)
-                ?.identifier
-            }
             {step.choices && (
-              <table>
+              <StyledTable>
                 {step.choices.map(c => (
                   <tr key={c.value}>
                     <td>{c.value}</td>
-                    <td>&rarr;</td>
+                    <td style={{fontSize: '15px'}}>&rarr;</td>
 
                     <td>
                       {' '}
@@ -225,7 +316,7 @@ const BranchingConfig: FunctionComponent<{
                     </td>
                   </tr>
                 ))}
-              </table>
+              </StyledTable>
             )}
             {step.other && <div>{'OTHER'}</div>}
           </Box>

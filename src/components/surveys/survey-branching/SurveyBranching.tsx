@@ -1,4 +1,4 @@
-import {Box, Button, styled} from '@mui/material'
+import {Box, styled} from '@mui/material'
 import {useSurveyConfig, useUpdateSurveyConfig} from '@services/assessmentHooks'
 import {latoFont} from '@style/theme'
 import {SmartStepEdge} from '@tisoap/react-flow-smart-edge'
@@ -31,9 +31,9 @@ const SurveyBranchingContainerBox = styled(Box)(({theme}) => ({
   backgroundColor: '#fcfcfc',
   // display: 'flex',
   width: '100%',
-  border: '1px solid black',
+  // border: '1px solid black',
 
-  minHeight: 'calc(100vh - 70px)',
+  minHeight: 'calc(100vh - 75px)',
   '& .react-flow': {
     backgroundColor: '#fcfcfc',
   },
@@ -162,12 +162,11 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   return (
     <SurveyBranchingContainerBox width="100%" sx={{}}>
       {error && <span>{error.toString()}</span>}
-      <Box ref={ref} sx={{border: '1px solid blue'}}>
+      <Box ref={ref}>
         <div
           style={{
             width: isHideInput ? width || 0 : (width || 0) - 424 + 'px',
-            height: '500px',
-            border: '1px solid red',
+            height: 'calc(100vh - 75px)',
           }}>
           <ReactFlow
             nodes={nodes}
@@ -190,12 +189,14 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
           <Box
             sx={{
               width: '424px',
-              border: '1px solid black',
+              height: 'calc(100vh - 75px)',
+              borderLeft: '1px solid black',
               position: 'absolute',
               top: '0',
               right: '0',
             }}>
             <BranchingConfig
+              onHide={() => setIsHideInput(true)}
               sourceNodesIds={edges
                 .filter(
                   e =>
@@ -213,8 +214,6 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
               questions={survey.config.steps as ChoiceQuestion[]}
               step={survey.config.steps[currentStepIndex] as ChoiceQuestion}
             />
-
-            <Button onClick={() => setIsHideInput(true)}>Hide input</Button>
           </Box>
         )}
     </SurveyBranchingContainerBox>
