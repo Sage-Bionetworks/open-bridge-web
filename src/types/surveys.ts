@@ -147,11 +147,23 @@ export type ActionButtonName =
   | 'pause'
 
 export type WebUISkipOptions = 'SKIP' | 'NO_SKIP' | 'CUSTOMIZE'
+export type InterruptionHandlingType = {
+  canResume: true
+  reviewIdentifier?: 'beginning'
+  canSkip: boolean
+  canSaveForLater: false
+}
 export type SurveyConfig = {
   webConfig?: {skipOption?: WebUISkipOptions}
   type: string //'assessment',
-
+  interrruptionHandling?: InterruptionHandlingType
   identifier: string //'foo',
+  interruptionHandling?: {
+    canResume: true
+    reviewIdentifier?: 'beginning'
+    canSkip: boolean
+    canSaveForLater: false
+  }
 
   versionString?: string //'1.2.3',
   schemaIdentifier?: string //'bar',

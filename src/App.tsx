@@ -155,15 +155,15 @@ function App() {
                 FallbackComponent={ErrorFallback}
                 onError={ErrorHandler}>
                 {redirect && <Redirect to={redirect}></Redirect>}
-                <React.StrictMode>
-                  {sessionData.id ? (
-                    <AuthenticatedApp />
-                  ) : (
-                    <Loader reqStatusLoading={getCode() !== null}>
-                      <UnauthenticatedApp appId={Utility.getAppId()} />
-                    </Loader>
-                  )}
-                </React.StrictMode>
+                {/*  <React.StrictMode>*/}
+                {sessionData.id ? (
+                  <AuthenticatedApp />
+                ) : (
+                  <Loader reqStatusLoading={getCode() !== null}>
+                    <UnauthenticatedApp appId={Utility.getAppId()} />
+                  </Loader>
+                )}
+                {/*  </React.StrictMode>*/}
               </ErrorBoundary>
             </QueryClientProvider>
           </Router>
