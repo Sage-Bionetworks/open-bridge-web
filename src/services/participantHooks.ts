@@ -5,6 +5,7 @@ import ParticipantService from '@services/participants.service'
 import {
   EditableParticipantData,
   ExtendedError,
+  ExtendedParticipantAccountSummary,
   ParticipantAccountSummary,
   ParticipantActivityType,
   ParticipantEvent,
@@ -35,6 +36,8 @@ export const PARTICIPANT_KEYS = {
     ] as const,
   detail: (studyId: string, participantId: string) =>
     [...PARTICIPANT_KEYS.list(studyId), participantId] as const,
+  detailWithClientData: (studyId: string, participantId: string) =>
+    [...PARTICIPANT_KEYS.list(studyId), participantId, 'clientData'] as const,
 }
 
 async function getParticipants(
@@ -243,6 +246,27 @@ export const useAddParticipant = () => {
     },
   })
   return mutation
+}
+
+export const useGetParticipant = (studyId: string, participantId: string) => {
+  const {token} = useUserSessionDataState()
+
+  return useQuery<ExtendedParticipantAccountSummary, ExtendedError>(
+    PARTICIPANT_KEYS.detailWithClientData(studyId, participantId),
+    () =>
+      ParticipantService.getParticipant(
+        studyId,
+
+        participantId,
+        token!
+      ),
+    {
+      enabled: !!studyId && !!participantId,
+      retry: false,
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+    }
+  )
 }
 
 export const useGetParticipantInfo = (

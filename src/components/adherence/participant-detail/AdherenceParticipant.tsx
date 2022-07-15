@@ -6,11 +6,14 @@ import BreadCrumb from '@components/widgets/BreadCrumb'
 import {MTBHeadingH4} from '@components/widgets/Headings'
 import LoadingComponent from '@components/widgets/Loader'
 import NonDraftHeaderFunctionComponent from '@components/widgets/StudyIdWithPhaseImage'
-import {Box, Button, Paper} from '@mui/material'
+import {Box, Button, Paper, styled} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {useEnrollmentForParticipant} from '@services/enrollmentHooks'
 import {useEventsForUser} from '@services/eventHooks'
-import {useGetParticipantInfo} from '@services/participantHooks'
+import {
+  useGetParticipant,
+  useGetParticipantInfo,
+} from '@services/participantHooks'
 import ParticipantService from '@services/participants.service'
 import {useStudy} from '@services/studyHooks'
 import {latoFont} from '@style/theme'
@@ -27,10 +30,19 @@ import {RouteComponentProps, useParams} from 'react-router-dom'
 import AdherenceUtility from '../adherenceUtility'
 import SessionLegend from '../SessionLegend'
 import {useCommonStyles} from '../styles'
+import AdditionalAdherenceParticipantInfo from './AdditionalAdherenceParticipantInfo'
 import AdherenceParticipantGrid from './AdherenceParticipantGrid'
-import DeviceInfo from './DeviceInfo'
 import EditParticipantEvents from './EditParticipantEvents'
 import EditParticipantNotes from './EditParticipantNotes'
+
+const BottomBox = styled('div', {label: 'BottomBox'})(({theme}) => ({
+  display: 'flex',
+  margin: theme.spacing(8, -3, 0, -3),
+  padding: theme.spacing(4, 3, 2, 3),
+  backgroundColor: '#fff',
+  justifyContent: 'space-between',
+}))
+
 const useStyles = makeStyles(theme => ({
   mainContainer: {
     padding: theme.spacing(3),
@@ -80,6 +92,8 @@ const AdherenceParticipant: FunctionComponent<
     studyId,
     participantId
   )
+
+  const {data: participant} = useGetParticipant(studyId, participantId)
 
   const {data: events} = useEventsForUser(studyId, participantId)
 
@@ -225,16 +239,18 @@ const AdherenceParticipant: FunctionComponent<
                 : `${adherenceReport?.adherencePercent} %`}
             </Box>
           </Box>
-          <Box display="flex" marginTop={8} justifyContent="space-around">
+          <BottomBox>
             <EditParticipantNotes
               participantId={participantId}
               studyId={studyId}
               enrollment={enrollment!}
             />
-            {participantRequestInfo?.clientInfo && (
-              <DeviceInfo {...participantRequestInfo} />
-            )}
-          </Box>
+
+            <AdditionalAdherenceParticipantInfo
+              participantRequestInfo={participantRequestInfo}
+              participantClientData={participant?.clientData}
+            />
+          </BottomBox>
         </Paper>
       </LoadingComponent>
       {isEditParticipant && (

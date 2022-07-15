@@ -270,6 +270,21 @@ export type ProgressionStatus =
   | 'unstarted'
   | 'no_schedule'
 
+export type ParticipantClientData = {
+  hasMigratedToV2?: boolean
+  sessionStartLocalTimes?: {
+    guid: string
+    start: string // "09:30"
+  }
+  availability?: {
+    wake: string // "09:30",
+    bed: string //"17:30"
+  }
+  earnings: string[] /* [
+      "$6.00",
+      "$29.00"]*/
+}
+
 export type ParticipantAccountSummary = {
   // isSelected?: boolean
   healthCode?: string
@@ -288,6 +303,7 @@ export type ParticipantAccountSummary = {
   note?: string
   dataGroups?: string[]
   clientTimeZone?: string
+  clientData?: ParticipantClientData
 }
 
 export type ExtendedParticipantAccountSummary = ParticipantAccountSummary & {

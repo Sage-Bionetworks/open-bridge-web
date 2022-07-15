@@ -1,6 +1,5 @@
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
-import {useUserSessionDataState} from '@helpers/AuthContext'
-import {Button, CircularProgress, Paper} from '@mui/material'
+import {Button, CircularProgress} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {useUpdateParticipantInList} from '@services/participantHooks'
 import {poppinsFont} from '@style/theme'
@@ -9,21 +8,18 @@ import React, {FunctionComponent} from 'react'
 
 const useStyles = makeStyles(theme => ({
   notesContainer: {
-    // marginTop: theme.spacing(8),
-    padding: theme.spacing(4),
+    padding: theme.spacing(0, 2, 2, 0),
     width: '50%',
-    marginRight: theme.spacing(5),
   },
+
   notesText: {
+    borderColor: '#BBC3CD',
+    margin: theme.spacing(2, 0),
+    width: '100%',
     '& .MuiOutlinedInput-inputMultiline': {
       background: '#fff',
       padding: theme.spacing(1),
     },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: '#BBC3CD',
-    },
-    margin: theme.spacing(2, 0),
-    width: '100%',
   },
   saveBtn: {
     backgroundColor: '#392D2D',
@@ -57,10 +53,7 @@ const EditParticipantNotes: FunctionComponent<EditParticipantNotesProps> = ({
   enrollment,
 }) => {
   const classes = useStyles()
-  const [isSaving, setIsSaving] = React.useState(false)
   const [note, setNote] = React.useState(enrollment.note)
-  const {token} = useUserSessionDataState()
-
   const {isLoading, mutateAsync} = useUpdateParticipantInList()
 
   const updateNotes = async (particpantId: string, updatedFields: any) => {
@@ -73,7 +66,7 @@ const EditParticipantNotes: FunctionComponent<EditParticipantNotesProps> = ({
     })
   }
   return (
-    <Paper className={classes.notesContainer}>
+    <div className={classes.notesContainer}>
       <div className={classes.noteHeader}>Participant Notes</div>
       <SimpleTextInput
         className={classes.notesText}
@@ -93,7 +86,7 @@ const EditParticipantNotes: FunctionComponent<EditParticipantNotesProps> = ({
         }}>
         {isLoading ? <CircularProgress /> : <>Save</>}
       </Button>
-    </Paper>
+    </div>
   )
 }
 
