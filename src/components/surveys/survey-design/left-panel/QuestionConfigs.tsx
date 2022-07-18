@@ -147,7 +147,7 @@ const QUESTIONS = new Map<
         subtitle: 'Subtitle',
         title: 'New Question',
         detail: 'Detail',
-        baseType: 'string',
+        baseType: 'integer',
         singleChoice: true,
         choices: [
           {value: 'Choice A', text: 'Choice A'},

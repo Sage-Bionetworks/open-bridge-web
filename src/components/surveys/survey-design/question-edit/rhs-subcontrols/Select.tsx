@@ -19,7 +19,11 @@ import {
 } from '@mui/material'
 import {SelectChangeEvent} from '@mui/material/Select'
 import {theme} from '@style/theme'
-import {ChoiceQuestion, QuestionDataType} from '@typedefs/surveys'
+import {
+  ChoiceQuestion,
+  ChoiceQuestionChoice,
+  QuestionDataType,
+} from '@typedefs/surveys'
 import React from 'react'
 import QUESTIONS, {QuestionTypeKey} from '../../left-panel/QuestionConfigs'
 
@@ -40,8 +44,8 @@ const ValueTable = styled('table')(({theme}) => ({
 
 const PairingTableHeading: React.FunctionComponent<{
   answerDataType: QuestionDataType
-  isSingleChoice?: boolean
-}> = ({answerDataType, isSingleChoice}) => {
+  issinglechoice?: boolean
+}> = ({answerDataType, issinglechoice}) => {
   const mapping = {
     number: [],
     boolean: [],
@@ -73,10 +77,47 @@ const PairingTableHeading: React.FunctionComponent<{
         fontStyle: 'italic',
         marginBottom: theme.spacing(2),
       }}>
-      Participant's answer{isSingleChoice ? '' : 's'} will be recorded as{' '}
-      {mapping[answerDataType][isSingleChoice ? 0 : 1]}
+      Participant's answer{issinglechoice ? '' : 's'} will be recorded as{' '}
+      {mapping[answerDataType][issinglechoice ? 0 : 1]}
       &nbsp;as defined below.
     </Typography>
+  )
+}
+
+const ChoiceValueInputRow: React.FunctionComponent<{
+  choice: ChoiceQuestionChoice
+  allValues: (string | number | undefined)[]
+  onChange: (e: string) => void
+}> = ({choice, onChange, allValues}) => {
+  const firstCell =
+    choice.selectorType === 'all' || choice.selectorType === 'exclusive' ? (
+      <>{choice.text}</>
+    ) : (
+      <>{choice.text} and some more</>
+    )
+  let inputCell = (
+    <SimpleTextInput
+      value={choice.value}
+      onChange={e => onChange(e.target.value)}
+    />
+  )
+  if (choice.selectorType === 'all') {
+    inputCell = (
+      <>
+        [&nbsp;&nbsp;{allValues.filter(v => v !== undefined).join(', ')}
+        &nbsp;&nbsp;]
+      </>
+    )
+  }
+  if (choice.selectorType === 'exclusive') {
+    inputCell = <>[&nbsp;&nbsp;empty array&nbsp;&nbsp;]</>
+  }
+
+  return (
+    <tr>
+      <td>{firstCell}</td> <td> &rarr;</td>{' '}
+      <td style={{width: '60px'}}>{inputCell}</td>
+    </tr>
   )
 }
 
@@ -85,23 +126,28 @@ const Select: React.FunctionComponent<{
 
   onChange: (step: ChoiceQuestion) => void
 }> = ({step, onChange}) => {
-  const [selectType, setSelectType] = React.useState<
-    'MULTI_SELECT' | 'SINGLE_SELECT'
-  >('MULTI_SELECT')
-  /*  const [answerDataType, setAnswerDataType] = React.useState<
-    'Integer' | 'String'
-  >('String')*/
   const selectTypeOptions: QuestionTypeKey[] = ['MULTI_SELECT', 'SINGLE_SELECT']
   const answerDataTypeOptions: QuestionDataType[] = ['integer', 'string']
 
   const handleSelectTypeChange = (
-    event: SelectChangeEvent<typeof selectType>
+    event: SelectChangeEvent<QuestionTypeKey>
   ) => {
     const {
       target: {value},
     } = event
 
-    setSelectType(value as typeof selectType)
+    const isSwitchedToSingleSelect =
+      !step.singleChoice && value === 'SINGLE_SELECT'
+
+    onChange({
+      ...step,
+      singleChoice: value === 'SINGLE_SELECT',
+      choices: isSwitchedToSingleSelect
+        ? step.choices.filter(
+            c => c.selectorType !== 'exclusive' && c.selectorType !== 'all'
+          )
+        : step.choices,
+    })
   }
 
   const handleDataTypeChange = (
@@ -110,20 +156,25 @@ const Select: React.FunctionComponent<{
     const {
       target: {value},
     } = event
+
     if (value !== step.baseType) {
+      const updatedStep = {...step}
+      updatedStep.baseType = value as typeof step.baseType
       let choices = [...step.choices]
       //switch from string to integer -- number them
       if (value === 'integer') {
         for (const [i, v] of choices.entries()) {
           v.value = i
         }
+        //if changing to integer -- remove 'other'
+        delete updatedStep.other
       } else {
         for (const [i, v] of choices.entries()) {
           v.value = v.text.replaceAll(' ', '_')
         }
       }
 
-      onChange({...step, baseType: value as typeof step.baseType, choices})
+      onChange({...updatedStep, choices})
     }
   }
 
@@ -135,7 +186,7 @@ const Select: React.FunctionComponent<{
         <StyledLabel14 mb={0.5}>Question Type:</StyledLabel14>
 
         <StyledDropDown
-          value={selectType}
+          value={step.singleChoice ? 'SINGLE_SELECT' : 'MULTI_SELECT'}
           width="200px"
           //@ts-ignore
           onChange={handleSelectTypeChange}
@@ -174,7 +225,7 @@ const Select: React.FunctionComponent<{
 
       <PairingTableHeading
         answerDataType={step.baseType}
-        isSingleChoice={step.singleChoice}
+        issinglechoice={step.singleChoice}
       />
 
       <Box sx={{backgroundColor: '#fff', padding: theme.spacing(2, 1.5)}}>
@@ -195,29 +246,35 @@ const Select: React.FunctionComponent<{
           </Button>
         )}
         <ValueTable>
-          <tr>
-            <th>Response</th> <th></th>{' '}
-            <th style={{width: '60px'}}>
-              Value={UtilityObject.capitalize(step.baseType)}
-            </th>
-          </tr>
-
-          {step.choices?.map((choice, index) => (
+          <tbody>
             <tr>
-              <td>{choice.text}</td> <td> &rarr;</td>{' '}
-              <td style={{width: '60px'}}>
-                <SimpleTextInput
-                  value={choice.value}
-                  onChange={e => {
-                    const choices = step.choices.map((c, i) =>
-                      i === index ? {...c, value: e.target.value} : c
-                    )
-                    onChange({...step, choices})
-                  }}
-                />
-              </td>
+              <th>Response</th> <th></th>{' '}
+              <th style={{width: '60px'}}>
+                Value={UtilityObject.capitalize(step.baseType)}
+              </th>
             </tr>
-          ))}
+
+            {step.choices?.map((choice, index) => (
+              <ChoiceValueInputRow
+                choice={choice}
+                allValues={step.choices.map(c => c.value)}
+                onChange={val => {
+                  const choices = step.choices.map((c, i) =>
+                    i === index ? {...c, value: val} : c
+                  )
+                  onChange({...step, choices})
+                }}
+              />
+            ))}
+            {step.other && (
+              <tr>
+                <td>Other</td> <td> &rarr;</td>{' '}
+                <td style={{width: '60px'}}>
+                  [&nbsp;&nbsp;custom text&nbsp;&nbsp;]
+                </td>
+              </tr>
+            )}
+          </tbody>
         </ValueTable>
       </Box>
     </Box>
