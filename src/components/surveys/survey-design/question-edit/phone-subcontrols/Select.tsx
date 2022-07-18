@@ -4,7 +4,11 @@ import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
 import ClearIcon from '@mui/icons-material/Clear'
 import {Box, IconButton, styled, Typography} from '@mui/material'
 import {theme} from '@style/theme'
-import {ChoiceQuestion, ChoiceQuestionChoice} from '@typedefs/surveys'
+import {
+  ChoiceQuestion,
+  ChoiceQuestionChoice,
+  ChoiceSelectorType,
+} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
 import {
   DragDropContext,
@@ -22,8 +26,8 @@ const OptionList = styled('div', {label: 'OptionList'})(({theme}) => ({
   // overflowY: 'scroll',
 }))
 
-const Option = styled('div')<{isSingleChoice?: boolean}>(
-  ({theme, isSingleChoice}) => ({
+const Option = styled('div')<{issinglechoice?: boolean}>(
+  ({theme, issinglechoice}) => ({
     background: '#FFFFFF',
     boxShadow: '1px 2px 3px rgba(42, 42, 42, 0.1)',
 
@@ -35,7 +39,7 @@ const Option = styled('div')<{isSingleChoice?: boolean}>(
     display: 'flex',
 
     alignItems: 'center',
-    borderRadius: isSingleChoice ? '28px' : '2px',
+    borderRadius: issinglechoice ? '28px' : '2px',
     //checkbox square
     '& div:first-of-type': {
       width: '16px',
@@ -43,7 +47,7 @@ const Option = styled('div')<{isSingleChoice?: boolean}>(
       border: '2px solid black',
       flexShrink: 0,
       marginRight: '6px',
-      borderRadius: isSingleChoice ? '7px' : '0px',
+      borderRadius: issinglechoice ? '7px' : '0px',
     },
     '& div:last-of-type': {
       marginLeft: 'auto',
@@ -77,15 +81,15 @@ const SelectOption: FunctionComponent<{
   onRename: (t: string) => void
   provided?: DraggableProvided
   isStatic?: boolean
-  isSingleChoice?: boolean
-}> = ({provided, choice, onDelete, onRename, isStatic, isSingleChoice}) => {
+  issinglechoice?: boolean
+}> = ({provided, choice, onDelete, onRename, isStatic, issinglechoice}) => {
   const [title, setTitle] = React.useState(choice.text)
   return (
     <Option
       {...provided?.draggableProps}
       {...provided?.dragHandleProps}
       ref={provided?.innerRef}
-      isSingleChoice={isSingleChoice}>
+      issinglechoice={issinglechoice}>
       <div />
       {isStatic ? (
         <Typography sx={{padding: theme.spacing(0.5, 0.5)}}>{title}</Typography>
@@ -135,10 +139,7 @@ const Select: React.FunctionComponent<{
     }
   }
 
-  const deleteOption = (
-    index: number,
-    selectorType?: 'all' | 'exclusive' | 'default'
-  ) => {
+  const deleteOption = (index: number, selectorType?: ChoiceSelectorType) => {
     if (stepData.choices) {
       const newChoices = [...stepData.choices]
       if ((index > -1 && selectorType) || (index == -1 && !selectorType)) {
@@ -161,7 +162,7 @@ const Select: React.FunctionComponent<{
   const renameOption = (
     newName: string,
     index: number,
-    selectorType?: 'all' | 'exclusive' | 'default'
+    selectorType?: ChoiceSelectorType
   ) => {
     console.log('chaning to ', newName)
     if (stepData.choices) {
@@ -220,7 +221,7 @@ const Select: React.FunctionComponent<{
                     key={choice.value}>
                     {provided => (
                       <SelectOption
-                        isSingleChoice={step.singleChoice}
+                        issinglechoice={step.singleChoice}
                         onRename={qText => renameOption(qText, index)}
                         provided={provided}
                         choice={choice}
@@ -240,7 +241,7 @@ const Select: React.FunctionComponent<{
             //  .sort((a, b) => (a.text < b.text ? -1 : 1))
             .map((choice, index) => (
               <SelectOption
-                isSingleChoice={step.singleChoice}
+                issinglechoice={step.singleChoice}
                 onRename={qText => renameOption(qText, -1, choice.selectorType)}
                 choice={choice}
                 key={choice.text}
@@ -249,7 +250,7 @@ const Select: React.FunctionComponent<{
             ))}
         {step.other && (
           <SelectOption
-            isSingleChoice={step.singleChoice}
+            issinglechoice={step.singleChoice}
             isStatic={true}
             onRename={() => {}}
             choice={{text: 'Other _________'}}

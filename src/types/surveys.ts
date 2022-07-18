@@ -37,6 +37,9 @@ export enum SurveyRuleOperator {
 
   Skip = 'de',
 }
+export type ChoiceSelectorType = 'all' | 'exclusive' | 'default'
+
+export type QuestionDataType = 'string' | 'integer' | 'number' | 'boolean'
 
 export type ActionButton = {
   type: string //'default',
@@ -71,12 +74,11 @@ export type Skip = {
 export type ChoiceQuestionChoice = {
   text: string
   value?: string | number
-  //  exclusive?: boolean
-  selectorType?: 'all' | 'exclusive' | 'default'
+
+  selectorType?: ChoiceSelectorType
   icon?: string
 }
 
-export type QuestionDataType = 'string' | 'integer' | 'number' | 'boolean'
 export type ChoiceQuestion = Question & {
   baseType: QuestionDataType
 
