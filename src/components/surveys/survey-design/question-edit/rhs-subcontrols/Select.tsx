@@ -1,4 +1,5 @@
 import {ReactComponent as GenerateId} from '@assets/surveys/actions/generate_id.svg'
+import SurveyUtils from '@components/surveys/SurveyUtils'
 import {
   StyledFormControl,
   StyledLabel14,
@@ -7,6 +8,7 @@ import {
   StyledDropDown,
   StyledDropDownItem,
 } from '@components/surveys/widgets/StyledDropDown'
+import InfoCircleWithToolTip from '@components/widgets/InfoCircleWithToolTip'
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import UtilityObject from '@helpers/utility'
 import {
@@ -89,28 +91,39 @@ const ChoiceValueInputRow: React.FunctionComponent<{
   allValues: (string | number | undefined)[]
   onChange: (e: string) => void
 }> = ({choice, onChange, allValues}) => {
-  const firstCell =
-    choice.selectorType === 'all' || choice.selectorType === 'exclusive' ? (
-      <>{choice.text}</>
-    ) : (
-      <>{choice.text} and some more</>
-    )
+  const isDefault = !SurveyUtils.isSpecialSelectChoice(choice)
+
+  const firstCell = (
+    <div style={{display: 'flex'}}>
+      {choice.text}{' '}
+      {!isDefault && (
+        <InfoCircleWithToolTip
+          style={{marginLeft: '4px'}}
+          tooltipDescription={
+            choice.selectorType === 'all'
+              ? 'Selects all responses'
+              : 'Deselects all responses'
+          }
+          variant="info"
+        />
+      )}
+    </div>
+  )
+
   let inputCell = (
     <SimpleTextInput
       value={choice.value}
       onChange={e => onChange(e.target.value)}
     />
   )
-  if (choice.selectorType === 'all') {
+  if (!isDefault) {
     inputCell = (
-      <>
-        [&nbsp;&nbsp;{allValues.filter(v => v !== undefined).join(', ')}
-        &nbsp;&nbsp;]
-      </>
+      <div style={{padding: ' 0 8px'}}>
+        {choice.selectorType === 'all'
+          ? allValues.filter(v => v !== undefined).join(', ')
+          : 'empty array'}
+      </div>
     )
-  }
-  if (choice.selectorType === 'exclusive') {
-    inputCell = <>[&nbsp;&nbsp;empty array&nbsp;&nbsp;]</>
   }
 
   return (
@@ -121,9 +134,14 @@ const ChoiceValueInputRow: React.FunctionComponent<{
   )
 }
 
+function generateValue(choice: ChoiceQuestionChoice, setTo?: number) {
+  return SurveyUtils.isSpecialSelectChoice(choice)
+    ? choice.value
+    : setTo ?? choice.text.replaceAll(' ', '_')
+}
+
 const Select: React.FunctionComponent<{
   step: ChoiceQuestion
-
   onChange: (step: ChoiceQuestion) => void
 }> = ({step, onChange}) => {
   const selectTypeOptions: QuestionTypeKey[] = ['MULTI_SELECT', 'SINGLE_SELECT']
@@ -143,9 +161,7 @@ const Select: React.FunctionComponent<{
       ...step,
       singleChoice: value === 'SINGLE_SELECT',
       choices: isSwitchedToSingleSelect
-        ? step.choices.filter(
-            c => c.selectorType !== 'exclusive' && c.selectorType !== 'all'
-          )
+        ? step.choices.filter(c => !SurveyUtils.isSpecialSelectChoice(c))
         : step.choices,
     })
   }
@@ -164,13 +180,13 @@ const Select: React.FunctionComponent<{
       //switch from string to integer -- number them
       if (value === 'integer') {
         for (const [i, v] of choices.entries()) {
-          v.value = i
+          v.value = generateValue(v, i)
         }
         //if changing to integer -- remove 'other'
         delete updatedStep.other
       } else {
         for (const [i, v] of choices.entries()) {
-          v.value = v.text.replaceAll(' ', '_')
+          v.value = generateValue(v)
         }
       }
 
@@ -237,7 +253,7 @@ const Select: React.FunctionComponent<{
                 ...step,
                 choices: step.choices.map(c => ({
                   ...c,
-                  value: c.text.replaceAll(' ', '_'),
+                  value: generateValue(c),
                 })),
               })
             }>
@@ -269,9 +285,7 @@ const Select: React.FunctionComponent<{
             {step.other && (
               <tr>
                 <td>Other</td> <td> &rarr;</td>{' '}
-                <td style={{width: '60px'}}>
-                  [&nbsp;&nbsp;custom text&nbsp;&nbsp;]
-                </td>
+                <td style={{width: '60px', padding: '0 8px'}}>custom text</td>
               </tr>
             )}
           </tbody>

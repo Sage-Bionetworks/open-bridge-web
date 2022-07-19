@@ -38,11 +38,16 @@ const getSequentialQuestionIndex = (id: string, questions: Step[]) => {
 
   return {index: qIndex, isLast: qIndex === questions.length - 1}
 }
+//is this select choice 'select all' or 'select none'
+const isSpecialSelectChoice = (choice: ChoiceQuestionChoice) => {
+  return choice.selectorType === 'all' || choice.selectorType === 'exclusive'
+}
 
 const SurveyUtils = {
   reorder,
   getNumberOfRegularSelectChoices,
   getNextSequentialQuestion,
   getSequentialQuestionIndex,
+  isSpecialSelectChoice,
 }
 export default SurveyUtils
