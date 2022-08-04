@@ -190,14 +190,14 @@ const BranchingConfig: FunctionComponent<{
   }
 
   const changeRuleMapping = (
-    optionValue: string | number | undefined,
+    optionValue: string | number | boolean | undefined,
     nextStepId: string
   ) => {
     let rules = [...(step.surveyRules || [])]
     const i = rules?.findIndex(r => r.matchingAnswer === optionValue)
     const rule = {
       matchingAnswer: optionValue,
-      ruleOperator: SurveyRuleOperator.Equal,
+      ruleOperator: 'eq' as SurveyRuleOperator,
       skipToIdentifier: nextStepId,
     }
 
@@ -295,7 +295,7 @@ const BranchingConfig: FunctionComponent<{
             {step.choices && (
               <StyledTable>
                 {step.choices.map(c => (
-                  <tr key={c.value}>
+                  <tr key={c.value?.toString() || 'undefined'}>
                     <td>{c.value}</td>
                     <td style={{fontSize: '15px'}}>&rarr;</td>
 

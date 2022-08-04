@@ -3,7 +3,7 @@ import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
 import {ControlType, Question, Step} from '@typedefs/surveys'
 import clsx from 'clsx'
-import React, {FunctionComponent} from 'react'
+import {FunctionComponent} from 'react'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -154,15 +154,8 @@ const ControlSelector: FunctionComponent<ControlSelectorProps> = ({
   onChange,
 }) => {
   const classes = useStyles()
-  //const [selectedControl, setSelectedControl] = React.useState<
-  //   Control | undefined
-  // >(controls.find(c => c.type === step?.controlType))
 
   const clickControl = (control: Control, type: ControlType) => {
-    /* selectedControl?.type === control.type
-      ? setSelectedControl(undefined)
-      : setSelectedControl(control)*/
-
     if (type === step.controlType) {
       onChange({...step, controlType: undefined})
     } else {
@@ -215,4 +208,3 @@ const ControlSelector: FunctionComponent<ControlSelectorProps> = ({
     </Box>
   )
 }
-export default ControlSelector
