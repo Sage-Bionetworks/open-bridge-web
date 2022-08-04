@@ -251,6 +251,9 @@ export const getQuestionId = (step: Step): QuestionTypeKey => {
       ? 'SINGLE_SELECT'
       : 'MULTI_SELECT'
   }
+  if (step.type === 'completion') {
+    return 'COMPLETION'
+  }
   const uiHint = (step as Question).uiHint
   const inputItemType = (step as Question).inputItem?.type
 
