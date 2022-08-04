@@ -195,19 +195,21 @@ async function updateSurveyAssessment(
     return assessmentResponse.data
   }
 
+  let result
   try {
-    return update(assessmentToUpdate)
+    result = await update(assessmentToUpdate)
   } catch (error) {
-    console.log('!!error')
     if ((error as ExtendedError).statusCode === 409) {
-      console.log('409')
       assessmentToUpdate.version = assessmentToUpdate.version + 1
 
-      return update(assessmentToUpdate)
+      result = await update(assessmentToUpdate)
     } else {
       throw error
     }
   }
+  if (result) {
+    return result
+  } else throw "can't update assessment"
 }
 async function getSurveyAssessmentConfig(
   guid: string,
