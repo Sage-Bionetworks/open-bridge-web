@@ -58,7 +58,7 @@ const RequiredToggle: FunctionComponent<RequiredToggleProps> = ({
       onChange={(e, _val) => {
         sendUpdate(_val)
       }}
-      aria-label="text alignment">
+      aria-label="allow skipping question">
       <StyledToggleButton value={true} aria-label="make required">
         <RequiredIcon />
         &nbsp; Make Required
