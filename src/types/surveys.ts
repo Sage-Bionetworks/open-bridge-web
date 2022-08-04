@@ -1,42 +1,43 @@
-export enum SurveyRuleOperator {
-  /**
-   * The answer value is equal to the matching answer.
-   */
+// export enum SurveyRuleOperatorE {
+//   /**
+//    * The answer value is equal to the matching answer.
+//    */
 
-  Equal = 'eq',
+//   Equal = 'eq',
 
-  /**
-   * The answer value is *not* equal to the matching answer.
-   */
-  NotEqual = 'ne',
-  /// The answer value is less than the matching answer.
+//   /**
+//    * The answer value is *not* equal to the matching answer.
+//    */
+//   NotEqual = 'ne',
+//   /// The answer value is less than the matching answer.
 
-  LessThan = 'lt',
+//   LessThan = 'lt',
 
-  /// The answer value is greater than the matching answer.
+//   /// The answer value is greater than the matching answer.
 
-  GreaterThan = 'gt',
+//   GreaterThan = 'gt',
 
-  /// The answer value is less than or equal to the matching answer.
+//   /// The answer value is less than or equal to the matching answer.
 
-  LessThanEqual = 'le',
+//   LessThanEqual = 'le',
 
-  /// The answer value is greater than or equal to the matching answer.
+//   /// The answer value is greater than or equal to the matching answer.
 
-  GreaterThanEqual = 'ge',
+//   GreaterThanEqual = 'ge',
 
-  /**
-   * The rule should always evaluate to true.
-   */
+//   /**
+//    * The rule should always evaluate to true.
+//    */
 
-  Always = 'always',
+//   Always = 'always',
 
-  /**
-   * Survey rule for checking if the answer was skipped.
-   */
+//   /**
+//    * Survey rule for checking if the answer was skipped.
+//    */
 
-  Skip = 'de',
-}
+//   Skip = 'de',
+// }
+export type SurveyRuleOperator = 'eq' | 'ne'
 export type ChoiceSelectorType = 'all' | 'exclusive' | 'default'
 
 export type QuestionDataType = 'string' | 'integer' | 'number' | 'boolean'
@@ -61,9 +62,22 @@ export type ImageAnimated = {
 export type InputItem = {
   type: 'string' | 'year' | 'checkbox' | 'duration' | 'integer' | 'time'
 
-  placeholder: string
-  fieldLabel: string
+  placeholder?: string
+  fieldLabel?: string
   displayUnits?: string[]
+  formatOptions?: FormatOptionsInteger | FormatOptionsYear
+}
+
+export type FormatOptionsYear = {
+  allowFuture: boolean
+  minimumYear: number
+}
+
+export type FormatOptionsInteger = {
+  maximumLabel: string
+  maximumValue: number
+  minimumLabel: string
+  minimumValue: number
 }
 
 export type Skip = {
@@ -73,7 +87,7 @@ export type Skip = {
 
 export type ChoiceQuestionChoice = {
   text: string
-  value?: string | number
+  value?: string | number | boolean
 
   selectorType?: ChoiceSelectorType
   icon?: string
@@ -83,7 +97,7 @@ export type ChoiceQuestion = Question & {
   baseType: QuestionDataType
 
   surveyRules?: {
-    matchingAnswer?: number | string
+    matchingAnswer?: number | string | boolean
     skipToIdentifier: string
     ruleOperator?: SurveyRuleOperator
   }[]
@@ -92,6 +106,7 @@ export type ChoiceQuestion = Question & {
   singleChoice?: boolean
   other?: {
     type: 'string'
+    fieldLabel?: string // no column
   }
 }
 
@@ -124,19 +139,22 @@ export type BaseStep = {
   identifier: string //'step1',
   controlType?: ControlType
   type:
+    | 'overview'
     | 'completion'
     | 'unkonwn'
     | 'instruction'
     | 'simpleQuestion'
-    | 'multipleInputQuestion'
+    //| 'multipleInputQuestion'
     | 'choiceQuestion'
-    | 'comboBoxQuestion' //otherInputItem
+  //   | 'comboBoxQuestion' //otherInputItem
   title: string //Instruction Step 1',
   subtitle?: string
   detail?: string //Here are the details for this instruction.',
+  comment?: string
   footnote?: string //'This is a footnote.',
-  image?: ImageAnimated | ImageFetchable
+  image?: ImageAnimated | ImageFetchable | 'sageResource'
   shouldHideActions?: ActionButtonName[]
+  actions?: {goForward?: ActionButton; cancel?: ActionButton}
 }
 
 export type Step = Question | Instruction
@@ -147,25 +165,20 @@ export type ActionButtonName =
   | 'skip' /*Skip the step and immediately go forward.*/
   | 'cancel' /*Exit the assessment.*/
   | 'pause'
+  | 'reviewInstructions'
 
 export type WebUISkipOptions = 'SKIP' | 'NO_SKIP' | 'CUSTOMIZE'
 export type InterruptionHandlingType = {
-  canResume: true
-  reviewIdentifier?: 'beginning'
+  canResume: boolean
+  reviewInstructions?: 'beginning'
   canSkip: boolean
-  canSaveForLater: false
+  canSaveForLater: boolean
 }
 export type SurveyConfig = {
   webConfig?: {skipOption?: WebUISkipOptions}
   type: string //'assessment',
-  interrruptionHandling?: InterruptionHandlingType
+  interruptionHandling?: InterruptionHandlingType
   identifier: string //'foo',
-  interruptionHandling?: {
-    canResume: true
-    reviewIdentifier?: 'beginning'
-    canSkip: boolean
-    canSaveForLater: false
-  }
 
   versionString?: string //'1.2.3',
   schemaIdentifier?: string //'bar',

@@ -1,10 +1,14 @@
+import {ReactComponent as PauseIcon} from '@assets/surveys/pause.svg'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import UtilityObject from '@helpers/utility'
+import CheckIcon from '@mui/icons-material/Check'
+import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined'
 import {
   Autocomplete,
   Box,
   Button,
   Checkbox,
+  CheckboxProps,
   Chip,
   FormControl,
   FormControlLabel,
@@ -15,13 +19,18 @@ import {
 } from '@mui/material'
 import {styled} from '@mui/material/styles'
 import {latoFont, poppinsFont, theme} from '@style/theme'
-import {ActionButtonName, Survey, WebUISkipOptions} from '@typedefs/surveys'
+import {
+  ActionButtonName,
+  InterruptionHandlingType,
+  Survey,
+  WebUISkipOptions,
+} from '@typedefs/surveys'
 import {Assessment} from '@typedefs/types'
 import React from 'react'
 import {SimpleTextInput} from '../../widgets/StyledComponents'
 
 const IntroContainer = styled('div')(({theme}) => ({
-  backgroundColor: '#fff',
+  backgroundColor: '#f8f8f8',
   width: '100%',
   padding: theme.spacing(8, 31),
 }))
@@ -36,6 +45,7 @@ const StyledInputLabel = styled('label')(({theme}) => ({
 const StyledFormControl = styled(FormControl)(({theme}) => ({
   marginBottom: theme.spacing(5),
   display: 'flex',
+  width: '520px',
 }))
 
 const HelpText = styled('span')(({theme}) => ({
@@ -45,11 +55,14 @@ const HelpText = styled('span')(({theme}) => ({
   fontWeight: 400,
 }))
 
-const StyledCheckbox = styled(Checkbox)(({theme}) => ({
+const StyledCheckbox = styled((props: CheckboxProps) => (
+  <Checkbox size="medium" checkedIcon={<CheckBoxOutlinedIcon />} {...props} />
+))(({theme}) => ({
   '& svg': {
     fontSize: '24px',
   },
   '&.Mui-checked': {
+    position: 'relative',
     '& svg': {
       color: 'black',
     },
@@ -94,13 +107,22 @@ const QuestionSettings = styled('div')(({theme}) => ({
     padding: theme.spacing(0.5, 1.5),
   },
 
-  backgroundColor: ' #BCD5E4',
+  backgroundColor: ' #FFF',
 }))
 
 const StyledInput = styled(SimpleTextInput)(({theme}) => ({
   marginRight: theme.spacing(3),
   marginBottom: '0 !important',
 }))
+
+const StyledBottomRadio = styled('div', {label: 'StyledBottomRadio'})(
+  ({theme}) => ({
+    marginBottom: theme.spacing(3),
+    '& strong': {
+      marginBottom: theme.spacing(1),
+    },
+  })
+)
 
 export interface IntroInfoProps {
   surveyAssessment?: Assessment
@@ -112,6 +134,12 @@ const getDefaultSurvey = (newSurveyId: string): Survey => ({
     type: 'assessment',
     identifier: newSurveyId,
     shouldHideActions: [],
+    interruptionHandling: {
+      canResume: true,
+      reviewInstructions: 'beginning',
+      canSkip: true,
+      canSaveForLater: true,
+    },
     steps: [],
     webConfig: {
       skipOption: 'CUSTOMIZE',
@@ -131,6 +159,13 @@ const getDefaultAssessment = (
   ownerId: orgMembership,
 })
 
+const InterruptionHandlingDefault: InterruptionHandlingType = {
+  canResume: true,
+  reviewInstructions: 'beginning',
+  canSkip: true,
+  canSaveForLater: true,
+}
+
 const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
   surveyAssessment: _surveyAssessment,
   survey,
@@ -141,6 +176,8 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
   const {orgMembership} = useUserSessionDataState()
   const [skip, setSkip] = React.useState<WebUISkipOptions | undefined>('SKIP')
   const [hideBack, setHideBack] = React.useState(false)
+  const [interruptionHandling, setInterruptionHandling] =
+    React.useState<InterruptionHandlingType>(InterruptionHandlingDefault)
   const [surveyConfig, setSurveyConfig] = React.useState<Survey>(
     getDefaultSurvey(newSurveyId)
   )
@@ -165,12 +202,38 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
         setHideBack(!!goBackHidden)
         setSkip(skipOption)
         setSurveyConfig(survey)
+        if (survey.config.interruptionHandling) {
+          setInterruptionHandling(survey.config.interruptionHandling)
+        }
       } else {
         setSurveyConfig(getDefaultSurvey(_surveyAssessment.identifier))
       }
     }
     console.log(surveyConfig, 'config')
   }, [_surveyAssessment, survey])
+
+  const updateInterruptonHandling = (
+    key: keyof InterruptionHandlingType,
+    value: boolean
+  ) => {
+    if (key !== 'reviewInstructions') {
+      setInterruptionHandling(prev => ({...prev, [key]: value}))
+    } else {
+      if (value) {
+        setInterruptionHandling(prev => ({
+          ...prev,
+          reviewInstructions: 'beginning',
+        }))
+      } else {
+        setInterruptionHandling(prev => {
+          delete prev.reviewInstructions
+          return prev
+        })
+      }
+    }
+
+    //  onUpdate(basicInfo, surveyConfig, basicInfo.guid ? 'UPDATE' : 'CREATE')
+  }
 
   const triggerUpdate = () => {
     const shouldHideActions: ActionButtonName[] = []
@@ -185,6 +248,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
       ...(surveyConfig.config.webConfig || {}),
       skipOption: skip,
     }
+    surveyConfig.config.interruptionHandling = interruptionHandling
 
     onUpdate(basicInfo, surveyConfig, basicInfo.guid ? 'UPDATE' : 'CREATE')
   }
@@ -197,7 +261,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
           <StyledInput
             className="compact"
             id="survey_name"
-            fullWidth
+            sx={{'& input': {width: '250px'}}}
             value={basicInfo?.title}
             onChange={e =>
               setBasicInfo(prev => ({...prev, title: e.target.value}))
@@ -270,18 +334,142 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
           control={
             <StyledCheckbox
               checked={!hideBack}
-              size="medium"
               onChange={e => setHideBack(!e.target.checked)}
             />
           }
           label={
             <Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>
-              Allow participants to <strong>navigate back</strong> to previous
-              question
+              Allow participants to <strong>navigate back</strong>
+              <br /> to previous question
             </Typography>
           }
         />
       </StyledFormControl>
+      <Box
+        sx={{
+          backgroundColor: '#fff',
+          maxWidth: '550px',
+          marginBottom: theme.spacing(6),
+          padding: theme.spacing(3, 3, 1, 3),
+        }}>
+        <StyledInputLabel
+          htmlFor="skip"
+          sx={{marginBottom: theme.spacing(1), display: 'flex'}}>
+          {' '}
+          <PauseIcon />
+          &nbsp;&nbsp; Pause Menu Settings
+        </StyledInputLabel>
+        <Typography>
+          A pause menu is located in the top left corner of every survey.
+          <br />
+          Configure the survey's menu options below:
+        </Typography>
+        <StyledFormControl>
+          <FormControlLabel
+            sx={{mt: theme.spacing(1.5)}}
+            control={
+              <CheckIcon sx={{marginRight: '16px', marginLeft: '8px'}} />
+            }
+            label={
+              <Typography sx={{fontFamily: poppinsFont, fontSize: '14px'}}>
+                <strong> Resume (always present)</strong>
+                <br />
+                Returns participant to the screen before selecting Pause.
+              </Typography>
+            }
+          />
+
+          <FormControlLabel
+            value={interruptionHandling.reviewInstructions}
+            sx={{mt: theme.spacing(1.5)}}
+            control={
+              <StyledCheckbox
+                checked={interruptionHandling.reviewInstructions !== undefined}
+                onChange={e =>
+                  updateInterruptonHandling(
+                    'reviewInstructions',
+                    e.target.checked
+                  )
+                }
+              />
+            }
+            label={
+              <Typography sx={{fontFamily: poppinsFont, fontSize: '14px'}}>
+                <strong>Review Instructions</strong> <br /> Displays the Title
+                Page message to participant for review.
+              </Typography>
+            }
+          />
+
+          <FormControlLabel
+            sx={{mt: theme.spacing(1.5), fontSize: '14px'}}
+            control={
+              <StyledCheckbox
+                checked={interruptionHandling.canSkip}
+                onChange={e =>
+                  updateInterruptonHandling('canSkip', e.target.checked)
+                }
+              />
+            }
+            label={
+              <Typography sx={{fontFamily: poppinsFont, fontSize: '14px'}}>
+                <strong>Skip this activity</strong>
+                <br />
+                Allows participant to skip the activity this one time. Survey
+                will be marked as "declined" and displayed as incomplete in
+                adherence.
+              </Typography>
+            }
+          />
+        </StyledFormControl>
+        <QuestionSettings
+          sx={{
+            width: 'auto',
+            height: 'auto',
+            marginBottom: theme.spacing(2),
+            backgroundColor: '#ECECEC',
+            marginLeft: theme.spacing(-2),
+            marginRight: theme.spacing(-2),
+            padding: theme.spacing(1, 2, 2, 2),
+            '& strong': {
+              display: 'block',
+            },
+          }}>
+          <RadioGroup
+            id="exitSave"
+            value={interruptionHandling.canSaveForLater.toString()}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              updateInterruptonHandling(
+                'canSaveForLater',
+                e.target.value === 'true'
+              )
+            }>
+            <FormControlLabel
+              value="true"
+              sx={{mt: theme.spacing(1.5), alignItems: 'flex-start'}}
+              control={<Radio />}
+              label={
+                <StyledBottomRadio>
+                  <strong>Save &amp; continue later</strong>
+                  Allows participant to save and continue where they left off
+                  within the scheduled window of a study.
+                </StyledBottomRadio>
+              }
+            />
+            <FormControlLabel
+              sx={{alignItems: 'flex-start'}}
+              value="false"
+              control={<Radio />}
+              label={
+                <StyledBottomRadio>
+                  <strong>Exit without saving</strong>
+                  Exits the survey and restarts survey when they open it later.
+                </StyledBottomRadio>
+              }
+            />
+          </RadioGroup>
+        </QuestionSettings>
+      </Box>
       <StyledFormControl>
         <StyledInputLabel htmlFor="skip">
           Tags{' '}
@@ -325,7 +513,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
         key="saveButton"
         onClick={triggerUpdate}
         disabled={!basicInfo?.title}>
-        Title Page
+        {basicInfo.guid ? 'Save' : 'Title Page'}
       </Button>
     </IntroContainer>
   )
