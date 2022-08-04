@@ -11,7 +11,7 @@ import {
 } from '@services/assessmentHooks'
 import {theme} from '@style/theme'
 import {Question, Step, Survey} from '@typedefs/surveys'
-import {Assessment} from '@typedefs/types'
+import {Assessment, ExtendedError} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {
   Redirect,
@@ -67,7 +67,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   const location = useLocation()
   const [assessment, setAssessment] = React.useState<Assessment | undefined>()
   const [survey, setSurvey] = React.useState<Survey | undefined>()
-  const [error, setError] = React.useState('')
+  const [error, setError] = React.useState<string | undefined>(undefined)
   const [currentStepIndex, setCurrentStepIndex] = React.useState<
     number | undefined
   >(getQuestionIndexFromSearchString())
@@ -141,7 +141,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     survey: Survey,
     action: 'UPDATE' | 'CREATE'
   ) => {
-    setError('')
+    setError(undefined)
     try {
       const result = await mutateAssessment({assessment: asmnt, action})
       await mutateSurvey({guid: result.guid!, survey})
@@ -151,7 +151,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       history.push(`/surveys/${result.guid}/design/title`)
       console.log('reloading')
     } catch (error) {
-      setError((error as any).toString())
+      setError((error as ExtendedError).message.toString())
     }
   }
 
