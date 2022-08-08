@@ -1,4 +1,5 @@
-import {act, cleanup, render, RenderResult} from '@testing-library/react'
+import {cleanup, render, RenderResult} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import AddQuestionMenu from './AddQuestionMenu'
 import QUESTIONS from './QuestionConfigs'
 
@@ -13,10 +14,6 @@ beforeEach(() => {
 })
 
 test('renders question selector', async () => {
-  /*  const {debug, container, getByRole} = render(
-    <AddQuestionMenu onSelectQuestion={something => onSelect(something)} />
-  )*/
-
   let valSelectTextField = component!.container.querySelector(
     '#select-survey-question'
   ) as HTMLDivElement
@@ -24,16 +21,8 @@ test('renders question selector', async () => {
 })
 
 test('brings up the menu with question types to select', async () => {
-  /*const {debug, container, getByRole} = render(
-    <AddQuestionMenu onSelectQuestion={something => onSelect(something)} />
-  )*/
-
   const button = component!.getByRole('button', {name: /select/i})
-
-  act(() => {
-    button.focus()
-    button.click()
-  })
+  userEvent.click(button)
 
   QUESTIONS.forEach(value => {
     var re = new RegExp(value.title)
@@ -43,27 +32,13 @@ test('brings up the menu with question types to select', async () => {
 })
 
 test('fires an appropriate call back when item is selected', async () => {
-  /*const {debug, container, getByRole} = render(
-    <AddQuestionMenu onSelectQuestion={something => onSelect(something)} />
-  )*/
-
   const button = component.getByRole('button', {name: /select/i})
   const buttonAdd = component.getByRole('button', {name: /add/i})
-  act(() => {
-    button.focus()
-    button.click()
-  })
+  userEvent.click(button)
 
   const item = component.getByRole('menuitem', {name: /Free Text/i})
-
-  act(() => {
-    item.focus()
-    item.click()
-  })
-  act(() => {
-    buttonAdd.focus()
-    buttonAdd.click()
-  })
+  userEvent.click(item)
+  userEvent.click(buttonAdd)
 
   expect(onSelect).toHaveBeenCalledWith('FREE_TEXT')
 })
