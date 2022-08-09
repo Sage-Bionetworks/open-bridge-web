@@ -95,20 +95,45 @@ const AutoCompleteText = styled(TextField)(({theme}) => ({
   },
 }))
 
-const QuestionSettings = styled('div')(({theme}) => ({
-  width: '345px',
-  height: '171px',
-  marginBottom: theme.spacing(4),
-  padding: theme.spacing(3),
+const QuestionSettings = styled('div', {label: 'QuestionSettings'})(
+  ({theme}) => ({
+    width: '345px',
+    height: '171px',
+    marginBottom: theme.spacing(4),
+    padding: theme.spacing(3),
 
-  textAlign: 'left',
-  '& span': {fontSize: '14px', fontFamily: poppinsFont},
-  '& .MuiRadio-root': {
-    padding: theme.spacing(0.5, 1.5),
-  },
+    textAlign: 'left',
+    '& span': {fontSize: '14px', fontFamily: poppinsFont},
+    '& .MuiRadio-root': {
+      padding: theme.spacing(0.5, 1.5),
+    },
 
-  backgroundColor: ' #FFF',
-}))
+    backgroundColor: ' #FFF',
+  })
+)
+const PauseMenuSettings = styled('div', {label: 'PauseMenuSettings'})(
+  ({theme}) => ({
+    backgroundColor: '#fff',
+    maxWidth: '550px',
+    marginBottom: theme.spacing(6),
+    padding: theme.spacing(3, 3, 1, 3),
+  })
+)
+
+const CanSaveSettings = styled('div', {label: 'CanSaveSettings'})(
+  ({theme}) => ({
+    width: 'auto',
+    height: 'auto',
+
+    backgroundColor: '#ECECEC',
+    marginLeft: theme.spacing(-2),
+    marginRight: theme.spacing(-2),
+    padding: theme.spacing(1, 2, 2, 2),
+    '& strong': {
+      display: 'block',
+    },
+  })
+)
 
 const StyledInput = styled(SimpleTextInput)(({theme}) => ({
   marginRight: theme.spacing(3),
@@ -174,7 +199,9 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
 }: IntroInfoProps) => {
   const newSurveyId = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
   const {orgMembership} = useUserSessionDataState()
-  const [skip, setSkip] = React.useState<WebUISkipOptions | undefined>('SKIP')
+  const [skip, setSkip] = React.useState<WebUISkipOptions | undefined>(
+    'CUSTOMIZE'
+  )
   const [hideBack, setHideBack] = React.useState(false)
   const [interruptionHandling, setInterruptionHandling] =
     React.useState<InterruptionHandlingType>(InterruptionHandlingDefault)
@@ -190,7 +217,6 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
       setBasicInfo(_surveyAssessment)
 
       if (survey) {
-        console.log('sur', survey)
         let skipOption: WebUISkipOptions
         if (survey.config.shouldHideActions?.includes('skip')) {
           skipOption = 'NO_SKIP'
@@ -209,7 +235,6 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
         setSurveyConfig(getDefaultSurvey(_surveyAssessment.identifier))
       }
     }
-    console.log(surveyConfig, 'config')
   }, [_surveyAssessment, survey])
 
   const updateInterruptonHandling = (
@@ -226,13 +251,12 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
         }))
       } else {
         setInterruptionHandling(prev => {
-          delete prev.reviewInstructions
-          return prev
+          const {reviewInstructions, ...rest} = prev
+
+          return rest
         })
       }
     }
-
-    //  onUpdate(basicInfo, surveyConfig, basicInfo.guid ? 'UPDATE' : 'CREATE')
   }
 
   const triggerUpdate = () => {
@@ -345,13 +369,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
           }
         />
       </StyledFormControl>
-      <Box
-        sx={{
-          backgroundColor: '#fff',
-          maxWidth: '550px',
-          marginBottom: theme.spacing(6),
-          padding: theme.spacing(3, 3, 1, 3),
-        }}>
+      <PauseMenuSettings>
         <StyledInputLabel
           htmlFor="skip"
           sx={{marginBottom: theme.spacing(1), display: 'flex'}}>
@@ -422,19 +440,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
             }
           />
         </StyledFormControl>
-        <QuestionSettings
-          sx={{
-            width: 'auto',
-            height: 'auto',
-            marginBottom: theme.spacing(2),
-            backgroundColor: '#ECECEC',
-            marginLeft: theme.spacing(-2),
-            marginRight: theme.spacing(-2),
-            padding: theme.spacing(1, 2, 2, 2),
-            '& strong': {
-              display: 'block',
-            },
-          }}>
+        <CanSaveSettings>
           <RadioGroup
             id="exitSave"
             value={interruptionHandling.canSaveForLater.toString()}
@@ -468,20 +474,21 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
               }
             />
           </RadioGroup>
-        </QuestionSettings>
-      </Box>
+        </CanSaveSettings>
+      </PauseMenuSettings>
       <StyledFormControl>
         <StyledInputLabel htmlFor="skip">
           Tags{' '}
           <HelpText>
-            Keywords to help locate survey. Only available to people you share
+            keywords to help locate survey. Only available to people you share
             it with.
           </HelpText>
         </StyledInputLabel>
         {}
         <Autocomplete
           multiple
-          id="keywords"
+          area-aria-label="survey tags"
+          id="survey tags"
           options={[]}
           freeSolo
           onChange={(e, v) => setBasicInfo(prev => ({...prev, tags: v}))}
@@ -499,8 +506,8 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
             <AutoCompleteText
               {...params}
               variant="outlined"
-              label="keywords"
-              placeholder="keywords"
+              label="survey tags"
+              placeholder="survey tags"
             />
           )}
         />
@@ -511,7 +518,9 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
         variant="contained"
         color="primary"
         key="saveButton"
-        onClick={triggerUpdate}
+        onClick={() => {
+          triggerUpdate()
+        }}
         disabled={!basicInfo?.title}>
         {basicInfo.guid ? 'Save' : 'Title Page'}
       </Button>

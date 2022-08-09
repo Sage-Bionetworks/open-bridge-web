@@ -113,7 +113,7 @@ export type Assessment = {
   deleted?: boolean
   guid?: string
 
-  modifiedOn?: Date
+  modifiedOn?: string
   normingStatus?: string
 
   summary?: string
