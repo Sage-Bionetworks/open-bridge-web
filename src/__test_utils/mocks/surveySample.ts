@@ -11,7 +11,7 @@ const surveySample: Survey = {
     title: 'Hello World!',
     subtitle: 'Subtitle',
     detail: 'Some text. This is a test.',
-    estimatedMinutes: 4,
+    estimatedMinutes: 5,
     icon: 'fooIcon',
     footnote: 'This is a footnote.',
     actions: {
