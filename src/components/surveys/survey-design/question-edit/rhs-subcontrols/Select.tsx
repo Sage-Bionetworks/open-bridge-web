@@ -1,3 +1,4 @@
+import {ReactComponent as AlertIcon} from '@assets/alert_icon.svg'
 import {ReactComponent as GenerateId} from '@assets/surveys/actions/generate_id.svg'
 import SurveyUtils from '@components/surveys/SurveyUtils'
 import {
@@ -268,7 +269,8 @@ const Select: React.FunctionComponent<{
           <ValueTable>
             <tbody>
               <tr>
-                <th>Response</th> <th></th>{' '}
+                <th>Response</th>
+                <th></th>
                 <th style={{width: '60px'}}>
                   Value={UtilityObject.capitalize(step.baseType)}
                 </th>
@@ -276,6 +278,7 @@ const Select: React.FunctionComponent<{
 
               {step.choices?.map((choice, index) => (
                 <ChoiceValueInputRow
+                  key={choice.text}
                   choice={choice}
                   allValues={step.choices.map(c => c.value)}
                   onChange={val => {
@@ -298,8 +301,11 @@ const Select: React.FunctionComponent<{
       </Box>
       <ConfirmationDialog
         isOpen={isTypeConversionWarning}
-        title={'Changing to Integer removes “Other“'}
-        type={'CLOSE_STUDY'}
+        title={'Changing to Integer removes "Other"'}
+        type={'CUSTOM'}
+        actionText={'Proceed and remove "Other" '}
+        width="580px"
+        icon={<AlertIcon />}
         onCancel={() => setIsTypeConversionWarning(false)}
         onConfirm={() => {
           handleDataTypeChange('integer', true)

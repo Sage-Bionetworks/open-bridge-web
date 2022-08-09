@@ -20,8 +20,8 @@ import {
 
 const OptionList = styled('div', {label: 'OptionList'})(({theme}) => ({}))
 
-const Option = styled('div')<{issinglechoice?: boolean}>(
-  ({theme, issinglechoice}) => ({
+const Option = styled('div')<{$issinglechoice?: boolean}>(
+  ({theme, $issinglechoice}) => ({
     background: '#FFFFFF',
     boxShadow: '1px 2px 3px rgba(42, 42, 42, 0.1)',
 
@@ -33,7 +33,7 @@ const Option = styled('div')<{issinglechoice?: boolean}>(
     display: 'flex',
 
     alignItems: 'center',
-    borderRadius: issinglechoice ? '28px' : '2px',
+    borderRadius: $issinglechoice ? '28px' : '2px',
     //checkbox square
     '& div:first-of-type': {
       width: '16px',
@@ -41,7 +41,7 @@ const Option = styled('div')<{issinglechoice?: boolean}>(
       border: '2px solid black',
       flexShrink: 0,
       marginRight: '6px',
-      borderRadius: issinglechoice ? '7px' : '0px',
+      borderRadius: $issinglechoice ? '7px' : '0px',
     },
     '& div:last-of-type': {
       marginLeft: 'auto',
@@ -87,7 +87,7 @@ const SelectOption: FunctionComponent<{
       {...provided?.draggableProps}
       {...provided?.dragHandleProps}
       ref={provided?.innerRef}
-      issinglechoice={isSingleChoice}>
+      $issinglechoice={isSingleChoice}>
       <div />
       {isStatic ? (
         <Typography sx={{padding: theme.spacing(0.5, 0.5)}}>{title}</Typography>
