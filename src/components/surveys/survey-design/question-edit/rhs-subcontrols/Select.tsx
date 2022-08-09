@@ -288,7 +288,7 @@ const Select: React.FunctionComponent<{
               ))}
               {step.other && (
                 <tr>
-                  <td>Other</td> <td> &rarr;</td>{' '}
+                  <td>{step.other.fieldLabel || 'Other'}</td> <td> &rarr;</td>{' '}
                   <td style={{width: '60px', padding: '0 8px'}}>custom text</td>
                 </tr>
               )}
