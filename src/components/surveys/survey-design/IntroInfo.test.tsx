@@ -1,4 +1,11 @@
-import {act, cleanup, fireEvent, render, screen} from '@testing-library/react'
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  RenderResult,
+  screen,
+} from '@testing-library/react'
 import SurveyAssessment from '__test_utils/mocks/surveyAssessment'
 
 import {loggedInSessionData} from '__test_utils/mocks/user'
@@ -6,7 +13,6 @@ import {ProvideTheme} from '__test_utils/utils'
 import IntroInfo from './IntroInfo'
 
 import * as useUserSessionDataState from '@helpers/AuthContext'
-import userEvent from '@testing-library/user-event'
 import {SurveyConfig} from '@typedefs/surveys'
 
 jest.mock('@helpers/AuthContext')
@@ -35,37 +41,66 @@ const mockedAuth = useUserSessionDataState as jest.Mocked<
   typeof useUserSessionDataState
 >
 
+let component: RenderResult | undefined
 const onUpdateFn = jest.fn()
 
-afterEach(cleanup)
+afterEach(() => {
+  component = undefined
+  cleanup()
+})
 
-function renderComponent(survey: SurveyConfig | undefined) {
+function renderComponent(survey: SurveyConfig | undefined, isNew?: boolean) {
   mockedAuth.useUserSessionDataState.mockImplementation(
     () => loggedInSessionData
   )
   const surv = survey ? {config: survey} : undefined
-  return render(
+  component = render(
     <ProvideTheme>
       <IntroInfo
         survey={surv}
-        surveyAssessment={SurveyAssessment}
+        surveyAssessment={isNew ? undefined : SurveyAssessment}
         onUpdate={(asmnt, survey, action) =>
           onUpdateFn(asmnt, survey, action)
         }></IntroInfo>
     </ProvideTheme>
   )
 }
+
+function triggerSave(isNew?: boolean) {
+  const matchObj = isNew ? {name: /title page/i} : {name: /save/i}
+  const saveBtn = component!.getByRole('button', matchObj)
+  act(() => {
+    saveBtn.focus()
+    saveBtn.click()
+  })
+}
+
+function getSurveyQuestionSettings() {
+  return [
+    screen.getByRole('radio', {name: /allow partcipants to skip/i}),
+    screen.getByRole('radio', {name: /make all survey questions required/i}),
+    screen.getByRole('radio', {name: /customize each/i}),
+  ]
+}
+
+function getPauseMenuSettings() {
+  const review = screen.getByRole('checkbox', {name: /review instructions/i})
+  const skip = screen.getByRole('checkbox', {name: /skip this activity/i})
+
+  //save continue
+  const save = screen.getByRole('radio', {name: /save & continue later /i})
+  const exit = screen.getByRole('radio', {name: /exit without saving /i})
+  return {review, skip, save, exit}
+}
+
 describe('<IntroInfo/>', () => {
   test('should display and set correct assessment information', () => {
-    const component = renderComponent(surveyConfig)
+    renderComponent(surveyConfig)
 
     const surveyName = screen.getByRole('textbox', {name: /survey name/i})
     const minutes = screen.getByRole('textbox', {
       name: /how long will this survey take/i,
     })
-    const saveBtn = component.getByRole('button', {name: /save/i})
-    userEvent.click(saveBtn)
-    expect(saveBtn).not.toBeDisabled()
 
     for (var tag of SurveyAssessment.tags) {
       let tagVal = screen.getByText(tag, {exact: false})
@@ -77,10 +112,7 @@ describe('<IntroInfo/>', () => {
     fireEvent.change(surveyName, {target: {value: 'Mock Name'}})
     fireEvent.change(minutes, {target: {value: '1'}})
 
-    act(() => {
-      saveBtn.focus()
-      saveBtn.click()
-    })
+    triggerSave()
     expect(onUpdateFn).toHaveBeenCalledWith(
       expect.objectContaining({title: 'Mock Name', minutesToComplete: 1}),
       expect.any(Object),
@@ -88,36 +120,61 @@ describe('<IntroInfo/>', () => {
     )
   })
 
-  test('should allow to skip and cusomize each quesiton by default ', () => {
-    //default is:
-    // shouldHideActions: [],
-    // webConfig: {
-    //   skipOption: 'CUSTOMIZE',
-    // }
-    //
-    const component = renderComponent(undefined)
-    const radios = [
-      screen.getByRole('radio', {name: /allow partcipants to skip/i}),
-      screen.getByRole('radio', {name: /make all survey questions required/i}),
-      screen.getByRole('radio', {name: /customize each/i}),
-    ]
+  describe('for the new survey', () => {
+    test('should allow to skip and cusomize each quesiton by default', () => {
+      //default is:
+      // shouldHideActions: [],
+      // webConfig: {
+      //   skipOption: 'CUSTOMIZE',
+      // }
+      //
+      renderComponent(undefined, true)
+      const radios = getSurveyQuestionSettings()
 
-    const navigateBackCheck = screen.getByRole('checkbox', {
-      name: /allow participants to navigate/i,
+      const navigateBackCheck = screen.getByRole('checkbox', {
+        name: /allow participants to navigate/i,
+      })
+      expect(radios[0]).not.toBeChecked()
+      expect(radios[1]).not.toBeChecked()
+      expect(radios[2]).toBeChecked()
+      expect(navigateBackCheck).toBeChecked()
     })
-    expect(radios[0]).not.toBeChecked()
-    expect(radios[1]).not.toBeChecked()
-    expect(radios[2]).toBeChecked()
-    expect(navigateBackCheck).toBeChecked()
+
+    test('save button should have "title page" text and be disabled if there is no survey name of duration', () => {
+      renderComponent(undefined, true)
+      const radios = getSurveyQuestionSettings()
+
+      const saveForNewBtn = component!.queryByRole('button', {
+        name: /title page/i,
+      })
+      const saveBtn = component!.queryByRole('button', {name: /save/i})
+      expect(saveForNewBtn).toBeInTheDocument()
+      expect(saveBtn).not.toBeInTheDocument()
+      expect(saveForNewBtn).toBeDisabled()
+    })
+
+    test(' and call update with "CREATE" action', () => {
+      renderComponent(undefined, true)
+
+      const surveyName = screen.getByRole('textbox', {name: /survey name/i})
+      const minutes = screen.getByRole('textbox', {
+        name: /how long will this survey take/i,
+      })
+      fireEvent.change(surveyName, {target: {value: 'Mock Name'}})
+      fireEvent.change(minutes, {target: {value: '1'}})
+
+      triggerSave(true)
+      expect(onUpdateFn).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.any(Object),
+        'CREATE'
+      )
+    })
   })
 
-  test('should display and  set Survey Question Settings', () => {
-    const component = renderComponent(surveyConfig)
-    const radios = [
-      screen.getByRole('radio', {name: /allow partcipants to skip/i}),
-      screen.getByRole('radio', {name: /make all survey questions required/i}),
-      screen.getByRole('radio', {name: /customize each/i}),
-    ]
+  test('should display and set Survey Question Settings', () => {
+    renderComponent(surveyConfig)
+    const radios = getSurveyQuestionSettings()
 
     const navigateBackCheck = screen.getByRole('checkbox', {
       name: /allow participants to navigate/i,
@@ -126,6 +183,22 @@ describe('<IntroInfo/>', () => {
     expect(radios[1]).toBeChecked()
     expect(radios[2]).not.toBeChecked()
     expect(navigateBackCheck).not.toBeChecked()
+    act(() => {
+      radios[0].focus()
+      radios[0].click()
+      navigateBackCheck.focus()
+      navigateBackCheck.click()
+    })
+    triggerSave()
+    const expectation = {
+      ...surveyConfig,
+      shouldHideActions: [],
+    }
+    expect(onUpdateFn).toHaveBeenCalledWith(
+      expect.any(Object),
+      {config: expectation},
+      'UPDATE'
+    )
   })
 
   /* 
@@ -136,31 +209,19 @@ describe('<IntroInfo/>', () => {
       canSaveForLater: true,
     },*/
 
-  test('should display default "Pause Menu" settings if survey is not provided ', () => {
-    const component = renderComponent(undefined)
+  test('should display default "Pause Menu" settings if info is not provided ', () => {
+    renderComponent(undefined)
 
-    //pauseMenuSettings
-    const review = screen.getByRole('checkbox', {name: /review instructions/i})
-    const skip = screen.getByRole('checkbox', {name: /skip this activity/i})
-
-    //save continue
-    const save = screen.getByRole('radio', {name: /save & continue later /i})
-    const exit = screen.getByRole('radio', {name: /exit without saving /i})
+    const {review, skip, save, exit} = getPauseMenuSettings()
     expect(review).toBeChecked()
     expect(skip).toBeChecked()
     expect(save).toBeChecked()
     expect(exit).not.toBeChecked()
   })
   test('should display and set "Pause Menu" settings ', () => {
-    const component = renderComponent(surveyConfig)
+    renderComponent(surveyConfig)
 
-    //pauseMenuSettings
-    const review = screen.getByRole('checkbox', {name: /review instructions/i})
-    const skip = screen.getByRole('checkbox', {name: /skip this activity/i})
-
-    //save continue
-    const save = screen.getByRole('radio', {name: /save & continue later /i})
-    const exit = screen.getByRole('radio', {name: /exit without saving /i})
+    const {review, skip, save, exit} = getPauseMenuSettings()
     expect(review).not.toBeChecked()
     expect(skip).not.toBeChecked()
     expect(save).not.toBeChecked()
