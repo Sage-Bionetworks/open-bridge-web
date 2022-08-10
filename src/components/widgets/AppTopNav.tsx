@@ -1,4 +1,5 @@
 import Logo from '@assets/logo_mtb.svg'
+import useFeatureToggles from '@helpers/FeatureToggle'
 import MenuIcon from '@mui/icons-material/Menu'
 import {
   Divider,
@@ -172,7 +173,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type AppTopNavProps = {
-  routes: {name: string; path: string; isRhs?: boolean}[]
+  routes: {name: string; path: string; isRhs?: boolean; toggle?: string}[]
   appId: string
   sessionData?: UserSessionData
 }
@@ -275,6 +276,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
 
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null)
+  const toggle = useFeatureToggles<{[key: string]: boolean}>()
 
   const handleMenuClose = () => {
     setMenuAnchor(null)
@@ -295,7 +297,10 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
   }
   // Hide the app store download page and also the sign in page from the nav.
   routes = routes.filter(
-    route => route.name !== 'APP STORE' && route.name !== 'SIGN IN'
+    route =>
+      route.name !== 'APP STORE' &&
+      route.name !== 'SIGN IN' &&
+      (!route.toggle || toggle[route.toggle] === true)
   )
 
   const isLoginButtonDisabled = React.useMemo(() => {
