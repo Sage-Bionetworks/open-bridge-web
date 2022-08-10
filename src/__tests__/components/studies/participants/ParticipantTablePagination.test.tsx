@@ -1,5 +1,6 @@
 import TablePagination from '@components/widgets/pagination/TablePagination'
 import {
+  act,
   cleanup,
   queryByAttribute,
   render,
@@ -7,8 +8,6 @@ import {
   within,
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import React from 'react'
-import ReactDOM from 'react-dom'
 import {ProvideTheme} from '__test_utils/utils'
 
 const getById = queryByAttribute.bind(null, 'id')
@@ -92,69 +91,66 @@ afterAll(() => {
 */
 
 // tests to see if the components are rendering without crashing
-test('should be rendering without crashing', () => {
-  const div = document.createElement('div')
-  ReactDOM.render(
-    <TablePagination
-      setPageSize={updatePageSize}
-      totalItems={totalParticipants}
-      currentPage={currentPage}
-      pageSize={pageSize}
-      counterTextSingular="participants"
-      onPageSelectedChanged={onPageSelectedChanged}></TablePagination>,
-    div
-  )
-})
 
 // test the functionality of the forward and back buttons for pagination
-test('should page forward and backward buttons function correctly', () => {
+test('should page forward and backward buttons function correctly', async () => {
+  const user = userEvent.setup()
   // try to go back one page. nothing should happen
-  userEvent.click(backward_one_page_button as HTMLElement)
-  expect(onPageSelectedChanged).not.toHaveBeenCalled()
+  expect(backward_one_page_button).toBeDisabled()
   // go forward one page
-  userEvent.click(forward_one_page_button as HTMLElement)
+  await act(
+    async () => await user.click(forward_one_page_button as HTMLElement)
+  )
   expect(onPageSelectedChanged).toHaveBeenLastCalledWith(1)
   onPageSelectedChanged.mockReset()
-  userEvent.click(backward_to_beginning_button as HTMLElement)
-  expect(onPageSelectedChanged).not.toHaveBeenCalled()
+
+  expect(backward_to_beginning_button).toBeDisabled()
   onPageSelectedChanged.mockReset()
   resetVariables({currentPage: 2})
   renderParticipantTableGrid()
   // go back one page
-  userEvent.click(backward_one_page_button as HTMLElement)
+  await act(
+    async () => await user.click(backward_one_page_button as HTMLElement)
+  )
   expect(onPageSelectedChanged).toHaveBeenLastCalledWith(1)
   // go to the last page
-  userEvent.click(forward_to_end_button as HTMLElement)
+  await act(async () => await user.click(forward_to_end_button as HTMLElement))
   expect(onPageSelectedChanged).toHaveBeenLastCalledWith(3)
   //when you are on the last page  try to go to next page. nothing should happen
   resetVariables({currentPage: 3})
   renderParticipantTableGrid()
   onPageSelectedChanged.mockReset()
-  userEvent.click(forward_one_page_button as HTMLElement)
-  expect(onPageSelectedChanged).not.toHaveBeenCalled()
-  userEvent.click(backward_to_beginning_button as HTMLElement)
+
+  expect(forward_one_page_button).toBeDisabled()
+  await act(
+    async () => await user.click(backward_to_beginning_button as HTMLElement)
+  )
   expect(onPageSelectedChanged).toHaveBeenLastCalledWith(0)
 })
 
 // test to see if the page changes as expected when page number is clicked
-test('should page change when page number is clicked', () => {
+test('should page change when page number is clicked', async () => {
+  const user = userEvent.setup()
   const btn =
     participantTablePagination.container.querySelector('#pagebox-button-3')
   expect(btn!.textContent).toBe('4')
-  userEvent.click(btn!)
+  await act(async () => await act(async () => await user.click(btn!)))
+
   expect(onPageSelectedChanged).toHaveBeenLastCalledWith(3)
 })
 
 // test to see if changing the page size results in correct behavior
-test('should changing page size result in correct behavior', () => {
+test('should changing page size result in correct behavior', async () => {
+  const user = userEvent.setup()
   const textField = getById(
     participantTablePagination.container as HTMLElement,
     'page-selector'
   )
   const selectNode = textField?.parentNode?.querySelector('[role=button]')
-  userEvent.click(selectNode!)
+
+  await act(async () => await user.click(selectNode!))
   const listbox = document.body.querySelector('ul[role=listbox]')
   const selectedItem = within(listbox as HTMLElement).getByText('50')
-  userEvent.click(selectedItem)
+  await act(async () => await user.click(selectedItem))
   expect(updatePageSize).toHaveBeenCalledWith(50)
 })

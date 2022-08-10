@@ -7,14 +7,6 @@ import LeftPanel from './LeftPanel'
 const onUpdateStep = jest.fn()
 const onNavigateStep = jest.fn()
 
-/*const LeftPanel: React.FunctionComponent<{
-  guid: string
-  surveyId?: string
-  surveyConfig?: SurveyConfig
-  currentStepIndex?: number
-  onUpdateSteps: (s: Step[]) => void
-  onNavigateStep: (id: number | 'title' | 'completion') => void*/
-
 function renderControl(
   location: string,
   guid: string,

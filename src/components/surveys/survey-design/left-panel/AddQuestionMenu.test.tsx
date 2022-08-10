@@ -1,18 +1,24 @@
-import {act, cleanup, render, RenderResult} from '@testing-library/react'
+import {act, cleanup, render} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import AddQuestionMenu from './AddQuestionMenu'
 import QUESTIONS from './QuestionConfigs'
 
-let component: RenderResult
+function setUp() {
+  const user = userEvent.setup()
+  const component = render(
+    <AddQuestionMenu onSelectQuestion={something => onSelect(something)} />
+  )
+
+  const selectBtn = component!.getByRole('button', {name: /select/i})
+  return {user, component, selectBtn}
+}
 
 const onSelect = jest.fn()
 afterEach(cleanup)
-beforeEach(() => {
-  component = render(
-    <AddQuestionMenu onSelectQuestion={something => onSelect(something)} />
-  )
-})
 
 test('renders question selector', async () => {
+  const {component} = setUp()
+
   let valSelectTextField = component!.container.querySelector(
     '#select-survey-question'
   ) as HTMLDivElement
@@ -20,11 +26,8 @@ test('renders question selector', async () => {
 })
 
 test('brings up the menu with question types to select', async () => {
-  const button = component!.getByRole('button', {name: /select/i})
-  act(() => {
-    button.focus()
-    button.click()
-  })
+  const {user, component, selectBtn} = setUp()
+  await act(async () => await user.click(selectBtn))
 
   QUESTIONS.forEach(value => {
     var re = new RegExp(value.title)
@@ -34,24 +37,13 @@ test('brings up the menu with question types to select', async () => {
 })
 
 test('fires an appropriate call back when item is selected', async () => {
-  const button = component.getByRole('button', {name: /select/i})
+  const {user, component, selectBtn} = setUp()
+
   const buttonAdd = component.getByRole('button', {name: /add/i})
-  act(() => {
-    button.focus()
-    button.click()
-  })
-
-  component.debug(undefined, 30000000)
+  await act(async () => await user.click(selectBtn))
   const item = component.getByRole('menuitem', {name: /Free Text/i})
-
-  act(() => {
-    item.focus()
-    item.click()
-  })
-  act(() => {
-    buttonAdd.focus()
-    buttonAdd.click()
-  })
+  await act(async () => await user.click(item))
+  await act(async () => await user.click(buttonAdd))
 
   expect(onSelect).toHaveBeenCalledWith('FREE_TEXT')
 })
