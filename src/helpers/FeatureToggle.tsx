@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react'
 
-type FeatureToggles = Record<string, string | boolean>
+export type ToggleKey = 'SURVEY BUILDER' | 'OTHER'
+
+export type FeatureToggles = Partial<Record<ToggleKey, undefined | boolean>>
 
 export interface FeatureToggleProps {
   featureToggles?: FeatureToggles

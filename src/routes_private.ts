@@ -12,9 +12,11 @@ import StudyList from '@components/studies/StudyList'
 import SurveyBranching from '@components/surveys/survey-branching/SurveyBranching'
 import SurveyDesign from '@components/surveys/survey-design/SurveyDesign'
 import SurveyList from '@components/surveys/SurveyList'
-import constants from '@typedefs/constants'
 
-export default [
+import constants from '@typedefs/constants'
+import {NavRouteType} from '@typedefs/types'
+
+const PATHS: NavRouteType[] = [
   {
     path: constants.restrictedPaths.ADHERENCE_DATA,
     name: '',
@@ -121,3 +123,5 @@ export default [
     Component: SessionsLayout,
   },*/
 ]
+
+export default PATHS

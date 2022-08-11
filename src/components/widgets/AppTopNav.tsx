@@ -1,5 +1,5 @@
 import Logo from '@assets/logo_mtb.svg'
-import useFeatureToggles from '@helpers/FeatureToggle'
+import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
 import MenuIcon from '@mui/icons-material/Menu'
 import {
   Divider,
@@ -14,7 +14,7 @@ import Button from '@mui/material/Button'
 import Toolbar from '@mui/material/Toolbar'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont} from '@style/theme'
-import {UserSessionData} from '@typedefs/types'
+import {NavRouteType, UserSessionData} from '@typedefs/types'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {useLocation} from 'react-router'
@@ -173,7 +173,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 type AppTopNavProps = {
-  routes: {name: string; path: string; isRhs?: boolean; toggle?: string}[]
+  routes: NavRouteType[]
   appId: string
   sessionData?: UserSessionData
 }
@@ -276,7 +276,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
 
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null)
-  const toggle = useFeatureToggles<{[key: string]: boolean}>()
+  const toggle = useFeatureToggles<FeatureToggles>()
 
   const handleMenuClose = () => {
     setMenuAnchor(null)
@@ -300,7 +300,7 @@ const AppTopNav: FunctionComponent<AppTopNavProps> = ({
     route =>
       route.name !== 'APP STORE' &&
       route.name !== 'SIGN IN' &&
-      (!route.toggle || toggle[route.toggle] === true)
+      (!route.toggle || toggle[route.toggle!] === true)
   )
 
   const isLoginButtonDisabled = React.useMemo(() => {
