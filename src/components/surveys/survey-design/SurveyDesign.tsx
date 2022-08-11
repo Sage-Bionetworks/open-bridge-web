@@ -10,7 +10,7 @@ import {
   useUpdateSurveyResource,
 } from '@services/assessmentHooks'
 import {theme} from '@style/theme'
-import {Question, Step, Survey} from '@typedefs/surveys'
+import {ChoiceQuestion, Question, Step, Survey} from '@typedefs/surveys'
 import {Assessment, ExtendedError} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {
@@ -276,6 +276,40 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     }
   }
 
+  const findDependentQuestions = () => {
+    const currentStep = getCurrentStep()
+    if (!currentStep) {
+      return []
+    }
+    /*  const dependentSteps = survey!.config.steps.filter(s => {
+      let q = s as ChoiceQuestion
+      if (!q.surveyRules) {
+        return false
+      }
+      return (
+        q.surveyRules.findIndex(
+          sr => sr.skipToIdentifier === currentStep.identifier
+        ) !== -1
+      )
+    })*/
+
+    const dependentSteps = survey!.config.steps.reduce((p, current, index) => {
+      let q = current as ChoiceQuestion
+
+      if (
+        q.surveyRules &&
+        q.surveyRules.findIndex(
+          sr => sr.skipToIdentifier === currentStep.identifier
+        ) !== -1
+      ) {
+        return [...p, index]
+      }
+      return [...p]
+    }, [] as number[])
+
+    return dependentSteps
+  }
+
   const getCurrentStep = () =>
     currentStepIndex !== undefined
       ? survey?.config.steps[currentStepIndex]
@@ -385,7 +419,6 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                       survey!.config.webConfig!.skipOption!
                     }
                     onChange={(step: Step) => {
-                      console.log('got step!!!!!', step)
                       updateCurrentStep(step)
                     }}
                     step={getCurrentStep()}
@@ -396,9 +429,11 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
               <Box height="100%" bgcolor={'#f8f8f8'}>
                 {survey && (
                   <QuestionEditRhs
+                    dependentQuestions={findDependentQuestions()}
                     step={getCurrentStep()!}
                     onChange={(step: Step) => updateCurrentStep(step)}>
                     <QuestionEditToolbar
+                      dependentQuestions={findDependentQuestions()}
                       onAction={action => {
                         console.log(action)
                         if (action === 'save') {

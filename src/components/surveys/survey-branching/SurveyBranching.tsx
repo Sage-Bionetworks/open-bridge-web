@@ -1,9 +1,8 @@
-import {Box, styled} from '@mui/material'
+import {Box, Button, styled} from '@mui/material'
 import {useSurveyConfig, useUpdateSurveyConfig} from '@services/assessmentHooks'
 import {latoFont} from '@style/theme'
 import {SmartStepEdge} from '@tisoap/react-flow-smart-edge'
 import {ChoiceQuestion, Survey} from '@typedefs/surveys'
-import {Assessment} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import ReactFlow, {
   addEdge,
@@ -135,14 +134,10 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     }
   }, [survey?.config.steps, width, isHideInput])
 
-  const saveSurvey = async (
-    asmnt: Assessment,
-    survey: Survey,
-    action: 'UPDATE' | 'CREATE'
-  ) => {
+  const saveSurvey = async () => {
     setError('')
     try {
-      await mutateSurvey({guid: surveyGuid, survey})
+      await mutateSurvey({guid: surveyGuid, survey: survey!})
     } catch (error) {
       setError((error as any).toString())
     }
@@ -214,6 +209,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
               questions={survey.config.steps as ChoiceQuestion[]}
               step={survey.config.steps[currentStepIndex] as ChoiceQuestion}
             />
+            <Button onClick={() => saveSurvey()}>Save Survey</Button>
           </Box>
         )}
     </SurveyBranchingContainerBox>

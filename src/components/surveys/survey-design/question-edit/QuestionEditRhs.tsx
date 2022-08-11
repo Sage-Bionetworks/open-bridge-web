@@ -55,9 +55,16 @@ function Factory(args: {
       return <>nothing</>
   }
 }
+/* 
+deleting questions:
+can't delete question if it is in the rules for another question.
+changing quesiton id:
+change the dependent quesitons
+*/
 
 type QuestionEditProps = {
   step: Step
+  dependentQuestions: number[] | undefined
   onChange: (step: Step) => void
 }
 
@@ -65,6 +72,7 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({
   step,
   onChange,
   children,
+  dependentQuestions,
 }) => {
   const matchIdentifier = () => {
     const newId = `${step?.title
