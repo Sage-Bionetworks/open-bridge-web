@@ -170,7 +170,7 @@ export type ActionButtonName =
 export type WebUISkipOptions = 'SKIP' | 'NO_SKIP' | 'CUSTOMIZE'
 export type InterruptionHandlingType = {
   canResume: boolean
-  reviewInstructions?: 'beginning'
+  reviewIdentifier?: 'beginning'
   canSkip: boolean
   canSaveForLater: boolean
 }
