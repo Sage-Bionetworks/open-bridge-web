@@ -1,3 +1,4 @@
+import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import {Box, Button, styled} from '@mui/material'
 import {useSurveyConfig, useUpdateSurveyConfig} from '@services/assessmentHooks'
 import {latoFont} from '@style/theme'
@@ -17,6 +18,7 @@ import ReactFlow, {
 } from 'react-flow-renderer'
 
 import {RouteComponentProps, useParams} from 'react-router-dom'
+import NavigationPrompt from 'react-router-navigation-prompt'
 import BranchingConfig from './BranchingConfig'
 import getNodes, {getDryRunEdges} from './GetNodesToPlot'
 import {useGetPlotWidth} from './UseGetPlotWidth'
@@ -79,6 +81,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   const {width} = useGetPlotWidth(ref)
   const [survey, setSurvey] = React.useState<Survey | undefined>()
   const [error, setError] = React.useState('')
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [currentStepIndex, setCurrentStepIndex] = React.useState<
     number | undefined
   >(-1)
@@ -138,6 +141,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     setError('')
     try {
       await mutateSurvey({guid: surveyGuid, survey: survey!})
+      setHasObjectChanged(false)
     } catch (error) {
       setError((error as any).toString())
     }
@@ -155,64 +159,80 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   }
 
   return (
-    <SurveyBranchingContainerBox width="100%" sx={{}}>
-      {error && <span>{error.toString()}</span>}
-      <Box ref={ref}>
-        <div
-          style={{
-            width: isHideInput ? width || 0 : (width || 0) - 424 + 'px',
-            height: 'calc(100vh - 75px)',
-          }}>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodeClick={onNodeClick}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            edgeTypes={edgeTypes}
-            // fitView
-            fitViewOptions={fitViewOptions}
+    <>
+      <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
+        {({onConfirm, onCancel}) => (
+          <ConfirmationDialog
+            isOpen={hasObjectChanged}
+            type={'NAVIGATE'}
+            onCancel={onCancel}
+            onConfirm={onConfirm}
           />
-        </div>
-      </Box>
-
-      {survey?.config.steps &&
-        currentStepIndex !== undefined &&
-        !isHideInput &&
-        survey.config.steps[currentStepIndex] && (
-          <Box
-            sx={{
-              width: '424px',
-              height: 'calc(100vh - 75px)',
-              borderLeft: '1px solid black',
-              position: 'absolute',
-              top: '0',
-              right: '0',
-            }}>
-            <BranchingConfig
-              onHide={() => setIsHideInput(true)}
-              sourceNodesIds={edges
-                .filter(
-                  e =>
-                    e.target ===
-                    survey.config.steps[currentStepIndex].identifier
-                )
-                .map(n => n.source)
-                .concat([survey.config.steps[currentStepIndex].identifier])}
-              onChange={steps => {
-                console.log('steps', steps)
-                const edges = getDryRunEdges(steps)
-                console.log('DRY RUN', edges)
-                setSurvey({...survey, config: {...survey.config, steps: steps}})
-              }}
-              questions={survey.config.steps as ChoiceQuestion[]}
-              step={survey.config.steps[currentStepIndex] as ChoiceQuestion}
-            />
-            <Button onClick={() => saveSurvey()}>Save Survey</Button>
-          </Box>
         )}
-    </SurveyBranchingContainerBox>
+      </NavigationPrompt>
+      <SurveyBranchingContainerBox width="100%" sx={{}}>
+        {error && <span>{error.toString()}</span>}
+        <Box ref={ref}>
+          <div
+            style={{
+              width: isHideInput ? width || 0 : (width || 0) - 424 + 'px',
+              height: 'calc(100vh - 75px)',
+            }}>
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodeClick={onNodeClick}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              edgeTypes={edgeTypes}
+              // fitView
+              fitViewOptions={fitViewOptions}
+            />
+          </div>
+        </Box>
+
+        {survey?.config.steps &&
+          currentStepIndex !== undefined &&
+          !isHideInput &&
+          survey.config.steps[currentStepIndex] && (
+            <Box
+              sx={{
+                width: '424px',
+                height: 'calc(100vh - 75px)',
+                borderLeft: '1px solid black',
+                position: 'absolute',
+                top: '0',
+                right: '0',
+              }}>
+              <BranchingConfig
+                onHide={() => setIsHideInput(true)}
+                sourceNodesIds={edges
+                  .filter(
+                    e =>
+                      e.target ===
+                      survey.config.steps[currentStepIndex].identifier
+                  )
+                  .map(n => n.source)
+                  .concat([survey.config.steps[currentStepIndex].identifier])}
+                onChange={steps => {
+                  console.log('steps', steps)
+                  const edges = getDryRunEdges(steps)
+                  console.log('DRY RUN', edges)
+                  setHasObjectChanged(true)
+                  setSurvey({
+                    ...survey,
+                    config: {...survey.config, steps: steps},
+                  })
+                }}
+                questions={survey.config.steps as ChoiceQuestion[]}
+                step={survey.config.steps[currentStepIndex] as ChoiceQuestion}
+              />
+              <Button onClick={() => saveSurvey()}>Save Survey</Button>
+            </Box>
+          )}
+      </SurveyBranchingContainerBox>
+    </>
   )
 }
 export default SurveyBranching
