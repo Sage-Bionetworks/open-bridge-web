@@ -74,6 +74,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
 
   //rq get and modify data hooks
   const {data: _assessment, status: aStatus} = useSurveyAssessment(
+    true,
     isNewSurvey() ? undefined : surveyGuid
   )
   const {data: _survey, status: cStatus} = useSurveyConfig(

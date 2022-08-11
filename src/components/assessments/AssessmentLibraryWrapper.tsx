@@ -1,11 +1,16 @@
 import {ReactComponent as DemoPhone} from '@assets/preview/demo_phone.svg'
-import {WhiteButton} from '@components/widgets/StyledComponents'
+import {
+  StyledToggleButton,
+  StyledToggleButtonGroup,
+  WhiteButton,
+} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
+import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
 import {Box, Container} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import {Assessment, StringDictionary} from '@typedefs/types'
+import {Assessment, AssessmentsType, StringDictionary} from '@typedefs/types'
 import clsx from 'clsx'
-import React, {FunctionComponent, ReactNode} from 'react'
+import {FunctionComponent, ReactNode} from 'react'
 import {NavLink} from 'react-router-dom'
 
 type AssessmentLibraryWrapperProps = {
@@ -13,7 +18,9 @@ type AssessmentLibraryWrapperProps = {
   tags?: StringDictionary<number>
   children: ReactNode[]
   onChangeTags: Function
+  onChangeAssessmentsType: (t: AssessmentsType) => void
   isAssessmentLibrary?: boolean
+  assessmentsType: AssessmentsType
 }
 
 const useStyles = makeStyles(theme => ({
@@ -60,16 +67,52 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
+const AssessmentTypeToggle: FunctionComponent<{
+  assessmentType: AssessmentsType
+  onChange: (a: AssessmentsType) => void
+}> = ({assessmentType, onChange}) => {
+  const sendUpdate = (value: AssessmentsType) => {
+    if (value === null) {
+      return
+    }
+
+    onChange(value)
+  }
+  return (
+    <Box mb={3} mt={1}>
+      <StyledToggleButtonGroup
+        $width={190}
+        value={assessmentType}
+        exclusive
+        onChange={(e, _val) => {
+          sendUpdate(_val)
+        }}
+        aria-label="allow skipping question">
+        <StyledToggleButton value={'OTHER'} aria-label="make required">
+          &nbsp; Assessments
+        </StyledToggleButton>
+
+        <StyledToggleButton value={'SURVEY'} aria-label="allow skip">
+          &nbsp; Surveys
+        </StyledToggleButton>
+      </StyledToggleButtonGroup>
+    </Box>
+  )
+}
+
 const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps> =
   ({
     children,
     isAssessmentLibrary = true,
+    assessmentsType = 'OTHER',
     tags,
     assessments,
     onChangeTags,
+    onChangeAssessmentsType,
   }: AssessmentLibraryWrapperProps) => {
     const classes = useStyles()
     const {token} = useUserSessionDataState()
+    const surveyToggle = useFeatureToggles<FeatureToggles>()
 
     return (
       <Box
@@ -95,6 +138,12 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
                 </WhiteButton>
               </NavLink>
             </Box>
+          )}
+          {surveyToggle['SURVEY BUILDER'] && (
+            <AssessmentTypeToggle
+              assessmentType={assessmentsType}
+              onChange={t => onChangeAssessmentsType(t)}
+            />
           )}
           <Box className={classes.cardGrid}>{children}</Box>
         </Container>
