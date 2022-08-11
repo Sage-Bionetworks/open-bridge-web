@@ -94,19 +94,19 @@ const StyledTable = styled('table', {label: 'StyledTable'})(({theme}) => ({
 const QuestionDisplay: FunctionComponent<{
   questions: Step[]
   id: string
-  isNext: boolean
+
   mode: 'light' | 'dark'
-}> = ({id, questions, isNext, mode}) => {
+}> = ({id, questions, mode}) => {
   const {index, isLast} = SurveyUtils.getSequentialQuestionIndex(id, questions)
-  if ((isLast && isNext) || index === -1) {
+  if (index === -1) {
     return <></>
   }
-  const q = isNext ? questions[index + 1] : questions[index]
+  const q = questions[index]
   return (
     <StyledQuestionDisplay mode={mode}>
       <DivContainer>
         {QUESTIONS.get(getQuestionId(q))?.img}
-        <div>{index + 2}</div>
+        <div>{index + 1}</div>
       </DivContainer>
     </StyledQuestionDisplay>
   )
@@ -233,7 +233,6 @@ const BranchingConfig: FunctionComponent<{
         <QuestionDisplay
           questions={questions}
           id={step.identifier}
-          isNext={false}
           mode={'dark'}
         />
         <StyledSmallFont> {step.subtitle}</StyledSmallFont> {step.title}
