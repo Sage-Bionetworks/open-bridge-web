@@ -1,5 +1,4 @@
 import {ReactComponent as DraggableIcon} from '@assets/surveys/draggable.svg'
-
 import {ReactComponent as PreviewIcon} from '@assets/surveys/preview.svg'
 import {ReactComponent as InstructionIcon} from '@assets/surveys/q_type_icons/icontitle.svg'
 import {ReactComponent as SettingsIcon} from '@assets/surveys/settings.svg'
@@ -143,7 +142,7 @@ const StaticStepLink: React.FunctionComponent<{
   onClick: () => void
 }> = ({isCurrentStep, children, onClick}) => {
   return (
-    <StyledNavAnchor onClick={onClick}>
+    <StyledNavAnchor onClick={onClick} href="#">
       <Row className={isCurrentStep ? 'current' : ''}>
         <QuestionTypeDisplay>{children}</QuestionTypeDisplay>
       </Row>
@@ -199,6 +198,7 @@ const LeftPanel: React.FunctionComponent<{
   onUpdateSteps,
 }) => {
   const location = useLocation()
+
   const onDragEnd = (result: DropResult) => {
     if (!surveyConfig?.steps) {
       return

@@ -12,17 +12,40 @@
       "webRoot": "${workspaceFolder}"
     },
     {
-      "name": "Debug CRA Tests",
+      "name": "Debug Jest Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/.bin/jest",
+        "--runInBand"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "port": 9229
+    },
+    {
+      "name": "Jest Debug opened file",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/react-scripts",
-      "args": ["test", "--runInBand", "--no-cache", "--watchAll=false"],
+      "args": [
+        "test",
+        "${fileBasenameNoExtension}",
+        "--runInBand",
+        "--no-cache",
+        "--watchAll"
+      ],
       "cwd": "${workspaceRoot}",
       "protocol": "inspector",
       "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "env": {"CI": "true"},
-      "disableOptimisticBPs": true
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Debug CRA Test attach",
+      "type": "node",
+      "request": "attach",
+      "port": 9229
     }
   ]
 }

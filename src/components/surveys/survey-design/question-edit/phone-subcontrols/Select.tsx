@@ -18,16 +18,10 @@ import {
   DropResult,
 } from 'react-beautiful-dnd'
 
-const OptionList = styled('div', {label: 'OptionList'})(({theme}) => ({
-  // height: '300px',
-  // marginLeft: '-10px',
-  // marginRight: '-10px',
-  //  padding: '0 10px',
-  // overflowY: 'scroll',
-}))
+const OptionList = styled('div', {label: 'OptionList'})(({theme}) => ({}))
 
-const Option = styled('div')<{issinglechoice?: boolean}>(
-  ({theme, issinglechoice}) => ({
+const Option = styled('div')<{$issinglechoice?: boolean}>(
+  ({theme, $issinglechoice}) => ({
     background: '#FFFFFF',
     boxShadow: '1px 2px 3px rgba(42, 42, 42, 0.1)',
 
@@ -39,7 +33,7 @@ const Option = styled('div')<{issinglechoice?: boolean}>(
     display: 'flex',
 
     alignItems: 'center',
-    borderRadius: issinglechoice ? '28px' : '2px',
+    borderRadius: $issinglechoice ? '28px' : '2px',
     //checkbox square
     '& div:first-of-type': {
       width: '16px',
@@ -47,7 +41,7 @@ const Option = styled('div')<{issinglechoice?: boolean}>(
       border: '2px solid black',
       flexShrink: 0,
       marginRight: '6px',
-      borderRadius: issinglechoice ? '7px' : '0px',
+      borderRadius: $issinglechoice ? '7px' : '0px',
     },
     '& div:last-of-type': {
       marginLeft: 'auto',
@@ -79,17 +73,21 @@ const SelectOption: FunctionComponent<{
   choice: ChoiceQuestionChoice
   onDelete: (t: string, type?: string) => void
   onRename: (t: string) => void
-  provided?: DraggableProvided
-  isStatic?: boolean
-  issinglechoice?: boolean
-}> = ({provided, choice, onDelete, onRename, isStatic, issinglechoice}) => {
+  options: {
+    provided?: DraggableProvided
+    isStatic?: boolean
+    isSingleChoice?: boolean
+    isOther?: boolean
+  }
+}> = ({choice, onDelete, onRename, options}) => {
   const [title, setTitle] = React.useState(choice.text)
+  const {provided, isStatic, isSingleChoice, isOther} = options
   return (
     <Option
       {...provided?.draggableProps}
       {...provided?.dragHandleProps}
       ref={provided?.innerRef}
-      issinglechoice={issinglechoice}>
+      $issinglechoice={isSingleChoice}>
       <div />
       {isStatic ? (
         <Typography sx={{padding: theme.spacing(0.5, 0.5)}}>{title}</Typography>
@@ -101,6 +99,7 @@ const SelectOption: FunctionComponent<{
           onBlur={e => onRename(e.target.value)}
         />
       )}
+
       <div>
         {provided !== undefined && <DraggableIcon />}
         <IconButton
@@ -165,6 +164,7 @@ const Select: React.FunctionComponent<{
     selectorType?: ChoiceSelectorType
   ) => {
     console.log('chaning to ', newName)
+
     if (stepData.choices) {
       const newChoices = [...stepData.choices]
       if ((index > -1 && selectorType) || (index == -1 && !selectorType)) {
@@ -182,6 +182,16 @@ const Select: React.FunctionComponent<{
         choices: newChoices,
       })
     }
+  }
+
+  const renameOtherOption = (newName: string) => {
+    console.log('chaning to ', newName)
+    //if index === -1 we are dealing with the 'other
+
+    onChange({
+      ...stepData,
+      other: {type: 'string', fieldLabel: newName},
+    })
   }
 
   const shouldShowExclusiveQuestion = () => {
@@ -218,12 +228,11 @@ const Select: React.FunctionComponent<{
                     draggableId={choice.value?.toString() || ''}
                     isDragDisabled={false}
                     index={index}
-                    key={choice.value}>
+                    key={choice.value?.toString()}>
                     {provided => (
                       <SelectOption
-                        issinglechoice={step.singleChoice}
+                        options={{isSingleChoice: step.singleChoice, provided}}
                         onRename={qText => renameOption(qText, index)}
-                        provided={provided}
                         choice={choice}
                         onDelete={() => deleteOption(index)}
                       />
@@ -241,7 +250,7 @@ const Select: React.FunctionComponent<{
             //  .sort((a, b) => (a.text < b.text ? -1 : 1))
             .map((choice, index) => (
               <SelectOption
-                issinglechoice={step.singleChoice}
+                options={{isSingleChoice: step.singleChoice}}
                 onRename={qText => renameOption(qText, -1, choice.selectorType)}
                 choice={choice}
                 key={choice.text}
@@ -250,10 +259,9 @@ const Select: React.FunctionComponent<{
             ))}
         {step.other && (
           <SelectOption
-            issinglechoice={step.singleChoice}
-            isStatic={true}
-            onRename={() => {}}
-            choice={{text: 'Other _________'}}
+            options={{isSingleChoice: step.singleChoice, isOther: true}}
+            onRename={qText => renameOtherOption(qText)}
+            choice={{text: (step.other.fieldLabel || 'Other') + '_________'}}
             onDelete={qText => deleteOtherOption()}
           />
         )}

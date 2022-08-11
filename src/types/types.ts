@@ -1,3 +1,4 @@
+import {ToggleKey} from '@helpers/FeatureToggle'
 import constants from './constants'
 import {Schedule, ScheduleNotification, SchedulingEvent} from './scheduling'
 
@@ -30,6 +31,15 @@ export interface ExtendedError extends Error {
 }
 
 export type RequestStatus = 'IDLE' | 'PENDING' | 'RESOLVED' | 'REJECTED'
+
+export type NavRouteType = {
+  path: string
+  name: string
+  Component: React.FunctionComponent<any>
+  exact?: boolean
+  isRhs?: boolean
+  toggle?: ToggleKey
+}
 
 /*
 'legacy	If not set, the study is in the LEGACY phase, and no domain logic will be applied to the study, enrollments, etc.
@@ -83,6 +93,7 @@ export interface OrgUser extends LoggedInUserData {
 }
 
 /* *** Assessment ********************************/
+export type AssessmentsType = 'SURVEY' | 'OTHER'
 export type ResourceFormat = 'image/png'
 export type AssessmentCategory = 'screenshot' | 'icon' | 'website'
 export type AssessmentResource = {
@@ -113,7 +124,7 @@ export type Assessment = {
   deleted?: boolean
   guid?: string
 
-  modifiedOn?: Date
+  modifiedOn?: string
   normingStatus?: string
 
   summary?: string

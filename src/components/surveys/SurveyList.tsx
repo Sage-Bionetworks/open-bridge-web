@@ -9,7 +9,11 @@ import {Link, Redirect} from 'react-router-dom'
 
 const SurveyList: React.FunctionComponent<{}> = () => {
   const handleError = useErrorHandler()
-  const {data: surveys, status, error} = useAssessments(true)
+  const {
+    data: surveys,
+    status,
+    error,
+  } = useAssessments({isLocal: true, isSurvey: true})
   const [isNew, setIsNew] = React.useState(false)
   if (error) {
     handleError(error)

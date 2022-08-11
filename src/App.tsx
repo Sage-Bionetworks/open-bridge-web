@@ -1,3 +1,4 @@
+import {FeatureToggleProvider} from '@helpers/FeatureToggle'
 import {
   CssBaseline,
   StyledEngineProvider,
@@ -156,13 +157,16 @@ function App() {
                 onError={ErrorHandler}>
                 {redirect && <Redirect to={redirect}></Redirect>}
                 {/*  <React.StrictMode>*/}
-                {sessionData.id ? (
-                  <AuthenticatedApp />
-                ) : (
-                  <Loader reqStatusLoading={getCode() !== null}>
-                    <UnauthenticatedApp appId={Utility.getAppId()} />
-                  </Loader>
-                )}
+                <FeatureToggleProvider
+                  featureToggles={{'SURVEY BUILDER': true}}>
+                  {sessionData.id ? (
+                    <AuthenticatedApp />
+                  ) : (
+                    <Loader reqStatusLoading={getCode() !== null}>
+                      <UnauthenticatedApp appId={Utility.getAppId()} />
+                    </Loader>
+                  )}
+                </FeatureToggleProvider>
                 {/*  </React.StrictMode>*/}
               </ErrorBoundary>
             </QueryClientProvider>

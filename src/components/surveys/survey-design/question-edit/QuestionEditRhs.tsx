@@ -38,16 +38,6 @@ function Factory(args: {
 }) {
   switch (args.q_type) {
     case 'SINGLE_SELECT': {
-      let _step = args.step as ChoiceQuestion
-      /*  return (
-        <RadioQuestion
-          {...{
-            ...props,
-            onChange: updateStepWithChoices,
-            choices: _step.choices || [],
-          }}
-        />
-      )*/
       return (
         <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
       )
@@ -57,20 +47,10 @@ function Factory(args: {
       return (
         <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
       )
-      return <>CHECKBOX</>
+
     case 'FREE_TEXT':
       return <FreeText step={args.step} onChange={args.onChange} />
-    // return <TextQuestion {...props} />
-    /* case 'time':
-      return <>TIME</>
-    // return <TimeQuestion {...props} />
 
-    case 'date':
-      return <>DATE</>
-    // return <DateQuestion {...props} />
-    case 'likert':
-      return <>LIKERT</>
-    // return <LikertQuestion {...props} />*/
     default:
       return <>nothing</>
   }
@@ -87,10 +67,10 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({
   children,
 }) => {
   const matchIdentifier = () => {
-    const newId = `${step?.title.replaceAll(
-      ' ',
-      '_'
-    )}_${Utility.generateNonambiguousCode(3, 'CONSONANTS')}`
+    const newId = `${step?.title
+      .replaceAll(' ', '_')
+      .toLowerCase()
+      .replace('?', '')}_${Utility.generateNonambiguousCode(3, 'CONSONANTS')}`
     onChange({...step, identifier: newId})
   }
   if (!step) {

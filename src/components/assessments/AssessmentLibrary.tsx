@@ -1,6 +1,6 @@
 import makeStyles from '@mui/styles/makeStyles'
 import {useAssessmentsWithResources} from '@services/assessmentHooks'
-import React, {FunctionComponent, useState} from 'react'
+import {FunctionComponent, useState} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
 import {Link, RouteComponentProps} from 'react-router-dom'
 import {Assessment} from '../../types/types'
@@ -31,8 +31,11 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
     Assessment[] | undefined
   >(undefined)
 
-  const {data, isError, error, status, isLoading} =
-    useAssessmentsWithResources()
+  const {data, isError, error, status, isLoading} = useAssessmentsWithResources(
+    false,
+    false
+  )
+  const {data: surveys} = useAssessmentsWithResources(false, true)
 
   if (isError) {
     handleError(error!)
@@ -47,10 +50,24 @@ const AssessmentLibrary: FunctionComponent<AssessmentLibraryProps> = ({
       {data && (
         <AssessmentLibraryWrapper
           assessments={data.assessments}
+          assessmentsType="OTHER"
+          onChangeAssessmentsType={() => {}}
           onChangeTags={
             (assessments: Assessment[]) =>
               setFilteredAssessments(assessments) /*setFilterTags(tags)*/
           }>
+          {surveys?.assessments &&
+            (surveys?.assessments).map((a, index) => (
+              <Link
+                to={`${match.url}/${a.guid}`}
+                className={classes.cardLink}
+                key={a.guid}>
+                <AssessmentCard
+                  index={index}
+                  assessment={a}
+                  key={a.guid}></AssessmentCard>
+              </Link>
+            ))}
           {(filteredAssessments || data.assessments).map((a, index) => (
             <Link
               to={`${match.url}/${a.guid}`}

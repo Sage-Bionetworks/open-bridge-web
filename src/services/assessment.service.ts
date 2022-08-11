@@ -14,41 +14,50 @@ const SURVEY_APP_TAG = {
   [constants.constants.MTB_APP_ID]: 'MTB Surveys Alina Test',
 }
 
+//tags used internally that end user will not see
 const TAGS_TO_HIDE = [
   ...Object.values(SURVEY_APP_TAG),
   ...Object.values(ASSESSMENT_APP_TAG),
 ]
 
+const DEFAULT_ASSESSMENT_RETR_OPTIONS = {isLocal: false, isSurvey: false}
+
 /* gets a shared assessment */
 async function getAssessment(
+  guid: string,
   token: string,
-  guid: string
-): Promise<Assessment[]> {
-  let endPoint = constants.endpoints.assessmentShared
-  const result = await Utility.callEndpoint<Assessment>(
+
+  options: {isLocal: boolean}
+): Promise<Assessment> {
+  let endPoint = options.isLocal
+    ? constants.endpoints.assessment
+    : constants.endpoints.assessmentShared
+  const assessmentResponse = await Utility.callEndpoint<Assessment>(
     `${endPoint.replace(':id', guid)}`,
     'GET',
     {},
     token
   )
+  const assessment = {
+    ...assessmentResponse.data,
+    tags: assessmentResponse.data.tags.filter(
+      tag => !TAGS_TO_HIDE.includes(tag)
+    ),
+  }
 
-  const returnResult = [
-    {
-      ...result.data,
-      tags: result.data.tags?.filter(tag => !TAGS_TO_HIDE.includes(tag)),
-    },
-  ]
-  return returnResult
+  return assessment
 }
 
 /* gets the list of shared assessments OR local (surveys)*/
 async function getAssessments(
   appId: string,
   token: string,
-  isLocal = false
+  options: {isLocal?: boolean; isSurvey?: boolean} = {}
+  //  isLocal = false
 ): Promise<Assessment[]> {
+  const _options = {...DEFAULT_ASSESSMENT_RETR_OPTIONS, ...options}
   const result = await Utility.callEndpoint<{items: Assessment[]}>(
-    isLocal
+    _options?.isLocal
       ? constants.endpoints.assessments
       : constants.endpoints.assessmentsShared,
     'GET',
@@ -56,7 +65,9 @@ async function getAssessments(
     token
   )
 
-  const filterTag = isLocal ? SURVEY_APP_TAG[appId] : ASSESSMENT_APP_TAG[appId]
+  const filterTag = _options?.isSurvey
+    ? SURVEY_APP_TAG[appId]
+    : ASSESSMENT_APP_TAG[appId]
   const returnResult = result.data.items
 
     .filter(item => item.tags && item.tags.includes(filterTag))
@@ -92,11 +103,14 @@ async function getResource(
 async function getAssessmentsWithResources(
   appId: string,
   token: string,
-  guid?: string
+  options: {isLocal?: boolean; isSurvey?: boolean; guid?: string} = {}
 ): Promise<{assessments: Assessment[]; tags: string[]}> {
+  const {guid, ..._options} = {...DEFAULT_ASSESSMENT_RETR_OPTIONS, ...options}
   const assessments = guid
-    ? await getAssessment(token, guid)
-    : await getAssessments(appId, token)
+    ? await getAssessment(guid, token, {isLocal: _options.isLocal}).then(
+        result => [result]
+      )
+    : await getAssessments(appId, token, _options)
   const resourcePromises = assessments.map(async asmnt =>
     getResource(asmnt, token)
   )
@@ -135,9 +149,9 @@ async function getAssessmentsWithResources(
 /* creates assessment for the survey. Potentially can be used to create any assessment but needs to be 
   refactored as to add the proper tags conditionally */
 async function createSurveyAssessment(
+  appId: string,
   assessment: Assessment,
-  token: string,
-  appId: string
+  token: string
 ): Promise<Assessment> {
   const tags = Array.from(new Set([...assessment.tags, SURVEY_APP_TAG[appId]]))
   const response = await Utility.callEndpoint<Assessment>(
@@ -150,7 +164,7 @@ async function createSurveyAssessment(
 }
 
 //returns assessment with config and resources
-async function getSurveyAssessment(
+/*async function getSurveyAssessment(
   guid: string,
   token: string
 ): Promise<Assessment> {
@@ -170,12 +184,12 @@ async function getSurveyAssessment(
   }
 
   return assessment
-}
+}*/
 
 async function updateSurveyAssessment(
+  appId: string,
   assessment: Assessment,
-  token: string,
-  appId: string
+  token: string
 ): Promise<Assessment> {
   const endpoint = constants.endpoints.assessment.replace(
     ':id',
@@ -195,19 +209,21 @@ async function updateSurveyAssessment(
     return assessmentResponse.data
   }
 
+  let result
   try {
-    return update(assessmentToUpdate)
+    result = await update(assessmentToUpdate)
   } catch (error) {
-    console.log('!!error')
     if ((error as ExtendedError).statusCode === 409) {
-      console.log('409')
       assessmentToUpdate.version = assessmentToUpdate.version + 1
 
-      return update(assessmentToUpdate)
+      result = await update(assessmentToUpdate)
     } else {
       throw error
     }
   }
+  if (result) {
+    return result
+  } else throw "can't update assessment"
 }
 async function getSurveyAssessmentConfig(
   guid: string,
@@ -280,7 +296,8 @@ const AssessmentService = {
   updateSurveyAssessmentResource,
   updateSurveyAssessmentConfig,
   getSurveyAssessmentConfig,
-  getSurveyAssessment,
+
+  getAssessment,
   getAssessments,
   getAssessmentsWithResources,
   getResource,

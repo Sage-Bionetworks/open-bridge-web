@@ -4,6 +4,9 @@ import {
   InputBase,
   InputLabel,
   Select,
+  styled,
+  ToggleButton,
+  ToggleButtonGroup,
 } from '@mui/material'
 import Alert from '@mui/material/Alert'
 import withStyles from '@mui/styles/withStyles'
@@ -242,3 +245,34 @@ export const NextButton = withStyles(theme => ({
     },
   },
 }))(Button)
+
+export const StyledToggleButtonGroup = styled(ToggleButtonGroup, {
+  label: 'StyledToggleButtonGroup',
+})<{$width?: number}>(({theme, $width}) => ({
+  background: '#EDEDED',
+  justifyContent: 'space-between',
+  boxShadow: 'inset 0px 1px 4px rgba(0, 0, 0, 0.25)',
+  width: `${$width || 255}px`,
+  borderRadius: '25px',
+  padding: theme.spacing(0.25),
+}))
+
+export const StyledToggleButton = styled(ToggleButton)(({theme}) => ({
+  padding: theme.spacing(0.25, 1),
+  borderRadius: '25px',
+  fontFamily: latoFont,
+  fontSize: '14px',
+  border: 'none',
+  '&.MuiToggleButtonGroup-grouped:not(:last-of-type), &.MuiToggleButtonGroup-grouped:not(:first-of-type), &.MuiToggleButtonGroup-grouped:not(:first-of-type)':
+    {
+      borderRadius: '25px',
+      '&.Mui-selected': {
+        backgroundColor: '#fff',
+        color: '##565656',
+        borderRadius: '25px',
+      },
+      '&:hover': {
+        borderRadius: '25px',
+      },
+    },
+}))

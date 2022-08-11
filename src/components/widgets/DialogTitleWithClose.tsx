@@ -1,8 +1,8 @@
 import {ReactComponent as EditIcon} from '@assets/edit_pencil_red.svg'
-import {IconButton} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
-import DialogTitle from '@mui/material/DialogTitle'
 import CloseIcon from '@mui/icons-material/Close'
+import {IconButton} from '@mui/material'
+import DialogTitle from '@mui/material/DialogTitle'
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {poppinsFont} from '../../style/theme'
@@ -36,14 +36,14 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-type ConfirmationDialogProps = {
+type DialogTitleWithCloseProps = {
   icon?: React.ReactNode
   onCancel: Function
   title: string
   isSmallTitle?: boolean
 }
 
-const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
+const DialogTitleWithClose: FunctionComponent<DialogTitleWithCloseProps> = ({
   onCancel,
   icon,
   title,
@@ -67,4 +67,4 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   )
 }
 
-export default ConfirmationDialog
+export default DialogTitleWithClose

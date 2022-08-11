@@ -36,6 +36,7 @@ const Wrapper: FunctionComponent<
     notStudyId ? undefined : studyId
   )
   const {data: survey, error: surveyError} = useSurveyAssessment(
+    true,
     isSurveyPath ? studyId : undefined
   )
   const handleError = useErrorHandler()

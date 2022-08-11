@@ -10,8 +10,8 @@ import {
   useUpdateSurveyResource,
 } from '@services/assessmentHooks'
 import {theme} from '@style/theme'
-import {Step, Survey} from '@typedefs/surveys'
-import {Assessment} from '@typedefs/types'
+import {Question, Step, Survey} from '@typedefs/surveys'
+import {Assessment, ExtendedError} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
 import {
   Redirect,
@@ -67,13 +67,14 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   const location = useLocation()
   const [assessment, setAssessment] = React.useState<Assessment | undefined>()
   const [survey, setSurvey] = React.useState<Survey | undefined>()
-  const [error, setError] = React.useState('')
+  const [error, setError] = React.useState<string | undefined>(undefined)
   const [currentStepIndex, setCurrentStepIndex] = React.useState<
     number | undefined
   >(getQuestionIndexFromSearchString())
 
   //rq get and modify data hooks
   const {data: _assessment, status: aStatus} = useSurveyAssessment(
+    true,
     isNewSurvey() ? undefined : surveyGuid
   )
   const {data: _survey, status: cStatus} = useSurveyConfig(
@@ -141,7 +142,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     survey: Survey,
     action: 'UPDATE' | 'CREATE'
   ) => {
-    setError('')
+    setError(undefined)
     try {
       const result = await mutateAssessment({assessment: asmnt, action})
       await mutateSurvey({guid: result.guid!, survey})
@@ -151,7 +152,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       history.push(`/surveys/${result.guid}/design/title`)
       console.log('reloading')
     } catch (error) {
-      setError((error as any).toString())
+      setError((error as ExtendedError).message.toString())
     }
   }
 
@@ -194,7 +195,31 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     }
   }
 
-  const addStep = async (title: QuestionTypeKey) => {
+  const addStepToTheEnd = async (
+    newStep: Step,
+    isAddCompletionStep?: boolean
+  ) => {
+    const steps = survey!.config?.steps ? [...survey!.config?.steps] : []
+
+    if (isAddCompletionStep) {
+      const completion = QUESTIONS.get('COMPLETION')?.default
+      //  const completion1 = {...(COMPLETION_DEFAULT.default as Step)}
+      steps.push({...completion} as Step)
+    }
+
+    //since completion is always the last step -- push to l-2
+    steps.splice(steps.length - 1, 0, newStep)
+    await reorderOrAddSteps(steps)
+
+    const currentStepId = steps.length - 2
+    console.log('wantto set current step')
+    // setCurrentStepIndex(currentStepId)
+    console.log('surveysteps' + survey!.config.steps)
+    navigateStep(currentStepId, false)
+  }
+
+  // adding the step from left menu
+  const addStepWithDefaultConfig = async (title: QuestionTypeKey) => {
     if (!survey) {
       return
     }
@@ -203,18 +228,22 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     const id = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
     const q = QUESTIONS.get(title)
     if (q && q.default) {
-      const steps = survey.config?.steps ? [...survey.config?.steps] : []
+      const newStep: Step = {...q.default} as Step
+      newStep.identifier = `${newStep.identifier}_${id}`
 
       //if we are adding first step, also add completion
+      addStepToTheEnd(newStep, isFirstStep)
+      //  console.log('adding step', newStep.identifier)
+
+      /* const steps = survey.config?.steps ? [...survey.config?.steps] : []
+
+
       if (isFirstStep) {
         const completion = QUESTIONS.get('COMPLETION')?.default
         //  const completion1 = {...(COMPLETION_DEFAULT.default as Step)}
         steps.push({...completion} as Step)
       }
 
-      const newStep: Step = {...q.default} as Step
-      newStep.identifier = `${newStep.identifier}_${id}`
-      console.log('adding step', newStep.identifier)
       //since completion is always the last step -- push to l-2
       steps.splice(steps.length - 1, 0, newStep)
 
@@ -224,7 +253,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       console.log('wantto set current step')
       // setCurrentStepIndex(currentStepId)
       console.log('surveysteps' + survey.config.steps)
-      navigateStep(currentStepId, false)
+      navigateStep(currentStepId, false)*/
     }
   }
 
@@ -254,6 +283,15 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
 
   const isTitleScreen = () => {
     return location.pathname.includes('design/title')
+  }
+
+  const duplicateCurrentStep = async () => {
+    const newStep: Question = {...getCurrentStep()!}
+    const id = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
+    const identifier = newStep.identifier.split('_')
+    identifier[identifier.length - 1] = id
+    newStep.identifier = identifier.join('_')
+    addStepToTheEnd(newStep)
   }
 
   const save = async () => {
@@ -300,7 +338,9 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           surveyConfig={survey?.config}
           onUpdateSteps={(steps: Step[]) => reorderOrAddSteps(steps)}>
           <AddQuestion>
-            <AddQuestionMenu onSelectQuestion={qType => addStep(qType)} />
+            <AddQuestionMenu
+              onSelectQuestion={qType => addStepWithDefaultConfig(qType)}
+            />
           </AddQuestion>
         </LeftPanel>
         {/* CEDNTRAL PHONE AREA*/}
@@ -366,6 +406,9 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                         }
                         if (action === 'delete') {
                           deleteCurrentStep()
+                        }
+                        if (action === 'duplicate') {
+                          duplicateCurrentStep()
                         }
                       }}
                     />

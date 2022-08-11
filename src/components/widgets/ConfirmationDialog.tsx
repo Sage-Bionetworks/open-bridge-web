@@ -11,7 +11,7 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import makeStyles from '@mui/styles/makeStyles'
 import {latoFont, poppinsFont} from '@style/theme'
-import React, {FunctionComponent} from 'react'
+import {FunctionComponent} from 'react'
 
 const useStyles = makeStyles(theme => ({
   dialogTitle: {},
@@ -58,14 +58,7 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: '#EDC6C6',
     },
   },
-  dialogPaper: {
-    //height: '275px',
-    width: '302px',
-  },
-  dialogPaperWide: {
-    //height: '275px',
-    width: '362px',
-  },
+
   cancelButton: {
     width: '120px',
     height: '49px',
@@ -85,8 +78,8 @@ const useStyles = makeStyles(theme => ({
   dialogButtonsContainer: {
     width: '100%',
     display: 'flex',
-    justifyContent: 'space-evenly',
-    marginBottom: theme.spacing(2.5),
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing(0),
   },
 }))
 
@@ -95,25 +88,30 @@ export type ConfirmationDialogType =
   | 'NAVIGATE'
   | 'WITHDRAW_STUDY'
   | 'CLOSE_STUDY'
+  | 'CUSTOM'
 
 type ConfirmationDialogProps = {
   isOpen: boolean
   type: ConfirmationDialogType
   title?: string
+  width?: string
   cancelText?: string
   actionText?: string
   onCancel: Function
   onConfirm: Function
   children?: JSX.Element
+  icon?: JSX.Element
 }
 
 const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   isOpen,
   onCancel,
+  icon,
   title = 'Navigate Away? ',
   type,
   onConfirm,
   children,
+  width = '302px',
   cancelText = 'Cancel',
   actionText = 'Delete',
 }) => {
@@ -134,7 +132,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
       case 'CLOSE_STUDY':
         return <CloseStudy />
       default:
-        return <></>
+        return icon
     }
   }
 
@@ -146,11 +144,8 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
       maxWidth="md"
       scroll="paper"
       className={classes.dialogTitle}
-      classes={{
-        paper:
-          type === 'CLOSE_STUDY'
-            ? classes.dialogPaperWide
-            : classes.dialogPaper,
+      sx={{
+        '& .MuiPaper-root': {width: type === 'CLOSE_STUDY' ? '362px' : width},
       }}>
       <DialogTitle id="alert-dialog-title" className={classes.title}>
         {getImage()}
