@@ -24,9 +24,9 @@ describe('assessment.service', () => {
       } as unknown as Assessment
       assessment.tags = []
       const result = await AssessmentService.createSurveyAssessment(
+        appId,
         assessment,
-        token,
-        appId
+        token
       )
       expect(result.tags).toContainEqual(
         AssessmentService.SURVEY_APP_TAG[appId]
@@ -40,7 +40,10 @@ describe('assessment.service', () => {
         ...assessmentData.LocalAssessmentsArc[0],
       } as unknown as Assessment
       assessment.tags = []
-      const result = await AssessmentService.getAssessments(appId, token, true)
+      const result = await AssessmentService.getAssessments(appId, token, {
+        isLocal: true,
+        isSurvey: true,
+      })
       expect(assessmentData.LocalAssessmentsMTB.length).toBe(2)
       expect(
         assessmentData.LocalAssessmentsMTB.filter(a =>
