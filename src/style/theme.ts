@@ -300,7 +300,7 @@ const theme: Theme = createTheme({
       black: '#2E2E2E',
     },
     background: {
-      default: '#EBEBEB',
+      default: '#e5e5e5',
       paper: '#fff',
     },
     text: {

@@ -1,10 +1,11 @@
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
-import {Box, Button, styled} from '@mui/material'
+import {Box, styled} from '@mui/material'
 import {useSurveyConfig, useUpdateSurveyConfig} from '@services/assessmentHooks'
 import {latoFont} from '@style/theme'
 import {SmartStepEdge} from '@tisoap/react-flow-smart-edge'
 import {ChoiceQuestion, Survey} from '@typedefs/surveys'
 import React, {FunctionComponent} from 'react'
+
 import ReactFlow, {
   addEdge,
   applyEdgeChanges,
@@ -30,11 +31,14 @@ const edgeTypes = {
 const SurveyBranchingContainerBox = styled(Box)(({theme}) => ({
   position: 'relative',
   backgroundColor: '#fcfcfc',
-  // display: 'flex',
+
+  padding: theme.spacing(3),
+
   width: '100%',
   // border: '1px solid black',
 
-  minHeight: 'calc(100vh - 75px)',
+  height: 'calc(100vh - 75px)',
+  overflow: 'scroll',
   '& .react-flow': {
     backgroundColor: '#fcfcfc',
   },
@@ -122,7 +126,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     if (survey) {
       console.log('%c surveyStepsChanged', 'background: #222; color: #bada55')
 
-      const plotWidth = isHideInput ? width || 0 : (width || 0) - 500
+      const plotWidth = width || 0
 
       const result = getNodes(
         survey?.config.steps as ChoiceQuestion[],
@@ -135,13 +139,14 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
         setEdges(result.edges)
       }
     }
-  }, [survey?.config.steps, width, isHideInput])
+  }, [survey?.config.steps, width])
 
   const saveSurvey = async () => {
     setError('')
     try {
       await mutateSurvey({guid: surveyGuid, survey: survey!})
       setHasObjectChanged(false)
+      setIsHideInput(true)
     } catch (error) {
       setError((error as any).toString())
     }
@@ -154,8 +159,34 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     )
     if (qIndex < survey!.config.steps.length - 1) {
       setCurrentStepIndex(qIndex)
+      // alert(node.position.y)
       setIsHideInput(false)
     }
+  }
+
+  const getCurrentStep = (): ChoiceQuestion | undefined =>
+    survey && currentStepIndex !== undefined
+      ? (survey.config.steps[currentStepIndex] as ChoiceQuestion)
+      : undefined
+
+  const getInvalidTargetStepIds = (): string[] => {
+    const currentStep = getCurrentStep()
+    if (!currentStep) {
+      return []
+    }
+    const sourceNodesIds = edges
+      .filter(e => e.target === currentStep.identifier)
+      .map(n => n.source)
+      .concat([currentStep.identifier])
+    return sourceNodesIds
+  }
+
+  const findLowestIndex = () => {
+    const yPos = nodes.map(n => n.position.y)
+    const lowest = Math.max(...yPos)
+    // alert(yPos.join(' , '))
+    // alert(lowest)
+    return lowest + 150
   }
 
   return (
@@ -170,67 +201,56 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
           />
         )}
       </NavigationPrompt>
-      <SurveyBranchingContainerBox width="100%" sx={{}}>
+
+      <SurveyBranchingContainerBox>
         {error && <span>{error.toString()}</span>}
         <Box ref={ref}>
           <div
             style={{
-              width: isHideInput ? width || 0 : (width || 0) - 424 + 'px',
-              height: 'calc(100vh - 75px)',
+              width: (width || 0) + 'px',
+              height: `${findLowestIndex()}px`, //'calc(100vh - 100px)',
             }}>
             <ReactFlow
+              style={{}}
+              zoomOnScroll={false}
               nodes={nodes}
               edges={edges}
               onNodeClick={onNodeClick}
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
+              preventScrolling={false}
               onConnect={onConnect}
               edgeTypes={edgeTypes}
+              fitView={false}
               // fitView
               fitViewOptions={fitViewOptions}
             />
           </div>
         </Box>
 
-        {survey?.config.steps &&
-          currentStepIndex !== undefined &&
-          !isHideInput &&
-          survey.config.steps[currentStepIndex] && (
-            <Box
-              sx={{
-                width: '424px',
-                height: 'calc(100vh - 75px)',
-                borderLeft: '1px solid black',
-                position: 'absolute',
-                top: '0',
-                right: '0',
-              }}>
-              <BranchingConfig
-                onHide={() => setIsHideInput(true)}
-                sourceNodesIds={edges
-                  .filter(
-                    e =>
-                      e.target ===
-                      survey.config.steps[currentStepIndex].identifier
-                  )
-                  .map(n => n.source)
-                  .concat([survey.config.steps[currentStepIndex].identifier])}
-                onChange={steps => {
-                  console.log('steps', steps)
-                  const edges = getDryRunEdges(steps)
-                  console.log('DRY RUN', edges)
-                  setHasObjectChanged(true)
-                  setSurvey({
-                    ...survey,
-                    config: {...survey.config, steps: steps},
-                  })
-                }}
-                questions={survey.config.steps as ChoiceQuestion[]}
-                step={survey.config.steps[currentStepIndex] as ChoiceQuestion}
-              />
-              <Button onClick={() => saveSurvey()}>Save Survey</Button>
-            </Box>
-          )}
+        {edges && getCurrentStep() && (
+          <BranchingConfig
+            onCancel={() => {
+              setSurvey(_survey)
+              setIsHideInput(true)
+            }}
+            onSave={() => saveSurvey()}
+            isOpen={!isHideInput}
+            invalidTargetStepIds={getInvalidTargetStepIds()}
+            onChange={steps => {
+              console.log('steps', steps)
+              const edges = getDryRunEdges(steps)
+              console.log('DRY RUN', edges)
+              setHasObjectChanged(true)
+              setSurvey({
+                ...survey,
+                config: {...survey!.config, steps: steps},
+              })
+            }}
+            questions={survey!.config.steps as ChoiceQuestion[]}
+            step={getCurrentStep()}
+          />
+        )}
       </SurveyBranchingContainerBox>
     </>
   )

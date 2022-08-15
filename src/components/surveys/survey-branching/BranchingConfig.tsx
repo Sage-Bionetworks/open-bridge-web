@@ -1,10 +1,20 @@
 import SurveyUtils from '@components/surveys/SurveyUtils'
+import {
+  DialogButtonPrimary,
+  DialogButtonSecondary,
+} from '@components/widgets/StyledComponents'
 import CloseIcon from '@mui/icons-material/Close'
 import {
   Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControlLabel,
   MenuItem,
   OutlinedInput,
+  Paper,
+  PaperProps,
   Radio,
   RadioGroup,
   styled,
@@ -13,6 +23,7 @@ import {
 import {latoFont, theme} from '@style/theme'
 import {ChoiceQuestion, Step, SurveyRuleOperator} from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
+import Draggable from 'react-draggable'
 import QUESTIONS, {
   getQuestionId,
 } from '../survey-design/left-panel/QuestionConfigs'
@@ -69,14 +80,16 @@ const StyledSmallFont = styled(Typography, {label: 'StyledSmallFont'})(
   })
 )
 
-const StyledTopArea = styled('div', {label: 'StyledTopArea'})(({theme}) => ({
-  background: ' #565656',
-  color: '#fff',
-  padding: theme.spacing(3, 3, 2, 3),
-  fontSize: '16px',
-  fontWeight: 700,
-  position: 'relative',
-}))
+const StyledDialogTitle = styled(DialogTitle, {label: 'StyledDialogTitle'})(
+  ({theme}) => ({
+    background: ' #565656',
+    color: '#fff',
+    padding: theme.spacing(3, 3, 2, 3),
+    fontSize: '16px',
+    fontWeight: 700,
+    position: 'relative',
+  })
+)
 
 const StyledTable = styled('table', {label: 'StyledTable'})(({theme}) => ({
   marginTop: theme.spacing(2.5),
@@ -90,6 +103,16 @@ const StyledTable = styled('table', {label: 'StyledTable'})(({theme}) => ({
     padding: theme.spacing(1),
   },
 }))
+
+function PaperComponent(props: PaperProps) {
+  return (
+    <Draggable
+      handle="#draggable-dialog-title"
+      cancel={'[class*="MuiDialogContent-root"]'}>
+      <Paper {...props} />
+    </Draggable>
+  )
+}
 
 const QuestionDisplay: FunctionComponent<{
   questions: Step[]
@@ -131,12 +154,6 @@ const NextQuestionDropdown: FunctionComponent<{
       }}
       input={<OutlinedInput />}
       inputProps={{'aria-label': 'Question Type:'}}>
-      {/* <MenuItem value={''} key="undefined">
-        <DivContainer
-          sx={{backgroundColor: '#F2F2F2', width: '112px', height: '48px'}}>
-          <div>...</div>
-        </DivContainer>
-      </MenuItem> */}
       {questions.map(
         (opt, index) =>
           !excludeIds.includes(opt.identifier) && (
@@ -153,14 +170,26 @@ const NextQuestionDropdown: FunctionComponent<{
 }
 
 const BranchingConfig: FunctionComponent<{
-  step: ChoiceQuestion
+  step?: ChoiceQuestion
   questions: ChoiceQuestion[]
-  sourceNodesIds: string[]
-  onHide: () => void
+  invalidTargetStepIds: string[]
+  onCancel: () => void
+  onSave: () => void
   onChange: (step: ChoiceQuestion[]) => void
-}> = ({step, questions, sourceNodesIds, onChange, onHide}) => {
+  isOpen: boolean
+}> = ({
+  step,
+  questions,
+  invalidTargetStepIds,
+  onChange,
+  onCancel,
+  isOpen,
+  onSave,
+}) => {
+  if (!step) {
+    return <></>
+  }
   const qTypeId = getQuestionId(step)
-  console.log('sourceIds', sourceNodesIds)
 
   const onChangeNextId = (stepId: string) => {
     onChange(
@@ -218,10 +247,15 @@ const BranchingConfig: FunctionComponent<{
     onChange(newSteps)
   }
   return (
-    <Box sx={{backgroundColor: '#FBFBFB'}}>
-      <StyledTopArea>
+    <Dialog
+      aria-labelledby="draggable-dialog-title"
+      maxWidth="sm"
+      PaperComponent={PaperComponent}
+      open={isOpen}
+      scroll="body">
+      <StyledDialogTitle style={{cursor: 'move'}} id="draggable-dialog-title">
         <CloseIcon
-          onClick={onHide}
+          onClick={onCancel}
           fontSize="large"
           sx={{
             color: '#fff',
@@ -237,91 +271,99 @@ const BranchingConfig: FunctionComponent<{
         />
         <StyledSmallFont> {step.subtitle}</StyledSmallFont> {step.title}
         <StyledSmallFont> {step.detail}</StyledSmallFont>
-      </StyledTopArea>
-      <Box sx={{padding: theme.spacing(3)}}>
-        <RadioGroup
-          onChange={e => onChangeNextOption(e.target.value)}
-          value={Boolean(step.nextStepIdentifier)}>
-          <FormControlLabel
-            value={false}
-            control={<Radio />}
-            label={
-              <div style={{display: 'flex'}}>
-                <div
-                  style={{
-                    width: '148px',
-                    margin: '12px 8px',
-                    alignItems: 'center',
-                  }}>
-                  Go to next
-                  <br />
-                  screen in sequence:
-                </div>
-                {/*    <QuestionDisplay
+      </StyledDialogTitle>
+
+      <DialogContent>
+        <Box sx={{padding: theme.spacing(3)}}>
+          <pre>{JSON.stringify(step, null, 2)}</pre>
+          <RadioGroup
+            onChange={e => onChangeNextOption(e.target.value)}
+            value={Boolean(step.nextStepIdentifier)}>
+            <FormControlLabel
+              value={false}
+              control={<Radio />}
+              label={
+                <div style={{display: 'flex'}}>
+                  <div
+                    style={{
+                      width: '148px',
+                      margin: '12px 8px',
+                      alignItems: 'center',
+                    }}>
+                    Go to next
+                    <br />
+                    screen in sequence:
+                  </div>
+                  {/*    <QuestionDisplay
                   questions={questions}
                   id={step.identifier}
                   isNext={true}
                   mode={'light'}
                 />*/}
-              </div>
-            }
-          />
-          <FormControlLabel
-            value={true}
-            control={<Radio />}
-            label={
-              <div style={{display: 'flex'}}>
-                <div
-                  style={{
-                    width: '88px',
-                    margin: '12px 8px',
-                    alignItems: 'center',
-                  }}>
-                  Skip To:{' '}
                 </div>
-                <NextQuestionDropdown
-                  questions={questions}
-                  excludeIds={sourceNodesIds}
-                  selectedIdentifier={step.nextStepIdentifier || ''}
-                  onChangeSelected={nextStepId => onChangeNextId(nextStepId)}
-                />
-              </div>
-            }
-          />
-        </RadioGroup>
-        {qTypeId === 'SINGLE_SELECT' && (
-          <Box>
-            {step.choices && (
-              <StyledTable>
-                {step.choices.map(c => (
-                  <tr key={c.value?.toString() || 'undefined'}>
-                    <td>{c.value}</td>
-                    <td style={{fontSize: '15px'}}>&rarr;</td>
+              }
+            />
+            <FormControlLabel
+              value={true}
+              control={<Radio />}
+              label={
+                <div style={{display: 'flex'}}>
+                  <div
+                    style={{
+                      width: '88px',
+                      margin: '12px 8px',
+                      alignItems: 'center',
+                    }}>
+                    Skip To:{' '}
+                  </div>
+                  <NextQuestionDropdown
+                    questions={questions}
+                    excludeIds={invalidTargetStepIds}
+                    selectedIdentifier={step.nextStepIdentifier || ''}
+                    onChangeSelected={nextStepId => onChangeNextId(nextStepId)}
+                  />
+                </div>
+              }
+            />
+          </RadioGroup>
+          {qTypeId === 'SINGLE_SELECT' && (
+            <Box>
+              {step.choices && (
+                <StyledTable>
+                  {step.choices.map(c => (
+                    <tr key={c.value?.toString() || 'undefined'}>
+                      <td>{c.value}</td>
+                      <td style={{fontSize: '15px'}}>&rarr;</td>
 
-                    <td>
-                      {' '}
-                      <NextQuestionDropdown
-                        questions={questions}
-                        excludeIds={sourceNodesIds}
-                        selectedIdentifier={
-                          step.surveyRules?.find(
-                            rule => rule.matchingAnswer === c.value
-                          )?.skipToIdentifier || ''
-                        }
-                        onChangeSelected={nextStepId =>
-                          changeRuleMapping(c.value, nextStepId)
-                        }
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </StyledTable>
-            )}
-            {step.other && <div>{'OTHER'}</div>}
-          </Box>
-        )}
-      </Box>
-    </Box>
+                      <td>
+                        {' '}
+                        <NextQuestionDropdown
+                          questions={questions}
+                          excludeIds={invalidTargetStepIds}
+                          selectedIdentifier={
+                            step.surveyRules?.find(
+                              rule => rule.matchingAnswer === c.value
+                            )?.skipToIdentifier || ''
+                          }
+                          onChangeSelected={nextStepId =>
+                            changeRuleMapping(c.value, nextStepId)
+                          }
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </StyledTable>
+              )}
+              {step.other && <div>{'OTHER'}</div>}
+            </Box>
+          )}
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <DialogButtonSecondary onClick={onCancel}>Cancel</DialogButtonSecondary>
+        <DialogButtonPrimary onClick={onSave}>Save Changes</DialogButtonPrimary>
+      </DialogActions>
+    </Dialog>
   )
 }
 

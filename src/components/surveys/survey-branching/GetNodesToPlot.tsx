@@ -10,7 +10,6 @@ import {DivContainer} from '../survey-design/left-panel/QuestionTypeDisplay'
 
 const HWIDTH = 120
 const HHEIGHT = 150
-const PADDING_X = 30
 
 const StyledQuestionTitle = styled('div', {label: 'StyledQuestionTitle'})<{
   unconnected?: boolean
@@ -99,8 +98,8 @@ function getCoordinatesForNextNode(
   const nextRow = x + HWIDTH + 80 > plotWidth
   const lastInRow = !nextRow && x + HWIDTH * 2 + 80 > plotWidth
 
-  const cx = nextRow ? PADDING_X : x + HWIDTH
-  const cy = nextRow ? HHEIGHT + 20 + newHeight : newHeight
+  const cx = nextRow ? 0 : x + HWIDTH
+  const cy = nextRow ? HHEIGHT + newHeight : newHeight
 
   return {x: cx, y: cy, nextRow: nextRow, lastInRow: lastInRow}
 }
@@ -111,9 +110,9 @@ function getCoordiatesForNextDisconnectedNode(
 
   id: string
 ) {
-  const rows = index === 0 ? 1 : Math.ceil((HWIDTH * index) / plotWidth)
+  const rows = Math.floor((HWIDTH * index) / plotWidth)
 
-  const isPerRow = Math.ceil((plotWidth - PADDING_X) / HWIDTH)
+  const isPerRow = Math.ceil(plotWidth / HWIDTH)
   const newI = index % isPerRow
 
   const cx = rows > 1 ? HWIDTH * newI : index * HWIDTH
@@ -124,11 +123,21 @@ function getCoordiatesForNextDisconnectedNode(
 
 function getChildNodes(questions: ChoiceQuestion[], q: ChoiceQuestion) {
   let nextQs: ChoiceQuestion[] = []
+  const qChoiceValues = (q.choices || []).map(c => c.value) || []
   //if surveyRules
   if (q.surveyRules) {
-    //find ids we are going to next/create a set to remove dups
+    //only use the rules that map to the choices the question has,
+    // find ids we are going to next/create a set to remove dups
+    //only included rules that have matchingAnswer
     const nextIds = [
-      ...new Set(q.surveyRules.map(rule => rule.skipToIdentifier)),
+      ...new Set(
+        q.surveyRules
+          .filter(
+            rule =>
+              rule.matchingAnswer && qChoiceValues.includes(rule.matchingAnswer)
+          )
+          .map(rule => rule.skipToIdentifier)
+      ),
     ]
     //find questions correcponding to those ids
     nextQs = questions.filter(q1 => nextIds.includes(q1.identifier))
@@ -140,7 +149,7 @@ function getChildNodes(questions: ChoiceQuestion[], q: ChoiceQuestion) {
     }
   }
 
-  //either use next step identifier or next step in lince
+  //either use next step identifier or next step in array
   if (q.nextStepIdentifier) {
     const next = questions.find(q1 => q1.identifier === q.nextStepIdentifier)
     if (next) {
@@ -219,7 +228,7 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
     }
   }
 
-  addNode(questions[0], 0, PADDING_X, 20, 0, undefined)
+  addNode(questions[0], 0, 0, 0, 0, undefined)
 
   /*
 
@@ -255,18 +264,38 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
       })
     }
   })*/
-  //adjust y positions
-  const minY = Math.min(...nodes.map(n => n.position.y))
-
-  if (minY < 20) {
-    nodes.forEach(n => (n.position.y = n.position.y + Math.abs(minY) + 20))
-  }
 
   //get nodes that don't have connections
   const nodeIds = nodes.map(n => n.id)
 
   const disconnectedQs = questions.filter(q => !nodeIds.includes(q.identifier))
+
+  //adjust y positions
   const maxY = Math.max(...nodes.map(n => n.position.y))
+  const minY = Math.min(...nodes.map(n => n.position.y))
+
+  const rows = Math.ceil((HWIDTH * disconnectedQs.length) / plotWidth)
+
+  const unconnectedHeight = rows * 130
+
+  console.log('unconnected rows', unconnectedHeight)
+
+  console.log(
+    `%node yg ${nodes.map(n => n.position.y)}`,
+    'background: #222; color: rgb(85, 218, 152)'
+  )
+
+  if (minY < unconnectedHeight) {
+    nodes.forEach(
+      n => (n.position.y = n.position.y + Math.abs(minY - unconnectedHeight))
+    )
+  }
+
+  console.log(
+    `%node ygupdated ${nodes.map(n => n.position.y)}`,
+    'background: #222; color: rgb(85, 218, 152)'
+  )
+
   disconnectedQs.forEach((dq, i) => {
     const result = getCoordiatesForNextDisconnectedNode(
       i,
@@ -275,20 +304,14 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
     )
 
     const qIndex = questions.findIndex(q1 => q1.identifier === dq.identifier)
-    const node = createNode(
-      dq,
-      qIndex,
-      result.x + 20,
-      result.y + maxY + 100,
-      true
-    )
+    const node = createNode(dq, qIndex, result.x, result.y, true)
     nodes.push(node)
   })
 
-  for (var i = 0; i < 4; i++) {
+  /* for (var i = 0; i < 4; i++) {
     var result = getCoordinatesForNextNode(800, 0, 0, i, 4)
     console.log('CHILD ' + i, result.y)
-  }
+  }*/
 
   return {nodes, edges, error}
 }

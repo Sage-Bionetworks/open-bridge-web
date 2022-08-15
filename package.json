@@ -31,6 +31,7 @@
     "react-beautiful-dnd": "^13.0.0",
     "react-colorful": "^5.2.3",
     "react-dom": "^18.2.0",
+    "react-draggable": "^4.4.5",
     "react-error-boundary": "^3.0.2",
     "react-flow-renderer": "^10.3.8",
     "react-imask": "^6.0.7",
