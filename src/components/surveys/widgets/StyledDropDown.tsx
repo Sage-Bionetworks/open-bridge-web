@@ -196,9 +196,10 @@ export const StyledDropDownItem = styled('div', {
   label: 'StyledSelectItem',
 })<{
   width: string
+  height?: string
   mode?: 'light' | 'dark'
-}>(({theme, width, mode = 'dark'}) => ({
-  height: theme.spacing(6),
+}>(({theme, width, mode = 'dark', height = '48px'}) => ({
+  height: height,
   width: width,
 
   display: 'flex',

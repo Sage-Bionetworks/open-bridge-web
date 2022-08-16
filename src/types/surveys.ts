@@ -116,7 +116,6 @@ export type Question = BaseStep & {
   skipCheckbox?: Skip
   baseType?: QuestionDataType
   nextStepIdentifier?: string
-
   uiHint?: 'checkmark' | 'likert' | 'textfield' | 'slider'
 }
 
@@ -134,6 +133,13 @@ export type ControlType =
   | 'likert'
   | 'time'
   | 'date'
+export type LikertQuestion = Question & {
+  uiHint: 'likert'
+  inputItem: InputItem & {
+    type: 'integer'
+    formatOptions: FormatOptionsInteger
+  }
+}
 
 export type BaseStep = {
   identifier: string //'step1',

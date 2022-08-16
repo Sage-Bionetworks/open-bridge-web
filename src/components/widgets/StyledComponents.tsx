@@ -159,7 +159,7 @@ export const SimpleTextLabel = withStyles(theme => ({
   },
 }))(InputLabel)
 
-export const SimpleTextInput = withStyles(theme => ({
+export const SimpleTextInput = styled(InputBase)(({theme}) => ({
   root: {
     border: `1px solid ${theme.palette.text.secondary}`,
     borderRadius: '1px',
@@ -201,7 +201,7 @@ export const SimpleTextInput = withStyles(theme => ({
   fullWidth: {
     '& input': {width: '100%'},
   },
-}))(InputBase)
+}))
 
 export const FormControlLabelHidden = withStyles(theme => ({
   root: {

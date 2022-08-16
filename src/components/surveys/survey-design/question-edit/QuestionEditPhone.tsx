@@ -6,12 +6,14 @@ import {latoFont, theme} from '@style/theme'
 import {
   ChoiceQuestion,
   ChoiceQuestionChoice,
+  LikertQuestion,
   Step,
   WebUISkipOptions,
 } from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
 import FreeText from './phone-subcontrols/FreeText'
+import Likert from './phone-subcontrols/Likert'
 import Select from './phone-subcontrols/Select'
 import SelectExtraActions from './phone-subcontrols/SelectExtraActions'
 import PhoneDisplay from './PhoneDisplay'
@@ -71,6 +73,9 @@ const ScrollableArea = styled('div')(({}) => ({
   marginRight: '-10px',
   padding: '0 10px',
   overflowY: 'scroll',
+
+  display: 'flex',
+  flexDirection: 'column',
 }))
 
 /*
@@ -359,7 +364,11 @@ function Factory(args: {
       return (
         <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
       )
-      return <>CHECKBOX</>
+
+    case 'LIKERT':
+      return (
+        <Likert step={args.step as LikertQuestion} onChange={args.onChange} />
+      )
     case 'FREE_TEXT':
       return <FreeText step={args.step} onChange={args.onChange} />
     // return <TextQuestion {...props} />

@@ -3,11 +3,12 @@ import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
 import {Box, Button, styled} from '@mui/material'
 import {theme} from '@style/theme'
-import {ChoiceQuestion, Step} from '@typedefs/surveys'
+import {ChoiceQuestion, LikertQuestion, Step} from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 import {StyledLabel14} from '../../widgets/SharedStyled'
 import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
 import FreeText from './rhs-subcontrols/FreeText'
+import Likert from './rhs-subcontrols/Likert'
 import Select from './rhs-subcontrols/Select'
 
 const StyledContainer = styled('div')(({theme}) => ({
@@ -50,6 +51,11 @@ function Factory(args: {
 
     case 'FREE_TEXT':
       return <FreeText step={args.step} onChange={args.onChange} />
+
+    case 'LIKERT':
+      return (
+        <Likert step={args.step as LikertQuestion} onChange={args.onChange} />
+      )
 
     default:
       return <>nothing</>
