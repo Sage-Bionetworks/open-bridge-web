@@ -158,7 +158,7 @@ const NextQuestionDropdown: FunctionComponent<{
         (opt, index) =>
           !excludeIds.includes(opt.identifier) && (
             <MenuItem value={opt.identifier} key={opt.identifier}>
-              <StyledDropDownItem width="112px" mode="light">
+              <StyledDropDownItem mode="light">
                 {QUESTIONS.get(getQuestionId(opt))?.img}
                 <div>{index + 1}</div>
               </StyledDropDownItem>

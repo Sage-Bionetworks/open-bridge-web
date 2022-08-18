@@ -133,8 +133,8 @@ export type ControlType =
   | 'likert'
   | 'time'
   | 'date'
-export type LikertQuestion = Question & {
-  uiHint: 'likert'
+export type ScaleQuestion = Question & {
+  uiHint: 'likert' | 'slider'
   inputItem: InputItem & {
     type: 'integer'
     formatOptions: FormatOptionsInteger

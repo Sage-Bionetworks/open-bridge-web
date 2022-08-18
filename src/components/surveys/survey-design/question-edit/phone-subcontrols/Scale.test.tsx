@@ -1,9 +1,9 @@
 import {cleanup, render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {LikertQuestion} from '@typedefs/surveys'
-import Likert from './Likert'
+import {ScaleQuestion} from '@typedefs/surveys'
+import Scale from './Scale'
 
-const QUESTION: LikertQuestion = {
+const QUESTION: ScaleQuestion = {
   type: 'simpleQuestion',
   identifier: 'simpleQ3',
   nextStepIdentifier: 'followupQ',
@@ -23,9 +23,9 @@ const QUESTION: LikertQuestion = {
 
 let component
 
-function setUp(step: LikertQuestion = QUESTION) {
+function setUp(step: ScaleQuestion = QUESTION) {
   const user = userEvent.setup()
-  component = render(<Likert step={step} onChange={step => onChange(step)} />)
+  component = render(<Scale step={step} onChange={step => onChange(step)} />)
 
   return {user, component}
 }
@@ -33,10 +33,11 @@ function setUp(step: LikertQuestion = QUESTION) {
 const onChange = jest.fn()
 afterEach(cleanup)
 
-test('show the scale correctly', async () => {
-  const {component} = setUp()
+test('show the scale correctly', () => {
+  setUp()
 
   expect(screen.queryByText('1')).toBeInTheDocument()
+  expect(screen.queryByText('2')).toBeInTheDocument()
   expect(screen.queryByText('7')).toBeInTheDocument()
   expect(screen.queryByText('0')).not.toBeInTheDocument()
   expect(screen.queryByText('8')).not.toBeInTheDocument()
@@ -44,7 +45,14 @@ test('show the scale correctly', async () => {
   expect(screen.queryByText('Not at all')).toBeInTheDocument()
 })
 
-test('show the min and max values/labels correctly', async () => {
+test('should only display the max and min for the slider', () => {
+  setUp({...QUESTION, uiHint: 'slider'}).component
+  expect(screen.queryByText('1')).toBeInTheDocument()
+  expect(screen.queryByText('2')).not.toBeInTheDocument()
+  expect(screen.queryByText('7')).toBeInTheDocument()
+})
+
+test('show the min and max values/labels correctly', () => {
   const newInput = {
     ...QUESTION.inputItem,
     formatOptions: {

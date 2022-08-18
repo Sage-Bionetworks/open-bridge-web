@@ -215,7 +215,7 @@ const Select: React.FunctionComponent<{
             inputProps={{'aria-label': 'Question Type:'}}>
             {selectTypeOptions.map(opt => (
               <MenuItem value={opt.toString()} key={opt.toString()}>
-                <StyledDropDownItem width="170px">
+                <StyledDropDownItem>
                   {QUESTIONS.get(opt)?.img}
                   <div>{QUESTIONS.get(opt)?.title}</div>
                 </StyledDropDownItem>
@@ -237,7 +237,7 @@ const Select: React.FunctionComponent<{
             inputProps={{'aria-label': 'Set Response Value Pairing:'}}>
             {answerDataTypeOptions.map(opt => (
               <MenuItem value={opt.toString()} key={opt.toString()}>
-                <StyledDropDownItem width="100px">
+                <StyledDropDownItem>
                   <Box paddingLeft="13px">{UtilityObject.capitalize(opt)}</Box>{' '}
                 </StyledDropDownItem>
               </MenuItem>

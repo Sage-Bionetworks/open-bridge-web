@@ -1,9 +1,15 @@
-import {act, cleanup, render, screen} from '@testing-library/react'
+import {
+  act,
+  cleanup,
+  render,
+  RenderResult,
+  screen,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {LikertQuestion} from '@typedefs/surveys'
-import Likert from './Likert'
+import {ScaleQuestion} from '@typedefs/surveys'
+import Likert from './Scale'
 
-const QUESTION: LikertQuestion = {
+const QUESTION: ScaleQuestion = {
   type: 'simpleQuestion',
   identifier: 'simpleQ3',
   nextStepIdentifier: 'followupQ',
@@ -21,7 +27,7 @@ const QUESTION: LikertQuestion = {
   },
 }
 
-function setUp(step: LikertQuestion = QUESTION) {
+function setUp(step: ScaleQuestion = QUESTION) {
   const user = userEvent.setup()
   const component = render(
     <Likert step={step} onChange={step => onChange(step)} />
@@ -50,7 +56,25 @@ test('show the setting correctly', async () => {
   expect(inputs.setMaxLabel).toHaveValue('Very much')
 })
 
-test('show the setting correctly', async () => {
+test('display a correct UI for likert and slider scale', async () => {
+  //the max value choices are different
+  let {component, buttons, user} = setUp()
+  const getMaxForLikert = (component: RenderResult) =>
+    component.queryByRole('option', {name: /7/i})
+  const getMaxForSlider = (component: RenderResult) =>
+    component.queryByRole('option', {name: /100/i})
+  await act(async () => await user.click(buttons.setMaxVal))
+  expect(getMaxForLikert(component)).toBeInTheDocument()
+  expect(getMaxForSlider(component)).not.toBeInTheDocument()
+  const setupResult = setUp({...QUESTION, uiHint: 'slider'})
+  await act(
+    async () => await setupResult.user.click(setupResult.buttons.setMaxVal)
+  )
+  expect(getMaxForLikert(setupResult.component)).not.toBeInTheDocument()
+  expect(getMaxForSlider(setupResult.component)).toBeInTheDocument()
+})
+
+test('update the setting correctly', async () => {
   const expectInputs = [
     {
       ...QUESTION.inputItem,

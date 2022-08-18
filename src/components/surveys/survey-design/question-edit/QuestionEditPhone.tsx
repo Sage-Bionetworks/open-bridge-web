@@ -6,14 +6,14 @@ import {latoFont, theme} from '@style/theme'
 import {
   ChoiceQuestion,
   ChoiceQuestionChoice,
-  LikertQuestion,
+  ScaleQuestion,
   Step,
   WebUISkipOptions,
 } from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
 import FreeText from './phone-subcontrols/FreeText'
-import Likert from './phone-subcontrols/Likert'
+import Scale from './phone-subcontrols/Scale'
 import Select from './phone-subcontrols/Select'
 import SelectExtraActions from './phone-subcontrols/SelectExtraActions'
 import PhoneDisplay from './PhoneDisplay'
@@ -297,7 +297,7 @@ const TimeQuestion: FunctionComponent<InputItem> = inputItem => {
   )
 }
 
-const LikertQuestion: FunctionComponent<InputItem> = inputItem => {
+const ScaleQuestion: FunctionComponent<InputItem> = inputItem => {
   return (
     <FormControl>
       <RadioGroup
@@ -346,15 +346,6 @@ function Factory(args: {
   switch (args.q_type) {
     case 'SINGLE_SELECT': {
       let _step = args.step as ChoiceQuestion
-      /*  return (
-        <RadioQuestion
-          {...{
-            ...props,
-            onChange: updateStepWithChoices,
-            choices: _step.choices || [],
-          }}
-        />
-      )*/
       return (
         <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
       )
@@ -364,10 +355,10 @@ function Factory(args: {
       return (
         <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
       )
-
+    case 'SLIDER':
     case 'LIKERT':
       return (
-        <Likert step={args.step as LikertQuestion} onChange={args.onChange} />
+        <Scale step={args.step as ScaleQuestion} onChange={args.onChange} />
       )
     case 'FREE_TEXT':
       return <FreeText step={args.step} onChange={args.onChange} />
@@ -381,7 +372,7 @@ function Factory(args: {
     // return <DateQuestion {...props} />
     case 'likert':
       return <>LIKERT</>
-    // return <LikertQuestion {...props} />*/
+    // return <ScaleQuestion {...props} />*/
     default:
       return <>nothing</>
   }
