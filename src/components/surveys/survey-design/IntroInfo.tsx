@@ -161,7 +161,7 @@ const getDefaultSurvey = (newSurveyId: string): Survey => ({
     shouldHideActions: [],
     interruptionHandling: {
       canResume: true,
-      reviewInstructions: 'beginning',
+      reviewIdentifier: 'beginning',
       canSkip: true,
       canSaveForLater: true,
     },
@@ -186,7 +186,7 @@ const getDefaultAssessment = (
 
 const InterruptionHandlingDefault: InterruptionHandlingType = {
   canResume: true,
-  reviewInstructions: 'beginning',
+  reviewIdentifier: 'beginning',
   canSkip: true,
   canSaveForLater: true,
 }
@@ -241,17 +241,17 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
     key: keyof InterruptionHandlingType,
     value: boolean
   ) => {
-    if (key !== 'reviewInstructions') {
+    if (key !== 'reviewIdentifier') {
       setInterruptionHandling(prev => ({...prev, [key]: value}))
     } else {
       if (value) {
         setInterruptionHandling(prev => ({
           ...prev,
-          reviewInstructions: 'beginning',
+          reviewIdentifier: 'beginning',
         }))
       } else {
         setInterruptionHandling(prev => {
-          const {reviewInstructions, ...rest} = prev
+          const {reviewIdentifier, ...rest} = prev
 
           return rest
         })
@@ -398,14 +398,14 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
           />
 
           <FormControlLabel
-            value={interruptionHandling.reviewInstructions}
+            value={interruptionHandling.reviewIdentifier}
             sx={{mt: theme.spacing(1.5)}}
             control={
               <StyledCheckbox
-                checked={interruptionHandling.reviewInstructions !== undefined}
+                checked={interruptionHandling.reviewIdentifier !== undefined}
                 onChange={e =>
                   updateInterruptonHandling(
-                    'reviewInstructions',
+                    'reviewIdentifier',
                     e.target.checked
                   )
                 }

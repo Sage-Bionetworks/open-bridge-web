@@ -159,11 +159,9 @@ export const SimpleTextLabel = withStyles(theme => ({
   },
 }))(InputLabel)
 
-export const SimpleTextInput = withStyles(theme => ({
-  root: {
+export const SimpleTextInput = styled(InputBase, {label: 'SimpleTextInput'})(
+  ({theme}) => ({
     border: `1px solid ${theme.palette.text.secondary}`,
-    borderRadius: '1px',
-
     'label + &': {
       marginTop: theme.spacing(2.5),
     },
@@ -180,28 +178,30 @@ export const SimpleTextInput = withStyles(theme => ({
     '&:not(:last-child)': {
       marginBottom: theme.spacing(2),
     },
-  },
-  multiline: {
-    padding: 0,
-  },
-  input: {
-    borderRadius: 0,
-    position: 'relative',
-    backgroundColor: theme.palette.common.white,
-    fontSize: '14px',
-    width: 'auto',
-    padding: '10px 12px',
-    transition: theme.transitions.create(['border-color', 'box-shadow']),
-    fontFamily: [latoFont, 'Roboto'].join(','),
-    '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active':
-      {
-        ' -webkit-box-shadow': '0 0 0 30px white inset !important',
-      },
-  },
-  fullWidth: {
-    '& input': {width: '100%'},
-  },
-}))(InputBase)
+
+    multiline: {
+      padding: 0,
+    },
+    input: {
+      borderRadius: '1px',
+      // borderRadius: 0,
+      position: 'relative',
+      backgroundColor: theme.palette.common.white,
+      fontSize: '14px',
+      width: 'auto',
+      padding: '10px 12px',
+      transition: theme.transitions.create(['border-color', 'box-shadow']),
+      fontFamily: [latoFont, 'Roboto'].join(','),
+      '&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill:active':
+        {
+          ' -webkit-box-shadow': '0 0 0 30px white inset !important',
+        },
+    },
+    fullWidth: {
+      '& input': {width: '100%'},
+    },
+  })
+)
 
 export const FormControlLabelHidden = withStyles(theme => ({
   root: {

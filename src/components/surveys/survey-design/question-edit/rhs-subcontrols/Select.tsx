@@ -150,6 +150,7 @@ const Select: React.FunctionComponent<{
   const [isTypeConversionWarning, setIsTypeConversionWarning] =
     React.useState(false)
   const answerDataTypeOptions: QuestionDataType[] = ['integer', 'string']
+  console.log('rules', step.surveyRules)
 
   const handleSelectTypeChange = (
     event: SelectChangeEvent<QuestionTypeKey>
@@ -201,7 +202,7 @@ const Select: React.FunctionComponent<{
 
   return (
     <>
-      <Box sx={{padding: theme.spacing(14, 3)}}>
+      <Box sx={{padding: theme.spacing(5, 3)}}>
         <StyledFormControl mb={2}>
           <StyledLabel14 mb={0.5}>Question Type:</StyledLabel14>
 
@@ -214,7 +215,7 @@ const Select: React.FunctionComponent<{
             inputProps={{'aria-label': 'Question Type:'}}>
             {selectTypeOptions.map(opt => (
               <MenuItem value={opt.toString()} key={opt.toString()}>
-                <StyledDropDownItem width="170px">
+                <StyledDropDownItem>
                   {QUESTIONS.get(opt)?.img}
                   <div>{QUESTIONS.get(opt)?.title}</div>
                 </StyledDropDownItem>
@@ -236,7 +237,7 @@ const Select: React.FunctionComponent<{
             inputProps={{'aria-label': 'Set Response Value Pairing:'}}>
             {answerDataTypeOptions.map(opt => (
               <MenuItem value={opt.toString()} key={opt.toString()}>
-                <StyledDropDownItem width="100px">
+                <StyledDropDownItem>
                   <Box paddingLeft="13px">{UtilityObject.capitalize(opt)}</Box>{' '}
                 </StyledDropDownItem>
               </MenuItem>
@@ -253,6 +254,10 @@ const Select: React.FunctionComponent<{
           {step.baseType === 'string' && (
             <Button
               sx={{marginRight: 0, float: 'right'}}
+              disabled={
+                step.surveyRules?.find(r => r.matchingAnswer !== undefined) !==
+                undefined
+              }
               onClick={() =>
                 onChange({
                   ...step,

@@ -116,7 +116,6 @@ export type Question = BaseStep & {
   skipCheckbox?: Skip
   baseType?: QuestionDataType
   nextStepIdentifier?: string
-
   uiHint?: 'checkmark' | 'likert' | 'textfield' | 'slider'
 }
 
@@ -134,6 +133,13 @@ export type ControlType =
   | 'likert'
   | 'time'
   | 'date'
+export type ScaleQuestion = Question & {
+  uiHint: 'likert' | 'slider'
+  inputItem: InputItem & {
+    type: 'integer'
+    formatOptions: FormatOptionsInteger
+  }
+}
 
 export type BaseStep = {
   identifier: string //'step1',
@@ -170,7 +176,7 @@ export type ActionButtonName =
 export type WebUISkipOptions = 'SKIP' | 'NO_SKIP' | 'CUSTOMIZE'
 export type InterruptionHandlingType = {
   canResume: boolean
-  reviewInstructions?: 'beginning'
+  reviewIdentifier?: 'beginning'
   canSkip: boolean
   canSaveForLater: boolean
 }

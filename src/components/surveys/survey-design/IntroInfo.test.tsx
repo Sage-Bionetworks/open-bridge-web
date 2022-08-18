@@ -204,7 +204,7 @@ describe('<IntroInfo/>', () => {
   /* 
   default for interruptionHandling: {
       canResume: true,
-      reviewInstructions: 'beginning',
+      reviewIdentifier: 'beginning',
       canSkip: true,
       canSaveForLater: true,
     },*/

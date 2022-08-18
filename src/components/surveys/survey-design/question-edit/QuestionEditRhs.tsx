@@ -3,11 +3,12 @@ import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
 import {Box, Button, styled} from '@mui/material'
 import {theme} from '@style/theme'
-import {ChoiceQuestion, Step} from '@typedefs/surveys'
+import {ChoiceQuestion, ScaleQuestion, Step} from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 import {StyledLabel14} from '../../widgets/SharedStyled'
 import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
 import FreeText from './rhs-subcontrols/FreeText'
+import Scale from './rhs-subcontrols/Scale'
 import Select from './rhs-subcontrols/Select'
 
 const StyledContainer = styled('div')(({theme}) => ({
@@ -50,14 +51,26 @@ function Factory(args: {
 
     case 'FREE_TEXT':
       return <FreeText step={args.step} onChange={args.onChange} />
+    case 'SLIDER':
+    case 'LIKERT':
+      return (
+        <Scale step={args.step as ScaleQuestion} onChange={args.onChange} />
+      )
 
     default:
       return <>nothing</>
   }
 }
+/* 
+deleting questions:
+can't delete question if it is in the rules for another question.
+changing quesiton id:
+change the dependent quesitons
+*/
 
 type QuestionEditProps = {
   step: Step
+  dependentQuestions: number[] | undefined
   onChange: (step: Step) => void
 }
 
@@ -65,6 +78,7 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({
   step,
   onChange,
   children,
+  dependentQuestions,
 }) => {
   const matchIdentifier = () => {
     const newId = `${step?.title

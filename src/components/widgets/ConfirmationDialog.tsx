@@ -111,7 +111,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   type,
   onConfirm,
   children,
-  width = '302px',
+  width = '352px',
   cancelText = 'Cancel',
   actionText = 'Delete',
 }) => {

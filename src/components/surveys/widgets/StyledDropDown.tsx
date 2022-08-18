@@ -18,7 +18,11 @@ const getSvgFilter = (mode: 'light' | 'dark' = 'dark') => {
       }
 }
 
-const getMenuProps = (mode: 'light' | 'dark' = 'dark') => {
+const getMenuProps = (
+  mode: 'light' | 'dark' = 'dark',
+  width: string,
+  height: string
+) => {
   return {
     PaperProps: {
       sx: {
@@ -26,7 +30,9 @@ const getMenuProps = (mode: 'light' | 'dark' = 'dark') => {
         borderRadius: 0,
         '& ul': {
           padding: 0,
+          width: `${width}`,
           '& li.MuiButtonBase-root': {
+            height: height,
             backgroundColor: getBgColor(mode),
             paddingLeft: '0',
 
@@ -71,60 +77,6 @@ function CaretBlack(props: SvgIconProps) {
     </SvgIcon>
   )
 }
-/*
-const MenuProps = {
-  PaperProps: {
-    sx: {
-      //  width: '200px',
-      borderRadius: 0,
-      '& ul': {
-        padding: 0,
-        '& li.MuiButtonBase-root': {
-          backgroundColor: '#565656',
-          paddingLeft: '0',
-
-          color: '#fff',
-          '& svg, img ': {
-            WebkitFilter: 'invert(1)',
-            filter: 'invert(1)',
-          },
-        },
-        '& li.MuiButtonBase-root.Mui-selected': {
-          backgroundColor: '#565656',
-        },
-        '& li.MuiButtonBase-root:hover': {
-          backgroundColor: '#6e6b6b',
-        },
-      },
-    },
-  },
-}
-
-const MenuPropsLight = {
-  PaperProps: {
-    sx: {
-      //  width: '200px',
-      borderRadius: 0,
-      '& ul': {
-        padding: 0,
-        '& li.MuiButtonBase-root': {
-          backgroundColor: '#F2F2F2',
-          paddingLeft: '0',
-
-          color: '#4D4D4D',
-        },
-        '& li.MuiButtonBase-root.Mui-selected': {
-          backgroundColor: '#F2F2F2',
-        },
-        '& li.MuiButtonBase-root:hover': {
-          backgroundColor: '#F2F2F2',
-        },
-      },
-    },
-  },
-}
-*/
-//props example
 
 export const StyledDropDown = styled(
   (
@@ -138,7 +90,7 @@ export const StyledDropDown = styled(
       displayEmpty
       IconComponent={props.mode === 'light' ? CaretBlack : Caret}
       input={<OutlinedInput />}
-      MenuProps={getMenuProps(props.mode)}
+      MenuProps={getMenuProps(props.mode, props.width, props.height)}
       {...props}
     />
   ),
@@ -147,7 +99,7 @@ export const StyledDropDown = styled(
   ({theme, width, height, mode = 'dark'}) => ({
     width: width,
     height: height,
-    '& ul': {padding: '0'},
+    //'& ul': {padding: '0'},
 
     '& .MuiSvgIcon-root': {
       top: 'calc(50% - 0.2em)',
@@ -195,12 +147,10 @@ export const StyledDropDown = styled(
 export const StyledDropDownItem = styled('div', {
   label: 'StyledSelectItem',
 })<{
-  width: string
   mode?: 'light' | 'dark'
-}>(({theme, width, mode = 'dark'}) => ({
-  height: theme.spacing(6),
-  width: width,
-
+}>(({theme, mode = 'dark'}) => ({
+  width: '100%',
+  height: '100%',
   display: 'flex',
   alignItems: 'center',
 

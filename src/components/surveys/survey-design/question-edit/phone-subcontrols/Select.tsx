@@ -116,8 +116,8 @@ const Select: React.FunctionComponent<{
   step: ChoiceQuestion
 
   onChange: (step: ChoiceQuestion) => void
-}> = ({step, onChange}) => {
-  const stepData = step as ChoiceQuestion
+}> = ({step: stepData, onChange}) => {
+  // const stepData = step as ChoiceQuestion
   const onDragEnd = (result: DropResult) => {
     if (!stepData.choices) {
       return
@@ -134,13 +134,15 @@ const Select: React.FunctionComponent<{
 
   const deleteOtherOption = () => {
     if (stepData.choices) {
-      onChange({...step, other: undefined})
+      onChange({...stepData, other: undefined})
     }
   }
 
   const deleteOption = (index: number, selectorType?: ChoiceSelectorType) => {
     if (stepData.choices) {
       const newChoices = [...stepData.choices]
+      let newRules = undefined
+
       if ((index > -1 && selectorType) || (index == -1 && !selectorType)) {
         throw new Error('question badly formed')
       }
@@ -148,12 +150,25 @@ const Select: React.FunctionComponent<{
       const deleteIndex = selectorType
         ? stepData.choices.findIndex(c => c.selectorType === selectorType)
         : index
+      //if this value is in the surveyRules - remove it
+      if (stepData.surveyRules) {
+        const rulesDeleteIndex = stepData.surveyRules!.findIndex(
+          r =>
+            r.matchingAnswer &&
+            r.matchingAnswer === stepData.choices[deleteIndex].value
+        )
+        newRules = [...stepData.surveyRules]
+        if (rulesDeleteIndex !== -1) {
+          newRules.splice(rulesDeleteIndex, 1)
+        }
+      }
 
       newChoices.splice(deleteIndex, 1)
 
       onChange({
         ...stepData,
         choices: newChoices,
+        surveyRules: newRules,
       })
     }
   }
@@ -231,7 +246,10 @@ const Select: React.FunctionComponent<{
                     key={choice.value?.toString()}>
                     {provided => (
                       <SelectOption
-                        options={{isSingleChoice: step.singleChoice, provided}}
+                        options={{
+                          isSingleChoice: stepData.singleChoice,
+                          provided,
+                        }}
                         onRename={qText => renameOption(qText, index)}
                         choice={choice}
                         onDelete={() => deleteOption(index)}
@@ -250,18 +268,20 @@ const Select: React.FunctionComponent<{
             //  .sort((a, b) => (a.text < b.text ? -1 : 1))
             .map((choice, index) => (
               <SelectOption
-                options={{isSingleChoice: step.singleChoice}}
+                options={{isSingleChoice: stepData.singleChoice}}
                 onRename={qText => renameOption(qText, -1, choice.selectorType)}
                 choice={choice}
                 key={choice.text}
                 onDelete={() => deleteOption(-1, choice.selectorType)}
               />
             ))}
-        {step.other && (
+        {stepData.other && (
           <SelectOption
-            options={{isSingleChoice: step.singleChoice, isOther: true}}
+            options={{isSingleChoice: stepData.singleChoice, isOther: true}}
             onRename={qText => renameOtherOption(qText)}
-            choice={{text: (step.other.fieldLabel || 'Other') + '_________'}}
+            choice={{
+              text: (stepData.other.fieldLabel || 'Other') + '_________',
+            }}
             onDelete={qText => deleteOtherOption()}
           />
         )}
