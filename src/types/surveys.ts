@@ -1,45 +1,5 @@
-// export enum SurveyRuleOperatorE {
-//   /**
-//    * The answer value is equal to the matching answer.
-//    */
-
-//   Equal = 'eq',
-
-//   /**
-//    * The answer value is *not* equal to the matching answer.
-//    */
-//   NotEqual = 'ne',
-//   /// The answer value is less than the matching answer.
-
-//   LessThan = 'lt',
-
-//   /// The answer value is greater than the matching answer.
-
-//   GreaterThan = 'gt',
-
-//   /// The answer value is less than or equal to the matching answer.
-
-//   LessThanEqual = 'le',
-
-//   /// The answer value is greater than or equal to the matching answer.
-
-//   GreaterThanEqual = 'ge',
-
-//   /**
-//    * The rule should always evaluate to true.
-//    */
-
-//   Always = 'always',
-
-//   /**
-//    * Survey rule for checking if the answer was skipped.
-//    */
-
-//   Skip = 'de',
-// }
 export type SurveyRuleOperator = 'eq' | 'ne'
 export type ChoiceSelectorType = 'all' | 'exclusive' | 'default'
-
 export type QuestionDataType = 'string' | 'integer' | 'number' | 'boolean'
 
 export type ActionButton = {
@@ -59,25 +19,32 @@ export type ImageAnimated = {
   imageNames: string[]
 }
 
-export type InputItem = {
-  type: 'string' | 'year' | 'checkbox' | 'duration' | 'integer' | 'time'
-
-  placeholder?: string
-  fieldLabel?: string
-  displayUnits?: string[]
-  formatOptions?: FormatOptionsInteger | FormatOptionsYear
-}
-
 export type FormatOptionsYear = {
   allowFuture: boolean
   minimumYear: number
 }
 
 export type FormatOptionsInteger = {
-  maximumLabel: string
-  maximumValue: number
-  minimumLabel: string
-  minimumValue: number
+  maximumLabel?: string
+  maximumValue?: number
+  minimumLabel?: string
+  minimumValue?: number
+}
+
+export type FormatOptionsTime = {
+  maximumValue?: string
+  minimumValue?: string
+  allowPast?: boolean
+  allowFuture?: boolean
+}
+
+export type InputItem = {
+  type: 'string' | 'year' | 'checkbox' | 'duration' | 'integer' | 'time'
+
+  placeholder?: string
+  fieldLabel?: string
+  displayUnits?: string[]
+  formatOptions?: FormatOptionsInteger | FormatOptionsYear | FormatOptionsTime
 }
 
 export type Skip = {
@@ -91,6 +58,24 @@ export type ChoiceQuestionChoice = {
 
   selectorType?: ChoiceSelectorType
   icon?: string
+}
+
+export type Instruction = BaseStep & {}
+export type ControlType =
+  | 'radio'
+  | 'checkbox'
+  | 'text'
+  | 'likert'
+  | 'time'
+  | 'date'
+
+export type Question = BaseStep & {
+  optional?: boolean //true,
+  inputItem?: InputItem
+  skipCheckbox?: Skip
+  baseType?: QuestionDataType
+  nextStepIdentifier?: string
+  uiHint?: 'checkmark' | 'likert' | 'textfield' | 'slider'
 }
 
 export type ChoiceQuestion = Question & {
@@ -109,35 +94,37 @@ export type ChoiceQuestion = Question & {
     fieldLabel?: string // no column
   }
 }
-
-export type Question = BaseStep & {
-  optional?: boolean //true,
-  inputItem?: InputItem
-  skipCheckbox?: Skip
-  baseType?: QuestionDataType
-  nextStepIdentifier?: string
-  uiHint?: 'checkmark' | 'likert' | 'textfield' | 'slider'
-}
-
 export type MultipleInputQuestion = BaseStep & {
   optional: boolean
   inputItems: InputItem[]
   skipCheckbox?: Skip
 }
-
-export type Instruction = BaseStep & {}
-export type ControlType =
-  | 'radio'
-  | 'checkbox'
-  | 'text'
-  | 'likert'
-  | 'time'
-  | 'date'
 export type ScaleQuestion = Question & {
   uiHint: 'likert' | 'slider'
   inputItem: InputItem & {
     type: 'integer'
     formatOptions: FormatOptionsInteger
+  }
+}
+export type DurationQuestion = Question & {
+  inputItem: InputItem & {
+    type: 'duration'
+    displayUnits: ['hour', 'minute']
+  }
+}
+
+export type TimeQuestion = Question & {
+  inputItem: InputItem & {
+    type: 'time'
+
+    formatOptions: FormatOptionsTime
+  }
+}
+
+export type NumericQuestion = Question & {
+  inputItem: InputItem & {
+    type: 'integer'
+    formatOptions?: FormatOptionsInteger
   }
 }
 
