@@ -202,107 +202,105 @@ const Select: React.FunctionComponent<{
 
   return (
     <>
-      <Box sx={{padding: theme.spacing(5, 3)}}>
-        <StyledFormControl mb={2}>
-          <StyledLabel14 mb={0.5}>Question Type:</StyledLabel14>
+      <StyledFormControl mb={2}>
+        <StyledLabel14 mb={0.5}>Question Type:</StyledLabel14>
 
-          <StyledDropDown
-            value={step.singleChoice ? 'SINGLE_SELECT' : 'MULTI_SELECT'}
-            width="200px"
-            //@ts-ignore
-            onChange={handleSelectTypeChange}
-            input={<OutlinedInput />}
-            inputProps={{'aria-label': 'Question Type:'}}>
-            {selectTypeOptions.map(opt => (
-              <MenuItem value={opt.toString()} key={opt.toString()}>
-                <StyledDropDownItem>
-                  {QUESTIONS.get(opt)?.img}
-                  <div>{QUESTIONS.get(opt)?.title}</div>
-                </StyledDropDownItem>
-              </MenuItem>
+        <StyledDropDown
+          value={step.singleChoice ? 'SINGLE_SELECT' : 'MULTI_SELECT'}
+          width="200px"
+          //@ts-ignore
+          onChange={handleSelectTypeChange}
+          input={<OutlinedInput />}
+          inputProps={{'aria-label': 'Question Type:'}}>
+          {selectTypeOptions.map(opt => (
+            <MenuItem value={opt.toString()} key={opt.toString()}>
+              <StyledDropDownItem>
+                {QUESTIONS.get(opt)?.img}
+                <div>{QUESTIONS.get(opt)?.title}</div>
+              </StyledDropDownItem>
+            </MenuItem>
+          ))}
+        </StyledDropDown>
+      </StyledFormControl>
+
+      <StyledFormControl mb={2}>
+        <StyledLabel14 mb={0.5}>Set Response Value Pairing:</StyledLabel14>
+
+        <StyledDropDown
+          value={step.baseType}
+          height="48px"
+          width="130px"
+          //@ts-ignore
+          onChange={e => handleDataTypeChange(e.target.value)}
+          input={<OutlinedInput />}
+          inputProps={{'aria-label': 'Set Response Value Pairing:'}}>
+          {answerDataTypeOptions.map(opt => (
+            <MenuItem value={opt.toString()} key={opt.toString()}>
+              <StyledDropDownItem>
+                <Box paddingLeft="13px">{UtilityObject.capitalize(opt)}</Box>{' '}
+              </StyledDropDownItem>
+            </MenuItem>
+          ))}
+        </StyledDropDown>
+      </StyledFormControl>
+
+      <PairingTableHeading
+        answerDataType={step.baseType}
+        issinglechoice={step.singleChoice}
+      />
+
+      <Box sx={{backgroundColor: '#fff', padding: theme.spacing(2, 1.5)}}>
+        {step.baseType === 'string' && (
+          <Button
+            sx={{marginRight: 0, float: 'right'}}
+            disabled={
+              step.surveyRules?.find(r => r.matchingAnswer !== undefined) !==
+              undefined
+            }
+            onClick={() =>
+              onChange({
+                ...step,
+                choices: step.choices.map(c => ({
+                  ...c,
+                  value: generateValue(c),
+                })),
+              })
+            }>
+            <GenerateId />
+            Match All Response Labels
+          </Button>
+        )}
+        <ValueTable>
+          <tbody>
+            <tr>
+              <th>Response</th>
+              <th></th>
+              <th style={{width: '60px'}}>
+                Value={UtilityObject.capitalize(step.baseType)}
+              </th>
+            </tr>
+
+            {step.choices?.map((choice, index) => (
+              <ChoiceValueInputRow
+                key={choice.text}
+                choice={choice}
+                allValues={step.choices.map(c => c.value)}
+                onChange={val => {
+                  const choices = step.choices.map((c, i) =>
+                    i === index ? {...c, value: val} : c
+                  )
+                  onChange({...step, choices})
+                }}
+              />
             ))}
-          </StyledDropDown>
-        </StyledFormControl>
-
-        <StyledFormControl mb={2}>
-          <StyledLabel14 mb={0.5}>Set Response Value Pairing:</StyledLabel14>
-
-          <StyledDropDown
-            value={step.baseType}
-            height="48px"
-            width="130px"
-            //@ts-ignore
-            onChange={e => handleDataTypeChange(e.target.value)}
-            input={<OutlinedInput />}
-            inputProps={{'aria-label': 'Set Response Value Pairing:'}}>
-            {answerDataTypeOptions.map(opt => (
-              <MenuItem value={opt.toString()} key={opt.toString()}>
-                <StyledDropDownItem>
-                  <Box paddingLeft="13px">{UtilityObject.capitalize(opt)}</Box>{' '}
-                </StyledDropDownItem>
-              </MenuItem>
-            ))}
-          </StyledDropDown>
-        </StyledFormControl>
-
-        <PairingTableHeading
-          answerDataType={step.baseType}
-          issinglechoice={step.singleChoice}
-        />
-
-        <Box sx={{backgroundColor: '#fff', padding: theme.spacing(2, 1.5)}}>
-          {step.baseType === 'string' && (
-            <Button
-              sx={{marginRight: 0, float: 'right'}}
-              disabled={
-                step.surveyRules?.find(r => r.matchingAnswer !== undefined) !==
-                undefined
-              }
-              onClick={() =>
-                onChange({
-                  ...step,
-                  choices: step.choices.map(c => ({
-                    ...c,
-                    value: generateValue(c),
-                  })),
-                })
-              }>
-              <GenerateId />
-              Match All Response Labels
-            </Button>
-          )}
-          <ValueTable>
-            <tbody>
+            {step.other && (
               <tr>
-                <th>Response</th>
-                <th></th>
-                <th style={{width: '60px'}}>
-                  Value={UtilityObject.capitalize(step.baseType)}
-                </th>
+                <td>{step.other.fieldLabel || 'Other'}</td> <td> &rarr;</td>{' '}
+                <td style={{width: '60px', padding: '0 8px'}}>custom text</td>
               </tr>
-
-              {step.choices?.map((choice, index) => (
-                <ChoiceValueInputRow
-                  key={choice.text}
-                  choice={choice}
-                  allValues={step.choices.map(c => c.value)}
-                  onChange={val => {
-                    const choices = step.choices.map((c, i) =>
-                      i === index ? {...c, value: val} : c
-                    )
-                    onChange({...step, choices})
-                  }}
-                />
-              ))}
-              {step.other && (
-                <tr>
-                  <td>{step.other.fieldLabel || 'Other'}</td> <td> &rarr;</td>{' '}
-                  <td style={{width: '60px', padding: '0 8px'}}>custom text</td>
-                </tr>
-              )}
-            </tbody>
-          </ValueTable>
-        </Box>
+            )}
+          </tbody>
+        </ValueTable>
       </Box>
       <ConfirmationDialog
         isOpen={isTypeConversionWarning}

@@ -145,19 +145,20 @@ export const DialogButtonPrimary = withStyles(theme => ({
   },
 }))(Button)
 
-export const SimpleTextLabel = withStyles(theme => ({
-  root: {
+export const SimpleTextLabel = styled(InputLabel, {label: 'SimpleTextLabel'})(
+  ({theme}) => ({
     fontFamily: [poppinsFont, 'Roboto'].join(','),
     fontWeight: 500,
     fontSize: '14px',
     transform: 'none',
+    maxWidth: '100%',
     paddingLeft: theme.spacing(0),
 
-    '.error > &': {
+    '&.error': {
       color: theme.palette.error.main,
     },
-  },
-}))(InputLabel)
+  })
+)
 
 export const SimpleTextInput = styled(InputBase, {label: 'SimpleTextInput'})(
   ({theme}) => ({
@@ -182,7 +183,8 @@ export const SimpleTextInput = styled(InputBase, {label: 'SimpleTextInput'})(
     multiline: {
       padding: 0,
     },
-    input: {
+
+    '& input, textarea': {
       borderRadius: '1px',
       // borderRadius: 0,
       position: 'relative',
@@ -196,6 +198,9 @@ export const SimpleTextInput = styled(InputBase, {label: 'SimpleTextInput'})(
         {
           ' -webkit-box-shadow': '0 0 0 30px white inset !important',
         },
+      '&.Mui-disabled': {
+        backgroundColor: 'rgba(239, 239, 239, 0.3)',
+      },
     },
     fullWidth: {
       '& input': {width: '100%'},

@@ -1,8 +1,8 @@
-import React from 'react'
-import {AlertWithText} from './StyledComponents'
-import Alert_Icon from '../../assets/alert_icon.svg'
+import Alert_Icon from '@assets/alert_icon.svg'
 import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
+import React from 'react'
+import {AlertWithText} from './StyledComponents'
 
 type AlertWithTextWrapperProps = {
   text: string
