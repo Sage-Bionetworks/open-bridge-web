@@ -125,7 +125,7 @@ const Limit: React.FunctionComponent<{
             const fo = {...formatOptions}
             fo.allowFuture = e.target.value !== 'FUTURE'
             fo.allowFuture = e.target.value !== 'PAST'
-            onUpdateFormat(fo, e.target.value)
+            onUpdateFormat(fo, e.target.value as LimitType)
           }}>
           <FormControlLabel
             value="NONE"
