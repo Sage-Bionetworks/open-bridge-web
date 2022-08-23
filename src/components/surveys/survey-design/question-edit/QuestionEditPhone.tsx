@@ -371,6 +371,8 @@ function Factory(args: {
       return <TimeDuration />
     case 'TIME':
       return <TimeDuration type="TIME" />
+    case 'YEAR':
+      return <Numeric step={args.step as NumericQuestion} onChange={e => {}} />
 
     case 'FREE_TEXT':
       return <FreeText step={args.step} onChange={args.onChange} />

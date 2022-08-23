@@ -2,9 +2,18 @@ import {
   DisappearingInput,
   FakeInput,
 } from '@components/surveys/widgets/SharedStyled'
-import {styled} from '@mui/material'
-import {latoFont} from '@style/theme'
-import {NumericQuestion} from '@typedefs/surveys'
+import {styled, Typography} from '@mui/material'
+import {Theme} from '@mui/system'
+import {latoFont, theme} from '@style/theme'
+import {NumericQuestion, YearQuestion} from '@typedefs/surveys'
+
+const labelStyles = (theme: Theme): React.CSSProperties => ({
+  fontFamily: latoFont,
+  fontWeight: 400,
+  fontSize: '12px',
+  color: '#2A2A2A',
+  marginBottom: theme.spacing(0.5),
+})
 
 const StyledContainer = styled('div', {label: 'StyledContainer'})(({}) => ({
   height: '100%',
@@ -18,11 +27,7 @@ const StyledContainer = styled('div', {label: 'StyledContainer'})(({}) => ({
 const StyledLabel = styled(DisappearingInput, {
   label: 'StyledLabel',
 })(({theme}) => ({
-  fontFamily: latoFont,
-  fontWeight: 400,
-  fontSize: '12px',
-  color: '#2A2A2A',
-  marginBottom: theme.spacing(0.5),
+  ...labelStyles(theme),
   '& > input': {
     padding: theme.spacing(0.125, 1),
     textAlign: 'center',
@@ -30,19 +35,23 @@ const StyledLabel = styled(DisappearingInput, {
 }))
 
 const Label: React.FunctionComponent<{
-  step: NumericQuestion
-
-  onChange: (iItem: NumericQuestion) => void
+  step: NumericQuestion | YearQuestion
+  onChange?: (iItem: NumericQuestion) => void
 }> = ({step, onChange}) => {
+  if (step.inputItem.type === 'year') {
+    return <Typography sx={{...labelStyles(theme)}}>Year</Typography>
+  }
   const label = step.inputItem.fieldLabel
 
   const onUpdate = (value: string) => {
-    const inputItem = {
-      ...step.inputItem,
+    if (step.inputItem.type === 'integer' && onChange) {
+      const inputItem = {
+        ...step.inputItem,
 
-      fieldLabel: value,
+        fieldLabel: value,
+      }
+      onChange({...step, inputItem})
     }
-    onChange({...step, inputItem})
   }
 
   return (
@@ -64,7 +73,7 @@ const Numeric: React.FunctionComponent<{
   return (
     <StyledContainer>
       <Label step={step} onChange={onChange} />
-      <FakeInput />
+      <FakeInput>{step.inputItem.type === 'integer' ? '' : 'YYYY'}</FakeInput>
     </StyledContainer>
   )
 }

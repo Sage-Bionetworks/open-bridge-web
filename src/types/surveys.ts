@@ -20,8 +20,10 @@ export type ImageAnimated = {
 }
 
 export type FormatOptionsYear = {
-  allowFuture: boolean
-  minimumYear: number
+  allowFuture?: boolean
+  allowPast?: boolean
+  minimumYear?: number
+  maximumYear?: number
 }
 
 export type FormatOptionsInteger = {
@@ -125,6 +127,13 @@ export type NumericQuestion = Question & {
   inputItem: InputItem & {
     type: 'integer'
     formatOptions?: FormatOptionsInteger
+  }
+}
+
+export type YearQuestion = Question & {
+  inputItem: InputItem & {
+    type: 'year'
+    formatOptions?: FormatOptionsYear
   }
 }
 

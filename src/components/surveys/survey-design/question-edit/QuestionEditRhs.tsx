@@ -8,6 +8,7 @@ import {
   ScaleQuestion,
   Step,
   TimeQuestion,
+  YearQuestion,
 } from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 import {StyledLabel14} from '../../widgets/SharedStyled'
@@ -17,6 +18,7 @@ import Numeric from './rhs-subcontrols/Numeric'
 import Scale from './rhs-subcontrols/Scale'
 import Select from './rhs-subcontrols/Select'
 import Time from './rhs-subcontrols/Time'
+import Year from './rhs-subcontrols/Year'
 
 const StyledContainer = styled('div')(({theme}) => ({
   width: '425px',
@@ -84,6 +86,8 @@ function Factory(args: {
       )
     case 'TIME':
       return <Time step={args.step as TimeQuestion} onChange={args.onChange} />
+    case 'YEAR':
+      return <Year step={args.step as YearQuestion} onChange={args.onChange} />
     default:
       return <>nothing</>
   }

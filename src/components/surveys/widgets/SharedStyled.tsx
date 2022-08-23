@@ -86,6 +86,7 @@ export const FakeInput = styled('div', {label: 'FakeInput'})<{
 }>(({theme, width = 92, height = 40}) => ({
   width: `${width}px`,
   height: `${height}px`,
+  lineHeight: `${height}px`,
   margin: '0 auto 24px auto',
   background: '#FCFCFC',
   border: '1px solid #2A2A2A',
