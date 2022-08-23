@@ -6,6 +6,7 @@ import {latoFont, theme} from '@style/theme'
 import {
   ChoiceQuestion,
   ChoiceQuestionChoice,
+  NumericQuestion,
   ScaleQuestion,
   Step,
   WebUISkipOptions,
@@ -13,9 +14,11 @@ import {
 import {FunctionComponent} from 'react'
 import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
 import FreeText from './phone-subcontrols/FreeText'
+import Numeric from './phone-subcontrols/Numeric'
 import Scale from './phone-subcontrols/Scale'
 import Select from './phone-subcontrols/Select'
 import SelectExtraActions from './phone-subcontrols/SelectExtraActions'
+import TimeDuration from './phone-subcontrols/TimeDuration'
 import PhoneDisplay from './PhoneDisplay'
 import QuestionPhoneBottomMenu from './QuestionPhoneBottomMenu'
 import RequiredToggle from './RequiredToggle'
@@ -360,8 +363,20 @@ function Factory(args: {
       return (
         <Scale step={args.step as ScaleQuestion} onChange={args.onChange} />
       )
+    case 'NUMERIC':
+      return (
+        <Numeric step={args.step as NumericQuestion} onChange={args.onChange} />
+      )
+    case 'DURATION':
+      return <TimeDuration />
+    case 'TIME':
+      return <TimeDuration type="TIME" />
+    case 'YEAR':
+      return <Numeric step={args.step as NumericQuestion} onChange={e => {}} />
+
     case 'FREE_TEXT':
       return <FreeText step={args.step} onChange={args.onChange} />
+
     // return <TextQuestion {...props} />
     /* case 'time':
       return <>TIME</>

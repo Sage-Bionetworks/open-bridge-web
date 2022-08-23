@@ -15,7 +15,7 @@ import {ChangeEvent} from 'react'
 const Labels = styled('div', {label: 'labels'})(({theme}) => ({
   backgroundColor: '#fff',
   padding: theme.spacing(2, 1.5),
-  marginLeft: theme.spacing(3),
+
   '& > label': {
     marginBottom: theme.spacing(0.5),
 
@@ -88,13 +88,11 @@ const Scale: React.FunctionComponent<{
       <Box
         sx={{
           display: 'flex',
-          marginTop: theme.spacing(3),
-          marginLeft: theme.spacing(3),
         }}>
         <ValueSelector
           type="MIN"
           scaleType={step.uiHint}
-          value={step.inputItem.formatOptions.minimumValue}
+          value={step.inputItem.formatOptions.minimumValue || 0}
           onChange={num =>
             onUpdateFormat({
               ...step.inputItem.formatOptions,
@@ -106,7 +104,12 @@ const Scale: React.FunctionComponent<{
           type="MAX"
           scaleType={step.uiHint}
           gtValue={1}
-          value={step.inputItem.formatOptions.maximumValue}
+          value={
+            step.inputItem.formatOptions.maximumValue ||
+            step.uiHint === 'likert'
+              ? 7
+              : 100
+          }
           onChange={num =>
             onUpdateFormat({
               ...step.inputItem.formatOptions,

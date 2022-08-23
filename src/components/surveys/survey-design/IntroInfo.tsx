@@ -2,13 +2,11 @@ import {ReactComponent as PauseIcon} from '@assets/surveys/pause.svg'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import UtilityObject from '@helpers/utility'
 import CheckIcon from '@mui/icons-material/Check'
-import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined'
+
 import {
   Autocomplete,
   Box,
   Button,
-  Checkbox,
-  CheckboxProps,
   Chip,
   FormControl,
   FormControlLabel,
@@ -28,6 +26,7 @@ import {
 import {Assessment} from '@typedefs/types'
 import React from 'react'
 import {SimpleTextInput} from '../../widgets/StyledComponents'
+import {StyledCheckbox} from '../widgets/SharedStyled'
 
 const IntroContainer = styled('div')(({theme}) => ({
   backgroundColor: '#f8f8f8',
@@ -53,20 +52,6 @@ const HelpText = styled('span')(({theme}) => ({
   fontSize: '15px',
   fontStyle: 'italic',
   fontWeight: 400,
-}))
-
-const StyledCheckbox = styled((props: CheckboxProps) => (
-  <Checkbox size="medium" checkedIcon={<CheckBoxOutlinedIcon />} {...props} />
-))(({theme}) => ({
-  '& svg': {
-    fontSize: '24px',
-  },
-  '&.Mui-checked': {
-    position: 'relative',
-    '& svg': {
-      color: 'black',
-    },
-  },
 }))
 
 const AutoCompleteText = styled(TextField)(({theme}) => ({

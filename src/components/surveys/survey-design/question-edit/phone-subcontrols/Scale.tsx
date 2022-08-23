@@ -1,6 +1,8 @@
 import {ReactComponent as SliderThumb} from '@assets/surveys/slider_thumb.svg'
-import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
-import {SimpleTextInput} from '@components/widgets/StyledComponents'
+import {
+  DisappearingInput,
+  FakeInput,
+} from '@components/surveys/widgets/SharedStyled'
 import {styled} from '@mui/material'
 import {latoFont} from '@style/theme'
 import {ScaleQuestion} from '@typedefs/surveys'
@@ -148,8 +150,12 @@ const Scale: React.FunctionComponent<{
   onChange: (step: ScaleQuestion) => void
 }> = ({step, onChange}) => {
   const circleRadius = 8
-  const {minimumValue, maximumValue, minimumLabel, maximumLabel} =
-    step.inputItem.formatOptions
+  const {
+    minimumValue = 0,
+    maximumValue = step.uiHint === 'likert' ? 7 : 100,
+    minimumLabel,
+    maximumLabel,
+  } = step.inputItem.formatOptions
   const range = maximumValue - minimumValue + 1
   //const width = range > 3 ? 125 : 100
   const width = step.uiHint === 'likert' ? 125 : 166
@@ -175,11 +181,7 @@ const Scale: React.FunctionComponent<{
       )}
       {step.uiHint === 'slider' && (
         <div style={{textAlign: 'center'}}>
-          <SimpleTextInput
-            sx={{width: '100px', margin: '0, auto'}}
-            value=""
-            onFocus={e => e.target.blur()}
-          />
+          <FakeInput />
           <ScaleDisplay width={width} key="scale">
             <Labels sx={{marginTop: '5px', marginLeft: '-16px'}}>
               <span className="sliderVal" key="min">

@@ -2,20 +2,30 @@ import {ReactComponent as GenerateId} from '@assets/surveys/actions/generate_id.
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import Utility from '@helpers/utility'
 import {Box, Button, styled} from '@mui/material'
-import {theme} from '@style/theme'
-import {ChoiceQuestion, ScaleQuestion, Step} from '@typedefs/surveys'
+import {latoFont, theme} from '@style/theme'
+import {
+  ChoiceQuestion,
+  ScaleQuestion,
+  Step,
+  TimeQuestion,
+  YearQuestion,
+} from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 import {StyledLabel14} from '../../widgets/SharedStyled'
 import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
 import FreeText from './rhs-subcontrols/FreeText'
+import Numeric from './rhs-subcontrols/Numeric'
 import Scale from './rhs-subcontrols/Scale'
 import Select from './rhs-subcontrols/Select'
+import Time from './rhs-subcontrols/Time'
+import Year from './rhs-subcontrols/Year'
 
 const StyledContainer = styled('div')(({theme}) => ({
-  border: '1px solid black',
   width: '425px',
   height: '100%',
-  '& > div': {},
+  '& > div.controlBody': {
+    padding: theme.spacing(3),
+  },
 }))
 
 const StyledButton = styled(Button)(({theme}) => ({
@@ -56,7 +66,28 @@ function Factory(args: {
       return (
         <Scale step={args.step as ScaleQuestion} onChange={args.onChange} />
       )
-
+    case 'NUMERIC':
+      return (
+        <Numeric step={args.step as ScaleQuestion} onChange={args.onChange} />
+      )
+    case 'DURATION':
+      return (
+        <Box
+          sx={{
+            fontFamily: latoFont,
+            margin: theme.spacing(4),
+            fontWeight: '400',
+            fontSize: '16px',
+            lineHeight: '19px',
+          }}>
+          *Hours and Minutes will be converted into seconds (SI unit) in the
+          results data.{' '}
+        </Box>
+      )
+    case 'TIME':
+      return <Time step={args.step as TimeQuestion} onChange={args.onChange} />
+    case 'YEAR':
+      return <Year step={args.step as YearQuestion} onChange={args.onChange} />
     default:
       return <>nothing</>
   }
@@ -103,14 +134,14 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({
           <GenerateId /> Match Identifier to Question
         </StyledButton>
       </Box>
-      {
+      <div className="controlBody">
         <Factory
           {...{
             step: {...step},
             onChange: onChange,
             q_type: getQuestionId(step),
           }}></Factory>
-      }
+      </div>
       {children}
     </StyledContainer>
   )

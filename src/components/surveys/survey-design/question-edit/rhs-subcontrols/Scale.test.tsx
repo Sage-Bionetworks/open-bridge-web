@@ -58,6 +58,7 @@ test('show the setting correctly', async () => {
 
 test('display a correct UI for likert and slider scale', async () => {
   //the max value choices are different
+  //do likert
   let {component, buttons, user} = setUp()
   const getMaxForLikert = (component: RenderResult) =>
     component.queryByRole('option', {name: /7/i})
@@ -66,6 +67,8 @@ test('display a correct UI for likert and slider scale', async () => {
   await act(async () => await user.click(buttons.setMaxVal))
   expect(getMaxForLikert(component)).toBeInTheDocument()
   expect(getMaxForSlider(component)).not.toBeInTheDocument()
+
+  //do slider
   const setupResult = setUp({...QUESTION, uiHint: 'slider'})
   await act(
     async () => await setupResult.user.click(setupResult.buttons.setMaxVal)
