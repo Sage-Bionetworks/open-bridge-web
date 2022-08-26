@@ -7,7 +7,7 @@ import {Box, styled} from '@mui/material'
 import React, {FunctionComponent} from 'react'
 import {ActionButton} from '../../widgets/SharedStyled'
 
-const ToolbarContainer = styled('div')(({theme}) => ({
+const QuestionEditToolbarContainer = styled('div')(({theme}) => ({
   bottom: '0',
   position: 'fixed',
   height: '54px',
@@ -63,7 +63,7 @@ const QuestionEditToolbar: FunctionComponent<{
   const [isConfirmDelete, setIsConfirmDelete] = React.useState(false)
   return (
     <>
-      <ToolbarContainer>
+      <QuestionEditToolbarContainer>
         <ActionButton
           startIcon={<SaveIcon />}
           variant="text"
@@ -82,7 +82,7 @@ const QuestionEditToolbar: FunctionComponent<{
             onClick={() => setIsConfirmDelete(true)}
           />
         </div>
-      </ToolbarContainer>
+      </QuestionEditToolbarContainer>
       <ConfirmationDialog
         isOpen={isConfirmDelete}
         title={'Delete Question'}

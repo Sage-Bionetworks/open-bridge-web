@@ -91,3 +91,16 @@ export const FakeInput = styled('div', {label: 'FakeInput'})<{
   background: '#FCFCFC',
   border: '1px solid #2A2A2A',
 }))
+
+export const QuestionEditToolbarContainer = styled('div')(({theme}) => ({
+  bottom: '0',
+  position: 'fixed',
+  height: '54px',
+  display: 'flex',
+  backgroundColor: '#f7f7f7',
+  flexDirection: 'row',
+  alignItems: 'center',
+  width: '425px',
+  justifyContent: 'space-between',
+  padding: theme.spacing(0, 2.5),
+}))

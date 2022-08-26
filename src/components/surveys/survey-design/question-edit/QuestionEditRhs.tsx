@@ -128,6 +128,7 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({
         sx={{backgroundColor: '#ECECEC;', padding: theme.spacing(3, 0, 3, 4)}}>
         <StyledLabel14 htmlFor="q_id">Question Identifier</StyledLabel14>
         <StyledSimpleTextInput
+          onChange={e => onChange({...step, identifier: e.target.value})}
           id="q_id"
           value={step?.identifier}></StyledSimpleTextInput>
         <StyledButton variant="text" onClick={matchIdentifier}>
