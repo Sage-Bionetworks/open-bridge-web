@@ -1,10 +1,16 @@
-import {Box, Button, FormControl} from '@mui/material'
+import {ReactComponent as SaveIcon} from '@assets/surveys/actions/save.svg'
+import {Box, Button, FormControl, Typography} from '@mui/material'
 import {styled} from '@mui/material/styles'
-import {latoFont, poppinsFont} from '@style/theme'
+import {latoFont, poppinsFont, theme} from '@style/theme'
 import {SurveyConfig} from '@typedefs/surveys'
 import {AssessmentResource} from '@typedefs/types'
 import React from 'react'
-import {DisappearingInput} from '../widgets/SharedStyled'
+
+import {
+  ActionButton,
+  DisappearingInput,
+  QuestionEditToolbarContainer,
+} from '../widgets/SharedStyled'
 import SurveyIcon, {SURVEY_ICONS} from '../widgets/SurveyIcon'
 import PhoneDisplay from './question-edit/PhoneDisplay'
 
@@ -31,8 +37,8 @@ const TitleIcon = styled('div')(({theme}) => ({
 }))
 
 const IconArea = styled('div')(({theme}) => ({
-  backgroundColor: '#e5e5e5',
-  padding: theme.spacing(9),
+  backgroundColor: '#ececec',
+  padding: theme.spacing(3, 0),
   width: '380px',
   flexGrow: 0,
 
@@ -45,9 +51,10 @@ const IconArea = styled('div')(({theme}) => ({
 }))
 const IconGrid = styled('div')(({theme}) => ({
   display: 'grid',
-  marginTop: theme.spacing(3),
-  gridTemplateColumns: 'repeat(3, 64px)',
-  columnGap: theme.spacing(2),
+  margin: theme.spacing(3),
+
+  gridTemplateColumns: 'repeat(4, 64px)',
+  columnGap: theme.spacing(3),
   rowGap: theme.spacing(2),
 }))
 
@@ -152,7 +159,9 @@ const SurveyTitle: React.FunctionComponent<SurveyTitleProps> = ({
         </PhoneDisplay>
       </Box>
       <IconArea>
-        <h3>Customize Survey Icon:</h3>
+        <Typography component="h4" sx={{paddingLeft: theme.spacing(2)}}>
+          Customize Survey Icon:
+        </Typography>
         <IconGrid>
           {Array.from(SURVEY_ICONS.keys()).map(name => (
             <SurveyIcon
@@ -174,6 +183,14 @@ const SurveyTitle: React.FunctionComponent<SurveyTitleProps> = ({
             />
           ))}
         </IconGrid>
+        <QuestionEditToolbarContainer sx={{backgroundColor: '#ececec'}}>
+          <ActionButton
+            startIcon={<SaveIcon />}
+            onClick={onSave}
+            variant="text">
+            Save Changes
+          </ActionButton>
+        </QuestionEditToolbarContainer>
       </IconArea>
     </>
   )

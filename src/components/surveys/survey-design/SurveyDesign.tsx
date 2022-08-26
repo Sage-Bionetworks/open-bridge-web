@@ -1,4 +1,4 @@
-import {ReactComponent as SaveIcon} from '@assets/surveys/actions/save.svg'
+import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import Loader from '@components/widgets/Loader'
 import UtilityObject from '@helpers/utility'
 import {Alert, Box, styled} from '@mui/material'
@@ -9,7 +9,6 @@ import {
   useUpdateSurveyConfig,
   useUpdateSurveyResource,
 } from '@services/assessmentHooks'
-import {theme} from '@style/theme'
 import {ChoiceQuestion, Question, Step, Survey} from '@typedefs/surveys'
 import {Assessment, ExtendedError} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
@@ -22,7 +21,7 @@ import {
   useLocation,
   useParams,
 } from 'react-router-dom'
-import {ActionButton} from '../widgets/SharedStyled'
+import NavigationPrompt from 'react-router-navigation-prompt'
 import IntroInfo from './IntroInfo'
 import AddQuestionMenu from './left-panel/AddQuestionMenu'
 import LeftPanel from './left-panel/LeftPanel'
@@ -80,6 +79,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   const {data: _survey, status: cStatus} = useSurveyConfig(
     isNewSurvey() ? undefined : surveyGuid
   )
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
 
   const {
     isSuccess: asmntUpdateSuccess,
@@ -111,8 +111,15 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     if (_survey) {
       console.log('%c surveyChanged', 'background: #222; color: #bada55')
       setSurvey(_survey)
+      setHasObjectChanged(false)
     }
   }, [_survey])
+
+  React.useEffect(() => {
+    if (survey && !hasObjectChanged && survey !== _survey) {
+      setHasObjectChanged(true)
+    }
+  }, [survey])
 
   React.useEffect(() => {
     console.log('location change')
@@ -281,17 +288,6 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     if (!currentStep) {
       return []
     }
-    /*  const dependentSteps = survey!.config.steps.filter(s => {
-      let q = s as ChoiceQuestion
-      if (!q.surveyRules) {
-        return false
-      }
-      return (
-        q.surveyRules.findIndex(
-          sr => sr.skipToIdentifier === currentStep.identifier
-        ) !== -1
-      )
-    })*/
 
     const dependentSteps = survey!.config.steps.reduce((p, current, index) => {
       let q = current as ChoiceQuestion
@@ -362,6 +358,16 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
 
   return (
     <Loader reqStatusLoading={!isNewSurvey() && !survey}>
+      <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
+        {({onConfirm, onCancel}) => (
+          <ConfirmationDialog
+            isOpen={hasObjectChanged}
+            type={'NAVIGATE'}
+            onCancel={onCancel}
+            onConfirm={onConfirm}
+          />
+        )}
+      </NavigationPrompt>
       <SurveyDesignContainerBox>
         {/* LEFT PANEL*/}
         <LeftPanel
@@ -378,13 +384,18 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           </AddQuestion>
         </LeftPanel>
         {/* CEDNTRAL PHONE AREA*/}
-        <Box display="flex" flexGrow={1} justifyContent="space-between">
-          {error && <Alert color="error">{error}</Alert>}
+        <Box
+          display="flex"
+          flexGrow={1}
+          justifyContent="space-between"
+          border="1px solid black">
           <div style={{width: '0px'}}>
             <pre style={{fontSize: '11px'}}>
               {JSON.stringify(survey?.config, null, 2)}
             </pre>
           </div>
+          {error && <Alert color="error">{error}</Alert>}
+
           <Switch>
             <Route path={`/surveys/:id/design/title`}>
               {assessment && survey && (
@@ -413,6 +424,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                 height="100%"
                 flexGrow="1"
                 bgcolor={'#fff'}>
+                {hasObjectChanged && <span>Unsaved changes*</span>}
                 {survey && (
                   <QuestionEditPhone
                     globalSkipConfiguration={
@@ -466,20 +478,6 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
             </Route>
           </Switch>
         </Box>
-        {/* SAVE BUTTON AREA*/}
-        {isTitleScreen() && (
-          <ActionButton
-            startIcon={<SaveIcon />}
-            variant="text"
-            sx={{
-              position: 'absolute',
-              top: theme.spacing(3),
-              right: theme.spacing(3),
-              textAlign: 'right',
-            }}>
-            Save Changes
-          </ActionButton>
-        )}
       </SurveyDesignContainerBox>
     </Loader>
   )
