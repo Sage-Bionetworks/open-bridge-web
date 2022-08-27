@@ -1,5 +1,4 @@
 import {ReactComponent as DraggableIcon} from '@assets/surveys/draggable.svg'
-import {ReactComponent as PreviewIcon} from '@assets/surveys/preview.svg'
 import {ReactComponent as InstructionIcon} from '@assets/surveys/q_type_icons/icontitle.svg'
 import {ReactComponent as SettingsIcon} from '@assets/surveys/settings.svg'
 import SurveyUtils from '@components/surveys/SurveyUtils'
@@ -126,12 +125,12 @@ const TitleRow: React.FunctionComponent<{surveyId?: string; guid?: string}> = ({
           <div>Survey ID: {surveyId}</div>
         </StyledNavLink>
       </div>
-      <div>
+      {/*AGendel: future feature   <div>
         <StyledNavLink to={`/surveys/${guid}/preview`}>
           <PreviewIcon style={{margin: '10px', maxWidth: '20px'}} />
           <div>Preview</div>
         </StyledNavLink>
-      </div>
+  </div>*/}
     </TitleStyledRow>
   )
 }
@@ -273,7 +272,9 @@ const LeftPanel: React.FunctionComponent<{
             )}
           </Box>
         </Box>
-        <AddStepMenuContainer>{children}</AddStepMenuContainer>
+        {surveyConfig && (
+          <AddStepMenuContainer>{children}</AddStepMenuContainer>
+        )}
       </DragDropContext>
     </Container>
   )
