@@ -213,7 +213,7 @@ export const useUpdateSurveyAssessment = () => {
 
     switch (action) {
       case 'DELETE':
-      // TODO: return await AssessmentService.removeStudy(study.identifier, token!)
+        return AssessmentService.deleteSurveyAssessment(assessment, token!)
 
       case 'COPY':
       /*  TODO: const {survey: Assessment} = await AssessmentService.copyStudy(
