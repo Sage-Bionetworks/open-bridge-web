@@ -12,6 +12,12 @@ export type ImageFetchable = {
   type: 'fetchable'
   imageName: string //'crf_seated'
 }
+
+export type ImageResource = {
+  type: 'sageResource'
+  imageName: string //'crf_seated'
+}
+
 export type ImageAnimated = {
   type: 'animated'
   compositeImageName: string //'crf_stair_step_start_animation',
@@ -154,7 +160,7 @@ export type BaseStep = {
   detail?: string //Here are the details for this instruction.',
   comment?: string
   footnote?: string //'This is a footnote.',
-  image?: ImageAnimated | ImageFetchable | 'sageResource'
+  image?: /*ImageAnimated | ImageFetchable |*/ ImageResource
   shouldHideActions?: ActionButtonName[]
   actions?: {goForward?: ActionButton; cancel?: ActionButton}
 }

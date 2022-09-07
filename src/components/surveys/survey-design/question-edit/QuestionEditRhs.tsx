@@ -13,7 +13,6 @@ import {
 import {FunctionComponent} from 'react'
 import {StyledLabel14} from '../../widgets/SharedStyled'
 import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
-import FreeText from './rhs-subcontrols/FreeText'
 import Numeric from './rhs-subcontrols/Numeric'
 import Scale from './rhs-subcontrols/Scale'
 import Select from './rhs-subcontrols/Select'
@@ -60,7 +59,7 @@ function Factory(args: {
       )
 
     case 'FREE_TEXT':
-      return <FreeText step={args.step} onChange={args.onChange} />
+      return <></>
     case 'SLIDER':
     case 'LIKERT':
       return (
