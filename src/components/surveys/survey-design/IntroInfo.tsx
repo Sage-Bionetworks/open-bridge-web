@@ -19,6 +19,7 @@ import {styled} from '@mui/material/styles'
 import {latoFont, poppinsFont, theme} from '@style/theme'
 import {
   ActionButtonName,
+  BaseStep,
   InterruptionHandlingType,
   Survey,
   WebUISkipOptions,
@@ -27,6 +28,7 @@ import {Assessment} from '@typedefs/types'
 import React from 'react'
 import {SimpleTextInput} from '../../widgets/StyledComponents'
 import {StyledCheckbox} from '../widgets/SharedStyled'
+import QUESTIONS from './left-panel/QuestionConfigs'
 
 const IntroContainer = styled('div')(({theme}) => ({
   backgroundColor: '#f8f8f8',
@@ -150,7 +152,10 @@ const getDefaultSurvey = (newSurveyId: string): Survey => ({
       canSkip: true,
       canSaveForLater: true,
     },
-    steps: [],
+    steps: [
+      QUESTIONS.get('OVERVIEW')!.default! as BaseStep,
+      QUESTIONS.get('COMPLETION')!.default! as BaseStep,
+    ],
     webConfig: {
       skipOption: 'CUSTOMIZE',
     },

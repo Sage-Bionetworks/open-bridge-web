@@ -8,6 +8,7 @@ import {ReactComponent as Numeric} from '@assets/surveys/q_type_icons/numeric.sv
 import {ReactComponent as SingleSelect} from '@assets/surveys/q_type_icons/single_select.svg'
 import {ReactComponent as Slider} from '@assets/surveys/q_type_icons/slider.svg'
 import {ReactComponent as Time} from '@assets/surveys/q_type_icons/time.svg'
+import {ReactComponent as Overview} from '@assets/surveys/q_type_icons/title.svg'
 import {ReactComponent as Year} from '@assets/surveys/q_type_icons/year.svg'
 import {ChoiceQuestion, Question, Step} from '@typedefs/surveys'
 import React from 'react'
@@ -24,6 +25,7 @@ export type QuestionTypeKey =
   | 'TIME'
   | 'YEAR'
   | 'COMPLETION'
+  | 'OVERVIEW'
 
 const QUESTIONS = new Map<
   QuestionTypeKey,
@@ -46,6 +48,26 @@ const QUESTIONS = new Map<
     },
   ],
   [
+    'OVERVIEW',
+    {
+      img: <Overview />,
+
+      title: 'Title Page',
+
+      default: {
+        type: 'overview',
+        identifier: 'overview',
+        title: 'Survey Title',
+        detail:
+          'Summary to participants on what they should know about the survey, thanking them for their time, what type of environment they should be taking it in, etc.',
+        image: {
+          type: 'sageResource',
+          imageName: 'default',
+        },
+      },
+    },
+  ],
+  [
     'FREE_TEXT',
     {
       img: <Free_text />,
@@ -55,6 +77,7 @@ const QUESTIONS = new Map<
         type: 'simpleQuestion',
         identifier: 'textQ',
         title: 'New Question',
+        detail: 'Maximum 250 characters',
         inputItem: {
           type: 'string',
         },
@@ -253,6 +276,9 @@ export const getQuestionId = (step: Step): QuestionTypeKey => {
   }
   if (step.type === 'completion') {
     return 'COMPLETION'
+  }
+  if (step.type === 'overview') {
+    return 'OVERVIEW'
   }
   const uiHint = (step as Question).uiHint
   const inputItemType = (step as Question).inputItem?.type

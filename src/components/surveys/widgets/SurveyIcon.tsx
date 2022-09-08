@@ -28,6 +28,37 @@ export const SURVEY_ICONS = new Map<string, {img: string; title: string}>([
   ['FINANCE', {img: finances, title: 'Finance'}],
   ['DAY_TO_DAY', {img: dayToDay, title: 'Day to day'}],
 ])
+/*
+GOES in assessment
+2	"type": "ImageResource",
+3	"name": "default",
+4	"module": "sage_survey",
+5	"label": "Foo"
+*/
+//fgoes in a overview
+/*
+  {"type" : "sageResource", "imageName" : "default", "label" : "Default" }*/
+
+/*"default",
+"cognition",
+"day_to_day",
+"demographics",
+"energy",
+"environment",
+"excercise",
+"exit",
+"finance",
+"food",
+"health",
+"leisure",
+"medicine",
+"mental_health",
+"mood",
+"pain",
+"quality_of_life",
+"social",
+"screening",
+"sleep"//*/
 
 const IconContainer = styled('div')(({theme}) => ({
   textAlign: 'center',

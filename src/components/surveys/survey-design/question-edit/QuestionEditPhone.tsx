@@ -7,6 +7,7 @@ import {
 import {Box, styled, Typography, TypographyProps} from '@mui/material'
 import {latoFont, theme} from '@style/theme'
 import {
+  BaseStep,
   ChoiceQuestion,
   ChoiceQuestionChoice,
   NumericQuestion,
@@ -16,10 +17,12 @@ import {
 } from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
+import Completion from './phone-subcontrols/Completion'
 import Numeric from './phone-subcontrols/Numeric'
 import Scale from './phone-subcontrols/Scale'
 import Select from './phone-subcontrols/Select'
 import SelectExtraActions from './phone-subcontrols/SelectExtraActions'
+import SurveyTitle from './phone-subcontrols/SurveyTitle'
 import TimeDuration from './phone-subcontrols/TimeDuration'
 import PhoneDisplay from './PhoneDisplay'
 import QuestionPhoneBottomMenu from './QuestionPhoneBottomMenu'
@@ -28,7 +31,7 @@ import RequiredToggle from './RequiredToggle'
 const OuterContainer = styled('div')(({theme}) => ({
   bgcolor: '#F8F8F8',
   padding: theme.spacing(0, 5),
-  border: '1px solid black',
+
   margin: '0 auto',
   position: 'relative',
 }))
@@ -72,8 +75,8 @@ const StyledH1 = styled(DisappearingInput, {label: 'StyledH1'})(({theme}) => ({
   },
 }))
 
-const ScrollableArea = styled('div')(({}) => ({
-  height: '330px',
+const ScrollableArea = styled('div')<{$height: number}>(({theme, $height}) => ({
+  height: `${$height}px`,
   marginLeft: '-10px',
   marginRight: '-10px',
   padding: '0 10px',
@@ -83,7 +86,23 @@ const ScrollableArea = styled('div')(({}) => ({
   flexDirection: 'column',
 }))
 
+const StyledStartButton = styled('div')(({theme}) => ({
+  height: theme.spacing(5),
+  lineHeight: theme.spacing(5),
+  cursor: 'default',
+  backgroundColor: '#2A2A2A',
+  borderRadius: '100px',
+  textAlign: 'center',
+
+  fontFamily: latoFont,
+  fontWeight: 600,
+  fontSize: '16px',
+  color: '#fff',
+  marginTop: '-20px',
+}))
+
 type QuestionEditProps = {
+  isDynamic: boolean
   step?: Step
   globalSkipConfiguration: WebUISkipOptions
   completionProgress: number
@@ -101,6 +120,7 @@ function isSelectQuestion(questionType: QuestionTypeKey | 0): boolean {
 function Factory(args: {
   step: Step
   onChange: (step: Step) => void
+
   q_type: QuestionTypeKey
 }) {
   switch (args.q_type) {
@@ -129,7 +149,9 @@ function Factory(args: {
     case 'TIME':
       return <TimeDuration type="TIME" />
     case 'YEAR':
-      return <Numeric step={args.step as NumericQuestion} onChange={e => {}} />
+      return (
+        <Numeric step={args.step as NumericQuestion} onChange={args.onChange} />
+      )
 
     case 'FREE_TEXT':
       return (
@@ -144,7 +166,16 @@ function Factory(args: {
           }}
         />
       ) //<FreeText step={args.step} onChange={args.onChange} />
-
+    case 'COMPLETION': {
+      return (
+        <Completion step={args.step as BaseStep} onChange={args.onChange} />
+      )
+    }
+    case 'OVERVIEW': {
+      return (
+        <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
+      )
+    }
     default:
       return <>nothing</>
   }
@@ -176,6 +207,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
   step,
   globalSkipConfiguration,
   completionProgress,
+  isDynamic,
   onChange,
 }) => {
   console.log('step changed', step, globalSkipConfiguration)
@@ -201,6 +233,26 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
     return opts
   }
 
+  const getPhoneBottom = () => {
+    if (!step) {
+      return <></>
+    }
+    if (isSelectQuestion(questionId)) {
+      return (
+        <QuestionPhoneBottomMenu
+          step={step as ChoiceQuestion}
+          onChange={s => onChange(s)}
+        />
+      )
+    }
+    if (step.type === 'overview') {
+      return <StyledStartButton>Start</StyledStartButton>
+    }
+    if (step.type === 'completion') {
+      return <StyledStartButton>Exit Study</StyledStartButton>
+    }
+  }
+
   return (
     <OuterContainer>
       {isSelectQuestion(questionId) && (
@@ -216,54 +268,52 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
         />
       )}
 
-      {/* QuestionEdit {step?.type}+{JSON.stringify(step?.subtitle)}*/}
       {step && (
         <>
           <PhoneDisplay
             sx={{marginBottom: '20px', textAlign: 'left'}}
-            phoneBottom={
-              isSelectQuestion(questionId) ? (
-                <QuestionPhoneBottomMenu
-                  step={step as ChoiceQuestion}
-                  onChange={s => onChange(s)}
-                />
-              ) : (
-                <></>
-              )
-            }>
+            phoneBottom={getPhoneBottom()}>
             <Box>
-              <PhoneProgressLine completionProgress={completionProgress} />
-              <PhoneTop>
-                <PauseIcon />
-                {shouldShowSkipButton() && <SkipQuestion />}
-              </PhoneTop>
+              {isDynamic && (
+                <>
+                  <PhoneProgressLine completionProgress={completionProgress} />
+                  <PhoneTop>
+                    <PauseIcon />
+                    {shouldShowSkipButton() && <SkipQuestion />}
+                  </PhoneTop>
 
-              <StyledP2
-                area-label="subtitle"
-                id="subtitle"
-                value={step.subtitle || ''}
-                placeholder="Subtitle"
-                onChange={e => onChange({...step, subtitle: e.target.value})}
-              />
+                  <StyledP2
+                    area-label="subtitle"
+                    id="subtitle"
+                    value={step.subtitle || ''}
+                    placeholder="Subtitle"
+                    onChange={e =>
+                      onChange({...step, subtitle: e.target.value})
+                    }
+                  />
 
-              <StyledH1
-                area-label="title"
-                id="title"
-                value={step.title || ''}
-                placeholder="Title"
-                onChange={e => onChange({...step, title: e.target.value})}
-              />
-              <ScrollableArea>
-                <StyledP2
-                  area-label="detail"
-                  id="detail"
-                  maxRows={4}
-                  multiline={true}
-                  value={step.detail || ''}
-                  placeholder="Description"
-                  sx={{marginBottom: theme.spacing(2.5)}}
-                  onChange={e => onChange({...step, detail: e.target.value})}
-                />
+                  <StyledH1
+                    area-label="title"
+                    id="title"
+                    value={step.title || ''}
+                    placeholder="Title"
+                    onChange={e => onChange({...step, title: e.target.value})}
+                  />
+                </>
+              )}
+              <ScrollableArea $height={isDynamic ? 330 : 400}>
+                {isDynamic && (
+                  <StyledP2
+                    area-label="detail"
+                    id="detail"
+                    maxRows={4}
+                    multiline={true}
+                    value={step.detail || ''}
+                    placeholder="Description"
+                    sx={{marginBottom: theme.spacing(2.5)}}
+                    onChange={e => onChange({...step, detail: e.target.value})}
+                  />
+                )}
 
                 {
                   <Factory
@@ -277,7 +327,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
             </Box>
           </PhoneDisplay>
 
-          {globalSkipConfiguration === 'CUSTOMIZE' && (
+          {globalSkipConfiguration === 'CUSTOMIZE' && isDynamic && (
             <RequiredToggle
               shouldHideActionsArray={step.shouldHideActions || []}
               onChange={shouldHideActions =>

@@ -1,7 +1,7 @@
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import Loader from '@components/widgets/Loader'
 import UtilityObject from '@helpers/utility'
-import {Alert, Box, styled} from '@mui/material'
+import {Alert, Box, Button, Dialog, styled} from '@mui/material'
 import {
   useSurveyAssessment,
   useSurveyConfig,
@@ -12,6 +12,7 @@ import {
 import {ChoiceQuestion, Question, Step, Survey} from '@typedefs/surveys'
 import {Assessment, ExtendedError} from '@typedefs/types'
 import React, {FunctionComponent} from 'react'
+import {useIsMutating} from 'react-query'
 import {
   Redirect,
   Route,
@@ -29,7 +30,6 @@ import QUESTIONS, {QuestionTypeKey} from './left-panel/QuestionConfigs'
 import QuestionEditPhone from './question-edit/QuestionEditPhone'
 import QuestionEditRhs from './question-edit/QuestionEditRhs'
 import QuestionEditToolbar from './question-edit/QuestionEditToolbar'
-import SurveyTitle from './SurveyTitle'
 
 const SurveyDesignContainerBox = styled(Box)(({theme}) => ({
   position: 'relative',
@@ -54,6 +54,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   }>()
 
   const getQuestionIndexFromSearchString = (): //  search: string
+
   number | undefined => {
     const qValue = new URLSearchParams(location.search)?.get('q')
     const qNum = parseInt(qValue || '')
@@ -70,6 +71,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   const [currentStepIndex, setCurrentStepIndex] = React.useState<
     number | undefined
   >(getQuestionIndexFromSearchString())
+  const isSaving = useIsMutating()
 
   //rq get and modify data hooks
   const {data: _assessment, status: aStatus} = useSurveyAssessment(
@@ -85,6 +87,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     isSuccess: asmntUpdateSuccess,
     isError: asmntUpdateError,
     mutateAsync: mutateAssessment,
+    status,
   } = useUpdateSurveyAssessment()
 
   const {
@@ -98,6 +101,8 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     isError: resourceUpdateError,
     mutateAsync: mutateResource,
   } = useUpdateSurveyResource()
+
+  const [debugOpen, setDebugOpen] = React.useState(false)
 
   //effects to populate local copies
 
@@ -115,11 +120,11 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     }
   }, [_survey])
 
-  React.useEffect(() => {
+  /*  useDeepCompareEffect(() => {
     if (survey && !hasObjectChanged && survey !== _survey) {
       setHasObjectChanged(true)
     }
-  }, [survey])
+  }, [survey || {}, _survey || {}])*/
 
   React.useEffect(() => {
     console.log('location change')
@@ -156,7 +161,8 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
 
       console.log('success')
       console.log(result)
-      history.push(`/surveys/${result.guid}/design/title`)
+
+      history.push(`/surveys/${result.guid}/design/question?q=0`)
       console.log('reloading')
     } catch (error) {
       setError((error as ExtendedError).message.toString())
@@ -177,10 +183,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     await mutateSurvey({guid: surveyGuid, survey: updatedSurvey})
   }
 
-  const navigateStep = async (
-    id: number | 'title' | 'completion',
-    shouldSave = true
-  ) => {
+  const navigateStep = async (id: number, shouldSave = true) => {
     console.log('type of id' + typeof id)
     try {
       console.log('about to update survey')
@@ -190,29 +193,16 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       if (typeof id === 'number') {
         console.log('redirecting')
 
-        //  history.push(`/surveys/${surveyGuid}/design/question?q=${id}`)
+        history.push(`/surveys/${surveyGuid}/design/question?q=${id}`)
         console.log('survey: ', survey?.config.steps)
-        history.replace(`/surveys/${surveyGuid}/design/question?q=${id}`)
-        // setCurrentStepIndex(id)
-      } else {
-        history.push(`/surveys/${surveyGuid}/design/${id}`)
       }
     } catch (e) {
       alert(e)
     }
   }
 
-  const addStepToTheEnd = async (
-    newStep: Step,
-    isAddCompletionStep?: boolean
-  ) => {
+  const addStepToTheEnd = async (newStep: Step) => {
     const steps = survey!.config?.steps ? [...survey!.config?.steps] : []
-
-    if (isAddCompletionStep) {
-      const completion = QUESTIONS.get('COMPLETION')?.default
-      //  const completion1 = {...(COMPLETION_DEFAULT.default as Step)}
-      steps.push({...completion} as Step)
-    }
 
     //since completion is always the last step -- push to l-2
     steps.splice(steps.length - 1, 0, newStep)
@@ -222,7 +212,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     console.log('wantto set current step')
     // setCurrentStepIndex(currentStepId)
     console.log('surveysteps' + survey!.config.steps)
-    navigateStep(currentStepId, false)
+    // navigateStep(currentStepId, false)
   }
 
   // adding the step from left menu
@@ -231,7 +221,9 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       return
     }
 
-    const isFirstStep = (survey.config.steps?.length || 0) === 0
+    //const isFirstStep =
+    //   (survey.config.steps || []).filter(s => s.type !== 'overview').length ===
+    //   0
     const id = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
     const q = QUESTIONS.get(title)
     if (q && q.default) {
@@ -239,7 +231,8 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       newStep.identifier = `${newStep.identifier}_${id}`
 
       //if we are adding first step, also add completion
-      addStepToTheEnd(newStep, isFirstStep)
+      await addStepToTheEnd(newStep)
+
       //  console.log('adding step', newStep.identifier)
 
       /* const steps = survey.config?.steps ? [...survey.config?.steps] : []
@@ -264,15 +257,15 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     }
   }
 
-  const updateCurrentStep = (step: Step) => {
+  const updateCurrentStep = (step: Step, stepIndex?: number) => {
     if (!survey) {
       return
     }
-    console.log('thinking')
-    if (currentStepIndex !== undefined) {
+    const indexToUpdate = stepIndex ?? currentStepIndex
+    if (indexToUpdate !== undefined) {
       console.log('updating step to ', step)
       let steps = [...survey!.config.steps]
-      steps[currentStepIndex] = step
+      steps[indexToUpdate] = step
       setSurvey(prev => ({
         ...prev!,
         config: {
@@ -280,6 +273,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           steps,
         },
       }))
+      setHasObjectChanged(true)
     }
   }
 
@@ -326,6 +320,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
 
   const save = async () => {
     console.log('!!!saving', survey)
+
     await mutateSurvey({guid: surveyGuid, survey: survey!})
     console.log('done')
   }
@@ -356,6 +351,11 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     return (currentStepIndex + 1) / survey!.config.steps.length
   }
 
+  const isDynamicStep = () => {
+    const step = getCurrentStep()
+    return !!step && step.type !== 'completion' && step.type !== 'overview'
+  }
+
   return (
     <Loader reqStatusLoading={!isNewSurvey() && !survey}>
       <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
@@ -368,6 +368,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           />
         )}
       </NavigationPrompt>
+      <Button onClick={() => setDebugOpen(true)}>Open survey 2JSON</Button>
       <SurveyDesignContainerBox>
         {/* LEFT PANEL*/}
         <LeftPanel
@@ -384,37 +385,11 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           </AddQuestion>
         </LeftPanel>
         {/* CEDNTRAL PHONE AREA*/}
-        <Box
-          display="flex"
-          flexGrow={1}
-          justifyContent="space-between"
-          border="1px solid black">
-          <div style={{width: '0px'}}>
-            <pre style={{fontSize: '11px'}}>
-              {JSON.stringify(survey?.config, null, 2)}
-            </pre>
-          </div>
+
+        <Box display="flex" flexGrow={1} justifyContent="space-between">
           {error && <Alert color="error">{error}</Alert>}
 
           <Switch>
-            <Route path={`/surveys/:id/design/title`}>
-              {assessment && survey && (
-                <SurveyTitle
-                  onSave={() => {
-                    saveIconResource()
-                    mutateSurvey({guid: assessment.guid!, survey})
-                  }}
-                  onUpdateResource={r => {
-                    setAssessment(_prev => ({...assessment, resources: r}))
-                  }}
-                  onUpdateSurveyConfig={c => {
-                    setSurvey(prev => ({...prev, config: c}))
-                  }}
-                  resources={assessment.resources}
-                  surveyConfig={survey?.config}
-                />
-              )}
-            </Route>
             <Route path={`/surveys/:id/design/question`}>
               <Box
                 py={0}
@@ -425,8 +400,11 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                 flexGrow="1"
                 bgcolor={'#fff'}>
                 {hasObjectChanged && <span>Unsaved changes*</span>}
+                {isSaving > 0 && <span>Saving</span>}
+
                 {survey && (
                   <QuestionEditPhone
+                    isDynamic={isDynamicStep()}
                     globalSkipConfiguration={
                       survey!.config.webConfig!.skipOption!
                     }
@@ -441,10 +419,12 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
               <Box height="100%" bgcolor={'#f8f8f8'}>
                 {survey && (
                   <QuestionEditRhs
+                    isDynamic={isDynamicStep()}
                     dependentQuestions={findDependentQuestions()}
                     step={getCurrentStep()!}
                     onChange={(step: Step) => updateCurrentStep(step)}>
                     <QuestionEditToolbar
+                      isDynamic={isDynamicStep()}
                       dependentQuestions={findDependentQuestions()}
                       onAction={action => {
                         console.log(action)
@@ -464,9 +444,6 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
               </Box>
             </Route>
 
-            <Route path={`/surveys/:id/design/completion`}>
-              <div>!!!completion</div>
-            </Route>
             <Route path={`/surveys/:id/design/intro`}>
               <IntroInfo
                 surveyAssessment={assessment}
@@ -479,6 +456,9 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
           </Switch>
         </Box>
       </SurveyDesignContainerBox>
+      <Dialog open={debugOpen} onClose={() => setDebugOpen(false)}>
+        <pre>{JSON.stringify(survey?.config, null, 2)}</pre>
+      </Dialog>
     </Loader>
   )
 }
