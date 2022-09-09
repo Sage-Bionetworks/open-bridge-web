@@ -208,11 +208,11 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     steps.splice(steps.length - 1, 0, newStep)
     await reorderOrAddSteps(steps)
 
-    const currentStepId = steps.length - 2
+    const currentStepId = steps.length > 3 ? steps.length - 2 : 1
     console.log('wantto set current step')
-    // setCurrentStepIndex(currentStepId)
+    setCurrentStepIndex(currentStepId)
     console.log('surveysteps' + survey!.config.steps)
-    // navigateStep(currentStepId, false)
+    navigateStep(currentStepId, false)
   }
 
   // adding the step from left menu
@@ -232,28 +232,6 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
 
       //if we are adding first step, also add completion
       await addStepToTheEnd(newStep)
-
-      //  console.log('adding step', newStep.identifier)
-
-      /* const steps = survey.config?.steps ? [...survey.config?.steps] : []
-
-
-      if (isFirstStep) {
-        const completion = QUESTIONS.get('COMPLETION')?.default
-        //  const completion1 = {...(COMPLETION_DEFAULT.default as Step)}
-        steps.push({...completion} as Step)
-      }
-
-      //since completion is always the last step -- push to l-2
-      steps.splice(steps.length - 1, 0, newStep)
-
-      await reorderOrAddSteps(steps)
-
-      const currentStepId = steps.length - 2
-      console.log('wantto set current step')
-      // setCurrentStepIndex(currentStepId)
-      console.log('surveysteps' + survey.config.steps)
-      navigateStep(currentStepId, false)*/
     }
   }
 
@@ -304,10 +282,6 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     currentStepIndex !== undefined
       ? survey?.config.steps[currentStepIndex]
       : undefined
-
-  const isTitleScreen = () => {
-    return location.pathname.includes('design/title')
-  }
 
   const duplicateCurrentStep = async () => {
     const newStep: Question = {...getCurrentStep()!}

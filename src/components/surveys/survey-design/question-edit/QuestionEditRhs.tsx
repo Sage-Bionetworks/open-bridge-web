@@ -148,7 +148,7 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({
           </StyledButton>
         </Box>
       )}
-      <Box sx={{padding: isDynamic ? theme.spacing(3) : 0, height: '100%'}}>
+      <Box sx={{padding: isDynamic ? theme.spacing(3) : 0}}>
         <Factory
           {...{
             step: {...step},

@@ -1,0 +1,13 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="64" height="64" fill="#F8F8F8"/>
+<circle cx="18" cy="32" r="6" fill="#8FD6FF"/>
+<circle cx="24" cy="36" r="4" fill="#8FD6FF"/>
+<rect x="34" y="41" width="16" height="4" fill="#8FD6FF"/>
+<path d="M10 46H54" stroke="#3A3A3A" stroke-linecap="round"/>
+<path d="M17 39V46" stroke="#3A3A3A" stroke-linecap="round"/>
+<path d="M23 41V46" stroke="#3A3A3A" stroke-linecap="round"/>
+<path d="M33 43H48" stroke="#3A3A3A" stroke-linecap="round"/>
+<path d="M32.5 45.5V39.5H48.5V45.5" stroke="#3A3A3A" stroke-linecap="round"/>
+<circle cx="23" cy="36" r="4.5" stroke="#3A3A3A"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M18.3522 37.847C17.9176 37.9471 17.465 38 17 38C13.6863 38 11 35.3137 11 32C11 28.6863 13.6863 26 17 26C19.9732 26 22.4414 28.1626 22.9172 31.0007C22.9447 31.0002 22.9723 31 23 31C23.3217 31 23.6364 31.0304 23.9412 31.0884C23.4944 27.6531 20.5571 25 17 25C13.134 25 10 28.134 10 32C10 35.866 13.134 39 17 39C17.6329 39 18.2461 38.916 18.8292 38.7586C18.6405 38.4738 18.4801 38.1686 18.3522 37.847Z" fill="#3A3A3A"/>
+</svg>
