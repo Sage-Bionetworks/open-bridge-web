@@ -1,3 +1,4 @@
+import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import {
   Box,
@@ -8,12 +9,7 @@ import {
   Typography,
 } from '@mui/material'
 import {theme} from '@style/theme'
-import {
-  FormatOptionsTime,
-  FormatOptionsYear,
-  Step,
-  YearQuestion,
-} from '@typedefs/surveys'
+import {FormatOptionsYear, Step, YearQuestion} from '@typedefs/surveys'
 import React from 'react'
 
 const Labels = styled('div', {label: 'labels'})(({theme}) => ({
@@ -30,87 +26,116 @@ const Labels = styled('div', {label: 'labels'})(({theme}) => ({
   },
 }))
 
-type LimitType = 'CURRENT' | 'VALUE' | 'ANY'
+type LimitType = 'VALUE' | 'NONE'
 
-function getLimit(type: 'MAX' | 'MIN', fo?: FormatOptionsYear): LimitType {
-  if (type === 'MIN') {
-    if (fo?.allowPast === false) {
-      return 'CURRENT'
-    }
-    if (fo?.minimumYear) {
-      return 'VALUE'
-    }
-  } else {
-    if (fo?.allowFuture === false) {
-      return 'CURRENT'
-    }
-    if (fo?.maximumYear) {
-      return 'VALUE'
-    }
-  }
-  return 'ANY'
-}
 const Limit: React.FunctionComponent<{
   type: 'MAX' | 'MIN'
   formatOptions: FormatOptionsYear
   onChange: (fo: FormatOptionsYear) => void
 }> = ({formatOptions, type, onChange}) => {
-  const [exclude, setExclude] = React.useState<LimitType>(
-    getLimit(type, formatOptions)
-  )
-  const [value, setValue] = React.useState(
-    type === 'MIN' ? formatOptions.minimumYear : formatOptions.maximumYear
-  )
+  const [exclude, setExclude] = React.useState<LimitType>('NONE')
+  const [value, setValue] = React.useState('')
+  const [error, setError] = React.useState('')
 
   const CONFIG = {
     MIN: {
       label: 'Minimum year:',
       anyLabel: 'Allow anytime in the past',
       yearLabel: 'Set Min Value',
+      validateRange: (e: number) =>
+        !formatOptions.maximumYear || e < formatOptions.maximumYear,
+      fields: {
+        NONE: 'allowPast',
+        VALUE: 'minimumYear',
+      } as Record<string, keyof FormatOptionsYear>,
     },
     MAX: {
       label: 'Maximum year:',
       anyLabel: 'Allow anytime in the future',
       yearLabel: 'Set Max Value',
+      validateRange: (e: number) =>
+        !formatOptions.minimumYear || e > formatOptions.minimumYear,
+      fields: {
+        NONE: 'allowFuture',
+        VALUE: 'maximumYear',
+      } as Record<string, keyof FormatOptionsYear>,
     },
   }
 
-  const fieldConfig: {
-    MIN: Record<string, keyof FormatOptionsYear>
-    MAX: Record<string, keyof FormatOptionsYear>
-  } = {
-    MIN: {
-      CURRENT: 'allowPast',
-      VALUE: 'minimumYear',
-    },
-    MAX: {
-      CURRENT: 'allowFuture',
-      VALUE: 'maximumYear',
-    },
+  const getPFValue = () => {
+    const pFField = CONFIG[type].fields['NONE']
+    return (
+      !formatOptions ||
+      formatOptions[pFField] === undefined ||
+      formatOptions[pFField]
+    )
   }
 
-  /* const getLimit = (type: 'MAX' | 'MIN', fo: FormatOptionsYear): LimitType => {
-    if (fo[fieldConfig[type]['CURRENT']] === false) {
-      return 'CURRENT'
-    }
+  const getLimitYearValue = (): number | undefined => {
+    const valueField = CONFIG[type].fields['VALUE']
+    return formatOptions?.[valueField]
+      ? parseInt(formatOptions[valueField]!.toString())
+      : undefined
+  }
 
-    if (fo[fieldConfig[type]['VALUE']]) {
+  function getLimit(type: 'MAX' | 'MIN', fo?: FormatOptionsYear): LimitType {
+    const limitYearValue = getLimitYearValue()
+    if (limitYearValue || getPFValue() === false) {
       return 'VALUE'
     }
 
-    return 'ANY'
-  }*/
+    return 'NONE'
+  }
+
+  const validateYear = (val: string): boolean => {
+    const intVal = parseInt(val)
+    if (isNaN(intVal)) {
+      setError('Please enter a valid year')
+      return false
+    }
+    var validRange = CONFIG[type].validateRange(intVal)
+    if (!validRange) {
+      setError('Please make sure your minimum is less than you maximum')
+      return false
+    }
+    const validNumber = 1900 < intVal && intVal < 2200
+    if (!validNumber) {
+      setError('Please make sure that your year is between 1900 and 2200')
+      return false
+    }
+    return true
+  }
+
+  React.useEffect(() => {
+    const limit = getLimit(type, formatOptions)
+    const value = getLimitYearValue()
+    setExclude(limit)
+    setValue(value ? value.toString() : '')
+  }, [formatOptions, type])
 
   const onUpdateFormat = (fo: FormatOptionsYear, limit: LimitType) => {
     const _fo = {...fo}
-    /* if (limit=== 'ANY') {
-        const field = fieldConfig['MIN']['CURRENT']!
-        _fo['allowPast'] = true
-        _fo[field]=true
-    }
-    const field = fieldConfig[type][limit]
+    let isValid = true
+    setError('')
 
-    onChange({...step, inputItem})*/
+    const allowXField = CONFIG[type].fields['NONE']!
+    const valueField = CONFIG[type].fields['VALUE']!
+
+    let result: FormatOptionsYear = {
+      ..._fo,
+      [allowXField]: true,
+      [valueField]: undefined,
+    }
+
+    if (limit === 'VALUE') {
+      isValid = value ? validateYear(value) : true
+      result = {..._fo, [allowXField]: false, [valueField]: value || undefined}
+    }
+
+    if (isValid && result) {
+      console.log('changing')
+      onChange(result)
+    }
   }
 
   return (
@@ -122,22 +147,13 @@ const Limit: React.FunctionComponent<{
           value={exclude}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setExclude(e.target.value as LimitType)
-            const fo = {...formatOptions}
-            fo.allowFuture = e.target.value !== 'FUTURE'
-            fo.allowFuture = e.target.value !== 'PAST'
-            onUpdateFormat(fo, e.target.value as LimitType)
+            onUpdateFormat(formatOptions, e.target.value as LimitType)
           }}>
           <FormControlLabel
             value="NONE"
             sx={{mt: theme.spacing(1.5), alignItems: 'center'}}
             control={<Radio />}
             label={CONFIG[type].anyLabel}
-          />
-          <FormControlLabel
-            value="CURRENT"
-            sx={{alignItems: 'center'}}
-            control={<Radio />}
-            label={'Current Year'}
           />
 
           <FormControlLabel
@@ -148,15 +164,16 @@ const Limit: React.FunctionComponent<{
               <Box sx={{display: 'flex', alignItems: 'center'}}>
                 <span>{CONFIG[type].yearLabel}</span>{' '}
                 <SimpleTextInput
+                  value={value || ''}
                   onChange={e => {
-                    // const ext = new RegExp(/(?:(?:18|19|20|21)[0-9]{2})/)
-                    // const val = parseInt(e.target.value)
                     setExclude('VALUE')
-                    setValue(parseInt(e.target.value))
+                    setValue(e.target.value || '')
+                  }}
+                  onBlur={e => {
+                    onUpdateFormat(formatOptions, exclude)
                   }}
                   sx={{
                     width: '75px',
-
                     marginLeft: theme.spacing(1),
                     '> input': {padding: theme.spacing(1)},
                   }}
@@ -165,6 +182,7 @@ const Limit: React.FunctionComponent<{
             }
           />
         </RadioGroup>
+        {error && <AlertWithTextWrapper text={error}></AlertWithTextWrapper>}
       </Labels>
     </>
   )
@@ -174,33 +192,22 @@ const Time: React.FunctionComponent<{
   step: YearQuestion
   onChange: (step: Step) => void
 }> = ({step, onChange}) => {
-  const onUpdateFormat = (fm: FormatOptionsTime) => {
-    const inputItem = {...step.inputItem, formatOptions: fm}
-    onChange({...step, inputItem})
-  }
-  const [error, setError] = React.useState('')
-
-  const validate = (range: {min?: string; max?: string}) => {
-    if (range.min === undefined || range.max === undefined) {
-      return true
-    }
-    return range.max > range.min
-  }
-
   return (
     <>
       <Limit
         formatOptions={step.inputItem.formatOptions || {}}
-        onChange={fo =>
+        onChange={fo => {
+          console.log('changing to', fo)
           onChange({...step, inputItem: {...step.inputItem, formatOptions: fo}})
-        }
+        }}
         type="MIN"
       />
       <Limit
         formatOptions={step.inputItem.formatOptions || {}}
-        onChange={fo =>
+        onChange={fo => {
+          console.log('changing to', fo)
           onChange({...step, inputItem: {...step.inputItem, formatOptions: fo}})
-        }
+        }}
         type="MAX"
       />
     </>

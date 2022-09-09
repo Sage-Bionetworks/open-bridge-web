@@ -1,9 +1,13 @@
 import {ReactComponent as PauseIcon} from '@assets/surveys/pause.svg'
 import SurveyUtils from '@components/surveys/SurveyUtils'
-import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
+import {
+  DisappearingInput,
+  FakeInput,
+} from '@components/surveys/widgets/SharedStyled'
 import {Box, styled, Typography, TypographyProps} from '@mui/material'
 import {latoFont, theme} from '@style/theme'
 import {
+  BaseStep,
   ChoiceQuestion,
   ChoiceQuestionChoice,
   NumericQuestion,
@@ -13,11 +17,12 @@ import {
 } from '@typedefs/surveys'
 import {FunctionComponent} from 'react'
 import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
-import FreeText from './phone-subcontrols/FreeText'
+import Completion from './phone-subcontrols/Completion'
 import Numeric from './phone-subcontrols/Numeric'
 import Scale from './phone-subcontrols/Scale'
 import Select from './phone-subcontrols/Select'
 import SelectExtraActions from './phone-subcontrols/SelectExtraActions'
+import SurveyTitle from './phone-subcontrols/SurveyTitle'
 import TimeDuration from './phone-subcontrols/TimeDuration'
 import PhoneDisplay from './PhoneDisplay'
 import QuestionPhoneBottomMenu from './QuestionPhoneBottomMenu'
@@ -26,7 +31,7 @@ import RequiredToggle from './RequiredToggle'
 const OuterContainer = styled('div')(({theme}) => ({
   bgcolor: '#F8F8F8',
   padding: theme.spacing(0, 5),
-  border: '1px solid black',
+
   margin: '0 auto',
   position: 'relative',
 }))
@@ -70,8 +75,8 @@ const StyledH1 = styled(DisappearingInput, {label: 'StyledH1'})(({theme}) => ({
   },
 }))
 
-const ScrollableArea = styled('div')(({}) => ({
-  height: '330px',
+const ScrollableArea = styled('div')<{$height: number}>(({theme, $height}) => ({
+  height: `${$height}px`,
   marginLeft: '-10px',
   marginRight: '-10px',
   padding: '0 10px',
@@ -81,65 +86,23 @@ const ScrollableArea = styled('div')(({}) => ({
   flexDirection: 'column',
 }))
 
-/*
+const StyledStartButton = styled('div')(({theme}) => ({
+  height: theme.spacing(5),
+  lineHeight: theme.spacing(5),
+  cursor: 'default',
+  backgroundColor: '#2A2A2A',
+  borderRadius: '100px',
+  textAlign: 'center',
 
-const useStyles = makeStyles(theme => ({
-
-
-  title: {
-    fontFamily: latoFont,
-
-    fontWeight: 'bold',
-    fontSize: '24px',
-    lineHeight: '1.1',
-    textAlign: 'center',
-
-
-
-  //  color: theme.palette.text.secondary,
-  },
-  checkboxButton: {
-    width: '100%',
-    background: '#95CFF4',
-    padding: theme.spacing(1, 1),
-
-    boxShadow: '1px 2px 3px rgba(42, 42, 42, 0.1)',
-    borderRadius: '5px',
-
-    fontFamily: latoFont,
-
-    fontWeight: 'bold',
-    fontSize: '20px',
-    lineHeight: '125%',
-    textAlign: 'center',
-    // display: 'flex',
-    // alignItems: 'center',
-    // letterSpacing: '0.04em',
-    color: '#2A2A2A',
-    margin: theme.spacing(1, 0),
-  },
-  radioSelectButton: {
-    width: '100%',
-    background: '#95CFF4',
-    padding: theme.spacing(3),
-
-    boxShadow: '1px 2px 3px rgba(42, 42, 42, 0.1)',
-    borderRadius: '100px',
-    fontFamily: latoFont,
-
-    fontWeight: 'bold',
-    fontSize: '20px',
-    lineHeight: '125%',
-    textAlign: 'center',
-    // display: 'flex',
-    // alignItems: 'center',
-    // letterSpacing: '0.04em',
-    color: '#2A2A2A',
-    margin: theme.spacing(1, 0),
-  },
-}))*/
+  fontFamily: latoFont,
+  fontWeight: 600,
+  fontSize: '16px',
+  color: '#fff',
+  marginTop: '-20px',
+}))
 
 type QuestionEditProps = {
+  isDynamic: boolean
   step?: Step
   globalSkipConfiguration: WebUISkipOptions
   completionProgress: number
@@ -149,179 +112,6 @@ type QuestionEditProps = {
   //  onAdd: (a: string) => void
   // onNavigate: (id: string) => void
 }
-/*
-const CheckboxQuestion: FunctionComponent<InputItem> = inputItem => {
-
-  const [choices, setChoices] = React.useState<ChoiceQuestionChoice[]>([])
-  const newChoice: ChoiceQuestionChoice = {
-    text: 'New Input',
-    value: 'New Input',
-  }
-  return (
-    <Box border="1px solid black">
-      {' '}
-      QuestionEdit
-      <FormGroup>
-        {choices.map((choice, index) => (
-          <FormControlLabel
-            className={classes.checkboxButton}
-            control={<Checkbox defaultChecked />}
-            label={
-              <EditableTextbox
-                styleProps={{padding: '8px 0'}}
-                initValue={choice.text}
-                onTriggerUpdate={(newText: string) => {
-                  const _choice = {...choice, text: newText, value: newText}
-                  const _choices = [...choices]
-                  _choices[index] = _choice
-                  setChoices(_choices)
-                }}></EditableTextbox>
-            }
-          />
-        ))}
-      </FormGroup>
-      <Button
-        className={classes.checkboxButton}
-        onClick={() => {
-          setChoices(prev => [...prev, {...newChoice}])
-        }}>
-        + Add Input
-      </Button>
-    </Box>
-  )
-}
-
-const RadioQuestion: FunctionComponent<
-  InputItem & {
-    choices: ChoiceQuestionChoice[]
-    onChange: (c: ChoiceQuestionChoice[]) => void
-  }
-> = ({onChange, choices, ...props}) => {
-  const classes = useStyles()
-  //const [choices, setChoices] = React.useState<ChoiceQuestionChoice[]>([])
-  const [checkChoice, setCheckChoice] = React.useState<
-    number | string | undefined
-  >()
-  const newChoice: ChoiceQuestionChoice = {
-    text: 'New Input',
-    value: 'New Input',
-  }
-  const allChoice: ChoiceQuestionChoice = {
-    text: 'All of the above',
-    value: 'all',
-    exclusive: true,
-  }
-  const noneChoice: ChoiceQuestionChoice = {
-    text: 'None of the above',
-    value: 'none',
-    exclusive: true,
-  }
-  const setChoices = (choices: ChoiceQuestionChoice[]) => {
-    onChange(choices)
-  }
-  return (
-    <Box>
-      <FormGroup>
-        <RadioGroup
-          aria-labelledby="demo-controlled-radio-buttons-group"
-          name="controlled-radio-buttons-group"
-          value={checkChoice}
-          onChange={e => {
-            console.log(e.target.value)
-            setCheckChoice(e.target.value)
-          }}>
-          {choices.map((choice, index) => (
-            <FormControlLabel
-              className={classes.radioSelectButton}
-              control={<Radio value={choice.value || null} />}
-              label={
-                <EditableTextbox
-                  styleProps={{padding: '8px 0'}}
-                  initValue={choice.text}
-                  onTriggerUpdate={(newText: string) => {
-                    const _choice = {...choice, text: newText, value: newText}
-                    const _choices = [...choices]
-                    _choices[index] = _choice
-                    setChoices(_choices)
-                  }}></EditableTextbox>
-              }
-            />
-          ))}
-        </RadioGroup>
-      </FormGroup>
-
-      <Button
-        className={classes.radioSelectButton}
-        onClick={() => {
-          setChoices([...choices, {...newChoice}])
-        }}>
-        + Add Input
-      </Button>
-      <Button
-        className={classes.radioSelectButton}
-        onClick={() => {
-          setChoices([...choices, {...allChoice}])
-        }}>
-        + Add All of the above
-      </Button>
-      <Button
-        className={classes.radioSelectButton}
-        onClick={() => {
-          setChoices([...choices, {...noneChoice}])
-        }}>
-        + Add none of the above
-      </Button>
-    </Box>
-  )
-}
-
-const TextQuestion: FunctionComponent<InputItem> = inputItem => {
-  return <TextField />
-}
-
-const DateQuestion: FunctionComponent<InputItem> = inputItem => {
-  return (
-    <DatePicker
-      isYearOnly={true}
-      id={'any'}
-      value={null}
-      onChange={() => {}}
-      label={inputItem.fieldLabel}></DatePicker>
-  )
-}
-const TimeQuestion: FunctionComponent<InputItem> = inputItem => {
-  return (
-    <DatePicker
-      isYearOnly={true}
-      id={'any'}
-      value={null}
-      onChange={() => {}}
-      label={inputItem.fieldLabel}></DatePicker>
-  )
-}
-
-const ScaleQuestion: FunctionComponent<InputItem> = inputItem => {
-  return (
-    <FormControl>
-      <RadioGroup
-        row
-        aria-labelledby="demo-row-radio-buttons-group-label"
-        name="row-radio-buttons-group">
-        <FormControlLabel value="female" control={<Radio />} label="Female" />
-        <FormControlLabel value="male" control={<Radio />} label="Male" />
-        <FormControlLabel value="other" control={<Radio />} label="Other" />
-        <FormControlLabel
-          value="disabled"
-          disabled
-          control={<Radio />}
-          label="other"
-        />
-      </RadioGroup>
-    </FormControl>
-  )
-}
-*/
-//type QuestionEditProps = QuestionEditOwnProps
 
 function isSelectQuestion(questionType: QuestionTypeKey | 0): boolean {
   return questionType === 'MULTI_SELECT' || questionType === 'SINGLE_SELECT'
@@ -330,22 +120,9 @@ function isSelectQuestion(questionType: QuestionTypeKey | 0): boolean {
 function Factory(args: {
   step: Step
   onChange: (step: Step) => void
+
   q_type: QuestionTypeKey
 }) {
-  // const type = args.step.controlType === 'checkbox' ? 'checkbox' : 'string'
-  /* const props: InputItem = {
-    type: type,
-    placeholder: 'enter data',
-    fieldLabel: args.step.title,
-  }
-  const updateStepWithChoices = (choices: ChoiceQuestionChoice[]) => {
-    console.log('update')
-    let result = {...args.step} as ChoiceQuestion
-    result.choices = [...choices]
-    console.log(result)
-    args.onChange(result)
-  }*/
-
   switch (args.q_type) {
     case 'SINGLE_SELECT': {
       let _step = args.step as ChoiceQuestion
@@ -372,22 +149,33 @@ function Factory(args: {
     case 'TIME':
       return <TimeDuration type="TIME" />
     case 'YEAR':
-      return <Numeric step={args.step as NumericQuestion} onChange={e => {}} />
+      return (
+        <Numeric step={args.step as NumericQuestion} onChange={args.onChange} />
+      )
 
     case 'FREE_TEXT':
-      return <FreeText step={args.step} onChange={args.onChange} />
-
-    // return <TextQuestion {...props} />
-    /* case 'time':
-      return <>TIME</>
-    // return <TimeQuestion {...props} />
-
-    case 'date':
-      return <>DATE</>
-    // return <DateQuestion {...props} />
-    case 'likert':
-      return <>LIKERT</>
-    // return <ScaleQuestion {...props} />*/
+      return (
+        <FakeInput
+          width={200}
+          height={20}
+          sx={{
+            borderRight: 'none',
+            borderTop: 'none',
+            borderBottom: 'none',
+            background: 'transparent',
+          }}
+        />
+      ) //<FreeText step={args.step} onChange={args.onChange} />
+    case 'COMPLETION': {
+      return (
+        <Completion step={args.step as BaseStep} onChange={args.onChange} />
+      )
+    }
+    case 'OVERVIEW': {
+      return (
+        <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
+      )
+    }
     default:
       return <>nothing</>
   }
@@ -419,6 +207,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
   step,
   globalSkipConfiguration,
   completionProgress,
+  isDynamic,
   onChange,
 }) => {
   console.log('step changed', step, globalSkipConfiguration)
@@ -444,6 +233,26 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
     return opts
   }
 
+  const getPhoneBottom = () => {
+    if (!step) {
+      return <></>
+    }
+    if (isSelectQuestion(questionId)) {
+      return (
+        <QuestionPhoneBottomMenu
+          step={step as ChoiceQuestion}
+          onChange={s => onChange(s)}
+        />
+      )
+    }
+    if (step.type === 'overview') {
+      return <StyledStartButton>Start</StyledStartButton>
+    }
+    if (step.type === 'completion') {
+      return <StyledStartButton>Exit Study</StyledStartButton>
+    }
+  }
+
   return (
     <OuterContainer>
       {isSelectQuestion(questionId) && (
@@ -459,54 +268,52 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
         />
       )}
 
-      {/* QuestionEdit {step?.type}+{JSON.stringify(step?.subtitle)}*/}
-      {step ? (
+      {step && (
         <>
           <PhoneDisplay
             sx={{marginBottom: '20px', textAlign: 'left'}}
-            phoneBottom={
-              isSelectQuestion(questionId) ? (
-                <QuestionPhoneBottomMenu
-                  step={step as ChoiceQuestion}
-                  onChange={s => onChange(s)}
-                />
-              ) : (
-                <></>
-              )
-            }>
+            phoneBottom={getPhoneBottom()}>
             <Box>
-              <PhoneProgressLine completionProgress={completionProgress} />
-              <PhoneTop>
-                <PauseIcon />
-                {shouldShowSkipButton() && <SkipQuestion />}
-              </PhoneTop>
+              {isDynamic && (
+                <>
+                  <PhoneProgressLine completionProgress={completionProgress} />
+                  <PhoneTop>
+                    <PauseIcon />
+                    {shouldShowSkipButton() && <SkipQuestion />}
+                  </PhoneTop>
 
-              <StyledP2
-                area-label="subtitle"
-                id="subtitle"
-                value={step.subtitle || ''}
-                placeholder="Subtitle"
-                onChange={e => onChange({...step, subtitle: e.target.value})}
-              />
+                  <StyledP2
+                    area-label="subtitle"
+                    id="subtitle"
+                    value={step.subtitle || ''}
+                    placeholder="Subtitle"
+                    onChange={e =>
+                      onChange({...step, subtitle: e.target.value})
+                    }
+                  />
 
-              <StyledH1
-                area-label="title"
-                id="title"
-                value={step.title || ''}
-                placeholder="Title"
-                onChange={e => onChange({...step, title: e.target.value})}
-              />
-              <ScrollableArea>
-                <StyledP2
-                  area-label="detail"
-                  id="detail"
-                  maxRows={4}
-                  multiline={true}
-                  value={step.detail || ''}
-                  placeholder="Description"
-                  sx={{marginBottom: theme.spacing(2.5)}}
-                  onChange={e => onChange({...step, detail: e.target.value})}
-                />
+                  <StyledH1
+                    area-label="title"
+                    id="title"
+                    value={step.title || ''}
+                    placeholder="Title"
+                    onChange={e => onChange({...step, title: e.target.value})}
+                  />
+                </>
+              )}
+              <ScrollableArea $height={isDynamic ? 330 : 400}>
+                {isDynamic && (
+                  <StyledP2
+                    area-label="detail"
+                    id="detail"
+                    maxRows={4}
+                    multiline={true}
+                    value={step.detail || ''}
+                    placeholder="Description"
+                    sx={{marginBottom: theme.spacing(2.5)}}
+                    onChange={e => onChange({...step, detail: e.target.value})}
+                  />
+                )}
 
                 {
                   <Factory
@@ -520,7 +327,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
             </Box>
           </PhoneDisplay>
 
-          {globalSkipConfiguration === 'CUSTOMIZE' && (
+          {globalSkipConfiguration === 'CUSTOMIZE' && isDynamic && (
             <RequiredToggle
               shouldHideActionsArray={step.shouldHideActions || []}
               onChange={shouldHideActions =>
@@ -532,8 +339,6 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
             />
           )}
         </>
-      ) : (
-        <></>
       )}
     </OuterContainer>
   )

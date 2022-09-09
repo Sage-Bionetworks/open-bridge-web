@@ -4,6 +4,7 @@ import Utility from '@helpers/utility'
 import {Box, Button, styled} from '@mui/material'
 import {latoFont, theme} from '@style/theme'
 import {
+  BaseStep,
   ChoiceQuestion,
   ScaleQuestion,
   Step,
@@ -13,19 +14,17 @@ import {
 import {FunctionComponent} from 'react'
 import {StyledLabel14} from '../../widgets/SharedStyled'
 import {getQuestionId, QuestionTypeKey} from '../left-panel/QuestionConfigs'
-import FreeText from './rhs-subcontrols/FreeText'
+import Completion from './rhs-subcontrols/Completion'
 import Numeric from './rhs-subcontrols/Numeric'
 import Scale from './rhs-subcontrols/Scale'
 import Select from './rhs-subcontrols/Select'
+import SurveyTitle from './rhs-subcontrols/SurveyTitle'
 import Time from './rhs-subcontrols/Time'
 import Year from './rhs-subcontrols/Year'
 
 const StyledContainer = styled('div')(({theme}) => ({
   width: '425px',
   height: '100%',
-  '& > div.controlBody': {
-    padding: theme.spacing(3),
-  },
 }))
 
 const StyledButton = styled(Button)(({theme}) => ({
@@ -60,7 +59,7 @@ function Factory(args: {
       )
 
     case 'FREE_TEXT':
-      return <FreeText step={args.step} onChange={args.onChange} />
+      return <></>
     case 'SLIDER':
     case 'LIKERT':
       return (
@@ -88,6 +87,14 @@ function Factory(args: {
       return <Time step={args.step as TimeQuestion} onChange={args.onChange} />
     case 'YEAR':
       return <Year step={args.step as YearQuestion} onChange={args.onChange} />
+    case 'OVERVIEW':
+      return (
+        <SurveyTitle step={args.step as BaseStep} onChange={args.onChange} />
+      )
+    case 'COMPLETION':
+      return (
+        <Completion step={args.step as BaseStep} onChange={args.onChange} />
+      )
     default:
       return <>nothing</>
   }
@@ -103,13 +110,14 @@ type QuestionEditProps = {
   step: Step
   dependentQuestions: number[] | undefined
   onChange: (step: Step) => void
+  isDynamic: boolean
 }
 
 const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({
   step,
   onChange,
   children,
-  dependentQuestions,
+  isDynamic,
 }) => {
   const matchIdentifier = () => {
     const newId = `${step?.title
@@ -123,26 +131,31 @@ const QuestionEditRhs: FunctionComponent<QuestionEditProps> = ({
   }
   return (
     <StyledContainer>
-      <Box
-        id="identifier"
-        sx={{backgroundColor: '#ECECEC;', padding: theme.spacing(3, 0, 3, 4)}}>
-        <StyledLabel14 htmlFor="q_id">Question Identifier</StyledLabel14>
-        <StyledSimpleTextInput
-          onChange={e => onChange({...step, identifier: e.target.value})}
-          id="q_id"
-          value={step?.identifier}></StyledSimpleTextInput>
-        <StyledButton variant="text" onClick={matchIdentifier}>
-          <GenerateId /> Match Identifier to Question
-        </StyledButton>
-      </Box>
-      <div className="controlBody">
+      {isDynamic && (
+        <Box
+          id="identifier"
+          sx={{
+            backgroundColor: '#ECECEC;',
+            padding: theme.spacing(3, 0, 3, 4),
+          }}>
+          <StyledLabel14 htmlFor="q_id">Question Identifier</StyledLabel14>
+          <StyledSimpleTextInput
+            onChange={e => onChange({...step, identifier: e.target.value})}
+            id="q_id"
+            value={step?.identifier}></StyledSimpleTextInput>
+          <StyledButton variant="text" onClick={matchIdentifier}>
+            <GenerateId /> Match Identifier to Question
+          </StyledButton>
+        </Box>
+      )}
+      <Box sx={{padding: isDynamic ? theme.spacing(3) : 0}}>
         <Factory
           {...{
             step: {...step},
             onChange: onChange,
             q_type: getQuestionId(step),
           }}></Factory>
-      </div>
+      </Box>
       {children}
     </StyledContainer>
   )

@@ -1,6 +1,4 @@
 import {ReactComponent as DraggableIcon} from '@assets/surveys/draggable.svg'
-import {ReactComponent as PreviewIcon} from '@assets/surveys/preview.svg'
-import {ReactComponent as InstructionIcon} from '@assets/surveys/q_type_icons/icontitle.svg'
 import {ReactComponent as SettingsIcon} from '@assets/surveys/settings.svg'
 import SurveyUtils from '@components/surveys/SurveyUtils'
 import {Box, styled} from '@mui/material'
@@ -16,7 +14,7 @@ import {
 } from 'react-beautiful-dnd'
 import {NavLink, useLocation} from 'react-router-dom'
 import QUESTIONS, {getQuestionId} from './QuestionConfigs'
-import QuestionTypeDisplay, {DivContainer} from './QuestionTypeDisplay'
+import {DivContainer} from './QuestionTypeDisplay'
 
 const linkStyle = {
   cursor: 'pointer',
@@ -126,27 +124,13 @@ const TitleRow: React.FunctionComponent<{surveyId?: string; guid?: string}> = ({
           <div>Survey ID: {surveyId}</div>
         </StyledNavLink>
       </div>
-      <div>
+      {/*AGendel: future feature   <div>
         <StyledNavLink to={`/surveys/${guid}/preview`}>
           <PreviewIcon style={{margin: '10px', maxWidth: '20px'}} />
           <div>Preview</div>
         </StyledNavLink>
-      </div>
+  </div>*/}
     </TitleStyledRow>
-  )
-}
-
-const StaticStepLink: React.FunctionComponent<{
-  isCurrentStep: boolean
-  // path: string
-  onClick: () => void
-}> = ({isCurrentStep, children, onClick}) => {
-  return (
-    <StyledNavAnchor onClick={onClick} href="#">
-      <Row className={isCurrentStep ? 'current' : ''}>
-        <QuestionTypeDisplay>{children}</QuestionTypeDisplay>
-      </Row>
-    </StyledNavAnchor>
   )
 }
 
@@ -158,28 +142,36 @@ const StepLink: React.FunctionComponent<{
   isCurrentStep: boolean
   provided: DraggableProvided
   onClick: () => void
-}> = ({index, step, size, isCurrentStep, provided, onClick}) => (
-  <Row
-    className={isCurrentStep ? 'current' : ''}
-    {...provided.draggableProps}
-    {...provided.dragHandleProps}
-    ref={provided.innerRef}>
-    <StyledNavAnchor onClick={onClick}>
-      <DivContainer
-        sx={{
-          paddingRight: '20px',
-        }}>
-        <DivContainer sx={{height: '100%'}}>
-          {QUESTIONS.get(getQuestionId(step))?.img}
-          <StyledQuestionText>
-            {`${index < 9 ? '0' : ''}${index + 1}. ${step.title}`}
-          </StyledQuestionText>
+}> = ({index, step, size, isCurrentStep, provided, onClick}) => {
+  let title = `${index < 9 ? '0' : ''}${index}. ${step.title}`
+  if (index === size - 1) {
+    title = 'Completion Screen'
+  }
+  if (index === 0) {
+    title = 'Title Page'
+  }
+
+  return (
+    <Row
+      className={isCurrentStep ? 'current' : ''}
+      {...provided.draggableProps}
+      {...provided.dragHandleProps}
+      ref={provided.innerRef}>
+      <StyledNavAnchor onClick={onClick}>
+        <DivContainer
+          sx={{
+            paddingRight: '20px',
+          }}>
+          <DivContainer sx={{height: '100%'}}>
+            {QUESTIONS.get(getQuestionId(step))?.img}
+            <StyledQuestionText>{title}</StyledQuestionText>
+          </DivContainer>
+          {size > 3 && index > 0 && index < size - 1 && <DraggableIcon />}
         </DivContainer>
-        {size > 1 && <DraggableIcon />}
-      </DivContainer>
-    </StyledNavAnchor>
-  </Row>
-)
+      </StyledNavAnchor>
+    </Row>
+  )
+}
 
 const LeftPanel: React.FunctionComponent<{
   guid: string
@@ -187,7 +179,7 @@ const LeftPanel: React.FunctionComponent<{
   surveyConfig?: SurveyConfig
   currentStepIndex?: number
   onUpdateSteps: (s: Step[]) => void
-  onNavigateStep: (id: number | 'title' | 'completion') => void
+  onNavigateStep: (id: number) => void
 }> = ({
   guid,
   surveyConfig,
@@ -204,10 +196,15 @@ const LeftPanel: React.FunctionComponent<{
       return
     }
 
+    let resultDesinationIndex = result.destination?.index || 1 //title is first
+    if (resultDesinationIndex === surveyConfig.steps.length - 1) {
+      resultDesinationIndex = surveyConfig.steps.length - 2
+    }
+
     const items = SurveyUtils.reorder(
       [...surveyConfig!.steps],
       result.source.index,
-      result.destination?.index
+      resultDesinationIndex
     )
 
     onUpdateSteps(items)
@@ -222,58 +219,52 @@ const LeftPanel: React.FunctionComponent<{
               height: 'calc(100vh - 150px)',
               overflow: 'scroll',
             }}>
-            <StaticStepLink
+            {/* <StaticStepLink
               onClick={() => onNavigateStep('title')}
               //  path={`/surveys/${guid}/design/title`}
               isCurrentStep={location.pathname.includes('/design/title')}>
               <InstructionIcon />
               <div>Title Page</div>
-            </StaticStepLink>
+          </StaticStepLink>*/}
             {surveyConfig?.steps && (
               <>
                 <Droppable droppableId="questions">
                   {provided => (
                     <Box ref={provided.innerRef} {...provided.droppableProps}>
-                      {surveyConfig!
-                        .steps!.filter(s => s.type !== 'completion')
-                        .map((step, index) => (
-                          <Draggable
-                            draggableId={step.identifier}
-                            isDragDisabled={surveyConfig?.steps!.length < 2}
-                            index={index}
-                            key={step.identifier}>
-                            {provided => (
-                              <StepLink
-                                provided={provided}
-                                isCurrentStep={currentStepIndex === index}
-                                //  guid={guid}
-                                onClick={() => onNavigateStep(index)}
-                                size={surveyConfig?.steps!.length}
-                                index={index}
-                                step={step}
-                              />
-                            )}
-                          </Draggable>
-                        ))}
+                      {surveyConfig!.steps!.map((step, index) => (
+                        <Draggable
+                          draggableId={step.identifier}
+                          isDragDisabled={
+                            surveyConfig?.steps!.length < 3 ||
+                            step.type === 'overview' ||
+                            step.type == 'completion'
+                          }
+                          index={index}
+                          key={step.identifier}>
+                          {provided => (
+                            <StepLink
+                              provided={provided}
+                              isCurrentStep={currentStepIndex === index}
+                              //  guid={guid}
+                              onClick={() => onNavigateStep(index)}
+                              size={surveyConfig?.steps!.length}
+                              index={index}
+                              step={step}
+                            />
+                          )}
+                        </Draggable>
+                      ))}
                       {provided.placeholder}
                     </Box>
                   )}
                 </Droppable>
-                {surveyConfig!.steps!.find(s => s.type === 'completion') && (
-                  <StaticStepLink
-                    onClick={() => onNavigateStep('completion')}
-                    isCurrentStep={location.pathname.includes(
-                      '/design/completion'
-                    )}>
-                    {QUESTIONS.get('COMPLETION')?.img}
-                    <div>Completion Screen</div>
-                  </StaticStepLink>
-                )}
               </>
             )}
           </Box>
         </Box>
-        <AddStepMenuContainer>{children}</AddStepMenuContainer>
+        {surveyConfig && (
+          <AddStepMenuContainer>{children}</AddStepMenuContainer>
+        )}
       </DragDropContext>
     </Container>
   )

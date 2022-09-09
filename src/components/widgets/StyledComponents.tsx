@@ -163,6 +163,7 @@ export const SimpleTextLabel = styled(InputLabel, {label: 'SimpleTextLabel'})(
 export const SimpleTextInput = styled(InputBase, {label: 'SimpleTextInput'})(
   ({theme}) => ({
     border: `1px solid ${theme.palette.text.secondary}`,
+    backgroundColor: '#fff',
     'label + &': {
       marginTop: theme.spacing(2.5),
     },

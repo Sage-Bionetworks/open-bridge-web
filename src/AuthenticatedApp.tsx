@@ -22,22 +22,18 @@ import PrivateRoutes from './routes_private'
 const Wrapper: FunctionComponent<
   RouteComponentProps & {sessionData: UserSessionData; children: ReactNode}
 > = ({children, sessionData}) => {
-  let {id: studyId, section: studySection} = useParams<{
+  let {id, section: studySection} = useParams<{
     id: string
     section: StudySection
   }>()
-  //only use studyId in study builder or
-  const isAssessmentPath = useLocation().pathname.includes(
-    `/assessments/${studyId}`
-  )
-  const isSurveyPath = useLocation().pathname.includes(`/surveys`)
+
+  const isAssessmentPath = useLocation().pathname.includes(`/assessments/${id}`)
+  const isSurveyPath = useLocation().pathname.includes(`/surveys/${id}`)
   const notStudyId = isAssessmentPath || isSurveyPath
-  const {data: study, error: studyError} = useStudy(
-    notStudyId ? undefined : studyId
-  )
+  const {data: study, error: studyError} = useStudy(notStudyId ? undefined : id)
   const {data: survey, error: surveyError} = useSurveyAssessment(
     true,
-    isSurveyPath ? studyId : undefined
+    isSurveyPath ? id : undefined
   )
   const handleError = useErrorHandler()
 

@@ -58,8 +58,9 @@ const DeleteButton: FunctionComponent<{
 
 const QuestionEditToolbar: FunctionComponent<{
   onAction: (action: 'save' | 'duplicate' | 'delete') => void
+  isDynamic: boolean
   dependentQuestions: number[] | undefined
-}> = ({onAction, dependentQuestions}) => {
+}> = ({onAction, dependentQuestions, isDynamic}) => {
   const [isConfirmDelete, setIsConfirmDelete] = React.useState(false)
   return (
     <>
@@ -70,18 +71,20 @@ const QuestionEditToolbar: FunctionComponent<{
           onClick={() => onAction('save')}>
           Save Changes
         </ActionButton>
-        <div>
-          <ActionButton
-            startIcon={<DuplicateIcon />}
-            variant="text"
-            onClick={() => onAction('duplicate')}>
-            Duplicate
-          </ActionButton>
-          <DeleteButton
-            dependentQuestions={dependentQuestions}
-            onClick={() => setIsConfirmDelete(true)}
-          />
-        </div>
+        {isDynamic && (
+          <div>
+            <ActionButton
+              startIcon={<DuplicateIcon />}
+              variant="text"
+              onClick={() => onAction('duplicate')}>
+              Duplicate
+            </ActionButton>
+            <DeleteButton
+              dependentQuestions={dependentQuestions}
+              onClick={() => setIsConfirmDelete(true)}
+            />
+          </div>
+        )}
       </QuestionEditToolbarContainer>
       <ConfirmationDialog
         isOpen={isConfirmDelete}

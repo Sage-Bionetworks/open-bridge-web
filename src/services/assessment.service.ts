@@ -225,6 +225,26 @@ async function updateSurveyAssessment(
     return result
   } else throw "can't update assessment"
 }
+
+async function deleteSurveyAssessment(
+  assessment: Assessment,
+  token: string
+): Promise<Assessment> {
+  const endpoint = constants.endpoints.assessment.replace(
+    ':id',
+    assessment.guid!
+  )
+
+  const assessmentResponse = await Utility.callEndpoint<Assessment>(
+    endpoint,
+    'DELETE',
+    {},
+    token
+  )
+  console.log('assessment deleted', assessmentResponse.data)
+  return assessmentResponse.data
+}
+
 async function getSurveyAssessmentConfig(
   guid: string,
   token: string
@@ -293,6 +313,7 @@ async function updateSurveyAssessmentConfig(
 const AssessmentService = {
   createSurveyAssessment,
   updateSurveyAssessment,
+  deleteSurveyAssessment,
   updateSurveyAssessmentResource,
   updateSurveyAssessmentConfig,
   getSurveyAssessmentConfig,
