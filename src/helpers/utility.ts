@@ -1,8 +1,8 @@
-import UserService from '@services/user.service'
 import {useState} from 'react'
-import CONSTANTS from '../types/constants'
+import {default as constants, default as CONSTANTS} from '../types/constants'
 import {
   AdminRole,
+  OauthEnvironment,
   Phone,
   Response,
   SignInType,
@@ -145,15 +145,38 @@ const setSession = (data: UserSessionData) => {
   sessionStorage.setItem(CONSTANTS.constants.SESSION_NAME, JSON.stringify(data))
 }
 
-const getAppId = () => {
-  if (
-    document.location.port === '3001' ||
-    document.location.host.includes('dashboard.sagebridge.org')
-  ) {
-    return CONSTANTS.constants.ARC_APP_ID
+const getOauthEnvironment = (): OauthEnvironment => {
+  return getOauthEnvironmentFromLocation(new URL(document.location.href))
+}
+const getOauthEnvironmentFromLocation = (loc: URL): OauthEnvironment => {
+  var href = loc.origin
+
+  const isLocalhost = (): boolean => href.indexOf('127.0.0.1') > -1
+
+  //localhost
+  if (isLocalhost()) {
+    const port = loc.port
+    //if localhost, find the appropriate configuration
+    for (const key of getEnumKeys(constants.oauth)) {
+      const value = constants.oauth[key]
+      if (value.redirect.includes(port)) {
+        return value
+      }
+    }
   } else {
-    return CONSTANTS.constants.MTB_APP_ID
+    const hostname = loc.hostname
+    for (const key of getEnumKeys(constants.oauth)) {
+      const value = constants.oauth[key]
+      if (value.redirect == loc.origin) {
+        return value
+      }
+    }
   }
+  throw new Error(`${loc} is an unknown environment`)
+}
+
+const getAppId = () => {
+  return getOauthEnvironment().appId
 }
 
 const redirectToSynapseLogin = () => {
@@ -167,7 +190,7 @@ const redirectToSynapseLogin = () => {
 
     let array = []
     array.push('response_type=code')
-    array.push('client_id=' + UserService.getOathEnvironment().client)
+    array.push('client_id=' + getOauthEnvironment().client)
     array.push('scope=openid')
     array.push('state=' + encodeURIComponent(state))
     array.push('redirect_uri=' + encodeURIComponent(document.location.origin))
@@ -219,7 +242,7 @@ const getRandomId = (): string => {
   return Date.now().toString(36) + Math.random().toString(36).substr(2)
 }
 
-const getEnumKeys = <T>(enum1: T): (keyof T)[] =>
+const getEnumKeys = <T extends {}>(enum1: T): (keyof T)[] =>
   Object.keys(enum1) as (keyof T)[]
 
 const getEnumKeyByEnumValue = (
@@ -423,6 +446,8 @@ const UtilityObject = {
   callEndpointXHR,
   redirectToSynapseLogin,
   getAllPages,
+  getOauthEnvironment,
+  getOauthEnvironmentFromLocation,
 }
 
 export default UtilityObject

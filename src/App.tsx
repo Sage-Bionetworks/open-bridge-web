@@ -43,7 +43,7 @@ const attemptLogin = async (code: string): Promise<LoggedInUserData> => {
 
   try {
     console.log('trying to log in')
-    const env = UserService.getOathEnvironment()
+    const env = Utility.getOauthEnvironment()
     const loggedIn = await UserService.loginOauth(
       code,
       env.redirect,
@@ -129,13 +129,14 @@ function App() {
 
   //dynamically set favicon and app depending on domain
   useEffect(() => {
+    const env = Utility.getOauthEnvironment()
     const $manifest = document.createElement('link')
     document.head.appendChild($manifest)
     $manifest.rel = 'manifest'
     const $icon = document.createElement('link')
     document.head.appendChild($icon)
     $icon.rel = 'icon'
-    if (UserService.isArc()) {
+    if (env.vendor.includes('arc-')) {
       $manifest.href = process.env.PUBLIC_URL + '/arc_manifest.json'
       $icon.href = process.env.PUBLIC_URL + '/arc_favicon.ico'
     } else {
@@ -158,7 +159,7 @@ function App() {
                 {redirect && <Redirect to={redirect}></Redirect>}
                 {/*  <React.StrictMode>*/}
                 <FeatureToggleProvider
-                  featureToggles={{'SURVEY BUILDER': true}}>
+                  featureToggles={{'SURVEY BUILDER': false}}>
                   {sessionData.id ? (
                     <AuthenticatedApp />
                   ) : (
