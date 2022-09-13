@@ -21,7 +21,7 @@ import ReactFlow, {
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import BranchingConfig from './BranchingConfig'
-import getNodes, {getDryRunEdges} from './GetNodesToPlot'
+import getNodes, {detectCycle, getDryRunEdges} from './GetNodesToPlot'
 import {useGetPlotWidth} from './UseGetPlotWidth'
 
 const edgeTypes = {
@@ -234,18 +234,28 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
               setSurvey(_survey)
               setIsHideInput(true)
             }}
+            error={error}
             onSave={() => saveSurvey()}
             isOpen={!isHideInput}
             invalidTargetStepIds={getInvalidTargetStepIds()}
             onChange={steps => {
-              console.log('steps', steps)
+              //  console.log('steps', steps)
               const edges = getDryRunEdges(steps)
+              setError('')
+
               console.log('DRY RUN', edges)
-              setHasObjectChanged(true)
-              setSurvey({
-                ...survey,
-                config: {...survey!.config, steps: steps},
-              })
+              const cycles = detectCycle(edges.edges)
+              console.log('CYCLES', cycles)
+              if (cycles) {
+                setError('Cycles detected')
+                return
+              } else {
+                setHasObjectChanged(true)
+                setSurvey({
+                  ...survey,
+                  config: {...survey!.config, steps: steps},
+                })
+              }
             }}
             questions={survey!.config.steps as ChoiceQuestion[]}
             step={getCurrentStep()}
