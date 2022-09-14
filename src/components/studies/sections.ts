@@ -71,7 +71,10 @@ const SECTIONS: {
   {
     name: 'Optional Monitoring',
     path: 'passive-features',
-    hideApps: [CONSTANTS.constants.ARC_APP_ID],
+    hideApps: [
+      CONSTANTS.constants.ARC_APP_ID,
+      CONSTANTS.constants.INV_ARC_APP_ID,
+    ],
     navIcon: RecordersRegularIcon,
     hoverIcon: RecordersHoveredIcon,
   },

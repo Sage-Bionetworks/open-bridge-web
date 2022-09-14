@@ -59,6 +59,7 @@
   "scripts": {
     "start": "craco start",
     "start:arc": "PORT=3001 craco start",
+    "start:invarc": "PORT=3002 craco start",
     "build": "craco build",
     "test": "craco test --watch",
     "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",

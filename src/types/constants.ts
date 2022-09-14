@@ -84,7 +84,7 @@ export default {
     },
 
     local_inv_arc: {
-      client: '100104', //TODO
+      client: '100276',
       vendor: 'inv-arc-dev',
       redirect: 'http://127.0.0.1:3002',
       appId: INV_ARC_ID,

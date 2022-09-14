@@ -7,9 +7,9 @@ describe('Utility functions', () => {
       ).vendor
     ).toBe('arc-dev')
     expect(
-      Utility.getOauthEnvironmentFromLocation(new URL('http://127.0.0.1:3001'))
+      Utility.getOauthEnvironmentFromLocation(new URL('http://127.0.0.1:3002'))
         .vendor
-    ).toBe('arc-dev')
+    ).toBe('inv-arc-dev')
     expect(
       Utility.getOauthEnvironmentFromLocation(new URL('http://127.0.0.1:3000'))
         .vendor

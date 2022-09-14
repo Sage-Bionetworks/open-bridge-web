@@ -1,7 +1,7 @@
 import {Alert} from '@mui/lab'
 import {Box, Container} from '@mui/material'
+import constants from '@typedefs/constants'
 import Utility from '../../helpers/utility'
-import CONSTANTS from '../../types/constants'
 import AccountLogin from '../account/AccountLogin'
 
 export function ErrorFallback(props: any) {
@@ -14,7 +14,10 @@ export function ErrorFallback(props: any) {
         <Box mx="auto" bgcolor="white" p={5} textAlign="center">
           <AccountLogin
             {...props}
-            isArcSignIn={Utility.getAppId() === CONSTANTS.constants.ARC_APP_ID}
+            isArcSignIn={[
+              constants.constants.ARC_APP_ID,
+              constants.constants.INV_ARC_APP_ID,
+            ].includes(Utility.getAppId())}
             callbackFn={() => {
               window.location.replace('/')
             }}></AccountLogin>
