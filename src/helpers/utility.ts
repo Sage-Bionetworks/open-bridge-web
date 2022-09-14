@@ -164,10 +164,9 @@ const getOauthEnvironmentFromLocation = (loc: URL): OauthEnvironment => {
       }
     }
   } else {
-    const hostname = loc.hostname
     for (const key of getEnumKeys(constants.oauth)) {
       const value = constants.oauth[key]
-      if (value.redirect == loc.origin) {
+      if (value.redirect === loc.origin) {
         return value
       }
     }

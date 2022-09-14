@@ -1,9 +1,11 @@
 const MTB_APP_ID = 'mobile-toolbox'
 const ARC_APP_ID = 'arc'
+const INV_ARC_ID = 'inv-arc'
 export default {
   constants: {
     MTB_APP_ID: MTB_APP_ID,
     ARC_APP_ID: ARC_APP_ID,
+    INV_ARC_APP_ID: INV_ARC_ID,
 
     SESSION_NAME: 'mtb-user-session',
     ENDPOINT: 'https://webservices.sagebridge.org',
@@ -32,17 +34,11 @@ export default {
     {value: 'production', label: 'Production'},
   ],
   org_roles: ['org_admin', 'study_designer', 'study_coordinator'] as const,
-  /*host: {
-    local: 'http://localhost:9000',
-    develop: 'https://ws-develop.sagebridge.org',
-    staging: 'https://ws-staging.sagebridge.org',
-    production: 'https://ws.sagebridge.org',
-  },*/
 
   oauth: {
     local_mtb: {
       client: '100062',
-      vendor: 'mtb',
+      vendor: 'mtb-dev',
       redirect: 'http://127.0.0.1:3000',
       appId: MTB_APP_ID,
     },
@@ -75,37 +71,35 @@ export default {
     stage_arc_studies: {
       client: '100162',
       vendor: 'arc-stage',
-      redirect: 'https://staging.dashboard.sagebridge.org',
-      // redirect: 'https://staging.arcdashboard.sagebionetworks.org',
+
+      redirect: 'https://staging.arcdashboard.sagebionetworks.org',
       appId: ARC_APP_ID,
     },
     prod_arc_studies: {
       client: '100164',
       vendor: 'arc-prod',
-      // redirect: 'https://dashboard.sagebridge.org',
+
       redirect: 'https://arcdashboard.sagebionetworks.org',
       appId: ARC_APP_ID,
     },
 
-    local_arc_inv: {
-      client: '100104',
-      vendor: 'arc-inv-dev',
+    local_inv_arc: {
+      client: '100104', //TODO
+      vendor: 'inv-arc-dev',
       redirect: 'http://127.0.0.1:3002',
-      appId: '',
+      appId: INV_ARC_ID,
     },
-    stage_arc_inv_studies: {
-      client: '100162',
-      vendor: 'arc-inv-stage',
-      //redirect: 'https://staging.dashboard.sagebridge.org',
+    stage_inv_arc_studies: {
+      client: '100274',
+      vendor: 'inv-arc-stage',
       redirect: 'https://staging.inv-arcdashboard.sagebionetworks.org',
-      appId: '',
+      appId: INV_ARC_ID,
     },
-    prod_arc_inv_studies: {
-      client: '100164',
-      vendor: 'arc-inv-prod',
-      // redirect: 'https://dashboard.sagebridge.org',
+    prod_inv_arc_studies: {
+      client: '100275',
+      vendor: 'inv-arc-prod',
       redirect: 'https://inv-arcdashboard.sagebionetworks.org',
-      appId: '',
+      appId: INV_ARC_ID,
     },
   },
 

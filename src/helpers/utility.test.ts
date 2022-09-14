@@ -13,12 +13,12 @@ describe('Utility functions', () => {
     expect(
       Utility.getOauthEnvironmentFromLocation(new URL('http://127.0.0.1:3000'))
         .vendor
-    ).toBe('mtb')
+    ).toBe('mtb-dev')
     expect(
       Utility.getOauthEnvironmentFromLocation(
         new URL('http://127.0.0.1:3002//studies/pbgjkb/participant-manager')
       ).vendor
-    ).toBe('arc-inv-dev')
+    ).toBe('inv-arc-dev')
     expect(
       Utility.getOauthEnvironmentFromLocation(
         new URL(
@@ -29,7 +29,7 @@ describe('Utility functions', () => {
     expect(
       Utility.getOauthEnvironmentFromLocation(
         new URL(
-          'https://staging.dashboard.sagebridge.org/studies/builder/zgpnsz/session-creator'
+          'https://staging.arcdashboard.sagebionetworks.org/studies/builder/zgpnsz/session-creator'
         )
       ).vendor
     ).toBe('arc-stage')
@@ -39,7 +39,7 @@ describe('Utility functions', () => {
           'https://staging.inv-arcdashboard.sagebionetworks.org/studies/builder/zgpnsz/session-creator'
         )
       ).vendor
-    ).toBe('arc-inv-stage')
+    ).toBe('inv-arc-stage')
 
     expect(
       Utility.getOauthEnvironmentFromLocation(
@@ -62,6 +62,11 @@ describe('Utility functions', () => {
           'https://inv-arcdashboard.sagebionetworks.org/assessments/Bf1w8SGCcOTj-ssNIPuDNNS1'
         )
       ).vendor
-    ).toBe('arc-inv-prod')
+    ).toBe('inv-arc-prod')
+    expect(
+      Utility.getOauthEnvironmentFromLocation(
+        new URL('https://staging.arcdashboard.sagebionetworks.org/')
+      ).vendor
+    ).toBe('arc-stage')
   })
 })
