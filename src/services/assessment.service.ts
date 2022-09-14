@@ -6,12 +6,14 @@ import {Assessment, AssessmentResource, ExtendedError} from '@typedefs/types'
 /* AG: BOTH survey and assessments would include arb/mtb tag, but surveys would include survey tag while other assessments won't*/
 const ASSESSMENT_APP_TAG = {
   [constants.constants.ARC_APP_ID]: 'ARC',
+  [constants.constants.INV_ARC_APP_ID]: 'ARC',
   [constants.constants.MTB_APP_ID]: 'Mobile Toolbox',
 }
 
 const SURVEY_APP_TAG = {
   [constants.constants.ARC_APP_ID]: 'Arc Surveys Alina Test',
   [constants.constants.MTB_APP_ID]: 'MTB Surveys Alina Test',
+  [constants.constants.INV_ARC_APP_ID]: 'Arc Surveys Alina Test',
 }
 
 //tags used internally that end user will not see

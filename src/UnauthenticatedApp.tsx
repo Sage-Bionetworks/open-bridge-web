@@ -1,4 +1,4 @@
-import React, {FunctionComponent} from 'react'
+import {FunctionComponent} from 'react'
 import {
   Route,
   RouteComponentProps,
@@ -21,7 +21,12 @@ const UnauthenticatedApp: FunctionComponent<
   const loc = useLocation()
   const route = PublicRoutes.find(r => r.path === loc.pathname)
 
-  if (appId === constants.constants.ARC_APP_ID) {
+  if (
+    [
+      constants.constants.ARC_APP_ID,
+      constants.constants.INV_ARC_APP_ID,
+    ].includes(appId)
+  ) {
     return <SignInPage isARCApp={true} />
   }
   return (
