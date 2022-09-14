@@ -230,41 +230,6 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
 
   addNode(questions[0], 0, 0, 0, 0, undefined)
 
-  /*
-
-  edges.forEach(e => {
-    const source = e.source
-    //find all of the childeren of that node
-    const sourceNode = nodes.find(n => n.id === source)
-    console.log(sourceNode?.position.y)
-    const childEdges = edges.filter(e => e.source === source).map(e => e.target)
-    const childNodes = nodes.filter(
-      n =>
-        childEdges.includes(n.id) &&
-        Math.abs(n.position.y - (sourceNode?.position.y || 0)) < 10
-    )
-    if (childNodes.length > 1) {
-      console.log(
-        'CHILD NODE of  ' + source + 'y=' + sourceNode?.position.y,
-        childNodes.map(n => n.position.y).join(',')
-      )
-      childNodes.forEach((childNode, index) => {
-        //for each child
-        const nToUpdate = nodes.findIndex(n => n.id === childNode.id)
-        const coords = getCoordinatesForNextNode(
-          plotWidth,
-          0,
-
-          sourceNode?.position.y || 0,
-          index,
-          childNodes.length
-        )
-        console.log('UPDATING', coords.y)
-        nodes[nToUpdate].position.y = coords.y
-      })
-    }
-  })*/
-
   //get nodes that don't have connections
   const nodeIds = nodes.map(n => n.id)
 
@@ -316,35 +281,48 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
   return {nodes, edges, error}
 }
 
-////
+//function detect cycles in a graph
+export const detectCycle = (edges: Edge[]): boolean => {
+  const visited: Edge[] = []
+  const stack: Edge[] = []
 
-function getChildEdges(
-  questions: ChoiceQuestion[],
-  q: ChoiceQuestion
-): string[] {
-  let nextIds: string[] = []
-  //if surveyRules
-  if (q.surveyRules) {
-    //find ids we are going to next
-    const nextIds = q.surveyRules.map(rule => rule.skipToIdentifier)
-    const qOptions = q.choices.map(c => c.value).filter(v => v !== undefined)
-    const ruleValues = q.surveyRules.map(rule => rule.matchingAnswer)
-    // if all options are accounted for
-    if (UtilityObject.areArraysEqual(qOptions, ruleValues)) {
-      return nextIds
+  //recursive function that checks if there is a cycle in the graph
+  function isCyclicUtil(edge: Edge, visited: Edge[], stack: Edge[]): boolean {
+    if (stack.includes(edge)) {
+      console.log('FOUND CYCLE', edge)
+      return true
+    }
+
+    if (visited.includes(edge)) {
+      return false
+    }
+
+    visited.push(edge)
+    stack.push(edge)
+
+    const children = edges.filter(e => e.source === edge.target)
+
+    for (var child of children) {
+      if (isCyclicUtil(child, visited, stack)) {
+        return true
+      }
+    }
+
+    stack.pop()
+    return false
+  } //end of function
+
+  for (var edge of edges) {
+    if (visited.includes(edge)) {
+      continue
+
+      //if not visited, then call recursive function
+    } else if (isCyclicUtil(edge, visited, stack)) {
+      console.log('FOUND CYCLE', edge)
+      return true
     }
   }
-
-  //either use next step identifier or next step in lince
-  if (q.nextStepIdentifier) {
-    nextIds.push(q.nextStepIdentifier)
-  } else {
-    const qIndex = questions.findIndex(q1 => q1.identifier === q.identifier)
-    if (qIndex < questions.length - 1 && qIndex !== -1) {
-      nextIds.push(questions[qIndex + 1].identifier)
-    }
-  }
-  return nextIds
+  return false
 }
 
 export const getDryRunEdges = (questions: ChoiceQuestion[]) => {
@@ -392,13 +370,6 @@ export const getDryRunEdges = (questions: ChoiceQuestion[]) => {
   addEdge(questions[0], 0, undefined)
 
   return {edges, error}
-}
-
-function test(questions: ChoiceQuestion[], plotWidth: number) {
-  const result = getDryRunEdges(questions)
-  const edges = result.edges
-  for (var edge of edges) {
-  }
 }
 
 export default getNodes

@@ -32,6 +32,13 @@ export interface ExtendedError extends Error {
 
 export type RequestStatus = 'IDLE' | 'PENDING' | 'RESOLVED' | 'REJECTED'
 
+export type OauthEnvironment = {
+  client: string
+  vendor: string
+  redirect: string
+  appId: string
+}
+
 export type NavRouteType = {
   path: string
   name: string

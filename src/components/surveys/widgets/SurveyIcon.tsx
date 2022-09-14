@@ -23,32 +23,26 @@ import {latoFont} from '@style/theme'
 import React from 'react'
 
 export const SURVEY_ICONS = new Map<string, {img: string; title: string}>([
-  ['default', {img: general, title: 'Default'}],
   ['cognition', {img: cognition, title: 'Cognition'}],
-
   ['day_to_day', {img: dayToDay, title: 'Day to day'}],
+  ['default', {img: general, title: 'Default'}],
   ['demographics', {img: demographics, title: 'Demographics'}],
   ['energy', {img: energy, title: 'Energy'}],
   ['environment', {img: environment, title: 'Environment'}],
-
   ['excercise', {img: exercise, title: 'Exercise'}],
   ['exit', {img: exit, title: 'Exit'}],
-
   ['finance', {img: finances, title: 'Finance'}],
   ['food', {img: food, title: 'Food'}],
-
   ['health', {img: health, title: 'Health'}],
-
   ['leisure', {img: leisure, title: 'Leisure'}],
-
   ['medicine', {img: medicine, title: 'Medicine'}],
   ['mental_health', {img: mental_health, title: 'Mental Health'}],
   ['mood', {img: mood, title: 'Mood'}],
   ['pain', {img: pain, title: 'Pain'}],
   ['quality_of_life', {img: quality_of_life, title: 'Quality of Life'}],
-  ['social', {img: social, title: 'Social'}],
   ['screening', {img: screening, title: 'Screening'}],
   ['sleep', {img: sleep, title: 'Sleep'}],
+  ['social', {img: social, title: 'Social'}],
 ])
 /*
 GOES in assessment

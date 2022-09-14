@@ -170,6 +170,8 @@ const NextQuestionDropdown: FunctionComponent<{
 }
 
 const BranchingConfig: FunctionComponent<{
+  error?: string
+
   step?: ChoiceQuestion
   questions: ChoiceQuestion[]
   invalidTargetStepIds: string[]
@@ -178,6 +180,7 @@ const BranchingConfig: FunctionComponent<{
   onChange: (step: ChoiceQuestion[]) => void
   isOpen: boolean
 }> = ({
+  error,
   step,
   questions,
   invalidTargetStepIds,
@@ -275,7 +278,8 @@ const BranchingConfig: FunctionComponent<{
 
       <DialogContent>
         <Box sx={{padding: theme.spacing(3)}}>
-          <pre>{JSON.stringify(step, null, 2)}</pre>
+          <pre>{/*JSON.stringify(step, null, 2)*/}</pre>
+          {error && <div>{error}</div>}
           <RadioGroup
             onChange={e => onChangeNextOption(e.target.value)}
             value={Boolean(step.nextStepIdentifier)}>
