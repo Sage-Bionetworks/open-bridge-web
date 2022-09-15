@@ -244,7 +244,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
         </Button>
       </Box>
       <Loader reqStatusLoading={status === 'loading'}>
-        <StyledSurveysContainer>
+        <StyledSurveysContainer key="container">
           {surveys?.map((survey, index) => (
             <AssessmentCard
               key={survey.identifier}

@@ -3,7 +3,6 @@ import * as useSurveyAssessment from '@services/assessmentHooks'
 import * as useStudy from '@services/studyHooks'
 import {cleanup, render} from '@testing-library/react'
 import {Assessment, ExtendedError, Study} from '@typedefs/types'
-import React from 'react'
 import {UseBaseQueryResult, UseQueryResult} from 'react-query'
 import {MemoryRouter} from 'react-router-dom'
 import {surveyList} from '__test_utils/mocks/useAssessmentResponses'
@@ -33,6 +32,9 @@ jest.mock('@components/studies/StudyTopNav', () => ({}) => (
 ))
 jest.mock('@components/surveys/SurveyTopNav', () => ({}) => (
   <div>Survey Top Nav</div>
+))
+jest.mock('@components/surveys/SurveyList', () => ({}) => (
+  <div>Survey List</div>
 ))
 jest.mock('@components/surveys/Surveys', () => ({}) => <div>Surveys page</div>)
 jest.mock('@components/studies/StudyBuilder', () => ({}) => (

@@ -151,7 +151,8 @@ const getOauthEnvironment = (): OauthEnvironment => {
 const getOauthEnvironmentFromLocation = (loc: URL): OauthEnvironment => {
   var href = loc.origin
 
-  const isLocalhost = (): boolean => href.indexOf('127.0.0.1') > -1
+  const isLocalhost = (): boolean =>
+    href.indexOf('127.0.0.1') > -1 || href.indexOf('localhost') > -1
 
   //localhost
   if (isLocalhost()) {
