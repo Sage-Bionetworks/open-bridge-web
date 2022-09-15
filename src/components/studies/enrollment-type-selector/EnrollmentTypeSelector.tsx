@@ -5,7 +5,6 @@ import StudyService from '@services/study.service'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React from 'react'
-import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import {useStudy, useUpdateStudyDetail} from '../../../services/studyHooks'
 import {latoFont, poppinsFont, ThemeType} from '../../../style/theme'
@@ -159,23 +158,15 @@ const EnrollmentTypeSelector: React.FunctionComponent<EnrollmentTypeSelectorProp
   ({id, children}: EnrollmentTypeSelectorProps) => {
     const classes = useStyles()
 
-    const {data: study, error, isLoading} = useStudy(id)
+    const {data: study} = useStudy(id)
 
-    const {
-      isSuccess: scheduleUpdateSuccess,
-      isError: scheduleUpdateError,
-      mutateAsync: mutateStudy,
-      data,
-    } = useUpdateStudyDetail()
+    const {mutateAsync: mutateStudy} = useUpdateStudyDetail()
 
     const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
 
-    const handleError = useErrorHandler()
     const [saveLoader, setSaveLoader] = React.useState(false)
 
-    const onUpdate = async (updatedStudy: Study) => {
-      const x = await mutateStudy({study: updatedStudy})
-    }
+    const onUpdate = async (updatedStudy: Study) => {}
 
     const updateStudy = (
       signInTypes: SignInType[],

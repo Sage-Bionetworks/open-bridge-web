@@ -8,7 +8,6 @@ import StudyService from '@services/study.service'
 import {latoFont, ThemeType} from '@style/theme'
 import {BackgroundRecorders} from '@typedefs/types'
 import React from 'react'
-import {useErrorHandler} from 'react-error-boundary'
 import {useStudy, useUpdateStudyDetail} from '../../../services/studyHooks'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
@@ -112,18 +111,12 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
   children,
 }) => {
   const classes = useStyles()
-  const {data: study, error, isLoading} = useStudy(id)
+  const {data: study} = useStudy(id)
 
-  const {
-    isSuccess: scheduleUpdateSuccess,
-    isError: scheduleUpdateError,
-    mutateAsync: mutateStudy,
-    data,
-  } = useUpdateStudyDetail()
+  const {mutateAsync: mutateStudy} = useUpdateStudyDetail()
 
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
 
-  const handleError = useErrorHandler()
   const [saveLoader, setSaveLoader] = React.useState(false)
 
   const onUpdate = async (recorders: BackgroundRecorders) => {
@@ -137,7 +130,6 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
 
     updatedStudy.clientData.backgroundRecorders = recorders
     try {
-      const result = await mutateStudy({study: updatedStudy})
     } catch (e) {
       alert(e)
     } finally {
@@ -247,7 +239,6 @@ const PassiveFeatures: React.FunctionComponent<PassiveFeaturesProps> = ({
             recorderType={'motion'}
             value={features?.motion}
             callbackFn={(e: boolean) => {
-              const result = {...features, motion: e}
               onUpdate({...features, motion: e})
             }}></PFSection>
         )}
