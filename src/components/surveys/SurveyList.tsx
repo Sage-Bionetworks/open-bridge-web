@@ -41,36 +41,49 @@ const StyledSurveysContainer = styled('div', {label: 'StyledSurveyContainer'})(
   })
 )
 
-const StyledSurveysCard = styled(Card, {label: 'StyledSurveysCard'})(
-  ({theme}) => ({
-    background: '#FCFCFC',
-    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-    height: '374px',
-    width: '220px',
-    '&>div': {
-      padding: theme.spacing(2),
-    },
+const StyledSurveysCard = styled(Card, {
+  label: 'StyledSurveysCard',
+  shouldForwardProp: prop => prop !== 'isMenuOpen',
+})<{
+  isMenuOpen: boolean
+}>(({theme, isMenuOpen}) => ({
+  background: '#FCFCFC',
+  boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+  height: '374px',
+  width: '220px',
+  '&>div': {
+    padding: theme.spacing(2),
+  },
 
-    '& > div.top': {
-      height: '172px',
-      backgroundColor: '#F6F6F6',
+  '& > div.top': {
+    height: '172px',
+    backgroundColor: '#F6F6F6',
+  },
+  '& h3': {
+    fontFamily: poppinsFont,
+    fontStyle: 'normal',
+    fontWeight: '600',
+    fontSize: '16px',
+    marginBottom: theme.spacing(1),
+  },
+  '& h5': {
+    marginTop: theme.spacing(1),
+    fontFamily: latoFont,
+    fontStyle: 'normal',
+    fontWeight: '400',
+    fontSize: '12px',
+  },
+  ' .MuiIconButton-root': {
+    padding: 0,
+    margin: theme.spacing(-1, 0, 0, -1),
+    '&:hover': {
+      backgroundColor: 'transparent',
     },
-    '& h3': {
-      fontFamily: poppinsFont,
-      fontStyle: 'normal',
-      fontWeight: '600',
-      fontSize: '16px',
-      marginBottom: theme.spacing(1),
+    '>div': {
+      boxShadow: isMenuOpen ? '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)' : '',
     },
-    '& h5': {
-      marginTop: theme.spacing(1),
-      fontFamily: latoFont,
-      fontStyle: 'normal',
-      fontWeight: '400',
-      fontSize: '12px',
-    },
-  })
-)
+  },
+}))
 
 const AssessmentCard: React.FunctionComponent<{
   assessment: Assessment
@@ -88,29 +101,13 @@ const AssessmentCard: React.FunctionComponent<{
       style={{textDecoration: 'none'}}
       key={assessment.identifier}
       to={`/surveys/${assessment.guid!}/design`}>
-      <StyledSurveysCard>
+      <StyledSurveysCard isMenuOpen={isMenuOpen}>
         <div className="top">
-          <Box display="flex" textAlign="left">
-            <IconButton
-              sx={{
-                padding: 0,
-                margin: theme.spacing(-1, 0, 0, -1),
-                '&:hover': {
-                  backgroundColor: 'transparent',
-                },
-              }}
-              onClick={_onClick}
-              size="large">
-              <Box
-                sx={{
-                  boxShadow: isMenuOpen
-                    ? '-2px 1px 4px 1px rgba(0, 0, 0, 0.2)'
-                    : '',
-                }}>
-                <MoreVertIcon />
-              </Box>
-            </IconButton>
-          </Box>
+          <IconButton onClick={_onClick} size="large">
+            <div>
+              <MoreVertIcon />
+            </div>
+          </IconButton>
         </div>
         <div>
           <h3> {assessment.title}</h3>
@@ -143,9 +140,15 @@ const AssessmentMenu: React.FunctionComponent<{
       }}
       open={Boolean(anchorEl)}
       onClose={onClose}>
-      <MenuItem onClick={onView}>View</MenuItem>
-      <MenuItem onClick={onDuplicate}>Duplicate</MenuItem>
-      <MenuItem onClick={onDelete}>Delete</MenuItem>
+      <MenuItem onClick={onView} key="view">
+        View
+      </MenuItem>
+      <MenuItem onClick={onDuplicate} key="duplicate">
+        Duplicate
+      </MenuItem>
+      <MenuItem onClick={onDelete} key="delete">
+        Delete
+      </MenuItem>
     </Menu>
   )
 }
@@ -244,6 +247,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
         <StyledSurveysContainer>
           {surveys?.map((survey, index) => (
             <AssessmentCard
+              key={survey.identifier}
               assessment={survey}
               isMenuOpen={menuAnchor?.survey?.identifier === survey.identifier}
               onClick={e => setMenuAnchor({survey, anchorEl: e})}
