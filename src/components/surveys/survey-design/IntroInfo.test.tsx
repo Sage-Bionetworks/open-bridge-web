@@ -140,9 +140,13 @@ describe('<IntroInfo/>', () => {
       expect(navigateBackCheck).toBeChecked()
     })
 
-    test('save button should have "title page" text and be disabled if there is no survey name of duration', () => {
+    test('save button should have "title page" text and be disabled if there is no survey name or duration', () => {
       renderComponent(undefined, true)
       const radios = getSurveyQuestionSettings()
+      const surveyName = screen.getByRole('textbox', {name: /survey name/i})
+      const minutes = screen.getByRole('textbox', {
+        name: /how long will this survey take/i,
+      })
 
       const saveForNewBtn = component!.queryByRole('button', {
         name: /title page/i,
@@ -151,6 +155,11 @@ describe('<IntroInfo/>', () => {
       expect(saveForNewBtn).toBeInTheDocument()
       expect(saveBtn).not.toBeInTheDocument()
       expect(saveForNewBtn).toBeDisabled()
+
+      fireEvent.change(surveyName, {target: {value: 'Mock Name'}})
+      fireEvent.change(minutes, {target: {value: '1'}})
+
+      expect(saveForNewBtn).not.toBeDisabled()
     })
 
     test(' and call update with "CREATE" action', () => {

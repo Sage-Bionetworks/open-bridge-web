@@ -60,7 +60,7 @@ const Label: React.FunctionComponent<{
       sx={{fontWeight: 'bold'}}
       id={label}
       value={label}
-      placeholder="FieldLabel"
+      placeholder="Field Label"
       onChange={e => onUpdate(e.target.value)}
     />
   )
