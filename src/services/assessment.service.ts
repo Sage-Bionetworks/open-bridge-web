@@ -200,14 +200,13 @@ async function updateSurveyAssessment(
   const tags = Array.from(new Set([...assessment.tags, SURVEY_APP_TAG[appId]]))
   const assessmentToUpdate = {...assessment, tags}
   const update = async (a: Assessment): Promise<Assessment> => {
-    console.log('trying update', a)
     const assessmentResponse = await Utility.callEndpoint<Assessment>(
       endpoint,
       'POST', // once we add things to the study -- we can change this to actual object
       a,
       token
     )
-    console.log('assessment updated', assessmentResponse.data)
+
     return assessmentResponse.data
   }
 
@@ -251,7 +250,6 @@ async function getSurveyAssessmentConfig(
   guid: string,
   token: string
 ): Promise<Survey> {
-  console.log('getting survey')
   const endpoint = `${constants.endpoints.assessment.replace(
     ':id',
     guid
@@ -262,7 +260,7 @@ async function getSurveyAssessmentConfig(
     {},
     token
   )
-  console.log('returning survey', response.data)
+
   return response.data
 }
 

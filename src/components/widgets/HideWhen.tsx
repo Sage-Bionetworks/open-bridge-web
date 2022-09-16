@@ -11,7 +11,6 @@ export interface HideWhenProps {
 }
 
 const HideWhen: React.FunctionComponent<HideWhenProps> = props => {
-  const classes = useStyles()
   const children = React.Children.toArray(props.children)
 
   if (children.length === 1) {

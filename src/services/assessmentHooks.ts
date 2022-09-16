@@ -111,7 +111,6 @@ export const useSurveyConfig = (guid?: string) => {
   return useQuery<Survey | undefined, ExtendedError>(
     ASSESSMENT_KEYS.assessmentConfig(guid || ''),
     () => {
-      console.log('!!!!guid!!!', guid)
       return guid
         ? AssessmentService.getSurveyAssessmentConfig(guid, token!)
         : Promise.resolve(undefined)
