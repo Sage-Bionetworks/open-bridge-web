@@ -12,7 +12,7 @@ import {
   Droppable,
   DropResult,
 } from 'react-beautiful-dnd'
-import {NavLink, useLocation} from 'react-router-dom'
+import {NavLink} from 'react-router-dom'
 import QUESTIONS, {getQuestionId} from './QuestionConfigs'
 import {DivContainer} from './QuestionTypeDisplay'
 
@@ -26,7 +26,7 @@ const linkStyle = {
 
 const leftSideWidth = theme.spacing(37)
 
-const Container = styled('div')(({theme}) => ({
+const Container = styled('div')(() => ({
   display: 'flex',
   flexGrow: 0,
   flexShrink: 0,
@@ -40,7 +40,7 @@ const Container = styled('div')(({theme}) => ({
 }))
 
 const AddStepMenuContainer = styled('div', {label: 'addStepMenuContainer'})(
-  ({theme}) => ({
+  () => ({
     width: leftSideWidth,
     position: 'fixed',
     bottom: '0px',
@@ -98,19 +98,15 @@ const TitleStyledRow = styled('div')(({theme}) => ({
   },
 }))
 
-const StyledNavLink = styled(NavLink)(({theme}) => linkStyle)
-const StyledNavAnchor = styled('a', {label: 'styledNavAnchor'})(
-  ({theme}) => linkStyle
-)
+const StyledNavLink = styled(NavLink)(() => linkStyle)
+const StyledNavAnchor = styled('a', {label: 'styledNavAnchor'})(() => linkStyle)
 
-const StyledQuestionText = styled('div', {label: 'styledQuestionText'})(
-  ({theme}) => ({
-    whiteSpace: 'nowrap',
-    width: '200px',
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
-  })
-)
+const StyledQuestionText = styled('div', {label: 'styledQuestionText'})(() => ({
+  whiteSpace: 'nowrap',
+  width: '200px',
+  textOverflow: 'ellipsis',
+  overflow: 'hidden',
+}))
 
 const TitleRow: React.FunctionComponent<{surveyId?: string; guid?: string}> = ({
   surveyId,
@@ -149,6 +145,10 @@ const StepLink: React.FunctionComponent<{
   }
   if (index === 0) {
     title = 'Title Page'
+  }
+  if (step.type === 'completion' && index === 1) {
+    //dont display completion unless it has other steps
+    return <></>
   }
 
   return (
@@ -189,8 +189,6 @@ const LeftPanel: React.FunctionComponent<{
   onNavigateStep,
   onUpdateSteps,
 }) => {
-  const location = useLocation()
-
   const onDragEnd = (result: DropResult) => {
     if (!surveyConfig?.steps) {
       return
@@ -219,13 +217,6 @@ const LeftPanel: React.FunctionComponent<{
               height: 'calc(100vh - 150px)',
               overflow: 'scroll',
             }}>
-            {/* <StaticStepLink
-              onClick={() => onNavigateStep('title')}
-              //  path={`/surveys/${guid}/design/title`}
-              isCurrentStep={location.pathname.includes('/design/title')}>
-              <InstructionIcon />
-              <div>Title Page</div>
-          </StaticStepLink>*/}
             {surveyConfig?.steps && (
               <>
                 <Droppable droppableId="questions">

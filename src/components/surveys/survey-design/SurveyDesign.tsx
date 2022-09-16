@@ -57,7 +57,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
 
   number | undefined => {
     const qValue = new URLSearchParams(location.search)?.get('q')
-    const qNum = parseInt(qValue || '')
+    const qNum = parseInt(qValue || '0')
     return isNaN(qNum) ? undefined : qNum
   }
 
@@ -315,6 +315,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
         },
       },
     })
+    setCurrentStepIndex(prev => prev! - 1)
   }
 
   const getSurveyProgress = () => {

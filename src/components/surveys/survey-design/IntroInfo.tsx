@@ -1,4 +1,5 @@
 import {ReactComponent as PauseIcon} from '@assets/surveys/pause.svg'
+import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import UtilityObject from '@helpers/utility'
 import CheckIcon from '@mui/icons-material/Check'
@@ -26,6 +27,7 @@ import {
 } from '@typedefs/surveys'
 import {Assessment} from '@typedefs/types'
 import React from 'react'
+import NavigationPrompt from 'react-router-navigation-prompt'
 import {SimpleTextInput} from '../../widgets/StyledComponents'
 import {StyledCheckbox} from '../widgets/SharedStyled'
 import QUESTIONS from './left-panel/QuestionConfigs'
@@ -198,10 +200,12 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
   const [surveyConfig, setSurveyConfig] = React.useState<Survey>(
     getDefaultSurvey(newSurveyId)
   )
+  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
 
   const [basicInfo, setBasicInfo] = React.useState<Assessment>(
     getDefaultAssessment(newSurveyId, orgMembership!)
   )
+
   React.useEffect(() => {
     if (_surveyAssessment) {
       setBasicInfo(_surveyAssessment)
@@ -227,10 +231,15 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
     }
   }, [_surveyAssessment, survey])
 
+  const updateState = (callback: Function) => {
+    setHasObjectChanged(true)
+    callback()
+  }
   const updateInterruptonHandling = (
     key: keyof InterruptionHandlingType,
     value: boolean
   ) => {
+    setHasObjectChanged(true)
     if (key !== 'reviewIdentifier') {
       setInterruptionHandling(prev => ({...prev, [key]: value}))
     } else {
@@ -263,12 +272,24 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
       skipOption: skip,
     }
     surveyConfig.config.interruptionHandling = interruptionHandling
+    setHasObjectChanged(false)
 
     onUpdate(basicInfo, surveyConfig, basicInfo.guid ? 'UPDATE' : 'CREATE')
   }
 
   return (
     <IntroContainer>
+      <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
+        {({onConfirm, onCancel}) => (
+          <ConfirmationDialog
+            isOpen={hasObjectChanged}
+            type={'NAVIGATE'}
+            onCancel={onCancel}
+            onConfirm={onConfirm}
+          />
+        )}
+      </NavigationPrompt>
+      {hasObjectChanged && <span>*</span>}
       <StyledFormControl variant="standard">
         <StyledInputLabel htmlFor="survey_name">Survey Name*</StyledInputLabel>
         <Box display="flex" alignItems="center">
@@ -278,7 +299,9 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
             sx={{'& input': {width: '250px'}}}
             value={basicInfo?.title}
             onChange={e =>
-              setBasicInfo(prev => ({...prev, title: e.target.value}))
+              updateState(() =>
+                setBasicInfo(prev => ({...prev, title: e.target.value}))
+              )
             }
           />
           <div>
@@ -299,10 +322,12 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
             id="duration"
             sx={{width: '60px'}}
             onChange={e =>
-              setBasicInfo(prev => ({
-                ...prev,
-                minutesToComplete: parseInt(e.target.value),
-              }))
+              updateState(() =>
+                setBasicInfo(prev => ({
+                  ...prev,
+                  minutesToComplete: parseInt(e.target.value),
+                }))
+              )
             }
             value={basicInfo?.minutesToComplete || ''}
           />
@@ -319,8 +344,10 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
           id="skip"
           value={skip}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            setSkip(
-              (event.target as HTMLInputElement).value as WebUISkipOptions
+            updateState(() =>
+              setSkip(
+                (event.target as HTMLInputElement).value as WebUISkipOptions
+              )
             )
           }>
           <FormControlLabel
@@ -348,7 +375,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
           control={
             <StyledCheckbox
               checked={!hideBack}
-              onChange={e => setHideBack(!e.target.checked)}
+              onChange={e => updateState(() => setHideBack(!e.target.checked))}
             />
           }
           label={
@@ -481,7 +508,9 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
           id="survey tags"
           options={[]}
           freeSolo
-          onChange={(e, v) => setBasicInfo(prev => ({...prev, tags: v}))}
+          onChange={(e, v) =>
+            updateState(() => setBasicInfo(prev => ({...prev, tags: v})))
+          }
           value={[...basicInfo.tags]}
           renderTags={(value: string[], getTagProps) =>
             value.map((option: string, index: number) => (
@@ -511,7 +540,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
         onClick={() => {
           triggerUpdate()
         }}
-        disabled={!basicInfo?.title}>
+        disabled={!basicInfo?.title || !basicInfo.minutesToComplete}>
         {basicInfo.guid ? 'Save' : 'Title Page'}
       </Button>
     </IntroContainer>

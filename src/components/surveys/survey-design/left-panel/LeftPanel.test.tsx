@@ -34,7 +34,7 @@ test('renders left panel for new survey without questions', () => {
   const app = renderControl('surveys/12345/design/title', '12345', 'sur01')
 
   const completion = app.queryByRole('link', {
-    name: /Completion/i,
+    name: /Completion Screen/i,
   })
   expect(completion).not.toBeInTheDocument()
 })
@@ -50,15 +50,15 @@ test('renders left panel for survey with questions with completion screen ', asy
   const buttons = app.getAllByRole('button')
 
   const lastQuestion = app.queryByRole('button', {
-    name: /12. What are your favorite colors?/i,
+    name: /11. What are your favorite colors?/i,
   })
 
-  const completion = app.queryByRole('link', {
-    name: /Completion/i,
-  })
+  /*  const completion = app.queryByRole('button', {
+    name: /Completion Screen/i,
+  })*/
 
   expect(lastQuestion).toBeInTheDocument()
   expect(surveySample.steps.length).toBe(13)
-  expect(buttons.length).toBe(12)
-  expect(completion).toBeInTheDocument()
+  expect(buttons.length).toBe(11)
+  //w expect(completion).toBeInTheDocument()
 })
