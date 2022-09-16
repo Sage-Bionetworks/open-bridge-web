@@ -278,7 +278,6 @@ const BranchingConfig: FunctionComponent<{
 
       <DialogContent>
         <Box sx={{padding: theme.spacing(3)}}>
-          <pre>{/*JSON.stringify(step, null, 2)*/}</pre>
           {error && <div>{error}</div>}
           <RadioGroup
             onChange={e => onChangeNextOption(e.target.value)}
@@ -298,12 +297,6 @@ const BranchingConfig: FunctionComponent<{
                     <br />
                     screen in sequence:
                   </div>
-                  {/*    <QuestionDisplay
-                  questions={questions}
-                  id={step.identifier}
-                  isNext={true}
-                  mode={'light'}
-                />*/}
                 </div>
               }
             />
