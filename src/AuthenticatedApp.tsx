@@ -75,7 +75,10 @@ const AuthenticatedApp: FunctionComponent<RouteComponentProps> = ({
   if (!sessionData.token) {
     //save location and redirect
     if (location.pathname !== '/') {
-      sessionStorage.setItem('location', location.pathname)
+      sessionStorage.setItem(
+        'location',
+        `${location.pathname}${location.search}`
+      )
     }
     Utility.redirectToSynapseLogin()
   }
