@@ -156,7 +156,7 @@ const DisabledOtherMenuItem: FunctionComponent = () => {
   )
 }
 
-const QuestionPhoneBottomMenu: FunctionComponent<{
+const SelectPhoneBottomMenu: FunctionComponent<{
   step: ChoiceQuestion
   onChange: (s: ChoiceQuestion) => void
 }> = ({step, onChange}) => {
@@ -204,13 +204,19 @@ const QuestionPhoneBottomMenu: FunctionComponent<{
     const numberOfChoices = SurveyUtils.getNumberOfRegularSelectChoices(
       step.choices
     )
+
     const nextLetter = String.fromCharCode(numberOfChoices + 65)
     const text = `Choice ${nextLetter.toUpperCase()}`
 
-    const choices = addAfterRegularQuestions([...(step.choices || [])], {
-      text: text,
-      value: text,
-    })
+    const newChoice = {
+      text,
+      value: step.baseType === 'string' ? text : numberOfChoices,
+    }
+
+    const choices = addAfterRegularQuestions(
+      [...(step.choices || [])],
+      newChoice
+    )
 
     onChange({...step, choices})
   }
@@ -313,4 +319,4 @@ const QuestionPhoneBottomMenu: FunctionComponent<{
   )
 }
 
-export default QuestionPhoneBottomMenu
+export default SelectPhoneBottomMenu

@@ -1,23 +1,9 @@
-import {Box, Button, FormControl} from '@mui/material'
-import {styled} from '@mui/material/styles'
-import {latoFont} from '@style/theme'
-import {BaseStep} from '@typedefs/surveys'
-import React from 'react'
-
 import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
 import {SURVEY_ICONS} from '@components/surveys/widgets/SurveyIcon'
-
-const StyledStartButton = styled(Button)(({theme}) => ({
-  height: theme.spacing(5),
-  // backgroundColor: '#2A2A2A',
-  borderRadius: '100px',
-  textAlign: 'center',
-
-  fontFamily: latoFont,
-  fontWeight: 600,
-  fontSize: '16px',
-  // color: '#fff',
-}))
+import {Box, FormControl} from '@mui/material'
+import {styled} from '@mui/material/styles'
+import {BaseStep} from '@typedefs/surveys'
+import React from 'react'
 
 const TitleIcon = styled('div')(({theme}) => ({
   height: theme.spacing(6),
@@ -63,7 +49,10 @@ const SurveyTitle: React.FunctionComponent<SurveyTitleProps> = ({
       height="100%">
       <TitleIcon>
         {step.image?.imageName && (
-          <img src={SURVEY_ICONS.get(step.image?.imageName)?.img} />
+          <img
+            src={SURVEY_ICONS.get(step.image?.imageName)?.img}
+            alt={SURVEY_ICONS.get(step.image?.imageName)?.title}
+          />
         )}
       </TitleIcon>
       <FormControl variant="standard" fullWidth sx={{mb: 0}}>

@@ -159,7 +159,7 @@ function App() {
                 {redirect && <Redirect to={redirect}></Redirect>}
                 {/*  <React.StrictMode>*/}
                 <FeatureToggleProvider
-                  featureToggles={{'SURVEY BUILDER': false}}>
+                  featureToggles={{'SURVEY BUILDER': true}}>
                   {sessionData.id ? (
                     <AuthenticatedApp />
                   ) : (

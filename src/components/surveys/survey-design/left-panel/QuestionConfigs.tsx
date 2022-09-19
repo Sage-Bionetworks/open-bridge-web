@@ -1,6 +1,6 @@
 import {ReactComponent as Completion} from '@assets/surveys/iconcomplete.svg'
 import {ReactComponent as Duration} from '@assets/surveys/q_type_icons/duration.svg'
-import {ReactComponent as Free_text} from '@assets/surveys/q_type_icons/free_text.svg'
+import {ReactComponent as FreeText} from '@assets/surveys/q_type_icons/free_text.svg'
 import {ReactComponent as Instruction} from '@assets/surveys/q_type_icons/instruction.svg'
 import {ReactComponent as Likert} from '@assets/surveys/q_type_icons/likert.svg'
 import {ReactComponent as MultiSelect} from '@assets/surveys/q_type_icons/multi_select.svg'
@@ -70,7 +70,7 @@ const QUESTIONS = new Map<
   [
     'FREE_TEXT',
     {
-      img: <Free_text />,
+      img: <FreeText />,
 
       title: 'Free Text',
       default: {
@@ -173,8 +173,8 @@ const QUESTIONS = new Map<
         baseType: 'integer',
         singleChoice: true,
         choices: [
-          {value: 'Choice A', text: 'Choice A'},
-          {value: 'Choice B', text: 'Choice B'},
+          {value: 0, text: 'Choice A'},
+          {value: 1, text: 'Choice B'},
         ],
       },
     },
@@ -263,7 +263,6 @@ const QUESTIONS = new Map<
     },
   ],
 ])
-type QuestionConfigFields = {type: string; inputItemType?: string}
 
 export const getQuestionId = (step: Step): QuestionTypeKey => {
   if (step.type === 'instruction') {
@@ -293,7 +292,7 @@ export const getQuestionId = (step: Step): QuestionTypeKey => {
         default:
           return 'NUMERIC'
       }
-      break
+
     case 'time':
       return 'TIME'
     case 'duration':

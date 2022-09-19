@@ -191,7 +191,7 @@ const Select: React.FunctionComponent<{
         //if changing to integer -- remove 'other'
         delete updatedStep.other
       } else {
-        for (const [i, v] of choices.entries()) {
+        for (const [_i, v] of choices.entries()) {
           v.value = generateValue(v)
         }
       }
