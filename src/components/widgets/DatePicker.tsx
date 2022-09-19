@@ -38,11 +38,6 @@ const DatePicker2: FunctionComponent<DatePickerProps> = ({
   isYearOnly,
 }) => {
   const classes = useStyles()
-  const [isDateControlFocused, setIsDateControlFocused] = React.useState(false)
-
-  const getView = (): ('year' | 'date')[] => {
-    return isYearOnly ? ['year'] : ['date']
-  }
 
   const handleDateChange = (date: Date | null) => {
     onChange(date)
@@ -51,11 +46,7 @@ const DatePicker2: FunctionComponent<DatePickerProps> = ({
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <FormControl>
-        <SimpleTextLabel
-          htmlFor={id}
-          className={isDateControlFocused ? 'Mui-focused' : ''}>
-          {label}
-        </SimpleTextLabel>
+        <SimpleTextLabel htmlFor={id}>{label}</SimpleTextLabel>
         <DesktopDatePicker
           clearable={true}
           value={value}

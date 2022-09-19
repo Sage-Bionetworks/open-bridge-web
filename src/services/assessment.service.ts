@@ -224,7 +224,7 @@ async function updateSurveyAssessment(
   }
   if (result) {
     return result
-  } else throw "can't update assessment"
+  } else throw new Error("Can't update assessment")
 }
 
 async function deleteSurveyAssessment(

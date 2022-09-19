@@ -159,8 +159,8 @@ export const StyledDropDownItem = styled('div', {
     flexGrow: 0,
     maxWidth: theme.spacing(6),
     maxHeight: theme.spacing(6),
-    WebkitFilter: mode == 'light' ? '' : 'invert(1)',
-    filter: mode == 'light' ? '' : 'invert(1)',
+    WebkitFilter: mode === 'light' ? '' : 'invert(1)',
+    filter: mode === 'light' ? '' : 'invert(1)',
   },
   '> div': {
     color: getColor(mode),

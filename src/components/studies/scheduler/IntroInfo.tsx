@@ -1,6 +1,8 @@
 import {SessionSymbols} from '@components/widgets/SessionIcon'
+import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -11,14 +13,13 @@ import {
 import createStyles from '@mui/styles/createStyles'
 import makeStyles from '@mui/styles/makeStyles'
 import ScheduleService from '@services/schedule.service'
+import {useUpdateSchedule} from '@services/scheduleHooks'
+import {useStudy, useUpdateStudyDetail} from '@services/studyHooks'
+import {latoFont, poppinsFont} from '@style/theme'
+import constants from '@typedefs/constants'
+import {DWsEnum, Schedule} from '@typedefs/scheduling'
 import {Study} from '@typedefs/types'
 import React from 'react'
-import {useUpdateSchedule} from '../../../services/scheduleHooks'
-import {useStudy, useUpdateStudyDetail} from '../../../services/studyHooks'
-import {latoFont, poppinsFont} from '../../../style/theme'
-import constants from '../../../types/constants'
-import {DWsEnum, Schedule} from '../../../types/scheduling'
-import {SimpleTextInput} from '../../widgets/StyledComponents'
 import Duration from './Duration'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -110,18 +111,9 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
   )
   const [duration, setDuration] = React.useState<any>('')
   const {data: study, error: studyError} = useStudy(studyId)
-  const {
-    isSuccess: scheduleUpdateSuccess,
-    isError: scheduleUpdateError,
-    mutateAsync: mutateSchedule,
-    data,
-  } = useUpdateSchedule()
+  const {mutateAsync: mutateSchedule} = useUpdateSchedule()
 
-  const {
-    isSuccess: studyUpdateSuccess,
-    isError: studyUpdateError,
-    mutateAsync: mutateStudy,
-  } = useUpdateStudyDetail()
+  const {mutateAsync: mutateStudy} = useUpdateStudyDetail()
 
   const createScheduleAndNameStudy = async (
     studyId: string,
@@ -129,7 +121,6 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
     duration: string,
     start: string
   ) => {
-    const symbol = SessionSymbols.values().next().value
     const studySession = ScheduleService.createEmptyScheduleSession(
       start,
       SessionSymbols.keys().next().value
@@ -167,6 +158,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
   return (
     <Container maxWidth="md" className={classes.container}>
       <div>
+        {studyError && <Alert color="error">{studyError.message}</Alert>}
         <FormControlLabel
           style={{marginBottom: '35px', marginLeft: 0}}
           classes={{labelPlacementStart: classes.labelDuration}}

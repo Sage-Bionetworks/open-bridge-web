@@ -4,11 +4,6 @@ import clsx from 'clsx'
 import React from 'react'
 import {latoFont, ThemeType} from '../../style/theme'
 
-type StyleProps = {
-  backgroundColor: string
-  textColor: string
-}
-
 const useStyles = makeStyles<ThemeType>((theme: ThemeType) => ({
   container: {
     position: 'fixed',

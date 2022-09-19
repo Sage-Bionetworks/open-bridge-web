@@ -551,7 +551,12 @@ async function addParticipant(
           ? new Date(e.timestamp).toISOString()
           : undefined,
       }
-      Utility.callEndpoint<{identifier: string}>(endpoint, 'POST', data, token)
+      return Utility.callEndpoint<{identifier: string}>(
+        endpoint,
+        'POST',
+        data,
+        token
+      )
     })
 
     const result = await Promise.all(updatePromises)

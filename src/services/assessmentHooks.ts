@@ -88,7 +88,7 @@ export const useAssessmentResource = (assessment: Assessment) => {
 }
 
 export const useSurveyAssessment = (isLocal: boolean, guid?: string) => {
-  const {token, appId} = useUserSessionDataState()
+  const {token} = useUserSessionDataState()
   const options = {isSurvey: true, isLocal}
 
   return useQuery<Assessment | undefined, ExtendedError>(
@@ -109,7 +109,7 @@ export const useSurveyAssessment = (isLocal: boolean, guid?: string) => {
 }
 
 export const useSurveyConfig = (guid?: string) => {
-  const {token, appId} = useUserSessionDataState()
+  const {token} = useUserSessionDataState()
 
   return useQuery<Survey | undefined, ExtendedError>(
     ASSESSMENT_KEYS.assessmentConfig(guid || ''),
@@ -224,6 +224,7 @@ export const useUpdateSurveyAssessment = () => {
           token!
         )
         return [newStudy]*/
+
       case 'UPDATE':
         console.log('updating', assessment)
         return AssessmentService.updateSurveyAssessment(

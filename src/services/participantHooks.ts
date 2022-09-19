@@ -73,8 +73,6 @@ async function getParticipants(
       )
 
   const result = participants.items!.map(participant => {
-    const id = participant.id as string
-
     if (participant.externalId) {
       const splitExternalId = participant.externalId.split(':')
       let id = ''

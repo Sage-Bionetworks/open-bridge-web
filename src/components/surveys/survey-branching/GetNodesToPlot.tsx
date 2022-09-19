@@ -234,7 +234,7 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
   const disconnectedQs = questions.filter(q => !nodeIds.includes(q.identifier))
 
   //adjust y positions
-  const maxY = Math.max(...nodes.map(n => n.position.y))
+
   const minY = Math.min(...nodes.map(n => n.position.y))
 
   const rows = Math.ceil((HWIDTH * disconnectedQs.length) / plotWidth)

@@ -168,10 +168,10 @@ async function renameStudy(
 ): Promise<Study> {
   const study = await getStudy(studyId, token)
   if (!study) {
-    throw 'no study found'
+    throw new Error('No study found')
   }
   study.name = newName
-  const version = await updateStudy(study, token)
+  await updateStudy(study, token)
   return study
 }
 
@@ -246,7 +246,7 @@ async function updateStudy(study: Study, token: string): Promise<number> {
       console.log('409')
       const updatedStudy = await getStudy(study.identifier, token)
       if (!updatedStudy) {
-        throw 'No study'
+        throw new Error('No study')
       }
       study.version = updatedStudy.version
       return updateStudy(study, token)
