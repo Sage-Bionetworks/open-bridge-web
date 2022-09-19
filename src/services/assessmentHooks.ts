@@ -32,10 +32,13 @@ export const useAssessments = (options?: {
 
   return useQuery<Assessment[] | undefined, ExtendedError>(
     ASSESSMENT_KEYS.list(appId, !!options?.isLocal, !!options?.isSurvey),
-    () => AssessmentService.getAssessments(appId, token!, options),
+    () => {
+      const result = AssessmentService.getAssessments(appId, token!, options)
+      return result
+    },
     {
       enabled: !!appId,
-      retry: 1,
+      retry: 2,
       refetchOnWindowFocus: false,
     }
   )

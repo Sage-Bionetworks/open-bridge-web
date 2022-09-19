@@ -14,6 +14,7 @@ import IntroInfo from './IntroInfo'
 
 import * as useUserSessionDataState from '@helpers/AuthContext'
 import {SurveyConfig} from '@typedefs/surveys'
+import {MemoryRouter} from 'react-router-dom'
 
 jest.mock('@helpers/AuthContext')
 jest.mock('@services/studyHooks')
@@ -55,14 +56,16 @@ function renderComponent(survey: SurveyConfig | undefined, isNew?: boolean) {
   )
   const surv = survey ? {config: survey} : undefined
   component = render(
-    <ProvideTheme>
-      <IntroInfo
-        survey={surv}
-        surveyAssessment={isNew ? undefined : SurveyAssessment}
-        onUpdate={(asmnt, survey, action) =>
-          onUpdateFn(asmnt, survey, action)
-        }></IntroInfo>
-    </ProvideTheme>
+    <MemoryRouter initialEntries={['/surveys']}>
+      <ProvideTheme>
+        <IntroInfo
+          survey={surv}
+          surveyAssessment={isNew ? undefined : SurveyAssessment}
+          onUpdate={(asmnt, survey, action) =>
+            onUpdateFn(asmnt, survey, action)
+          }></IntroInfo>
+      </ProvideTheme>
+    </MemoryRouter>
   )
 }
 
