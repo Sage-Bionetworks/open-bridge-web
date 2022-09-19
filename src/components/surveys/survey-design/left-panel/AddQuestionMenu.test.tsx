@@ -32,7 +32,7 @@ test('brings up the menu with question types to select', async () => {
   QUESTIONS.forEach(value => {
     var re = new RegExp(value.title)
     const def = value.default as any
-    if (def.type! == 'overview' && def.type !== 'overview') {
+    if (def.type! === 'overview' && def.type !== 'overview') {
       const item = component!.getByRole('menuitem', {name: re})
       expect(item).toBeInTheDocument()
     }

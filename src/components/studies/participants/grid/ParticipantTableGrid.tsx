@@ -244,7 +244,7 @@ function getPhone(params: GridValueGetterParams) {
   } else return ''
 }
 function getDate(value: GridCellValue) {
-  return value && moment(value.toString()).isValid
+  return value && moment(value.toString()).isValid()
     ? moment(value.toString()).format('MM/DD/YYYY')
     : undefined
 }
@@ -418,7 +418,7 @@ function getColumns(
 
   const shouldShowEvent = (eventId: string) => {
     const isBurstEvent = EventService.isEventBurstEvent(eventId)
-    const isLoginEvent = eventId == JOINED_EVENT_ID
+    const isLoginEvent = eventId === JOINED_EVENT_ID
     const isFirstBurst = EventService.getBurstNumberFromEventId(eventId) === 1
     return !isLoginEvent && (!isBurstEvent || !isFirstBurst)
   }

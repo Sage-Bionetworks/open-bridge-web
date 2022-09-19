@@ -18,7 +18,7 @@ const RepeatFrequency: React.FunctionComponent<RepeatFrequencyProps> = ({
   const label = occurrences
     ? ` for ${occurrences} times`
     : 'until the end of study'
-  const disabled = occurrences == 1
+  const disabled = occurrences === 1
   return (
     <SchedulingFormSection
       label={'Run this session every:'}

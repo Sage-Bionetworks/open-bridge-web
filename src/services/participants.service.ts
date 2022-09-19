@@ -306,7 +306,7 @@ async function getParticipants(
   pageSize: number,
   offsetBy: number
 ): Promise<{items: ExtendedParticipantAccountSummary[]; total: number}> {
-  if (participantType == 'TEST') {
+  if (participantType === 'TEST') {
     return getTestParticipants(studyId, token, pageSize, offsetBy)
   } else {
     return participantType === 'ACTIVE'

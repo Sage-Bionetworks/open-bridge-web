@@ -277,7 +277,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
                 </NextButton>
               )}
 
-              {activeStep == 2 && (
+              {activeStep === 2 && (
                 <Button
                   variant="contained"
                   color="primary"
@@ -288,7 +288,7 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
                 </Button>
               )}
 
-              {activeStep == 1 && isStudyLive && (
+              {activeStep === 1 && isStudyLive && (
                 <SaveButton
                   variant="contained"
                   color="primary"

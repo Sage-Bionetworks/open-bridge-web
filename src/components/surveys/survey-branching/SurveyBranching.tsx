@@ -102,13 +102,9 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     [setEdges]
   )
 
-  const {data: _survey, status: cStatus} = useSurveyConfig(surveyGuid)
+  const {data: _survey} = useSurveyConfig(surveyGuid)
 
-  const {
-    isSuccess: surveyUpdateSuccess,
-    isError: surveyUpdateError,
-    mutateAsync: mutateSurvey,
-  } = useUpdateSurveyConfig()
+  const {mutateAsync: mutateSurvey} = useUpdateSurveyConfig()
 
   React.useEffect(() => {
     if (_survey) {
@@ -130,7 +126,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
         setEdges(result.edges)
       }
     }
-  }, [survey?.config.steps, width])
+  }, [survey, survey?.config.steps, width])
 
   const saveSurvey = async () => {
     setError('')

@@ -249,7 +249,7 @@ const getEnumKeyByEnumValue = (
   myEnum: any,
   enumValue: number | string
 ): string => {
-  let keys = Object.keys(myEnum).filter(x => myEnum[x] == enumValue)
+  let keys = Object.keys(myEnum).filter(x => myEnum[x] === enumValue)
   const result = keys.length > 0 ? keys[0] : ''
 
   return result

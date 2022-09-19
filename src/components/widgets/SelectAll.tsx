@@ -1,6 +1,6 @@
+import CheckIcon from '@mui/icons-material/Check'
 import {Box, Button, Checkbox, Menu, MenuItem} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import CheckIcon from '@mui/icons-material/Check'
 import {SelectionType} from '@typedefs/types'
 import clsx from 'clsx'
 import React from 'react'
@@ -154,7 +154,7 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
             onClick={() => setSelect(item.value as SelectionType)}
             key={item.value}>
             <div className={classes.icon}>
-              {selectionType == item.value && <CheckIcon />}
+              {selectionType === item.value && <CheckIcon />}
             </div>
             {item.label}
           </MenuItem>

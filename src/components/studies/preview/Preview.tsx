@@ -344,12 +344,12 @@ const PreviewIdGenerated: React.FunctionComponent<{
             <div className={classes.storeButtons}>
               <a
                 href="https://apps.apple.com/us/app/mobile-toolbox-app/id1578358408"
-                target="_blank">
+                target="_blank" rel="noreferrer">
                 <img src={appStoreBtn} />
               </a>
               <a
                 href="https://play.google.com/store/apps/details?id=org.sagebionetworks.research.mobiletoolbox.app"
-                target="_blank">
+                target="_blank" rel="noreferrer">
                 <img src={googlePlayBtn} />
               </a>
             </div>
