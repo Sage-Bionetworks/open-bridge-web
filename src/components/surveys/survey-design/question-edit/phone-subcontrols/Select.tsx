@@ -82,7 +82,7 @@ const SelectOption: FunctionComponent<{
   }
 }> = ({choice, onDelete, onRename, options}) => {
   const [title, setTitle] = React.useState(choice.text)
-  const {provided, isStatic, isSingleChoice, isOther} = options
+  const {provided, isStatic, isSingleChoice} = options
   return (
     <Option
       {...provided?.draggableProps}
@@ -144,7 +144,7 @@ const Select: React.FunctionComponent<{
       const newChoices = [...stepData.choices]
       let newRules = undefined
 
-      if ((index > -1 && selectorType) || (index == -1 && !selectorType)) {
+      if ((index > -1 && selectorType) || (index === -1 && !selectorType)) {
         throw new Error('question badly formed')
       }
 
@@ -183,7 +183,7 @@ const Select: React.FunctionComponent<{
 
     if (stepData.choices) {
       const newChoices = [...stepData.choices]
-      if ((index > -1 && selectorType) || (index == -1 && !selectorType)) {
+      if ((index > -1 && selectorType) || (index === -1 && !selectorType)) {
         throw new Error('question badly formed')
       }
 

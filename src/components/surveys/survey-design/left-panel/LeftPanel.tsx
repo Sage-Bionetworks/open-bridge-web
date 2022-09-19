@@ -228,7 +228,7 @@ const LeftPanel: React.FunctionComponent<{
                           isDragDisabled={
                             surveyConfig?.steps!.length < 3 ||
                             step.type === 'overview' ||
-                            step.type == 'completion'
+                            step.type === 'completion'
                           }
                           index={index}
                           key={step.identifier}>

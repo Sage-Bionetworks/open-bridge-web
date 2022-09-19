@@ -15,7 +15,7 @@ const labelStyles = (theme: Theme): React.CSSProperties => ({
   marginBottom: theme.spacing(0.5),
 })
 
-const StyledContainer = styled('div', {label: 'StyledContainer'})(({}) => ({
+const StyledContainer = styled('div', {label: 'StyledContainer'})(() => ({
   height: '100%',
   display: 'flex',
   textAlign: 'center',

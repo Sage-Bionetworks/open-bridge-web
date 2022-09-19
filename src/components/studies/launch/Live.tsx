@@ -1,20 +1,20 @@
-import {Button} from '@mui/material'
+import confetti from '@assets/launch/confetti.svg'
+import LiveIcon from '@assets/live_study_icon.svg'
+import {MTBHeadingH1} from '@components/widgets/Headings'
+import {Alert, Button} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {useStudy} from '@services/studyHooks'
-import clsx from 'clsx'
-import React from 'react'
-import {RouteComponentProps} from 'react-router'
-import {useParams} from 'react-router-dom'
-import confetti from '../../../assets/launch/confetti.svg'
-import LiveIcon from '../../../assets/live_study_icon.svg'
 import {
   latoFont,
   playfairDisplayFont,
   poppinsFont,
   ThemeType,
-} from '../../../style/theme'
-import constants from '../../../types/constants'
-import {MTBHeadingH1} from '../../widgets/Headings'
+} from '@style/theme'
+import constants from '@typedefs/constants'
+import clsx from 'clsx'
+import React from 'react'
+import {RouteComponentProps} from 'react-router'
+import {useParams} from 'react-router-dom'
 
 const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -80,46 +80,46 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
 }))
 
-const Live: React.FunctionComponent<RouteComponentProps> =
-  ({}: RouteComponentProps) => {
-    const classes = useStyles()
-    let {id} = useParams<{
-      id: string
-    }>()
+const Live: React.FunctionComponent<RouteComponentProps> = () => {
+  const classes = useStyles()
+  let {id} = useParams<{
+    id: string
+  }>()
 
-    const {data: study, error: studyError} = useStudy(id)
-    if (!study) {
-      return <></>
-    }
-    return (
-      <div className={classes.root}>
-        <div className={classes.inner}>
-          <div style={{marginLeft: '-50px'}}>
-            <MTBHeadingH1 className={classes.congratsText}>
-              Congratulations!
-            </MTBHeadingH1>
-            <MTBHeadingH1
-              className={clsx(classes.congratsText, classes.liveText)}>
-              {study.name} officially live!
-            </MTBHeadingH1>
-            <img src={LiveIcon} className={classes.liveButton}></img>
-            <p className={classes.enrollmentText}>
-              You may now enroll <br />
-              participants to this study.
-            </p>
-            <Button
-              color="secondary"
-              href={constants.restrictedPaths.PARTICIPANT_MANAGER.replace(
-                ':id',
-                study.identifier
-              )}
-              className={classes.enrollButton}>
-              Enroll Participants
-            </Button>
-          </div>
+  const {data: study, error: studyError} = useStudy(id)
+  if (!study) {
+    return <></>
+  }
+  return (
+    <div className={classes.root}>
+      {studyError && <Alert>{studyError}</Alert>}
+      <div className={classes.inner}>
+        <div style={{marginLeft: '-50px'}}>
+          <MTBHeadingH1 className={classes.congratsText}>
+            Congratulations!
+          </MTBHeadingH1>
+          <MTBHeadingH1
+            className={clsx(classes.congratsText, classes.liveText)}>
+            {study.name} officially live!
+          </MTBHeadingH1>
+          <img src={LiveIcon} className={classes.liveButton}></img>
+          <p className={classes.enrollmentText}>
+            You may now enroll <br />
+            participants to this study.
+          </p>
+          <Button
+            color="secondary"
+            href={constants.restrictedPaths.PARTICIPANT_MANAGER.replace(
+              ':id',
+              study.identifier
+            )}
+            className={classes.enrollButton}>
+            Enroll Participants
+          </Button>
         </div>
       </div>
-    )
-  }
+    </div>
+  )
+}
 
 export default Live
