@@ -24,14 +24,20 @@ const mockedUseAssessment = useSurveyAssessment as jest.Mocked<
   typeof useSurveyAssessment
 >
 
-jest.mock('@components/widgets/AppTopNav', () => <div>App Top Nav</div>)
+jest.mock('@components/widgets/AppTopNav', () => () => <div>App Top Nav</div>)
 
-jest.mock('@components/studies/StudyList', () => <div>Study List</div>)
-jest.mock('@components/studies/StudyTopNav', () => <div>Study Top Nav</div>)
-jest.mock('@components/surveys/SurveyTopNav', () => <div>Survey Top Nav</div>)
-jest.mock('@components/surveys/SurveyList', () => <div>Survey List</div>)
-jest.mock('@components/surveys/Surveys', () => <div>Surveys page</div>)
-jest.mock('@components/studies/StudyBuilder', () => <div>Study Builder</div>)
+jest.mock('@components/studies/StudyList', () => () => <div>Study List</div>)
+jest.mock('@components/studies/StudyTopNav', () => () => (
+  <div>Study Top Nav</div>
+))
+jest.mock('@components/surveys/SurveyTopNav', () => () => (
+  <div>Survey Top Nav</div>
+))
+jest.mock('@components/surveys/SurveyList', () => () => <div>Survey List</div>)
+jest.mock('@components/surveys/Surveys', () => () => <div>Surveys page</div>)
+jest.mock('@components/studies/StudyBuilder', () => () => (
+  <div>Study Builder</div>
+))
 
 function renderControl(location: string) {
   return render(
