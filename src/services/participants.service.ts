@@ -634,17 +634,8 @@ async function updateParticipant(
     updatedFields.clientTimeZone = undefined
   }
 
-  const participantInfo = await participantId?.map(pId =>
-    getParticipant(studyIdentifier, pId, token)
-  )
   const updatedParticipantFields = {...updatedFields}
   delete updatedParticipantFields.note
-
-  // updated participant object
-  const data = {
-    ...participantInfo,
-    ...updatedParticipantFields,
-  }
 
   if (participantId.length === 1 && updatedFields.note !== undefined) {
     //we update the enrollment note record
@@ -656,20 +647,31 @@ async function updateParticipant(
     )
   }
 
-  const promises = participantId.map(async pId => {
-    const endpoint = `${constants.endpoints.participant.replace(
-      ':id',
-      studyIdentifier
-    )}/${pId}`
-    const apiCall = await Utility.callEndpoint<ParticipantAccountSummary>(
-      endpoint,
-      'POST',
-      data,
-      token
-    )
-    return {participantId: pId, apiCall: apiCall}
-  })
-  const result = await Promise.all(promises).then(result => {
+  //what about multiple notes
+
+  const updateParticipantPromises = participantId?.map(pId =>
+    getParticipant(studyIdentifier, pId, token).then(participant => {
+      const updatedParticipant = {
+        ...participant,
+        ...updatedParticipantFields,
+      }
+      const endpoint = `${constants.endpoints.participant.replace(
+        ':id',
+        studyIdentifier
+      )}/${pId}`
+
+      return Utility.callEndpoint<ParticipantAccountSummary>(
+        endpoint,
+        'POST',
+        updatedParticipant,
+        token
+      ).then(p => {
+        return {participantId: pId, result: p}
+      })
+    })
+  )
+
+  const result = await Promise.all(updateParticipantPromises).then(result => {
     return result.map(item => item.participantId)
   })
   //we want to ping adherence to make sure data is refreshed
