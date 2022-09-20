@@ -62,7 +62,7 @@ const BatchEditForm: React.FunctionComponent<BatchEditFormProps> = ({
         shouldWithdraw={false}
         batchEdit
       />
-      {isAllSelected ? 'true' : 'false'}
+
       <EditParticipantForm
         scheduleEvents={scheduleEvents}
         isEnrolledById={isEnrolledById}
