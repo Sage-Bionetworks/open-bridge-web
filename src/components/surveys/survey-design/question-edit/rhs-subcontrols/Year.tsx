@@ -111,7 +111,7 @@ const Limit: React.FunctionComponent<{
     const value = getLimitYearValue()
     setExclude(limit)
     setValue(value ? value.toString() : '')
-  }, [formatOptions, type])
+  }, [formatOptions, type, getLimitYearValue, getLimit])
 
   const onUpdateFormat = (fo: FormatOptionsYear, limit: LimitType) => {
     const _fo = {...fo}

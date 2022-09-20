@@ -1,6 +1,6 @@
 // import {cleanup, queryByAttribute, render, within} from '@testing-library/react'
 // import userEvent from '@testing-library/user-event'
-import React from 'react'
+
 // import ParticipantTableGrid from '../../../../components/studies/participants/ParticipantTableGrid'
 // import {UserSessionDataProvider} from '../../../../helpers/AuthContext'
 // import {

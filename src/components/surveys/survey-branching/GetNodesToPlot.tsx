@@ -205,9 +205,7 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
         //
         if (runNumber > questions.length * 5) {
           error = new Error('Overflow')
-
-          //stack overflow
-          //  alert('Stack overflow, Please refresh the page')
+          //this would only happen with infinite loops. Should never happen in realistic context
         } else {
           const indexOfNode = nodes.findIndex(q1 => q1.id === child.identifier)
 
@@ -221,7 +219,7 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
               ++runNumber,
               error
             )
-            //  console.log('adding node', child.identifier)
+            //
           }
         }
       }
@@ -236,30 +234,18 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
   const disconnectedQs = questions.filter(q => !nodeIds.includes(q.identifier))
 
   //adjust y positions
-  const maxY = Math.max(...nodes.map(n => n.position.y))
+
   const minY = Math.min(...nodes.map(n => n.position.y))
 
   const rows = Math.ceil((HWIDTH * disconnectedQs.length) / plotWidth)
 
   const unconnectedHeight = rows * 130
 
-  console.log('unconnected rows', unconnectedHeight)
-
-  console.log(
-    `%node yg ${nodes.map(n => n.position.y)}`,
-    'background: #222; color: rgb(85, 218, 152)'
-  )
-
   if (minY < unconnectedHeight) {
     nodes.forEach(
       n => (n.position.y = n.position.y + Math.abs(minY - unconnectedHeight))
     )
   }
-
-  console.log(
-    `%node ygupdated ${nodes.map(n => n.position.y)}`,
-    'background: #222; color: rgb(85, 218, 152)'
-  )
 
   disconnectedQs.forEach((dq, i) => {
     const result = getCoordiatesForNextDisconnectedNode(
@@ -273,15 +259,10 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
     nodes.push(node)
   })
 
-  /* for (var i = 0; i < 4; i++) {
-    var result = getCoordinatesForNextNode(800, 0, 0, i, 4)
-    console.log('CHILD ' + i, result.y)
-  }*/
-
   return {nodes, edges, error}
 }
 
-//function detect cycles in a graph
+//function detect cycles in a graph using DFS
 export const detectCycle = (edges: Edge[]): boolean => {
   const visited: Edge[] = []
   const stack: Edge[] = []
@@ -289,7 +270,6 @@ export const detectCycle = (edges: Edge[]): boolean => {
   //recursive function that checks if there is a cycle in the graph
   function isCyclicUtil(edge: Edge, visited: Edge[], stack: Edge[]): boolean {
     if (stack.includes(edge)) {
-      console.log('FOUND CYCLE', edge)
       return true
     }
 
@@ -318,56 +298,30 @@ export const detectCycle = (edges: Edge[]): boolean => {
 
       //if not visited, then call recursive function
     } else if (isCyclicUtil(edge, visited, stack)) {
-      console.log('FOUND CYCLE', edge)
       return true
     }
   }
   return false
 }
 
-export const getDryRunEdges = (questions: ChoiceQuestion[]) => {
+export const getEdgesFromSteps = (questions: ChoiceQuestion[]) => {
   const edges: Edge[] = []
   let error: Error | undefined = undefined
 
-  function addEdge(
-    q: ChoiceQuestion,
-
-    runNumber: number,
-    error: Error | undefined
-  ) {
-    //  console.log('node', q, index)
-
+  function addEdge(q: ChoiceQuestion, error: Error | undefined) {
     let nextEdges = getChildNodes(questions, q)
 
-    if (nextEdges.length) {
-      //add it if it hasn't been added, otherwise just add edge
-
-      var i = 0
-      nextEdges.forEach((child, index) => {
-        //find sequential index of the quesiton
-
-        const edge = createEdge(q.identifier, child.identifier)
-
-        if (edges.findIndex(e => e.id === edge.id) === -1) {
-          console.log(
-            `%cadding ${q.identifier} to ${child.identifier}`,
-            'background: #222; color: rgb(85, 218, 152)'
-          )
-          edges.push(edge)
-          addEdge(child, ++runNumber, error)
-        } else {
-          console.log(
-            `%cthe edge from ${q.identifier} to ${child.identifier} already exists`,
-            'background: #222; color: rgb(218, 85, 105)'
-          )
-
-          // alert('THIS ALREADY EXIST' + edge.id)
-        }
-      })
-    }
+    //add it if it hasn't been added, otherwise just add edge
+    nextEdges.forEach((child, index) => {
+      const edge = createEdge(q.identifier, child.identifier)
+      if (edges.findIndex(e => e.id === edge.id) === -1) {
+        edges.push(edge)
+        addEdge(child, error)
+      }
+    })
   }
 
-  addEdge(questions[0], 0, undefined)
+  addEdge(questions[0], undefined)
 
   return {edges, error}
 }

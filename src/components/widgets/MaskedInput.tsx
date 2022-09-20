@@ -25,7 +25,7 @@ const TextMask: React.FunctionComponent<TextMaskProps> = ({
   ...other
 }) => {
   if (!maskType || customMask) {
-    throw 'You must specify either mask type or a custom mask'
+    throw new Error('You must specify either mask type or a custom mask')
   }
 
   return (

@@ -127,14 +127,18 @@ const AddQuestionMenu: React.FunctionComponent<{
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}>
-        {Array.from(QUESTIONS.keys()).map(name => (
-          <MenuItem
-            key={name}
-            onClick={() => onSelect(<QuestionTypeDisplay name={name} />, name)}
-            disableRipple>
-            <QuestionTypeDisplay name={name} />
-          </MenuItem>
-        ))}
+        {Array.from(QUESTIONS.keys())
+          .filter(key => key !== 'COMPLETION' && key !== 'OVERVIEW')
+          .map(name => (
+            <MenuItem
+              key={name}
+              onClick={() =>
+                onSelect(<QuestionTypeDisplay name={name} />, name)
+              }
+              disableRipple>
+              <QuestionTypeDisplay name={name} />
+            </MenuItem>
+          ))}
       </StyledMenu>
       <StyledButton
         color="primary"

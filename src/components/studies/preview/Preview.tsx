@@ -208,7 +208,10 @@ const Reminder: React.FunctionComponent<{text: string; img: string}> = ({
   const classes = useStyles()
   return (
     <Box textAlign="center" width="200px">
-      <img className={classes.reminderOfUseIcon} src={img}></img>
+      <img
+        className={classes.reminderOfUseIcon}
+        src={img}
+        alt="reminder of use"></img>
       <p className={classes.reminderOfUseText}>{text}</p>
     </Box>
   )
@@ -218,11 +221,7 @@ const PreviewAssessments: React.FunctionComponent<{
   studyId: string
 }> = ({studyId}) => {
   const classes = useStyles()
-  const {
-    data: schedule,
-    error: scheduleError,
-    isLoading: isScheduleLoading,
-  } = useSchedule(studyId)
+  const {data: schedule} = useSchedule(studyId)
 
   const [uniqueAssessments, setUniqueAssessments] = React.useState<
     Assessment[]
@@ -257,7 +256,8 @@ const PreviewAssessments: React.FunctionComponent<{
         <Box display="flex" flexDirection="row" alignItems="flex-start">
           <img
             src={SampleAssessmentDataImg}
-            className={classes.assessmentImg}></img>
+            className={classes.assessmentImg}
+            alt="sample assessment data"></img>
           <Box className={classes.sampleAssessmentDataText}>
             Sample Assessment Data
           </Box>
@@ -339,18 +339,20 @@ const PreviewIdGenerated: React.FunctionComponent<{
           <div>
             {isAssessmentDemo ? assessmentDemoIntro : studyDemoIntro}
             <Box my={3} mx="auto" p={2} bgcolor="white" textAlign="center">
-              <img src={QrCode} width="95px" />
+              <img src={QrCode} width="95px" alt="qr code" />
             </Box>
             <div className={classes.storeButtons}>
               <a
                 href="https://apps.apple.com/us/app/mobile-toolbox-app/id1578358408"
-                target="_blank">
-                <img src={appStoreBtn} />
+                target="_blank"
+                rel="noreferrer">
+                <img src={appStoreBtn} alt="app store" />
               </a>
               <a
                 href="https://play.google.com/store/apps/details?id=org.sagebionetworks.research.mobiletoolbox.app"
-                target="_blank">
-                <img src={googlePlayBtn} />
+                target="_blank"
+                rel="noreferrer">
+                <img src={googlePlayBtn} alt="google play" />
               </a>
             </div>
             <p className={classes.reminderOfUseText}>
@@ -416,7 +418,10 @@ const PreviewIntroScreen: React.FunctionComponent<{
           variant="outlined"
           color="primary"
           onClick={() => {}}>
-          <img className={classes.linkIcon} src={LinkIcon}></img>
+          <img
+            className={classes.linkIcon}
+            src={LinkIcon}
+            alt="link icon"></img>
           <Box className={classes.tosText}>
             <a
               style={{textDecoration: 'none'}}
@@ -457,7 +462,8 @@ const PreviewIntroScreen: React.FunctionComponent<{
                 Please remember to customize your study schedule on&nbsp;
                 <img
                   className={classes.scheduleSessionsIcon}
-                  src={ScheduleSessionsIcon}></img>
+                  src={ScheduleSessionsIcon}
+                  alt="schedule session"></img>
                 &nbsp;
                 <NavLink
                   to={'scheduler'}

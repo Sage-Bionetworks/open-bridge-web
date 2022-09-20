@@ -306,7 +306,7 @@ async function getParticipants(
   pageSize: number,
   offsetBy: number
 ): Promise<{items: ExtendedParticipantAccountSummary[]; total: number}> {
-  if (participantType == 'TEST') {
+  if (participantType === 'TEST') {
     return getTestParticipants(studyId, token, pageSize, offsetBy)
   } else {
     return participantType === 'ACTIVE'
@@ -551,7 +551,12 @@ async function addParticipant(
           ? new Date(e.timestamp).toISOString()
           : undefined,
       }
-      Utility.callEndpoint<{identifier: string}>(endpoint, 'POST', data, token)
+      return Utility.callEndpoint<{identifier: string}>(
+        endpoint,
+        'POST',
+        data,
+        token
+      )
     })
 
     const result = await Promise.all(updatePromises)

@@ -48,8 +48,8 @@ const ValueTable = styled('table')(({theme}) => ({
 
 const PairingTableHeading: React.FunctionComponent<{
   answerDataType: QuestionDataType
-  issinglechoice?: boolean
-}> = ({answerDataType, issinglechoice}) => {
+  isSingleChoice?: boolean
+}> = ({answerDataType, isSingleChoice}) => {
   const mapping = {
     number: [],
     boolean: [],
@@ -81,8 +81,8 @@ const PairingTableHeading: React.FunctionComponent<{
         fontStyle: 'italic',
         marginBottom: theme.spacing(2),
       }}>
-      Participant's answer{issinglechoice ? '' : 's'} will be recorded as{' '}
-      {mapping[answerDataType][issinglechoice ? 0 : 1]}
+      Participant's answer{isSingleChoice ? '' : 's'} will be recorded as{' '}
+      {mapping[answerDataType][isSingleChoice ? 0 : 1]}
       &nbsp;as defined below.
     </Typography>
   )
@@ -191,7 +191,7 @@ const Select: React.FunctionComponent<{
         //if changing to integer -- remove 'other'
         delete updatedStep.other
       } else {
-        for (const [i, v] of choices.entries()) {
+        for (const [_i, v] of choices.entries()) {
           v.value = generateValue(v)
         }
       }
@@ -246,7 +246,7 @@ const Select: React.FunctionComponent<{
 
       <PairingTableHeading
         answerDataType={step.baseType}
-        issinglechoice={step.singleChoice}
+        isSingleChoice={step.singleChoice}
       />
 
       <Box sx={{backgroundColor: '#fff', padding: theme.spacing(2, 1.5)}}>
@@ -295,7 +295,7 @@ const Select: React.FunctionComponent<{
             ))}
             {step.other && (
               <tr>
-                <td>{step.other.fieldLabel || 'Other'}</td> <td> &rarr;</td>{' '}
+                <td>{step.other.fieldLabel || 'Other'}</td> <td> &rarr;</td>
                 <td style={{width: '60px', padding: '0 8px'}}>custom text</td>
               </tr>
             )}

@@ -7,24 +7,10 @@ import {
   SimpleTextInput,
   SimpleTextLabel,
 } from '@components/widgets/StyledComponents'
-import {Box, FormControlLabel, styled, Typography} from '@mui/material'
+import {Box, FormControlLabel, Typography} from '@mui/material'
 import {poppinsFont, theme} from '@style/theme'
 import {FormatOptionsInteger, NumericQuestion, Step} from '@typedefs/surveys'
 import React, {ChangeEvent} from 'react'
-
-const Labels = styled('div', {label: 'labels'})(({theme}) => ({
-  backgroundColor: '#fff',
-  padding: theme.spacing(2, 1.5),
-  marginLeft: theme.spacing(3),
-  '& > label': {
-    marginBottom: theme.spacing(0.5),
-
-    '& span': {
-      width: '130px',
-      display: 'inline-block',
-    },
-  },
-}))
 
 const ValueSelector: React.FunctionComponent<{
   value?: number

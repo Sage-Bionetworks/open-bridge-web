@@ -110,7 +110,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     React.useEffect(() => {
       if (
         !sessionErrorState ||
-        sessionErrorState.sessionWindowErrors.size == 0
+        sessionErrorState.sessionWindowErrors.size === 0
       ) {
         setWindowErrors([])
         return
@@ -128,7 +128,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
     React.useEffect(() => {
       if (
         !sessionErrorState ||
-        sessionErrorState.notificationErrors.size == 0
+        sessionErrorState.notificationErrors.size === 0
       ) {
         setNotificationErrors([])
         return
@@ -145,10 +145,10 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
 
     function hasWindowLongerThan24h(session?: StudySession) {
       const windows = session ? session.timeWindows : studySession.timeWindows
-      if (!windows || windows.length == 0) {
+      if (!windows || windows.length === 0) {
         return false
       }
-      if (windows.length == 1 && !windows[0].expiration) {
+      if (windows.length === 1 && !windows[0].expiration) {
         return false
       }
       const over24 = windows.find(window => {
@@ -255,7 +255,7 @@ const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSess
         ...schedulableSession,
         occurrences: occurrences,
       }
-      if (occurrences == 1) {
+      if (occurrences === 1) {
         newSessionSchedule.interval = undefined
       }
       updateSessionSchedule(newSessionSchedule)

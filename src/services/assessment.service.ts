@@ -29,7 +29,7 @@ async function getAssessment(
   guid: string,
   token: string,
 
-  options: {isLocal: boolean}
+  options: {isLocal: boolean; shouldKeepAllTags?: boolean}
 ): Promise<Assessment> {
   let endPoint = options.isLocal
     ? constants.endpoints.assessment
@@ -40,11 +40,12 @@ async function getAssessment(
     {},
     token
   )
+  // should keep all tags if set 'true' will return assessment. Otherwise it'll fiter the tags
   const assessment = {
     ...assessmentResponse.data,
-    tags: assessmentResponse.data.tags.filter(
-      tag => !TAGS_TO_HIDE.includes(tag)
-    ),
+    tags: options.shouldKeepAllTags
+      ? assessmentResponse.data.tags
+      : assessmentResponse.data.tags.filter(tag => !TAGS_TO_HIDE.includes(tag)),
   }
 
   return assessment
@@ -165,28 +166,38 @@ async function createSurveyAssessment(
   return response.data
 }
 
-//returns assessment with config and resources
-/*async function getSurveyAssessment(
+async function duplicateAssessment(
+  appId: string,
   guid: string,
-  token: string
-): Promise<Assessment> {
-  const endpoint = constants.endpoints.assessment.replace(':id', guid)
-  const assessmentResponse = await Utility.callEndpoint<Assessment>(
-    endpoint,
-    'GET',
-    {},
+  token: string,
+  isLocal: boolean
+): Promise<{assessment: Assessment; config: Survey}> {
+  const sourceAssessment = await getAssessment(guid, token, {
+    isLocal,
+  })
+  const sourceConfig = await getSurveyAssessmentConfig(guid, token)
+  const identifier = Utility.generateNonambiguousCode(6, 'CONSONANTS')
+  const assessmentCopy = {
+    ...sourceAssessment,
+    name: `Copy of ${sourceAssessment.title}`,
+    createdOn: undefined,
+    identifier,
+    guid: undefined,
+    modifiedOn: undefined,
+    deleted: undefined,
+    version: 0,
+    type: 'Assessment',
+  }
+  const configCopy = {config: {...sourceConfig.config, identifier}}
+
+  const assessment = await createSurveyAssessment(appId, assessmentCopy, token)
+  const config = await updateSurveyAssessmentConfig(
+    assessment.guid!,
+    configCopy,
     token
   )
-
-  const assessment = {
-    ...assessmentResponse.data,
-    tags: assessmentResponse.data.tags.filter(
-      tag => !TAGS_TO_HIDE.includes(tag)
-    ),
-  }
-
-  return assessment
-}*/
+  return {assessment, config}
+}
 
 async function updateSurveyAssessment(
   appId: string,
@@ -200,14 +211,13 @@ async function updateSurveyAssessment(
   const tags = Array.from(new Set([...assessment.tags, SURVEY_APP_TAG[appId]]))
   const assessmentToUpdate = {...assessment, tags}
   const update = async (a: Assessment): Promise<Assessment> => {
-    console.log('trying update', a)
     const assessmentResponse = await Utility.callEndpoint<Assessment>(
       endpoint,
       'POST', // once we add things to the study -- we can change this to actual object
       a,
       token
     )
-    console.log('assessment updated', assessmentResponse.data)
+
     return assessmentResponse.data
   }
 
@@ -225,7 +235,7 @@ async function updateSurveyAssessment(
   }
   if (result) {
     return result
-  } else throw "can't update assessment"
+  } else throw new Error("Can't update assessment")
 }
 
 async function deleteSurveyAssessment(
@@ -251,7 +261,6 @@ async function getSurveyAssessmentConfig(
   guid: string,
   token: string
 ): Promise<Survey> {
-  console.log('getting survey')
   const endpoint = `${constants.endpoints.assessment.replace(
     ':id',
     guid
@@ -262,7 +271,7 @@ async function getSurveyAssessmentConfig(
     {},
     token
   )
-  console.log('returning survey', response.data)
+
   return response.data
 }
 
@@ -314,6 +323,7 @@ async function updateSurveyAssessmentConfig(
 
 const AssessmentService = {
   createSurveyAssessment,
+  duplicateAssessment,
   updateSurveyAssessment,
   deleteSurveyAssessment,
   updateSurveyAssessmentResource,

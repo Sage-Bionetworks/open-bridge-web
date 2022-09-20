@@ -46,7 +46,7 @@ test('show the scale correctly', () => {
 })
 
 test('should only display the max and min for the slider', () => {
-  setUp({...QUESTION, uiHint: 'slider'}).component
+  setUp({...QUESTION, uiHint: 'slider'})
   expect(screen.queryByText('1')).toBeInTheDocument()
   expect(screen.queryByText('2')).not.toBeInTheDocument()
   expect(screen.queryByText('7')).toBeInTheDocument()

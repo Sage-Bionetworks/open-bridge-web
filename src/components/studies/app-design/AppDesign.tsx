@@ -25,7 +25,6 @@ import clsx from 'clsx'
 import _ from 'lodash'
 import React, {ChangeEvent, useEffect, useState} from 'react'
 import {HexColorPicker} from 'react-colorful'
-import {useErrorHandler} from 'react-error-boundary'
 import {useLocation} from 'react-router-dom'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import GeneralContactAndSupportSection from './GeneralContactAndSupportSection'
@@ -474,22 +473,16 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
   id,
   onShowFeedback,
 }) => {
-  const handleError = useErrorHandler()
   const params = new URLSearchParams(useLocation().search)
 
   const [study, setStudy] = React.useState<Study>()
 
-  const {data: sourceStudy, error, isLoading} = useStudy(id)
+  const {data: sourceStudy} = useStudy(id)
   const [previewFile, setPreviewFile] = React.useState<
     PreviewFile | undefined
   >()
 
-  const {
-    isSuccess: scheduleUpdateSuccess,
-    isError: scheduleUpdateError,
-    mutateAsync: mutateStudy,
-    data,
-  } = useUpdateStudyDetail()
+  const {mutateAsync: mutateStudy} = useUpdateStudyDetail()
 
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [saveLoader, setSaveLoader] = React.useState(false)
@@ -543,19 +536,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
       getFormattedPhoneNumber(sourceStudy, 'study_support')
     )
     setIrbPhoneNumber(getFormattedPhoneNumber(sourceStudy, 'irb'))
-
-    /*  // Set the use default message property to true by default
-      const {welcomeScreenData} = sourceStudy.clientData
-      if (welcomeScreenData?.isUsingDefaultMessage === undefined) {
-        console.log('no default')
-        updateWelcomeScreenMessaging(
-          welcomeScreenData?.welcomeScreenHeader || '',
-          welcomeScreenData?.welcomeScreenBody || '',
-          welcomeScreenData?.welcomeScreenSalutation || '',
-          welcomeScreenData?.welcomeScreenFromText || '',
-          true
-        )
-      }*/
   }, [sourceStudy])
 
   useEffect(() => {
@@ -833,27 +813,6 @@ const AppDesign: React.FunctionComponent<AppDesignProps> = ({
       result.position = 'IRB/Ethics Board of Record'
     }
     return result
-  }
-
-  function updateContactProperty(
-    role: 'study_support' | 'irb',
-    propName: keyof SubType<Contact, string | boolean | undefined>,
-    propValue: string
-  ) {
-    if (!study || !propName) {
-      return
-    }
-    const newContactObject = getContactPersonObject(role)
-    newContactObject[propName] = propValue
-    const contacts = study.contacts ? [...study.contacts] : []
-
-    const contactIndex = contacts.findIndex(c => c.role !== role)
-    if (contactIndex === -1) {
-      contacts.push(newContactObject)
-    } else {
-      contacts[contactIndex] = newContactObject
-    }
-    handleUpdate({...study, contacts})
   }
 
   function updateWelcomeScreenMessaging(

@@ -123,7 +123,7 @@ async function saveSchedule(
     if (error.statusCode === 409) {
       const updatedSchedule = await getSchedule(studyId, appId, token, false)
       if (!updatedSchedule) {
-        throw 'No schedule found'
+        throw new Error('No schedule found')
       }
       return saveSchedule(
         studyId,
@@ -262,7 +262,7 @@ async function getAllEventsForTimelineByStudyId(
   var burst = getStudyBurst(timeline)
 
   var result = events.reduce((res, current) => {
-    var res = [...res]
+    // var res = [...res]
 
     // create and add non-burst event
     var nontBurstEvent: ExtendedScheduleEventObject = {

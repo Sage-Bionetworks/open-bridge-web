@@ -114,18 +114,9 @@ async function updateParticipantCustomEvents(
     e => e.eventId !== JOINED_EVENT_ID
   )
 
-  //delete all of the events
-  const deletePromises = customEventsToUpdate.map(event =>
-    Utility.callEndpoint<{identifier: string}>(
-      eventEndpoint + '/' + event.eventId,
-      'DELETE',
-      {},
-      token
-    )
-  )
-
+  //to update an event -- delete it and then recreate it
   for (const event of customEventsToUpdate) {
-    const d = await Utility.callEndpoint<{identifier: string}>(
+    await Utility.callEndpoint<{identifier: string}>(
       eventEndpoint + '/' + event.eventId,
       'DELETE',
       {},

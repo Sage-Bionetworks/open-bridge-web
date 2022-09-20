@@ -85,7 +85,7 @@ const PageSelector: React.FunctionComponent<PageSelectorProps> = ({
       {pageNumbers.map((element, index) => (
         <PageBox
           key={`page-box-${index}`}
-          isSelected={index == currentPageSelected}
+          isSelected={index === currentPageSelected}
           pageNumber={element}
           onPageSelected={onPageSelected}
           index={index}

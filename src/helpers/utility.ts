@@ -151,7 +151,8 @@ const getOauthEnvironment = (): OauthEnvironment => {
 const getOauthEnvironmentFromLocation = (loc: URL): OauthEnvironment => {
   var href = loc.origin
 
-  const isLocalhost = (): boolean => href.indexOf('127.0.0.1') > -1
+  const isLocalhost = (): boolean =>
+    href.indexOf('127.0.0.1') > -1 || href.indexOf('localhost') > -1
 
   //localhost
   if (isLocalhost()) {
@@ -248,7 +249,7 @@ const getEnumKeyByEnumValue = (
   myEnum: any,
   enumValue: number | string
 ): string => {
-  let keys = Object.keys(myEnum).filter(x => myEnum[x] == enumValue)
+  let keys = Object.keys(myEnum).filter(x => myEnum[x] === enumValue)
   const result = keys.length > 0 ? keys[0] : ''
 
   return result

@@ -5,7 +5,7 @@ import Utility from '@helpers/utility'
 import makeStyles from '@mui/styles/makeStyles'
 import StudyService from '@services/study.service'
 import {DisplayStudyPhase, Study} from '@typedefs/types'
-import React, {FunctionComponent} from 'react'
+import {FunctionComponent} from 'react'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -40,7 +40,11 @@ const NonDraftHeaderFunctionComponent: FunctionComponent<{
     <div className={classes.root}>
       Study ID: {Utility.formatStudyId(study.identifier)}
       &nbsp;&nbsp;
-      <img src={phaseIcon[displayPhase]} style={{flexShrink: 0}} />
+      <img
+        src={phaseIcon[displayPhase]}
+        style={{flexShrink: 0}}
+        alt={displayPhase}
+      />
     </div>
   )
 }

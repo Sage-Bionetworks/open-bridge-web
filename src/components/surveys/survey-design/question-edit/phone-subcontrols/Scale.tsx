@@ -7,7 +7,7 @@ import {styled} from '@mui/material'
 import {latoFont} from '@style/theme'
 import {ScaleQuestion} from '@typedefs/surveys'
 
-const StyledContainer = styled('div', {label: 'StyledContainer'})(({}) => ({
+const StyledContainer = styled('div', {label: 'StyledContainer'})(() => ({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
@@ -16,7 +16,7 @@ const StyledContainer = styled('div', {label: 'StyledContainer'})(({}) => ({
 
 const ScaleDisplay = styled('div', {label: 'Scale'})<{
   width: number
-}>(({theme, width}) => ({
+}>(({width}) => ({
   position: 'relative',
   height: '46px',
   textAlign: 'center',
@@ -46,7 +46,7 @@ const Labels = styled('div', {label: 'labels'})(({theme}) => ({
 const CircleContainer = styled('div', {label: 'Circle'})<{
   left: number
   cradius: number
-}>(({theme, left, cradius}) => ({
+}>(({left, cradius}) => ({
   left: `${left}px`,
   textAlign: 'center',
   width: `${cradius * 2}px`,
@@ -61,7 +61,7 @@ const CircleContainer = styled('div', {label: 'Circle'})<{
   },
 }))
 const LikertLine = styled('div', {label: 'LikertLine'})<{width?: number}>(
-  ({theme, width}) => ({
+  () => ({
     backgroundColor: ' #B0B0B6',
     height: '2px',
     top: '7px',
@@ -73,7 +73,7 @@ const LikertLine = styled('div', {label: 'LikertLine'})<{width?: number}>(
 )
 
 const SliderLine = styled('div', {label: 'LikertLine'})<{width?: number}>(
-  ({theme, width}) => ({
+  () => ({
     height: '4px',
     top: '11px',
     width: `100%`,
@@ -150,12 +150,8 @@ const Scale: React.FunctionComponent<{
   onChange: (step: ScaleQuestion) => void
 }> = ({step, onChange}) => {
   const circleRadius = 8
-  const {
-    minimumValue = 0,
-    maximumValue = step.uiHint === 'likert' ? 7 : 100,
-    minimumLabel,
-    maximumLabel,
-  } = step.inputItem.formatOptions
+  const {minimumValue = 0, maximumValue = step.uiHint === 'likert' ? 7 : 100} =
+    step.inputItem.formatOptions
   const range = maximumValue - minimumValue + 1
   //const width = range > 3 ? 125 : 100
   const width = step.uiHint === 'likert' ? 125 : 166

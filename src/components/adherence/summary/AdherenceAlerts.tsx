@@ -4,7 +4,6 @@ import {ReactComponent as PersonIcon} from '@assets/adherence/person_icon.svg'
 import {ReactComponent as CheckEmpty} from '@assets/adherence/round_check_empty.svg'
 import {ReactComponent as CheckGreen} from '@assets/adherence/round_check_green.svg'
 import Loader from '@components/widgets/Loader'
-import {useUserSessionDataState} from '@helpers/AuthContext'
 import CommentIcon from '@mui/icons-material/Comment'
 import {Box, Checkbox, styled} from '@mui/material'
 import IconButton from '@mui/material/IconButton'
@@ -16,19 +15,12 @@ import ListItemText from '@mui/material/ListItemText'
 import {latoFont} from '@style/theme'
 import moment from 'moment'
 import React, {FunctionComponent} from 'react'
-import {useParams} from 'react-router-dom'
 
 type AdherenceAlertsProps = {
   studyId?: string
 }
 
 type AlertType = 'enrollment' | 'adherence' | 'upcoming'
-
-const AertTypes: Record<AlertType, string> = {
-  enrollment: 'Enrollment',
-  adherence: 'Adherence',
-  upcoming: 'Upcoming Bursts',
-}
 
 type AdhAlert = {
   type: AlertType
@@ -131,11 +123,6 @@ const TypeIcons = new Map<AlertType, React.ReactNode>([
 ])
 
 const AdherenceAlerts: FunctionComponent<AdherenceAlertsProps> = () => {
-  let {id: studyId} = useParams<{
-    id: string
-  }>()
-
-  const {token} = useUserSessionDataState()
   const [alerts, setAlerts] = React.useState<AdhAlert[] | undefined>(_alerts)
   const [checked, setChecked] = React.useState([0])
 

@@ -1,3 +1,6 @@
+import {MTBHeadingH1} from '@components/widgets/Headings'
+import {PrevButton} from '@components/widgets/StyledComponents'
+import {useUserSessionDataState} from '@helpers/AuthContext'
 import CloseIcon from '@mui/icons-material/Close'
 import {
   Box,
@@ -11,19 +14,15 @@ import {
   Paper,
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+import AssessmentService from '@services/assessment.service'
+import {useSchedule, useUpdateSchedule} from '@services/scheduleHooks'
 import StudyService from '@services/study.service'
+import {useStudy} from '@services/studyHooks'
+import {poppinsFont} from '@style/theme'
+import {StudySession} from '@typedefs/scheduling'
+import {Assessment} from '@typedefs/types'
 import React, {FunctionComponent, useState} from 'react'
 import {useErrorHandler} from 'react-error-boundary'
-import NavigationPrompt from 'react-router-navigation-prompt'
-import AssessmentService from '../../../services/assessment.service'
-import {useSchedule, useUpdateSchedule} from '../../../services/scheduleHooks'
-import {useStudy} from '../../../services/studyHooks'
-import {poppinsFont} from '../../../style/theme'
-import {StudySession} from '../../../types/scheduling'
-import {Assessment} from '../../../types/types'
-import ConfirmationDialog from '../../widgets/ConfirmationDialog'
-import {MTBHeadingH1} from '../../widgets/Headings'
-import {PrevButton} from '../../widgets/StyledComponents'
 import AssessmentSelector from './AssessmentSelector'
 import ReadOnlySessionCreator from './read-only-pages/ReadOnlySessionCreator'
 import SessionActionButtons from './SessionActionButtons'
@@ -102,22 +101,11 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
 }: SessionCreatorProps) => {
   const classes = useStyles()
 
-  const {
-    data: schedule,
-    error: scheduleError,
-    isLoading: isScheduleLoading,
-  } = useSchedule(id)
+  const {data: schedule} = useSchedule(id)
 
   const {data: study, error, isLoading} = useStudy(id)
 
-  const {
-    isSuccess: scheduleUpdateSuccess,
-    isError: scheduleUpdateError,
-    mutateAsync: mutateSchedule,
-    data,
-  } = useUpdateSchedule()
-
-  const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
+  const {mutateAsync: mutateSchedule, data} = useUpdateSchedule()
 
   const handleError = useErrorHandler()
   const [saveLoader, setSaveLoader] = React.useState(false)
@@ -130,6 +118,7 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   const [isAddingAssessmentToSession, setIsAddingAssessmentToSession] =
     useState(false)
   const [activeSession, setActiveSession] = React.useState<string | undefined>()
+  const {token} = useUserSessionDataState()
 
   const onUpdate = async (newState: StudySession[]) => {
     const updatedSchedule = {...schedule!, sessions: newState}
@@ -188,7 +177,8 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
     for (let i = 0; i < newAssessments.length; i++) {
       try {
         const assessmentWithResources = await AssessmentService.getResource(
-          newAssessments[i]
+          newAssessments[i],
+          token!
         )
         assessments.push(assessmentWithResources)
       } catch (error) {
@@ -228,27 +218,6 @@ const SessionCreator: FunctionComponent<SessionCreatorProps> = ({
   if (schedule?.sessions) {
     return (
       <>
-        <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
-          {({onConfirm, onCancel}) => (
-            <ConfirmationDialog
-              isOpen={hasObjectChanged}
-              type={'NAVIGATE'}
-              onCancel={onCancel}
-              onConfirm={onConfirm}
-            />
-          )}
-        </NavigationPrompt>
-        {/*hasObjectChanged && !saveLoader && (
-        <Button
-          variant="contained"
-          color="primary"
-          key="saveButton"
-          style={{marginBottom: '32px'}}
-          onClick={() => onSave()}
-          startIcon={<SaveIcon />}>
-          Save changes
-        </Button>
-      )*/}
         <Box className={classes.root} key="sessions">
           {schedule.sessions.map((session, index) => (
             <Paper

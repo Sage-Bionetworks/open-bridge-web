@@ -272,7 +272,10 @@ const SurveyTopNav: FunctionComponent<SurveyTopNavProps> = ({
             )}
             activeClassName={classes.mobileSelectedLink}
             onClick={() => setIsMobileOpen(false)}>
-            <img src={ParticipantsIcon} style={{marginRight: '20px'}}></img>
+            <img
+              src={ParticipantsIcon}
+              style={{marginRight: '20px'}}
+              alt="participants"></img>
             Access settings
           </NavLink>
         </Drawer>

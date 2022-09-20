@@ -3,7 +3,6 @@ import * as useSurveyAssessment from '@services/assessmentHooks'
 import * as useStudy from '@services/studyHooks'
 import {cleanup, render} from '@testing-library/react'
 import {Assessment, ExtendedError, Study} from '@typedefs/types'
-import React from 'react'
 import {UseBaseQueryResult, UseQueryResult} from 'react-query'
 import {MemoryRouter} from 'react-router-dom'
 import {surveyList} from '__test_utils/mocks/useAssessmentResponses'
@@ -25,17 +24,18 @@ const mockedUseAssessment = useSurveyAssessment as jest.Mocked<
   typeof useSurveyAssessment
 >
 
-jest.mock('@components/widgets/AppTopNav', () => ({}) => <div>App Top Nav</div>)
+jest.mock('@components/widgets/AppTopNav', () => () => <div>App Top Nav</div>)
 
-jest.mock('@components/studies/StudyList', () => ({}) => <div>Study List</div>)
-jest.mock('@components/studies/StudyTopNav', () => ({}) => (
+jest.mock('@components/studies/StudyList', () => () => <div>Study List</div>)
+jest.mock('@components/studies/StudyTopNav', () => () => (
   <div>Study Top Nav</div>
 ))
-jest.mock('@components/surveys/SurveyTopNav', () => ({}) => (
+jest.mock('@components/surveys/SurveyTopNav', () => () => (
   <div>Survey Top Nav</div>
 ))
-jest.mock('@components/surveys/Surveys', () => ({}) => <div>Surveys page</div>)
-jest.mock('@components/studies/StudyBuilder', () => ({}) => (
+jest.mock('@components/surveys/SurveyList', () => () => <div>Survey List</div>)
+jest.mock('@components/surveys/Surveys', () => () => <div>Surveys page</div>)
+jest.mock('@components/studies/StudyBuilder', () => () => (
   <div>Study Builder</div>
 ))
 
@@ -62,7 +62,7 @@ test.skip('should throw if user not logged in', () => {
   )
 
   try {
-    expect(renderControl('/studies')).toThrow
+    expect(renderControl('/studies')).toThrow()
   } catch (err) {
     expect(err.message.indexOf(document.location)).toBeGreaterThan(-1)
   }

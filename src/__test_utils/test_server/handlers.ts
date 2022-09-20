@@ -88,7 +88,7 @@ export const handlers = [
     }
   ),
 
-  //local Assessments
+  //get local assessments
   rest.get(
     `*${constants.endpoints.assessments.split('/?')[0]}/*`,
     (req, res, ctx) => {

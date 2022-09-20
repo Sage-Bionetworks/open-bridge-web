@@ -25,8 +25,8 @@ import SelectExtraActions from './phone-subcontrols/SelectExtraActions'
 import SurveyTitle from './phone-subcontrols/SurveyTitle'
 import TimeDuration from './phone-subcontrols/TimeDuration'
 import PhoneDisplay from './PhoneDisplay'
-import QuestionPhoneBottomMenu from './QuestionPhoneBottomMenu'
 import RequiredToggle from './RequiredToggle'
+import SelectPhoneBottomMenu from './SelectPhoneBottomMenu'
 
 const OuterContainer = styled('div')(({theme}) => ({
   bgcolor: '#F8F8F8',
@@ -39,14 +39,14 @@ const OuterContainer = styled('div')(({theme}) => ({
 const SkipQuestion = styled(
   (props: TypographyProps) => <Typography {...props}>Skip question</Typography>,
   {label: 'skipQuestion'}
-)(({}) => ({
+)(() => ({
   fontWeight: 400,
   fontSize: '12px',
   lineHeight: '18px',
   textDecoration: 'underline',
 }))
 
-const PhoneTop = styled('div')(({}) => ({
+const PhoneTop = styled('div')(() => ({
   display: 'flex',
   margin: '0 -15px 20px -15px',
   justifyContent: 'space-between',
@@ -75,8 +75,11 @@ const StyledH1 = styled(DisappearingInput, {label: 'StyledH1'})(({theme}) => ({
   },
 }))
 
-const ScrollableArea = styled('div')<{$height: number}>(({theme, $height}) => ({
-  height: `${$height}px`,
+const ScrollableArea = styled('div', {
+  label: 'ScrollableArea',
+  shouldForwardProp: prop => prop !== 'height',
+})<{height: number}>(({theme, height}) => ({
+  height: `${height}px`,
   marginLeft: '-10px',
   marginRight: '-10px',
   padding: '0 10px',
@@ -108,9 +111,6 @@ type QuestionEditProps = {
   completionProgress: number
 
   onChange: (step: Step) => void
-
-  //  onAdd: (a: string) => void
-  // onNavigate: (id: string) => void
 }
 
 function isSelectQuestion(questionType: QuestionTypeKey | 0): boolean {
@@ -125,7 +125,6 @@ function Factory(args: {
 }) {
   switch (args.q_type) {
     case 'SINGLE_SELECT': {
-      let _step = args.step as ChoiceQuestion
       return (
         <Select step={args.step as ChoiceQuestion} onChange={args.onChange} />
       )
@@ -239,7 +238,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
     }
     if (isSelectQuestion(questionId)) {
       return (
-        <QuestionPhoneBottomMenu
+        <SelectPhoneBottomMenu
           step={step as ChoiceQuestion}
           onChange={s => onChange(s)}
         />
@@ -301,7 +300,7 @@ const QuestionEditPhone: FunctionComponent<QuestionEditProps> = ({
                   />
                 </>
               )}
-              <ScrollableArea $height={isDynamic ? 330 : 400}>
+              <ScrollableArea height={isDynamic ? 330 : 400}>
                 {isDynamic && (
                   <StyledP2
                     area-label="detail"

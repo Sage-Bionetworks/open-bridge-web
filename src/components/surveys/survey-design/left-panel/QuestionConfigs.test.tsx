@@ -8,7 +8,7 @@ import {Step} from '@typedefs/surveys'
 afterEach(cleanup)
 const onChange = jest.fn()
 const stepExpectations = [
-  'INSTRUCTION',
+  'OVERVIEW',
   'SINGLE_SELECT',
   'FREE_TEXT',
   'YEAR',

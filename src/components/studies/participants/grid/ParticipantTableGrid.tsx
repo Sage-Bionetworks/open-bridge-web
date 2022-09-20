@@ -131,12 +131,6 @@ const EditCell: FunctionComponent<{
         return result
       }
 
-      const getValDate = (column: string): Date | undefined => {
-        const result = params.row[column]?.toString()
-        const d = result ? new Date(result) : undefined
-        return d
-      }
-
       const getValPhone = (column: string): string | undefined => {
         const result = params.row[column]?.toString()
         return result?.replace('+1', '') || ''
@@ -222,7 +216,6 @@ const SelectionControl: FunctionComponent<{
 export function CustomColumnMenuComponent(
   props: GridColumnMenuProps & {color: string}
 ) {
-  const classes = useStyles()
   const {hideMenu, currentColumn, color, ...other} = props
   // more info here: https://material-ui.com/components/data-grid/components/#components
   /*if (currentColumn.field === 'name') { }*/
@@ -244,7 +237,7 @@ function getPhone(params: GridValueGetterParams) {
   } else return ''
 }
 function getDate(value: GridCellValue) {
-  return value && moment(value.toString()).isValid
+  return value && moment(value.toString()).isValid()
     ? moment(value.toString()).format('MM/DD/YYYY')
     : undefined
 }
@@ -265,7 +258,8 @@ function getJoinedDateWithIcons(params: GridValueGetterParams) {
       {dateToDisplay && (
         <img
           src={hasJoined ? JoinedCheckSymbol : JoinedPhoneSymbol}
-          style={{marginRight: '6px', width: '16px'}}></img>
+          style={{marginRight: '6px', width: '16px'}}
+          alt={hasJoined ? 'joined' : 'not joined'}></img>
       )}
       {formattedDate}
     </Box>
@@ -275,7 +269,10 @@ function getJoinedDateWithIcons(params: GridValueGetterParams) {
 function renderColumnHeaderWithIcon(icon: string, headerName: string) {
   return (
     <Box display="flex" flexDirection="row">
-      <img src={icon} style={{marginRight: '6px', width: '16px'}}></img>
+      <img
+        src={icon}
+        style={{marginRight: '6px', width: '16px'}}
+        alt={headerName}></img>
       {headerName}
     </Box>
   ) as ReactNode
@@ -418,7 +415,7 @@ function getColumns(
 
   const shouldShowEvent = (eventId: string) => {
     const isBurstEvent = EventService.isEventBurstEvent(eventId)
-    const isLoginEvent = eventId == JOINED_EVENT_ID
+    const isLoginEvent = eventId === JOINED_EVENT_ID
     const isFirstBurst = EventService.getBurstNumberFromEventId(eventId) === 1
     return !isLoginEvent && (!isBurstEvent || !isFirstBurst)
   }
@@ -481,7 +478,7 @@ function getColumns(
   // if no custom event / burst -- remove time zone column
   if (scheduleEventIds.length === 1) {
     participantColumns = participantColumns.filter(
-      el => el.headerName != 'Time Zone'
+      el => el.headerName !== 'Time Zone'
     )
   }
 
@@ -523,13 +520,10 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
 }: ParticipantTableGridProps) => {
   const classes = useStyles()
   const {token} = useUserSessionDataState()
-  const {data: scheduleEvents = [], error: eventError} = useEvents(studyId)
+  const {data: scheduleEvents = []} = useEvents(studyId)
 
-  const {
-    isLoading: isParticipantUpdating,
-    error: participantUpdateError,
-    mutate,
-  } = useUpdateParticipantInList()
+  const {isLoading: isParticipantUpdating, mutate} =
+    useUpdateParticipantInList()
 
   //when we are editing the record this is where the info is stored
   const [participantToEdit, setParticipantToEdit] = React.useState<
@@ -686,7 +680,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
               if (e.target.checked) {
                 model = [...selectionModel, id]
               } else {
-                model = selectionModel.filter(mid => mid != id)
+                model = selectionModel.filter(mid => mid !== id)
               }
 
               onRowSelected(model, false)
@@ -716,7 +710,7 @@ const ParticipantTableGrid: FunctionComponent<ParticipantTableGridProps> = ({
                 if (!selectionModel.includes(params.row.id)) {
                   model = [...selectionModel, params.row.id]
                 } else {
-                  model = selectionModel.filter(id => id != params.row.id)
+                  model = selectionModel.filter(id => id !== params.row.id)
                 }
 
                 onRowSelected(model, false)

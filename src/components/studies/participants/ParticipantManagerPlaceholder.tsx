@@ -1,12 +1,12 @@
-import React from 'react'
 import {Box} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
-import RocketIcon from '../../../assets/participants/participant_manager_rocket_icon.svg'
+import clsx from 'clsx'
+import React from 'react'
 import LiveCard from '../../../assets/participants/participant_manager_live_card_draft_icon.svg'
+import RocketIcon from '../../../assets/participants/participant_manager_rocket_icon.svg'
 import DraftCard from '../../../assets/participants/participant_manager_study_card_draft_icon.svg'
 import RightArrow from '../../../assets/participants/right_arrow.svg'
 import {latoFont} from '../../../style/theme'
-import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -51,7 +51,10 @@ const ParticipantManagerPlaceholder: React.FunctionComponent = () => {
   return (
     <Box className={classes.container}>
       <Box className={classes.innerContainer}>
-        <img className={classes.rocketIcon} src={RocketIcon}></img>
+        <img
+          className={classes.rocketIcon}
+          src={RocketIcon}
+          alt=" Please check back after your study launches"></img>
         <Box className={classes.text}>
           Please check back after your study launches.
         </Box>
@@ -59,9 +62,9 @@ const ParticipantManagerPlaceholder: React.FunctionComponent = () => {
           This tab will be available once your study is officially live.
         </Box>
         <Box className={classes.imageCardContainer}>
-          <img src={DraftCard} style={{marginRight: '25px'}}></img>
-          <img src={RightArrow}></img>
-          <img src={LiveCard} style={{marginLeft: '25px'}}></img>
+          <img src={DraftCard} style={{marginRight: '25px'}} alt="draft"></img>
+          <img src={RightArrow} alt="arrow"></img>
+          <img src={LiveCard} style={{marginLeft: '25px'}} alt="live"></img>
         </Box>
       </Box>
     </Box>

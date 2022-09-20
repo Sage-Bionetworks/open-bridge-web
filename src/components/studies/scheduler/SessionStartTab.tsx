@@ -183,7 +183,12 @@ const ERROR_MSG = {
 
 const CalendarIconControl: React.FunctionComponent<any> = React.memo(() => {
   const classes = useStyles()
-  return <img src={CalendarIcon} className={classes.calendarIcon}></img>
+  return (
+    <img
+      src={CalendarIcon}
+      className={classes.calendarIcon}
+      alt="calendar"></img>
+  )
 })
 
 const FakeSelect: React.FunctionComponent<{
@@ -192,7 +197,6 @@ const FakeSelect: React.FunctionComponent<{
   hasCarret?: boolean
 }> = ({evtName, hasCalendar, hasCarret = false}) => {
   const classes = useStyles()
-  var x = <span>{evtName}</span>
 
   return (
     <Box
@@ -231,12 +235,7 @@ const SessionStartTab: React.ForwardRefRenderFunction<
     },
   }))
 
-  const {
-    isSuccess,
-    isError,
-    mutateAsync: mutateStudy,
-    data,
-  } = useUpdateStudyDetail()
+  const {mutateAsync: mutateStudy} = useUpdateStudyDetail()
 
   const [saveLoader, setSaveLoader] = React.useState(false)
   const [error, setError] = React.useState<string | undefined>(undefined)
@@ -252,8 +251,12 @@ const SessionStartTab: React.ForwardRefRenderFunction<
       ...study,
       customEvents,
     }
-
-    await mutateStudy({study: updatedStudy})
+    try {
+      await mutateStudy({study: updatedStudy})
+    } catch (e) {
+      console.log(e)
+      alert(e)
+    }
   }
 
   const [newEvent, setNewEvent] = React.useState(

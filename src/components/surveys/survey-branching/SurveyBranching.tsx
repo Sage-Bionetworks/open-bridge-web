@@ -21,7 +21,7 @@ import ReactFlow, {
 import {RouteComponentProps, useParams} from 'react-router-dom'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import BranchingConfig from './BranchingConfig'
-import getNodes, {detectCycle, getDryRunEdges} from './GetNodesToPlot'
+import getNodes, {detectCycle, getEdgesFromSteps} from './GetNodesToPlot'
 import {useGetPlotWidth} from './UseGetPlotWidth'
 
 const edgeTypes = {
@@ -31,12 +31,8 @@ const edgeTypes = {
 const SurveyBranchingContainerBox = styled(Box)(({theme}) => ({
   position: 'relative',
   backgroundColor: '#fcfcfc',
-
   padding: theme.spacing(3),
-
   width: '100%',
-  // border: '1px solid black',
-
   height: 'calc(100vh - 75px)',
   overflow: 'scroll',
   '& .react-flow': {
@@ -60,7 +56,6 @@ const SurveyBranchingContainerBox = styled(Box)(({theme}) => ({
       backgroundColor: 'transparent',
       borderRadius: '0',
       border: 'none',
-      //border: '1px solid black',
     },
     '&.selected': {
       border: '1px solid black',
@@ -107,27 +102,19 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     [setEdges]
   )
 
-  const {data: _survey, status: cStatus} = useSurveyConfig(surveyGuid)
+  const {data: _survey} = useSurveyConfig(surveyGuid)
 
-  const {
-    isSuccess: surveyUpdateSuccess,
-    isError: surveyUpdateError,
-    mutateAsync: mutateSurvey,
-  } = useUpdateSurveyConfig()
+  const {mutateAsync: mutateSurvey} = useUpdateSurveyConfig()
 
   React.useEffect(() => {
     if (_survey) {
-      console.log('%c surveyChanged', 'background: #222; color: #bada55')
       setSurvey(_survey)
     }
   }, [_survey])
 
   React.useEffect(() => {
     if (survey) {
-      console.log('%c surveyStepsChanged', 'background: #222; color: #bada55')
-
       const plotWidth = width || 0
-
       const result = getNodes(
         survey?.config.steps as ChoiceQuestion[],
         plotWidth
@@ -139,7 +126,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
         setEdges(result.edges)
       }
     }
-  }, [survey?.config.steps, width])
+  }, [survey, survey?.config.steps, width])
 
   const saveSurvey = async () => {
     setError('')
@@ -151,15 +138,29 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
       setError((error as any).toString())
     }
   }
+
+  const changeBranching = (steps: ChoiceQuestion[]) => {
+    const edges = getEdgesFromSteps(steps)
+    setError('')
+    const cycles = detectCycle(edges.edges)
+    if (cycles) {
+      setError('Cycles detected')
+      return
+    } else {
+      setHasObjectChanged(true)
+      setSurvey({
+        ...survey,
+        config: {...survey!.config, steps: steps},
+      })
+    }
+  }
+
   const onNodeClick = (x: any, node: Node) => {
-    console.log('CLICKIN', node)
-    //  alert(node.id)
     const qIndex = survey!.config.steps!.findIndex(
       q => q.identifier === node.id
     )
     if (qIndex < survey!.config.steps.length - 1) {
       setCurrentStepIndex(qIndex)
-      // alert(node.position.y)
       setIsHideInput(false)
     }
   }
@@ -181,12 +182,10 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     return sourceNodesIds
   }
 
-  const findLowestIndex = () => {
+  const findHeightOfNodes = () => {
     const yPos = nodes.map(n => n.position.y)
-    const lowest = Math.max(...yPos)
-    // alert(yPos.join(' , '))
-    // alert(lowest)
-    return lowest + 150
+    const max = Math.max(...yPos)
+    return max + 150
   }
 
   return (
@@ -208,7 +207,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
           <div
             style={{
               width: (width || 0) + 'px',
-              height: `${findLowestIndex()}px`, //'calc(100vh - 100px)',
+              height: `${findHeightOfNodes()}px`,
             }}>
             <ReactFlow
               style={{}}
@@ -222,7 +221,6 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
               onConnect={onConnect}
               edgeTypes={edgeTypes}
               fitView={false}
-              // fitView
               fitViewOptions={fitViewOptions}
             />
           </div>
@@ -238,25 +236,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
             onSave={() => saveSurvey()}
             isOpen={!isHideInput}
             invalidTargetStepIds={getInvalidTargetStepIds()}
-            onChange={steps => {
-              //  console.log('steps', steps)
-              const edges = getDryRunEdges(steps)
-              setError('')
-
-              console.log('DRY RUN', edges)
-              const cycles = detectCycle(edges.edges)
-              console.log('CYCLES', cycles)
-              if (cycles) {
-                setError('Cycles detected')
-                return
-              } else {
-                setHasObjectChanged(true)
-                setSurvey({
-                  ...survey,
-                  config: {...survey!.config, steps: steps},
-                })
-              }
-            }}
+            onChange={steps => changeBranching(steps)}
             questions={survey!.config.steps as ChoiceQuestion[]}
             step={getCurrentStep()}
           />

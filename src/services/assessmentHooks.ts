@@ -32,10 +32,13 @@ export const useAssessments = (options?: {
 
   return useQuery<Assessment[] | undefined, ExtendedError>(
     ASSESSMENT_KEYS.list(appId, !!options?.isLocal, !!options?.isSurvey),
-    () => AssessmentService.getAssessments(appId, token!, options),
+    () => {
+      const result = AssessmentService.getAssessments(appId, token!, options)
+      return result
+    },
     {
       enabled: !!appId,
-      retry: 1,
+      retry: 2,
       refetchOnWindowFocus: false,
     }
   )
@@ -85,7 +88,7 @@ export const useAssessmentResource = (assessment: Assessment) => {
 }
 
 export const useSurveyAssessment = (isLocal: boolean, guid?: string) => {
-  const {token, appId} = useUserSessionDataState()
+  const {token} = useUserSessionDataState()
   const options = {isSurvey: true, isLocal}
 
   return useQuery<Assessment | undefined, ExtendedError>(
@@ -106,12 +109,11 @@ export const useSurveyAssessment = (isLocal: boolean, guid?: string) => {
 }
 
 export const useSurveyConfig = (guid?: string) => {
-  const {token, appId} = useUserSessionDataState()
+  const {token} = useUserSessionDataState()
 
   return useQuery<Survey | undefined, ExtendedError>(
     ASSESSMENT_KEYS.assessmentConfig(guid || ''),
     () => {
-      console.log('!!!!guid!!!', guid)
       return guid
         ? AssessmentService.getSurveyAssessmentConfig(guid, token!)
         : Promise.resolve(undefined)
@@ -216,12 +218,15 @@ export const useUpdateSurveyAssessment = () => {
         return AssessmentService.deleteSurveyAssessment(assessment, token!)
 
       case 'COPY':
-      /*  TODO: const {survey: Assessment} = await AssessmentService.copyStudy(
-          survey.identifier!,
-          appId,
-          token!
-        )
-        return [newStudy]*/
+        const {assessment: result} =
+          await AssessmentService.duplicateAssessment(
+            appId,
+            assessment.guid!,
+            token!,
+            true
+          )
+        return result
+
       case 'UPDATE':
         console.log('updating', assessment)
         return AssessmentService.updateSurveyAssessment(

@@ -112,7 +112,7 @@ export const useStyles = makeStyles((theme: Theme) =>
     },
     inactiveBurstSaveButton: {
       border: 0,
-      opacity: 0.7
+      opacity: 0.7,
     },
     assessments: {
       width: '286px',
@@ -189,28 +189,19 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
 }) => {
   const classes = useStyles()
 
-  const {data: _study, error, isLoading} = useStudy(id)
+  const {data: _study} = useStudy(id)
   const {data: _schedule, refetch} = useSchedule(id)
   const {data: timeline, isLoading: isTimelineLoading} = useTimeline(id)
 
-  const {
-    isSuccess: scheduleUpdateSuccess,
-    isError: scheduleUpdateError,
-    mutateAsync: mutateSchedule,
-  } = useUpdateSchedule()
+  const {mutateAsync: mutateSchedule} = useUpdateSchedule()
 
-  const {
-    isSuccess: studyeUpdateSuccess,
-    isError: studyUpdateError,
-    mutateAsync: mutateStudy,
-    data: studyUpdateData,
-  } = useUpdateStudyDetail()
+  const {mutateAsync: mutateStudy} = useUpdateStudyDetail()
 
   const [hasBursts, setHasBursts] = React.useState(false)
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
   const [schedulerErrors, setScheduleErrors] = React.useState<
     SchedulerErrorType[]
-  >([]) //ALINA TODO
+  >([])
 
   const handleError = useErrorHandler()
   const [saveLoader, setSaveLoader] = React.useState(false)
@@ -285,7 +276,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
     setHasBeenSaved(true)
     let error: Error | undefined = undefined
     try {
-      const result = await mutateSchedule({
+      await mutateSchedule({
         studyId: id,
         schedule,
         action: 'UPDATE',
@@ -296,7 +287,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
           ..._study,
           studyStartEventId: study.studyStartEventId,
         }
-        const result = await mutateStudy({study: updatedStudy})
+        await mutateStudy({study: updatedStudy})
       }
       setHasObjectChanged(false)
     } catch (e) {
@@ -314,9 +305,7 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
           top: 0,
           behavior: 'smooth',
         })
-        // alina todo
-        console.log('todo')
-        // setError(prev => [...prev, e.message])
+
         error = e as ExtendedError
       } else {
         const errorObject = {
@@ -610,7 +599,14 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
                 disabled={isScheduleDefault(schedule) && !hasBeenSaved}
                 className={classes.burstButton}
                 onClick={() => setOpenModal('BURSTS')}>
-                <BurstIcon style={isScheduleDefault(schedule) && !hasBeenSaved ? {opacity:'0.3'}:{}} /> Configure Study Bursts
+                <BurstIcon
+                  style={
+                    isScheduleDefault(schedule) && !hasBeenSaved
+                      ? {opacity: '0.3'}
+                      : {}
+                  }
+                />{' '}
+                Configure Study Bursts
               </Button>
             )}
             {!timeline ? (
@@ -832,8 +828,12 @@ const Scheduler: React.FunctionComponent<SchedulerProps> = ({
           </DialogButtonSecondary>
 
           <DialogButtonPrimary
-            disabled={!!!hasBursts && schedule.studyBursts?.length===0}
-            className={!!!hasBursts && schedule.studyBursts?.length===0 ? classes.inactiveBurstSaveButton : ''}
+            disabled={!!!hasBursts && schedule.studyBursts?.length === 0}
+            className={
+              !!!hasBursts && schedule.studyBursts?.length === 0
+                ? classes.inactiveBurstSaveButton
+                : ''
+            }
             onClick={() => {
               ref2.current?.save()
             }}>

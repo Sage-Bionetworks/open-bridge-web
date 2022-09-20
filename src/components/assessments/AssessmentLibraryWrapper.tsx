@@ -139,7 +139,7 @@ const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps>
               </NavLink>
             </Box>
           )}
-          {surveyToggle['SURVEY BUILDER'] && (
+          {surveyToggle['SURVEY BUILDER'] && false && (
             <AssessmentTypeToggle
               assessmentType={assessmentsType}
               onChange={t => onChangeAssessmentsType(t)}
