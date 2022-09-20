@@ -218,12 +218,14 @@ export const useUpdateSurveyAssessment = () => {
         return AssessmentService.deleteSurveyAssessment(assessment, token!)
 
       case 'COPY':
-      /*  TODO: const {survey: Assessment} = await AssessmentService.copyStudy(
-          survey.identifier!,
-          appId,
-          token!
-        )
-        return [newStudy]*/
+        const {assessment: result} =
+          await AssessmentService.duplicateAssessment(
+            appId,
+            assessment.guid!,
+            token!,
+            true
+          )
+        return result
 
       case 'UPDATE':
         console.log('updating', assessment)

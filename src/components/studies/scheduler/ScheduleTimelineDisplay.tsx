@@ -3,8 +3,8 @@ import {ReactComponent as TimerIcon} from '@assets/scheduler/timer_icon.svg'
 import AssessmentImage from '@components/assessments/AssessmentImage'
 import SessionIcon from '@components/widgets/SessionIcon'
 import {Box} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import Tooltip, {TooltipProps} from '@mui/material/Tooltip'
+import makeStyles from '@mui/styles/makeStyles'
 import {latoFont, poppinsFont} from '@style/theme'
 import {
   Schedule,
@@ -13,7 +13,6 @@ import {
   StudySessionTimeline,
 } from '@typedefs/scheduling'
 import React from 'react'
-import {useErrorHandler} from 'react-error-boundary'
 import Pluralize from 'react-pluralize'
 import TimelineBurstPlot from './timeline-plot/TimelineBurstPlot'
 
@@ -120,8 +119,6 @@ const ScheduleTimelineDisplay: React.FunctionComponent<TimelineProps> = ({
   isDefault,
   onSelectSession,
 }: TimelineProps) => {
-  const handleError = useErrorHandler()
-
   const classes = useStyles()
   const tooltipProps: Partial<TooltipProps> = {
     placement: 'top',

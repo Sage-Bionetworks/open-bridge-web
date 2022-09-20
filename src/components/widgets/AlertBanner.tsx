@@ -77,7 +77,7 @@ const AlertBanner: React.FunctionComponent<AlertBannerProps> = ({
         onClose()
       }, 8000)
     }
-  }, [isSelfClosing, isVisible])
+  }, [isSelfClosing, isVisible, onClose])
 
   return (
     <Alert

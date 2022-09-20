@@ -75,7 +75,6 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
 }) => {
   const classes = useStyles()
 
-  const [selection, setSelection] = React.useState<SelectionType>(selectionType)
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null)
 
   const handleMenuClose = () => {
@@ -86,7 +85,6 @@ const SelectAll: React.FunctionComponent<SelectAllProps> = ({
     setMenuAnchor(event.currentTarget)
   }
   const setSelect = (type: SelectionType) => {
-    setSelection(type)
     handleMenuClose()
 
     switch (type) {

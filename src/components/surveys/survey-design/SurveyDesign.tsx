@@ -74,33 +74,20 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   const isSaving = useIsMutating()
 
   //rq get and modify data hooks
-  const {data: _assessment, status: aStatus} = useSurveyAssessment(
+  const {data: _assessment} = useSurveyAssessment(
     true,
     isNewSurvey() ? undefined : surveyGuid
   )
-  const {data: _survey, status: cStatus} = useSurveyConfig(
+  const {data: _survey} = useSurveyConfig(
     isNewSurvey() ? undefined : surveyGuid
   )
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
 
-  const {
-    isSuccess: asmntUpdateSuccess,
-    isError: asmntUpdateError,
-    mutateAsync: mutateAssessment,
-    status,
-  } = useUpdateSurveyAssessment()
+  const {mutateAsync: mutateAssessment, status} = useUpdateSurveyAssessment()
 
-  const {
-    isSuccess: surveyUpdateSuccess,
-    isError: surveyUpdateError,
-    mutateAsync: mutateSurvey,
-  } = useUpdateSurveyConfig()
+  const {mutateAsync: mutateSurvey} = useUpdateSurveyConfig()
 
-  const {
-    isSuccess: resourceUpdateSuccess,
-    isError: resourceUpdateError,
-    mutateAsync: mutateResource,
-  } = useUpdateSurveyResource()
+  const {mutateAsync: mutateResource} = useUpdateSurveyResource()
 
   const [debugOpen, setDebugOpen] = React.useState(false)
 
@@ -120,24 +107,11 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     }
   }, [_survey])
 
-  /*  useDeepCompareEffect(() => {
-    if (survey && !hasObjectChanged && survey !== _survey) {
-      setHasObjectChanged(true)
-    }
-  }, [survey || {}, _survey || {}])*/
-
   React.useEffect(() => {
     console.log('location change')
     setCurrentStepIndex(getQuestionIndexFromSearchString())
   }, [location])
 
-  /*React.useEffect(() => {
-    let qIndex = new URLSearchParams(useLocation().search)?.get('q')
-
-    setCurrentStepIndex(qIndex ? parseInt(qIndex) : undefined)
-    console.log('changing index')
-  }, [])
-*/
   // fns used  to subcomponent callbackss
   const saveIconResource = async () => {
     if (assessment) {
@@ -374,8 +348,8 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
                 height="100%"
                 flexGrow="1"
                 bgcolor={'#fff'}>
-                {hasObjectChanged && <span>Unsaved changes*</span>}
-                {isSaving > 0 && <span>Saving</span>}
+                {hasObjectChanged && <span>*</span>}
+                {isSaving > 0 && false && <span>Saving</span>}
 
                 {survey && (
                   <QuestionEditPhone

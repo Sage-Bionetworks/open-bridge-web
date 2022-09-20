@@ -1,19 +1,8 @@
-import React, {FunctionComponent, SyntheticEvent} from 'react'
-
-import {
-  Tabs,
-  Tab,
-  Menu,
-  MenuItem,
-  PopoverOrigin,
-  TabsTypeMap,
-} from '@mui/material'
-
-import makeStyles from '@mui/styles/makeStyles'
-
 import DeleteIcon from '@mui/icons-material/Delete'
+import {Menu, MenuItem, PopoverOrigin, Tab, Tabs} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
+import React, {FunctionComponent, SyntheticEvent} from 'react'
 import EditableTextbox from './EditableTextbox'
-import {CSSProperties} from '@mui/material/styles'
 
 const useStyles = makeStyles({
   tabRoot: {
@@ -58,7 +47,7 @@ type TabProps = {
   }[]
 }
 
-const TabsMtb: FunctionComponent<TabProps & CSSProperties> = ({
+const TabsMtb: FunctionComponent<TabProps> = ({
   handleChange,
   value,
   tabDataObjects,

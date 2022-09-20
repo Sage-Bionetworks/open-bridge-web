@@ -5,7 +5,7 @@ import {
 import {styled} from '@mui/material'
 import {theme} from '@style/theme'
 
-const StyledContainer = styled('div', {label: 'StyledContainer'})(({}) => ({
+const StyledContainer = styled('div', {label: 'StyledContainer'})(() => ({
   height: '100%',
   display: 'flex',
   textAlign: 'center',

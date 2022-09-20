@@ -162,7 +162,9 @@ const SurveyList: React.FunctionComponent<{}> = () => {
     survey: Assessment
     anchorEl: HTMLElement
   }>(null)
-
+  const [highlightedStudyId, setHighlightedStudyId] = React.useState<
+    string | null
+  >(null)
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState<
     'DELETE' | undefined
   >(undefined)
@@ -212,9 +214,19 @@ const SurveyList: React.FunctionComponent<{}> = () => {
         break
 
       case 'DUPLICATE':
-        //resetStatusFilters()
-        // await createStudy(study)
-        alert('duplicate')
+        mutateAssessment(
+          {assessment: survey, action: 'COPY'},
+          {
+            onSuccess: data => {
+              setHighlightedStudyId(data.guid!)
+              setTimeout(() => {
+                setHighlightedStudyId(null)
+              }, 2000)
+              // alert('done')
+            },
+            onError: e => alert(e),
+          }
+        )
         return
 
       default: {
@@ -246,12 +258,20 @@ const SurveyList: React.FunctionComponent<{}> = () => {
       <Loader reqStatusLoading={status === 'loading'}>
         <StyledSurveysContainer key="container">
           {surveys?.map((survey, index) => (
-            <AssessmentCard
-              key={survey.identifier}
-              assessment={survey}
-              isMenuOpen={menuAnchor?.survey?.identifier === survey.identifier}
-              onClick={e => setMenuAnchor({survey, anchorEl: e})}
-            />
+            <Box
+              sx={{
+                border:
+                  highlightedStudyId === survey.guid ? '1px solid #3f51b5' : '',
+              }}>
+              <AssessmentCard
+                key={survey.identifier}
+                assessment={survey}
+                isMenuOpen={
+                  menuAnchor?.survey?.identifier === survey.identifier
+                }
+                onClick={e => setMenuAnchor({survey, anchorEl: e})}
+              />
+            </Box>
           ))}
         </StyledSurveysContainer>
       </Loader>

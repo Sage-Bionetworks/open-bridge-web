@@ -24,22 +24,14 @@ const mockedUseAssessment = useSurveyAssessment as jest.Mocked<
   typeof useSurveyAssessment
 >
 
-jest.mock('@components/widgets/AppTopNav', () => ({}) => <div>App Top Nav</div>)
+jest.mock('@components/widgets/AppTopNav', () => <div>App Top Nav</div>)
 
-jest.mock('@components/studies/StudyList', () => ({}) => <div>Study List</div>)
-jest.mock('@components/studies/StudyTopNav', () => ({}) => (
-  <div>Study Top Nav</div>
-))
-jest.mock('@components/surveys/SurveyTopNav', () => ({}) => (
-  <div>Survey Top Nav</div>
-))
-jest.mock('@components/surveys/SurveyList', () => ({}) => (
-  <div>Survey List</div>
-))
-jest.mock('@components/surveys/Surveys', () => ({}) => <div>Surveys page</div>)
-jest.mock('@components/studies/StudyBuilder', () => ({}) => (
-  <div>Study Builder</div>
-))
+jest.mock('@components/studies/StudyList', () => <div>Study List</div>)
+jest.mock('@components/studies/StudyTopNav', () => <div>Study Top Nav</div>)
+jest.mock('@components/surveys/SurveyTopNav', () => <div>Survey Top Nav</div>)
+jest.mock('@components/surveys/SurveyList', () => <div>Survey List</div>)
+jest.mock('@components/surveys/Surveys', () => <div>Surveys page</div>)
+jest.mock('@components/studies/StudyBuilder', () => <div>Study Builder</div>)
 
 function renderControl(location: string) {
   return render(
@@ -64,7 +56,7 @@ test.skip('should throw if user not logged in', () => {
   )
 
   try {
-    expect(renderControl('/studies')).toThrow
+    expect(renderControl('/studies')).toThrow()
   } catch (err) {
     expect(err.message.indexOf(document.location)).toBeGreaterThan(-1)
   }

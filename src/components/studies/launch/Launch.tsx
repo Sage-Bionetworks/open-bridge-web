@@ -12,7 +12,6 @@ import {ThemeType} from '@style/theme'
 import {Schedule} from '@typedefs/scheduling'
 import {Study} from '@typedefs/types'
 import React, {useState} from 'react'
-import {useErrorHandler} from 'react-error-boundary'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import AboutStudy from './AboutStudy'
 import IrbDetails from './IrbDetails'
@@ -111,26 +110,14 @@ const Launch: React.FunctionComponent<LaunchProps> = ({
   onShowFeedback,
 }: LaunchProps) => {
   const classes = useStyles()
-  const {data: sourceStudy, error, isLoading} = useStudy(id)
-  const {
-    data: schedule,
-    error: scheduleError,
-    isLoading: scheduleLoading,
-  } = useSchedule(id, false)
+  const {data: sourceStudy} = useStudy(id)
+  const {data: schedule} = useSchedule(id, false)
   const [study, setStudy] = React.useState<Study>()
 
-  const {
-    isSuccess: scheduleUpdateSuccess,
-    isError: scheduleUpdateError,
-    mutateAsync: mutateStudy,
-    data,
-  } = useUpdateStudyDetail()
+  const {mutateAsync: mutateStudy} = useUpdateStudyDetail()
 
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
 
-  const handleError = useErrorHandler()
-  //const [isStudyLive, setIsStudyLive] = React.useState(false)
-  const [saveLoader, setSaveLoader] = React.useState(false)
   const [isStudyLive, setIsStudyLive] = React.useState(false)
 
   const [steps, setSteps] = useState<{label: string}[]>(getSteps(false))

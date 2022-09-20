@@ -1,8 +1,16 @@
+import TrashIcon from '@assets/trash.svg'
+import AssessmentSmall from '@components/assessments/AssessmentSmall'
+import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
+import EditableTextbox from '@components/widgets/EditableTextbox'
+import SessionIcon from '@components/widgets/SessionIcon'
 import ClockIcon from '@mui/icons-material/AccessTime'
 import AddIcon from '@mui/icons-material/Add'
 import ClearIcon from '@mui/icons-material/Clear'
 import {Box, Button, FormControlLabel, Switch} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+import {ThemeType} from '@style/theme'
+import {StudySession} from '@typedefs/scheduling'
+import {Assessment} from '@typedefs/types'
 import clsx from 'clsx'
 import _ from 'lodash'
 import React, {FunctionComponent} from 'react'
@@ -13,14 +21,6 @@ import {
   Droppable,
   DropResult,
 } from 'react-beautiful-dnd'
-import TrashIcon from '../../../assets/trash.svg'
-import {ThemeType} from '../../../style/theme'
-import {StudySession} from '../../../types/scheduling'
-import {Assessment} from '../../../types/types'
-import AssessmentSmall from '../../assessments/AssessmentSmall'
-import ConfirmationDialog from '../../widgets/ConfirmationDialog'
-import EditableTextbox from '../../widgets/EditableTextbox'
-import SessionIcon from '../../widgets/SessionIcon'
 
 export const useStyles = makeStyles((theme: ThemeType) => ({
   root: {
@@ -230,9 +230,9 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> =
                       ))}
                     {studySession.assessments?.map((assessment, index) => (
                       <Draggable
-                        draggableId={assessment.guid + index}
+                        draggableId={assessment.guid! + index}
                         index={index}
-                        key={assessment.guid + index}>
+                        key={assessment.guid! + index}>
                         {(provided, snapshot) => (
                           <div
                             ref={provided.innerRef}
@@ -248,10 +248,11 @@ const SingleSessionContainer: FunctionComponent<SingleSessionContainerProps> =
                                   className={classes.btnDeleteAssessment}
                                   onClick={e => {
                                     e.stopPropagation()
-                                    removeAssessment(assessment.guid)
+                                    removeAssessment(assessment.guid!)
                                   }}>
                                   <img
                                     src={TrashIcon}
+                                    alt="remove assessment"
                                     style={{
                                       width: '10px',
                                       height: '14px',
