@@ -1,8 +1,8 @@
 import constants from '@typedefs/constants'
 import {ParticipantAccountSummary} from '@typedefs/types'
 import {rest} from 'msw'
-import * as enrollment from '../mocks/enrollments.json'
-import * as participant from '../mocks/participant.json'
+import enrollment from '../mocks/enrollments.json'
+import participant from '../mocks/participant.json'
 
 type Search = {
   pageSize: number

@@ -151,7 +151,7 @@ export const useUpdateParticipantInList = () => {
     customEvents?: ParticipantEvent[]
 
     isAllSelected?: boolean
-  }): Promise<string | string[]> => {
+  }): Promise<string | string[] | ParticipantAccountSummary[]> => {
     switch (props.action) {
       case 'WITHDRAW':
         return await ParticipantService.withdrawParticipant(

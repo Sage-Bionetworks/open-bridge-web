@@ -560,7 +560,6 @@ async function addParticipant(
     })
 
     const result = await Promise.all(updatePromises)
-    console.log(result.length)
   }
   //prime adherence. We are not waiting -- just firing it up
   AdherenceService.getAdherenceForWeekForUsers(studyId, [userId], token)
@@ -658,6 +657,7 @@ async function updateParticipant(
         ...participant,
         ...updatedParticipantFields,
       }
+
       const endpoint = `${constants.endpoints.participant.replace(
         ':id',
         studyIdentifier
