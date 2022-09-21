@@ -120,7 +120,9 @@ export default {
     assmentsForSessions: '/v1/sessions/:sessionId/assessments',
     bridgeAccount: '/v1/accounts/:id',
     enrollments: '/v5/studies/:studyId/enrollments',
-    enrollmentsForUser: '/v5/studies/:studyId/participants/:userId/enrollments',
+    enrollment: '/v5/studies/:studyId/enrollments/:userId',
+    participantEnrollments:
+      '/v5/studies/:studyId/participants/:userId/enrollments',
     events: '/v5/studies/:studyId/participants/:userId/activityevents',
     getAccountsForOrg: '/v1/organizations/:orgId/members',
     oauthSignIn: '/v3/auth/oauth/signIn',

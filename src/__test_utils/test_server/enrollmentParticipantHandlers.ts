@@ -1,75 +1,62 @@
 import constants from '@typedefs/constants'
 import {ParticipantAccountSummary} from '@typedefs/types'
 import {rest} from 'msw'
-import * as assessments from '../mocks/assessments'
+import * as enrollment from '../mocks/enrollments.json'
+import * as participant from '../mocks/participant.json'
 
 type Search = {
   pageSize: number
   offsetBy: number
 }
 
-/*enrollments: '/v5/studies/:studyId/enrollments',
-enrollmentsForUser: '/v5/studies/:studyId/participants/:userId/enrollments',
+/* 
+endpoints:
+
+enrollments: '/v5/studies/:studyId/enrollments',
+enrollment: '/v5/studies/:studyId/enrollments/:userId',
+participantEnrollments: '/v5/studies/:studyId/participants/:userId/enrollments',
 participant: '/v5/studies/:id/participants',
 participantsSearch: '/v5/studies/:studyId/participants/search',
 requestInfo: '/v5/studies/:studyId/participants/:userId/requestInfo',*/
 
 const endpoints = [
-  //shared assessments
+  //get enrollment for participant
   rest.get(
-    `*${constants.endpoints.enrollments.replace(':studyId', '123')}*`,
-    (req, res, ctx) => {
-      console.log('REQ', req)
-      return res(
-        ctx.json({
-          items: [assessments.SharedAssessmentsArc],
-        }),
-        ctx.status(200)
-      )
-    }
-  ),
-  //post for for user enrollments
-  rest.post(
-    `*${constants.endpoints.enrollmentsForUser
-      .replace(':studyId', '123')
-      .replace(':userId', '123')}*`,
-    (req, res, ctx) => {
-      return res(ctx.json(req.body), ctx.status(200))
-    }
-  ),
-
-  //generate rest request for  '/v5/studies/:studyId/enrollments',
-  rest.post(`*${constants.endpoints.enrollments}`, async (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
-        items: [],
-      })
-    )
-  }),
-
-  rest.post(
-    `*${constants.endpoints.participantsSearch}`,
+    `*${constants.endpoints.participantEnrollments}*`,
     async (req, res, ctx) => {
-      const data = req.body as Search
-      const expectedData = []
-      for (let i = data.offsetBy + 1; i <= data.pageSize + data.offsetBy; i++) {
-        let obj: ParticipantAccountSummary = {
-          createdOn: '2021-02-22T20:45:38.375Z',
-          externalIds: {testID: `test-id-${i}`},
-          id: 'dRNO0ydUO3hAGD5rHOXx1Gmb' + i,
-          status: 'unverified',
-          firstName: '',
-          lastName: '',
-          email: '',
-        }
-        expectedData.push(obj)
-      }
       return res(
         ctx.status(200),
         ctx.json({
-          items: expectedData,
-          total: 100,
+          items: [enrollment.items],
+        })
+      )
+    }
+  ),
+  //get participant
+  rest.get(`*${constants.endpoints.participant}/*`, async (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json(participant))
+  }),
+
+  //update enrollment
+  rest.post(`*${constants.endpoints.enrollment}`, async (req, res, ctx) => {
+    const data = req.body as ParticipantAccountSummary
+    return res(ctx.status(200), ctx.json(JSON.stringify(data)))
+  }),
+
+  //update participant
+  rest.post(`*${constants.endpoints.participant}/*`, async (req, res, ctx) => {
+    const data = req.body as ParticipantAccountSummary
+    return res(ctx.status(200), ctx.json(JSON.stringify(data)))
+  }),
+
+  // get enrollments for user
+  rest.get(
+    `*${constants.endpoints.participantEnrollments}/*`,
+    async (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          items: [enrollment.items],
         })
       )
     }

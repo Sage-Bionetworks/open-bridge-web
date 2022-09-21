@@ -24,10 +24,9 @@ function getParticipantEnrollmentEndpoint(
   studyId: string,
   participantId: string
 ) {
-  return `${constants.endpoints.enrollments.replace(
-    ':studyId',
-    studyId
-  )}/${participantId}`
+  return `${constants.endpoints.enrollment
+    .replace(':studyId', studyId)
+    .replace(':userId', participantId)}`
 }
 
 //formats participant in the format required by datagrid
@@ -334,9 +333,10 @@ async function getUserEnrollmentInfo(
   participantId: string,
   token: string
 ) {
-  const endpoint = constants.endpoints.enrollmentsForUser
+  const endpoint = constants.endpoints.participantEnrollments
     .replace(':studyId', studyId)
     .replace(':userId', participantId)
+
   const result = await Utility.callEndpoint<{items: EnrolledAccountRecord[]}>(
     endpoint,
     'GET',
@@ -606,6 +606,7 @@ async function getParticipant(
   return participantInfo.data
 }
 
+//updates any number of participants in a study.
 async function updateParticipant(
   studyIdentifier: string,
   token: string,
@@ -614,7 +615,7 @@ async function updateParticipant(
     [Property in keyof ParticipantAccountSummary]?: ParticipantAccountSummary[Property]
   },
   isAllSelected?: boolean
-): Promise<string[]> {
+): Promise<ParticipantAccountSummary[]> {
   if (isAllSelected) {
     const resultEnrolled = await getEnrollmentByEnrollmentType(
       studyIdentifier,
@@ -637,21 +638,23 @@ async function updateParticipant(
   const updatedParticipantFields = {...updatedFields}
   delete updatedParticipantFields.note
 
-  if (participantId.length === 1 && updatedFields.note !== undefined) {
+  if (updatedFields.note !== undefined) {
     //we update the enrollment note record
-    await updateEnrollmentNote(
-      studyIdentifier,
-      participantId[0], // updating single participants
-      updatedFields.note,
-      token
-    )
+    if (participantId.length === 1) {
+      await updateEnrollmentNote(
+        studyIdentifier,
+        participantId[0], // updating single participants
+        updatedFields.note,
+        token
+      )
+    } else {
+      throw Error("You can only update a single participant's note")
+    }
   }
-
-  //what about multiple notes
 
   const updateParticipantPromises = participantId?.map(pId =>
     getParticipant(studyIdentifier, pId, token).then(participant => {
-      const updatedParticipant = {
+      const updatedParticipant: ParticipantAccountSummary = {
         ...participant,
         ...updatedParticipantFields,
       }
@@ -660,19 +663,27 @@ async function updateParticipant(
         studyIdentifier
       )}/${pId}`
 
-      return Utility.callEndpoint<ParticipantAccountSummary>(
-        endpoint,
-        'POST',
-        updatedParticipant,
-        token
-      ).then(p => {
-        return {participantId: pId, result: p}
-      })
+      if (Object.keys(updatedParticipantFields).length === 0) {
+        //if we are only updating note -- just return participants
+        return Promise.resolve({
+          updatedParticipants: updatedParticipant,
+          result: {message: 'nothing to update'},
+        })
+      } else {
+        return Utility.callEndpoint<{message: string}>(
+          endpoint,
+          'POST',
+          updatedParticipant,
+          token
+        ).then(p => {
+          return {updatedParticipants: updatedParticipant, result: p.data}
+        })
+      }
     })
   )
 
   const result = await Promise.all(updateParticipantPromises).then(result => {
-    return result.map(item => item.participantId)
+    return result.map(item => item.updatedParticipants)
   })
   //we want to ping adherence to make sure data is refreshed
   AdherenceService.getAdherenceForWeekForUsers(
