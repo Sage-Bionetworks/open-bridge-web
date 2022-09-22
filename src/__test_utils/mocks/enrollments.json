@@ -1,0 +1,102 @@
+{
+  "items": [
+    {
+      "participant": {
+        "identifier": "56kN5p3FCGO_Udzdh721yAKC",
+        "firstName": "Some",
+        "lastName": "Girl",
+        "type": "AccountRef"
+      },
+      "enrolledBy": {
+        "identifier": "YJPK1_RcLafFVc5L-Of19rRe",
+        "firstName": "Alina",
+        "lastName": "Gendel",
+        "email": "alina.gendel@sagebase.org",
+        "synapseUserId": "3391841",
+        "orgMembership": "sage-bionetworks",
+        "type": "AccountRef"
+      },
+      "externalId": "901df:study123",
+      "studyId": "study123",
+      "consentRequired": false,
+      "enrolledOn": "2022-01-24T17:47:49.191Z",
+      "withdrawalNote": "my notes edit test 978\ntesting with SSM input2",
+      "note": "Is name still there?\nmy notes edit test 978\ntesting with SSM input2",
+      "type": "EnrollmentDetail"
+    },
+    {
+      "participant": {
+        "identifier": "5DUmZONG0E9K6XRveEEaWLlf",
+        "type": "AccountRef"
+      },
+      "enrolledBy": {
+        "identifier": "YJPK1_RcLafFVc5L-Of19rRe",
+        "firstName": "Alina",
+        "lastName": "Gendel",
+        "email": "alina.gendel@sagebase.org",
+        "synapseUserId": "3391841",
+        "orgMembership": "sage-bionetworks",
+        "type": "AccountRef"
+      },
+      "externalId": "9812034:study123",
+      "studyId": "study123",
+      "consentRequired": true,
+      "enrolledOn": "2022-01-21T21:05:57.446Z",
+      "withdrawalNote": "note123",
+      "note": "note123",
+      "type": "EnrollmentDetail"
+    },
+    {
+      "participant": {
+        "identifier": "7zfixzItXCGWvkSWKtiLHt2Q",
+        "type": "AccountRef"
+      },
+      "enrolledBy": {
+        "identifier": "YJPK1_RcLafFVc5L-Of19rRe",
+        "firstName": "Alina",
+        "lastName": "Gendel",
+        "email": "alina.gendel@sagebase.org",
+        "synapseUserId": "3391841",
+        "orgMembership": "sage-bionetworks",
+        "type": "AccountRef"
+      },
+      "externalId": "12345qbc:study123",
+      "studyId": "study123",
+      "consentRequired": true,
+      "enrolledOn": "2022-01-24T17:47:09.837Z",
+      "withdrawalNote": "bad user",
+      "note": "bad user",
+      "type": "EnrollmentDetail"
+    },
+    {
+      "participant": {
+        "identifier": "8aQhHA7NailVuOYaZFjP7zc_",
+        "firstName": "Some",
+        "lastName": "Girl",
+        "type": "AccountRef"
+      },
+      "enrolledBy": {
+        "identifier": "YJPK1_RcLafFVc5L-Of19rRe",
+        "firstName": "Alina",
+        "lastName": "Gendel",
+        "email": "alina.gendel@sagebase.org",
+        "synapseUserId": "3391841",
+        "orgMembership": "sage-bionetworks",
+        "type": "AccountRef"
+      },
+      "externalId": "a912:study123",
+      "studyId": "study123",
+      "consentRequired": true,
+      "enrolledOn": "2022-01-24T17:44:45.491Z",
+      "type": "EnrollmentDetail"
+    }
+  ],
+  "total": 4,
+  "requestParams": {
+    "enrollmentFilter": "enrolled",
+    "pageSize": 25,
+    "offsetBy": 0,
+    "type": "RequestParams"
+  },
+  "type": "PagedResourceList"
+}

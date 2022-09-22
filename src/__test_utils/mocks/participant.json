@@ -1,0 +1,31 @@
+{
+  "firstName": "Some",
+  "lastName": "Girl",
+  "emailVerified": false,
+  "phoneVerified": false,
+  "externalId": "901df:qtqchv",
+  "sharingScope": "no_sharing",
+  "notifyByEmail": true,
+  "dataGroups": [],
+  "healthCode": "3KdmB7VsfLQMSWIzesV5ixa9",
+  "attributes": {},
+  "consentHistories": {"mobile-toolbox": []},
+  "enrollments": {
+    "qtqchv": {
+      "externalId": "901df:qtqchv",
+      "enrolledOn": "2022-01-24T17:47:49.191Z",
+      "consentRequired": false,
+      "type": "EnrollmentInfo"
+    }
+  },
+  "consented": true,
+  "roles": [],
+  "languages": [],
+  "status": "enabled",
+  "createdOn": "2022-01-24T17:47:49.086Z",
+  "id": "56kN5p3FCGO_Udzdh721yAKC",
+  "studyIds": ["qtqchv"],
+  "externalIds": {"qtqchv": "901df:qtqchv"},
+  "clientTimeZone": "America/Yakutat",
+  "type": "StudyParticipant"
+}
