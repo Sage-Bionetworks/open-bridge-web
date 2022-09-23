@@ -3,6 +3,7 @@ import {Box, styled, Typography} from '@mui/material'
 import {latoFont, poppinsFont, theme} from '@style/theme'
 import {ParticipantClientData, ParticipantRequestInfo} from '@typedefs/types'
 import moment from 'moment'
+import ClientDeviceMap from '../clientDevices'
 
 const Table = styled('table')(({theme}) => ({
   borderSpacing: 0,
@@ -46,6 +47,17 @@ type AdditionalAdherenceParticipantInfoProps = {
   participantClientData?: ParticipantClientData
 }
 
+function getDeviceName(deviceType: string): string {
+  if (!deviceType) {
+    return ''
+  }
+  const keys = Array.from(ClientDeviceMap.keys())
+  const deviceKey = keys.find(key => deviceType.includes(key))
+  return deviceKey && ClientDeviceMap.has(deviceKey)
+    ? ClientDeviceMap.get(deviceKey)!
+    : deviceType
+}
+
 const AdditionalAdherenceParticipantInfo: React.FunctionComponent<AdditionalAdherenceParticipantInfoProps> =
   ({participantRequestInfo, participantClientData}) => {
     return (
@@ -82,7 +94,7 @@ const AdditionalAdherenceParticipantInfo: React.FunctionComponent<AdditionalAdhe
               sx={{fontFamily: latoFont, marginBottom: 3}}
               component="p">
               {' '}
-              {participantRequestInfo.clientInfo.deviceName}
+              {getDeviceName(participantRequestInfo.clientInfo.deviceName)}
             </Typography>
 
             <Table>
