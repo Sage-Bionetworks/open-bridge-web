@@ -80,6 +80,7 @@ const Completion: React.FunctionComponent<{
           <StyledH1
             area-label="title"
             id="title"
+            data-testid="title"
             value={step.title}
             placeholder="Title"
             onChange={e => onChange({ ...step, title: e.target.value })}
@@ -91,6 +92,7 @@ const Completion: React.FunctionComponent<{
             area-label="summary"
             multiline={true}
             minRows={2}
+            data-testid="summary"
             placeholder={step.detail}
             value={step.detail}
             onChange={e => onChange({ ...step, detail: e.target.value })}
