@@ -10,21 +10,21 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  styled,
+  styled
 } from '@mui/material'
 import {
   useAssessments,
-  useUpdateSurveyAssessment,
+  useUpdateSurveyAssessment
 } from '@services/assessmentHooks'
-import {latoFont, poppinsFont, theme} from '@style/theme'
+import { latoFont, poppinsFont, theme } from '@style/theme'
 import constants from '@typedefs/constants'
-import {Assessment} from '@typedefs/types'
+import { Assessment } from '@typedefs/types'
 import React from 'react'
-import {useErrorHandler} from 'react-error-boundary'
-import {Link, Redirect, useHistory} from 'react-router-dom'
+import { useErrorHandler } from 'react-error-boundary'
+import { Link, Redirect, useHistory } from 'react-router-dom'
 
-const StyledSurveysContainer = styled('div', {label: 'StyledSurveyContainer'})(
-  ({theme}) => ({
+const StyledSurveysContainer = styled('div', { label: 'StyledSurveyContainer' })(
+  ({ theme }) => ({
     display: 'grid',
     padding: theme.spacing(4, 0),
     justifyContent: 'center',
@@ -46,7 +46,7 @@ const StyledSurveysCard = styled(Card, {
   shouldForwardProp: prop => prop !== 'isMenuOpen',
 })<{
   isMenuOpen: boolean
-}>(({theme, isMenuOpen}) => ({
+}>(({ theme, isMenuOpen }) => ({
   background: '#FCFCFC',
   boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
   height: '374px',
@@ -89,7 +89,7 @@ const AssessmentCard: React.FunctionComponent<{
   assessment: Assessment
   onClick: (e: HTMLElement) => void
   isMenuOpen: boolean
-}> = ({isMenuOpen, onClick, assessment}) => {
+}> = ({ isMenuOpen, onClick, assessment }) => {
   const _onClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation()
     e.preventDefault()
@@ -98,7 +98,7 @@ const AssessmentCard: React.FunctionComponent<{
 
   return (
     <Link
-      style={{textDecoration: 'none'}}
+      style={{ textDecoration: 'none' }}
       key={assessment.identifier}
       to={`/surveys/${assessment.guid!}/design`}>
       <StyledSurveysCard isMenuOpen={isMenuOpen}>
@@ -124,7 +124,7 @@ const AssessmentMenu: React.FunctionComponent<{
   onView: () => void
   onClose: () => void
   onDuplicate: () => void
-}> = ({onDelete, onView, onDuplicate, onClose, anchorEl}) => {
+}> = ({ onDelete, onView, onDuplicate, onClose, anchorEl }) => {
   return (
     <Menu
       id="assessment-menu"
@@ -173,7 +173,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
     data: surveys,
     status,
     error,
-  } = useAssessments({isLocal: true, isSurvey: true})
+  } = useAssessments({ isLocal: true, isSurvey: true })
 
   const {
     isSuccess: asmntUpdateSuccess,
@@ -203,7 +203,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
       case 'DELETE':
         // await mutate({ action: type, study })
         mutateAssessment(
-          {assessment: survey, action: 'DELETE'},
+          { assessment: survey, action: 'DELETE' },
           {
             onSuccess: data => {
               // alert('done')
@@ -215,7 +215,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
 
       case 'DUPLICATE':
         mutateAssessment(
-          {assessment: survey, action: 'COPY'},
+          { assessment: { ...survey, title: `Copy of ${survey.title}` }, action: 'COPY' },
           {
             onSuccess: data => {
               setHighlightedStudyId(data.guid!)
@@ -260,8 +260,12 @@ const SurveyList: React.FunctionComponent<{}> = () => {
           {surveys?.map((survey, index) => (
             <Box
               sx={{
-                border:
-                  highlightedStudyId === survey.guid ? '1px solid #3f51b5' : '',
+                outline:
+                  highlightedStudyId === survey.guid ? '4px solid #BCD5E4' : '',
+                '&:hover': {
+                  outline: '4px solid #BCD5E4',
+                },
+
               }}>
               <AssessmentCard
                 key={survey.identifier}
@@ -269,7 +273,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
                 isMenuOpen={
                   menuAnchor?.survey?.identifier === survey.identifier
                 }
-                onClick={e => setMenuAnchor({survey, anchorEl: e})}
+                onClick={e => setMenuAnchor({ survey, anchorEl: e })}
               />
             </Box>
           ))}
