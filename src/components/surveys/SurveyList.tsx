@@ -3,6 +3,7 @@ import Loader from '@components/widgets/Loader'
 import Utility from '@helpers/utility'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -171,19 +172,17 @@ const SurveyList: React.FunctionComponent<{}> = () => {
 
   const {
     data: surveys,
-    status,
-    error,
+    status: getSurveysStatus,
+    error: getSurveysError,
   } = useAssessments({ isLocal: true, isSurvey: true })
 
   const {
-    isSuccess: asmntUpdateSuccess,
-    isError: asmntUpdateError,
+
+    error: asmntUpdateError,
     mutate: mutateAssessment,
   } = useUpdateSurveyAssessment()
 
-  if (error) {
-    handleError(error)
-  }
+
   if (isNew) {
     return <Redirect to={`${constants.restrictedPaths.SURVEY_BUILDER}/intro`} />
   }
@@ -237,6 +236,17 @@ const SurveyList: React.FunctionComponent<{}> = () => {
 
   return (
     <Container maxWidth="xl">
+      {getSurveysError && (
+        <Alert severity="error">
+          {getSurveysError.message}
+        </Alert>
+      )}
+      {asmntUpdateError && (
+        <Alert severity="error">
+          {asmntUpdateError.message}
+        </Alert>
+      )}
+
       <Box
         sx={{
           display: 'flex',
@@ -255,7 +265,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
           + Create New Survey
         </Button>
       </Box>
-      <Loader reqStatusLoading={status === 'loading'}>
+      <Loader reqStatusLoading={getSurveysStatus === 'loading'}>
         <StyledSurveysContainer key="container">
           {surveys?.map((survey, index) => (
             <Box

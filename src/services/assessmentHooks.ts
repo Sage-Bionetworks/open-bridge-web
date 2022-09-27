@@ -249,7 +249,7 @@ export const useUpdateSurveyAssessment = () => {
     }
   }
 
-  const mutation = useMutation(update, {
+  const mutation = useMutation<Assessment, Error, any, any>(update, {
     onMutate: async (props) => {
       queryClient.cancelQueries(ASSESSMENT_KEYS.all(appId))
 
