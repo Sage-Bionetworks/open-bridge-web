@@ -1,7 +1,7 @@
 import SurveyUtils from '@components/surveys/SurveyUtils'
 import {
   DialogButtonPrimary,
-  DialogButtonSecondary,
+  DialogButtonSecondary
 } from '@components/widgets/StyledComponents'
 import CloseIcon from '@mui/icons-material/Close'
 import {
@@ -18,17 +18,17 @@ import {
   Radio,
   RadioGroup,
   styled,
-  Typography,
+  Typography
 } from '@mui/material'
-import {latoFont, theme} from '@style/theme'
-import {ChoiceQuestion, Step, SurveyRuleOperator} from '@typedefs/surveys'
-import {FunctionComponent} from 'react'
+import { latoFont, theme } from '@style/theme'
+import { ChoiceQuestion, Step, SurveyRuleOperator } from '@typedefs/surveys'
+import { FunctionComponent } from 'react'
 import Draggable from 'react-draggable'
 import QUESTIONS, {
-  getQuestionId,
+  getQuestionId
 } from '../survey-design/left-panel/QuestionConfigs'
-import {DivContainer} from '../survey-design/left-panel/QuestionTypeDisplay'
-import {StyledDropDown, StyledDropDownItem} from '../widgets/StyledDropDown'
+import { DivContainer } from '../survey-design/left-panel/QuestionTypeDisplay'
+import { StyledDropDown, StyledDropDownItem } from '../widgets/StyledDropDown'
 
 // agendel TODO: refactor duplicate
 const getBgColor = (mode: 'light' | 'dark' = 'dark') => {
@@ -42,18 +42,18 @@ const getSvgFilter = (mode: 'light' | 'dark' = 'dark') => {
   return mode === 'light'
     ? {}
     : {
-        WebkitFilter: 'invert(1)',
-        filter: 'invert(1)',
-      }
+      WebkitFilter: 'invert(1)',
+      filter: 'invert(1)',
+    }
 }
 
 const getBoxShadow = (mode: 'light' | 'dark' = 'dark') => {
   return mode === 'light' ? ' 1px 2px 3px rgba(42, 42, 42, 0.1);' : 'none'
 }
 
-const StyledQuestionDisplay = styled(Box, {label: 'StyledQuestionDisplay'})<{
+const StyledQuestionDisplay = styled(Box, { label: 'StyledQuestionDisplay' })<{
   mode?: 'dark' | 'light'
-}>(({theme, mode = 'dark'}) => ({
+}>(({ theme, mode = 'dark' }) => ({
   backgroundColor: getBgColor(mode),
   width: '80px',
   height: '48px',
@@ -66,8 +66,8 @@ const StyledQuestionDisplay = styled(Box, {label: 'StyledQuestionDisplay'})<{
   '& svg, img ': getSvgFilter(mode),
 }))
 
-const StyledSmallFont = styled(Typography, {label: 'StyledSmallFont'})(
-  ({theme}) => ({
+const StyledSmallFont = styled(Typography, { label: 'StyledSmallFont' })(
+  ({ theme }) => ({
     fontFamily: latoFont,
     fontWeight: 400,
     fontSize: '12px',
@@ -80,8 +80,8 @@ const StyledSmallFont = styled(Typography, {label: 'StyledSmallFont'})(
   })
 )
 
-const StyledDialogTitle = styled(DialogTitle, {label: 'StyledDialogTitle'})(
-  ({theme}) => ({
+const StyledDialogTitle = styled(DialogTitle, { label: 'StyledDialogTitle' })(
+  ({ theme }) => ({
     background: ' #565656',
     color: '#fff',
     padding: theme.spacing(3, 3, 2, 3),
@@ -91,7 +91,7 @@ const StyledDialogTitle = styled(DialogTitle, {label: 'StyledDialogTitle'})(
   })
 )
 
-const StyledTable = styled('table', {label: 'StyledTable'})(({theme}) => ({
+const StyledTable = styled('table', { label: 'StyledTable' })(({ theme }) => ({
   marginTop: theme.spacing(2.5),
   padding: theme.spacing(1),
   backgroundColor: '#fff',
@@ -119,8 +119,8 @@ const QuestionDisplay: FunctionComponent<{
   id: string
 
   mode: 'light' | 'dark'
-}> = ({id, questions, mode}) => {
-  const {index, isLast} = SurveyUtils.getSequentialQuestionIndex(id, questions)
+}> = ({ id, questions, mode }) => {
+  const { index, isLast } = SurveyUtils.getSequentialQuestionIndex(id, questions)
   if (index === -1) {
     return <></>
   }
@@ -129,7 +129,7 @@ const QuestionDisplay: FunctionComponent<{
     <StyledQuestionDisplay mode={mode}>
       <DivContainer>
         {QUESTIONS.get(getQuestionId(q))?.img}
-        <div>{index + 1}</div>
+        <div>{index}</div>
       </DivContainer>
     </StyledQuestionDisplay>
   )
@@ -141,7 +141,7 @@ const NextQuestionDropdown: FunctionComponent<{
   selectedIdentifier?: string
 
   onChangeSelected: (qIs: string) => void
-}> = ({questions, selectedIdentifier, excludeIds, onChangeSelected}) => {
+}> = ({ questions, selectedIdentifier, excludeIds, onChangeSelected }) => {
   return (
     <StyledDropDown
       value={selectedIdentifier || ''}
@@ -153,14 +153,14 @@ const NextQuestionDropdown: FunctionComponent<{
         onChangeSelected(e.target.value)
       }}
       input={<OutlinedInput />}
-      inputProps={{'aria-label': 'Question Type:'}}>
+      inputProps={{ 'aria-label': 'Question Type:' }}>
       {questions.map(
         (opt, index) =>
-          !excludeIds.includes(opt.identifier) && (
+          (!excludeIds.includes(opt.identifier) && index > 0) && (
             <MenuItem value={opt.identifier} key={opt.identifier}>
               <StyledDropDownItem mode="light">
                 {QUESTIONS.get(getQuestionId(opt))?.img}
-                <div>{index + 1}</div>
+                <div>{index}</div>
               </StyledDropDownItem>
             </MenuItem>
           )
@@ -189,179 +189,179 @@ const BranchingConfig: FunctionComponent<{
   isOpen,
   onSave,
 }) => {
-  if (!step) {
-    return <></>
-  }
-  const qTypeId = getQuestionId(step)
+    if (!step) {
+      return <></>
+    }
+    const qTypeId = getQuestionId(step)
 
-  const onChangeNextId = (stepId: string) => {
-    onChange(
-      questions.map(_question =>
-        _question.identifier === step.identifier
-          ? {..._question, nextStepIdentifier: stepId}
-          : _question
-      )
-    )
-  }
-  const onChangeNextOption = (hasNextDefined: string) => {
-    let newSteps: ChoiceQuestion[]
-    if (hasNextDefined === 'false') {
-      newSteps = questions.map(_question =>
-        _question.identifier === step.identifier
-          ? {..._question, nextStepIdentifier: undefined}
-          : _question
-      )
-    } else {
-      newSteps = questions.map((_question, i) =>
-        _question.identifier === step.identifier
-          ? {..._question, nextStepIdentifier: questions[i + 1].identifier}
-          : _question
+    const onChangeNextId = (stepId: string) => {
+      onChange(
+        questions.map(_question =>
+          _question.identifier === step.identifier
+            ? { ..._question, nextStepIdentifier: stepId }
+            : _question
+        )
       )
     }
-    onChange(newSteps)
-  }
-
-  const changeRuleMapping = (
-    optionValue: string | number | boolean | undefined,
-    nextStepId: string
-  ) => {
-    let rules = [...(step.surveyRules || [])]
-    const i = rules?.findIndex(r => r.matchingAnswer === optionValue)
-    const rule = {
-      matchingAnswer: optionValue,
-      ruleOperator: 'eq' as SurveyRuleOperator,
-      skipToIdentifier: nextStepId,
+    const onChangeNextOption = (hasNextDefined: string) => {
+      let newSteps: ChoiceQuestion[]
+      if (hasNextDefined === 'false') {
+        newSteps = questions.map(_question =>
+          _question.identifier === step.identifier
+            ? { ..._question, nextStepIdentifier: undefined, surveyRules: undefined }
+            : _question
+        )
+      } else {
+        newSteps = questions.map((_question, i) =>
+          _question.identifier === step.identifier
+            ? { ..._question, nextStepIdentifier: questions[i + 1].identifier }
+            : _question
+        )
+      }
+      onChange(newSteps)
     }
 
-    if (i === -1) {
-      rules.push(rule)
-    } else {
-      rules[i] = rule
-    }
-    const newSteps = questions.map(_question =>
-      _question.identifier === step.identifier
-        ? {
+    const changeRuleMapping = (
+      optionValue: string | number | boolean | undefined,
+      nextStepId: string
+    ) => {
+      let rules = [...(step.surveyRules || [])]
+      const i = rules?.findIndex(r => r.matchingAnswer === optionValue)
+      const rule = {
+        matchingAnswer: optionValue,
+        ruleOperator: 'eq' as SurveyRuleOperator,
+        skipToIdentifier: nextStepId,
+      }
+
+      if (i === -1) {
+        rules.push(rule)
+      } else {
+        rules[i] = rule
+      }
+      const newSteps = questions.map(_question =>
+        _question.identifier === step.identifier
+          ? {
             ..._question,
             surveyRules: rules,
           }
-        : _question
+          : _question
+      )
+      console.log(newSteps)
+      onChange(newSteps)
+    }
+    return (
+      <Dialog
+        aria-labelledby="draggable-dialog-title"
+        maxWidth="sm"
+        PaperComponent={PaperComponent}
+        open={isOpen}
+        scroll="body">
+        <StyledDialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
+          <CloseIcon
+            onClick={onCancel}
+            fontSize="large"
+            sx={{
+              color: '#fff',
+              position: 'absolute',
+              top: '10px',
+
+              right: '10px',
+            }}></CloseIcon>
+          <QuestionDisplay
+            questions={questions}
+            id={step.identifier}
+            mode={'dark'}
+          />
+          <StyledSmallFont> {step.subtitle}</StyledSmallFont> {step.title}
+          <StyledSmallFont> {step.detail}</StyledSmallFont>
+        </StyledDialogTitle>
+
+        <DialogContent>
+          <Box sx={{ padding: theme.spacing(3) }}>
+            {error && <div>{error}</div>}
+            <RadioGroup
+              onChange={e => onChangeNextOption(e.target.value)}
+              value={Boolean(step.nextStepIdentifier)}>
+              <FormControlLabel
+                value={false}
+                control={<Radio />}
+                label={
+                  <div style={{ display: 'flex' }}>
+                    <div
+                      style={{
+                        width: '148px',
+                        margin: '12px 8px',
+                        alignItems: 'center',
+                      }}>
+                      Go to next
+                      <br />
+                      screen in sequence:
+                    </div>
+                  </div>
+                }
+              />
+              <FormControlLabel
+                value={true}
+                control={<Radio />}
+                label={
+                  <div style={{ display: 'flex' }}>
+                    <div
+                      style={{
+                        width: '88px',
+                        margin: '12px 8px',
+                        alignItems: 'center',
+                      }}>
+                      Skip To:{' '}
+                    </div>
+                    <NextQuestionDropdown
+                      questions={questions}
+                      excludeIds={invalidTargetStepIds}
+                      selectedIdentifier={step.nextStepIdentifier || ''}
+                      onChangeSelected={nextStepId => onChangeNextId(nextStepId)}
+                    />
+                  </div>
+                }
+              />
+            </RadioGroup>
+            {qTypeId === 'SINGLE_SELECT' && (
+              <Box>
+                {step.choices && (
+                  <StyledTable>
+                    {step.choices.map(c => (
+                      <tr key={c.value?.toString() || 'undefined'}>
+                        <td>{c.value}</td>
+                        <td style={{ fontSize: '15px' }}>&rarr;</td>
+
+                        <td>
+                          {' '}
+                          <NextQuestionDropdown
+                            questions={questions}
+                            excludeIds={invalidTargetStepIds}
+                            selectedIdentifier={
+                              step.surveyRules?.find(
+                                rule => rule.matchingAnswer === c.value
+                              )?.skipToIdentifier || ''
+                            }
+                            onChangeSelected={nextStepId =>
+                              changeRuleMapping(c.value, nextStepId)
+                            }
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </StyledTable>
+                )}
+                {step.other && <div>{'OTHER'}</div>}
+              </Box>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <DialogButtonSecondary onClick={onCancel}>Cancel</DialogButtonSecondary>
+          <DialogButtonPrimary onClick={onSave}>Save Changes</DialogButtonPrimary>
+        </DialogActions>
+      </Dialog>
     )
-    console.log(newSteps)
-    onChange(newSteps)
   }
-  return (
-    <Dialog
-      aria-labelledby="draggable-dialog-title"
-      maxWidth="sm"
-      PaperComponent={PaperComponent}
-      open={isOpen}
-      scroll="body">
-      <StyledDialogTitle style={{cursor: 'move'}} id="draggable-dialog-title">
-        <CloseIcon
-          onClick={onCancel}
-          fontSize="large"
-          sx={{
-            color: '#fff',
-            position: 'absolute',
-            top: '10px',
-
-            right: '10px',
-          }}></CloseIcon>
-        <QuestionDisplay
-          questions={questions}
-          id={step.identifier}
-          mode={'dark'}
-        />
-        <StyledSmallFont> {step.subtitle}</StyledSmallFont> {step.title}
-        <StyledSmallFont> {step.detail}</StyledSmallFont>
-      </StyledDialogTitle>
-
-      <DialogContent>
-        <Box sx={{padding: theme.spacing(3)}}>
-          {error && <div>{error}</div>}
-          <RadioGroup
-            onChange={e => onChangeNextOption(e.target.value)}
-            value={Boolean(step.nextStepIdentifier)}>
-            <FormControlLabel
-              value={false}
-              control={<Radio />}
-              label={
-                <div style={{display: 'flex'}}>
-                  <div
-                    style={{
-                      width: '148px',
-                      margin: '12px 8px',
-                      alignItems: 'center',
-                    }}>
-                    Go to next
-                    <br />
-                    screen in sequence:
-                  </div>
-                </div>
-              }
-            />
-            <FormControlLabel
-              value={true}
-              control={<Radio />}
-              label={
-                <div style={{display: 'flex'}}>
-                  <div
-                    style={{
-                      width: '88px',
-                      margin: '12px 8px',
-                      alignItems: 'center',
-                    }}>
-                    Skip To:{' '}
-                  </div>
-                  <NextQuestionDropdown
-                    questions={questions}
-                    excludeIds={invalidTargetStepIds}
-                    selectedIdentifier={step.nextStepIdentifier || ''}
-                    onChangeSelected={nextStepId => onChangeNextId(nextStepId)}
-                  />
-                </div>
-              }
-            />
-          </RadioGroup>
-          {qTypeId === 'SINGLE_SELECT' && (
-            <Box>
-              {step.choices && (
-                <StyledTable>
-                  {step.choices.map(c => (
-                    <tr key={c.value?.toString() || 'undefined'}>
-                      <td>{c.value}</td>
-                      <td style={{fontSize: '15px'}}>&rarr;</td>
-
-                      <td>
-                        {' '}
-                        <NextQuestionDropdown
-                          questions={questions}
-                          excludeIds={invalidTargetStepIds}
-                          selectedIdentifier={
-                            step.surveyRules?.find(
-                              rule => rule.matchingAnswer === c.value
-                            )?.skipToIdentifier || ''
-                          }
-                          onChangeSelected={nextStepId =>
-                            changeRuleMapping(c.value, nextStepId)
-                          }
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </StyledTable>
-              )}
-              {step.other && <div>{'OTHER'}</div>}
-            </Box>
-          )}
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <DialogButtonSecondary onClick={onCancel}>Cancel</DialogButtonSecondary>
-        <DialogButtonPrimary onClick={onSave}>Save Changes</DialogButtonPrimary>
-      </DialogActions>
-    </Dialog>
-  )
-}
 
 export default BranchingConfig
