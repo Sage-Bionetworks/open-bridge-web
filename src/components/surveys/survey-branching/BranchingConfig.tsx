@@ -313,53 +313,53 @@ const BranchingConfig: FunctionComponent<{
                       }}>
                       Skip To:{' '}
                     </div>
-    <NextQuestionDropdown
-      questions={questions}
-      excludeIds={invalidTargetStepIds}
-      selectedIdentifier={step.nextStepIdentifier || ''}
-      onChangeSelected={nextStepId => onChangeNextId(nextStepId)}
-    />
+                    <NextQuestionDropdown
+                      questions={questions}
+                      excludeIds={invalidTargetStepIds}
+                      selectedIdentifier={step.nextStepIdentifier || ''}
+                      onChangeSelected={nextStepId => onChangeNextId(nextStepId)}
+                    />
                   </div >
                 }
-/>
+              />
             </RadioGroup >
-  { qTypeId === 'SINGLE_SELECT' && (
-    <Box>
-      {step.choices && (
-        <StyledTable>
+            {qTypeId === 'SINGLE_SELECT' && (
+              <Box>
+                {step.choices && (
+                  <StyledTable>
                     {step.choices.map(c => (
-    <tr key={c.value?.toString() || 'undefined'}>
-      <td>{c.value}</td>
-          <td style={{ fontSize: '15px' }}>&rarr;</td>
+                      <tr key={c.value?.toString() || 'undefined'}>
+                        <td>{c.value}</td>
+                        <td style={{ fontSize: '15px' }}>&rarr;</td>
 
-          <td>
-            {' '}
-            <NextQuestionDropdown
-              questions={questions}
-              excludeIds={invalidTargetStepIds}
-              selectedIdentifier={
-                step.surveyRules?.find(
-                  rule => rule.matchingAnswer === c.value
-                )?.skipToIdentifier || ''
-              }
-              onChangeSelected={nextStepId =>
-                changeRuleMapping(c.value, nextStepId)
-              }
-            />
-          </td>
-        </tr>
-      ))}
-    </StyledTable>
-  )}
-{ step.other && <div>{'OTHER'}</div> }
+                        <td>
+                          {' '}
+                          <NextQuestionDropdown
+                            questions={questions}
+                            excludeIds={invalidTargetStepIds}
+                            selectedIdentifier={
+                              step.surveyRules?.find(
+                                rule => rule.matchingAnswer === c.value
+                              )?.skipToIdentifier || ''
+                            }
+                            onChangeSelected={nextStepId =>
+                              changeRuleMapping(c.value, nextStepId)
+                            }
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </StyledTable>
+                )}
+                {step.other && <div>{'OTHER'}</div>}
               </Box >
             )}
           </Box >
         </DialogContent >
-  <DialogActions>
-    <DialogButtonSecondary onClick={onCancel}>Cancel</DialogButtonSecondary>
-    <DialogButtonPrimary onClick={onSave}>Save Changes</DialogButtonPrimary>
-  </DialogActions>
+        <DialogActions>
+          <DialogButtonSecondary onClick={onCancel}>Cancel</DialogButtonSecondary>
+          <DialogButtonPrimary onClick={onSave}>Save Changes</DialogButtonPrimary>
+        </DialogActions>
       </Dialog >
     )
   }
