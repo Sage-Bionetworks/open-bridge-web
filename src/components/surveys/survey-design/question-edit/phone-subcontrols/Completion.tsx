@@ -1,13 +1,11 @@
-import {ReactComponent as DoneCheck} from '@assets/surveys/done_check.svg'
-import {DisappearingInput} from '@components/surveys/widgets/SharedStyled'
-import {Box, FormControl, Paper, styled} from '@mui/material'
-import {latoFont} from '@style/theme'
-import {BaseStep} from '@typedefs/surveys'
+import { ReactComponent as DoneCheck } from '@assets/surveys/done_check.svg'
+import { DisappearingInput } from '@components/surveys/widgets/SharedStyled'
+import { Box, FormControl, Paper, styled } from '@mui/material'
+import { latoFont } from '@style/theme'
+import { BaseStep } from '@typedefs/surveys'
 
-const StyledContainer = styled(Paper, {label: 'StyledContainer'})(
-  ({theme}) => ({
-    // position: 'absolute',
-    //width: '220px',
+const StyledContainer = styled(Paper, { label: 'StyledContainer' })(
+  ({ theme }) => ({
     position: 'relative',
     marginTop: '150px',
     marginLeft: '-10px',
@@ -20,7 +18,6 @@ const StyledContainer = styled(Paper, {label: 'StyledContainer'})(
     ),
 
     background: '#FFFFFF',
-
     boxShadow: '1px 2px 3px rgba(42, 42, 42, 0.1)',
     display: 'flex',
     textAlign: 'center',
@@ -33,7 +30,7 @@ const StyledContainer = styled(Paper, {label: 'StyledContainer'})(
   })
 )
 
-const StyledP2 = styled(DisappearingInput, {label: 'StyledP2'})(({theme}) => ({
+const StyledP2 = styled(DisappearingInput, { label: 'StyledP2' })(({ theme }) => ({
   fontFamily: latoFont,
   fontWeight: 500,
   fontSize: '16px',
@@ -45,7 +42,7 @@ const StyledP2 = styled(DisappearingInput, {label: 'StyledP2'})(({theme}) => ({
   },
 }))
 
-const StyledH1 = styled(DisappearingInput, {label: 'StyledH1'})(({theme}) => ({
+const StyledH1 = styled(DisappearingInput, { label: 'StyledH1' })(({ theme }) => ({
   fontFamily: latoFont,
 
   fontWeight: 'bold',
@@ -63,7 +60,7 @@ const StyledH1 = styled(DisappearingInput, {label: 'StyledH1'})(({theme}) => ({
 const Completion: React.FunctionComponent<{
   step: BaseStep
   onChange: (step: BaseStep) => void
-}> = ({step, onChange}) => {
+}> = ({ step, onChange }) => {
   return (
     <>
       <StyledContainer>
@@ -79,13 +76,14 @@ const Completion: React.FunctionComponent<{
           }}>
           <DoneCheck />
         </Box>
-        <FormControl variant="standard" fullWidth sx={{mb: 1}}>
+        <FormControl variant="standard" fullWidth sx={{ mb: 1 }}>
           <StyledH1
             area-label="title"
             id="title"
+            data-testid="title"
             value={step.title}
             placeholder="Title"
-            onChange={e => onChange({...step, title: e.target.value})}
+            onChange={e => onChange({ ...step, title: e.target.value })}
           />
         </FormControl>
         <FormControl variant="standard" fullWidth>
@@ -94,9 +92,10 @@ const Completion: React.FunctionComponent<{
             area-label="summary"
             multiline={true}
             minRows={2}
+            data-testid="summary"
             placeholder={step.detail}
             value={step.detail}
-            onChange={e => onChange({...step, detail: e.target.value})}
+            onChange={e => onChange({ ...step, detail: e.target.value })}
           />
         </FormControl>
       </StyledContainer>

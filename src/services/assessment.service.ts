@@ -1,7 +1,7 @@
 import Utility from '@helpers/utility'
 import constants from '@typedefs/constants'
-import {Survey} from '@typedefs/surveys'
-import {Assessment, AssessmentResource, ExtendedError} from '@typedefs/types'
+import { Survey } from '@typedefs/surveys'
+import { Assessment, AssessmentResource, ExtendedError } from '@typedefs/types'
 
 /* AG: BOTH survey and assessments would include arb/mtb tag, but surveys would include survey tag while other assessments won't*/
 const ASSESSMENT_APP_TAG = {
@@ -177,16 +177,16 @@ async function duplicateAssessment(
   })
   const sourceConfig = await getSurveyAssessmentConfig(guid, token)
   const identifier = Utility.generateNonambiguousCode(6, 'CONSONANTS')
-  const assessmentCopy = {
+  const assessmentCopy: Assessment = {
     ...sourceAssessment,
-    name: `Copy of ${sourceAssessment.title}`,
+    title: `Copy of ${sourceAssessment.title}`,
     createdOn: undefined,
     identifier,
     guid: undefined,
     modifiedOn: undefined,
     deleted: undefined,
     version: 0,
-    type: 'Assessment',
+
   }
   const configCopy = {config: {...sourceConfig.config, identifier}}
 
