@@ -208,7 +208,7 @@ const BranchingConfig: FunctionComponent<{
       if (hasNextDefined === 'false') {
         newSteps = questions.map(_question =>
           _question.identifier === step.identifier
-            ? { ..._question, nextStepIdentifier: undefined, surveyRules: undefined }
+            ? { ..._question, nextStepIdentifier: undefined }
             : _question
         )
       } else {
@@ -295,7 +295,7 @@ const BranchingConfig: FunctionComponent<{
                       }}>
                       Go to next
                       <br />
-                      screen in sequence:
+                      screen in sequence
                     </div>
                   </div>
                 }
@@ -319,10 +319,10 @@ const BranchingConfig: FunctionComponent<{
                       selectedIdentifier={step.nextStepIdentifier || ''}
                       onChangeSelected={nextStepId => onChangeNextId(nextStepId)}
                     />
-                  </div>
+                  </div >
                 }
               />
-            </RadioGroup>
+            </RadioGroup >
             {qTypeId === 'SINGLE_SELECT' && (
               <Box>
                 {step.choices && (
@@ -352,15 +352,15 @@ const BranchingConfig: FunctionComponent<{
                   </StyledTable>
                 )}
                 {step.other && <div>{'OTHER'}</div>}
-              </Box>
+              </Box >
             )}
-          </Box>
-        </DialogContent>
+          </Box >
+        </DialogContent >
         <DialogActions>
           <DialogButtonSecondary onClick={onCancel}>Cancel</DialogButtonSecondary>
           <DialogButtonPrimary onClick={onSave}>Save Changes</DialogButtonPrimary>
         </DialogActions>
-      </Dialog>
+      </Dialog >
     )
   }
 
