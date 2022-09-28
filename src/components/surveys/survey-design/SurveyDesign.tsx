@@ -1,18 +1,18 @@
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import Loader from '@components/widgets/Loader'
 import UtilityObject from '@helpers/utility'
-import {Alert, Box, Button, Dialog, styled} from '@mui/material'
+import { Alert, Box, Button, Dialog, styled } from '@mui/material'
 import {
   useSurveyAssessment,
   useSurveyConfig,
   useUpdateSurveyAssessment,
   useUpdateSurveyConfig,
-  useUpdateSurveyResource,
+  useUpdateSurveyResource
 } from '@services/assessmentHooks'
-import {ChoiceQuestion, Question, Step, Survey} from '@typedefs/surveys'
-import {Assessment, ExtendedError} from '@typedefs/types'
-import React, {FunctionComponent} from 'react'
-import {useIsMutating} from 'react-query'
+import { ChoiceQuestion, Question, Step, Survey } from '@typedefs/surveys'
+import { Assessment, ExtendedError } from '@typedefs/types'
+import React, { FunctionComponent } from 'react'
+import { useIsMutating } from 'react-query'
 import {
   Redirect,
   Route,
@@ -20,18 +20,18 @@ import {
   Switch,
   useHistory,
   useLocation,
-  useParams,
+  useParams
 } from 'react-router-dom'
 import NavigationPrompt from 'react-router-navigation-prompt'
 import IntroInfo from './IntroInfo'
 import AddQuestionMenu from './left-panel/AddQuestionMenu'
 import LeftPanel from './left-panel/LeftPanel'
-import QUESTIONS, {QuestionTypeKey} from './left-panel/QuestionConfigs'
+import QUESTIONS, { QuestionTypeKey } from './left-panel/QuestionConfigs'
 import QuestionEditPhone from './question-edit/QuestionEditPhone'
 import QuestionEditRhs from './question-edit/QuestionEditRhs'
 import QuestionEditToolbar from './question-edit/QuestionEditToolbar'
 
-const SurveyDesignContainerBox = styled(Box)(({theme}) => ({
+const SurveyDesignContainerBox = styled(Box)(({ theme }) => ({
   position: 'relative',
   backgroundColor: 'pink',
   display: 'flex',
@@ -39,7 +39,7 @@ const SurveyDesignContainerBox = styled(Box)(({theme}) => ({
   minHeight: 'calc(100vh - 70px)',
 }))
 
-const AddQuestion = styled('div')(({theme}) => ({
+const AddQuestion = styled('div')(({ theme }) => ({
   borderTop: '1px solid #f2f2f2',
   display: 'flex',
 }))
@@ -49,15 +49,15 @@ type SurveyDesignOwnProps = {}
 type SurveyDesignProps = SurveyDesignOwnProps & RouteComponentProps
 
 const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
-  let {id: surveyGuid} = useParams<{
+  let { id: surveyGuid } = useParams<{
     id: string
   }>()
 
   const getQuestionIndexFromSearchString = (): //  search: string
 
-  number | undefined => {
+    number | undefined => {
     const qValue = new URLSearchParams(location.search)?.get('q')
-    const qNum = parseInt(qValue || '0')
+    const qNum = parseInt(qValue || '')
     return isNaN(qNum) ? undefined : qNum
   }
 
@@ -74,20 +74,20 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   const isSaving = useIsMutating()
 
   //rq get and modify data hooks
-  const {data: _assessment} = useSurveyAssessment(
+  const { data: _assessment } = useSurveyAssessment(
     true,
     isNewSurvey() ? undefined : surveyGuid
   )
-  const {data: _survey} = useSurveyConfig(
+  const { data: _survey } = useSurveyConfig(
     isNewSurvey() ? undefined : surveyGuid
   )
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
 
-  const {mutateAsync: mutateAssessment, status} = useUpdateSurveyAssessment()
+  const { mutateAsync: mutateAssessment, status } = useUpdateSurveyAssessment()
 
-  const {mutateAsync: mutateSurvey} = useUpdateSurveyConfig()
+  const { mutateAsync: mutateSurvey } = useUpdateSurveyConfig()
 
-  const {mutateAsync: mutateResource} = useUpdateSurveyResource()
+  const { mutateAsync: mutateResource } = useUpdateSurveyResource()
 
   const [debugOpen, setDebugOpen] = React.useState(false)
 
@@ -119,7 +119,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       if (!r) {
         throw new Error('no resource')
       }
-      return mutateResource({assessment, resource: r})
+      return mutateResource({ assessment, resource: r })
     }
   }
 
@@ -130,8 +130,8 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   ) => {
     setError(undefined)
     try {
-      const result = await mutateAssessment({assessment: asmnt, action})
-      await mutateSurvey({guid: result.guid!, survey})
+      const result = await mutateAssessment({ assessment: asmnt, action })
+      await mutateSurvey({ guid: result.guid!, survey })
 
       console.log('success')
       console.log(result)
@@ -154,7 +154,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     }
     setSurvey(updatedSurvey)
 
-    await mutateSurvey({guid: surveyGuid, survey: updatedSurvey})
+    await mutateSurvey({ guid: surveyGuid, survey: updatedSurvey })
   }
 
   const navigateStep = async (id: number, shouldSave = true) => {
@@ -201,7 +201,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     const id = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
     const q = QUESTIONS.get(title)
     if (q && q.default) {
-      const newStep: Step = {...q.default} as Step
+      const newStep: Step = { ...q.default } as Step
       newStep.identifier = `${newStep.identifier}_${id}`
 
       //if we are adding first step, also add completion
@@ -258,7 +258,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       : undefined
 
   const duplicateCurrentStep = async () => {
-    const newStep: Question = {...getCurrentStep()!}
+    const newStep: Question = { ...getCurrentStep()! }
     const id = UtilityObject.generateNonambiguousCode(6, 'CONSONANTS')
     const identifier = newStep.identifier.split('_')
     identifier[identifier.length - 1] = id
@@ -269,7 +269,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   const save = async () => {
     console.log('!!!saving', survey)
 
-    await mutateSurvey({guid: surveyGuid, survey: survey!})
+    await mutateSurvey({ guid: surveyGuid, survey: survey! })
     console.log('done')
   }
   const deleteCurrentStep = async () => {
@@ -308,7 +308,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   return (
     <Loader reqStatusLoading={!isNewSurvey() && !survey}>
       <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
-        {({onConfirm, onCancel}) => (
+        {({ onConfirm, onCancel }) => (
           <ConfirmationDialog
             isOpen={hasObjectChanged}
             type={'NAVIGATE'}

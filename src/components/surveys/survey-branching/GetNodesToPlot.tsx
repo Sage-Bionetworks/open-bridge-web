@@ -1,19 +1,19 @@
 import UtilityObject from '@helpers/utility'
-import {Box, styled} from '@mui/material'
-import {latoFont} from '@style/theme'
-import {ChoiceQuestion, Step} from '@typedefs/surveys'
-import {Edge, MarkerType, Node, Position} from 'react-flow-renderer'
+import { Box, styled } from '@mui/material'
+import { latoFont } from '@style/theme'
+import { ChoiceQuestion, Step } from '@typedefs/surveys'
+import { Edge, MarkerType, Node, Position } from 'react-flow-renderer'
 import QUESTIONS, {
-  getQuestionId,
+  getQuestionId
 } from '../survey-design/left-panel/QuestionConfigs'
-import {DivContainer} from '../survey-design/left-panel/QuestionTypeDisplay'
+import { DivContainer } from '../survey-design/left-panel/QuestionTypeDisplay'
 
 const HWIDTH = 120
 const HHEIGHT = 150
 
-const StyledQuestionTitle = styled('div', {label: 'StyledQuestionTitle'})<{
+const StyledQuestionTitle = styled('div', { label: 'StyledQuestionTitle' })<{
   unconnected?: boolean
-}>(({theme, unconnected}) => ({
+}>(({ theme, unconnected }) => ({
   '&.title': {
     fontSize: '12px',
     position: 'absolute',
@@ -37,10 +37,10 @@ function createNode(
   isUnconnected: boolean
 ): Node {
   const label = (
-    <div style={{position: 'relative'}}>
+    <div style={{ position: 'relative' }}>
       <DivContainer>
         {QUESTIONS.get(getQuestionId(q))?.img}
-        <Box>{qSequentialIndex + 1}</Box>
+        {(q.type !== 'completion' && q.type !== 'overview') && <Box>{qSequentialIndex}</Box>}
         <StyledQuestionTitle className="title" unconnected={isUnconnected}>
           {q.title}
         </StyledQuestionTitle>
@@ -50,8 +50,8 @@ function createNode(
 
   return {
     id: q.identifier,
-    data: {label: label},
-    position: {x: xCoord, y: yCoord},
+    data: { label: label },
+    position: { x: xCoord, y: yCoord },
     sourcePosition: Position.Right,
     targetPosition: Position.Left,
   }
@@ -63,7 +63,7 @@ function createEdge(i1: string, i2: string) {
     source: i1,
     target: i2,
     type: 'default',
-    markerEnd: {type: MarkerType.ArrowClosed, color: '#000'},
+    markerEnd: { type: MarkerType.ArrowClosed, color: '#000' },
   }
 }
 
@@ -101,7 +101,7 @@ function getCoordinatesForNextNode(
   const cx = nextRow ? 0 : x + HWIDTH
   const cy = nextRow ? HHEIGHT + newHeight : newHeight
 
-  return {x: cx, y: cy, nextRow: nextRow, lastInRow: lastInRow}
+  return { x: cx, y: cy, nextRow: nextRow, lastInRow: lastInRow }
 }
 
 function getCoordiatesForNextDisconnectedNode(
@@ -118,7 +118,7 @@ function getCoordiatesForNextDisconnectedNode(
   const cx = rows > 1 ? HWIDTH * newI : index * HWIDTH
   const cy = rows * HHEIGHT
 
-  return {x: cx, y: cy}
+  return { x: cx, y: cy }
 }
 
 function getChildNodes(questions: ChoiceQuestion[], q: ChoiceQuestion) {
@@ -259,7 +259,7 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
     nodes.push(node)
   })
 
-  return {nodes, edges, error}
+  return { nodes, edges, error }
 }
 
 //function detect cycles in a graph using DFS
@@ -323,7 +323,7 @@ export const getEdgesFromSteps = (questions: ChoiceQuestion[]) => {
 
   addEdge(questions[0], undefined)
 
-  return {edges, error}
+  return { edges, error }
 }
 
 export default getNodes
