@@ -1,9 +1,9 @@
 //unit tests for ./Completion.tsx using react-testing-library
 
 
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router-dom'
+import { screen } from '@testing-library/react'
+import { Step } from '@typedefs/surveys'
+import { renderSurveyQuestionComponent } from '__test_utils/utils'
 import Completion from './Completion'
 
 jest.mock('react-router-dom', () => ({
@@ -12,34 +12,26 @@ jest.mock('react-router-dom', () => ({
         id: 'survey_12345'
     })
 }))
-//render the component
-const renderComponent = (props: any) => {
-    const user = userEvent.setup()
-    const element = render(
-        <MemoryRouter>
-            <Completion {...props} />
-        </MemoryRouter>)
-    return { user, element }
+
+const renderComponent = (step: Step) => {
+    return renderSurveyQuestionComponent({ step, Component: Completion })
 }
 
+
 //mock the props
-const mockProps = {
-    step: {
-        type: 'completion',
-        identifier: 'completion',
-        title: 'Completion',
-        detail: 'Thank you for completing the survey.',
-        image: {
-            type: 'sageResource',
-            imageName: 'survey',
-        },
+const step: Step = {
+    type: 'completion',
+    identifier: 'completion',
+    title: 'Completion',
+    detail: 'Thank you for completing the survey.',
+    image: {
+        type: 'sageResource',
+        imageName: 'survey',
     },
-    onChange: jest.fn(),
 }
 
 test('has the link to branching', async () => {
-    const { user, element } = renderComponent(mockProps)
-    element.debug()
+    const { user, element } = renderComponent(step)
     const link = screen.getByRole('link')
     expect(link.getAttribute('href')).toBe('/surveys/survey_12345/branching')
 })
