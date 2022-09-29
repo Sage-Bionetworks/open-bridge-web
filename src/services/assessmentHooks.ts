@@ -139,7 +139,7 @@ export const useUpdateSurveyConfig = () => {
     return AssessmentService.updateSurveyAssessmentConfig(guid, survey, token!)
   }
 
-  const mutation = useMutation(update, {
+  const mutation = useMutation<Survey, Error, any, any>(update, {
     onMutate: async props => {
       queryClient.cancelQueries(ASSESSMENT_KEYS.assessmentConfig(props.guid))
     },
@@ -178,7 +178,7 @@ export const useUpdateSurveyResource = () => {
     )
   }
 
-  const mutation = useMutation(update, {
+  const mutation = useMutation<AssessmentResource, Error, any, any>(update, {
     onMutate: async props => {
       queryClient.cancelQueries(
         ASSESSMENT_KEYS.assessment(props.assessment.guid!)
