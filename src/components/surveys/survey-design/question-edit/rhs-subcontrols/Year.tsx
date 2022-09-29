@@ -1,18 +1,18 @@
 import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
-import {SimpleTextInput} from '@components/widgets/StyledComponents'
+import { SimpleTextInput } from '@components/widgets/StyledComponents'
 import {
   Box,
   FormControlLabel,
   Radio,
   RadioGroup,
   styled,
-  Typography,
+  Typography
 } from '@mui/material'
-import {theme} from '@style/theme'
-import {FormatOptionsYear, Step, YearQuestion} from '@typedefs/surveys'
+import { theme } from '@style/theme'
+import { FormatOptionsYear, Step, YearQuestion } from '@typedefs/surveys'
 import React from 'react'
 
-const Labels = styled('div', {label: 'labels'})(({theme}) => ({
+const Labels = styled('div', { label: 'labels' })(({ theme }) => ({
   backgroundColor: '#fff',
   padding: theme.spacing(2, 1.5),
   marginTop: theme.spacing(2),
@@ -28,64 +28,70 @@ const Labels = styled('div', {label: 'labels'})(({theme}) => ({
 
 type LimitType = 'VALUE' | 'NONE'
 
+const CONFIG = {
+  MIN: {
+    label: 'Minimum year:',
+    anyLabel: 'Allow anytime in the past',
+    yearLabel: 'Set Min Value',
+    validateRange: (e: number, formatOptions: FormatOptionsYear) =>
+      !formatOptions.maximumYear || e < formatOptions.maximumYear,
+    fields: {
+      NONE: 'allowPast',
+      VALUE: 'minimumYear',
+    } as Record<string, keyof FormatOptionsYear>,
+  },
+  MAX: {
+    label: 'Maximum year:',
+    anyLabel: 'Allow anytime in the future',
+    yearLabel: 'Set Max Value',
+    validateRange: (e: number, formatOptions: FormatOptionsYear) =>
+      !formatOptions.minimumYear || e > formatOptions.minimumYear,
+    fields: {
+      NONE: 'allowFuture',
+      VALUE: 'maximumYear',
+    } as Record<string, keyof FormatOptionsYear>,
+  },
+}
+
+const getLimitYearValue = (type: 'MIN' | 'MAX', formatOptions?: FormatOptionsYear): number | undefined => {
+  const valueField = CONFIG[type].fields['VALUE']
+  return formatOptions?.[valueField]
+    ? parseInt(formatOptions[valueField]!.toString())
+    : undefined
+}
+
+const getPFValue = (type: 'MAX' | 'MIN', fo?: FormatOptionsYear) => {
+  const pFField = CONFIG[type].fields['NONE']
+  return (
+    !fo ||
+    fo[pFField] === undefined ||
+    fo[pFField]
+  )
+}
+
+
+function getLimit(type: 'MAX' | 'MIN', fo?: FormatOptionsYear): LimitType {
+  const limitYearValue = getLimitYearValue(type, fo)
+  if (limitYearValue || getPFValue(type, fo) === false) {
+    return 'VALUE'
+  }
+
+  return 'NONE'
+}
+
 const Limit: React.FunctionComponent<{
   type: 'MAX' | 'MIN'
   formatOptions: FormatOptionsYear
   onChange: (fo: FormatOptionsYear) => void
-}> = ({formatOptions, type, onChange}) => {
+}> = ({ formatOptions, type, onChange }) => {
   const [exclude, setExclude] = React.useState<LimitType>('NONE')
   const [value, setValue] = React.useState('')
   const [error, setError] = React.useState('')
 
-  const CONFIG = {
-    MIN: {
-      label: 'Minimum year:',
-      anyLabel: 'Allow anytime in the past',
-      yearLabel: 'Set Min Value',
-      validateRange: (e: number) =>
-        !formatOptions.maximumYear || e < formatOptions.maximumYear,
-      fields: {
-        NONE: 'allowPast',
-        VALUE: 'minimumYear',
-      } as Record<string, keyof FormatOptionsYear>,
-    },
-    MAX: {
-      label: 'Maximum year:',
-      anyLabel: 'Allow anytime in the future',
-      yearLabel: 'Set Max Value',
-      validateRange: (e: number) =>
-        !formatOptions.minimumYear || e > formatOptions.minimumYear,
-      fields: {
-        NONE: 'allowFuture',
-        VALUE: 'maximumYear',
-      } as Record<string, keyof FormatOptionsYear>,
-    },
-  }
 
-  const getPFValue = () => {
-    const pFField = CONFIG[type].fields['NONE']
-    return (
-      !formatOptions ||
-      formatOptions[pFField] === undefined ||
-      formatOptions[pFField]
-    )
-  }
 
-  const getLimitYearValue = (): number | undefined => {
-    const valueField = CONFIG[type].fields['VALUE']
-    return formatOptions?.[valueField]
-      ? parseInt(formatOptions[valueField]!.toString())
-      : undefined
-  }
 
-  function getLimit(type: 'MAX' | 'MIN', fo?: FormatOptionsYear): LimitType {
-    const limitYearValue = getLimitYearValue()
-    if (limitYearValue || getPFValue() === false) {
-      return 'VALUE'
-    }
 
-    return 'NONE'
-  }
 
   const validateYear = (val: string): boolean => {
     const intVal = parseInt(val)
@@ -93,7 +99,7 @@ const Limit: React.FunctionComponent<{
       setError('Please enter a valid year')
       return false
     }
-    var validRange = CONFIG[type].validateRange(intVal)
+    var validRange = CONFIG[type].validateRange(intVal, formatOptions)
     if (!validRange) {
       setError('Please make sure your minimum is less than you maximum')
       return false
@@ -108,13 +114,13 @@ const Limit: React.FunctionComponent<{
 
   React.useEffect(() => {
     const limit = getLimit(type, formatOptions)
-    const value = getLimitYearValue()
+    const value = getLimitYearValue(type, formatOptions)
     setExclude(limit)
     setValue(value ? value.toString() : '')
-  }, [formatOptions, type, getLimitYearValue, getLimit])
+  }, [formatOptions, type])
 
   const onUpdateFormat = (fo: FormatOptionsYear, limit: LimitType) => {
-    const _fo = {...fo}
+    const _fo = { ...fo }
     let isValid = true
     setError('')
 
@@ -129,7 +135,7 @@ const Limit: React.FunctionComponent<{
 
     if (limit === 'VALUE') {
       isValid = value ? validateYear(value) : true
-      result = {..._fo, [allowXField]: false, [valueField]: value || undefined}
+      result = { ..._fo, [allowXField]: false, [valueField]: value || undefined }
     }
 
     if (isValid && result) {
@@ -151,22 +157,22 @@ const Limit: React.FunctionComponent<{
           }}>
           <FormControlLabel
             value="NONE"
-            sx={{mt: theme.spacing(1.5), alignItems: 'center'}}
+            sx={{ mt: theme.spacing(1.5), alignItems: 'center' }}
             control={<Radio />}
             label={CONFIG[type].anyLabel}
           />
 
           <FormControlLabel
-            sx={{alignItems: 'center'}}
+            sx={{ alignItems: 'center' }}
             value="VALUE"
             control={<Radio />}
             label={
-              <Box sx={{display: 'flex', alignItems: 'center'}}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <span>{CONFIG[type].yearLabel}</span>{' '}
                 <SimpleTextInput
                   value={value || ''}
                   onChange={e => {
-                    setExclude('VALUE')
+                    if (exclude !== value) { setExclude('VALUE') }
                     setValue(e.target.value || '')
                   }}
                   onBlur={e => {
@@ -175,7 +181,7 @@ const Limit: React.FunctionComponent<{
                   sx={{
                     width: '75px',
                     marginLeft: theme.spacing(1),
-                    '> input': {padding: theme.spacing(1)},
+                    '> input': { padding: theme.spacing(1) },
                   }}
                 />
               </Box>
@@ -191,14 +197,14 @@ const Limit: React.FunctionComponent<{
 const Time: React.FunctionComponent<{
   step: YearQuestion
   onChange: (step: Step) => void
-}> = ({step, onChange}) => {
+}> = ({ step, onChange }) => {
   return (
     <>
       <Limit
         formatOptions={step.inputItem.formatOptions || {}}
         onChange={fo => {
           console.log('changing to', fo)
-          onChange({...step, inputItem: {...step.inputItem, formatOptions: fo}})
+          onChange({ ...step, inputItem: { ...step.inputItem, formatOptions: fo } })
         }}
         type="MIN"
       />
@@ -206,7 +212,7 @@ const Time: React.FunctionComponent<{
         formatOptions={step.inputItem.formatOptions || {}}
         onChange={fo => {
           console.log('changing to', fo)
-          onChange({...step, inputItem: {...step.inputItem, formatOptions: fo}})
+          onChange({ ...step, inputItem: { ...step.inputItem, formatOptions: fo } })
         }}
         type="MAX"
       />
