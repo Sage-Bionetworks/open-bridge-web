@@ -132,7 +132,7 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
       onSuccess: (assessment: Assessment) => {
         mutateSurvey({ guid: assessment.guid!, survey }, {
           onSuccess: () => {
-            history.push(`/surveys/${assessment.guid}design/question?q=0`)
+            history.push(`/surveys/${assessment.guid}/design/question?q=0`)
           }
         })
       },
