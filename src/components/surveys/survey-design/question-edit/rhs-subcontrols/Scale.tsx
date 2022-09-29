@@ -1,18 +1,18 @@
 import {
   StyledFormControl,
-  StyledLabel14,
+  StyledLabel14
 } from '@components/surveys/widgets/SharedStyled'
 import {
   StyledDropDown,
-  StyledDropDownItem,
+  StyledDropDownItem
 } from '@components/surveys/widgets/StyledDropDown'
-import {SimpleTextInput} from '@components/widgets/StyledComponents'
-import {Box, MenuItem, OutlinedInput, styled} from '@mui/material'
-import {theme} from '@style/theme'
-import {FormatOptionsInteger, ScaleQuestion, Step} from '@typedefs/surveys'
-import {ChangeEvent} from 'react'
+import { SimpleTextInput } from '@components/widgets/StyledComponents'
+import { Box, MenuItem, OutlinedInput, styled } from '@mui/material'
+import { theme } from '@style/theme'
+import { FormatOptionsInteger, ScaleQuestion, Step } from '@typedefs/surveys'
+import { ChangeEvent } from 'react'
 
-const Labels = styled('div', {label: 'labels'})(({theme}) => ({
+const Labels = styled('div', { label: 'labels' })(({ theme }) => ({
   backgroundColor: '#fff',
   padding: theme.spacing(2, 1.5),
 
@@ -32,7 +32,7 @@ const ValueSelector: React.FunctionComponent<{
   type: 'MIN' | 'MAX'
   gtValue?: number
   onChange: (value: number) => void
-}> = ({value, scaleType, type, gtValue = -1, onChange}) => {
+}> = ({ value, scaleType, type, gtValue = -1, onChange }) => {
   const CONFIG = {
     MIN: {
       label: 'Min Value',
@@ -48,7 +48,7 @@ const ValueSelector: React.FunctionComponent<{
   }
 
   return (
-    <StyledFormControl sx={{marginRight: theme.spacing(2)}}>
+    <StyledFormControl sx={{ marginRight: theme.spacing(2) }}>
       <StyledLabel14 mb={0.5} id={CONFIG[type].labelId}>
         {CONFIG[type].label}
       </StyledLabel14>
@@ -78,10 +78,10 @@ const ValueSelector: React.FunctionComponent<{
 const Scale: React.FunctionComponent<{
   step: ScaleQuestion
   onChange: (step: Step) => void
-}> = ({step, onChange}) => {
+}> = ({ step, onChange }) => {
   const onUpdateFormat = (fm: FormatOptionsInteger) => {
-    const inputItem = {...step.inputItem, formatOptions: fm}
-    onChange({...step, inputItem})
+    const inputItem = { ...step.inputItem, formatOptions: fm }
+    onChange({ ...step, inputItem })
   }
   return (
     <>
@@ -106,9 +106,9 @@ const Scale: React.FunctionComponent<{
           gtValue={1}
           value={
             step.inputItem.formatOptions.maximumValue ||
-            step.uiHint === 'likert'
+            (step.uiHint === 'likert'
               ? 7
-              : 100
+              : 100)
           }
           onChange={num =>
             onUpdateFormat({
