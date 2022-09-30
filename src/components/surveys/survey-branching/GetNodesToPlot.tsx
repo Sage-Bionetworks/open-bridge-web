@@ -2,7 +2,7 @@ import UtilityObject from '@helpers/utility'
 import { Box, styled } from '@mui/material'
 import { latoFont } from '@style/theme'
 import { ChoiceQuestion, Step } from '@typedefs/surveys'
-import { Edge, MarkerType, Node, Position } from 'react-flow-renderer'
+import { Edge, MarkerType, Node, Position } from 'reactflow'
 import QUESTIONS, {
   getQuestionId
 } from '../survey-design/left-panel/QuestionConfigs'

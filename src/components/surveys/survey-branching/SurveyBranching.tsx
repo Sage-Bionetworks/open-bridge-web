@@ -1,10 +1,10 @@
-import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
-import {Box, styled} from '@mui/material'
-import {useSurveyConfig, useUpdateSurveyConfig} from '@services/assessmentHooks'
-import {latoFont} from '@style/theme'
-import {SmartStepEdge} from '@tisoap/react-flow-smart-edge'
-import {ChoiceQuestion, Survey} from '@typedefs/surveys'
-import React, {FunctionComponent} from 'react'
+import ConfirmationDialog from '@components/widgets/ConfirmationDialog';
+import { Box, styled } from '@mui/material';
+import { useSurveyConfig, useUpdateSurveyConfig } from '@services/assessmentHooks';
+import { latoFont } from '@style/theme';
+import { ChoiceQuestion, Survey } from '@typedefs/surveys';
+import React, { FunctionComponent } from 'react';
+import 'reactflow/dist/style.css';
 
 import ReactFlow, {
   addEdge,
@@ -15,20 +15,20 @@ import ReactFlow, {
   EdgeChange,
   FitViewOptions,
   Node,
-  NodeChange,
-} from 'react-flow-renderer'
+  NodeChange
+} from 'reactflow';
 
-import {RouteComponentProps, useParams} from 'react-router-dom'
-import NavigationPrompt from 'react-router-navigation-prompt'
-import BranchingConfig from './BranchingConfig'
-import getNodes, {detectCycle, getEdgesFromSteps} from './GetNodesToPlot'
-import {useGetPlotWidth} from './UseGetPlotWidth'
+import { RouteComponentProps, useParams } from 'react-router-dom';
+import NavigationPrompt from 'react-router-navigation-prompt';
+import BranchingConfig from './BranchingConfig';
+import getNodes, { detectCycle, getEdgesFromSteps } from './GetNodesToPlot';
+import { useGetPlotWidth } from './UseGetPlotWidth';
 
-const edgeTypes = {
+/*const edgeTypes = {
   smart: SmartStepEdge,
-}
+}*/
 
-const SurveyBranchingContainerBox = styled(Box)(({theme}) => ({
+const SurveyBranchingContainerBox = styled(Box)(({ theme }) => ({
   position: 'relative',
   backgroundColor: '#fcfcfc',
   padding: theme.spacing(3),
@@ -72,12 +72,12 @@ const fitViewOptions: FitViewOptions = {
 type SurveyBranchingProps = SurveyBranchingOwnProps & RouteComponentProps
 
 const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
-  let {id: surveyGuid} = useParams<{
+  let { id: surveyGuid } = useParams<{
     id: string
   }>()
 
   const ref = React.useRef<HTMLDivElement>(null)
-  const {width} = useGetPlotWidth(ref)
+  const { width } = useGetPlotWidth(ref)
   const [survey, setSurvey] = React.useState<Survey | undefined>()
   const [error, setError] = React.useState('')
   const [hasObjectChanged, setHasObjectChanged] = React.useState(false)
@@ -102,9 +102,9 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
     [setEdges]
   )
 
-  const {data: _survey} = useSurveyConfig(surveyGuid)
+  const { data: _survey } = useSurveyConfig(surveyGuid)
 
-  const {mutateAsync: mutateSurvey} = useUpdateSurveyConfig()
+  const { mutateAsync: mutateSurvey } = useUpdateSurveyConfig()
 
   React.useEffect(() => {
     if (_survey) {
@@ -131,7 +131,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   const saveSurvey = async () => {
     setError('')
     try {
-      await mutateSurvey({guid: surveyGuid, survey: survey!})
+      await mutateSurvey({ guid: surveyGuid, survey: survey! })
       setHasObjectChanged(false)
       setIsHideInput(true)
     } catch (error) {
@@ -150,7 +150,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
       setHasObjectChanged(true)
       setSurvey({
         ...survey,
-        config: {...survey!.config, steps: steps},
+        config: { ...survey!.config, steps: steps },
       })
     }
   }
@@ -191,7 +191,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   return (
     <>
       <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
-        {({onConfirm, onCancel}) => (
+        {({ onConfirm, onCancel }) => (
           <ConfirmationDialog
             isOpen={hasObjectChanged}
             type={'NAVIGATE'}
@@ -219,7 +219,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
               onEdgesChange={onEdgesChange}
               preventScrolling={false}
               onConnect={onConnect}
-              edgeTypes={edgeTypes}
+
               fitView={false}
               fitViewOptions={fitViewOptions}
             />
