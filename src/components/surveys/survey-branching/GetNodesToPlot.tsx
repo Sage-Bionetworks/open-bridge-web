@@ -63,8 +63,9 @@ function createEdge(i1: string, i2: string, isDisconnected?: boolean): Edge {
     target: i2,
     type: 'smoothstep',
     animated: !!isDisconnected,
-    style: { stroke: isDisconnected ? 'red' : 'back' },
-    markerEnd: { type: MarkerType.ArrowClosed, color: isDisconnected ? 'red' : 'back' },
+
+    style: { stroke: isDisconnected ? 'red' : 'black' },
+    markerEnd: { type: MarkerType.ArrowClosed, color: !!isDisconnected ? 'red' : 'black' },
   }
 }
 
@@ -72,7 +73,7 @@ function getChildNodes(questions: ChoiceQuestion[], q: ChoiceQuestion) {
   let nextQs: ChoiceQuestion[] = []
   const qChoiceValues = (q.choices || []).map(c => c.value) || []
   //if surveyRules
-  if (q.surveyRules) {
+  if (q.surveyRules?.length) {
     //only use the rules that map to the choices the question has,
     // find ids we are going to next/create a set to remove dups
     //only included rules that have matchingAnswer
@@ -138,9 +139,9 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
 
         const edge = createEdge(q.identifier, child.identifier)
         // console.log('adding edge', edge, nextQs.length)
-        if (edges.findIndex(e => e.id === edge.id) === -1) {
-          edges.push(edge)
-        }
+        // if (edges.findIndex(e => e.id === edge.id) === -1) {
+        edges.push(edge)
+        //  }
 
 
         const indexOfNode = nodes.findIndex(q1 => q1.id === child.identifier)
@@ -186,9 +187,9 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
 
         const edge = createEdge(dq.identifier, child.identifier, true)
         // console.log('adding edge', edge, nextQs.length)
-        if (edges.findIndex(e => e.id === edge.id) === -1) {
-          edges.push(edge)
-        }
+        //  if (edges.findIndex(e => e.id === edge.id) === -1) {
+        edges.push(edge)
+        //  }
       }
     }
 

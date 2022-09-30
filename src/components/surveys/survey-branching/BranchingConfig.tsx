@@ -1,4 +1,5 @@
 import SurveyUtils from '@components/surveys/SurveyUtils'
+import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
 import {
   DialogButtonPrimary,
   DialogButtonSecondary
@@ -22,13 +23,14 @@ import {
 } from '@mui/material'
 import { latoFont, theme } from '@style/theme'
 import { ChoiceQuestion, Step, SurveyRuleOperator } from '@typedefs/surveys'
-import { FunctionComponent } from 'react'
+import React, { FunctionComponent } from 'react'
 import Draggable from 'react-draggable'
 import QUESTIONS, {
   getQuestionId
 } from '../survey-design/left-panel/QuestionConfigs'
 import { DivContainer } from '../survey-design/left-panel/QuestionTypeDisplay'
 import { StyledDropDown, StyledDropDownItem } from '../widgets/StyledDropDown'
+import { detectCycle, getEdgesFromSteps } from './GetNodesToPlot'
 
 // agendel TODO: refactor duplicate
 const getBgColor = (mode: 'light' | 'dark' = 'dark') => {
@@ -169,6 +171,35 @@ const NextQuestionDropdown: FunctionComponent<{
   )
 }
 
+const CycleError: FunctionComponent<{ qNumber: number }> = ({ qNumber }) => {
+  return (
+    <div style={{ backgroundColor: '#FCD2D2', padding: '8px 12px' }}>
+      <AlertWithTextWrapper>
+        <div style={{ color: 'black', fontSize: '12px' }}>
+          <strong>Cycles detected.</strong>
+          <div>Skipping to Question {qNumber} will cause an infinite loop<br />
+            Please select another question to skip to.</div>
+        </div>
+      </AlertWithTextWrapper>
+    </div>
+  )
+}
+
+const RuleError: FunctionComponent<{}> = () => {
+  return (
+    <div style={{ backgroundColor: '#FCD2D2', padding: '8px 12px' }}>
+      <AlertWithTextWrapper>
+        <div style={{ color: 'black', fontSize: '12px' }}>
+          <strong>Unreachable Selection.</strong>
+          <div>You should either leave some choices undefined <br />
+            or have a 'Skip To' value that mathes on of the choices
+          </div>
+        </div>
+      </AlertWithTextWrapper>
+    </div>
+  )
+}
+
 const BranchingConfig: FunctionComponent<{
   error?: string
 
@@ -189,65 +220,109 @@ const BranchingConfig: FunctionComponent<{
   isOpen,
   onSave,
 }) => {
+
+    const [cycleErrQNum, setCycleErrQNum] = React.useState<number | undefined>(undefined)
+    const [hasUnreachableState, setHasUnreachableState] = React.useState(false)
     if (!step) {
       return <></>
     }
     const qTypeId = getQuestionId(step)
 
+
+    const validateAndSave = (updatedSteps: ChoiceQuestion[], changedStepId: string) => {
+      setCycleErrQNum(undefined)
+      setHasUnreachableState(false)
+      const updatedStep = updatedSteps.find(s => s.identifier === step.identifier)
+      if (updatedStep?.surveyRules) {
+        //if we have rules for each step and skip to is not one of them then we have an error
+        if (updatedStep.choices.length === updatedStep.surveyRules.length && !updatedStep.surveyRules.find(r => r.skipToIdentifier === updatedStep.nextStepIdentifier)) {
+          setHasUnreachableState(true)
+          return
+        }
+      }
+
+      const edges = getEdgesFromSteps(updatedSteps)
+
+      const cycles = detectCycle(edges.edges)
+      if (cycles) {
+        setCycleErrQNum(SurveyUtils.getSequentialQuestionIndex(changedStepId, questions).index)
+      }
+      else {
+        onChange(updatedSteps)
+      }
+    }
+
+    //change the skip to question in a dropdown
     const onChangeNextId = (stepId: string) => {
-      onChange(
+      validateAndSave(
         questions.map(_question =>
           _question.identifier === step.identifier
             ? { ..._question, nextStepIdentifier: stepId }
             : _question
-        )
+        ), stepId
       )
     }
+    //radio button change
     const onChangeNextOption = (hasNextDefined: string) => {
       let newSteps: ChoiceQuestion[]
+      const stepIndex = SurveyUtils.getSequentialQuestionIndex(step.identifier, questions).index
       if (hasNextDefined === 'false') {
         newSteps = questions.map(_question =>
           _question.identifier === step.identifier
-            ? { ..._question, nextStepIdentifier: undefined }
+            ? { ..._question, nextStepIdentifier: undefined, surveyRules: [] }
             : _question
         )
       } else {
         newSteps = questions.map((_question, i) =>
           _question.identifier === step.identifier
-            ? { ..._question, nextStepIdentifier: questions[i + 1].identifier }
+            ? { ..._question, nextStepIdentifier: questions[stepIndex + 1]?.identifier }
             : _question
         )
       }
-      onChange(newSteps)
+      validateAndSave(newSteps, questions[stepIndex + 1]?.identifier)
     }
 
     const changeRuleMapping = (
       optionValue: string | number | boolean | undefined,
       nextStepId: string
     ) => {
+      //make a copy of the rules
       let rules = [...(step.surveyRules || [])]
-      const i = rules?.findIndex(r => r.matchingAnswer === optionValue)
+      const ruleIndexToUpdate = rules?.findIndex(r => r.matchingAnswer === optionValue)
       const rule = {
         matchingAnswer: optionValue,
         ruleOperator: 'eq' as SurveyRuleOperator,
         skipToIdentifier: nextStepId,
       }
-
-      if (i === -1) {
+      //update the rules
+      if (ruleIndexToUpdate === -1) {
         rules.push(rule)
       } else {
-        rules[i] = rule
+        rules[ruleIndexToUpdate] = rule
       }
+
+
+      //if we have the rule we will always have nextStepIdentifier
       const newSteps = questions.map(_question =>
         _question.identifier === step.identifier
           ? {
             ..._question,
             surveyRules: rules,
+            nextStepIdentifier: step.nextStepIdentifier || nextStepId
           }
           : _question
       )
       console.log(newSteps)
-      onChange(newSteps)
+      validateAndSave(newSteps, nextStepId)
+    }
+
+    const closeModal = () => {
+      setCycleErrQNum(undefined)
+      setHasUnreachableState(false)
+      onCancel()
+    }
+    const isSaveDisabled = () => {
+      return cycleErrQNum !== undefined || hasUnreachableState
     }
     return (
       <Dialog
@@ -258,7 +333,7 @@ const BranchingConfig: FunctionComponent<{
         scroll="body">
         <StyledDialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
           <CloseIcon
-            onClick={onCancel}
+            onClick={closeModal}
             fontSize="large"
             sx={{
               color: '#fff',
@@ -274,8 +349,10 @@ const BranchingConfig: FunctionComponent<{
           />
           <StyledSmallFont> {step.subtitle}</StyledSmallFont> {step.title}
           <StyledSmallFont> {step.detail}</StyledSmallFont>
-        </StyledDialogTitle>
 
+        </StyledDialogTitle>
+        {cycleErrQNum !== undefined && <CycleError qNumber={cycleErrQNum} />}
+        {hasUnreachableState && <RuleError />}
         <DialogContent>
           <Box sx={{ padding: theme.spacing(3) }}>
             {error && <div>{error}</div>}
@@ -357,8 +434,8 @@ const BranchingConfig: FunctionComponent<{
           </Box >
         </DialogContent >
         <DialogActions>
-          <DialogButtonSecondary onClick={onCancel}>Cancel</DialogButtonSecondary>
-          <DialogButtonPrimary onClick={onSave}>Save Changes</DialogButtonPrimary>
+          <DialogButtonSecondary onClick={closeModal}>Cancel</DialogButtonSecondary>
+          <DialogButtonPrimary onClick={onSave} disabled={isSaveDisabled()}>Save Changes</DialogButtonPrimary>
         </DialogActions>
       </Dialog >
     )

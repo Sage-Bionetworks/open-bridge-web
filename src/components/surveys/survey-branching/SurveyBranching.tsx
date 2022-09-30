@@ -24,7 +24,7 @@ import ReactFlow, {
 import { RouteComponentProps, useParams } from 'react-router-dom';
 import NavigationPrompt from 'react-router-navigation-prompt';
 import BranchingConfig from './BranchingConfig';
-import getNodes, { detectCycle, getEdgesFromSteps } from './GetNodesToPlot';
+import getNodes from './GetNodesToPlot';
 import { useGetPlotWidth } from './UseGetPlotWidth';
 
 /*const edgeTypes = {
@@ -201,19 +201,13 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   }
 
   const changeBranching = (steps: ChoiceQuestion[]) => {
-    const edges = getEdgesFromSteps(steps)
-    setError('')
-    const cycles = detectCycle(edges.edges)
-    if (cycles) {
-      setError('Cycles detected')
-      return
-    } else {
-      setHasObjectChanged(true)
-      setSurvey({
-        ...survey,
-        config: { ...survey!.config, steps: steps },
-      })
-    }
+
+    setHasObjectChanged(true)
+    setSurvey({
+      ...survey,
+      config: { ...survey!.config, steps: steps },
+    })
+
   }
 
   const onNodeClick = (x: any, node: Node) => {
@@ -277,9 +271,9 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
               edges={edges}
               onNodeClick={onNodeClick}
               onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
+              // onEdgesChange={onEdgesChange}
               preventScrolling={false}
-              onConnect={onConnect}
+              //  onConnect={onConnect}
               connectionLineType={ConnectionLineType.SmoothStep}
               fitView={false}
               fitViewOptions={fitViewOptions}

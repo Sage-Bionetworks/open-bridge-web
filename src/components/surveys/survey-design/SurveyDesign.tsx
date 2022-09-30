@@ -22,6 +22,8 @@ import {
   useLocation,
   useParams
 } from 'react-router-dom'
+// default styling
+
 import NavigationPrompt from 'react-router-navigation-prompt'
 import IntroInfo from './IntroInfo'
 import AddQuestionMenu from './left-panel/AddQuestionMenu'
