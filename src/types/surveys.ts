@@ -68,7 +68,7 @@ export type ChoiceQuestionChoice = {
   icon?: string
 }
 
-export type Instruction = BaseStep & {}
+export interface Instruction extends BaseStep { }
 export type ControlType =
   | 'radio'
   | 'checkbox'
@@ -77,7 +77,7 @@ export type ControlType =
   | 'time'
   | 'date'
 
-export type Question = BaseStep & {
+export interface Question extends BaseStep {
   optional?: boolean //true,
   inputItem?: InputItem
   skipCheckbox?: Skip
@@ -86,7 +86,7 @@ export type Question = BaseStep & {
   uiHint?: 'checkmark' | 'likert' | 'textfield' | 'slider'
 }
 
-export type ChoiceQuestion = Question & {
+export interface ChoiceQuestion extends Question {
   baseType: QuestionDataType
 
   surveyRules?: {
@@ -102,26 +102,26 @@ export type ChoiceQuestion = Question & {
     fieldLabel?: string // no column
   }
 }
-export type MultipleInputQuestion = BaseStep & {
+export interface MultipleInputQuestion extends Question {
   optional: boolean
   inputItems: InputItem[]
   skipCheckbox?: Skip
 }
-export type ScaleQuestion = Question & {
+export interface ScaleQuestion extends Question {
   uiHint: 'likert' | 'slider'
   inputItem: InputItem & {
     type: 'integer'
     formatOptions: FormatOptionsInteger
   }
 }
-export type DurationQuestion = Question & {
+export interface DurationQuestion extends Question {
   inputItem: InputItem & {
     type: 'duration'
     displayUnits: ['hour', 'minute']
   }
 }
 
-export type TimeQuestion = Question & {
+export interface TimeQuestion extends Question {
   inputItem: InputItem & {
     type: 'time'
 
@@ -129,31 +129,31 @@ export type TimeQuestion = Question & {
   }
 }
 
-export type NumericQuestion = Question & {
+export interface NumericQuestion extends Question {
   inputItem: InputItem & {
     type: 'integer'
     formatOptions?: FormatOptionsInteger
   }
 }
 
-export type YearQuestion = Question & {
+export interface YearQuestion extends Question {
   inputItem: InputItem & {
     type: 'year'
     formatOptions?: FormatOptionsYear
   }
 }
 
-export type BaseStep = {
+export interface BaseStep {
   identifier: string //'step1',
   controlType?: ControlType
   type:
-    | 'overview'
-    | 'completion'
-    | 'unkonwn'
-    | 'instruction'
-    | 'simpleQuestion'
-    //| 'multipleInputQuestion'
-    | 'choiceQuestion'
+  | 'overview'
+  | 'completion'
+  | 'unkonwn'
+  | 'instruction'
+  | 'simpleQuestion'
+  //| 'multipleInputQuestion'
+  | 'choiceQuestion'
   //   | 'comboBoxQuestion' //otherInputItem
   title: string //Instruction Step 1',
   subtitle?: string
@@ -162,7 +162,7 @@ export type BaseStep = {
   footnote?: string //'This is a footnote.',
   image?: /*ImageAnimated | ImageFetchable |*/ ImageResource
   shouldHideActions?: ActionButtonName[]
-  actions?: {goForward?: ActionButton; cancel?: ActionButton}
+  actions?: { goForward?: ActionButton; cancel?: ActionButton }
 }
 
 export type Step = Question | Instruction
@@ -183,7 +183,7 @@ export type InterruptionHandlingType = {
   canSaveForLater: boolean
 }
 export type SurveyConfig = {
-  webConfig?: {skipOption?: WebUISkipOptions}
+  webConfig?: { skipOption?: WebUISkipOptions }
   type: string //'assessment',
   interruptionHandling?: InterruptionHandlingType
   identifier: string //'foo',
@@ -196,7 +196,7 @@ export type SurveyConfig = {
   estimatedMinutes?: number //4,
   icon?: string //'fooIcon', ALINA TODO where is it coming from
   footnote?: string //This is a footnote.',
-  actions?: {goForward: ActionButton; cancel: ActionButton}
+  actions?: { goForward: ActionButton; cancel: ActionButton }
   shouldHideActions?: ActionButtonName[] //['goBackward']
   progressMarkers?: string[] //['step1','step2'],
   steps: Step[]
