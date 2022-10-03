@@ -28,13 +28,10 @@ const step: Step = {
 }
 
 
-
 //test the component renders
 test('renders the component', () => {
     renderComponent(step)
-
     expect(getTitle()).toBeInTheDocument()
-
     expect(getDetail()).toBeInTheDocument()
 })
 //test that the title can be edited
@@ -45,7 +42,6 @@ test('the title can be edited', async () => {
     expect(title).toHaveValue(step.title)
     await act(async () => await user.clear(title))
     await act(async () => await user.type(title, 'New Title'))
-
     expect(title).toHaveValue('New Title')
 })
 //test that the detail can be edited
