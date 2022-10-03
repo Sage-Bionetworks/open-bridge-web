@@ -46,7 +46,7 @@ const renderComponent = (props: any) => {
 
 test('renders the component, initially with loader', async () => {
 
-    renderComponent({})
+    const { user, element } = renderComponent({})
     expect(screen.queryByRole('progressbar')).toBeInTheDocument()
     await waitFor(() => {
 
