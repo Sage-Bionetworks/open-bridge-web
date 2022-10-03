@@ -281,7 +281,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
           </div>
         </Box>
 
-        {edges && getCurrentStep() && (
+        {edges && (getCurrentStep() !== undefined) && (
           <BranchingConfig
             onCancel={() => {
               setSurvey(_survey)
@@ -293,7 +293,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
             invalidTargetStepIds={getInvalidTargetStepIds()}
             onChange={steps => changeBranching(steps)}
             questions={survey!.config.steps as ChoiceQuestion[]}
-            step={getCurrentStep()}
+            step={getCurrentStep()!}
           />
         )}
       </SurveyBranchingContainerBox>

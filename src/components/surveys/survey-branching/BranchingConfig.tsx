@@ -25,6 +25,7 @@ import { latoFont, theme } from '@style/theme'
 import { ChoiceQuestion, Step, SurveyRuleOperator } from '@typedefs/surveys'
 import React, { FunctionComponent } from 'react'
 import Draggable from 'react-draggable'
+import useQuestionInfo from '../hooks/useQuestionInfo'
 import QUESTIONS, {
   getQuestionId
 } from '../survey-design/left-panel/QuestionConfigs'
@@ -116,27 +117,6 @@ function PaperComponent(props: PaperProps) {
   )
 }
 
-const QuestionDisplay: FunctionComponent<{
-  questions: Step[]
-  id: string
-
-  mode: 'light' | 'dark'
-}> = ({ id, questions, mode }) => {
-  const { index, isLast } = SurveyUtils.getSequentialQuestionIndex(id, questions)
-  if (index === -1) {
-    return <></>
-  }
-  const q = questions[index]
-  return (
-    <StyledQuestionDisplay mode={mode}>
-      <DivContainer>
-        {QUESTIONS.get(getQuestionId(q))?.img}
-        <div>{index}</div>
-      </DivContainer>
-    </StyledQuestionDisplay>
-  )
-}
-
 const NextQuestionDropdown: FunctionComponent<{
   questions: Step[]
   excludeIds: string[]
@@ -171,39 +151,44 @@ const NextQuestionDropdown: FunctionComponent<{
   )
 }
 
-const CycleError: FunctionComponent<{ qNumber: number }> = ({ qNumber }) => {
+const ErrorDisplay: FunctionComponent<{ qNumber?: number, isRuleError: boolean }> = ({ qNumber, isRuleError }) => {
+
+  if (qNumber === undefined && !isRuleError) {
+    return <></>
+  }
+  const textObj = {
+    rule: {
+      title: 'Unreachable Selection.',
+      body: (<>You should either leave some choices undefined <br />
+        or have a 'Skip To' value that mathes on of the choices'</>)
+
+    },
+    cycle: {
+      title: 'Cycles detected..',
+      body: (<>{`Skipping to Question ${qNumber} will cause an infinite loop<br />
+      Please select another question to skip to.`}</>)
+
+    }
+  }
+  const textToUse = qNumber !== undefined ? textObj.cycle : textObj.rule
   return (
-    <div style={{ backgroundColor: '#FCD2D2', padding: '8px 12px' }}>
+    <Box sx={{ bgcolor: theme.palette.error.light, padding: theme.spacing(1, 1.5) }}>
       <AlertWithTextWrapper>
-        <div style={{ color: 'black', fontSize: '12px' }}>
-          <strong>Cycles detected.</strong>
-          <div>Skipping to Question {qNumber} will cause an infinite loop<br />
-            Please select another question to skip to.</div>
-        </div>
+        <Box sx={{ color: 'black', fontSize: '12px' }}>
+          <strong>{textToUse.title}</strong>
+          <div>{textToUse.body}</div>
+        </Box>
       </AlertWithTextWrapper>
-    </div>
+    </Box>
   )
 }
 
-const RuleError: FunctionComponent<{}> = () => {
-  return (
-    <div style={{ backgroundColor: '#FCD2D2', padding: '8px 12px' }}>
-      <AlertWithTextWrapper>
-        <div style={{ color: 'black', fontSize: '12px' }}>
-          <strong>Unreachable Selection.</strong>
-          <div>You should either leave some choices undefined <br />
-            or have a 'Skip To' value that mathes on of the choices
-          </div>
-        </div>
-      </AlertWithTextWrapper>
-    </div>
-  )
-}
+
 
 const BranchingConfig: FunctionComponent<{
   error?: string
 
-  step?: ChoiceQuestion
+  step: ChoiceQuestion
   questions: ChoiceQuestion[]
   invalidTargetStepIds: string[]
   onCancel: () => void
@@ -223,10 +208,11 @@ const BranchingConfig: FunctionComponent<{
 
     const [cycleErrQNum, setCycleErrQNum] = React.useState<number | undefined>(undefined)
     const [hasUnreachableState, setHasUnreachableState] = React.useState(false)
+    const extendedStepInfo = useQuestionInfo(step, questions)
     if (!step) {
       return <></>
     }
-    const qTypeId = getQuestionId(step)
+    // const qTypeId = getQuestionId(step)
 
 
     const validateAndSave = (updatedSteps: ChoiceQuestion[], changedStepId: string) => {
@@ -342,17 +328,19 @@ const BranchingConfig: FunctionComponent<{
 
               right: '10px',
             }}></CloseIcon>
-          <QuestionDisplay
-            questions={questions}
-            id={step.identifier}
-            mode={'dark'}
-          />
+          <StyledQuestionDisplay mode='dark'>
+            <DivContainer>
+              {QUESTIONS.get(extendedStepInfo.stepType)?.img}
+              <div>{extendedStepInfo.index}</div>
+            </DivContainer>
+          </StyledQuestionDisplay>
+
           <StyledSmallFont> {step.subtitle}</StyledSmallFont> {step.title}
           <StyledSmallFont> {step.detail}</StyledSmallFont>
 
         </StyledDialogTitle>
-        {cycleErrQNum !== undefined && <CycleError qNumber={cycleErrQNum} />}
-        {hasUnreachableState && <RuleError />}
+        <ErrorDisplay qNumber={cycleErrQNum} isRuleError={hasUnreachableState} />
+
         <DialogContent>
           <Box sx={{ padding: theme.spacing(3) }}>
             {error && <div>{error}</div>}
@@ -400,7 +388,7 @@ const BranchingConfig: FunctionComponent<{
                 }
               />
             </RadioGroup >
-            {qTypeId === 'SINGLE_SELECT' && (
+            {extendedStepInfo.stepType === 'SINGLE_SELECT' && (
               <Box>
                 {step.choices && (
                   <StyledTable>
