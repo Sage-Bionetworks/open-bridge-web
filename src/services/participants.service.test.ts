@@ -17,7 +17,7 @@ describe('participants.service', () => {
         'study123',
         'token123',
         ['p123'],
-        {firstName: 'NewName'}
+        { firstName: 'NewName' }
       )
       const name = participant.firstName
 
@@ -40,7 +40,7 @@ describe('participants.service', () => {
         'study123',
         'token123',
         ['p123'],
-        {firstName: 'NewName', note: 'My Note'}
+        { firstName: 'NewName', note: 'My Note' }
       )
       const name = participant.firstName
 
@@ -56,29 +56,30 @@ describe('participants.service', () => {
           expect(value).toEqual(participant[key])
         }
       }
-    }),
-      it('it should uupdate timezone for several participants', async () => {
-        const result = await ParticipantService.updateParticipant(
-          'study123',
-          'token123',
-          ['p123', 'p456'],
-          {clientTimeZone: 'America/New_York'}
-        )
+    })
 
-        expect(result.length).toBe(2)
+    it('it should uupdate timezone for several participants', async () => {
+      const result = await ParticipantService.updateParticipant(
+        'study123',
+        'token123',
+        ['p123', 'p456'],
+        { clientTimeZone: 'America/New_York' }
+      )
 
-        //iterate over participant properties and check if they are updated
+      expect(result.length).toBe(2)
 
-        for (var participant of result) {
-          for (const [key, value] of Object.entries(participant)) {
-            if (key === 'clientTimeZone') {
-              expect(value).toBe('America/New_York')
-            } else {
-              //@ts-ignore
-              expect(value).toEqual(participant[key])
-            }
+      //iterate over participant properties and check if they are updated
+
+      for (var participant of result) {
+        for (const [key, value] of Object.entries(participant)) {
+          if (key === 'clientTimeZone') {
+            expect(value).toBe('America/New_York')
+          } else {
+            //@ts-ignore
+            expect(value).toEqual(participant[key])
           }
         }
-      })
+      }
+    })
   })
 })
