@@ -125,7 +125,7 @@ export interface TimeQuestion extends Question {
   inputItem: InputItem & {
     type: 'time'
 
-    formatOptions: FormatOptionsTime
+    formatOptions?: FormatOptionsTime
   }
 }
 
