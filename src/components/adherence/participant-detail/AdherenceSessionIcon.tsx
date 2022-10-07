@@ -1,9 +1,9 @@
-import {ReactComponent as Dot} from '@assets/symbols/empty.svg'
-import {SessionSymbols} from '@components/widgets/SessionIcon'
+import { ReactComponent as Dot } from '@assets/symbols/empty.svg'
+import { SessionSymbols } from '@components/widgets/SessionIcon'
 import makeStyles from '@mui/styles/makeStyles'
-import {AdherenceWindowState} from '@typedefs/types'
+import { AdherenceWindowState } from '@typedefs/types'
 import clsx from 'clsx'
-import React, {FunctionComponent} from 'react'
+import React, { FunctionComponent } from 'react'
 
 const useStyles = makeStyles(theme => ({
   dot: {
@@ -32,14 +32,14 @@ export const SHAPE_CLASSES: Record<
     complianceState: 'NONCOMPLIANT' | 'COMPLIANT' | 'UNKNOWN' | undefined
   }
 > = {
-  not_applicable: {shapeIndex: -1, complianceState: undefined},
-  not_yet_available: {shapeIndex: -1, complianceState: undefined},
-  unstarted: {shapeIndex: -1, complianceState: 'UNKNOWN'},
-  started: {shapeIndex: 1, complianceState: 'UNKNOWN'},
-  completed: {shapeIndex: 0, complianceState: 'COMPLIANT'},
-  abandoned: {shapeIndex: 1, complianceState: 'NONCOMPLIANT'},
-  expired: {shapeIndex: 2, complianceState: 'NONCOMPLIANT'},
-  declined: {shapeIndex: 2, complianceState: 'NONCOMPLIANT'},
+  not_applicable: { shapeIndex: -1, complianceState: undefined },
+  not_yet_available: { shapeIndex: -1, complianceState: undefined },
+  unstarted: { shapeIndex: -1, complianceState: 'UNKNOWN' },
+  started: { shapeIndex: 1, complianceState: 'UNKNOWN' },
+  completed: { shapeIndex: 0, complianceState: 'COMPLIANT' },
+  abandoned: { shapeIndex: 1, complianceState: 'NONCOMPLIANT' },
+  expired: { shapeIndex: 2, complianceState: 'NONCOMPLIANT' },
+  declined: { shapeIndex: 2, complianceState: 'NONCOMPLIANT' },
 }
 
 const AdherenceSessionIcon: FunctionComponent<{
@@ -48,7 +48,7 @@ const AdherenceSessionIcon: FunctionComponent<{
   isRed?: boolean
   children?: React.ReactNode
   isInLegend?: boolean
-}> = ({sessionSymbol, windowState, children, isRed = false, isInLegend}) => {
+}> = ({ sessionSymbol, windowState, children, isRed = false, isInLegend }) => {
   const classes = useStyles()
   if (!sessionSymbol) {
     return <></>
@@ -58,11 +58,12 @@ const AdherenceSessionIcon: FunctionComponent<{
   const isEmptyDot = SHAPE_CLASSES[windowState].shapeIndex === -1
 
   //0 - filled, 1- partcial, 2 - empty, 3 - partical-red, 4- empty-red
+  //ag 10/7 partial will always be yellow and empty will always be red
 
   let variant = SHAPE_CLASSES[windowState].shapeIndex
-  if (isRed && variant > 0) {
-    variant = variant + 2
-  }
+  /* if (isRed && variant > 0) {
+     variant = variant + 2
+   }*/
   if (variant === undefined) {
     throw Error('unknown state')
   }
@@ -75,7 +76,7 @@ const AdherenceSessionIcon: FunctionComponent<{
 
   const el = isEmptyDot ? (
     <div className={clsx(classes.dot, isInLegend && classes.legend)}>
-      <Dot style={{margin: '4px 0'}} />
+      <Dot style={{ margin: '4px 0' }} />
     </div>
   ) : (
     React.cloneElement(SessionSymbols.get(sessionSymbol)![variant], {
@@ -86,10 +87,10 @@ const AdherenceSessionIcon: FunctionComponent<{
   return !children ? (
     <>{el}</>
   ) : (
-    <div style={{display: 'flex', alignItems: 'center'}}>
+    <div style={{ display: 'flex', alignItems: 'center' }}>
       {el}
 
-      <div style={{marginLeft: '4px'}}>{children}</div>
+      <div style={{ marginLeft: '4px' }}>{children}</div>
     </div>
   )
 }
