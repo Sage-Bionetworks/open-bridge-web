@@ -9,7 +9,7 @@ import {
   Typography
 } from '@mui/material'
 import { theme } from '@style/theme'
-import { FormatOptionsYear, Step, YearQuestion } from '@typedefs/surveys'
+import { FormatOptionsYear, YearQuestion } from '@typedefs/surveys'
 import React from 'react'
 
 const Labels = styled('div', { label: 'labels' })(({ theme }) => ({
@@ -87,11 +87,6 @@ const Limit: React.FunctionComponent<{
   const [exclude, setExclude] = React.useState<LimitType>('NONE')
   const [value, setValue] = React.useState('')
   const [error, setError] = React.useState('')
-
-
-
-
-
 
   const validateYear = (val: string): boolean => {
     const intVal = parseInt(val)
@@ -194,9 +189,9 @@ const Limit: React.FunctionComponent<{
   )
 }
 
-const Time: React.FunctionComponent<{
+const Year: React.FunctionComponent<{
   step: YearQuestion
-  onChange: (step: Step) => void
+  onChange: (step: YearQuestion) => void
 }> = ({ step, onChange }) => {
   return (
     <>
@@ -220,4 +215,4 @@ const Time: React.FunctionComponent<{
   )
 }
 
-export default Time
+export default Year
