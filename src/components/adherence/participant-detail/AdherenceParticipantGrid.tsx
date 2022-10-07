@@ -1,18 +1,18 @@
 import {
   PlotDaysDisplay,
-  useGetPlotAndUnitWidth,
+  useGetPlotAndUnitWidth
 } from '@components/studies/scheduler/timeline-plot/TimelineBurstPlot'
-import {Box, Tooltip} from '@mui/material'
+import { Box } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import EventService from '@services/event.service'
-import {latoFont} from '@style/theme'
-import {AdherenceDetailReport} from '@typedefs/types'
+import { latoFont } from '@style/theme'
+import { AdherenceDetailReport } from '@typedefs/types'
 import clsx from 'clsx'
-import React, {FunctionComponent} from 'react'
+import React, { FunctionComponent } from 'react'
 import AdherenceUtility from '../adherenceUtility'
 import DayDisplay from '../DayDisplay'
-import {useCommonStyles} from '../styles'
-import AdherenceSessionIcon from './AdherenceSessionIcon'
+import RowLabel from '../RowLabel'
+import { useCommonStyles } from '../styles'
 
 const useStyles = makeStyles(theme => ({
   daysList: {
@@ -60,7 +60,7 @@ type AdherenceParticipantGridProps = {
   adherenceReport: AdherenceDetailReport
 }
 
-const UndefinedEvents: FunctionComponent<{startEventIds: string[]}> = ({
+const UndefinedEvents: FunctionComponent<{ startEventIds: string[] }> = ({
   startEventIds,
 }) => {
   const classes = useStyles()
@@ -84,16 +84,16 @@ const UndefinedEvents: FunctionComponent<{startEventIds: string[]}> = ({
 //https://github.com/Sage-Bionetworks/BridgeServer2/blob/develop/src/main/java/org/sagebionetworks/bridge/models/schedules2/adherence/SessionCompletionState.java
 
 const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps> =
-  ({adherenceReport}) => {
+  ({ adherenceReport }) => {
     const ref = React.useRef<HTMLDivElement>(null)
-    const {unitWidth: dayWidthInPx} = useGetPlotAndUnitWidth(ref, 7, 250)
-    const classes = {...useCommonStyles(), ...useStyles()}
+    const { unitWidth: dayWidthInPx } = useGetPlotAndUnitWidth(ref, 7, 250)
+    const classes = { ...useCommonStyles(), ...useStyles() }
 
     const dayListingTitleStyle: React.CSSProperties = {
       fontWeight: 'bold',
       paddingLeft: '16px',
       fontSize: '14px',
-      width: '245px',
+      width: '235px',
     }
 
     const adHerenceLabelStyle: React.CSSProperties = {
@@ -133,12 +133,11 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                     className={classes.eventRowForWeekSingleSession}
                     id={'session' + row.label}>
                     <div className={classes.startEventId} key={'wk_name'}>
-                      Week {week.weekInStudy}/
-                      {row.studyBurstNum !== undefined
-                        ? `Burst ${row.studyBurstNum}`
-                        : row.sessionName}
+                      <RowLabel wkInStudy={week.weekInStudy} burstNum={row.studyBurstNum} sessionName={row.sessionName} />
+
+
                     </div>
-                    <Tooltip title={row.label}>
+                    {/*  <Tooltip title={row.label}>
                       <div className={classes.sessionLegendIcon}>
                         <AdherenceSessionIcon
                           sessionSymbol={row.sessionSymbol || undefined}
@@ -146,7 +145,7 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                           &nbsp;
                         </AdherenceSessionIcon>
                       </div>
-                    </Tooltip>
+                      </Tooltip>*/}
                     <div
                       id={'wk' + weekIndex + 'events'}
                       className={classes.sessionWindows}>
@@ -178,11 +177,11 @@ const AdherenceParticipantGrid: FunctionComponent<AdherenceParticipantGridProps>
                 className={clsx(
                   classes.adherenceDisplay,
                   !AdherenceUtility.isCompliant(week.adherencePercent) &&
-                    adherenceReport.progression === 'in_progress' &&
-                    classes.red
+                  adherenceReport.progression === 'in_progress' &&
+                  classes.red
                 )}>
                 {week.adherencePercent !== undefined &&
-                adherenceReport.progression !== 'unstarted'
+                  adherenceReport.progression !== 'unstarted'
                   ? `${week.adherencePercent}%`
                   : '-'}
               </div>
