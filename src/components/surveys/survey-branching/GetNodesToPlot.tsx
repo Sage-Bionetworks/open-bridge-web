@@ -10,7 +10,7 @@ import { DivContainer } from '../survey-design/left-panel/QuestionTypeDisplay'
 
 
 const position = { x: 0, y: 0 };
-const edgeType = "smoothstep";
+
 
 const StyledQuestionTitle = styled('div', { label: 'StyledQuestionTitle' })<{
   unconnected?: boolean
@@ -128,32 +128,23 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
     let nextQs = getChildNodes(questions, q)
 
     if (nextQs.length) {
-      //add it if it hasn't been added, otherwise just add edge
-
-      for (var child of nextQs) {
+      //add child edges
+      for (let child of nextQs) {
         //find sequential index of the quesiton
         const qIndex = questions.findIndex(
           q1 => q1.identifier === child.identifier
         )
-
-
         const edge = createEdge(q.identifier, child.identifier)
-        // console.log('adding edge', edge, nextQs.length)
-        // if (edges.findIndex(e => e.id === edge.id) === -1) {
         edges.push(edge)
-        //  }
-
-
+        //add child node
         const indexOfNode = nodes.findIndex(q1 => q1.id === child.identifier)
 
         if (indexOfNode === -1) {
           addNode(
             child,
             qIndex,
-
             error
           )
-          //
 
         }
       }
@@ -173,27 +164,14 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
     const node = createNode(dq, qIndex, true)
     nodes.push(node)
 
-
     let nextQs = getChildNodes(questions, dq)
     if (nextQs.length) {
-      //add it if it hasn't been added, otherwise just add edge
-
-      for (var child of nextQs) {
-        //find sequential index of the quesiton
-        const qIndex = questions.findIndex(
-          q1 => q1.identifier === child.identifier
-        )
-
-
+      //add child edges
+      for (let child of nextQs) {
         const edge = createEdge(dq.identifier, child.identifier, true)
-        // console.log('adding edge', edge, nextQs.length)
-        //  if (edges.findIndex(e => e.id === edge.id) === -1) {
         edges.push(edge)
-        //  }
       }
     }
-
-
   })
 
   return { nodes, edges, error }

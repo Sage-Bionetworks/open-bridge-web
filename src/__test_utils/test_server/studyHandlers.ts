@@ -1,6 +1,6 @@
 import constants from '@typedefs/constants'
-import {Study} from '@typedefs/types'
-import {rest} from 'msw'
+import { Study } from '@typedefs/types'
+import { rest } from 'msw'
 import * as studies from '../mocks/studies.json'
 
 export const handlers = [
@@ -21,7 +21,7 @@ export const handlers = [
 
   //  get single study
   rest.get(`*${constants.endpoints.study}`, async (req, res, ctx) => {
-    const {id} = req.params
+    const { id } = req.params
 
     const _study = studies.data.find(study => study.identifier === id)
     if (_study) {
@@ -48,7 +48,6 @@ export const handlers = [
 
   //create study
   rest.post(`*${constants.endpoints.study}`, async (req, res, ctx) => {
-    const {id} = req.params
     const study = req.body as Study
 
     return res(

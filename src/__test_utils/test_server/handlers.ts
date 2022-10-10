@@ -1,13 +1,11 @@
 import constants from '@typedefs/constants'
-import {rest} from 'msw'
+import { rest } from 'msw'
 import AssessmentRequests from './assessmentHandlers'
 import EnrollmentParticipantRequests from './enrollmentParticipantHandlers'
 import {
   default as AccountRequests,
-  default as StudyRequests,
+  default as StudyRequests
 } from './studyHandlers'
-const mtbAppId = constants.constants.MTB_APP_ID
-const arcAppId = constants.constants.ARC_APP_ID
 
 export const handlers = [
   ...AssessmentRequests,

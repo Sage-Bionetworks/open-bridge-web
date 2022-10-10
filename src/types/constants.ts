@@ -1,7 +1,7 @@
 const MTB_APP_ID = 'mobile-toolbox'
 const ARC_APP_ID = 'arc'
 const INV_ARC_ID = 'inv-arc'
-export default {
+const constants = {
   constants: {
     MTB_APP_ID: MTB_APP_ID,
     ARC_APP_ID: ARC_APP_ID,
@@ -28,10 +28,10 @@ export default {
   },
 
   environments: [
-    {value: 'local', label: 'Local'},
-    {value: 'develop', label: 'Development'},
-    {value: 'staging', label: 'Staging'},
-    {value: 'production', label: 'Production'},
+    { value: 'local', label: 'Local' },
+    { value: 'develop', label: 'Development' },
+    { value: 'staging', label: 'Staging' },
+    { value: 'production', label: 'Production' },
   ],
   org_roles: ['org_admin', 'study_designer', 'study_coordinator'] as const,
 
@@ -147,3 +147,5 @@ export default {
     synapseGetUserProfile: '/repo/v1/user/:id/bundle',
   },
 }
+
+export default constants

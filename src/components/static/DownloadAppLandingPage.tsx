@@ -1,11 +1,11 @@
 import QrCode from '@assets/qr_code.png'
-import {Box} from '@mui/material'
+import { Box } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
 import MTBLogoLarge from '../../assets/mtb_logo_large.svg'
 import appStoreBtn from '../../assets/preview/appStoreBtn.png'
 import googlePlayBtn from '../../assets/preview/googlePlayBtn.png'
-import {latoFont, playfairDisplayFont} from '../../style/theme'
+import { latoFont, playfairDisplayFont } from '../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -39,14 +39,14 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const DownloadAppLandingPage: React.FunctionComponent<{}> = ({}) => {
+const DownloadAppLandingPage: React.FunctionComponent = () => {
   const classes = useStyles()
   return (
     <Box className={classes.container}>
       <img
         src={MTBLogoLarge}
         alt="large mtb logo"
-        style={{width: '100px', height: '100px'}}
+        style={{ width: '100px', height: '100px' }}
       />
       <Box className={classes.downloadText}>
         <strong>
@@ -83,12 +83,12 @@ const DownloadAppLandingPage: React.FunctionComponent<{}> = ({}) => {
         </ol>
       </p>
 
-      <Box m={2} textAlign="center" bgcolor="white" style={{padding: '16px'}}>
+      <Box m={2} textAlign="center" bgcolor="white" style={{ padding: '16px' }} alt="QR code">
         <img src={QrCode} width="130px" />
       </Box>
       <Box my={3}>
         <a
-          style={{marginRight: '24px'}}
+          style={{ marginRight: '24px' }}
           href="https://apps.apple.com/us/app/mobile-toolbox-app/id1578358408"
           target="_blank" rel="noreferrer">
           <img src={appStoreBtn} alt="ios app store button"></img>
