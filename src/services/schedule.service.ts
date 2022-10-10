@@ -1,4 +1,4 @@
-import {getTimePeriodFromPeriodString} from '@components/studies/scheduler/utility'
+import { getTimePeriodFromPeriodString } from '@components/studies/scheduler/utility'
 import _ from 'lodash'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
@@ -11,13 +11,12 @@ import {
   StudyBurst,
   StudySession,
   TimelineScheduleItem,
-  TimePeriod,
+  TimePeriod
 } from '../types/scheduling'
-import {Assessment} from '../types/types'
 import AssessmentService from './assessment.service'
 import EventService, {
   BURST_EVENT_PATTERN,
-  JOINED_EVENT_ID,
+  JOINED_EVENT_ID
 } from './event.service'
 import StudyService from './study.service'
 
@@ -82,7 +81,7 @@ function createEmptyScheduleSession(
     timeWindows: [defaultTimeWindow],
     performanceOrder: 'participant_choice',
     assessments: [],
-    notifications: [{...DEFAULT_NOTIFICATION}],
+    notifications: [{ ...DEFAULT_NOTIFICATION }],
   }
   return studySession
 }
@@ -95,7 +94,7 @@ async function createSchedule(
   const result = await Utility.callEndpoint<Schedule>(
     constants.endpoints.schedule.replace(':studyId', studyId),
     'POST', // once we add things to the study -- we can change this to actual object
-    {...schedule, guid: undefined},
+    { ...schedule, guid: undefined },
     token
   )
 
@@ -128,7 +127,7 @@ async function saveSchedule(
       return saveSchedule(
         studyId,
         appId,
-        {...schedule, version: updatedSchedule.version},
+        { ...schedule, version: updatedSchedule.version },
         token
       )
     } else {
@@ -142,12 +141,8 @@ async function addAssessmentResourcesToSchedule(
   token: string,
   schedule: Schedule
 ): Promise<Schedule> {
-  //try from storage first
-  const localA = sessionStorage.getItem('AssessmentResources')
-
-  const assessmentData = localA
-    ? (JSON.parse(localA) as {assessments: Assessment[]; tags: string[]})
-    : await AssessmentService.getAssessmentsWithResources(appId, token)
+  //agendel: get fresh -- don't use local storage
+  const assessmentData = await AssessmentService.getAssessmentsWithResources(appId, token)
   schedule.sessions.forEach(session => {
     const assmntWithResources = session.assessments?.map(assmnt => {
       assmnt.resources = assessmentData.assessments.find(
@@ -177,9 +172,10 @@ async function getSchedule(
   if (!schedule) {
     return undefined
   }
-  return addResources
-    ? addAssessmentResourcesToSchedule(appId, token, schedule.data)
+  const result = addResources
+    ? await addAssessmentResourcesToSchedule(appId, token, schedule.data)
     : schedule.data
+  return result
 }
 
 async function getTimeline(
@@ -196,7 +192,7 @@ async function getTimeline(
 }
 
 function getEventsForTimeline(
-  {schedule, studyBursts}: ScheduleTimeline,
+  { schedule, studyBursts }: ScheduleTimeline,
   sortedCustomEventIds?: string[]
 ): ExtendedScheduleEventObject[] {
   //get startEventIds from Sessions
@@ -224,7 +220,7 @@ function getEventsForTimeline(
         return p
       }
     },
-    [] as {eventId: string; delay: TimePeriod}[]
+    [] as { eventId: string; delay: TimePeriod }[]
   )
 
   if (!sortedCustomEventIds) {
