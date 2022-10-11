@@ -1,11 +1,11 @@
+import MTBLogoLarge from '@assets/mtb_logo_large.svg'
+import appStoreBtn from '@assets/preview/appStoreBtn.png'
+import googlePlayBtn from '@assets/preview/googlePlayBtn.png'
 import QrCode from '@assets/qr_code.png'
 import { Box } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
+import { latoFont, playfairDisplayFont, theme } from '@style/theme'
 import React from 'react'
-import MTBLogoLarge from '../../assets/mtb_logo_large.svg'
-import appStoreBtn from '../../assets/preview/appStoreBtn.png'
-import googlePlayBtn from '../../assets/preview/googlePlayBtn.png'
-import { latoFont, playfairDisplayFont } from '../../style/theme'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -83,8 +83,13 @@ const DownloadAppLandingPage: React.FunctionComponent = () => {
         </ol>
       </p>
 
-      <Box m={2} textAlign="center" bgcolor="white" style={{ padding: '16px' }} alt="QR code">
-        <img src={QrCode} width="130px" />
+      <Box sx={{
+        margin: theme.spacing(2),
+        padding: theme.spacing(2),
+        textAlign: "center",
+        bgcolor: "white"
+      }} >
+        <img src={QrCode} width="130px" alt="QR code" />
       </Box>
       <Box my={3}>
         <a

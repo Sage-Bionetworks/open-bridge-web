@@ -1,12 +1,12 @@
-import {cleanup} from '@testing-library/react'
+import { cleanup } from '@testing-library/react'
 
 import steps from '../../../../__test_utils/mocks/surveyQuestions'
-import {getQuestionId} from './QuestionConfigs'
+import { getQuestionId } from './QuestionConfigs'
 
-import {Step} from '@typedefs/surveys'
+import { Step } from '@typedefs/surveys'
 
 afterEach(cleanup)
-const onChange = jest.fn()
+
 const stepExpectations = [
   'OVERVIEW',
   'SINGLE_SELECT',

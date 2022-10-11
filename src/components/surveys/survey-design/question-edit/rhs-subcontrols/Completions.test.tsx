@@ -31,7 +31,7 @@ const step: Step = {
 }
 
 test('has the link to branching', async () => {
-    const { user, element } = renderComponent(step)
+    renderComponent(step)
     const link = screen.getByRole('link')
     expect(link.getAttribute('href')).toBe('/surveys/survey_12345/branching')
 })

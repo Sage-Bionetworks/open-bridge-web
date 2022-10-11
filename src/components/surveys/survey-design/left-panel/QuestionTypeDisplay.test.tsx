@@ -1,11 +1,10 @@
-import {cleanup, render} from '@testing-library/react'
+import { cleanup, render } from '@testing-library/react'
 
 import React from 'react'
-import {QuestionTypeKey} from './QuestionConfigs'
+import { QuestionTypeKey } from './QuestionConfigs'
 import QuestionTypeDisplay from './QuestionTypeDisplay'
 
 afterEach(cleanup)
-const onChange = jest.fn()
 
 function renderControl(name?: QuestionTypeKey, children?: React.ReactNode) {
   return name

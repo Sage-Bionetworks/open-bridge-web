@@ -92,7 +92,7 @@ function getLimit(fo?: FormatOptionsTime): LimitType {
   if (fo.allowPast === false) {
     return 'FUTURE'
   }
-  if (fo.allowFuture == false) {
+  if (fo.allowFuture === false) {
     return 'PAST'
   }
   return 'NONE'
