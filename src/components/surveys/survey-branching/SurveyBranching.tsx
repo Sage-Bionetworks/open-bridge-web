@@ -140,12 +140,6 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  const nodeWidth = 172;
-  const nodeHeight = 36;
-
-
-
-
   const onNodesChange = React.useCallback(
     (changes: NodeChange[]) => setNodes(nds => applyNodeChanges(changes, nds)),
     [setNodes]
@@ -171,6 +165,7 @@ const SurveyBranching: FunctionComponent<SurveyBranchingProps> = () => {
 
   React.useEffect(() => {
     if (survey) {
+      console.log('repanting')
       const plotWidth = width || 0
       const result = getNodes(
         survey?.config.steps as ChoiceQuestion[],

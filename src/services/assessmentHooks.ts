@@ -143,10 +143,7 @@ export const useUpdateSurveyConfig = () => {
     onMutate: async props => {
       queryClient.cancelQueries(ASSESSMENT_KEYS.assessmentConfig(props.guid))
     },
-    onError: (err, variables, context) => {
-      console.log(err, variables, context)
-      throw err
-    },
+
     onSettled: async (data, error, props) => {
       queryClient.invalidateQueries(ASSESSMENT_KEYS.all(appId))
       queryClient.invalidateQueries(
@@ -184,10 +181,7 @@ export const useUpdateSurveyResource = () => {
         ASSESSMENT_KEYS.assessment(props.assessment.guid!)
       )
     },
-    onError: (err, variables, context) => {
-      console.log(err, variables, context)
-      throw err
-    },
+
     onSettled: async (data, error, props) => {
       queryClient.invalidateQueries(ASSESSMENT_KEYS.all(appId))
       queryClient.invalidateQueries(
@@ -208,6 +202,7 @@ export const useUpdateSurveyResource = () => {
 export const useUpdateSurveyAssessment = () => {
   const { token, appId } = useUserSessionDataState()
   const queryClient = useQueryClient()
+
 
   const update = async (props: {
     assessment: Assessment
@@ -279,13 +274,14 @@ export const useUpdateSurveyAssessment = () => {
       return { previousState, newState }
     },
 
-    onError: (err, newState, context) => {
-      queryClient.setQueryData(
-        (ASSESSMENT_KEYS.list(appId, true, true)),
-        context?.previousState
-      )
-    },
-    onSettled: async (data, error, props) => {
+
+    onSettled: async (data, error, props, context) => {
+      if (error) {
+        queryClient.setQueryData(
+          (ASSESSMENT_KEYS.list(appId, true, true)),
+          context?.previousState
+        )
+      }
       queryClient.invalidateQueries(ASSESSMENT_KEYS.list(appId, true, true))
       queryClient.invalidateQueries(
         ASSESSMENT_KEYS.assessment(props.assessment.guid || '')

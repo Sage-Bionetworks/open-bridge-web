@@ -1,7 +1,9 @@
+import BannerInfo from '@components/studies/BannerInfo'
+import AlertBanner from '@components/widgets/AlertBanner'
 import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import Loader from '@components/widgets/Loader'
 import UtilityObject from '@helpers/utility'
-import { Alert, Box, Button, Dialog, styled } from '@mui/material'
+import { Box, Button, Dialog, styled } from '@mui/material'
 import {
   useSurveyAssessment,
   useSurveyConfig,
@@ -49,6 +51,28 @@ const AddQuestion = styled('div')(({ theme }) => ({
 type SurveyDesignOwnProps = {}
 
 type SurveyDesignProps = SurveyDesignOwnProps & RouteComponentProps
+
+const ErrorBanner: React.FunctionComponent<{ errors: (Error | null)[] }> = ({ errors }) => {
+  const [show, setShow] = React.useState<boolean>(false)
+  React.useEffect(() => {
+    setShow(errors.some((e) => e !== null))
+  }, [errors])
+  return (
+    <>
+      {errors.filter(e => !!e).map((e, i) => (
+        <AlertBanner
+          backgroundColor={BannerInfo.bannerMap.get('error')!.bgColor}
+          textColor={BannerInfo.bannerMap.get('error')!.textColor}
+          onClose={() => { setShow(false) }}
+          isVisible={show}
+          icon={BannerInfo.bannerMap.get('error')!.icon[0]}
+          isSelfClosing={true}
+          displayBottomOfPage={false}
+          displayText={e!.message}></AlertBanner>
+      ))}
+    </>
+  )
+}
 
 const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
   let { id: surveyGuid } = useParams<{
@@ -295,6 +319,8 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
     return !!step && step.type !== 'completion' && step.type !== 'overview'
   }
 
+
+
   return (
     <Loader reqStatusLoading={!isNewSurvey() && !survey}>
       <NavigationPrompt when={hasObjectChanged} key="nav_prompt">
@@ -308,6 +334,8 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
         )}
       </NavigationPrompt>
       <Button onClick={() => setDebugOpen(true)}>Open survey 2JSON</Button>
+      {/* <ErrorBanner errors={[errorAssessmentUpdate, errorSurveyUpdate, errorResourceUpdate]} />*/}
+
       <SurveyDesignContainerBox>
         {/* LEFT PANEL*/}
         <LeftPanel
@@ -326,9 +354,6 @@ const SurveyDesign: FunctionComponent<SurveyDesignProps> = () => {
         {/* CEDNTRAL PHONE AREA*/}
 
         <Box display="flex" flexGrow={1} justifyContent="space-between">
-          {errorAssessmentUpdate && <Alert color="error">{errorAssessmentUpdate.message}</Alert>}
-          {errorSurveyUpdate && <Alert color="error">{errorSurveyUpdate.message}</Alert>}
-          {errorResourceUpdate && <Alert color="error">{errorResourceUpdate.message}</Alert>}
           <Switch>
             <Route path={`/surveys/:id/design/question`}>
               <Box

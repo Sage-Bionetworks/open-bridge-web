@@ -219,7 +219,7 @@ const BranchingConfig: FunctionComponent<{
       setCycleErrQNum(undefined)
       setHasUnreachableState(false)
       const updatedStep = updatedSteps.find(s => s.identifier === step.identifier)
-      if (updatedStep?.surveyRules) {
+      if (updatedStep?.choices && updatedStep?.surveyRules) {
         //if we have rules for each step and skip to is not one of them then we have an error
         if (updatedStep.choices.length === updatedStep.surveyRules.length && !updatedStep.surveyRules.find(r => r.skipToIdentifier === updatedStep.nextStepIdentifier)) {
           setHasUnreachableState(true)

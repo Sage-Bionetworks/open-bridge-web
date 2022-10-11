@@ -122,7 +122,7 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
     index: number,
     error: Error | undefined
   ) {
-    //  console.log('node', q, index)
+
     const node = createNode(q, index, false)
     nodes.push(node)
     let nextQs = getChildNodes(questions, q)
@@ -169,7 +169,9 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
       //add child edges
       for (let child of nextQs) {
         const edge = createEdge(dq.identifier, child.identifier, true)
-        edges.push(edge)
+        if (edges.findIndex(e => e.id === edge.id) === -1) {
+          edges.push(edge)
+        }
       }
     }
   })
