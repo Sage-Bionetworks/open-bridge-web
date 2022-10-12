@@ -1,10 +1,4 @@
-import {
-  act,
-  cleanup,
-  render,
-  RenderResult,
-  screen,
-} from '@testing-library/react'
+import {act, cleanup, render, RenderResult, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {ScaleQuestion} from '@typedefs/surveys'
 import Likert from './Scale'
@@ -29,11 +23,7 @@ const QUESTION: ScaleQuestion = {
 
 function setUp(step: ScaleQuestion = QUESTION) {
   const user = userEvent.setup()
-  const component = render(
-    <Likert step={step} onChange={step => onChange(step)} />
-  )
-  const btn = component.getAllByRole('button')
-
+  const component = render(<Likert step={step} onChange={step => onChange(step)} />)
   const buttons = {
     setMinVal: component.getByRole('button', {name: /min/i}),
     setMaxVal: component.getByRole('button', {name: /max /i}),
@@ -49,7 +39,7 @@ const onChange = jest.fn()
 afterEach(cleanup)
 
 test('show the setting correctly', async () => {
-  const {component, buttons, inputs} = setUp()
+  const {buttons, inputs} = setUp()
   expect(buttons.setMinVal).toHaveTextContent('1')
   expect(buttons.setMaxVal).toHaveTextContent('7')
   expect(inputs.setMinLabel).toHaveValue('Not at all')
@@ -60,19 +50,15 @@ test('display a correct UI for likert and slider scale', async () => {
   //the max value choices are different
   //do likert
   let {component, buttons, user} = setUp()
-  const getMaxForLikert = (component: RenderResult) =>
-    component.queryByRole('option', {name: /7/i})
-  const getMaxForSlider = (component: RenderResult) =>
-    component.queryByRole('option', {name: /100/i})
+  const getMaxForLikert = (component: RenderResult) => component.queryByRole('option', {name: /7/i})
+  const getMaxForSlider = (component: RenderResult) => component.queryByRole('option', {name: /100/i})
   await act(async () => await user.click(buttons.setMaxVal))
   expect(getMaxForLikert(component)).toBeInTheDocument()
   expect(getMaxForSlider(component)).not.toBeInTheDocument()
 
   //do slider
   const setupResult = setUp({...QUESTION, uiHint: 'slider'})
-  await act(
-    async () => await setupResult.user.click(setupResult.buttons.setMaxVal)
-  )
+  await act(async () => await setupResult.user.click(setupResult.buttons.setMaxVal))
   expect(getMaxForLikert(setupResult.component)).not.toBeInTheDocument()
   expect(getMaxForSlider(setupResult.component)).toBeInTheDocument()
 })

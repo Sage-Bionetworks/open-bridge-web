@@ -24,18 +24,8 @@ export const PARTICIPANT_KEYS = {
     pageSize: number = 0,
     tab: ParticipantActivityType = 'ACTIVE',
     searchValue: string | undefined = undefined
-  ) =>
-    [
-      ...PARTICIPANT_KEYS.all,
-      'list',
-      studyId,
-      currentPage,
-      pageSize,
-      tab,
-      searchValue,
-    ] as const,
-  detail: (studyId: string, participantId: string) =>
-    [...PARTICIPANT_KEYS.list(studyId), participantId] as const,
+  ) => [...PARTICIPANT_KEYS.all, 'list', studyId, currentPage, pageSize, tab, searchValue] as const,
+  detail: (studyId: string, participantId: string) => [...PARTICIPANT_KEYS.list(studyId), participantId] as const,
   detailWithClientData: (studyId: string, participantId: string) =>
     [...PARTICIPANT_KEYS.list(studyId), participantId, 'clientData'] as const,
 }
@@ -64,13 +54,7 @@ async function getParticipants(
         tab,
         searchOptions.searchParam
       )
-    : await ParticipantService.getParticipants(
-        studyId,
-        token,
-        tab,
-        pageSize,
-        offset < 0 ? 0 : offset
-      )
+    : await ParticipantService.getParticipants(studyId, token, tab, pageSize, offset < 0 ? 0 : offset)
 
   const result = participants.items!.map(participant => {
     if (participant.externalId) {
@@ -101,24 +85,14 @@ export const useParticipants = (
   isById?: boolean
 ) => {
   const {token} = useUserSessionDataState()
-  let searchOptions:
-    | {searchParam: 'EXTERNAL_ID' | 'PHONE_NUMBER'; searchValue: string}
-    | undefined = undefined
+  let searchOptions: {searchParam: 'EXTERNAL_ID' | 'PHONE_NUMBER'; searchValue: string} | undefined = undefined
   if (searchValue) {
     const searchParam = isById ? 'EXTERNAL_ID' : 'PHONE_NUMBER'
     searchOptions = {searchParam, searchValue}
   }
   return useQuery<ParticipantData, ExtendedError>(
     PARTICIPANT_KEYS.list(studyId, currentPage, pageSize, tab, searchValue),
-    () =>
-      getParticipants(
-        studyId!,
-        currentPage,
-        pageSize,
-        tab,
-        token!,
-        searchOptions
-      ),
+    () => getParticipants(studyId!, currentPage, pageSize, tab, token!, searchOptions),
     {
       enabled: !!studyId,
       retry: false,
@@ -154,24 +128,12 @@ export const useUpdateParticipantInList = () => {
   }): Promise<string | string[] | ParticipantAccountSummary[]> => {
     switch (props.action) {
       case 'WITHDRAW':
-        return await ParticipantService.withdrawParticipant(
-          props.studyId!,
-          token!,
-          props.userId![0],
-          props.note
-        )
+        return await ParticipantService.withdrawParticipant(props.studyId!, token!, props.userId![0], props.note)
       case 'DELETE':
-        return await ParticipantService.deleteParticipant(
-          props.studyId!,
-          token!,
-          props.userId!
-        )
+        return await ParticipantService.deleteParticipant(props.studyId!, token!, props.userId!)
       case 'UPDATE':
         if (props.customEvents?.length) {
-          if (
-            !props.updatedFields?.clientTimeZone ||
-            props.updatedFields.clientTimeZone.length < 3
-          ) {
+          if (!props.updatedFields?.clientTimeZone || props.updatedFields.clientTimeZone.length < 3) {
             throw new Error('Please enter the time zone to update the events')
           }
           await EventService.updateParticipantCustomEvents(
@@ -201,9 +163,7 @@ export const useUpdateParticipantInList = () => {
       console.log(err, variables, context)
     },
     onSettled: async (data, error, props) => {
-      queryClient.invalidateQueries(
-        PARTICIPANT_KEYS.detail(props.studyId, props.userId![0])
-      )
+      queryClient.invalidateQueries(PARTICIPANT_KEYS.detail(props.studyId, props.userId![0]))
       queryClient.invalidateQueries(PARTICIPANT_KEYS.all)
       if (props.customEvents && props.customEvents.length > 0) {
         console.log('invalidating events list')
@@ -218,11 +178,7 @@ export const useAddParticipant = () => {
   const {token} = useUserSessionDataState()
   const queryClient = useQueryClient()
 
-  const update = async (props: {
-    studyId: string
-    options: EditableParticipantData
-    phone?: Phone
-  }): Promise<string> => {
+  const update = async (props: {studyId: string; options: EditableParticipantData; phone?: Phone}): Promise<string> => {
     const {studyId, options, phone} = props
     return phone
       ? await ParticipantService.addParticipant(studyId, token!, {
@@ -267,10 +223,7 @@ export const useGetParticipant = (studyId: string, participantId: string) => {
   )
 }
 
-export const useGetParticipantInfo = (
-  studyId: string,
-  participantId: string
-) => {
+export const useGetParticipantInfo = (studyId: string, participantId: string) => {
   const {token} = useUserSessionDataState()
 
   return useQuery<ParticipantRequestInfo, ExtendedError>(

@@ -3,7 +3,7 @@ import AssessmentLibrary from '@components/assessments/AssessmentLibrary'
 import DownloadAppLandingPage from './components/static/DownloadAppLandingPage'
 import SignInPage from './SignInPage'
 
-export default [
+const routes = [
   {
     path: '/',
     name: '',
@@ -39,3 +39,4 @@ export default [
     isRhs: true,
   },
 ]
+export default routes

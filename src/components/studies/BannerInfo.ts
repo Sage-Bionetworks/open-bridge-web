@@ -12,10 +12,7 @@ export type BannerInfoType = {
   type: DisplayStudyPhase | 'success' | 'error'
 }
 
-const bannerMap = new Map<
-  DisplayStudyPhase | 'success' | 'error',
-  BannerInfoType
->()
+const bannerMap = new Map<DisplayStudyPhase | 'success' | 'error', BannerInfoType>()
 
 bannerMap.set('error', {
   bgColor: '#EE6070',

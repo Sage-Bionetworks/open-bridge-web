@@ -158,10 +158,7 @@ self.addEventListener('fetch', function (event) {
 
       switch (clientMessage.type) {
         case 'MOCK_SUCCESS': {
-          setTimeout(
-            resolve.bind(this, createResponse(clientMessage)),
-            clientMessage.payload.delay
-          )
+          setTimeout(resolve.bind(this, createResponse(clientMessage)), clientMessage.payload.delay)
           break
         }
 
@@ -211,8 +208,7 @@ If you wish to mock an error response, please refer to this guide: https://mswjs
             ok: clonedResponse.ok,
             status: clonedResponse.status,
             statusText: clonedResponse.statusText,
-            body:
-              clonedResponse.body === null ? null : await clonedResponse.text(),
+            body: clonedResponse.body === null ? null : await clonedResponse.text(),
             headers: serializeHeaders(clonedResponse.headers),
             redirected: clonedResponse.redirected,
           },
@@ -234,9 +230,7 @@ If you wish to mock an error response, please refer to this guide: https://mswjs
 function serializeHeaders(headers) {
   const reqHeaders = {}
   headers.forEach((value, name) => {
-    reqHeaders[name] = reqHeaders[name]
-      ? [].concat(reqHeaders[name]).concat(value)
-      : value
+    reqHeaders[name] = reqHeaders[name] ? [].concat(reqHeaders[name]).concat(value) : value
   })
   return reqHeaders
 }

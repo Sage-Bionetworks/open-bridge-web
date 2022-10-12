@@ -2,52 +2,37 @@ import ConfirmationDialog from '@components/widgets/ConfirmationDialog'
 import Loader from '@components/widgets/Loader'
 import Utility from '@helpers/utility'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  Container,
-  IconButton,
-  Menu,
-  MenuItem,
-  styled
-} from '@mui/material'
-import {
-  useAssessments,
-  useUpdateSurveyAssessment
-} from '@services/assessmentHooks'
-import { latoFont, poppinsFont, theme } from '@style/theme'
+import {Alert, Box, Button, Card, Container, IconButton, Menu, MenuItem, styled} from '@mui/material'
+import {useAssessments, useUpdateSurveyAssessment} from '@services/assessmentHooks'
+import {latoFont, poppinsFont, theme} from '@style/theme'
 import constants from '@typedefs/constants'
-import { Assessment } from '@typedefs/types'
+import {Assessment} from '@typedefs/types'
 import React from 'react'
-import { useErrorHandler } from 'react-error-boundary'
-import { Link, Redirect, useHistory } from 'react-router-dom'
+import {useErrorHandler} from 'react-error-boundary'
+import {Link, Redirect, useHistory} from 'react-router-dom'
 
-const StyledSurveysContainer = styled('div', { label: 'StyledSurveyContainer' })(
-  ({ theme }) => ({
-    display: 'grid',
-    padding: theme.spacing(4, 0),
+const StyledSurveysContainer = styled('div', {label: 'StyledSurveyContainer'})(({theme}) => ({
+  display: 'grid',
+  padding: theme.spacing(4, 0),
+  justifyContent: 'center',
+  margin: theme.spacing(3, 0),
+  borderTop: '1px solid rgba(116, 116, 116, 0.5)',
+  gridTemplateColumns: `repeat(auto-fill,220px)`,
+  gridColumnGap: theme.spacing(3),
+  gridRowGap: theme.spacing(3),
+  [theme.breakpoints.down('md')]: {
+    padding: theme.spacing(3),
     justifyContent: 'center',
-    margin: theme.spacing(3, 0),
-    borderTop: '1px solid rgba(116, 116, 116, 0.5)',
-    gridTemplateColumns: `repeat(auto-fill,220px)`,
-    gridColumnGap: theme.spacing(3),
-    gridRowGap: theme.spacing(3),
-    [theme.breakpoints.down('md')]: {
-      padding: theme.spacing(3),
-      justifyContent: 'center',
-      gridRowGap: theme.spacing(4),
-    },
-  })
-)
+    gridRowGap: theme.spacing(4),
+  },
+}))
 
 const StyledSurveysCard = styled(Card, {
   label: 'StyledSurveysCard',
   shouldForwardProp: prop => prop !== 'isMenuOpen',
 })<{
   isMenuOpen: boolean
-}>(({ theme, isMenuOpen }) => ({
+}>(({theme, isMenuOpen}) => ({
   background: '#FCFCFC',
   boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
   height: '374px',
@@ -90,7 +75,7 @@ const AssessmentCard: React.FunctionComponent<{
   assessment: Assessment
   onClick: (e: HTMLElement) => void
   isMenuOpen: boolean
-}> = ({ isMenuOpen, onClick, assessment }) => {
+}> = ({isMenuOpen, onClick, assessment}) => {
   const _onClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation()
     e.preventDefault()
@@ -98,10 +83,7 @@ const AssessmentCard: React.FunctionComponent<{
   }
 
   return (
-    <Link
-      style={{ textDecoration: 'none' }}
-      key={assessment.identifier}
-      to={`/surveys/${assessment.guid!}/design`}>
+    <Link style={{textDecoration: 'none'}} key={assessment.identifier} to={`/surveys/${assessment.guid!}/design`}>
       <StyledSurveysCard isMenuOpen={isMenuOpen}>
         <div className="top">
           <IconButton onClick={_onClick} size="large">
@@ -125,7 +107,7 @@ const AssessmentMenu: React.FunctionComponent<{
   onView: () => void
   onClose: () => void
   onDuplicate: () => void
-}> = ({ onDelete, onView, onDuplicate, onClose, anchorEl }) => {
+}> = ({onDelete, onView, onDuplicate, onClose, anchorEl}) => {
   return (
     <Menu
       id="assessment-menu"
@@ -163,25 +145,16 @@ const SurveyList: React.FunctionComponent<{}> = () => {
     survey: Assessment
     anchorEl: HTMLElement
   }>(null)
-  const [highlightedStudyId, setHighlightedStudyId] = React.useState<
-    string | null
-  >(null)
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState<
-    'DELETE' | undefined
-  >(undefined)
+  const [highlightedStudyId, setHighlightedStudyId] = React.useState<string | null>(null)
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = React.useState<'DELETE' | undefined>(undefined)
 
   const {
     data: surveys,
     status: getSurveysStatus,
     error: getSurveysError,
-  } = useAssessments({ isLocal: true, isSurvey: true })
+  } = useAssessments({isLocal: true, isSurvey: true})
 
-  const {
-
-    error: asmntUpdateError,
-    mutate: mutateAssessment,
-  } = useUpdateSurveyAssessment()
-
+  const {error: asmntUpdateError, mutate: mutateAssessment} = useUpdateSurveyAssessment()
 
   if (isNew) {
     return <Redirect to={`${constants.restrictedPaths.SURVEY_BUILDER}/intro`} />
@@ -202,7 +175,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
       case 'DELETE':
         // await mutate({ action: type, study })
         mutateAssessment(
-          { assessment: survey, action: 'DELETE' },
+          {assessment: survey, action: 'DELETE'},
           {
             onSuccess: data => {
               // alert('done')
@@ -214,7 +187,10 @@ const SurveyList: React.FunctionComponent<{}> = () => {
 
       case 'DUPLICATE':
         mutateAssessment(
-          { assessment: { ...survey, title: `Copy of ${survey.title}` }, action: 'COPY' },
+          {
+            assessment: {...survey, title: `Copy of ${survey.title}`},
+            action: 'COPY',
+          },
           {
             onSuccess: data => {
               setHighlightedStudyId(data.guid!)
@@ -236,16 +212,8 @@ const SurveyList: React.FunctionComponent<{}> = () => {
 
   return (
     <Container maxWidth="xl">
-      {getSurveysError && (
-        <Alert severity="error">
-          {getSurveysError.message}
-        </Alert>
-      )}
-      {asmntUpdateError && (
-        <Alert severity="error">
-          {asmntUpdateError.message}
-        </Alert>
-      )}
+      {getSurveysError && <Alert severity="error">{getSurveysError.message}</Alert>}
+      {asmntUpdateError && <Alert severity="error">{asmntUpdateError.message}</Alert>}
 
       <Box
         sx={{
@@ -254,12 +222,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
           marginTop: theme.spacing(5),
         }}>
         <Button
-          disabled={
-            !Utility.isPathAllowed(
-              'any',
-              constants.restrictedPaths.SURVEY_BUILDER
-            )
-          }
+          disabled={!Utility.isPathAllowed('any', constants.restrictedPaths.SURVEY_BUILDER)}
           variant="contained"
           onClick={e => setIsNew(true)}>
           + Create New Survey
@@ -270,20 +233,16 @@ const SurveyList: React.FunctionComponent<{}> = () => {
           {surveys?.map((survey, index) => (
             <Box
               sx={{
-                outline:
-                  highlightedStudyId === survey.guid ? '4px solid #BCD5E4' : '',
+                outline: highlightedStudyId === survey.guid ? '4px solid #BCD5E4' : '',
                 '&:hover': {
                   outline: '4px solid #BCD5E4',
                 },
-
               }}>
               <AssessmentCard
                 key={survey.identifier}
                 assessment={survey}
-                isMenuOpen={
-                  menuAnchor?.survey?.identifier === survey.identifier
-                }
-                onClick={e => setMenuAnchor({ survey, anchorEl: e })}
+                isMenuOpen={menuAnchor?.survey?.identifier === survey.identifier}
+                onClick={e => setMenuAnchor({survey, anchorEl: e})}
               />
             </Box>
           ))}
@@ -295,9 +254,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
           onClose={handleMenuClose}
           onDelete={() => setIsConfirmDialogOpen('DELETE')}
           onDuplicate={() => onAction(menuAnchor!.survey, 'DUPLICATE')}
-          onView={() =>
-            history.push(`/surveys/${menuAnchor?.survey.guid}/design/intro`)
-          }
+          onView={() => history.push(`/surveys/${menuAnchor?.survey.guid}/design/intro`)}
         />
       )}
 
@@ -311,8 +268,7 @@ const SurveyList: React.FunctionComponent<{}> = () => {
           onAction(menuAnchor!.survey, 'DELETE')
         }}>
         <div>
-          Are you sure you would like to permanently delete:{' '}
-          <p>{menuAnchor?.survey.title}</p>
+          Are you sure you would like to permanently delete: <p>{menuAnchor?.survey.title}</p>
         </div>
       </ConfirmationDialog>
     </Container>

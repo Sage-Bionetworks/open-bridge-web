@@ -68,16 +68,10 @@ export type ChoiceQuestionChoice = {
   icon?: string
 }
 
-export type Instruction = BaseStep & {}
-export type ControlType =
-  | 'radio'
-  | 'checkbox'
-  | 'text'
-  | 'likert'
-  | 'time'
-  | 'date'
+export interface Instruction extends BaseStep {}
+export type ControlType = 'radio' | 'checkbox' | 'text' | 'likert' | 'time' | 'date'
 
-export type Question = BaseStep & {
+export interface Question extends BaseStep {
   optional?: boolean //true,
   inputItem?: InputItem
   skipCheckbox?: Skip
@@ -86,7 +80,7 @@ export type Question = BaseStep & {
   uiHint?: 'checkmark' | 'likert' | 'textfield' | 'slider'
 }
 
-export type ChoiceQuestion = Question & {
+export interface ChoiceQuestion extends Question {
   baseType: QuestionDataType
 
   surveyRules?: {
@@ -102,48 +96,48 @@ export type ChoiceQuestion = Question & {
     fieldLabel?: string // no column
   }
 }
-export type MultipleInputQuestion = BaseStep & {
+export interface MultipleInputQuestion extends Question {
   optional: boolean
   inputItems: InputItem[]
   skipCheckbox?: Skip
 }
-export type ScaleQuestion = Question & {
+export interface ScaleQuestion extends Question {
   uiHint: 'likert' | 'slider'
   inputItem: InputItem & {
     type: 'integer'
     formatOptions: FormatOptionsInteger
   }
 }
-export type DurationQuestion = Question & {
+export interface DurationQuestion extends Question {
   inputItem: InputItem & {
     type: 'duration'
     displayUnits: ['hour', 'minute']
   }
 }
 
-export type TimeQuestion = Question & {
+export interface TimeQuestion extends Question {
   inputItem: InputItem & {
     type: 'time'
 
-    formatOptions: FormatOptionsTime
+    formatOptions?: FormatOptionsTime
   }
 }
 
-export type NumericQuestion = Question & {
+export interface NumericQuestion extends Question {
   inputItem: InputItem & {
     type: 'integer'
     formatOptions?: FormatOptionsInteger
   }
 }
 
-export type YearQuestion = Question & {
+export interface YearQuestion extends Question {
   inputItem: InputItem & {
     type: 'year'
     formatOptions?: FormatOptionsYear
   }
 }
 
-export type BaseStep = {
+export interface BaseStep {
   identifier: string //'step1',
   controlType?: ControlType
   type:

@@ -8,11 +8,7 @@ type EditDialogTitleProps = {
   shouldWithdraw?: boolean
   batchEdit?: boolean
 }
-const EditDialogTitle: FunctionComponent<EditDialogTitleProps> = ({
-  onCancel,
-  shouldWithdraw,
-  batchEdit,
-}) => {
+const EditDialogTitle: FunctionComponent<EditDialogTitleProps> = ({onCancel, shouldWithdraw, batchEdit}) => {
   const title = shouldWithdraw
     ? 'Withdraw'
     : !batchEdit
@@ -20,9 +16,7 @@ const EditDialogTitle: FunctionComponent<EditDialogTitleProps> = ({
     : 'Batch Edit Multiple Participant Details '
   const Icon = shouldWithdraw ? WithdrawIcon : PencilIcon
 
-  return (
-    <DialogTitleWithClose onCancel={onCancel} icon={<Icon />} title={title} />
-  )
+  return <DialogTitleWithClose onCancel={onCancel} icon={<Icon />} title={title} />
 }
 
 export default EditDialogTitle

@@ -81,76 +81,55 @@ type StudyPageTopPhoneContentProps = {
   isReadOnly?: boolean
 }
 
-const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContentProps> =
-  ({
-    imgHeight,
-    appColor,
-    studyTitle,
-    studySummaryBody,
-    leadInvestigator,
-    funder,
-    studyLogoUrl,
-    getContactName,
-    isReadOnly,
-  }) => {
-    const classes = useStyles()
-    return (
-      <Box className={classes.container}>
-        <Box
-          className={classes.studyLogoContainer}
-          style={{
-            backgroundColor: appColor ? 'transparent' : appColor,
-          }}>
-          {studyLogoUrl ? (
-            <img
-              src={studyLogoUrl}
-              style={{height: `${imgHeight - 16}px`}}
-              alt="study-logo"
-            />
-          ) : (
-            <></>
-          )}
-        </Box>
-        <Box className={classes.innerContainer}>
-          {!isReadOnly && (
-            <SectionIndicator
-              index={4}
-              className={classes.sectionFourIndicatorPosition}
-            />
-          )}
-          <Box height="420px">
-            <Box className={classes.headlineStyle}>
-              {studyTitle || 'Title of study...'}
-            </Box>
-            <p className={classes.bodyText}>{studySummaryBody || 'Body...'}</p>
-          </Box>
-
-          <Divider className={classes.divider} />
-          <StudySummaryRoles
-            type="Lead Principal Investigator"
-            name={getContactName(leadInvestigator.name) || 'placeholder'}
-            className={classes.studySummaryRoles}
-          />
-          {!isReadOnly && (
-            <SectionIndicator
-              index={5}
-              className={classes.sectionFiveIndicatorPosition}
-            />
-          )}
-
-          <StudySummaryRoles
-            type="Institution"
-            name={leadInvestigator.affiliation || 'placeholder'}
-            className={classes.studySummaryRoles}
-          />
-          <StudySummaryRoles
-            type="Funder"
-            name={getContactName(funder.name) || 'placeholder'}
-            className={classes.studySummaryRoles}
-          />
-        </Box>
+const StudyPageTopPhoneContent: React.FunctionComponent<StudyPageTopPhoneContentProps> = ({
+  imgHeight,
+  appColor,
+  studyTitle,
+  studySummaryBody,
+  leadInvestigator,
+  funder,
+  studyLogoUrl,
+  getContactName,
+  isReadOnly,
+}) => {
+  const classes = useStyles()
+  return (
+    <Box className={classes.container}>
+      <Box
+        className={classes.studyLogoContainer}
+        style={{
+          backgroundColor: appColor ? 'transparent' : appColor,
+        }}>
+        {studyLogoUrl ? <img src={studyLogoUrl} style={{height: `${imgHeight - 16}px`}} alt="study-logo" /> : <></>}
       </Box>
-    )
-  }
+      <Box className={classes.innerContainer}>
+        {!isReadOnly && <SectionIndicator index={4} className={classes.sectionFourIndicatorPosition} />}
+        <Box height="420px">
+          <Box className={classes.headlineStyle}>{studyTitle || 'Title of study...'}</Box>
+          <p className={classes.bodyText}>{studySummaryBody || 'Body...'}</p>
+        </Box>
+
+        <Divider className={classes.divider} />
+        <StudySummaryRoles
+          type="Lead Principal Investigator"
+          name={getContactName(leadInvestigator.name) || 'placeholder'}
+          className={classes.studySummaryRoles}
+        />
+        {!isReadOnly && <SectionIndicator index={5} className={classes.sectionFiveIndicatorPosition} />}
+
+        <StudySummaryRoles
+          type="Institution"
+          name={leadInvestigator.affiliation || 'placeholder'}
+          className={classes.studySummaryRoles}
+        />
+        <StudySummaryRoles
+          type="Funder"
+          name={getContactName(funder.name) || 'placeholder'}
+          className={classes.studySummaryRoles}
+        />
+      </Box>
+    </Box>
+  )
+}
 
 export default StudyPageTopPhoneContent

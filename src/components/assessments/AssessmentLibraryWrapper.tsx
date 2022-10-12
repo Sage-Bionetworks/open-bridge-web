@@ -1,9 +1,5 @@
 import {ReactComponent as DemoPhone} from '@assets/preview/demo_phone.svg'
-import {
-  StyledToggleButton,
-  StyledToggleButtonGroup,
-  WhiteButton,
-} from '@components/widgets/StyledComponents'
+import {StyledToggleButton, StyledToggleButtonGroup, WhiteButton} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
 import useFeatureToggles, {FeatureToggles} from '@helpers/FeatureToggle'
 import {Box, Container} from '@mui/material'
@@ -100,55 +96,45 @@ const AssessmentTypeToggle: FunctionComponent<{
   )
 }
 
-const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps> =
-  ({
-    children,
-    isAssessmentLibrary = true,
-    assessmentsType = 'OTHER',
-    tags,
-    assessments,
-    onChangeTags,
-    onChangeAssessmentsType,
-  }: AssessmentLibraryWrapperProps) => {
-    const classes = useStyles()
-    const {token} = useUserSessionDataState()
-    const surveyToggle = useFeatureToggles<FeatureToggles>()
+const AssessmentLibraryWrapper: FunctionComponent<AssessmentLibraryWrapperProps> = ({
+  children,
+  isAssessmentLibrary = true,
+  assessmentsType = 'OTHER',
+  tags,
+  assessments,
+  onChangeTags,
+  onChangeAssessmentsType,
+}: AssessmentLibraryWrapperProps) => {
+  const classes = useStyles()
+  const {token} = useUserSessionDataState()
+  const surveyToggle = useFeatureToggles<FeatureToggles>()
 
-    return (
-      <Box
-        className={clsx(
-          classes.root,
-          !token && isAssessmentLibrary && classes.blue
-        )}>
-        {/* Filtering will not be present in the october release */}
-        {/* <AssessmentLibraryFilter
+  return (
+    <Box className={clsx(classes.root, !token && isAssessmentLibrary && classes.blue)}>
+      {/* Filtering will not be present in the october release */}
+      {/* <AssessmentLibraryFilter
         tags={tags}
         assessments={assessments}
         onChangeTags={(tags: string[]) => onChangeTags(tags)}
       /> */}
-        <Container className={classes.assessmentContainer} maxWidth="xl">
-          {isAssessmentLibrary && token && (
-            <Box textAlign="right" mx={3.5} mb={6}>
-              <NavLink
-                to={'assessments/preview'}
-                style={{textDecoration: 'none'}}>
-                <WhiteButton variant="contained" style={{fontSize: '15px'}}>
-                  <DemoPhone />
-                  Demo all assessments
-                </WhiteButton>
-              </NavLink>
-            </Box>
-          )}
-          {surveyToggle['SURVEY BUILDER'] && false && (
-            <AssessmentTypeToggle
-              assessmentType={assessmentsType}
-              onChange={t => onChangeAssessmentsType(t)}
-            />
-          )}
-          <Box className={classes.cardGrid}>{children}</Box>
-        </Container>
-      </Box>
-    )
-  }
+      <Container className={classes.assessmentContainer} maxWidth="xl">
+        {isAssessmentLibrary && token && (
+          <Box textAlign="right" mx={3.5} mb={6}>
+            <NavLink to={'assessments/preview'} style={{textDecoration: 'none'}}>
+              <WhiteButton variant="contained" style={{fontSize: '15px'}}>
+                <DemoPhone />
+                Demo all assessments
+              </WhiteButton>
+            </NavLink>
+          </Box>
+        )}
+        {surveyToggle['SURVEY BUILDER'] && false && (
+          <AssessmentTypeToggle assessmentType={assessmentsType} onChange={t => onChangeAssessmentsType(t)} />
+        )}
+        <Box className={classes.cardGrid}>{children}</Box>
+      </Container>
+    </Box>
+  )
+}
 
 export default AssessmentLibraryWrapper

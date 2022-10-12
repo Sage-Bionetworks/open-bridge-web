@@ -58,11 +58,12 @@ const AdherenceSessionIcon: FunctionComponent<{
   const isEmptyDot = SHAPE_CLASSES[windowState].shapeIndex === -1
 
   //0 - filled, 1- partcial, 2 - empty, 3 - partical-red, 4- empty-red
+  //ag 10/7 partial will always be yellow and empty will always be red
 
   let variant = SHAPE_CLASSES[windowState].shapeIndex
-  if (isRed && variant > 0) {
-    variant = variant + 2
-  }
+  /* if (isRed && variant > 0) {
+     variant = variant + 2
+   }*/
   if (variant === undefined) {
     throw Error('unknown state')
   }

@@ -1,15 +1,7 @@
 import {SessionSymbols} from '@components/widgets/SessionIcon'
 import {SimpleTextInput} from '@components/widgets/StyledComponents'
 import {useUserSessionDataState} from '@helpers/AuthContext'
-import {
-  Alert,
-  Box,
-  Button,
-  Container,
-  Divider,
-  FormControlLabel,
-  Theme,
-} from '@mui/material'
+import {Alert, Box, Button, Container, Divider, FormControlLabel, Theme} from '@mui/material'
 import createStyles from '@mui/styles/createStyles'
 import makeStyles from '@mui/styles/makeStyles'
 import ScheduleService from '@services/schedule.service'
@@ -100,42 +92,25 @@ export interface IntroInfoProps {
   id: string
 }
 
-const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
-  studyName: name,
-  id: studyId,
-}: IntroInfoProps) => {
+const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({studyName: name, id: studyId}: IntroInfoProps) => {
   const classes = useStyles()
   const {token} = useUserSessionDataState()
-  const [studyName, setStudyName] = React.useState<any>(
-    name === constants.constants.NEW_STUDY_NAME ? '' : name
-  )
+  const [studyName, setStudyName] = React.useState<any>(name === constants.constants.NEW_STUDY_NAME ? '' : name)
   const [duration, setDuration] = React.useState<any>('')
   const {data: study, error: studyError} = useStudy(studyId)
   const {mutateAsync: mutateSchedule} = useUpdateSchedule()
 
   const {mutateAsync: mutateStudy} = useUpdateStudyDetail()
 
-  const createScheduleAndNameStudy = async (
-    studyId: string,
-    studyName: string,
-    duration: string,
-    start: string
-  ) => {
-    const studySession = ScheduleService.createEmptyScheduleSession(
-      start,
-      SessionSymbols.keys().next().value
-    )
+  const createScheduleAndNameStudy = async (studyId: string, studyName: string, duration: string, start: string) => {
+    const studySession = ScheduleService.createEmptyScheduleSession(start, SessionSymbols.keys().next().value)
     let schedule: Schedule = {
       guid: '',
       name: studyId,
       duration,
       sessions: [studySession],
     }
-    const newSchedule = await ScheduleService.createSchedule(
-      studyId,
-      schedule,
-      token!
-    )
+    const newSchedule = await ScheduleService.createSchedule(studyId, schedule, token!)
 
     //agendel 10/6 adding  default to signin with study Id signInTypes: SignInType[]
     const updatedStudy: Study = {
@@ -173,13 +148,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
           }
           className={classes.formControl}
           labelPlacement="start"
-          control={
-            <SimpleTextInput
-              fullWidth
-              value={studyName}
-              onChange={e => setStudyName(e.target.value)}
-            />
-          }
+          control={<SimpleTextInput fullWidth value={studyName} onChange={e => setStudyName(e.target.value)} />}
         />
         <Divider className={classes.divider}></Divider>
         <Box className={classes.middleContainer}>
@@ -189,13 +158,10 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
             }}
             label={
               <Box width="210px" marginRight="40px">
-                <strong className={classes.headerText}>
-                  How long is your study?
-                </strong>
+                <strong className={classes.headerText}>How long is your study?</strong>
                 <br /> <br />
                 <div className={classes.description}>
-                  This is the duration that a participant is involved in the
-                  study.
+                  This is the duration that a participant is involved in the study.
                 </div>{' '}
               </Box>
             }
@@ -212,9 +178,7 @@ const IntroInfo: React.FunctionComponent<IntroInfoProps> = ({
                   unitData={DWsEnum}
                   isIntro={true}></Duration>
                 <span className={classes.hint}>
-                  <strong>
-                    The study duration must be shorter than 5 years.
-                  </strong>
+                  <strong>The study duration must be shorter than 5 years.</strong>
                 </span>
               </Box>
             }

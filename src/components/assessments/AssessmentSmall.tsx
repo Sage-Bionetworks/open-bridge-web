@@ -1,9 +1,9 @@
 import {Box, Paper} from '@mui/material'
 import createStyles from '@mui/styles/createStyles'
 import makeStyles from '@mui/styles/makeStyles'
+import {Assessment} from '@typedefs/types'
 import clsx from 'clsx'
-import React, {FunctionComponent} from 'react'
-import {Assessment} from '../../types/types'
+import {FunctionComponent} from 'react'
 import AssessmentImage from './AssessmentImage'
 
 const useStyles = makeStyles(theme =>
@@ -51,13 +51,14 @@ const useStyles = makeStyles(theme =>
     },
     title: {
       fontSize: '12px',
+      overflowWrap: 'break-word',
     },
     text: {
       padding: theme.spacing(1),
       paddingRight: theme.spacing(3),
       backgroundColor: '#E0E0E0',
       position: 'relative',
-
+      overflow: 'hidden',
       flexGrow: 1,
       textAlign: 'left',
     },
@@ -89,28 +90,16 @@ const AssessmentSmall: FunctionComponent<AssessmentSmallProps> = ({
   const classes = useStyles()
 
   return (
-    <Paper
-      className={clsx(
-        classes.root,
-        !hasHover && 'no-hover',
-        isDragging && 'dragging'
-      )}>
+    <Paper className={clsx(classes.root, !hasHover && 'no-hover', isDragging && 'dragging')}>
       <Box className={classes.card}>
-        <AssessmentImage
-          variant="small"
-          resources={assessment.resources}
-          name={assessment.title}></AssessmentImage>
+        <AssessmentImage variant="small" resources={assessment.resources} name={assessment.title}></AssessmentImage>
       </Box>
       <div className={classes.text}>
         <div className={classes.hoverImage}> &#9776;</div>
         <span className={classes.title}>
           {assessment.title}
 
-          {!isHideDuration && (
-            <div className={classes.duration}>
-              {assessment.minutesToComplete} min
-            </div>
-          )}
+          {!isHideDuration && <div className={classes.duration}>{assessment.minutesToComplete} min</div>}
         </span>
         {children}
       </div>

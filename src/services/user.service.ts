@@ -7,27 +7,16 @@ const requestResetPassword = async (email: string): Promise<Response<{}>> => {
     email,
     appId: Utility.getAppId(),
   }
-  return await Utility.callEndpoint<any>(
-    constants.endpoints.requestResetPassword,
-    'POST',
-    postData
-  )
+  return await Utility.callEndpoint<any>(constants.endpoints.requestResetPassword, 'POST', postData)
 }
 
-const loginWithPassword = async (
-  email: string,
-  password: string
-): Promise<Response<LoggedInUserData>> => {
+const loginWithPassword = async (email: string, password: string): Promise<Response<LoggedInUserData>> => {
   const postData = {
     appId: Utility.getAppId(),
     email,
     password,
   }
-  return await Utility.callEndpoint<LoggedInUserData>(
-    constants.endpoints.signIn,
-    'POST',
-    postData
-  )
+  return await Utility.callEndpoint<LoggedInUserData>(constants.endpoints.signIn, 'POST', postData)
 }
 
 const loginOauth = async (
@@ -42,22 +31,13 @@ const loginOauth = async (
     callbackUrl,
   }
 
-  const result = await Utility.callEndpoint<LoggedInUserData>(
-    constants.endpoints.oauthSignIn,
-    'POST',
-    postData
-  )
+  const result = await Utility.callEndpoint<LoggedInUserData>(constants.endpoints.oauthSignIn, 'POST', postData)
 
   return result
 }
 
 async function getUserInfo(token: string): Promise<Response<LoggedInUserData>> {
-  const result = await Utility.callEndpoint<LoggedInUserData>(
-    constants.endpoints.selfInfo,
-    'GET',
-    {},
-    token
-  )
+  const result = await Utility.callEndpoint<LoggedInUserData>(constants.endpoints.selfInfo, 'GET', {}, token)
   return result
 }
 const UserService = {

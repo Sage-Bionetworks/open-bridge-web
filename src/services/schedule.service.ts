@@ -13,12 +13,8 @@ import {
   TimelineScheduleItem,
   TimePeriod,
 } from '../types/scheduling'
-import {Assessment} from '../types/types'
 import AssessmentService from './assessment.service'
-import EventService, {
-  BURST_EVENT_PATTERN,
-  JOINED_EVENT_ID,
-} from './event.service'
+import EventService, {BURST_EVENT_PATTERN, JOINED_EVENT_ID} from './event.service'
 import StudyService from './study.service'
 
 const ScheduleService = {
@@ -59,19 +55,11 @@ export const DEFAULT_NOTIFICATION: ScheduleNotification = {
   ],
 }
 
-function getStudyBurst(
-  schedule?: Schedule | ScheduleTimeline
-): StudyBurst | undefined {
-  return !schedule?.studyBursts || schedule.studyBursts.length === 0
-    ? undefined
-    : schedule.studyBursts[0]
+function getStudyBurst(schedule?: Schedule | ScheduleTimeline): StudyBurst | undefined {
+  return !schedule?.studyBursts || schedule.studyBursts.length === 0 ? undefined : schedule.studyBursts[0]
 }
 
-function createEmptyScheduleSession(
-  startEventId: string,
-  symbol: string,
-  name = 'Session1'
-) {
+function createEmptyScheduleSession(startEventId: string, symbol: string, name = 'Session1') {
   const defaultTimeWindow: AssessmentWindow = {
     startTime: '08:00',
   }
@@ -87,11 +75,7 @@ function createEmptyScheduleSession(
   return studySession
 }
 
-async function createSchedule(
-  studyId: string,
-  schedule: Schedule,
-  token: string
-): Promise<Schedule> {
+async function createSchedule(studyId: string, schedule: Schedule, token: string): Promise<Schedule> {
   const result = await Utility.callEndpoint<Schedule>(
     constants.endpoints.schedule.replace(':studyId', studyId),
     'POST', // once we add things to the study -- we can change this to actual object
@@ -102,12 +86,7 @@ async function createSchedule(
   return result.data
 }
 
-async function saveSchedule(
-  studyId: string,
-  appId: string,
-  schedule: Schedule,
-  token: string
-): Promise<Schedule> {
+async function saveSchedule(studyId: string, appId: string, schedule: Schedule, token: string): Promise<Schedule> {
   const scheduleEndpoint = constants.endpoints.schedule
   try {
     const response = await Utility.callEndpoint<Schedule>(
@@ -125,34 +104,19 @@ async function saveSchedule(
       if (!updatedSchedule) {
         throw new Error('No schedule found')
       }
-      return saveSchedule(
-        studyId,
-        appId,
-        {...schedule, version: updatedSchedule.version},
-        token
-      )
+      return saveSchedule(studyId, appId, {...schedule, version: updatedSchedule.version}, token)
     } else {
       throw error
     }
   }
 }
 
-async function addAssessmentResourcesToSchedule(
-  appId: string,
-  token: string,
-  schedule: Schedule
-): Promise<Schedule> {
-  //try from storage first
-  const localA = sessionStorage.getItem('AssessmentResources')
-
-  const assessmentData = localA
-    ? (JSON.parse(localA) as {assessments: Assessment[]; tags: string[]})
-    : await AssessmentService.getAssessmentsWithResources(appId, token)
+async function addAssessmentResourcesToSchedule(appId: string, token: string, schedule: Schedule): Promise<Schedule> {
+  //agendel: get fresh -- don't use local storage
+  const assessmentData = await AssessmentService.getAssessmentsWithResources(appId, token)
   schedule.sessions.forEach(session => {
     const assmntWithResources = session.assessments?.map(assmnt => {
-      assmnt.resources = assessmentData.assessments.find(
-        a => a.guid === assmnt.guid
-      )?.resources
+      assmnt.resources = assessmentData.assessments.find(a => a.guid === assmnt.guid)?.resources
       return assmnt
     })
     session.assessments = assmntWithResources ? [...assmntWithResources] : []
@@ -177,15 +141,11 @@ async function getSchedule(
   if (!schedule) {
     return undefined
   }
-  return addResources
-    ? addAssessmentResourcesToSchedule(appId, token, schedule.data)
-    : schedule.data
+  const result = addResources ? await addAssessmentResourcesToSchedule(appId, token, schedule.data) : schedule.data
+  return result
 }
 
-async function getTimeline(
-  studyId: string,
-  token: string
-): Promise<ScheduleTimeline | undefined> {
+async function getTimeline(studyId: string, token: string): Promise<ScheduleTimeline | undefined> {
   const result = await Utility.callEndpoint<any>(
     constants.endpoints.scheduleTimeline.replace(':studyId', studyId),
     'GET',
@@ -203,41 +163,33 @@ function getEventsForTimeline(
 
   const burst = !_.isEmpty(studyBursts) ? studyBursts[0] : undefined
 
-  const events = schedule.reduce(
-    (p: ExtendedScheduleEventObject[], i: TimelineScheduleItem) => {
-      var isBurstEvent = i.studyBurstNum !== undefined
-      var eventId = isBurstEvent ? burst!.originEventId : i.startEventId
+  const events = schedule.reduce((p: ExtendedScheduleEventObject[], i: TimelineScheduleItem) => {
+    var isBurstEvent = i.studyBurstNum !== undefined
+    var eventId = isBurstEvent ? burst!.originEventId : i.startEventId
 
-      var event = {
-        eventId,
-        studyBurstId: isBurstEvent ? burst?.identifier : undefined,
+    var event = {
+      eventId,
+      studyBurstId: isBurstEvent ? burst?.identifier : undefined,
+    }
+    //check if we already have this event
+    const eventIndex = p.findIndex(e => e.eventId === eventId)
+    // add event if it doesn't exist or would replace non-burst event
+    if (eventIndex === -1) {
+      return [...p, event]
+    } else {
+      if (!p[eventIndex].studyBurstId && event.studyBurstId) {
+        p[eventIndex] = event
       }
-      //check if we already have this event
-      const eventIndex = p.findIndex(e => e.eventId === eventId)
-      // add event if it doesn't exist or would replace non-burst event
-      if (eventIndex === -1) {
-        return [...p, event]
-      } else {
-        if (!p[eventIndex].studyBurstId && event.studyBurstId) {
-          p[eventIndex] = event
-        }
-        return p
-      }
-    },
-    [] as {eventId: string; delay: TimePeriod}[]
-  )
+      return p
+    }
+  }, [] as {eventId: string; delay: TimePeriod}[])
 
   if (!sortedCustomEventIds) {
     return events
   }
-  const prefixedStudyEvents = sortedCustomEventIds.map(e =>
-    EventService.prefixCustomEventIdentifier(e)
-  )
+  const prefixedStudyEvents = sortedCustomEventIds.map(e => EventService.prefixCustomEventIdentifier(e))
   const result = events.sort((a, b) => {
-    return prefixedStudyEvents.indexOf(a.eventId) >
-      prefixedStudyEvents.indexOf(b.eventId)
-      ? 1
-      : -1
+    return prefixedStudyEvents.indexOf(a.eventId) > prefixedStudyEvents.indexOf(b.eventId) ? 1 : -1
   })
   return result
 }
@@ -276,10 +228,10 @@ async function getAllEventsForTimelineByStudyId(
     if (burst?.identifier && burst.identifier === current.studyBurstId) {
       for (let i = 1; i <= burst.occurrences; i++) {
         //generate burst name
-        var eventId = BURST_EVENT_PATTERN.replace(
-          '[0-9]+',
-          i < 10 ? '0' + i : '' + i
-        ).replace('[burst_id]', burst.identifier)
+        var eventId = BURST_EVENT_PATTERN.replace('[0-9]+', i < 10 ? '0' + i : '' + i).replace(
+          '[burst_id]',
+          burst.identifier
+        )
         res.push({
           eventId,
           originEventId: current.eventId,

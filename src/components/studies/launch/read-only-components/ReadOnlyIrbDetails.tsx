@@ -38,9 +38,7 @@ const useStyles = makeStyles((theme: ThemeType) => ({
   },
 }))
 
-const ReadOnlyIrbDetails: React.FunctionComponent<{study: Study}> = ({
-  study,
-}) => {
+const ReadOnlyIrbDetails: React.FunctionComponent<{study: Study}> = ({study}) => {
   const classes = useStyles()
   return (
     <Box padding="50px 0px">
@@ -89,69 +87,41 @@ const ReadOnlyIrbDetails: React.FunctionComponent<{study: Study}> = ({
           <Box pl={3} mb={4}>
             <FormControlLabel
               key="confirmReviewed"
-              control={
-                <Checkbox checked={true} onChange={() => {}} color="primary" />
-              }
+              control={<Checkbox checked={true} onChange={() => {}} color="primary" />}
               label="The study protocol was reviewed by the IRB and /or equivalent body listed below."
             />
             <FormControlLabel
               key="confirmConsistent"
-              control={
-                <Checkbox checked={true} onChange={() => {}} color="primary" />
-              }
+              control={<Checkbox checked={true} onChange={() => {}} color="primary" />}
               label="The Principal Investigator has assured that this study is consistent with applicable laws and regulations as well as relevant institutional policies."
             />
           </Box>
         </Box>
-        <ReadOnlyTextbox
-          header="IRB Protocol Title:"
-          value={study.name || ''}
-        />
+        <ReadOnlyTextbox header="IRB Protocol Title:" value={study.name || ''} />
         <ReadOnlyTextbox
           header="Lead Principal Investigator:"
-          value={
-            study.contacts?.find(el => el.role === 'principal_investigator')
-              ?.name || ''
-          }
+          value={study.contacts?.find(el => el.role === 'principal_investigator')?.name || ''}
         />
         <ReadOnlyTextbox
           header="Institutional Affiliation:"
-          value={
-            study.contacts?.find(el => el.role === 'principal_investigator')
-              ?.affiliation || ''
-          }
+          value={study.contacts?.find(el => el.role === 'principal_investigator')?.affiliation || ''}
         />
-        <ReadOnlyTextbox
-          header="IRB of record:"
-          value={study.contacts?.find(el => el.role === 'irb')?.name || ''}
-        />
-        <ReadOnlyTextbox
-          header="IRB Protocol ID:"
-          value={study.irbProtocolId || ''}
-        />
+        <ReadOnlyTextbox header="IRB of record:" value={study.contacts?.find(el => el.role === 'irb')?.name || ''} />
+        <ReadOnlyTextbox header="IRB Protocol ID:" value={study.irbProtocolId || ''} />
         <Box mt={3} fontWeight="bold" fontFamily={poppinsFont} fontSize="14px">
-          IRB Decision*:{' '}
-          {study.irbDecisionType === 'approved' ? 'Approved' : 'Exempt'}
+          IRB Decision*: {study.irbDecisionType === 'approved' ? 'Approved' : 'Exempt'}
         </Box>
         <Box display="flex" flexDirection="row" mt={-2}>
           <Box mr={2} width="194px">
             <ReadOnlyTextbox
-              header={
-                study.irbDecisionType === 'approved'
-                  ? 'Date of IRB sApproval'
-                  : 'Date of Exemption'
-              }
-              value={getFormattedDate(
-                getDateWithTimeZone(new Date(study.irbDecisionOn!))
-              )}
+              header={study.irbDecisionType === 'approved' ? 'Date of IRB sApproval' : 'Date of Exemption'}
+              value={getFormattedDate(getDateWithTimeZone(new Date(study.irbDecisionOn!)))}
             />
           </Box>
           {study.irbDecisionType === 'approved' && (
             <ReadOnlyTextbox
               header={'Date of Approval Expiration'}
-              value={getFormattedDate(
-                getDateWithTimeZone(new Date(study.irbExpiresOn!))
-              )}
+              value={getFormattedDate(getDateWithTimeZone(new Date(study.irbExpiresOn!)))}
             />
           )}
         </Box>

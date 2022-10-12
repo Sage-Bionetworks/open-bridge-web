@@ -80,424 +80,353 @@ type notificationErrorArrayType = {
   notificationName: string
 }
 
-const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSessionContainerProps> =
-  ({
-    studySession,
-    onUpdateSessionSchedule,
-    sessionErrorState,
-    customEvents,
-    burstOriginEventId,
-    onOpenEventsEditor,
-    hasCriticalStartEvent,
-  }) => {
-    const classes = useStyles()
+const SchedulableSingleSessionContainer: FunctionComponent<SchedulableSingleSessionContainerProps> = ({
+  studySession,
+  onUpdateSessionSchedule,
+  sessionErrorState,
+  customEvents,
+  burstOriginEventId,
+  onOpenEventsEditor,
+  hasCriticalStartEvent,
+}) => {
+  const classes = useStyles()
 
-    const [schedulableSession, setSchedulableSession] =
-      React.useState<StudySession>(studySession || defaultSchedule)
+  const [schedulableSession, setSchedulableSession] = React.useState<StudySession>(studySession || defaultSchedule)
 
-    const [windowErrors, setWindowErrors] = React.useState<
-      windowErrorArrayType[]
-    >([])
+  const [windowErrors, setWindowErrors] = React.useState<windowErrorArrayType[]>([])
 
-    const [notificationErrors, setNotificationErrors] = React.useState<
-      notificationErrorArrayType[]
-    >([])
+  const [notificationErrors, setNotificationErrors] = React.useState<notificationErrorArrayType[]>([])
 
-    React.useEffect(() => {
-      setSchedulableSession(studySession || defaultSchedule)
-    }, [studySession])
+  React.useEffect(() => {
+    setSchedulableSession(studySession || defaultSchedule)
+  }, [studySession])
 
-    React.useEffect(() => {
-      if (
-        !sessionErrorState ||
-        sessionErrorState.sessionWindowErrors.size === 0
-      ) {
-        setWindowErrors([])
-        return
-      }
-      const windowErrorsArray: windowErrorArrayType[] = []
-      sessionErrorState.sessionWindowErrors.forEach((el, key) => {
-        windowErrorsArray.push({
-          windowName: 'window ' + key,
-          windowError: el,
-        })
+  React.useEffect(() => {
+    if (!sessionErrorState || sessionErrorState.sessionWindowErrors.size === 0) {
+      setWindowErrors([])
+      return
+    }
+    const windowErrorsArray: windowErrorArrayType[] = []
+    sessionErrorState.sessionWindowErrors.forEach((el, key) => {
+      windowErrorsArray.push({
+        windowName: 'window ' + key,
+        windowError: el,
       })
-      setWindowErrors(windowErrorsArray)
-    }, [sessionErrorState?.sessionWindowErrors])
+    })
+    setWindowErrors(windowErrorsArray)
+  }, [sessionErrorState?.sessionWindowErrors])
 
-    React.useEffect(() => {
-      if (
-        !sessionErrorState ||
-        sessionErrorState.notificationErrors.size === 0
-      ) {
-        setNotificationErrors([])
-        return
-      }
-      const notificationErrorsArray: notificationErrorArrayType[] = []
-      sessionErrorState.notificationErrors.forEach((el, key) => {
-        notificationErrorsArray.push({
-          notificationName: 'notification ' + key,
-          notficationError: el,
-        })
+  React.useEffect(() => {
+    if (!sessionErrorState || sessionErrorState.notificationErrors.size === 0) {
+      setNotificationErrors([])
+      return
+    }
+    const notificationErrorsArray: notificationErrorArrayType[] = []
+    sessionErrorState.notificationErrors.forEach((el, key) => {
+      notificationErrorsArray.push({
+        notificationName: 'notification ' + key,
+        notficationError: el,
       })
-      setNotificationErrors(notificationErrorsArray)
-    }, [sessionErrorState?.notificationErrors])
+    })
+    setNotificationErrors(notificationErrorsArray)
+  }, [sessionErrorState?.notificationErrors])
 
-    function hasWindowLongerThan24h(session?: StudySession) {
-      const windows = session ? session.timeWindows : studySession.timeWindows
-      if (!windows || windows.length === 0) {
-        return false
-      }
-      if (windows.length === 1 && !windows[0].expiration) {
-        return false
-      }
-      const over24 = windows.find(window => {
-        if (!window.expiration) {
-          return true
-        } else {
-          const expirationHours = moment.duration(window.expiration).asHours()
-          return expirationHours > 24
-        }
-      })
-      return over24 !== undefined
+  function hasWindowLongerThan24h(session?: StudySession) {
+    const windows = session ? session.timeWindows : studySession.timeWindows
+    if (!windows || windows.length === 0) {
+      return false
     }
-
-    const updateSessionSchedule = (
-      newSession: StudySession,
-      shouldInvalidateBurst?: boolean
-    ) => {
-      onUpdateSessionSchedule(
-        newSession,
-        shouldInvalidateBurst,
-        shouldInvalidateBurst && hasCriticalStartEvent
-      )
+    if (windows.length === 1 && !windows[0].expiration) {
+      return false
     }
-
-    const addNewWindow = () => {
-      const newState = {...schedulableSession}
-      let aWindow = {
-        startTime: '08:00',
+    const over24 = windows.find(window => {
+      if (!window.expiration) {
+        return true
+      } else {
+        const expirationHours = moment.duration(window.expiration).asHours()
+        return expirationHours > 24
       }
-      newState.timeWindows
-        ? newState.timeWindows.push(aWindow)
-        : (newState.timeWindows = [aWindow])
+    })
+    return over24 !== undefined
+  }
 
-      updateSessionSchedule(newState)
+  const updateSessionSchedule = (newSession: StudySession, shouldInvalidateBurst?: boolean) => {
+    onUpdateSessionSchedule(newSession, shouldInvalidateBurst, shouldInvalidateBurst && hasCriticalStartEvent)
+  }
+
+  const addNewWindow = () => {
+    const newState = {...schedulableSession}
+    let aWindow = {
+      startTime: '08:00',
     }
+    newState.timeWindows ? newState.timeWindows.push(aWindow) : (newState.timeWindows = [aWindow])
 
-    const addNewNotification = () => {
-      const newState = {...schedulableSession}
+    updateSessionSchedule(newState)
+  }
 
-      newState.notifications
-        ? newState.notifications.push(DEFAULT_NOTIFICATION)
-        : (newState.notifications = [DEFAULT_NOTIFICATION])
+  const addNewNotification = () => {
+    const newState = {...schedulableSession}
 
-      updateSessionSchedule(newState)
+    newState.notifications
+      ? newState.notifications.push(DEFAULT_NOTIFICATION)
+      : (newState.notifications = [DEFAULT_NOTIFICATION])
+
+    updateSessionSchedule(newState)
+  }
+
+  const deleteWindow = (index: number) => {
+    const timeWindows = [...(schedulableSession.timeWindows || [])]
+    timeWindows.splice(index, 1)
+    const newState = {
+      ...schedulableSession,
+      timeWindows: [...timeWindows],
     }
+    updateSessionSchedule(newState)
+  }
 
-    const deleteWindow = (index: number) => {
-      const timeWindows = [...(schedulableSession.timeWindows || [])]
-      timeWindows.splice(index, 1)
-      const newState = {
-        ...schedulableSession,
-        timeWindows: [...timeWindows],
-      }
-      updateSessionSchedule(newState)
+  const updateWindow = (window: AssessmentWindowType, index: number) => {
+    if (!schedulableSession.timeWindows) {
+      return
     }
-
-    const updateWindow = (window: AssessmentWindowType, index: number) => {
-      if (!schedulableSession.timeWindows) {
-        return
-      }
-      const newState = {
-        ...schedulableSession,
-        timeWindows: schedulableSession.timeWindows.map((item, i) =>
-          i === index ? window : item
-        ),
-      }
-      updateSessionSchedule(newState)
+    const newState = {
+      ...schedulableSession,
+      timeWindows: schedulableSession.timeWindows.map((item, i) => (i === index ? window : item)),
     }
+    updateSessionSchedule(newState)
+  }
 
-    const deleteNotification = (index: number) => {
-      const notificatons = [...(schedulableSession.notifications || [])]
-      notificatons.splice(index, 1)
-      const newState = {
-        ...schedulableSession,
-        notifications: [...notificatons],
-      }
-      updateSessionSchedule(newState)
+  const deleteNotification = (index: number) => {
+    const notificatons = [...(schedulableSession.notifications || [])]
+    notificatons.splice(index, 1)
+    const newState = {
+      ...schedulableSession,
+      notifications: [...notificatons],
     }
+    updateSessionSchedule(newState)
+  }
 
-    const deleteAllNotifications = () => {
-      const newState = {
-        ...schedulableSession,
-        notifications: [],
-      }
-      updateSessionSchedule(newState)
+  const deleteAllNotifications = () => {
+    const newState = {
+      ...schedulableSession,
+      notifications: [],
     }
+    updateSessionSchedule(newState)
+  }
 
-    const updateNotification = (
-      notification: ScheduleNotification,
-      index: number
-    ) => {
-      let existingNotifications = schedulableSession.notifications || []
-      const newState = {
-        ...schedulableSession,
-        notifications: existingNotifications.map((item, i) =>
-          i === index ? notification : item
-        ),
-      }
-      updateSessionSchedule(newState)
+  const updateNotification = (notification: ScheduleNotification, index: number) => {
+    let existingNotifications = schedulableSession.notifications || []
+    const newState = {
+      ...schedulableSession,
+      notifications: existingNotifications.map((item, i) => (i === index ? notification : item)),
     }
+    updateSessionSchedule(newState)
+  }
 
-    const handleEndDateChange = (occurrences: number | undefined) => {
-      const newSessionSchedule = {
-        ...schedulableSession,
-        occurrences: occurrences,
-      }
-      if (occurrences === 1) {
-        newSessionSchedule.interval = undefined
-      }
-      updateSessionSchedule(newSessionSchedule)
+  const handleEndDateChange = (occurrences: number | undefined) => {
+    const newSessionSchedule = {
+      ...schedulableSession,
+      occurrences: occurrences,
     }
+    if (occurrences === 1) {
+      newSessionSchedule.interval = undefined
+    }
+    updateSessionSchedule(newSessionSchedule)
+  }
 
-    return (
-      <Box bgcolor="#F8F8F8" flexGrow="1" pb={0} pl={4}>
-        {sessionErrorState && sessionErrorState.generalErrorMessage.length > 0 && (
-          <Box className={classes.firstAlertStyling}>
-            {sessionErrorState.generalErrorMessage.map((el, index) => {
+  return (
+    <Box bgcolor="#F8F8F8" flexGrow="1" pb={0} pl={4}>
+      {sessionErrorState && sessionErrorState.generalErrorMessage.length > 0 && (
+        <Box className={classes.firstAlertStyling}>
+          {sessionErrorState.generalErrorMessage.map((el, index) => {
+            return (
+              <AlertWithText
+                key={index}
+                icon={<img src={AlertIcon} style={{height: '20px'}} alt={'error-message-' + index}></img>}
+                severity="error">
+                {`${studySession.name} ${el}`}
+              </AlertWithText>
+            )
+          })}
+        </Box>
+      )}
+      <form noValidate autoComplete="off">
+        <Box className={classes.formSection}>
+          <StartDate
+            onOpenEventsEditor={onOpenEventsEditor}
+            startEventId={
+              _.isEmpty(studySession.studyBurstIds)
+                ? _.first(schedulableSession.startEventIds)!
+                : burstOriginEventId || ''
+            }
+            isBurst={!_.isEmpty(studySession.studyBurstIds)}
+            delay={schedulableSession.delay}
+            customEvents={customEvents}
+            sessionName={studySession.name}
+            onChangeStartEventId={(startEventId: string) => {
+              updateSessionSchedule(
+                {
+                  ...schedulableSession,
+                  startEventIds: [startEventId],
+                },
+                true
+              )
+            }}
+            onChangeDelay={(delay: string | undefined) => {
+              updateSessionSchedule({...schedulableSession, delay})
+            }}>
+            <InfoCircleWithToolTip
+              tooltipDescription={
+                <span>
+                  This session is now part of a <strong>Burst</strong>. To edit this Start Session event, the session
+                  must be removed from the Burst first.
+                </span>
+              }
+              variant="info"
+            />
+          </StartDate>
+        </Box>
+        <Box className={classes.formSection}>
+          <EndDate occurrences={schedulableSession.occurrences} onChange={handleEndDateChange}></EndDate>
+        </Box>
+        <Box className={classes.formSection}>
+          <RepeatFrequency
+            onChange={(interval: string | undefined) => {
+              updateSessionSchedule({
+                ...schedulableSession,
+                interval,
+              })
+            }}
+            interval={schedulableSession.interval}
+            occurrences={schedulableSession.occurrences}></RepeatFrequency>
+        </Box>
+
+        <Box className={classes.formSection}>
+          <Box ml={-2}>
+            {windowErrors.map((el, index) => {
               return (
                 <AlertWithText
-                  key={index}
-                  icon={
-                    <img
-                      src={AlertIcon}
-                      style={{height: '20px'}}
-                      alt={'error-message-' + index}></img>
-                  }
-                  severity="error">
-                  {`${studySession.name} ${el}`}
+                  severity="error"
+                  icon={<img src={AlertIcon} style={{height: '20px'}} alt={'window-error-' + index}></img>}
+                  key={index}>
+                  Session {studySession.name} in {`${el.windowName}: ${el.windowError}`}
                 </AlertWithText>
               )
             })}
           </Box>
-        )}
-        <form noValidate autoComplete="off">
-          <Box className={classes.formSection}>
-            <StartDate
-              onOpenEventsEditor={onOpenEventsEditor}
-              startEventId={
-                _.isEmpty(studySession.studyBurstIds)
-                  ? _.first(schedulableSession.startEventIds)!
-                  : burstOriginEventId || ''
-              }
-              isBurst={!_.isEmpty(studySession.studyBurstIds)}
-              delay={schedulableSession.delay}
-              customEvents={customEvents}
-              sessionName={studySession.name}
-              onChangeStartEventId={(startEventId: string) => {
-                updateSessionSchedule(
-                  {
-                    ...schedulableSession,
-                    startEventIds: [startEventId],
-                  },
-                  true
-                )
-              }}
-              onChangeDelay={(delay: string | undefined) => {
-                updateSessionSchedule({...schedulableSession, delay})
-              }}>
-              <InfoCircleWithToolTip
-                tooltipDescription={
-                  <span>
-                    This session is now part of a <strong>Burst</strong>. To
-                    edit this Start Session event, the session must be removed
-                    from the Burst first.
-                  </span>
-                }
-                variant="info"
-              />
-            </StartDate>
-          </Box>
-          <Box className={classes.formSection}>
-            <EndDate
-              occurrences={schedulableSession.occurrences}
-              onChange={handleEndDateChange}></EndDate>
-          </Box>
-          <Box className={classes.formSection}>
-            <RepeatFrequency
-              onChange={(interval: string | undefined) => {
-                updateSessionSchedule({
-                  ...schedulableSession,
-                  interval,
-                })
-              }}
-              interval={schedulableSession.interval}
-              occurrences={schedulableSession.occurrences}></RepeatFrequency>
-          </Box>
 
-          <Box className={classes.formSection}>
-            <Box ml={-2}>
-              {windowErrors.map((el, index) => {
+          <SchedulingFormSection label="Session Window*:">
+            <Box flexGrow={1}>
+              {schedulableSession.timeWindows?.map((window, index) => (
+                <AssessmentWindow
+                  index={index}
+                  key={`${index}${window.startTime}${window.expiration}`}
+                  onDelete={() => {
+                    deleteWindow(index)
+                  }}
+                  onChange={(window: AssessmentWindowType) => updateWindow(window, index)}
+                  window={window}
+                  errorText={sessionErrorState?.sessionWindowErrors.get(index + 1) || ''}></AssessmentWindow>
+              ))}
+
+              <BlueButton
+                style={{marginLeft: 0}}
+                color="secondary"
+                onClick={addNewWindow}
+                variant="contained"
+                disabled={hasWindowLongerThan24h()}>
+                +Add new window
+              </BlueButton>
+            </Box>
+          </SchedulingFormSection>
+          <Box ml={-2}>
+            {!_.isEmpty(schedulableSession.notifications) &&
+              notificationErrors.map((el, index) => {
                 return (
                   <AlertWithText
                     severity="error"
-                    icon={
-                      <img
-                        src={AlertIcon}
-                        style={{height: '20px'}}
-                        alt={'window-error-' + index}></img>
-                    }
-                    key={index}>
-                    Session {studySession.name} in{' '}
-                    {`${el.windowName}: ${el.windowError}`}
+                    icon={<img src={AlertIcon} style={{height: '24px'}} alt={'notification-error-' + index}></img>}
+                    key={index}
+                    className={classes.errorText}>
+                    Session {studySession.name} in {`${el.notificationName}: ${el.notficationError}`}
                   </AlertWithText>
                 )
               })}
-            </Box>
-
-            <SchedulingFormSection label="Session Window*:">
-              <Box flexGrow={1}>
-                {schedulableSession.timeWindows?.map((window, index) => (
-                  <AssessmentWindow
-                    index={index}
-                    key={`${index}${window.startTime}${window.expiration}`}
-                    onDelete={() => {
-                      deleteWindow(index)
-                    }}
-                    onChange={(window: AssessmentWindowType) =>
-                      updateWindow(window, index)
-                    }
-                    window={window}
-                    errorText={
-                      sessionErrorState?.sessionWindowErrors.get(index + 1) ||
-                      ''
-                    }></AssessmentWindow>
-                ))}
-
-                <BlueButton
-                  style={{marginLeft: 0}}
-                  color="secondary"
-                  onClick={addNewWindow}
-                  variant="contained"
-                  disabled={hasWindowLongerThan24h()}>
-                  +Add new window
-                </BlueButton>
-              </Box>
-            </SchedulingFormSection>
-            <Box ml={-2}>
-              {!_.isEmpty(schedulableSession.notifications) &&
-                notificationErrors.map((el, index) => {
-                  return (
-                    <AlertWithText
-                      severity="error"
-                      icon={
-                        <img
-                          src={AlertIcon}
-                          style={{height: '24px'}}
-                          alt={'notification-error-' + index}></img>
-                      }
-                      key={index}
-                      className={classes.errorText}>
-                      Session {studySession.name} in{' '}
-                      {`${el.notificationName}: ${el.notficationError}`}
-                    </AlertWithText>
-                  )
-                })}
-            </Box>
-            <SchedulingFormSection
-              border={false}
-              label={
-                <>
-                  <label>Session Notifications:</label>{' '}
-                  <Box className={classes.notifySwitch}>
-                    <Switch
-                      color="primary"
-                      checked={!_.isEmpty(schedulableSession.notifications)}
-                      onChange={e => {
-                        if (e.target.checked) {
-                          addNewNotification()
-                        } else {
-                          deleteAllNotifications()
-                        }
-                      }}
-                      style={{marginLeft: 0, marginRight: '8px'}}></Switch>{' '}
-                    {!_.isEmpty(schedulableSession.notifications)
-                      ? 'On'
-                      : 'Off'}
-                  </Box>
-                </>
-              }>
-              <Box flexGrow={1}>
-                {schedulableSession.notifications?.map(
-                  (notification, index) => (
-                    <NotificationWindow
-                      index={index}
-                      notification={notification}
-                      isMultiday={hasWindowLongerThan24h()}
-                      key={index}
-                      onDelete={() => {
-                        deleteNotification(index)
-                      }}
-                      onChange={(notification: ScheduleNotification) => {
-                        updateNotification(notification, index)
-                      }}
-                      isError={
-                        sessionErrorState?.notificationErrors.has(index + 1) ||
-                        false
-                      }>
-                      <NotificationTime
-                        notifyAt={notification.notifyAt}
-                        offset={notification.offset}
-                        isFollowUp={index > 0}
-                        windowStartTime={
-                          !_.isEmpty(schedulableSession.timeWindows)
-                            ? schedulableSession.timeWindows[0].startTime
-                            : undefined
-                        }
-                        isMultiday={
-                          hasWindowLongerThan24h() ||
-                          !_.first(schedulableSession.timeWindows)?.expiration
-                        }
-                        onChange={e =>
-                          updateNotification(
-                            {
-                              ...notification,
-                              notifyAt: e.notifyAt,
-                              offset: e.offset,
-                            },
-                            index
-                          )
-                        }
-                      />
-                    </NotificationWindow>
-                  )
-                )}
-
-                {!schedulableSession.notifications && (
-                  <BlueButton
-                    onClick={addNewNotification}
-                    color="secondary"
-                    style={{marginLeft: 0}}
-                    variant="contained">
-                    +Add new notification
-                  </BlueButton>
-                )}
-
-                {schedulableSession.notifications?.length === 1 && (
-                  <BlueButton
-                    onClick={addNewNotification}
-                    color="secondary"
-                    style={{marginLeft: 0}}
-                    variant="contained">
-                    +Add a reminder notification
-                  </BlueButton>
-                )}
-              </Box>
-            </SchedulingFormSection>
           </Box>
-        </form>
-      </Box>
-    )
-  }
+          <SchedulingFormSection
+            border={false}
+            label={
+              <>
+                <label>Session Notifications:</label>{' '}
+                <Box className={classes.notifySwitch}>
+                  <Switch
+                    color="primary"
+                    checked={!_.isEmpty(schedulableSession.notifications)}
+                    onChange={e => {
+                      if (e.target.checked) {
+                        addNewNotification()
+                      } else {
+                        deleteAllNotifications()
+                      }
+                    }}
+                    style={{marginLeft: 0, marginRight: '8px'}}></Switch>{' '}
+                  {!_.isEmpty(schedulableSession.notifications) ? 'On' : 'Off'}
+                </Box>
+              </>
+            }>
+            <Box flexGrow={1}>
+              {schedulableSession.notifications?.map((notification, index) => (
+                <NotificationWindow
+                  index={index}
+                  notification={notification}
+                  isMultiday={hasWindowLongerThan24h()}
+                  key={index}
+                  onDelete={() => {
+                    deleteNotification(index)
+                  }}
+                  onChange={(notification: ScheduleNotification) => {
+                    updateNotification(notification, index)
+                  }}
+                  isError={sessionErrorState?.notificationErrors.has(index + 1) || false}>
+                  <NotificationTime
+                    notifyAt={notification.notifyAt}
+                    offset={notification.offset}
+                    isFollowUp={index > 0}
+                    windowStartTime={
+                      !_.isEmpty(schedulableSession.timeWindows)
+                        ? schedulableSession.timeWindows[0].startTime
+                        : undefined
+                    }
+                    isMultiday={hasWindowLongerThan24h() || !_.first(schedulableSession.timeWindows)?.expiration}
+                    onChange={e =>
+                      updateNotification(
+                        {
+                          ...notification,
+                          notifyAt: e.notifyAt,
+                          offset: e.offset,
+                        },
+                        index
+                      )
+                    }
+                  />
+                </NotificationWindow>
+              ))}
+
+              {!schedulableSession.notifications && (
+                <BlueButton onClick={addNewNotification} color="secondary" style={{marginLeft: 0}} variant="contained">
+                  +Add new notification
+                </BlueButton>
+              )}
+
+              {schedulableSession.notifications?.length === 1 && (
+                <BlueButton onClick={addNewNotification} color="secondary" style={{marginLeft: 0}} variant="contained">
+                  +Add a reminder notification
+                </BlueButton>
+              )}
+            </Box>
+          </SchedulingFormSection>
+        </Box>
+      </form>
+    </Box>
+  )
+}
 export default SchedulableSingleSessionContainer

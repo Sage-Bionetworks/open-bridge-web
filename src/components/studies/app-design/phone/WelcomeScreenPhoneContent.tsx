@@ -58,8 +58,7 @@ type WelcomeScreenStrings = keyof SubType<WelcomeScreenData, string>
 
 export const DEFAULT_TEXT: {[K in WelcomeScreenStrings]: string} = {
   welcomeScreenHeader: 'Welcome to \n[STUDY_TITLE]!',
-  welcomeScreenBody:
-    'We are excited that you will be participating. We hope that you find this study helpful.',
+  welcomeScreenBody: 'We are excited that you will be participating. We hope that you find this study helpful.',
   welcomeScreenSalutation: 'Sincerely,',
   welcomeScreenFromText: 'The [STUDY_TITLE] team',
 }
@@ -71,46 +70,37 @@ const PLACEHOLDER_TEXT: {[K in WelcomeScreenStrings]: string} = {
   welcomeScreenFromText: 'Study Team Name',
 }
 
-const WelcomeScreenPhoneContent: React.FunctionComponent<WelcomeScreenPhoneContentProps> =
-  ({welcomeScreenContent, studyTitle, isReadOnly}) => {
-    const classes = useStyles()
+const WelcomeScreenPhoneContent: React.FunctionComponent<WelcomeScreenPhoneContentProps> = ({
+  welcomeScreenContent,
+  studyTitle,
+  isReadOnly,
+}) => {
+  const classes = useStyles()
 
-    function getMessage(field: WelcomeScreenStrings): string {
-      if (welcomeScreenContent.isUsingDefaultMessage) {
-        return DEFAULT_TEXT[field].replace('[STUDY_TITLE]', studyTitle)
-      } else {
-        return welcomeScreenContent[field] || PLACEHOLDER_TEXT[field]
-      }
+  function getMessage(field: WelcomeScreenStrings): string {
+    if (welcomeScreenContent.isUsingDefaultMessage) {
+      return DEFAULT_TEXT[field].replace('[STUDY_TITLE]', studyTitle)
+    } else {
+      return welcomeScreenContent[field] || PLACEHOLDER_TEXT[field]
     }
-
-    return (
-      <Box className={classes.phoneInner}>
-        {!welcomeScreenContent.isUsingDefaultMessage && !isReadOnly && (
-          <SectionIndicator
-            index={3}
-            className={classes.sectionThreeIndicatorPosition}
-          />
-        )}
-        <Box className={classes.headlineStyle}>
-          {getMessage('welcomeScreenHeader')}
-        </Box>
-        <p className={clsx(classes.bodyText)}>
-          {getMessage('welcomeScreenBody')}
-        </p>
-        <Box className={clsx(classes.bodyText, classes.salutationText)}>
-          {getMessage('welcomeScreenSalutation')}
-        </Box>
-        <Box className={clsx(classes.bodyText, classes.fromText)}>
-          {getMessage('welcomeScreenFromText')}
-        </Box>
-        {welcomeScreenContent.isUsingDefaultMessage && (
-          <Box className={clsx(classes.bodyText, classes.disclaimerText)}>
-            This is a research Study. It does not provide medical advice,
-            diagnosis, or treatment.
-          </Box>
-        )}
-      </Box>
-    )
   }
+
+  return (
+    <Box className={classes.phoneInner}>
+      {!welcomeScreenContent.isUsingDefaultMessage && !isReadOnly && (
+        <SectionIndicator index={3} className={classes.sectionThreeIndicatorPosition} />
+      )}
+      <Box className={classes.headlineStyle}>{getMessage('welcomeScreenHeader')}</Box>
+      <p className={clsx(classes.bodyText)}>{getMessage('welcomeScreenBody')}</p>
+      <Box className={clsx(classes.bodyText, classes.salutationText)}>{getMessage('welcomeScreenSalutation')}</Box>
+      <Box className={clsx(classes.bodyText, classes.fromText)}>{getMessage('welcomeScreenFromText')}</Box>
+      {welcomeScreenContent.isUsingDefaultMessage && (
+        <Box className={clsx(classes.bodyText, classes.disclaimerText)}>
+          This is a research Study. It does not provide medical advice, diagnosis, or treatment.
+        </Box>
+      )}
+    </Box>
+  )
+}
 
 export default WelcomeScreenPhoneContent

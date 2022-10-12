@@ -93,9 +93,7 @@ export interface BlackBorderDropdownStyleProps {
   isRequired?: boolean
 }
 
-const BlackBorderDropdown: React.FunctionComponent<
-  SelectProps & BlackBorderDropdownStyleProps
-> = ({
+const BlackBorderDropdown: React.FunctionComponent<SelectProps & BlackBorderDropdownStyleProps> = ({
   value,
   onChange,
   dropdown,
@@ -122,11 +120,7 @@ const BlackBorderDropdown: React.FunctionComponent<
       onChange={onChange}
       disableUnderline
       classes={{
-        select: clsx(
-          true && classes.selectBase,
-          hasError && classes.errorBorder,
-          !hasError && classes.regularBorder
-        ),
+        select: clsx(true && classes.selectBase, hasError && classes.errorBorder, !hasError && classes.regularBorder),
       }}
       MenuProps={{
         classes: {
@@ -148,11 +142,7 @@ const BlackBorderDropdown: React.FunctionComponent<
         {emptyValueLabel}
       </MenuItem>
       {dropdown.map((el, index) => (
-        <MenuItem
-          className={classes.optionClass}
-          key={index}
-          value={el.value}
-          id={`investigator-${index}`}>
+        <MenuItem className={classes.optionClass} key={index} value={el.value} id={`investigator-${index}`}>
           {el.label}
         </MenuItem>
       ))}
@@ -161,23 +151,14 @@ const BlackBorderDropdown: React.FunctionComponent<
 
   const searchableDropdown = (
     <Box>
-      <Box style={{fontSize: '14px', fontFamily: poppinsFont}}>
-        {`${controlLabel || ''}${isRequired ? '*' : ''}`}
-      </Box>
+      <Box style={{fontSize: '14px', fontFamily: poppinsFont}}>{`${controlLabel || ''}${isRequired ? '*' : ''}`}</Box>
       <Autocomplete
         value={{value: value, label: value}}
         id={id}
         options={dropdown}
         className={classes.root}
         placeholder="Time Zones"
-        renderInput={params => (
-          <TextField
-            className={classes.listPadding}
-            {...params}
-            label=""
-            variant="outlined"
-          />
-        )}
+        renderInput={params => <TextField className={classes.listPadding} {...params} label="" variant="outlined" />}
         getOptionLabel={option => option.label}
         classes={{paper: classes.listBorder, input: classes.input}}
         onChange={(event, newValue) => {

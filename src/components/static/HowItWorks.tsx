@@ -9,10 +9,7 @@ type HowItWorksOwnProps = {
 
 type HowItWorksProps = HowItWorksOwnProps & RouteComponentProps
 
-const HowItWorks: FunctionComponent<HowItWorksProps> = ({
-  title = 'something',
-  paragraph,
-}) => (
+const HowItWorks: FunctionComponent<HowItWorksProps> = ({title = 'something', paragraph}) => (
   <aside>
     <h2>{title}HowItWorks</h2>
     <p>{paragraph}</p>

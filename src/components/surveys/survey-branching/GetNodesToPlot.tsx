@@ -1,20 +1,19 @@
 import UtilityObject from '@helpers/utility'
-import { Box, styled } from '@mui/material'
-import { latoFont } from '@style/theme'
-import { ChoiceQuestion, Step } from '@typedefs/surveys'
-import { Edge, MarkerType, Node } from 'reactflow'
-import QUESTIONS, {
-  getQuestionId
-} from '../survey-design/left-panel/QuestionConfigs'
-import { DivContainer } from '../survey-design/left-panel/QuestionTypeDisplay'
+import {Box, styled} from '@mui/material'
+import {latoFont} from '@style/theme'
+import {ChoiceQuestion, Step} from '@typedefs/surveys'
+import {Edge, MarkerType, Node} from 'reactflow'
+import QUESTIONS, {getQuestionId} from '../survey-design/left-panel/QuestionConfigs'
+import {DivContainer} from '../survey-design/left-panel/QuestionTypeDisplay'
 
+const position = {x: 0, y: 0}
 
-const position = { x: 0, y: 0 };
-const edgeType = "smoothstep";
-
-const StyledQuestionTitle = styled('div', { label: 'StyledQuestionTitle' })<{
+const StyledQuestionTitle = styled('div', {
+  label: 'StyledQuestionTitle',
+  shouldForwardProp: prop => prop !== 'unconnected',
+})<{
   unconnected?: boolean
-}>(({ theme, unconnected }) => ({
+}>(({theme, unconnected}) => ({
   '&.title': {
     fontSize: '12px',
     position: 'absolute',
@@ -37,10 +36,10 @@ function createNode(
   isUnconnected: boolean
 ): Node {
   const label = (
-    <div style={{ position: 'relative' }}>
+    <div style={{position: 'relative'}}>
       <DivContainer>
         {QUESTIONS.get(getQuestionId(q))?.img}
-        {(q.type !== 'completion' && q.type !== 'overview') && <Box>{qSequentialIndex}</Box>}
+        {q.type !== 'completion' && q.type !== 'overview' && <Box>{qSequentialIndex}</Box>}
         <StyledQuestionTitle className="title" unconnected={isUnconnected}>
           {q.title}
         </StyledQuestionTitle>
@@ -50,9 +49,8 @@ function createNode(
 
   return {
     id: q.identifier,
-    data: { label: label },
-    position
-
+    data: {label: label},
+    position,
   }
 }
 
@@ -63,8 +61,12 @@ function createEdge(i1: string, i2: string, isDisconnected?: boolean): Edge {
     target: i2,
     type: 'smoothstep',
     animated: !!isDisconnected,
-    style: { stroke: isDisconnected ? 'red' : 'back' },
-    markerEnd: { type: MarkerType.ArrowClosed, color: isDisconnected ? 'red' : 'back' },
+
+    style: {stroke: isDisconnected ? 'red' : 'black'},
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: !!isDisconnected ? 'red' : 'black',
+    },
   }
 }
 
@@ -72,17 +74,14 @@ function getChildNodes(questions: ChoiceQuestion[], q: ChoiceQuestion) {
   let nextQs: ChoiceQuestion[] = []
   const qChoiceValues = (q.choices || []).map(c => c.value) || []
   //if surveyRules
-  if (q.surveyRules) {
+  if (q.surveyRules?.length) {
     //only use the rules that map to the choices the question has,
     // find ids we are going to next/create a set to remove dups
     //only included rules that have matchingAnswer
     const nextIds = [
       ...new Set(
         q.surveyRules
-          .filter(
-            rule =>
-              rule.matchingAnswer && qChoiceValues.includes(rule.matchingAnswer)
-          )
+          .filter(rule => rule.matchingAnswer && qChoiceValues.includes(rule.matchingAnswer))
           .map(rule => rule.skipToIdentifier)
       ),
     ]
@@ -116,44 +115,23 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
   const edges: Edge[] = []
   let error: Error | undefined = undefined
 
-  function addNode(
-    q: ChoiceQuestion,
-    index: number,
-    error: Error | undefined
-  ) {
-    //  console.log('node', q, index)
+  function addNode(q: ChoiceQuestion, index: number, error: Error | undefined) {
     const node = createNode(q, index, false)
     nodes.push(node)
     let nextQs = getChildNodes(questions, q)
 
     if (nextQs.length) {
-      //add it if it hasn't been added, otherwise just add edge
-
-      for (var child of nextQs) {
+      //add child edges
+      for (let child of nextQs) {
         //find sequential index of the quesiton
-        const qIndex = questions.findIndex(
-          q1 => q1.identifier === child.identifier
-        )
-
-
+        const qIndex = questions.findIndex(q1 => q1.identifier === child.identifier)
         const edge = createEdge(q.identifier, child.identifier)
-        // console.log('adding edge', edge, nextQs.length)
-        if (edges.findIndex(e => e.id === edge.id) === -1) {
-          edges.push(edge)
-        }
-
-
+        edges.push(edge)
+        //add child node
         const indexOfNode = nodes.findIndex(q1 => q1.id === child.identifier)
 
         if (indexOfNode === -1) {
-          addNode(
-            child,
-            qIndex,
-
-            error
-          )
-          //
-
+          addNode(child, qIndex, error)
         }
       }
     }
@@ -166,36 +144,24 @@ const getNodes = (questions: ChoiceQuestion[], plotWidth: number) => {
 
   const disconnectedQs = questions.filter(q => !nodeIds.includes(q.identifier))
 
-
   disconnectedQs.forEach((dq, i) => {
     const qIndex = questions.findIndex(q1 => q1.identifier === dq.identifier)
     const node = createNode(dq, qIndex, true)
     nodes.push(node)
 
-
     let nextQs = getChildNodes(questions, dq)
     if (nextQs.length) {
-      //add it if it hasn't been added, otherwise just add edge
-
-      for (var child of nextQs) {
-        //find sequential index of the quesiton
-        const qIndex = questions.findIndex(
-          q1 => q1.identifier === child.identifier
-        )
-
-
+      //add child edges
+      for (let child of nextQs) {
         const edge = createEdge(dq.identifier, child.identifier, true)
-        // console.log('adding edge', edge, nextQs.length)
         if (edges.findIndex(e => e.id === edge.id) === -1) {
           edges.push(edge)
         }
       }
     }
-
-
   })
 
-  return { nodes, edges, error }
+  return {nodes, edges, error}
 }
 
 //function detect cycles in a graph using DFS
@@ -259,7 +225,7 @@ export const getEdgesFromSteps = (questions: ChoiceQuestion[]) => {
 
   addEdge(questions[0], undefined)
 
-  return { edges, error }
+  return {edges, error}
 }
 
 export default getNodes

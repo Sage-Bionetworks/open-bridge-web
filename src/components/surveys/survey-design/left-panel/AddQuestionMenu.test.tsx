@@ -5,9 +5,7 @@ import QUESTIONS from './QuestionConfigs'
 
 function setUp() {
   const user = userEvent.setup()
-  const component = render(
-    <AddQuestionMenu onSelectQuestion={something => onSelect(something)} />
-  )
+  const component = render(<AddQuestionMenu onSelectQuestion={something => onSelect(something)} />)
 
   const selectBtn = component!.getByRole('button', {name: /select/i})
   return {user, component, selectBtn}
@@ -19,9 +17,7 @@ afterEach(cleanup)
 test('renders question selector', async () => {
   const {component} = setUp()
 
-  let valSelectTextField = component!.container.querySelector(
-    '#select-survey-question'
-  ) as HTMLDivElement
+  let valSelectTextField = component!.container.querySelector('#select-survey-question') as HTMLDivElement
   expect(valSelectTextField).toBeInTheDocument()
 })
 

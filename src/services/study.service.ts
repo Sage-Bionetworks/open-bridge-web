@@ -1,13 +1,7 @@
 import {Schedule} from '@typedefs/scheduling'
 import Utility from '../helpers/utility'
 import constants from '../types/constants'
-import {
-  DisplayStudyPhase,
-  ExtendedError,
-  FileRevision,
-  Study,
-  StudyPhase,
-} from '../types/types'
+import {DisplayStudyPhase, ExtendedError, FileRevision, Study, StudyPhase} from '../types/types'
 import ScheduleService from './schedule.service'
 
 const StudyService = {
@@ -61,11 +55,7 @@ function isStudyInDesign(study: Study) {
 }
 
 function isStudyClosedToEdits(study: Study) {
-  return (
-    study.phase !== 'design' &&
-    study.phase !== 'recruitment' &&
-    study.phase !== 'in_flight'
-  )
+  return study.phase !== 'design' && study.phase !== 'recruitment' && study.phase !== 'in_flight'
 }
 
 async function editStudyLogo(
@@ -106,12 +96,7 @@ async function editStudyLogo(
     await fetch(uploadURL, config)
     // Tell the backend that we have successfully finished uploading file to aws
     const successfulUploadEndpoint = `${constants.endpoints.studies}/${studyId}/logo/${uploadData.createdOn}`
-    const successfulUploadResponse = await Utility.callEndpoint<Study>(
-      successfulUploadEndpoint,
-      'POST',
-      {},
-      token
-    )
+    const successfulUploadResponse = await Utility.callEndpoint<Study>(successfulUploadEndpoint, 'POST', {}, token)
     return successfulUploadResponse.data
   } catch (error) {
     throw error
@@ -137,12 +122,7 @@ async function getStudies(
 }
 
 async function getStudy(id: string, token: string): Promise<Study | undefined> {
-  const response = await Utility.callEndpoint<Study>(
-    constants.endpoints.study.replace(':id', id),
-    'GET',
-    {},
-    token
-  )
+  const response = await Utility.callEndpoint<Study>(constants.endpoints.study.replace(':id', id), 'GET', {}, token)
   const study = response.data
   if (!study.clientData) {
     study.clientData = getDefaultClientData()
@@ -161,11 +141,7 @@ async function createStudy(study: Study, token: string): Promise<number> {
   return newVersion.data.version
 }
 
-async function renameStudy(
-  studyId: string,
-  newName: string,
-  token: string
-): Promise<Study> {
+async function renameStudy(studyId: string, newName: string, token: string): Promise<Study> {
   const study = await getStudy(studyId, token)
   if (!study) {
     throw new Error('No study found')
@@ -175,11 +151,7 @@ async function renameStudy(
   return study
 }
 
-async function copyStudy(
-  studyId: string,
-  appId: string,
-  token: string
-): Promise<{study: Study; schedule?: Schedule}> {
+async function copyStudy(studyId: string, appId: string, token: string): Promise<{study: Study; schedule?: Schedule}> {
   // get original study
   const studyToCopy = await getStudy(studyId, token)
   if (!studyToCopy) {
@@ -188,11 +160,7 @@ async function copyStudy(
 
   let scheduleToCopy = undefined
   try {
-    scheduleToCopy = await ScheduleService.getSchedule(
-      studyToCopy.identifier,
-      appId,
-      token!
-    )
+    scheduleToCopy = await ScheduleService.getSchedule(studyToCopy.identifier, appId, token!)
   } catch (error) {
     console.log(error, 'no schedule')
   } //dont' do anything . no schedule
@@ -217,16 +185,10 @@ async function copyStudy(
       guid: '',
       name: newStudyId + 'test',
       sessions: scheduleToCopy.sessions.map(s => ({...s, guid: undefined})),
-      studyBursts: scheduleToCopy.studyBursts
-        ? [...scheduleToCopy.studyBursts]
-        : [],
+      studyBursts: scheduleToCopy.studyBursts ? [...scheduleToCopy.studyBursts] : [],
     }
 
-    copiedSchedule = await ScheduleService.createSchedule(
-      newStudyId,
-      copiedSchedule,
-      token!
-    )
+    copiedSchedule = await ScheduleService.createSchedule(newStudyId, copiedSchedule, token!)
   }
   return {study: newStudy, schedule: copiedSchedule}
 }
@@ -257,12 +219,7 @@ async function updateStudy(study: Study, token: string): Promise<number> {
 }
 
 async function removeStudy(studyId: string, token: string): Promise<Study[]> {
-  await Utility.callEndpoint<{items: Study[]}>(
-    constants.endpoints.study.replace(':id', studyId),
-    'DELETE',
-    {},
-    token
-  )
+  await Utility.callEndpoint<{items: Study[]}>(constants.endpoints.study.replace(':id', studyId), 'DELETE', {}, token)
   const data = await getStudies(token)
   return data.items
 }

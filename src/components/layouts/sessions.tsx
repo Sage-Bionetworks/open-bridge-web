@@ -1,5 +1,7 @@
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import SomeIcon from '@mui/icons-material/FaceOutlined'
 import {Box} from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -7,20 +9,11 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import {useTheme} from '@mui/material/styles'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import SomeIcon from '@mui/icons-material/FaceOutlined'
+import makeStyles from '@mui/styles/makeStyles'
 import clsx from 'clsx'
 import React, {FunctionComponent} from 'react'
 import {RouteComponentProps} from 'react-router-dom'
-import {
-  MTBHeadingH1,
-  MTBHeadingH2,
-  MTBHeadingH3,
-  MTBHeadingH4,
-  MTBHeadingH5,
-} from '../widgets/Headings'
+import {MTBHeadingH1, MTBHeadingH2, MTBHeadingH3, MTBHeadingH4, MTBHeadingH5} from '../widgets/Headings'
 
 const drawerWidth = 212
 
@@ -99,31 +92,18 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-type SessionsLayoutOwnProps = {
-  title?: string
-  paragraph?: string
-}
-
-type SessionsLayoutProps = SessionsLayoutOwnProps & RouteComponentProps
 const cards = [1, 2, 3, 4, 5]
 
-const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
-  title = 'something',
-  paragraph,
-}) => {
+const SessionsLayout: FunctionComponent<RouteComponentProps> = ({}) => {
   const classes = useStyles()
-  const theme = useTheme()
+
   const [open, setOpen] = React.useState(false)
 
   const toggleDrawer = () => {
     setOpen(prev => !prev)
   }
   return (
-    <Box
-      paddingTop="16px"
-      bgcolor="#997cbf29"
-      display="flex"
-      position="relative">
+    <Box paddingTop="16px" bgcolor="#997cbf29" display="flex" position="relative">
       <Drawer
         variant="permanent"
         className={clsx(classes.drawer, {
@@ -143,16 +123,9 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
         </div>
         <Divider />
         <List>
-          {[
-            'Study Protocol',
-            'Sessions Creator',
-            'Scheduler',
-            'Participant Groups',
-          ].map((text, index) => (
+          {['Study Protocol', 'Sessions Creator', 'Scheduler', 'Participant Groups'].map((text, index) => (
             <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <SomeIcon /> : <SomeIcon />}
-              </ListItemIcon>
+              <ListItemIcon>{index % 2 === 0 ? <SomeIcon /> : <SomeIcon />}</ListItemIcon>
               <ListItemText primary={text} />
             </ListItem>
           ))}
@@ -180,11 +153,7 @@ const SessionsLayout: FunctionComponent<SessionsLayoutProps> = ({
             columnGap="16px"
             rowGap="16px">
             {cards.map(card => (
-              <Box
-                width="280px"
-                height="511px"
-                border="1px solid black"
-                bgcolor="#d5e5ec">
+              <Box width="280px" height="511px" border="1px solid black" bgcolor="#d5e5ec">
                 card
               </Box>
             ))}

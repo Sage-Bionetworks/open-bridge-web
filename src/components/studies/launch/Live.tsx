@@ -4,12 +4,7 @@ import {MTBHeadingH1} from '@components/widgets/Headings'
 import {Alert, Button} from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import {useStudy} from '@services/studyHooks'
-import {
-  latoFont,
-  playfairDisplayFont,
-  poppinsFont,
-  ThemeType,
-} from '@style/theme'
+import {latoFont, playfairDisplayFont, poppinsFont, ThemeType} from '@style/theme'
 import constants from '@typedefs/constants'
 import clsx from 'clsx'
 import React from 'react'
@@ -95,11 +90,8 @@ const Live: React.FunctionComponent<RouteComponentProps> = () => {
       {studyError && <Alert>{studyError}</Alert>}
       <div className={classes.inner}>
         <div style={{marginLeft: '-50px'}}>
-          <MTBHeadingH1 className={classes.congratsText}>
-            Congratulations!
-          </MTBHeadingH1>
-          <MTBHeadingH1
-            className={clsx(classes.congratsText, classes.liveText)}>
+          <MTBHeadingH1 className={classes.congratsText}>Congratulations!</MTBHeadingH1>
+          <MTBHeadingH1 className={clsx(classes.congratsText, classes.liveText)}>
             {study.name} officially live!
           </MTBHeadingH1>
           <img src={LiveIcon} className={classes.liveButton}></img>
@@ -109,10 +101,7 @@ const Live: React.FunctionComponent<RouteComponentProps> = () => {
           </p>
           <Button
             color="secondary"
-            href={constants.restrictedPaths.PARTICIPANT_MANAGER.replace(
-              ':id',
-              study.identifier
-            )}
+            href={constants.restrictedPaths.PARTICIPANT_MANAGER.replace(':id', study.identifier)}
             className={classes.enrollButton}>
             Enroll Participants
           </Button>

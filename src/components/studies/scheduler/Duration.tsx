@@ -36,9 +36,7 @@ export interface DurationProps {
   selectWidth?: number
 }
 
-const Duration: React.FunctionComponent<
-  DurationProps & StandardTextFieldProps
-> = ({
+const Duration: React.FunctionComponent<DurationProps & StandardTextFieldProps> = ({
   durationString,
   unitData,
   onChange,
@@ -103,10 +101,7 @@ const Duration: React.FunctionComponent<
 
   const triggerChange = (e: any) => {
     const time = unt === 'H' || unt === 'M' ? 'T' : ''
-    const p =
-      unt === undefined || num === undefined
-        ? undefined
-        : `P${time}${num}${unt}`
+    const p = unt === undefined || num === undefined ? undefined : `P${time}${num}${unt}`
 
     onChange({target: {value: p}})
   }
@@ -134,17 +129,10 @@ const Duration: React.FunctionComponent<
         label={placeHolder}
         sourceData={unitData}
         id={unitLabel.replace(' ', '')}
-        onChange={e =>
-          changeValue(num, e.target.value as moment.unitOfTime.Base)
-        }
-        style={
-          selectWidth ? {width: `${selectWidth}px`} : {width: '100px'}
-        }></SelectWithEnum>
+        onChange={e => changeValue(num, e.target.value as moment.unitOfTime.Base)}
+        style={selectWidth ? {width: `${selectWidth}px`} : {width: '100px'}}></SelectWithEnum>
       {isShowClear && (
-        <IconButton
-          className={classes.clear}
-          onClick={_e => onChange({target: {value: undefined}})}
-          size="large">
+        <IconButton className={classes.clear} onClick={_e => onChange({target: {value: undefined}})} size="large">
           <ClearIcon />
         </IconButton>
       )}

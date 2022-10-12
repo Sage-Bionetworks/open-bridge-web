@@ -8,14 +8,10 @@ import {
 import _ from 'lodash'
 import moment from 'moment'
 
-function getMaxNumberOfTimeWindows(
-  streams: (AdherenceDetailReportWeek | AdherenceWeeklyReport)[]
-): number {
+function getMaxNumberOfTimeWindows(streams: (AdherenceDetailReportWeek | AdherenceWeeklyReport)[]): number {
   const maxNumberOfWindowsInStreams = streams.map(stream => {
     const dayEntires = _.flatten(Object.values(stream.byDayEntries))
-    const maxWindowsInStream = Math.max(
-      ...dayEntires.map(entry => entry.timeWindows.length)
-    )
+    const maxWindowsInStream = Math.max(...dayEntires.map(entry => entry.timeWindows.length))
     return maxWindowsInStream
   })
 
@@ -39,9 +35,7 @@ function getLastSchedleDate(
   return new Date(result).toDateString()
 }*/
 function isCompliant(adherence: number | undefined): boolean {
-  return (
-    adherence === undefined || adherence > AdherenceService.COMPLIANCE_THRESHOLD
-  )
+  return adherence === undefined || adherence > AdherenceService.COMPLIANCE_THRESHOLD
 }
 
 function getDisplayFromLabel(
@@ -51,16 +45,12 @@ function getDisplayFromLabel(
 ): string | string[] {
   const arr = label.split('/')
   const returnLabel =
-    burstNumber !== undefined
-      ? `${arr[1].trim()}/Burst ${burstNumber}`
-      : `${arr[1].trim()}/${arr[0].trim()}`
+    burstNumber !== undefined ? `${arr[1].trim()}/Burst ${burstNumber}` : `${arr[1].trim()}/${arr[0].trim()}`
 
   return isReturnArray ? returnLabel.split('/') : returnLabel
 }
 
-function getUniqueSessionsInfo(
-  items: AdherenceWeeklyReport[] | AdherenceDetailReportWeek[]
-): SessionDisplayInfo[] {
+function getUniqueSessionsInfo(items: AdherenceWeeklyReport[] | AdherenceDetailReportWeek[]): SessionDisplayInfo[] {
   const labels = _.flatten(items.map(i => i.rows))
   const result: SessionDisplayInfo[] = labels
     .filter(label => !!label)
@@ -77,11 +67,7 @@ function getDateForDisplay(date?: string) {
   return date ? moment(date).format('MM/DD/YYYY') : 'Event date is not defined'
 }
 
-function getItemFromByDayEntries(
-  byDayEntries: AdherenceByDayEntries,
-  dayIndex: number,
-  rowIndex: number
-) {
+function getItemFromByDayEntries(byDayEntries: AdherenceByDayEntries, dayIndex: number, rowIndex: number) {
   return byDayEntries[dayIndex][rowIndex]
 }
 

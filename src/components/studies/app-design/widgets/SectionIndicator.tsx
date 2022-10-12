@@ -25,16 +25,9 @@ type SectionIndicatorProps = {
   className?: string
 }
 
-const SectionIndicator: React.FunctionComponent<SectionIndicatorProps> = ({
-  index,
-  className,
-}) => {
+const SectionIndicator: React.FunctionComponent<SectionIndicatorProps> = ({index, className}) => {
   const classes = useStyles()
-  return (
-    <Box className={clsx(classes.container, className && className)}>
-      {index}
-    </Box>
-  )
+  return <Box className={clsx(classes.container, className && className)}>{index}</Box>
 }
 
 export default SectionIndicator

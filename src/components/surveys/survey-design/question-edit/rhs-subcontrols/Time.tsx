@@ -1,26 +1,10 @@
 import {getDropdownTimeItems} from '@components/studies/scheduler/utility'
-import {
-  StyledCheckbox,
-  StyledFormControl,
-  StyledLabel14,
-} from '@components/surveys/widgets/SharedStyled'
-import {
-  StyledDropDown,
-  StyledDropDownItem,
-} from '@components/surveys/widgets/StyledDropDown'
+import {StyledCheckbox, StyledFormControl, StyledLabel14} from '@components/surveys/widgets/SharedStyled'
+import {StyledDropDown, StyledDropDownItem} from '@components/surveys/widgets/StyledDropDown'
 import AlertWithTextWrapper from '@components/widgets/AlertWithTextWrapper'
-import {
-  Box,
-  FormControlLabel,
-  MenuItem,
-  OutlinedInput,
-  Radio,
-  RadioGroup,
-  styled,
-  Typography,
-} from '@mui/material'
+import {Box, FormControlLabel, MenuItem, OutlinedInput, Radio, RadioGroup, styled, Typography} from '@mui/material'
 import {poppinsFont, theme} from '@style/theme'
-import {FormatOptionsTime, Step, TimeQuestion} from '@typedefs/surveys'
+import {FormatOptionsTime, TimeQuestion} from '@typedefs/surveys'
 import React, {ChangeEvent} from 'react'
 
 const Labels = styled('div', {label: 'labels'})(({theme}) => ({
@@ -56,8 +40,7 @@ const ValueSelector: React.FunctionComponent<{
   }
 
   return (
-    <StyledFormControl
-      sx={{marginRight: theme.spacing(2), marginBottom: theme.spacing(2)}}>
+    <StyledFormControl sx={{marginRight: theme.spacing(2), marginBottom: theme.spacing(2)}}>
       <StyledLabel14 mb={0.5} id={CONFIG[type].labelId}>
         {CONFIG[type].label}
       </StyledLabel14>
@@ -85,34 +68,32 @@ const ValueSelector: React.FunctionComponent<{
 
 type LimitType = 'PAST' | 'FUTURE' | 'NONE'
 
-function getLimit(fo: FormatOptionsTime): LimitType {
-  if (!fo.allowPast) {
-    return 'PAST'
+function getLimit(fo?: FormatOptionsTime): LimitType {
+  if (!fo) {
+    return 'NONE'
   }
-  if (!fo.allowFuture) {
+  if (fo.allowPast === false) {
     return 'FUTURE'
+  }
+  if (fo.allowFuture === false) {
+    return 'PAST'
   }
   return 'NONE'
 }
 
 const Time: React.FunctionComponent<{
   step: TimeQuestion
-  onChange: (step: Step) => void
+  onChange: (step: TimeQuestion) => void
 }> = ({step, onChange}) => {
   const [rangeDisabled, setRangeDisabled] = React.useState(
-    step.inputItem.formatOptions?.minimumValue === undefined &&
-      step.inputItem.formatOptions?.maximumValue === undefined
+    step.inputItem.formatOptions?.minimumValue === undefined && step.inputItem.formatOptions?.maximumValue === undefined
   )
-  const [range, setRange] = React.useState<
-    {min?: string; max?: string} | undefined
-  >({
+  const [range, setRange] = React.useState<{min?: string; max?: string} | undefined>({
     min: step.inputItem.formatOptions?.minimumValue,
     max: step.inputItem.formatOptions?.maximumValue,
   })
 
-  const [exclude, setExclude] = React.useState<LimitType>(
-    getLimit(step.inputItem.formatOptions)
-  )
+  const [exclude, setExclude] = React.useState<LimitType>(getLimit(step.inputItem.formatOptions))
   const onUpdateFormat = (fm: FormatOptionsTime) => {
     const inputItem = {...step.inputItem, formatOptions: fm}
     onChange({...step, inputItem})
@@ -127,9 +108,7 @@ const Time: React.FunctionComponent<{
   }
 
   React.useEffect(() => {
-    setError(
-      !range || validate(range) ? '' : 'Max value should be less than min value'
-    )
+    setError(!range || validate(range) ? '' : 'Max value should be less than min value')
   }, [range])
 
   const changeRangeDisabled = (val: boolean) => {
@@ -144,17 +123,8 @@ const Time: React.FunctionComponent<{
     <>
       <FormControlLabel
         sx={{mt: theme.spacing(1.5)}}
-        control={
-          <StyledCheckbox
-            checked={rangeDisabled}
-            onChange={e => changeRangeDisabled(e.target.checked)}
-          />
-        }
-        label={
-          <Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>
-            No min and max validation!
-          </Typography>
-        }
+        control={<StyledCheckbox checked={rangeDisabled} onChange={e => changeRangeDisabled(e.target.checked)} />}
+        label={<Typography sx={{fontFamily: poppinsFont, fontWeight: '14px'}}>No min and max validation!</Typography>}
       />
       <Box
         sx={{
@@ -198,13 +168,13 @@ const Time: React.FunctionComponent<{
           value={exclude}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setExclude(e.target.value as LimitType)
-            const fo = {...step.inputItem.formatOptions}
-            fo.allowFuture = e.target.value !== 'FUTURE'
-            fo.allowPast = e.target.value !== 'PAST'
+            const fo = {...(step.inputItem.formatOptions || {})}
+            fo.allowFuture = e.target.value !== 'PAST'
+            fo.allowPast = e.target.value !== 'FUTURE'
             onUpdateFormat(fo)
           }}>
           <FormControlLabel
-            value="ALL"
+            value="NONE"
             sx={{mt: theme.spacing(1.5), alignItems: 'center'}}
             control={<Radio />}
             label={'Allow any time value'}
@@ -218,17 +188,14 @@ const Time: React.FunctionComponent<{
 
           <FormControlLabel
             sx={{alignItems: 'center'}}
-            value="NONE"
+            value="PAST"
             control={<Radio />}
             label={'Allow only time in the past'}
           />
         </RadioGroup>
       </Labels>
-      <Typography
-        variant="body1"
-        margin={(theme.spacing(3), 'auto', 'auto', theme.spacing(3))}>
-        *The actual UI for this question will default to the system's OS
-        interface.{' '}
+      <Typography variant="body1" margin={(theme.spacing(3), 'auto', 'auto', theme.spacing(3))}>
+        *The actual UI for this question will default to the system's OS interface.{' '}
       </Typography>
     </>
   )

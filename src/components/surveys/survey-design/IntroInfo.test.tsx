@@ -1,11 +1,4 @@
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  RenderResult,
-  screen,
-} from '@testing-library/react'
+import {act, cleanup, fireEvent, render, RenderResult, screen} from '@testing-library/react'
 import SurveyAssessment from '__test_utils/mocks/surveyAssessment'
 
 import {loggedInSessionData} from '__test_utils/mocks/user'
@@ -38,9 +31,7 @@ const surveyConfig: SurveyConfig = {
   steps: [],
 }
 
-const mockedAuth = useUserSessionDataState as jest.Mocked<
-  typeof useUserSessionDataState
->
+const mockedAuth = useUserSessionDataState as jest.Mocked<typeof useUserSessionDataState>
 
 let component: RenderResult | undefined
 const onUpdateFn = jest.fn()
@@ -51,9 +42,7 @@ afterEach(() => {
 })
 
 function renderComponent(survey: SurveyConfig | undefined, isNew?: boolean) {
-  mockedAuth.useUserSessionDataState.mockImplementation(
-    () => loggedInSessionData
-  )
+  mockedAuth.useUserSessionDataState.mockImplementation(() => loggedInSessionData)
   const surv = survey ? {config: survey} : undefined
   component = render(
     <MemoryRouter initialEntries={['/surveys']}>
@@ -61,9 +50,7 @@ function renderComponent(survey: SurveyConfig | undefined, isNew?: boolean) {
         <IntroInfo
           survey={surv}
           surveyAssessment={isNew ? undefined : SurveyAssessment}
-          onUpdate={(asmnt, survey, action) =>
-            onUpdateFn(asmnt, survey, action)
-          }></IntroInfo>
+          onUpdate={(asmnt, survey, action) => onUpdateFn(asmnt, survey, action)}></IntroInfo>
       </ProvideTheme>
     </MemoryRouter>
   )
@@ -145,7 +132,7 @@ describe('<IntroInfo/>', () => {
 
     test('save button should have "title page" text and be disabled if there is no survey name or duration', () => {
       renderComponent(undefined, true)
-      const radios = getSurveyQuestionSettings()
+
       const surveyName = screen.getByRole('textbox', {name: /survey name/i})
       const minutes = screen.getByRole('textbox', {
         name: /how long will this survey take/i,
@@ -176,11 +163,7 @@ describe('<IntroInfo/>', () => {
       fireEvent.change(minutes, {target: {value: '1'}})
 
       triggerSave(true)
-      expect(onUpdateFn).toHaveBeenCalledWith(
-        expect.any(Object),
-        expect.any(Object),
-        'CREATE'
-      )
+      expect(onUpdateFn).toHaveBeenCalledWith(expect.any(Object), expect.any(Object), 'CREATE')
     })
   })
 
@@ -206,11 +189,7 @@ describe('<IntroInfo/>', () => {
       ...surveyConfig,
       shouldHideActions: [],
     }
-    expect(onUpdateFn).toHaveBeenCalledWith(
-      expect.any(Object),
-      {config: expectation},
-      'UPDATE'
-    )
+    expect(onUpdateFn).toHaveBeenCalledWith(expect.any(Object), {config: expectation}, 'UPDATE')
   })
 
   /* 
